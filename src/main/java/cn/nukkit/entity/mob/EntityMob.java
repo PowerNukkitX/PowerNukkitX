@@ -20,7 +20,6 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.Utils;
 import lombok.Getter;
@@ -76,6 +75,15 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
                 this.armorInventory.setItem(armorTag.getByte("Slot"), NBTIO.getItemHelper(armorTag));
             }
         }
+    }
+
+    @Override
+    public boolean onUpdate(int currentTick) {
+        //怪物不能在和平模式下生存
+        if (this.getServer().getDifficulty() == 0) {
+            this.close();
+            return true;
+        } else return super.onUpdate(currentTick);
     }
 
     public void spawnToAll() {
@@ -239,7 +247,7 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
 
     @Override
     public float getDiffHandDamage(int difficulty) {
-        return this.diffHandDamage[difficulty - 1];
+        return this.diffHandDamage[difficulty];
     }
 
     @Override
