@@ -10,6 +10,31 @@
 2. <a href="#CataLogs-Join-the-community">💬 Join the Community / 加入我們 </a>
 3. <a href="#CataLogs-Version-history">🔖 Version history / 歷史版本 </a>
 
+## [Dev-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - Future
+該版本目前支持了Minecraft:BE `1.19.50 (協議版本560)`.
+
+## 新增內容
+
+- [#860] 實現魚的AI。
+- [#897] 初步晚上鞘翅飛行傷害計算。
+
+## 修改記錄
+
+- [#908] 刪除重複的傳送門檢查。
+- [#912] 實體接口組件化。
+
+## BUG修復
+
+- [#889] 修復1.19.50中小地圖不顯示的BUG。
+- [#890] 修復`AdventureSettings`的NPE問題。
+- [#900] 修復Item與Tag無法雙向查找的BUG。
+- [#909] 修復`InventorySlice#isFull`的異常行為。
+- [#911] 修復EntityCanAttack ArrayIndexOutOfBoundsException。
+
+## 文檔內容
+
+- [#899] 清理濫用的lombok註解。
+
 ## [1.19.50-r3-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.50-r3) - 2022-12-26
 該版本目前支持了Minecraft:BE `1.19.50 (協議版本560)`.
 
@@ -1985,6 +2010,7 @@ Need to switch languages?
 [#857]: https://github.com/PowerNukkitX/PowerNukkitX/pull/857
 [#858]: https://github.com/PowerNukkitX/PowerNukkitX/pull/858
 [#859]: https://github.com/PowerNukkitX/PowerNukkitX/pull/859
+[#860]: https://github.com/PowerNukkitX/PowerNukkitX/pull/860
 [#861]: https://github.com/PowerNukkitX/PowerNukkitX/pull/861
 [#862]: https://github.com/PowerNukkitX/PowerNukkitX/pull/862
 [#864]: https://github.com/PowerNukkitX/PowerNukkitX/pull/864
@@ -2000,6 +2026,15 @@ Need to switch languages?
 [#883]: https://github.com/PowerNukkitX/PowerNukkitX/pull/883
 [#885]: https://github.com/PowerNukkitX/PowerNukkitX/pull/885
 [#886]: https://github.com/PowerNukkitX/PowerNukkitX/pull/886
+[#889]: https://github.com/PowerNukkitX/PowerNukkitX/pull/889
+[#890]: https://github.com/PowerNukkitX/PowerNukkitX/pull/890
+[#897]: https://github.com/PowerNukkitX/PowerNukkitX/pull/897
+[#899]: https://github.com/PowerNukkitX/PowerNukkitX/pull/899
+[#900]: https://github.com/PowerNukkitX/PowerNukkitX/pull/900
+[#908]: https://github.com/PowerNukkitX/PowerNukkitX/pull/908
+[#909]: https://github.com/PowerNukkitX/PowerNukkitX/pull/909
+[#911]: https://github.com/PowerNukkitX/PowerNukkitX/pull/911
+[#912]: https://github.com/PowerNukkitX/PowerNukkitX/pull/912
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->
