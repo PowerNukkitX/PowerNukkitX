@@ -884,7 +884,7 @@ public abstract class Entity extends Location implements Metadatable {
 
         try {
             this.componentGroup = requireEntityComponentGroup();
-        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+        } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
             throw new RuntimeException("An error occurred while creating the component group", e);
         }
         this.componentGroup.onInitEntity();
@@ -3499,15 +3499,20 @@ public abstract class Entity extends Location implements Metadatable {
      */
     @PowerNukkitXOnly
     @Since("1.19.50-r4")
-    protected EntityComponentGroup requireEntityComponentGroup() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    protected EntityComponentGroup requireEntityComponentGroup() throws InvocationTargetException, InstantiationException, IllegalAccessException {
         var components = new HashSet<EntityComponent>();
 
         var interfaces = this.getClass().getInterfaces();
         for (var interfaze : interfaces) {
             var component = EntityComponentRegistery.getInterfaceBoundEntityComponent(interfaze);
             if (component != null) {
-                var constructor = EntityComponent.CONSTRUCTOR_CACHE.get(component);
-                if (constructor == null) EntityComponent.CONSTRUCTOR_CACHE.put(component, constructor = component.getConstructor(Entity.class));
+                var constructor = EntityComponent.CONSTRUCTOR_CACHE.computeIfAbsent(component,k -> {
+                    try {
+                        return component.getConstructor(Entity.class);
+                    } catch (NoSuchMethodException e) {
+                        throw new RuntimeException("The required entity component constructor was not found", e);
+                    }
+                });
                 components.add(constructor.newInstance(this));
             }
         }
