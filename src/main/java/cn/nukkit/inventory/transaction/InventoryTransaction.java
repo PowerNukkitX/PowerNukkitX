@@ -218,19 +218,20 @@ public class InventoryTransaction {
             this.sendInventories();
             return false;
         }
-
+        boolean send = false;
         for (InventoryAction action : this.actions) {
             if (!action.onPreExecute(this.source)) {
                 this.sendInventories();
                 return false;
             }
-            if(action instanceof SlotChangeAction){
-                if(source.isPlayer()){
+            if (action instanceof SlotChangeAction slotChangeAction) {
+                if (slotChangeAction.getSlot() == 50) send = true;
+                if (source.isPlayer()) {
                     Player player = (Player) source;
-                    if(player.isSurvival()){
-                        int slot = ((SlotChangeAction) action).getSlot();
-                        if(slot == 36 || slot == 37 || slot == 38 || slot == 39){
-                            if(action.getSourceItem().hasEnchantment(Enchantment.ID_BINDING_CURSE) && action.getSourceItem().applyEnchantments()){
+                    if (player.isSurvival()) {
+                        int slot = slotChangeAction.getSlot();
+                        if (slot == 36 || slot == 37 || slot == 38 || slot == 39) {
+                            if (action.getSourceItem().hasEnchantment(Enchantment.ID_BINDING_CURSE) && action.getSourceItem().applyEnchantments()) {
                                 this.sendInventories();
                                 return false;
                             }
@@ -247,6 +248,9 @@ public class InventoryTransaction {
                 action.onExecuteFail(this.source);
             }
         }
+        // todo hack implement to fix issue#692
+        // only handle win10 to avoid issue#732
+        if (send && source.getLoginChainData().getDeviceOS() == 7) this.sendInventories();
 
         this.hasExecuted = true;
         return true;

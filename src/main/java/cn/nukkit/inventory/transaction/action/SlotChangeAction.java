@@ -62,7 +62,7 @@ public class SlotChangeAction extends InventoryAction {
     @Override
     @PowerNukkitXDifference(info = "Use setItemByPlayer", since = "1.19.50-r3")
     public boolean execute(Player source) {
-        // hack for solving issue#732
+
         return this.inventory.setItemByPlayer(source, this.inventorySlot, this.targetItem, false);
     }
 
