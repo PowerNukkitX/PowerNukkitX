@@ -159,7 +159,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
         //写入结果
         this.addNode(findingPath);
 
-        if (EntityAI.DEBUG) {
+        if (EntityAI.checkDebugOption(EntityAI.DebugOption.ROUTE)) {
             findingPath.forEach(node -> {
                 sendParticle("minecraft:balloon_gas_particle", node.getVector3(), Server.getInstance().getOnlinePlayers().values().toArray(Player.EMPTY_ARRAY));
             });

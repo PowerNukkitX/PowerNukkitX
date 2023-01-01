@@ -69,7 +69,7 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
             behaviorGroup.tickRunningCoreBehaviors(this);
             behaviorGroup.tickRunningBehaviors(this);
             behaviorGroup.applyController(this);
-            if (EntityAI.DEBUG) behaviorGroup.debugTick(this);
+            if (EntityAI.checkDebugOption(EntityAI.DebugOption.BEHAVIOR)) behaviorGroup.debugTick(this);
         }
         return super.onUpdate(currentTick);
     }
@@ -108,7 +108,7 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
 
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
-        if (!EntityAI.DEBUG) {
+        if (!EntityAI.checkDebugOption(EntityAI.DebugOption.MEMORY)) {
             return super.onInteract(player, item, clickedPos);
         } else {
             if (player.isOp() && item.getId() == ItemID.STICK) {
