@@ -17,6 +17,8 @@ public interface CommandMap {
 
     boolean dispatch(CommandSender sender, String cmdLine);
 
+    int executeCommand(CommandSender sender, String cmdLine);
+
     void clearCommands();
 
     Command getCommand(String name);

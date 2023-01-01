@@ -331,12 +331,8 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
                         if (event.isCancelled()) {
                             return false;
                         }
-
-                        if (Server.getInstance().dispatchCommand(this, cmd)) {
-                            this.successCount = 1; //TODO: >1
-                        } else {
-                            this.successCount = 0;
-                        }
+                        this.successCount = Server.getInstance().executeCommand(this, cmd);
+                        System.out.println(this.successCount);
                     }
                 }
 

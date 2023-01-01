@@ -284,9 +284,14 @@ public class SimpleCommandMap implements CommandMap {
 
     @Override
     public boolean dispatch(CommandSender sender, String cmdLine) {
+        return this.executeCommand(sender, cmdLine) > 0;
+    }
+
+    @Override
+    public int executeCommand(CommandSender sender, String cmdLine) {
         ArrayList<String> parsed = parseArguments(cmdLine);
         if (parsed.size() == 0) {
-            return false;
+            return 0;
         }
 
         String sentCommandLabel = parsed.remove(0).toLowerCase();//command name
@@ -294,30 +299,30 @@ public class SimpleCommandMap implements CommandMap {
         Command target = this.getCommand(sentCommandLabel);
 
         if (target == null) {
-            return false;
+            return 0;
         }
 
-        boolean output;
+        int output;
         target.timing.startTiming();
         try {
             if (target.paramTree == null) {
-                output = target.execute(sender, sentCommandLabel, args);
+                output = target.execute(sender, sentCommandLabel, args) ? 1 : 0;
             } else {
                 var result = target.paramTree.matchAndParse(sender, args);
-                if (result == null) output = false;
+                if (result == null) output = 0;
                 else {
                     try {
                         output = target.execute(sender, sentCommandLabel, result, new CommandLogger(target, sender, args));
                     } catch (UnsupportedOperationException e) {
                         log.fatal("If you use paramtree, you must override execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) method to run the command!");
-                        output = false;
+                        output = 0;
                     }
                 }
             }
         } catch (Exception e) {
             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.exception"));
             log.fatal(this.server.getLanguage().translateString("nukkit.command.exception", cmdLine, target.toString(), Utils.getExceptionMessage(e)), e);
-            output = false;
+            output = 0;
         }
         target.timing.stopTiming();
 

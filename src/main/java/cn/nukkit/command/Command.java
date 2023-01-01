@@ -159,7 +159,7 @@ public abstract class Command {
         throw new UnsupportedOperationException();
     }
 
-    public boolean execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         throw new UnsupportedOperationException();
     }
 

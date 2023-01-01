@@ -170,49 +170,46 @@ public class ExecuteCommand extends VanillaCommand {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        if (!this.testPermission(sender)) return false;
+    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+        if (!this.testPermission(sender)) return 0;
+        int num = 0;
         var list = result.getValue();
         switch (result.getKey()) {
             case "run" -> {
                 String command = list.getResult(1);
-                if (command.isBlank()) return false;
-                return sender.getServer().dispatchCommand(sender, command);
+                if (command.isBlank()) return 0;
+                return sender.getServer().executeCommand(sender, command);
             }
             case "as" -> {
                 List<Entity> executors = list.getResult(1);
                 String chainCommand = list.getResult(2);
                 for (Entity executor : executors) {
                     ExecutorCommandSender executorCommandSender = new ExecutorCommandSender(sender, executor, sender.getLocation());
-                    if (!executorCommandSender.getServer().dispatchCommand(executorCommandSender, chainCommand)) {
-                        return false;
-                    }
+                    num += executorCommandSender.getServer().executeCommand(executorCommandSender, chainCommand);
                 }
-                return true;
+                return num;
             }
             case "at" -> {
                 List<Entity> locations = list.getResult(1);
-                if (locations.isEmpty()) return false;
+                if (locations.isEmpty()) return 0;
                 String chainCommand = list.getResult(2);
                 for (Location location : locations) {
                     ExecutorCommandSender executorCommandSender = new ExecutorCommandSender(sender, sender.asEntity(), location);
-                    if (!executorCommandSender.getServer().dispatchCommand(executorCommandSender, chainCommand)) {
-                        return false;
-                    }
+                    num += executorCommandSender.getServer().executeCommand(executorCommandSender, chainCommand);
                 }
-                return true;
+                return num;
             }
             case "in" -> {
                 String levelName = list.getResult(1);
                 Level level = Server.getInstance().getLevelByName(levelName);
                 if (level == null) {
-                    return false;
+                    return 0;
                 }
                 String chainCommand = list.getResult(2);
                 Location location = sender.getLocation();
                 location.setLevel(level);
                 ExecutorCommandSender executorCommandSender = new ExecutorCommandSender(sender, sender.asEntity(), location);
-                return executorCommandSender.getServer().dispatchCommand(executorCommandSender, chainCommand);
+                return executorCommandSender.getServer().executeCommand(executorCommandSender, chainCommand);
             }
             case "facing" -> {
                 Vector3 pos = list.getResult(1);
@@ -222,11 +219,11 @@ public class ExecuteCommand extends VanillaCommand {
                 source.setPitch(bv.getPitch());
                 source.setYaw(bv.getYaw());
                 ExecutorCommandSender executorCommandSender = new ExecutorCommandSender(sender, sender.asEntity(), source);
-                return executorCommandSender.getServer().dispatchCommand(executorCommandSender, chainCommand);
+                return executorCommandSender.getServer().executeCommand(executorCommandSender, chainCommand);
             }
             case "facing-entity" -> {
                 List<Entity> targets = list.getResult(2);
-                if (targets.isEmpty()) return false;
+                if (targets.isEmpty()) return 0;
                 String anchor = list.getResult(3);
                 boolean anchorAtEyes = anchor.equals("eyes");
                 String chainCommand = list.getResult(4);
@@ -236,11 +233,9 @@ public class ExecuteCommand extends VanillaCommand {
                     source.setPitch(bv.getPitch());
                     source.setYaw(bv.getYaw());
                     ExecutorCommandSender executorCommandSender = new ExecutorCommandSender(sender, sender.asEntity(), source);
-                    if (!executorCommandSender.getServer().dispatchCommand(executorCommandSender, chainCommand)) {
-                        return false;
-                    }
+                    num += executorCommandSender.getServer().executeCommand(executorCommandSender, chainCommand);
                 }
-                return true;
+                return num;
             }
             case "rotated" -> {
                 double yaw = sender.getLocation().yaw;
@@ -252,22 +247,20 @@ public class ExecuteCommand extends VanillaCommand {
                 location.setYaw(yaw);
                 location.setPitch(pitch);
                 ExecutorCommandSender executorCommandSender = new ExecutorCommandSender(sender, sender.asEntity(), location);
-                return executorCommandSender.getServer().dispatchCommand(executorCommandSender, chainCommand);
+                return executorCommandSender.getServer().executeCommand(executorCommandSender, chainCommand);
             }
             case "rotated as" -> {
                 List<Entity> executors = list.getResult(2);
-                if (executors.isEmpty()) return false;
+                if (executors.isEmpty()) return 0;
                 String chainCommand = list.getResult(3);
                 for (Entity executor : executors) {
                     Location location = sender.getLocation();
                     location.setYaw(executor.getYaw());
                     location.setPitch(executor.getPitch());
                     ExecutorCommandSender executorCommandSender = new ExecutorCommandSender(sender, sender.asEntity(), location);
-                    if (!executorCommandSender.getServer().dispatchCommand(executorCommandSender, chainCommand)) {
-                        return false;
-                    }
+                    num += executorCommandSender.getServer().executeCommand(executorCommandSender, chainCommand);
                 }
-                return true;
+                return num;
             }
             case "align" -> {
                 String axes = list.getResult(1);
@@ -281,10 +274,10 @@ public class ExecuteCommand extends VanillaCommand {
                     }
                 }
                 ExecutorCommandSender executorCommandSender = new ExecutorCommandSender(sender, sender.asEntity(), location);
-                return executorCommandSender.getServer().dispatchCommand(executorCommandSender, chainCommand);
+                return executorCommandSender.getServer().executeCommand(executorCommandSender, chainCommand);
             }
             case "anchored" -> {
-                if (!sender.isEntity()) return false;
+                if (!sender.isEntity()) return 0;
                 Location location = sender.getLocation();
                 String anchor = list.getResult(1);
                 String chainCommand = list.getResult(2);
@@ -295,7 +288,7 @@ public class ExecuteCommand extends VanillaCommand {
                     case "eyes" -> location = location.add(0, sender.asEntity().getEyeHeight(), 0);
                 }
                 ExecutorCommandSender executorCommandSender = new ExecutorCommandSender(sender, sender.asEntity(), location);
-                return executorCommandSender.getServer().dispatchCommand(executorCommandSender, chainCommand);
+                return executorCommandSender.getServer().executeCommand(executorCommandSender, chainCommand);
             }
             case "positioned" -> {
                 Vector3 vec = list.getResult(1);
@@ -305,11 +298,11 @@ public class ExecuteCommand extends VanillaCommand {
                 newLoc.setZ(vec.getZ());
                 String chainCommand = list.getResult(2);
                 ExecutorCommandSender executorCommandSender = new ExecutorCommandSender(sender, sender.asEntity(), newLoc);
-                return executorCommandSender.getServer().dispatchCommand(executorCommandSender, chainCommand);
+                return executorCommandSender.getServer().executeCommand(executorCommandSender, chainCommand);
             }
             case "positioned as" -> {
                 List<Entity> targets = list.getResult(2);
-                if (targets.isEmpty()) return false;
+                if (targets.isEmpty()) return 0;
                 String chainCommand = list.getResult(3);
                 for (Vector3 vec : targets) {
                     Location newLoc = sender.getLocation();
@@ -317,11 +310,9 @@ public class ExecuteCommand extends VanillaCommand {
                     newLoc.setY(vec.getY());
                     newLoc.setZ(vec.getZ());
                     ExecutorCommandSender executorCommandSender = new ExecutorCommandSender(sender, sender.asEntity(), newLoc);
-                    if (!executorCommandSender.getServer().dispatchCommand(executorCommandSender, chainCommand)) {
-                        return false;
-                    }
+                    num += executorCommandSender.getServer().executeCommand(executorCommandSender, chainCommand);
                 }
-                return true;
+                return num;
             }
             case "if-unless-block" -> {
                 Position pos = list.getResult(2);
@@ -334,9 +325,9 @@ public class ExecuteCommand extends VanillaCommand {
                 boolean matched = block.getId() == id;
                 boolean shouldMatch = isIF.equals("if");
                 if ((matched && shouldMatch) || (!matched && !shouldMatch)) {
-                    return sender.getServer().dispatchCommand(sender, chainCommand);
+                    return sender.getServer().executeCommand(sender, chainCommand);
                 }
-                return false;
+                return 0;
             }
             case "if-unless-block-data" -> {
                 Position pos = list.getResult(2);
@@ -350,9 +341,9 @@ public class ExecuteCommand extends VanillaCommand {
                 boolean matched = id == block.getId() && (data == -1 || data == block.getDamage());
                 boolean shouldMatch = isIF.equals("if");
                 if ((matched && shouldMatch) || (!matched && !shouldMatch)) {
-                    return sender.getServer().dispatchCommand(sender, chainCommand);
+                    return sender.getServer().executeCommand(sender, chainCommand);
                 }
-                return false;
+                return 0;
             }
             case "if-unless-blocks" -> {
                 String isIF = list.getResult(0);
@@ -382,9 +373,9 @@ public class ExecuteCommand extends VanillaCommand {
                 if (blocksAABB.getMinY() < 0 || blocksAABB.getMaxY() > 255 || destinationAABB.getMinY() < 0 || destinationAABB.getMaxY() > 255) {
                     sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.testforblock.outOfWorld"));
                     if (!shouldMatch) {
-                        return sender.getServer().dispatchCommand(sender, chainCommand);
+                        return sender.getServer().executeCommand(sender, chainCommand);
                     }
-                    return false;
+                    return 0;
                 }
 
                 Level level = begin.getLevel();
@@ -394,16 +385,16 @@ public class ExecuteCommand extends VanillaCommand {
                         if (level.getChunkIfLoaded(sourceChunkX, sourceChunkZ) == null) {
                             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.testforblock.outOfWorld"));
                             if (!shouldMatch) {
-                                return sender.getServer().dispatchCommand(sender, chainCommand);
+                                return sender.getServer().executeCommand(sender, chainCommand);
                             }
-                            return false;
+                            return 0;
                         }
                         if (level.getChunkIfLoaded(destinationChunkX, destinationChunkZ) == null) {
                             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.testforblock.outOfWorld"));
                             if (!shouldMatch) {
-                                return sender.getServer().dispatchCommand(sender, chainCommand);
+                                return sender.getServer().executeCommand(sender, chainCommand);
                             }
-                            return false;
+                            return 0;
                         }
                     }
                 }
@@ -450,9 +441,9 @@ public class ExecuteCommand extends VanillaCommand {
                 sender.sendMessage(new TranslationContainer("%commands.compare.success", String.valueOf(count)));
 
                 if ((matched && shouldMatch) || (!matched && !shouldMatch)) {
-                    return sender.getServer().dispatchCommand(sender, chainCommand);
+                    return sender.getServer().executeCommand(sender, chainCommand);
                 }
-                return false;
+                return 0;
             }
             case "if-unless-entity" -> {
                 String isIF = list.getResult(0);
@@ -461,9 +452,9 @@ public class ExecuteCommand extends VanillaCommand {
                 String chainCommand = list.getResult(3);
                 boolean found = !targets.isEmpty();
                 if ((found && shouldMatch) || (!found && !shouldMatch)) {
-                    return sender.getServer().dispatchCommand(sender, chainCommand);
+                    return sender.getServer().executeCommand(sender, chainCommand);
                 }
-                return false;
+                return 0;
             }
             case "if-unless-score" -> {
                 boolean matched = false;
@@ -475,14 +466,14 @@ public class ExecuteCommand extends VanillaCommand {
                 Set<IScorer> targetScorers = targets.stream().filter(Objects::nonNull).map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).collect(Collectors.toSet());
                 if (targetScorers.size() > 1) {
                     sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.tooManyTargets"));
-                    return false;
+                    return 0;
                 }
                 IScorer targetScorer = targetScorers.iterator().next();
 
                 String targetObjectiveName = list.getResult(3);
                 if (!manager.containScoreboard(targetObjectiveName)) {
                     sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.scoreboard.objectiveNotFound", targetObjectiveName));
-                    return false;
+                    return 0;
                 }
                 var targetScoreboard = manager.getScoreboards().get(targetObjectiveName);
 
@@ -491,20 +482,20 @@ public class ExecuteCommand extends VanillaCommand {
                 Set<IScorer> selectorScorers = scorers.stream().filter(t -> t != null).map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).collect(Collectors.toSet());
                 if (selectorScorers.size() > 1) {
                     sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.tooManyTargets"));
-                    return false;
+                    return 0;
                 }
                 IScorer sourceScorer = selectorScorers.iterator().next();
 
                 String sourceObjectiveName = list.getResult(6);
                 if (!manager.containScoreboard(sourceObjectiveName)) {
                     sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.scoreboard.objectiveNotFound", sourceObjectiveName));
-                    return false;
+                    return 0;
                 }
                 var sourceScoreboard = manager.getScoreboards().get(targetObjectiveName);
 
                 if (!sourceScoreboard.getLines().containsKey(sourceScorer)) {
                     sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.scoreboard.players.operation.notFound", sourceObjectiveName, sourceScorer.getName()));
-                    return false;
+                    return 0;
                 }
 
                 int targetScore = targetScoreboard.getLines().get(targetScorer).getScore();
@@ -521,9 +512,9 @@ public class ExecuteCommand extends VanillaCommand {
 
                 String chainCommand = list.getResult(7);
                 if ((matched && shouldMatch) || (!matched && !shouldMatch)) {
-                    return sender.getServer().dispatchCommand(sender, chainCommand);
+                    return sender.getServer().executeCommand(sender, chainCommand);
                 }
-                return false;
+                return 0;
             }
             case "if-unless-score-matches" -> {
                 boolean matched = false;
@@ -535,14 +526,14 @@ public class ExecuteCommand extends VanillaCommand {
                 Set<IScorer> targetScorers = targets.stream().filter(Objects::nonNull).map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).collect(Collectors.toSet());
                 if (targetScorers.size() > 1) {
                     sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.tooManyTargets"));
-                    return false;
+                    return 0;
                 }
                 IScorer targetScorer = targetScorers.iterator().next();
 
                 String targetObjectiveName = list.getResult(3);
                 if (!manager.containScoreboard(targetObjectiveName)) {
                     sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.scoreboard.objectiveNotFound", targetObjectiveName));
-                    return false;
+                    return 0;
                 }
                 var targetScoreboard = manager.getScoreboards().get(targetObjectiveName);
 
@@ -567,12 +558,12 @@ public class ExecuteCommand extends VanillaCommand {
                 }
                 String chainCommand = list.getResult(6);
                 if ((matched && shouldMatch) || (!matched && !shouldMatch)) {
-                    return sender.getServer().dispatchCommand(sender, chainCommand);
+                    return sender.getServer().executeCommand(sender, chainCommand);
                 }
-                return false;
+                return 0;
             }
             default -> {
-                return false;
+                return 0;
             }
         }
     }

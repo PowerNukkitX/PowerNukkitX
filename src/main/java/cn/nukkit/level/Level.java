@@ -3001,11 +3001,11 @@ public class Level implements ChunkManager, Metadatable {
                 block = block.up();
             }
         }
-
+        //handle height limit
         if (!isYInRange((int) block.y)) {
             return null;
         }
-
+        //handle height limit in nether
         if (block.y > 127 && this.getDimension() == DIMENSION_NETHER) {
             return null;
         }
@@ -3015,13 +3015,12 @@ public class Level implements ChunkManager, Metadatable {
         }
 
         if (player != null) {
-            PlayerInteractEvent ev = new PlayerInteractEvent(player, item, target, face,
-                    target.getId() == 0 ? Action.RIGHT_CLICK_AIR : Action.RIGHT_CLICK_BLOCK);
+            PlayerInteractEvent ev = new PlayerInteractEvent(player, item, target, face, target.getId() == 0 ? Action.RIGHT_CLICK_AIR : Action.RIGHT_CLICK_BLOCK);
 
             if (player.getGamemode() > 2) {
                 ev.setCancelled();
             }
-
+            //handle spawn protect
             if (!player.isOp() && isInSpawnRadius(target)) {
                 ev.setCancelled();
             }

@@ -111,8 +111,8 @@ public class ScoreboardCommand extends VanillaCommand {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        if (!this.testPermission(sender)) return false;
+    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+        if (!this.testPermission(sender)) return 0;
         var list = result.getValue();
         var manager = Server.getInstance().getScoreboardManager();
         switch (result.getKey()) {
@@ -120,7 +120,7 @@ public class ScoreboardCommand extends VanillaCommand {
                 String objectiveName = list.getResult(2);
                 if (manager.containScoreboard(objectiveName)) {
                     log.outputError(TextFormat.RED + "%commands.scoreboard.objectives.add.alreadyExists", objectiveName);
-                    return false;
+                    return 0;
                 }
                 String criteriaName = list.getResult(3);
                 if (list.hasResult(4)) {
@@ -129,26 +129,26 @@ public class ScoreboardCommand extends VanillaCommand {
                     manager.addScoreboard(new Scoreboard(objectiveName, objectiveName, criteriaName, SortOrder.ASCENDING));
                 }
                 log.outputSuccess("commands.scoreboard.objectives.add.success", objectiveName);
-                return true;
+                return 1;
             }
             case "objectives-list" -> {
-                log.addSuccess(TextFormat.GREEN + "%commands.scoreboard.objectives.list.count", String.valueOf(manager.getScoreboards().size()));
+                log.addMessage(TextFormat.GREEN + "%commands.scoreboard.objectives.list.count", String.valueOf(manager.getScoreboards().size()));
                 for (var scoreboard : manager.getScoreboards().values()) {
-                    log.addSuccess("commands.scoreboard.objectives.list.entry", scoreboard.getObjectiveName(), scoreboard.getDisplayName(), scoreboard.getCriteriaName());
+                    log.addMessage("commands.scoreboard.objectives.list.entry", scoreboard.getObjectiveName(), scoreboard.getDisplayName(), scoreboard.getCriteriaName());
                 }
-                log.outputSuccess();
-                return true;
+                log.output();
+                return 1;
             }
             case "objectives-remove" -> {
                 String objectiveName = list.getResult(2);
                 if (!manager.containScoreboard(objectiveName)) {
                     log.outputError(TextFormat.RED + "%commands.scoreboard.objectiveNotFound", objectiveName);
-                    return false;
+                    return 0;
                 }
                 if (manager.removeScoreboard(objectiveName)) {
                     log.outputSuccess("commands.scoreboard.objectives.remove.success", objectiveName);
                 }
-                return true;
+                return 1;
             }
             case "objectives-setdisplay-list-sidebar" -> {
                 String slotName = list.getResult(2);
@@ -165,7 +165,7 @@ public class ScoreboardCommand extends VanillaCommand {
                     String objectiveName = list.getResult(3);
                     if (!manager.containScoreboard(objectiveName)) {
                         log.outputError(TextFormat.RED + "%commands.scoreboard.objectiveNotFound", objectiveName);
-                        return false;
+                        return 0;
                     }
                     var scoreboard = manager.getScoreboards().get(objectiveName);
                     String orderName = list.getResult(4);
@@ -178,22 +178,22 @@ public class ScoreboardCommand extends VanillaCommand {
                     manager.setDisplay(slot, scoreboard);
                     log.outputSuccess("commands.scoreboard.objectives.setdisplay.successSet", slot.getSlotName(), objectiveName);
                 }
-                return true;
+                return 1;
             }
             case "objectives-setdisplay-belowname" -> {
                 if (!list.hasResult(3)) {
                     manager.setDisplay(DisplaySlot.BELOW_NAME, null);
                     log.outputSuccess("commands.scoreboard.objectives.setdisplay.successCleared", DisplaySlot.BELOW_NAME.getSlotName());
-                    return true;
+                    return 1;
                 } else {
                     String objectiveName = list.getResult(3);
                     if (!manager.containScoreboard(objectiveName)) {
                         log.outputError(TextFormat.RED + "%commands.scoreboard.objectiveNotFound", objectiveName);
-                        return false;
+                        return 0;
                     }
                     manager.setDisplay(DisplaySlot.BELOW_NAME, manager.getScoreboard(objectiveName));
                     log.outputSuccess("commands.scoreboard.objectives.setdisplay.successSet", DisplaySlot.BELOW_NAME.getSlotName(), objectiveName);
-                    return true;
+                    return 1;
                 }
             }
             case "players-add-remove-set" -> {
@@ -202,7 +202,7 @@ public class ScoreboardCommand extends VanillaCommand {
             case "players-list" -> {
                 if (manager.getScoreboards().isEmpty()) {
                     log.outputError(TextFormat.RED + "%commands.scoreboard.players.list.empty");
-                    return false;
+                    return 0;
                 }
                 if (list.hasResult(2)) {
                     String wildcard_target_str = list.getResult(2);
@@ -229,17 +229,17 @@ public class ScoreboardCommand extends VanillaCommand {
                         }
                         if (!find) {
                             log.outputError(TextFormat.RED + "%commands.scoreboard.players.list.player.empty", scorer.getName());
-                            return false;
+                            return 0;
                         }
-                        log.addSuccess(TextFormat.GREEN + "%commands.scoreboard.players.list.player.count", String.valueOf(count), scorer.getName());
+                        log.addMessage(TextFormat.GREEN + "%commands.scoreboard.players.list.player.count", String.valueOf(count), scorer.getName());
                         for (var scoreboard : manager.getScoreboards().values()) {
                             if (scoreboard.getLines().containsKey(scorer)) {
-                                log.addSuccess("commands.scoreboard.players.list.player.entry", String.valueOf(scoreboard.getLines().get(scorer).getScore()), scoreboard.getDisplayName(), scoreboard.getObjectiveName());
+                                log.addMessage("commands.scoreboard.players.list.player.entry", String.valueOf(scoreboard.getLines().get(scorer).getScore()), scoreboard.getDisplayName(), scoreboard.getObjectiveName());
                             }
                         }
-                        log.outputSuccess();
+                        log.output();
                     }
-                    return true;
+                    return 1;
                 } else {
                     Set<String> playerNames = new LinkedHashSet<>();
                     for (var display : manager.getDisplay().values()) {
@@ -275,14 +275,14 @@ public class ScoreboardCommand extends VanillaCommand {
                 String objectiveName = list.getResult(3);
                 if (!manager.containScoreboard(objectiveName)) {
                     log.outputError(TextFormat.RED + "%commands.scoreboard.objectiveNotFound", objectiveName);
-                    return false;
+                    return 0;
                 }
                 var scoreboard = manager.getScoreboards().get(objectiveName);
                 long min = list.getResult(4);
                 long max = list.getResult(5);
                 if (min > max) {
                     log.outputError(TextFormat.RED + "%commands.scoreboard.players.random.invalidRange", String.valueOf(min), String.valueOf(max));
-                    return false;
+                    return 0;
                 }
                 Random random = new Random();
                 for (IScorer scorer : scorers) {
@@ -291,10 +291,10 @@ public class ScoreboardCommand extends VanillaCommand {
                         scoreboard.addLine(new ScoreboardLine(scoreboard, scorer, score));
                     }
                     scoreboard.getLines().get(scorer).setScore(score);
-                    log.addSuccess("commands.scoreboard.players.set.success", objectiveName, scorer.getName(), String.valueOf(score));
+                    log.addMessage("commands.scoreboard.players.set.success", objectiveName, scorer.getName(), String.valueOf(score));
                 }
-                log.outputSuccess();
-                return true;
+                log.output();
+                return 1;
             }
             case "players-reset" -> {
                 String wildcard_target_str = list.getResult(2);
@@ -314,28 +314,28 @@ public class ScoreboardCommand extends VanillaCommand {
                     String objectiveName = list.getResult(3);
                     if (!manager.containScoreboard(objectiveName)) {
                         log.outputError(TextFormat.RED + "%commands.scoreboard.objectiveNotFound", objectiveName);
-                        return false;
+                        return 0;
                     }
                     var scoreboard = manager.getScoreboards().get(objectiveName);
                     for (IScorer scorer : scorers) {
                         if (scoreboard.containLine(scorer)) {
                             scoreboard.removeLine(scorer);
-                            log.addSuccess("commands.scoreboard.players.resetscore.success", scoreboard.getObjectiveName(), scorer.getName());
+                            log.addMessage("commands.scoreboard.players.resetscore.success", scoreboard.getObjectiveName(), scorer.getName());
                         }
                     }
-                    log.outputSuccess();
-                    return true;
+                    log.output();
+                    return 1;
                 } else {
                     for (var scoreboard : manager.getScoreboards().values()) {
                         for (IScorer scorer : scorers) {
                             if (scoreboard.containLine(scorer)) {
                                 scoreboard.removeLine(scorer);
-                                log.addSuccess("commands.scoreboard.players.resetscore.success", scoreboard.getObjectiveName(), scorer.getName());
+                                log.addMessage("commands.scoreboard.players.resetscore.success", scoreboard.getObjectiveName(), scorer.getName());
                             }
                         }
                     }
-                    log.outputSuccess();
-                    return true;
+                    log.output();
+                    return 1;
                 }
             }
             case "players-test" -> {
@@ -355,7 +355,7 @@ public class ScoreboardCommand extends VanillaCommand {
                 String objectiveName = list.getResult(3);
                 if (!manager.containScoreboard(objectiveName)) {
                     log.outputError(TextFormat.RED + "%commands.scoreboard.objectiveNotFound", objectiveName);
-                    return false;
+                    return 0;
                 }
                 var scoreboard = manager.getScoreboards().get(objectiveName);
                 int min = list.getResult(4);
@@ -367,23 +367,23 @@ public class ScoreboardCommand extends VanillaCommand {
                     var line = scoreboard.getLine(scorer);
                     if (line == null) {
                         log.outputError(TextFormat.RED + "%commands.scoreboard.players.score.notFound", objectiveName, scorer.getName());
-                        return false;
+                        return 0;
                     }
                     int score = line.getScore();
                     if (score < min || score > max) {
                         log.outputError(TextFormat.RED + "%commands.scoreboard.players.test.failed", String.valueOf(score), String.valueOf(min), String.valueOf(max));
-                        return false;
+                        return 0;
                     }
-                    log.addSuccess("commands.scoreboard.players.test.success", String.valueOf(score), String.valueOf(min), String.valueOf(max));
+                    log.addMessage("commands.scoreboard.players.test.success", String.valueOf(score), String.valueOf(min), String.valueOf(max));
                 }
-                log.outputSuccess();
-                return true;
+                log.output();
+                return 1;
             }
         }
-        return false;
+        return 0;
     }
 
-    private boolean playersCRUD(ParamList list, CommandSender sender, IScoreboardManager manager, CommandLogger log) {
+    private int playersCRUD(ParamList list, CommandSender sender, IScoreboardManager manager, CommandLogger log) {
         String ars = list.getResult(1);
         String wildcard_target_str = list.getResult(2);
         List<IScorer> scorers = new ArrayList<>();
@@ -400,14 +400,14 @@ public class ScoreboardCommand extends VanillaCommand {
         String objectiveName = list.getResult(3);
         if (!manager.containScoreboard(objectiveName)) {
             log.outputError(TextFormat.RED + "%commands.scoreboard.objectiveNotFound", objectiveName);
-            return false;
+            return 0;
         }
         var scoreboard = manager.getScoreboards().get(objectiveName);
         if (wildcard)
             scorers.addAll(scoreboard.getLines().keySet());
         if (scorers.isEmpty()) {
             log.outputError(TextFormat.RED + "%commands.scoreboard.players.list.empty");
-            return false;
+            return 0;
         }
         int score = list.getResult(4);
         int count = scorers.size();
@@ -425,7 +425,7 @@ public class ScoreboardCommand extends VanillaCommand {
                 } else {
                     log.outputSuccess("commands.scoreboard.players.add.multiple.success", String.valueOf(score), objectiveName, String.valueOf(count));
                 }
-                return true;
+                return 1;
             }
             case "remove" -> {
                 for (IScorer scorer : scorers) {
@@ -439,7 +439,7 @@ public class ScoreboardCommand extends VanillaCommand {
                 } else {
                     log.outputSuccess("commands.scoreboard.players.remove.multiple.success", String.valueOf(score), objectiveName, String.valueOf(count));
                 }
-                return true;
+                return 1;
             }
             case "set" -> {
                 for (IScorer scorer : scorers) {
@@ -453,13 +453,13 @@ public class ScoreboardCommand extends VanillaCommand {
                 } else {
                     log.outputSuccess("commands.scoreboard.players.set.multiple.success", objectiveName, String.valueOf(count), String.valueOf(score));
                 }
-                return true;
+                return 1;
             }
         }
-        return false;
+        return 0;
     }
 
-    private boolean playersOperate(ParamList list, CommandSender sender, IScoreboardManager manager, CommandLogger log) {
+    private int playersOperate(ParamList list, CommandSender sender, IScoreboardManager manager, CommandLogger log) {
         String wildcard_target_str = list.getResult(2);
         Set<IScorer> targetScorers = new HashSet<>();
         if (wildcard_target_str.equals("*")) {
@@ -477,7 +477,7 @@ public class ScoreboardCommand extends VanillaCommand {
         String targetObjectiveName = list.getResult(3);
         if (!manager.containScoreboard(targetObjectiveName)) {
             log.outputError(TextFormat.RED + "%commands.scoreboard.objectiveNotFound", targetObjectiveName);
-            return false;
+            return 0;
         }
         var targetScoreboard = manager.getScoreboards().get(targetObjectiveName);
 
@@ -499,7 +499,7 @@ public class ScoreboardCommand extends VanillaCommand {
 
         if (selectorScorers.size() > 1) {
             log.outputError(TextFormat.RED + "%commands.generic.tooManyTargets");
-            return false;
+            return 0;
         }
         if (selectorScorers.size() == 0) {
             selectorScorers.add(new FakeScorer(selector_str));
@@ -508,17 +508,17 @@ public class ScoreboardCommand extends VanillaCommand {
         String selectorObjectiveName = list.getResult(6);
         if (!manager.containScoreboard(selectorObjectiveName)) {
             log.outputError(TextFormat.RED + "%commands.scoreboard.objectiveNotFound", selectorObjectiveName);
-            return false;
+            return 0;
         }
         var selectorScoreboard = manager.getScoreboards().get(targetObjectiveName);
         if (!selectorScoreboard.getLines().containsKey(seletorScorer)) {
             log.outputError(TextFormat.RED + "%commands.scoreboard.players.operation.notFound", selectorObjectiveName, seletorScorer.getName());
-            return false;
+            return 0;
         }
         for (IScorer targetScorer : targetScorers) {
             if (!targetScoreboard.getLines().containsKey(targetScorer)) {
                 log.outputError(TextFormat.RED + "%commands.scoreboard.players.operation.notFound", targetObjectiveName, targetScorer.getName());
-                return false;
+                return 0;
             }
             int targetScore = targetScoreboard.getLines().get(targetScorer).getScore();
             int selectorScore = selectorScoreboard.getLines().get(seletorScorer).getScore();
@@ -562,9 +562,9 @@ public class ScoreboardCommand extends VanillaCommand {
                     selectorScoreboard.getLines().get(seletorScorer).setScore(targetScore);
                 }
             }
-            log.addSuccess("commands.scoreboard.players.operation.success", String.valueOf(changeScore), targetObjectiveName);
+            log.addMessage("commands.scoreboard.players.operation.success", String.valueOf(changeScore), targetObjectiveName);
         }
-        log.outputSuccess();
-        return true;
+        log.output();
+        return 1;
     }
 }

@@ -11,7 +11,6 @@ import java.util.List;
 @Since("1.19.50-r4")
 public class CommandOutputContainer implements Cloneable {
     private final List<CommandOutputMessage> messages;
-    private final String data = null;
     private int successCount;
 
     public CommandOutputContainer() {
@@ -27,12 +26,21 @@ public class CommandOutputContainer implements Cloneable {
         this.successCount = successCount;
     }
 
+    /**
+     * 返回命令容器成功输出消息的数量
+     *
+     * @return the success count
+     */
     public int getSuccessCount() {
         return successCount;
     }
 
     public void setSuccessCount(int successCount) {
         this.successCount = successCount;
+    }
+
+    public void incrementSuccessCount() {
+        this.successCount++;
     }
 
     public List<CommandOutputMessage> getMessages() {

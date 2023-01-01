@@ -1090,13 +1090,17 @@ public class Server {
     }
 
     public boolean dispatchCommand(CommandSender sender, String commandLine) throws ServerException {
+        return this.executeCommand(sender, commandLine) > 0;
+    }
+
+    public int executeCommand(CommandSender sender, String commandLine) throws ServerException {
         // First we need to check if this command is on the main thread or not, if not, warn the user
         if (!this.isPrimaryThread()) {
             log.warn("Command Dispatched Async: {}\nPlease notify author of plugin causing this execution to fix this bug!", commandLine,
                     new ConcurrentModificationException("Command Dispatched Async: " + commandLine));
 
-            this.scheduler.scheduleTask(null, () -> dispatchCommand(sender, commandLine));
-            return true;
+            this.scheduler.scheduleTask(null, () -> executeCommand(sender, commandLine));
+            return 1;
         }
 
         if (sender == null) {
@@ -1106,12 +1110,7 @@ public class Server {
         if (this.commandMap.getCommand((commandLine.startsWith("/") ? commandLine.substring(1) : commandLine).split(" ")[0]) == null) {
             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%nukkit.command.generic.unknown", commandLine));
         }
-
-        if (this.commandMap.dispatch(sender, commandLine)) {
-            return true;
-        }
-
-        return false;
+        return this.commandMap.executeCommand(sender, commandLine);
     }
 
     //todo: use ticker to check console
