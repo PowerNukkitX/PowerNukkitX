@@ -249,8 +249,7 @@ public class InventoryTransaction {
                 action.onExecuteFail(this.source);
             }
         }
-        // todo hack implement to fix issue#692
-        // only handle win10 to avoid issue#732
+        // hack implement to fix issue#692
         if (send && source.getLoginChainData().getDeviceOS() == 7 && this.inventories.stream().anyMatch(i -> i instanceof PlayerInventory))
             this.sendInventories();
 
