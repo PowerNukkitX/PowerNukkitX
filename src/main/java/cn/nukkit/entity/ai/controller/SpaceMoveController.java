@@ -31,6 +31,10 @@ public class SpaceMoveController implements IController {
             entity.addTmpMoveMotion(new Vector3(dx, dy, dz));
             entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_MOVING, true);
             if (xyzLength < speed) {
+                //在切换新路径点的时候”刹车“
+                entity.motionX = 0;
+                entity.motionY = 0;
+                entity.motionZ = 0;
                 needNewDirection(entity);
                 return false;
             }
