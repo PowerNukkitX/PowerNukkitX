@@ -246,11 +246,6 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
     }
 
     @Override
-    public float getDiffHandDamage(int difficulty) {
-        return this.diffHandDamage[difficulty];
-    }
-
-    @Override
     public boolean attackTarget(Entity entity) {
         return entity instanceof Player;
     }
