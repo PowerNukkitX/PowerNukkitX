@@ -142,7 +142,7 @@ public class BlockCake extends BlockTransparentMeta {
 
     @Override
     public boolean onActivate(@Nonnull Item item, Player player) {
-        if (item.getBlockId() >= BlockID.CANDLE && item.getId() <= BlockID.BLACK_CANDLE) {
+        if (item.getBlockId() >= BlockID.CANDLE && item.getBlockId() <= BlockID.BLACK_CANDLE) {
             return false;
         }
         if (player != null && (player.getFoodData().getLevel() < player.getFoodData().getMaxLevel() || player.isCreative() || player.getServer().getDifficulty() == 0)) {
