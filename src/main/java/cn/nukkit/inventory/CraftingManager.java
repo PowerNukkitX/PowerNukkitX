@@ -672,12 +672,6 @@ public class CraftingManager {
             }
         }
 
-        for (Map<UUID, SmithingRecipe> map : getSmithingRecipeMap().values()) {
-            for (SmithingRecipe recipe : map.values()) {
-                pk.addShapelessRecipe(recipe);
-            }
-        }
-
         for (Map<UUID, CartographyRecipe> map : getCartographyRecipeMap().values()) {
             for (CartographyRecipe recipe : map.values()) {
                 pk.addCartographyRecipe(recipe);
@@ -838,11 +832,16 @@ public class CraftingManager {
     @Since("1.4.0.0-PN")
     public void registerSmithingRecipe(@Nonnull SmithingRecipe recipe) {
         this.addRecipe(recipe);
-        List<Item> list = recipe.getIngredientsAggregate();
-        UUID hash = getMultiItemHash(list);
+        List<Item> list1 = recipe.getIngredientsAggregate();
+        List<ItemDescriptor> list2 = recipe.getNewIngredients();
+
+        UUID hash = getItemWithItemDescriptorsHash(list1, list2);
+
         int resultHash = getItemHash(recipe.getResult());
-        Map<UUID, SmithingRecipe> map = getSmithingRecipeMap().computeIfAbsent(resultHash, k -> new HashMap<>());
-        map.put(hash, recipe);
+        Map<UUID, ShapelessRecipe> map1 = getShapelessRecipeMap().computeIfAbsent(resultHash, k -> new HashMap<>());
+        Map<UUID, SmithingRecipe> map2 = getSmithingRecipeMap().computeIfAbsent(resultHash, k -> new HashMap<>());
+        map1.put(hash, recipe);
+        map2.put(hash, recipe);
     }
 
     public void registerBrewingRecipe(BrewingRecipe recipe) {
