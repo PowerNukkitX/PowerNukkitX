@@ -32,10 +32,6 @@ public class SpaceMoveController implements IController {
             entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_MOVING, true);
             if (xyzLength < speed) {
                 needNewDirection(entity);
-                //刹车！
-                entity.motionX = 0;
-                entity.motionY = 0;
-                entity.motionZ = 0;
                 return false;
             }
             return true;
