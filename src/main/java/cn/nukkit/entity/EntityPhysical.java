@@ -87,11 +87,17 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     @Override
     public void updateMovement() {
         // 检测自由落体时间
-        if (!this.onGround && this.y < this.highestPosition) {
+        if (isFalling()) {
             this.fallingTick++;
         }
         super.updateMovement();
         this.move(this.motionX, this.motionY, this.motionZ);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    public boolean isFalling() {
+        return !this.onGround && this.y < this.highestPosition;
     }
 
     public final void addTmpMoveMotion(Vector3 tmpMotion) {
@@ -141,7 +147,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
 
     protected void handleFrictionMovement() {
         // 减少移动向量（计算摩擦系数，在冰上滑得更远）
-        final double friction = this.getLevel().getTickCachedBlock(this.temporalVector.setComponents((int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z) - 1)).getFrictionFactor();
+        final double friction = getFrictionFactor();
         final double reduce = getMovementSpeedAtBlock(this.getTickCachedLevelBlock()) * (1 - friction * 0.85) * 0.43;
         if (Math.abs(this.motionZ) < PRECISION && Math.abs(this.motionX) < PRECISION) {
             return;
@@ -175,6 +181,13 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         } else {
             this.motionZ = 0;
         }
+    }
+
+    /**
+     * 计算当前位置的摩擦因子
+     */
+    protected double getFrictionFactor() {
+        return this.getLevel().getTickCachedBlock(this.temporalVector.setComponents((int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z) - 1)).getFrictionFactor();
     }
 
     /**

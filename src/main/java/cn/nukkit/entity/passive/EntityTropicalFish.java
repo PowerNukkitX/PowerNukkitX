@@ -67,7 +67,7 @@ public class EntityTropicalFish extends EntityFish {
             this.mark_variant = getRandomMarkVariant();
         }
         if (!this.namedTag.contains("Color")) {
-            this.setColor(randomColor());
+            this.setColor(getRandomColor());
         } else {
             this.setColor(this.namedTag.getByte("Color"));
         }
@@ -81,26 +81,8 @@ public class EntityTropicalFish extends EntityFish {
         this.setDataProperty(new IntEntityData(DATA_COLOR_2, this.color2));
     }
 
-    private int randomColor() {
-        ThreadLocalRandom random = ThreadLocalRandom.current();
-        double rand = random.nextDouble(1, 100);
-        //黑色
-        if (rand <= 85) {
-            return random.nextBoolean() ? DyeColor.BLUE.getWoolData() : random.nextBoolean() ? DyeColor.RED.getWoolData() : DyeColor.BLACK.getWoolData();
-        }
-        if (rand <= 95) {
-            return random.nextBoolean() ? DyeColor.GREEN.getWoolData() : random.nextBoolean() ? DyeColor.YELLOW.getWoolData() : DyeColor.GRAY.getWoolData();
-        }
-        if (rand <= 65) {
-            return random.nextBoolean() ? DyeColor.ORANGE.getWoolData() : random.nextBoolean() ? DyeColor.LIGHT_GRAY.getWoolData() : DyeColor.PINK.getWoolData();
-        }
-        if (rand <= 55) {
-            return random.nextBoolean() ? DyeColor.LIGHT_BLUE.getWoolData() : random.nextBoolean() ? DyeColor.MAGENTA.getWoolData() : DyeColor.BROWN.getWoolData();
-        }
-        if (rand <= 75) {
-            return random.nextBoolean() ? DyeColor.PURPLE.getWoolData() : random.nextBoolean() ? DyeColor.CYAN.getWoolData() : DyeColor.LIME.getWoolData();
-        }
-        return DyeColor.WHITE.getWoolData();
+    private int getRandomColor() {
+        return DyeColor.values()[ThreadLocalRandom.current().nextInt(0, 16)].getWoolData();
     }
 
     private int getRandomMarkVariant() {
