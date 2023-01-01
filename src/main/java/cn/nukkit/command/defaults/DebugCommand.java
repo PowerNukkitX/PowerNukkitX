@@ -45,7 +45,7 @@ public class DebugCommand extends TestCommand{
                     parser.parseString();
                     var option = parser.parseEnum(EntityAI.DebugOption.class);
                     EntityAI.setDebugOption(option, parser.parseBoolean());
-                    sender.sendMessage("Entity AI framework " + option.name() + "debug mode have been set to: " + EntityAI.checkDebugOption(option));
+                    sender.sendMessage("Entity AI framework " + option.name() + " debug mode have been set to: " + EntityAI.checkDebugOption(option));
                     return true;
                 }
             }

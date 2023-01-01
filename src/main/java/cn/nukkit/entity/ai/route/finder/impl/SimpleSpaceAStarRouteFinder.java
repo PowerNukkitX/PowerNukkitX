@@ -7,6 +7,7 @@ import cn.nukkit.entity.ai.route.data.Node;
 import cn.nukkit.entity.ai.route.posevaluator.IPosEvaluator;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.math.VectorMath;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -63,20 +64,13 @@ public class SimpleSpaceAStarRouteFinder extends SimpleFlatAStarRouteFinder {
         }
     }
 
-//    @Override
-//    protected boolean hasBarrier(Vector3 pos1, Vector3 pos2) {
-//        return hasBlocksAround(VectorMath.getPassByVector3(pos1, pos2));
-//    }
-//
-//    @Override
-//    protected boolean hasBlocksAround(List<Vector3> list) {
-//        double radius = (this.entity.getWidth() * this.entity.getScale()) / 2 + 0.1;
-//        double height = this.entity.getHeight() * this.entity.getScale();
-//        for (Vector3 vector3 : list) {
-//            AxisAlignedBB bb = new SimpleAxisAlignedBB(vector3.getX() - radius, vector3.getY(), vector3.getZ() - radius, vector3.getX() + radius, vector3.getY() + height, vector3.getZ() + radius);
-//            if (Utils.hasCollisionTickCachedBlocks(level, bb)) return true;
-//
-//        }
-//        return false;
-//    }
+    /**
+     * 指定两个Node之间是否有障碍物
+     */
+    protected boolean hasBarrier(Vector3 pos1, Vector3 pos2) {
+        if (pos1.equals(pos2)) return false;
+        return VectorMath.getPassByVector3(pos1, pos2).stream().anyMatch(
+                (pos) -> !evalPos(this.level.getBlock(pos.add(0, -1)))
+        );
+    }
 }

@@ -177,13 +177,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
         packet.identifier = identifier;
         packet.dimensionId = this.entity.level.getDimension();
         packet.position = pos.asVector3f();
-        Arrays.stream(showPlayers).forEach(player -> {
-            if (!player.isOnline())
-                return;
-            try {
-                player.dataPacket(packet);
-            } catch (Throwable ignore) {}
-        });
+        Server.broadcastPacket(showPlayers, packet);
     }
 
     /**
@@ -463,14 +457,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
     protected boolean hasBarrier(Vector3 pos1, Vector3 pos2) {
         if (pos1.equals(pos2)) return false;
         return VectorMath.getPassByVector3(pos1, pos2).stream().anyMatch(
-                (pos) -> {
-//                    var offsetX = pos.x - this.entity.x;
-//                    var offsetY = pos.y - this.entity.y;
-//                    var offsetZ = pos.z - this.entity.z;
-//                    var offsetBox = this.entity.getBoundingBox().getOffsetBoundingBox(offsetX, offsetY, offsetZ);
-//                    return Utils.hasCollisionBlocks(this.level, offsetBox);
-                    return !evalStandingBlock(this.level.getBlock(pos.add(0, -1)));
-                }
+                (pos) -> !evalStandingBlock(this.level.getBlock(pos.add(0, -1)))
         );
     }
 
