@@ -122,7 +122,7 @@ public interface IBehaviorGroup {
     void setForceUpdateRoute(boolean forceUpdateRoute);
 
     /**
-     * 当 {@link cn.nukkit.entity.ai.EntityAI}.DEBUG == true 时此方法每1gt调用一次，用于debug模式相关内容的刷新
+     * 当 EntityAI.checkDebugOption(BEHAVIOR) == true 时此方法每1gt调用一次，用于debug模式相关内容的刷新
      */
     default void debugTick(EntityIntelligent entity){};
 }
