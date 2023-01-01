@@ -6,6 +6,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.event.inventory.InventoryClickEvent;
 import cn.nukkit.event.inventory.InventoryTransactionEvent;
 import cn.nukkit.inventory.Inventory;
+import cn.nukkit.inventory.PlayerInventory;
 import cn.nukkit.inventory.transaction.action.InventoryAction;
 import cn.nukkit.inventory.transaction.action.SlotChangeAction;
 import cn.nukkit.inventory.transaction.action.TakeLevelAction;
@@ -227,7 +228,7 @@ public class InventoryTransaction {
             if (action instanceof SlotChangeAction slotChangeAction) {
                 if (slotChangeAction.getSlot() == 50) send = true;
                 if (source.isPlayer()) {
-                    Player player = (Player) source;
+                    Player player = source;
                     if (player.isSurvival()) {
                         int slot = slotChangeAction.getSlot();
                         if (slot == 36 || slot == 37 || slot == 38 || slot == 39) {
@@ -250,7 +251,8 @@ public class InventoryTransaction {
         }
         // todo hack implement to fix issue#692
         // only handle win10 to avoid issue#732
-        if (send && source.getLoginChainData().getDeviceOS() == 7) this.sendInventories();
+        if (send && source.getLoginChainData().getDeviceOS() == 7 && this.inventories.stream().anyMatch(i -> i instanceof PlayerInventory))
+            this.sendInventories();
 
         this.hasExecuted = true;
         return true;
