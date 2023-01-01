@@ -4388,9 +4388,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     if (craftingType == CRAFTING_BIG && craftingEventPacket.type == CraftingEventPacket.TYPE_WORKBENCH
                             || craftingType == CRAFTING_SMALL && craftingEventPacket.type == CraftingEventPacket.TYPE_INVENTORY) {
                         if (craftingTransaction != null) {
+                            craftingTransaction.setReadyToExecute(true);
                             if (craftingTransaction.getPrimaryOutput() == null) {
                                 craftingTransaction.setPrimaryOutput(craftingEventPacket.output[0]);
-                                craftingTransaction.setReadyToExecute(true);
                             }
                         }
                     }
