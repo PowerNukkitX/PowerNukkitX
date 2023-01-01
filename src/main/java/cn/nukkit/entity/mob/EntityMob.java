@@ -48,7 +48,7 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
      * <p>
      * The damage that can be caused by the entity's empty hand at different difficulties.
      */
-    protected float[] diffHandDamage = new float[]{0,0,0};
+    protected float[] diffHandDamage;
 
     public EntityMob(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);

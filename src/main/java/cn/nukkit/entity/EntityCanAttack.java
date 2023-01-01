@@ -11,6 +11,9 @@ import cn.nukkit.api.Since;
 @PowerNukkitXOnly
 @Since("1.19.30-r1")
 public interface EntityCanAttack {
+
+    float[] EMPTY_FLOAT_ARRAY = new float[]{0.0f, 0.0f, 0.0f};
+
     /**
      * 得到所有难度下不携带物品能造成的伤害.
      * <p>
@@ -18,7 +21,9 @@ public interface EntityCanAttack {
      *
      * @return 一个包含所有难度下伤害的数组, 0 1 2分别代表简单、普通、困难难度<br>An array containing damage on all difficulties, 0 1 2 for easy, normal and hard difficulties respectively
      */
-    float[] getDiffHandDamage();
+    default float[] getDiffHandDamage() {
+        return EMPTY_FLOAT_ARRAY;
+    }
 
     /**
      * 得到指定难度下不携带物品能造成的伤害.
