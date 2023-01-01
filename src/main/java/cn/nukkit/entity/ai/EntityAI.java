@@ -3,9 +3,7 @@ package cn.nukkit.entity.ai;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 存放一些AI框架的全局参数
@@ -14,15 +12,16 @@ import java.util.Map;
 @Since("1.19.50-r1")
 public final class EntityAI {
 
-    private static final Map<DebugOption, Boolean> debugOptions = new EnumMap<>(DebugOption.class);
+    private static final Set<DebugOption> debugOptions = EnumSet.noneOf(DebugOption.class);
     private EntityAI() {/*不能实例化*/}
 
     public static void setDebugOption(DebugOption option, boolean open) {
-        debugOptions.put(option, open);
+        if (open) debugOptions.add(option);
+        else debugOptions.remove(option);
     }
 
     public static boolean checkDebugOption(DebugOption option) {
-        return debugOptions.computeIfAbsent(option, k -> false);
+        return debugOptions.contains(option);
     }
 
     public enum DebugOption {
