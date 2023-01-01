@@ -23,11 +23,6 @@ import cn.nukkit.entity.ai.sensor.EntityAttackedByOwnerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
 import cn.nukkit.entity.ai.sensor.WolfNearestFeedingPlayerSensor;
-import cn.nukkit.entity.component.EntityComponentGroup;
-import cn.nukkit.entity.component.SimpleEntityComponentGroup;
-import cn.nukkit.entity.component.impl.EntityAngryComponent;
-import cn.nukkit.entity.component.impl.EntitySittingComponent;
-import cn.nukkit.entity.component.impl.EntityTameComponent;
 import cn.nukkit.entity.data.ByteEntityData;
 import cn.nukkit.entity.mob.EntitySkeleton;
 import cn.nukkit.entity.mob.EntityStray;
@@ -103,33 +98,39 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
                                         boolean validAttacker = attackByEntityEvent != null && attackByEntityEvent.getDamager().isAlive() && (!(attackByEntityEvent.getDamager() instanceof Player player) || player.isSurvival());
                                         if (hasOwner) {
                                             //已驯服
-                                            if (storage.notEmpty(CoreMemoryTypes.ENTITY_ATTACKING_OWNER) && storage.get(CoreMemoryTypes.ENTITY_ATTACKING_OWNER).isAlive()) {
-                                                //攻击攻击主人的生物
+                                            if (storage.notEmpty(CoreMemoryTypes.ENTITY_ATTACKING_OWNER) && storage.get(CoreMemoryTypes.ENTITY_ATTACKING_OWNER).isAlive() && !storage.get(CoreMemoryTypes.ENTITY_ATTACKING_OWNER).equals(this)) {
+                                                //攻击攻击主人的生物(排除自己)
                                                 attackTarget = storage.get(CoreMemoryTypes.ENTITY_ATTACKING_OWNER);
+                                                storage.clear(CoreMemoryTypes.ENTITY_ATTACKING_OWNER);
                                             } else if (storage.notEmpty(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER) && storage.get(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER).isAlive() && !storage.get(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER).equals(this)) {
                                                 //攻击主人攻击的生物
                                                 attackTarget = storage.get(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER);
+                                                storage.clear(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER);
                                             } else if (attackByEntityEvent != null && validAttacker && !attackByEntityEvent.getDamager().equals(getOwner())) {
                                                 //攻击攻击自己的生物（主人例外）
                                                 attackTarget = attackByEntityEvent.getDamager();
+                                                storage.clear(CoreMemoryTypes.BE_ATTACKED_EVENT);
                                             } else if (storage.notEmpty(CoreMemoryTypes.NEAREST_SKELETON) && storage.get(CoreMemoryTypes.NEAREST_SKELETON).isAlive()) {
                                                 //攻击最近的骷髅
                                                 attackTarget = storage.get(CoreMemoryTypes.NEAREST_SKELETON);
+                                                storage.clear(CoreMemoryTypes.NEAREST_SKELETON);
                                             }
                                         } else {
                                             //未驯服
-                                            if (attackByEntityEvent != null && validAttacker) {
+                                            if (validAttacker) {
                                                 //攻击攻击自己的生物
                                                 attackTarget = attackByEntityEvent.getDamager();
+                                                storage.clear(CoreMemoryTypes.BE_ATTACKED_EVENT);
                                             } else if (storage.notEmpty(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET) && storage.get(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET).isAlive()) {
                                                 //攻击最近的合适生物
                                                 attackTarget = storage.get(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET);
+                                                storage.clear(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET);
                                             }
                                         }
                                         storage.put(CoreMemoryTypes.ATTACK_TARGET, attackTarget);
-                                        return true;
+                                        return false;
                                     },
-                                    entity -> true, 1
+                                    entity -> this.getMemoryStorage().isEmpty(CoreMemoryTypes.ATTACK_TARGET), 1
                             )
                     ),
                     Set.of(

@@ -14,7 +14,6 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.VectorMath;
 import cn.nukkit.network.protocol.SpawnParticleEffectPacket;
-import cn.nukkit.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;

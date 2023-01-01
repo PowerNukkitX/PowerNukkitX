@@ -3,7 +3,6 @@ package cn.nukkit.entity;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.component.impl.EntityAngryComponent;
-import cn.nukkit.entity.component.impl.EntitySittingComponent;
 
 /**
  * 可生气实体<p>

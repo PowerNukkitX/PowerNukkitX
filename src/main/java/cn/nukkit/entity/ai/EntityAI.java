@@ -3,7 +3,8 @@ package cn.nukkit.entity.ai;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 
-import java.util.*;
+import java.util.EnumSet;
+import java.util.Set;
 
 /**
  * 存放一些AI框架的全局参数

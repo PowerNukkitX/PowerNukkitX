@@ -1,8 +1,8 @@
 package cn.nukkit.entity.ai.sensor;
 
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.EntityTamable;
+import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 
 public class EntityAttackedByOwnerSensor implements ISensor {
     protected int period;
