@@ -672,6 +672,12 @@ public class CraftingManager {
             }
         }
 
+        for (Map<UUID, SmithingRecipe> map : getSmithingRecipeMap().values()) {
+            for (SmithingRecipe recipe : map.values()) {
+                pk.addShapelessRecipe(recipe);
+            }
+        }
+
         for (Map<UUID, CartographyRecipe> map : getCartographyRecipeMap().values()) {
             for (CartographyRecipe recipe : map.values()) {
                 pk.addCartographyRecipe(recipe);
