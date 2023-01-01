@@ -269,7 +269,7 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
             getMemoryStorage().put(CoreMemoryTypes.LAST_FEED_PLAYER, player);
             getMemoryStorage().put(CoreMemoryTypes.LAST_BE_FED_TIME, Server.getInstance().getTick());
             return true;
-        } else if (this.hasOwner() && player.getName().equals(getOwnerName())) {
+        } else if (this.hasOwner() && player.getName().equals(getOwnerName()) && !this.isTouchingWater()) {
             this.setSitting(!this.isSitting());
             return false;
         }

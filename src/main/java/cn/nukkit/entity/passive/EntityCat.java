@@ -262,7 +262,7 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable, Ent
                 this.setCollarColor(((ItemDye) item).getDyeColor());
                 return true;
             }
-        } else if (this.hasOwner() && player.getName().equals(getOwnerName())) {
+        } else if (this.hasOwner() && player.getName().equals(getOwnerName()) && !this.isTouchingWater()) {
             this.setSitting(!this.isSitting());
             return false;
         }
