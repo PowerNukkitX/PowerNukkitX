@@ -8,7 +8,9 @@ import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.ICommandBlock;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.ConsoleCommandSender;
 import cn.nukkit.command.ExecutorCommandSender;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.CommandOutputContainer;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.GameRule;
@@ -52,6 +54,13 @@ public record CommandLogger(Command command, CommandSender sender, String[] args
         outputSuccess(broadcast, key, params.toArray(new String[]{}));
     }
 
+    /**
+     * 输出一条命令成功执行的消息给命令发送者<br>参数message可以是纯文本，也可以是语言文本key<br>如果是语言文本key将会翻译成对应message
+     *
+     * @param broadcast 是否广播消息给其他在管理员频道的玩家
+     * @param key       the key
+     * @param params    the params
+     */
     public void outputSuccess(boolean broadcast, String key, String... params) {
         if (isNotSend()) return;
         if (sender instanceof Player player) {
@@ -70,18 +79,40 @@ public record CommandLogger(Command command, CommandSender sender, String[] args
     }
 
     public void outputError(String key, String... params) {
+        this.outputError(false, key, params);
+    }
+
+    /**
+     * 输出一条错误信息
+     *
+     * @param broadcast 是否广播消息给其他在管理员频道的玩家
+     * @param key       语言文本key/错误信息
+     * @param params    语言文本参数/空
+     */
+    public void outputError(boolean broadcast, String key, String... params) {
         if (isNotSend()) return;
         if (sender instanceof Player player) {
             player.sendCommandOutput(new CommandOutputContainer(key, params, 0));
         } else if (sender instanceof ExecutorCommandSender executorCommandSender) {
             executorCommandSender.sendCommandOutput(new CommandOutputContainer(key, params, 0));
         } else sender.sendMessage(new TranslationContainer(key, params));
+        if (broadcast) {
+            broadcastAdminChannel(key, params);
+        }
     }
 
+    /**
+     * 输出{@link #outputContainer}中的所有信息.
+     */
     public void output() {
         this.output(false);
     }
 
+    /**
+     * 输出{@link #outputContainer}中的所有信息.
+     *
+     * @param broadcast 是否广播消息给其他在管理员频道的玩家
+     */
     public void output(boolean broadcast) {
         if (isNotSend()) return;
         if (sender instanceof Player player) {
@@ -101,16 +132,35 @@ public record CommandLogger(Command command, CommandSender sender, String[] args
         this.outputContainer.getMessages().clear();
     }
 
+    /**
+     * 添加一条信息到{@link #outputContainer}中.
+     *
+     * @param key the key
+     * @return the command logger
+     */
     public CommandLogger addMessage(String key) {
         this.outputContainer.getMessages().add(new CommandOutputMessage(key));
         return this;
     }
 
+    /**
+     * 添加一条信息到{@link #outputContainer}中.
+     *
+     * @param key    the key
+     * @param params the params
+     * @return the command logger
+     */
     public CommandLogger addMessage(String key, String... params) {
         this.outputContainer.getMessages().add(new CommandOutputMessage(key, params));
         return this;
     }
 
+    /**
+     * 标记{@link #outputContainer}的成功数量
+     *
+     * @param successCount the success count
+     * @return the command logger
+     */
     public CommandLogger successCount(int successCount) {
         this.outputContainer.setSuccessCount(successCount);
         return this;
@@ -144,10 +194,17 @@ public record CommandLogger(Command command, CommandSender sender, String[] args
     }
 
     /**
-     * 输出一个目标选择器错误信息
+     * 输出一个目标选择器没有匹配目标的错误信息
      */
     public void outputNoTargetMatch() {
-        this.outputError(TextFormat.RED + "%commands.generic.noTargetMatch", new String[]{});
+        this.outputError("commands.generic.noTargetMatch", new String[]{});
+    }
+
+    /**
+     * 输出一个目标选择器匹配目标过多的错误信息
+     */
+    public void outputTooManyTargets() {
+        this.outputError("commands.generic.tooManyTargets", new String[]{});
     }
 
     /**
@@ -158,6 +215,21 @@ public record CommandLogger(Command command, CommandSender sender, String[] args
      */
     public void outputNumTooSmall(int errorIndex, int minimum) {
         this.outputError("commands.generic.num.tooSmall", args[errorIndex], " " + minimum);
+    }
+
+    public void broadcastConsole(String key, String[] value) {
+        var message = new TranslationContainer(key, value);
+        String resultStr = "[" + sender.getName() + ": " + (!message.getText().equals(sender.getServer().getLanguage().get(message.getText())) ? "%" : "") + message.getText() + "]";
+        String coloredStr = TextFormat.GRAY + "" + TextFormat.ITALIC + resultStr;
+        message.setText(coloredStr);
+        Set<Permissible> users = sender.getServer().getPluginManager().getPermissionSubscriptions(Server.BROADCAST_CHANNEL_ADMINISTRATIVE);
+        for (Permissible user : users) {
+            if (user instanceof CommandSender commandSender) {
+                if (!commandSender.equals(sender) && commandSender instanceof ConsoleCommandSender) {
+                    commandSender.sendMessage(message);
+                }
+            }
+        }
     }
 
     private String[] syntaxErrorsValue(int errorIndex) {
@@ -189,7 +261,8 @@ public record CommandLogger(Command command, CommandSender sender, String[] args
         Set<Permissible> users = sender.getServer().getPluginManager().getPermissionSubscriptions(Server.BROADCAST_CHANNEL_ADMINISTRATIVE);
         for (Permissible user : users) {
             if (user instanceof CommandSender commandSender) {
-                if (!commandSender.equals(sender)) {
+                Entity delegate = sender.asEntity();
+                if (!commandSender.equals(delegate) && !(commandSender instanceof ConsoleCommandSender)) {
                     commandSender.sendMessage(message);
                 }
             }

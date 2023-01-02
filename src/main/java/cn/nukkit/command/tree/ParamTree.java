@@ -22,6 +22,7 @@ public class ParamTree {
     private final Map<String, ParamList> root;
     private CommandSender sender;
     private String[] args;
+    private CommandLogger log;
 
     /**
      * 从给定的命令中初始化命令节点树，其中每个参数类型{@link cn.nukkit.command.data.CommandParamType CommandParamType}会对应一个默认的参数节点,或者使用
@@ -114,7 +115,7 @@ public class ParamTree {
     }
 
     /**
-     * 从给定输入参数匹配该命令节点树对应命令{@link Command}的命令重载，并且解析对应参数。<br>
+     * 从给定输入参数匹配该命令节点树对应命令的命令重载，并且解析对应参数。<br>
      * 返回值是一个{@link Map.Entry},它是成功匹配的命令重载，对应{@link Command#getCommandParameters()}  commandParameters}。<br>
      * 其Key对应commandParameters中的Key,值是一个{@link ParamList} 其中每个节点与commandParameters的Value一一对应，并且是解析之后的结果。
      *
@@ -125,6 +126,7 @@ public class ParamTree {
     public Map.Entry<String, ParamList> matchAndParse(CommandSender sender, String[] args) {//成功条件 命令链与参数长度相等 命令链必选参数全部有结果
         this.args = args;
         this.sender = sender;
+        this.log = new CommandLogger(this.command, sender, args);
         //reset
         for (var list : this.root.values()) {
             list.reset();
@@ -157,7 +159,6 @@ public class ParamTree {
             }
         }
         if (result == null) {//全部不成功
-            var log = new CommandLogger(this.getCommand(), sender, args);
             var errorIndex = error.stream().map(ParamList::getError).max(Integer::compare).orElse(-1);
             log.outputSyntaxErrors(errorIndex);
             return null;
@@ -176,6 +177,10 @@ public class ParamTree {
 
     public Command getCommand() {
         return command;
+    }
+
+    public CommandLogger getLog() {
+        return log;
     }
 
     public Map<String, ParamList> getRoot() {

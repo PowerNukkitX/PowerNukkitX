@@ -4,14 +4,13 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.command.utils.EntitySelector;
 import cn.nukkit.entity.Entity;
 
 import java.util.Collections;
 
 /**
- * 可以从玩家名或者目标选择器解析出一个{@link Entity} {@link java.util.List List},不可能为空，当为空时会抛出{@link CommandSyntaxException}<br>
+ * 可以从玩家名或者目标选择器解析出一个{@link Entity} {@link java.util.List List},不可能为null,当没有匹配时会返回一个空List<br>
  * 对应参数类型{@link cn.nukkit.command.data.CommandParamType#TARGET TARGET}
  */
 @PowerNukkitXOnly
@@ -22,12 +21,10 @@ public class EntitiesNode extends TargetNode<Entity> {
     @Override
     public void fill(String arg) {
         if (EntitySelector.hasArguments(arg)) {
-            var result = EntitySelector.matchEntities(this.parent.parent.getSender(), arg);
-            if (result.isEmpty()) this.parent.error();
-            this.value = result;
+            this.value = EntitySelector.matchEntities(this.parent.parent.getSender(), arg);
         } else {
             Player player = Server.getInstance().getPlayer(arg);
-            if (player == null) this.parent.error();
+            if (player == null) this.value = Collections.emptyList();
             else this.value = Collections.singletonList(player);
         }
     }

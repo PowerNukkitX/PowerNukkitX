@@ -4,7 +4,6 @@ import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.command.tree.node.EnumNode;
 import cn.nukkit.command.tree.node.IParamNode;
 import cn.nukkit.item.Item;
 import com.google.common.collect.Lists;
@@ -298,32 +297,32 @@ public class CommandParameter {
     /**
      * New enum command parameter.
      *
-     * @param name     the name
-     * @param optional the optional
-     * @param data     the data
-     * @param enumNode the enum node
+     * @param name      the name
+     * @param optional  the optional
+     * @param data      the data
+     * @param paramNode the enum node
      * @return the command parameter
      */
     @PowerNukkitXOnly
     @Since("1.19.50-r4")
-    public static CommandParameter newEnum(String name, boolean optional, CommandEnum data, EnumNode enumNode) {
-        return new CommandParameter(name, optional, null, data, null, enumNode);
+    public static CommandParameter newEnum(String name, boolean optional, CommandEnum data, IParamNode<?> paramNode) {
+        return new CommandParameter(name, optional, null, data, null, paramNode);
     }
 
     /**
      * New enum command parameter.
      *
-     * @param name     the name
-     * @param optional the optional
-     * @param data     the data
-     * @param enumNode the enum node
-     * @param options  the options
+     * @param name      the name
+     * @param optional  the optional
+     * @param data      the data
+     * @param paramNode the enum node
+     * @param options   the options
      * @return the command parameter
      */
     @PowerNukkitXOnly
     @Since("1.19.50-r4")
-    public static CommandParameter newEnum(String name, boolean optional, CommandEnum data, EnumNode enumNode, CommandParamOption... options) {
-        var result = new CommandParameter(name, optional, null, data, null, enumNode);
+    public static CommandParameter newEnum(String name, boolean optional, CommandEnum data, IParamNode<?> paramNode, CommandParamOption... options) {
+        var result = new CommandParameter(name, optional, null, data, null, paramNode);
         result.paramOptions = Lists.newArrayList(options);
         return result;
     }

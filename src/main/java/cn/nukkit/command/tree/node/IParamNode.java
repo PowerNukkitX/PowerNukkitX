@@ -4,7 +4,6 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
-import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.command.tree.ParamList;
 
 /**
@@ -17,7 +16,7 @@ public interface IParamNode<T> {
     /**
      * 负责填充该参数节点,覆写该方法需要实现对接受参数arg的验证以及解析成为对应类型T的结果
      * <br>
-     * 当验证失败或者解析失败,请抛出异常{@link CommandSyntaxException}
+     * 当验证失败或者解析失败,请调用{@link ParamList#error()}方法标记错误.形如{@code this.parent.error()}
      *
      * @param arg the arg
      */
@@ -29,7 +28,7 @@ public interface IParamNode<T> {
     <E> E get();
 
     /**
-     * 将节点重置会初始化状态,以待下次填充{@link #fill(String)}
+     * 将节点重置回初始化状态,以待下次填充{@link #fill(String)}
      */
     void reset();
 
@@ -54,7 +53,6 @@ public interface IParamNode<T> {
      * @param enumData the enum data
      * @param postFix  the post fix
      * @return the param node
-     * @throws IllegalArgumentException the illegal argument exception
      */
     default IParamNode<T> init(ParamList parent, String name, boolean optional, CommandParamType type, CommandEnum enumData, String postFix) {
         return this;

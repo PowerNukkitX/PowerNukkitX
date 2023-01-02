@@ -136,7 +136,7 @@ public class ScoreboardCommand extends VanillaCommand {
                 for (var scoreboard : manager.getScoreboards().values()) {
                     log.addMessage("commands.scoreboard.objectives.list.entry", scoreboard.getObjectiveName(), scoreboard.getDisplayName(), scoreboard.getCriteriaName());
                 }
-                log.output();
+                log.output(true);
                 return 1;
             }
             case "objectives-remove" -> {

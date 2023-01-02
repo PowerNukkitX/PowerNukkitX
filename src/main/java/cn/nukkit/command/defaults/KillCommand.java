@@ -52,8 +52,9 @@ public class KillCommand extends VanillaCommand {
                     else
                         return true;
                 }).toList();
-                if (entities.isEmpty() && log.outputContainer().getMessages().isEmpty()) {
-                    log.outputNoTargetMatch();
+                if (entities.isEmpty()) {
+                    if (log.outputContainer().getMessages().isEmpty()) log.outputNoTargetMatch();
+                    else log.output();
                     return 0;
                 }
                 for (Entity entity : entities) {

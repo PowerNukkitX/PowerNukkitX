@@ -317,7 +317,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
                         this.lastOutput = "#itzlipofutzli";
                         this.successCount = 1;
                     }else if(cmd.equalsIgnoreCase("Hello PNX!")){
-                        this.lastOutput = "superice666\nlt_name\ndaoge_cmd\nO(∩_∩)O\nzimzaza4";
+                        this.lastOutput = "superice666\nlt_name\ndaoge_cmd\nCool_Loong\nzimzaza4";
                         this.successCount = 1;
                     } else {
                         this.lastOutput = null;
