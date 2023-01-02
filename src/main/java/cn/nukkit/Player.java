@@ -708,7 +708,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             pos.yaw = this.yaw;
             pos.pitch = this.pitch;
         }
-        this.teleport(pos.getFloorY() == pos.getY() ? pos.add(0, 0.5) : pos.setY(Math.ceil(pos.getY())), TeleportCause.PLAYER_SPAWN);
+        this.teleport(pos.getFloorY() == pos.getY() ? pos.add(0, 0.5) : (Position) pos.setY(Math.ceil(pos.getY())), TeleportCause.PLAYER_SPAWN);
         lastYaw = yaw;
         lastPitch = pitch;
 
@@ -1787,7 +1787,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.inventory.sendArmorContents(this);
         this.offhandInventory.sendContents(this);
 
-        this.teleport(respawnPos.getFloorY() == respawnPos.getY() ? respawnPos.add(0, 0.5) : respawnPos.setY(Math.ceil(respawnPos.getY())), TeleportCause.PLAYER_SPAWN);
+        this.teleport(respawnPos.getFloorY() == respawnPos.getY() ? respawnPos.add(0, 0.5) : (Position) respawnPos.setY(Math.ceil(respawnPos.getY())), TeleportCause.PLAYER_SPAWN);
         this.despawnFromAll();
         this.spawnToAll();
         this.scheduleUpdate();
