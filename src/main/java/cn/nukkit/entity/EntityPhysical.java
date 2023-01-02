@@ -186,6 +186,8 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     /**
      * 计算当前位置的摩擦因子
      */
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
     protected double getFrictionFactor() {
         return this.getLevel().getTickCachedBlock(this.temporalVector.setComponents((int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z) - 1)).getFrictionFactor();
     }
