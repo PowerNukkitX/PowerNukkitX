@@ -30,6 +30,12 @@
 - [#900] 修復Item與Tag無法雙向查找的BUG。
 - [#909] 修復`InventorySlice#isFull`的異常行為。
 - [#911] 修復EntityCanAttack ArrayIndexOutOfBoundsException。
+- [#916] 嘗試修復crafting grid sync問題。
+- [#917] 修復diff hand damage array out of bound again。
+- [#919] 修復蠟燭蛋糕相關的BUG。
+- [#923] 修復smithingRecipe register。
+- [#925] 修復自定義方塊摩擦係數問題。
+- [#927] 修復重生傳送的一個BUG。
 
 ## 文檔內容
 
@@ -2035,6 +2041,12 @@ Need to switch languages?
 [#909]: https://github.com/PowerNukkitX/PowerNukkitX/pull/909
 [#911]: https://github.com/PowerNukkitX/PowerNukkitX/pull/911
 [#912]: https://github.com/PowerNukkitX/PowerNukkitX/pull/912
+[#916]: https://github.com/PowerNukkitX/PowerNukkitX/pull/916
+[#917]: https://github.com/PowerNukkitX/PowerNukkitX/pull/917
+[#919]: https://github.com/PowerNukkitX/PowerNukkitX/pull/919
+[#923]: https://github.com/PowerNukkitX/PowerNukkitX/pull/923
+[#925]: https://github.com/PowerNukkitX/PowerNukkitX/pull/925
+[#927]: https://github.com/PowerNukkitX/PowerNukkitX/pull/927
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->

@@ -30,6 +30,12 @@ This work in progress version supports Minecraft:BE `1.19.50 (Protocol Version 5
 - [#900] Fix the bug that Item and Tag can't be found in both directions.
 - [#909] Fix the abnormal behavior of `InventorySlice#isFull`.
 - [#911] Fix EntityCanAttack ArrayIndexOutOfBoundsException.
+- [#916] Try to fix crafting grid sync.
+- [#917] Fix diff hand damage array out of bound again.
+- [#919] Fix candle cake related bug.
+- [#923] Fix smithingRecipe register. 
+- [#925] Fix custom block friction coefficient issue.
+- [#927] Fix a bug in respawn teleport.
 
 ## Documentation
 
@@ -2033,6 +2039,12 @@ Need to switch languages?
 [#909]: https://github.com/PowerNukkitX/PowerNukkitX/pull/909
 [#911]: https://github.com/PowerNukkitX/PowerNukkitX/pull/911
 [#912]: https://github.com/PowerNukkitX/PowerNukkitX/pull/912
+[#916]: https://github.com/PowerNukkitX/PowerNukkitX/pull/916
+[#917]: https://github.com/PowerNukkitX/PowerNukkitX/pull/917
+[#919]: https://github.com/PowerNukkitX/PowerNukkitX/pull/919
+[#923]: https://github.com/PowerNukkitX/PowerNukkitX/pull/923
+[#925]: https://github.com/PowerNukkitX/PowerNukkitX/pull/925
+[#927]: https://github.com/PowerNukkitX/PowerNukkitX/pull/927
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->
