@@ -5,11 +5,9 @@ import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.blockentity.ICommandBlock;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.CommandOutputContainer;
 import cn.nukkit.lang.TextContainer;
-import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.permission.Permission;
@@ -42,30 +40,18 @@ public class ExecutorCommandSender implements CommandSender {
 
     @Override
     public void sendMessage(String message) {
-        if (this.executor instanceof ICommandBlock && !executor.getPosition().level.getGameRules().getBoolean(GameRule.COMMAND_BLOCK_OUTPUT))
-            return;
-        if (entity instanceof Player) {
-            ((Player) entity).sendMessage(message);
-        }
+        executor.sendMessage(message);
     }
 
     @Override
     public void sendMessage(TextContainer message) {
-        if (this.executor instanceof ICommandBlock && !executor.getPosition().level.getGameRules().getBoolean(GameRule.COMMAND_BLOCK_OUTPUT))
-            return;
-        if (entity instanceof Player) {
-            ((Player) entity).sendMessage(message);
-        }
+        executor.sendMessage(message);
     }
 
     @PowerNukkitXOnly
     @Since("1.19.50-r4")
     public void sendCommandOutput(CommandOutputContainer container) {
-        if (this.executor instanceof ICommandBlock && !executor.getPosition().level.getGameRules().getBoolean(GameRule.COMMAND_BLOCK_OUTPUT))
-            return;
-        if (entity instanceof Player) {
-            ((Player) entity).sendCommandOutput(container);
-        }
+        executor.sendCommandOutput(container);
     }
 
     @Override
@@ -173,6 +159,8 @@ public class ExecutorCommandSender implements CommandSender {
     }
 
     public CommandSender getExecutor() {
-        return executor;
+        if (this.executor instanceof ExecutorCommandSender executorCommandSender)
+            return executorCommandSender.getExecutor();
+        else return this.executor;
     }
 }

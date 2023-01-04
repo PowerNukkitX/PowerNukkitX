@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.StringJoiner;
 
 /**
+ * 会填充所有剩余参数以空格分隔合并<br>
  * {@link cn.nukkit.command.defaults.ExecuteCommand ExecuteCommand}命令的子命令节点<br>
  * 对应参数类型{@link cn.nukkit.command.data.CommandParamType#COMMAND COMMAND}
  */

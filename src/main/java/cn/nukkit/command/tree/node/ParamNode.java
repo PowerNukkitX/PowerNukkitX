@@ -41,6 +41,11 @@ public abstract class ParamNode<T> implements IParamNode<T> {
     }
 
     @Override
+    public ParamList getParent() {
+        return parent;
+    }
+
+    @Override
     public IParamNode<T> init(ParamList parent, String name, boolean optional, CommandParamType type, CommandEnum enumData, String postFix) {
         this.parent = parent;
         this.optional = optional;

@@ -2,6 +2,8 @@ package cn.nukkit.command;
 
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
+import cn.nukkit.lang.CommandOutputContainer;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.permission.*;
 import cn.nukkit.plugin.Plugin;
@@ -25,7 +27,7 @@ public class CapturingCommandSender implements CommandSender {
     private String name;
 
     private boolean isOp;
-    
+
     @NonNull
     private final Permissible perms;
 
@@ -105,6 +107,14 @@ public class CapturingCommandSender implements CommandSender {
     @Override
     public void sendMessage(TextContainer message) {
         sendMessage(message.toString());
+    }
+
+    @Since("1.19.50-r4")
+    @Override
+    public void sendCommandOutput(CommandOutputContainer container) {
+        if (!container.getMessages().isEmpty()) {
+            sendMessage(container.getMessages().get(container.getMessages().size() - 1).getMessageId());
+        }
     }
 
     @Override

@@ -36,9 +36,6 @@ public class AbilityCommand extends VanillaCommand {
 
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        if (!this.testPermission(sender)) {
-            return 0;
-        }
         if (result.getKey().equals("default")) {
             var list = result.getValue();
             List<Player> players = list.getResult(0);

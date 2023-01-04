@@ -4,7 +4,6 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
-import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.command.tree.ParamList;
 import com.google.common.collect.Sets;
 
@@ -12,7 +11,7 @@ import java.util.Set;
 
 
 /**
- * 会评估当前参数是否在枚举中，如果不在则抛出{@link CommandSyntaxException}<br>
+ * 会评估当前参数是否在枚举中，如果不在则标记错误<br>
  * 对应枚举参数类型{@link cn.nukkit.command.data.CommandEnum}
  */
 @PowerNukkitXOnly
@@ -36,7 +35,7 @@ public class EnumNode extends ParamNode<String> {
 //                throw new CommandSyntaxException();
 //            }
 //        }
-        if (!enums.contains(arg)) this.parent.error();
+        if (!enums.contains(arg)) this.error();
         this.value = arg;
     }
 

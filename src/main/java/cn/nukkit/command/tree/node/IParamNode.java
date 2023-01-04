@@ -16,7 +16,7 @@ public interface IParamNode<T> {
     /**
      * 负责填充该参数节点,覆写该方法需要实现对接受参数arg的验证以及解析成为对应类型T的结果
      * <br>
-     * 当验证失败或者解析失败,请调用{@link ParamList#error()}方法标记错误.形如{@code this.parent.error()}
+     * 当验证失败或者解析失败,请调用{@link #error()}方法标记错误.形如{@code this.error()}
      *
      * @param arg the arg
      */
@@ -42,6 +42,20 @@ public interface IParamNode<T> {
      * 该命令节点是否为可选值,可选值不一定需要被填充{@link #fill(String)}
      */
     boolean isOptional();
+
+    /**
+     * 获取该节点所属{@link ParamList}
+     *
+     * @return the parent
+     */
+    ParamList getParent();
+
+    /**
+     * 标记该节点的{@link #fill(String)}出现错误
+     */
+    default void error() {
+        this.getParent().error();
+    }
 
     /**
      * 这个方法用于初始化{@link ParamList}和一些能从{@link cn.nukkit.command.data.CommandParameter CommandParameter}得到的参数,例如optional enumData等，插件不需要调用

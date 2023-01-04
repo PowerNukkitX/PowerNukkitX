@@ -17,7 +17,7 @@ public class OperatorStringNode extends StringNode {
     @Override
     public void fill(String arg) {
         if (OPERATOR.contains(arg)) this.value = arg;
-        else this.parent.error();
+        else this.error();
     }
 
 }

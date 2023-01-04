@@ -169,7 +169,6 @@ public class ExecuteCommand extends VanillaCommand {
 
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        if (!this.testPermission(sender)) return 0;
         int num = 0;
         var list = result.getValue();
         switch (result.getKey()) {

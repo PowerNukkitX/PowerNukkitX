@@ -10,7 +10,6 @@ import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.ConsoleCommandSender;
 import cn.nukkit.command.ExecutorCommandSender;
-import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.CommandOutputContainer;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.GameRule;
@@ -39,37 +38,31 @@ public record CommandLogger(Command command, CommandSender sender, String[] args
      * @param message the message
      */
     public void outputSuccess(String message) {
-        this.outputSuccess(false, message);
+        this.outputSuccess(false, false, message);
     }
 
     public void outputSuccess(String key, String... params) {
-        this.outputSuccess(false, key, params);
+        this.outputSuccess(false, false, key, params);
     }
 
     public void outputSuccess(String key, List<String> params) {
-        this.outputSuccess(false, key, params.toArray(new String[]{}));
-    }
-
-    public void outputSuccess(boolean broadcast, String key, List<String> params) {
-        outputSuccess(broadcast, key, params.toArray(new String[]{}));
+        this.outputSuccess(false, false, key, params.toArray(new String[]{}));
     }
 
     /**
      * 输出一条命令成功执行的消息给命令发送者<br>参数message可以是纯文本，也可以是语言文本key<br>如果是语言文本key将会翻译成对应message
      *
-     * @param broadcast 是否广播消息给其他在管理员频道的玩家
-     * @param key       the key
-     * @param params    the params
+     * @param broadcastAdminChannel 是否广播消息给其他在管理员频道的玩家
+     * @param broadcastConsole      the broadcast console
+     * @param key                   the key
+     * @param params                the params
      */
-    public void outputSuccess(boolean broadcast, String key, String... params) {
+    public void outputSuccess(boolean broadcastAdminChannel, boolean broadcastConsole, String key, String... params) {
         if (isNotSend()) return;
-        if (sender instanceof Player player) {
-            player.sendCommandOutput(new CommandOutputContainer(key, params, 1));
-        } else if (sender instanceof ExecutorCommandSender executorCommandSender) {
-            executorCommandSender.sendCommandOutput(new CommandOutputContainer(key, params, 1));
-        } else sender.sendMessage(new TranslationContainer(key, params));
-        if (broadcast) {
-            broadcastAdminChannel(key, params);
+        var container = new CommandOutputContainer(key, params, 0);
+        this.sender.sendCommandOutput(container);
+        if (broadcastAdminChannel) {
+            broadcastAdminChannel(broadcastConsole, key, params);
         }
     }
 
@@ -79,25 +72,23 @@ public record CommandLogger(Command command, CommandSender sender, String[] args
     }
 
     public void outputError(String key, String... params) {
-        this.outputError(false, key, params);
+        this.outputError(false, false, key, params);
     }
 
     /**
      * 输出一条错误信息
      *
-     * @param broadcast 是否广播消息给其他在管理员频道的玩家
-     * @param key       语言文本key/错误信息
-     * @param params    语言文本参数/空
+     * @param broadcastAdminChannel the broadcast admin channel
+     * @param broadcastConsole      the broadcast console
+     * @param key                   语言文本key/错误信息
+     * @param params                语言文本参数/空
      */
-    public void outputError(boolean broadcast, String key, String... params) {
+    public void outputError(boolean broadcastAdminChannel, boolean broadcastConsole, String key, String... params) {
         if (isNotSend()) return;
-        if (sender instanceof Player player) {
-            player.sendCommandOutput(new CommandOutputContainer(key, params, 0));
-        } else if (sender instanceof ExecutorCommandSender executorCommandSender) {
-            executorCommandSender.sendCommandOutput(new CommandOutputContainer(key, params, 0));
-        } else sender.sendMessage(new TranslationContainer(key, params));
-        if (broadcast) {
-            broadcastAdminChannel(key, params);
+        var container = new CommandOutputContainer(key, params, 0);
+        sender.sendCommandOutput(container);
+        if (broadcastAdminChannel) {
+            broadcastAdminChannel(broadcastConsole, key, params);
         }
     }
 
@@ -105,28 +96,24 @@ public record CommandLogger(Command command, CommandSender sender, String[] args
      * 输出{@link #outputContainer}中的所有信息.
      */
     public void output() {
-        this.output(false);
+        this.output(false, false);
+    }
+
+    public void output(boolean broadcastAdminChannel) {
+        this.output(broadcastAdminChannel, false);
     }
 
     /**
      * 输出{@link #outputContainer}中的所有信息.
      *
-     * @param broadcast 是否广播消息给其他在管理员频道的玩家
+     * @param broadcastAdminChannel 是否广播消息给其他在管理员频道的玩家
      */
-    public void output(boolean broadcast) {
+    public void output(boolean broadcastAdminChannel, boolean broadcastConsole) {
         if (isNotSend()) return;
-        if (sender instanceof Player player) {
-            player.sendCommandOutput(this.outputContainer);
-        } else if (sender instanceof ExecutorCommandSender executorCommandSender) {
-            executorCommandSender.sendCommandOutput(this.outputContainer);
-        } else {
+        this.sender.sendCommandOutput(this.outputContainer);
+        if (broadcastAdminChannel) {
             for (var msg : this.outputContainer.getMessages()) {
-                sender.sendMessage(new TranslationContainer(msg.getMessageId(), msg.getParameters()));
-            }
-        }
-        if (broadcast) {
-            for (var msg : this.outputContainer.getMessages()) {
-                broadcastAdminChannel(TextFormat.clean(msg.getMessageId()), msg.getParameters());
+                broadcastAdminChannel(broadcastConsole, msg.getMessageId(), msg.getParameters());
             }
         }
         this.outputContainer.getMessages().clear();
@@ -164,6 +151,18 @@ public record CommandLogger(Command command, CommandSender sender, String[] args
     public CommandLogger successCount(int successCount) {
         this.outputContainer.setSuccessCount(successCount);
         return this;
+    }
+
+    /**
+     * 给命令目标的反馈信息
+     *
+     * @param receiver 命令目标
+     * @param key      the key
+     * @param params   给命令目标的反馈信息参数
+     */
+    public void outputObjectWhisper(Player receiver, String key, String... params) {
+        if (isNotSend()) return;
+        receiver.sendMessage(new TranslationContainer(key, params));
     }
 
     /**
@@ -217,21 +216,6 @@ public record CommandLogger(Command command, CommandSender sender, String[] args
         this.outputError("commands.generic.num.tooSmall", args[errorIndex], " " + minimum);
     }
 
-    public void broadcastConsole(String key, String[] value) {
-        var message = new TranslationContainer(key, value);
-        String resultStr = "[" + sender.getName() + ": " + (!message.getText().equals(sender.getServer().getLanguage().get(message.getText())) ? "%" : "") + message.getText() + "]";
-        String coloredStr = TextFormat.GRAY + "" + TextFormat.ITALIC + resultStr;
-        message.setText(coloredStr);
-        Set<Permissible> users = sender.getServer().getPluginManager().getPermissionSubscriptions(Server.BROADCAST_CHANNEL_ADMINISTRATIVE);
-        for (Permissible user : users) {
-            if (user instanceof CommandSender commandSender) {
-                if (!commandSender.equals(sender) && commandSender instanceof ConsoleCommandSender) {
-                    commandSender.sendMessage(message);
-                }
-            }
-        }
-    }
-
     private String[] syntaxErrorsValue(int errorIndex) {
         var join1 = new StringJoiner(" ", "/", " ");
         join1.add(command.getName());
@@ -253,16 +237,24 @@ public record CommandLogger(Command command, CommandSender sender, String[] args
         return new String[]{join1.toString(), args[errorIndex], join2.toString()};
     }
 
-    private void broadcastAdminChannel(String key, String[] value) {
-        var message = new TranslationContainer(key, value);
-        String resultStr = "[" + sender.getName() + ": " + (!message.getText().equals(sender.getServer().getLanguage().get(message.getText())) ? "%" : "") + message.getText() + "]";
+    private void broadcastAdminChannel(boolean broadcastConsole, String key, String[] value) {
+        CommandSender target = sender;
+        if (target instanceof ExecutorCommandSender executorCommandSender) target = executorCommandSender.getExecutor();
+
+        if (target instanceof ICommandBlock) return;
+
+        Set<Permissible> users = target.getServer().getPluginManager().getPermissionSubscriptions(Server.BROADCAST_CHANNEL_ADMINISTRATIVE);
+        users.remove(target);
+        var message = new TranslationContainer(TextFormat.clean(key), value);
+        String resultStr = "[" + target.getName() + ": " + (!message.getText().equals(target.getServer().getLanguage().get(message.getText())) ? "%" : "") + message.getText() + "]";
         String coloredStr = TextFormat.GRAY + "" + TextFormat.ITALIC + resultStr;
         message.setText(coloredStr);
-        Set<Permissible> users = sender.getServer().getPluginManager().getPermissionSubscriptions(Server.BROADCAST_CHANNEL_ADMINISTRATIVE);
+
         for (Permissible user : users) {
             if (user instanceof CommandSender commandSender) {
-                Entity delegate = sender.asEntity();
-                if (!commandSender.equals(delegate) && !(commandSender instanceof ConsoleCommandSender)) {
+                if (broadcastConsole) {
+                    commandSender.sendMessage(message);
+                } else if (!(commandSender instanceof ConsoleCommandSender)) {
                     commandSender.sendMessage(message);
                 }
             }
@@ -271,10 +263,6 @@ public record CommandLogger(Command command, CommandSender sender, String[] args
 
     //only player
     private boolean isNotSend() {
-        if (sender instanceof ICommandBlock && !sender.getPosition().getLevel().getGameRules().getBoolean(GameRule.COMMAND_BLOCK_OUTPUT))
-            return true;
-        if (sender instanceof ExecutorCommandSender exeSender && exeSender.getExecutor() instanceof ICommandBlock && !sender.getPosition().getLevel().getGameRules().getBoolean(GameRule.COMMAND_BLOCK_OUTPUT))
-            return true;
         return sender instanceof Player && !sender.getPosition().getLevel().getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK);
     }
 }

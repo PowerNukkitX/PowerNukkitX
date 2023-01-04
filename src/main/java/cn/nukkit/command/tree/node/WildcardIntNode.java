@@ -29,7 +29,7 @@ public class WildcardIntNode extends ParamNode<Integer> {
             try {
                 this.value = Integer.parseInt(arg);
             } catch (NumberFormatException e) {
-                this.parent.error();
+                this.error();
             }
         }
     }

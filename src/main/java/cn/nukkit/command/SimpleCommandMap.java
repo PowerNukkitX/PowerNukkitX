@@ -309,13 +309,20 @@ public class SimpleCommandMap implements CommandMap {
             } else {
                 var result = target.paramTree.matchAndParse(sender, args);
                 if (result == null) output = 0;
-                else {
+                else if (target.testPermissionSilent(sender)) {
                     try {
                         output = target.execute(sender, sentCommandLabel, result, target.paramTree.getLog());
                     } catch (UnsupportedOperationException e) {
                         log.fatal("If you use paramtree, you must override execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) method to run the command!");
                         output = 0;
                     }
+                } else {
+                    if (target.getPermissionMessage() == null) {
+                        target.paramTree.getLog().outputError(TextFormat.RED + "%commands.generic.unknown", target.getName());
+                    } else if (!target.getPermissionMessage().equals("")) {
+                        target.paramTree.getLog().outputError(target.getPermissionMessage().replace("<permission>", target.getPermission()));
+                    }
+                    output = 0;
                 }
             }
         } catch (Exception e) {

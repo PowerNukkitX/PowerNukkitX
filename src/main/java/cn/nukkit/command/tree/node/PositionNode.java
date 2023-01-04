@@ -34,8 +34,8 @@ public abstract class PositionNode extends ParamNode<Position> {
             TMP.add(matcher.group());
         }
         var str = TMP.stream().reduce((s1, s2) -> s1 + s2);
-        if (str.isEmpty()) this.parent.error();
-        else if (str.get().length() != arg.length()) this.parent.error();
+        if (str.isEmpty()) this.error();
+        else if (str.get().length() != arg.length()) this.error();
         else {
             try {
                 Player player = null;
@@ -45,7 +45,7 @@ public abstract class PositionNode extends ParamNode<Position> {
                 for (String s : TMP) {
                     if (s.charAt(0) == '~') {
                         if (player == null) {
-                            this.parent.error();
+                            this.error();
                             return;
                         }
                         String relativeCoordinate = s.substring(1);
@@ -57,14 +57,14 @@ public abstract class PositionNode extends ParamNode<Position> {
                                 case 1 -> coordinate[index] = player.getY() + Double.parseDouble(relativeCoordinate);
                                 case 2 -> coordinate[index] = player.getZ() + Double.parseDouble(relativeCoordinate);
                                 default -> {
-                                    this.parent.error();
+                                    this.error();
                                     return;
                                 }
                             }
                         }
                     } else if (s.charAt(0) == '^') {
                         if (player == null) {
-                            this.parent.error();
+                            this.error();
                             return;
                         }
                         String relativeAngleCoordinate = s.substring(1);
@@ -79,7 +79,7 @@ public abstract class PositionNode extends ParamNode<Position> {
                                 case 2 ->
                                         coordinate[index] = BVector3.fromLocation(player.getLocation()).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(player).getZ();
                                 default -> {
-                                    this.parent.error();
+                                    this.error();
                                     return;
                                 }
                             }
@@ -94,7 +94,7 @@ public abstract class PositionNode extends ParamNode<Position> {
                     index = 0;
                 }
             } catch (NumberFormatException ignore) {
-                this.parent.error();
+                this.error();
             }
         }
     }
@@ -105,7 +105,7 @@ public abstract class PositionNode extends ParamNode<Position> {
             case 1 -> coordinate[index] = player.getY();
             case 2 -> coordinate[index] = player.getZ();
             default -> {
-                this.parent.error();
+                this.error();
                 return false;
             }
         }

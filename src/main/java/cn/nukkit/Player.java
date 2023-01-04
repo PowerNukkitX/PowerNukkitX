@@ -4326,8 +4326,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                 boolean conditional = cmdpk.isConditional;
                                 cmdBlock.setPropertyValue(BlockCommandBlock.CONDITIONAL_BIT, conditional);
 
-                                this.level.setBlock(commandBlock, cmdBlock, true);
-
                                 commandBlock.setCommand(cmdpk.command);
                                 commandBlock.setName(cmdpk.name);
                                 commandBlock.setTrackOutput(cmdpk.shouldTrackOutput);
@@ -4341,6 +4339,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                 if (!isRedstoneMode && cmdpk.commandBlockMode == ICommandBlock.MODE_NORMAL) {
                                     commandBlock.trigger();
                                 }
+                                commandBlock.getLevelBlockAround().forEach(b -> b.onUpdate(Level.BLOCK_UPDATE_REDSTONE));//update redstone
+                                this.level.setBlock(commandBlock, cmdBlock, true);
                             }
                         }
                     }

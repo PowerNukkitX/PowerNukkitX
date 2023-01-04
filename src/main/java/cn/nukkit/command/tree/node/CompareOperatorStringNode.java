@@ -19,7 +19,7 @@ public class CompareOperatorStringNode extends StringNode {
     @Override
     public void fill(String arg) {
         if (COMPARE_OPERATOR.contains(arg)) this.value = arg;
-        else this.parent.error();
+        else this.error();
     }
 
 }
