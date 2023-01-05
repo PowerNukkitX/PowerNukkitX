@@ -8,6 +8,7 @@ import cn.nukkit.command.tree.ParamTree;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.permission.BanEntry;
 import cn.nukkit.permission.BanList;
+import cn.nukkit.utils.TextFormat;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -43,7 +44,7 @@ public class BanListCommand extends VanillaCommand {
                     }
                     case "players" -> list = sender.getServer().getNameBans();
                     default -> {
-                        log.outputSyntaxErrors(0);
+                        log.addSyntaxErrors(0).output();
                         return 0;
                     }
                 }
@@ -59,13 +60,13 @@ public class BanListCommand extends VanillaCommand {
                     builder.append(", ");
                 }
             }
-            int size = Math.max(1, list.getEntires().size());
+            int size = list.getEntires().size();
             if (ips) {
                 log.addSuccess("commands.banlist.ips", String.valueOf(size));
             } else {
                 log.addSuccess("commands.banlist.players", String.valueOf(size));
             }
-            log.addSuccess(builder.toString()).successCount(size).output();
+            log.addSuccess(TextFormat.GREEN + builder.toString()).successCount(size).output();
             return size;
         }
         return 0;

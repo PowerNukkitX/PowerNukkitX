@@ -95,6 +95,48 @@ public record CommandLogger(Command command, CommandSender sender, String[] args
         return this;
     }
 
+
+    /**
+     * 输出默认的命令格式错误信息,会提示命令发送者在指定索引处发生错误
+     *
+     * @param errorIndex 发生错误的参数索引
+     */
+    public CommandLogger addSyntaxErrors(int errorIndex) {
+        if (sender instanceof ConsoleCommandSender) {
+            this.addMessage("commands.generic.usage", "\n" + command.getCommandFormatTips());
+        } else if (isSend()) {
+            this.addError("commands.generic.syntax", this.syntaxErrorsValue(errorIndex));
+        }
+        return this;
+    }
+
+    /**
+     * 输出一个目标选择器没有匹配目标的错误信息
+     */
+    public CommandLogger addNoTargetMatch() {
+        this.addError("commands.generic.noTargetMatch", CommandOutputContainer.EMPTY_STRING);
+        return this;
+    }
+
+    /**
+     * 输出一个目标选择器匹配目标过多的错误信息
+     */
+    public CommandLogger addTooManyTargets() {
+        this.addError("commands.generic.tooManyTargets", CommandOutputContainer.EMPTY_STRING);
+        return this;
+    }
+
+    /**
+     * 输出一个参数过小的错误信息，会提示命令发送者指定位置的参数最小值不能低于minimum
+     *
+     * @param errorIndex 发生错误的参数索引
+     * @param minimum    允许的最小值
+     */
+    public CommandLogger addNumTooSmall(int errorIndex, int minimum) {
+        this.addError("commands.generic.num.tooSmall", args[errorIndex], " " + minimum);
+        return this;
+    }
+
     /**
      * 输出{@link #outputContainer}中的所有信息.
      */
@@ -113,6 +155,16 @@ public record CommandLogger(Command command, CommandSender sender, String[] args
      * @param broadcastConsole      是否广播消息给控制台
      */
     public void output(boolean broadcastAdminChannel, boolean broadcastConsole) {
+        if (sender instanceof ConsoleCommandSender) {
+            this.sender.sendCommandOutput(this.outputContainer);
+            this.outputContainer.setSuccessCount(0);
+            this.outputContainer.getMessages().clear();
+            return;
+        } else if (broadcastConsole) {
+            for (var msg : this.outputContainer.getMessages()) {
+                broadcastConsole(msg.getMessageId(), msg.getParameters());
+            }
+        }
         if (isSend()) {
             this.sender.sendCommandOutput(this.outputContainer);
             if (broadcastAdminChannel) {
@@ -121,11 +173,7 @@ public record CommandLogger(Command command, CommandSender sender, String[] args
                 }
             }
         }
-        if (broadcastConsole) {
-            for (var msg : this.outputContainer.getMessages()) {
-                broadcastConsole(msg.getMessageId(), msg.getParameters());
-            }
-        }
+        this.outputContainer.setSuccessCount(0);
         this.outputContainer.getMessages().clear();
     }
 
@@ -166,41 +214,12 @@ public record CommandLogger(Command command, CommandSender sender, String[] args
         }
     }
 
-    /**
-     * 输出默认的命令格式错误信息,会提示命令发送者在指定索引处发生错误
-     *
-     * @param errorIndex 发生错误的参数索引
-     */
-    public void outputSyntaxErrors(int errorIndex) {
+    public String getSyntaxErrorMessage(int errorIndex) {
         if (sender instanceof ConsoleCommandSender) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + command.getCommandFormatTips()));
-        } else if (isSend()) {
-            sender.sendCommandOutput(new CommandOutputContainer("commands.generic.syntax", this.syntaxErrorsValue(errorIndex), 0));
+            return Server.getInstance().getLanguage().tr("commands.generic.usage", "\n" + command.getCommandFormatTips());
+        } else {
+            return Server.getInstance().getLanguage().tr("commands.generic.syntax", this.syntaxErrorsValue(errorIndex));
         }
-    }
-
-    /**
-     * 输出一个目标选择器没有匹配目标的错误信息
-     */
-    public void outputNoTargetMatch() {
-        this.addError("commands.generic.noTargetMatch", CommandOutputContainer.EMPTY_STRING).output();
-    }
-
-    /**
-     * 输出一个目标选择器匹配目标过多的错误信息
-     */
-    public void outputTooManyTargets() {
-        this.addError("commands.generic.tooManyTargets", CommandOutputContainer.EMPTY_STRING).output();
-    }
-
-    /**
-     * 输出一个参数过小的错误信息，会提示命令发送者指定位置的参数最小值不能低于minimum
-     *
-     * @param errorIndex 发生错误的参数索引
-     * @param minimum    允许的最小值
-     */
-    public void outputNumTooSmall(int errorIndex, int minimum) {
-        this.addError("commands.generic.num.tooSmall", args[errorIndex], " " + minimum).output();
     }
 
     private String[] syntaxErrorsValue(int errorIndex) {

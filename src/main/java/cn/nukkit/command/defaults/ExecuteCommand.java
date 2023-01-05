@@ -462,7 +462,7 @@ public class ExecuteCommand extends VanillaCommand {
                 List<Entity> targets = list.getResult(2);
                 Set<IScorer> targetScorers = targets.stream().filter(Objects::nonNull).map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).collect(Collectors.toSet());
                 if (targetScorers.size() > 1) {
-                    log.outputTooManyTargets();
+                    log.addTooManyTargets().output();
                     return 0;
                 }
                 IScorer targetScorer = targetScorers.iterator().next();
@@ -478,7 +478,7 @@ public class ExecuteCommand extends VanillaCommand {
                 List<Entity> scorers = list.getResult(5);
                 Set<IScorer> selectorScorers = scorers.stream().filter(t -> t != null).map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).collect(Collectors.toSet());
                 if (selectorScorers.size() > 1) {
-                    log.outputTooManyTargets();
+                    log.addTooManyTargets().output();
                     return 0;
                 }
                 IScorer sourceScorer = selectorScorers.iterator().next();
@@ -522,7 +522,7 @@ public class ExecuteCommand extends VanillaCommand {
                 List<Entity> targets = list.getResult(2);
                 Set<IScorer> targetScorers = targets.stream().filter(Objects::nonNull).map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).collect(Collectors.toSet());
                 if (targetScorers.size() > 1) {
-                    log.outputTooManyTargets();
+                    log.addTooManyTargets().output();
                     return 0;
                 }
                 IScorer targetScorer = targetScorers.iterator().next();

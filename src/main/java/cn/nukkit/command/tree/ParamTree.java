@@ -12,6 +12,7 @@ import cn.nukkit.command.utils.CommandLogger;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,7 +53,7 @@ public class ParamTree {
         for (Map.Entry<String, CommandParameter[]> entry : command.getCommandParameters().entrySet()) {
             var paramList = new ParamList(this);
             for (CommandParameter parameter : entry.getValue()) {
-                IParamNode<?> node = new VoidNode();
+                IParamNode<?> node;
                 if (parameter.paramNode != null) {
                     node = parameter.paramNode;
                 } else if (parameter.enumData == null) {
@@ -82,7 +83,6 @@ public class ParamTree {
                             node = new StringNode();
                         }
                         case FILE_PATH -> {
-                            //todo 1
                             node = new StringNode();
                         }
                         case COMMAND -> {
@@ -94,15 +94,17 @@ public class ParamTree {
                         case COMPARE_OPERATOR -> {
                             node = new CompareOperatorStringNode();
                         }
-                        case MESSAGE, TEXT, RAWTEXT, JSON -> {
-                            //todo 2
+                        case JSON -> {
+                            node = new RemainStringNode();
+                        }
+                        case MESSAGE, TEXT, RAWTEXT -> {
                             node = new StringNode();
                         }
+                        default -> node = new VoidNode();
                     }
                 } else {
                     node = new EnumNode();
                 }
-
                 paramList.add(node.init(paramList, parameter.name, parameter.optional, parameter.type, parameter.enumData, parameter.postFix));
             }
             root.put(entry.getKey(), paramList);
@@ -141,7 +143,7 @@ public class ParamTree {
                     if (list.getIndex() >= args.length) {
                         if (node.isOptional()) break f2;
                         list.getIndexAndIncrement();
-                        list.error();
+                        node.error();
                         break f2;
                     }
                     node.fill(args[list.getIndexAndIncrement()]);
@@ -159,8 +161,12 @@ public class ParamTree {
         }
 
         if (result == null) {//全部不成功
-            var errorIndex = error.stream().map(ParamList::getError).max(Integer::compare).orElse(-1);
-            log.outputSyntaxErrors(errorIndex);
+            var list = error.stream().max(Comparator.comparingInt(ParamList::getError)).orElseGet(() -> {
+                var defaultList = new ParamList(this);
+                defaultList.error();
+                return defaultList;
+            });
+            log.addMessage(list.getErrorMessage().getKey(), list.getErrorMessage().getKey()).output();
             return null;
         } else {
             return result;

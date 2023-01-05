@@ -54,7 +54,9 @@ public interface IParamNode<T> {
      * 标记该节点的{@link #fill(String)}出现错误
      */
     default void error() {
-        this.getParent().error();
+        var list = this.getParent();
+        list.error();
+        list.setErrorMessage(list.getParent().getLog().getSyntaxErrorMessage(list.getError()));
     }
 
     /**

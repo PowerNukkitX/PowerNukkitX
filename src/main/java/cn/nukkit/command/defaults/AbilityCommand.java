@@ -38,10 +38,6 @@ public class AbilityCommand extends VanillaCommand {
         if (result.getKey().equals("default")) {
             var list = result.getValue();
             List<Player> players = list.getResult(0);
-            if (players.size() == 0) {
-                log.outputNoTargetMatch();
-                return 0;
-            }
             String ability_str;
             AdventureSettings.Type type = switch (ability_str = list.getResult(1)) {
                 case "mayfly" -> AdventureSettings.Type.ALLOW_FLIGHT;

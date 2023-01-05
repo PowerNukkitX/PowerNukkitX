@@ -9,7 +9,6 @@ import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.ParamTree;
 import cn.nukkit.command.tree.node.CommandNode;
 import cn.nukkit.command.tree.node.IPStringNode;
-import cn.nukkit.command.tree.node.StringNode;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.event.player.PlayerKickEvent;
 import cn.nukkit.nbt.NBTIO;
@@ -36,7 +35,7 @@ public class BanIpCommand extends VanillaCommand {
         this.setAliases(new String[]{"banip"});
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
-                CommandParameter.newType("player", CommandParamType.TARGET, new StringNode()),
+                CommandParameter.newType("player", CommandParamType.STRING),
                 CommandParameter.newType("reason", true, CommandParamType.STRING, new CommandNode())
         });
         this.commandParameters.put("byIp", new CommandParameter[]{

@@ -14,6 +14,7 @@ import cn.nukkit.utils.TextFormat;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 /**
@@ -41,21 +42,27 @@ public class KillCommand extends VanillaCommand {
                     log.addError("nukkit.command.generic.permission").output();
                     return 0;
                 }
+
                 List<Entity> entities = result.getValue().getResult(0);
+                AtomicBoolean creativePlayer = new AtomicBoolean(false);
                 entities = entities.stream().filter(entity -> {
                     if (entity instanceof Player player)
                         if (player.isCreative()) {
-                            log.addMessage(TextFormat.WHITE + "%commands.kill.attemptKillPlayerCreative");
+                            creativePlayer.set(true);
                             return false;
                         } else return true;
                     else
                         return true;
                 }).toList();
+
                 if (entities.isEmpty()) {
-                    if (log.outputContainer().getMessages().isEmpty()) log.outputNoTargetMatch();
-                    else log.output();
+                    if (creativePlayer.get())
+                        log.addError(TextFormat.WHITE + "%commands.kill.attemptKillPlayerCreative");
+                    else log.addNoTargetMatch();
+                    log.output();
                     return 0;
                 }
+
                 for (Entity entity : entities) {
                     if (entity.getName().equals(sender.getName())) {
                         if (!sender.hasPermission("nukkit.command.kill.self")) {

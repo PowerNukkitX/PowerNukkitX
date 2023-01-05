@@ -46,10 +46,6 @@ public class GiveCommand extends VanillaCommand {
             var list = result.getValue();
 
             List<Player> players = list.getResult(0);
-            if (players.isEmpty()) {
-                log.outputNoTargetMatch();
-                return 0;
-            }
 
             Item item;
             String itemName = list.getResult(1);
@@ -71,7 +67,7 @@ public class GiveCommand extends VanillaCommand {
             if (list.hasResult(2)) {
                 count = list.getResult(2);
                 if (count <= 0) {
-                    log.outputNumTooSmall(2, 1);
+                    log.addNumTooSmall(2, 1).output();
                     return 0;
                 }
                 item.setCount(count);

@@ -21,11 +21,14 @@ public class PlayersNode extends TargetNode<Player> {
     public void fill(String arg) {
         if (EntitySelector.hasArguments(arg)) {
             var entities = EntitySelector.matchEntities(this.parent.parent.getSender(), arg);
-            this.value = entities.stream().filter(entity -> entity instanceof Player).map(entity -> (Player) entity).collect(Collectors.toList());
+            if (entities != null)
+                this.value = entities.stream().filter(entity -> entity instanceof Player).map(entity -> (Player) entity).collect(Collectors.toList());
+            else error();
         } else {
             Player player = Server.getInstance().getPlayer(arg);
-            if (player == null) this.value = Collections.emptyList();
-            else this.value = Collections.singletonList(player);
+            if (player != null) {
+                this.value = Collections.singletonList(player);
+            } else error();
         }
     }
 }

@@ -3,14 +3,17 @@ package cn.nukkit.command.tree;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.tree.node.IParamNode;
+import cn.nukkit.lang.CommandOutputContainer;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 @PowerNukkitXOnly
 @Since("1.19.50-r4")
 public class ParamList extends ArrayList<IParamNode<?>> {
     private int error = Integer.MIN_VALUE;
     private int index = 0;
+    private Map.Entry<String, String[]> errorMessage;
     public final ParamTree parent;
 
     public ParamList(ParamTree parent) {
@@ -56,6 +59,22 @@ public class ParamList extends ArrayList<IParamNode<?>> {
      */
     public <E> E getResult(int index) {
         return this.get(index).get();
+    }
+
+    public Map.Entry<String, String[]> getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String key) {
+        this.errorMessage = Map.entry(key, CommandOutputContainer.EMPTY_STRING);
+    }
+
+    public void setErrorMessage(String key, String... params) {
+        this.errorMessage = Map.entry(key, params);
+    }
+
+    public ParamTree getParent() {
+        return parent;
     }
 
     /**

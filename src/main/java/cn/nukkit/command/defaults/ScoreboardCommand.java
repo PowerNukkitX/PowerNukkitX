@@ -135,9 +135,9 @@ public class ScoreboardCommand extends VanillaCommand {
                 return 1;
             }
             case "objectives-list" -> {
-                log.addMessage(TextFormat.GREEN + "%commands.scoreboard.objectives.list.count", String.valueOf(manager.getScoreboards().size()));
+                log.addSuccess(TextFormat.GREEN + "%commands.scoreboard.objectives.list.count", String.valueOf(manager.getScoreboards().size()));
                 for (var scoreboard : manager.getScoreboards().values()) {
-                    log.addMessage("commands.scoreboard.objectives.list.entry", scoreboard.getObjectiveName(), scoreboard.getDisplayName(), scoreboard.getCriteriaName());
+                    log.addSuccess("commands.scoreboard.objectives.list.entry", scoreboard.getObjectiveName(), scoreboard.getDisplayName(), scoreboard.getCriteriaName());
                 }
                 log.output(true);
                 return 1;

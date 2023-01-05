@@ -21,11 +21,13 @@ public class EntitiesNode extends TargetNode<Entity> {
     @Override
     public void fill(String arg) {
         if (EntitySelector.hasArguments(arg)) {
-            this.value = EntitySelector.matchEntities(this.parent.parent.getSender(), arg);
+            var entities = EntitySelector.matchEntities(this.parent.parent.getSender(), arg);
+            if (entities != null) this.value = entities;
+            else error();
         } else {
             Player player = Server.getInstance().getPlayer(arg);
-            if (player == null) this.value = Collections.emptyList();
-            else this.value = Collections.singletonList(player);
+            if (player != null) this.value = Collections.singletonList(player);
+            else error();
         }
     }
 }
