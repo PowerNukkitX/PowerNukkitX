@@ -128,6 +128,22 @@
                 <activeByDefault>false</activeByDefault>
             </activation>
         </profile>
+        <profile>
+            <id>test</id>
+            <properties>
+                <profiles.active>test</profiles.active>
+                <skipShade>true</skipShade>
+                <skipCopyLibs>true</skipCopyLibs>
+                <skipGpg>true</skipGpg>
+                <maven.javadoc.skip>true</maven.javadoc.skip>
+                <skipDelombok>true</skipDelombok>
+                <skipNexus>true</skipNexus>
+                <skipTests>false</skipTests>
+            </properties>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+        </profile>
     </profiles>
 
     <distributionManagement>
@@ -197,9 +213,9 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.powernukkit</groupId>
-            <artifactId>powernukkit-tests-junit5</artifactId>
-            <version>0.1.1</version>
+            <groupId>cn.powernukkitx</groupId>
+            <artifactId>powernukkitx-tests-junit5</artifactId>
+            <version>0.0.1</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
