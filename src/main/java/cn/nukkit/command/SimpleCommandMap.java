@@ -317,10 +317,10 @@ public class SimpleCommandMap implements CommandMap {
                         output = 0;
                     }
                 } else {
-                    if (target.getPermissionMessage() == null) {
-                        target.paramTree.getLog().outputError(TextFormat.RED + "%commands.generic.unknown", target.getName());
-                    } else if (!target.getPermissionMessage().equals("")) {
-                        target.paramTree.getLog().outputError(target.getPermissionMessage().replace("<permission>", target.getPermission()));
+                    if (!target.getPermissionMessage().equals("")) {
+                        target.paramTree.getLog().addError(target.getPermissionMessage().replace("<permission>", target.getPermission())).output();
+                    } else {
+                        target.paramTree.getLog().addMessage("nukkit.command.generic.permission").output();
                     }
                     output = 0;
                 }

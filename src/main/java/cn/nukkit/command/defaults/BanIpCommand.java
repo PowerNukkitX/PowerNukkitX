@@ -58,7 +58,7 @@ public class BanIpCommand extends VanillaCommand {
                 Player player = sender.getServer().getPlayer(value);
                 if (player != null) {
                     this.processIPBan(player.getAddress(), sender, reason);
-                    log.outputSuccess(true, true, "commands.banip.success.players", player.getAddress(), player.getName());
+                    log.addSuccess("commands.banip.success.players", player.getAddress(), player.getName()).output(true, true);
                     return 1;
                 } else {
                     String name = value.toLowerCase();
@@ -75,10 +75,10 @@ public class BanIpCommand extends VanillaCommand {
 
                     if (nbt != null && nbt.contains("lastIP") && Pattern.matches("^(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9])\\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[0-9])$", (value = nbt.getString("lastIP")))) {
                         this.processIPBan(value, sender, reason);
-                        log.outputSuccess(true, true, "commands.banip.success", value);
+                        log.addSuccess("commands.banip.success", value).output(true, true);
                         return 1;
                     } else {
-                        log.outputError("commands.banip.invalid");
+                        log.addError("commands.banip.invalid").output();
                         return 0;
                     }
                 }
@@ -87,7 +87,7 @@ public class BanIpCommand extends VanillaCommand {
                 String ip = list.getResult(0);
                 if (list.hasResult(1)) reason = list.getResult(1);
                 this.processIPBan(ip, sender, reason);
-                log.outputSuccess(true, true, "commands.banip.success", ip);
+                log.addSuccess("commands.banip.success", ip).output(true, true);
             }
             default -> {
                 return 0;

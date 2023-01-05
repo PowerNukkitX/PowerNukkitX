@@ -5491,9 +5491,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public void sendCommandOutput(CommandOutputContainer container) {
         var pk = new CommandOutputPacket();
         pk.messages.addAll(container.getMessages());
-        pk.commandOriginData = new CommandOriginData(CommandOriginData.Origin.PLAYER, this.getUniqueId(), "", null);
-        pk.type = CommandOutputType.ALL_OUTPUT;
-        pk.successCount = container.getSuccessCount();
+        pk.commandOriginData = new CommandOriginData(CommandOriginData.Origin.PLAYER, this.getUniqueId(), "", null);//Only players can effect
+        pk.type = CommandOutputType.ALL_OUTPUT;//Useless
+        pk.successCount = container.getSuccessCount();//Useless,maybe used for server-client interaction
         this.dataPacket(pk);
     }
 

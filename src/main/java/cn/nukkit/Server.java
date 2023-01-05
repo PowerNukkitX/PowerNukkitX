@@ -769,8 +769,6 @@ public class Server {
         DispenseBehaviorRegister.init();
         GlobalBlockPalette.getOrCreateRuntimeId(0, 0); //Force it to load
 
-        this.commandMap = new SimpleCommandMap(this);
-
         freezableArrayManager = new FreezableArrayManager(
                 this.getConfig("memory-compression.enable", true),
                 this.getConfig("memory-compression.slots", 32),
@@ -802,6 +800,7 @@ public class Server {
         this.craftingManager = new CraftingManager();
         this.resourcePackManager = new ResourcePackManager(new File(Nukkit.DATA_PATH, "resource_packs"));
 
+        this.commandMap = new SimpleCommandMap(this);
         this.pluginManager = new PluginManager(this, this.commandMap);
         this.pluginManager.subscribeToPermission(Server.BROADCAST_CHANNEL_ADMINISTRATIVE, this.consoleSender);
 

@@ -1,12 +1,13 @@
 package cn.nukkit.network.protocol;
 
-import io.netty.util.internal.EmptyArrays;
 import lombok.ToString;
+
+import java.util.List;
 
 @ToString
 public class UpdateSoftEnumPacket extends DataPacket {
 
-    public final String[] values = EmptyArrays.EMPTY_STRINGS;
+    public List<String> values = List.of();
     public String name = "";
     public Type type = Type.SET;
 
@@ -23,7 +24,7 @@ public class UpdateSoftEnumPacket extends DataPacket {
     public void encode() {
         this.reset();
         this.putString(name);
-        this.putUnsignedVarInt(values.length);
+        this.putUnsignedVarInt(values.size());
 
         for (String value : values) {
             this.putString(value);

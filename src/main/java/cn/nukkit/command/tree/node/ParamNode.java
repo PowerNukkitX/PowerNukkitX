@@ -19,10 +19,8 @@ public abstract class ParamNode<T> implements IParamNode<T> {
     @Override
     @SuppressWarnings("unchecked")
     public <E> E get() {
-        if (this.isOptional()) {
-            if (value == null) return null;
-            else return (E) value;
-        } else return (E) value;
+        if (value == null) return null;
+        else return (E) value;
     }
 
     @Override
@@ -32,7 +30,7 @@ public abstract class ParamNode<T> implements IParamNode<T> {
 
     @Override
     public void reset() {
-        this.value = null;
+        if (this.value != null) this.value = null;
     }
 
     @Override

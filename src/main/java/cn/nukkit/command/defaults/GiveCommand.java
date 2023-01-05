@@ -14,7 +14,6 @@ import cn.nukkit.command.tree.node.StringNode;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
-import cn.nukkit.utils.TextFormat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,15 +56,15 @@ public class GiveCommand extends VanillaCommand {
             try {
                 item = Item.fromString(itemName);
             } catch (Exception e) {
-                log.outputError("commands.generic.usage", "\n" + this.getCommandFormatTips());
+                log.addError("commands.generic.usage", "\n" + this.getCommandFormatTips()).output();
                 return 0;
             }
             if (item.isNull() && item.getId() != 0) {
-                log.outputError("%commands.give.item.notFound", itemName);
+                log.addError("commands.give.item.notFound", itemName).output();
                 return 0;
             }
             if (item instanceof ItemBlock && item.getBlock() instanceof BlockUnknown) {
-                log.outputError("commands.give.block.notFound", itemName);
+                log.addError("commands.give.block.notFound", itemName).output();
                 return 0;
             }
             int count;
@@ -114,7 +113,7 @@ public class GiveCommand extends VanillaCommand {
                 log.outputObjectWhisper(player, "commands.give.successRecipient", item.getName() + " (" + item.getNamespaceId() + (item.getDamage() != 0 ? ":" + item.getDamage() : "") + ")",
                         String.valueOf(item.getCount()));
             }
-            log.addMessage(TextFormat.WHITE + "%commands.give.success", item.getName() + " (" + item.getNamespaceId() + (item.getDamage() != 0 ? ":" + item.getDamage() : "") + ")",
+            log.addSuccess("commands.give.success", item.getName() + " (" + item.getNamespaceId() + (item.getDamage() != 0 ? ":" + item.getDamage() : "") + ")",
                     String.valueOf(item.getCount()),
                     players.stream().map(Player::getName).collect(Collectors.joining(","))).successCount(players.size()).output(true, true);
             return players.size();

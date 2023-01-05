@@ -14,6 +14,7 @@ import cn.nukkit.command.tree.ParamTree;
 import cn.nukkit.command.tree.node.WildcardIntNode;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.command.utils.EntitySelector;
+import cn.nukkit.network.protocol.UpdateSoftEnumPacket;
 import cn.nukkit.scoreboard.data.DisplaySlot;
 import cn.nukkit.scoreboard.data.SortOrder;
 import cn.nukkit.scoreboard.manager.IScoreboardManager;
@@ -31,6 +32,8 @@ import java.util.stream.Collectors;
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public class ScoreboardCommand extends VanillaCommand {
+    private static final CommandEnum SCORE_BOARD_OBJECTIVES = new CommandEnum("ScoreboardObjectives", () -> Server.getInstance().getScoreboardManager().getScoreboards().keySet(), true);
+
     public ScoreboardCommand(String name) {
         super(name, "commands.scoreboard.description", "commands.scoreboard.usage");
         this.setPermission("nukkit.command.scoreboard");
@@ -38,7 +41,7 @@ public class ScoreboardCommand extends VanillaCommand {
         this.commandParameters.put("objectives-add", new CommandParameter[]{
                 CommandParameter.newEnum("category", false, new CommandEnum("ScoreboardObjectivesCategory", List.of("objectives"), false)),
                 CommandParameter.newEnum("action", false, new CommandEnum("ScoreboardAddAction", List.of("add"), false)),
-                CommandParameter.newEnum("objective", false, new CommandEnum("ScoreboardObjectives", List.of(), true)),
+                CommandParameter.newEnum("objective", false, SCORE_BOARD_OBJECTIVES),
                 CommandParameter.newEnum("criteria", false, new CommandEnum("ScoreboardCriteria", List.of("dummy"), false)),
                 CommandParameter.newType("displayName", true, CommandParamType.STRING)
         });
@@ -49,26 +52,26 @@ public class ScoreboardCommand extends VanillaCommand {
         this.commandParameters.put("objectives-remove", new CommandParameter[]{
                 CommandParameter.newEnum("category", false, new CommandEnum("ScoreboardObjectivesCategory", List.of("objectives"), false)),
                 CommandParameter.newEnum("action", false, new CommandEnum("ScoreboardRemoveAction", List.of("remove"), false)),
-                CommandParameter.newEnum("objective", false, new CommandEnum("ScoreboardObjectives", List.of(), true)),
+                CommandParameter.newEnum("objective", false, SCORE_BOARD_OBJECTIVES),
         });
         this.commandParameters.put("objectives-setdisplay-list-sidebar", new CommandParameter[]{
                 CommandParameter.newEnum("category", false, new CommandEnum("ScoreboardObjectivesCategory", List.of("objectives"), false)),
                 CommandParameter.newEnum("action", false, new CommandEnum("ScoreboardSetDisplayAction", List.of("setdisplay"), false)),
                 CommandParameter.newEnum("displaySlot", false, new CommandEnum("ScoreboardDisplaySlotSortable", List.of("list", "sidebar"), false), CommandParamOption.SUPPRESS_ENUM_AUTOCOMPLETION),
-                CommandParameter.newEnum("objective", true, new CommandEnum("ScoreboardObjectives", List.of(), true)),
+                CommandParameter.newEnum("objective", true, SCORE_BOARD_OBJECTIVES),
                 CommandParameter.newEnum("sortOrder", true, new CommandEnum("ScoreboardSortOrder", List.of("ascending", "descending"), false), CommandParamOption.SUPPRESS_ENUM_AUTOCOMPLETION),
         });
         this.commandParameters.put("objectives-setdisplay-belowname", new CommandParameter[]{
                 CommandParameter.newEnum("category", false, new CommandEnum("ScoreboardObjectivesCategory", List.of("objectives"), false)),
                 CommandParameter.newEnum("action", false, new CommandEnum("ScoreboardSetDisplayAction", List.of("setdisplay"), false)),
                 CommandParameter.newEnum("displaySlot", false, new CommandEnum("ScoreboardDisplaySlotNonSortable", List.of("belowname"), false)),
-                CommandParameter.newEnum("objective", true, new CommandEnum("ScoreboardObjectives", List.of(), true))
+                CommandParameter.newEnum("objective", true, SCORE_BOARD_OBJECTIVES)
         });
         this.commandParameters.put("players-add-remove-set", new CommandParameter[]{
                 CommandParameter.newEnum("category", false, new CommandEnum("ScoreboardPlayersCategory", List.of("players"), false)),
                 CommandParameter.newEnum("action", false, new CommandEnum("ScoreboardPlayersNumAction", List.of("add", "remove", "set"), false)),
                 CommandParameter.newType("player", false, CommandParamType.WILDCARD_TARGET),//allow *
-                CommandParameter.newEnum("targetObjective", false, "ScoreboardObjectives", true),
+                CommandParameter.newEnum("targetObjective", false, SCORE_BOARD_OBJECTIVES),
                 CommandParameter.newType("count", CommandParamType.INT)
         });
         this.commandParameters.put("players-list", new CommandParameter[]{
@@ -80,16 +83,16 @@ public class ScoreboardCommand extends VanillaCommand {
                 CommandParameter.newEnum("category", false, new CommandEnum("ScoreboardPlayersCategory", List.of("players"), false)),
                 CommandParameter.newEnum("action", false, new CommandEnum("ScoreboardOperationAction", List.of("operation"), false)),
                 CommandParameter.newType("targetName", CommandParamType.WILDCARD_TARGET),//allow *
-                CommandParameter.newEnum("targetObjective", false, "ScoreboardObjectives", true),
+                CommandParameter.newEnum("targetObjective", false, SCORE_BOARD_OBJECTIVES),
                 CommandParameter.newType("operation", CommandParamType.OPERATOR),
                 CommandParameter.newType("selector", CommandParamType.WILDCARD_TARGET),
-                CommandParameter.newEnum("objective", false, "ScoreboardObjectives", true)
+                CommandParameter.newEnum("objective", false, SCORE_BOARD_OBJECTIVES)
         });
         this.commandParameters.put("players-random", new CommandParameter[]{
                 CommandParameter.newEnum("category", false, new CommandEnum("ScoreboardPlayersCategory", List.of("players"), false)),
                 CommandParameter.newEnum("action", false, new CommandEnum("ScoreboardRandomAction", List.of("random"), false)),
                 CommandParameter.newType("player", false, CommandParamType.WILDCARD_TARGET),//allow *
-                CommandParameter.newEnum("objective", false, "ScoreboardObjectives", true),
+                CommandParameter.newEnum("objective", false, SCORE_BOARD_OBJECTIVES),
                 CommandParameter.newType("min", false, CommandParamType.WILDCARD_INT, new WildcardIntNode(Integer.MIN_VALUE)),
                 CommandParameter.newType("max", false, CommandParamType.WILDCARD_INT, new WildcardIntNode(Integer.MAX_VALUE))
         });
@@ -97,13 +100,13 @@ public class ScoreboardCommand extends VanillaCommand {
                 CommandParameter.newEnum("category", false, new CommandEnum("ScoreboardPlayersCategory", List.of("players"), false)),
                 CommandParameter.newEnum("action", false, new CommandEnum("ScoreboardResetAction", List.of("reset"), false)),
                 CommandParameter.newType("player", false, CommandParamType.WILDCARD_TARGET),//allow *
-                CommandParameter.newEnum("objective", true, "ScoreboardObjectives", true)
+                CommandParameter.newEnum("objective", true, SCORE_BOARD_OBJECTIVES)
         });
         this.commandParameters.put("players-test", new CommandParameter[]{
                 CommandParameter.newEnum("category", false, new CommandEnum("ScoreboardPlayersCategory", List.of("players"), false)),
                 CommandParameter.newEnum("action", false, new CommandEnum("ScoreboardTestAction", List.of("test"), false)),
                 CommandParameter.newType("player", false, CommandParamType.WILDCARD_TARGET),//allow *
-                CommandParameter.newEnum("objective", false, "ScoreboardObjectives", true),
+                CommandParameter.newEnum("objective", false, SCORE_BOARD_OBJECTIVES),
                 CommandParameter.newType("min", false, CommandParamType.WILDCARD_INT, new WildcardIntNode(Integer.MIN_VALUE)),
                 CommandParameter.newType("max", true, CommandParamType.WILDCARD_INT, new WildcardIntNode(Integer.MAX_VALUE))
         });
@@ -118,7 +121,7 @@ public class ScoreboardCommand extends VanillaCommand {
             case "objectives-add" -> {
                 String objectiveName = list.getResult(2);
                 if (manager.containScoreboard(objectiveName)) {
-                    log.outputError(TextFormat.RED + "%commands.scoreboard.objectives.add.alreadyExists", objectiveName);
+                    log.addError("commands.scoreboard.objectives.add.alreadyExists", objectiveName).output();
                     return 0;
                 }
                 String criteriaName = list.getResult(3);
@@ -127,7 +130,8 @@ public class ScoreboardCommand extends VanillaCommand {
                 } else {
                     manager.addScoreboard(new Scoreboard(objectiveName, objectiveName, criteriaName, SortOrder.ASCENDING));
                 }
-                log.outputSuccess("commands.scoreboard.objectives.add.success", objectiveName);
+                log.addSuccess("commands.scoreboard.objectives.add.success", objectiveName).output();
+                SCORE_BOARD_OBJECTIVES.updateSoftEnum(UpdateSoftEnumPacket.Type.ADD, objectiveName);
                 return 1;
             }
             case "objectives-list" -> {
@@ -141,12 +145,13 @@ public class ScoreboardCommand extends VanillaCommand {
             case "objectives-remove" -> {
                 String objectiveName = list.getResult(2);
                 if (!manager.containScoreboard(objectiveName)) {
-                    log.outputError(TextFormat.RED + "%commands.scoreboard.objectiveNotFound", objectiveName);
+                    log.addError("commands.scoreboard.objectiveNotFound", objectiveName).output();
                     return 0;
                 }
                 if (manager.removeScoreboard(objectiveName)) {
-                    log.outputSuccess("commands.scoreboard.objectives.remove.success", objectiveName);
+                    log.addSuccess("commands.scoreboard.objectives.remove.success", objectiveName).output();
                 }
+                SCORE_BOARD_OBJECTIVES.updateSoftEnum(UpdateSoftEnumPacket.Type.REMOVE, objectiveName);
                 return 1;
             }
             case "objectives-setdisplay-list-sidebar" -> {
@@ -159,11 +164,11 @@ public class ScoreboardCommand extends VanillaCommand {
 
                 if (!list.hasResult(3)) {
                     manager.setDisplay(slot, null);
-                    log.outputSuccess("commands.scoreboard.objectives.setdisplay.successCleared", slot.getSlotName());
+                    log.addSuccess("commands.scoreboard.objectives.setdisplay.successCleared", slot.getSlotName()).output();
                 } else {
                     String objectiveName = list.getResult(3);
                     if (!manager.containScoreboard(objectiveName)) {
-                        log.outputError(TextFormat.RED + "%commands.scoreboard.objectiveNotFound", objectiveName);
+                        log.addError("commands.scoreboard.objectiveNotFound", objectiveName).output();
                         return 0;
                     }
                     var scoreboard = manager.getScoreboards().get(objectiveName);
@@ -175,23 +180,23 @@ public class ScoreboardCommand extends VanillaCommand {
                     } : SortOrder.ASCENDING;
                     scoreboard.setSortOrder(order);
                     manager.setDisplay(slot, scoreboard);
-                    log.outputSuccess("commands.scoreboard.objectives.setdisplay.successSet", slot.getSlotName(), objectiveName);
+                    log.addSuccess("commands.scoreboard.objectives.setdisplay.successSet", slot.getSlotName(), objectiveName).output();
                 }
                 return 1;
             }
             case "objectives-setdisplay-belowname" -> {
                 if (!list.hasResult(3)) {
                     manager.setDisplay(DisplaySlot.BELOW_NAME, null);
-                    log.outputSuccess("commands.scoreboard.objectives.setdisplay.successCleared", DisplaySlot.BELOW_NAME.getSlotName());
+                    log.addSuccess("commands.scoreboard.objectives.setdisplay.successCleared", DisplaySlot.BELOW_NAME.getSlotName()).output();
                     return 1;
                 } else {
                     String objectiveName = list.getResult(3);
                     if (!manager.containScoreboard(objectiveName)) {
-                        log.outputError(TextFormat.RED + "%commands.scoreboard.objectiveNotFound", objectiveName);
+                        log.addError("commands.scoreboard.objectiveNotFound", objectiveName).output();
                         return 0;
                     }
                     manager.setDisplay(DisplaySlot.BELOW_NAME, manager.getScoreboard(objectiveName));
-                    log.outputSuccess("commands.scoreboard.objectives.setdisplay.successSet", DisplaySlot.BELOW_NAME.getSlotName(), objectiveName);
+                    log.addSuccess("commands.scoreboard.objectives.setdisplay.successSet", DisplaySlot.BELOW_NAME.getSlotName(), objectiveName).output();
                     return 1;
                 }
             }
@@ -200,7 +205,7 @@ public class ScoreboardCommand extends VanillaCommand {
             }
             case "players-list" -> {
                 if (manager.getScoreboards().isEmpty()) {
-                    log.outputError(TextFormat.RED + "%commands.scoreboard.players.list.empty");
+                    log.addError("commands.scoreboard.players.list.empty").output();
                     return 0;
                 }
                 if (list.hasResult(2)) {
@@ -227,13 +232,13 @@ public class ScoreboardCommand extends VanillaCommand {
                             }
                         }
                         if (!find) {
-                            log.outputError(TextFormat.RED + "%commands.scoreboard.players.list.player.empty", scorer.getName());
+                            log.addError("commands.scoreboard.players.list.player.empty", scorer.getName()).output();
                             return 0;
                         }
-                        log.addMessage(TextFormat.GREEN + "%commands.scoreboard.players.list.player.count", String.valueOf(count), scorer.getName());
+                        log.addSuccess(TextFormat.GREEN + "%commands.scoreboard.players.list.player.count", String.valueOf(count), scorer.getName());
                         for (var scoreboard : manager.getScoreboards().values()) {
                             if (scoreboard.getLines().containsKey(scorer)) {
-                                log.addMessage("commands.scoreboard.players.list.player.entry", String.valueOf(scoreboard.getLines().get(scorer).getScore()), scoreboard.getDisplayName(), scoreboard.getObjectiveName());
+                                log.addSuccess("commands.scoreboard.players.list.player.entry", String.valueOf(scoreboard.getLines().get(scorer).getScore()), scoreboard.getDisplayName(), scoreboard.getObjectiveName());
                             }
                         }
                         log.output();
@@ -248,10 +253,10 @@ public class ScoreboardCommand extends VanillaCommand {
                             }
                         }
                     }
-                    log.outputSuccess(TextFormat.GREEN + "%commands.scoreboard.players.list.count", String.valueOf(playerNames.size()));
+                    log.addSuccess(TextFormat.GREEN + "%commands.scoreboard.players.list.count", String.valueOf(playerNames.size()));
                     var join = new StringJoiner(",");
                     playerNames.forEach(join::add);
-                    log.outputSuccess(TextFormat.WHITE + join.toString());
+                    log.addSuccess(join.toString()).output();
                 }
             }
             case "players-operation" -> {
@@ -273,14 +278,14 @@ public class ScoreboardCommand extends VanillaCommand {
                 }
                 String objectiveName = list.getResult(3);
                 if (!manager.containScoreboard(objectiveName)) {
-                    log.outputError(TextFormat.RED + "%commands.scoreboard.objectiveNotFound", objectiveName);
+                    log.addError("commands.scoreboard.objectiveNotFound", objectiveName).output();
                     return 0;
                 }
                 var scoreboard = manager.getScoreboards().get(objectiveName);
                 long min = list.getResult(4);
                 long max = list.getResult(5);
                 if (min > max) {
-                    log.outputError(TextFormat.RED + "%commands.scoreboard.players.random.invalidRange", String.valueOf(min), String.valueOf(max));
+                    log.addError("commands.scoreboard.players.random.invalidRange", String.valueOf(min), String.valueOf(max)).output();
                     return 0;
                 }
                 Random random = new Random();
@@ -312,7 +317,7 @@ public class ScoreboardCommand extends VanillaCommand {
                 if (list.hasResult(3)) {
                     String objectiveName = list.getResult(3);
                     if (!manager.containScoreboard(objectiveName)) {
-                        log.outputError(TextFormat.RED + "%commands.scoreboard.objectiveNotFound", objectiveName);
+                        log.addError("commands.scoreboard.objectiveNotFound", objectiveName).output();
                         return 0;
                     }
                     var scoreboard = manager.getScoreboards().get(objectiveName);
@@ -353,7 +358,7 @@ public class ScoreboardCommand extends VanillaCommand {
                 }
                 String objectiveName = list.getResult(3);
                 if (!manager.containScoreboard(objectiveName)) {
-                    log.outputError(TextFormat.RED + "%commands.scoreboard.objectiveNotFound", objectiveName);
+                    log.addError("commands.scoreboard.objectiveNotFound", objectiveName).output();
                     return 0;
                 }
                 var scoreboard = manager.getScoreboards().get(objectiveName);
@@ -365,12 +370,12 @@ public class ScoreboardCommand extends VanillaCommand {
                 for (IScorer scorer : scorers) {
                     var line = scoreboard.getLine(scorer);
                     if (line == null) {
-                        log.outputError(TextFormat.RED + "%commands.scoreboard.players.score.notFound", objectiveName, scorer.getName());
+                        log.addError("commands.scoreboard.players.score.notFound", objectiveName, scorer.getName()).output();
                         return 0;
                     }
                     int score = line.getScore();
                     if (score < min || score > max) {
-                        log.outputError(TextFormat.RED + "%commands.scoreboard.players.test.failed", String.valueOf(score), String.valueOf(min), String.valueOf(max));
+                        log.addError("commands.scoreboard.players.test.failed", String.valueOf(score), String.valueOf(min), String.valueOf(max)).output();
                         return 0;
                     }
                     log.addMessage("commands.scoreboard.players.test.success", String.valueOf(score), String.valueOf(min), String.valueOf(max));
@@ -398,14 +403,14 @@ public class ScoreboardCommand extends VanillaCommand {
         }
         String objectiveName = list.getResult(3);
         if (!manager.containScoreboard(objectiveName)) {
-            log.outputError(TextFormat.RED + "%commands.scoreboard.objectiveNotFound", objectiveName);
+            log.addError("commands.scoreboard.objectiveNotFound", objectiveName).output();
             return 0;
         }
         var scoreboard = manager.getScoreboards().get(objectiveName);
         if (wildcard)
             scorers.addAll(scoreboard.getLines().keySet());
         if (scorers.isEmpty()) {
-            log.outputError(TextFormat.RED + "%commands.scoreboard.players.list.empty");
+            log.addError("commands.scoreboard.players.list.empty").output();
             return 0;
         }
         int score = list.getResult(4);
@@ -420,10 +425,11 @@ public class ScoreboardCommand extends VanillaCommand {
                     }
                 }
                 if (count == 1) {
-                    log.outputSuccess("commands.scoreboard.players.add.success", String.valueOf(score), objectiveName, scorers.get(0).getName(), String.valueOf(scoreboard.getLines().get(scorers.get(0)).getScore()));
+                    log.addSuccess("commands.scoreboard.players.add.success", String.valueOf(score), objectiveName, scorers.get(0).getName(), String.valueOf(scoreboard.getLines().get(scorers.get(0)).getScore()));
                 } else {
-                    log.outputSuccess("commands.scoreboard.players.add.multiple.success", String.valueOf(score), objectiveName, String.valueOf(count));
+                    log.addSuccess("commands.scoreboard.players.add.multiple.success", String.valueOf(score), objectiveName, String.valueOf(count));
                 }
+                log.output();
                 return 1;
             }
             case "remove" -> {
@@ -434,10 +440,11 @@ public class ScoreboardCommand extends VanillaCommand {
                     scoreboard.getLines().get(scorer).removeScore(score);
                 }
                 if (count == 1) {
-                    log.outputSuccess("commands.scoreboard.players.remove.success", String.valueOf(score), objectiveName, scorers.get(0).getName(), String.valueOf(scoreboard.getLines().get(scorers.get(0)).getScore()));
+                    log.addSuccess("commands.scoreboard.players.remove.success", String.valueOf(score), objectiveName, scorers.get(0).getName(), String.valueOf(scoreboard.getLines().get(scorers.get(0)).getScore()));
                 } else {
-                    log.outputSuccess("commands.scoreboard.players.remove.multiple.success", String.valueOf(score), objectiveName, String.valueOf(count));
+                    log.addSuccess("commands.scoreboard.players.remove.multiple.success", String.valueOf(score), objectiveName, String.valueOf(count));
                 }
+                log.output();
                 return 1;
             }
             case "set" -> {
@@ -448,10 +455,11 @@ public class ScoreboardCommand extends VanillaCommand {
                     scoreboard.getLines().get(scorer).setScore(score);
                 }
                 if (count == 1) {
-                    log.outputSuccess("commands.scoreboard.players.set.success", objectiveName, scorers.get(0).getName(), String.valueOf(score));
+                    log.addSuccess("commands.scoreboard.players.set.success", objectiveName, scorers.get(0).getName(), String.valueOf(score));
                 } else {
-                    log.outputSuccess("commands.scoreboard.players.set.multiple.success", objectiveName, String.valueOf(count), String.valueOf(score));
+                    log.addSuccess("commands.scoreboard.players.set.multiple.success", objectiveName, String.valueOf(count), String.valueOf(score));
                 }
+                log.output();
                 return 1;
             }
         }
@@ -475,7 +483,7 @@ public class ScoreboardCommand extends VanillaCommand {
 
         String targetObjectiveName = list.getResult(3);
         if (!manager.containScoreboard(targetObjectiveName)) {
-            log.outputError(TextFormat.RED + "%commands.scoreboard.objectiveNotFound", targetObjectiveName);
+            log.addError("commands.scoreboard.objectiveNotFound", targetObjectiveName).output();
             return 0;
         }
         var targetScoreboard = manager.getScoreboards().get(targetObjectiveName);
@@ -497,7 +505,7 @@ public class ScoreboardCommand extends VanillaCommand {
         }
 
         if (selectorScorers.size() > 1) {
-            log.outputError(TextFormat.RED + "%commands.generic.tooManyTargets");
+            log.addError("commands.generic.tooManyTargets").output();
             return 0;
         }
         if (selectorScorers.size() == 0) {
@@ -506,17 +514,17 @@ public class ScoreboardCommand extends VanillaCommand {
         IScorer seletorScorer = selectorScorers.iterator().next();
         String selectorObjectiveName = list.getResult(6);
         if (!manager.containScoreboard(selectorObjectiveName)) {
-            log.outputError(TextFormat.RED + "%commands.scoreboard.objectiveNotFound", selectorObjectiveName);
+            log.addError("commands.scoreboard.objectiveNotFound", selectorObjectiveName).output();
             return 0;
         }
         var selectorScoreboard = manager.getScoreboards().get(targetObjectiveName);
         if (!selectorScoreboard.getLines().containsKey(seletorScorer)) {
-            log.outputError(TextFormat.RED + "%commands.scoreboard.players.operation.notFound", selectorObjectiveName, seletorScorer.getName());
+            log.addError("commands.scoreboard.players.operation.notFound", selectorObjectiveName, seletorScorer.getName()).output();
             return 0;
         }
         for (IScorer targetScorer : targetScorers) {
             if (!targetScoreboard.getLines().containsKey(targetScorer)) {
-                log.outputError(TextFormat.RED + "%commands.scoreboard.players.operation.notFound", targetObjectiveName, targetScorer.getName());
+                log.addError("commands.scoreboard.players.operation.notFound", targetObjectiveName, targetScorer.getName()).output();
                 return 0;
             }
             int targetScore = targetScoreboard.getLines().get(targetScorer).getScore();

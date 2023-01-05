@@ -13,7 +13,6 @@ import cn.nukkit.command.tree.ParamTree;
 import cn.nukkit.command.tree.node.BooleanNode;
 import cn.nukkit.command.tree.node.PlayersNode;
 import cn.nukkit.command.utils.CommandLogger;
-import cn.nukkit.utils.TextFormat;
 
 import java.util.List;
 import java.util.Map;
@@ -57,18 +56,18 @@ public class AbilityCommand extends VanillaCommand {
                     player.getAdventureSettings().set(type, value);
                     player.getAdventureSettings().update();
                     if (value)
-                        log.addMessage(TextFormat.WHITE + "%commands.ability.granted", ability_str);
+                        log.addSuccess("commands.ability.granted", ability_str);
                     else
-                        log.addMessage(TextFormat.WHITE + "%commands.ability.revoked", ability_str);
+                        log.addSuccess("commands.ability.revoked", ability_str);
                 }
-                log.addMessage(TextFormat.WHITE + "%commands.ability.success").successCount(1).output();
+                log.addSuccess("commands.ability.success").successCount(1).output();
                 return 1;
             } else {
                 if (!sender.isPlayer()) {
                     return 0;
                 }
                 boolean value = sender.asPlayer().getAdventureSettings().get(type);
-                log.outputSuccess(TextFormat.WHITE + ability_str + " = " + value);
+                log.addSuccess(ability_str + " = " + value).output();
                 return 1;
             }
         }

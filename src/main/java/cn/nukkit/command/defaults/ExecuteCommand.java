@@ -348,20 +348,19 @@ public class ExecuteCommand extends VanillaCommand {
                 Position begin = list.getResult(2);
                 Position end = list.getResult(3);
                 Position destination = list.getResult(4);
-                String chainCommand = list.getResult(6);
                 TestForBlocksCommand.TestForBlocksMode mode = TestForBlocksCommand.TestForBlocksMode.ALL;
-
                 if (list.hasResult(5)) {
                     String str5 = list.getResult(5);
                     mode = TestForBlocksCommand.TestForBlocksMode.valueOf(str5.toUpperCase(Locale.ENGLISH));
                 }
+                String chainCommand = list.getResult(6);
 
                 AxisAlignedBB blocksAABB = new SimpleAxisAlignedBB(Math.min(begin.getX(), end.getX()), Math.min(begin.getY(), end.getY()), Math.min(begin.getZ(), end.getZ()), Math.max(begin.getX(), end.getX()), Math.max(begin.getY(), end.getY()), Math.max(begin.getZ(), end.getZ()));
                 int size = NukkitMath.floorDouble((blocksAABB.getMaxX() - blocksAABB.getMinX() + 1) * (blocksAABB.getMaxY() - blocksAABB.getMinY() + 1) * (blocksAABB.getMaxZ() - blocksAABB.getMinZ() + 1));
 
                 if (size > 16 * 16 * 256 * 8) {
-                    log.addMessage("commands.fill.tooManyBlocks", String.valueOf(size), String.valueOf(16 * 16 * 256 * 8))
-                            .addMessage("Operation will continue, but too many blocks may cause stuttering")
+                    log.addError("commands.fill.tooManyBlocks", String.valueOf(size), String.valueOf(16 * 16 * 256 * 8))
+                            .addError("Operation will continue, but too many blocks may cause stuttering")
                             .successCount(2).output();
                 }
 
@@ -369,7 +368,7 @@ public class ExecuteCommand extends VanillaCommand {
                 AxisAlignedBB destinationAABB = new SimpleAxisAlignedBB(Math.min(destination.getX(), to.getX()), Math.min(destination.getY(), to.getY()), Math.min(destination.getZ(), to.getZ()), Math.max(destination.getX(), to.getX()), Math.max(destination.getY(), to.getY()), Math.max(destination.getZ(), to.getZ()));
 
                 if (blocksAABB.getMinY() < 0 || blocksAABB.getMaxY() > 255 || destinationAABB.getMinY() < 0 || destinationAABB.getMaxY() > 255) {
-                    log.outputError("commands.testforblock.outOfWorld");
+                    log.addError("commands.testforblock.outOfWorld").output();
                     if (!shouldMatch) {
                         return sender.getServer().executeCommand(sender, chainCommand);
                     }
@@ -381,14 +380,14 @@ public class ExecuteCommand extends VanillaCommand {
                 for (int sourceChunkX = NukkitMath.floorDouble(blocksAABB.getMinX()) >> 4, destinationChunkX = NukkitMath.floorDouble(destinationAABB.getMinX()) >> 4; sourceChunkX <= NukkitMath.floorDouble(blocksAABB.getMaxX()) >> 4; sourceChunkX++, destinationChunkX++) {
                     for (int sourceChunkZ = NukkitMath.floorDouble(blocksAABB.getMinZ()) >> 4, destinationChunkZ = NukkitMath.floorDouble(destinationAABB.getMinZ()) >> 4; sourceChunkZ <= NukkitMath.floorDouble(blocksAABB.getMaxZ()) >> 4; sourceChunkZ++, destinationChunkZ++) {
                         if (level.getChunkIfLoaded(sourceChunkX, sourceChunkZ) == null) {
-                            log.outputError("commands.testforblock.outOfWorld");
+                            log.addError("commands.testforblock.outOfWorld").output();
                             if (!shouldMatch) {
                                 return sender.getServer().executeCommand(sender, chainCommand);
                             }
                             return 0;
                         }
                         if (level.getChunkIfLoaded(destinationChunkX, destinationChunkZ) == null) {
-                            log.outputError("commands.testforblock.outOfWorld");
+                            log.addError("commands.testforblock.outOfWorld").output();
                             if (!shouldMatch) {
                                 return sender.getServer().executeCommand(sender, chainCommand);
                             }
@@ -412,7 +411,7 @@ public class ExecuteCommand extends VanillaCommand {
                             if (block.equalsBlock(destinationBlock)) {
                                 ++count;
                             } else {
-                                log.outputError("commands.compare.failed");
+                                log.addError("commands.compare.failed").output();
                                 matched = false;
                                 break;
                             }
@@ -427,7 +426,7 @@ public class ExecuteCommand extends VanillaCommand {
                             if (block.equalsBlock(destinationBlock)) {
                                 ++count;
                             } else if (block.getId() != Block.AIR) {
-                                log.outputError("commands.compare.failed");
+                                log.addError("commands.compare.failed").output();
                                 matched = false;
                                 break;
                             }
@@ -436,7 +435,7 @@ public class ExecuteCommand extends VanillaCommand {
                         break;
                 }
 
-                log.outputSuccess("commands.compare.success", String.valueOf(count));
+                log.addSuccess("commands.compare.success", String.valueOf(count)).output();
 
                 if ((matched && shouldMatch) || (!matched && !shouldMatch)) {
                     return sender.getServer().executeCommand(sender, chainCommand);
@@ -470,7 +469,7 @@ public class ExecuteCommand extends VanillaCommand {
 
                 String targetObjectiveName = list.getResult(3);
                 if (!manager.containScoreboard(targetObjectiveName)) {
-                    log.outputError("commands.scoreboard.objectiveNotFound", targetObjectiveName);
+                    log.addError("commands.scoreboard.objectiveNotFound", targetObjectiveName).output();
                     return 0;
                 }
                 var targetScoreboard = manager.getScoreboards().get(targetObjectiveName);
@@ -486,13 +485,13 @@ public class ExecuteCommand extends VanillaCommand {
 
                 String sourceObjectiveName = list.getResult(6);
                 if (!manager.containScoreboard(sourceObjectiveName)) {
-                    log.outputError("commands.scoreboard.objectiveNotFound", sourceObjectiveName);
+                    log.addError("commands.scoreboard.objectiveNotFound", sourceObjectiveName).output();
                     return 0;
                 }
                 var sourceScoreboard = manager.getScoreboards().get(targetObjectiveName);
 
                 if (!sourceScoreboard.getLines().containsKey(sourceScorer)) {
-                    log.outputError("commands.scoreboard.players.operation.notFound", sourceObjectiveName, sourceScorer.getName());
+                    log.addError("commands.scoreboard.players.operation.notFound", sourceObjectiveName, sourceScorer.getName()).output();
                     return 0;
                 }
 
@@ -530,7 +529,7 @@ public class ExecuteCommand extends VanillaCommand {
 
                 String targetObjectiveName = list.getResult(3);
                 if (!manager.containScoreboard(targetObjectiveName)) {
-                    log.outputError("commands.scoreboard.objectiveNotFound", targetObjectiveName);
+                    log.addError("commands.scoreboard.objectiveNotFound", targetObjectiveName).output();
                     return 0;
                 }
                 var targetScoreboard = manager.getScoreboards().get(targetObjectiveName);

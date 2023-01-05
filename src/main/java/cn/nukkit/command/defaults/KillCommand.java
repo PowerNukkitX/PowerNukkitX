@@ -38,7 +38,7 @@ public class KillCommand extends VanillaCommand {
         if (result.getKey().equals("default")) {
             if (result.getValue().hasResult(0)) {
                 if (!sender.hasPermission("nukkit.command.kill.other")) {
-                    log.outputError(TextFormat.RED + "%nukkit.command.generic.permission");
+                    log.addError("nukkit.command.generic.permission").output();
                     return 0;
                 }
                 List<Entity> entities = result.getValue().getResult(0);
@@ -70,22 +70,22 @@ public class KillCommand extends VanillaCommand {
                     }
                 }
                 String message = entities.stream().map(Entity::getName).collect(Collectors.joining(", "));
-                log.addMessage(TextFormat.WHITE + "%commands.kill.successful", message).successCount(entities.size()).output(true);
+                log.addSuccess("commands.kill.successful", message).successCount(entities.size()).output(true);
                 return entities.size();
             } else {
                 if (sender.isPlayer()) {
                     if (!sender.hasPermission("nukkit.command.kill.self")) {
-                        log.outputError("nukkit.command.generic.permission");
+                        log.addError("nukkit.command.generic.permission").output();
                         return 0;
                     }
                     if (sender.asPlayer().isCreative()) {
-                        log.outputError(TextFormat.WHITE + "%commands.kill.attemptKillPlayerCreative");
+                        log.addError("commands.kill.attemptKillPlayerCreative").output();
                         return 0;
                     }
                     EntityDamageEvent ev = new EntityDamageEvent(sender.asPlayer(), DamageCause.SUICIDE, 1000000);
                     sender.asPlayer().attack(ev);
                 } else {
-                    log.outputError("commands.generic.usage", "\n" + this.getCommandFormatTips());
+                    log.addError("commands.generic.usage", "\n" + this.getCommandFormatTips()).output();
                     return 0;
                 }
                 return 1;

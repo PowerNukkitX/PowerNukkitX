@@ -10,11 +10,13 @@ import java.util.List;
 @PowerNukkitXOnly
 @Since("1.19.50-r4")
 public class CommandOutputContainer implements Cloneable {
+    public static final String[] EMPTY_STRING = new String[]{};
     private final List<CommandOutputMessage> messages;
     private int successCount;
 
     public CommandOutputContainer() {
         this.messages = new ArrayList<>();
+        this.successCount = 0;
     }
 
     public CommandOutputContainer(String messageId, String[] parameters, int successCount) {

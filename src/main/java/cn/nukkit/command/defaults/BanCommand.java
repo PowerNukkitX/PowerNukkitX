@@ -10,7 +10,6 @@ import cn.nukkit.command.tree.node.CommandNode;
 import cn.nukkit.command.tree.node.StringNode;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.event.player.PlayerKickEvent;
-import cn.nukkit.utils.TextFormat;
 
 import java.util.Map;
 
@@ -43,7 +42,7 @@ public class BanCommand extends VanillaCommand {
             if (player != null) {
                 player.kick(PlayerKickEvent.Reason.NAME_BANNED, (reason.length() > 0) ? "Banned by admin. Reason: " + reason : "Banned by admin");
             }
-            log.outputSuccess(true, true, TextFormat.WHITE + "%commands.ban.success", player != null ? player.getName() : name);
+            log.addSuccess("commands.ban.success", player != null ? player.getName() : name).output(true, true);
             return 1;
         }
         return 0;

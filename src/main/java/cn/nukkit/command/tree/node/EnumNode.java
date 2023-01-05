@@ -26,17 +26,8 @@ public class EnumNode extends ParamNode<String> {
             this.value = arg;
             return;
         }
-//        if (commandEnum.getName().equals("Block")) {
-//            if (BlockStateRegistry.getBlockId(arg) != null || BlockStateRegistry.getBlockId("minecraft:" + arg) != null)
-//                throw new CommandSyntaxException();
-//        }
-//        if (commandEnum.getName().equals("Item")) {
-//            if (RuntimeItems.getRuntimeMapping().getNetworkIdByNamespaceId(arg).isPresent() || RuntimeItems.getRuntimeMapping().getNetworkIdByNamespaceId("minecraft:" + arg).isPresent()) {
-//                throw new CommandSyntaxException();
-//            }
-//        }
-        if (!enums.contains(arg)) this.error();
-        this.value = arg;
+        if (enums.contains(arg)) this.value = arg;
+        else this.error();
     }
 
     @Override

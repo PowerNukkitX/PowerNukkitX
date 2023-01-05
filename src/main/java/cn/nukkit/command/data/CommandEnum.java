@@ -1,10 +1,13 @@
 package cn.nukkit.command.data;
 
+import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.network.protocol.UpdateSoftEnumPacket;
 import com.google.common.collect.ImmutableList;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
@@ -13,7 +16,6 @@ import java.util.function.Supplier;
  * @author CreeperFace
  */
 public class CommandEnum {
-
     @Since("1.4.0.0-PN")
     public static final CommandEnum ENUM_BOOLEAN = new CommandEnum("Boolean", ImmutableList.of("true", "false"));
 
@@ -58,7 +60,7 @@ public class CommandEnum {
 
     @PowerNukkitXOnly
     @Since("1.19.50-r4")
-    private final Supplier<List<String>> strListSupplier;
+    private final Supplier<Collection<String>> strListSupplier;
 
     @Since("1.4.0.0-PN")
     public CommandEnum(String name, String... values) {
@@ -96,7 +98,7 @@ public class CommandEnum {
      */
     @PowerNukkitXOnly
     @Since("1.19.50-r4")
-    public CommandEnum(String name, Supplier<List<String>> strListSupplier, boolean isSoft) {
+    public CommandEnum(String name, Supplier<Collection<String>> strListSupplier, boolean isSoft) {
         this.name = name;
         this.values = null;
         this.isSoft = isSoft;
@@ -109,7 +111,7 @@ public class CommandEnum {
 
     public List<String> getValues() {
         if (this.strListSupplier == null) return values;
-        else return strListSupplier.get();
+        else return strListSupplier.get().stream().toList();
     }
 
     public boolean isSoft() {
@@ -119,5 +121,25 @@ public class CommandEnum {
     @Override
     public int hashCode() {
         return name.hashCode();
+    }
+
+    public boolean updateSoftEnum(UpdateSoftEnumPacket.Type mode, String... value) {
+        if (!this.isSoft) return false;
+        UpdateSoftEnumPacket pk = new UpdateSoftEnumPacket();
+        pk.name = this.getName();
+        pk.values = Arrays.stream(value).toList();
+        pk.type = mode;
+        Server.broadcastPacket(Server.getInstance().getOnlinePlayers().values(), pk);
+        return true;
+    }
+
+    public boolean updateSoftEnum() {
+        if (!this.isSoft && this.strListSupplier == null) return false;
+        UpdateSoftEnumPacket pk = new UpdateSoftEnumPacket();
+        pk.name = this.getName();
+        pk.values = this.getValues();
+        pk.type = UpdateSoftEnumPacket.Type.SET;
+        Server.broadcastPacket(Server.getInstance().getOnlinePlayers().values(), pk);
+        return true;
     }
 }

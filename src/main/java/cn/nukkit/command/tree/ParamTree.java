@@ -25,9 +25,9 @@ public class ParamTree {
     private CommandLogger log;
 
     /**
-     * 从给定的命令中初始化命令节点树，其中每个参数类型{@link cn.nukkit.command.data.CommandParamType CommandParamType}会对应一个默认的参数节点,或者使用
+     * 从给定的命令中初始化命令节点树，其中每个参数类型{@link cn.nukkit.command.data.CommandParamType CommandParamType}会对应一个默认的参数节点,或者使用<br>
      * {@link CommandParameter#newType(String, CommandParamType, IParamNode)}<br>
-     * {@link CommandParameter#newEnum(String, boolean, CommandEnum, EnumNode)}<br>
+     * {@link CommandParameter#newEnum(String, boolean, CommandEnum, IParamNode)}<br>
      * 初始化指定的命令节点。
      * 该方法应该在命令构造函数中commandParameters初始化完毕后调用，形如<br>
      * <pre>
@@ -44,6 +44,7 @@ public class ParamTree {
      *
      * @param command the command
      */
+    //todo 优化建树和遍历
     @SuppressWarnings("RedundantLabeledSwitchRuleCodeBlock")
     public ParamTree(Command command) {
         this.command = command;
@@ -127,15 +128,13 @@ public class ParamTree {
         this.args = args;
         this.sender = sender;
         this.log = new CommandLogger(this.command, sender, args);
-        //reset
-        for (var list : this.root.values()) {
-            list.reset();
-        }
+
         Map.Entry<String, ParamList> result = null;
         var error = new ArrayList<ParamList>();
-        var lists = this.root.entrySet();
-        for (var entry : lists) {
+
+        for (var entry : this.root.entrySet()) {
             var list = entry.getValue();
+            list.reset();
             f2:
             for (var node : list) {
                 while (!node.hasResult()) {
@@ -152,12 +151,13 @@ public class ParamTree {
                 }
             }
             if (list.getError() == Integer.MIN_VALUE) {
-                result = Map.entry(entry.getKey(), list.clone());
+                result = Map.entry(entry.getKey(), list);
                 break;
             } else {
                 error.add(list);
             }
         }
+
         if (result == null) {//全部不成功
             var errorIndex = error.stream().map(ParamList::getError).max(Integer::compare).orElse(-1);
             log.outputSyntaxErrors(errorIndex);
