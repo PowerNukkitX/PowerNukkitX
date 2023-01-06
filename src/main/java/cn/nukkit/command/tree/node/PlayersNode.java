@@ -19,16 +19,18 @@ public class PlayersNode extends TargetNode<Player> {
     //todo 支持uuid 或者 xuid
     @Override
     public void fill(String arg) {
-        if (EntitySelector.hasArguments(arg)) {
+        if (arg.isBlank()) {
+            this.error();
+        } else if (EntitySelector.hasArguments(arg)) {
             var entities = EntitySelector.matchEntities(this.parent.parent.getSender(), arg);
             if (entities != null)
                 this.value = entities.stream().filter(entity -> entity instanceof Player).map(entity -> (Player) entity).collect(Collectors.toList());
-            else error();
+            else error("commands.generic.noTargetMatch");
         } else {
             Player player = Server.getInstance().getPlayer(arg);
             if (player != null) {
                 this.value = Collections.singletonList(player);
-            } else error();
+            } else error("commands.generic.noTargetMatch");
         }
     }
 }

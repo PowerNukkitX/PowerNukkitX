@@ -4,6 +4,7 @@ import cn.nukkit.Server;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.defaults.*;
 import cn.nukkit.command.simple.*;
+import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.utils.TextFormat;
 import cn.nukkit.utils.Utils;
@@ -311,16 +312,17 @@ public class SimpleCommandMap implements CommandMap {
                 if (result == null) output = 0;
                 else if (target.testPermissionSilent(sender)) {
                     try {
-                        output = target.execute(sender, sentCommandLabel, result, target.paramTree.getLog());
+                        output = target.execute(sender, sentCommandLabel, result, new CommandLogger(target, sender, args, result.getValue().getMessageContainer()));
                     } catch (UnsupportedOperationException e) {
                         log.fatal("If you use paramtree, you must override execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) method to run the command!");
                         output = 0;
                     }
                 } else {
+                    var log = new CommandLogger(target, sender, args, result.getValue().getMessageContainer());
                     if (!target.getPermissionMessage().equals("")) {
-                        target.paramTree.getLog().addError(target.getPermissionMessage().replace("<permission>", target.getPermission())).output();
+                        log.addError(target.getPermissionMessage().replace("<permission>", target.getPermission())).output();
                     } else {
-                        target.paramTree.getLog().addMessage("nukkit.command.generic.permission").output();
+                        log.addMessage("nukkit.command.generic.permission").output();
                     }
                     output = 0;
                 }

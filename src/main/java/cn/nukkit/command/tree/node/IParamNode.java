@@ -5,6 +5,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.tree.ParamList;
+import cn.nukkit.lang.CommandOutputContainer;
 
 /**
  * 代表一个抽象的命令节点，类型T对应节点解析结果类型<br>
@@ -16,7 +17,7 @@ public interface IParamNode<T> {
     /**
      * 负责填充该参数节点,覆写该方法需要实现对接受参数arg的验证以及解析成为对应类型T的结果
      * <br>
-     * 当验证失败或者解析失败,请调用{@link #error()}方法标记错误.形如{@code this.error()}
+     * 当验证失败或者解析失败,请调用{@link #error(String)}方法标记错误.形如{@code this.error()}
      *
      * @param arg the arg
      */
@@ -50,13 +51,22 @@ public interface IParamNode<T> {
      */
     ParamList getParent();
 
+
+    default void error() {
+        this.getParent().error();
+    }
+
+    default void error(String key) {
+        this.error(key, CommandOutputContainer.EMPTY_STRING);
+    }
+
     /**
      * 标记该节点的{@link #fill(String)}出现错误
      */
-    default void error() {
+    default void error(String key, String... params) {
         var list = this.getParent();
         list.error();
-        list.setErrorMessage(list.getParent().getLog().getSyntaxErrorMessage(list.getError()));
+        list.addErrorMessage(key, params);
     }
 
     /**

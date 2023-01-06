@@ -20,7 +20,9 @@ public class EntitiesNode extends TargetNode<Entity> {
     //todo 支持uuid 或者 xuid
     @Override
     public void fill(String arg) {
-        if (EntitySelector.hasArguments(arg)) {
+        if (arg.isBlank()) {
+            this.error();
+        } else if (EntitySelector.hasArguments(arg)) {
             var entities = EntitySelector.matchEntities(this.parent.parent.getSender(), arg);
             if (entities != null) this.value = entities;
             else error();

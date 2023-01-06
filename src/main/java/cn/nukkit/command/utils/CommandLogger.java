@@ -16,7 +16,6 @@ import cn.nukkit.level.GameRule;
 import cn.nukkit.network.protocol.types.CommandOutputMessage;
 import cn.nukkit.permission.Permissible;
 import cn.nukkit.utils.TextFormat;
-import lombok.extern.log4j.Log4j2;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,9 +24,10 @@ import java.util.StringJoiner;
 
 @PowerNukkitXOnly
 @Since("1.19.50-r4")
-@Log4j2
 public record CommandLogger(Command command, CommandSender sender, String[] args,
                             CommandOutputContainer outputContainer) {
+    private static final byte SYNTAX_ERROR_LENGTH_LIMIT = 23;
+
     public CommandLogger(Command command, CommandSender sender, String[] args) {
         this(command, sender, args, new CommandOutputContainer());
     }
@@ -214,23 +214,17 @@ public record CommandLogger(Command command, CommandSender sender, String[] args
         }
     }
 
-    public String getSyntaxErrorMessage(int errorIndex) {
-        if (sender instanceof ConsoleCommandSender) {
-            return Server.getInstance().getLanguage().tr("commands.generic.usage", "\n" + command.getCommandFormatTips());
-        } else {
-            return Server.getInstance().getLanguage().tr("commands.generic.syntax", this.syntaxErrorsValue(errorIndex));
-        }
-    }
-
     private String[] syntaxErrorsValue(int errorIndex) {
-        var join1 = new StringJoiner(" ", "/", " ");
+        var join1 = new StringJoiner(" ", "", " ");
         join1.add(command.getName());
 
         if (errorIndex == -1) {
-            return new String[]{join1.toString(), " ", " "};
+            var result = join1.toString();
+            return new String[]{result.substring(Math.max(0, result.length() - SYNTAX_ERROR_LENGTH_LIMIT)), " ", " "};
         } else if (errorIndex == args.length) {
             Arrays.stream(args).forEach(join1::add);
-            return new String[]{join1.toString(), "", ""};
+            var result = join1.toString();
+            return new String[]{result.substring(Math.max(0, result.length() - SYNTAX_ERROR_LENGTH_LIMIT)), "", ""};
         }
 
         for (int i = 0; i < errorIndex; ++i) {
@@ -240,7 +234,14 @@ public record CommandLogger(Command command, CommandSender sender, String[] args
         for (int i = errorIndex + 1, len = args.length; i < len; ++i) {
             join2.add(args[i]);
         }
-        return new String[]{join1.toString(), args[errorIndex], join2.toString()};
+
+        var end = args[errorIndex] + join2;
+        if (end.length() >= SYNTAX_ERROR_LENGTH_LIMIT) {
+            return new String[]{"", args[errorIndex], join2.toString()};
+        } else {
+            var result = join1.toString();
+            return new String[]{result.substring(Math.max(0, join1.length() + end.length() - SYNTAX_ERROR_LENGTH_LIMIT)), args[errorIndex], join2.toString()};
+        }
     }
 
     private void broadcastAdminChannel(String key, String[] value) {

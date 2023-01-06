@@ -1106,7 +1106,8 @@ public class Server {
             throw new ServerException("CommandSender is not valid");
         }
 
-        if (this.commandMap.getCommand((commandLine.startsWith("/") ? commandLine.substring(1) : commandLine).split(" ")[0]) == null) {
+        var commandName = (commandLine.startsWith("/") ? commandLine.substring(1) : commandLine);
+        if (this.commandMap.getCommand(commandName.substring(0, commandName.indexOf(" "))) == null) {
             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%nukkit.command.generic.unknown", commandLine));
         }
         return this.commandMap.executeCommand(sender, commandLine);

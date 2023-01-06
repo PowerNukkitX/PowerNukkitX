@@ -4,24 +4,26 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.tree.node.IParamNode;
 import cn.nukkit.lang.CommandOutputContainer;
+import cn.nukkit.network.protocol.types.CommandOutputMessage;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 @PowerNukkitXOnly
 @Since("1.19.50-r4")
 public class ParamList extends ArrayList<IParamNode<?>> {
     private int error = Integer.MIN_VALUE;
     private int index = 0;
-    private Map.Entry<String, String[]> errorMessage;
+    private final CommandOutputContainer messageContainer;
     public final ParamTree parent;
 
     public ParamList(ParamTree parent) {
         this.parent = parent;
+        this.messageContainer = new CommandOutputContainer();
     }
 
     public void reset() {
         this.error = Integer.MIN_VALUE;
+        this.messageContainer.getMessages().clear();
         this.index = 0;
         for (var node : this) {
             node.reset();
@@ -61,16 +63,16 @@ public class ParamList extends ArrayList<IParamNode<?>> {
         return this.get(index).get();
     }
 
-    public Map.Entry<String, String[]> getErrorMessage() {
-        return errorMessage;
+    public CommandOutputContainer getMessageContainer() {
+        return messageContainer;
     }
 
-    public void setErrorMessage(String key) {
-        this.errorMessage = Map.entry(key, CommandOutputContainer.EMPTY_STRING);
+    public void addErrorMessage(String key) {
+        this.messageContainer.getMessages().add(new CommandOutputMessage(key, CommandOutputContainer.EMPTY_STRING));
     }
 
-    public void setErrorMessage(String key, String... params) {
-        this.errorMessage = Map.entry(key, params);
+    public void addErrorMessage(String key, String... params) {
+        this.messageContainer.getMessages().add(new CommandOutputMessage(key, params));
     }
 
     public ParamTree getParent() {

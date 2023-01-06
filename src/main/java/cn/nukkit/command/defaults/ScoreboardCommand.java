@@ -135,11 +135,11 @@ public class ScoreboardCommand extends VanillaCommand {
                 return 1;
             }
             case "objectives-list" -> {
-                log.addSuccess(TextFormat.GREEN + "%commands.scoreboard.objectives.list.count", String.valueOf(manager.getScoreboards().size()));
+                /*log.addSuccess(TextFormat.GREEN + "%commands.scoreboard.objectives.list.count", String.valueOf(manager.getScoreboards().size()));
                 for (var scoreboard : manager.getScoreboards().values()) {
                     log.addSuccess("commands.scoreboard.objectives.list.entry", scoreboard.getObjectiveName(), scoreboard.getDisplayName(), scoreboard.getCriteriaName());
                 }
-                log.output(true);
+                log.output(true);*/
                 return 1;
             }
             case "objectives-remove" -> {

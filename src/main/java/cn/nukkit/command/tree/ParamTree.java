@@ -23,7 +23,6 @@ public class ParamTree {
     private final Map<String, ParamList> root;
     private CommandSender sender;
     private String[] args;
-    private CommandLogger log;
 
     /**
      * 从给定的命令中初始化命令节点树，其中每个参数类型{@link cn.nukkit.command.data.CommandParamType CommandParamType}会对应一个默认的参数节点,或者使用<br>
@@ -129,8 +128,6 @@ public class ParamTree {
     public Map.Entry<String, ParamList> matchAndParse(CommandSender sender, String[] args) {//成功条件 命令链与参数长度相等 命令链必选参数全部有结果
         this.args = args;
         this.sender = sender;
-        this.log = new CommandLogger(this.command, sender, args);
-
         Map.Entry<String, ParamList> result = null;
         var error = new ArrayList<ParamList>();
 
@@ -166,7 +163,11 @@ public class ParamTree {
                 defaultList.error();
                 return defaultList;
             });
-            log.addMessage(list.getErrorMessage().getKey(), list.getErrorMessage().getKey()).output();
+            CommandLogger log = new CommandLogger(this.command, sender, args, list.getMessageContainer());
+            if (log.outputContainer().getMessages().isEmpty()) {
+                log.addSyntaxErrors(list.getError());
+            }
+            log.output();
             return null;
         } else {
             return result;
@@ -183,10 +184,6 @@ public class ParamTree {
 
     public Command getCommand() {
         return command;
-    }
-
-    public CommandLogger getLog() {
-        return log;
     }
 
     public Map<String, ParamList> getRoot() {
