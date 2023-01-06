@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-public abstract class Command {
+public abstract class Command implements GenericParameter {
 
     protected CommandData commandData;
 
@@ -168,6 +168,8 @@ public abstract class Command {
      * @param log          命令输出工具
      * @return 返回0代表执行失败, 返回大于等于1代表执行成功
      */
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         throw new UnsupportedOperationException();
     }

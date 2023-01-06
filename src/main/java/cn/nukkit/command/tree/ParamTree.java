@@ -1,5 +1,6 @@
 package cn.nukkit.command.tree;
 
+import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.Command;
@@ -9,6 +10,8 @@ import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.node.*;
 import cn.nukkit.command.utils.CommandLogger;
+import cn.nukkit.lang.CommandOutputContainer;
+import cn.nukkit.network.protocol.types.CommandOutputMessage;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -63,8 +66,11 @@ public class ParamTree {
                         case WILDCARD_INT -> {
                             node = new WildcardIntNode();
                         }
-                        case FLOAT, VALUE -> {
+                        case FLOAT -> {
                             node = new FloatNode();
+                        }
+                        case VALUE -> {
+                            node = new DoubleNode();
                         }
                         case POSITION -> {//(?<=\s|^)([~^]?-?\d+\.?\d*(?=\s|$))
                             node = new FloatPositionNode();
@@ -125,7 +131,7 @@ public class ParamTree {
      * @param args   命令的参数
      */
     @Nullable
-    public Map.Entry<String, ParamList> matchAndParse(CommandSender sender, String[] args) {//成功条件 命令链与参数长度相等 命令链必选参数全部有结果
+    public Map.Entry<String, ParamList> matchAndParse(CommandSender sender, String commandLabel, String[] args) {
         this.args = args;
         this.sender = sender;
         Map.Entry<String, ParamList> result = null;
@@ -137,7 +143,7 @@ public class ParamTree {
             f2:
             for (var node : list) {
                 while (!node.hasResult()) {
-                    if (list.getIndex() >= args.length) {
+                    if (list.getIndex() >= args.length) {//参数用完
                         if (node.isOptional()) break f2;
                         list.getIndexAndIncrement();
                         node.error();
@@ -150,8 +156,14 @@ public class ParamTree {
                 }
             }
             if (list.getError() == Integer.MIN_VALUE) {
-                result = Map.entry(entry.getKey(), list);
-                break;
+                if (entry.getValue().getIndex() < args.length) {//没用完参数
+                    entry.getValue().getIndexAndIncrement();
+                    entry.getValue().error();
+                    error.add(entry.getValue());
+                } else {
+                    result = Map.entry(entry.getKey(), list);//成功条件 命令链与参数长度相等 命令链必选参数全部有结果
+                    break;
+                }
             } else {
                 error.add(list);
             }
@@ -163,8 +175,14 @@ public class ParamTree {
                 defaultList.error();
                 return defaultList;
             });
-            CommandLogger log = new CommandLogger(this.command, sender, args, list.getMessageContainer());
-            if (log.outputContainer().getMessages().isEmpty()) {
+
+            var container = new CommandOutputContainer();
+            CommandLogger log = new CommandLogger(this.command, sender, commandLabel, args, container);
+            if (!list.getMessageContainer().getMessages().isEmpty()) {
+                for (var message : list.getMessageContainer().getMessages()) {
+                    container.getMessages().add(new CommandOutputMessage(Server.getInstance().getLanguage().translateString(message.getMessageId(), message.getParameters()), CommandOutputContainer.EMPTY_STRING));
+                }
+            } else {
                 log.addSyntaxErrors(list.getError());
             }
             log.output();

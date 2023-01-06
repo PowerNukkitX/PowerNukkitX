@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
-import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
@@ -14,7 +13,6 @@ import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.inventory.PlayerInventory;
 import cn.nukkit.inventory.PlayerOffhandInventory;
 import cn.nukkit.item.Item;
-import com.google.common.collect.Lists;
 
 import java.util.List;
 import java.util.Map;
@@ -29,7 +27,7 @@ public class ClearCommand extends VanillaCommand {
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
                 CommandParameter.newType("player", true, CommandParamType.TARGET, new PlayersNode()),
-                CommandParameter.newEnum("itemName", true, CommandEnum.ENUM_ITEM),
+                ITEM_NAME.get(true),
                 CommandParameter.newType("data", true, CommandParamType.INT),
                 CommandParameter.newType("maxCount", true, CommandParamType.INT)
         });
@@ -40,7 +38,7 @@ public class ClearCommand extends VanillaCommand {
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         if (result.getKey().equals("default")) {
             var list = result.getValue();
-            List<Player> targets;
+            List<Player> targets = sender.isPlayer() ? List.of(sender.asPlayer()) : null;
             int maxCount = -1;
             Item item = null;
 
@@ -60,9 +58,9 @@ public class ClearCommand extends VanillaCommand {
 
                     item = Item.fromString(itemName);
                 }
-            } else if (sender.isPlayer()) {
-                targets = Lists.newArrayList(sender.asPlayer());
-            } else {
+            }
+
+            if (targets == null) {
                 log.addNoTargetMatch().output();
                 return 0;
             }

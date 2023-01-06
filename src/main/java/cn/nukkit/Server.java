@@ -1106,11 +1106,13 @@ public class Server {
             throw new ServerException("CommandSender is not valid");
         }
 
-        var commandName = (commandLine.startsWith("/") ? commandLine.substring(1) : commandLine);
-        if (this.commandMap.getCommand(commandName.substring(0, commandName.indexOf(" "))) == null) {
-            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%nukkit.command.generic.unknown", commandLine));
+        var command = (commandLine.startsWith("/") ? commandLine.substring(1) : commandLine);
+        int spaceIndex = command.indexOf(" ");
+        if (this.commandMap.getCommand(command.substring(0, spaceIndex == -1 ? command.length() : spaceIndex)) == null) {
+            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.unknown", commandLine));
+            return 0;
         }
-        return this.commandMap.executeCommand(sender, commandLine);
+        return this.commandMap.executeCommand(sender, command);
     }
 
     //todo: use ticker to check console

@@ -3,14 +3,12 @@ package cn.nukkit.command.defaults;
 import cn.nukkit.Player;
 import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.command.CommandSender;
-import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.ParamTree;
 import cn.nukkit.command.tree.node.PlayersNode;
 import cn.nukkit.command.tree.node.RemainStringNode;
-import cn.nukkit.command.tree.node.StringNode;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
@@ -32,7 +30,7 @@ public class GiveCommand extends VanillaCommand {
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
                 CommandParameter.newType("player", CommandParamType.TARGET, new PlayersNode()),
-                CommandParameter.newEnum("itemName", false, CommandEnum.ENUM_ITEM, new StringNode()),
+                ITEM_NAME.get(false),
                 CommandParameter.newType("amount", true, CommandParamType.INT),
                 CommandParameter.newType("data", true, CommandParamType.INT),
                 CommandParameter.newType("components", true, CommandParamType.JSON, new RemainStringNode())
@@ -44,8 +42,6 @@ public class GiveCommand extends VanillaCommand {
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         if (result.getKey().equals("default")) {
             var list = result.getValue();
-
-            List<Player> players = list.getResult(0);
 
             Item item;
             String itemName = list.getResult(1);
@@ -82,6 +78,7 @@ public class GiveCommand extends VanillaCommand {
                 item.readItemJsonComponents(components);
             }
 
+            List<Player> players = list.getResult(0);
             for (Player player : players) {
                 Item[] returns = player.getInventory().addItem(item.clone());
                 List<Item> drops = new ArrayList<>();

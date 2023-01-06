@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class CommandParameter {
+public class CommandParameter implements Cloneable {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -372,6 +372,23 @@ public class CommandParameter {
     @Override
     public int hashCode() {
         return Objects.hash(name);
+    }
+
+    @Override
+    public CommandParameter clone() throws CloneNotSupportedException {
+        try {
+            CommandParameter commandParameter = (CommandParameter) super.clone();
+            commandParameter.type = this.type;
+            commandParameter.name = this.name;
+            commandParameter.enumData = this.enumData;
+            commandParameter.optional = this.optional;
+            commandParameter.paramOptions = this.paramOptions;
+            commandParameter.postFix = this.postFix;
+            commandParameter.paramNode = this.paramNode;
+            return commandParameter;
+        } catch (CloneNotSupportedException e) {
+            return null;
+        }
     }
 
     @Deprecated

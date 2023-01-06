@@ -67,12 +67,18 @@ public class ParamList extends ArrayList<IParamNode<?>> {
         return messageContainer;
     }
 
-    public void addErrorMessage(String key) {
+    public void addMessage(String key) {
         this.messageContainer.getMessages().add(new CommandOutputMessage(key, CommandOutputContainer.EMPTY_STRING));
     }
 
-    public void addErrorMessage(String key, String... params) {
+    public void addMessage(String key, String... params) {
         this.messageContainer.getMessages().add(new CommandOutputMessage(key, params));
+    }
+
+    public void addMessage(CommandOutputMessage... messages) {
+        for (var message : messages) {
+            this.messageContainer.getMessages().add(message);
+        }
     }
 
     public ParamTree getParent() {

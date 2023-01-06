@@ -24,12 +24,13 @@ import java.util.StringJoiner;
 
 @PowerNukkitXOnly
 @Since("1.19.50-r4")
-public record CommandLogger(Command command, CommandSender sender, String[] args,
+public record CommandLogger(Command command,
+                            CommandSender sender, String commandLabel, String[] args,
                             CommandOutputContainer outputContainer) {
     private static final byte SYNTAX_ERROR_LENGTH_LIMIT = 23;
 
-    public CommandLogger(Command command, CommandSender sender, String[] args) {
-        this(command, sender, args, new CommandOutputContainer());
+    public CommandLogger(Command command, CommandSender sender, String commandLabel, String[] args) {
+        this(command, sender, commandLabel, args, new CommandOutputContainer());
     }
 
     public CommandLogger addSuccess(String message) {
@@ -216,7 +217,7 @@ public record CommandLogger(Command command, CommandSender sender, String[] args
 
     private String[] syntaxErrorsValue(int errorIndex) {
         var join1 = new StringJoiner(" ", "", " ");
-        join1.add(command.getName());
+        join1.add(commandLabel);
 
         if (errorIndex == -1) {
             var result = join1.toString();

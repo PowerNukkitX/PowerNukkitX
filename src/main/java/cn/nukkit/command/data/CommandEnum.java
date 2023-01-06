@@ -16,6 +16,12 @@ import java.util.function.Supplier;
  * @author CreeperFace
  */
 public class CommandEnum {
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    public static final CommandEnum SCOREBOARD_OBJECTIVES = new CommandEnum("ScoreboardObjectives", () -> Server.getInstance().getScoreboardManager().getScoreboards().keySet(), true);
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    public static final CommandEnum CHAINED_COMMAND_ENUM = new CommandEnum("ExecuteChainedOption_0", "run", "as", "at", "positioned", "if", "unless", "in", "align", "anchored", "rotated", "facing");
     @Since("1.4.0.0-PN")
     public static final CommandEnum ENUM_BOOLEAN = new CommandEnum("Boolean", ImmutableList.of("true", "false"));
 
@@ -123,6 +129,8 @@ public class CommandEnum {
         return name.hashCode();
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
     public boolean updateSoftEnum(UpdateSoftEnumPacket.Type mode, String... value) {
         if (!this.isSoft) return false;
         UpdateSoftEnumPacket pk = new UpdateSoftEnumPacket();
@@ -133,6 +141,8 @@ public class CommandEnum {
         return true;
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
     public boolean updateSoftEnum() {
         if (!this.isSoft && this.strListSupplier == null) return false;
         UpdateSoftEnumPacket pk = new UpdateSoftEnumPacket();

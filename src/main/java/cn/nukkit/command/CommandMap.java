@@ -1,5 +1,8 @@
 package cn.nukkit.command;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
+
 import java.util.List;
 
 /**
@@ -17,6 +20,8 @@ public interface CommandMap {
 
     boolean dispatch(CommandSender sender, String cmdLine);
 
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
     int executeCommand(CommandSender sender, String cmdLine);
 
     void clearCommands();

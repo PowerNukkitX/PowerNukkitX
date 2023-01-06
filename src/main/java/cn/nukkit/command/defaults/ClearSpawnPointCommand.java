@@ -6,12 +6,13 @@ import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
-import cn.nukkit.command.exceptions.CommandSyntaxException;
-import cn.nukkit.command.utils.CommandParser;
-import cn.nukkit.lang.TranslationContainer;
-import cn.nukkit.utils.TextFormat;
+import cn.nukkit.command.tree.ParamList;
+import cn.nukkit.command.tree.ParamTree;
+import cn.nukkit.command.tree.node.PlayersNode;
+import cn.nukkit.command.utils.CommandLogger;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @PowerNukkitXOnly
@@ -23,46 +24,34 @@ public class ClearSpawnPointCommand extends VanillaCommand {
         this.setPermission("nukkit.command.clearspawnpoint");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
-                CommandParameter.newType("player", true, CommandParamType.TARGET),
+                CommandParameter.newType("player", true, CommandParamType.TARGET, new PlayersNode()),
         });
+        this.paramTree = new ParamTree(this);
     }
 
     @Override
-    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        if (!this.testPermission(sender)) {
-            return false;
-        }
-
-        CommandParser parser = new CommandParser(this, sender, args);
-        if (parser.matchCommandForm() == null) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-            return false;
-        }
-
-        try {
-            List<Player> players;
-            if (parser.hasNext()) {
-                players = parser.parseTargetPlayers();
-            } else if (sender.isPlayer()) {
-                players = List.of(sender.asPlayer());
-            } else {
-                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.noTargetMatch"));
-                return false;
+    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+        if (result.getKey().equals("default")) {
+            var list = result.getValue();
+            List<Player> players = sender.isPlayer() ? List.of(sender.asPlayer()) : null;
+            if (list.hasResult(0)) players = list.getResult(0);
+            if (players == null) {
+                log.addNoTargetMatch().output();
+                return 0;
             }
             for (Player player : players) {
                 player.setSpawn(null);
                 player.setSpawnBlock(null);
             }
-            String players_str = players.stream().map(p -> p.getName()).collect(Collectors.joining(" "));
+            String players_str = players.stream().map(Player::getName).collect(Collectors.joining(" "));
             if (players.size() > 1) {
-                sender.sendMessage(new TranslationContainer("commands.clearspawnpoint.success.multiple", players_str));
+                log.addSuccess("commands.clearspawnpoint.success.multiple", players_str);
             } else {
-                sender.sendMessage(new TranslationContainer("commands.clearspawnpoint.success.single", players_str));
+                log.addSuccess("commands.clearspawnpoint.success.single", players_str);
             }
-            return true;
-        } catch (CommandSyntaxException e) {
-            e.printStackTrace();
+            log.successCount(players.size()).output();
+            return players.size();
         }
-        return false;
+        return 0;
     }
 }

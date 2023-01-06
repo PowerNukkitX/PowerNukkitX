@@ -298,27 +298,23 @@ public class SimpleCommandMap implements CommandMap {
         String[] args = parsed.toArray(EmptyArrays.EMPTY_STRINGS);
         Command target = this.getCommand(sentCommandLabel);
 
-        if (target == null) {
-            return 0;
-        }
-
         int output;
         target.timing.startTiming();
         try {
             if (target.paramTree == null) {
                 output = target.execute(sender, sentCommandLabel, args) ? 1 : 0;
             } else {
-                var result = target.paramTree.matchAndParse(sender, args);
+                var result = target.paramTree.matchAndParse(sender, sentCommandLabel, args);
                 if (result == null) output = 0;
                 else if (target.testPermissionSilent(sender)) {
                     try {
-                        output = target.execute(sender, sentCommandLabel, result, new CommandLogger(target, sender, args, result.getValue().getMessageContainer()));
+                        output = target.execute(sender, sentCommandLabel, result, new CommandLogger(target, sender, sentCommandLabel, args, result.getValue().getMessageContainer()));
                     } catch (UnsupportedOperationException e) {
                         log.fatal("If you use paramtree, you must override execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) method to run the command!");
                         output = 0;
                     }
                 } else {
-                    var log = new CommandLogger(target, sender, args, result.getValue().getMessageContainer());
+                    var log = new CommandLogger(target, sender, sentCommandLabel, args, result.getValue().getMessageContainer());
                     if (!target.getPermissionMessage().equals("")) {
                         log.addError(target.getPermissionMessage().replace("<permission>", target.getPermission())).output();
                     } else {
