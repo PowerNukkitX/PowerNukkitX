@@ -138,6 +138,11 @@ public record CommandLogger(Command command,
         return this;
     }
 
+    public CommandLogger addOutOfWorld() {
+        this.addError("commands.generic.outOfWorld", CommandOutputContainer.EMPTY_STRING);
+        return this;
+    }
+
     /**
      * 输出{@link #outputContainer}中的所有信息.
      */

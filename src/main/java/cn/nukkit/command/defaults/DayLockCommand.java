@@ -3,13 +3,16 @@ package cn.nukkit.command.defaults;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParameter;
-import cn.nukkit.command.exceptions.CommandSyntaxException;
-import cn.nukkit.command.utils.CommandParser;
-import cn.nukkit.lang.TranslationContainer;
+import cn.nukkit.command.tree.ParamList;
+import cn.nukkit.command.tree.ParamTree;
+import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.GameRules;
 import cn.nukkit.level.Level;
+
+import java.util.Map;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -20,40 +23,35 @@ public class DayLockCommand extends VanillaCommand {
         this.setPermission("nukkit.command.daylock");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
-                CommandParameter.newEnum("lock", true, new String[]{"true", "false"})
+                CommandParameter.newEnum("lock", true, CommandEnum.ENUM_BOOLEAN)
         });
+        this.paramTree = new ParamTree(this);
     }
 
+    @Since("1.19.50-r4")
     @Override
-    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        if (!this.testPermission(sender)) {
-            return false;
-        }
-
-        CommandParser parser = new CommandParser(this, sender, args);
-        try {
+    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+        if (result.getKey().equals("default")) {
+            var list = result.getValue();
             boolean lock = true;
 
-            if (args.length > 0) {
-                lock = parser.parseBoolean();
-            }
+            if (list.hasResult(0)) lock = list.getResult(0);
 
-            Level level = parser.getTargetLevel();
+            Level level = sender.getPosition().getLevel();
+            level = level == null ? sender.getServer().getDefaultLevel() : level;
             GameRules rules = level.getGameRules();
 
             if (lock) {
                 rules.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
                 level.stopTime();
                 level.setTime(5000);
+                log.addSuccess("commands.always.day.locked").output();
             } else {
                 rules.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, true);
                 level.startTime();
+                log.addSuccess("commands.always.day.unlocked").output();
             }
-        } catch (CommandSyntaxException e) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-            return false;
         }
-
-        return true;
+        return 0;
     }
 }

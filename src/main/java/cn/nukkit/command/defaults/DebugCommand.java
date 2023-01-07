@@ -5,10 +5,12 @@ import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParameter;
-import cn.nukkit.command.exceptions.CommandSyntaxException;
-import cn.nukkit.command.utils.CommandParser;
+import cn.nukkit.command.tree.ParamList;
+import cn.nukkit.command.tree.ParamTree;
+import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.entity.ai.EntityAI;
-import cn.nukkit.lang.TranslationContainer;
+
+import java.util.Map;
 
 @PowerNukkitXOnly
 @Since("1.19.50-r1")
@@ -22,33 +24,18 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                 CommandParameter.newEnum("entity", new String[]{"entity"}),
                 CommandParameter.newEnum("value", false, CommandEnum.ENUM_BOOLEAN)
         });
+        this.paramTree = new ParamTree(this);
     }
 
+    @Since("1.19.50-r4")
     @Override
-    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        if (!this.testPermission(sender)) {
-            return false;
+    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+        if (result.getKey().equals("entity")) {
+            var list = result.getValue();
+            EntityAI.DEBUG = list.getResult(1);
+            log.addSuccess("Entity AI framework debug mode have been set to: " + EntityAI.DEBUG).output();
+            return 1;
         }
-
-        CommandParser parser = new CommandParser(this, sender, args);
-        if (parser.matchCommandForm() == null) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-            return false;
-        }
-
-        try{
-            switch (parser.getMatchedCommandForm()) {
-                case "entity" -> {
-                    parser.parseString();
-                    EntityAI.DEBUG = parser.parseBoolean();
-                    sender.sendMessage("Entity AI framework debug mode have been set to: " + EntityAI.DEBUG);
-                    return true;
-                }
-            }
-        } catch (CommandSyntaxException e) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-            return false;
-        }
-        return true;
+        return 0;
     }
 }

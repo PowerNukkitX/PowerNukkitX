@@ -51,7 +51,6 @@ public abstract class PositionNode extends ParamNode<Position> {
                         String relativeCoordinate = s.substring(1);
                         if (relativeCoordinate.isEmpty()) {
                             setCorrdinate(player);
-                            return;
                         } else {
                             switch (index) {
                                 case 0 -> coordinate[index] = player.getX() + Double.parseDouble(relativeCoordinate);
@@ -71,7 +70,6 @@ public abstract class PositionNode extends ParamNode<Position> {
                         String relativeAngleCoordinate = s.substring(1);
                         if (relativeAngleCoordinate.isEmpty()) {
                             setCorrdinate(player);
-                            return;
                         } else {
                             switch (index) {
                                 case 0 ->
@@ -106,9 +104,7 @@ public abstract class PositionNode extends ParamNode<Position> {
             case 0 -> coordinate[index] = player.getX();
             case 1 -> coordinate[index] = player.getY();
             case 2 -> coordinate[index] = player.getZ();
-            default -> {
-                this.error();
-            }
+            default -> this.error();
         }
     }
 }

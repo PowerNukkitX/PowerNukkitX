@@ -24,17 +24,13 @@ public class CommandEnum {
     public static final CommandEnum CHAINED_COMMAND_ENUM = new CommandEnum("ExecuteChainedOption_0", "run", "as", "at", "positioned", "if", "unless", "in", "align", "anchored", "rotated", "facing");
     @Since("1.4.0.0-PN")
     public static final CommandEnum ENUM_BOOLEAN = new CommandEnum("Boolean", ImmutableList.of("true", "false"));
-
     @Since("1.4.0.0-PN")
     public static final CommandEnum ENUM_GAMEMODE = new CommandEnum("GameMode",
             ImmutableList.of("survival", "creative", "s", "c", "adventure", "a", "spectator", "view", "v", "spc"));
-
     @Since("1.4.0.0-PN")
     public static final CommandEnum ENUM_BLOCK;
-
     @Since("1.4.0.0-PN")
     public static final CommandEnum ENUM_ITEM;
-
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public static final CommandEnum ENUM_ENTITY;

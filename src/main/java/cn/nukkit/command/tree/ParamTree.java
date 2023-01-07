@@ -108,7 +108,13 @@ public class ParamTree {
                         default -> node = new VoidNode();
                     }
                 } else {
-                    node = new EnumNode();
+                    if (parameter.enumData.equals(CommandEnum.ENUM_BOOLEAN)) {
+                        node = new BooleanNode();
+                    } else if (parameter.enumData.equals(CommandEnum.ENUM_ITEM)
+                            || parameter.enumData.equals(CommandEnum.ENUM_BLOCK)
+                            || parameter.enumData.equals(CommandEnum.ENUM_ENTITY)) {
+                        node = new StringNode();
+                    } else node = new EnumNode();
                 }
                 paramList.add(node.init(paramList, parameter.name, parameter.optional, parameter.type, parameter.enumData, parameter.postFix));
             }
