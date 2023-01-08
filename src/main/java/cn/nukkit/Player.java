@@ -186,6 +186,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected final int spawnThreshold;
     private final Queue<Vector3> clientMovements = PlatformDependent.newMpscQueue(4);
     private final AtomicReference<Locale> locale = new AtomicReference<>(null);
+    private final int loaderId;
     public boolean playedBefore;
     public boolean spawned = false;
     public boolean loggedIn = false;
@@ -298,7 +299,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     private BlockVector3 lastBreakPosition = new BlockVector3();
     private boolean inventoryOpen;
     private String clientSecret;
-    private final int loaderId;
     private int noShieldTicks;
     private PermissibleBase perm = null;
     private int exp = 0;
@@ -2805,16 +2805,19 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             var networkGamemode = toNetworkGamemode(gamemode);
             pk.gameType = GameType.from(networkGamemode);
             pk.entityId = this.getId();
-            var players = Server.getInstance().getOnlinePlayers().values();
-            //不向自身发送UpdatePlayerGameTypePacket，我们将使用SetPlayerGameTypePacket
-            players.remove(this);
-            //我们需要给所有玩家发送此包，来使玩家客户端能正确渲染玩家实体
-            //eg: 观察者模式玩家对于gm 0 1 2的玩家不可见
-            Server.broadcastPacket(players, pk);
-            //对于自身，我们使用SetPlayerGameTypePacket来确保与WaterDog的兼容
-            var pk2 = new SetPlayerGameTypePacket();
-            pk2.gamemode = networkGamemode;
-            this.dataPacket(pk2);
+            //我们需要给所有玩家发送游戏模式更新包，来使玩家客户端能正确渲染玩家实体
+            //eg: 观察者模式玩家对于gm 0 1 2的玩家不可见，这是由客户端控制的
+            for (var player : Server.getInstance().getOnlinePlayers().values()) {
+                if (player == this) {
+                    //不向自身发送UpdatePlayerGameTypePacket，我们将使用SetPlayerGameTypePacket
+                    //对于自身，我们使用SetPlayerGameTypePacket来确保与WaterDog的兼容
+                    var pkSelf = new SetPlayerGameTypePacket();
+                    pkSelf.gamemode = networkGamemode;
+                    this.dataPacket(pkSelf);
+                } else {
+                    player.dataPacket(pk);
+                }
+            }
         }
 
         this.resetFallDistance();
