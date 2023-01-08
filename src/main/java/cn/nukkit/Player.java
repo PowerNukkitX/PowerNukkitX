@@ -2802,11 +2802,19 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         if (!serverSide) {
             var pk = new UpdatePlayerGameTypePacket();
-            pk.gameType = GameType.from(toNetworkGamemode(gamemode));
+            var networkGamemode = toNetworkGamemode(gamemode);
+            pk.gameType = GameType.from(networkGamemode);
             pk.entityId = this.getId();
+            var players = Server.getInstance().getOnlinePlayers().values();
+            //不向自身发送UpdatePlayerGameTypePacket，我们将使用SetPlayerGameTypePacket
+            players.remove(this);
             //我们需要给所有玩家发送此包，来使玩家客户端能正确渲染玩家实体
             //eg: 观察者模式玩家对于gm 0 1 2的玩家不可见
-            Server.broadcastPacket(Server.getInstance().getOnlinePlayers().values(), pk);
+            Server.broadcastPacket(players, pk);
+            //对于自身，我们使用SetPlayerGameTypePacket来确保与WaterDog的兼容
+            var pk2 = new SetPlayerGameTypePacket();
+            pk2.gamemode = networkGamemode;
+            this.dataPacket(pk2);
         }
 
         this.resetFallDistance();
