@@ -90,6 +90,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Sets;
 import io.netty.util.internal.EmptyArrays;
 import io.netty.util.internal.PlatformDependent;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -2805,7 +2806,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             var networkGamemode = toNetworkGamemode(gamemode);
             pk.gameType = GameType.from(networkGamemode);
             pk.entityId = this.getId();
-            var players = Server.getInstance().getOnlinePlayers().values();
+            var players = Sets.newHashSet(Server.getInstance().getOnlinePlayers().values());
             //不向自身发送UpdatePlayerGameTypePacket，我们将使用SetPlayerGameTypePacket
             players.remove(this);
             //我们需要给所有玩家发送此包，来使玩家客户端能正确渲染玩家实体
@@ -3885,6 +3886,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             }
                             break packetswitch;
                         case PlayerActionPacket.ACTION_CREATIVE_PLAYER_DESTROY_BLOCK:
+                            if (this.server.getServerAuthoritativeMovement() > 0) break;//ServerAuthorInput not use this
                             this.onBlockBreakComplete(new BlockVector3(playerActionPacket.x, playerActionPacket.y, playerActionPacket.z), face);
                             break;
                         case PlayerActionPacket.ACTION_DIMENSION_CHANGE_ACK:
@@ -4931,7 +4933,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                     this.level.sendBlocks(new Player[]{this}, new Block[]{target.getLevelBlockAtLayer(1), block.getLevelBlockAtLayer(1)}, UpdateBlockPacket.FLAG_NOGRAPHIC, 1);
                                     break packetswitch;
                                 case InventoryTransactionPacket.USE_ITEM_ACTION_BREAK_BLOCK:
-                                    if (!this.spawned || !this.isAlive()) {
+                                    if (!this.spawned || !this.isAlive() || this.isCreative()) {//Creative mode use PlayerActionPacket.ACTION_CREATIVE_PLAYER_DESTROY_BLOCK
                                         break packetswitch;
                                     }
 
@@ -4940,9 +4942,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                     Item i = this.getInventory().getItemInHand();
 
                                     Item oldItem = i.clone();
-
-                                    if (this.canInteract(blockVector.add(0.5, 0.5, 0.5), this.isCreative() ? 13 : 7) && (i = this.level.useBreakOn(blockVector.asVector3(), face, i, this, true)) != null) {
-                                        if (this.isSurvival() || this.isAdventure()) {
+                                    if (this.isSurvival() || this.isAdventure()) {
+                                        if (this.canInteract(blockVector.add(0.5, 0.5, 0.5), 7) && (i = this.level.useBreakOn(blockVector.asVector3(), face, i, this, true)) != null) {
                                             this.getFoodData().updateFoodExpLevel(0.005);
                                             if (!i.equals(oldItem) || i.getCount() != oldItem.getCount()) {
                                                 if (oldItem.getId() == i.getId() || i.getId() == 0) {
@@ -4952,8 +4953,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                                 }
                                                 inventory.sendHeldItem(this.getViewers().values());
                                             }
+                                            break packetswitch;
                                         }
-                                        break packetswitch;
                                     }
 
                                     inventory.sendContents(this);
