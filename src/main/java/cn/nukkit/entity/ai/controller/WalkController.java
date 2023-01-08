@@ -27,7 +27,7 @@ public class WalkController implements IController {
         if (entity.hasMoveDirection() && !entity.isShouldUpdateMoveDirection()) {
             //clone防止异步导致的NPE
             Vector3 direction = entity.getMoveDirectionEnd().clone();
-            var speed = entity.getMovementSpeedAtBlock(entity.getTickCachedLevelBlock());
+            var speed = entity.getRealMovementSpeed();
             if (entity.motionX * entity.motionX + entity.motionZ * entity.motionZ > speed * speed * 0.4756) {
                 entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_MOVING, false);
                 return false;

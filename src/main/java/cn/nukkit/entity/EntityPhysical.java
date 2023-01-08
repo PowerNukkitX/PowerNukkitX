@@ -55,14 +55,18 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         // 重新计算绝对位置碰撞箱
         this.calculateOffsetBoundingBox();
         if (!this.isImmobile()) {
-            // 处理运动
+            // 处理重力
             handleGravity();
+            // 处理支持力
+            handleSupportForce();
             if (needsRecalcMovement) {
+                // 处理碰撞箱挤压运动
                 handleCollideMovement(currentTick);
             }
-            addTmpMoveMotionXZ(previousCollideMotion);
-            handleFrictionMovement();
             handleFloatingMovement();
+            handleGroundFrictionMovement();
+            handleFluidFrictionMovement();
+            addTmpMoveMotionXZ(previousCollideMotion);
         }
     }
 
@@ -112,12 +116,11 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     }
 
     protected void handleGravity() {
-        if (!this.onGround) {
-            if (this.hasWaterAt(getFootHeight())) {
-                resetFallDistance();
-            } else {
-                this.motionY -= this.getGravity();
-            }
+        //重力一直存在
+        this.motionY -= this.getGravity();
+        if (!this.onGround && this.hasWaterAt(getFootHeight())) {
+            //落地水
+            resetFallDistance();
         } else {
             /*
              * 修复生物在天上浮空而不能识别是否在地面的漏洞
@@ -127,69 +130,82 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
             this.onGround = this.level.getTickCachedCollisionBlocks(
                     this.offsetBoundingBox.
                             shrink(0.4 * this.getWidth(), 0.5 * this.getHeight(), 0.4 * this.getWidth()).
-                            offset(0, -0.6 * this.getHeight(), 0)).length > 0;
+                            offset(0, -0.6 * this.getHeight(), 0), true, false, block -> !block.canPassThrough()).length > 0;
         }
     }
 
     /**
-     * 获取实体在某方块处行走的真实速度，此方法会考虑流体阻力
-     *
-     * @param block 实体所在的方块，不是脚下的方块
-     * @return 在某方块处行走的真实速度
+     * 处理地面支持力
      */
-    public float getMovementSpeedAtBlock(Block block) {
-        if (block instanceof BlockLiquid liquid) {
-            return getMovementSpeed() * liquid.getDrag();
-        } else {
-            return getMovementSpeed();
-        }
-    }
-
-    protected void handleFrictionMovement() {
-        // 减少移动向量（计算摩擦系数，在冰上滑得更远）
-        final double friction = getFrictionFactor();
-        final double reduce = getMovementSpeedAtBlock(this.getTickCachedLevelBlock()) * (1 - friction * 0.85) * 0.43;
-        if (Math.abs(this.motionZ) < PRECISION && Math.abs(this.motionX) < PRECISION) {
-            return;
-        }
-        final double angle = StrictMath.atan2(this.motionZ, this.motionX);
-        double tmp = (StrictMath.cos(angle) * reduce);
-        if (this.motionX > PRECISION) {
-            this.motionX -= tmp;
-            if (this.motionX < PRECISION) {
-                this.motionX = 0;
-            }
-        } else if (this.motionX < -PRECISION) {
-            this.motionX -= tmp;
-            if (this.motionX > -PRECISION) {
-                this.motionX = 0;
-            }
-        } else {
-            this.motionX = 0;
-        }
-        tmp = (StrictMath.sin(angle) * reduce);
-        if (this.motionZ > PRECISION) {
-            this.motionZ -= tmp;
-            if (this.motionZ < PRECISION) {
-                this.motionZ = 0;
-            }
-        } else if (this.motionZ < -PRECISION) {
-            this.motionZ -= tmp;
-            if (this.motionZ > -PRECISION) {
-                this.motionZ = 0;
-            }
-        } else {
-            this.motionZ = 0;
-        }
+    @Since("1.19.50-r4")
+    protected void handleSupportForce() {
+        if (this.onGround && this.motionY < 0)
+            this.motionY = 0;
     }
 
     /**
-     * 计算当前位置的摩擦因子
+     * 获取实体行走的真实速度，此方法会考虑地面摩擦力和流体阻力
+     *
+     * @return 行走的真实速度
+     */
+    public float getRealMovementSpeed() {
+        return (float) (getMovementSpeed()
+                * (this.getFluidFrictionFactor() + this.add(0, -1).getTickCachedLevelBlock().getFrictionFactor()) / 2);
+    }
+
+    /**
+     * 计算地面摩擦力
+     */
+    protected void handleGroundFrictionMovement() {
+        //未在地面就没有地面阻力
+        if (!this.onGround) return;
+        //小于精度
+        if (Math.abs(this.motionZ) < PRECISION && Math.abs(this.motionX) < PRECISION) return;
+        // 减少移动向量（计算摩擦系数，在冰上滑得更远）
+        final double factor = getGroundFrictionFactor();
+        this.motionX *= factor;
+        this.motionZ *= factor;
+        if (Math.abs(this.motionX) < PRECISION) this.motionX = 0;
+        if (Math.abs(this.motionZ) < PRECISION) this.motionZ = 0;
+    }
+
+    /**
+     * 计算流体阻力（空气/液体）
+     */
+    @Since("1.19.50-r4")
+    protected void handleFluidFrictionMovement() {
+        //小于精度
+        if (Math.abs(this.motionZ) < PRECISION && Math.abs(this.motionX) < PRECISION && Math.abs(this.motionY) < PRECISION)
+            return;
+        final double factor = getFluidFrictionFactor();
+        this.motionX *= factor;
+        this.motionY *= factor;
+        this.motionZ *= factor;
+        if (Math.abs(this.motionX) < PRECISION) this.motionX = 0;
+        if (Math.abs(this.motionY) < PRECISION) this.motionY = 0;
+        if (Math.abs(this.motionZ) < PRECISION) this.motionZ = 0;
+    }
+
+    /**
+     * 计算当前位置的地面摩擦因子
+     *
+     * @return 当前位置的地面摩擦因子
      */
     @PowerNukkitXOnly
     @Since("1.19.50-r4")
-    protected double getFrictionFactor() {
-        return this.getLevel().getTickCachedBlock(this.temporalVector.setComponents((int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z) - 1)).getFrictionFactor();
+    protected double getGroundFrictionFactor() {
+        return this.getLevel().getTickCachedBlock(this.temporalVector.setComponents((int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z))).getFrictionFactor();
+    }
+
+    /**
+     * 计算当前位置的流体阻力因子（空气/水）
+     *
+     * @return 当前位置的流体阻力因子
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    protected double getFluidFrictionFactor() {
+        return this.getTickCachedLevelBlock().getFluidFrictionFactor();
     }
 
     /**
@@ -240,12 +256,23 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     }
 
     protected void handleFloatingMovement() {
-        if (this.isTouchingWater()) {
-            if (this.motionY < -this.getGravity() && this.hasWaterAt(getFootHeight())) {
-                this.motionY += this.getGravity() * 0.3;
+        this.motionY += this.getGravity() * getFloatingForceFactor();
+    }
+
+    /**
+     * 浮力系数
+     */
+    @Since("1.19.50-r4")
+    protected double getFloatingForceFactor() {
+        if (this.hasWaterAt(0)) {
+            //浮力应大于重力
+            if (this.isInsideOfWater()) {
+                return 1.3;
             }
-            this.motionY += this.getGravity() * 0.075;
+            return 0.9;
         }
+        //未在水里
+        return 0;
     }
 
     protected void handleCollideMovement(int currentTick) {

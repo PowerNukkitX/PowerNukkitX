@@ -94,4 +94,10 @@ public class BlockWater extends BlockLiquid {
     public boolean usesWaterLogging() {
         return true;
     }
+
+    @Since("1.19.50-r4")
+    @Override
+    public double getFluidFrictionFactor() {
+        return 0.5;
+    }
 }

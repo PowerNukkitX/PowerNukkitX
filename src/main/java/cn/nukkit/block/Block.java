@@ -1449,12 +1449,23 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     /**
-     * 控制方块的摩擦因素
+     * 控制方块的摩擦因素。此值越小阻力越大
      *
      * @return 方块的摩擦因素 (0-1)
      */
     public double getFrictionFactor() {
-        return 0.6;
+        return 0.8;
+    }
+
+    /**
+     * 控制方块的流体阻力因素（0-1）。此值越小阻力越大<p/>
+     * 对于不可穿过的方块，若未覆写，此值始终为1<p/>
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    public double getFluidFrictionFactor() {
+        if (!this.canPassThrough()) return 0;
+        return 0.95;
     }
 
     /**
