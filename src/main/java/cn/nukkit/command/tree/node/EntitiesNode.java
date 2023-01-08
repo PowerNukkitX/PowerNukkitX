@@ -25,11 +25,11 @@ public class EntitiesNode extends TargetNode<Entity> {
         } else if (EntitySelector.hasArguments(arg)) {
             var entities = EntitySelector.matchEntities(this.parent.parent.getSender(), arg);
             if (entities != null) this.value = entities;
-            else error();
+            else error("commands.generic.noTargetMatch");
         } else {
             Player player = Server.getInstance().getPlayer(arg);
             if (player != null) this.value = Collections.singletonList(player);
-            else error();
+            else error("commands.generic.player.notFound");
         }
     }
 }

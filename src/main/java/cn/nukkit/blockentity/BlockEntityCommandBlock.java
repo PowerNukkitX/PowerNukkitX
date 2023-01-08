@@ -17,6 +17,7 @@ import cn.nukkit.lang.TextContainer;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -29,6 +30,7 @@ import cn.nukkit.utils.TextFormat;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -584,6 +586,13 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
     @Override
     public Position getPosition() {
         return this;
+    }
+
+    @Since("1.19.50-r4")
+    @NotNull
+    @Override
+    public Location getLocation() {
+        return Location.fromObject(this.getPosition(), this.getLevel());
     }
 
     @Override

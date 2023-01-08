@@ -4,6 +4,7 @@ import cn.nukkit.Server;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.defaults.*;
 import cn.nukkit.command.simple.*;
+import cn.nukkit.command.tree.node.CommandNode;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.utils.TextFormat;
@@ -109,6 +110,7 @@ public class SimpleCommandMap implements CommandMap {
         if (this.server.getConfig("debug.commands", false)) {
             this.register("nukkit", new DebugCommand("debug"));
         }
+        CommandNode.setCommandNames(this.getCommands().keySet());
     }
 
     @Override

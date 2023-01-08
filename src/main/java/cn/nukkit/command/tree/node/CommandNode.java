@@ -3,9 +3,7 @@ package cn.nukkit.command.tree.node;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringJoiner;
+import java.util.*;
 
 /**
  * 会填充所有剩余参数以空格分隔合并<br>
@@ -15,16 +13,27 @@ import java.util.StringJoiner;
 @PowerNukkitXOnly
 @Since("1.19.50-r4")
 public class CommandNode extends ParamNode<String> {
+    private final static Set<String> COMMAND_NAMES = new HashSet<>();
+
     private final List<String> TMP = new ArrayList<>();
+
+    private boolean first = true;
 
     @Override
     public void fill(String arg) {
-        if (this.parent.getIndex() != this.parent.parent.getArgs().length) TMP.add(arg);
-        else {
+        if (first && !COMMAND_NAMES.contains(arg)) {
+            this.error("commands.generic.unknown", arg);
+            return;
+        }
+        if (this.parent.getIndex() != this.parent.parent.getArgs().length) {
+            first = false;
+            TMP.add(arg);
+        } else {
             TMP.add(arg);
             var join = new StringJoiner(" ");
             TMP.forEach(join::add);
             this.value = join.toString();
+            first = true;
         }
     }
 
@@ -32,5 +41,9 @@ public class CommandNode extends ParamNode<String> {
     public void reset() {
         super.reset();
         TMP.clear();
+    }
+
+    public static void setCommandNames(Set<String> names) {
+        if (COMMAND_NAMES.isEmpty()) COMMAND_NAMES.addAll(names);
     }
 }

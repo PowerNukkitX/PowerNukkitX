@@ -302,14 +302,14 @@ public class Network {
 
     @PowerNukkitOnly
     @Since("FUTURE")
-    public List<DataPacket> unpackBatchedPackets(BatchPacket packet,CompressionProvider compression) throws ProtocolException {
+    public List<DataPacket> unpackBatchedPackets(BatchPacket packet, CompressionProvider compression) throws ProtocolException {
         List<DataPacket> packets = new ObjectArrayList<>();
-        processBatch(packet.payload, packets,compression);
+        processBatch(packet.payload, packets, compression);
         return packets;
     }
 
     @Since("1.4.0.0-PN")
-    public void processBatch(byte[] payload, Collection<DataPacket> packets,CompressionProvider compression) throws ProtocolException {
+    public void processBatch(byte[] payload, Collection<DataPacket> packets, CompressionProvider compression) throws ProtocolException {
         byte[] data;
         try {
             data = compression.decompress(payload);
@@ -585,5 +585,6 @@ public class Network {
         this.registerPacket(ProtocolInfo.UPDATE_ADVENTURE_SETTINGS_PACKET, UpdateAdventureSettingsPacket.class);
         this.registerPacket(ProtocolInfo.UPDATE_CLIENT_INPUT_LOCKS, UpdateClientInputLocksPacket.class);
         this.registerPacket(ProtocolInfo.PLAYER_FOG_PACKET, PlayerFogPacket.class);
+        this.registerPacket(ProtocolInfo.SET_DEFAULT_GAME_TYPE_PACKET, SetDefaultGameTypePacket.class);
     }
 }

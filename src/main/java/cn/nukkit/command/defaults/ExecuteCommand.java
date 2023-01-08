@@ -26,6 +26,8 @@ import cn.nukkit.scoreboard.scorer.PlayerScorer;
 import com.google.common.base.Splitter;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static cn.nukkit.utils.Utils.getLevelBlocks;
@@ -36,6 +38,7 @@ public class ExecuteCommand extends VanillaCommand {
 
     private static final Splitter SCORE_SCOPE_SEPARATOR = Splitter.on("..").limit(2);
 
+    private static final Pattern ERROR_COMMAND_NAME = Pattern.compile("(?<=run\\s).*?(?=\\s|$)");
 
     public ExecuteCommand(String name) {
         super(name, "commands.execute.description", "commands.execute.usage");
@@ -181,8 +184,20 @@ public class ExecuteCommand extends VanillaCommand {
                 String chainCommand = list.getResult(2);
                 for (Entity executor : executors) {
                     ExecutorCommandSender executorCommandSender = new ExecutorCommandSender(sender, executor, sender.getLocation());
-                    num += executorCommandSender.getServer().executeCommand(executorCommandSender, chainCommand);
+                    int n = executorCommandSender.getServer().executeCommand(executorCommandSender, chainCommand);
+                    if (n == 0) {
+                        var names = new ArrayList<String>();
+                        Matcher match = ERROR_COMMAND_NAME.matcher(chainCommand);
+                        while (match.find()) {
+                            names.add(match.group());
+                        }
+                        Collections.reverse(names);
+                        for (var name : names) {
+                            log.addError("commands.execute.failed", name, executor.getName());
+                        }
+                    } else num += n;
                 }
+                log.output();
                 return num;
             }
             case "at" -> {

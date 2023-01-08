@@ -1,9 +1,8 @@
 package cn.nukkit.command.tree.node;
 
-import cn.nukkit.Player;
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.BVector3;
 
@@ -19,11 +18,33 @@ import java.util.regex.Pattern;
 public abstract class PositionNode extends ParamNode<Position> {
     private final Pattern pattern;
     protected final double[] coordinate = new double[3];
-    protected byte index = 0;
     protected final List<String> TMP = new ArrayList<>();
+    private byte relative = 0b0000;
+    protected byte index = 0;
 
     public PositionNode(Pattern pattern) {
         this.pattern = pattern;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <E> E get() {
+        return this.get(this.parent.parent.getSender().getPosition());
+    }
+
+    @SuppressWarnings("unchecked")
+    public <E> E get(Position basePos) {
+        if (value == null) return null;
+        if (this.getRelative(0)) {
+            this.value.setX(this.value.x + basePos.getX());
+        }
+        if (this.getRelative(1)) {
+            this.value.setY(this.value.y + basePos.getY());
+        }
+        if (this.getRelative(2)) {
+            this.value.setZ(this.value.z + basePos.getZ());
+        }
+        return (E) this.value;
     }
 
     @Override
@@ -38,46 +59,29 @@ public abstract class PositionNode extends ParamNode<Position> {
         else if (str.get().length() != arg.length()) this.error();
         else {
             try {
-                Player player = null;
-                if (this.parent.parent.getSender() instanceof Player p) {
-                    player = p;
-                }
+                Location loc = this.parent.parent.getSender().getLocation();
                 for (String s : TMP) {
                     if (s.charAt(0) == '~') {
-                        if (player == null) {
-                            this.error();
-                            return;
-                        }
+                        this.setRelative(index);
                         String relativeCoordinate = s.substring(1);
                         if (relativeCoordinate.isEmpty()) {
-                            setCorrdinate(player);
+                            coordinate[index] = 0;
                         } else {
-                            switch (index) {
-                                case 0 -> coordinate[index] = player.getX() + Double.parseDouble(relativeCoordinate);
-                                case 1 -> coordinate[index] = player.getY() + Double.parseDouble(relativeCoordinate);
-                                case 2 -> coordinate[index] = player.getZ() + Double.parseDouble(relativeCoordinate);
-                                default -> {
-                                    this.error();
-                                    return;
-                                }
-                            }
+                            coordinate[index] = Double.parseDouble(relativeCoordinate);
                         }
                     } else if (s.charAt(0) == '^') {
-                        if (player == null) {
-                            this.error();
-                            return;
-                        }
+                        this.setRelative(index);
                         String relativeAngleCoordinate = s.substring(1);
                         if (relativeAngleCoordinate.isEmpty()) {
-                            setCorrdinate(player);
+                            coordinate[index] = 0;
                         } else {
                             switch (index) {
                                 case 0 ->
-                                        coordinate[index] = BVector3.fromLocation(player.getLocation()).addAngle(-90, 0).setYAngle(0).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(player).getX();
+                                        coordinate[index] = BVector3.fromLocation(loc).addAngle(-90, 0).setYAngle(0).setLength(Double.parseDouble(relativeAngleCoordinate)).getPos().getX();
                                 case 1 ->
-                                        coordinate[index] = BVector3.fromLocation(player.getLocation()).addAngle(0, 90).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(player).getY();
+                                        coordinate[index] = BVector3.fromLocation(loc).addAngle(0, 90).setLength(Double.parseDouble(relativeAngleCoordinate)).getPos().getY();
                                 case 2 ->
-                                        coordinate[index] = BVector3.fromLocation(player.getLocation()).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(player).getZ();
+                                        coordinate[index] = BVector3.fromLocation(loc).setLength(Double.parseDouble(relativeAngleCoordinate)).getPos().getZ();
                                 default -> {
                                     this.error();
                                     return;
@@ -90,7 +94,7 @@ public abstract class PositionNode extends ParamNode<Position> {
                     index++;
                 }
                 if (index == 3) {
-                    this.value = new Position(coordinate[0], coordinate[1], coordinate[2], player == null ? Server.getInstance().getDefaultLevel() : player.getLevel());
+                    this.value = new Position(coordinate[0], coordinate[1], coordinate[2], loc.getLevel());
                     index = 0;
                 }
             } catch (NumberFormatException ignore) {
@@ -99,12 +103,28 @@ public abstract class PositionNode extends ParamNode<Position> {
         }
     }
 
-    private void setCorrdinate(Player player) {
+    @Override
+    public void reset() {
+        super.reset();
+        this.relative = 0b0000;
+    }
+
+    public void setRelative(byte index) {
         switch (index) {
-            case 0 -> coordinate[index] = player.getX();
-            case 1 -> coordinate[index] = player.getY();
-            case 2 -> coordinate[index] = player.getZ();
-            default -> this.error();
+            case 0 -> this.relative |= 0b0001;
+            case 1 -> this.relative |= 0b0010;
+            case 2 -> this.relative |= 0b0100;
+            default -> {
+            }
         }
+    }
+
+    public boolean getRelative(int index) {
+        return switch (index) {
+            case 0 -> (this.relative & 0b0001) == 1;
+            case 1 -> (this.relative & 0b0010) == 2;
+            case 2 -> (this.relative & 0b0100) == 4;
+            default -> false;
+        };
     }
 }

@@ -30,7 +30,7 @@ public class PlayersNode extends TargetNode<Player> {
             Player player = Server.getInstance().getPlayer(arg);
             if (player != null) {
                 this.value = Collections.singletonList(player);
-            } else error("commands.generic.noTargetMatch");
+            } else error("commands.generic.player.notFound");
         }
     }
 }
