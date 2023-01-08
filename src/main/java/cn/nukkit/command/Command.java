@@ -24,8 +24,7 @@ import java.util.stream.Collectors;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class Command implements GenericParameter {
-
-    protected CommandData commandData;
+    public Timing timing;
 
     private final String name;
 
@@ -49,12 +48,11 @@ public abstract class Command implements GenericParameter {
 
     protected Map<String, CommandParameter[]> commandParameters = new HashMap<>();
 
-    public Timing timing;
-
     @PowerNukkitXOnly
     @Since("1.19.50-r4")
-    public ParamTree paramTree;
+    protected ParamTree paramTree;
 
+    protected CommandData commandData;
     public Command(String name) {
         this(name, "", null, EmptyArrays.EMPTY_STRINGS);
     }
@@ -315,6 +313,14 @@ public abstract class Command implements GenericParameter {
 
     public void setUsage(String usageMessage) {
         this.usageMessage = usageMessage;
+    }
+
+    public boolean hasParamTree() {
+        return this.paramTree != null;
+    }
+
+    public ParamTree getParamTree() {
+        return paramTree;
     }
 
     @Deprecated

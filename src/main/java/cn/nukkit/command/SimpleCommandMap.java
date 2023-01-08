@@ -303,10 +303,8 @@ public class SimpleCommandMap implements CommandMap {
         int output;
         target.timing.startTiming();
         try {
-            if (target.paramTree == null) {
-                output = target.execute(sender, sentCommandLabel, args) ? 1 : 0;
-            } else {
-                var result = target.paramTree.matchAndParse(sender, sentCommandLabel, args);
+            if (target.hasParamTree()) {
+                var result = target.getParamTree().matchAndParse(sender, sentCommandLabel, args);
                 if (result == null) output = 0;
                 else if (target.testPermissionSilent(sender)) {
                     try {
@@ -324,6 +322,8 @@ public class SimpleCommandMap implements CommandMap {
                     }
                     output = 0;
                 }
+            } else {
+                output = target.execute(sender, sentCommandLabel, args) ? 1 : 0;
             }
         } catch (Exception e) {
             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.exception"));

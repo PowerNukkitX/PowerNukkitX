@@ -9,7 +9,6 @@ import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.ParamTree;
 import cn.nukkit.command.tree.node.PlayersNode;
 import cn.nukkit.command.utils.CommandLogger;
-import cn.nukkit.utils.TextFormat;
 
 import java.util.List;
 import java.util.Map;
@@ -40,11 +39,10 @@ public class DeopCommand extends VanillaCommand {
                     return 0;
                 }
                 player.setOp(false);
-                if (player instanceof Player) {
-                    log.addSuccess(TextFormat.GRAY + "%commands.deop.message");
-                }
-                log.addSuccess("commands.deop.success", player.getName()).output(true, true);
+                log.outputObjectWhisper(player, "commands.deop.message");
+                log.addSuccess("commands.deop.success", player.getName());
             }
+            log.output(true, true);
             return 1;
         }
         return 0;
