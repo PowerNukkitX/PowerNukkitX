@@ -57,8 +57,6 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         if (!this.isImmobile()) {
             // 处理重力
             handleGravity();
-            // 处理支持力
-//            handleSupportForce();
             if (needsRecalcMovement) {
                 // 处理碰撞箱挤压运动
                 handleCollideMovement(currentTick);
@@ -66,7 +64,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
             addTmpMoveMotionXZ(previousCollideMotion);
             handleFloatingMovement();
             handleGroundFrictionMovement();
-            handleFluidFrictionMovement();
+            handlePassableBlockFrictionMovement();
         }
     }
 
@@ -125,17 +123,9 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     }
 
     /**
-     * 处理地面支持力
-     */
-    @Since("1.19.50-r4")
-    protected void handleSupportForce() {
-        if (this.onGround && this.motionY < 0)
-            this.motionY = 0;
-    }
-
-    /**
      * 计算地面摩擦力
      */
+    @Since("1.19.50-r4")
     protected void handleGroundFrictionMovement() {
         //未在地面就没有地面阻力
         if (!this.onGround) return;
@@ -153,11 +143,11 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
      * 计算流体阻力（空气/液体）
      */
     @Since("1.19.50-r4")
-    protected void handleFluidFrictionMovement() {
+    protected void handlePassableBlockFrictionMovement() {
         //小于精度
         if (Math.abs(this.motionZ) < PRECISION && Math.abs(this.motionX) < PRECISION && Math.abs(this.motionY) < PRECISION)
             return;
-        final double factor = getFluidFrictionFactor();
+        final double factor = getPassableBlockFrictionFactor();
         this.motionX *= factor;
         this.motionY *= factor;
         this.motionZ *= factor;
@@ -185,9 +175,9 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
      */
     @PowerNukkitXOnly
     @Since("1.19.50-r4")
-    protected double getFluidFrictionFactor() {
+    protected double getPassableBlockFrictionFactor() {
         var block =  this.getTickCachedLevelBlock();
-        if (block.collidesWithBB(this.offsetBoundingBox)) return block.getFluidFrictionFactor();
+        if (block.collidesWithBB(this.getBoundingBox(), true)) return block.getPassableBlockFrictionFactor();
         return Block.DEFAULT_AIR_FLUID_FRICTION;
     }
 

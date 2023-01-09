@@ -3,6 +3,7 @@ package cn.nukkit.entity.passive;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
+import cn.nukkit.entity.ai.controller.LiftForceController;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.SpaceMoveController;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
@@ -41,7 +42,7 @@ public class EntityAllay extends EntityFlyingAnimal {
                             new Behavior(new FlatRandomRoamExecutor(0.15f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
                     ),
                     Set.of(new NearestPlayerSensor(50, 0, 20)),
-                    Set.of(new SpaceMoveController(), new LookController(true, true)),
+                    Set.of(new SpaceMoveController(), new LookController(true, true), new LiftForceController()),
                     new SimpleSpaceAStarRouteFinder(new FlyingPosEvaluator(), this)
             );
         }

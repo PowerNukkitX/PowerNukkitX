@@ -234,7 +234,7 @@ public class BlockLava extends BlockLiquid {
 
     @Since("1.19.50-r4")
     @Override
-    public double getFluidFrictionFactor() {
+    public double getPassableBlockFrictionFactor() {
         return 0.3;
     }
 }
