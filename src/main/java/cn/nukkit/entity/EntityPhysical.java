@@ -63,10 +63,10 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
                 // 处理碰撞箱挤压运动
                 handleCollideMovement(currentTick);
             }
+            addTmpMoveMotionXZ(previousCollideMotion);
             handleFloatingMovement();
             handleGroundFrictionMovement();
             handleFluidFrictionMovement();
-            addTmpMoveMotionXZ(previousCollideMotion);
         }
     }
 
@@ -94,8 +94,8 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         if (isFalling()) {
             this.fallingTick++;
         }
-        super.updateMovement();
         this.move(this.motionX, this.motionY, this.motionZ);
+        super.updateMovement();
     }
 
     @PowerNukkitXOnly
@@ -141,16 +141,6 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     protected void handleSupportForce() {
         if (this.onGround && this.motionY < 0)
             this.motionY = 0;
-    }
-
-    /**
-     * 获取实体行走的真实速度，此方法会考虑地面摩擦力和流体阻力
-     *
-     * @return 行走的真实速度
-     */
-    public float getRealMovementSpeed() {
-        return (float) (getMovementSpeed()
-                * (this.getFluidFrictionFactor() + this.add(0, -1).getTickCachedLevelBlock().getFrictionFactor()) / 2);
     }
 
     /**

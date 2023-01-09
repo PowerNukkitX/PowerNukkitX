@@ -63,34 +63,20 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
     }
 
     @Override
-    public boolean onUpdate(int currentTick) {
-        if (!this.isImmobile()) {
+    public void asyncPrepare(int currentTick) {
+        // 计算是否活跃
+        isActive = level.isHighLightChunk(getChunkX(), getChunkZ());
+        if (!this.isImmobile()) { // immobile会禁用实体AI
             var behaviorGroup = getBehaviorGroup();
+            if (behaviorGroup == null) return;
+            behaviorGroup.collectSensorData(this);
+            behaviorGroup.evaluateCoreBehaviors(this);
+            behaviorGroup.evaluateBehaviors(this);
+            behaviorGroup.updateRoute(this);
             behaviorGroup.tickRunningCoreBehaviors(this);
             behaviorGroup.tickRunningBehaviors(this);
             behaviorGroup.applyController(this);
             if (EntityAI.checkDebugOption(EntityAI.DebugOption.BEHAVIOR)) behaviorGroup.debugTick(this);
-        }
-        return super.onUpdate(currentTick);
-    }
-
-    /**
-     * 我们将行为组运行循环的部分工作并行化以提高性能
-     */
-    @Override
-    public void asyncPrepare(int currentTick) {
-        if (needsRecalcMovement) { // 每次要重新计算实体运动时，都重新计算一次是否活跃
-            isActive = level.isHighLightChunk(getChunkX(), getChunkZ());
-        }
-        if (!this.isImmobile()) { // immobile会禁用实体AI
-            var behaviorGroup = getBehaviorGroup();
-            if (behaviorGroup == null) return;
-            if (needsRecalcMovement) {
-                behaviorGroup.collectSensorData(this);
-                behaviorGroup.evaluateCoreBehaviors(this);
-                behaviorGroup.evaluateBehaviors(this);
-                behaviorGroup.updateRoute(this);
-            }
         }
         super.asyncPrepare(currentTick);
     }
@@ -139,7 +125,6 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
      * 返回实体最大的跳跃高度，返回值会用在移动处理上
      *
      * @return 实体最大跳跃高度
-     * @see WalkController
      */
     public float getJumpingHeight() {
         return 1.0f;

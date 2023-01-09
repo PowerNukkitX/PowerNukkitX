@@ -27,7 +27,7 @@ public class WalkController implements IController {
         if (entity.hasMoveDirection() && !entity.isShouldUpdateMoveDirection()) {
             //clone防止异步导致的NPE
             Vector3 direction = entity.getMoveDirectionEnd().clone();
-            var speed = entity.getRealMovementSpeed();
+            var speed = entity.getMovementSpeed();
             if (entity.motionX * entity.motionX + entity.motionZ * entity.motionZ > speed * speed * 0.4756) {
                 entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_MOVING, false);
                 return false;
@@ -51,6 +51,7 @@ public class WalkController implements IController {
                     //计算出需要向上移动的高度
                     double maxY = Arrays.stream(collisionBlocks).map(b -> b.getCollisionBoundingBox().getMaxY()).max(Double::compareTo).orElse(0.0d);
                     //有时我们并不需要跳那么高，所以说只跳需要跳的高度
+                    //                       考虑到空气阻力，这边motionY应给大点
                     dy += Math.min(maxY - entity.getY() + 0.1, entity.getJumpingHeight()) * 0.43;
                     currentJumpCoolDown = 0;
                 }
