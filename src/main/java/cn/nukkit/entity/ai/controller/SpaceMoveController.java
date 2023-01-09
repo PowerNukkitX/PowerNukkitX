@@ -49,9 +49,4 @@ public class SpaceMoveController implements IController {
         //通知需要新的移动目标
         entity.setShouldUpdateMoveDirection(true);
     }
-
-    protected boolean collidesBlocks(EntityIntelligent entity, double dx, double dy, double dz) {
-        return entity.level.getCollisionBlocks(entity.getOffsetBoundingBox().getOffsetBoundingBox(dx, dy, dz), true,
-                false, Block::isSolid).length > 0;
-    }
 }

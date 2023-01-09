@@ -161,9 +161,8 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
      *
      * @return 当前位置的地面摩擦因子
      */
-    @PowerNukkitXOnly
     @Since("1.19.50-r4")
-    protected double getGroundFrictionFactor() {
+    public double getGroundFrictionFactor() {
         if (!this.onGround) return 1.0;
         return this.getLevel().getTickCachedBlock(this.temporalVector.setComponents((int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z) - 1)).getFrictionFactor();
     }
@@ -173,9 +172,8 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
      *
      * @return 当前位置的流体阻力因子
      */
-    @PowerNukkitXOnly
     @Since("1.19.50-r4")
-    protected double getPassableBlockFrictionFactor() {
+    public double getPassableBlockFrictionFactor() {
         var block =  this.getTickCachedLevelBlock();
         if (block.collidesWithBB(this.getBoundingBox(), true)) return block.getPassableBlockFrictionFactor();
         return Block.DEFAULT_AIR_FLUID_FRICTION;
@@ -236,7 +234,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
      * 浮力系数
      */
     @Since("1.19.50-r4")
-    protected double getFloatingForceFactor() {
+    public double getFloatingForceFactor() {
         if (this.hasWaterAt(0)) {
             //浮力应大于重力
             if (this.isInsideOfWater()) {
