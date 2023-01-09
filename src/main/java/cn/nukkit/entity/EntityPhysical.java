@@ -217,9 +217,9 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
      */
     @Since("1.19.50-r4")
     public double getFloatingForceFactor() {
-        if (this.hasWaterAt(this.getHeight()/3)) {
+        if (this.hasWaterAt(0)) {
             //浮力应大于重力
-            if (this.hasWaterAt(this.getHeight()*2/3)) {
+            if (this.hasWaterAt(this.getEyeHeight())) {
                 return 1.3;
             }
             return 0.7;

@@ -12,6 +12,7 @@ import java.util.Arrays;
 
 /**
  * 处理陆地行走实体运动
+ * todo: 有待解耦
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
