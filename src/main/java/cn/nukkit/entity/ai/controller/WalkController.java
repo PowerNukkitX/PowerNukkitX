@@ -52,7 +52,7 @@ public class WalkController implements IController {
                     double maxY = Arrays.stream(collisionBlocks).map(b -> b.getCollisionBoundingBox().getMaxY()).max(Double::compareTo).orElse(0.0d);
                     //有时我们并不需要跳那么高，所以说只跳需要跳的高度
                     //                       考虑到空气阻力，这边motionY应给大点
-                    dy += Math.min(maxY - entity.getY() + 0.1, entity.getJumpingHeight()) * 0.43;
+                    dy += Math.min(maxY - entity.getY() + 0.1, entity.getJumpingHeight()) * 0.5;
                     currentJumpCoolDown = 0;
                 }
             }

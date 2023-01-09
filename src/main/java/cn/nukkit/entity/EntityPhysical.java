@@ -58,7 +58,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
             // 处理重力
             handleGravity();
             // 处理支持力
-            handleSupportForce();
+//            handleSupportForce();
             if (needsRecalcMovement) {
                 // 处理碰撞箱挤压运动
                 handleCollideMovement(currentTick);
@@ -174,7 +174,8 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     @PowerNukkitXOnly
     @Since("1.19.50-r4")
     protected double getGroundFrictionFactor() {
-        return this.getLevel().getTickCachedBlock(this.temporalVector.setComponents((int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z))).getFrictionFactor();
+        if (!this.onGround) return 1.0;
+        return this.getLevel().getTickCachedBlock(this.temporalVector.setComponents((int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z) - 1)).getFrictionFactor();
     }
 
     /**
@@ -185,7 +186,9 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     @PowerNukkitXOnly
     @Since("1.19.50-r4")
     protected double getFluidFrictionFactor() {
-        return this.getTickCachedLevelBlock().getFluidFrictionFactor();
+        var block =  this.getTickCachedLevelBlock();
+        if (block.collidesWithBB(this.offsetBoundingBox)) return block.getFluidFrictionFactor();
+        return Block.DEFAULT_AIR_FLUID_FRICTION;
     }
 
     /**

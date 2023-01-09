@@ -1448,24 +1448,29 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return ItemTool.TYPE_NONE;
     }
 
+    public static final double DEFAULT_FRICTION_FACTOR = 0.6;
+
     /**
      * 控制方块的摩擦因素。此值越小阻力越大
      *
      * @return 方块的摩擦因素 (0-1)
      */
     public double getFrictionFactor() {
-        return 0.8;
+        return DEFAULT_FRICTION_FACTOR;
     }
+
+    public static final double DEFAULT_AIR_FLUID_FRICTION = 0.95;
+    public static final double DEFAULT_SOLID_FLUID_FRICTION = 0.1;
 
     /**
      * 控制方块的流体阻力因素（0-1）。此值越小阻力越大<p/>
-     * 对于不可穿过的方块，若未覆写，此值始终为1<p/>
+     * 对于不可穿过的方块，若未覆写，此值始终为0.1（不为0是为了防止卡死在方块内）<p/>
      */
     @PowerNukkitXOnly
     @Since("1.19.50-r4")
     public double getFluidFrictionFactor() {
-        if (!this.canPassThrough()) return 0;
-        return 0.95;
+        if (!this.canPassThrough()) return DEFAULT_SOLID_FLUID_FRICTION;
+        return DEFAULT_AIR_FLUID_FRICTION;
     }
 
     /**

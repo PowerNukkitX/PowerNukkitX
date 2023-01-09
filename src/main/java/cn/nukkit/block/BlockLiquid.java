@@ -588,17 +588,6 @@ public abstract class BlockLiquid extends BlockTransparentMeta {
         return 2;
     }
 
-//    /**
-//     * 流体对在其中的实体运动造成的阻碍系数，范围(0, 1)，此值越小运动阻力越大。
-//     *
-//     * @return 流体阻碍系数
-//     */
-//    @PowerNukkitXOnly
-//    @Since("1.6.0.0-PNX")
-//    public float getDrag() {
-//        return 0.5f;
-//    }
-
     @Since("1.6.0.0-PNX")
     @Override
     public int getWalkThroughExtraCost() {
