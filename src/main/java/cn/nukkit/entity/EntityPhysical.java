@@ -208,7 +208,6 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         addTmpMoveMotion(previousCurrentMotion);
     }
 
-    @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
     protected boolean hasWaterAt(float height) {
         double y = this.y + height;
