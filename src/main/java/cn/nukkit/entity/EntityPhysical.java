@@ -208,23 +208,6 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         addTmpMoveMotion(previousCurrentMotion);
     }
 
-    @Since("1.6.0.0-PNX")
-    protected boolean hasWaterAt(float height) {
-        double y = this.y + height;
-        Block block = this.level.getTickCachedBlock(this.temporalVector.setComponents(NukkitMath.floorDouble(this.x), NukkitMath.floorDouble(y), NukkitMath.floorDouble(this.z)));
-
-        boolean layer1 = false;
-        if (!(block instanceof BlockBubbleColumn) && (
-                block instanceof BlockWater
-                        || (layer1 = block.getTickCachedLevelBlockAtLayer(1) instanceof BlockWater))) {
-            BlockWater water = (BlockWater) (layer1 ? block.getTickCachedLevelBlockAtLayer(1) : block);
-            double f = (block.y + 1) - (water.getFluidHeightPercent() - 0.1111111);
-            return y < f;
-        }
-
-        return false;
-    }
-
     protected void handleFloatingMovement() {
         this.motionY += this.getGravity() * getFloatingForceFactor();
     }
@@ -234,12 +217,12 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
      */
     @Since("1.19.50-r4")
     public double getFloatingForceFactor() {
-        if (this.hasWaterAt(0)) {
+        if (this.hasWaterAt(this.getHeight()/3)) {
             //浮力应大于重力
-            if (this.isInsideOfWater()) {
+            if (this.hasWaterAt(this.getHeight()*2/3)) {
                 return 1.3;
             }
-            return 0.9;
+            return 0.7;
         }
         //未在水里
         return 0;

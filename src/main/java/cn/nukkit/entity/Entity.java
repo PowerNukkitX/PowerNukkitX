@@ -2470,15 +2470,23 @@ public abstract class Entity extends Location implements Metadatable {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    protected boolean hasWaterAt(float height) {
+    @PowerNukkitXDifference(info = "Make as public method", since = "1.19.50-r4")
+    public boolean hasWaterAt(float height) {
+        return hasWaterAt(height, false);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    protected boolean hasWaterAt(float height, boolean tickCached) {
         double y = this.y + height;
-        Block block = this.level.getBlock(this.temporalVector.setComponents(NukkitMath.floorDouble(this.x), NukkitMath.floorDouble(y), NukkitMath.floorDouble(this.z)));
+        Block block = this.level.getTickCachedBlock(this.temporalVector.setComponents(NukkitMath.floorDouble(this.x), NukkitMath.floorDouble(y), NukkitMath.floorDouble(this.z)));
 
         boolean layer1 = false;
+        Block block1 = tickCached ? block.getTickCachedLevelBlockAtLayer(1) : block.getLevelBlockAtLayer(1);
         if (!(block instanceof BlockBubbleColumn) && (
                 block instanceof BlockWater
-                        || (layer1 = block.getLevelBlockAtLayer(1) instanceof BlockWater))) {
-            BlockWater water = (BlockWater) (layer1 ? block.getLevelBlockAtLayer(1) : block);
+                        || (layer1 = block1 instanceof BlockWater))) {
+            BlockWater water = (BlockWater) (layer1 ? block1 : block);
             double f = (block.y + 1) - (water.getFluidHeightPercent() - 0.1111111);
             return y < f;
         }
