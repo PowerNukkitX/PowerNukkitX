@@ -2573,6 +2573,7 @@ public abstract class Entity extends Location implements Metadatable {
         return true;
     }
 
+    @PowerNukkitXDifference(since = "1.19.50-r4", info = "The onGround is updated when the entity motion is 0")
     public boolean move(double dx, double dy, double dz) {
         if (dx == 0 && dz == 0 && dy == 0) {
             this.onGround = !this.getPosition().setComponents(this.down()).getTickCachedLevelBlock().canPassThrough();
@@ -2690,7 +2691,6 @@ public abstract class Entity extends Location implements Metadatable {
         }
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Will do nothing if the entity is on ground and all args are 0")
     protected void checkGroundState(double movX, double movY, double movZ, double dx, double dy, double dz) {
         if (this.noClip) {
             this.isCollidedVertically = false;
