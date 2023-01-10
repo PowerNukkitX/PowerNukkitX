@@ -491,6 +491,9 @@ public abstract class Entity extends Location implements Metadatable {
     public double motionX;
     public double motionY;
     public double motionZ;
+    /**
+     * 临时向量，其值没有任何含义
+     */
     public Vector3 temporalVector;
     public double lastMotionX;
     public double lastMotionY;
