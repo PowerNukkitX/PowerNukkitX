@@ -40,7 +40,7 @@ import cn.nukkit.utils.Utils;
 import java.util.List;
 import java.util.Set;
 
-public class EntityCat extends EntityWalkingAnimal implements EntityTamable, EntityCanSit, EntityCanAttack, EntityHealable {
+public class EntityCat extends EntityAnimal implements EntityWalkable, EntityTamable, EntityCanSit, EntityCanAttack, EntityHealable {
     public static final int NETWORK_ID = 75;
     private DyeColor collarColor = DyeColor.RED;//驯服后项圈为红色
     private IBehaviorGroup behaviorGroup;

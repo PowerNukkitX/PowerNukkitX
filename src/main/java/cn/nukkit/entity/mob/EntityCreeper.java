@@ -5,6 +5,7 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityInteractable;
+import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
@@ -36,7 +37,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * @author Box.
  */
-public class EntityCreeper extends EntityWalkingMob implements EntityInteractable {
+public class EntityCreeper extends EntityMob implements EntityWalkable, EntityInteractable {
 
     public static final int NETWORK_ID = 33;
 

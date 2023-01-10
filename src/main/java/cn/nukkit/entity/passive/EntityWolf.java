@@ -49,7 +49,7 @@ import java.util.Set;
  * @author Cool_Loong (PowerNukkitX Project)
  * todo 野生狼不会被刷新
  */
-public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, EntityCanAttack, EntityCanSit, EntityAngryable, EntityHealable {
+public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityTamable, EntityCanAttack, EntityCanSit, EntityAngryable, EntityHealable {
     public static final int NETWORK_ID = 14;
     //实体子类字段最好不要显式初始化，因为实体创建流程是先初始化父类Entity然后进入Entity#init方法,
     //随后调用子类initEntity初始化实体,之后从根父类Entity逐级返回初始化字段,最后进入子类初始化字段

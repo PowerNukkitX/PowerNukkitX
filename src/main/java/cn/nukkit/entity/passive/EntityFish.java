@@ -2,6 +2,7 @@ package cn.nukkit.entity.passive;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.entity.EntitySwimmable;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
@@ -21,7 +22,7 @@ import java.util.Set;
  */
 @PowerNukkitXOnly
 @Since("1.19.50-r4")
-public abstract class EntityFish extends EntitySwimmingAnimal{
+public abstract class EntityFish extends EntityAnimal implements EntitySwimmable {
 
     protected IBehaviorGroup behaviorGroup;
 

@@ -2,6 +2,7 @@ package cn.nukkit.entity.passive;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.entity.EntitySwimmable;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -9,7 +10,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 /**
  * @author PetteriM1
  */
-public class EntityDolphin extends EntitySwimmingAnimal {
+public class EntityDolphin extends EntityAnimal implements EntitySwimmable {
 
     public static final int NETWORK_ID = 31;
 

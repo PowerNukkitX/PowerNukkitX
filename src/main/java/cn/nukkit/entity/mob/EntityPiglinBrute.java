@@ -3,6 +3,7 @@ package cn.nukkit.entity.mob;
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
@@ -12,7 +13,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
  */
 @Since("1.4.0.0-PN")
 @PowerNukkitOnly
-public class EntityPiglinBrute extends EntityWalkingMob {
+public class EntityPiglinBrute extends EntityMob implements EntityWalkable {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly

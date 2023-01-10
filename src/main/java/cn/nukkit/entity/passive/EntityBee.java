@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntityBeehive;
+import cn.nukkit.entity.EntityFlyable;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
@@ -11,7 +12,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
  * @author joserobjr
  */
 @Since("1.1.1.0-PN")
-public class EntityBee extends EntityFlyingAnimal {
+public class EntityBee extends EntityAnimal implements EntityFlyable {
 
     @Since("1.1.1.0-PN")
     public static final int NETWORK_ID = 122;

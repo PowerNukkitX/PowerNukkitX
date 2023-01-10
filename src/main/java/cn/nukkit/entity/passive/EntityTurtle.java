@@ -2,6 +2,8 @@ package cn.nukkit.entity.passive;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.entity.EntitySwimmable;
+import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -9,7 +11,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 /**
  * @author PetteriM1
  */
-public class EntityTurtle extends EntityAmphibiousAnimal {
+public class EntityTurtle extends EntityAnimal implements EntitySwimmable, EntityWalkable {
 
     public static final int NETWORK_ID = 74;
 

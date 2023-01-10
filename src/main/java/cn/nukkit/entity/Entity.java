@@ -1500,6 +1500,14 @@ public abstract class Entity extends Location implements Metadatable {
             return false;
         }
 
+        //水生生物免疫溺水
+        if (this instanceof EntitySwimmable swimmable && !swimmable.canDrown() && source.getCause() == DamageCause.DROWNING)
+            return false;
+
+        //飞行生物免疫摔伤
+        if (this instanceof EntityFlyable flyable && !flyable.hasFallingDamage() && source.getCause() == DamageCause.FALL)
+            return false;
+
         //事件回调函数
         getServer().getPluginManager().callEvent(source);
         if (source.isCancelled()) {

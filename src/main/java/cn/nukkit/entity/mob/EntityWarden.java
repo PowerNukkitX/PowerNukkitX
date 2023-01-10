@@ -5,6 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityCreature;
+import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
@@ -37,7 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class EntityWarden extends EntityWalkingMob implements VibrationListener {
+public class EntityWarden extends EntityMob implements EntityWalkable, VibrationListener {
 
     public static final int NETWORK_ID = 131;
     protected int lastDetectTime = Server.getInstance().getTick();

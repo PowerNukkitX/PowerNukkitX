@@ -4,6 +4,7 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntitySmite;
+import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -13,7 +14,7 @@ import cn.nukkit.potion.Effect;
  * @author PikyCZ
  */
 @Deprecated
-public class EntityZombieVillagerV1 extends EntityWalkingMob implements EntitySmite {
+public class EntityZombieVillagerV1 extends EntityMob implements EntityWalkable, EntitySmite {
 
     public static final int NETWORK_ID = 44;
 

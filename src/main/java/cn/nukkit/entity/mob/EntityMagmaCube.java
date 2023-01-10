@@ -3,13 +3,14 @@ package cn.nukkit.entity.mob;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
  * @author PikyCZ
  */
-public class EntityMagmaCube extends EntityWalkingMob {
+public class EntityMagmaCube extends EntityMob implements EntityWalkable {
 
     public static final int NETWORK_ID = 42;
 

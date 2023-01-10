@@ -1,5 +1,6 @@
 package cn.nukkit.entity.passive;
 
+import cn.nukkit.entity.EntityFlyable;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
@@ -20,7 +21,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 
 import java.util.Set;
 
-public class EntityAllay extends EntityFlyingAnimal {
+public class EntityAllay extends EntityAnimal implements EntityFlyable {
     public static final int NETWORK_ID = 134;
 
     private IBehaviorGroup behaviorGroup;

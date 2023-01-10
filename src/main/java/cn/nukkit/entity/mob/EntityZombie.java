@@ -5,6 +5,7 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntitySmite;
+import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
@@ -30,7 +31,7 @@ import java.util.Set;
  * @author Dr. Nick Doran
  * @since 4/23/2017
  */
-public class EntityZombie extends EntityWalkingMob implements EntitySmite {
+public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmite {
 
     public static final int NETWORK_ID = 32;
 

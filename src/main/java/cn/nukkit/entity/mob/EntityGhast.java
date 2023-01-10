@@ -2,13 +2,14 @@ package cn.nukkit.entity.mob;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.entity.EntityFlyable;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
  * @author PikyCZ
  */
-public class EntityGhast extends EntityFlyingMob {
+public class EntityGhast extends EntityMob implements EntityFlyable {
 
     public static final int NETWORK_ID = 41;
 

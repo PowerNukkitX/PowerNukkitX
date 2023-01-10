@@ -4,13 +4,14 @@ import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.entity.EntityFlyable;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
  * @author PikyCZ
  */
-public class EntityBlaze extends EntityFlyingMob {
+public class EntityBlaze extends EntityMob implements EntityFlyable {
 
     public static final int NETWORK_ID = 43;
 
