@@ -8,6 +8,7 @@ import cn.nukkit.entity.EntityInteractable;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
+import cn.nukkit.entity.ai.controller.FluctuateController;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
@@ -87,7 +88,7 @@ public class EntityCreeper extends EntityWalkingMob implements EntityInteractabl
                             memoryStorage.put(CoreMemoryTypes.SHOULD_EXPLODE, false);
                         }
                     }),
-                    Set.of(new WalkController(), new LookController(true, true)),
+                    Set.of(new WalkController(), new LookController(true, true), new FluctuateController()),
                     new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)
             );
         }
@@ -107,6 +108,12 @@ public class EntityCreeper extends EntityWalkingMob implements EntityInteractabl
     @Override
     public float getHeight() {
         return 1.8f;
+    }
+
+    @Since("1.19.50-r4")
+    @Override
+    public float getFloatingHeight() {
+        return 0.6f;
     }
 
     public boolean isPowered() {

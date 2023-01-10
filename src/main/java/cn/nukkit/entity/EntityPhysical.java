@@ -1,14 +1,14 @@
 package cn.nukkit.entity;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.block.*;
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockLava;
+import cn.nukkit.block.BlockLiquid;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.AxisAlignedBB;
-import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -174,7 +174,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
      */
     @Since("1.19.50-r4")
     public double getPassableBlockFrictionFactor() {
-        var block =  this.getTickCachedLevelBlock();
+        var block = this.getTickCachedLevelBlock();
         if (block.collidesWithBB(this.getBoundingBox(), true)) return block.getPassableBlockFrictionFactor();
         return Block.DEFAULT_AIR_FLUID_FRICTION;
     }
@@ -209,24 +209,44 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     }
 
     protected void handleFloatingMovement() {
-        this.motionY += this.getGravity() * getFloatingForceFactor();
+        if (this.hasWaterAt(0)) {
+            this.motionY += this.getGravity() * getFloatingForceFactor();
+        }
     }
 
     /**
-     * 浮力系数
+     * 浮力系数<br>
+     * 示例:
+     * <pre>
+     * if (hasWaterAt(this.getFloatingHeight())) {//实体指定高度进入水中后实体上浮
+     *     return 1.3;//因为浮力系数>1,该值越大上浮越快
+     * }
+     * return 0.7;//实体指定高度没进入水中，实体存在浮力会抵抗部分重力，但是不会上浮。
+     *            //因为浮力系数<1,该值最好和上值相加等于2，例 1.3+0.7=2
+     * </pre>
+     *
+     * @return the floating force factor
      */
     @Since("1.19.50-r4")
     public double getFloatingForceFactor() {
-        if (this.hasWaterAt(0)) {
-            //浮力应大于重力
-            if (this.hasWaterAt(this.getEyeHeight())) {
-                return 1.3;
-            }
-            return 0.7;
+        if (hasWaterAt(this.getFloatingHeight())) {
+            return 1.3;
         }
-        //未在水里
-        return 0;
+        return 0.7;
     }
+
+    /**
+     * 获得浮动到的实体高度 , 0为实体底部 {@link Entity#getCurrentHeight()}为实体顶部<br>
+     * 例：<br>值为0时，实体的脚接触水平面<br>值为getCurrentHeight/2时，实体的中间部分接触水平面<br>值为getCurrentHeight时，实体的头部接触水平面
+     *
+     * @return the float
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    public float getFloatingHeight() {
+        return this.getEyeHeight();
+    }
+
 
     protected void handleCollideMovement(int currentTick) {
         var selfAABB = getOffsetBoundingBox().getOffsetBoundingBox(this.motionX, this.motionY, this.motionZ);
@@ -305,10 +325,10 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     }
 
     protected void calculateOffsetBoundingBox() {
-        final double dx = this.getWidth() * 0.5;
-        final double dz = this.getHeight() * 0.5;
         //由于是asyncPrepare,this.offsetBoundingBox有几率为null，需要判空
         if (this.offsetBoundingBox == null) return;
+        final double dx = this.getWidth() * 0.5;
+        final double dz = this.getHeight() * 0.5;
         this.offsetBoundingBox.setMinX(this.x - dx);
         this.offsetBoundingBox.setMaxX(this.x + dz);
         this.offsetBoundingBox.setMinY(this.y);
