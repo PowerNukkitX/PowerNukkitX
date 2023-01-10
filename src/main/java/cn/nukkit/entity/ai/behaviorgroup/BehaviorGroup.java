@@ -1,6 +1,5 @@
 package cn.nukkit.entity.ai.behaviorgroup;
 
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
@@ -10,8 +9,11 @@ import cn.nukkit.entity.ai.controller.IController;
 import cn.nukkit.entity.ai.memory.IMemoryStorage;
 import cn.nukkit.entity.ai.memory.MemoryStorage;
 import cn.nukkit.entity.ai.route.RouteFindingManager;
+import cn.nukkit.entity.ai.route.data.Node;
 import cn.nukkit.entity.ai.route.finder.SimpleRouteFinder;
 import cn.nukkit.entity.ai.sensor.ISensor;
+import cn.nukkit.level.Level;
+import cn.nukkit.level.format.generic.BaseChunk;
 import cn.nukkit.math.Vector3;
 import lombok.Builder;
 import lombok.Getter;
@@ -84,6 +86,8 @@ public class BehaviorGroup implements IBehaviorGroup {
      * 寻路任务
      */
     protected RouteFindingManager.RouteFindingTask routeFindingTask;
+
+    protected long blockChangeCache = -1;
 
     /**
      * 记录距离上次路径更新过去的gt数
@@ -230,7 +234,7 @@ public class BehaviorGroup implements IBehaviorGroup {
             return;
         }
         //到达更新周期时，开始重新计算新路径
-        if (currentRouteUpdateTick >= calcActiveDelay(entity, ROUTE_UPDATE_CYCLE + (entity.level.tickRateOptDelay << 1)) || isForceUpdateRoute()) {
+        if (isForceUpdateRoute() || (currentRouteUpdateTick >= calcActiveDelay(entity, ROUTE_UPDATE_CYCLE + (entity.level.tickRateOptDelay << 1)) && shouldUpdateRoute(entity, target))) {
             //若有路径目标，则计算新路径
             //TODO: 这边这个注释会导致循环提交寻路计算任务，介于不清楚其作用，我们仅将他注释。需要分析此处会产生的潜在影响 2023/1/11
             if ((routeFindingTask == null || routeFindingTask.getFinished() /*|| Server.getInstance().getNextTick() - routeFindingTask.getStartTime() > 8*/)) {
@@ -240,6 +244,9 @@ public class BehaviorGroup implements IBehaviorGroup {
                     entity.setShouldUpdateMoveDirection(false);
                     currentRouteUpdateTick = 0;
                     setForceUpdateRoute(false);
+
+                    //写入section变更记录
+                    cacheSectionBlockChange(entity.level, calPassByChunkSections(this.routeFinder.getRoute().stream().map(Node::getVector3).toList(), entity.level));
                 }).setStart(entity.clone()).setTarget(target));
             }
         }
@@ -257,6 +264,68 @@ public class BehaviorGroup implements IBehaviorGroup {
                 entity.setShouldUpdateMoveDirection(false);
             }
         }
+    }
+
+    /**
+     * 检查路径是否需要更新。此方法只会粗略的检测路径经过的chunk是否发生了变化
+     * @return 是否需要更新路径
+     */
+    @Since("1.19.50-r4")
+    protected boolean shouldUpdateRoute(EntityIntelligent entity, Vector3 newMoveTarget) {
+        //已经在运行
+        if (this.routeFindingTask != null && !this.routeFindingTask.getFinished())
+            return false;
+        //终点发生变化或第一次计算，需要重算
+        if (this.routeFinder.getTarget() == null || !this.routeFinder.getTarget().floor().equals(newMoveTarget.floor()) || this.blockChangeCache == -1) {
+            this.blockChangeCache = -1;
+            return true;
+        }
+        //chunkX | chunkSectionY | chunkZ
+        Set<Vector3> passByChunkSections = calPassByChunkSections(this.routeFinder.getRoute().stream().map(Node::getVector3).toList(), entity.level);
+        long total = 0;
+        for (Vector3 vector3 : passByChunkSections) {
+            total += getSectionBlockChange(entity.level, vector3);
+        }
+        if (blockChangeCache != total) {
+            blockChangeCache = -1;
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 缓存section的blockChanges到blockChangeCache
+     */
+    @Since("1.19.50-r4")
+    protected void cacheSectionBlockChange(Level level, Set<Vector3> vecs) {
+        blockChangeCache = 0;
+        vecs.forEach(vector3 -> {
+            var sectionChanges = getSectionBlockChange(level, vector3);
+            blockChangeCache += sectionChanges;
+        });
+    }
+
+    /**
+     * 返回sectionVector对应的section的blockChanges
+     */
+    @Since("1.19.50-r4")
+    protected long getSectionBlockChange(Level level, Vector3 vector3) {
+        var chunk = level.getChunk((int) vector3.x, (int) vector3.z);
+        //TODO: 此处强转未经检查，可能在未来导致兼容性问题
+        return ((BaseChunk)chunk).getSectionBlockChanges((int) vector3.y);
+    }
+
+    /**
+     * 计算坐标集经过的ChunkSection
+     * @return (chunkX | chunkSectionY | chunkZ)
+     */
+    @Since("1.19.50-r4")
+    protected Set<Vector3> calPassByChunkSections(Collection<Vector3> nodes, Level level) {
+        Set<Vector3> passByChunkSections = new HashSet<>();
+        nodes.forEach(vector3 -> {
+            passByChunkSections.add(new Vector3(vector3.getChunkX(), ((int)vector3.y - level.getMinHeight()) >> 4, vector3.getChunkZ()));
+        });
+        return passByChunkSections;
     }
 
     @Override

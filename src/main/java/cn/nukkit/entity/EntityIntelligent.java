@@ -79,7 +79,6 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
             var behaviorGroup = getBehaviorGroup();
             behaviorGroup.tickRunningCoreBehaviors(this);
             behaviorGroup.tickRunningBehaviors(this);
-            behaviorGroup.applyController(this);
             if (EntityAI.checkDebugOption(EntityAI.DebugOption.BEHAVIOR)) behaviorGroup.debugTick(this);
         }
         return super.onUpdate(currentTick);
@@ -98,7 +97,10 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
             behaviorGroup.evaluateCoreBehaviors(this);
             behaviorGroup.evaluateBehaviors(this);
             behaviorGroup.updateRoute(this);
+            //在物理计算之前处理运动控制器，以使物理计算能一并处理ai的motion
+            behaviorGroup.applyController(this);
         }
+        super.asyncPrepare(currentTick);
     }
 
     @Override
