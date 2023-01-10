@@ -251,6 +251,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     protected void handleCollideMovement(int currentTick) {
         var selfAABB = getOffsetBoundingBox().getOffsetBoundingBox(this.motionX, this.motionY, this.motionZ);
         var collidingEntities = this.level.fastCollidingEntities(selfAABB, this);
+        collidingEntities.removeIf(entity -> !(entity instanceof EntityPhysical || entity instanceof Player));
         var size = collidingEntities.size();
         if (size == 0) {
             this.previousCollideMotion.setX(0);
