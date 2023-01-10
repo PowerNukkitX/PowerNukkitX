@@ -186,12 +186,27 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final int SMITHING_WINDOW_ID = dynamic(6);
-
-    @Since("FUTURE")
-    protected static final int RESOURCE_PACK_CHUNK_SIZE = 8 * 1024; // 8KB
-    private static final int NO_SHIELD_DELAY = 10;
     public final HashSet<String> achievements = new HashSet<>();
     public final Map<Long, Boolean> usedChunks = new Long2ObjectOpenHashMap<>();
+    public boolean playedBefore;
+    public boolean spawned = false;
+    public boolean loggedIn = false;
+    @Since("1.4.0.0-PN")
+    public boolean locallyInitialized = false;
+    public int gamemode;
+    public long lastBreak;
+    /**
+     * 每tick 当前位置与移动目标位置向量之差
+     * <p>
+     * The difference between the current position and the moving target position vector per tick
+     */
+    public Vector3 speed = null;
+    public int craftingType = CRAFTING_SMALL;
+    public long creationTime = 0;
+    public Block breakingBlock = null;
+    public int pickedXPOrb = 0;
+    public EntityFishingHook fishing = null;
+    public long lastSkinChange;
     protected final SourceInterface interfaz;
     @Since("1.19.30-r1")
     @PowerNukkitXOnly
@@ -204,44 +219,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected final Map<UUID, Player> hiddenPlayers = new HashMap<>();
     protected final int chunksPerTick;
     protected final int spawnThreshold;
-    private final Queue<Vector3> clientMovements = PlatformDependent.newMpscQueue(4);
-    private final AtomicReference<Locale> locale = new AtomicReference<>(null);
-    public boolean playedBefore;
-    public boolean spawned = false;
-    public boolean loggedIn = false;
-    @Since("1.4.0.0-PN")
-    public boolean locallyInitialized = false;
-    private boolean verified = false;
-    private int unverifiedPackets;
-    public int gamemode;
-    public long lastBreak;
-    public Vector3 speed = null;
-    public int craftingType = CRAFTING_SMALL;
-    public long creationTime = 0;
-    public Block breakingBlock = null;
-    public int pickedXPOrb = 0;
-    public EntityFishingHook fishing = null;
-    public long lastSkinChange;
     protected int windowCnt = 4;
     @Since("1.4.0.0-PN")
     protected int closingWindowId = Integer.MIN_VALUE;
     protected int messageCounter = 2;
-
-    private String clientSecret;
-
-    /**
-     * 每tick 当前位置与移动目标位置向量之差
-     * <p>
-     * The difference between the current position and the moving target position vector per tick
-     */
-    public Vector3 speed = null;
-
-    private final Queue<Vector3> clientMovements = PlatformDependent.newMpscQueue(4);
-
-    public final HashSet<String> achievements = new HashSet<>();
-
-    public int craftingType = CRAFTING_SMALL;
-
     protected PlayerUIInventory playerUIInventory;
     protected CraftingGrid craftingGrid;
     protected CraftingTransaction craftingTransaction;
@@ -272,6 +253,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected String username;
     protected String iusername;
     protected String displayName;
+    protected static final int RESOURCE_PACK_CHUNK_SIZE = 8 * 1024; // 8KB
 
     /**
      * 这个值代表玩家是否正在使用物品(长按右键)，-1时玩家未使用物品，当玩家使用物品时该值为{@link Server#getTick() getTick()}的值.
@@ -289,7 +271,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected Position spawnPosition;
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    protected Vector3 spawnBlockPosition;
+    @PowerNukkitXDifference(info = "change as Position")
+    protected Position spawnBlockPosition;
 
     /**
      * 代表玩家悬浮空中所经过的tick数.
@@ -317,19 +300,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      */
     protected int lastChorusFruitTeleport = 20;
 
-    /**
-     * 用来暂存放玩家打开的末影箱实例对象，当玩家打开末影箱时该值为指定为那个末影箱，当玩家关闭末影箱后重新设置回null.
-     * <p>
-     * This is used to temporarily store the player's open EnderChest instance object, when the player opens the EnderChest the value is specified as that EnderChest, when the player closes the EnderChest reset back to null.
-     */
-    private BlockEnderChest viewingEnderChest = null;
-
-    private LoginChainData loginChainData;
-    public Block breakingBlock = null;
-    private PlayerBlockActionData lastBlockAction;
-
-    public int pickedXPOrb = 0;
-
     protected int formWindowCount = 0;
     protected Map<Integer, FormWindow> formWindows = new Int2ObjectOpenHashMap<>();
     protected Map<Integer, FormWindow> serverSettings = new Int2ObjectOpenHashMap<>();
@@ -349,8 +319,43 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected boolean shouldLogin = false;
     protected double lastRightClickTime = 0.0;
     protected Vector3 lastRightClickPos = null;
-
+    private final Queue<Vector3> clientMovements = PlatformDependent.newMpscQueue(4);
+    private final AtomicReference<Locale> locale = new AtomicReference<>(null);
+    private boolean verified = false;
+    private int unverifiedPackets;
+    private String clientSecret;
     private int timeSinceRest;
+    private String buttonText = "Button";
+    private boolean inventoryOpen;
+    private PermissibleBase perm = null;
+    private int hash;
+    private int exp = 0;
+    private int expLevel = 0;
+    private final int loaderId;
+    private BlockVector3 lastBreakPosition = new BlockVector3();
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    private boolean showingCredits;
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    private boolean hasSeenCredits;
+    private boolean wasInSoulSandCompatible;
+    private float soulSpeedMultiplier = 1;
+    private Entity killer = null;
+    /**
+     * 用来暂存放玩家打开的末影箱实例对象，当玩家打开末影箱时该值为指定为那个末影箱，当玩家关闭末影箱后重新设置回null.
+     * <p>
+     * This is used to temporarily store the player's open EnderChest instance object, when the player opens the EnderChest the value is specified as that EnderChest, when the player closes the EnderChest reset back to null.
+     */
+    private BlockEnderChest viewingEnderChest = null;
+
+    private LoginChainData loginChainData;
+    private static final int NO_SHIELD_DELAY = 10;
+    private PlayerBlockActionData lastBlockAction;
+    private TaskHandler delayedPosTrackingUpdate;
+    private int noShieldTicks;
+
+    private AsyncTask preLoginEventTask = null;
 
     /**
      * 玩家升级时播放音乐的时间
@@ -389,6 +394,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected Entity lastBeAttackEntity = null;
 
     private boolean foodEnabled = true;
+
     /**
      * 单元测试用的构造函数
      * <p>
@@ -451,38 +457,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @Since("1.19.50-r3")
     private static int toNetworkGamemode(int gamemode) {
         return gamemode != SPECTATOR ? gamemode : GameType.SPECTATOR.ordinal();
-    }
-
-    public static int calculateRequireExperience(int level) {
-        if (level >= 30) {
-            return 112 + (level - 30) * 9;
-        } else if (level >= 15) {
-            return 37 + (level - 15) * 5;
-        } else {
-            return 7 + level * 2;
-        }
-    }
-
-    public static BatchPacket getChunkCacheFromData(int chunkX, int chunkZ, int subChunkCount, byte[] payload) {
-        LevelChunkPacket pk = new LevelChunkPacket();
-        pk.chunkX = chunkX;
-        pk.chunkZ = chunkZ;
-        pk.subChunkCount = subChunkCount;
-        pk.data = payload;
-        pk.encode();
-
-        BatchPacket batch = new BatchPacket();
-        byte[][] batchPayload = new byte[2][];
-        byte[] buf = pk.getBuffer();
-        batchPayload[0] = Binary.writeUnsignedVarInt(buf.length);
-        batchPayload[1] = buf;
-        byte[] data = Binary.appendBytes(batchPayload);
-        try {
-            batch.payload = Network.deflateRaw(data, Server.getInstance().networkCompressionLevel);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        return batch;
     }
 
     private void logTriedToSetButHadInHand(Item tried, Item had) {
@@ -2246,11 +2220,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     @Deprecated
-    public boolean getAllowFlight() {
-        return this.getAdventureSettings().get(Type.ALLOW_FLIGHT);
-    }
-
-    @Deprecated
     public void setAllowFlight(boolean value) {
         this.getAdventureSettings().set(Type.ALLOW_FLIGHT, value);
         this.getAdventureSettings().update();
@@ -2333,15 +2302,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      */
     public boolean getRemoveFormat() {
         return removeFormat;
-    }
-
-    /**
-     * {@code setRemoveFormat(true)}
-     *
-     * @see #setRemoveFormat(boolean)
-     */
-    public void setRemoveFormat() {
-        this.setRemoveFormat(true);
     }
 
     /**
@@ -2764,29 +2724,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
-    @PowerNukkitDifference(info = "pos can be null now and if it is null,the player's spawn will use the level's default spawn")
-    public void setSpawn(@Nullable Vector3 pos) {
-        if (pos != null) {
-            Level level;
-            if (!(pos instanceof Position)) {
-                level = this.level;
-            } else {
-                level = ((Position) pos).getLevel();
-            }
-            this.spawnPosition = new Position(pos.x, pos.y, pos.z, level);
-            this.spawnBlockPosition = null;
-            SetSpawnPositionPacket pk = new SetSpawnPositionPacket();
-            pk.spawnType = SetSpawnPositionPacket.TYPE_PLAYER_SPAWN;
-            pk.x = (int) this.spawnPosition.x;
-            pk.y = (int) this.spawnPosition.y;
-            pk.z = (int) this.spawnPosition.z;
-            pk.dimension = this.spawnPosition.level.getDimension();
-            this.dataPacket(pk);
-        } else {
-            this.spawnPosition = null;
-        }
-    }
-
     /**
      * 保存玩家重生位置的方块的位置。当未知时可能为空。
      * <p>
@@ -3035,6 +2972,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 level = ((Position) pos).getLevel();
             }
             this.spawnPosition = new Position(pos.x, pos.y, pos.z, level);
+            this.spawnBlockPosition = null;
             SetSpawnPositionPacket pk = new SetSpawnPositionPacket();
             pk.spawnType = SetSpawnPositionPacket.TYPE_PLAYER_SPAWN;
             pk.x = (int) this.spawnPosition.x;
@@ -3113,8 +3051,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      *
      * @see #setGamemode(int, boolean, AdventureSettings)
      */
-    public boolean setGamemode(int gamemode, boolean clientSide) {
-        return this.setGamemode(gamemode, clientSide, null);
+    public boolean setGamemode(int gamemode, boolean serverSide) {
+        return this.setGamemode(gamemode, serverSide, null);
+    }
+
+    public boolean setGamemode(int gamemode, boolean serverSide, AdventureSettings newSettings) {
+        return this.setGamemode(gamemode, serverSide, newSettings, false);
     }
 
     /**
@@ -3124,9 +3066,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @param serverSide  是否只更新服务端侧玩家游戏模式。若为true，则不会向客户端发送游戏模式更新包
      * @param newSettings 新的AdventureSettings
      * @param forceUpdate 是否强制更新。若为true，将取消对形参'gamemode'的检查
-     * @return
+     * @return gamemode
      */
-    public boolean setGamemode(int gamemode, boolean clientSide, AdventureSettings newSettings) {
+    public boolean setGamemode(int gamemode, boolean serverSide, AdventureSettings newSettings, boolean forceUpdate) {
         if (!forceUpdate && (gamemode < 0 || gamemode > 3 || this.gamemode == gamemode)) {
             return false;
         }
@@ -7270,7 +7212,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * Show dialog window to the player.
      *
      * @param dialog NPC对话框<br>the dialog
-     * @param book   如果为true,将会立即更新该{@link FormWindowDialog#sceneName}<br>If true, the {@link FormWindowDialog#sceneName} will be updated immediately.
+     * @param book   如果为true,将会立即更新该{@link FormWindowDialog#getSceneName()}<br>If true, the {@link FormWindowDialog#getSceneName()} will be updated immediately.
      */
     public void showDialogWindow(FormWindowDialog dialog, boolean book) {
         String actionJson = dialog.getButtonJSONData();
