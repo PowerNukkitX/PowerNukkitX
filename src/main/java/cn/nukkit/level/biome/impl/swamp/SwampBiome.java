@@ -16,11 +16,11 @@ public class SwampBiome extends GrassyBiome {
 
     public SwampBiome() {
         super();
-        
+
         PopulatorDisk populatorDiskClay = new PopulatorDisk(1.0, BlockState.of(CLAY_BLOCK), 1, 2, 1, Arrays.asList(BlockState.of(DIRT), BlockState.of(CLAY_BLOCK)));
         populatorDiskClay.setBaseAmount(1);
         addPopulator(populatorDiskClay);
-        
+
         PopulatorLilyPad lilypad = new PopulatorLilyPad();
         lilypad.setBaseAmount(4);
         lilypad.setRandomAmount(2);
@@ -29,7 +29,7 @@ public class SwampBiome extends GrassyBiome {
         SwampTreePopulator trees = new SwampTreePopulator();
         trees.setBaseAmount(2);
         this.addPopulator(trees);
-        
+
         PopulatorSeagrass populatorSeagrass = new PopulatorSeagrass(0.6);
         populatorSeagrass.setBaseAmount(32);
         populatorSeagrass.setBaseAmount(32);

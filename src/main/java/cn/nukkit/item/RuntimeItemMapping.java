@@ -213,9 +213,9 @@ public class RuntimeItemMapping {
                 this.entries.remove(entry);
                 this.namespaceNetworkMap.remove(block.getNamespaceId());
                 this.networkNamespaceMap.remove(255 - block.getId());
-                this.generatePalette();
             }
         }
+        this.generatePalette();
     }
 
     /**

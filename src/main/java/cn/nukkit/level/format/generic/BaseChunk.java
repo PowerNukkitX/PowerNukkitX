@@ -34,10 +34,9 @@ import java.util.stream.Stream;
  */
 @Log4j2
 public abstract class BaseChunk extends BaseFullChunk implements Chunk {
-    private boolean delayPaletteUpdates;
-
     protected ChunkSection[] sections;
     protected int sectionLength;
+    private boolean delayPaletteUpdates;
 
     @PowerNukkitOnly("Needed for level backward compatibility")
     @Since("1.3.0.0-PN")

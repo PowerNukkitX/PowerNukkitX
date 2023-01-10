@@ -14,10 +14,12 @@ import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.inventory.Fuel;
+import cn.nukkit.inventory.ItemTag;
 import cn.nukkit.item.customitem.CustomItemDefinition;
 import cn.nukkit.item.customitem.ItemCustom;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.enchantment.sideeffect.SideEffect;
+import cn.nukkit.item.randomitem.ItemEchoShard;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
@@ -407,6 +409,8 @@ public class Item implements Cloneable, BlockID, ItemID {
             list[ITEM_MANGROVE_DOOR] = ItemDoorMangrove.class;//633
             list[MANGROVE_SIGN] = ItemMangroveSign.class;//634
 
+            list[RECORD_5] = ItemRecord5.class;//636
+            list[DISC_FRAGMENT_5] = ItemDiscFragment5.class;//637
 
             list[OAK_CHEST_BOAT] = ItemChestBoatOak.class; //638
             list[BIRCH_CHEST_BOAT] = ItemChestBoatBirch.class; //639
@@ -415,6 +419,8 @@ public class Item implements Cloneable, BlockID, ItemID {
             list[ACACIA_CHEST_BOAT] = ItemChestBoatAcacia.class; //642
             list[DARK_OAK_CHEST_BOAT] = ItemChestBoatDarkOak.class; //643
             list[MANGROVE_CHEST_BOAT] = ItemChestBoatMangrove.class; //644
+
+            list[ECHO_SHARD] = ItemEchoShard.class; //647
 
             list[GLOW_BERRIES] = ItemGlowBerries.class; //654
 
@@ -625,17 +631,8 @@ public class Item implements Cloneable, BlockID, ItemID {
      */
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public static void registerCustomItem(Class<? extends ItemCustom> c) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        if (!Server.getInstance().isEnableExperimentMode() || Server.getInstance().getConfig("settings.waterdogpe", false)) {
-            log.warn("The server does not have the experiment mode feature enabled. " + c.getName() + "Unable to register!");
-            return;
-        }
-        ItemCustom itemCustom = c.getDeclaredConstructor().newInstance();
-        if (CUSTOM_ITEMS.containsKey(itemCustom.getNamespaceId())) return;
-        CUSTOM_ITEMS.put(itemCustom.getNamespaceId(), c);
-        CUSTOM_ITEM_DEFINITIONS.put(itemCustom.getNamespaceId(), itemCustom.getDefinition());
-        RuntimeItems.getRuntimeMapping().registerCustomItem(itemCustom);
-        addCreativeItem(itemCustom);
+    public static void registerCustomItem(Class<? extends ItemCustom> c) {
+        registerCustomItem(List.of(c));
     }
 
     /**
@@ -647,18 +644,34 @@ public class Item implements Cloneable, BlockID, ItemID {
      */
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public static void registerCustomItem(@Nonnull List<Class<? extends ItemCustom>> itemClassList) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    public static void registerCustomItem(@Nonnull List<Class<? extends ItemCustom>> itemClassList) {
         if (!Server.getInstance().isEnableExperimentMode() || Server.getInstance().getConfig("settings.waterdogpe", false)) {
             log.warn("The server does not have the custom item feature enabled. Unable to register the customItemList!");
             return;
         }
         for (var clazz : itemClassList) {
-            ItemCustom itemCustom = clazz.getDeclaredConstructor().newInstance();
-            if (CUSTOM_ITEMS.containsKey(itemCustom.getNamespaceId())) return;
-            CUSTOM_ITEMS.put(itemCustom.getNamespaceId(), clazz);
-            CUSTOM_ITEM_DEFINITIONS.put(itemCustom.getNamespaceId(), itemCustom.getDefinition());
-            RuntimeItems.getRuntimeMapping().registerCustomItem(itemCustom);
-            addCreativeItem(itemCustom);
+            try {
+                var method = clazz.getDeclaredConstructor();
+                method.setAccessible(true);
+                ItemCustom itemCustom = method.newInstance();
+                if (CUSTOM_ITEMS.containsKey(itemCustom.getNamespaceId())) return;
+                CUSTOM_ITEMS.put(itemCustom.getNamespaceId(), clazz);
+                var customDef = itemCustom.getDefinition();
+                CUSTOM_ITEM_DEFINITIONS.put(itemCustom.getNamespaceId(), customDef);
+                // 在服务端注册自定义物品的tag
+                if (customDef.nbt().get("components") instanceof CompoundTag componentTag) {
+                    var tagList = componentTag.getList("item_tags", StringTag.class);
+                    if (tagList.size() != 0) {
+                        ItemTag.registerItemTag(itemCustom.getNamespaceId(), tagList.getAll().stream().map(tag -> tag.data).collect(Collectors.toSet()));
+                    }
+                }
+                RuntimeItems.getRuntimeMapping().registerCustomItem(itemCustom);
+                addCreativeItem(itemCustom);
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                throw new RuntimeException(e);
+            } catch (NoSuchMethodException e) {
+                log.error("Cannot find the parameterless constructor for this custom item:" + clazz.getCanonicalName());
+            }
         }
     }
 

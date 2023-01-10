@@ -7,7 +7,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityCanAttack;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.ai.memory.EntityMemory;
+import cn.nukkit.entity.ai.memory.MemoryType;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.inventory.EntityInventoryHolder;
@@ -27,9 +27,9 @@ import java.util.Map;
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class MeleeAttackExecutor extends AboutControlExecutor {
+public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
 
-    protected Class<? extends EntityMemory<?>> memoryClazz;
+    protected MemoryType<? extends Entity> memory;
     protected float speed;
     protected int maxSenseRangeSquared;
     protected boolean clearDataWhenLose;
@@ -56,14 +56,14 @@ public class MeleeAttackExecutor extends AboutControlExecutor {
     /**
      * 近战攻击执行器
      *
-     * @param memoryClazz       记忆
+     * @param memory            记忆
      * @param speed             移动向攻击目标的速度
      * @param maxSenseRange     最大获取攻击目标范围
-     * @param clearDataWhenLose 失去目标时清空memoryClazz对应的记忆
+     * @param clearDataWhenLose 失去目标时清空记忆
      * @param coolDown          攻击冷却时间(单位tick)
      */
-    public MeleeAttackExecutor(Class<? extends EntityMemory<?>> memoryClazz, float speed, int maxSenseRange, boolean clearDataWhenLose, int coolDown) {
-        this.memoryClazz = memoryClazz;
+    public MeleeAttackExecutor(MemoryType<? extends Entity> memory, float speed, int maxSenseRange, boolean clearDataWhenLose, int coolDown) {
+        this.memory = memory;
         this.speed = speed;
         this.maxSenseRangeSquared = maxSenseRange * maxSenseRange;
         this.clearDataWhenLose = clearDataWhenLose;
@@ -77,26 +77,28 @@ public class MeleeAttackExecutor extends AboutControlExecutor {
 
         if (this.target == null) {
             //获取目标
-            if (entity.getBehaviorGroup().getMemoryStorage().isEmpty(memoryClazz)) return false;
-            target = entity.getBehaviorGroup().getMemoryStorage().get(memoryClazz).getData();
+            if (entity.getBehaviorGroup().getMemoryStorage().isEmpty(memory)) return false;
+            target = entity.getBehaviorGroup().getMemoryStorage().get(memory);
         }
 
+        //如果已经死了就退出
+        if (!target.isAlive()) return false;
+
         //如果是玩家检测模式 检查距离 检查是否在同一维度
-        if ((target instanceof Player player && !player.isSurvival()) || entity.distanceSquared(target) > maxSenseRangeSquared
-                || !entity.level.getName().equals(target.level.getName())) return false;
+        if ((target instanceof Player player && (!player.isSurvival() || !player.isOnline())) || entity.distanceSquared(target) > maxSenseRangeSquared
+                || !(entity.level.getId() == target.level.getId())) return false;
 
         if (entity.getMovementSpeed() != speed) entity.setMovementSpeed(speed);
 
-        Vector3 clonedTarget = target.clone();
         if (this.lookTarget == null) {
-            lookTarget = clonedTarget;
+            this.lookTarget = target.clone();
         }
         //更新寻路target
-        setRouteTarget(entity, clonedTarget);
+        setRouteTarget(entity, this.target.clone());
         //更新视线target
-        setLookTarget(entity, lookTarget);
+        setLookTarget(entity, this.lookTarget.clone());
 
-        var floor = clonedTarget.floor();
+        var floor = target.floor();
 
         if (oldTarget == null || !oldTarget.equals(floor)) entity.getBehaviorGroup().setForceUpdateRoute(true);
 
@@ -136,8 +138,12 @@ public class MeleeAttackExecutor extends AboutControlExecutor {
             target.attack(ev);
             playAttackAnimation(entity);
             attackTick = 0;
-            if (target.getHealth() == 0) return false;
+            return target.getHealth() != 0;
         }
+
+        //清空以待下次使用
+        this.lookTarget = null;
+        this.target = null;
         return true;
     }
 
@@ -148,7 +154,7 @@ public class MeleeAttackExecutor extends AboutControlExecutor {
         //重置速度
         entity.setMovementSpeed(0.1f);
         if (clearDataWhenLose) {
-            entity.getBehaviorGroup().getMemoryStorage().clear(memoryClazz);
+            entity.getBehaviorGroup().getMemoryStorage().clear(memory);
         }
         entity.setEnablePitch(false);
         this.target = null;
@@ -162,7 +168,7 @@ public class MeleeAttackExecutor extends AboutControlExecutor {
         //重置速度
         entity.setMovementSpeed(0.1f);
         if (clearDataWhenLose) {
-            entity.getBehaviorGroup().getMemoryStorage().clear(memoryClazz);
+            entity.getBehaviorGroup().getMemoryStorage().clear(memory);
         }
         entity.setEnablePitch(false);
         this.target = null;

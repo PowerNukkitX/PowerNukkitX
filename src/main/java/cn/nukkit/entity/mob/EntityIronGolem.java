@@ -69,9 +69,8 @@ public class EntityIronGolem extends EntityWalkingMob {
 
     @Override
     protected void initEntity() {
-        super.initEntity();
         this.setMaxHealth(100);
-        this.setHealth(100);
+        super.initEntity();
     }
 
     @Override

@@ -112,6 +112,16 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
             } else {
                 this.motionY -= this.getGravity();
             }
+        } else {
+            /*
+             * 修复生物在天上浮空而不能识别是否在地面的漏洞
+             * 通过 shrink 缩小 XZ 碰撞箱大小，并将Y设为0
+             * 再通过 offset 偏移碰撞箱检测位置（偏移至脚下）
+             */
+            this.onGround = this.level.getTickCachedCollisionBlocks(
+                    this.offsetBoundingBox.
+                            shrink(0.4 * this.getWidth(), 0.5 * this.getHeight(), 0.4 * this.getWidth()).
+                            offset(0, -0.6 * this.getHeight(), 0)).length > 0;
         }
     }
 
@@ -302,6 +312,8 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     protected void calculateOffsetBoundingBox() {
         final double dx = this.getWidth() * 0.5;
         final double dz = this.getHeight() * 0.5;
+        //由于是asyncPrepare,this.offsetBoundingBox有几率为null，需要判空
+        if (this.offsetBoundingBox == null) return;
         this.offsetBoundingBox.setMinX(this.x - dx);
         this.offsetBoundingBox.setMaxX(this.x + dz);
         this.offsetBoundingBox.setMinY(this.y);

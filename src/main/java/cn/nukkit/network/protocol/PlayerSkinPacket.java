@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.Server;
 import cn.nukkit.entity.data.Skin;
 import lombok.ToString;
 
@@ -36,6 +37,6 @@ public class PlayerSkinPacket extends DataPacket {
         putSkin(skin);
         putString(newSkinName);
         putString(oldSkinName);
-        putBoolean(skin.isTrusted());
+        putBoolean(skin.isTrusted() || Server.getInstance().isForceSkinTrusted());
     }
 }

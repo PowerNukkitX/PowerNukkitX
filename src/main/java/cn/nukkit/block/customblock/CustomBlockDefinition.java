@@ -4,12 +4,14 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.customblock.data.BlockCreativeCategory;
+import cn.nukkit.block.customblock.data.BoneCondition;
 import cn.nukkit.block.customblock.data.Materials;
 import cn.nukkit.block.customblock.data.Permutations;
 import cn.nukkit.blockproperty.*;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.*;
 import lombok.NonNull;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -18,9 +20,9 @@ import java.util.Locale;
 import java.util.function.Consumer;
 
 /**
- * CustomBlockDefinition用于获得发送给客户端的方块行为包数据。{@link CustomBlockDefinition#Builder}中提供的方法都是控制发送给客户端数据，如果需要控制服务端部分行为，请覆写{@link cn.nukkit.block.Block Block}中的方法。
+ * CustomBlockDefinition用于获得发送给客户端的方块行为包数据。{@link CustomBlockDefinition.Builder}中提供的方法都是控制发送给客户端数据，如果需要控制服务端部分行为，请覆写{@link cn.nukkit.block.Block Block}中的方法。
  * <p>
- * CustomBlockDefinition is used to get the data of the block behavior_pack sent to the client. The methods provided in {@link CustomBlockDefinition#Builder} control the data sent to the client, if you need to control some of the server-side behavior, please override the methods in {@link cn.nukkit.block.Block Block}.
+ * CustomBlockDefinition is used to get the data of the block behavior_pack sent to the client. The methods provided in {@link CustomBlockDefinition.Builder} control the data sent to the client, if you need to control some of the server-side behavior, please override the methods in {@link cn.nukkit.block.Block Block}.
  */
 @PowerNukkitXOnly
 @Since("1.19.31-r1")
@@ -66,7 +68,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
 
             //设置一些与PNX内部对应的方块属性
             components.putCompound("minecraft:friction", new CompoundTag()
-                            .putFloat("value", (float) customBlock.getFrictionFactor()))
+                            .putFloat("value", (float) Math.abs(1 - customBlock.getFrictionFactor()))) // in vanilla, the closer factor to 0, the more slippery the block is. But in PNX it's reversed.
                     .putCompound("minecraft:explosion_resistance", new CompoundTag()
                             .putInt("value", (int) customBlock.getResistance()))
                     .putCompound("minecraft:light_dampening", new CompoundTag()
@@ -153,6 +155,71 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
             var per = permutations.data();
             per.setName("permutations");
             this.nbt.putList(per);
+            return this;
+        }
+
+        /**
+         * 条件渲染自定义方块的部分模型内容。
+         * <p>
+         * Partially render the content of the custom block with conditional rendering.
+         */
+        public Builder partVisibility(@NotNull BoneCondition... boneConditions) {
+            var components = this.nbt.getCompound("components");
+            var boneConditionsNBT = new CompoundTag("boneConditions");
+            for (var boneCondition : boneConditions) {
+                var tag = new CompoundTag(boneCondition.getConditionName());
+                tag.putString("bone_condition", boneCondition.getConditionExpr());
+                tag.putString("bone_name", boneCondition.getBoneName());
+                tag.putInt("molang_version", boneCondition.getMolangVersion());
+                boneConditionsNBT.putCompound(tag.getName(), tag);
+            }
+            components.put(boneConditionsNBT.getName(), boneConditionsNBT);
+            return this;
+        }
+
+        /**
+         * 设置此方块的客户端碰撞箱。
+         * <p>
+         * Set the client collision box for this block.
+         *
+         * @param origin 碰撞箱的原点 The origin of the collision box
+         * @param size   碰撞箱的大小 The size of the collision box
+         */
+        public Builder collisionBox(@NotNull Vector3f origin, @NotNull Vector3f size) {
+            this.nbt.getCompound("components")
+                    .putCompound("minecraft:collision_box", new CompoundTag()
+                            .putBoolean("enabled", true)
+                            .putList(new ListTag<FloatTag>("origin")
+                                    .add(new FloatTag("", -3.25f))
+                                    .add(new FloatTag("", 4.75f))
+                                    .add(new FloatTag("", -3.25f)))
+                            .putList(new ListTag<FloatTag>("size")
+                                    .add(new FloatTag("", 6.5f))
+                                    .add(new FloatTag("", 6.5f))
+                                    .add(new FloatTag("", 6.5f))));
+            return this;
+        }
+
+        /**
+         * 设置此方块的客户端选择箱。
+         * <p>
+         * Set the client collision box for this block.
+         *
+         * @param origin 选择箱的原点 The origin of the collision box
+         * @param size   选择箱的大小 The size of the collision box
+         */
+        public Builder selectionBox(@NotNull Vector3f origin, @NotNull Vector3f size) {
+            this.nbt.getCompound("components")
+                    .putCompound("minecraft:selection_box", new CompoundTag()
+                            .putBoolean("enabled", true)
+                            .putList(new ListTag<FloatTag>("origin")
+                                    .add(new FloatTag("", -3.25f))
+                                    .add(new FloatTag("", 4.75f))
+                                    .add(new FloatTag("", -3.25f)))
+                            .putList(new ListTag<FloatTag>("size")
+                                    .add(new FloatTag("", 6.5f))
+                                    .add(new FloatTag("", 6.5f))
+                                    .add(new FloatTag("", 6.5f))));
             return this;
         }
 

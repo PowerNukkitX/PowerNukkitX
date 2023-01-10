@@ -84,7 +84,7 @@ public class ReadOnlyLegacyStructureTemplate extends AbstractLegacyStructureTemp
             }
 
             BlockVector3 vec = blockInfo.pos.add(0, position.getY());
-            
+
             if (entry.getId() != BlockID.STRUCTURE_BLOCK) {
                 int BlockIDLayer0 = chunk.getBlockId(vec.getX(), vec.getY(), vec.getZ(), 0);
                 int BlockIDLayer1 = chunk.getBlockId(vec.getX(), vec.getY(), vec.getZ(), 1);
@@ -138,7 +138,7 @@ public class ReadOnlyLegacyStructureTemplate extends AbstractLegacyStructureTemp
                 int BlockIDLayer0 = level.getBlockIdAt(vec.getX(), vec.getY(), vec.getZ(), 0);
                 int BlockIDLayer1 = level.getBlockIdAt(vec.getX(), vec.getY(), vec.getZ(), 1);
                 boolean shouldFillWater = BlockIDLayer0 == BlockID.FLOWING_WATER || BlockIDLayer0 == BlockID.STILL_WATER ||
-                                          BlockIDLayer1 == BlockID.FLOWING_WATER || BlockIDLayer1 == BlockID.STILL_WATER;
+                        BlockIDLayer1 == BlockID.FLOWING_WATER || BlockIDLayer1 == BlockID.STILL_WATER;
                 level.setBlockAtLayer(vec.getX(), vec.getY(), vec.getZ(), 0, entry.getId(), entry.getMeta());
                 if (shouldFillWater) level.setBlockAtLayer(vec.getX(), vec.getY(), vec.getZ(), 1, BlockID.STILL_WATER);
             }
@@ -191,7 +191,8 @@ public class ReadOnlyLegacyStructureTemplate extends AbstractLegacyStructureTemp
                 boolean shouldFillWater = BlockIDLayer0 == BlockID.FLOWING_WATER || BlockIDLayer0 == BlockID.STILL_WATER ||
                         BlockIDLayer1 == BlockID.FLOWING_WATER || BlockIDLayer1 == BlockID.STILL_WATER;
                 chunk.setBlockAtLayer(vec.getX() & 0xf, vec.getY(), vec.getZ() & 0xf, 0, entry.getId(), entry.getMeta());
-                if (shouldFillWater) chunk.setBlockAtLayer(vec.getX() & 0xf, vec.getY(), vec.getZ() & 0xf, 1, BlockID.STILL_WATER);
+                if (shouldFillWater)
+                    chunk.setBlockAtLayer(vec.getX() & 0xf, vec.getY(), vec.getZ() & 0xf, 1, BlockID.STILL_WATER);
             } else if (!isIgnoreAir) {
                 chunk.setBlock(vec.getX() & 0xf, vec.getY(), vec.getZ() & 0xf, Block.AIR);
             }

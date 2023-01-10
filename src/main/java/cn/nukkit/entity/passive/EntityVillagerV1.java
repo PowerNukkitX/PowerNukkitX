@@ -58,8 +58,8 @@ public class EntityVillagerV1 extends EntityCreature implements EntityNPC, Entit
 
     @Override
     public void initEntity() {
-        super.initEntity();
         this.setMaxHealth(20);
+        super.initEntity();
 
         if (!this.namedTag.contains("Profession")) {
             this.setProfession(PROFESSION_GENERIC);
@@ -72,10 +72,5 @@ public class EntityVillagerV1 extends EntityCreature implements EntityNPC, Entit
 
     public void setProfession(int profession) {
         this.namedTag.putInt("Profession", profession);
-    }
-
-    @Override
-    public boolean isBaby() {
-        return this.getDataFlag(DATA_FLAGS, Entity.DATA_FLAG_BABY);
     }
 }

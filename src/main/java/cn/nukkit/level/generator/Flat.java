@@ -1,7 +1,9 @@
 package cn.nukkit.level.generator;
 
+import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.event.level.ChunkPrePopulateEvent;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.generic.BaseFullChunk;
@@ -24,43 +26,15 @@ import java.util.regex.Pattern;
 @Log4j2
 public class Flat extends Generator {
 
-    @Override
-    public int getId() {
-        return TYPE_FLAT;
-    }
-
-    private ChunkManager level;
-
-    private NukkitRandom random;
-
     private final List<Populator> populators = new ArrayList<>();
-
-    private int[][] structure;
-
     private final Map<String, Object> options;
-
+    private ChunkManager level;
+    private NukkitRandom random;
+    private int[][] structure;
     private int floorLevel;
-
     private String preset;
-
     private boolean init = false;
-
     private int biome;
-
-    @Override
-    public ChunkManager getChunkManager() {
-        return level;
-    }
-
-    @Override
-    public Map<String, Object> getSettings() {
-        return this.options;
-    }
-
-    @Override
-    public String getName() {
-        return "flat";
-    }
 
     public Flat() {
         this(new HashMap<>());
@@ -83,6 +57,31 @@ public class Flat extends Generator {
             });
             this.populators.add(ores);
         }
+    }
+
+    @Override
+    public int getId() {
+        return TYPE_FLAT;
+    }
+
+    @Override
+    public ChunkManager getChunkManager() {
+        return level;
+    }
+
+    @Override
+    public NukkitRandom getRandom() {
+        return this.random;
+    }
+
+    @Override
+    public Map<String, Object> getSettings() {
+        return this.options;
+    }
+
+    @Override
+    public String getName() {
+        return "flat";
     }
 
     protected void parsePreset(String preset, int chunkX, int chunkZ) {
@@ -184,8 +183,13 @@ public class Flat extends Generator {
     @Override
     public void populateChunk(int chunkX, int chunkZ) {
         BaseFullChunk chunk = level.getChunk(chunkX, chunkZ);
-        this.random.setSeed(0xdeadbeef ^ (chunkX << 8) ^ chunkZ ^ this.level.getSeed());
-        for (Populator populator : this.populators) {
+        this.random.setSeed(0xdeadbeef ^ ((long) chunkX << 8) ^ chunkZ ^ this.level.getSeed());
+        var event = new ChunkPrePopulateEvent(chunk, this.populators, List.of());
+        Server.getInstance().getPluginManager().callEvent(event);
+        for (Populator populator : event.getTerrainPopulators()) {
+            populator.populate(this.level, chunkX, chunkZ, this.random, chunk);
+        }
+        for (Populator populator : event.getBiomePopulators()) {
             populator.populate(this.level, chunkX, chunkZ, this.random, chunk);
         }
     }

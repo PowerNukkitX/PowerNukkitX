@@ -10,18 +10,19 @@ import cn.nukkit.entity.ai.controller.IController;
 import cn.nukkit.entity.ai.memory.IMemoryStorage;
 import cn.nukkit.entity.ai.memory.MemoryStorage;
 import cn.nukkit.entity.ai.route.RouteFindingManager;
-import cn.nukkit.entity.ai.route.SimpleRouteFinder;
+import cn.nukkit.entity.ai.route.finder.SimpleRouteFinder;
 import cn.nukkit.entity.ai.sensor.ISensor;
 import cn.nukkit.math.Vector3;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
+/**
+ * 标准行为组实现
+ */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 @Getter
@@ -91,7 +92,7 @@ public class BehaviorGroup implements IBehaviorGroup {
 
     protected boolean forceUpdateRoute = false;
 
-
+    @Builder
     public BehaviorGroup(int startRouteUpdateTick, Set<IBehavior> coreBehaviors, Set<IBehavior> behaviors, Set<ISensor> sensors, Set<IController> controllers, SimpleRouteFinder routeFinder) {
         //此参数用于错开各个实体路径更新的时间，避免在1gt内提交过多路径更新任务
         this.currentRouteUpdateTick = startRouteUpdateTick;
@@ -106,6 +107,7 @@ public class BehaviorGroup implements IBehaviorGroup {
     /**
      * 运行并刷新正在运行的行为
      */
+    @Override
     public void tickRunningBehaviors(EntityIntelligent entity) {
         var iterator = runningBehaviors.iterator();
         while (iterator.hasNext()) {
@@ -118,6 +120,7 @@ public class BehaviorGroup implements IBehaviorGroup {
         }
     }
 
+    @Override
     public void tickRunningCoreBehaviors(EntityIntelligent entity) {
         var iterator = runningCoreBehaviors.iterator();
         while (iterator.hasNext()) {
@@ -130,6 +133,7 @@ public class BehaviorGroup implements IBehaviorGroup {
         }
     }
 
+    @Override
     public void collectSensorData(EntityIntelligent entity) {
         sensorPeriodTimer.forEach((sensor, tick) -> {
             //刷新gt数
@@ -141,6 +145,7 @@ public class BehaviorGroup implements IBehaviorGroup {
         });
     }
 
+    @Override
     public void evaluateCoreBehaviors(EntityIntelligent entity) {
         coreBehaviorPeriodTimer.forEach((coreBehavior, tick) -> {
             //若已经在运行了，就不需要评估了
@@ -164,6 +169,7 @@ public class BehaviorGroup implements IBehaviorGroup {
      *
      * @param entity 评估的实体对象
      */
+    @Override
     public void evaluateBehaviors(EntityIntelligent entity) {
         //存储评估成功的行为（未过滤优先级）
         var evalSucceed = new HashSet<IBehavior>(behaviors.size());
@@ -230,7 +236,7 @@ public class BehaviorGroup implements IBehaviorGroup {
                 //clone防止寻路器潜在的修改
                 RouteFindingManager.getInstance().submit(routeFindingTask = new RouteFindingManager.RouteFindingTask(routeFinder, task -> {
                     updateMoveDirection(entity);
-                    entity.setNeedUpdateMoveDirection(false);
+                    entity.setShouldUpdateMoveDirection(false);
                     currentRouteUpdateTick = 0;
                     setForceUpdateRoute(false);
                 })
@@ -245,13 +251,30 @@ public class BehaviorGroup implements IBehaviorGroup {
             entity.setMoveDirectionStart(null);
             entity.setMoveDirectionEnd(null);
         }
-        if (entity.isNeedUpdateMoveDirection()) {
+        if (entity.isShouldUpdateMoveDirection()) {
             if (routeFinder.hasNext()) {
                 //若有新的移动方向，则更新
                 updateMoveDirection(entity);
-                entity.setNeedUpdateMoveDirection(false);
+                entity.setShouldUpdateMoveDirection(false);
             }
         }
+    }
+
+    @Override
+    public void debugTick(EntityIntelligent entity) {
+        var sortedBehaviors = new ArrayList<>(behaviors);
+        sortedBehaviors.sort(Comparator.comparing(IBehavior::getPriority, Integer::compareTo));
+        Collections.reverse(sortedBehaviors);
+
+        var strBuilder = new StringBuilder();
+        for (var behavior : sortedBehaviors) {
+            strBuilder.append(behavior.getBehaviorState() == BehaviorState.ACTIVE ? "§b" : "§7" );
+            strBuilder.append(behavior);
+            strBuilder.append("\n");
+        }
+
+        entity.setNameTag(strBuilder.toString());
+        entity.setNameTagAlwaysVisible();
     }
 
     /**
@@ -273,14 +296,6 @@ public class BehaviorGroup implements IBehaviorGroup {
         behaviors.forEach(behavior -> behaviorPeriodTimer.put(behavior, 0));
         sensors.forEach(sensor -> sensorPeriodTimer.put(sensor, 0));
     }
-
-//    protected void clearMemory(Class<? extends IMemory<?>> clazz) {
-//        memoryStorage.clear(clazz);
-//    }
-//
-//    protected <T> void setMemoryData(Class<? extends IMemory<T>> clazz, T data) {
-//        memoryStorage.get(clazz).setData(data);
-//    }
 
     protected void updateMoveDirection(EntityIntelligent entity) {
         Vector3 end = entity.getMoveDirectionEnd();
@@ -318,20 +333,4 @@ public class BehaviorGroup implements IBehaviorGroup {
         }
         runningBehaviors.clear();
     }
-
-//    /**
-//     * 获取指定Set<IBehavior>内的最高优先级
-//     *
-//     * @param behaviors 行为组
-//     * @return int 最高优先级
-//     */
-//    protected int getHighestPriority(@NotNull Set<IBehavior> behaviors) {
-//        int highestPriority = Integer.MIN_VALUE;
-//        for (IBehavior behavior : behaviors) {
-//            if (behavior.getPriority() > highestPriority) {
-//                highestPriority = behavior.getPriority();
-//            }
-//        }
-//        return highestPriority;
-//    }
 }

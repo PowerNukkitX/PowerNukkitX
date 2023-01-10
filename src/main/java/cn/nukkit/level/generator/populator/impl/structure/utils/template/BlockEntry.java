@@ -33,8 +33,7 @@ public class BlockEntry {
         if (this == obj) {
             return true;
         }
-        if (obj instanceof BlockEntry) {
-            BlockEntry o = (BlockEntry) obj;
+        if (obj instanceof BlockEntry o) {
             return this.id == o.id && this.meta == o.meta;
         }
         return false;

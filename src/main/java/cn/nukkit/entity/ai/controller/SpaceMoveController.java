@@ -3,18 +3,19 @@ package cn.nukkit.entity.ai.controller;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.math.Vector3;
 
 /**
- * 处理3D实体运动
+ * 处理飞行/游泳实体运动
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public class SpaceMoveController implements IController {
     @Override
     public boolean control(EntityIntelligent entity) {
-        if (entity.hasMoveDirection() && !entity.isNeedUpdateMoveDirection()) {
+        if (entity.hasMoveDirection() && !entity.isShouldUpdateMoveDirection()) {
             Vector3 direction = entity.getMoveDirectionEnd();
             var speed = entity.getMovementSpeedAtBlock(entity.getTickCachedLevelBlock());
             if (entity.motionX * entity.motionX + entity.motionY * entity.motionY + entity.motionZ * entity.motionZ > speed * speed * 0.4756) {
@@ -28,19 +29,25 @@ public class SpaceMoveController implements IController {
             var dy = relativeVector.y * k;
             var dz = relativeVector.z * k;
             entity.addTmpMoveMotion(new Vector3(dx, dy, dz));
+            entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_MOVING, true);
             if (xyzLength < speed) {
                 needNewDirection(entity);
+                //刹车！
+                entity.motionX = 0;
+                entity.motionY = 0;
+                entity.motionZ = 0;
                 return false;
             }
             return true;
         } else {
+            entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_MOVING, false);
             return false;
         }
     }
 
     protected void needNewDirection(EntityIntelligent entity) {
         //通知需要新的移动目标
-        entity.setNeedUpdateMoveDirection(true);
+        entity.setShouldUpdateMoveDirection(true);
     }
 
     protected boolean collidesBlocks(EntityIntelligent entity, double dx, double dy, double dz) {

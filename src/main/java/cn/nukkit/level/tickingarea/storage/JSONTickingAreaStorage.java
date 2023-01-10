@@ -20,7 +20,8 @@ import java.util.*;
 
 public class JSONTickingAreaStorage implements TickingAreaStorage {
 
-    private static final Type type = new TypeToken<HashSet<TickingArea>>() {}.getType();
+    private static final Type type = new TypeToken<HashSet<TickingArea>>() {
+    }.getType();
 
     protected static Gson gson = new Gson();
 
@@ -100,7 +101,7 @@ public class JSONTickingAreaStorage implements TickingAreaStorage {
             for (Level level : Server.getInstance().getLevels().values()) {
                 if (areaMap.containsRow(level.getName())) {
                     Files.writeString(Path.of(filePath.toString(), level.getName(), "tickingarea.json"), gson.toJson(areaMap.rowMap().get(level.getName()).values().toArray()));
-                }else{
+                } else {
                     Files.deleteIfExists(Path.of(filePath.toString(), level.getName(), "tickingarea.json"));
                 }
             }

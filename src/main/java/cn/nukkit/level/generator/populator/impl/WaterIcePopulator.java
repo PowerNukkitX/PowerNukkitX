@@ -15,7 +15,7 @@ public class WaterIcePopulator extends Populator {
                 Biome biome = EnumBiome.getBiome(chunk.getBiomeId(x, z));
                 if (biome.isFreezing()) {
                     int topBlock = chunk.getHighestBlockAt(x, z);
-                    if (chunk.getBlockId(x, topBlock, z) == STILL_WATER)     {
+                    if (chunk.getBlockId(x, topBlock, z) == STILL_WATER) {
                         chunk.setBlockId(x, topBlock, z, ICE);
                     }
                 }

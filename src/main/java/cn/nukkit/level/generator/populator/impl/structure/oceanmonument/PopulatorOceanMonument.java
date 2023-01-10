@@ -27,11 +27,34 @@ public class PopulatorOceanMonument extends PopulatorStructure {
 
     protected static final int SPACING = 32;
     protected static final int SEPARATION = 5;
+    protected static boolean[] DEEP_OCEAN_BIOMES = new boolean[256];
+    protected static boolean[] WATER_BIOMES = new boolean[256];
+
+    static {
+        // Oceans
+        WATER_BIOMES[EnumBiome.OCEAN.id] = true;
+        WATER_BIOMES[EnumBiome.FROZEN_OCEAN.id] = true;
+        WATER_BIOMES[EnumBiome.LUKEWARM_OCEAN.id] = true;
+        WATER_BIOMES[EnumBiome.COLD_OCEAN.id] = true;
+        WATER_BIOMES[EnumBiome.WARM_OCEAN.id] = true;
+
+        //Deep Oceans
+        WATER_BIOMES[EnumBiome.DEEP_OCEAN.id] = DEEP_OCEAN_BIOMES[EnumBiome.DEEP_OCEAN.id] = true;
+        WATER_BIOMES[EnumBiome.DEEP_WARM_OCEAN.id] = DEEP_OCEAN_BIOMES[EnumBiome.DEEP_WARM_OCEAN.id] = true;
+        WATER_BIOMES[EnumBiome.DEEP_LUKEWARM_OCEAN.id] = DEEP_OCEAN_BIOMES[EnumBiome.DEEP_LUKEWARM_OCEAN.id] = true;
+        WATER_BIOMES[EnumBiome.DEEP_COLD_OCEAN.id] = DEEP_OCEAN_BIOMES[EnumBiome.DEEP_COLD_OCEAN.id] = true;
+        WATER_BIOMES[EnumBiome.DEEP_FROZEN_OCEAN.id] = DEEP_OCEAN_BIOMES[EnumBiome.DEEP_FROZEN_OCEAN.id] = true;
+
+        // Rivers
+        WATER_BIOMES[EnumBiome.RIVER.id] = true;
+        WATER_BIOMES[EnumBiome.FROZEN_RIVER.id] = true;
+    }
 
     protected final Map<Long, Set<Long>> waitingChunks = Maps.newConcurrentMap();
 
     @Override
     public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
+        if (!chunk.isOverWorld()) return;
         if (DEEP_OCEAN_BIOMES[chunk.getBiomeId(7, chunk.getHighestBlockAt(7, 7), 7)]) {
             //\\ OceanMonumentFeature::isFeatureChunk(BiomeSource const &,Random &,ChunkPos const &,uint)
             int cX = (chunkX < 0 ? chunkX - SPACING + 1 : chunkX) / SPACING;
@@ -63,7 +86,7 @@ public class PopulatorOceanMonument extends PopulatorStructure {
                     Level world = chunk.getProvider().getLevel();
                     this.waitingChunks.put(Level.chunkHash(chunkX, chunkZ), indexes);
                     for (BaseFullChunk ck : chunks) {
-                        Server.getInstance().getScheduler().scheduleAsyncTask(null, new CallbackableChunkGenerationTask<>(world, ck, this,
+                        chunk.getProvider().getLevel().getGenerator().handleAsyncStructureGenTask(new CallbackableChunkGenerationTask<>(world, ck, this,
                                 feature -> feature.generateChunkCallback(level, startX, startZ, chunk, ck.getX(), ck.getZ())));
                     }
                     return;
@@ -151,7 +174,7 @@ public class PopulatorOceanMonument extends PopulatorStructure {
             BoundingBox boundingBox = start.getBoundingBox();
             for (int cx = boundingBox.x0 >> 4; cx <= boundingBox.x1 >> 4; cx++) {
                 for (int cz = boundingBox.z0 >> 4; cz <= boundingBox.z1 >> 4; cz++) {
-                    NukkitRandom rand = new NukkitRandom(cx * r1 ^ cz * r2 ^ seed);
+                    NukkitRandom rand = new NukkitRandom((long) cx * r1 ^ (long) cz * r2 ^ seed);
                     int x = cx << 4;
                     int z = cz << 4;
                     BaseFullChunk ck = level.getChunk(cx, cz);
@@ -164,7 +187,7 @@ public class PopulatorOceanMonument extends PopulatorStructure {
                     } else {
                         int f_cx = cx;
                         int f_cz = cz;
-                        Server.getInstance().getScheduler().scheduleAsyncTask(null, new CallbackableChunkGenerationTask<>(
+                        chunk.getProvider().getLevel().getGenerator().handleAsyncStructureGenTask(new CallbackableChunkGenerationTask<>(
                                 chunk.getProvider().getLevel(), ck, start,
                                 structure -> structure.postProcess(level, rand, new BoundingBox(x, z, x + 15, z + 15), f_cx, f_cz)));
                     }
@@ -181,27 +204,10 @@ public class PopulatorOceanMonument extends PopulatorStructure {
         }
     }
 
-    protected static boolean[] DEEP_OCEAN_BIOMES = new boolean[256];
-    protected static boolean[] WATER_BIOMES = new boolean[256];
-
-    static {
-        // Oceans
-        WATER_BIOMES[EnumBiome.OCEAN.id] = true;
-        WATER_BIOMES[EnumBiome.FROZEN_OCEAN.id] = true;
-        WATER_BIOMES[EnumBiome.LUKEWARM_OCEAN.id] = true;
-        WATER_BIOMES[EnumBiome.COLD_OCEAN.id] = true;
-        WATER_BIOMES[EnumBiome.WARM_OCEAN.id] = true;
-
-        //Deep Oceans
-        WATER_BIOMES[EnumBiome.DEEP_OCEAN.id] = DEEP_OCEAN_BIOMES[EnumBiome.DEEP_OCEAN.id] = true;
-        WATER_BIOMES[EnumBiome.DEEP_WARM_OCEAN.id] = DEEP_OCEAN_BIOMES[EnumBiome.DEEP_WARM_OCEAN.id] = true;
-        WATER_BIOMES[EnumBiome.DEEP_LUKEWARM_OCEAN.id] = DEEP_OCEAN_BIOMES[EnumBiome.DEEP_LUKEWARM_OCEAN.id] = true;
-        WATER_BIOMES[EnumBiome.DEEP_COLD_OCEAN.id] = DEEP_OCEAN_BIOMES[EnumBiome.DEEP_COLD_OCEAN.id] = true;
-        WATER_BIOMES[EnumBiome.DEEP_FROZEN_OCEAN.id] = DEEP_OCEAN_BIOMES[EnumBiome.DEEP_FROZEN_OCEAN.id] = true;
-
-        // Rivers
-        WATER_BIOMES[EnumBiome.RIVER.id] = true;
-        WATER_BIOMES[EnumBiome.FROZEN_RIVER.id] = true;
+    @Since("1.19.21-r2")
+    @Override
+    public boolean isAsync() {
+        return true;
     }
 
     public static class OceanMonumentStart extends StructureStart {
@@ -234,11 +240,5 @@ public class PopulatorOceanMonument extends PopulatorStructure {
         public String getType() {
             return "Monument";
         }
-    }
-
-    @Since("1.19.21-r2")
-    @Override
-    public boolean isAsync() {
-        return true;
     }
 }

@@ -22,7 +22,7 @@ public class CrimsonGrassesPopulator extends Populator {
             int x = NukkitMath.randomRange(random, chunkX << 4, (chunkX << 4) + 15);
             int z = NukkitMath.randomRange(random, chunkZ << 4, (chunkZ << 4) + 15);
             ArrayList<Integer> ys = this.getHighestWorkableBlocks(x, z);
-            for(int y : ys) {
+            for (int y : ys) {
                 if (y <= 1) continue;
 
                 int randomType = random.nextBoundedInt(6);
@@ -41,8 +41,8 @@ public class CrimsonGrassesPopulator extends Populator {
         ArrayList<Integer> blockYs = new ArrayList<>();
         for (y = 128; y > 0; --y) {
             int b = this.level.getBlockIdAt(x, y, z);
-            if ((b == Block.CRIMSON_NYLIUM) && this.level.getBlockIdAt(x, y+1, z) == 0) {
-                blockYs.add(y+1);
+            if ((b == Block.CRIMSON_NYLIUM) && this.level.getBlockIdAt(x, y + 1, z) == 0) {
+                blockYs.add(y + 1);
             }
         }
         return blockYs;

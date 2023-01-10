@@ -14,10 +14,6 @@ public class VillageTwoRoomHouseChest extends RandomizableContainer {
 
     private static final VillageTwoRoomHouseChest INSTANCE = new VillageTwoRoomHouseChest();
 
-    public static VillageTwoRoomHouseChest get() {
-        return INSTANCE;
-    }
-
     private VillageTwoRoomHouseChest() {
         super(Maps.newHashMap(), InventoryType.CHEST.getDefaultSize());
 
@@ -29,5 +25,9 @@ public class VillageTwoRoomHouseChest extends RandomizableContainer {
                 .register(new ItemEntry(Item.BEETROOT, 0, 8, 5, 5))
                 .register(new ItemEntry(Item.WOODEN_HOE, 1));
         this.pools.put(pool1.build(), new RollEntry(8, 6, pool1.getTotalWeight()));
+    }
+
+    public static VillageTwoRoomHouseChest get() {
+        return INSTANCE;
     }
 }

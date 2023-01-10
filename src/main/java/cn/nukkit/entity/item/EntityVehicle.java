@@ -3,6 +3,7 @@ package cn.nukkit.entity.item;
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityInteractable;
+import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.EntityRideable;
 import cn.nukkit.entity.data.IntEntityData;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
@@ -76,6 +77,15 @@ public abstract class EntityVehicle extends Entity implements EntityRideable, En
         }
         // Movement code
         updateMovement();
+
+        //Check riding
+        if (this.riding == null) {
+            for (Entity entity : level.fastNearbyEntities(this.boundingBox.grow(0.20000000298023224, 0.0D, 0.20000000298023224), this)) {
+                if (entity instanceof EntityLiving entityLiving) {
+                    entityLiving.collidingWith(this);
+                }
+            }
+        }
         return true;
     }
 

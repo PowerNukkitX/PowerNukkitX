@@ -10,7 +10,7 @@ public class NibbleArray implements Cloneable {
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
     public static final NibbleArray EMPTY_DATA_ARRAY = new NibbleArray(EmptyChunkSection.EMPTY_DATA_ARRAY);
-    
+
     private final byte[] data;
 
     public NibbleArray(int length) {

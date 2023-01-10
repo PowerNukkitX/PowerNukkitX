@@ -181,7 +181,7 @@ public class JungleTemple extends ScatteredStructurePiece {
         //TODO: tile
         builder.setBlock(new BlockVector3(10, 3, 9), Block.REDSTONE_WIRE);
         builder.fill(new BlockVector3(8, 2, 9), new BlockVector3(8, 2, 10), Block.REDSTONE_WIRE);
-        builder.setBlock(new BlockVector3(10, 2, 10), Block.UNPOWERED_REPEATER, 0 + 4); // N
+        builder.setBlock(new BlockVector3(10, 2, 10), Block.UNPOWERED_REPEATER, 4); // N
         builder.setBlock(new BlockVector3(8, 1, 3), Block.CHEST, 4); // E
         ListTag<CompoundTag> chestE = new ListTag<>("Items");
         JungleTempleChest.get().create(chestE, random);

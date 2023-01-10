@@ -6,7 +6,7 @@ import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.behavior.IBehavior;
 import cn.nukkit.entity.ai.controller.IController;
 import cn.nukkit.entity.ai.memory.IMemoryStorage;
-import cn.nukkit.entity.ai.route.IRouteFinder;
+import cn.nukkit.entity.ai.route.finder.IRouteFinder;
 import cn.nukkit.entity.ai.sensor.ISensor;
 
 import java.util.Set;
@@ -35,7 +35,7 @@ public interface IBehaviorGroup {
     void evaluateCoreBehaviors(EntityIntelligent entity);
 
     /**
-     * 调用行为组内部的所有传感器{@link ISensor}，并将传感器返回的记忆{@link cn.nukkit.entity.ai.memory.IMemory}写入到记忆存储器中{@link IMemoryStorage}
+     * 调用行为组内部的所有传感器{@link ISensor}，并将传感器返回的记忆数据写入到记忆存储器中{@link IMemoryStorage}
      *
      * @param entity 目标实体对象
      */
@@ -117,7 +117,12 @@ public interface IBehaviorGroup {
     /**
      * 要求下一gt立即更新路径
      *
-     * @param forceUpdateRoute
+     * @param forceUpdateRoute 立即更新路径
      */
     void setForceUpdateRoute(boolean forceUpdateRoute);
+
+    /**
+     * 当 {@link cn.nukkit.entity.ai.EntityAI}.DEBUG == true 时此方法每1gt调用一次，用于debug模式相关内容的刷新
+     */
+    default void debugTick(EntityIntelligent entity){};
 }

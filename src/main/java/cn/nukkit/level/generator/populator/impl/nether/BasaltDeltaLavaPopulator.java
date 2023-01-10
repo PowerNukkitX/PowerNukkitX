@@ -22,8 +22,8 @@ public class BasaltDeltaLavaPopulator extends Populator {
             int x = NukkitMath.randomRange(random, chunkX << 4, (chunkX << 4) + 15);
             int z = NukkitMath.randomRange(random, chunkZ << 4, (chunkZ << 4) + 15);
             ArrayList<Integer> ys = this.getHighestWorkableBlocks(x, z);
-            for(int y : ys) {
-                if(y <= 1) continue;
+            for (int y : ys) {
+                if (y <= 1) continue;
                 this.level.setBlockAt(x, y, z, BlockID.STILL_LAVA);
             }
         }
@@ -35,11 +35,11 @@ public class BasaltDeltaLavaPopulator extends Populator {
         for (y = 128; y > 0; --y) {
             int b = this.level.getBlockIdAt(x, y, z);
             if ((b == Block.BASALT || b == Block.BLACKSTONE) &&
-                    this.level.getBlockIdAt(x, y+1, z) == 0 &&
-                    this.level.getBlockIdAt(x+1, y, z) != 0 &&
-                    this.level.getBlockIdAt(x-1, y, z) != 0 &&
-                    this.level.getBlockIdAt(x, y, z+1) != 0 &&
-                    this.level.getBlockIdAt(x, y, z-1) != 0
+                    this.level.getBlockIdAt(x, y + 1, z) == 0 &&
+                    this.level.getBlockIdAt(x + 1, y, z) != 0 &&
+                    this.level.getBlockIdAt(x - 1, y, z) != 0 &&
+                    this.level.getBlockIdAt(x, y, z + 1) != 0 &&
+                    this.level.getBlockIdAt(x, y, z - 1) != 0
             ) {
                 blockYs.add(y);
             }

@@ -2,15 +2,14 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXDifference;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.event.inventory.FurnaceBurnEvent;
 import cn.nukkit.event.inventory.FurnaceSmeltEvent;
-import cn.nukkit.inventory.FurnaceInventory;
-import cn.nukkit.inventory.InventoryHolder;
-import cn.nukkit.inventory.InventoryType;
-import cn.nukkit.inventory.SmeltingRecipe;
+import cn.nukkit.inventory.*;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemBucket;
@@ -27,7 +26,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * @author MagicDroidX
  */
-public class BlockEntityFurnace extends BlockEntitySpawnable implements InventoryHolder, BlockEntityContainer, BlockEntityNameable {
+public class BlockEntityFurnace extends BlockEntitySpawnable implements InventoryHolder, RecipeInventoryHolder, BlockEntityContainer, BlockEntityNameable {
 
     protected FurnaceInventory inventory;
 
@@ -35,6 +34,9 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
     protected int burnDuration;
     protected int cookTime;
     protected int maxTime;
+    @Since("1.19.50-r3")
+    @PowerNukkitXOnly
+    protected float storedXP;
 
     private int crackledTime;
 
@@ -89,6 +91,12 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
             this.namedTag.remove("BurnTicks");
         }
 
+        if (this.namedTag.contains("StoredXpInt")) {
+            storedXP = this.namedTag.getShort("StoredXpInt");
+        } else {
+            storedXP = 0;
+        }
+
         if (burnTime > 0) {
             this.scheduleUpdate();
         }
@@ -136,12 +144,18 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
         }
     }
 
+    @PowerNukkitXDifference(info = "Drop xp when break.", since = "1.19.50-r3")
     @Override
     public void onBreak() {
         for (Item content : inventory.getContents().values()) {
             level.dropItem(this, content);
         }
         this.inventory.clearAll();
+        var xp = calculateXpDrop();
+        if (xp > 0) {
+            setStoredXP(0);
+            level.dropExpOrb(this, xp);
+        }
     }
 
     @Override
@@ -155,6 +169,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
         this.namedTag.putShort("BurnTime", burnTime);
         this.namedTag.putShort("BurnDuration", burnDuration);
         this.namedTag.putShort("MaxTime", maxTime);
+        this.namedTag.putShort("StoredXpInt", (int) storedXP);
     }
 
     @Since("1.6.0.0-PNX")
@@ -169,6 +184,9 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
         burnDuration = this.namedTag.getShort("BurnDuration");
         maxTime = this.namedTag.getShort("MaxTime");
         burnDuration = this.namedTag.getShort("BurnTicks");
+        if (this.namedTag.containsShort("StoredXpInt")) {
+            storedXP = this.namedTag.getShort("StoredXpInt");
+        }
         this.namedTag.remove("BurnTicks");
     }
 
@@ -328,7 +346,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
                     product = smelt.getResult().clone();
                     product.setCount(count);
 
-                    FurnaceSmeltEvent ev = new FurnaceSmeltEvent(this, raw, product);
+                    FurnaceSmeltEvent ev = new FurnaceSmeltEvent(this, raw, product, (float) this.server.getCraftingManager().getRecipeXp(smelt));
                     this.server.getPluginManager().callEvent(ev);
                     if (!ev.isCancelled()) {
                         this.inventory.setResult(ev.getResult());
@@ -336,6 +354,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
                         if (raw.getCount() == 0) {
                             raw = new ItemBlock(Block.get(BlockID.AIR), 0, 0);
                         }
+                        this.storedXP += ev.getXp();
                         this.inventory.setSmelting(raw);
                     }
 
@@ -388,8 +407,8 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
                 .putInt("z", (int) this.z)
                 .putShort("BurnDuration", burnDuration)
                 .putShort("BurnTime", burnTime)
-                .putShort("CookTime", cookTime);
-
+                .putShort("CookTime", cookTime)
+                .putShort("StoredXpInt", (int) this.storedXP);
         if (this.hasName()) {
             c.put("CustomName", this.namedTag.get("CustomName"));
         }
@@ -427,5 +446,33 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
 
     public void setMaxTime(int maxTime) {
         this.maxTime = maxTime;
+    }
+
+    @Since("1.19.50-r3")
+    @PowerNukkitXOnly
+    public float getStoredXP() {
+        return storedXP;
+    }
+
+    @Since("1.19.50-r3")
+    @PowerNukkitXOnly
+    public void setStoredXP(float storedXP) {
+        this.storedXP = storedXP;
+    }
+
+    @Since("1.19.50-r3")
+    @PowerNukkitXOnly
+    public short calculateXpDrop() {
+        return (short) (Math.floor(this.storedXP) + (ThreadLocalRandom.current().nextFloat() < (this.storedXP % 1) ? 1 : 0));
+    }
+
+    @Override
+    public Inventory getIngredientView() {
+        return new InventorySlice(this.inventory, 0, 1);
+    }
+
+    @Override
+    public Inventory getProductView() {
+        return new InventorySlice(this.inventory, 2, 3);
     }
 }

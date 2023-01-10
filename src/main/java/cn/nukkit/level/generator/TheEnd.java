@@ -1,7 +1,9 @@
 package cn.nukkit.level.generator;
 
+import cn.nukkit.Server;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.event.level.ChunkPrePopulateEvent;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.biome.Biome;
@@ -18,78 +20,70 @@ import cn.nukkit.math.MathHelper;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
-import com.google.common.collect.ImmutableList;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author GoodLucky777
- *         <p>
- *         This generator originally adapted from the Glowstone's
- *         TheEndGenerator
- *         (https://github.com/GlowstoneMC/Glowstone/blob/3de174426cd1e15e78050b9d691a3c1722c83181/src/main/java/net/glowstone/generator/TheEndGenerator.java)
- * 
- *         Glowstone licensed under the following MIT license:
- * 
- *         Glowstone Copyright (C) 2015-2020 The Glowstone Project.
- *         Glowstone Copyright (C) 2011-2014 Tad Hardesty.
- *         Lightstone Copyright (C) 2010-2011 Graham Edgecombe.
- * 
- *         Permission is hereby granted, free of charge, to any person obtaining
- *         a copy
- *         of this software and associated documentation files (the "Software"),
- *         to deal
- *         in the Software without restriction, including without limitation the
- *         rights
- *         to use, copy, modify, merge, publish, distribute, sublicense, and/or
- *         sell
- *         copies of the Software, and to permit persons to whom the Software is
- *         furnished to do so, subject to the following conditions:
- * 
- *         The above copyright notice and this permission notice shall be
- *         included in
- *         all copies or substantial portions of the Software.
- * 
- *         THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- *         EXPRESS OR
- *         IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- *         MERCHANTABILITY,
- *         FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT
- *         SHALL THE
- *         AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
- *         OTHER
- *         LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- *         ARISING FROM,
- *         OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- *         DEALINGS IN
- *         THE SOFTWARE.
+ * <p>
+ * This generator originally adapted from the Glowstone's
+ * TheEndGenerator
+ * (https://github.com/GlowstoneMC/Glowstone/blob/3de174426cd1e15e78050b9d691a3c1722c83181/src/main/java/net/glowstone/generator/TheEndGenerator.java)
+ * <p>
+ * Glowstone licensed under the following MIT license:
+ * <p>
+ * Glowstone Copyright (C) 2015-2020 The Glowstone Project.
+ * Glowstone Copyright (C) 2011-2014 Tad Hardesty.
+ * Lightstone Copyright (C) 2010-2011 Graham Edgecombe.
+ * <p>
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy
+ * of this software and associated documentation files (the "Software"),
+ * to deal
+ * in the Software without restriction, including without limitation the
+ * rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or
+ * sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * <p>
+ * The above copyright notice and this permission notice shall be
+ * included in
+ * all copies or substantial portions of the Software.
+ * <p>
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT
+ * SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN
+ * THE SOFTWARE.
  */
 public class TheEnd extends Generator {
 
+    private static final BlockState STATE_END_STONE = BlockState.of(END_STONE);
+    private static final double coordinateScale = 684.412;
+    private static final double detailNoiseScaleX = 80;
+    private static final double detailNoiseScaleZ = 80;
+    private final double[][][] density = new double[3][3][33];
+    double[] detailNoise;
+    double[] roughnessNoise;
+    double[] roughnessNoise2;
     private ChunkManager level;
     private NukkitRandom nukkitRandom;
     private Random random;
-
-    private static final BlockState STATE_END_STONE = BlockState.of(END_STONE);
-
-    private static double coordinateScale = 684.412;
-    private static double detailNoiseScaleX = 80;
-    private static double detailNoiseScaleZ = 80;
-
     private NoiseGeneratorOctavesD roughnessNoiseOctaves;
     private NoiseGeneratorOctavesD roughnessNoiseOctaves2;
     private NoiseGeneratorOctavesD detailNoiseOctaves;
     private NoiseGeneratorSimplexD islandNoise;
-
-    double[] detailNoise;
-    double[] roughnessNoise;
-    double[] roughnessNoise2;
-
-    private final double[][][] density = new double[3][3][33];
-
-    private List<Populator> populators = new ArrayList<>();
-    private List<Populator> generationPopulators = new ArrayList<>();
+    private final List<Populator> populators = new ArrayList<>();
+    private final List<Populator> generationPopulators = new ArrayList<>();
 
     private long localSeed1;
     private long localSeed2;
@@ -125,6 +119,11 @@ public class TheEnd extends Generator {
     @Override
     public ChunkManager getChunkManager() {
         return this.level;
+    }
+
+    @Override
+    public NukkitRandom getRandom() {
+        return this.nukkitRandom;
     }
 
     @Override
@@ -193,10 +192,10 @@ public class TheEnd extends Generator {
                     index++;
                     double lowering;
                     if (k < 8) {
-                        lowering = (double) ((float) (8 - k) / 7);
+                        lowering = (float) (8 - k) / 7;
                         dens = dens * (1d - lowering) + lowering * -30d;
                     } else if (k > 33 / 2 - 2) {
-                        lowering = (double) ((float) (k - ((33 / 2) - 2)) / 64d);
+                        lowering = (float) (k - ((33 / 2) - 2)) / 64d;
                         lowering = NukkitMath.clamp(lowering, 0, 1);
                         dens = dens * (1d - lowering) + lowering * -3000d;
                     }
@@ -253,13 +252,15 @@ public class TheEnd extends Generator {
     @Override
     public void populateChunk(int chunkX, int chunkZ) {
         BaseFullChunk chunk = level.getChunk(chunkX, chunkZ);
-        this.nukkitRandom.setSeed(0xdeadbeef ^ (chunkX << 8) ^ chunkZ ^ this.level.getSeed());
-        for (Populator populator : this.populators) {
+        this.nukkitRandom.setSeed(0xdeadbeef ^ ((long) chunkX << 8) ^ chunkZ ^ this.level.getSeed());
+        @SuppressWarnings("deprecation")
+        Biome biome = EnumBiome.getBiome(chunk.getBiomeId(7, 7));
+        var event = new ChunkPrePopulateEvent(chunk, this.populators, biome.getPopulators());
+        Server.getInstance().getPluginManager().callEvent(event);
+        for (Populator populator : event.getTerrainPopulators()) {
             populator.populate(this.level, chunkX, chunkZ, this.nukkitRandom, chunk);
         }
-
-        Biome biome = EnumBiome.getBiome(chunk.getBiomeId(7, 7));
-        biome.populateChunk(this.level, chunkX, chunkZ, this.nukkitRandom);
+        biome.populateChunk(this.level, event.getBiomePopulators(), chunkX, chunkZ, this.nukkitRandom);
     }
 
     public Vector3 getSpawn() {
@@ -273,8 +274,8 @@ public class TheEnd extends Generator {
 
         for (int i = -12; i <= 12; i++) {
             for (int j = -12; j <= 12; j++) {
-                long x2 = (long) (chunkX + i);
-                long z2 = (long) (chunkZ + j);
+                long x2 = chunkX + i;
+                long z2 = chunkZ + j;
                 if ((x2 * x2) + (z2 * z2) > 4096L
                         && this.islandNoise.getValue((double) x2, (double) z2) < (double) -0.9f) {
                     x1 = (float) (x - i * 2);

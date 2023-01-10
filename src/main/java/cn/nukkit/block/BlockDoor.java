@@ -1,5 +1,6 @@
 package cn.nukkit.block;
 
+import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitDifference;
@@ -363,6 +364,8 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
 
     @PowerNukkitDifference(info = "Just call the #setOpen() method.", since = "1.4.0.0-PN")
     public boolean toggle(Player player) {
+        if (!player.getAdventureSettings().get(AdventureSettings.Type.DOORS_AND_SWITCHED))
+            return false;
         return this.setOpen(player, !this.isOpen());
     }
 

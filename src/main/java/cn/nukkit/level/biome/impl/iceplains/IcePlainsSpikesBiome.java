@@ -24,7 +24,7 @@ public class IcePlainsSpikesBiome extends IcePlainsBiome {
     @Override
     public int getSurfaceBlock(int y) {
         if (useNewRakNetSurface()) {
-            return getSurfaceId(0,y,0) >> 4;
+            return getSurfaceId(0, y, 0) >> 4;
         }
         return SNOW_BLOCK;
     }

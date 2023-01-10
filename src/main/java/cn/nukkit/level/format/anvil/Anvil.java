@@ -15,7 +15,6 @@ import cn.nukkit.level.format.generic.BaseLevelProvider;
 import cn.nukkit.level.format.generic.BaseRegionLoader;
 import cn.nukkit.level.generator.Generator;
 import cn.nukkit.level.util.PalettedBlockStorage;
-import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.scheduler.AsyncTask;
@@ -23,16 +22,16 @@ import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.ChunkException;
 import cn.nukkit.utils.ThreadCache;
 import cn.nukkit.utils.Utils;
-import it.unimi.dsi.fastutil.ints.IntListIterator;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.nio.ByteOrder;
-import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
@@ -56,6 +55,7 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
     @PowerNukkitXOnly
     @Since("1.19.20-r3")
     private DimensionData dimensionData;
+    private int lastPosition = 0;
 
     public Anvil(Level level, String path) throws IOException {
         super(level, path);
@@ -78,10 +78,6 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
 
     public static boolean usesChunkSection() {
         return true;
-    }
-
-    public boolean isOldAnvil() {
-        return isOldAnvil;
     }
 
     public static boolean isValid(String path) {
@@ -142,6 +138,95 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
                 throw new UncheckedIOException(e);
             }
         });
+    }
+
+    private static byte[] serializeEntities(BaseChunk chunk) {
+        List<CompoundTag> tagList = new ObjectArrayList<>();
+        for (BlockEntity blockEntity : chunk.getBlockEntities().values()) {
+            if (blockEntity instanceof BlockEntitySpawnable) {
+                tagList.add(((BlockEntitySpawnable) blockEntity).getSpawnCompound());
+            }
+        }
+        try {
+            return NBTIO.write(tagList, ByteOrder.LITTLE_ENDIAN, true);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static int getAnvilIndex(int x, int y, int z) {
+        return (y << 8) + (z << 4) + x; // YZX
+    }
+
+    private static byte[] serializeBiomes(BaseFullChunk chunk, int sectionCount) {
+        var stream = ThreadCache.binaryStream.get().reset();
+        if (chunk instanceof cn.nukkit.level.format.Chunk sectionChunk && sectionChunk.isChunkSection3DBiomeSupported()) {
+            var sections = sectionChunk.getSections();
+            var len = Math.min(sections.length, sectionCount);
+            final var tmpSectionBiomeStream = new BinaryStream[len];
+            for (int i = 0; i < len; i++) { // 确保全部在主线程上分配
+                tmpSectionBiomeStream[i] = new BinaryStream(new byte[4096 + 1024]).reset(); // 5KB
+            }
+            IntStream.range(0, len).parallel().forEach(i -> {
+                if (sections[i] instanceof ChunkSection3DBiome each) {
+                    var palette = PalettedBlockStorage.createWithDefaultState(Biome.getBiomeIdOrCorrect(chunk.getBiomeId(0, 0) & 0xFF));
+                    var biomeData = each.get3DBiomeDataArray();
+                    for (int x = 0; x < 16; x++) {
+                        for (int z = 0; z < 16; z++) {
+                            for (int y = 0; y < 16; y++) {
+                                var tmpBiome = Biome.getBiomeIdOrCorrect(biomeData[getAnvilIndex(x, y, z)] & 0xFF);
+                                palette.setBlock(x, y, z, tmpBiome);
+                            }
+                        }
+                    }
+                    palette.writeTo(tmpSectionBiomeStream[i]);
+                } else {
+                    var palette = PalettedBlockStorage.createWithDefaultState(Biome.getBiomeIdOrCorrect(chunk.getBiomeId(0, 0) & 0xFF));
+                    for (int x = 0; x < 16; x++) {
+                        for (int z = 0; z < 16; z++) {
+                            int biomeId = Biome.getBiomeIdOrCorrect(chunk.getBiomeId(x, z) & 0xFF);
+                            for (int y = 0; y < 16; y++) {
+                                palette.setBlock(x, y, z, biomeId);
+                            }
+                        }
+                    }
+                    palette.writeTo(tmpSectionBiomeStream[i]);
+                }
+            });
+            for (int i = 0; i < len; i++) {
+                stream.put(tmpSectionBiomeStream[i].getBuffer());
+            }
+        } else {
+            PalettedBlockStorage palette = PalettedBlockStorage.createWithDefaultState(Biome.getBiomeIdOrCorrect(chunk.getBiomeId(0, 0) & 0xFF));
+            for (int x = 0; x < 16; x++) {
+                for (int z = 0; z < 16; z++) {
+                    int biomeId = Biome.getBiomeIdOrCorrect(chunk.getBiomeId(x, z));
+                    for (int y = 0; y < 16; y++) {
+                        palette.setBlock(x, y, z, biomeId);
+                    }
+                }
+            }
+
+            palette.writeTo(stream);
+            byte[] bytes = stream.getBuffer();
+            stream.reset();
+
+            for (int i = 0; i < sectionCount; i++) {
+                stream.put(bytes);
+            }
+        }
+        return stream.getBuffer();
+    }
+
+    @UsedByReflection
+    public static ChunkSection createChunkSection(int y) {
+        ChunkSection cs = new ChunkSection(y);
+        cs.hasSkyLight = true;
+        return cs;
+    }
+
+    public boolean isOldAnvil() {
+        return isOldAnvil;
     }
 
     @Override
@@ -210,81 +295,6 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
         callback.accept(stream, writtenSections);
     }
 
-    private static byte[] serializeEntities(BaseChunk chunk) {
-        List<CompoundTag> tagList = new ObjectArrayList<>();
-        for (BlockEntity blockEntity : chunk.getBlockEntities().values()) {
-            if (blockEntity instanceof BlockEntitySpawnable) {
-                tagList.add(((BlockEntitySpawnable) blockEntity).getSpawnCompound());
-            }
-        }
-        try {
-            return NBTIO.write(tagList, ByteOrder.LITTLE_ENDIAN, true);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static byte[] serializeBiomes(BaseFullChunk chunk, int sectionCount) {
-        var stream = ThreadCache.binaryStream.get().reset();
-        if (chunk instanceof cn.nukkit.level.format.Chunk sectionChunk && sectionChunk.isChunkSection3DBiomeSupported()) {
-            var sections = sectionChunk.getSections();
-            var len = Math.min(sections.length, sectionCount);
-            final var tmpSectionBiomeStream = new BinaryStream[len];
-            for (int i = 0; i < len; i++) { // 确保全部在主线程上分配
-                tmpSectionBiomeStream[i] = new BinaryStream(new byte[4096 + 1024]).reset(); // 5KB
-            }
-            IntStream.range(0, len).parallel().forEach(i -> {
-                if (sections[i] instanceof ChunkSection3DBiome each) {
-                    var palette = PalettedBlockStorage.createWithDefaultState(Biome.getBiomeIdOrCorrect(chunk.getBiomeId(0, 0) & 0xFF));
-                    for (int x = 0; x < 16; x++) {
-                        for (int z = 0; z < 16; z++) {
-                            for (int y = 0; y < 16; y++) {
-                                var tmpBiome = Biome.getBiomeIdOrCorrect(each.getBiomeId(x, y, z) & 0xFF);
-                                palette.setBlock(x, y, z, tmpBiome);
-                            }
-                        }
-                    }
-                    palette.writeTo(tmpSectionBiomeStream[i]);
-                } else {
-                    var palette = PalettedBlockStorage.createWithDefaultState(Biome.getBiomeIdOrCorrect(chunk.getBiomeId(0, 0) & 0xFF));
-                    for (int x = 0; x < 16; x++) {
-                        for (int z = 0; z < 16; z++) {
-                            int biomeId = Biome.getBiomeIdOrCorrect(chunk.getBiomeId(x, z) & 0xFF);
-                            for (int y = 0; y < 16; y++) {
-                                palette.setBlock(x, y, z, biomeId);
-                            }
-                        }
-                    }
-                    palette.writeTo(tmpSectionBiomeStream[i]);
-                }
-            });
-            for (int i = 0; i < len; i++) {
-                stream.put(tmpSectionBiomeStream[i].getBuffer());
-            }
-        } else {
-            PalettedBlockStorage palette = PalettedBlockStorage.createWithDefaultState(Biome.getBiomeIdOrCorrect(chunk.getBiomeId(0, 0) & 0xFF));
-            for (int x = 0; x < 16; x++) {
-                for (int z = 0; z < 16; z++) {
-                    int biomeId = Biome.getBiomeIdOrCorrect(chunk.getBiomeId(x, z));
-                    for (int y = 0; y < 16; y++) {
-                        palette.setBlock(x, y, z, biomeId);
-                    }
-                }
-            }
-
-            palette.writeTo(stream);
-            byte[] bytes = stream.getBuffer();
-            stream.reset();
-
-            for (int i = 0; i < sectionCount; i++) {
-                stream.put(bytes);
-            }
-        }
-        return stream.getBuffer();
-    }
-
-    private int lastPosition = 0;
-
     @Override
     public void doGarbageCollection(long time) {
         long start = System.currentTimeMillis();
@@ -349,7 +359,6 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
         }
     }
 
-
     @Override
     public synchronized void saveChunk(int x, int z, FullChunk chunk) {
         if (!(chunk instanceof Chunk)) {
@@ -365,13 +374,6 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @UsedByReflection
-    public static ChunkSection createChunkSection(int y) {
-        ChunkSection cs = new ChunkSection(y);
-        cs.hasSkyLight = true;
-        return cs;
     }
 
     protected synchronized BaseRegionLoader loadRegion(int x, int z) {

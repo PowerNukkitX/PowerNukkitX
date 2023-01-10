@@ -297,7 +297,7 @@ public abstract class BaseInventory implements Inventory {
 
             for (Item slot : new ArrayList<>(itemSlots)) {
                 if (slot.equals(item)) {
-                    int maxStackSize = Math.min(this.getMaxStackSize() ,item.getMaxStackSize());
+                    int maxStackSize = Math.min(this.getMaxStackSize(), item.getMaxStackSize());
                     if (item.getCount() < maxStackSize) {
                         int amount = Math.min(maxStackSize - item.getCount(), slot.getCount());
                         amount = Math.min(amount, this.getMaxStackSize());
@@ -467,9 +467,9 @@ public abstract class BaseInventory implements Inventory {
                 ((Player) holder).updateTrackingPositions(true);
             }
 
-            getViewers().forEach(p-> p.updateTrackingPositions(true));
+            getViewers().forEach(p -> p.updateTrackingPositions(true));
         }
-        
+
 
         if (this.listeners != null) {
             for (InventoryListener listener : listeners) {
@@ -532,6 +532,12 @@ public abstract class BaseInventory implements Inventory {
         return true;
     }
 
+    /**
+     * 检测指定物品能在该库存所能存放的空余数量
+     *
+     * @param item 要检测的物品
+     * @return 所能存放的空余数量
+     */
     public int getFreeSpace(Item item) {
         int maxStackSize = Math.min(item.getMaxStackSize(), this.getMaxStackSize());
         int space = (this.getSize() - this.slots.size()) * maxStackSize;

@@ -3,7 +3,7 @@ package cn.nukkit.entity.passive;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.ai.memory.PlayerBreedingMemory;
+import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.level.format.FullChunk;
@@ -33,7 +33,8 @@ public abstract class EntityAnimal extends EntityIntelligent {
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         boolean superResult = super.onInteract(player, item, clickedPos);
         if (isBreedingItem(item)) {
-            getMemoryStorage().get(PlayerBreedingMemory.class).setData(player);
+            getMemoryStorage().put(CoreMemoryTypes.LAST_FEED_PLAYER, player);
+            getMemoryStorage().put(CoreMemoryTypes.LAST_BE_FED_TIME, Server.getInstance().getTick());
             sendBreedingAnimation(item);
             item.count--;
             return player.getInventory().setItemInHand(item) && superResult;
@@ -65,4 +66,5 @@ public abstract class EntityAnimal extends EntityIntelligent {
     protected double getStepHeight() {
         return 0.5;
     }
+
 }

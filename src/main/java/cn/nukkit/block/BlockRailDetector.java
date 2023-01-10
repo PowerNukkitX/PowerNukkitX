@@ -25,37 +25,39 @@ public class BlockRailDetector extends BlockRail {
     public static Set<Position> activeDetectors = new HashSet<>();
 
     static{
-        Server.getInstance().getScheduler().scheduleRepeatingTask(() -> {
-            for (Position pos : activeDetectors.toArray(new Position[0])) {
-                BlockRailDetector detector;
-                if (pos.getLevel().getBlock(pos) instanceof BlockRailDetector) {
-                    detector = (BlockRailDetector) pos.getLevel().getBlock(pos);
-                }else{
-                    activeDetectors.remove(pos);
-                    return;
-                }
-                for (Entity entity : detector.level.getNearbyEntities(new SimpleAxisAlignedBB(
-                        detector.getFloorX() + 0.2D,
-                        detector.getFloorY(),
-                        detector.getFloorZ() + 0.2D,
-                        detector.getFloorX() + 0.8D,
-                        detector.getFloorY() + 0.8D,
-                        detector.getFloorZ() + 0.8D))) {
-                    if (entity instanceof EntityMinecartAbstract) {
+        if (Server.getInstance() != null) {
+            Server.getInstance().getScheduler().scheduleRepeatingTask(() -> {
+                for (Position pos : activeDetectors.toArray(new Position[0])) {
+                    BlockRailDetector detector;
+                    if (pos.getLevel().getBlock(pos) instanceof BlockRailDetector) {
+                        detector = (BlockRailDetector) pos.getLevel().getBlock(pos);
+                    } else {
+                        activeDetectors.remove(pos);
                         return;
                     }
-                }
-                detector.setActive(false);
-                detector.level.setBlock(detector,detector,true,true);
-                activeDetectors.remove(detector);
+                    for (Entity entity : detector.level.getNearbyEntities(new SimpleAxisAlignedBB(
+                            detector.getFloorX() + 0.2D,
+                            detector.getFloorY(),
+                            detector.getFloorZ() + 0.2D,
+                            detector.getFloorX() + 0.8D,
+                            detector.getFloorY() + 0.8D,
+                            detector.getFloorZ() + 0.8D))) {
+                        if (entity instanceof EntityMinecartAbstract) {
+                            return;
+                        }
+                    }
+                    detector.setActive(false);
+                    detector.level.setBlock(detector, detector, true, true);
+                    activeDetectors.remove(detector);
 
-                //update redstone
-                RedstoneComponent.updateAroundRedstone(detector.down());
-                if (detector.getOrientation().isAscending()) {
-                    RedstoneComponent.updateAroundRedstone(detector.up());
+                    //update redstone
+                    RedstoneComponent.updateAroundRedstone(detector.down());
+                    if (detector.getOrientation().isAscending()) {
+                        RedstoneComponent.updateAroundRedstone(detector.up());
+                    }
                 }
-            }
-        }, 20);
+            }, 20);
+        }
     }
 
     public BlockRailDetector() {

@@ -41,6 +41,13 @@ public class OceanMonumentPieces {
     private static final BlockState PACKED_ICE = new BlockState(Block.PACKED_ICE);
     //private static final BlockState BLUE_ICE = new BlockState(Block.BLUE_ICE);
 
+    interface MonumentRoomFitter {
+
+        boolean fits(RoomDefinition roomDefinition);
+
+        OceanMonumentPiece create(BlockFace orientation, RoomDefinition roomDefinition, NukkitRandom random);
+    }
+
     public abstract static class OceanMonumentPiece extends StructurePiece {
 
         protected static BlockState BASE_GRAY = PRISMARINE;
@@ -64,10 +71,6 @@ public class OceanMonumentPieces {
         protected static int GRIDROOM_RIGHTWING_CONNECT_INDEX = getRoomIndex(4, 1, 0);
 
         protected RoomDefinition roomDefinition;
-
-        protected static int getRoomIndex(int x, int y, int z) {
-            return y * 25 + z * 5 + x;
-        }
 
         public OceanMonumentPiece(int genDepth) {
             super(genDepth);
@@ -115,6 +118,10 @@ public class OceanMonumentPieces {
             super(tag);
         }
 
+        protected static int getRoomIndex(int x, int y, int z) {
+            return y * 25 + z * 5 + x;
+        }
+
         @Override
         protected void addAdditionalSaveData(CompoundTag tag) {
 
@@ -141,16 +148,16 @@ public class OceanMonumentPieces {
         //\\ OceanMonumentPiece::generateDefaultFloor(BlockSource *,BoundingBox const &,int,int,bool)
         protected void generateDefaultFloor(ChunkManager level, BoundingBox boundingBox, int x, int z, boolean hasOpening) {
             if (hasOpening) {
-                this.generateBox(level, boundingBox, x + 0, 0, z + 0, x + 2, 0, z + 8 - 1, BASE_GRAY, BASE_GRAY, false);
-                this.generateBox(level, boundingBox, x + 5, 0, z + 0, x + 8 - 1, 0, z + 8 - 1, BASE_GRAY, BASE_GRAY, false);
-                this.generateBox(level, boundingBox, x + 3, 0, z + 0, x + 4, 0, z + 2, BASE_GRAY, BASE_GRAY, false);
+                this.generateBox(level, boundingBox, x, 0, z, x + 2, 0, z + 8 - 1, BASE_GRAY, BASE_GRAY, false);
+                this.generateBox(level, boundingBox, x + 5, 0, z, x + 8 - 1, 0, z + 8 - 1, BASE_GRAY, BASE_GRAY, false);
+                this.generateBox(level, boundingBox, x + 3, 0, z, x + 4, 0, z + 2, BASE_GRAY, BASE_GRAY, false);
                 this.generateBox(level, boundingBox, x + 3, 0, z + 5, x + 4, 0, z + 8 - 1, BASE_GRAY, BASE_GRAY, false);
                 this.generateBox(level, boundingBox, x + 3, 0, z + 2, x + 4, 0, z + 2, BASE_LIGHT, BASE_LIGHT, false);
                 this.generateBox(level, boundingBox, x + 3, 0, z + 5, x + 4, 0, z + 5, BASE_LIGHT, BASE_LIGHT, false);
                 this.generateBox(level, boundingBox, x + 2, 0, z + 3, x + 2, 0, z + 4, BASE_LIGHT, BASE_LIGHT, false);
                 this.generateBox(level, boundingBox, x + 5, 0, z + 3, x + 5, 0, z + 4, BASE_LIGHT, BASE_LIGHT, false);
             } else {
-                this.generateBox(level, boundingBox, x + 0, 0, z + 0, x + 8 - 1, 0, z + 8 - 1, BASE_GRAY, BASE_GRAY, false);
+                this.generateBox(level, boundingBox, x, 0, z, x + 8 - 1, 0, z + 8 - 1, BASE_GRAY, BASE_GRAY, false);
             }
         }
 
@@ -201,9 +208,9 @@ public class OceanMonumentPieces {
 
     public static class MonumentBuilding extends OceanMonumentPiece {
 
+        private final List<OceanMonumentPiece> childPieces;
         private RoomDefinition sourceRoom;
         private RoomDefinition coreRoom;
-        private final List<OceanMonumentPiece> childPieces;
 
         public MonumentBuilding(NukkitRandom random, int x, int z, BlockFace orientation) {
             super(0);
@@ -407,10 +414,10 @@ public class OceanMonumentPieces {
             }
 
             for (int i = 0; i < 5; ++i) {
-                this.generateWaterBox(level, boundingBox, -1 - i, 0 + i * 2, -1 - i, -1 - i, 23, 58 + i);
-                this.generateWaterBox(level, boundingBox, 58 + i, 0 + i * 2, -1 - i, 58 + i, 23, 58 + i);
-                this.generateWaterBox(level, boundingBox, 0 - i, 0 + i * 2, -1 - i, 57 + i, 23, -1 - i);
-                this.generateWaterBox(level, boundingBox, 0 - i, 0 + i * 2, 58 + i, 57 + i, 23, 58 + i);
+                this.generateWaterBox(level, boundingBox, -1 - i, i * 2, -1 - i, -1 - i, 23, 58 + i);
+                this.generateWaterBox(level, boundingBox, 58 + i, i * 2, -1 - i, 58 + i, 23, 58 + i);
+                this.generateWaterBox(level, boundingBox, -i, i * 2, -1 - i, 57 + i, 23, -1 - i);
+                this.generateWaterBox(level, boundingBox, -i, i * 2, 58 + i, 57 + i, 23, 58 + i);
             }
 
             for (OceanMonumentPiece piece : this.childPieces) {
@@ -424,8 +431,8 @@ public class OceanMonumentPieces {
 
         private void generateWing(boolean reverse, int x, ChunkManager level, NukkitRandom random, BoundingBox boundingBox) {
             if (this.chunkIntersects(boundingBox, x, 0, x + 23, 20)) {
-                this.generateBox(level, boundingBox, x + 0, 0, 0, x + 24, 0, 20, BASE_GRAY, BASE_GRAY, false);
-                this.generateWaterBox(level, boundingBox, x + 0, 1, 0, x + 24, 10, 20);
+                this.generateBox(level, boundingBox, x, 0, 0, x + 24, 0, 20, BASE_GRAY, BASE_GRAY, false);
+                this.generateWaterBox(level, boundingBox, x, 1, 0, x + 24, 10, 20);
 
                 for (int k = 0; k < 4; ++k) {
                     this.generateBox(level, boundingBox, x + k, k + 1, k, x + k, k + 1, 20, BASE_LIGHT, BASE_LIGHT, false);
@@ -1927,12 +1934,5 @@ public class OceanMonumentPieces {
             roomDefinition.connections[BlockFace.NORTH.getIndex()].connections[BlockFace.UP.getIndex()].claimed = true;
             return new OceanMonumentDoubleYZRoom(orientation, roomDefinition);
         }
-    }
-
-    interface MonumentRoomFitter {
-
-        boolean fits(RoomDefinition roomDefinition);
-
-        OceanMonumentPiece create(BlockFace orientation, RoomDefinition roomDefinition, NukkitRandom random);
     }
 }

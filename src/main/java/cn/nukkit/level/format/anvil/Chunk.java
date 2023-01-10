@@ -14,7 +14,6 @@ import cn.nukkit.level.format.ChunkSection3DBiome;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.anvil.palette.BiomePalette;
 import cn.nukkit.level.format.generic.BaseChunk;
-import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.format.generic.EmptyChunkSection;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.*;
@@ -32,7 +31,6 @@ import java.io.UncheckedIOException;
 import java.lang.reflect.Constructor;
 import java.nio.ByteOrder;
 import java.util.*;
-import java.util.stream.IntStream;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -47,11 +45,6 @@ public class Chunk extends BaseChunk {
     @PowerNukkitXOnly
     @Since("1.19.20-r4")
     protected DimensionData dimensionData = null;
-
-    @Override
-    public Chunk clone() {
-        return (Chunk) super.clone();
-    }
 
     public Chunk(LevelProvider level) {
         this(level, (CompoundTag) null);
@@ -237,6 +230,94 @@ public class Chunk extends BaseChunk {
         }
     }
 
+    public static Chunk fromBinary(byte[] data) {
+        return fromBinary(data, null);
+    }
+
+    public static Chunk fromBinary(byte[] data, LevelProvider provider) {
+        try {
+            CompoundTag chunk = NBTIO.read(new ByteArrayInputStream(Zlib.inflate(data)), ByteOrder.BIG_ENDIAN);
+
+            if (!chunk.contains("Level") || !(chunk.get("Level") instanceof CompoundTag)) {
+                return null;
+            }
+
+            return new Chunk(provider, chunk.getCompound("Level"));
+        } catch (Exception e) {
+            log.error("An error has occurred while parsing a chunk from {}", provider.getName(), e);
+            return null;
+        }
+    }
+
+    public static Chunk fromFastBinary(byte[] data) {
+        return fromFastBinary(data, null);
+    }
+
+    public static Chunk fromFastBinary(byte[] data, LevelProvider provider) {
+        try {
+            CompoundTag chunk = NBTIO.read(new DataInputStream(new ByteArrayInputStream(data)), ByteOrder.BIG_ENDIAN);
+            if (!chunk.contains("Level") || !(chunk.get("Level") instanceof CompoundTag)) {
+                return null;
+            }
+
+            return new Chunk(provider, chunk.getCompound("Level"));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @Nullable
+    @UsedByReflection
+    public static Chunk getEmptyChunk(int chunkX, int chunkZ) {
+        return getEmptyChunk(chunkX, chunkZ, (LevelProvider) null);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.20-r4")
+    @Nullable
+    @UsedByReflection
+    public static Chunk getEmptyChunk(int chunkX, int chunkZ, DimensionData dimensionData) {
+        return getEmptyChunk(chunkX, chunkZ, null, dimensionData);
+    }
+
+    @Nullable
+    public static Chunk getEmptyChunk(int chunkX, int chunkZ, LevelProvider provider) {
+        return getEmptyChunk(chunkX, chunkZ, provider, null);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.20-r4")
+    @Nullable
+    public static Chunk getEmptyChunk(int chunkX, int chunkZ, LevelProvider provider, DimensionData dimensionData) {
+        try {
+            Chunk chunk;
+            if (provider != null) {
+                chunk = new Chunk(provider, null, dimensionData);
+            } else {
+                chunk = new Chunk(Anvil.class, null, dimensionData);
+            }
+
+            chunk.setPosition(chunkX, chunkZ);
+
+            chunk.heightMap = new byte[256];
+            chunk.inhabitedTime = 0;
+            chunk.terrainGenerated = false;
+            chunk.terrainPopulated = false;
+            if (provider != null)
+                chunk.isNew384World = provider.isOverWorld();
+//            chunk.lightPopulated = false;
+            return chunk;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public Chunk clone() {
+        return (Chunk) super.clone();
+    }
+
     @PowerNukkitXOnly
     @Since("1.19.20-r5")
     @Override
@@ -274,11 +355,6 @@ public class Chunk extends BaseChunk {
     }
 
     @Override
-    public void setPopulated() {
-        this.setPopulated(true);
-    }
-
-    @Override
     public void setPopulated(boolean value) {
         if (value != this.terrainPopulated) {
             this.terrainPopulated = value;
@@ -287,13 +363,13 @@ public class Chunk extends BaseChunk {
     }
 
     @Override
-    public boolean isGenerated() {
-        return this.terrainGenerated || this.terrainPopulated;
+    public void setPopulated() {
+        this.setPopulated(true);
     }
 
     @Override
-    public void setGenerated() {
-        this.setGenerated(true);
+    public boolean isGenerated() {
+        return this.terrainGenerated || this.terrainPopulated;
     }
 
     @Override
@@ -302,6 +378,11 @@ public class Chunk extends BaseChunk {
             this.terrainGenerated = value;
             setChanged();
         }
+    }
+
+    @Override
+    public void setGenerated() {
+        this.setGenerated(true);
     }
 
     @Override
@@ -360,44 +441,6 @@ public class Chunk extends BaseChunk {
 
         return tag;
     }
-
-    public static Chunk fromBinary(byte[] data) {
-        return fromBinary(data, null);
-    }
-
-    public static Chunk fromBinary(byte[] data, LevelProvider provider) {
-        try {
-            CompoundTag chunk = NBTIO.read(new ByteArrayInputStream(Zlib.inflate(data)), ByteOrder.BIG_ENDIAN);
-
-            if (!chunk.contains("Level") || !(chunk.get("Level") instanceof CompoundTag)) {
-                return null;
-            }
-
-            return new Chunk(provider, chunk.getCompound("Level"));
-        } catch (Exception e) {
-            log.error("An error has occurred while parsing a chunk from {}", provider.getName(), e);
-            return null;
-        }
-    }
-
-
-    public static Chunk fromFastBinary(byte[] data) {
-        return fromFastBinary(data, null);
-    }
-
-    public static Chunk fromFastBinary(byte[] data, LevelProvider provider) {
-        try {
-            CompoundTag chunk = NBTIO.read(new DataInputStream(new ByteArrayInputStream(data)), ByteOrder.BIG_ENDIAN);
-            if (!chunk.contains("Level") || !(chunk.get("Level") instanceof CompoundTag)) {
-                return null;
-            }
-
-            return new Chunk(provider, chunk.getCompound("Level"));
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
 
     @Override
     public byte[] toFastBinary() {
@@ -560,7 +603,6 @@ public class Chunk extends BaseChunk {
 
         CompoundTag chunk = new CompoundTag("");
         chunk.putCompound("Level", nbt);
-
         try {
             return Zlib.deflate(NBTIO.write(chunk, ByteOrder.BIG_ENDIAN), RegionLoader.COMPRESSION_LEVEL);
         } catch (IOException e) {
@@ -571,8 +613,7 @@ public class Chunk extends BaseChunk {
     @Override
     public int getBlockSkyLight(int x, int y, int z) {
         cn.nukkit.level.format.ChunkSection section = this.sections[toSectionY(y)];
-        if (section instanceof cn.nukkit.level.format.anvil.ChunkSection) {
-            cn.nukkit.level.format.anvil.ChunkSection anvilSection = (cn.nukkit.level.format.anvil.ChunkSection) section;
+        if (section instanceof ChunkSection anvilSection) {
             if (anvilSection.skyLight != null) {
                 return section.getBlockSkyLight(x, y & 0x0f, z);
             } else if (!anvilSection.hasSkyLight) {
@@ -595,8 +636,7 @@ public class Chunk extends BaseChunk {
     @Override
     public int getBlockLight(int x, int y, int z) {
         cn.nukkit.level.format.ChunkSection section = this.sections[toSectionY(y)];
-        if (section instanceof cn.nukkit.level.format.anvil.ChunkSection) {
-            cn.nukkit.level.format.anvil.ChunkSection anvilSection = (cn.nukkit.level.format.anvil.ChunkSection) section;
+        if (section instanceof ChunkSection anvilSection) {
             if (anvilSection.blockLight != null) {
                 return section.getBlockLight(x, y & 0x0f, z);
             } else if (!anvilSection.hasBlockLight) {
@@ -609,60 +649,12 @@ public class Chunk extends BaseChunk {
         }
     }
 
-    @Nullable
-    @UsedByReflection
-    public static Chunk getEmptyChunk(int chunkX, int chunkZ) {
-        return getEmptyChunk(chunkX, chunkZ, (LevelProvider) null);
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.20-r4")
-    @Nullable
-    @UsedByReflection
-    public static Chunk getEmptyChunk(int chunkX, int chunkZ, DimensionData dimensionData) {
-        return getEmptyChunk(chunkX, chunkZ, null, dimensionData);
-    }
-
-    @Nullable
-    public static Chunk getEmptyChunk(int chunkX, int chunkZ, LevelProvider provider) {
-        return getEmptyChunk(chunkX, chunkZ, provider, null);
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.20-r4")
-    @Nullable
-    public static Chunk getEmptyChunk(int chunkX, int chunkZ, LevelProvider provider, DimensionData dimensionData) {
-        try {
-            Chunk chunk;
-            if (provider != null) {
-                chunk = new Chunk(provider, null, dimensionData);
-            } else {
-                chunk = new Chunk(Anvil.class, null, dimensionData);
-            }
-
-            chunk.setPosition(chunkX, chunkZ);
-
-            chunk.heightMap = new byte[256];
-            chunk.inhabitedTime = 0;
-            chunk.terrainGenerated = false;
-            chunk.terrainPopulated = false;
-            if (provider != null)
-                chunk.isNew384World = provider.isOverWorld();
-//            chunk.lightPopulated = false;
-            return chunk;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
     @Override
     public boolean compress() {
         super.compress();
         boolean result = false;
         for (cn.nukkit.level.format.ChunkSection section : getSections()) {
-            if (section instanceof ChunkSection) {
-                ChunkSection anvilSection = (ChunkSection) section;
+            if (section instanceof ChunkSection anvilSection) {
                 if (!anvilSection.isEmpty()) {
                     result |= anvilSection.compress();
                 }

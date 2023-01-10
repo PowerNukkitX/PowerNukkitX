@@ -36,6 +36,7 @@ import java.util.function.Consumer;
 @Since("1.19.21-r2")
 public class PopulatorShipwreck extends PopulatorStructure implements CallbackableTemplateStructurePopulator {
 
+    public static final boolean[] FILTER = new boolean[2048];
     protected static final ReadableStructureTemplate WITH_MAST = new ReadOnlyLegacyStructureTemplate().load(loadNBT("structures/shipwreck/swwithmast.nbt"));
     protected static final ReadableStructureTemplate UPSIDEDOWN_FULL = new ReadOnlyLegacyStructureTemplate().load(loadNBT("structures/shipwreck/swupsidedownfull.nbt"));
     protected static final ReadableStructureTemplate UPSIDEDOWN_FRONTHALF = new ReadOnlyLegacyStructureTemplate().load(loadNBT("structures/shipwreck/swupsidedownfronthalf.nbt"));
@@ -56,7 +57,6 @@ public class PopulatorShipwreck extends PopulatorStructure implements Callbackab
     protected static final ReadableStructureTemplate RIGHTSIDEUP_FULL_DEGRADED = new ReadOnlyLegacyStructureTemplate().load(loadNBT("structures/shipwreck/swrightsideupfulldegraded.nbt"));
     protected static final ReadableStructureTemplate RIGHTSIDEUP_FRONTHALF_DEGRADED = new ReadOnlyLegacyStructureTemplate().load(loadNBT("structures/shipwreck/swrightsideupfronthalfdegraded.nbt"));
     protected static final ReadableStructureTemplate RIGHTSIDEUP_BACKHALF_DEGRADED = new ReadOnlyLegacyStructureTemplate().load(loadNBT("structures/shipwreck/swrightsideupbackhalfdegraded.nbt"));
-
     protected static final ReadableStructureTemplate[] STRUCTURE_LOCATION_BEACHED = new ReadableStructureTemplate[]{
             WITH_MAST,
             SIDEWAYS_FULL,
@@ -70,7 +70,6 @@ public class PopulatorShipwreck extends PopulatorStructure implements Callbackab
             RIGHTSIDEUP_FRONTHALF_DEGRADED,
             RIGHTSIDEUP_BACKHALF_DEGRADED
     };
-
     protected static final ReadableStructureTemplate[] STRUCTURE_LOCATION_OCEAN = new ReadableStructureTemplate[]{
             WITH_MAST,
             UPSIDEDOWN_FULL,
@@ -93,6 +92,8 @@ public class PopulatorShipwreck extends PopulatorStructure implements Callbackab
             RIGHTSIDEUP_FRONTHALF_DEGRADED,
             RIGHTSIDEUP_BACKHALF_DEGRADED
     };
+    protected static final int SPACING = 24;
+    protected static final int SEPARATION = 4;
     protected static boolean[] VALID_BIOMES = new boolean[256];
     protected static boolean[] VALID_BEACH_BIOMES = new boolean[256];
 
@@ -116,15 +117,82 @@ public class PopulatorShipwreck extends PopulatorStructure implements Callbackab
         VALID_BIOMES[EnumBiome.COLD_BEACH.id] = VALID_BEACH_BIOMES[EnumBiome.COLD_BEACH.id] = true;
     }
 
-    protected static final int SPACING = 24;
-    protected static final int SEPARATION = 4;
+    static {
+        FILTER[AIR] = true;
+        FILTER[LOG] = true;
+        FILTER[FLOWING_WATER] = true;
+        FILTER[STILL_WATER] = true;
+        FILTER[FLOWING_LAVA] = true;
+        FILTER[STILL_LAVA] = true;
+        FILTER[LEAVES] = true;
+        FILTER[TALL_GRASS] = true;
+        FILTER[DEAD_BUSH] = true;
+        FILTER[DANDELION] = true;
+        FILTER[RED_FLOWER] = true;
+        FILTER[BROWN_MUSHROOM] = true;
+        FILTER[RED_MUSHROOM] = true;
+        FILTER[SNOW_LAYER] = true;
+        FILTER[ICE] = true;
+        FILTER[CACTUS] = true;
+        FILTER[REEDS] = true;
+        FILTER[PUMPKIN] = true;
+        FILTER[BROWN_MUSHROOM_BLOCK] = true;
+        FILTER[RED_MUSHROOM_BLOCK] = true;
+        FILTER[MELON_BLOCK] = true;
+        FILTER[VINE] = true;
+        FILTER[WATERLILY] = true;
+        FILTER[COCOA] = true;
+        FILTER[LEAVES2] = true;
+        FILTER[LOG2] = true;
+        FILTER[PACKED_ICE] = true;
+        FILTER[DOUBLE_PLANT] = true;
+    }
 
     protected final Map<Long, Set<Long>> waitingChunks = Maps.newConcurrentMap();
 
+    protected static Consumer<CompoundTag> getBlockActorProcessor(FullChunk chunk, NukkitRandom random) {
+        return nbt -> {
+            if (nbt.getString("id").equals(BlockEntity.STRUCTURE_BLOCK)) {
+                switch (nbt.getString("metadata")) {
+                    case "supplyChest":
+                        ListTag<CompoundTag> itemList = new ListTag<>("Items");
+                        ShipwreckSupplyChest.get().create(itemList, random);
+
+                        Server.getInstance().getScheduler().scheduleDelayedTask(new LootSpawnTask(chunk.getProvider().getLevel(),
+                                new BlockVector3(nbt.getInt("x"), nbt.getInt("y") - 1, nbt.getInt("z")), itemList), 2);
+                        break;
+                    case "mapChest":
+                        itemList = new ListTag<>("Items");
+                        ShipwreckMapChest.get().create(itemList, random);
+
+                        Server.getInstance().getScheduler().scheduleDelayedTask(new LootSpawnTask(chunk.getProvider().getLevel(),
+                                new BlockVector3(nbt.getInt("x"), nbt.getInt("y") - 1, nbt.getInt("z")), itemList), 2);
+                        break;
+                    case "treasureChest":
+                        itemList = new ListTag<>("Items");
+                        ShipwreckTreasureChest.get().create(itemList, random);
+
+                        Server.getInstance().getScheduler().scheduleDelayedTask(new LootSpawnTask(chunk.getProvider().getLevel(),
+                                new BlockVector3(nbt.getInt("x"), nbt.getInt("y") - 1, nbt.getInt("z")), itemList), 2);
+                        break;
+                }
+            }
+        };
+    }
+
+    private static CompoundTag loadNBT(String path) {
+        try (InputStream inputStream = PopulatorShipwreck.class.getModule().getResourceAsStream(path)) {
+            return NBTIO.readCompressed(inputStream);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
+        if (!chunk.isOverWorld()) return;
         int biome = chunk.getBiomeId(5, chunk.getHighestBlockAt(5, 5), 5);
-        if (chunk.getProvider().isOverWorld() && VALID_BIOMES[biome]
+        if (VALID_BIOMES[biome]
                 && chunkX == (((chunkX < 0 ? (chunkX - SPACING + 1) : chunkX) / SPACING) * SPACING) + random.nextBoundedInt(SPACING - SEPARATION)
                 && chunkZ == (((chunkZ < 0 ? (chunkZ - SPACING + 1) : chunkZ) / SPACING) * SPACING) + random.nextBoundedInt(SPACING - SEPARATION)) {
             ReadableStructureTemplate template;
@@ -183,7 +251,7 @@ public class PopulatorShipwreck extends PopulatorStructure implements Callbackab
             if (!chunks.isEmpty()) {
                 this.waitingChunks.put(Level.chunkHash(chunkX, chunkZ), indexes);
                 for (BaseFullChunk ck : chunks) {
-                    Server.getInstance().getScheduler().scheduleAsyncTask(null, new CallbackableChunkGenerationTask<CallbackableTemplateStructurePopulator>(
+                    chunk.getProvider().getLevel().getGenerator().handleAsyncStructureGenTask(new CallbackableChunkGenerationTask<CallbackableTemplateStructurePopulator>(
                             chunk.getProvider().getLevel(), ck, this,
                             populator -> populator.generateChunkCallback(template, seed, level, chunkX, chunkZ, y, ck.getX(), ck.getZ())));
                 }
@@ -216,77 +284,6 @@ public class PopulatorShipwreck extends PopulatorStructure implements Callbackab
         indexes.remove(Level.chunkHash(chunkX, chunkZ));
         if (indexes.isEmpty()) {
             this.placeInLevel(level, startChunkX, startChunkZ, template, seed, y);
-        }
-    }
-
-    protected static Consumer<CompoundTag> getBlockActorProcessor(FullChunk chunk, NukkitRandom random) {
-        return nbt -> {
-            if (nbt.getString("id").equals(BlockEntity.STRUCTURE_BLOCK)) {
-                switch (nbt.getString("metadata")) {
-                    case "supplyChest":
-                        ListTag<CompoundTag> itemList = new ListTag<>("Items");
-                        ShipwreckSupplyChest.get().create(itemList, random);
-
-                        Server.getInstance().getScheduler().scheduleDelayedTask(new LootSpawnTask(chunk.getProvider().getLevel(),
-                                new BlockVector3(nbt.getInt("x"), nbt.getInt("y") - 1, nbt.getInt("z")), itemList), 2);
-                        break;
-                    case "mapChest":
-                        itemList = new ListTag<>("Items");
-                        ShipwreckMapChest.get().create(itemList, random);
-
-                        Server.getInstance().getScheduler().scheduleDelayedTask(new LootSpawnTask(chunk.getProvider().getLevel(),
-                                new BlockVector3(nbt.getInt("x"), nbt.getInt("y") - 1, nbt.getInt("z")), itemList), 2);
-                        break;
-                    case "treasureChest":
-                        itemList = new ListTag<>("Items");
-                        ShipwreckTreasureChest.get().create(itemList, random);
-
-                        Server.getInstance().getScheduler().scheduleDelayedTask(new LootSpawnTask(chunk.getProvider().getLevel(),
-                                new BlockVector3(nbt.getInt("x"), nbt.getInt("y") - 1, nbt.getInt("z")), itemList), 2);
-                        break;
-                }
-            }
-        };
-    }
-
-    public static final boolean[] FILTER = new boolean[2048];
-
-    static {
-        FILTER[AIR] = true;
-        FILTER[LOG] = true;
-        FILTER[FLOWING_WATER] = true;
-        FILTER[STILL_WATER] = true;
-        FILTER[FLOWING_LAVA] = true;
-        FILTER[STILL_LAVA] = true;
-        FILTER[LEAVES] = true;
-        FILTER[TALL_GRASS] = true;
-        FILTER[DEAD_BUSH] = true;
-        FILTER[DANDELION] = true;
-        FILTER[RED_FLOWER] = true;
-        FILTER[BROWN_MUSHROOM] = true;
-        FILTER[RED_MUSHROOM] = true;
-        FILTER[SNOW_LAYER] = true;
-        FILTER[ICE] = true;
-        FILTER[CACTUS] = true;
-        FILTER[REEDS] = true;
-        FILTER[PUMPKIN] = true;
-        FILTER[BROWN_MUSHROOM_BLOCK] = true;
-        FILTER[RED_MUSHROOM_BLOCK] = true;
-        FILTER[MELON_BLOCK] = true;
-        FILTER[VINE] = true;
-        FILTER[WATERLILY] = true;
-        FILTER[COCOA] = true;
-        FILTER[LEAVES2] = true;
-        FILTER[LOG2] = true;
-        FILTER[PACKED_ICE] = true;
-        FILTER[DOUBLE_PLANT] = true;
-    }
-
-    private static CompoundTag loadNBT(String path) {
-        try (InputStream inputStream = PopulatorShipwreck.class.getModule().getResourceAsStream(path)) {
-            return NBTIO.readCompressed(inputStream);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 

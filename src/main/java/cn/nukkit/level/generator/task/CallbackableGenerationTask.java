@@ -16,15 +16,14 @@ import cn.nukkit.scheduler.AsyncTask;
 @Since("1.19.21-r2")
 public class CallbackableGenerationTask extends AsyncTask {
 
-    public boolean state = true;
-
     private final Level world;
-    private BaseFullChunk chunk;
     private final PopulatorScatteredStructure structure;
     private final ScatteredStructurePiece piece;
     private final ChunkManager level;
     private final int startChunkX;
     private final int startChunkZ;
+    public boolean state = true;
+    private BaseFullChunk chunk;
 
     public CallbackableGenerationTask(Level world, BaseFullChunk chunk, PopulatorScatteredStructure structure, ScatteredStructurePiece piece, ChunkManager level, int startChunkX, int startChunkZ) {
         this.chunk = chunk;
@@ -65,10 +64,10 @@ public class CallbackableGenerationTask extends AsyncTask {
                 }
             }
         }
-    //}
+        //}
 
-    //@Override
-    //public void onCompletion(Server server) {
+        //@Override
+        //public void onCompletion(Server server) {
         if (this.state && this.world != null) {
             if (this.chunk != null) {
                 this.structure.generateChunkCallback(this.level, this.startChunkX, this.startChunkZ, this.piece, this.chunk.getX(), this.chunk.getZ());

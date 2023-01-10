@@ -40,24 +40,17 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @Log4j2
 public abstract class BaseLevelProvider implements LevelProvider {
-    protected Level level;
-
     protected final String path;
-
-    protected CompoundTag levelData;
-
-    private Vector3 spawn;
-
     protected final AtomicReference<BaseRegionLoader> lastRegion = new AtomicReference<>();
-
     protected final Long2ObjectMap<BaseRegionLoader> regions = new Long2ObjectOpenHashMap<>();
-
     @PowerNukkitXDifference(since = "1.19.20-r3", info = "同步开销甚至远大于装拆箱开销")
     protected final ConcurrentMap<Long, BaseFullChunk> chunks = new ConcurrentHashMap<>();
-    //protected final Long2ObjectMap<BaseFullChunk> chunks = new Long2ObjectOpenHashMap<>();
-
     @PowerNukkitXDifference(since = "1.19.20-r3", info = "允许多线程彻底地并发获取区块")
     private final ThreadLocal<WeakReference<BaseFullChunk>> lastChunk = new ThreadLocal<>();
+    protected Level level;
+    protected CompoundTag levelData;
+    //protected final Long2ObjectMap<BaseFullChunk> chunks = new Long2ObjectOpenHashMap<>();
+    private Vector3 spawn;
     //private final AtomicReference<BaseFullChunk> lastChunk = new AtomicReference<>();
 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed resource leak")
@@ -73,7 +66,6 @@ public abstract class BaseLevelProvider implements LevelProvider {
         File levelDatFile = new File(getPath(), "level.dat");
         try (FileInputStream fos = new FileInputStream(levelDatFile); BufferedInputStream input = new BufferedInputStream(fos)) {
             levelData = NBTIO.readCompressed(input, ByteOrder.BIG_ENDIAN);
-            ;
         } catch (Exception e) {
             log.fatal("Failed to load the level.dat file at {}, attempting to load level.dat_old instead!", levelDatFile.getAbsolutePath(), e);
             try {
@@ -124,6 +116,14 @@ public abstract class BaseLevelProvider implements LevelProvider {
         this.path = path;
         this.levelData = levelData;
         this.spawn = spawn;
+    }
+
+    protected static int getRegionIndexX(int chunkX) {
+        return chunkX >> 5;
+    }
+
+    protected static int getRegionIndexZ(int chunkZ) {
+        return chunkZ >> 5;
     }
 
     public abstract BaseFullChunk loadChunk(long index, int chunkX, int chunkZ, boolean create);
@@ -179,14 +179,6 @@ public abstract class BaseLevelProvider implements LevelProvider {
         synchronized (regions) {
             return this.regions.get(index);
         }
-    }
-
-    protected static int getRegionIndexX(int chunkX) {
-        return chunkX >> 5;
-    }
-
-    protected static int getRegionIndexZ(int chunkZ) {
-        return chunkZ >> 5;
     }
 
     @Override

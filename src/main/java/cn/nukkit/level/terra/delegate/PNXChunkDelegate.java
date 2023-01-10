@@ -1,17 +1,17 @@
 package cn.nukkit.level.terra.delegate;
 
-import cn.nukkit.level.ChunkManager;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.terra.PNXAdapter;
 import com.dfsek.terra.api.block.state.BlockState;
-import com.dfsek.terra.api.config.ConfigPack;
 import com.dfsek.terra.api.world.ServerWorld;
-import com.dfsek.terra.api.world.biome.generation.BiomeProvider;
 import com.dfsek.terra.api.world.chunk.Chunk;
-import com.dfsek.terra.api.world.chunk.generation.ChunkGenerator;
 import org.jetbrains.annotations.NotNull;
 
-public record PNXChunkDelegate(ServerWorld world,BaseFullChunk chunk) implements Chunk {
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
+public record PNXChunkDelegate(ServerWorld world, BaseFullChunk chunk) implements Chunk {
     @Override
     public void setBlock(int i, int i1, int i2, BlockState blockState, boolean b) {
         setBlock(i, i1, i2, blockState);

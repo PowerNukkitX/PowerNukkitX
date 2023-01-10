@@ -3,6 +3,7 @@
 minecraft:acacia_button
 minecraft:acacia_door
 minecraft:acacia_fence_gate
+minecraft:acacia_hanging_sign
 minecraft:acacia_pressure_plate
 minecraft:acacia_stairs
 minecraft:acacia_standing_sign
@@ -20,7 +21,24 @@ minecraft:azalea
 minecraft:azalea_leaves
 minecraft:azalea_leaves_flowered
 minecraft:bamboo
+minecraft:bamboo_button
+minecraft:bamboo_door
+minecraft:bamboo_double_slab
+minecraft:bamboo_fence
+minecraft:bamboo_fence_gate
+minecraft:bamboo_hanging_sign
+minecraft:bamboo_mosaic
+minecraft:bamboo_mosaic_double_slab
+minecraft:bamboo_mosaic_slab
+minecraft:bamboo_mosaic_stairs
+minecraft:bamboo_planks
+minecraft:bamboo_pressure_plate
 minecraft:bamboo_sapling
+minecraft:bamboo_slab
+minecraft:bamboo_stairs
+minecraft:bamboo_standing_sign
+minecraft:bamboo_trapdoor
+minecraft:bamboo_wall_sign
 minecraft:barrel
 minecraft:barrier
 minecraft:basalt
@@ -35,6 +53,7 @@ minecraft:big_dripleaf
 minecraft:birch_button
 minecraft:birch_door
 minecraft:birch_fence_gate
+minecraft:birch_hanging_sign
 minecraft:birch_pressure_plate
 minecraft:birch_stairs
 minecraft:birch_standing_sign
@@ -86,6 +105,7 @@ minecraft:chain_command_block
 minecraft:chemical_heat
 minecraft:chemistry_table
 minecraft:chest
+minecraft:chiseled_bookshelf
 minecraft:chiseled_deepslate
 minecraft:chiseled_nether_bricks
 minecraft:chiseled_polished_blackstone
@@ -130,6 +150,7 @@ minecraft:crimson_double_slab
 minecraft:crimson_fence
 minecraft:crimson_fence_gate
 minecraft:crimson_fungus
+minecraft:crimson_hanging_sign
 minecraft:crimson_hyphae
 minecraft:crimson_nylium
 minecraft:crimson_planks
@@ -151,6 +172,7 @@ minecraft:cyan_glazed_terracotta
 minecraft:dark_oak_button
 minecraft:dark_oak_door
 minecraft:dark_oak_fence_gate
+minecraft:dark_oak_hanging_sign
 minecraft:dark_oak_pressure_plate
 minecraft:dark_oak_stairs
 minecraft:dark_oak_trapdoor
@@ -393,6 +415,7 @@ minecraft:jukebox
 minecraft:jungle_button
 minecraft:jungle_door
 minecraft:jungle_fence_gate
+minecraft:jungle_hanging_sign
 minecraft:jungle_pressure_plate
 minecraft:jungle_stairs
 minecraft:jungle_standing_sign
@@ -441,6 +464,7 @@ minecraft:mangrove_door
 minecraft:mangrove_double_slab
 minecraft:mangrove_fence
 minecraft:mangrove_fence_gate
+minecraft:mangrove_hanging_sign
 minecraft:mangrove_leaves
 minecraft:mangrove_log
 minecraft:mangrove_planks
@@ -484,6 +508,7 @@ minecraft:netherrack
 minecraft:netherreactor
 minecraft:normal_stone_stairs
 minecraft:noteblock
+minecraft:oak_hanging_sign
 minecraft:oak_stairs
 minecraft:observer
 minecraft:obsidian
@@ -611,6 +636,7 @@ minecraft:spore_blossom
 minecraft:spruce_button
 minecraft:spruce_door
 minecraft:spruce_fence_gate
+minecraft:spruce_hanging_sign
 minecraft:spruce_pressure_plate
 minecraft:spruce_stairs
 minecraft:spruce_standing_sign
@@ -678,6 +704,7 @@ minecraft:warped_double_slab
 minecraft:warped_fence
 minecraft:warped_fence_gate
 minecraft:warped_fungus
+minecraft:warped_hanging_sign
 minecraft:warped_hyphae
 minecraft:warped_nylium
 minecraft:warped_planks

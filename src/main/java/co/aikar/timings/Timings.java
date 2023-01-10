@@ -25,6 +25,7 @@ package co.aikar.timings;
 
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.command.Command;
@@ -47,6 +48,7 @@ import static co.aikar.timings.TimingIdentifier.DEFAULT_GROUP;
 
 @Log4j2
 public final class Timings {
+    private static final boolean timingsCompletelyClosed;
     private static boolean timingsEnabled = false;
     private static boolean verboseEnabled = false;
     private static boolean privacy = false;
@@ -55,7 +57,9 @@ public final class Timings {
     private static final int MAX_HISTORY_FRAMES = 12;
     private static int historyInterval = -1;
     private static int historyLength = -1;
-
+    //当timings完全关闭时代替使用的占位Timer
+    //Placeholder Timer to use instead when timings are completely off
+    public static final EmptyTiming emptyTimer;
     public static final FullServerTickTiming fullServerTickTimer;
     public static final Timing timingsTickTimer;
     public static final Timing pluginEventTimer;
@@ -88,51 +92,60 @@ public final class Timings {
     public static final Timing permissionDefaultTimer;
 
     static {
-        setTimingsEnabled(Server.getInstance().getConfig("timings.enabled", false));
-        setVerboseEnabled(Server.getInstance().getConfig("timings.verbose", false));
-        setHistoryInterval(Server.getInstance().getConfig("timings.history-interval", 6000));
-        setHistoryLength(Server.getInstance().getConfig("timings.history-length", 72000));
+        if (Server.getInstance() != null) {
+            timingsCompletelyClosed = Server.getInstance().getConfig("timings.completely-close", true);
+            if (!timingsCompletelyClosed) {
+                setTimingsEnabled(Server.getInstance().getConfig("timings.enabled", false));
+                setVerboseEnabled(Server.getInstance().getConfig("timings.verbose", false));
+            } else {
+                setTimingsEnabled(false);
+                setVerboseEnabled(false);
+            }
+            setHistoryInterval(Server.getInstance().getConfig("timings.history-interval", 6000));
+            setHistoryLength(Server.getInstance().getConfig("timings.history-length", 72000));
+            privacy = Server.getInstance().getConfig("timings.privacy", false);
+            ignoredConfigSections.addAll(Server.getInstance().getConfig().getStringList("timings.ignore"));
+        } else timingsCompletelyClosed = true;
 
-        privacy = Server.getInstance().getConfig("timings.privacy", false);
-        ignoredConfigSections.addAll(Server.getInstance().getConfig().getStringList("timings.ignore"));
-
-        log.debug("Timings: \n" +
-                "Enabled - {}\n" +
-                "Verbose - {}\n" +
-                "History Interval - {}\n" +
-                "History Length - {}",
+        if (!timingsCompletelyClosed) log.debug("Timings: \n" +
+                        "Enabled - {}\n" +
+                        "Verbose - {}\n" +
+                        "History Interval - {}\n" +
+                        "History Length - {}",
                 isTimingsEnabled(), isVerboseEnabled(), getHistoryInterval(), getHistoryLength());
 
+        emptyTimer = new EmptyTiming();
         fullServerTickTimer = new FullServerTickTiming();
-        timingsTickTimer = TimingsManager.getTiming(DEFAULT_GROUP.name, "Timings Tick", fullServerTickTimer);
-        pluginEventTimer = TimingsManager.getTiming("Plugin Events");
+        
+        timingsTickTimer = timingsCompletelyClosed ? emptyTimer : TimingsManager.getTiming(DEFAULT_GROUP.name, "Timings Tick", fullServerTickTimer);
+        pluginEventTimer = timingsCompletelyClosed ? emptyTimer : TimingsManager.getTiming("Plugin Events");
 
-        connectionTimer = TimingsManager.getTiming("Connection Handler");
-        schedulerTimer = TimingsManager.getTiming("Scheduler");
-        schedulerAsyncTimer = TimingsManager.getTiming("## Scheduler - Async Tasks");
-        schedulerSyncTimer = TimingsManager.getTiming("## Scheduler - Sync Tasks");
-        commandTimer = TimingsManager.getTiming("Commands");
-        serverCommandTimer = TimingsManager.getTiming("Server Command");
-        levelSaveTimer = TimingsManager.getTiming("Level Save");
+        connectionTimer = timingsCompletelyClosed ? emptyTimer : TimingsManager.getTiming("Connection Handler");
+        schedulerTimer = timingsCompletelyClosed ? emptyTimer : TimingsManager.getTiming("Scheduler");
+        schedulerAsyncTimer = timingsCompletelyClosed ? emptyTimer : TimingsManager.getTiming("## Scheduler - Async Tasks");
+        schedulerSyncTimer = timingsCompletelyClosed ? emptyTimer : TimingsManager.getTiming("## Scheduler - Sync Tasks");
+        commandTimer = timingsCompletelyClosed ? emptyTimer : TimingsManager.getTiming("Commands");
+        serverCommandTimer = timingsCompletelyClosed ? emptyTimer : TimingsManager.getTiming("Server Command");
+        levelSaveTimer = timingsCompletelyClosed ? emptyTimer : TimingsManager.getTiming("Level Save");
 
-        playerNetworkSendTimer = TimingsManager.getTiming("Player Network Send");
-        playerNetworkReceiveTimer = TimingsManager.getTiming("Player Network Receive");
-        playerChunkOrderTimer = TimingsManager.getTiming("Player Order Chunks");
-        playerChunkSendTimer = TimingsManager.getTiming("Player Send Chunks");
-        playerCommandTimer = TimingsManager.getTiming("Player Command");
+        playerNetworkSendTimer = timingsCompletelyClosed ? emptyTimer : TimingsManager.getTiming("Player Network Send");
+        playerNetworkReceiveTimer = timingsCompletelyClosed ? emptyTimer : TimingsManager.getTiming("Player Network Receive");
+        playerChunkOrderTimer = timingsCompletelyClosed ? emptyTimer : TimingsManager.getTiming("Player Order Chunks");
+        playerChunkSendTimer = timingsCompletelyClosed ? emptyTimer : TimingsManager.getTiming("Player Send Chunks");
+        playerCommandTimer = timingsCompletelyClosed ? emptyTimer : TimingsManager.getTiming("Player Command");
 
-        tickEntityTimer = TimingsManager.getTiming("## Entity Tick");
-        tickBlockEntityTimer = TimingsManager.getTiming("## BlockEntity Tick");
-        entityMoveTimer = TimingsManager.getTiming("## Entity Move");
-        entityBaseTickTimer = TimingsManager.getTiming("## Entity Base Tick");
-        livingEntityBaseTickTimer = TimingsManager.getTiming("## LivingEntity Base Tick");
+        tickEntityTimer = timingsCompletelyClosed ? emptyTimer : TimingsManager.getTiming("## Entity Tick");
+        tickBlockEntityTimer = timingsCompletelyClosed ? emptyTimer : TimingsManager.getTiming("## BlockEntity Tick");
+        entityMoveTimer = timingsCompletelyClosed ? emptyTimer : TimingsManager.getTiming("## Entity Move");
+        entityBaseTickTimer = timingsCompletelyClosed ? emptyTimer : TimingsManager.getTiming("## Entity Base Tick");
+        livingEntityBaseTickTimer = timingsCompletelyClosed ? emptyTimer : TimingsManager.getTiming("## LivingEntity Base Tick");
 
-        generationTimer = TimingsManager.getTiming("Level Generation");
-        populationTimer = TimingsManager.getTiming("Level Population");
-        generationCallbackTimer = TimingsManager.getTiming("Level Generation Callback");
+        generationTimer = timingsCompletelyClosed ? emptyTimer : TimingsManager.getTiming("Level Generation");
+        populationTimer = timingsCompletelyClosed ? emptyTimer : TimingsManager.getTiming("Level Population");
+        generationCallbackTimer = timingsCompletelyClosed ? emptyTimer : TimingsManager.getTiming("Level Generation Callback");
 
-        permissibleCalculationTimer = TimingsManager.getTiming("Permissible Calculation");
-        permissionDefaultTimer = TimingsManager.getTiming("Default Permission Calculation");
+        permissibleCalculationTimer = timingsCompletelyClosed ? emptyTimer : TimingsManager.getTiming("Permissible Calculation");
+        permissionDefaultTimer = timingsCompletelyClosed ? emptyTimer : TimingsManager.getTiming("Default Permission Calculation");
     }
 
     /**
@@ -144,11 +157,22 @@ public final class Timings {
         // code is already executed on <cinit>
     }
 
+    /**
+     * Timings是否被完全关闭了
+     * @return boolean
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.50-r3")
+    public static boolean isTimingsCloseCompletely() {
+        return timingsCompletelyClosed;
+    }
+
     public static boolean isTimingsEnabled() {
         return timingsEnabled;
     }
 
     public static void setTimingsEnabled(boolean enabled) {
+        if (timingsCompletelyClosed) return;
         timingsEnabled = enabled;
         TimingsManager.reset();
     }
@@ -204,7 +228,7 @@ public final class Timings {
             log.warn(
                     "Timings Length too high. Requested {}, max is {}"
                             + ". To get longer history, you must increase your interval. Set Interval to {}"
-                            + " to achieve this length.", 
+                            + " to achieve this length.",
                     length, maxLength, Math.ceil((float) length / MAX_HISTORY_FRAMES));
         }
 
@@ -218,10 +242,12 @@ public final class Timings {
 
 
     public static Timing getCommandTiming(Command command) {
+        if (Timings.isTimingsCloseCompletely()) return Timings.emptyTimer;
         return TimingsManager.getTiming(DEFAULT_GROUP.name, "Command: " + command.getLabel(), commandTimer);
     }
 
     public static Timing getTaskTiming(TaskHandler handler, long period) {
+        if (Timings.isTimingsCloseCompletely()) return Timings.emptyTimer;
         String repeating = " ";
         if (period > 0) {
             repeating += "(interval:" + period + ")";
@@ -231,15 +257,16 @@ public final class Timings {
 
         if (handler.getTask() instanceof PluginTask) {
             String owner = ((PluginTask) handler.getTask()).getOwner().getName();
-            return TimingsManager.getTiming(owner, "PluginTask: " + handler.getTaskId() + repeating, schedulerSyncTimer);
+            return TimingsManager.getTiming(owner, "PluginTask: " + handler.getTaskId() + repeating, schedulerSyncTimer, false);
         } else if (!handler.isAsynchronous()) {
-            return TimingsManager.getTiming(DEFAULT_GROUP.name, "Task: " + handler.getTaskId() + repeating, schedulerSyncTimer);
+            return TimingsManager.getTiming(DEFAULT_GROUP.name, "Task: " + handler.getTaskId() + repeating, schedulerSyncTimer, false);
         } else {
             return null;
         }
     }
 
     public static Timing getPluginEventTiming(Class<? extends Event> event, Listener listener, EventExecutor executor, Plugin plugin) {
+        if (Timings.isTimingsCloseCompletely()) return Timings.emptyTimer;
         Timing group = TimingsManager.getTiming(plugin.getName(), "Combined Total", pluginEventTimer);
 
         return TimingsManager.getTiming(plugin.getName(), "Event: " + listener.getClass().getName() + "."
@@ -248,18 +275,22 @@ public final class Timings {
     }
 
     public static Timing getEntityTiming(Entity entity) {
+        if (Timings.isTimingsCloseCompletely()) return Timings.emptyTimer;
         return TimingsManager.getTiming(DEFAULT_GROUP.name, "## Entity Tick: " + entity.getClass().getSimpleName(), tickEntityTimer);
     }
 
     public static Timing getBlockEntityTiming(BlockEntity blockEntity) {
+        if (Timings.isTimingsCloseCompletely()) return Timings.emptyTimer;
         return TimingsManager.getTiming(DEFAULT_GROUP.name, "## BlockEntity Tick: " + blockEntity.getClass().getSimpleName(), tickBlockEntityTimer);
     }
 
     public static Timing getReceiveDataPacketTiming(DataPacket pk) {
+        if (Timings.isTimingsCloseCompletely()) return Timings.emptyTimer;
         return TimingsManager.getTiming(DEFAULT_GROUP.name, "## Receive Packet: " + pk.getClass().getSimpleName(), playerNetworkReceiveTimer);
     }
 
     public static Timing getSendDataPacketTiming(DataPacket pk) {
+        if (Timings.isTimingsCloseCompletely()) return Timings.emptyTimer;
         return TimingsManager.getTiming(DEFAULT_GROUP.name, "## Send Packet: " + pk.getClass().getSimpleName(), playerNetworkSendTimer);
     }
 

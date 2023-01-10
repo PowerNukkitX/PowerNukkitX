@@ -26,7 +26,7 @@ public class MushroomIslandBiome extends GrassyBiome {
     @Override
     public int getSurfaceBlock(int y) {
         if (useNewRakNetSurface()) {
-            return getSurfaceId(0,y,0) >> 4;
+            return getSurfaceId(0, y, 0) >> 4;
         }
         return Block.MYCELIUM;
     }

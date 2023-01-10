@@ -13,10 +13,6 @@ public class ShipwreckMapChest extends RandomizableContainer {
 
     private static final ShipwreckMapChest INSTANCE = new ShipwreckMapChest();
 
-    public static ShipwreckMapChest get() {
-        return INSTANCE;
-    }
-
     private ShipwreckMapChest() {
         super(Maps.newHashMap(), InventoryType.CHEST.getDefaultSize());
 
@@ -32,5 +28,9 @@ public class ShipwreckMapChest extends RandomizableContainer {
                 .register(new ItemEntry(Item.FEATHER, 0, 5, 10))
                 .register(new ItemEntry(Item.BOOK, 0, 5, 5));
         this.pools.put(pool2.build(), new RollEntry(3, pool2.getTotalWeight()));
+    }
+
+    public static ShipwreckMapChest get() {
+        return INSTANCE;
     }
 }

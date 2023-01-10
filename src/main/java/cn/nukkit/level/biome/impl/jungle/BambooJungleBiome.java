@@ -13,7 +13,7 @@ public class BambooJungleBiome extends JungleBiome {
         bamboo.setBaseAmount(80);
         bamboo.setRandomAmount(30);
         this.addPopulator(bamboo);
-        
+
         JungleBigTreePopulator jungleBigTrees = new JungleBigTreePopulator();
         jungleBigTrees.setBaseAmount(-1);
         jungleBigTrees.setRandomAmount(2);
@@ -24,7 +24,7 @@ public class BambooJungleBiome extends JungleBiome {
         vines.setRandomAmount(4);
         this.addPopulator(vines);*/
     }
-    
+
     @Override
     public String getName() {
         return "Bamboo Jungle";

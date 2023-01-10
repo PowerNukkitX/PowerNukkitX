@@ -1,5 +1,6 @@
 package cn.nukkit.level.biome;
 
+import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
@@ -7,6 +8,7 @@ import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.math.NukkitRandom;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,9 +71,19 @@ public abstract class Biome implements BlockID {
         this.populators.add(populator);
     }
 
-    public void populateChunk(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random) {
+    @Deprecated
+    @DeprecationDetails(since = "1.19.50-r3", reason = "populators will be modified by plugins in event calls.",
+            replaceWith = "populateChunk(ChunkManager, List<Populator>, int, int, NukkitRandom)")
+    public void populateChunk(@NotNull ChunkManager level, int chunkX, int chunkZ, NukkitRandom random) {
         FullChunk chunk = level.getChunk(chunkX, chunkZ);
         for (Populator populator : populators) {
+            populator.populate(level, chunkX, chunkZ, random, chunk);
+        }
+    }
+
+    public void populateChunk(@NotNull ChunkManager level, @NotNull List<Populator> usedPopulators, int chunkX, int chunkZ, NukkitRandom random) {
+        FullChunk chunk = level.getChunk(chunkX, chunkZ);
+        for (Populator populator : usedPopulators) {
             populator.populate(level, chunkX, chunkZ, random, chunk);
         }
     }
@@ -90,20 +102,20 @@ public abstract class Biome implements BlockID {
 
     public abstract String getName();
 
-    public void setBaseHeight(float baseHeight) {
-        this.baseHeight = baseHeight;
-    }
-
-    public void setHeightVariation(float heightVariation)   {
-        this.heightVariation = heightVariation;
-    }
-
     public float getBaseHeight() {
         return baseHeight;
     }
 
+    public void setBaseHeight(float baseHeight) {
+        this.baseHeight = baseHeight;
+    }
+
     public float getHeightVariation() {
         return heightVariation;
+    }
+
+    public void setHeightVariation(float heightVariation) {
+        this.heightVariation = heightVariation;
     }
 
     @Override
@@ -123,12 +135,12 @@ public abstract class Biome implements BlockID {
 
     /**
      * Whether or not overhangs should generate in this biome (places where solid blocks generate over air)
-     *
+     * <p>
      * This should probably be used with a custom max elevation or things can look stupid
      *
      * @return overhang
      */
-    public boolean doesOverhang()   {
+    public boolean doesOverhang() {
         return false;
     }
 
@@ -139,7 +151,7 @@ public abstract class Biome implements BlockID {
      * @param z z
      * @return height offset
      */
-    public int getHeightOffset(int x, int z)    {
+    public int getHeightOffset(int x, int z) {
         return 0;
     }
 

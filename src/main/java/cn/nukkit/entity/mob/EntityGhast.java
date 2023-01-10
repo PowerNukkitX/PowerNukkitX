@@ -23,8 +23,8 @@ public class EntityGhast extends EntityFlyingMob {
 
     @Override
     protected void initEntity() {
-        super.initEntity();
         this.setMaxHealth(10);
+        super.initEntity();
     }
 
     @Override

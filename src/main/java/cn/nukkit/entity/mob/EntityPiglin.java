@@ -27,8 +27,8 @@ public class EntityPiglin extends EntityWalkingMob implements EntityAgeable {
 
     @Override
     protected void initEntity() {
-        super.initEntity();
         this.setMaxHealth(16);
+        super.initEntity();
     }
 
     @Override
@@ -46,12 +46,6 @@ public class EntityPiglin extends EntityWalkingMob implements EntityAgeable {
     @Override
     public String getOriginalName() {
         return "Piglin";
-    }
-
-    @PowerNukkitOnly
-    @Override
-    public boolean isBaby() {
-        return this.getDataFlag(DATA_FLAGS, Entity.DATA_FLAG_BABY);
     }
 
     @PowerNukkitOnly

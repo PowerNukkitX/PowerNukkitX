@@ -1,0 +1,34 @@
+FROM alpine:3.16.3 AS prepare
+
+# Copy the libs and nukkit.yml
+WORKDIR /work
+
+COPY /target/libs /work/libs
+COPY src/main/resources/default-nukkit.yml /work/nukkit.yml
+COPY entrypoint.sh /work/entrypoint.sh
+
+RUN apk add --no-cache wget && \
+    apk add --no-cache unzip && \
+    wget https://github.com/PowerNukkitX/PNX-CLI/releases/download/v0.0.7/PNX-CLI-Jar.zip && \
+    unzip PNX-CLI-Jar.zip -d /work
+
+# Final image
+FROM findepi/graalvm:java17
+LABEL author="CoolLoong"
+WORKDIR /pnx
+
+ENV language=eng
+ENV memory=2G
+
+COPY --from=prepare /work/libs /pnx/libs
+COPY --from=prepare /work/PNX-CLI-0.0.1-alpha.jar /pnx/cli.jar
+COPY --from=prepare /work/nukkit.yml /pnx/nukkit.yml
+COPY --from=prepare /work/entrypoint.sh /pnx/entrypoint.sh
+
+RUN gu install js && \
+    mkdir -p /pnx/plugins /pnx/players /pnx/worlds && \
+    java -jar /pnx/cli.jar server -u --latest
+
+EXPOSE 19132/udp
+VOLUME ["/pnx/plugins","/pnx/players","/pnx/worlds"]
+ENTRYPOINT ["/pnx/entrypoint.sh"]

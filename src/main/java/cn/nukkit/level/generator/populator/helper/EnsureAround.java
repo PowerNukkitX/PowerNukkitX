@@ -9,7 +9,7 @@ import static cn.nukkit.block.BlockID.AIR;
  * @author LT_Name
  */
 public interface EnsureAround {
-    static boolean ensureAroundAir(int x, int y, int z, FullChunk chunk)  {
+    static boolean ensureAroundAir(int x, int y, int z, FullChunk chunk) {
         return chunk.getBlockId(x + 1, y, z) == AIR &&
                 chunk.getBlockId(x - 1, y, z) == AIR &&
                 chunk.getBlockId(x, y, z + 1) == AIR &&

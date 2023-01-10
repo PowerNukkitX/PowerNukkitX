@@ -40,8 +40,8 @@ public class EntityDonkey extends EntityWalkingAnimal {
 
     @Override
     public void initEntity() {
-        super.initEntity();
         this.setMaxHealth(15);
+        super.initEntity();
     }
 
     @Override

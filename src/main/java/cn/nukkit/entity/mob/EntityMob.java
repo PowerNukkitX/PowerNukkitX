@@ -20,7 +20,6 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.Utils;
 import lombok.Getter;
@@ -37,7 +36,6 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
     private static final String TAG_MAINHAND = "Mainhand";
     private static final String TAG_OFFHAND = "Offhand";
     private static final String TAG_ARMOR = "Armor";
-    public static final String DIFFICULTY_HAND_DAMAGE = "diffHandDamage";
 
     @Getter
     private EntityEquipmentInventory equipmentInventory;
@@ -77,13 +75,15 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
                 this.armorInventory.setItem(armorTag.getByte("Slot"), NBTIO.getItemHelper(armorTag));
             }
         }
-        if (this.namedTag.contains(DIFFICULTY_HAND_DAMAGE)) {
-            var damageList = this.namedTag.getList(DIFFICULTY_HAND_DAMAGE, FloatTag.class);
-            this.diffHandDamage = new float[3];
-            this.diffHandDamage[0] = damageList.get(0).getData();
-            this.diffHandDamage[1] = damageList.get(1).getData();
-            this.diffHandDamage[2] = damageList.get(2).getData();
-        }
+    }
+
+    @Override
+    public boolean onUpdate(int currentTick) {
+        //怪物不能在和平模式下生存
+        if (this.getServer().getDifficulty() == 0) {
+            this.close();
+            return true;
+        } else return super.onUpdate(currentTick);
     }
 
     public void spawnToAll() {
@@ -115,8 +115,6 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
             }
             this.namedTag.putList(armorTag);
         }
-        if (diffHandDamage != null)
-            this.namedTag.putList(new ListTag<FloatTag>(DIFFICULTY_HAND_DAMAGE).add(new FloatTag("", this.diffHandDamage[0])).add(new FloatTag("", this.diffHandDamage[1])).add(new FloatTag("", this.diffHandDamage[2])));
     }
 
     @Override
@@ -248,19 +246,7 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
     }
 
     @Override
-    public float getDiffHandDamage(int difficulty) {
-        return this.diffHandDamage[difficulty - 1];
-    }
-
-    @Override
-    public void setDiffHandDamage(float[] damages) {
-        this.diffHandDamage = damages;
-        this.namedTag.putList(new ListTag<FloatTag>(DIFFICULTY_HAND_DAMAGE).add(new FloatTag("", this.diffHandDamage[0])).add(new FloatTag("", this.diffHandDamage[1])).add(new FloatTag("", this.diffHandDamage[2])));
-    }
-
-    @Override
-    public void setDiffHandDamage(int difficulty, float damage) {
-        this.diffHandDamage[difficulty - 1] = damage;
-        this.namedTag.putList(new ListTag<FloatTag>(DIFFICULTY_HAND_DAMAGE).add(new FloatTag("", this.diffHandDamage[0])).add(new FloatTag("", this.diffHandDamage[1])).add(new FloatTag("", this.diffHandDamage[2])));
+    public boolean attackTarget(Entity entity) {
+        return entity instanceof Player;
     }
 }

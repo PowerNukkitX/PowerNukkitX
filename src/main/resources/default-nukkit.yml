@@ -22,6 +22,7 @@ debug:
   - LevelChunkPacket
 
 timings:
+ completely-close: false
  enabled: false
  verbose: false
  history-interval: 6000
@@ -62,6 +63,20 @@ ticks-per:
  monster-spawns: 1
  autosave: 6000
  cache-cleanup: 900
+
+memory-compression:
+ enable: true
+ slots: 32
+ default-temperature: 32
+ threshold:
+  freezing-point: 0
+  boiling-point: 1024
+  absolute-zero: -256
+ heat:
+  melting: 16
+  single-operation: 1
+  batch-operation: 32
+
 
 spawn-limits:
  monsters: 70

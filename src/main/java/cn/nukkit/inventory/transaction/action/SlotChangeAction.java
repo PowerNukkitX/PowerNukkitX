@@ -1,6 +1,7 @@
 package cn.nukkit.inventory.transaction.action;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.transaction.InventoryTransaction;
 import cn.nukkit.item.Item;
@@ -14,7 +15,7 @@ import java.util.Set;
 public class SlotChangeAction extends InventoryAction {
 
     protected Inventory inventory;
-    private int inventorySlot;
+    private final int inventorySlot;
 
     public SlotChangeAction(Inventory inventory, int inventorySlot, Item sourceItem, Item targetItem) {
         super(sourceItem, targetItem);
@@ -59,8 +60,9 @@ public class SlotChangeAction extends InventoryAction {
      * @return successfully executed
      */
     @Override
+    @PowerNukkitXDifference(info = "Use setItemByPlayer", since = "1.19.50-r3")
     public boolean execute(Player source) {
-        return this.inventory.setItem(this.inventorySlot, this.targetItem, false);
+        return this.inventory.setItemByPlayer(source, this.inventorySlot, this.targetItem, false);
     }
 
     /**
@@ -71,12 +73,8 @@ public class SlotChangeAction extends InventoryAction {
     @Override
     public void onExecuteSuccess(Player source) {
         Set<Player> viewers = new HashSet<>(this.inventory.getViewers());
-        if (source.getLoginChainData().getDeviceOS() == 7) {
-            this.inventory.sendSlot(this.inventorySlot, viewers);
-        } else {
-            viewers.remove(source);
-            this.inventory.sendSlot(this.inventorySlot, viewers);
-        }
+        viewers.remove(source);
+        this.inventory.sendSlot(this.inventorySlot, viewers);
     }
 
     /**

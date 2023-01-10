@@ -28,8 +28,8 @@ public class EntityZoglin extends EntityWalkingMob implements EntityAgeable {
 
     @Override
     protected void initEntity() {
-        super.initEntity();
         this.setMaxHealth(40);
+        super.initEntity();
     }
 
     @Override
@@ -65,18 +65,5 @@ public class EntityZoglin extends EntityWalkingMob implements EntityAgeable {
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;
-    }
-
-    @PowerNukkitOnly
-    @Override
-    public boolean isBaby() {
-        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_BABY);
-    }
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public void setBaby(boolean baby) {
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_BABY, baby);
-        this.setScale(baby ? 0.5f : 1.0f);
     }
 }

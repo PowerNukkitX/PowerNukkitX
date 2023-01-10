@@ -7,15 +7,16 @@ import cn.nukkit.api.*;
 import cn.nukkit.block.*;
 import cn.nukkit.blockentity.BlockEntityPistonArm;
 import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.entity.component.EntityComponent;
+import cn.nukkit.entity.component.EntityComponentGroup;
+import cn.nukkit.entity.component.EntityComponentRegistery;
+import cn.nukkit.entity.component.SimpleEntityComponentGroup;
 import cn.nukkit.entity.custom.CustomEntity;
 import cn.nukkit.entity.custom.CustomEntityDefinition;
 import cn.nukkit.entity.data.*;
 import cn.nukkit.entity.item.EntityArmorStand;
 import cn.nukkit.entity.item.EntityItem;
-import cn.nukkit.entity.mob.EntityBlaze;
 import cn.nukkit.entity.mob.EntityEnderDragon;
-import cn.nukkit.entity.mob.EntityMagmaCube;
-import cn.nukkit.entity.passive.EntityStrider;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.provider.ClassEntityProvider;
 import cn.nukkit.entity.provider.CustomEntityProvider;
@@ -56,10 +57,12 @@ import co.aikar.timings.TimingsHistory;
 import com.google.common.collect.Iterables;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
@@ -275,19 +278,27 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_HITBOX = dynamic(118); //NBT
     @Since("1.3.0.0-PN")
     public static final int DATA_IS_BUOYANT = dynamic(119); //byte
-    @Since("1.5.0.0-PN")
-    public static final int DATA_BASE_RUNTIME_ID = dynamic(120); // ???
     @Since("1.4.0.0-PN")
-    public static final int DATA_FREEZING_EFFECT_STRENGTH = dynamic(121); //float
+    public static final int DATA_FREEZING_EFFECT_STRENGTH = dynamic(120); //float
     @Since("1.3.0.0-PN")
-    public static final int DATA_BUOYANCY_DATA = dynamic(122); //string
+    public static final int DATA_BUOYANCY_DATA = dynamic(121); //string
     @Since("1.4.0.0-PN")
-    public static final int DATA_GOAT_HORN_COUNT = dynamic(123); // ???
+    public static final int DATA_GOAT_HORN_COUNT = dynamic(122); // ???
     @Since("1.5.0.0-PN")
-    public static final int DATA_UPDATE_PROPERTIES = dynamic(124); // ???
-    public static final int DATA_MOVEMENT_SOUND_DISTANCE_OFFSET = dynamic(125); // ???
-    public static final int DATA_HEARTBEAT_INTERVAL_TICKS = dynamic(126); // ???
-    public static final int DATA_HEARTBEAT_SOUND_EVENT = dynamic(127); // ???
+    public static final int DATA_BASE_RUNTIME_ID = dynamic(123); // ???
+    public static final int DATA_MOVEMENT_SOUND_DISTANCE_OFFSET = dynamic(124); // ???
+    //Deprecated
+    //@Since("1.5.0.0-PN")
+    //public static final int DATA_UPDATE_PROPERTIES = dynamic(124); // ???
+    public static final int DATA_HEARTBEAT_INTERVAL_TICKS = dynamic(125); // ???
+    public static final int DATA_HEARTBEAT_SOUND_EVENT = dynamic(126); // ???
+    @Since("1.19.40-r3")
+    public static final int DATA_PLAYER_LAST_DEATH_POS = 127;// ???
+    @Since("1.19.40-r3")
+    public static final int DATA_PLAYER_LAST_DEATH_DIMENSION = 128;// ???
+    @Since("1.19.40-r3")
+    public static final int DATA_PLAYER_HAS_DIED = 129;// ???
+
     // Flags
     public static final int DATA_FLAG_ONFIRE = dynamic(0);
     public static final int DATA_FLAG_SNEAKING = dynamic(1);
@@ -336,26 +347,28 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_FLAG_CHARGE_ATTACK = dynamic(43);
     public static final int DATA_FLAG_WASD_CONTROLLED = dynamic(44);
     public static final int DATA_FLAG_CAN_POWER_JUMP = dynamic(45);
-    public static final int DATA_FLAG_LINGER = dynamic(46);
-    public static final int DATA_FLAG_HAS_COLLISION = dynamic(47);
-    public static final int DATA_FLAG_GRAVITY = dynamic(48);
-    public static final int DATA_FLAG_FIRE_IMMUNE = dynamic(49);
-    public static final int DATA_FLAG_DANCING = dynamic(50);
-    public static final int DATA_FLAG_ENCHANTED = dynamic(51);
-    public static final int DATA_FLAG_SHOW_TRIDENT_ROPE = dynamic(52); // tridents show an animated rope when enchanted with loyalty after they are thrown and return to their owner. To be combined with DATA_OWNER_EID
-    public static final int DATA_FLAG_CONTAINER_PRIVATE = dynamic(53); //inventory is private, doesn't drop contents when killed if true
+    public static final int DATA_FLAG_CAN_DASH = dynamic(46);
+
+    public static final int DATA_FLAG_LINGER = dynamic(47);
+    public static final int DATA_FLAG_HAS_COLLISION = dynamic(48);
+    public static final int DATA_FLAG_GRAVITY = dynamic(49);
+    public static final int DATA_FLAG_FIRE_IMMUNE = dynamic(50);
+    public static final int DATA_FLAG_DANCING = dynamic(51);
+    public static final int DATA_FLAG_ENCHANTED = dynamic(52);
+    public static final int DATA_FLAG_SHOW_TRIDENT_ROPE = dynamic(53); // tridents show an animated rope when enchanted with loyalty after they are thrown and return to their owner. To be combined with DATA_OWNER_EID
+    public static final int DATA_FLAG_CONTAINER_PRIVATE = dynamic(54); //inventory is private, doesn't drop contents when killed if true
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_IS_TRANSFORMING = dynamic(54);
-    public static final int DATA_FLAG_SPIN_ATTACK = dynamic(55);
-    public static final int DATA_FLAG_SWIMMING = dynamic(56);
-    public static final int DATA_FLAG_BRIBED = dynamic(57); //dolphins have this set when they go to find treasure for the player
-    public static final int DATA_FLAG_PREGNANT = dynamic(58);
-    public static final int DATA_FLAG_LAYING_EGG = dynamic(59);
+    public static final int DATA_FLAG_IS_TRANSFORMING = dynamic(55);
+    public static final int DATA_FLAG_SPIN_ATTACK = dynamic(56);
+    public static final int DATA_FLAG_SWIMMING = dynamic(57);
+    public static final int DATA_FLAG_BRIBED = dynamic(58); //dolphins have this set when they go to find treasure for the player
+    public static final int DATA_FLAG_PREGNANT = dynamic(59);
+    public static final int DATA_FLAG_LAYING_EGG = dynamic(60);
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_RIDER_CAN_PICK = dynamic(60);
+    public static final int DATA_FLAG_RIDER_CAN_PICK = dynamic(61);
     @PowerNukkitOnly
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_TRANSITION_SITTING = dynamic(61); // PowerNukkit but without typo
+    public static final int DATA_FLAG_TRANSITION_SITTING = dynamic(62); // PowerNukkit but without typo
     /**
      * @see #DATA_FLAG_TRANSITION_SITTING
      * @deprecated This is from NukkitX but it has a typo which we can't remove unless NukkitX removes from their side.
@@ -367,84 +380,90 @@ public abstract class Entity extends Location implements Metadatable {
             replaceWith = "DATA_FLAG_TRANSITION_SITTING")
     @Since("1.2.0.0-PN")
     public static final int DATA_FLAG_TRANSITION_SETTING = DATA_FLAG_TRANSITION_SITTING; // NukkitX with the same typo
-    public static final int DATA_FLAG_EATING = dynamic(62);
-    public static final int DATA_FLAG_LAYING_DOWN = dynamic(63);
-    public static final int DATA_FLAG_SNEEZING = dynamic(64);
-    public static final int DATA_FLAG_TRUSTING = dynamic(65);
-    public static final int DATA_FLAG_ROLLING = dynamic(66);
-    public static final int DATA_FLAG_SCARED = dynamic(67);
-    public static final int DATA_FLAG_IN_SCAFFOLDING = dynamic(68);
-    public static final int DATA_FLAG_OVER_SCAFFOLDING = dynamic(69);
-    public static final int DATA_FLAG_FALL_THROUGH_SCAFFOLDING = dynamic(70);
-    public static final int DATA_FLAG_BLOCKING = dynamic(71); //shield
+    public static final int DATA_FLAG_EATING = dynamic(63);
+    public static final int DATA_FLAG_LAYING_DOWN = dynamic(64);
+    public static final int DATA_FLAG_SNEEZING = dynamic(65);
+    public static final int DATA_FLAG_TRUSTING = dynamic(66);
+    public static final int DATA_FLAG_ROLLING = dynamic(67);
+    public static final int DATA_FLAG_SCARED = dynamic(68);
+    public static final int DATA_FLAG_IN_SCAFFOLDING = dynamic(69);
+    public static final int DATA_FLAG_OVER_SCAFFOLDING = dynamic(70);
+    public static final int DATA_FLAG_FALL_THROUGH_SCAFFOLDING = dynamic(71);
+    public static final int DATA_FLAG_BLOCKING = dynamic(72); //shield
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_TRANSITION_BLOCKING = dynamic(72);
+    public static final int DATA_FLAG_TRANSITION_BLOCKING = dynamic(73);
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_BLOCKED_USING_SHIELD = dynamic(73);
+    public static final int DATA_FLAG_BLOCKED_USING_SHIELD = dynamic(74);
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_BLOCKED_USING_DAMAGED_SHIELD = dynamic(74);
+    public static final int DATA_FLAG_BLOCKED_USING_DAMAGED_SHIELD = dynamic(75);
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_SLEEPING = dynamic(75);
+    public static final int DATA_FLAG_SLEEPING = dynamic(76);
     @Since("FUTURE")
-    public static final int DATA_FLAG_ENTITY_GROW_UP = dynamic(76);
+    public static final int DATA_FLAG_ENTITY_GROW_UP = dynamic(77);
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_TRADE_INTEREST = dynamic(77);
+    public static final int DATA_FLAG_TRADE_INTEREST = dynamic(78);
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_DOOR_BREAKER = dynamic(78);
+    public static final int DATA_FLAG_DOOR_BREAKER = dynamic(79);
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_BREAKING_OBSTRUCTION = dynamic(79);
+    public static final int DATA_FLAG_BREAKING_OBSTRUCTION = dynamic(80);
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_DOOR_OPENER = dynamic(80);
+    public static final int DATA_FLAG_DOOR_OPENER = dynamic(81);
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_IS_ILLAGER_CAPTAIN = dynamic(81);
+    public static final int DATA_FLAG_IS_ILLAGER_CAPTAIN = dynamic(82);
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_STUNNED = dynamic(82);
+    public static final int DATA_FLAG_STUNNED = dynamic(83);
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_ROARING = dynamic(83);
+    public static final int DATA_FLAG_ROARING = dynamic(84);
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_DELAYED_ATTACK = dynamic(84);
+    public static final int DATA_FLAG_DELAYED_ATTACK = dynamic(85);
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_IS_AVOIDING_MOBS = dynamic(85);
+    public static final int DATA_FLAG_IS_AVOIDING_MOBS = dynamic(86);
     @Since("1.3.0.0-PN")
-    public static final int DATA_FLAG_IS_AVOIDING_BLOCKS = dynamic(86);
+    public static final int DATA_FLAG_IS_AVOIDING_BLOCKS = dynamic(87);
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_FACING_TARGET_TO_RANGE_ATTACK = dynamic(87);
+    public static final int DATA_FLAG_FACING_TARGET_TO_RANGE_ATTACK = dynamic(88);
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_HIDDEN_WHEN_INVISIBLE = dynamic(88);
+    public static final int DATA_FLAG_HIDDEN_WHEN_INVISIBLE = dynamic(89);
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_IS_IN_UI = dynamic(89);
+    public static final int DATA_FLAG_IS_IN_UI = dynamic(90);
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_STALKING = dynamic(90);
+    public static final int DATA_FLAG_STALKING = dynamic(91);
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_EMOTING = dynamic(91);
+    public static final int DATA_FLAG_EMOTING = dynamic(92);
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_CELEBRATING = dynamic(92);
+    public static final int DATA_FLAG_CELEBRATING = dynamic(93);
     @Since("1.3.0.0-PN")
-    public static final int DATA_FLAG_ADMIRING = dynamic(93);
+    public static final int DATA_FLAG_ADMIRING = dynamic(94);
     @Since("1.3.0.0-PN")
-    public static final int DATA_FLAG_CELEBRATING_SPECIAL = dynamic(94);
+    public static final int DATA_FLAG_CELEBRATING_SPECIAL = dynamic(95);
     @Since("1.4.0.0-PN")
-    public static final int DATA_FLAG_RAM_ATTACK = dynamic(96);
+    public static final int DATA_FLAG_RAM_ATTACK = dynamic(97);
     @Since("1.5.0.0-PN")
-    public static final int DATA_FLAG_PLAYING_DEAD = dynamic(97);
+    public static final int DATA_FLAG_PLAYING_DEAD = dynamic(98);
     @Since("FUTURE")
-    public static final int DATA_FLAG_IN_ASCENDABLE_BLOCK = dynamic(98);
+    public static final int DATA_FLAG_IN_ASCENDABLE_BLOCK = dynamic(99);
     @Since("FUTURE")
-    public static final int DATA_FLAG_OVER_DESCENDABLE_BLOCK = dynamic(99);
+    public static final int DATA_FLAG_OVER_DESCENDABLE_BLOCK = dynamic(100);
     @Since("1.6.0.0-PNX")
-    public static final int DATA_FLAG_CROAKING = dynamic(100);
+    public static final int DATA_FLAG_CROAKING = dynamic(101);
     @Since("1.6.0.0-PNX")
-    public static final int DATA_FLAG_EAT_MOB = dynamic(101);
+    public static final int DATA_FLAG_EAT_MOB = dynamic(102);
     @Since("1.6.0.0-PNX")
-    public static final int DATA_FLAG_JUMP_GOAL_JUMP = dynamic(102);
+    public static final int DATA_FLAG_JUMP_GOAL_JUMP = dynamic(103);
     @Since("1.6.0.0-PNX")
-    public static final int DATA_FLAG_EMERGING = dynamic(103);
+    public static final int DATA_FLAG_EMERGING = dynamic(104);
     @Since("1.6.0.0-PNX")
-    public static final int DATA_FLAG_SNIFFING = dynamic(104);
+    public static final int DATA_FLAG_SNIFFING = dynamic(105);
     @Since("1.6.0.0-PNX")
-    public static final int DATA_FLAG_DIGGING = dynamic(105);
+    public static final int DATA_FLAG_DIGGING = dynamic(106);
     @Since("1.19.21-r4")
-    public static final int DATA_FLAG_SONIC_BOOM = dynamic(106);
+    public static final int DATA_FLAG_SONIC_BOOM = dynamic(107);
+    @Since("1.19.50-r1")
+    public static final int DATA_FLAG_HAS_DASH_COOLDOWN = dynamic(108);
+    @Since("1.19.50-r1")
+    public static final int DATA_FLAG_PUSH_TOWARDS_CLOSEST_SPACE = dynamic(109);
+    @Since("1.19.50-r4")
+    public static final int DATA_FLAG_LARGE = dynamic(110);
     private static final Set<CustomEntityDefinition> entityDefinitions = new HashSet<>();
     private static final Map<String, EntityProvider<? extends Entity>> knownEntities = new HashMap<>();
     private static final Map<String, String> shortNames = new HashMap<>();
@@ -536,6 +555,10 @@ public abstract class Entity extends Location implements Metadatable {
     protected Server server;
     protected Timing timing;
     protected boolean isPlayer = this instanceof Player;
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    @Getter
+    protected EntityComponentGroup componentGroup;
     private int maxHealth = 20;
     private volatile boolean initialized;
 
@@ -735,6 +758,38 @@ public abstract class Entity extends Location implements Metadatable {
                         .add(new FloatTag("", pitch)));
     }
 
+    /**
+     * Batch play animation on entity groups<br/>
+     * This method is recommended if you need to play the same animation on a large number of entities at the same time, as it only sends packets once for each player, which greatly reduces bandwidth pressure
+     * <p>
+     * 在实体群上批量播放动画<br/>
+     * 若你需要同时在大量实体上播放同一动画，建议使用此方法，因为此方法只会针对每个玩家发送一次包，这能极大地缓解带宽压力
+     *
+     * @param animation 动画对象 Animation objects
+     * @param entities  需要播放动画的实体群 Group of entities that need to play animations
+     * @param players   可视玩家 Visible Player
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.50-r3")
+    public static void playAnimationOnEntities(AnimateEntityPacket.Animation animation, Collection<Entity> entities, Collection<Player> players) {
+        var pk = new AnimateEntityPacket();
+        pk.parseFromAnimation(animation);
+        entities.forEach(entity -> pk.getEntityRuntimeIds().add(entity.getId()));
+        pk.encode();
+        Server.broadcastPacket(players, pk);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.50-r3")
+    public static void playAnimationOnEntities(AnimateEntityPacket.Animation animation, Collection<Entity> entities) {
+        var viewers = new HashSet<Player>();
+        entities.forEach(entity -> {
+            viewers.addAll(entity.getViewers().values());
+            if (entity.isPlayer) viewers.add((Player) entity);
+        });
+        playAnimationOnEntities(animation, entities, viewers);
+    }
+
     public abstract int getNetworkId();
 
     public float getHeight() {
@@ -783,6 +838,12 @@ public abstract class Entity extends Location implements Metadatable {
         return 0;
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.50-r2")
+    public int getFrostbiteInjury() {
+        return 1;
+    }
+
     protected void initEntity() {
         if (!(this instanceof Player)) {
             if (this.namedTag.contains("uuid")) {
@@ -820,6 +881,13 @@ public abstract class Entity extends Location implements Metadatable {
         this.dataProperties.putFloat(DATA_BOUNDING_BOX_HEIGHT, this.getHeight());
         this.dataProperties.putFloat(DATA_BOUNDING_BOX_WIDTH, this.getWidth());
         this.dataProperties.putInt(DATA_HEALTH, (int) this.getHealth());
+
+        try {
+            this.componentGroup = requireEntityComponentGroup();
+        } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException("An error occurred while creating the component group", e);
+        }
+        this.componentGroup.onInitEntity();
 
         this.scheduleUpdate();
     }
@@ -1131,9 +1199,13 @@ public abstract class Entity extends Location implements Metadatable {
         if (effect == null) {
             return; //here add null means add nothing
         }
-
+        Effect oldEffect = this.getEffect(effect.getId());
+        if (oldEffect != null && (Math.abs(effect.getAmplifier()) < Math.abs(oldEffect.getAmplifier()) ||
+                Math.abs(effect.getAmplifier()) == Math.abs(oldEffect.getAmplifier())
+                        && effect.getDuration() < oldEffect.getDuration())) {
+            return;
+        }
         effect.add(this);
-
         this.effects.put(effect.getId(), effect);
 
         this.recalculateEffectColor();
@@ -1259,6 +1331,8 @@ public abstract class Entity extends Location implements Metadatable {
         } else {
             this.namedTag.remove("ActiveEffects");
         }
+
+        this.getComponentGroup().onSaveNBT();
     }
 
     /**
@@ -1712,8 +1786,7 @@ public abstract class Entity extends Location implements Metadatable {
         this.checkBlockCollision();
 
         if (this.y < (level.getMinHeight() - 18) && this.isAlive()) {
-            if (this instanceof Player) {
-                Player player = (Player) this;
+            if (this instanceof Player player) {
                 if (!player.isCreative()) this.attack(new EntityDamageEvent(this, DamageCause.VOID, 10));
             } else {
                 this.attack(new EntityDamageEvent(this, DamageCause.VOID, 10));
@@ -1786,7 +1859,7 @@ public abstract class Entity extends Location implements Metadatable {
             }
         }
 
-        if (this.getCollisionBlocks().stream().noneMatch(block -> block.getId() == Block.POWDER_SNOW) && this.getFreezingTicks() > 0) {
+        if (this.getTickCachedCollisionBlocks().stream().noneMatch(block -> block.getId() == Block.POWDER_SNOW) && this.getFreezingTicks() > 0) {
             this.addFreezingTicks(-tickDiff);
         }
 
@@ -1798,13 +1871,8 @@ public abstract class Entity extends Location implements Metadatable {
             }
         }
 
-        //todo: 取代求余运算提高性能
         if (this.getFreezingTicks() == 140 && this.getServer().getTick() % 40 == 0) {
-            if (this instanceof EntityBlaze || this instanceof EntityStrider || this instanceof EntityMagmaCube) {
-                this.attack(5);
-            } else {
-                this.attack(1);
-            }
+            this.attack(new EntityDamageEvent(this, DamageCause.FREEZING, getFrostbiteInjury()));
         }
 
         this.age += tickDiff;
@@ -1838,10 +1906,6 @@ public abstract class Entity extends Location implements Metadatable {
                 .filter(block -> block.down().getId() != BlockID.NETHER_PORTAL)
                 .min(euclideanDistance.thenComparing(heightDistance))
                 .orElse(null);
-
-        if (nearestPortal == null) {
-            return null;
-        }
 
         return nearestPortal;
     }
@@ -1929,6 +1993,27 @@ public abstract class Entity extends Location implements Metadatable {
         Server.broadcastPacket(this.hasSpawned.values(), pk);
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.31-r1")
+    protected void broadcastMovement(boolean teleport) {
+        var pk = new MoveEntityAbsolutePacket();
+        pk.eid = this.getId();
+        pk.x = this.x;
+        /*todo HACK实现
+        当不启用服务器权威移动、玩家游泳时，以玩家当前位置发送MoveEntityAbsolutePacket会导致
+        玩家位置和实际位置不相符，需要+getBaseOffset()*/
+        if (getServer().getServerAuthoritativeMovement() == 0) {
+            pk.y = isSwimming() ? this.y + getBaseOffset() : this.y + this.getEyeHeight();
+        } else pk.y = this.y + this.getEyeHeight();
+        pk.z = this.z;
+        pk.headYaw = yaw;
+        pk.pitch = pitch;
+        pk.yaw = yaw;
+        pk.teleport = teleport;
+        pk.onGround = this.onGround;
+        Server.broadcastPacket(hasSpawned.values(), pk);
+    }
+
     @PowerNukkitXDifference(info = "There is no need to set the temporalVector, because the result is prone to change in an asynchronous environment.")
     @Override
     public Vector3 getDirectionVector() {
@@ -1991,8 +2076,7 @@ public abstract class Entity extends Location implements Metadatable {
             this.updateMovement();
         }
 
-        if (this.getLevelBlock() instanceof BlockBigDripleaf) {
-            BlockBigDripleaf block = (BlockBigDripleaf) this.getLevelBlock();
+        if (this.add(0, -0.1).getTickCachedLevelBlock() instanceof BlockBigDripleaf block) {
             if (block.isHead())
                 block.onUpdate(Level.BLOCK_UPDATE_NORMAL);
         }
@@ -2660,11 +2744,52 @@ public abstract class Entity extends Location implements Metadatable {
         return this.blocksAround;
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.50-r2")
+    public List<Block> getTickCachedBlocksAround() {
+        if (this.blocksAround == null) {
+            int minX = NukkitMath.floorDouble(this.boundingBox.getMinX());
+            int minY = NukkitMath.floorDouble(this.boundingBox.getMinY());
+            int minZ = NukkitMath.floorDouble(this.boundingBox.getMinZ());
+            int maxX = NukkitMath.ceilDouble(this.boundingBox.getMaxX());
+            int maxY = NukkitMath.ceilDouble(this.boundingBox.getMaxY());
+            int maxZ = NukkitMath.ceilDouble(this.boundingBox.getMaxZ());
+
+            this.blocksAround = new ArrayList<>();
+
+            for (int z = minZ; z <= maxZ; ++z) {
+                for (int x = minX; x <= maxX; ++x) {
+                    for (int y = minY; y <= maxY; ++y) {
+                        this.blocksAround.add(this.level.getTickCachedBlock(this.temporalVector.setComponents(x, y, z)));
+                    }
+                }
+            }
+        }
+
+        return this.blocksAround;
+    }
+
     public List<Block> getCollisionBlocks() {
         if (this.collisionBlocks == null) {
             this.collisionBlocks = new ArrayList<>();
 
             for (Block b : getBlocksAround()) {
+                if (b.collidesWithBB(this.getBoundingBox(), true)) {
+                    this.collisionBlocks.add(b);
+                }
+            }
+        }
+
+        return this.collisionBlocks;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.50-r2")
+    public List<Block> getTickCachedCollisionBlocks() {
+        if (this.collisionBlocks == null) {
+            this.collisionBlocks = new ArrayList<>();
+
+            for (Block b : getTickCachedBlocksAround()) {
                 if (b.collidesWithBB(this.getBoundingBox(), true)) {
                     this.collisionBlocks.add(b);
                 }
@@ -2697,7 +2822,7 @@ public abstract class Entity extends Location implements Metadatable {
         boolean portal = false;
         boolean scaffolding = false;
         boolean endPortal = false;
-        for (Block block : this.getCollisionBlocks()) {
+        for (var block : this.getTickCachedCollisionBlocks()) {
             switch (block.getId()) {
                 case Block.NETHER_PORTAL -> portal = true;
                 case BlockID.SCAFFOLDING -> scaffolding = true;
@@ -2705,7 +2830,7 @@ public abstract class Entity extends Location implements Metadatable {
             }
 
             block.onEntityCollide(this);
-            block.getLevelBlockAtLayer(1).onEntityCollide(this);
+            block.getTickCachedLevelBlockAtLayer(1).onEntityCollide(this);
             if (needsRecalcCurrent)
                 block.addVelocityToEntity(this, vector);
         }
@@ -2994,7 +3119,7 @@ public abstract class Entity extends Location implements Metadatable {
 
         if (this.setPositionAndRotation(to, yaw, pitch)) {
             this.resetFallDistance();
-            this.onGround = this.noClip ? false : true;
+            this.onGround = !this.noClip;
 
             this.updateMovement();
 
@@ -3098,7 +3223,7 @@ public abstract class Entity extends Location implements Metadatable {
             if (data.getId() == DATA_FLAGS_EXTENDED) {
                 metadata.put(this.dataProperties.get(DATA_FLAGS));
             }
-            this.sendData(this.hasSpawned.values().toArray(new Player[0]), metadata);
+            this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), metadata);
         }
         return true;
     }
@@ -3361,6 +3486,58 @@ public abstract class Entity extends Location implements Metadatable {
     @Since("1.19.21-r4")
     public void setAmbientSoundEventName(String eventName) {
         this.setDataProperty(new StringEntityData(Entity.DATA_AMBIENT_SOUND_EVENT_NAME, eventName));
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.50-r3")
+    public void playAnimation(AnimateEntityPacket.Animation animation) {
+        var viewers = this.getViewers().values();
+        if (this.isPlayer) viewers.add((Player) this);
+        playAnimation(animation, viewers);
+    }
+
+    /**
+     * Play the animation of this entity to a specified group of players
+     * <p>
+     * 向指定玩家群体播放此实体的动画
+     *
+     * @param animation 动画对象 Animation objects
+     * @param players   可视玩家 Visible Player
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.50-r3")
+    public void playAnimation(AnimateEntityPacket.Animation animation, Collection<Player> players) {
+        var pk = new AnimateEntityPacket();
+        pk.parseFromAnimation(animation);
+        pk.getEntityRuntimeIds().add(this.getId());
+        pk.encode();
+        Server.broadcastPacket(players, pk);
+    }
+
+    /**
+     * 通过反射获取类实现的接口并查询{@link cn.nukkit.entity.component.EntityComponentRegistery}创建对应组件
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    protected EntityComponentGroup requireEntityComponentGroup() throws InvocationTargetException, InstantiationException, IllegalAccessException {
+        var components = new HashSet<EntityComponent>();
+
+        var interfaces = this.getClass().getInterfaces();
+        for (var interfaze : interfaces) {
+            var component = EntityComponentRegistery.getInterfaceBoundEntityComponent(interfaze);
+            if (component != null) {
+                var constructor = EntityComponent.CONSTRUCTOR_CACHE.computeIfAbsent(component,k -> {
+                    try {
+                        return component.getConstructor(Entity.class);
+                    } catch (NoSuchMethodException e) {
+                        throw new RuntimeException("The required entity component constructor was not found", e);
+                    }
+                });
+                components.add(constructor.newInstance(this));
+            }
+        }
+
+        return new SimpleEntityComponentGroup(components);
     }
 
     private record OldStringClass(String key, Class<? extends Entity> value) {

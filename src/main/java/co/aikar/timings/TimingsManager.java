@@ -111,8 +111,13 @@ public class TimingsManager {
     }
 
     static Timing getTiming(String group, String name, Timing groupTiming) {
+        return getTiming(group, name, groupTiming, true);
+    }
+
+    static Timing getTiming(String group, String name, Timing groupTiming, boolean cache) {
+        if (Timings.isTimingsCloseCompletely()) return Timings.emptyTimer;
         TimingIdentifier id = new TimingIdentifier(group, name, groupTiming);
-        return TIMING_MAP.computeIfAbsent(id, k -> new Timing(id));
+        return cache ? TIMING_MAP.computeIfAbsent(id, k -> new Timing(id)) : new Timing(id);
     }
 
     static final class BoundedQueue<E> extends LinkedList<E> {

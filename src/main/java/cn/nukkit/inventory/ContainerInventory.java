@@ -1,5 +1,6 @@
 package cn.nukkit.inventory;
 
+import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -36,6 +37,8 @@ public abstract class ContainerInventory extends BaseInventory {
 
     @Override
     public void onOpen(Player who) {
+        if (!who.getAdventureSettings().get(AdventureSettings.Type.OPEN_CONTAINERS))
+            return;
         super.onOpen(who);
         ContainerOpenPacket pk = new ContainerOpenPacket();
         pk.windowId = who.getWindowId(this);

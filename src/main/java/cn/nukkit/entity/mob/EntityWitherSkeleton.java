@@ -25,6 +25,7 @@ public class EntityWitherSkeleton extends EntityWalkingMob implements EntitySmit
 
     @Override
     protected void initEntity() {
+        this.setMaxHealth(20);
         super.initEntity();
     }
 
