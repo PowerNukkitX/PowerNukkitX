@@ -4,21 +4,21 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 /**
  * 控制实体在水中扑腾的控制器
  */
 @PowerNukkitXOnly
 @Since("1.19.50-r4")
 public class FluctuateController implements IController {
-    private final double strength;
+    private final double strength1;
+    private final double strength2;
     private boolean lastTickInWater = false;
 
-    public FluctuateController() {
-        this.strength = 6d;
-    }
-
-    public FluctuateController(double strength) {
-        this.strength = strength;
+    public FluctuateController(EntityIntelligent entity) {
+        this.strength1 = entity.getFloatingHeight() * 0.8;
+        this.strength2 = entity.getFloatingHeight() * 0.6;
     }
 
     @Override
@@ -29,7 +29,11 @@ public class FluctuateController implements IController {
             if (lastTickInWater) {
                 lastTickInWater = false;
                 if (entity.hasWaterAt(0)) {
-                    entity.motionY += strength * entity.getGravity();
+                    if (ThreadLocalRandom.current().nextInt(0, 4) == 3) {// 1/3
+                        entity.motionY += strength1;
+                    } else {
+                        entity.motionY += strength2;
+                    }
                 }
             }
         }

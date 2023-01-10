@@ -2,11 +2,13 @@ package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityCreature;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
+import cn.nukkit.entity.ai.controller.FluctuateController;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
@@ -132,7 +134,7 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
                             new Behavior(new FlatRandomRoamExecutor(0.05f, 12, 100, true, -1, true, 10), (entity -> true), 1)
                     ),
                     Set.of(new RouteUnreachableTimeSensor(CoreMemoryTypes.ROUTE_UNREACHABLE_TIME)),
-                    Set.of(new WalkController(), new LookController(true, true)),
+                    Set.of(new WalkController(), new LookController(true, true), new FluctuateController(this)),
                     new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)
             );
         }
@@ -147,6 +149,12 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
     @Override
     public float getHeight() {
         return 2.9f;
+    }
+
+    @Since("1.19.50-r4")
+    @Override
+    public float getFloatingHeight() {
+        return 0.8f;
     }
 
     @Override

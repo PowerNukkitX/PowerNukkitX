@@ -9,6 +9,7 @@ import cn.nukkit.entity.*;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
+import cn.nukkit.entity.ai.controller.FluctuateController;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.ConditionalProbabilityEvaluator;
@@ -144,7 +145,7 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable, Ent
                             new NearestTargetEntitySensor<>(0, 15, 20,
                                     List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), this::attackTarget)
                     ),
-                    Set.of(new WalkController(), new LookController(true, true)),
+                    Set.of(new WalkController(), new LookController(true, true), new FluctuateController(this)),
                     new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)
 
             );
