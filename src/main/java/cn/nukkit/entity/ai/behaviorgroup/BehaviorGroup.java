@@ -239,9 +239,7 @@ public class BehaviorGroup implements IBehaviorGroup {
                     entity.setShouldUpdateMoveDirection(false);
                     currentRouteUpdateTick = 0;
                     setForceUpdateRoute(false);
-                })
-                        .setStart(entity.clone())
-                        .setTarget(target));
+                }).setStart(entity.clone()).setTarget(target));
             }
         }
         //若不能再移动了，则清除路径信息

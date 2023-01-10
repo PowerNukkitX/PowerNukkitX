@@ -25,6 +25,8 @@ public class WalkingPosEvaluator implements IPosEvaluator {
         //检查是否可到达
         if (!isPassable(entity, blockCenter))
             return false;
+        if (entity.hasWaterAt(0) && blockCenter.getY() - entity.getY() > 1)//实体在水中不能移动到一格高以上的方块
+            return false;
         //TODO: 检查碰头
         //脚下不能是伤害性方块
         if (block.getId() == Block.FLOWING_LAVA || block.getId() == Block.STILL_LAVA || block.getId() == Block.CACTUS)

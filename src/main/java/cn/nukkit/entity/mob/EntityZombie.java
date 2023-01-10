@@ -54,7 +54,8 @@ public class EntityZombie extends EntityWalkingMob implements EntitySmite {
                             new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.15f, 40, false, 10), all(
                                     new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
                                     entity -> {
-                                        if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_PLAYER)) return true;
+                                        if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_PLAYER))
+                                            return true;
                                         Player player = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
                                         return player.isSurvival();
                                     }
@@ -121,6 +122,12 @@ public class EntityZombie extends EntityWalkingMob implements EntitySmite {
                             if (!this.isOnFire())
                                 this.setOnFire(1);
         return super.onUpdate(currentTick);
+    }
+
+    @Since("1.19.50-r4")
+    @Override
+    public double getFloatingForceFactor() {
+        return 0.7;
     }
 
     @Override

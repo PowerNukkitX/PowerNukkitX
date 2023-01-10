@@ -204,7 +204,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
 
         if ((offsetY = getAvailableHorizontalOffset(vector3)) != -384) {
             if (Math.abs(offsetY) > 0.25) {
-                Vector3 vec = vector3.add(1, offsetY, 0);
+                Vector3 vec = vector3.add(0, offsetY, 0);
                 if (!existInCloseList(vec)) {
                     Node nodeNear = getOpenNode(vec);
                     if (nodeNear == null) {
