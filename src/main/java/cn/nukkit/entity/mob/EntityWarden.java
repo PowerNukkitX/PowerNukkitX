@@ -134,7 +134,7 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
                             new Behavior(new FlatRandomRoamExecutor(0.05f, 12, 100, true, -1, true, 10), (entity -> true), 1)
                     ),
                     Set.of(new RouteUnreachableTimeSensor(CoreMemoryTypes.ROUTE_UNREACHABLE_TIME)),
-                    Set.of(new WalkController(), new LookController(true, true), new FluctuateController(this)),
+                    Set.of(new WalkController(), new LookController(true, true), new FluctuateController()),
                     new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)
             );
         }

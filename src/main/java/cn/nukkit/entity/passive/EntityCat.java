@@ -145,7 +145,7 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable, Ent
                             new NearestTargetEntitySensor<>(0, 15, 20,
                                     List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), this::attackTarget)
                     ),
-                    Set.of(new WalkController(), new LookController(true, true), new FluctuateController(this)),
+                    Set.of(new WalkController(), new LookController(true, true), new FluctuateController()),
                     new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)
 
             );

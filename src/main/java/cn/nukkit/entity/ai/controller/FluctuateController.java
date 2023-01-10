@@ -12,15 +12,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @PowerNukkitXOnly
 @Since("1.19.50-r4")
 public class FluctuateController implements IController {
-    private final double strength1;
-    private final double strength2;
     private boolean lastTickInWater = false;
-
-    public FluctuateController(EntityIntelligent entity) {
-        this.strength1 = entity.getFloatingHeight() * 0.8;
-        this.strength2 = entity.getFloatingHeight() * 0.6;
-    }
-
     @Override
     public boolean control(EntityIntelligent entity) {
         if (entity.hasWaterAt(entity.getFloatingHeight())) {
@@ -30,9 +22,9 @@ public class FluctuateController implements IController {
                 lastTickInWater = false;
                 if (entity.hasWaterAt(0)) {
                     if (ThreadLocalRandom.current().nextInt(0, 4) == 3) {// 1/3
-                        entity.motionY += strength1;
+                        entity.motionY += entity.getFloatingHeight() * 0.8;
                     } else {
-                        entity.motionY += strength2;
+                        entity.motionY += entity.getFloatingHeight() * 0.6;
                     }
                 }
             }

@@ -88,7 +88,7 @@ public class EntityCreeper extends EntityWalkingMob implements EntityInteractabl
                             memoryStorage.put(CoreMemoryTypes.SHOULD_EXPLODE, false);
                         }
                     }),
-                    Set.of(new WalkController(), new LookController(true, true), new FluctuateController(this)),
+                    Set.of(new WalkController(), new LookController(true, true), new FluctuateController()),
                     new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)
             );
         }

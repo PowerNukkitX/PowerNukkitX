@@ -94,7 +94,7 @@ public class EntityChicken extends EntityWalkingAnimal{
                             ), 1, 1, 20)
                     ),
                     Set.of(new NearestFeedingPlayerSensor(8, 0), new NearestPlayerSensor(8, 0, 20)),
-                    Set.of(new WalkController(), new LookController(true, true), new FluctuateController(this)),
+                    Set.of(new WalkController(), new LookController(true, true), new FluctuateController()),
                     new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)
             );
         }
