@@ -83,9 +83,9 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
             behaviorGroup.collectSensorData(this);
             behaviorGroup.evaluateCoreBehaviors(this);
             behaviorGroup.evaluateBehaviors(this);
-            behaviorGroup.updateRoute(this);
             behaviorGroup.tickRunningCoreBehaviors(this);
             behaviorGroup.tickRunningBehaviors(this);
+            behaviorGroup.updateRoute(this);
             behaviorGroup.applyController(this);
             if (EntityAI.checkDebugOption(EntityAI.DebugOption.BEHAVIOR)) behaviorGroup.debugTick(this);
         }
