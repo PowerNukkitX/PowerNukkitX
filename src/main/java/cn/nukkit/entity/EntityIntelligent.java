@@ -74,22 +74,31 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
     }
 
     @Override
+    public boolean onUpdate(int currentTick) {
+        if (!this.isImmobile()) {
+            var behaviorGroup = getBehaviorGroup();
+            behaviorGroup.tickRunningCoreBehaviors(this);
+            behaviorGroup.tickRunningBehaviors(this);
+            behaviorGroup.applyController(this);
+            if (EntityAI.checkDebugOption(EntityAI.DebugOption.BEHAVIOR)) behaviorGroup.debugTick(this);
+        }
+        return super.onUpdate(currentTick);
+    }
+
+    /**
+     * 我们将行为组运行循环的部分工作并行化以提高性能
+     */
+    @Override
     public void asyncPrepare(int currentTick) {
         // 计算是否活跃
         isActive = level.isHighLightChunk(getChunkX(), getChunkZ());
         if (!this.isImmobile()) { // immobile会禁用实体AI
             var behaviorGroup = getBehaviorGroup();
-            if (behaviorGroup == null) return;
             behaviorGroup.collectSensorData(this);
             behaviorGroup.evaluateCoreBehaviors(this);
             behaviorGroup.evaluateBehaviors(this);
-            behaviorGroup.tickRunningCoreBehaviors(this);
-            behaviorGroup.tickRunningBehaviors(this);
             behaviorGroup.updateRoute(this);
-            behaviorGroup.applyController(this);
-            if (EntityAI.checkDebugOption(EntityAI.DebugOption.BEHAVIOR)) behaviorGroup.debugTick(this);
         }
-        super.asyncPrepare(currentTick);
     }
 
     @Override

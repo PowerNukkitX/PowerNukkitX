@@ -232,7 +232,8 @@ public class BehaviorGroup implements IBehaviorGroup {
         //到达更新周期时，开始重新计算新路径
         if (currentRouteUpdateTick >= calcActiveDelay(entity, ROUTE_UPDATE_CYCLE + (entity.level.tickRateOptDelay << 1)) || isForceUpdateRoute()) {
             //若有路径目标，则计算新路径
-            if ((routeFindingTask == null || routeFindingTask.getFinished() || Server.getInstance().getNextTick() - routeFindingTask.getStartTime() > 8)) {
+            //TODO: 这边这个注释会导致循环提交寻路计算任务，介于不清楚其作用，我们仅将他注释。需要分析此处会产生的潜在影响 2023/1/11
+            if ((routeFindingTask == null || routeFindingTask.getFinished() /*|| Server.getInstance().getNextTick() - routeFindingTask.getStartTime() > 8*/)) {
                 //clone防止寻路器潜在的修改
                 RouteFindingManager.getInstance().submit(routeFindingTask = new RouteFindingManager.RouteFindingTask(routeFinder, task -> {
                     updateMoveDirection(entity);
