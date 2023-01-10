@@ -18,8 +18,8 @@ import java.util.Map;
 @Getter
 public class FunctionManager {
 
-    private Path rootPath;
-    private Map<String,Function> functions = new HashMap<>();
+    private final Path rootPath;
+    private final Map<String, Function> functions = new HashMap<>();
 
     public FunctionManager(Path rootPath) {
         this.rootPath = rootPath;
