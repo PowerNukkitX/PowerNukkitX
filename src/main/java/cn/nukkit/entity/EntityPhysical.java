@@ -241,6 +241,8 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
      *
      * @return the float
      */
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
     public float getFloatingHeight() {
         return this.getEyeHeight();
     }
