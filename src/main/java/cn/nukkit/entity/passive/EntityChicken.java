@@ -33,8 +33,6 @@ public class EntityChicken extends EntityAnimal implements EntityWalkable {
 
     public static final int NETWORK_ID = 10;
 
-    private IBehaviorGroup behaviorGroup;
-
     public EntityChicken(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -50,19 +48,18 @@ public class EntityChicken extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
-    public IBehaviorGroup getBehaviorGroup() {
-        if (behaviorGroup == null) {
-            behaviorGroup = new BehaviorGroup(
-                    this.tickSpread,
-                    Set.of(
-                            //用于刷新InLove状态的核心行为
-                            new Behavior(
-                                    new InLoveExecutor(400),
-                                    all(
-                                            new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_FED_TIME, 0, 400),
-                                            new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE)
-                                    ),
-                                    1, 1
+    public IBehaviorGroup requireBehaviorGroup() {
+        return new BehaviorGroup(
+                this.tickSpread,
+                Set.of(
+                        //用于刷新InLove状态的核心行为
+                        new Behavior(
+                                new InLoveExecutor(400),
+                                all(
+                                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_FED_TIME, 0, 400),
+                                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE)
+                                ),
+                                1, 1
                             ),
                             //生长
                             new Behavior(
@@ -98,8 +95,6 @@ public class EntityChicken extends EntityAnimal implements EntityWalkable {
                     Set.of(new WalkController(), new LookController(true, true), new FluctuateController()),
                     new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)
             );
-        }
-        return behaviorGroup;
     }
 
     @Override

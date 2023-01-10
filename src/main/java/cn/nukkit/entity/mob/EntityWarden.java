@@ -44,102 +44,98 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
     protected int lastDetectTime = Server.getInstance().getTick();
     protected int lastCollideTime = Server.getInstance().getTick();
     protected boolean waitForVibration = false;
-    private IBehaviorGroup behaviorGroup;
 
     public EntityWarden(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     @Override
-    public IBehaviorGroup getBehaviorGroup() {
-        if (behaviorGroup == null) {
-            behaviorGroup = new BehaviorGroup(
-                    this.tickSpread,
-                    Set.of(
-                            new Behavior((entity) -> {
-                                //刷新随机播放音效
-                                if (this.getMemoryStorage().notEmpty(CoreMemoryTypes.ATTACK_TARGET))
-                                    this.setAmbientSoundEvent(Sound.MOB_WARDEN_ANGRY);
-                                else if (this.getMemoryStorage().notEmpty(CoreMemoryTypes.WARDEN_ANGER_VALUE))
-                                    this.setAmbientSoundEvent(Sound.MOB_WARDEN_AGITATED);
-                                else
-                                    this.setAmbientSoundEvent(Sound.MOB_WARDEN_IDLE);
-                                return false;
-                            }, (entity) -> true, 1, 1, 20),
-                            new Behavior((entity) -> {
-                                //刷新anger数值
-                                var angerValueMap = this.getMemoryStorage().get(CoreMemoryTypes.WARDEN_ANGER_VALUE);
-                                var iterator = angerValueMap.entrySet().iterator();
-                                while (iterator.hasNext()) {
-                                    Map.Entry<Entity, Integer> next = iterator.next();
-                                    if (!entity.level.getName().equals(this.level.getName()) || !isValidAngerEntity(next.getKey())) {
-                                        iterator.remove();
-                                        var attackTarget = this.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET);
-                                        if (attackTarget != null && attackTarget.equals(next.getKey()))
-                                            this.getMemoryStorage().clear(CoreMemoryTypes.ATTACK_TARGET);
+    public IBehaviorGroup requireBehaviorGroup() {
+        return new BehaviorGroup(
+                this.tickSpread,
+                Set.of(
+                        new Behavior((entity) -> {
+                            //刷新随机播放音效
+                            if (this.getMemoryStorage().notEmpty(CoreMemoryTypes.ATTACK_TARGET))
+                                this.setAmbientSoundEvent(Sound.MOB_WARDEN_ANGRY);
+                            else if (this.getMemoryStorage().notEmpty(CoreMemoryTypes.WARDEN_ANGER_VALUE))
+                                this.setAmbientSoundEvent(Sound.MOB_WARDEN_AGITATED);
+                            else
+                                this.setAmbientSoundEvent(Sound.MOB_WARDEN_IDLE);
+                            return false;
+                        }, (entity) -> true, 1, 1, 20),
+                        new Behavior((entity) -> {
+                            //刷新anger数值
+                            var angerValueMap = this.getMemoryStorage().get(CoreMemoryTypes.WARDEN_ANGER_VALUE);
+                            var iterator = angerValueMap.entrySet().iterator();
+                            while (iterator.hasNext()) {
+                                Map.Entry<Entity, Integer> next = iterator.next();
+                                if (!entity.level.getName().equals(this.level.getName()) || !isValidAngerEntity(next.getKey())) {
+                                    iterator.remove();
+                                    var attackTarget = this.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET);
+                                    if (attackTarget != null && attackTarget.equals(next.getKey()))
+                                        this.getMemoryStorage().clear(CoreMemoryTypes.ATTACK_TARGET);
+                                    continue;
+                                }
+                                var newAnger = next.getValue() - 1;
+                                if (newAnger == 0) iterator.remove();
+                                else next.setValue(newAnger);
+                            }
+                            return false;
+                        }, (entity) -> true, 1, 1, 20),
+                        new Behavior((entity) -> {
+                            //为玩家附加黑暗效果
+                            for (var player : entity.level.getPlayers().values()) {
+                                if (!player.isCreative() && !player.isSpectator()
+                                        && entity.distanceSquared(player) <= 400) {
+                                    var effect = player.getEffect(Effect.DARKNESS);
+                                    if (effect == null) {
+                                        effect = Effect.getEffect(Effect.DARKNESS);
+                                        effect.setDuration(260);
+                                        player.addEffect(effect);
                                         continue;
                                     }
-                                    var newAnger = next.getValue() - 1;
-                                    if (newAnger == 0) iterator.remove();
-                                    else next.setValue(newAnger);
+                                    effect.setDuration(effect.getDuration() + 260);
+                                    player.addEffect(effect);
                                 }
-                                return false;
-                            }, (entity) -> true, 1, 1, 20),
-                            new Behavior((entity) -> {
-                                //为玩家附加黑暗效果
-                                for (var player : entity.level.getPlayers().values()) {
-                                    if (!player.isCreative() && !player.isSpectator()
-                                            && entity.distanceSquared(player) <= 400) {
-                                        var effect = player.getEffect(Effect.DARKNESS);
-                                        if (effect == null) {
-                                            effect = Effect.getEffect(Effect.DARKNESS);
-                                            effect.setDuration(260);
-                                            player.addEffect(effect);
-                                            continue;
-                                        }
-                                        effect.setDuration(effect.getDuration() + 260);
-                                        player.addEffect(effect);
-                                    }
-                                }
-                                return false;
-                            }, (entity) -> true, 1, 1, 120),
-                            new Behavior((entity) -> {
-                                //计算心跳间隔
-                                this.setDataProperty(new IntEntityData(Entity.DATA_HEARTBEAT_INTERVAL_TICKS, this.calHeartBeatDelay()));
-                                return false;
-                            }, (entity) -> true, 1, 1, 20)),
-                    Set.of(
-                            new Behavior(
-                                    new WardenViolentAnimationExecutor((int) (4.2 * 20)), all(
-                                    (entity) -> entity.getMemoryStorage().compareDataTo(CoreMemoryTypes.IS_ATTACK_TARGET_CHANGED, true),
-                                    new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET)), 5
-                            ),
-                            new Behavior(
-                                    new WardenRangedAttackExecutor((int) (1.7 * 20), (int) (3.0 * 20)),
-                                    (entity) -> this.getMemoryStorage().get(CoreMemoryTypes.ROUTE_UNREACHABLE_TIME) > 20 //1s
-                                            && this.getMemoryStorage().notEmpty(CoreMemoryTypes.ATTACK_TARGET)
-                                            && isInRangedAttackRange(this.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET))
-                                    , 4, 1, 20
-                            ),
-                            new Behavior(
-                                    new WardenMeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET,
-                                            switch (this.getServer().getDifficulty()) {
-                                                case 1 -> 16;
-                                                case 2 -> 30;
-                                                case 3 -> 45;
-                                                default -> 0;
-                                            }, 0.4f),
-                                    new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET), 3, 1
-                            ),
-                            new Behavior(new WardenSniffExecutor((int) (4.2 * 20), 35), new RandomTimeRangeEvaluator(5 * 20, 10 * 20), 2),
-                            new Behavior(new FlatRandomRoamExecutor(0.05f, 12, 100, true, -1, true, 10), (entity -> true), 1)
-                    ),
-                    Set.of(new RouteUnreachableTimeSensor(CoreMemoryTypes.ROUTE_UNREACHABLE_TIME)),
-                    Set.of(new WalkController(), new LookController(true, true), new FluctuateController()),
-                    new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)
-            );
-        }
-        return this.behaviorGroup;
+                            }
+                            return false;
+                        }, (entity) -> true, 1, 1, 120),
+                        new Behavior((entity) -> {
+                            //计算心跳间隔
+                            this.setDataProperty(new IntEntityData(Entity.DATA_HEARTBEAT_INTERVAL_TICKS, this.calHeartBeatDelay()));
+                            return false;
+                        }, (entity) -> true, 1, 1, 20)),
+                Set.of(
+                        new Behavior(
+                                new WardenViolentAnimationExecutor((int) (4.2 * 20)), all(
+                                (entity) -> entity.getMemoryStorage().compareDataTo(CoreMemoryTypes.IS_ATTACK_TARGET_CHANGED, true),
+                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET)), 5
+                        ),
+                        new Behavior(
+                                new WardenRangedAttackExecutor((int) (1.7 * 20), (int) (3.0 * 20)),
+                                (entity) -> this.getMemoryStorage().get(CoreMemoryTypes.ROUTE_UNREACHABLE_TIME) > 20 //1s
+                                        && this.getMemoryStorage().notEmpty(CoreMemoryTypes.ATTACK_TARGET)
+                                        && isInRangedAttackRange(this.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET))
+                                , 4, 1, 20
+                        ),
+                        new Behavior(
+                                new WardenMeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET,
+                                        switch (this.getServer().getDifficulty()) {
+                                            case 1 -> 16;
+                                            case 2 -> 30;
+                                            case 3 -> 45;
+                                            default -> 0;
+                                        }, 0.4f),
+                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET), 3, 1
+                        ),
+                        new Behavior(new WardenSniffExecutor((int) (4.2 * 20), 35), new RandomTimeRangeEvaluator(5 * 20, 10 * 20), 2),
+                        new Behavior(new FlatRandomRoamExecutor(0.05f, 12, 100, true, -1, true, 10), (entity -> true), 1)
+                ),
+                Set.of(new RouteUnreachableTimeSensor(CoreMemoryTypes.ROUTE_UNREACHABLE_TIME)),
+                Set.of(new WalkController(), new LookController(true, true), new FluctuateController()),
+                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)
+        );
     }
 
     @Override

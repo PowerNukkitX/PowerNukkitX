@@ -24,29 +24,24 @@ import java.util.Set;
 @Since("1.19.50-r4")
 public abstract class EntityFish extends EntityAnimal implements EntitySwimmable {
 
-    protected IBehaviorGroup behaviorGroup;
-
     public EntityFish(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     //移除搁浅音效很不对味
     @Override
-    public IBehaviorGroup getBehaviorGroup() {
-        if (behaviorGroup == null) {
-            behaviorGroup = new BehaviorGroup(
-                    this.tickSpread,
-                    Set.of(),
-                    Set.of(
-                            new Behavior(
-                                    new SpaceRandomRoamExecutor(0.2f, 12, 1, 80, false, -1, false, 10),
-                                    entity -> true, 1)
-                    ),
-                    Set.of(),
-                    Set.of(new SpaceMoveController(), new LookController(true, true), new DiveController()),
-                    new SimpleSpaceAStarRouteFinder(new SwimmingPosEvaluator(), this)
+    public IBehaviorGroup requireBehaviorGroup() {
+        return new BehaviorGroup(
+                this.tickSpread,
+                Set.of(),
+                Set.of(
+                        new Behavior(
+                                new SpaceRandomRoamExecutor(0.2f, 12, 1, 80, false, -1, false, 10),
+                                entity -> true, 1)
+                ),
+                Set.of(),
+                Set.of(new SpaceMoveController(), new LookController(true, true), new DiveController()),
+                new SimpleSpaceAStarRouteFinder(new SwimmingPosEvaluator(), this)
             );
-        }
-        return behaviorGroup;
     }
 }

@@ -36,27 +36,24 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable {
 
     public static final int NETWORK_ID = 16;
 
-    private IBehaviorGroup behaviorGroup;
-
     public EntityMooshroom(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     @PowerNukkitOnly
     @Override
-    public IBehaviorGroup getBehaviorGroup() {
-        if (behaviorGroup == null) {
-            behaviorGroup = new BehaviorGroup(
-                    this.tickSpread,
-                    Set.of(
-                            //用于刷新InLove状态的核心行为
-                            new Behavior(
-                                    new InLoveExecutor(400),
-                                    all(
-                                            new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_FED_TIME, 0, 400),
-                                            new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE)
-                                    ),
-                                    1, 1
+    public IBehaviorGroup requireBehaviorGroup() {
+        return new BehaviorGroup(
+                this.tickSpread,
+                Set.of(
+                        //用于刷新InLove状态的核心行为
+                        new Behavior(
+                                new InLoveExecutor(400),
+                                all(
+                                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_FED_TIME, 0, 400),
+                                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE)
+                                ),
+                                1, 1
                             )
                     ),
                     Set.of(
@@ -70,8 +67,6 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable {
                     Set.of(new WalkController(), new LookController(true, true), new FluctuateController()),
                     new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)
             );
-        }
-        return behaviorGroup;
     }
 
     @Override

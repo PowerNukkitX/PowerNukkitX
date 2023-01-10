@@ -46,54 +46,49 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
     public static final int DATA_SWELL_OLD = 18;
     public static final int DATA_POWERED = 19;
 
-    private IBehaviorGroup behaviorGroup;
-
     public EntityCreeper(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     @Override
-    public IBehaviorGroup getBehaviorGroup() {
-        if (behaviorGroup == null) {
-            behaviorGroup = new BehaviorGroup(
-                    this.tickSpread,
-                    Set.of(),
-                    Set.of(new Behavior(
-                                    new EntityExplosionExecutor(30, 3, CoreMemoryTypes.SHOULD_EXPLODE),
-                                    entity -> entity.getMemoryStorage().compareDataTo(CoreMemoryTypes.SHOULD_EXPLODE, true), 4, 1
-                            ),
-                            new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.15f, true, 16f, 3f, true), all(
-                                    new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET),
-                                    entity -> !entity.getMemoryStorage().notEmpty(CoreMemoryTypes.ATTACK_TARGET) || !(entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET) instanceof Player player) || player.isSurvival()
-                            ), 3, 1),
-                            new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.15f, true, 16f, 3f), all(
-                                    new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
-                                    entity -> {
-                                        if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_PLAYER)) return true;
-                                        Player player = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
-                                        return player.isSurvival();
-                                    }
-                            ), 2, 1),
-                            new Behavior(new FlatRandomRoamExecutor(0.15f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
-                    ),
-                    Set.of(new NearestPlayerSensor(16, 0, 20), entity -> {
-                        var memoryStorage = entity.getMemoryStorage();
-                        Entity attacker = memoryStorage.get(CoreMemoryTypes.ATTACK_TARGET);
-                        if (attacker == null)
-                            attacker = memoryStorage.get(CoreMemoryTypes.NEAREST_PLAYER);
-                        if (attacker != null && (!(attacker instanceof Player player) || player.isSurvival()) && attacker.distanceSquared(entity) <= 3 * 3 && (memoryStorage.isEmpty(CoreMemoryTypes.SHOULD_EXPLODE) || memoryStorage.compareDataTo(CoreMemoryTypes.SHOULD_EXPLODE, false))) {
-                            memoryStorage.put(CoreMemoryTypes.SHOULD_EXPLODE, true);
-                            return;
-                        }
-                        if ((attacker == null || (attacker instanceof Player player && !player.isSurvival()) || attacker.distanceSquared(entity) >= 7 * 7) && memoryStorage.compareDataTo(CoreMemoryTypes.SHOULD_EXPLODE, true) && memoryStorage.get(CoreMemoryTypes.EXPLODE_CANCELLABLE)) {
-                            memoryStorage.put(CoreMemoryTypes.SHOULD_EXPLODE, false);
-                        }
-                    }),
-                    Set.of(new WalkController(), new LookController(true, true), new FluctuateController()),
-                    new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)
-            );
-        }
-        return behaviorGroup;
+    public IBehaviorGroup requireBehaviorGroup() {
+        return new BehaviorGroup(
+                this.tickSpread,
+                Set.of(),
+                Set.of(new Behavior(
+                                new EntityExplosionExecutor(30, 3, CoreMemoryTypes.SHOULD_EXPLODE),
+                                entity -> entity.getMemoryStorage().compareDataTo(CoreMemoryTypes.SHOULD_EXPLODE, true), 4, 1
+                        ),
+                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.15f, true, 16f, 3f, true), all(
+                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET),
+                                entity -> !entity.getMemoryStorage().notEmpty(CoreMemoryTypes.ATTACK_TARGET) || !(entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET) instanceof Player player) || player.isSurvival()
+                        ), 3, 1),
+                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.15f, true, 16f, 3f), all(
+                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
+                                entity -> {
+                                    if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_PLAYER)) return true;
+                                    Player player = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
+                                    return player.isSurvival();
+                                }
+                        ), 2, 1),
+                        new Behavior(new FlatRandomRoamExecutor(0.15f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
+                ),
+                Set.of(new NearestPlayerSensor(16, 0, 20), entity -> {
+                    var memoryStorage = entity.getMemoryStorage();
+                    Entity attacker = memoryStorage.get(CoreMemoryTypes.ATTACK_TARGET);
+                    if (attacker == null)
+                        attacker = memoryStorage.get(CoreMemoryTypes.NEAREST_PLAYER);
+                    if (attacker != null && (!(attacker instanceof Player player) || player.isSurvival()) && attacker.distanceSquared(entity) <= 3 * 3 && (memoryStorage.isEmpty(CoreMemoryTypes.SHOULD_EXPLODE) || memoryStorage.compareDataTo(CoreMemoryTypes.SHOULD_EXPLODE, false))) {
+                        memoryStorage.put(CoreMemoryTypes.SHOULD_EXPLODE, true);
+                        return;
+                    }
+                    if ((attacker == null || (attacker instanceof Player player && !player.isSurvival()) || attacker.distanceSquared(entity) >= 7 * 7) && memoryStorage.compareDataTo(CoreMemoryTypes.SHOULD_EXPLODE, true) && memoryStorage.get(CoreMemoryTypes.EXPLODE_CANCELLABLE)) {
+                        memoryStorage.put(CoreMemoryTypes.SHOULD_EXPLODE, false);
+                    }
+                }),
+                Set.of(new WalkController(), new LookController(true, true), new FluctuateController()),
+                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)
+        );
     }
 
     @Override

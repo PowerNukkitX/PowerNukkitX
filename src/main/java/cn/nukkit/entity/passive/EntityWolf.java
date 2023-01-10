@@ -56,7 +56,6 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityTa
     //字段初始化语句，应当放进initEntity中执行
     //如果不明白顺序，可能会出现在initEntity中初始化后被字段初始化覆盖的情况
     private DyeColor collarColor;//项圈颜色
-    private IBehaviorGroup behaviorGroup;
     protected float[] diffHandDamage = new float[]{3, 4, 6};
 
     public EntityWolf(FullChunk chunk, CompoundTag nbt) {
@@ -69,19 +68,18 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityTa
     }
 
     @Override
-    public IBehaviorGroup getBehaviorGroup() {
-        if (behaviorGroup == null) {
-            behaviorGroup = new BehaviorGroup(
-                    this.tickSpread,
-                    Set.of(
-                            //用于刷新InLove状态的核心行为
-                            new Behavior(
-                                    new InLoveExecutor(400),
-                                    all(
-                                            new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_FED_TIME, 0, 400),
-                                            new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE),
-                                            //只有拥有主人的狼才能交配
-                                            //Only wolves with a master can mate
+    public IBehaviorGroup requireBehaviorGroup() {
+        return new BehaviorGroup(
+                this.tickSpread,
+                Set.of(
+                        //用于刷新InLove状态的核心行为
+                        new Behavior(
+                                new InLoveExecutor(400),
+                                all(
+                                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_FED_TIME, 0, 400),
+                                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE),
+                                        //只有拥有主人的狼才能交配
+                                        //Only wolves with a master can mate
                                             (entity) -> this.hasOwner()
                                     ),
                                     1, 1
@@ -170,8 +168,6 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityTa
                     Set.of(new WalkController(), new LookController(true, true), new FluctuateController()),
                     new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)
             );
-        }
-        return behaviorGroup;
     }
 
     @Override

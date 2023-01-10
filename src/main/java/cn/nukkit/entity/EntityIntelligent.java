@@ -7,7 +7,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.entity.ai.EntityAI;
 import cn.nukkit.entity.ai.behaviorgroup.EmptyBehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
-import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.LogicalUtils;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.memory.IMemoryStorage;
@@ -32,6 +31,9 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
 
     public static final IBehaviorGroup EMPTY_BEHAVIOR_GROUP = new EmptyBehaviorGroup();
 
+    @Since("1.19.50-r4")
+    protected IBehaviorGroup behaviorGroup;
+
     /**
      * 是否为活跃实体，如果实体不活跃，就应当降低AI运行频率
      */
@@ -39,6 +41,7 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
 
     public EntityIntelligent(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
+        this.behaviorGroup = requireBehaviorGroup();
         var storage = getMemoryStorage();
         if (storage != null) {
             getMemoryStorage().put(CoreMemoryTypes.ENTITY_SPAWN_TIME, Server.getInstance().getTick());
@@ -56,9 +59,17 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
      *
      * @return 此实体持有的行为组
      */
-
-    @PowerNukkitXOnly
     public IBehaviorGroup getBehaviorGroup() {
+        return behaviorGroup;
+    }
+
+    /**
+     * 请求一个行为组实例，此方法在实体初始化行为组时调用
+     *
+     * @return 新创建的行为组
+     */
+    @Since("1.19.50-r4")
+    protected IBehaviorGroup requireBehaviorGroup() {
         return EMPTY_BEHAVIOR_GROUP;
     }
 
