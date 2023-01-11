@@ -18,7 +18,6 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import lombok.Getter;
-import lombok.Setter;
 
 /**
  * {@code EntityIntelligent}抽象了一个具有行为组{@link IBehaviorGroup}（也就是具有AI）的实体
@@ -78,6 +77,7 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
         isActive = level.isHighLightChunk(getChunkX(), getChunkZ());
         if (!this.isImmobile()) { // immobile会禁用实体AI
             var behaviorGroup = getBehaviorGroup();
+            if (behaviorGroup == null) return;
             behaviorGroup.collectSensorData(this);
             behaviorGroup.evaluateCoreBehaviors(this);
             behaviorGroup.evaluateBehaviors(this);

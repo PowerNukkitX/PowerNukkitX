@@ -21,6 +21,7 @@ import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 标准行为组实现
@@ -87,7 +88,7 @@ public class BehaviorGroup implements IBehaviorGroup {
      */
     protected RouteFindingManager.RouteFindingTask routeFindingTask;
 
-    protected long blockChangeCache = -1;
+    protected long blockChangeCache;
 
     /**
      * 记录距离上次路径更新过去的gt数
@@ -236,8 +237,8 @@ public class BehaviorGroup implements IBehaviorGroup {
         //到达更新周期时，开始重新计算新路径
         if (isForceUpdateRoute() || (currentRouteUpdateTick >= calcActiveDelay(entity, ROUTE_UPDATE_CYCLE + (entity.level.tickRateOptDelay << 1)) && shouldUpdateRoute(entity, target))) {
             //若有路径目标，则计算新路径
-            //TODO: 这边这个注释会导致循环提交寻路计算任务，介于不清楚其作用，我们仅将他注释。需要分析此处会产生的潜在影响 2023/1/11
-            if ((routeFindingTask == null || routeFindingTask.getFinished() /*|| Server.getInstance().getNextTick() - routeFindingTask.getStartTime() > 8*/)) {
+            //         第一次计算                       上一次计算已完成
+            if ((routeFindingTask == null || routeFindingTask.getFinished() /*|| (!routeFindingTask.getStarted() && Server.getInstance().getNextTick() - routeFindingTask.getStartTime() > 8)*/)) {
                 //clone防止寻路器潜在的修改
                 RouteFindingManager.getInstance().submit(routeFindingTask = new RouteFindingManager.RouteFindingTask(routeFinder, task -> {
                     updateMoveDirection(entity);
@@ -273,25 +274,14 @@ public class BehaviorGroup implements IBehaviorGroup {
     @Since("1.19.50-r4")
     protected boolean shouldUpdateRoute(EntityIntelligent entity, Vector3 newMoveTarget) {
         //此优化只针对处于非active区块的实体
-        if (!entity.isActive()) return true;
-        //已经在运行
-        if (this.routeFindingTask != null && !this.routeFindingTask.getFinished())
-            return false;
+        if (entity.isActive()) return true;
         //终点发生变化或第一次计算，需要重算
-        if (this.routeFinder.getTarget() == null || !this.routeFinder.getTarget().floor().equals(newMoveTarget.floor()) || this.blockChangeCache == -1) {
-            this.blockChangeCache = -1;
+        if (this.routeFinder.getTarget() == null || !this.routeFinder.getTarget().equals(newMoveTarget))
             return true;
-        }
         Set<ChunkSectionVector> passByChunkSections = calPassByChunkSections(this.routeFinder.getRoute().stream().map(Node::getVector3).toList(), entity.level);
-        long total = 0;
-        for (var vector3 : passByChunkSections) {
-            total += getSectionBlockChange(entity.level, vector3);
-        }
-        if (blockChangeCache != total) {
-            blockChangeCache = -1;
-            return true;
-        }
-        return false;
+        long total = passByChunkSections.stream().mapToLong(vector3 -> getSectionBlockChange(entity.level, vector3)).sum();
+        //Section发生变化，需要重算
+        return blockChangeCache != total;
     }
 
     /**
@@ -299,11 +289,7 @@ public class BehaviorGroup implements IBehaviorGroup {
      */
     @Since("1.19.50-r4")
     protected void cacheSectionBlockChange(Level level, Set<ChunkSectionVector> vecs) {
-        blockChangeCache = 0;
-        vecs.forEach(vector3 -> {
-            var sectionChanges = getSectionBlockChange(level, vector3);
-            blockChangeCache += sectionChanges;
-        });
+        this.blockChangeCache = vecs.stream().mapToLong(vector3 -> getSectionBlockChange(level, vector3)).sum();
     }
 
     /**
@@ -311,9 +297,9 @@ public class BehaviorGroup implements IBehaviorGroup {
      */
     @Since("1.19.50-r4")
     protected long getSectionBlockChange(Level level, ChunkSectionVector vector) {
-        var chunk = level.getChunk((int) vector.chunkX, (int) vector.chunkZ);
+        var chunk = level.getChunk(vector.chunkX, vector.chunkZ);
         //TODO: 此处强转未经检查，可能在未来导致兼容性问题
-        return ((BaseChunk)chunk).getSectionBlockChanges((int) vector.sectionY);
+        return ((BaseChunk)chunk).getSectionBlockChanges(vector.sectionY);
     }
 
     /**
@@ -322,11 +308,7 @@ public class BehaviorGroup implements IBehaviorGroup {
      */
     @Since("1.19.50-r4")
     protected Set<ChunkSectionVector> calPassByChunkSections(Collection<Vector3> nodes, Level level) {
-        Set<ChunkSectionVector> passByChunkSections = new HashSet<>();
-        nodes.forEach(vector3 -> {
-            passByChunkSections.add(new ChunkSectionVector(vector3.getChunkX(), ((int)vector3.y - level.getMinHeight()) >> 4, vector3.getChunkZ()));
-        });
-        return passByChunkSections;
+        return nodes.stream().map(vector3 -> new ChunkSectionVector(vector3.getChunkX(), ((int) vector3.y - level.getMinHeight()) >> 4, vector3.getChunkZ())).collect(Collectors.toSet());
     }
 
     @Override
