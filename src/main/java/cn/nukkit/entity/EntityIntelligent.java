@@ -25,8 +25,6 @@ import lombok.Setter;
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-@Getter
-@Setter
 public abstract class EntityIntelligent extends EntityPhysical implements LogicalUtils {
 
     public static final IBehaviorGroup EMPTY_BEHAVIOR_GROUP = new EmptyBehaviorGroup();
@@ -37,6 +35,7 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
     /**
      * 是否为活跃实体，如果实体不活跃，就应当降低AI运行频率
      */
+    @Getter
     protected boolean isActive = true;
 
     public EntityIntelligent(FullChunk chunk, CompoundTag nbt) {
@@ -74,20 +73,6 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
     }
 
     @Override
-    public boolean onUpdate(int currentTick) {
-        if (!this.isImmobile()) {
-            var behaviorGroup = getBehaviorGroup();
-            behaviorGroup.tickRunningCoreBehaviors(this);
-            behaviorGroup.tickRunningBehaviors(this);
-            if (EntityAI.checkDebugOption(EntityAI.DebugOption.BEHAVIOR)) behaviorGroup.debugTick(this);
-        }
-        return super.onUpdate(currentTick);
-    }
-
-    /**
-     * 我们将行为组运行循环的部分工作并行化以提高性能
-     */
-    @Override
     public void asyncPrepare(int currentTick) {
         // 计算是否活跃
         isActive = level.isHighLightChunk(getChunkX(), getChunkZ());
@@ -96,9 +81,11 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
             behaviorGroup.collectSensorData(this);
             behaviorGroup.evaluateCoreBehaviors(this);
             behaviorGroup.evaluateBehaviors(this);
+            behaviorGroup.tickRunningCoreBehaviors(this);
+            behaviorGroup.tickRunningBehaviors(this);
             behaviorGroup.updateRoute(this);
-            //在物理计算之前处理运动控制器，以使物理计算能一并处理ai的motion
             behaviorGroup.applyController(this);
+            if (EntityAI.checkDebugOption(EntityAI.DebugOption.BEHAVIOR)) behaviorGroup.debugTick(this);
         }
         super.asyncPrepare(currentTick);
     }
