@@ -267,11 +267,13 @@ public class BehaviorGroup implements IBehaviorGroup {
     }
 
     /**
-     * 检查路径是否需要更新。此方法只会粗略的检测路径经过的chunk是否发生了变化
+     * 检查路径是否需要更新。此方法检测路径经过的ChunkSection是否发生了变化
      * @return 是否需要更新路径
      */
     @Since("1.19.50-r4")
     protected boolean shouldUpdateRoute(EntityIntelligent entity, Vector3 newMoveTarget) {
+        //此优化只针对处于非active区块的实体
+        if (!entity.isActive()) return true;
         //已经在运行
         if (this.routeFindingTask != null && !this.routeFindingTask.getFinished())
             return false;
@@ -280,10 +282,9 @@ public class BehaviorGroup implements IBehaviorGroup {
             this.blockChangeCache = -1;
             return true;
         }
-        //chunkX | chunkSectionY | chunkZ
-        Set<Vector3> passByChunkSections = calPassByChunkSections(this.routeFinder.getRoute().stream().map(Node::getVector3).toList(), entity.level);
+        Set<ChunkSectionVector> passByChunkSections = calPassByChunkSections(this.routeFinder.getRoute().stream().map(Node::getVector3).toList(), entity.level);
         long total = 0;
-        for (Vector3 vector3 : passByChunkSections) {
+        for (var vector3 : passByChunkSections) {
             total += getSectionBlockChange(entity.level, vector3);
         }
         if (blockChangeCache != total) {
@@ -297,7 +298,7 @@ public class BehaviorGroup implements IBehaviorGroup {
      * 缓存section的blockChanges到blockChangeCache
      */
     @Since("1.19.50-r4")
-    protected void cacheSectionBlockChange(Level level, Set<Vector3> vecs) {
+    protected void cacheSectionBlockChange(Level level, Set<ChunkSectionVector> vecs) {
         blockChangeCache = 0;
         vecs.forEach(vector3 -> {
             var sectionChanges = getSectionBlockChange(level, vector3);
@@ -309,10 +310,10 @@ public class BehaviorGroup implements IBehaviorGroup {
      * 返回sectionVector对应的section的blockChanges
      */
     @Since("1.19.50-r4")
-    protected long getSectionBlockChange(Level level, Vector3 vector3) {
-        var chunk = level.getChunk((int) vector3.x, (int) vector3.z);
+    protected long getSectionBlockChange(Level level, ChunkSectionVector vector) {
+        var chunk = level.getChunk((int) vector.chunkX, (int) vector.chunkZ);
         //TODO: 此处强转未经检查，可能在未来导致兼容性问题
-        return ((BaseChunk)chunk).getSectionBlockChanges((int) vector3.y);
+        return ((BaseChunk)chunk).getSectionBlockChanges((int) vector.sectionY);
     }
 
     /**
@@ -320,10 +321,10 @@ public class BehaviorGroup implements IBehaviorGroup {
      * @return (chunkX | chunkSectionY | chunkZ)
      */
     @Since("1.19.50-r4")
-    protected Set<Vector3> calPassByChunkSections(Collection<Vector3> nodes, Level level) {
-        Set<Vector3> passByChunkSections = new HashSet<>();
+    protected Set<ChunkSectionVector> calPassByChunkSections(Collection<Vector3> nodes, Level level) {
+        Set<ChunkSectionVector> passByChunkSections = new HashSet<>();
         nodes.forEach(vector3 -> {
-            passByChunkSections.add(new Vector3(vector3.getChunkX(), ((int)vector3.y - level.getMinHeight()) >> 4, vector3.getChunkZ()));
+            passByChunkSections.add(new ChunkSectionVector(vector3.getChunkX(), ((int)vector3.y - level.getMinHeight()) >> 4, vector3.getChunkZ()));
         });
         return passByChunkSections;
     }
@@ -400,5 +401,27 @@ public class BehaviorGroup implements IBehaviorGroup {
             behavior.setBehaviorState(BehaviorState.STOP);
         }
         runningBehaviors.clear();
+    }
+
+    /**
+     * 描述一个ChunkSection的位置
+     * @param chunkX
+     * @param sectionY
+     * @param chunkZ
+     */
+    protected record ChunkSectionVector(int chunkX, int sectionY, int chunkZ) {
+        @Override
+        public boolean equals(Object obj) {
+            if (!(obj instanceof ChunkSectionVector other)) {
+                return false;
+            }
+
+            return this.chunkX == other.chunkX && this.sectionY == other.sectionY && this.chunkZ == other.chunkZ;
+        }
+
+        @Override
+        public int hashCode() {
+            return (chunkX ^ (chunkZ << 12)) ^ (sectionY << 24);
+        }
     }
 }
