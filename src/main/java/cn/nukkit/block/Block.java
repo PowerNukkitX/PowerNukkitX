@@ -756,7 +756,22 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             list[RED_CANDLE] = BlockCandleRed.class; //682
             list[BLACK_CANDLE] = BlockCandleBlack.class; //683
             list[CANDLE_CAKE] = BlockCandleCake.class; //684
-            // Unused 684 - 700
+            list[WHITE_CANDLE_CAKE] = BlockCandleCakeWhite.class; //685
+            list[ORANGE_CANDLE_CAKE] = BlockCandleCakeOrange.class; //686
+            list[MAGENTA_CANDLE_CAKE] = BlockCandleCakeMagenta.class; //687
+            list[LIGHT_BLUE_CANDLE_CAKE] = BlockCandleCakeLightBlue.class; //688
+            list[YELLOW_CANDLE_CAKE] = BlockCandleCakeYellow.class; //689
+            list[LIME_CANDLE_CAKE] = BlockCandleCakeLime.class; //690
+            list[PINK_CANDLE_CAKE] = BlockCandleCakePink.class; //691
+            list[GRAY_CANDLE_CAKE] = BlockCandleCakeGray.class; //692
+            list[LIGHT_GRAY_CANDLE_CAKE] = BlockCandleCakeLightGray.class; //693
+            list[CYAN_CANDLE_CAKE] = BlockCandleCakeCyan.class; //694
+            list[PURPLE_CANDLE_CAKE] = BlockCandleCakePurple.class; //695
+            list[BLUE_CANDLE_CAKE] = BlockCandleCakeBlue.class; //696
+            list[BROWN_CANDLE_CAKE] = BlockCandleCakeBrown.class; //697
+            list[GREEN_CANDLE_CAKE] = BlockCandleCakeGreen.class; //698
+            list[RED_CANDLE_CAKE] = BlockCandleCakeRed.class; //699
+            list[BLACK_CANDLE_CAKE] = BlockCandleCakeBlack.class; //700
             list[WAXED_OXIDIZED_COPPER] = BlockCopperOxidizedWaxed.class; //701
             list[WAXED_OXIDIZED_CUT_COPPER] = BlockCopperCutOxidizedWaxed.class; //702
             list[WAXED_OXIDIZED_CUT_COPPER_STAIRS] = BlockStairsCopperCutOxidizedWaxed.class; //703

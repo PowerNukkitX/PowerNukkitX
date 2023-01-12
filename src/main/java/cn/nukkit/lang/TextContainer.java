@@ -3,6 +3,9 @@ package cn.nukkit.lang;
 import lombok.extern.log4j.Log4j2;
 
 /**
+ * 文本容器
+ * 通过{@link #text}存放文本内容
+ *
  * @author MagicDroidX (Nukkit Project)
  */
 @Log4j2
@@ -21,6 +24,11 @@ public class TextContainer implements Cloneable {
         return text;
     }
 
+    /**
+     * 等于{@link #getText()}
+     * <p>
+     * equal {@link #getText()}
+     */
     @Override
     public String toString() {
         return this.getText();

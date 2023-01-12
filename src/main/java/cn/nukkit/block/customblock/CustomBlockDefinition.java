@@ -68,7 +68,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
 
             //设置一些与PNX内部对应的方块属性
             components.putCompound("minecraft:friction", new CompoundTag()
-                            .putFloat("value", (float) customBlock.getFrictionFactor()))
+                            .putFloat("value", (float) Math.abs(1 - customBlock.getFrictionFactor()))) // in vanilla, the closer factor to 0, the more slippery the block is. But in PNX it's reversed.
                     .putCompound("minecraft:explosion_resistance", new CompoundTag()
                             .putInt("value", (int) customBlock.getResistance()))
                     .putCompound("minecraft:light_dampening", new CompoundTag()

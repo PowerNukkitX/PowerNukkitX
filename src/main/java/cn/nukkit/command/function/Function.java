@@ -16,7 +16,7 @@ import java.util.List;
 @Getter
 public class Function {
 
-    private Path fullPath;
+    private final Path fullPath;
     private List<String> commands;
 
     private Function(FunctionManager manager,Path fullPath){
