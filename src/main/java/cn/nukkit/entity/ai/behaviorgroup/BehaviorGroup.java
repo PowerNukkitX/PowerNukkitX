@@ -240,14 +240,13 @@ public class BehaviorGroup implements IBehaviorGroup {
             //若有路径目标，则计算新路径
             //         第一次计算                       上一次计算已完成
             if ((routeFindingTask == null || routeFindingTask.getFinished() || (!routeFindingTask.getStarted() && Server.getInstance().getNextTick() - routeFindingTask.getStartTime() > 8))) {
-                if (routeFindingTask != null) routeFindingTask.cancel(true);
+                if (routeFindingTask != null && !routeFindingTask.getFinished()) routeFindingTask.cancel(true);
                 //clone防止寻路器潜在的修改
                 RouteFindingManager.getInstance().submit(routeFindingTask = new RouteFindingManager.RouteFindingTask(routeFinder, task -> {
                     updateMoveDirection(entity);
                     entity.setShouldUpdateMoveDirection(false);
                     currentRouteUpdateTick = 0;
                     setForceUpdateRoute(false);
-
                     //写入section变更记录
                     cacheSectionBlockChange(entity.level, calPassByChunkSections(this.routeFinder.getRoute().stream().map(Node::getVector3).toList(), entity.level));
                 }).setStart(entity.clone()).setTarget(target));
