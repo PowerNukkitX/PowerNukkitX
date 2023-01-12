@@ -13,7 +13,7 @@ public class EntityElytraFirework extends EntityFirework {
     private static final Random RANDOM = new Random();
     private Player followingPlayer;
     private int fireworkAge = 0;
-    private int lifetime;
+    private final int lifetime;
 
     public EntityElytraFirework(FullChunk chunk, CompoundTag nbt, @Nullable Player player) {
         super(chunk, nbt);
@@ -42,8 +42,8 @@ public class EntityElytraFirework extends EntityFirework {
                     this.move(this.motionX, this.motionY, this.motionZ);
                     this.updateMovement();
                     float f = (float) Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
-                    this.yaw = (double) ((float) (Math.atan2(this.motionX, this.motionZ) * 57.29577951308232D));
-                    this.pitch = (double) ((float) (Math.atan2(this.motionY, (double) f) * 57.29577951308232D));
+                    this.yaw = (float) (Math.atan2(this.motionX, this.motionZ) * 57.29577951308232D);
+                    this.pitch = (float) (Math.atan2(this.motionY, f) * 57.29577951308232D);
                     if (this.fireworkAge == 0) {
                         this.getLevel().addLevelSoundEvent(this, 56);
                     }

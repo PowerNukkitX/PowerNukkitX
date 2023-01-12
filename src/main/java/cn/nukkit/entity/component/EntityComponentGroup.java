@@ -15,6 +15,7 @@ public interface EntityComponentGroup {
 
     /**
      * 获取已注册的组件
+     *
      * @return 已注册的组件
      */
     Map<Class<? extends EntityComponent>, EntityComponent> getComponents();

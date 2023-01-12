@@ -528,7 +528,7 @@ public class EntityThrownTrident extends SlenderProjectile {
             return false;
         }
 
-        if (this.getCollisionPos().equals(this.defaultCollisionPos) && this.getStuckToBlockPos().equals(this.defaultStuckToBlockPos)) {
+        if (this.getCollisionPos().equals(defaultCollisionPos) && this.getStuckToBlockPos().equals(defaultStuckToBlockPos)) {
             return false;
         }
 

@@ -290,8 +290,7 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
         if (!(sniff ? isInSniffRange(entity) : isInAngerRange(entity))) return false;
         if (!(entity instanceof EntityCreature)) return false;
         if (entity instanceof Player player && (!player.isSurvival() && !player.isAdventure())) return false;
-        if (entity instanceof EntityWarden) return false;
-        return true;
+        return !(entity instanceof EntityWarden);
     }
 
     public boolean isInSniffRange(Entity entity) {

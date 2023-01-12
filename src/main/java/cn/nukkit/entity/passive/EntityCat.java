@@ -42,11 +42,11 @@ import java.util.Set;
 
 public class EntityCat extends EntityAnimal implements EntityWalkable, EntityTamable, EntityCanSit, EntityCanAttack, EntityHealable {
     public static final int NETWORK_ID = 75;
-    private DyeColor collarColor = DyeColor.RED;//驯服后项圈为红色
     //猫咪有11种颜色变种
     private static final int[] VARIANTS = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    private int variant;
     protected float[] diffHandDamage = new float[]{4, 4, 4};
+    private DyeColor collarColor = DyeColor.RED;//驯服后项圈为红色
+    private int variant;
 
     public EntityCat(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);

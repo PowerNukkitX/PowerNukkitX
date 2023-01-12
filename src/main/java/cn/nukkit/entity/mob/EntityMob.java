@@ -36,19 +36,16 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
     private static final String TAG_MAINHAND = "Mainhand";
     private static final String TAG_OFFHAND = "Offhand";
     private static final String TAG_ARMOR = "Armor";
-
-    @Getter
-    private EntityEquipmentInventory equipmentInventory;
-
-    @Getter
-    private EntityArmorInventory armorInventory;
-
     /**
      * 不同难度下实体空手能造成的伤害.
      * <p>
      * The damage that can be caused by the entity's empty hand at different difficulties.
      */
     protected float[] diffHandDamage;
+    @Getter
+    private EntityEquipmentInventory equipmentInventory;
+    @Getter
+    private EntityArmorInventory armorInventory;
 
     public EntityMob(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);

@@ -18,7 +18,7 @@ public interface EntityCanSit {
         getSettingComponent().setSitting(sitting);
     }
 
-    default EntitySittingComponent getSettingComponent(){
+    default EntitySittingComponent getSettingComponent() {
         return ((Entity) this).getComponentGroup().getComponent(EntitySittingComponent.class);
     }
 }

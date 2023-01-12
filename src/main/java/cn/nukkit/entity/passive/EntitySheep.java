@@ -61,35 +61,35 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable {
                                         new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE)
                                 ),
                                 1, 1
-                            )
-                    ),
-                    Set.of(
-                            new Behavior(new FlatRandomRoamExecutor(0.5f, 12, 40, true, 100, true, 10), new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100), 6, 1),
-                            new Behavior(new EntityBreedingExecutor<>(EntitySheep.class, 16, 100, 0.5f), entity -> entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE), 5, 1),
-                            new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_FEEDING_PLAYER, 0.5f, true, 8, 1.5f), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_FEEDING_PLAYER), 4, 1),
-                            new Behavior(new EatGrassExecutor(40), all(
-                                    any(
-                                            all(
-                                                    entity -> entity instanceof EntityAnimal animal && !animal.isBaby(),
-                                                    new ProbabilityEvaluator(1, 100)
-                                            ),
-                                            all(
-                                                    entity -> entity instanceof EntityAnimal animal && animal.isBaby(),
-                                                    new ProbabilityEvaluator(43, 50)
-                                            )
-                                    ),
-                                    any(
-                                            new BlockCheckEvaluator(Block.GRASS, new Vector3(0, -1, 0)),
-                                            new BlockCheckEvaluator(Block.TALL_GRASS, Vector3.ZERO))),
-                                    3, 1, 100
-                            ),
-                            new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100), new ProbabilityEvaluator(4, 10), 1, 1, 100),
-                            new Behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
-                    ),
-                    Set.of(new NearestFeedingPlayerSensor(8, 0), new NearestPlayerSensor(8, 0, 20)),
-                    Set.of(new WalkController(), new LookController(true, true), new FluctuateController()),
-                    new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)
-            );
+                        )
+                ),
+                Set.of(
+                        new Behavior(new FlatRandomRoamExecutor(0.5f, 12, 40, true, 100, true, 10), new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100), 6, 1),
+                        new Behavior(new EntityBreedingExecutor<>(EntitySheep.class, 16, 100, 0.5f), entity -> entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE), 5, 1),
+                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_FEEDING_PLAYER, 0.5f, true, 8, 1.5f), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_FEEDING_PLAYER), 4, 1),
+                        new Behavior(new EatGrassExecutor(40), all(
+                                any(
+                                        all(
+                                                entity -> entity instanceof EntityAnimal animal && !animal.isBaby(),
+                                                new ProbabilityEvaluator(1, 100)
+                                        ),
+                                        all(
+                                                entity -> entity instanceof EntityAnimal animal && animal.isBaby(),
+                                                new ProbabilityEvaluator(43, 50)
+                                        )
+                                ),
+                                any(
+                                        new BlockCheckEvaluator(Block.GRASS, new Vector3(0, -1, 0)),
+                                        new BlockCheckEvaluator(Block.TALL_GRASS, Vector3.ZERO))),
+                                3, 1, 100
+                        ),
+                        new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100), new ProbabilityEvaluator(4, 10), 1, 1, 100),
+                        new Behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
+                ),
+                Set.of(new NearestFeedingPlayerSensor(8, 0), new NearestPlayerSensor(8, 0, 20)),
+                Set.of(new WalkController(), new LookController(true, true), new FluctuateController()),
+                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)
+        );
     }
 
     @Override

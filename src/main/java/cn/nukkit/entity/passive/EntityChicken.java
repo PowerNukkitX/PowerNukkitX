@@ -60,41 +60,41 @@ public class EntityChicken extends EntityAnimal implements EntityWalkable {
                                         new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE)
                                 ),
                                 1, 1
-                            ),
-                            //生长
-                            new Behavior(
-                                    new AnimalGrowExecutor(),
-                                    //todo：Growth rate
-                                    all(
-                                            new PassByTimeEvaluator(CoreMemoryTypes.ENTITY_SPAWN_TIME, 20 * 60 * 20, Integer.MAX_VALUE),
-                                            entity -> entity instanceof EntityAnimal animal && animal.isBaby()
-                                    )
-                                    , 1, 1, 1200
-                            )
-                    ),
-                    Set.of(
-                            new Behavior(new FlatRandomRoamExecutor(0.38f, 12, 40, true, 100, true, 10), new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100), 6, 1),
-                            new Behavior(new EntityBreedingExecutor<>(EntityChicken.class, 16, 100, 0.3f), entity -> entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE), 5, 1),
-                            new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_FEEDING_PLAYER, 0.38f, true), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_FEEDING_PLAYER), 4, 1),
-                            new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100), new ProbabilityEvaluator(4, 10), 1, 1, 100),
-                            new Behavior(new FlatRandomRoamExecutor(0.38f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1),
-                            new Behavior(entity -> {
-                                entity.getMemoryStorage().put(CoreMemoryTypes.LAST_EGG_SPAWN_TIME, Server.getInstance().getTick());
-                                entity.getLevel().dropItem(entity, Item.get(Item.EGG));
-                                entity.getLevel().addSound(entity, Sound.MOB_CHICKEN_PLOP);
-                                return false;
-                            }, any(
-                                    all(
-                                            new PassByTimeEvaluator(CoreMemoryTypes.LAST_EGG_SPAWN_TIME, 6000, 12000),
-                                            new ProbabilityEvaluator(20, 100)
-                                    ),
-                                    new PassByTimeEvaluator(CoreMemoryTypes.LAST_EGG_SPAWN_TIME, 12000, Integer.MAX_VALUE)
-                            ), 1, 1, 20)
-                    ),
-                    Set.of(new NearestFeedingPlayerSensor(8, 0), new NearestPlayerSensor(8, 0, 20)),
-                    Set.of(new WalkController(), new LookController(true, true), new FluctuateController()),
-                    new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)
-            );
+                        ),
+                        //生长
+                        new Behavior(
+                                new AnimalGrowExecutor(),
+                                //todo：Growth rate
+                                all(
+                                        new PassByTimeEvaluator(CoreMemoryTypes.ENTITY_SPAWN_TIME, 20 * 60 * 20, Integer.MAX_VALUE),
+                                        entity -> entity instanceof EntityAnimal animal && animal.isBaby()
+                                )
+                                , 1, 1, 1200
+                        )
+                ),
+                Set.of(
+                        new Behavior(new FlatRandomRoamExecutor(0.38f, 12, 40, true, 100, true, 10), new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100), 6, 1),
+                        new Behavior(new EntityBreedingExecutor<>(EntityChicken.class, 16, 100, 0.3f), entity -> entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE), 5, 1),
+                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_FEEDING_PLAYER, 0.38f, true), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_FEEDING_PLAYER), 4, 1),
+                        new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100), new ProbabilityEvaluator(4, 10), 1, 1, 100),
+                        new Behavior(new FlatRandomRoamExecutor(0.38f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1),
+                        new Behavior(entity -> {
+                            entity.getMemoryStorage().put(CoreMemoryTypes.LAST_EGG_SPAWN_TIME, Server.getInstance().getTick());
+                            entity.getLevel().dropItem(entity, Item.get(Item.EGG));
+                            entity.getLevel().addSound(entity, Sound.MOB_CHICKEN_PLOP);
+                            return false;
+                        }, any(
+                                all(
+                                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_EGG_SPAWN_TIME, 6000, 12000),
+                                        new ProbabilityEvaluator(20, 100)
+                                ),
+                                new PassByTimeEvaluator(CoreMemoryTypes.LAST_EGG_SPAWN_TIME, 12000, Integer.MAX_VALUE)
+                        ), 1, 1, 20)
+                ),
+                Set.of(new NearestFeedingPlayerSensor(8, 0), new NearestPlayerSensor(8, 0, 20)),
+                Set.of(new WalkController(), new LookController(true, true), new FluctuateController()),
+                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)
+        );
     }
 
     @Override

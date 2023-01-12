@@ -12,5 +12,7 @@ public interface EntityFlyable {
     /**
      * @return 是否具有摔落伤害
      */
-    default boolean hasFallingDamage() {return false;}
+    default boolean hasFallingDamage() {
+        return false;
+    }
 }

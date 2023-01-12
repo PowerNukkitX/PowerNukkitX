@@ -3544,7 +3544,7 @@ public abstract class Entity extends Location implements Metadatable {
         for (var interfaze : interfaces) {
             var component = EntityComponentRegistery.getInterfaceBoundEntityComponent(interfaze);
             if (component != null) {
-                var constructor = EntityComponent.CONSTRUCTOR_CACHE.computeIfAbsent(component,k -> {
+                var constructor = EntityComponent.CONSTRUCTOR_CACHE.computeIfAbsent(component, k -> {
                     try {
                         return component.getConstructor(Entity.class);
                     } catch (NoSuchMethodException e) {

@@ -124,5 +124,7 @@ public interface IBehaviorGroup {
     /**
      * 当 EntityAI.checkDebugOption(BEHAVIOR) == true 时此方法每1gt调用一次，用于debug模式相关内容的刷新
      */
-    default void debugTick(EntityIntelligent entity){};
+    default void debugTick(EntityIntelligent entity) {
+    }
+
 }

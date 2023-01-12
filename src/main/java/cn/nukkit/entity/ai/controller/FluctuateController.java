@@ -13,6 +13,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @Since("1.19.50-r4")
 public class FluctuateController implements IController {
     private boolean lastTickInWater = false;
+
     @Override
     public boolean control(EntityIntelligent entity) {
         if (entity.hasWaterAt(entity.getFloatingHeight())) {

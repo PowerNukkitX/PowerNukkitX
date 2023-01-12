@@ -10,7 +10,7 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
  */
 @PowerNukkitXOnly
 @Since("1.19.50-r4")
-public class DiveController implements IController{
+public class DiveController implements IController {
     @Override
     public boolean control(EntityIntelligent entity) {
         //add dive force

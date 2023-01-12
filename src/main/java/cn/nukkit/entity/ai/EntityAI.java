@@ -14,6 +14,7 @@ import java.util.Set;
 public final class EntityAI {
 
     private static final Set<DebugOption> debugOptions = EnumSet.noneOf(DebugOption.class);
+
     private EntityAI() {/*不能实例化*/}
 
     public static void setDebugOption(DebugOption option, boolean open) {

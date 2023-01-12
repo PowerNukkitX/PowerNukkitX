@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @PowerNukkitXOnly
 @Since("1.19.50-r4")
-public class SimpleEntityComponentGroup implements EntityComponentGroup{
+public class SimpleEntityComponentGroup implements EntityComponentGroup {
 
     protected Map<Class<? extends EntityComponent>, EntityComponent> components = new ConcurrentHashMap<>();
 

@@ -18,7 +18,7 @@ public interface EntityAngryable {
         getAngryComponent().setAngry(angry);
     }
 
-    default EntityAngryComponent getAngryComponent(){
+    default EntityAngryComponent getAngryComponent() {
         return ((Entity) this).getComponentGroup().getComponent(EntityAngryComponent.class);
     }
 }

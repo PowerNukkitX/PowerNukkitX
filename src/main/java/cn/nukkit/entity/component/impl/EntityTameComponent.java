@@ -13,10 +13,10 @@ import javax.annotation.Nullable;
 @PowerNukkitXOnly
 @Since("1.19.50-r4")
 public class EntityTameComponent extends AbstractEntityComponent {
-    
+
     protected String ownerName;
     protected Player owner;
-    
+
     public EntityTameComponent(Entity entity) {
         super(entity);
     }

@@ -69,7 +69,7 @@ public class Behavior extends AbstractBehavior {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return "[" + priority + "] " + executor.getClass().getSimpleName() + " | " + evaluator.getClass().getSimpleName();
     }
 }

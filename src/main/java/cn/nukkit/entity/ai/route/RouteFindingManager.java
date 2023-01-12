@@ -108,15 +108,15 @@ public class RouteFindingManager {
             return this;
         }
 
-        public void setStarted(boolean started) {
-            this.started.set(started);
-        }
-
         /**
          * @return 是否开始寻路
          */
         public boolean getStarted() {
             return started.get();
+        }
+
+        public void setStarted(boolean started) {
+            this.started.set(started);
         }
 
         /**

@@ -17,7 +17,7 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
     @Since("1.1.1.0-PN")
     public static final int NETWORK_ID = 122;
 
-    private int beehiveTimer = 600;
+    private final int beehiveTimer = 600;
 
     @Since("1.1.1.0-PN")
     public EntityBee(FullChunk chunk, CompoundTag nbt) {

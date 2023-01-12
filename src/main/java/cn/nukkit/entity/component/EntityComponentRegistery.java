@@ -21,13 +21,13 @@ import java.util.Map;
 @Since("1.19.50-r4")
 public final class EntityComponentRegistery {
 
+    @Getter
+    private static final Map<Class<?>, Class<? extends EntityComponent>> COMPONENTS_REGISTERY;
+
     static {
         COMPONENTS_REGISTERY = new HashMap<>();
         registerDefaultComponents();
     }
-
-    @Getter
-    private static final Map<Class<?>, Class<? extends EntityComponent>> COMPONENTS_REGISTERY;
 
     public static void register(Class<?> interfaceClazz, Class<? extends EntityComponent> componentClazz) {
         COMPONENTS_REGISTERY.put(interfaceClazz, componentClazz);

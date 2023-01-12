@@ -13,6 +13,7 @@ import javax.annotation.Nonnull;
 
 /**
  * 实体生物
+ *
  * @author MagicDroidX (Nukkit Project)
  */
 @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements EntityNameable only in PowerNukkit")

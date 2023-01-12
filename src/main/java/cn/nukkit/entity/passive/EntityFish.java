@@ -42,6 +42,6 @@ public abstract class EntityFish extends EntityAnimal implements EntitySwimmable
                 Set.of(),
                 Set.of(new SpaceMoveController(), new LookController(true, true), new DiveController()),
                 new SimpleSpaceAStarRouteFinder(new SwimmingPosEvaluator(), this)
-            );
+        );
     }
 }

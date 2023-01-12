@@ -18,10 +18,10 @@ import java.util.concurrent.ThreadLocalRandom;
 public class EntityTropicalFish extends EntityFish {
 
     public static final int NETWORK_ID = 111;
-    public int color = 0;
     private static final int[] VARIANTS = {0, 1};
     private static final int[] MARK_VARIANTS = {0, 1, 2, 3, 4, 5};
     private static final int[] COLOR2 = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14};
+    public int color = 0;
     private int variant;
     private int mark_variant;
     private int color2;

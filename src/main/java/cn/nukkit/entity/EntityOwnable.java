@@ -26,7 +26,7 @@ public interface EntityOwnable {
         return getTameComponent().getOwner();
     }
 
-    default EntityTameComponent getTameComponent(){
+    default EntityTameComponent getTameComponent() {
         return ((Entity) this).getComponentGroup().getComponent(EntityTameComponent.class);
     }
 }

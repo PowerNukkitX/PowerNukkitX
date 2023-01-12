@@ -275,6 +275,7 @@ public class BehaviorGroup implements IBehaviorGroup {
 
     /**
      * 检查路径是否需要更新。此方法检测路径经过的ChunkSection是否发生了变化
+     *
      * @return 是否需要更新路径
      */
     @Since("1.19.50-r4")
@@ -292,6 +293,7 @@ public class BehaviorGroup implements IBehaviorGroup {
 
     /**
      * 通过比对寻路器中设置的moveTarget与entity的moveTarget来确认实体是否设置了新的未计算的moveTarget
+     *
      * @param entity 实体
      * @return 是否存在新的未计算的寻路目标
      */
@@ -314,11 +316,12 @@ public class BehaviorGroup implements IBehaviorGroup {
     protected long getSectionBlockChange(Level level, ChunkSectionVector vector) {
         var chunk = level.getChunk(vector.chunkX, vector.chunkZ);
         //TODO: 此处强转未经检查，可能在未来导致兼容性问题
-        return ((BaseChunk)chunk).getSectionBlockChanges(vector.sectionY);
+        return ((BaseChunk) chunk).getSectionBlockChanges(vector.sectionY);
     }
 
     /**
      * 计算坐标集经过的ChunkSection
+     *
      * @return (chunkX | chunkSectionY | chunkZ)
      */
     @Since("1.19.50-r4")
@@ -334,7 +337,7 @@ public class BehaviorGroup implements IBehaviorGroup {
 
         var strBuilder = new StringBuilder();
         for (var behavior : sortedBehaviors) {
-            strBuilder.append(behavior.getBehaviorState() == BehaviorState.ACTIVE ? "§b" : "§7" );
+            strBuilder.append(behavior.getBehaviorState() == BehaviorState.ACTIVE ? "§b" : "§7");
             strBuilder.append(behavior);
             strBuilder.append("\n");
         }
@@ -402,6 +405,7 @@ public class BehaviorGroup implements IBehaviorGroup {
 
     /**
      * 描述一个ChunkSection的位置
+     *
      * @param chunkX
      * @param sectionY
      * @param chunkZ
