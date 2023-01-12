@@ -1,5 +1,6 @@
 package cn.nukkit.entity.ai.behaviorgroup;
 
+import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
@@ -238,7 +239,8 @@ public class BehaviorGroup implements IBehaviorGroup {
         if (isForceUpdateRoute() || (currentRouteUpdateTick >= calcActiveDelay(entity, ROUTE_UPDATE_CYCLE + (entity.level.tickRateOptDelay << 1)) && shouldUpdateRoute(entity, target))) {
             //若有路径目标，则计算新路径
             //         第一次计算                       上一次计算已完成
-            if ((routeFindingTask == null || routeFindingTask.getFinished() /*|| (!routeFindingTask.getStarted() && Server.getInstance().getNextTick() - routeFindingTask.getStartTime() > 8)*/)) {
+            if ((routeFindingTask == null || routeFindingTask.getFinished() || (!routeFindingTask.getStarted() && Server.getInstance().getNextTick() - routeFindingTask.getStartTime() > 8))) {
+                if (routeFindingTask != null) routeFindingTask.cancel(true);
                 //clone防止寻路器潜在的修改
                 RouteFindingManager.getInstance().submit(routeFindingTask = new RouteFindingManager.RouteFindingTask(routeFinder, task -> {
                     updateMoveDirection(entity);
