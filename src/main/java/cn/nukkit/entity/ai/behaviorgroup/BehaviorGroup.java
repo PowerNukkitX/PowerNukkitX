@@ -235,17 +235,19 @@ public class BehaviorGroup implements IBehaviorGroup {
             entity.setMoveDirectionEnd(null);
             return;
         }
+        boolean reachUpdateCycle = currentRouteUpdateTick >= calcActiveDelay(entity, ROUTE_UPDATE_CYCLE + (entity.level.tickRateOptDelay << 1));
+        if (reachUpdateCycle) currentRouteUpdateTick = 0;
         //到达更新周期时，开始重新计算新路径
-        if (isForceUpdateRoute() || (currentRouteUpdateTick >= calcActiveDelay(entity, ROUTE_UPDATE_CYCLE + (entity.level.tickRateOptDelay << 1)) && shouldUpdateRoute(entity, target))) {
+        if (isForceUpdateRoute() || (reachUpdateCycle && shouldUpdateRoute(entity, target))) {
             //若有路径目标，则计算新路径
-            //         第一次计算                       上一次计算已完成
-            if ((routeFindingTask == null || routeFindingTask.getFinished() || (!routeFindingTask.getStarted() && Server.getInstance().getNextTick() - routeFindingTask.getStartTime() > 8))) {
-                if (routeFindingTask != null && !routeFindingTask.getFinished()) routeFindingTask.cancel(true);
+            boolean reSubmit = false;
+            //         第一次计算                       上一次计算已完成                                         超时，重新提交任务
+            if (routeFindingTask == null || routeFindingTask.getFinished() || (reSubmit = (!routeFindingTask.getStarted() && Server.getInstance().getNextTick() - routeFindingTask.getStartTime() > 8))) {
+                if (reSubmit) routeFindingTask.cancel(true);
                 //clone防止寻路器潜在的修改
                 RouteFindingManager.getInstance().submit(routeFindingTask = new RouteFindingManager.RouteFindingTask(routeFinder, task -> {
                     updateMoveDirection(entity);
                     entity.setShouldUpdateMoveDirection(false);
-                    currentRouteUpdateTick = 0;
                     setForceUpdateRoute(false);
                     //写入section变更记录
                     cacheSectionBlockChange(entity.level, calPassByChunkSections(this.routeFinder.getRoute().stream().map(Node::getVector3).toList(), entity.level));
