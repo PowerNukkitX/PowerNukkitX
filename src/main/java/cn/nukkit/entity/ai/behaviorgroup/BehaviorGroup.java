@@ -254,12 +254,14 @@ public class BehaviorGroup implements IBehaviorGroup {
                 }).setStart(entity.clone()).setTarget(target));
             }
         }
-        //若不能再移动了，则清除路径信息
-        var reachableTarget = routeFinder.getReachableTarget();
-        if (reachableTarget != null && entity.floor().equals(reachableTarget.floor())) {
-            entity.setMoveTarget(null);
-            entity.setMoveDirectionStart(null);
-            entity.setMoveDirectionEnd(null);
+        if (routeFindingTask != null && routeFindingTask.getFinished()) {
+            //若不能再移动了，且没有正在计算的寻路任务，则清除路径信息
+            var reachableTarget = routeFinder.getReachableTarget();
+            if (reachableTarget != null && entity.floor().equals(reachableTarget.floor())) {
+                entity.setMoveTarget(null);
+                entity.setMoveDirectionStart(null);
+                entity.setMoveDirectionEnd(null);
+            }
         }
         if (entity.isShouldUpdateMoveDirection()) {
             if (routeFinder.hasNext()) {
