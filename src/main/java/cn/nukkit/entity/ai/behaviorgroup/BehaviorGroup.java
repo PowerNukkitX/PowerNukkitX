@@ -228,6 +228,8 @@ public class BehaviorGroup implements IBehaviorGroup {
     @Override
     public void updateRoute(EntityIntelligent entity) {
         currentRouteUpdateTick++;
+        boolean reachUpdateCycle = currentRouteUpdateTick >= calcActiveDelay(entity, ROUTE_UPDATE_CYCLE + (entity.level.tickRateOptDelay << 1));
+        if (reachUpdateCycle) currentRouteUpdateTick = 0;
         Vector3 target = entity.getMoveTarget();
         if (target == null) {
             //没有路径目标，则清除路径信息
@@ -235,8 +237,6 @@ public class BehaviorGroup implements IBehaviorGroup {
             entity.setMoveDirectionEnd(null);
             return;
         }
-        boolean reachUpdateCycle = currentRouteUpdateTick >= calcActiveDelay(entity, ROUTE_UPDATE_CYCLE + (entity.level.tickRateOptDelay << 1));
-        if (reachUpdateCycle) currentRouteUpdateTick = 0;
         //到达更新周期时，开始重新计算新路径
         if (isForceUpdateRoute() || (reachUpdateCycle && shouldUpdateRoute(entity, target))) {
             //若有路径目标，则计算新路径
