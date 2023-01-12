@@ -11,15 +11,13 @@ import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.command.utils.CommandParser;
 import cn.nukkit.command.utils.EntitySelector;
 import cn.nukkit.lang.TranslationContainer;
-import cn.nukkit.scoreboard.scoreboard.IScoreboard;
-import cn.nukkit.scoreboard.scoreboard.Scoreboard;
-import cn.nukkit.scoreboard.manager.ScoreboardManager;
 import cn.nukkit.scoreboard.data.DisplaySlot;
 import cn.nukkit.scoreboard.data.SortOrder;
+import cn.nukkit.scoreboard.scoreboard.Scoreboard;
 import cn.nukkit.scoreboard.scoreboard.ScoreboardLine;
-import cn.nukkit.scoreboard.scorer.IScorer;
 import cn.nukkit.scoreboard.scorer.EntityScorer;
 import cn.nukkit.scoreboard.scorer.FakeScorer;
+import cn.nukkit.scoreboard.scorer.IScorer;
 import cn.nukkit.scoreboard.scorer.PlayerScorer;
 import cn.nukkit.utils.TextFormat;
 

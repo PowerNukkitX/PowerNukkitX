@@ -5,8 +5,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.level.Location;
 import lombok.Getter;
 
-import java.util.Vector;
-
 //todo: 怀疑有bug且性能低下，考虑重写
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")

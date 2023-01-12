@@ -238,7 +238,7 @@ public class BehaviorGroup implements IBehaviorGroup {
             return;
         }
         //到达更新周期时，开始重新计算新路径
-        if (isForceUpdateRoute() || (reachUpdateCycle && shouldUpdateRoute(entity, target))) {
+        if (isForceUpdateRoute() || (reachUpdateCycle && shouldUpdateRoute(entity))) {
             //若有路径目标，则计算新路径
             boolean reSubmit = false;
             //         第一次计算                       上一次计算已完成                                         超时，重新提交任务
@@ -254,13 +254,14 @@ public class BehaviorGroup implements IBehaviorGroup {
                 }).setStart(entity.clone()).setTarget(target));
             }
         }
-        if (routeFindingTask != null && routeFindingTask.getFinished()) {
+        if (routeFindingTask != null && routeFindingTask.getFinished() && !hasNewUnCalMoveTarget(entity)) {
             //若不能再移动了，且没有正在计算的寻路任务，则清除路径信息
             var reachableTarget = routeFinder.getReachableTarget();
             if (reachableTarget != null && entity.floor().equals(reachableTarget.floor())) {
                 entity.setMoveTarget(null);
                 entity.setMoveDirectionStart(null);
                 entity.setMoveDirectionEnd(null);
+                return;
             }
         }
         if (entity.isShouldUpdateMoveDirection()) {
@@ -277,16 +278,25 @@ public class BehaviorGroup implements IBehaviorGroup {
      * @return 是否需要更新路径
      */
     @Since("1.19.50-r4")
-    protected boolean shouldUpdateRoute(EntityIntelligent entity, Vector3 newMoveTarget) {
+    protected boolean shouldUpdateRoute(EntityIntelligent entity) {
         //此优化只针对处于非active区块的实体
         if (entity.isActive()) return true;
         //终点发生变化或第一次计算，需要重算
-        if (this.routeFinder.getTarget() == null || !this.routeFinder.getTarget().equals(newMoveTarget))
+        if (this.routeFinder.getTarget() == null || hasNewUnCalMoveTarget(entity))
             return true;
         Set<ChunkSectionVector> passByChunkSections = calPassByChunkSections(this.routeFinder.getRoute().stream().map(Node::getVector3).toList(), entity.level);
         long total = passByChunkSections.stream().mapToLong(vector3 -> getSectionBlockChange(entity.level, vector3)).sum();
         //Section发生变化，需要重算
         return blockChangeCache != total;
+    }
+
+    /**
+     * 通过比对寻路器中设置的moveTarget与entity的moveTarget来确认实体是否设置了新的未计算的moveTarget
+     * @param entity 实体
+     * @return 是否存在新的未计算的寻路目标
+     */
+    protected boolean hasNewUnCalMoveTarget(EntityIntelligent entity) {
+        return !entity.getMoveTarget().equals(this.routeFinder.getTarget());
     }
 
     /**

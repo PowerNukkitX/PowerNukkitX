@@ -16,7 +16,6 @@ import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.ChunkException;
 import cn.nukkit.utils.collection.ByteArrayWrapper;
 import cn.nukkit.utils.collection.FreezableArrayManager;
-import cn.nukkit.utils.collection.FreezableByteArray;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;

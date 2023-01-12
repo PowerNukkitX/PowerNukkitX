@@ -22,7 +22,6 @@ import lombok.Getter;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.function.Supplier;
 
 /**
  * Terra生成器平台实现类<br/>
