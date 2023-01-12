@@ -1,18 +1,20 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
-import cn.nukkit.command.exceptions.CommandSyntaxException;
-import cn.nukkit.command.utils.CommandParser;
-import cn.nukkit.lang.TranslationContainer;
+import cn.nukkit.command.tree.ParamList;
+import cn.nukkit.command.tree.ParamTree;
+import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.level.ParticleEffect;
 import cn.nukkit.level.Position;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author xtypr
@@ -32,41 +34,25 @@ public class ParticleCommand extends VanillaCommand {
                 CommandParameter.newType("position", CommandParamType.POSITION),
                 CommandParameter.newType("count", true, CommandParamType.INT)
         });
+        this.paramTree = new ParamTree(this);
     }
 
+    @Since("1.19.50-r4")
     @Override
-    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        if (!this.testPermission(sender)) {
-            return false;
-        }
-
-        CommandParser parser = new CommandParser(this, sender, args);
-        if (parser.matchCommandForm() == null) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-            return false;
-        }
-
+    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         Position defaultPosition = sender.getPosition();
-
-        try {
-            String name = parser.parseString();
-
-            Position position = parser.parsePosition();
-
-            int count = 1;
-            if (parser.hasNext())
-                count = parser.parseInt();
-            count = Math.max(1, count);
-
-            for (int i = 0; i < count; i++) {
-                position.level.addParticleEffect(position.asVector3f(), name, -1, position.level.getDimension(), (Player[]) null);
-            }
-
-            sender.sendMessage(new TranslationContainer("commands.particle.success", name, String.valueOf(count)));
-            return true;
-        } catch (CommandSyntaxException e) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-            return false;
+        String name = result.getValue().getResult(0);
+        Position position = result.getValue().getResult(1);
+        int count = 1;
+        if (result.getValue().hasResult(3)) count = result.getValue().getResult(3);
+        if (count < 1) {
+            log.addNumTooSmall(3, 1).output();
+            return 0;
         }
+        for (int i = 0; i < count; i++) {
+            position.level.addParticleEffect(position.asVector3f(), name, -1, position.level.getDimension(), (Player[]) null);
+        }
+        log.addSuccess("commands.particle.success", name, String.valueOf(count));
+        return 1;
     }
 }
