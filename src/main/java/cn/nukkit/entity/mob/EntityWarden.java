@@ -126,11 +126,11 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
                                             case 2 -> 30;
                                             case 3 -> 45;
                                             default -> 0;
-                                        }, 0.4f),
+                                        }, 0.7f),
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET), 3, 1
                         ),
                         new Behavior(new WardenSniffExecutor((int) (4.2 * 20), 35), new RandomTimeRangeEvaluator(5 * 20, 10 * 20), 2),
-                        new Behavior(new FlatRandomRoamExecutor(0.05f, 12, 100, true, -1, true, 10), (entity -> true), 1)
+                        new Behavior(new FlatRandomRoamExecutor(0.1f, 12, 100, true, -1, true, 10), (entity -> true), 1)
                 ),
                 Set.of(new RouteUnreachableTimeSensor(CoreMemoryTypes.ROUTE_UNREACHABLE_TIME)),
                 Set.of(new WalkController(), new LookController(true, true), new FluctuateController()),
