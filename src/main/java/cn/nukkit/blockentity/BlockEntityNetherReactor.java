@@ -10,10 +10,10 @@ import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
  * This entity allows to manipulate the save state of a nether reactor core, but changing it
- * will cause no visual change. To see the changes in the world it would be necessary to 
+ * will cause no visual change. To see the changes in the world it would be necessary to
  * change the block data value to {@code 0 1 or 3} but that is impossible in the recent versions
- * because Minecraft Bedrock Edition has moved from block data to the block property & block state
- * system and did not create a block property for the old nether reactor core block, making it 
+ * because Minecraft Bedrock Edition has moved from block data to the block property {@code &} block state
+ * system and did not create a block property for the old nether reactor core block, making it
  * impossible for the server to tell the client to render the red and dark versions of the block.
  */
 @PowerNukkitOnly

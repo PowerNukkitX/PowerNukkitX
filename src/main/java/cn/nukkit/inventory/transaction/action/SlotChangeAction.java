@@ -15,7 +15,7 @@ import java.util.Set;
 public class SlotChangeAction extends InventoryAction {
 
     protected Inventory inventory;
-    private int inventorySlot;
+    private final int inventorySlot;
 
     public SlotChangeAction(Inventory inventory, int inventorySlot, Item sourceItem, Item targetItem) {
         super(sourceItem, targetItem);
@@ -73,13 +73,8 @@ public class SlotChangeAction extends InventoryAction {
     @Override
     public void onExecuteSuccess(Player source) {
         Set<Player> viewers = new HashSet<>(this.inventory.getViewers());
-        //todo hack implement to fix issue#732 and issue#692
-        if (source.getLoginChainData().getDeviceOS() == 7) {//win10
-            this.inventory.sendSlot(this.inventorySlot, viewers);
-        } else {
-            viewers.remove(source);
-            this.inventory.sendSlot(this.inventorySlot, viewers);
-        }
+        viewers.remove(source);
+        this.inventory.sendSlot(this.inventorySlot, viewers);
     }
 
     /**

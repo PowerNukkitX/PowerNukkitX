@@ -10,6 +10,82 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 2. <a href="#CataLogs-Join-the-community">💬 Join the Community / 加入我们 </a>
 3. <a href="#CataLogs-Version-history">🔖 Version history / 历史版本 </a>
 
+## [Dev-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - Future
+This work in progress version supports Minecraft:BE `1.19.50 (Protocol Version 560)`.
+
+## Added
+
+- [#860] Implement fish AI.
+- [#897] Preliminary evening sheathwing flight damage calculation.
+
+## Changed
+
+- [#908] Remove duplicate portal checks.
+- [#912] Entity interface componentization.
+
+## Fixes
+
+- [#889] Fix 1.19.50 bug where small maps don't show up.
+- [#890] Fix NPE issue with `AdventureSettings`.
+- [#900] Fix the bug that Item and Tag can't be found in both directions.
+- [#909] Fix the abnormal behavior of `InventorySlice#isFull`.
+- [#911] Fix EntityCanAttack ArrayIndexOutOfBoundsException.
+- [#916] Try to fix crafting grid sync.
+- [#917] Fix diff hand damage array out of bound again.
+- [#919] Fix candle cake related bug.
+- [#923] Fix smithingRecipe register. 
+- [#925] Fix custom block friction coefficient issue.
+- [#927] Fix a bug in respawn teleport.
+
+## Documentation
+
+- [#899] Clean up abusive lombok annotations.
+
+## [1.19.50-r3-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.50-r3) - 2022-12-26
+This work in progress version supports Minecraft:BE `1.19.50 (Protocol Version 560)`.
+
+## Added
+ 
+- [#840] Add `EntityIntelligentHuman`。
+- [#841] Implemented the ability to gain experience by burning items in the furnace.
+- [#845] Added cat creature AI.
+- [#850] Added `/reload <pluginName>` and `/world` commands.
+- [#852] Implement the `Entity Animation API` and the `/playanimation` command.
+- [#855] Implement Fog.
+- [#858] New Unified Module Recipe API.
+- [#861] Add a `disable timings` configuration item to `nukkit.yml` (enabled by default).
+- [#866] Implement a list of player permissions.
+- [#876] Add `ChunkPrePopulateEvent`.
+- [#885] Add `RecipeInventoyHolder`.
+- [#886] Register new version of fuel item, block.
+
+## Changed
+
+- [#856] Optimize teleport when players are spawn.
+- [#859] Change default setting.
+- [#864] Tweak `handle exception`.
+- [#870] Custom API improvements.
+- [#875] Temporarily remove version detection with OBE, pending backend refactoring.
+- [#873] Vanilla Spectator Mode.
+
+## Fixes
+
+- [#838] Try fix dripleaf.
+- [#842] Fix some bugs in Wolf.
+- [#846] Fix the player's speed can be accumulated.
+- [#848]/[#850] Fix the bug that player's revive point is wrong.
+- [#857] Fix Timings.getTaskTiming() memory leak.
+- [#862] Fix a error of spawn point.
+- [#865] Fix a bug that crash the client.
+- [#867] Fix wrong `Materials.java` constant value.
+- [#872] Fix permission list.
+- [#881] Fix bug about registering recipes.
+- [#883] Fix bug that `SkinTrusted` doesn't work.
+
+## Documentation
+
+- [#854] Add English comments to the animation API.
+
 ## [1.19.50-r2-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.50-r2) - 2022-12-5
 This work in progress version supports Minecraft:BE `1.19.50 (Protocol Version 560)`.
 
@@ -1387,6 +1463,7 @@ Fixes several anvil issues.
 
    1. [#1.19.50-r1] PNX-1.19.50-r1 (Protocol Version 560)
    2. [#1.19.50-r2] PNX-1.19.50-r2 (Protocol Version 560)
+   3. [#1.19.50-r3] PNX-1.19.50-r3 (Protocol Version 560)
 
 </details>
 
@@ -1922,6 +1999,52 @@ Need to switch languages?
 [#833]: https://github.com/PowerNukkitX/PowerNukkitX/pull/833
 [#836]: https://github.com/PowerNukkitX/PowerNukkitX/pull/836
 [#837]: https://github.com/PowerNukkitX/PowerNukkitX/pull/837
+[#838]: https://github.com/PowerNukkitX/PowerNukkitX/pull/838
+[#840]: https://github.com/PowerNukkitX/PowerNukkitX/pull/840
+[#841]: https://github.com/PowerNukkitX/PowerNukkitX/pull/841
+[#842]: https://github.com/PowerNukkitX/PowerNukkitX/pull/842
+[#845]: https://github.com/PowerNukkitX/PowerNukkitX/pull/845
+[#846]: https://github.com/PowerNukkitX/PowerNukkitX/pull/846
+[#848]: https://github.com/PowerNukkitX/PowerNukkitX/pull/848
+[#850]: https://github.com/PowerNukkitX/PowerNukkitX/pull/850
+[#852]: https://github.com/PowerNukkitX/PowerNukkitX/pull/852
+[#854]: https://github.com/PowerNukkitX/PowerNukkitX/pull/854
+[#855]: https://github.com/PowerNukkitX/PowerNukkitX/pull/855
+[#856]: https://github.com/PowerNukkitX/PowerNukkitX/pull/856
+[#857]: https://github.com/PowerNukkitX/PowerNukkitX/pull/857
+[#858]: https://github.com/PowerNukkitX/PowerNukkitX/pull/858
+[#859]: https://github.com/PowerNukkitX/PowerNukkitX/pull/859
+[#860]: https://github.com/PowerNukkitX/PowerNukkitX/pull/860
+[#861]: https://github.com/PowerNukkitX/PowerNukkitX/pull/861
+[#862]: https://github.com/PowerNukkitX/PowerNukkitX/pull/862
+[#864]: https://github.com/PowerNukkitX/PowerNukkitX/pull/864
+[#865]: https://github.com/PowerNukkitX/PowerNukkitX/pull/865
+[#866]: https://github.com/PowerNukkitX/PowerNukkitX/pull/866
+[#867]: https://github.com/PowerNukkitX/PowerNukkitX/pull/867
+[#870]: https://github.com/PowerNukkitX/PowerNukkitX/pull/870
+[#872]: https://github.com/PowerNukkitX/PowerNukkitX/pull/872
+[#873]: https://github.com/PowerNukkitX/PowerNukkitX/pull/873
+[#875]: https://github.com/PowerNukkitX/PowerNukkitX/pull/875
+[#876]: https://github.com/PowerNukkitX/PowerNukkitX/pull/876
+[#881]: https://github.com/PowerNukkitX/PowerNukkitX/pull/881
+[#883]: https://github.com/PowerNukkitX/PowerNukkitX/pull/883
+[#885]: https://github.com/PowerNukkitX/PowerNukkitX/pull/885
+[#886]: https://github.com/PowerNukkitX/PowerNukkitX/pull/886
+[#889]: https://github.com/PowerNukkitX/PowerNukkitX/pull/889
+[#890]: https://github.com/PowerNukkitX/PowerNukkitX/pull/890
+[#897]: https://github.com/PowerNukkitX/PowerNukkitX/pull/897
+[#899]: https://github.com/PowerNukkitX/PowerNukkitX/pull/899
+[#900]: https://github.com/PowerNukkitX/PowerNukkitX/pull/900
+[#908]: https://github.com/PowerNukkitX/PowerNukkitX/pull/908
+[#909]: https://github.com/PowerNukkitX/PowerNukkitX/pull/909
+[#911]: https://github.com/PowerNukkitX/PowerNukkitX/pull/911
+[#912]: https://github.com/PowerNukkitX/PowerNukkitX/pull/912
+[#916]: https://github.com/PowerNukkitX/PowerNukkitX/pull/916
+[#917]: https://github.com/PowerNukkitX/PowerNukkitX/pull/917
+[#919]: https://github.com/PowerNukkitX/PowerNukkitX/pull/919
+[#923]: https://github.com/PowerNukkitX/PowerNukkitX/pull/923
+[#925]: https://github.com/PowerNukkitX/PowerNukkitX/pull/925
+[#927]: https://github.com/PowerNukkitX/PowerNukkitX/pull/927
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->
@@ -1979,8 +2102,10 @@ Need to switch languages?
 
 <!--1.19.50-r1-PNX Protocol Version 560-->
 [#1.19.50-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.50-r1
-<!--1.19.40-r2-PNX Protocol Version 560-->
+<!--1.19.50-r2-PNX Protocol Version 560-->
 [#1.19.50-r2]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.50-r2
+<!--1.19.50-r3-PNX Protocol Version 560-->
+[#1.19.50-r3]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.50-r3
 <!--1.19.xx-PNX Version summary End-->
 
 <!--PowerNukkitX Urls-->

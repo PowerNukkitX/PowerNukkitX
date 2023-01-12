@@ -36,7 +36,7 @@ public abstract class EntityFish extends EntityAnimal implements EntitySwimmable
                 Set.of(),
                 Set.of(
                         new Behavior(
-                                new SpaceRandomRoamExecutor(0.2f, 12, 1, 80, false, -1, false, 10),
+                                new SpaceRandomRoamExecutor(0.36f, 12, 1, 80, false, -1, false, 10),
                                 entity -> true, 1)
                 ),
                 Set.of(),

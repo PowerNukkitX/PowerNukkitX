@@ -136,11 +136,11 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityTa
                             //坐下锁定
                             new Behavior(entity -> false, entity -> this.isSitting(), 7),
                             //攻击仇恨目标 todo 召集同伴
-                            new Behavior(new WolfAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.35f, 33, true, 15),
+                            new Behavior(new WolfAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.7f, 33, true, 15),
                                     new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET)
                                     , 6, 1),
                             new Behavior(new EntityBreedingExecutor<>(EntityWolf.class, 16, 100, 0.35f), entity -> entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE), 5, 1),
-                            new Behavior(new EntityMoveToOwnerExecutor(0.35f, true, 15), entity -> {
+                            new Behavior(new EntityMoveToOwnerExecutor(0.7f, true, 15), entity -> {
                                 if (this.hasOwner()) {
                                     var player = getOwner();
                                     if (!player.isOnGround()) return false;
@@ -151,7 +151,7 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityTa
                             new Behavior(new LookAtFeedingPlayerExecutor(), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_FEEDING_PLAYER), 3, 1),
                             new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100), new ConditionalProbabilityEvaluator(3, 7, entity -> hasOwner(false), 10),
                                     1, 1, 25),
-                            new Behavior(new FlatRandomRoamExecutor(0.1f, 12, 150, false, -1, true, 10),
+                            new Behavior(new FlatRandomRoamExecutor(0.2f, 12, 150, false, -1, true, 10),
                                     new ProbabilityEvaluator(5, 10), 1, 1, 50)
                     ),
                     Set.of(new WolfNearestFeedingPlayerSensor(7, 0),

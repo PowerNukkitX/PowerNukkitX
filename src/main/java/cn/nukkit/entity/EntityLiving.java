@@ -397,6 +397,13 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         return this.movementSpeed;
     }
 
+    /**
+     * 设置该有生命实体的移动速度
+     * <p>
+     * Set the movement speed of this Entity.
+     *
+     * @param speed 速度大小<br>Speed value
+     */
     public void setMovementSpeed(float speed) {
         this.movementSpeed = speed;
     }
