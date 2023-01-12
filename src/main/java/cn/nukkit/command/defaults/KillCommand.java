@@ -36,7 +36,6 @@ public class KillCommand extends VanillaCommand {
 
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        if (result.getKey().equals("default")) {
             if (result.getValue().hasResult(0)) {
                 if (!sender.hasPermission("nukkit.command.kill.other")) {
                     log.addError("nukkit.command.generic.permission").output();
@@ -97,7 +96,5 @@ public class KillCommand extends VanillaCommand {
                 }
                 return 1;
             }
-        }
-        return 0;
     }
 }

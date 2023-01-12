@@ -36,7 +36,6 @@ public class ClearCommand extends VanillaCommand {
 
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        if (result.getKey().equals("default")) {
             var list = result.getValue();
             List<Player> targets = sender.isPlayer() ? List.of(sender.asPlayer()) : null;
             int maxCount = -1;
@@ -177,7 +176,5 @@ public class ClearCommand extends VanillaCommand {
                 }
             }
             return targets.size();
-        }
-        return 0;
     }
 }

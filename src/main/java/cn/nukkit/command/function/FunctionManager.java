@@ -2,6 +2,7 @@ package cn.nukkit.command.function;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.command.data.CommandEnum;
 import lombok.Getter;
 
 import java.io.IOException;
@@ -19,7 +20,7 @@ import java.util.Map;
 public class FunctionManager {
 
     private Path rootPath;
-    private Map<String,Function> functions = new HashMap<>();
+    private Map<String, Function> functions = new HashMap<>();
 
     public FunctionManager(Path rootPath) {
         this.rootPath = rootPath;
@@ -39,11 +40,11 @@ public class FunctionManager {
 
     public void loadFunctions() {
         try {
-            Files.walkFileTree(this.rootPath, new SimpleFileVisitor<Path>(){
+            Files.walkFileTree(this.rootPath, new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
                     if (path.toString().endsWith(".mcfunction")) {
-                        functions.put(path.toString().replace(rootPath.toString() + "\\","").replaceAll("\\\\","/").replace(".mcfunction",""), Function.fromPath(FunctionManager.this,path));
+                        functions.put(path.toString().replace(rootPath.toString() + "\\", "").replaceAll("\\\\", "/").replace(".mcfunction", ""), Function.fromPath(FunctionManager.this, path));
                     }
                     return FileVisitResult.CONTINUE;
                 }
@@ -56,6 +57,7 @@ public class FunctionManager {
     public void reload() {
         functions.clear();
         loadFunctions();
+        CommandEnum.FUNCTION_FILE.updateSoftEnum();
     }
 
     public boolean containFunction(String name) {

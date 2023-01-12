@@ -31,27 +31,25 @@ public class DayLockCommand extends VanillaCommand {
     @Since("1.19.50-r4")
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        if (result.getKey().equals("default")) {
-            var list = result.getValue();
-            boolean lock = true;
+        var list = result.getValue();
+        boolean lock = true;
 
-            if (list.hasResult(0)) lock = list.getResult(0);
+        if (list.hasResult(0)) lock = list.getResult(0);
 
-            Level level = sender.getPosition().getLevel();
-            level = level == null ? sender.getServer().getDefaultLevel() : level;
-            GameRules rules = level.getGameRules();
+        Level level = sender.getPosition().getLevel();
+        level = level == null ? sender.getServer().getDefaultLevel() : level;
+        GameRules rules = level.getGameRules();
 
-            if (lock) {
-                rules.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
-                level.stopTime();
-                level.setTime(5000);
-                log.addSuccess("commands.always.day.locked").output();
-            } else {
-                rules.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, true);
-                level.startTime();
-                log.addSuccess("commands.always.day.unlocked").output();
-            }
+        if (lock) {
+            rules.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+            level.stopTime();
+            level.setTime(5000);
+            log.addSuccess("commands.always.day.locked").output();
+        } else {
+            rules.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, true);
+            level.startTime();
+            log.addSuccess("commands.always.day.unlocked").output();
         }
-        return 0;
+        return 1;
     }
 }

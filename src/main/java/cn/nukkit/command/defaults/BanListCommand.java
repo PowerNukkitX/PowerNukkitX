@@ -30,45 +30,42 @@ public class BanListCommand extends VanillaCommand {
 
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        if (result.getKey().equals("default")) {
-            var paramList = result.getValue();
-            BanList list;
-            boolean ips = false;
+        var paramList = result.getValue();
+        BanList list;
+        boolean ips = false;
 
-            if (paramList.hasResult(0)) {
-                String type = paramList.getResult(0);
-                switch (type.toLowerCase()) {
-                    case "ips" -> {
-                        list = sender.getServer().getIPBans();
-                        ips = true;
-                    }
-                    case "players" -> list = sender.getServer().getNameBans();
-                    default -> {
-                        log.addSyntaxErrors(0).output();
-                        return 0;
-                    }
+        if (paramList.hasResult(0)) {
+            String type = paramList.getResult(0);
+            switch (type.toLowerCase()) {
+                case "ips" -> {
+                    list = sender.getServer().getIPBans();
+                    ips = true;
                 }
-            } else {
-                list = sender.getServer().getNameBans();
-            }
-
-            StringBuilder builder = new StringBuilder();
-            Iterator<BanEntry> itr = list.getEntires().values().iterator();
-            while (itr.hasNext()) {
-                builder.append(itr.next().getName());
-                if (itr.hasNext()) {
-                    builder.append(", ");
+                case "players" -> list = sender.getServer().getNameBans();
+                default -> {
+                    log.addSyntaxErrors(0).output();
+                    return 0;
                 }
             }
-            int size = list.getEntires().size();
-            if (ips) {
-                log.addSuccess("commands.banlist.ips", String.valueOf(size));
-            } else {
-                log.addSuccess("commands.banlist.players", String.valueOf(size));
-            }
-            log.addSuccess(TextFormat.GREEN + builder.toString()).successCount(size).output();
-            return size;
+        } else {
+            list = sender.getServer().getNameBans();
         }
-        return 0;
+
+        StringBuilder builder = new StringBuilder();
+        Iterator<BanEntry> itr = list.getEntires().values().iterator();
+        while (itr.hasNext()) {
+            builder.append(itr.next().getName());
+            if (itr.hasNext()) {
+                builder.append(", ");
+            }
+        }
+        int size = list.getEntires().size();
+        if (ips) {
+            log.addSuccess("commands.banlist.ips", String.valueOf(size));
+        } else {
+            log.addSuccess("commands.banlist.players", String.valueOf(size));
+        }
+        log.addSuccess(TextFormat.GREEN + builder.toString()).successCount(size).output();
+        return size;
     }
 }

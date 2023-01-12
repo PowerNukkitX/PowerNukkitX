@@ -1,12 +1,17 @@
 package cn.nukkit.command.defaults;
 
+import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.command.tree.ParamList;
+import cn.nukkit.command.tree.ParamTree;
+import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.command.utils.EntitySelector;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.utils.TextFormat;
+
+import java.util.Map;
 
 /**
  * @author xtypr
@@ -21,22 +26,14 @@ public class MeCommand extends VanillaCommand {
         this.commandParameters.put("default", new CommandParameter[]{
                 CommandParameter.newType("message", CommandParamType.MESSAGE)
         });
+        this.paramTree = new ParamTree(this);
     }
 
+    @Since("1.19.50-r4")
     @Override
-    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        if (!this.testPermission(sender)) {
-            return true;
-        }
-
-        if (args.length == 0) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-
-            return false;
-        }
-
+    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         String name = sender.getName();
-
+        String[] args = result.getValue().getResult(0);
         StringBuilder msg = new StringBuilder();
         for (String arg : args) {
             if (EntitySelector.hasArguments(arg)) {
@@ -52,8 +49,7 @@ public class MeCommand extends VanillaCommand {
             msg = new StringBuilder(msg.substring(0, msg.length() - 1));
         }
 
-        sender.getServer().broadcastMessage(new TranslationContainer("chat.type.emote", name, TextFormat.WHITE + msg.toString()));
-
-        return true;
+        log.addSuccess("chat.type.emote", name, TextFormat.WHITE + msg.toString()).output(true, true);
+        return 1;
     }
 }

@@ -3,67 +3,52 @@ package cn.nukkit.command.defaults;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
-import cn.nukkit.command.data.CommandParamType;
+import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.function.Function;
-import cn.nukkit.lang.TranslationContainer;
-import cn.nukkit.utils.TextFormat;
+import cn.nukkit.command.tree.ParamList;
+import cn.nukkit.command.tree.ParamTree;
+import cn.nukkit.command.utils.CommandLogger;
+import cn.nukkit.network.protocol.UpdateSoftEnumPacket;
 
 import java.util.Map;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public class FunctionCommand extends VanillaCommand {
+
+
     public FunctionCommand(String name) {
         super(name, "commands.function.description");
         this.setPermission("nukkit.command.function");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
-                CommandParameter.newType("name", CommandParamType.FILE_PATH)
+                CommandParameter.newEnum("name", false, CommandEnum.FUNCTION_FILE)//todo 找到CommandParamType.FILE_PATH自动补全的工作原理
         });
-        this.commandParameters.put("opera", new CommandParameter[]{
-                CommandParameter.newEnum("opera", false, new String[]{"opera"}),
-                CommandParameter.newEnum("type", false, new String[]{"list", "reload"}),
-        });
+        this.paramTree = new ParamTree(this);
     }
 
+    @Since("1.19.50-r4")
     @Override
-    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        if (!this.testPermission(sender)) {
-            return false;
-        }
-        if (args.length == 0) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-            return false;
-        }
-        if (args.length == 1) {
-            Function function = Server.getInstance().getFunctionManager().getFunction(args[0]);
+    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+        UpdateSoftEnumPacket pk = new UpdateSoftEnumPacket();
+        pk.type = UpdateSoftEnumPacket.Type.SET;
+        pk.name = "filepath";
+        pk.values = Server.getInstance().getFunctionManager().getFunctions().keySet().stream().toList();
+        Server.broadcastPacket(Server.getInstance().getOnlinePlayers().values(), pk);
+        var list = result.getValue();
+        if (result.getKey().equals("default")) {
+            String file = list.getResult(0);
+            Function function = Server.getInstance().getFunctionManager().getFunction(file);
             if (function == null) {
-                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.function.functionNameNotFound", args[0]));
-                return false;
+                log.addError("commands.function.functionNameNotFound", file).output();
+                return 0;
             }
             function.dispatch(sender);
-            sender.sendMessage(new TranslationContainer("commands.function.success", String.valueOf(function.getCommands().size())));
+            log.addSuccess("commands.function.success", String.valueOf(function.getCommands().size())).output();
+            return 1;
         }
-        if (args.length == 2) {
-            if (!args[0].equals("opera")) {
-                sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-                return false;
-            }
-            if (args[1].equals("list")) {
-                sender.sendMessage(TextFormat.GREEN + "The following functions exist\n");
-                for (Map.Entry<String, Function> entry : Server.getInstance().getFunctionManager().getFunctions().entrySet()) {
-                    sender.sendMessage("- " + "name: '" + entry.getKey() + "',commands length: " + entry.getValue().getCommands().size() + "\n");
-                }
-            }
-            if (args[1].equals("reload")) {
-                Command.broadcastCommandMessage(sender, TextFormat.YELLOW + "Reloading functions...");
-                Server.getInstance().getFunctionManager().reload();
-                Command.broadcastCommandMessage(sender, TextFormat.GREEN + "Functions reloaded");
-            }
-        }
-        return true;
+        return 0;
     }
 }

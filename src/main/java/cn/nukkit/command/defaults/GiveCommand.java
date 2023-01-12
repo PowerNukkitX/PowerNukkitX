@@ -40,7 +40,6 @@ public class GiveCommand extends VanillaCommand {
 
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        if (result.getKey().equals("default")) {
             var list = result.getValue();
 
             Item item;
@@ -110,7 +109,5 @@ public class GiveCommand extends VanillaCommand {
                     String.valueOf(item.getCount()),
                     players.stream().map(Player::getName).collect(Collectors.joining(","))).successCount(players.size()).output(true, true);
             return players.size();
-        }
-        return 0;
     }
 }

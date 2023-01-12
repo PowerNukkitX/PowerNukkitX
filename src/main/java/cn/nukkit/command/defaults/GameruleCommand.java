@@ -1,10 +1,13 @@
 package cn.nukkit.command.defaults;
 
+import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
-import cn.nukkit.lang.TranslationContainer;
+import cn.nukkit.command.tree.ParamList;
+import cn.nukkit.command.tree.ParamTree;
+import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.GameRules;
 
@@ -34,7 +37,7 @@ public class GameruleCommand extends VanillaCommand {
                 default -> unknownGameRules.add(rule.getName().toLowerCase());
             }
         });
-
+        this.commandParameters.put("default", CommandParameter.EMPTY_ARRAY);
         if (!boolGameRules.isEmpty()) {
             this.commandParameters.put("boolGameRules", new CommandParameter[]{
                     CommandParameter.newEnum("rule", new CommandEnum("BoolGameRule", boolGameRules)),
@@ -59,51 +62,57 @@ public class GameruleCommand extends VanillaCommand {
                     CommandParameter.newType("value", true, CommandParamType.STRING)
             });
         }
+        this.paramTree = new ParamTree(this);
     }
 
+    @Since("1.19.50-r4")
     @Override
-    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        if (!this.testPermission(sender)) {
-            return false;
-        }
-
-
+    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         GameRules rules = sender.getPosition().level.getGameRules();
+        var list = result.getValue();
+        String ruleStr = list.getResult(0);
+        if (result.getKey().equals("default")) {
+            StringJoiner rulesJoiner = new StringJoiner(", ");
+            for (GameRule rule : rules.getRules()) {
+                rulesJoiner.add(rule.getName().toLowerCase());
+            }
+            log.addSuccess(rulesJoiner.toString()).output();
+            return 1;
+        } else if (!list.hasResult(1)) {
+            Optional<GameRule> gameRule = GameRule.parseString(ruleStr);
+            if (gameRule.isEmpty() || !rules.hasRule(gameRule.get())) {
+                log.addSyntaxErrors(0).output();
+                return 0;
+            }
+            log.addSuccess(gameRule.get().getName().toLowerCase() + " = " + rules.getString(gameRule.get())).output();
+            return 1;
+        }
 
-        switch (args.length) {
-            case 0 -> {
-                StringJoiner rulesJoiner = new StringJoiner(", ");
-                for (GameRule rule : rules.getRules()) {
-                    rulesJoiner.add(rule.getName().toLowerCase());
-                }
-                sender.sendMessage(rulesJoiner.toString());
-                return true;
+        Optional<GameRule> optionalRule = GameRule.parseString(ruleStr);
+        if (optionalRule.isEmpty()) {
+            log.addSyntaxErrors(0).output();
+            return 0;
+        }
+        switch (result.getKey()) {
+            case "boolGameRules" -> {
+                boolean value = list.getResult(1);
+                rules.setGameRule(optionalRule.get(), value);
             }
-            case 1 -> {
-                Optional<GameRule> gameRule = GameRule.parseString(args[0]);
-                if (gameRule.isEmpty() || !rules.hasRule(gameRule.get())) {
-                    sender.sendMessage(new TranslationContainer("commands.generic.syntax", "/gamerule", args[0]));
-                    return false;
-                }
-                sender.sendMessage(gameRule.get().getName().toLowerCase() + " = " + rules.getString(gameRule.get()));
-                return true;
+            case "intGameRules" -> {
+                int value = list.getResult(1);
+                rules.setGameRule(optionalRule.get(), value);
             }
-            default -> {
-                Optional<GameRule> optionalRule = GameRule.parseString(args[0]);
-                if (optionalRule.isEmpty()) {
-                    sender.sendMessage(new TranslationContainer("commands.generic.syntax",
-                            "/gamerule ", args[0], " " + String.join(" ", Arrays.copyOfRange(args, 1, args.length))));
-                    return false;
-                }
-                try {
-                    rules.setGameRules(optionalRule.get(), args[1]);
-                    sender.sendMessage(new TranslationContainer("commands.gamerule.success", optionalRule.get().getName().toLowerCase(), args[1]));
-                } catch (IllegalArgumentException e) {
-                    sender.sendMessage(new TranslationContainer("commands.generic.syntax", "/gamerule " + args[0] + " ", args[1], " " + String.join(" ", Arrays.copyOfRange(args, 2, args.length))));
-                    return false;
-                }
-                return true;
+            case "floatGameRules" -> {
+                float value = list.getResult(1);
+                rules.setGameRule(optionalRule.get(), value);
+            }
+            case "unknownGameRules" -> {
+                String value = list.getResult(1);
+                rules.setGameRules(optionalRule.get(), value);
             }
         }
+        var str = list.getResult(1);
+        log.addSuccess("commands.gamerule.success", optionalRule.get().getName().toLowerCase(), str.toString());
+        return 1;
     }
 }

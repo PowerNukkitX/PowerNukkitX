@@ -30,12 +30,9 @@ public class DebugCommand extends TestCommand implements CoreCommand {
     @Since("1.19.50-r4")
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        if (result.getKey().equals("entity")) {
             var list = result.getValue();
             EntityAI.DEBUG = list.getResult(1);
             log.addSuccess("Entity AI framework debug mode have been set to: " + EntityAI.DEBUG).output();
             return 1;
-        }
-        return 0;
     }
 }

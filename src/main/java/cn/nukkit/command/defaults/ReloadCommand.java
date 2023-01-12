@@ -18,7 +18,7 @@ public class ReloadCommand extends VanillaCommand {
         super(name, "Reload the server/plugin");
         this.setPermission("nukkit.command.reload");
         this.commandParameters.clear();
-        this.commandParameters.put("default", new CommandParameter[0]);
+        this.commandParameters.put("default", CommandParameter.EMPTY_ARRAY);
         this.commandParameters.put("function", new CommandParameter[]{
                 CommandParameter.newEnum("function", false, new String[]{"function"})
         });

@@ -18,6 +18,9 @@ import java.util.function.Supplier;
 public class CommandEnum {
     @PowerNukkitXOnly
     @Since("1.19.50-r4")
+    public static final CommandEnum FUNCTION_FILE = new CommandEnum("filepath", () -> Server.getInstance().getFunctionManager().getFunctions().keySet(), true);
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
     public static final CommandEnum SCOREBOARD_OBJECTIVES = new CommandEnum("ScoreboardObjectives", () -> Server.getInstance().getScoreboardManager().getScoreboards().keySet(), true);
     @PowerNukkitXOnly
     @Since("1.19.50-r4")
@@ -127,25 +130,23 @@ public class CommandEnum {
 
     @PowerNukkitXOnly
     @Since("1.19.50-r4")
-    public boolean updateSoftEnum(UpdateSoftEnumPacket.Type mode, String... value) {
-        if (!this.isSoft) return false;
+    public void updateSoftEnum(UpdateSoftEnumPacket.Type mode, String... value) {
+        if (!this.isSoft) return;
         UpdateSoftEnumPacket pk = new UpdateSoftEnumPacket();
         pk.name = this.getName();
         pk.values = Arrays.stream(value).toList();
         pk.type = mode;
         Server.broadcastPacket(Server.getInstance().getOnlinePlayers().values(), pk);
-        return true;
     }
 
     @PowerNukkitXOnly
     @Since("1.19.50-r4")
-    public boolean updateSoftEnum() {
-        if (!this.isSoft && this.strListSupplier == null) return false;
+    public void updateSoftEnum() {
+        if (!this.isSoft && this.strListSupplier == null) return;
         UpdateSoftEnumPacket pk = new UpdateSoftEnumPacket();
         pk.name = this.getName();
         pk.values = this.getValues();
         pk.type = UpdateSoftEnumPacket.Type.SET;
         Server.broadcastPacket(Server.getInstance().getOnlinePlayers().values(), pk);
-        return true;
     }
 }

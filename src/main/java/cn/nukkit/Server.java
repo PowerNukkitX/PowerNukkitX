@@ -369,10 +369,10 @@ public class Server {
         banByIP = new BanList(dataPath + "banned-ips.json");
         operators = new Config();
         whitelist = new Config();
-        commandMap = new SimpleCommandMap(this);
         scoreboardManager = new ScoreboardManager(new JSONScoreboardStorage(this.commandDataPath + "/scoreboard.json"));
         functionManager = new FunctionManager(this.commandDataPath + "/functions");
         tickingAreaManager = new SimpleTickingAreaManager(new JSONTickingAreaStorage(this.dataPath + "worlds/"));
+        commandMap = new SimpleCommandMap(this);
 
         setMaxPlayers(10);
 

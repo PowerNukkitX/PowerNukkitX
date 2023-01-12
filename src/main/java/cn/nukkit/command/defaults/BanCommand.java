@@ -31,19 +31,16 @@ public class BanCommand extends VanillaCommand {
 
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        if (result.getKey().equals("default")) {
-            var list = result.getValue();
-            String name = list.getResult(0);
-            String reason = list.getResult(1);
-            sender.getServer().getNameBans().addBan(name, reason, null, sender.getName());
+        var list = result.getValue();
+        String name = list.getResult(0);
+        String reason = list.getResult(1);
+        sender.getServer().getNameBans().addBan(name, reason, null, sender.getName());
 
-            Player player = sender.getServer().getPlayerExact(name);
-            if (player != null) {
-                player.kick(PlayerKickEvent.Reason.NAME_BANNED, (reason.length() > 0) ? "Banned by admin. Reason: " + reason : "Banned by admin");
-            }
-            log.addSuccess("commands.ban.success", player != null ? player.getName() : name).output(true, true);
-            return 1;
+        Player player = sender.getServer().getPlayerExact(name);
+        if (player != null) {
+            player.kick(PlayerKickEvent.Reason.NAME_BANNED, (reason.length() > 0) ? "Banned by admin. Reason: " + reason : "Banned by admin");
         }
-        return 0;
+        log.addSuccess("commands.ban.success", player != null ? player.getName() : name).output(true, true);
+        return 1;
     }
 }

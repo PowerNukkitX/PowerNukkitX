@@ -31,7 +31,6 @@ public class ClearSpawnPointCommand extends VanillaCommand {
 
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        if (result.getKey().equals("default")) {
             var list = result.getValue();
             List<Player> players = sender.isPlayer() ? List.of(sender.asPlayer()) : null;
             if (list.hasResult(0)) players = list.getResult(0);
@@ -51,7 +50,5 @@ public class ClearSpawnPointCommand extends VanillaCommand {
             }
             log.successCount(players.size()).output();
             return players.size();
-        }
-        return 0;
     }
 }

@@ -30,7 +30,6 @@ public class DeopCommand extends VanillaCommand {
     @Since("1.19.50-r4")
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        if (result.getKey().equals("default")) {
             var list = result.getValue();
             List<Player> players = list.getResult(0);
             for (Player player : players) {
@@ -44,7 +43,5 @@ public class DeopCommand extends VanillaCommand {
             }
             log.output(true, true);
             return 1;
-        }
-        return 0;
     }
 }

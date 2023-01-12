@@ -35,38 +35,35 @@ public class AbilityCommand extends VanillaCommand {
 
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        if (result.getKey().equals("default")) {
-            var list = result.getValue();
-            List<Player> players = list.getResult(0);
-            String ability_str;
-            AdventureSettings.Type type = switch (ability_str = list.getResult(1)) {
-                case "mayfly" -> AdventureSettings.Type.ALLOW_FLIGHT;
-                case "mute" -> AdventureSettings.Type.MUTED;
-                case "worldbuilder" -> AdventureSettings.Type.WORLD_BUILDER;
-                default -> null;
-            };
+        var list = result.getValue();
+        List<Player> players = list.getResult(0);
+        String ability_str;
+        AdventureSettings.Type type = switch (ability_str = list.getResult(1)) {
+            case "mayfly" -> AdventureSettings.Type.ALLOW_FLIGHT;
+            case "mute" -> AdventureSettings.Type.MUTED;
+            case "worldbuilder" -> AdventureSettings.Type.WORLD_BUILDER;
+            default -> null;
+        };
 
-            if (list.hasResult(2)) {
-                boolean value = list.getResult(2);
-                for (Player player : players) {
-                    player.getAdventureSettings().set(type, value);
-                    player.getAdventureSettings().update();
-                    if (value)
-                        log.addSuccess("commands.ability.granted", ability_str);
-                    else
-                        log.addSuccess("commands.ability.revoked", ability_str);
-                }
-                log.addSuccess("commands.ability.success").successCount(1).output();
-                return 1;
-            } else {
-                if (!sender.isPlayer()) {
-                    return 0;
-                }
-                boolean value = sender.asPlayer().getAdventureSettings().get(type);
-                log.addSuccess(ability_str + " = " + value).output();
-                return 1;
+        if (list.hasResult(2)) {
+            boolean value = list.getResult(2);
+            for (Player player : players) {
+                player.getAdventureSettings().set(type, value);
+                player.getAdventureSettings().update();
+                if (value)
+                    log.addSuccess("commands.ability.granted", ability_str);
+                else
+                    log.addSuccess("commands.ability.revoked", ability_str);
             }
+            log.addSuccess("commands.ability.success").successCount(1).output();
+            return 1;
+        } else {
+            if (!sender.isPlayer()) {
+                return 0;
+            }
+            boolean value = sender.asPlayer().getAdventureSettings().get(type);
+            log.addSuccess(ability_str + " = " + value).output();
+            return 1;
         }
-        return 0;
     }
 }

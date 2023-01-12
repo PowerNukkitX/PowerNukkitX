@@ -22,8 +22,8 @@ import java.util.Map;
 @PowerNukkitXOnly
 @Since("1.19.50-r4")
 public class ParamTree {
-    private final Command command;
     private final Map<String, ParamList> root;
+    private final Command command;
     private CommandSender sender;
     private String[] args;
 
@@ -99,10 +99,10 @@ public class ParamTree {
                         case COMPARE_OPERATOR -> {
                             node = new CompareOperatorStringNode();
                         }
-                        case JSON -> {
+                        case MESSAGE, JSON -> {
                             node = new RemainStringNode();
                         }
-                        case MESSAGE, TEXT, RAWTEXT -> {
+                        case TEXT, RAWTEXT -> {
                             node = new StringNode();
                         }
                         default -> node = new VoidNode();
