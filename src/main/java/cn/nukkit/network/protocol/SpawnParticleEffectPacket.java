@@ -16,7 +16,7 @@ public class SpawnParticleEffectPacket extends DataPacket {
     /**
      * @since v503
      */
-    private Optional<String> molangVariablesJson = Optional.empty();
+    public Optional<String> molangVariablesJson = Optional.empty();
 
     @Override
     public byte pid() {
