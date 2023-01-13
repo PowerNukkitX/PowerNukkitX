@@ -1,11 +1,15 @@
 package cn.nukkit.math;
 
+import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.level.Location;
 import lombok.Getter;
 
-//todo: 怀疑有bug且性能低下，考虑重写
+@Deprecated
+@DeprecationDetails(since = "1.19.50-r4",
+        reason = "The implementation of this utility class is very crude and suspected to be buggy. Will be removed after a few versions",
+        replaceWith = "AngleMath.java")
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 @Getter
