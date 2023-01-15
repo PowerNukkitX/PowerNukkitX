@@ -6,9 +6,11 @@ import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
-import cn.nukkit.command.exceptions.CommandSyntaxException;
-import cn.nukkit.command.utils.CommandParser;
-import cn.nukkit.lang.TranslationContainer;
+import cn.nukkit.command.tree.ParamList;
+import cn.nukkit.command.tree.ParamTree;
+import cn.nukkit.command.utils.CommandLogger;
+
+import java.util.Map;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -21,36 +23,26 @@ public class SetMaxPlayersCommand extends VanillaCommand {
         this.addCommandParameters("default", new CommandParameter[]{
                 CommandParameter.newType("maxPlayers", false, CommandParamType.INT)
         });
+        this.paramTree = new ParamTree(this);
     }
 
+    @Since("1.19.50-r4")
     @Override
-    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        if (!this.testPermission(sender)) {
-            return false;
+    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+        int maxPlayers = result.getValue().getResult(0);
+        boolean lowerBound = false;
+
+        if (maxPlayers < Server.getInstance().getOnlinePlayers().size()) {
+            maxPlayers = Server.getInstance().getOnlinePlayers().size();
+            lowerBound = true;
         }
 
-        CommandParser parser = new CommandParser(this, sender, args);
-        try {
-            int maxPlayers = parser.parseInt();
-            boolean lowerBound = false;
-
-            if (maxPlayers < Server.getInstance().getOnlinePlayers().size()) {
-                maxPlayers = Server.getInstance().getOnlinePlayers().size();
-                lowerBound = true;
-            }
-
-            sender.getServer().setMaxPlayers(maxPlayers);
-
-            sender.sendMessage(new TranslationContainer("commands.setmaxplayers.success", String.valueOf(maxPlayers)));
-
-            if (lowerBound) {
-                sender.sendMessage(new TranslationContainer("commands.setmaxplayers.success.lowerbound"));
-            }
-        } catch (CommandSyntaxException e) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-            return false;
+        sender.getServer().setMaxPlayers(maxPlayers);
+        log.addSuccess("commands.setmaxplayers.success", String.valueOf(maxPlayers));
+        if (lowerBound) {
+            log.addSuccess("commands.setmaxplayers.success.lowerbound");
         }
-
-        return true;
+        log.output();
+        return 1;
     }
 }

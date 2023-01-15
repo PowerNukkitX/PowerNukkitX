@@ -5,15 +5,14 @@ import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
-import cn.nukkit.command.exceptions.CommandSyntaxException;
-import cn.nukkit.command.utils.CommandParser;
+import cn.nukkit.command.tree.ParamList;
+import cn.nukkit.command.tree.ParamTree;
+import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.lang.TranslationContainer;
-import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.utils.TextFormat;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 @PowerNukkitXOnly
@@ -34,47 +33,34 @@ public class SpreadPlayersCommand extends VanillaCommand {
                 CommandParameter.newType("victim", false, CommandParamType.TARGET)
         });
         this.random = ThreadLocalRandom.current();
+        this.paramTree = new ParamTree(this);
     }
 
+    @Since("1.19.50-r4")
     @Override
-    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        if (!this.testPermission(sender)) {
-            return false;
+    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+        var list = result.getValue();
+        double x = list.getResult(0);
+        double z = list.getResult(1);
+        float spreadDistance = list.getResult(3);
+        float maxRange = list.getResult(4);
+        List<Entity> targets = list.getResult(5);
+
+        if (spreadDistance < 0) {
+            log.addError("commands.generic.double.tooSmall", String.valueOf(spreadDistance), "0").output();
+            return 0;
+        } else if (maxRange < spreadDistance) {
+            log.addError("commands.generic.double.tooSmall", String.valueOf(maxRange), String.valueOf(spreadDistance + 1)).output();
+            return 0;
         }
-
-        CommandParser parser = new CommandParser(this, sender, args);
-        try {
-            Vector2 vec2 = parser.parseVector2();
-            float spreadDistance = (float) parser.parseDouble(); //TODO
-            float maxRange = (float) parser.parseDouble();
-            List<Entity> targets = parser.parseTargets();
-
-            if (spreadDistance < 0) {
-                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.double.tooSmall", String.valueOf(spreadDistance), "0"));
-                return false;
-            } else if (maxRange < spreadDistance) {
-                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.double.tooSmall", String.valueOf(maxRange), String.valueOf(spreadDistance + 1)));
-                return false;
-            }
-
-            if (targets.size() == 0) {
-                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.noTargetMatch"));
-                return false;
-            }
-
-            for (Entity target : targets) {
-                Vector3 vec3 = this.nextXZ(vec2.getX(), vec2.getY(), (int) maxRange);
-                vec3.y = target.getLevel().getHighestBlockAt(vec3.getFloorX(), vec3.getFloorZ()) + 1;
-                target.teleport(vec3);
-            }
-
-            sender.sendMessage(new TranslationContainer("commands.spreadplayers.success.players", String.valueOf(targets.size()), String.valueOf(vec2.getFloorX()), String.valueOf(vec2.getFloorY())));
-        } catch (CommandSyntaxException e) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-            return false;
+        for (Entity target : targets) {
+            Vector3 vec3 = this.nextXZ(x, z, (int) maxRange);
+            vec3.y = target.getLevel().getHighestBlockAt(vec3.getFloorX(), vec3.getFloorZ()) + 1;
+            target.teleport(vec3);
         }
-
-        return true;
+        log.addSuccess("commands.spreadplayers.success.players",
+                String.valueOf(targets.size()), String.valueOf(Math.floor(x)), String.valueOf(Math.floor(z))).output();
+        return 1;
     }
 
     private Vector3 nextXZ(double centerX, double centerZ, int maxRange) {
