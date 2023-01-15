@@ -5,7 +5,6 @@ import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
-import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.ExecutorCommandSender;
 import cn.nukkit.command.data.CommandEnum;
@@ -324,8 +323,8 @@ public class ExecuteCommand extends VanillaCommand {
             case "if-unless-block" -> {
                 Position pos = list.getResult(2);
                 Block block = pos.getLevelBlock();
-                String blockName = list.getResult(3);
-                int id = BlockState.of(blockName.startsWith("minecraft:") ? blockName : "minecraft:" + blockName).getBlockId();
+                Block blockName = list.getResult(3);
+                int id = blockName.getId();
                 String chainCommand = list.getResult(4);
                 String isIF = list.getResult(0);
 
@@ -339,8 +338,8 @@ public class ExecuteCommand extends VanillaCommand {
             case "if-unless-block-data" -> {
                 Position pos = list.getResult(2);
                 Block block = pos.getLevelBlock();
-                String blockName = list.getResult(3);
-                int id = BlockState.of(blockName.startsWith("minecraft:") ? blockName : "minecraft:" + blockName).getBlockId();
+                Block blockName = list.getResult(3);
+                int id = blockName.getId();
                 int data = list.getResult(4);
                 String chainCommand = list.getResult(5);
                 String isIF = list.getResult(0);

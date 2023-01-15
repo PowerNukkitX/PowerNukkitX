@@ -3,7 +3,6 @@ package cn.nukkit.command.defaults;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
-import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
@@ -55,12 +54,11 @@ public class FillCommand extends VanillaCommand {
         var list = result.getValue();
         Position from = list.getResult(0);
         Position to = list.getResult(1);
-        String tileName = list.getResult(2);
-        tileName = tileName.contains(":") ? tileName : "minecraft:" + tileName;
-        Integer tileId = BlockStateRegistry.getBlockId(tileName);
+        Block tileName = list.getResult(2);
+        int tileId = tileName.getId();
         int tileData = 0;
         FillMode oldBlockHandling = FillMode.REPLACE;
-        Integer replaceTileId = -1;
+        int replaceTileId;
         int replaceDataValue = 0;
 
         AxisAlignedBB aabb = new SimpleAxisAlignedBB(Math.min(from.getX(), to.getX()), Math.min(from.getY(), to.getY()), Math.min(from.getZ(), to.getZ()), Math.max(from.getX(), to.getX()), Math.max(from.getY(), to.getY()), Math.max(from.getZ(), to.getZ()));
@@ -95,18 +93,13 @@ public class FillCommand extends VanillaCommand {
                     String str = list.getResult(4);
                     oldBlockHandling = FillMode.valueOf(str.toUpperCase(Locale.ENGLISH));
                 }
-                if (tileId == null) {
-                    log.addError("commands.fill.failed").output();
-                    return 0;
-                }
-
                 switch (oldBlockHandling) {
                     case OUTLINE -> {
                         for (int x = NukkitMath.floorDouble(aabb.getMinX()); x <= NukkitMath.floorDouble(aabb.getMaxX()); x++) {
                             for (int z = NukkitMath.floorDouble(aabb.getMinZ()); z <= NukkitMath.floorDouble(aabb.getMaxZ()); z++) {
                                 for (int y = NukkitMath.floorDouble(aabb.getMinY()); y <= NukkitMath.floorDouble(aabb.getMaxY()); y++) {
                                     if (x == from.x || x == to.x || z == from.z || z == to.z || y == from.y || y == to.y) {
-                                        level.setBlock(x, y, z, Block.get(tileId.intValue(), tileData), false, true);
+                                        level.setBlock(x, y, z, Block.get(tileId, tileData), false, true);
                                         ++count;
                                     }
                                 }
@@ -120,7 +113,7 @@ public class FillCommand extends VanillaCommand {
                                     Block block;
 
                                     if (x == from.x || x == to.x || z == from.z || z == to.z || y == from.y || y == to.y) {
-                                        block = Block.get(tileId.intValue(), tileData);
+                                        block = Block.get(tileId, tileData);
                                     } else {
                                         block = Block.get(Block.AIR);
                                     }
@@ -134,7 +127,7 @@ public class FillCommand extends VanillaCommand {
                     case REPLACE -> {
                         blocks = getLevelBlocks(level, aabb);
                         for (Block block : blocks) {
-                            level.setBlock(block, Block.get(tileId.intValue(), tileData));
+                            level.setBlock(block, Block.get(tileId, tileData));
                             ++count;
                         }
                     }
@@ -142,7 +135,7 @@ public class FillCommand extends VanillaCommand {
                         blocks = getLevelBlocks(level, aabb);
                         for (Block block : blocks) {
                             level.useBreakOn(block, null, null, null, true);
-                            level.setBlock(block, Block.get(tileId.intValue(), tileData));
+                            level.setBlock(block, Block.get(tileId, tileData));
                             ++count;
                         }
                     }
@@ -150,7 +143,7 @@ public class FillCommand extends VanillaCommand {
                         blocks = getLevelBlocks(level, aabb);
                         for (Block block : blocks) {
                             if (block.getId() == Block.AIR) {
-                                level.setBlock(block, Block.get(tileId.intValue(), tileData));
+                                level.setBlock(block, Block.get(tileId, tileData));
                                 ++count;
                             }
                         }
@@ -159,26 +152,20 @@ public class FillCommand extends VanillaCommand {
             }
             case "replace" -> {
                 tileData = list.getResult(3);
-                String replaceTileName = list.getResult(5);
-                replaceTileName = replaceTileName.contains(":") ? replaceTileName : "minecraft:" + replaceTileName;
-                replaceTileId = BlockStateRegistry.getBlockId(replaceTileName);
+                Block replaceTileName = list.getResult(5);
+                replaceTileId = replaceTileName.getId();
                 if (list.hasResult(6)) {
                     replaceDataValue = list.getResult(6);
                 }
-                if (tileId == null || replaceTileId == null) {
-                    log.addError("commands.fill.failed");
-                    return 0;
-                }
                 blocks = getLevelBlocks(level, aabb);
-
                 for (Block block : blocks) {
                     if (replaceTileId != -1) {
                         if (block.getId() == replaceTileId && block.getDamage() == replaceDataValue) {
-                            level.setBlock(block, Block.get(tileId.intValue(), tileData));
+                            level.setBlock(block, Block.get(tileId, tileData));
                             ++count;
                         }
                     } else {
-                        level.setBlock(block, Block.get(tileId.intValue(), tileData));
+                        level.setBlock(block, Block.get(tileId, tileData));
                         ++count;
                     }
                 }

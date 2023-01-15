@@ -1822,6 +1822,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             playerRespawnEvent.setRespawnPosition(this.getServer().getDefaultLevel().getSafeSpawn());
         }
         this.server.getPluginManager().callEvent(playerRespawnEvent);
+        this.despawnFromAll();
 
         Position respawnPos = playerRespawnEvent.getRespawnPosition();
 
@@ -1849,7 +1850,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.offhandInventory.sendContents(this);
 
         this.teleport(respawnPos.getFloorY() == respawnPos.getY() ? respawnPos.add(0, 0.5) : (Position) respawnPos.setY(Math.ceil(respawnPos.getY())), TeleportCause.PLAYER_SPAWN);
-        this.despawnFromAll();
         this.spawnToAll();
         this.scheduleUpdate();
     }
