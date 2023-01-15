@@ -96,7 +96,7 @@ public class ConsoleCommandSender implements CommandSender {
 
     @Override
     public void sendMessage(TextContainer message) {
-        this.sendMessage(this.getServer().getLanguage().translate(message));
+        this.sendMessage(this.getServer().getLanguage().tr(message));
     }
 
     @Since("1.19.50-r4")
