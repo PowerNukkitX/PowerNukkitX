@@ -51,9 +51,9 @@ public class ParamTree {
     @SuppressWarnings("RedundantLabeledSwitchRuleCodeBlock")
     public ParamTree(Command command) {
         this.command = command;
-        var root = new HashMap<String, ParamList>();
+        final var root = new HashMap<String, ParamList>();
         for (Map.Entry<String, CommandParameter[]> entry : command.getCommandParameters().entrySet()) {
-            var paramList = new ParamList(this);
+            final var paramList = new ParamList(this);
             for (CommandParameter parameter : entry.getValue()) {
                 IParamNode<?> node;
                 if (parameter.paramNode != null) {
@@ -143,10 +143,10 @@ public class ParamTree {
         this.args = args;
         this.sender = sender;
         Map.Entry<String, ParamList> result = null;
-        var error = new ArrayList<ParamList>();
+        final var error = new ArrayList<ParamList>();
 
-        for (var entry : this.root.entrySet()) {
-            var list = entry.getValue();
+        for (final var entry : this.root.entrySet()) {
+            final var list = entry.getValue();
             list.reset();
             f2:
             for (var node : list) {
@@ -178,14 +178,14 @@ public class ParamTree {
         }
 
         if (result == null) {//全部不成功
-            var list = error.stream().max(Comparator.comparingInt(ParamList::getError)).orElseGet(() -> {
+            final var list = error.stream().max(Comparator.comparingInt(ParamList::getError)).orElseGet(() -> {
                 var defaultList = new ParamList(this);
                 defaultList.error();
                 return defaultList;
             });
 
-            var container = new CommandOutputContainer();
-            CommandLogger log = new CommandLogger(this.command, sender, commandLabel, args, container);
+            final var container = new CommandOutputContainer();
+            final CommandLogger log = new CommandLogger(this.command, sender, commandLabel, args, container);
             if (!list.getMessageContainer().getMessages().isEmpty()) {
                 for (var message : list.getMessageContainer().getMessages()) {
                     container.getMessages().add(new CommandOutputMessage(Server.getInstance().getLanguage().translateString(message.getMessageId(), message.getParameters()), CommandOutputContainer.EMPTY_STRING));
