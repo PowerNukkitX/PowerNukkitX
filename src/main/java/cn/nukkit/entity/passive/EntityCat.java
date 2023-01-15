@@ -9,6 +9,7 @@ import cn.nukkit.entity.*;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
+import cn.nukkit.entity.ai.controller.FluctuateController;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.ConditionalProbabilityEvaluator;
@@ -39,14 +40,13 @@ import cn.nukkit.utils.Utils;
 import java.util.List;
 import java.util.Set;
 
-public class EntityCat extends EntityWalkingAnimal implements EntityTamable, EntityCanSit, EntityCanAttack, EntityHealable {
+public class EntityCat extends EntityAnimal implements EntityWalkable, EntityTamable, EntityCanSit, EntityCanAttack, EntityHealable {
     public static final int NETWORK_ID = 75;
-    private DyeColor collarColor = DyeColor.RED;//驯服后项圈为红色
-    private IBehaviorGroup behaviorGroup;
     //猫咪有11种颜色变种
     private static final int[] VARIANTS = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    private int variant;
     protected float[] diffHandDamage = new float[]{4, 4, 4};
+    private DyeColor collarColor = DyeColor.RED;//驯服后项圈为红色
+    private int variant;
 
     public EntityCat(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -65,91 +65,87 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable, Ent
     }
 
     @Override
-    public IBehaviorGroup getBehaviorGroup() {
-        if (behaviorGroup == null) {
-            behaviorGroup = new BehaviorGroup(
-                    this.tickSpread,
-                    Set.of(
-                            new Behavior((entity) -> {
-                                //刷新随机播放音效
-                                //当猫被驯服时发出的声音
-                                if (this.hasOwner(false))
-                                    this.setAmbientSoundEvent(Sound.MOB_CAT_MEOW);
-                                else
-                                    this.setAmbientSoundEvent(Sound.MOB_CAT_STRAYMEOW);
-                                return false;
-                            }, (entity) -> true, 1, 1, 20),
-                            //用于刷新InLove状态的核心行为
-                            new Behavior(
-                                    new InLoveExecutor(400),
-                                    all(
-                                            new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_FED_TIME, 0, 400),
-                                            new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE),
-                                            (entity) -> this.hasOwner()
-                                    ),
-                                    1, 1
-                            ),
-                            //"流浪猫会寻找并攻击15格内的鸡[仅Java版]、兔子和幼年海龟" --- 来自Wiki https://minecraft.fandom.com/wiki/Cat#Bedrock_Edition
-                            new Behavior(
-                                    entity -> {
-                                        if (this.hasOwner(false)) return false;
-                                        var storage = getMemoryStorage();
-                                        if (storage.notEmpty(CoreMemoryTypes.ATTACK_TARGET)) return false;
-                                        Entity attackTarget = null;
-                                        //已驯服为家猫就不攻击下述动物反之未驯服为流浪猫攻击下述动物
-                                        //攻击最近的小海龟，兔子
-                                        if (storage.notEmpty(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET) && storage.get(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET).isAlive()) {
-                                            attackTarget = storage.get(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET);
-                                        }
-                                        storage.put(CoreMemoryTypes.ATTACK_TARGET, attackTarget);
-                                        return false;
-                                    },
-                                    entity -> true, 20
-                            )
-                    ),
-                    Set.of(
-                            //坐下锁定 优先级8
-                            new Behavior(entity -> false, entity -> this.isSitting(), 8),
-                            //睡觉 优先级7
-                            new Behavior(new SleepOnOwnerBedExecutor(), entity -> {
-                                var player = this.getOwner();
-                                if (player == null) return false;
-                                if (player.getLevel().getId() != this.level.getId()) return false;
-                                return player.isSleeping();
-                            }, 7),
-                            //攻击仇恨目标 优先级6
-                            new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.35f, 15, true, 10), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET), 6),
-                            //猫咪繁殖 优先级5
-                            new Behavior(new EntityBreedingExecutor<>(EntityCat.class, 8, 100, 0.35f), entity -> entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE), 5),
-                            //猫咪向主人移动 优先级4
-                            new Behavior(new EntityMoveToOwnerExecutor(0.35f, true, 15), entity -> {
-                                if (this.hasOwner()) {
-                                    var player = getOwner();
-                                    if (!player.isOnGround()) return false;
-                                    var distanceSquared = entity.distanceSquared(player);
-                                    return distanceSquared >= 100;
-                                } else return false;
-                            }, 4),
-                            //猫在主人身边随机移动 优先级3
-                            new Behavior(new FlatRandomRoamExecutor(0.1f, 4, 100, false, -1, true, 20), entity -> this.hasOwner() && this.getOwner().distanceSquared(this) < 100, 3),
-                            //猫咪看向食物 优先级3
-                            new Behavior(new LookAtFeedingPlayerExecutor(), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_FEEDING_PLAYER), 3),
-                            //猫咪随机目标点移动 优先级1
-                            new Behavior(new FlatRandomRoamExecutor(0.2f, 12, 150, false, -1, true, 20), new ProbabilityEvaluator(5, 10), 1, 1, 25),
-                            //猫咪看向目标玩家 优先级1
-                            new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100), new ConditionalProbabilityEvaluator(3, 7, entity -> hasOwner(false), 10), 1, 1, 25)
-                    ),
-                    Set.of(new NearestFeedingPlayerSensor(7, 0),
-                            new NearestPlayerSensor(8, 0, 20),
-                            new NearestTargetEntitySensor<>(0, 15, 20,
-                                    List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), this::attackTarget)
-                    ),
-                    Set.of(new WalkController(), new LookController(true, true)),
-                    new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)
-
-            );
-        }
-        return behaviorGroup;
+    public IBehaviorGroup requireBehaviorGroup() {
+        return new BehaviorGroup(
+                this.tickSpread,
+                Set.of(
+                        new Behavior((entity) -> {
+                            //刷新随机播放音效
+                            //当猫被驯服时发出的声音
+                            if (this.hasOwner(false))
+                                this.setAmbientSoundEvent(Sound.MOB_CAT_MEOW);
+                            else
+                                this.setAmbientSoundEvent(Sound.MOB_CAT_STRAYMEOW);
+                            return false;
+                        }, (entity) -> true, 1, 1, 20),
+                        //用于刷新InLove状态的核心行为
+                        new Behavior(
+                                new InLoveExecutor(400),
+                                all(
+                                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_FED_TIME, 0, 400),
+                                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE),
+                                        (entity) -> this.hasOwner()
+                                ),
+                                1, 1
+                        ),
+                        //"流浪猫会寻找并攻击15格内的鸡[仅Java版]、兔子和幼年海龟" --- 来自Wiki https://minecraft.fandom.com/wiki/Cat#Bedrock_Edition
+                        new Behavior(
+                                entity -> {
+                                    if (this.hasOwner(false)) return false;
+                                    var storage = getMemoryStorage();
+                                    if (storage.notEmpty(CoreMemoryTypes.ATTACK_TARGET)) return false;
+                                    Entity attackTarget = null;
+                                    //已驯服为家猫就不攻击下述动物反之未驯服为流浪猫攻击下述动物
+                                    //攻击最近的小海龟，兔子
+                                    if (storage.notEmpty(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET) && storage.get(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET).isAlive()) {
+                                        attackTarget = storage.get(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET);
+                                    }
+                                    storage.put(CoreMemoryTypes.ATTACK_TARGET, attackTarget);
+                                    return false;
+                                },
+                                entity -> true, 20
+                        )
+                ),
+                Set.of(
+                        //坐下锁定 优先级8
+                        new Behavior(entity -> false, entity -> this.isSitting(), 8),
+                        //睡觉 优先级7
+                        new Behavior(new SleepOnOwnerBedExecutor(), entity -> {
+                            var player = this.getOwner();
+                            if (player == null) return false;
+                            if (player.getLevel().getId() != this.level.getId()) return false;
+                            return player.isSleeping();
+                        }, 7),
+                        //攻击仇恨目标 优先级6
+                        new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.35f, 15, true, 10), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET), 6),
+                        //猫咪繁殖 优先级5
+                        new Behavior(new EntityBreedingExecutor<>(EntityCat.class, 8, 100, 0.35f), entity -> entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE), 5),
+                        //猫咪向主人移动 优先级4
+                        new Behavior(new EntityMoveToOwnerExecutor(0.35f, true, 15), entity -> {
+                            if (this.hasOwner()) {
+                                var player = getOwner();
+                                if (!player.isOnGround()) return false;
+                                var distanceSquared = entity.distanceSquared(player);
+                                return distanceSquared >= 100;
+                            } else return false;
+                        }, 4),
+                        //猫在主人身边随机移动 优先级3
+                        new Behavior(new FlatRandomRoamExecutor(0.1f, 4, 100, false, -1, true, 20), entity -> this.hasOwner() && this.getOwner().distanceSquared(this) < 100, 3),
+                        //猫咪看向食物 优先级3
+                        new Behavior(new LookAtFeedingPlayerExecutor(), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_FEEDING_PLAYER), 3),
+                        //猫咪随机目标点移动 优先级1
+                        new Behavior(new FlatRandomRoamExecutor(0.2f, 12, 150, false, -1, true, 20), new ProbabilityEvaluator(5, 10), 1, 1, 25),
+                        //猫咪看向目标玩家 优先级1
+                        new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100), new ConditionalProbabilityEvaluator(3, 7, entity -> hasOwner(false), 10), 1, 1, 25)
+                ),
+                Set.of(new NearestFeedingPlayerSensor(7, 0),
+                        new NearestPlayerSensor(8, 0, 20),
+                        new NearestTargetEntitySensor<>(0, 15, 20,
+                                List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), this::attackTarget)
+                ),
+                Set.of(new WalkController(), new LookController(true, true), new FluctuateController()),
+                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)
+        );
     }
 
     //猫咪身体大小来自Wiki https://minecraft.fandom.com/wiki/Cat
@@ -258,7 +254,7 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable, Ent
                 this.setCollarColor(((ItemDye) item).getDyeColor());
                 return true;
             }
-        } else if (this.hasOwner() && player.getName().equals(getOwnerName())) {
+        } else if (this.hasOwner() && player.getName().equals(getOwnerName()) && !this.isTouchingWater()) {
             this.setSitting(!this.isSitting());
             return false;
         }

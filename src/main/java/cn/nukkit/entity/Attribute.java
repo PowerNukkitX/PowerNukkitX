@@ -1,25 +1,44 @@
 package cn.nukkit.entity;
-/**
- * Attribute
- *
- * @author Box, MagicDroidX(code), PeratX @ Nukkit Project
- * @since Nukkit 1.0 | Nukkit API 1.0.0
- */
+
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.utils.ServerException;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * 属性是作用于{@link Entity}上一个的增益/减益系统。
+ * <p>
+ * Attributes are buffs/debuffs systems that act on {@link Entity}.
+ *
+ * @author Box, MagicDroidX(code), PeratX @ Nukkit Project
+ * @since Nukkit 1.0 | Nukkit API 1.0.0
+ */
 public class Attribute implements Cloneable {
+    /**
+     * 方便执行{@link Collection#toArray()}
+     * <p>
+     * Convenient execution of {@link Collection#toArray()}
+     */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final Attribute[] EMPTY_ARRAY = new Attribute[0];
 
+    /**
+     * 伤害吸收
+     * <p>
+     * ABSORPTION
+     */
     public static final int ABSORPTION = 0;
+    /**
+     * 饱食度
+     * <p>
+     * SATURATION
+     */
     public static final int SATURATION = 1;
     public static final int EXHAUSTION = 2;
     public static final int KNOCKBACK_RESISTANCE = 3;
@@ -41,7 +60,7 @@ public class Attribute implements Cloneable {
     protected float currentValue;
     protected String name;
     protected boolean shouldSend;
-    private int id;
+    private final int id;
 
     private Attribute(int id, String name, float minValue, float maxValue, float defaultValue, boolean shouldSend) {
         this.id = id;
@@ -80,6 +99,14 @@ public class Attribute implements Cloneable {
         return attributes.put(id, new Attribute(id, name, minValue, maxValue, defaultValue, shouldSend));
     }
 
+    /**
+     * 获取对应id的{@link Attribute}。
+     * <p>
+     * Get the {@link Attribute} of the corresponding id.
+     *
+     * @param id the id
+     * @return the attribute
+     */
     public static Attribute getAttribute(int id) {
         if (attributes.containsKey(id)) {
             return attributes.get(id).clone();
@@ -88,8 +115,12 @@ public class Attribute implements Cloneable {
     }
 
     /**
+     * 获取对应名字的{@link Attribute}。
+     * <p>
+     * Get the {@link Attribute} of the corresponding name.
+     *
      * @param name name
-     * @return null|Attribute
+     * @return null |Attribute
      */
     public static Attribute getAttributeByName(String name) {
         for (Attribute a : attributes.values()) {

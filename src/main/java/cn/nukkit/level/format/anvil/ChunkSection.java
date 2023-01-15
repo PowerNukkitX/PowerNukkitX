@@ -69,6 +69,9 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
     @PowerNukkitXOnly
     @Since("1.19.21-r1")
     protected boolean invalidCustomBlockWhenLoad = false;
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    protected long blockChanges = 0;
     private LayerStorage layerStorage;
     private int contentVersion;
 
@@ -326,6 +329,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
         sectionLock.writeLock().lock();
         try {
             layerStorage.setNeedReObfuscate();
+            addBlockChange();
             if (id != 0) {
                 layerStorage.getOrSetStorage(this::setLayerStorage, this::getContentVersion, layer).setBlockId(x, y, z, id);
             } else {
@@ -358,6 +362,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
     public boolean setFullBlockId(int x, int y, int z, int layer, int fullId) {
         sectionLock.writeLock().lock();
         try {
+            addBlockChange();
             if (fullId != 0) {
                 layerStorage.getOrSetStorage(this::setLayerStorage, this::getContentVersion, layer).setFullBlock(x, y, z, fullId);
             } else {
@@ -407,6 +412,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
         sectionLock.writeLock().lock();
         try {
             layerStorage.setNeedReObfuscate();
+            addBlockChange();
             if (data != 0) {
                 layerStorage.getOrSetStorage(this::setLayerStorage, this::getContentVersion, layer).setBlockData(x, y, z, data);
             } else {
@@ -476,6 +482,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
         sectionLock.writeLock().lock();
         try {
             layerStorage.setNeedReObfuscate();
+            addBlockChange();
             BlockStorage storage;
             if (block.getId() != 0 || !block.isDefaultState()) {
                 storage = layerStorage.getOrSetStorage(this::setLayerStorage, this::getContentVersion, layer);
@@ -504,6 +511,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
         sectionLock.writeLock().lock();
         try {
             layerStorage.setNeedReObfuscate();
+            addBlockChange();
             if (!BlockState.AIR.equals(state)) {
                 return layerStorage.getOrSetStorage(this::setLayerStorage, this::getContentVersion, layer).getAndSetBlockState(x, y, z, state);
             } else {
@@ -1053,6 +1061,18 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
     @Override
     public void setNeedReObfuscate() {
         layerStorage.setNeedReObfuscate();
+    }
+
+    @Since("1.19.50-r4")
+    @Override
+    public long getBlockChanges() {
+        return this.blockChanges;
+    }
+
+    @Since("1.19.50-r4")
+    @Override
+    public void addBlockChange() {
+        this.blockChanges++;
     }
 
     @Override

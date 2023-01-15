@@ -3,17 +3,11 @@ package cn.nukkit.utils.collection;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import com.google.common.collect.ConcurrentHashMultiset;
-import io.netty.util.internal.ConcurrentSet;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.ref.ReferenceQueue;
-import java.lang.ref.WeakReference;
 import java.util.Arrays;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**

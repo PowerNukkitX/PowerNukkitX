@@ -69,6 +69,25 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
         return chunk;
     }
 
+    @Override
+    public long getBlockChanges() {
+        long total = 0;
+        for (var section : sections) {
+            total += section.getBlockChanges();
+        }
+        return total;
+    }
+
+    /**
+     * @param sectionY
+     * @return 指定section的方块更改总数
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    public long getSectionBlockChanges(int sectionY) {
+        return sections[sectionY].getBlockChanges();
+    }
+
     @PowerNukkitDifference(info = "using BlockEntity.close() instead of removeBlockEntity() to solve the bug of incomplete cleanup", since = "1.6.0.0-PNX")
     private void removeInvalidTile(int x, int y, int z) {
         BlockEntity entity = getTile(x, y, z);

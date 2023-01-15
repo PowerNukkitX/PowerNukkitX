@@ -16,7 +16,6 @@ import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.ChunkException;
 import cn.nukkit.utils.collection.ByteArrayWrapper;
 import cn.nukkit.utils.collection.FreezableArrayManager;
-import cn.nukkit.utils.collection.FreezableByteArray;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -282,6 +281,18 @@ public class EmptyChunkSection implements ChunkSection, ChunkSection3DBiome {
     @Override
     public void writeTo(@Nonnull BinaryStream stream) {
         stream.put(EMPTY_CHUNK_DATA);
+    }
+
+    @Since("1.19.50-r4")
+    @Override
+    public long getBlockChanges() {
+        return 0;
+    }
+
+    @Since("1.19.50-r4")
+    @Override
+    public void addBlockChange() {
+
     }
 
     @PowerNukkitOnly

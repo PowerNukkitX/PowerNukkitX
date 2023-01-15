@@ -8,61 +8,18 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.FloatTag;
-import cn.nukkit.nbt.tag.ListTag;
 
 import javax.annotation.Nonnull;
 
 /**
  * 实体生物
+ *
  * @author MagicDroidX (Nukkit Project)
  */
 @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements EntityNameable only in PowerNukkit")
 public abstract class EntityCreature extends EntityLiving implements EntityNameable, EntityAgeable {
-
-    //以下属性涉及到对应的语义接口
-    //若未实现相应接口，对应属性可忽略
-    boolean sitting = false;
-    boolean angry = false;
-    String ownerName;
-    Player owner;
-
-
     public EntityCreature(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
-    }
-
-    @Override
-    protected void initEntity() {
-        super.initEntity();
-
-        //语义接口逻辑
-        if (this instanceof EntityCanSit && this.namedTag.contains("Sitting") && this.namedTag.getBoolean("Sitting")) {
-            this.sitting = true;
-            this.setDataFlag(DATA_FLAGS, DATA_FLAG_SITTING, true);
-        }
-
-        if (this instanceof EntityTamable && this.namedTag.contains("OwnerName")) {
-            this.ownerName = this.namedTag.getString("OwnerName");
-            this.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_TAMED, true);
-        }
-
-        if (this instanceof EntityAngryable && this.namedTag.contains("Angry")) {
-            if (this.namedTag.getBoolean("Angry")) {
-                this.angry = true;
-                this.setDataFlag(DATA_FLAGS, DATA_FLAG_ANGRY, true);
-            }
-        }
-    }
-
-    @Override
-    public void saveNBT() {
-        super.saveNBT();
-
-        //语义接口逻辑
-        if (this instanceof EntityCanSit) this.namedTag.putBoolean("Sitting", sitting);
-        if (this instanceof EntityTamable && this.ownerName != null) this.namedTag.putString("OwnerName", this.ownerName);
-        if (this instanceof EntityAngryable) this.namedTag.putBoolean("Angry", this.angry);
     }
 
     // Armor stands, when implemented, should also check this.

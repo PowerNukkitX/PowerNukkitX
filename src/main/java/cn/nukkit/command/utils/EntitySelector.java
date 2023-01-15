@@ -11,9 +11,8 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.*;
 import cn.nukkit.network.protocol.AddEntityPacket;
-import cn.nukkit.scoreboard.scoreboard.Scoreboard;
-import cn.nukkit.scoreboard.scorer.IScorer;
 import cn.nukkit.scoreboard.scorer.EntityScorer;
+import cn.nukkit.scoreboard.scorer.IScorer;
 import cn.nukkit.scoreboard.scorer.PlayerScorer;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
@@ -69,7 +68,7 @@ public final class EntitySelector {
     private static final Set<String> LEVEL_ARGS = Sets.newHashSet(ARG_X, ARG_Y, ARG_Z, ARG_DX, ARG_DY, ARG_DZ, ARG_RM, ARG_R);
     private static final Predicate<String> VALID_ARGUMENT = arg -> arg != null && ARGS.contains(arg);
 
-    private static Cache<String,Map<String, List<String>>> args_cache = CacheBuilder.newBuilder().maximumSize(65535).expireAfterAccess(1, TimeUnit.MINUTES).build();
+    private static final Cache<String, Map<String, List<String>>> args_cache = CacheBuilder.newBuilder().maximumSize(65535).expireAfterAccess(1, TimeUnit.MINUTES).build();
 
     private static String registerArgument(String arg) {
         ARGS.add(arg);
@@ -113,13 +112,13 @@ public final class EntitySelector {
 
                         if ("s".equalsIgnoreCase(selectorType) || "initiator".equalsIgnoreCase(selectorType)) {
                             Entity entity = null;
-                            if ("s".equalsIgnoreCase(selectorType)){
-                                if (sender.isEntity()){
+                            if ("s".equalsIgnoreCase(selectorType)) {
+                                if (sender.isEntity()) {
                                     entity = sender.asEntity();
                                 }
-                            }else if (sender instanceof NPCCommandSender npcCommandSender){
+                            } else if (sender instanceof NPCCommandSender npcCommandSender) {
                                 entity = npcCommandSender.getInitiator();
-                            }else{
+                            } else {
                                 return Collections.emptyList();
                             }
 
@@ -142,7 +141,7 @@ public final class EntitySelector {
                                 }
 
                                 return Lists.newArrayList(entity);
-                            }else {
+                            } else {
                                 return Collections.emptyList();
                             }
                         }
@@ -180,7 +179,7 @@ public final class EntitySelector {
         for (String type : types) {
             if (type != null) {
                 String identifier = type.startsWith("!") ? type.substring(1) : type;
-                if(!ENTITY_NAME2ID.containsKey(identifier.startsWith("minecraft:") ? identifier : "minecraft:" + identifier)){
+                if (!ENTITY_NAME2ID.containsKey(identifier.startsWith("minecraft:") ? identifier : "minecraft:" + identifier)) {
                     return false;
                 }
             }
@@ -191,7 +190,7 @@ public final class EntitySelector {
 
     private static List<Predicate<Entity>> getTypePredicates(Map<String, List<String>> params, String selectorType) {
         List<String> types = getArgument(params, ARG_TYPE);
-        if (types == null){
+        if (types == null) {
             return Collections.emptyList();
         }
         List<Predicate<Entity>> predicates = Lists.newArrayList();
@@ -216,7 +215,7 @@ public final class EntitySelector {
 
                 predicates.add(entity -> entity != null && (entity instanceof Player && identifier.equals("minecraft:player") || ENTITY_NAME2ID.get(identifier) == entity.getNetworkId()) != inverted);
             } else {
-                if(!selectorType.equals("e") && !selectorType.equals("s")){
+                if (!selectorType.equals("e") && !selectorType.equals("s")) {
                     predicates.add(entity -> entity instanceof Player);
                 }
             }
@@ -382,7 +381,7 @@ public final class EntitySelector {
                     }
                     String finalTag = tag;
                     predicates.add(entity -> entity != null && entity.containTag(finalTag) != inverted);
-                }else{
+                } else {
                     predicates.add(entity -> entity != null && entity.getAllTags().isEmpty());
                 }
             }
@@ -406,7 +405,7 @@ public final class EntitySelector {
         for (String score_part : scores) {
             if (score_part != null) {
                 score_part = score_part.substring(1, score_part.length() - 1);
-                for(String score_entry : SCORE_SEPARATOR.splitToList(score_part)){
+                for (String score_entry : SCORE_SEPARATOR.splitToList(score_part)) {
                     Iterator<String> score_entry_split = SCORE_JOINER.split(score_entry).iterator();
                     String objective = score_entry_split.next();
                     var scoreboard = Server.getInstance().getScoreboardManager().getScoreboard(objective);
@@ -437,29 +436,29 @@ public final class EntitySelector {
                             IScorer scorer;
                             if (entity instanceof Player) {
                                 scorer = new PlayerScorer((Player) entity);
-                            }else{
+                            } else {
                                 scorer = new EntityScorer(entity);
                             }
                             if (scoreboard.getLine(scorer) != null) {
                                 int currentScore = scoreboard.getLine(scorer).getScore();
                                 return (currentScore >= finalMin && currentScore <= finalMax) != inverted;
-                            }else{
+                            } else {
                                 return false;
                             }
                         });
-                    }else{
+                    } else {
                         final int finalScore = Integer.parseInt(score);
                         predicates.add(entity -> {
                             IScorer scorer;
                             if (entity instanceof Player) {
                                 scorer = new PlayerScorer((Player) entity);
-                            }else{
+                            } else {
                                 scorer = new EntityScorer(entity);
                             }
                             if (scoreboard.getLine(scorer) != null) {
                                 int currentScore = scoreboard.getLine(scorer).getScore();
                                 return (currentScore == finalScore) != inverted;
-                            }else{
+                            } else {
                                 return false;
                             }
                         });
@@ -490,7 +489,8 @@ public final class EntitySelector {
 
         List<String> types = getArgument(params, ARG_TYPE);
 
-        if (types != null) types = types.stream().map(type -> type.startsWith("!") ? type.substring(1) : type).collect(Collectors.toList());
+        if (types != null)
+            types = types.stream().map(type -> type.startsWith("!") ? type.substring(1) : type).collect(Collectors.toList());
         ///todo: check what the use of value "types"
 
         boolean playerOnly = !selectorType.equals("e");
@@ -615,9 +615,9 @@ public final class EntitySelector {
 
     private static int getInt(String value, int defaultValue) {
         try {
-            if (value.startsWith("~")){
+            if (value.startsWith("~")) {
                 return defaultValue + Integer.parseInt(value.substring(1));
-            }else {
+            } else {
                 return Integer.parseInt(value);
             }
         } catch (NumberFormatException e) {
@@ -646,7 +646,7 @@ public final class EntitySelector {
     }
 
     private static Map<String, List<String>> getArgumentMap(String inputArguments) throws SelectorSyntaxException {
-        Map<String,  List<String>> args = Maps.newHashMap();
+        Map<String, List<String>> args = Maps.newHashMap();
 
         if (inputArguments != null) {
             for (String arg : separateArguments(inputArguments)) {
@@ -659,7 +659,7 @@ public final class EntitySelector {
 
                 if (!args.containsKey(argName)) {
                     args.put(argName, Lists.newArrayList(iterator.hasNext() ? iterator.next() : ""));
-                }else{
+                } else {
                     args.get(argName).add(iterator.hasNext() ? iterator.next() : "");
                 }
             }
@@ -674,14 +674,14 @@ public final class EntitySelector {
         int start = 0;
 
         for (int i = 0; i < inputArguments.length(); i++) {
-            if(inputArguments.charAt(i) == ',' && !go_on) {
+            if (inputArguments.charAt(i) == ',' && !go_on) {
                 result.add(inputArguments.substring(start, i));
                 start = i + 1;
             }
-            if(inputArguments.charAt(i) == '{') {
+            if (inputArguments.charAt(i) == '{') {
                 go_on = true;
             }
-            if(inputArguments.charAt(i) == '}') {
+            if (inputArguments.charAt(i) == '}') {
                 go_on = false;
                 i++;
                 result.add(inputArguments.substring(start, i));

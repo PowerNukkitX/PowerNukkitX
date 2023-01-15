@@ -9,6 +9,7 @@ import cn.nukkit.entity.passive.EntityAnimal;
 import cn.nukkit.item.Item;
 
 //TODO: 需要进一步抽象
+
 /**
  * 搜索狼最近携带食物的玩家,与{@link NearestFeedingPlayerSensor}相比它特判了Bone.
  * <p>

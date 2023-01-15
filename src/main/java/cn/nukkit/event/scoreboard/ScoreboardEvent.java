@@ -6,7 +6,6 @@ import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.Event;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.scoreboard.scoreboard.IScoreboard;
-import cn.nukkit.scoreboard.scoreboard.Scoreboard;
 import lombok.Getter;
 
 /**

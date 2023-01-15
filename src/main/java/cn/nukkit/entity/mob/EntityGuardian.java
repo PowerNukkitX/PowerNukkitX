@@ -3,13 +3,14 @@ package cn.nukkit.entity.mob;
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.entity.EntitySwimmable;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
  * @author PikyCZ
  */
-public class EntityGuardian extends EntitySwimmingMob {
+public class EntityGuardian extends EntityMob implements EntitySwimmable {
 
     public static final int NETWORK_ID = 49;
 

@@ -42,6 +42,7 @@ public class WardenMeleeAttackExecutor implements EntityControl, IBehaviorExecut
             entity.setMovementSpeed(speed);
         //获取目标位置（这个clone很重要）
         Entity target = entity.getBehaviorGroup().getMemoryStorage().get(memory);
+        if (!target.isAlive()) return false;
         this.coolDown = calCoolDown(entity, target);
         Vector3 clonedTarget = target.clone();
         //更新寻路target

@@ -24,9 +24,9 @@ import java.util.Map;
 @Since("1.6.0.0-PNX")
 public class ExecutorCommandSender implements CommandSender {
 
-    private CommandSender executor;
-    private Entity entity;
-    private Location executeLocation;
+    private final CommandSender executor;
+    private final Entity entity;
+    private final Location executeLocation;
 
     public ExecutorCommandSender(@Nonnull CommandSender executor, @Nullable Entity entity, @Nullable Location executeLocation) {
         if (executor instanceof ExecutorCommandSender executorCommandSender) {

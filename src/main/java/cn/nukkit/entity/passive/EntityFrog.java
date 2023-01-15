@@ -1,9 +1,10 @@
 package cn.nukkit.entity.passive;
 
+import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
-public class EntityFrog extends EntityWalkingAnimal {
+public class EntityFrog extends EntityAnimal implements EntityWalkable {
     public static final int NETWORK_ID = 132;
 
     public EntityFrog(FullChunk chunk, CompoundTag nbt) {

@@ -66,4 +66,5 @@ public abstract class EntityAnimal extends EntityIntelligent {
     protected double getStepHeight() {
         return 0.5;
     }
+
 }

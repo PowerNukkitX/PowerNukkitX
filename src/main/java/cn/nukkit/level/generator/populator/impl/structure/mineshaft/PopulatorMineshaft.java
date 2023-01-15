@@ -1,6 +1,5 @@
 package cn.nukkit.level.generator.populator.impl.structure.mineshaft;
 
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.level.ChunkManager;

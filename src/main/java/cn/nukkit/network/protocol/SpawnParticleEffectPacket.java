@@ -16,7 +16,7 @@ public class SpawnParticleEffectPacket extends DataPacket {
     /**
      * @since v503
      */
-    private Optional<String> molangVariablesJson;
+    public Optional<String> molangVariablesJson = Optional.empty();
 
     @Override
     public byte pid() {
@@ -34,6 +34,7 @@ public class SpawnParticleEffectPacket extends DataPacket {
         this.putEntityUniqueId(uniqueEntityId);
         this.putVector3f(this.position);
         this.putString(this.identifier);
-        this.putBoolean(false);
+        this.putBoolean(molangVariablesJson.isPresent());
+        molangVariablesJson.ifPresent(this::putString);
     }
 }

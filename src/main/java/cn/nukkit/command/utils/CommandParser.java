@@ -44,14 +44,15 @@ public class CommandParser {
     private static final String BLOCK_COORDINATE_PATTERN = "([~^]-?\\d+|-?\\d+|[~^])";//block coordinate part value
 
     //using cache to improve performance
-    private static Cache<String,CommandParser> result_cache = CacheBuilder.newBuilder().maximumSize(65535).expireAfterAccess(1, TimeUnit.MINUTES).build();
-    private static Cache<String,PatternCache> pattern_cache = CacheBuilder.newBuilder().maximumSize(65535).expireAfterAccess(1, TimeUnit.MINUTES).build();
+    private static Cache<String, CommandParser> result_cache = CacheBuilder.newBuilder().maximumSize(65535).expireAfterAccess(1, TimeUnit.MINUTES).build();
+    private static Cache<String, PatternCache> pattern_cache = CacheBuilder.newBuilder().maximumSize(65535).expireAfterAccess(1, TimeUnit.MINUTES).build();
 
-    private record PatternCache(Pattern pattern,int length){}
+    private record PatternCache(Pattern pattern, int length) {
+    }
 
-    private Command command;
-    private CommandSender sender;
-    private String[] args;
+    private final Command command;
+    private final CommandSender sender;
+    private final String[] args;
     private String[] parsedArgs;
     private String matchedCommandForm;
 

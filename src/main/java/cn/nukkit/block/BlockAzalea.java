@@ -9,7 +9,6 @@ import cn.nukkit.blockproperty.value.WoodType;
 import cn.nukkit.event.level.StructureGrowEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.ListChunkManager;
 import cn.nukkit.level.generator.object.BasicGenerator;

@@ -35,7 +35,7 @@ public class RouteFindingManager {
     }
 
     public void submit(@NotNull RouteFindingTask task) {
-        task.setStartTime(Server.getInstance().getNextTick()).setFinished(false);
+        task.setStartTime(Server.getInstance().getNextTick());
         ((ForkJoinPool) pool).submit(task);
     }
 
@@ -76,6 +76,7 @@ public class RouteFindingManager {
     public static class RouteFindingTask extends RecursiveAction {
         private final IRouteFinder routeFinder;
         private final AtomicLong startTime;
+        private final AtomicBoolean started;
         private final AtomicBoolean finished;
         private final FinishCallback onFinish;
         private Vector3 start;
@@ -85,7 +86,8 @@ public class RouteFindingManager {
             this.routeFinder = routeFinder;
             this.onFinish = onFinish;
             this.startTime = new AtomicLong(0);
-            this.finished = new AtomicBoolean(true);
+            this.started = new AtomicBoolean(false);
+            this.finished = new AtomicBoolean(false);
         }
 
         public Vector3 getStart() {
@@ -104,6 +106,17 @@ public class RouteFindingManager {
         public RouteFindingTask setTarget(Vector3 target) {
             this.target = target;
             return this;
+        }
+
+        /**
+         * @return 是否开始寻路
+         */
+        public boolean getStarted() {
+            return started.get();
+        }
+
+        public void setStarted(boolean started) {
+            this.started.set(started);
         }
 
         /**
@@ -128,6 +141,7 @@ public class RouteFindingManager {
 
         @Override
         protected void compute() {
+            setStarted(true);
             routeFinder.setStart(start);
             routeFinder.setTarget(target);
             routeFinder.search();

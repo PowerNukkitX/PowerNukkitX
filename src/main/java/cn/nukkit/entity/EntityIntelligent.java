@@ -7,7 +7,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.entity.ai.EntityAI;
 import cn.nukkit.entity.ai.behaviorgroup.EmptyBehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
-import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.LogicalUtils;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.memory.IMemoryStorage;
@@ -19,26 +18,28 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import lombok.Getter;
-import lombok.Setter;
 
 /**
  * {@code EntityIntelligent}抽象了一个具有行为组{@link IBehaviorGroup}（也就是具有AI）的实体
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-@Getter
-@Setter
 public abstract class EntityIntelligent extends EntityPhysical implements LogicalUtils {
 
     public static final IBehaviorGroup EMPTY_BEHAVIOR_GROUP = new EmptyBehaviorGroup();
 
+    @Since("1.19.50-r4")
+    protected IBehaviorGroup behaviorGroup;
+
     /**
      * 是否为活跃实体，如果实体不活跃，就应当降低AI运行频率
      */
+    @Getter
     protected boolean isActive = true;
 
     public EntityIntelligent(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
+        this.behaviorGroup = requireBehaviorGroup();
         var storage = getMemoryStorage();
         if (storage != null) {
             getMemoryStorage().put(CoreMemoryTypes.ENTITY_SPAWN_TIME, Server.getInstance().getTick());
@@ -56,41 +57,35 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
      *
      * @return 此实体持有的行为组
      */
-
-    @PowerNukkitXOnly
     public IBehaviorGroup getBehaviorGroup() {
+        return behaviorGroup;
+    }
+
+    /**
+     * 请求一个行为组实例，此方法在实体初始化行为组时调用
+     *
+     * @return 新创建的行为组
+     */
+    @Since("1.19.50-r4")
+    protected IBehaviorGroup requireBehaviorGroup() {
         return EMPTY_BEHAVIOR_GROUP;
     }
 
     @Override
-    public boolean onUpdate(int currentTick) {
-        if (!this.isImmobile()) {
-            var behaviorGroup = getBehaviorGroup();
-            behaviorGroup.tickRunningCoreBehaviors(this);
-            behaviorGroup.tickRunningBehaviors(this);
-            behaviorGroup.applyController(this);
-            if (EntityAI.DEBUG) behaviorGroup.debugTick(this);
-        }
-        return super.onUpdate(currentTick);
-    }
-
-    /**
-     * 我们将行为组运行循环的部分工作并行化以提高性能
-     */
-    @Override
     public void asyncPrepare(int currentTick) {
-        if (needsRecalcMovement) { // 每次要重新计算实体运动时，都重新计算一次是否活跃
-            isActive = level.isHighLightChunk(getChunkX(), getChunkZ());
-        }
+        // 计算是否活跃
+        isActive = level.isHighLightChunk(getChunkX(), getChunkZ());
         if (!this.isImmobile()) { // immobile会禁用实体AI
             var behaviorGroup = getBehaviorGroup();
             if (behaviorGroup == null) return;
-            if (needsRecalcMovement) {
-                behaviorGroup.collectSensorData(this);
-                behaviorGroup.evaluateCoreBehaviors(this);
-                behaviorGroup.evaluateBehaviors(this);
-                behaviorGroup.updateRoute(this);
-            }
+            behaviorGroup.collectSensorData(this);
+            behaviorGroup.evaluateCoreBehaviors(this);
+            behaviorGroup.evaluateBehaviors(this);
+            behaviorGroup.tickRunningCoreBehaviors(this);
+            behaviorGroup.tickRunningBehaviors(this);
+            behaviorGroup.updateRoute(this);
+            behaviorGroup.applyController(this);
+            if (EntityAI.checkDebugOption(EntityAI.DebugOption.BEHAVIOR)) behaviorGroup.debugTick(this);
         }
         super.asyncPrepare(currentTick);
     }
@@ -108,7 +103,7 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
 
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
-        if (!EntityAI.DEBUG) {
+        if (!EntityAI.checkDebugOption(EntityAI.DebugOption.MEMORY)) {
             return super.onInteract(player, item, clickedPos);
         } else {
             if (player.isOp() && item.getId() == ItemID.STICK) {
@@ -139,7 +134,6 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
      * 返回实体最大的跳跃高度，返回值会用在移动处理上
      *
      * @return 实体最大跳跃高度
-     * @see WalkController
      */
     public float getJumpingHeight() {
         return 1.0f;

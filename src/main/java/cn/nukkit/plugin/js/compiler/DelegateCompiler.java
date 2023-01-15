@@ -1,8 +1,8 @@
 package cn.nukkit.plugin.js.compiler;
 
 import cn.nukkit.utils.StringUtils;
-import org.objectweb.asm.*;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.*;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.*;

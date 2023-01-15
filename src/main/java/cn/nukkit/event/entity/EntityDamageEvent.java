@@ -10,8 +10,6 @@ import cn.nukkit.item.enchantment.sideeffect.SideEffect;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.EventException;
 import com.google.common.collect.ImmutableMap;
-import lombok.Getter;
-import lombok.Setter;
 
 import javax.annotation.Nonnull;
 import java.util.*;

@@ -3,8 +3,8 @@ package cn.nukkit.entity.mob;
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityAgeable;
+import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
@@ -12,7 +12,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
  * @author Erik Miller | EinBexiii
  */
 @Since("1.3.1.0-PN")
-public class EntityPiglin extends EntityWalkingMob implements EntityAgeable {
+public class EntityPiglin extends EntityMob implements EntityWalkable, EntityAgeable {
 
     public final static int NETWORK_ID = 123;
 

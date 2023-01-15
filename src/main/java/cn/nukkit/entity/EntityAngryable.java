@@ -2,20 +2,23 @@ package cn.nukkit.entity;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.entity.component.impl.EntityAngryComponent;
 
 /**
- * 实体可生气
+ * 可生气实体<p>
  */
 @PowerNukkitXOnly
 @Since("1.19.50-r3")
 public interface EntityAngryable {
     default boolean isAngry() {
-        return ((EntityCreature) this).angry;
+        return getAngryComponent().isAngry();
     }
 
     default void setAngry(boolean angry) {
-        var entity = (EntityCreature) this;
-        entity.angry = angry;
-        entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_ANGRY, angry);
+        getAngryComponent().setAngry(angry);
+    }
+
+    default EntityAngryComponent getAngryComponent() {
+        return ((Entity) this).getComponentGroup().getComponent(EntityAngryComponent.class);
     }
 }

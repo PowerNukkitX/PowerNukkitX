@@ -157,11 +157,11 @@ public class BlockCandleCake extends BlockTransparentMeta {
             getLevel().addSound(this, Sound.FIRE_IGNITE);
             getLevel().setBlock(this, this, true, true);
             return true;
-        } else if (player != null && player.getFoodData().getLevel() < player.getFoodData().getMaxLevel()) {
+        } else if (player != null && (player.getFoodData().getLevel() < player.getFoodData().getMaxLevel() || player.isCreative())) {
             final Block cake = new BlockCake();
             this.getLevel().setBlock(this, cake, true, true);
             this.getLevel().dropItem(this.add(0.5, 0.5, 0.5), getDrops(null)[0]);
-            return this.getLevel().getBlock(this).onActivate(item, player);
+            return this.getLevel().getBlock(this).onActivate(Item.get(0), player);
         }
         return false;
     }

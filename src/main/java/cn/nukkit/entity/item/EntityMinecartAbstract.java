@@ -182,7 +182,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
             // Reverse yaw if yaw is below 0
             if (yawToChange < 0) {
                 // -90-(-90)-(-90) = 90
-                yawToChange -= yawToChange - yawToChange;
+                yawToChange -= 0.0;
             }
 
             setRotation(yawToChange, pitch);
@@ -323,8 +323,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
                 motiveZ *= 1 + entityCollisionReduction;
                 motiveX *= 0.5D;
                 motiveZ *= 0.5D;
-                if (entity instanceof EntityMinecartAbstract) {
-                    EntityMinecartAbstract mine = (EntityMinecartAbstract) entity;
+                if (entity instanceof EntityMinecartAbstract mine) {
                     double desinityX = mine.x - x;
                     double desinityZ = mine.z - z;
                     Vector3 vector = new Vector3(desinityX, 0, desinityZ).normalize();

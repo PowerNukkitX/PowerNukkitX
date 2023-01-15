@@ -20,7 +20,6 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.Utils;
 import lombok.Getter;
@@ -37,19 +36,16 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
     private static final String TAG_MAINHAND = "Mainhand";
     private static final String TAG_OFFHAND = "Offhand";
     private static final String TAG_ARMOR = "Armor";
-
-    @Getter
-    private EntityEquipmentInventory equipmentInventory;
-
-    @Getter
-    private EntityArmorInventory armorInventory;
-
     /**
      * 不同难度下实体空手能造成的伤害.
      * <p>
      * The damage that can be caused by the entity's empty hand at different difficulties.
      */
-    protected float[] diffHandDamage = new float[]{0,0,0};
+    protected float[] diffHandDamage;
+    @Getter
+    private EntityEquipmentInventory equipmentInventory;
+    @Getter
+    private EntityArmorInventory armorInventory;
 
     public EntityMob(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -76,6 +72,15 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
                 this.armorInventory.setItem(armorTag.getByte("Slot"), NBTIO.getItemHelper(armorTag));
             }
         }
+    }
+
+    @Override
+    public boolean onUpdate(int currentTick) {
+        //怪物不能在和平模式下生存
+        if (this.getServer().getDifficulty() == 0) {
+            this.close();
+            return true;
+        } else return super.onUpdate(currentTick);
     }
 
     public void spawnToAll() {
@@ -235,11 +240,6 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
     @Override
     public float[] getDiffHandDamage() {
         return this.diffHandDamage;
-    }
-
-    @Override
-    public float getDiffHandDamage(int difficulty) {
-        return this.diffHandDamage[difficulty - 1];
     }
 
     @Override
