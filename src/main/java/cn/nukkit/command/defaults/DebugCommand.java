@@ -10,9 +10,9 @@ import cn.nukkit.command.tree.ParamTree;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.entity.ai.EntityAI;
 
-import java.util.Map;
-
 import java.util.Arrays;
+import java.util.Locale;
+import java.util.Map;
 
 @PowerNukkitXOnly
 @Since("1.19.50-r1")
@@ -27,34 +27,25 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                 CommandParameter.newEnum("option", Arrays.stream(EntityAI.DebugOption.values()).map(option -> option.name().toLowerCase()).toList().toArray(new String[0])),
                 CommandParameter.newEnum("value", false, CommandEnum.ENUM_BOOLEAN)
         });
+        this.paramTree = new ParamTree(this);
     }
 
+    @Since("1.19.50-r4")
     @Override
-    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        if (!this.testPermission(sender)) {
-            return false;
-        }
-
-        CommandParser parser = new CommandParser(this, sender, args);
-        if (parser.matchCommandForm() == null) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-            return false;
-        }
-
-        try{
-            switch (parser.getMatchedCommandForm()) {
-                case "entity" -> {
-                    parser.parseString();
-                    var option = parser.parseEnum(EntityAI.DebugOption.class);
-                    EntityAI.setDebugOption(option, parser.parseBoolean());
-                    sender.sendMessage("Entity AI framework " + option.name() + " debug mode have been set to: " + EntityAI.checkDebugOption(option));
-                    return true;
-                }
+    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+        var list = result.getValue();
+        switch (result.getKey()) {
+            case "entity" -> {
+                String str = list.getResult(1);
+                var option = EntityAI.DebugOption.valueOf(str.toUpperCase(Locale.ENGLISH));
+                boolean value = list.getResult(2);
+                EntityAI.setDebugOption(option, value);
+                log.addSuccess("Entity AI framework " + option.name() + " debug mode have been set to: " + EntityAI.checkDebugOption(option)).output();
+                return 1;
             }
-        } catch (CommandSyntaxException e) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-            return false;
+            default -> {
+                return 0;
+            }
         }
-        return true;
     }
 }

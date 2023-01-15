@@ -42,20 +42,13 @@ public class GiveCommand extends VanillaCommand {
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
             var list = result.getValue();
 
-            Item item;
-            String itemName = list.getResult(1);
-            try {
-                item = Item.fromString(itemName);
-            } catch (Exception e) {
-                log.addError("commands.generic.usage", "\n" + this.getCommandFormatTips()).output();
-                return 0;
-            }
+            Item item = list.getResult(1);
             if (item.isNull() && item.getId() != 0) {
-                log.addError("commands.give.item.notFound", itemName).output();
+                log.addError("commands.give.item.notFound", item.getName()).output();
                 return 0;
             }
             if (item instanceof ItemBlock && item.getBlock() instanceof BlockUnknown) {
-                log.addError("commands.give.block.notFound", itemName).output();
+                log.addError("commands.give.block.notFound", item.getName()).output();
                 return 0;
             }
             int count;

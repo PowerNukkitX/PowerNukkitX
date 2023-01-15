@@ -110,8 +110,9 @@ public class ParamTree {
                 } else {
                     if (parameter.enumData.equals(CommandEnum.ENUM_BOOLEAN)) {
                         node = new BooleanNode();
-                    } else if (parameter.enumData.equals(CommandEnum.ENUM_ITEM)
-                            || parameter.enumData.equals(CommandEnum.ENUM_BLOCK)
+                    } else if (parameter.enumData.equals(CommandEnum.ENUM_ITEM)) {
+                        node = new ItemNode();
+                    } else if (parameter.enumData.equals(CommandEnum.ENUM_BLOCK)
                             || parameter.enumData.equals(CommandEnum.ENUM_ENTITY)) {
                         node = new StringNode();
                     } else node = new EnumNode();

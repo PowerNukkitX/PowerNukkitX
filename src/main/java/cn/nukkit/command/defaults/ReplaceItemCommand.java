@@ -9,16 +9,18 @@ import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
-import cn.nukkit.command.exceptions.CommandSyntaxException;
-import cn.nukkit.command.utils.CommandParser;
+import cn.nukkit.command.tree.ParamList;
+import cn.nukkit.command.tree.ParamTree;
+import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.inventory.EntityInventoryHolder;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
-import cn.nukkit.lang.TranslationContainer;
-import cn.nukkit.utils.TextFormat;
+import cn.nukkit.level.Position;
 
 import java.util.List;
+import java.util.Map;
+import java.util.StringJoiner;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -83,363 +85,348 @@ public class ReplaceItemCommand extends VanillaCommand {
                 CommandParameter.newType("data", true, CommandParamType.INT),
                 CommandParameter.newType("components", true, CommandParamType.JSON),
         });
+        this.paramTree = new ParamTree(this);
     }
 
+    @Since("1.19.50-r4")
     @Override
-    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        if (!this.testPermission(sender)) {
-            return false;
-        }
-
-        CommandParser parser = new CommandParser(this, sender, args);
-        String form = parser.matchCommandForm();
-        if (form == null) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-            return false;
-        }
-        try {
-            switch (form) {
-                case "entity", "entity-oldItemHandling": {
-                    parser.parseString();
-                    List<Entity> entities = parser.parseTargets().stream().toList();
-                    if (entities.isEmpty()) {
-                        sender.sendMessage(new TranslationContainer("commands.generic.noTargetMatch"));
-                        return false;
-                    }
-                    String slotType = parser.parseString();
-                    int slotId = parser.parseInt();
-                    String oldItemHandling = form.equals("entity") ? "destroy" : parser.parseString();
-                    Item item = Item.fromString(parser.parseString());
-                    item.setCount(1);
-                    if (parser.hasNext()) {
-                        item.setCount(parser.parseInt());
-                    }
-                    if (parser.hasNext()) {
-                        item.setDamage(parser.parseInt());
-                    }
-                    if (parser.hasNext()) {
-                        item.readItemJsonComponents(Item.ItemJsonComponents.fromJson(parser.parseString()));
-                    }
-                    for (Entity entity : entities) {
-                        switch (slotType) {
-                            case "slot.weapon.mainhand" -> {
-                                if (entity instanceof Player player) {
-                                    Item old = player.getInventory().getItemInHand();
-                                    if (oldItemHandling.equals("keep") && !old.isNull()) {
-                                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.keepFailed", slotType, String.valueOf(slotId)));
-                                        return false;
-                                    }
-                                    if (player.getInventory().setItemInHand(item)) {
-                                        sender.sendMessage(new TranslationContainer("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
-
-                                    } else {
-                                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
-                                        return false;
-                                    }
-                                }
-                                if (entity instanceof EntityInventoryHolder entityMob) {
-                                    Item old = entityMob.getEquipmentInventory().getItemInHand();
-                                    if (oldItemHandling.equals("keep") && !old.isNull()) {
-                                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.keepFailed", slotType, String.valueOf(slotId)));
-                                        return false;
-                                    }
-                                    if (entityMob.getEquipmentInventory().setItemInHand(item, true)) {
-                                        sender.sendMessage(new TranslationContainer("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
-
-                                    } else {
-                                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
-                                        return false;
-                                    }
-                                }
-                            }
-                            case "slot.weapon.offhand" -> {
-                                if (entity instanceof Player player) {
-                                    Item old = player.getOffhandInventory().getItem(0);
-                                    if (oldItemHandling.equals("keep") && !old.isNull()) {
-                                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.keepFailed", slotType, String.valueOf(slotId)));
-                                        return false;
-                                    }
-                                    if (player.getOffhandInventory().setItem(0, item)) {
-                                        sender.sendMessage(new TranslationContainer("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
-
-                                    } else {
-                                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
-                                        return false;
-                                    }
-                                }
-                                if (entity instanceof EntityInventoryHolder entityMob) {
-                                    Item old = entityMob.getEquipmentInventory().getItemInOffhand();
-                                    if (oldItemHandling.equals("keep") && !old.isNull()) {
-                                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.keepFailed", slotType, String.valueOf(slotId)));
-                                        return false;
-                                    }
-                                    if (entityMob.getEquipmentInventory().setItemInOffhand(item, true)) {
-                                        sender.sendMessage(new TranslationContainer("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
-
-                                    } else {
-                                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
-                                        return false;
-                                    }
-                                }
-                            }
-                            case "slot.armor.head" -> {
-                                if (entity instanceof Player player) {
-                                    Item old = player.getInventory().getHelmet();
-                                    if (oldItemHandling.equals("keep") && !old.isNull()) {
-                                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.keepFailed", slotType, String.valueOf(slotId)));
-                                        return false;
-                                    }
-                                    if (player.getInventory().setHelmet(item)) {
-                                        sender.sendMessage(new TranslationContainer("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
-
-                                    } else {
-                                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
-                                        return false;
-                                    }
-                                }
-                                if (entity instanceof EntityInventoryHolder entityMob) {
-                                    Item old = entityMob.getHelmet();
-                                    if (oldItemHandling.equals("keep") && !old.isNull()) {
-                                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.keepFailed", slotType, String.valueOf(slotId)));
-                                        return false;
-                                    }
-                                    if (entityMob.setHelmet(item)) {
-                                        sender.sendMessage(new TranslationContainer("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
-
-                                    } else {
-                                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
-                                        return false;
-                                    }
-                                }
-                            }
-                            case "slot.armor.chest" -> {
-                                if (entity instanceof Player player) {
-                                    Item old = player.getInventory().getChestplate();
-                                    if (oldItemHandling.equals("keep") && !old.isNull()) {
-                                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.keepFailed", slotType, String.valueOf(slotId)));
-                                        return false;
-                                    }
-                                    if (player.getInventory().setChestplate(item)) {
-                                        sender.sendMessage(new TranslationContainer("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
-
-                                    } else {
-                                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
-                                        return false;
-                                    }
-                                }
-                                if (entity instanceof EntityInventoryHolder entityMob) {
-                                    Item old = entityMob.getChestplate();
-                                    if (oldItemHandling.equals("keep") && !old.isNull()) {
-                                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.keepFailed", slotType, String.valueOf(slotId)));
-                                        return false;
-                                    }
-                                    if (entityMob.setChestplate(item)) {
-                                        sender.sendMessage(new TranslationContainer("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
-
-                                    } else {
-                                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
-                                        return false;
-                                    }
-                                }
-                            }
-                            case "slot.armor.legs" -> {
-                                if (entity instanceof Player player) {
-                                    Item old = player.getInventory().getLeggings();
-                                    if (oldItemHandling.equals("keep") && !old.isNull()) {
-                                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.keepFailed", slotType, String.valueOf(slotId)));
-                                        return false;
-                                    }
-                                    if (player.getInventory().setLeggings(item)) {
-                                        sender.sendMessage(new TranslationContainer("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
-
-                                    } else {
-                                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
-                                        return false;
-                                    }
-                                }
-                                if (entity instanceof EntityInventoryHolder entityMob) {
-                                    Item old = entityMob.getLeggings();
-                                    if (oldItemHandling.equals("keep") && !old.isNull()) {
-                                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.keepFailed", slotType, String.valueOf(slotId)));
-                                        return false;
-                                    }
-                                    if (entityMob.setLeggings(item)) {
-                                        sender.sendMessage(new TranslationContainer("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
-
-                                    } else {
-                                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
-                                        return false;
-                                    }
-                                }
-                            }
-                            case "slot.armor.feet" -> {
-                                if (entity instanceof Player player) {
-                                    Item old = player.getInventory().getBoots();
-                                    if (oldItemHandling.equals("keep") && !old.isNull()) {
-                                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.keepFailed", slotType, String.valueOf(slotId)));
-                                        return false;
-                                    }
-                                    if (player.getInventory().setBoots(item)) {
-                                        sender.sendMessage(new TranslationContainer("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
-
-                                    } else {
-                                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
-                                        return false;
-                                    }
-                                }
-                                if (entity instanceof EntityInventoryHolder entityMob) {
-                                    Item old = entityMob.getBoots();
-                                    if (oldItemHandling.equals("keep") && !old.isNull()) {
-                                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.keepFailed", slotType, String.valueOf(slotId)));
-                                        return false;
-                                    }
-                                    if (entityMob.setBoots(item)) {
-                                        sender.sendMessage(new TranslationContainer("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
-
-                                    } else {
-                                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
-                                        return false;
-                                    }
-                                }
-                            }
-                            case "slot.enderchest" -> {
-                                if (slotId < 0 || slotId >= 27) {
-                                    sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.badSlotNumber", slotType, "0", "26"));
-                                    return false;
-                                }
-                                if (entity instanceof Player player) {
-                                    Item old = player.getEnderChestInventory().getItem(slotId);
-                                    if (oldItemHandling.equals("keep") && !old.isNull()) {
-                                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.keepFailed", slotType, String.valueOf(slotId)));
-                                        return false;
-                                    }
-                                    if (player.getEnderChestInventory().setItem(slotId, item)) {
-                                        sender.sendMessage(new TranslationContainer("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
-
-                                    } else {
-                                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
-                                        return false;
-                                    }
-                                } else {
-                                    sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.failed", slotType, "0", String.valueOf(item.getCount()), item.getName()));
-                                    return false;
-                                }
-                            }
-                            case "slot.hotbar" -> {
-                                if (slotId < 0 || slotId >= 9) {
-                                    sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.badSlotNumber", slotType, "0", "8"));
-                                    return false;
-                                }
-                                if (entity instanceof Player player) {
-                                    Item old = player.getInventory().getItem(slotId);
-                                    if (oldItemHandling.equals("keep") && !old.isNull()) {
-                                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.keepFailed", slotType, String.valueOf(slotId)));
-                                        return false;
-                                    }
-                                    if (player.getInventory().setItem(slotId, item)) {
-                                        sender.sendMessage(new TranslationContainer("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
-
-                                    } else {
-                                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
-                                        return false;
-                                    }
-                                } else {
-                                    sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.failed", slotType, "0", String.valueOf(item.getCount()), item.getName()));
-                                    return false;
-                                }
-                            }
-                            case "slot.inventory" -> {
-                                if (entity instanceof Player player) {
-                                    Item old = player.getInventory().getItem(slotId);
-                                    if (oldItemHandling.equals("keep") && !old.isNull()) {
-                                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.keepFailed", slotType, String.valueOf(slotId)));
-                                        return false;
-                                    }
-                                    if (slotId < 0 || slotId >= player.getInventory().getSize()) {
-                                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.badSlotNumber", slotType, "0", String.valueOf(player.getInventory().getSize())));
-                                        return false;
-                                    }
-                                    if (player.getInventory().setItem(slotId, item)) {
-                                        sender.sendMessage(new TranslationContainer("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
-
-                                    } else {
-                                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.failed", slotType, "0", String.valueOf(item.getCount()), item.getName()));
-                                        return false;
-                                    }
-                                }
-                                if (entity instanceof EntityInventoryHolder entityMob) {
-                                    Item old = entityMob.getInventory().getItem(slotId);
-                                    if (oldItemHandling.equals("keep") && !old.isNull()) {
-                                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.keepFailed", slotType, String.valueOf(slotId)));
-                                        return false;
-                                    }
-                                    if (slotId < 0 || slotId >= entityMob.getInventory().getSize()) {
-                                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.badSlotNumber", slotType, "0", String.valueOf(entityMob.getInventory().getSize())));
-                                        return false;
-                                    }
-                                    if (entityMob.getInventory().setItem(slotId, item)) {
-                                        sender.sendMessage(new TranslationContainer("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
-
-                                    } else {
-                                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.failed", slotType, "0", String.valueOf(item.getCount()), item.getName()));
-                                        return false;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                break;
-                case "block", "block-oldItemHandling": {
-                    parser.parseString();
-                    Block block = parser.parsePosition().getLevelBlock();
-                    InventoryHolder holder = null;
-                    boolean isHolder = false;
-                    if (block instanceof BlockEntityHolder<?> h) {
-                        if (h.getBlockEntity() instanceof InventoryHolder ct) {
-                            holder = ct;
-                            isHolder = true;
-                        }
-                    }
-                    if (!isHolder) {
-                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.noContainer", block.asBlockVector3().toString()));
-                        return false;
-                    }
-                    parser.parseString();
-                    int slotId = parser.parseInt();
-                    if (slotId < 0 || slotId >= holder.getInventory().getSize()) {
-                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.badSlotNumber", "slot.container", "0", String.valueOf(holder.getInventory().getSize() - 1)));
-                        return false;
-                    }
-                    String oldItemHandling = form.equals("block") ? "destroy" : parser.parseString();
-                    Item old = holder.getInventory().getItem(slotId);
-                    if (oldItemHandling.equals("keep") && !old.isNull()) {
-                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.keepFailed", "slot.container", String.valueOf(slotId)));
-                        return false;
-                    }
-                    Item item = Item.fromString(parser.parseString());
-                    item.setCount(1);
-                    if (parser.hasNext()) {
-                        item.setCount(parser.parseInt());
-                    }
-                    if (parser.hasNext()) {
-                        item.setDamage(parser.parseInt());
-                    }
-                    if (parser.hasNext()) {
-                        item.readItemJsonComponents(Item.ItemJsonComponents.fromJson(parser.parseString()));
-                    }
-                    if (holder.getInventory().setItem(slotId, item)) {
-                        sender.sendMessage(new TranslationContainer("commands.replaceitem.success", "slot.container", String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
-                    } else {
-                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.failed", "slot.container", String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
-                        return false;
-                    }
-                }
-                break;
+    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+        var list = result.getValue();
+        switch (result.getKey()) {
+            case "entity", "entity-oldItemHandling" -> {
+                return entity(sender, result.getKey(), list, log);
             }
-        } catch (CommandSyntaxException e) {
-            e.printStackTrace();
+            case "block", "block-oldItemHandling" -> {
+                Position pos = list.getResult(1);
+                Block block = pos.getLevelBlock();
+                InventoryHolder holder = null;
+                boolean isHolder = false;
+                if (block instanceof BlockEntityHolder<?> h) {
+                    if (h.getBlockEntity() instanceof InventoryHolder ct) {
+                        holder = ct;
+                        isHolder = true;
+                    }
+                }
+                if (!isHolder) {
+                    log.addError("commands.replaceitem.noContainer", block.asBlockVector3().toString()).output();
+                    return 0;
+                }
+                int slotId = list.getResult(3);
+                if (slotId < 0 || slotId >= holder.getInventory().getSize()) {
+                    log.addError("commands.replaceitem.badSlotNumber", "slot.container", "0", String.valueOf(holder.getInventory().getSize() - 1)).output();
+                    return 0;
+                }
+                String oldItemHandling = result.getKey().equals("block") ? "destroy" : list.getResult(4);
+                Item old = holder.getInventory().getItem(slotId);
+                if (oldItemHandling.equals("keep") && !old.isNull()) {
+                    log.addError("commands.replaceitem.keepFailed", "slot.container", String.valueOf(slotId)).output();
+                    return 0;
+                }
+                Item item = list.getResult(5);
+                item.setCount(1);
+                if (list.hasResult(6)) {
+                    int count = list.getResult(6);
+                    item.setCount(count);
+                }
+                if (list.hasResult(7)) {
+                    int data = list.getResult(7);
+                    item.setDamage(data);
+                }
+                if (list.hasResult(8)) {
+                    String[] components = list.getResult(8);
+                    StringJoiner join = new StringJoiner("");
+                    for (var c : components) join.add(c);
+                    item.readItemJsonComponents(Item.ItemJsonComponents.fromJson(join.toString()));
+                }
+                if (holder.getInventory().setItem(slotId, item)) {
+                    log.addSuccess("commands.replaceitem.success", "slot.container", String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()).output();
+                    return 1;
+                } else {
+                    log.addError("commands.replaceitem.failed", "slot.container", String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()).output();
+                    return 0;
+                }
+            }
+            default -> {
+                return 0;
+            }
         }
-        return true;
+    }
+
+
+    private int entity(CommandSender sender, String key, ParamList list, CommandLogger log) {
+        List<Entity> entities = list.getResult(1);
+        String slotType = list.getResult(2);
+        int slotId = list.getResult(3);
+        String oldItemHandling = key.equals("entity") ? "destroy" : list.getResult(4);
+        Item item = list.getResult(5);
+        item.setCount(1);
+        if (list.hasResult(6)) {
+            int amount = list.getResult(6);
+            item.setCount(amount);
+        }
+        if (list.hasResult(7)) {
+            int data = list.getResult(7);
+            item.setDamage(data);
+        }
+        if (list.hasResult(8)) {
+            String[] components = list.getResult(8);
+            StringJoiner join = new StringJoiner("");
+            for (var c : components) join.add(c);
+            item.readItemJsonComponents(Item.ItemJsonComponents.fromJson(join.toString()));
+        }
+        int successCount = 0;
+        for (Entity entity : entities) {
+            switch (slotType) {
+                case "slot.weapon.mainhand" -> {
+                    if (entity instanceof Player player) {
+                        Item old = player.getInventory().getItemInHand();
+                        if (oldItemHandling.equals("keep") && !old.isNull()) {
+                            log.addError("commands.replaceitem.keepFailed", slotType, String.valueOf(slotId));
+                            continue;
+                        }
+                        if (player.getInventory().setItemInHand(item)) {
+                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            successCount++;
+                        } else {
+                            log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                        }
+                    } else if (entity instanceof EntityInventoryHolder entityMob) {
+                        Item old = entityMob.getEquipmentInventory().getItemInHand();
+                        if (oldItemHandling.equals("keep") && !old.isNull()) {
+                            log.addError("commands.replaceitem.keepFailed", slotType, String.valueOf(slotId));
+                            continue;
+                        }
+                        if (entityMob.getEquipmentInventory().setItemInHand(item, true)) {
+                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            successCount++;
+                        } else {
+                            log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                        }
+                    }
+                }
+                case "slot.weapon.offhand" -> {
+                    if (entity instanceof Player player) {
+                        Item old = player.getOffhandInventory().getItem(0);
+                        if (oldItemHandling.equals("keep") && !old.isNull()) {
+                            log.addError("commands.replaceitem.keepFailed", slotType, String.valueOf(slotId));
+                            continue;
+                        }
+                        if (player.getOffhandInventory().setItem(0, item)) {
+                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            successCount++;
+                        } else {
+                            log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                        }
+                    } else if (entity instanceof EntityInventoryHolder entityMob) {
+                        Item old = entityMob.getEquipmentInventory().getItemInOffhand();
+                        if (oldItemHandling.equals("keep") && !old.isNull()) {
+                            log.addError("commands.replaceitem.keepFailed", slotType, String.valueOf(slotId));
+                            continue;
+                        }
+                        if (entityMob.getEquipmentInventory().setItemInOffhand(item, true)) {
+                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            successCount++;
+                        } else {
+                            log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                        }
+                    }
+                }
+                case "slot.armor.head" -> {
+                    if (entity instanceof Player player) {
+                        Item old = player.getInventory().getHelmet();
+                        if (oldItemHandling.equals("keep") && !old.isNull()) {
+                            log.addError("commands.replaceitem.keepFailed", slotType, String.valueOf(slotId));
+                            continue;
+                        }
+                        if (player.getInventory().setHelmet(item)) {
+                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            successCount++;
+                        } else {
+                            log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            continue;
+                        }
+                    }
+                    if (entity instanceof EntityInventoryHolder entityMob) {
+                        Item old = entityMob.getHelmet();
+                        if (oldItemHandling.equals("keep") && !old.isNull()) {
+                            log.addError("commands.replaceitem.keepFailed", slotType, String.valueOf(slotId));
+                            continue;
+                        }
+                        if (entityMob.setHelmet(item)) {
+                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            successCount++;
+                        } else {
+                            log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                        }
+                    }
+                }
+                case "slot.armor.chest" -> {
+                    if (entity instanceof Player player) {
+                        Item old = player.getInventory().getChestplate();
+                        if (oldItemHandling.equals("keep") && !old.isNull()) {
+                            log.addError("commands.replaceitem.keepFailed", slotType, String.valueOf(slotId));
+                            continue;
+                        }
+                        if (player.getInventory().setChestplate(item)) {
+                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            successCount++;
+                        } else {
+                            log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            continue;
+                        }
+                    }
+                    if (entity instanceof EntityInventoryHolder entityMob) {
+                        Item old = entityMob.getChestplate();
+                        if (oldItemHandling.equals("keep") && !old.isNull()) {
+                            log.addError("commands.replaceitem.keepFailed", slotType, String.valueOf(slotId));
+                            continue;
+                        }
+                        if (entityMob.setChestplate(item)) {
+                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            successCount++;
+                        } else {
+                            log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                        }
+                    }
+                }
+                case "slot.armor.legs" -> {
+                    if (entity instanceof Player player) {
+                        Item old = player.getInventory().getLeggings();
+                        if (oldItemHandling.equals("keep") && !old.isNull()) {
+                            log.addError("commands.replaceitem.keepFailed", slotType, String.valueOf(slotId));
+                            continue;
+                        }
+                        if (player.getInventory().setLeggings(item)) {
+                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            successCount++;
+                        } else {
+                            log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            continue;
+                        }
+                    }
+                    if (entity instanceof EntityInventoryHolder entityMob) {
+                        Item old = entityMob.getLeggings();
+                        if (oldItemHandling.equals("keep") && !old.isNull()) {
+                            log.addError("commands.replaceitem.keepFailed", slotType, String.valueOf(slotId));
+                            continue;
+                        }
+                        if (entityMob.setLeggings(item)) {
+                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            successCount++;
+                        } else {
+                            log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                        }
+                    }
+                }
+                case "slot.armor.feet" -> {
+                    if (entity instanceof Player player) {
+                        Item old = player.getInventory().getBoots();
+                        if (oldItemHandling.equals("keep") && !old.isNull()) {
+                            log.addError("commands.replaceitem.keepFailed", slotType, String.valueOf(slotId));
+                            continue;
+                        }
+                        if (player.getInventory().setBoots(item)) {
+                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            successCount++;
+                        } else {
+                            log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            continue;
+                        }
+                    }
+                    if (entity instanceof EntityInventoryHolder entityMob) {
+                        Item old = entityMob.getBoots();
+                        if (oldItemHandling.equals("keep") && !old.isNull()) {
+                            log.addError("commands.replaceitem.keepFailed", slotType, String.valueOf(slotId));
+                            continue;
+                        }
+                        if (entityMob.setBoots(item)) {
+                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            successCount++;
+                        } else {
+                            log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                        }
+                    }
+                }
+                case "slot.enderchest" -> {
+                    if (slotId < 0 || slotId >= 27) {
+                        log.addError("commands.replaceitem.badSlotNumber", slotType, "0", "26");
+                        continue;
+                    }
+                    if (entity instanceof Player player) {
+                        Item old = player.getEnderChestInventory().getItem(slotId);
+                        if (oldItemHandling.equals("keep") && !old.isNull()) {
+                            log.addError("commands.replaceitem.keepFailed", slotType, String.valueOf(slotId));
+                            continue;
+                        }
+                        if (player.getEnderChestInventory().setItem(slotId, item)) {
+                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            successCount++;
+                        } else {
+                            log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                        }
+                    } else {
+                        log.addError("commands.replaceitem.failed", slotType, "0", String.valueOf(item.getCount()), item.getName());
+                    }
+                }
+                case "slot.hotbar" -> {
+                    if (slotId < 0 || slotId >= 9) {
+                        log.addError("commands.replaceitem.badSlotNumber", slotType, "0", "8");
+                        continue;
+                    }
+                    if (entity instanceof Player player) {
+                        Item old = player.getInventory().getItem(slotId);
+                        if (oldItemHandling.equals("keep") && !old.isNull()) {
+                            log.addError("commands.replaceitem.keepFailed", slotType, String.valueOf(slotId));
+                            continue;
+                        }
+                        if (player.getInventory().setItem(slotId, item)) {
+                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            successCount++;
+                        } else {
+                            log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                        }
+                    } else {
+                        log.addError("commands.replaceitem.failed", slotType, "0", String.valueOf(item.getCount()), item.getName());
+                    }
+                }
+                case "slot.inventory" -> {
+                    if (entity instanceof Player player) {
+                        Item old = player.getInventory().getItem(slotId);
+                        if (oldItemHandling.equals("keep") && !old.isNull()) {
+                            log.addError("commands.replaceitem.keepFailed", slotType, String.valueOf(slotId));
+                            continue;
+                        }
+                        if (slotId < 0 || slotId >= player.getInventory().getSize()) {
+                            log.addError("commands.replaceitem.badSlotNumber", slotType, "0", String.valueOf(player.getInventory().getSize()));
+                            continue;
+                        }
+                        if (player.getInventory().setItem(slotId, item)) {
+                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            successCount++;
+                        } else {
+                            log.addError("commands.replaceitem.failed", slotType, "0", String.valueOf(item.getCount()), item.getName());
+                        }
+                    } else if (entity instanceof EntityInventoryHolder entityMob) {
+                        Item old = entityMob.getInventory().getItem(slotId);
+                        if (oldItemHandling.equals("keep") && !old.isNull()) {
+                            log.addError("commands.replaceitem.keepFailed", slotType, String.valueOf(slotId));
+                            continue;
+                        }
+                        if (slotId < 0 || slotId >= entityMob.getInventory().getSize()) {
+                            log.addError("commands.replaceitem.badSlotNumber", slotType, "0", String.valueOf(entityMob.getInventory().getSize()));
+                            continue;
+                        }
+                        if (entityMob.getInventory().setItem(slotId, item)) {
+                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            successCount++;
+                        } else {
+                            log.addError("commands.replaceitem.failed", slotType, "0", String.valueOf(item.getCount()), item.getName());
+                        }
+                    }
+                }
+            }
+        }
+        log.successCount(successCount).output();
+        return successCount;
     }
 }

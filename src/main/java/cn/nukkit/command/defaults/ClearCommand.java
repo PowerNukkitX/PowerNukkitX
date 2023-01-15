@@ -44,7 +44,7 @@ public class ClearCommand extends VanillaCommand {
             if (list.hasResult(0)) {
                 targets = list.getResult(1);
                 if (list.hasResult(1)) {
-                    String itemName = list.getResult(1);
+                    item = list.getResult(1);
                     int data = -1;
                     if (list.hasResult(2)) {
                         data = list.getResult(2);
@@ -52,10 +52,7 @@ public class ClearCommand extends VanillaCommand {
                             maxCount = list.getResult(3);
                         }
                     }
-
-                    itemName = itemName + ":" + data;
-
-                    item = Item.fromString(itemName);
+                    item.setDamage(data);
                 }
             }
 

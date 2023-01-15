@@ -1,8 +1,12 @@
 package cn.nukkit.command.defaults;
 
+import cn.nukkit.api.Since;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
-import cn.nukkit.lang.TranslationContainer;
+import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.command.tree.ParamList;
+import cn.nukkit.command.tree.ParamTree;
+import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.utils.TextFormat;
 
@@ -22,19 +26,18 @@ public class PluginsCommand extends Command implements CoreCommand {
         );
         this.setPermission("nukkit.command.plugins");
         this.commandParameters.clear();
+        this.commandParameters.put("default", CommandParameter.EMPTY_ARRAY);
+        this.paramTree = new ParamTree(this);
     }
 
+    @Since("1.19.50-r4")
     @Override
-    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        if (!this.testPermission(sender)) {
-            return true;
-        }
-
-        this.sendPluginList(sender);
-        return true;
+    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+        this.sendPluginList(sender, log);
+        return 1;
     }
 
-    private void sendPluginList(CommandSender sender) {
+    private void sendPluginList(CommandSender sender, CommandLogger log) {
         StringBuilder list = new StringBuilder();
         Map<String, Plugin> plugins = sender.getServer().getPluginManager().getPlugins();
         for (Plugin plugin : plugins.values()) {
@@ -44,7 +47,6 @@ public class PluginsCommand extends Command implements CoreCommand {
             list.append(plugin.isEnabled() ? TextFormat.GREEN : TextFormat.RED);
             list.append(plugin.getDescription().getFullName());
         }
-
-        sender.sendMessage(new TranslationContainer("nukkit.command.plugins.success", String.valueOf(plugins.size()), list.toString()));
+        log.addMessage("nukkit.command.plugins.success", String.valueOf(plugins.size()), list.toString()).output();
     }
 }
