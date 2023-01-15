@@ -5,8 +5,8 @@ import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.EntityTamable;
+import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
 

@@ -10,8 +10,8 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
-import cn.nukkit.math.Vector3;
 import cn.nukkit.math.BVector3;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.types.PlayerAbility;
 import cn.nukkit.utils.TextFormat;
 

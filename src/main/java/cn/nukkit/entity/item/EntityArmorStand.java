@@ -444,10 +444,8 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
             return true;
         }
 
-        if (source instanceof EntityDamageByEntityEvent) {
-            EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) source;
-            if (event.getDamager() instanceof Player) {
-                Player player = (Player) event.getDamager();
+        if (source instanceof EntityDamageByEntityEvent event) {
+            if (event.getDamager() instanceof Player player) {
                 if (player.isCreative()) {
                     this.level.addParticle(new DestroyBlockParticle(this, Block.get(BlockID.PLANKS)));
                     this.close();

@@ -2,9 +2,11 @@ package cn.nukkit.entity.passive;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.entity.EntitySwimmable;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
+import cn.nukkit.entity.ai.controller.DiveController;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.SpaceMoveController;
 import cn.nukkit.entity.ai.executor.SpaceRandomRoamExecutor;
@@ -20,9 +22,7 @@ import java.util.Set;
  */
 @PowerNukkitXOnly
 @Since("1.19.50-r4")
-public abstract class EntityFish extends EntitySwimmingAnimal{
-
-    protected IBehaviorGroup behaviorGroup;
+public abstract class EntityFish extends EntityAnimal implements EntitySwimmable {
 
     public EntityFish(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -30,21 +30,18 @@ public abstract class EntityFish extends EntitySwimmingAnimal{
 
     //移除搁浅音效很不对味
     @Override
-    public IBehaviorGroup getBehaviorGroup() {
-        if (behaviorGroup == null) {
-            behaviorGroup = new BehaviorGroup(
-                    this.tickSpread,
-                    Set.of(),
-                    Set.of(
-                            new Behavior(
-                                    new SpaceRandomRoamExecutor(0.2f, 12, 1, 80, false, -1, false, 10),
-                                    entity -> true, 1)
-                    ),
-                    Set.of(),
-                    Set.of(new SpaceMoveController(), new LookController(true, true)),
-                    new SimpleSpaceAStarRouteFinder(new SwimmingPosEvaluator(), this)
-            );
-        }
-        return behaviorGroup;
+    public IBehaviorGroup requireBehaviorGroup() {
+        return new BehaviorGroup(
+                this.tickSpread,
+                Set.of(),
+                Set.of(
+                        new Behavior(
+                                new SpaceRandomRoamExecutor(0.36f, 12, 1, 80, false, -1, false, 10),
+                                entity -> true, 1)
+                ),
+                Set.of(),
+                Set.of(new SpaceMoveController(), new LookController(true, true), new DiveController()),
+                new SimpleSpaceAStarRouteFinder(new SwimmingPosEvaluator(), this)
+        );
     }
 }

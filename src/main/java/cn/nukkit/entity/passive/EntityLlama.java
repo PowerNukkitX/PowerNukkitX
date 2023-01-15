@@ -2,13 +2,14 @@ package cn.nukkit.entity.passive;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
  * @author PikyCZ
  */
-public class EntityLlama extends EntityWalkingAnimal {
+public class EntityLlama extends EntityAnimal implements EntityWalkable {
 
     public static final int NETWORK_ID = 29;
 

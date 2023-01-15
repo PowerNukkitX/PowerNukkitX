@@ -9,11 +9,9 @@ package cn.nukkit.utils.collection;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.ref.Reference;
-import java.lang.ref.WeakReference;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 /**
  * <p>

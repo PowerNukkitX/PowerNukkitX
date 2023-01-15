@@ -24,6 +24,9 @@ public interface CoreMemoryTypes {
     MemoryType<Vector3> MOVE_DIRECTION_END = new MemoryType<>("minecraft:move_direction_end");
     MemoryType<Boolean> SHOULD_UPDATE_MOVE_DIRECTION = new MemoryType<>("minecraft:should_update_move_direction", false);
     MemoryType<Boolean> ENABLE_PITCH = new MemoryType<>("minecraft:enable_pitch", true);
+
+    MemoryType<Boolean> ENABLE_LIFT_FORCE = new MemoryType<>("minecraft:enable_lift_force", true);
+    MemoryType<Boolean> ENABLE_DIVE_FORCE = new MemoryType<>("minecraft:enable_dive_force", true);
     //以下这两个暂时未使用到
 //    MemoryType<Boolean> ENABLE_YAW = new MemoryType<>("minecraft:enable_yaw", true);
 //    MemoryType<Boolean> ENABLE_HEAD_YAW = new MemoryType<>("minecraft:enable_head_yaw", true);

@@ -1463,13 +1463,28 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return ItemTool.TYPE_NONE;
     }
 
+    public static final double DEFAULT_FRICTION_FACTOR = 0.6;
+
     /**
-     * 控制方块的摩擦因素
+     * 控制方块的摩擦因素。此值越小阻力越大
      *
      * @return 方块的摩擦因素 (0-1)
      */
     public double getFrictionFactor() {
-        return 0.6;
+        return DEFAULT_FRICTION_FACTOR;
+    }
+
+    public static final double DEFAULT_AIR_FLUID_FRICTION = 0.95;
+
+    /**
+     * 控制方块的通过阻力因素（0-1）。此值越小阻力越大<p/>
+     * 对于不可穿过的方块，若未覆写，此值始终为1（无效）<p/>
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    public double getPassableBlockFrictionFactor() {
+        if (!this.canPassThrough()) return 1;
+        return DEFAULT_AIR_FLUID_FRICTION;
     }
 
     /**

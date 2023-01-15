@@ -14,7 +14,6 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.VectorMath;
 import cn.nukkit.network.protocol.SpawnParticleEffectPacket;
-import cn.nukkit.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
@@ -44,8 +43,6 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
 
     protected EntityIntelligent entity;
 
-    protected Level level;
-
     protected Vector3 start;
 
     protected Vector3 target;
@@ -69,7 +66,6 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
     public SimpleFlatAStarRouteFinder(IPosEvaluator blockEvaluator, EntityIntelligent entity) {
         super(blockEvaluator);
         this.entity = entity;
-        this.level = entity.level;
     }
 
     @Override
@@ -159,7 +155,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
         //写入结果
         this.addNode(findingPath);
 
-        if (EntityAI.DEBUG) {
+        if (EntityAI.checkDebugOption(EntityAI.DebugOption.ROUTE)) {
             findingPath.forEach(node -> {
                 sendParticle("minecraft:balloon_gas_particle", node.getVector3(), Server.getInstance().getOnlinePlayers().values().toArray(Player.EMPTY_ARRAY));
             });
@@ -177,13 +173,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
         packet.identifier = identifier;
         packet.dimensionId = this.entity.level.getDimension();
         packet.position = pos.asVector3f();
-        Arrays.stream(showPlayers).forEach(player -> {
-            if (!player.isOnline())
-                return;
-            try {
-                player.dataPacket(packet);
-            } catch (Throwable ignore) {}
-        });
+        Server.broadcastPacket(showPlayers, packet);
     }
 
     /**
@@ -211,7 +201,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
 
         if ((offsetY = getAvailableHorizontalOffset(vector3)) != -384) {
             if (Math.abs(offsetY) > 0.25) {
-                Vector3 vec = vector3.add(1, offsetY, 0);
+                Vector3 vec = vector3.add(0, offsetY, 0);
                 if (!existInCloseList(vec)) {
                     Node nodeNear = getOpenNode(vec);
                     if (nodeNear == null) {
@@ -230,7 +220,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
         if (E = ((offsetY = getAvailableHorizontalOffset(vector3.add(1, 0, 0))) != -384)) {
             Vector3 vec = vector3.add(1, offsetY, 0);
             if (!existInCloseList(vec)) {
-                var cost = getBlockMoveCostAt(level, vec) + DIRECT_MOVE_COST + node.getG();
+                var cost = getBlockMoveCostAt(entity.level, vec) + DIRECT_MOVE_COST + node.getG();
                 Node nodeNear = getOpenNode(vec);
                 if (nodeNear == null) {
                     this.openList.offer(new Node(vec, node, cost, calH(vec, target)));
@@ -247,7 +237,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
         if (S = ((offsetY = getAvailableHorizontalOffset(vector3.add(0, 0, 1))) != -384)) {
             Vector3 vec = vector3.add(0, offsetY, 1);
             if (!existInCloseList(vec)) {
-                var cost = getBlockMoveCostAt(level, vec) + DIRECT_MOVE_COST + node.getG();
+                var cost = getBlockMoveCostAt(entity.level, vec) + DIRECT_MOVE_COST + node.getG();
                 Node nodeNear = getOpenNode(vec);
                 if (nodeNear == null) {
                     this.openList.offer(new Node(vec, node, cost, calH(vec, target)));
@@ -264,7 +254,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
         if (W = ((offsetY = getAvailableHorizontalOffset(vector3.add(-1, 0, 0))) != -384)) {
             Vector3 vec = vector3.add(-1, offsetY, 0);
             if (!existInCloseList(vec)) {
-                var cost = getBlockMoveCostAt(level, vec) + DIRECT_MOVE_COST + node.getG();
+                var cost = getBlockMoveCostAt(entity.level, vec) + DIRECT_MOVE_COST + node.getG();
                 Node nodeNear = getOpenNode(vec);
                 if (nodeNear == null) {
                     this.openList.offer(new Node(vec, node, cost, calH(vec, target)));
@@ -281,7 +271,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
         if (N = ((offsetY = getAvailableHorizontalOffset(vector3.add(0, 0, -1))) != -384)) {
             Vector3 vec = vector3.add(0, offsetY, -1);
             if (!existInCloseList(vec)) {
-                var cost = getBlockMoveCostAt(level, vec) + DIRECT_MOVE_COST + node.getG();
+                var cost = getBlockMoveCostAt(entity.level, vec) + DIRECT_MOVE_COST + node.getG();
                 Node nodeNear = getOpenNode(vec);
                 if (nodeNear == null) {
                     this.openList.offer(new Node(vec, node, cost, calH(vec, target)));
@@ -300,7 +290,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
         if (N && E && (((offsetY = getAvailableHorizontalOffset(vector3.add(1, 0, -1))) == 0) || (offsetY != -384 && entity.isTouchingWater()))) {
             Vector3 vec = vector3.add(1, offsetY, -1);
             if (!existInCloseList(vec)) {
-                var cost = getBlockMoveCostAt(level, vec) + OBLIQUE_MOVE_COST + node.getG();
+                var cost = getBlockMoveCostAt(entity.level, vec) + OBLIQUE_MOVE_COST + node.getG();
                 Node nodeNear = getOpenNode(vec);
                 if (nodeNear == null) {
                     this.openList.offer(new Node(vec, node, cost, calH(vec, target)));
@@ -317,7 +307,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
         if (E && S && (((offsetY = getAvailableHorizontalOffset(vector3.add(1, 0, 1))) == 0) || (offsetY != -384 && entity.isTouchingWater()))) {
             Vector3 vec = vector3.add(1, offsetY, 1);
             if (!existInCloseList(vec)) {
-                var cost = getBlockMoveCostAt(level, vec) + OBLIQUE_MOVE_COST + node.getG();
+                var cost = getBlockMoveCostAt(entity.level, vec) + OBLIQUE_MOVE_COST + node.getG();
                 Node nodeNear = getOpenNode(vec);
                 if (nodeNear == null) {
                     this.openList.offer(new Node(vec, node, cost, calH(vec, target)));
@@ -334,7 +324,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
         if (W && S && (((offsetY = getAvailableHorizontalOffset(vector3.add(-1, 0, 1))) == 0) || (offsetY != -384 && entity.isTouchingWater()))) {
             Vector3 vec = vector3.add(-1, offsetY, 1);
             if (!existInCloseList(vec)) {
-                var cost = getBlockMoveCostAt(level, vec) + OBLIQUE_MOVE_COST + node.getG();
+                var cost = getBlockMoveCostAt(entity.level, vec) + OBLIQUE_MOVE_COST + node.getG();
                 Node nodeNear = getOpenNode(vec);
                 if (nodeNear == null) {
                     this.openList.offer(new Node(vec, node, cost, calH(vec, target)));
@@ -351,7 +341,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
         if (W && N && (((offsetY = getAvailableHorizontalOffset(vector3.add(-1, 0, -1))) == 0) || (offsetY != -384 && entity.isTouchingWater()))) {
             Vector3 vec = vector3.add(-1, offsetY, -1);
             if (!existInCloseList(vec)) {
-                var cost = getBlockMoveCostAt(level, vec) + OBLIQUE_MOVE_COST + node.getG();
+                var cost = getBlockMoveCostAt(entity.level, vec) + OBLIQUE_MOVE_COST + node.getG();
                 Node nodeNear = getOpenNode(vec);
                 if (nodeNear == null) {
                     this.openList.offer(new Node(vec, node, cost, calH(vec, target)));
@@ -413,14 +403,14 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
     protected Block getHighestUnder(Vector3 vector3, int limit) {
         if (limit > 0) {
             for (int y = vector3.getFloorY(); y >= vector3.getFloorY() - limit; y--) {
-                Block block = this.level.getTickCachedBlock(vector3.getFloorX(), y, vector3.getFloorZ(), false);
+                Block block = this.entity.level.getTickCachedBlock(vector3.getFloorX(), y, vector3.getFloorZ(), false);
                 if (evalStandingBlock(block))
                     return block;
             }
             return null;
         }
         for (int y = vector3.getFloorY(); y >= -64; y--) {
-            Block block = this.level.getTickCachedBlock(vector3.getFloorX(), y, vector3.getFloorZ(), false);
+            Block block = this.entity.level.getTickCachedBlock(vector3.getFloorX(), y, vector3.getFloorZ(), false);
             if (evalStandingBlock(block))
                 return block;
         }
@@ -463,14 +453,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
     protected boolean hasBarrier(Vector3 pos1, Vector3 pos2) {
         if (pos1.equals(pos2)) return false;
         return VectorMath.getPassByVector3(pos1, pos2).stream().anyMatch(
-                (pos) -> {
-//                    var offsetX = pos.x - this.entity.x;
-//                    var offsetY = pos.y - this.entity.y;
-//                    var offsetZ = pos.z - this.entity.z;
-//                    var offsetBox = this.entity.getBoundingBox().getOffsetBoundingBox(offsetX, offsetY, offsetZ);
-//                    return Utils.hasCollisionBlocks(this.level, offsetBox);
-                    return !evalStandingBlock(this.level.getBlock(pos.add(0, -1)));
-                }
+                (pos) -> !evalStandingBlock(this.entity.level.getTickCachedBlock(pos.add(0, -1)))
         );
     }
 

@@ -5,6 +5,7 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntitySmite;
+import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.FullChunk;
@@ -14,7 +15,7 @@ import cn.nukkit.potion.Effect;
 /**
  * @author PikyCZ
  */
-public class EntitySkeleton extends EntityWalkingMob implements EntitySmite {
+public class EntitySkeleton extends EntityMob implements EntityWalkable, EntitySmite {
 
     public static final int NETWORK_ID = 34;
 

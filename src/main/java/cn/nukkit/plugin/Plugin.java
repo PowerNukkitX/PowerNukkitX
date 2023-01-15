@@ -9,7 +9,6 @@ import cn.nukkit.utils.Config;
 
 import java.io.File;
 import java.io.InputStream;
-import java.nio.file.Path;
 
 /**
  * 所有Nukkit插件必须实现的接口。<br>

@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.IntBlockProperty;
@@ -587,17 +586,6 @@ public abstract class BlockLiquid extends BlockTransparentMeta {
     @Override
     public int getLightFilter() {
         return 2;
-    }
-
-    /**
-     * 流体对在其中的实体运动造成的阻碍系数，范围(0, 1)，此值越小运动阻力越大。
-     *
-     * @return 流体阻碍系数
-     */
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
-    public float getDrag() {
-        return 0.5f;
     }
 
     @Since("1.6.0.0-PNX")

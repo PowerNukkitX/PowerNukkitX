@@ -379,8 +379,7 @@ public class EntityAreaEffectCloud extends Entity {
 
                         for (Effect effect : cloudEffects) {
                             if (effect instanceof InstantEffect) {
-                                boolean damage = false;
-                                if (effect.getId() == Effect.HARMING) damage = true;
+                                boolean damage = effect.getId() == Effect.HARMING;
                                 if (collidingEntity.isUndead()) damage = !damage; // invert effect if undead
 
                                 if (damage)

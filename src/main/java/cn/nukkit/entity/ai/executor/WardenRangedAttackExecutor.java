@@ -40,6 +40,8 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor {
         if (currentTick == this.chargingTime) {
             var target = entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET);
 
+            if (!target.isAlive()) return false;
+
             //particle
             sendAttackParticle(entity, entity.add(0, 1.5), target.add(0, target.getHeight() / 2));
 

@@ -3,6 +3,7 @@ package cn.nukkit.entity.mob;
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.entity.EntityFlyable;
 import cn.nukkit.entity.EntitySmite;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
@@ -11,7 +12,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 /**
  * @author PetteriM1
  */
-public class EntityPhantom extends EntityFlyingMob implements EntitySmite {
+public class EntityPhantom extends EntityMob implements EntityFlyable, EntitySmite {
 
     public static final int NETWORK_ID = 58;
 

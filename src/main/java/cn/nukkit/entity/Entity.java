@@ -491,6 +491,9 @@ public abstract class Entity extends Location implements Metadatable {
     public double motionX;
     public double motionY;
     public double motionZ;
+    /**
+     * 临时向量，其值没有任何含义
+     */
     public Vector3 temporalVector;
     public double lastMotionX;
     public double lastMotionY;
@@ -1497,6 +1500,14 @@ public abstract class Entity extends Location implements Metadatable {
             return false;
         }
 
+        //水生生物免疫溺水
+        if (this instanceof EntitySwimmable swimmable && !swimmable.canDrown() && source.getCause() == DamageCause.DROWNING)
+            return false;
+
+        //飞行生物免疫摔伤
+        if (this instanceof EntityFlyable flyable && !flyable.hasFallingDamage() && source.getCause() == DamageCause.FALL)
+            return false;
+
         //事件回调函数
         getServer().getPluginManager().callEvent(source);
         if (source.isCancelled()) {
@@ -2482,15 +2493,25 @@ public abstract class Entity extends Location implements Metadatable {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    protected boolean hasWaterAt(float height) {
+    @PowerNukkitXDifference(info = "Make as public method", since = "1.19.50-r4")
+    public boolean hasWaterAt(float height) {
+        return hasWaterAt(height, false);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    protected boolean hasWaterAt(float height, boolean tickCached) {
         double y = this.y + height;
-        Block block = this.level.getBlock(this.temporalVector.setComponents(NukkitMath.floorDouble(this.x), NukkitMath.floorDouble(y), NukkitMath.floorDouble(this.z)));
+        Block block = tickCached ?
+                this.level.getTickCachedBlock(this.temporalVector.setComponents(NukkitMath.floorDouble(this.x), NukkitMath.floorDouble(y), NukkitMath.floorDouble(this.z))) :
+                this.level.getBlock(this.temporalVector.setComponents(NukkitMath.floorDouble(this.x), NukkitMath.floorDouble(y), NukkitMath.floorDouble(this.z)));
 
         boolean layer1 = false;
+        Block block1 = tickCached ? block.getTickCachedLevelBlockAtLayer(1) : block.getLevelBlockAtLayer(1);
         if (!(block instanceof BlockBubbleColumn) && (
                 block instanceof BlockWater
-                        || (layer1 = block.getLevelBlockAtLayer(1) instanceof BlockWater))) {
-            BlockWater water = (BlockWater) (layer1 ? block.getLevelBlockAtLayer(1) : block);
+                        || (layer1 = block1 instanceof BlockWater))) {
+            BlockWater water = (BlockWater) (layer1 ? block1 : block);
             double f = (block.y + 1) - (water.getFluidHeightPercent() - 0.1111111);
             return y < f;
         }
@@ -2585,8 +2606,10 @@ public abstract class Entity extends Location implements Metadatable {
         return true;
     }
 
+    @PowerNukkitXDifference(since = "1.19.50-r4", info = "The onGround is updated when the entity motion is 0")
     public boolean move(double dx, double dy, double dz) {
         if (dx == 0 && dz == 0 && dy == 0) {
+            this.onGround = !this.getPosition().setComponents(this.down()).getTickCachedLevelBlock().canPassThrough();
             return true;
         }
 
@@ -2701,12 +2724,7 @@ public abstract class Entity extends Location implements Metadatable {
         }
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Will do nothing if the entity is on ground and all args are 0")
     protected void checkGroundState(double movX, double movY, double movZ, double dx, double dy, double dz) {
-        if (onGround && movX == 0 && movY == 0 && movZ == 0 && dx == 0 && dy == 0 && dz == 0) {
-            return;
-        }
-
         if (this.noClip) {
             this.isCollidedVertically = false;
             this.isCollidedHorizontally = false;
@@ -3526,7 +3544,7 @@ public abstract class Entity extends Location implements Metadatable {
         for (var interfaze : interfaces) {
             var component = EntityComponentRegistery.getInterfaceBoundEntityComponent(interfaze);
             if (component != null) {
-                var constructor = EntityComponent.CONSTRUCTOR_CACHE.computeIfAbsent(component,k -> {
+                var constructor = EntityComponent.CONSTRUCTOR_CACHE.computeIfAbsent(component, k -> {
                     try {
                         return component.getConstructor(Entity.class);
                     } catch (NoSuchMethodException e) {

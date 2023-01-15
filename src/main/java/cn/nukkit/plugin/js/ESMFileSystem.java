@@ -16,7 +16,6 @@ import java.nio.file.attribute.FileAttribute;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static cn.nukkit.plugin.js.JSClassLoader.javaClassCache;
 

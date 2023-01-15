@@ -154,6 +154,20 @@ public interface ChunkSection {
 
     }
 
+    /**
+     * @return 此section的方块变更数
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    long getBlockChanges();
+
+    /**
+     * 增加方块变更数
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    void addBlockChange();
+
     @PowerNukkitOnly
     int getMaximumLayer();
 

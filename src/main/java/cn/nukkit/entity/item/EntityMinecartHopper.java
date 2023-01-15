@@ -8,12 +8,14 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockComposter;
 import cn.nukkit.block.BlockRailActivator;
 import cn.nukkit.blockentity.BlockEntity;
-import cn.nukkit.blockentity.BlockEntityFurnace;
 import cn.nukkit.blockentity.BlockEntityHopper;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.inventory.InventoryMoveItemEvent;
-import cn.nukkit.inventory.*;
+import cn.nukkit.inventory.Inventory;
+import cn.nukkit.inventory.InventoryHolder;
+import cn.nukkit.inventory.MinecartHopperInventory;
+import cn.nukkit.inventory.RecipeInventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.*;
@@ -86,8 +88,7 @@ public class EntityMinecartHopper extends EntityMinecartAbstract implements Inve
         Block blockSide = this.getLevelBlock().getSide(BlockFace.UP);
         BlockEntity blockEntity = this.level.getBlockEntity(temporalVector.setComponentsAdding(this, BlockFace.UP));
 
-        if (blockEntity instanceof BlockEntityHopper) {
-            BlockEntityHopper hopper = (BlockEntityHopper) blockEntity;
+        if (blockEntity instanceof BlockEntityHopper hopper) {
             if (hopper.isDisabled())
                 return false;
         }
@@ -125,8 +126,7 @@ public class EntityMinecartHopper extends EntityMinecartAbstract implements Inve
                     return true;
                 }
             }
-        } else if (blockSide instanceof BlockComposter) {
-            BlockComposter blockComposter = (BlockComposter) blockSide;
+        } else if (blockSide instanceof BlockComposter blockComposter) {
             if (blockComposter.isFull()) {
                 Item item = blockComposter.empty();
 
@@ -159,11 +159,10 @@ public class EntityMinecartHopper extends EntityMinecartAbstract implements Inve
         boolean pickedUpItem = false;
 
         for (Entity entity : this.level.getCollidingEntities(this.pickupArea)) {
-            if (entity.isClosed() || !(entity instanceof EntityItem)) {
+            if (entity.isClosed() || !(entity instanceof EntityItem itemEntity)) {
                 continue;
             }
 
-            EntityItem itemEntity = (EntityItem) entity;
             Item item = itemEntity.getItem();
 
             if (item.isNull()) {

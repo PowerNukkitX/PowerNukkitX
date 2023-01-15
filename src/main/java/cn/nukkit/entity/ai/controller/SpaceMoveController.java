@@ -2,7 +2,6 @@ package cn.nukkit.entity.ai.controller;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.math.Vector3;
@@ -17,7 +16,7 @@ public class SpaceMoveController implements IController {
     public boolean control(EntityIntelligent entity) {
         if (entity.hasMoveDirection() && !entity.isShouldUpdateMoveDirection()) {
             Vector3 direction = entity.getMoveDirectionEnd();
-            var speed = entity.getMovementSpeedAtBlock(entity.getTickCachedLevelBlock());
+            var speed = entity.getMovementSpeed();
             if (entity.motionX * entity.motionX + entity.motionY * entity.motionY + entity.motionZ * entity.motionZ > speed * speed * 0.4756) {
                 return false;
             }
@@ -32,10 +31,6 @@ public class SpaceMoveController implements IController {
             entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_MOVING, true);
             if (xyzLength < speed) {
                 needNewDirection(entity);
-                //刹车！
-                entity.motionX = 0;
-                entity.motionY = 0;
-                entity.motionZ = 0;
                 return false;
             }
             return true;
@@ -48,10 +43,5 @@ public class SpaceMoveController implements IController {
     protected void needNewDirection(EntityIntelligent entity) {
         //通知需要新的移动目标
         entity.setShouldUpdateMoveDirection(true);
-    }
-
-    protected boolean collidesBlocks(EntityIntelligent entity, double dx, double dy, double dz) {
-        return entity.level.getCollisionBlocks(entity.getOffsetBoundingBox().getOffsetBoundingBox(dx, dy, dz), true,
-                false, Block::isSolid).length > 0;
     }
 }

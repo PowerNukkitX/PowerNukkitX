@@ -7,7 +7,6 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockCactus;
 import cn.nukkit.block.BlockMagma;
 import cn.nukkit.entity.data.ShortEntityData;
-import cn.nukkit.entity.passive.EntitySwimmingAnimal;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.weather.EntityWeather;
 import cn.nukkit.event.entity.*;
@@ -248,7 +247,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             }
 
             if (!this.hasEffect(Effect.WATER_BREATHING) && !this.hasEffect(Effect.CONDUIT_POWER) && this.isInsideOfWater()) {
-                if (this instanceof EntitySwimmingAnimal || (this instanceof Player && (((Player) this).isCreative() || ((Player) this).isSpectator()))) {
+                if (this instanceof EntitySwimmable || (this instanceof Player && (((Player) this).isCreative() || ((Player) this).isSpectator()))) {
                     this.setAirTicks(400);
                 } else {
                     if (turtleTicks == 0 || turtleTicks == 200) {
@@ -264,7 +263,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                     }
                 }
             } else {
-                if (this instanceof EntitySwimmingAnimal) {
+                if (this instanceof EntitySwimmable) {
                     hasUpdate = true;
                     int airTicks = getAirTicks() - tickDiff;
 

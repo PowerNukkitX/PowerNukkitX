@@ -3,7 +3,6 @@ package cn.nukkit.entity;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.component.impl.EntityAngryComponent;
-import cn.nukkit.entity.component.impl.EntitySittingComponent;
 
 /**
  * 可生气实体<p>
@@ -19,7 +18,7 @@ public interface EntityAngryable {
         getAngryComponent().setAngry(angry);
     }
 
-    default EntityAngryComponent getAngryComponent(){
+    default EntityAngryComponent getAngryComponent() {
         return ((Entity) this).getComponentGroup().getComponent(EntityAngryComponent.class);
     }
 }

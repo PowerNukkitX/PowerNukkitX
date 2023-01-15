@@ -50,22 +50,16 @@ public class EntityIntelligentHuman extends EntityIntelligent implements Invento
     public static final int DATA_PLAYER_FLAGS = 26;
     public static final int DATA_PLAYER_BED_POSITION = 28;
     public static final int DATA_PLAYER_BUTTON_TEXT = 40;
+    protected UUID uuid;
+    protected byte[] rawUUID;
+    protected Skin skin;
+    protected FakeHumanInventory inventory;
+    protected FakeHumanEnderChestInventory enderChestInventory;
+    protected FakeHumanOffhandInventory offhandInventory;
 
     public EntityIntelligentHuman(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
-
-    protected UUID uuid;
-
-    protected byte[] rawUUID;
-
-    protected Skin skin;
-
-    protected FakeHumanInventory inventory;
-
-    protected FakeHumanEnderChestInventory enderChestInventory;
-
-    protected FakeHumanOffhandInventory offhandInventory;
 
     @Since("1.5.1.0-PN")
     @PowerNukkitOnly

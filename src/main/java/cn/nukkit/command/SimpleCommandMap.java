@@ -5,7 +5,6 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.defaults.*;
 import cn.nukkit.command.simple.*;
 import cn.nukkit.lang.TranslationContainer;
-import cn.nukkit.network.protocol.types.PlayerAbility;
 import cn.nukkit.utils.TextFormat;
 import cn.nukkit.utils.Utils;
 import co.aikar.timings.Timings;

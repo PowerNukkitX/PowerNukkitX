@@ -1,9 +1,10 @@
 package cn.nukkit.entity.passive;
 
+import cn.nukkit.entity.EntitySwimmable;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
-public class EntityAxolotl extends EntitySwimmingAnimal {
+public class EntityAxolotl extends EntityAnimal implements EntitySwimmable {
     public static final int NETWORK_ID = 130;
 
     public EntityAxolotl(FullChunk chunk, CompoundTag nbt) {

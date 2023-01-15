@@ -1,7 +1,6 @@
 package cn.nukkit.plugin.js;
 
 import cn.nukkit.plugin.CommonJSPlugin;
-import cn.nukkit.plugin.js.compiler.JClassBuilder;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.management.ManagementFactory;

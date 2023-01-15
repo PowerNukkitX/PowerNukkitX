@@ -6,7 +6,6 @@ import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.lang.BaseLang;
 import cn.nukkit.network.Network;
 import cn.powernukkitx.libdeflate.Libdeflate;
-import io.netty.handler.codec.compression.Snappy;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;

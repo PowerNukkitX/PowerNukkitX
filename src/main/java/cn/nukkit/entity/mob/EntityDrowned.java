@@ -4,6 +4,8 @@ import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntitySmite;
+import cn.nukkit.entity.EntitySwimmable;
+import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -11,7 +13,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 /**
  * @author PetteriM1
  */
-public class EntityDrowned extends EntityAmphibiousMob implements EntitySmite {
+public class EntityDrowned extends EntityMob implements EntitySwimmable, EntityWalkable, EntitySmite {
 
     public static final int NETWORK_ID = 110;
 

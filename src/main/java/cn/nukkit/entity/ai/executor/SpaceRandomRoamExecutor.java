@@ -21,7 +21,7 @@ public class SpaceRandomRoamExecutor extends FlatRandomRoamExecutor {
     }
 
     public SpaceRandomRoamExecutor(float speed, int maxXZRoamRange, int maxYRoamRange, int frequency, boolean calNextTargetImmediately, int runningTime) {
-        this(speed, maxXZRoamRange, maxYRoamRange, frequency, calNextTargetImmediately, runningTime,true, 10);
+        this(speed, maxXZRoamRange, maxYRoamRange, frequency, calNextTargetImmediately, runningTime, true, 10);
     }
 
     public SpaceRandomRoamExecutor(float speed, int maxXZRoamRange, int maxYRoamRange, int frequency, boolean calNextTargetImmediately, int runningTime, boolean avoidWater, int maxRetryTime) {

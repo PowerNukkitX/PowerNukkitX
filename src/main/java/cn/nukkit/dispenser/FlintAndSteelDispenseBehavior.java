@@ -6,7 +6,6 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockDispenser;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemFlintSteel;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
 

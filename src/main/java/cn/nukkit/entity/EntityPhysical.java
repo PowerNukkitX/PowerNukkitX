@@ -1,14 +1,14 @@
 package cn.nukkit.entity;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.block.*;
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockLava;
+import cn.nukkit.block.BlockLiquid;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.AxisAlignedBB;
-import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -55,14 +55,16 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         // 重新计算绝对位置碰撞箱
         this.calculateOffsetBoundingBox();
         if (!this.isImmobile()) {
-            // 处理运动
+            // 处理重力
             handleGravity();
             if (needsRecalcMovement) {
+                // 处理碰撞箱挤压运动
                 handleCollideMovement(currentTick);
             }
             addTmpMoveMotionXZ(previousCollideMotion);
-            handleFrictionMovement();
             handleFloatingMovement();
+            handleGroundFrictionMovement();
+            handlePassableBlockFrictionMovement();
         }
     }
 
@@ -87,11 +89,17 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     @Override
     public void updateMovement() {
         // 检测自由落体时间
-        if (!this.onGround && this.y < this.highestPosition) {
+        if (isFalling()) {
             this.fallingTick++;
         }
         super.updateMovement();
         this.move(this.motionX, this.motionY, this.motionZ);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    public boolean isFalling() {
+        return !this.onGround && this.y < this.highestPosition;
     }
 
     public final void addTmpMoveMotion(Vector3 tmpMotion) {
@@ -106,75 +114,69 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     }
 
     protected void handleGravity() {
-        if (!this.onGround) {
-            if (this.hasWaterAt(getFootHeight())) {
-                resetFallDistance();
-            } else {
-                this.motionY -= this.getGravity();
-            }
-        } else {
-            /*
-             * 修复生物在天上浮空而不能识别是否在地面的漏洞
-             * 通过 shrink 缩小 XZ 碰撞箱大小，并将Y设为0
-             * 再通过 offset 偏移碰撞箱检测位置（偏移至脚下）
-             */
-            this.onGround = this.level.getTickCachedCollisionBlocks(
-                    this.offsetBoundingBox.
-                            shrink(0.4 * this.getWidth(), 0.5 * this.getHeight(), 0.4 * this.getWidth()).
-                            offset(0, -0.6 * this.getHeight(), 0)).length > 0;
+        //重力一直存在
+        this.motionY -= this.getGravity();
+        if (!this.onGround && this.hasWaterAt(getFootHeight())) {
+            //落地水
+            resetFallDistance();
         }
     }
 
     /**
-     * 获取实体在某方块处行走的真实速度，此方法会考虑流体阻力
-     *
-     * @param block 实体所在的方块，不是脚下的方块
-     * @return 在某方块处行走的真实速度
+     * 计算地面摩擦力
      */
-    public float getMovementSpeedAtBlock(Block block) {
-        if (block instanceof BlockLiquid liquid) {
-            return getMovementSpeed() * liquid.getDrag();
-        } else {
-            return getMovementSpeed();
-        }
+    @Since("1.19.50-r4")
+    protected void handleGroundFrictionMovement() {
+        //未在地面就没有地面阻力
+        if (!this.onGround) return;
+        //小于精度
+        if (Math.abs(this.motionZ) < PRECISION && Math.abs(this.motionX) < PRECISION) return;
+        // 减少移动向量（计算摩擦系数，在冰上滑得更远）
+        final double factor = getGroundFrictionFactor();
+        this.motionX *= factor;
+        this.motionZ *= factor;
+        if (Math.abs(this.motionX) < PRECISION) this.motionX = 0;
+        if (Math.abs(this.motionZ) < PRECISION) this.motionZ = 0;
     }
 
-    protected void handleFrictionMovement() {
-        // 减少移动向量（计算摩擦系数，在冰上滑得更远）
-        final double friction = this.getLevel().getTickCachedBlock(this.temporalVector.setComponents((int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z) - 1)).getFrictionFactor();
-        final double reduce = getMovementSpeedAtBlock(this.getTickCachedLevelBlock()) * (1 - friction * 0.85) * 0.43;
-        if (Math.abs(this.motionZ) < PRECISION && Math.abs(this.motionX) < PRECISION) {
+    /**
+     * 计算流体阻力（空气/液体）
+     */
+    @Since("1.19.50-r4")
+    protected void handlePassableBlockFrictionMovement() {
+        //小于精度
+        if (Math.abs(this.motionZ) < PRECISION && Math.abs(this.motionX) < PRECISION && Math.abs(this.motionY) < PRECISION)
             return;
-        }
-        final double angle = StrictMath.atan2(this.motionZ, this.motionX);
-        double tmp = (StrictMath.cos(angle) * reduce);
-        if (this.motionX > PRECISION) {
-            this.motionX -= tmp;
-            if (this.motionX < PRECISION) {
-                this.motionX = 0;
-            }
-        } else if (this.motionX < -PRECISION) {
-            this.motionX -= tmp;
-            if (this.motionX > -PRECISION) {
-                this.motionX = 0;
-            }
-        } else {
-            this.motionX = 0;
-        }
-        tmp = (StrictMath.sin(angle) * reduce);
-        if (this.motionZ > PRECISION) {
-            this.motionZ -= tmp;
-            if (this.motionZ < PRECISION) {
-                this.motionZ = 0;
-            }
-        } else if (this.motionZ < -PRECISION) {
-            this.motionZ -= tmp;
-            if (this.motionZ > -PRECISION) {
-                this.motionZ = 0;
-            }
-        } else {
-            this.motionZ = 0;
-        }
+        final double factor = getPassableBlockFrictionFactor();
+        this.motionX *= factor;
+        this.motionY *= factor;
+        this.motionZ *= factor;
+        if (Math.abs(this.motionX) < PRECISION) this.motionX = 0;
+        if (Math.abs(this.motionY) < PRECISION) this.motionY = 0;
+        if (Math.abs(this.motionZ) < PRECISION) this.motionZ = 0;
+    }
+
+    /**
+     * 计算当前位置的地面摩擦因子
+     *
+     * @return 当前位置的地面摩擦因子
+     */
+    @Since("1.19.50-r4")
+    public double getGroundFrictionFactor() {
+        if (!this.onGround) return 1.0;
+        return this.getLevel().getTickCachedBlock(this.temporalVector.setComponents((int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z))).getFrictionFactor();
+    }
+
+    /**
+     * 计算当前位置的流体阻力因子（空气/水）
+     *
+     * @return 当前位置的流体阻力因子
+     */
+    @Since("1.19.50-r4")
+    public double getPassableBlockFrictionFactor() {
+        var block = this.getTickCachedLevelBlock();
+        if (block.collidesWithBB(this.getBoundingBox(), true)) return block.getPassableBlockFrictionFactor();
+        return Block.DEFAULT_AIR_FLUID_FRICTION;
     }
 
     /**
@@ -206,36 +208,50 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         addTmpMoveMotion(previousCurrentMotion);
     }
 
-    @PowerNukkitOnly
-    @Since("1.6.0.0-PNX")
-    protected boolean hasWaterAt(float height) {
-        double y = this.y + height;
-        Block block = this.level.getTickCachedBlock(this.temporalVector.setComponents(NukkitMath.floorDouble(this.x), NukkitMath.floorDouble(y), NukkitMath.floorDouble(this.z)));
-
-        boolean layer1 = false;
-        if (!(block instanceof BlockBubbleColumn) && (
-                block instanceof BlockWater
-                        || (layer1 = block.getTickCachedLevelBlockAtLayer(1) instanceof BlockWater))) {
-            BlockWater water = (BlockWater) (layer1 ? block.getTickCachedLevelBlockAtLayer(1) : block);
-            double f = (block.y + 1) - (water.getFluidHeightPercent() - 0.1111111);
-            return y < f;
-        }
-
-        return false;
-    }
-
     protected void handleFloatingMovement() {
-        if (this.isTouchingWater()) {
-            if (this.motionY < -this.getGravity() && this.hasWaterAt(getFootHeight())) {
-                this.motionY += this.getGravity() * 0.3;
-            }
-            this.motionY += this.getGravity() * 0.075;
+        if (this.hasWaterAt(0)) {
+            this.motionY += this.getGravity() * getFloatingForceFactor();
         }
     }
+
+    /**
+     * 浮力系数<br>
+     * 示例:
+     * <pre>
+     * if (hasWaterAt(this.getFloatingHeight())) {//实体指定高度进入水中后实体上浮
+     *     return 1.3;//因为浮力系数>1,该值越大上浮越快
+     * }
+     * return 0.7;//实体指定高度没进入水中，实体存在浮力会抵抗部分重力，但是不会上浮。
+     *            //因为浮力系数<1,该值最好和上值相加等于2，例 1.3+0.7=2
+     * </pre>
+     *
+     * @return the floating force factor
+     */
+    @Since("1.19.50-r4")
+    public double getFloatingForceFactor() {
+        if (hasWaterAt(this.getFloatingHeight())) {
+            return 1.3;
+        }
+        return 0.7;
+    }
+
+    /**
+     * 获得浮动到的实体高度 , 0为实体底部 {@link Entity#getCurrentHeight()}为实体顶部<br>
+     * 例：<br>值为0时，实体的脚接触水平面<br>值为getCurrentHeight/2时，实体的中间部分接触水平面<br>值为getCurrentHeight时，实体的头部接触水平面
+     *
+     * @return the float
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    public float getFloatingHeight() {
+        return this.getEyeHeight();
+    }
+
 
     protected void handleCollideMovement(int currentTick) {
         var selfAABB = getOffsetBoundingBox().getOffsetBoundingBox(this.motionX, this.motionY, this.motionZ);
         var collidingEntities = this.level.fastCollidingEntities(selfAABB, this);
+        collidingEntities.removeIf(entity -> !(entity instanceof EntityPhysical || entity instanceof Player));
         var size = collidingEntities.size();
         if (size == 0) {
             this.previousCollideMotion.setX(0);
@@ -310,10 +326,10 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     }
 
     protected void calculateOffsetBoundingBox() {
-        final double dx = this.getWidth() * 0.5;
-        final double dz = this.getHeight() * 0.5;
         //由于是asyncPrepare,this.offsetBoundingBox有几率为null，需要判空
         if (this.offsetBoundingBox == null) return;
+        final double dx = this.getWidth() * 0.5;
+        final double dz = this.getHeight() * 0.5;
         this.offsetBoundingBox.setMinX(this.x - dx);
         this.offsetBoundingBox.setMaxX(this.x + dz);
         this.offsetBoundingBox.setMinY(this.y);

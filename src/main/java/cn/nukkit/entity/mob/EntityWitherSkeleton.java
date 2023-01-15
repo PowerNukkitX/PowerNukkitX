@@ -4,13 +4,14 @@ import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntitySmite;
+import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
  * @author PikyCZ
  */
-public class EntityWitherSkeleton extends EntityWalkingMob implements EntitySmite {
+public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, EntitySmite {
 
     public static final int NETWORK_ID = 48;
 

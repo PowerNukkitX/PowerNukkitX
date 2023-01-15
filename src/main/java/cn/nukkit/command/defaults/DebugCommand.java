@@ -10,6 +10,8 @@ import cn.nukkit.command.utils.CommandParser;
 import cn.nukkit.entity.ai.EntityAI;
 import cn.nukkit.lang.TranslationContainer;
 
+import java.util.Arrays;
+
 @PowerNukkitXOnly
 @Since("1.19.50-r1")
 public class DebugCommand extends TestCommand{
@@ -20,6 +22,7 @@ public class DebugCommand extends TestCommand{
         //生物AI debug模式开关
         this.commandParameters.put("entity", new CommandParameter[]{
                 CommandParameter.newEnum("entity", new String[]{"entity"}),
+                CommandParameter.newEnum("option", Arrays.stream(EntityAI.DebugOption.values()).map(option -> option.name().toLowerCase()).toList().toArray(new String[0])),
                 CommandParameter.newEnum("value", false, CommandEnum.ENUM_BOOLEAN)
         });
     }
@@ -40,8 +43,9 @@ public class DebugCommand extends TestCommand{
             switch (parser.getMatchedCommandForm()) {
                 case "entity" -> {
                     parser.parseString();
-                    EntityAI.DEBUG = parser.parseBoolean();
-                    sender.sendMessage("Entity AI framework debug mode have been set to: " + EntityAI.DEBUG);
+                    var option = parser.parseEnum(EntityAI.DebugOption.class);
+                    EntityAI.setDebugOption(option, parser.parseBoolean());
+                    sender.sendMessage("Entity AI framework " + option.name() + " debug mode have been set to: " + EntityAI.checkDebugOption(option));
                     return true;
                 }
             }

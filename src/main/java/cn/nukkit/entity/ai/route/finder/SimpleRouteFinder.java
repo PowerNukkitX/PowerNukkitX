@@ -17,7 +17,6 @@ import java.util.List;
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-@Getter
 public abstract class SimpleRouteFinder implements IRouteFinder {
 
     //用于存储寻路结果的List
@@ -27,6 +26,7 @@ public abstract class SimpleRouteFinder implements IRouteFinder {
     protected int currentIndex = 0;
 
     //方块评估器
+    @Getter
     protected IPosEvaluator evalPos;
 
     public SimpleRouteFinder(IPosEvaluator blockEvaluator) {
