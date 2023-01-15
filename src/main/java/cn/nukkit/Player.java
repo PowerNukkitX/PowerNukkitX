@@ -1822,8 +1822,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             playerRespawnEvent.setRespawnPosition(this.getServer().getDefaultLevel().getSafeSpawn());
         }
         this.server.getPluginManager().callEvent(playerRespawnEvent);
-        this.despawnFromAll();
-
         Position respawnPos = playerRespawnEvent.getRespawnPosition();
 
         this.sendExperience();
@@ -3316,6 +3314,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         if (!this.isAlive() && this.spawned) {
+            if (this.getLevel().getGameRules().getBoolean(GameRule.DO_IMMEDIATE_RESPAWN)) {
+                this.despawnFromAll();
+                return true;
+            }
             ++this.deadTicks;
             if (this.deadTicks >= 10) {
                 this.despawnFromAll();
