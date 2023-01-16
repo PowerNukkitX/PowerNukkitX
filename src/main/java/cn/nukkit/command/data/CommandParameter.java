@@ -327,7 +327,8 @@ public class CommandParameter implements Cloneable {
     }
 
     //此方法使用不当会崩溃客户端，请谨慎使用！
-    @Since("1.4.0.0-PN")
+    //todo 注释掉创建Postfix的方法知道能够稳定运行
+    /*@Since("1.4.0.0-PN")
     public static CommandParameter newPostfix(String name, String postfix) {
         return newPostfix(name, false, postfix);
     }
@@ -336,7 +337,7 @@ public class CommandParameter implements Cloneable {
     @Since("1.4.0.0-PN")
     public static CommandParameter newPostfix(String name, boolean optional, String postfix) {
         return new CommandParameter(name, optional, null, null, postfix);
-    }
+    }*/
 
     protected static CommandParamType fromString(String param) {
         switch (param) {

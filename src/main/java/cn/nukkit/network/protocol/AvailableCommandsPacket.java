@@ -206,39 +206,21 @@ public class AvailableCommandsPacket extends DataPacket {
         this.putString(param.name);
 
         int index;
-        boolean postfix = false;
-        boolean enumData = false;
-        boolean softEnum = false;
         if (param.postFix != null) {
-            postfix = true;
-            index = postFixes.indexOf(param.postFix);
+            index = postFixes.indexOf(param.postFix) | ARG_FLAG_POSTFIX;
         } else if (param.enumData != null) {
             if (param.enumData.isSoft()) {
-                softEnum = true;
-                index = softEnums.indexOf(param.enumData);
+                index = softEnums.indexOf(param.enumData) | ARG_FLAG_SOFT_ENUM | ARG_FLAG_VALID;
             } else {
-                enumData = true;
-                index = enums.indexOf(param.enumData);
+                index = enums.indexOf(param.enumData) | ARG_FLAG_ENUM | ARG_FLAG_VALID;
             }
         } else if (param.type != null) {
-            index = param.type.getId();
+            index = param.type.getId() | ARG_FLAG_VALID;
         } else {
             throw new IllegalStateException("No param type specified: " + param);
         }
 
-        int value = index;
-        if (enumData) {
-            value |= ARG_FLAG_ENUM;
-        }
-        if (softEnum) {
-            value |= ARG_FLAG_SOFT_ENUM;
-        }
-        if (postfix) {
-            value |= ARG_FLAG_POSTFIX;
-        } else {
-            value |= ARG_FLAG_VALID;
-        }
-        this.putLInt(value);
+        this.putLInt(index);
         this.putBoolean(param.optional);
 
         byte options = 0;

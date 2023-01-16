@@ -2,6 +2,7 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.ParamTree;
 import cn.nukkit.command.utils.CommandLogger;
@@ -17,6 +18,7 @@ public class StopCommand extends VanillaCommand {
         super(name, "commands.stop.description");
         this.setPermission("nukkit.command.stop");
         this.commandParameters.clear();
+        this.commandParameters.put("default", CommandParameter.EMPTY_ARRAY);
         this.paramTree = new ParamTree(this);
     }
 

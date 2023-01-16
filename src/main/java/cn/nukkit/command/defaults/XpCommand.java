@@ -1,17 +1,20 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.Since;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
-import cn.nukkit.command.utils.EntitySelector;
-import cn.nukkit.entity.Entity;
-import cn.nukkit.lang.TranslationContainer;
-import cn.nukkit.utils.TextFormat;
+import cn.nukkit.command.tree.ParamList;
+import cn.nukkit.command.tree.ParamTree;
+import cn.nukkit.command.tree.node.PlayersNode;
+import cn.nukkit.command.tree.node.XpLevelNode;
+import cn.nukkit.command.utils.CommandLogger;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Snake1999
@@ -24,109 +27,73 @@ public class XpCommand extends Command {
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
                 CommandParameter.newType("amount", CommandParamType.INT),
-                CommandParameter.newType("player", true, CommandParamType.TARGET)
+                CommandParameter.newType("player", true, CommandParamType.TARGET, new PlayersNode())
         });
         this.commandParameters.put("level", new CommandParameter[]{
-                CommandParameter.newType("level", CommandParamType.INT),
-                CommandParameter.newType("player", true, CommandParamType.TARGET)
+                CommandParameter.newType("level", CommandParamType.STRING, new XpLevelNode()),
+                CommandParameter.newType("player", true, CommandParamType.TARGET, new PlayersNode())
         });
+        this.paramTree = new ParamTree(this);
     }
 
+    @Since("1.19.50-r4")
     @Override
-    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        if (!this.testPermission(sender)) {
-            return false;
-        }
-
+    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         //  "/xp <amount> [player]"  for adding exp
         //  "/xp <amount>L [player]" for adding exp level
-        String amountString;
-        List<Player> players;
-        if (!sender.isPlayer()) {
-            if (args.length != 2) {
-                sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-                return false;
-            }
-
-            List<Entity> entities = List.of();
-            if (EntitySelector.hasArguments(args[1])) {
-                entities = EntitySelector.matchEntities(sender, args[1]);
-            } else if (sender.getServer().getPlayer(args[1]) != null) {
-                entities = List.of(sender.getServer().getPlayer(args[1]));
-            }
-
-            players = entities.stream().filter(entity -> entity instanceof Player).map(p -> (Player) p).toList();
-            if (players.size() == 0) {
-                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
-                return false;
-            }
-            amountString = args[0];
-        } else {
-            if (args.length == 1) {
-                amountString = args[0];
-                players = new ArrayList<>();
-                players.add(sender.asPlayer());
-            } else if (args.length == 2) {
-                amountString = args[0];
-                List<Entity> entities = List.of();
-                if (EntitySelector.hasArguments(args[1])) {
-                    entities = EntitySelector.matchEntities(sender, args[1]);
-                } else if (sender.getServer().getPlayer(args[1]) != null) {
-                    entities = List.of(sender.getServer().getPlayer(args[1]));
-                }
-
-                players = entities.stream().filter(entity -> entity instanceof Player).map(p -> (Player) p).toList();
-                if (players.size() == 0) {
-                    sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
-                    return false;
-                }
-            } else {
-                sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-                return false;
-            }
-        }
-
-
-        int amount;
-        boolean isLevel = false;
-        if (amountString.endsWith("l") || amountString.endsWith("L")) {
-            amountString = amountString.substring(0, amountString.length() - 1);
-            isLevel = true;
-        }
-
-        try {
-            amount = Integer.parseInt(amountString);
-        } catch (NumberFormatException e1) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-            return false;
-        }
-
-        for (Entity entity : players) {
-            Player player = (Player) entity;
-            if (isLevel) {
-                int newLevel = player.getExperienceLevel();
-                newLevel += amount;
-                if (newLevel > 24791) newLevel = 24791;
-                if (newLevel < 0) {
-                    player.setExperience(0, 0);
-                } else {
-                    player.setExperience(player.getExperience(), newLevel, true);
-                }
-                if (amount > 0) {
-                    sender.sendMessage(new TranslationContainer("commands.xp.success.levels", String.valueOf(amount), player.getName()));
-                } else {
-                    sender.sendMessage(new TranslationContainer("commands.xp.success.levels.minus", String.valueOf(-amount), player.getName()));
-                }
-
-            } else {
+        var list = result.getValue();
+        List<Player> players = sender.isPlayer() ? Collections.singletonList(sender.asPlayer()) : null;
+        switch (result.getKey()) {
+            case "default" -> {
+                int amount = list.getResult(0);
                 if (amount < 0) {
-                    sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-                    return false;
+                    log.addNumTooSmall(0, 0).output();
+                    return 0;
                 }
-                player.addExperience(amount);
-                sender.sendMessage(new TranslationContainer("commands.xp.success", String.valueOf(amount), player.getName()));
+                if (list.hasResult(1)) {
+                    players = list.getResult(1);
+                }
+                if (players == null) {
+                    log.addNoTargetMatch().output();
+                    return 0;
+                }
+                for (Player player : players) {
+                    player.addExperience(amount);
+                    log.addSuccess("commands.xp.success", String.valueOf(amount), player.getName());
+                }
+                log.successCount(players.size()).output();
+                return players.size();
+            }
+            case "level" -> {
+                int level = list.getResult(0);
+                if (list.hasResult(1)) {
+                    players = list.getResult(1);
+                }
+                if (players == null) {
+                    log.addNoTargetMatch().output();
+                    return 0;
+                }
+                for (Player player : players) {
+                    int newLevel = player.getExperienceLevel();
+                    newLevel += level;
+                    if (newLevel > 24791) newLevel = 24791;
+                    if (newLevel < 0) {
+                        player.setExperience(0, 0);
+                    } else {
+                        player.setExperience(player.getExperience(), newLevel, true);
+                    }
+                    if (level > 0) {
+                        log.addSuccess("commands.xp.success.levels", String.valueOf(level), player.getName());
+                    } else {
+                        log.addSuccess("commands.xp.success.levels.minus", String.valueOf(-level), player.getName());
+                    }
+                }
+                log.successCount(players.size()).output();
+                return players.size();
+            }
+            default -> {
+                return 0;
             }
         }
-        return true;
     }
 }
