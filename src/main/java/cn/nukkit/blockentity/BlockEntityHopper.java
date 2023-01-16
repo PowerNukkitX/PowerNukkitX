@@ -231,7 +231,6 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
             setDirty();
         }
 
-
         return true;
     }
 

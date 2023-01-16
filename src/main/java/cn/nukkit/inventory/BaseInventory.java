@@ -3,6 +3,9 @@ package cn.nukkit.inventory;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXDifference;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.blockentity.BlockEntity;
@@ -105,6 +108,16 @@ public abstract class BaseInventory implements Inventory {
     @Override
     public Item getItem(int index) {
         return this.slots.containsKey(index) ? this.slots.get(index).clone() : AIR_ITEM;
+    }
+
+    /**
+     * 获得未克隆的Item对象<p/>
+     * 若调用方保证不会修改此方法返回的Item对象，则使用此方法将降低特定场景下的性能开销
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    public Item getUnclonedItem(int index) {
+        return this.slots.getOrDefault(index, AIR_ITEM);
     }
 
     @Override
@@ -254,13 +267,14 @@ public abstract class BaseInventory implements Inventory {
         }
     }
 
+    @PowerNukkitXDifference(info = "Using BaseInventory::getUnclonedItem() to improve performance", since = "1.19.50-r4")
     @Override
     public boolean canAddItem(Item item) {
         item = item.clone();
         boolean checkDamage = item.hasMeta();
         boolean checkTag = item.getCompoundTag() != null;
         for (int i = 0; i < this.getSize(); ++i) {
-            Item slot = this.getItem(i);
+            Item slot = this.getUnclonedItem(i);
             if (item.equals(slot, checkDamage, checkTag)) {
                 int diff;
                 if ((diff = Math.min(slot.getMaxStackSize(), this.getMaxStackSize()) - slot.getCount()) > 0) {
