@@ -247,7 +247,7 @@ public class BlockHopper extends BlockTransparentMeta implements RedstoneCompone
             if (hopperInv.isFull())
                 return false;
 
-            Block blockSide = hopperPos.getSide(BlockFace.UP).getLevelBlock();
+            Block blockSide = hopperPos.getSide(BlockFace.UP).getTickCachedLevelBlock();
             BlockEntity blockEntity = hopperPos.level.getBlockEntity(new Vector3().setComponentsAdding(hopperPos, BlockFace.UP));
 
             if (blockEntity instanceof BlockEntityHopper) {

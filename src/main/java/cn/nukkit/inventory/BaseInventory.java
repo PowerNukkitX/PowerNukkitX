@@ -17,6 +17,9 @@ import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.network.protocol.InventoryContentPacket;
 import cn.nukkit.network.protocol.InventorySlotPacket;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntLists;
 
 import java.util.*;
 
@@ -298,26 +301,33 @@ public abstract class BaseInventory implements Inventory {
             }
         }
 
-        List<Integer> emptySlots = new ArrayList<>();
+        //使用FastUtils的IntArrayList提高性能
+        IntList emptySlots = new IntArrayList(this.getSize());
 
         for (int i = 0; i < this.getSize(); ++i) {
-            Item item = this.getItem(i);
+            //获取未克隆Item对象
+            Item item = this.getUnclonedItem(i);
             if (item.getId() == Item.AIR || item.getCount() <= 0) {
                 emptySlots.add(i);
             }
 
-            for (Item slot : new ArrayList<>(itemSlots)) {
+            //使用迭代器而不是新建一个ArrayList
+            for (Iterator<Item> iterator = itemSlots.iterator(); iterator.hasNext(); ) {
+                Item slot = iterator.next();
                 if (slot.equals(item)) {
                     int maxStackSize = Math.min(this.getMaxStackSize(), item.getMaxStackSize());
                     if (item.getCount() < maxStackSize) {
                         int amount = Math.min(maxStackSize - item.getCount(), slot.getCount());
                         amount = Math.min(amount, this.getMaxStackSize());
                         if (amount > 0) {
+                            //在需要clone时再clone
+                            item = item.clone();
                             slot.setCount(slot.getCount() - amount);
                             item.setCount(item.getCount() + amount);
                             this.setItem(i, item);
                             if (slot.getCount() <= 0) {
-                                itemSlots.remove(slot);
+//                                itemSlots.remove(slot);
+                                iterator.remove();
                             }
                         }
                     }
