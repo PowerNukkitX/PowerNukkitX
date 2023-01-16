@@ -92,7 +92,7 @@ public record CommandLogger(Command command,
      * @return the command logger
      */
     public CommandLogger addMessage(String key, String... params) {
-        this.outputContainer.getMessages().add(new CommandOutputMessage(Server.getInstance().getLanguage().translateString(key, params), CommandOutputContainer.EMPTY_STRING));
+        this.outputContainer.getMessages().add(new CommandOutputMessage(Server.getInstance().getLanguage().tr(key, params), CommandOutputContainer.EMPTY_STRING));
         return this;
     }
 
@@ -135,6 +135,28 @@ public record CommandLogger(Command command,
      */
     public CommandLogger addNumTooSmall(int errorIndex, int minimum) {
         this.addError("commands.generic.num.tooSmall", args[errorIndex], " " + minimum);
+        return this;
+    }
+
+    /**
+     * 输出一个Double参数过大的错误信息，会提示命令发送者指定位置的参数最大值不能超过maximum
+     *
+     * @param errorIndex 发生错误的参数索引
+     * @param maximum    允许的最大值
+     */
+    public CommandLogger addDoubleTooBig(int errorIndex, double maximum) {
+        this.addError("commands.generic.double.tooBig", args[errorIndex], " " + maximum);
+        return this;
+    }
+
+    /**
+     * 输出一个Double参数过小的错误信息，会提示命令发送者指定位置的参数最小值不能低于minimum
+     *
+     * @param errorIndex 发生错误的参数索引
+     * @param minimum    允许的最小值
+     */
+    public CommandLogger addDoubleTooSmall(int errorIndex, double minimum) {
+        this.addError("commands.generic.double.tooSmall", args[errorIndex], " " + minimum);
         return this;
     }
 

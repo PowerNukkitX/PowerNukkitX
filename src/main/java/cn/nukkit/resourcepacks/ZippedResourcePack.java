@@ -25,7 +25,7 @@ public class ZippedResourcePack extends AbstractResourcePack {
     public ZippedResourcePack(File file) {
         if (!file.exists()) {
             throw new IllegalArgumentException(Server.getInstance().getLanguage()
-                    .translateString("nukkit.resources.zip.not-found", file.getName()));
+                    .tr("nukkit.resources.zip.not-found", file.getName()));
         }
 
         this.file = file;
@@ -34,8 +34,8 @@ public class ZippedResourcePack extends AbstractResourcePack {
             ZipEntry entry = zip.getEntry("manifest.json");
             if (entry == null) {
                 entry = zip.stream()
-                        .filter(e-> e.getName().toLowerCase().endsWith("manifest.json") && !e.isDirectory())
-                        .filter(e-> {
+                        .filter(e -> e.getName().toLowerCase().endsWith("manifest.json") && !e.isDirectory())
+                        .filter(e -> {
                             File fe = new File(e.getName());
                             if (!fe.getName().equalsIgnoreCase("manifest.json")) {
                                 return false;
@@ -44,7 +44,7 @@ public class ZippedResourcePack extends AbstractResourcePack {
                         })
                         .findFirst()
                         .orElseThrow(() -> new IllegalArgumentException(
-                                Server.getInstance().getLanguage().translateString("nukkit.resources.zip.no-manifest")));
+                                Server.getInstance().getLanguage().tr("nukkit.resources.zip.no-manifest")));
             }
 
             this.manifest = new JsonParser()
@@ -65,7 +65,7 @@ public class ZippedResourcePack extends AbstractResourcePack {
 
         if (!this.verifyManifest()) {
             throw new IllegalArgumentException(Server.getInstance().getLanguage()
-                    .translateString("nukkit.resources.zip.invalid-manifest"));
+                    .tr("nukkit.resources.zip.invalid-manifest"));
         }
     }
 

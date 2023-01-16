@@ -3,11 +3,13 @@ package cn.nukkit.lang;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import io.netty.util.internal.EmptyArrays;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -37,6 +39,7 @@ public class BaseLang {
      */
     protected Map<String, String> fallbackLang = new HashMap<>();
 
+    //用于提取字符串中%后带有[a-zA-Z0-9_.-]这些字符的字符串的模式
     private final Pattern split = Pattern.compile("%[A-Za-z0-9_.-]+");
 
 
@@ -66,8 +69,6 @@ public class BaseLang {
             if (useFallback) this.fallbackLang = this.loadLang(path + fallback + "/lang.ini");
         }
         if (this.fallbackLang == null) this.fallbackLang = this.lang;
-
-
     }
 
     public Map<String, String> getLangMap() {
@@ -144,7 +145,7 @@ public class BaseLang {
     @PowerNukkitXOnly
     @Since("1.19.50-r4")
     public String tr(String key) {
-        return this.translateString(key);
+        return tr(key, EmptyArrays.EMPTY_STRINGS);
     }
 
     /**
@@ -157,7 +158,11 @@ public class BaseLang {
     @PowerNukkitXOnly
     @Since("1.19.50-r4")
     public String tr(String key, String... args) {
-        return this.translateString(key, args);
+        String baseText = parseLanguageText(key);
+        for (int i = 0; i < args.length; i++) {
+            baseText = baseText.replace("{%" + i + "}", parseLanguageText(String.valueOf(args[i])));
+        }
+        return baseText;
     }
 
     /**
@@ -170,9 +175,9 @@ public class BaseLang {
     @PowerNukkitXOnly
     @Since("1.19.50-r4")
     public String tr(String key, Object... args) {
-        String baseText = parseText(key);
+        String baseText = parseLanguageText(key);
         for (int i = 0; i < args.length; i++) {
-            baseText = baseText.replace("{%" + i + "}", parseText(String.valueOf(args[i])));
+            baseText = baseText.replace("{%" + i + "}", parseLanguageText(parseArg(args[i])));
         }
         return baseText;
     }
@@ -180,10 +185,10 @@ public class BaseLang {
     @PowerNukkitXOnly
     @Since("1.19.50-r4")
     public String tr(TextContainer c) {
-        String baseText = this.parseText(c.getText());
+        String baseText = this.parseLanguageText(c.getText());
         if (c instanceof TranslationContainer cc) {
             for (int i = 0; i < cc.getParameters().length; i++) {
-                baseText = baseText.replace("{%" + i + "}", this.parseText(cc.getParameters()[i]));
+                baseText = baseText.replace("{%" + i + "}", this.parseLanguageText(cc.getParameters()[i]));
             }
         }
         return baseText;
@@ -207,16 +212,17 @@ public class BaseLang {
         return this.tr(str, params);
     }
 
-    @Deprecated
-    @DeprecationDetails(since = "1.19.50-r4", reason = "old", replaceWith = "BaseLang#tr(String,Object...)")
     public String translateString(String str, String param, String onlyPrefix) {
-        return this.tr(str, param);
+        return this.translateString(str, new String[]{param}, onlyPrefix);
     }
 
-    @Deprecated
-    @DeprecationDetails(since = "1.19.50-r4", reason = "old", replaceWith = "BaseLang#tr(String,Object...)")
     public String translateString(String str, String[] params, String onlyPrefix) {
-        return tr(str, params);
+        String baseText = this.get(str);
+        baseText = this.parseTranslation((baseText != null && (onlyPrefix == null || str.indexOf(onlyPrefix) == 0)) ? baseText : str, onlyPrefix);
+        for (int i = 0; i < params.length; i++) {
+            baseText = baseText.replace("{$" + i + "}", this.parseTranslation(params[i]));
+        }
+        return baseText;
     }
 
     @Deprecated
@@ -233,6 +239,12 @@ public class BaseLang {
         return baseText;
     }
 
+    /**
+     * 获取指定id对应的多语言文本，若不存在则返回null
+     *
+     * @param id the id
+     * @return the string
+     */
     public String internalGet(String id) {
         if (this.lang.containsKey(id)) {
             return this.lang.get(id);
@@ -242,6 +254,12 @@ public class BaseLang {
         return null;
     }
 
+    /**
+     * 获取指定id对应的多语言文本，若不存在则返回id本身
+     *
+     * @param id the id
+     * @return the string
+     */
     public String get(String id) {
         if (this.lang.containsKey(id)) {
             return this.lang.get(id);
@@ -251,7 +269,36 @@ public class BaseLang {
         return id;
     }
 
-    protected String parseText(String str) {
+    protected String parseArg(Object arg) {
+        switch (arg.getClass().getSimpleName()) {
+            case "int[]" -> {
+                return Arrays.toString((int[]) arg);
+            }
+            case "double[]" -> {
+                return Arrays.toString((double[]) arg);
+            }
+            case "float[]" -> {
+                return Arrays.toString((float[]) arg);
+            }
+            case "short[]" -> {
+                return Arrays.toString((short[]) arg);
+            }
+            case "byte[]" -> {
+                return Arrays.toString((byte[]) arg);
+            }
+            case "long[]" -> {
+                return Arrays.toString((long[]) arg);
+            }
+            case "boolean[]" -> {
+                return Arrays.toString((boolean[]) arg);
+            }
+            default -> {
+                return String.valueOf(arg);
+            }
+        }
+    }
+
+    protected String parseLanguageText(String str) {
         String result = internalGet(str);
         if (result != null) {
             return result;
@@ -261,12 +308,10 @@ public class BaseLang {
         }
     }
 
-    @Deprecated
     protected String parseTranslation(String text) {
         return this.parseTranslation(text, null);
     }
 
-    @Deprecated
     protected String parseTranslation(String text, String onlyPrefix) {
         StringBuilder newString = new StringBuilder();
         text = String.valueOf(text);

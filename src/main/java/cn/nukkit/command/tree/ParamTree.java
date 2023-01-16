@@ -188,7 +188,7 @@ public class ParamTree {
             final CommandLogger log = new CommandLogger(this.command, sender, commandLabel, args, container);
             if (!list.getMessageContainer().getMessages().isEmpty()) {
                 for (var message : list.getMessageContainer().getMessages()) {
-                    container.getMessages().add(new CommandOutputMessage(Server.getInstance().getLanguage().translateString(message.getMessageId(), message.getParameters()), CommandOutputContainer.EMPTY_STRING));
+                    container.getMessages().add(new CommandOutputMessage(Server.getInstance().getLanguage().tr(message.getMessageId(), message.getParameters()), CommandOutputContainer.EMPTY_STRING));
                 }
             } else {
                 log.addSyntaxErrors(list.getError());

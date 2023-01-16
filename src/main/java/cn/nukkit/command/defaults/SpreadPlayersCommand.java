@@ -47,10 +47,10 @@ public class SpreadPlayersCommand extends VanillaCommand {
         List<Entity> targets = list.getResult(5);
 
         if (spreadDistance < 0) {
-            log.addError("commands.generic.double.tooSmall", String.valueOf(spreadDistance), "0").output();
+            log.addDoubleTooSmall(3, 0).output();
             return 0;
         } else if (maxRange < spreadDistance) {
-            log.addError("commands.generic.double.tooSmall", String.valueOf(maxRange), String.valueOf(spreadDistance + 1)).output();
+            log.addDoubleTooSmall(4, spreadDistance + 1).output();
             return 0;
         }
         for (Entity target : targets) {

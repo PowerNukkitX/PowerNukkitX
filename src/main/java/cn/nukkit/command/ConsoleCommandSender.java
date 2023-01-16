@@ -88,7 +88,7 @@ public class ConsoleCommandSender implements CommandSender {
 
     @Override
     public void sendMessage(String message) {
-        message = this.getServer().getLanguage().translateString(message);
+        message = this.getServer().getLanguage().tr(message);
         for (String line : message.trim().split("\n")) {
             log.info(line);
         }

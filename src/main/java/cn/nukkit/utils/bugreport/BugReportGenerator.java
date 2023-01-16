@@ -35,11 +35,11 @@ public class BugReportGenerator extends Thread {
     public void run() {
         BaseLang baseLang = Server.getInstance().getLanguage();
         try {
-            log.info("[BugReport] " + baseLang.translateString("nukkit.bugreport.create"));
+            log.info("[BugReport] " + baseLang.tr("nukkit.bugreport.create"));
             String path = generate();
-            log.info("[BugReport] " + baseLang.translateString("nukkit.bugreport.archive", path));
+            log.info("[BugReport] " + baseLang.tr("nukkit.bugreport.archive", path));
         } catch (Exception e) {
-            log.info("[BugReport] " + baseLang.translateString("nukkit.bugreport.error", e.getMessage()), e);
+            log.info("[BugReport] " + baseLang.tr("nukkit.bugreport.error", e.getMessage()), e);
         }
     }
 

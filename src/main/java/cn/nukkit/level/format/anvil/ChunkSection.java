@@ -280,7 +280,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
                             if (namespaceId != null) {
                                 var tmp = Block.CUSTOM_BLOCK_ID_MAP.get(namespaceId);
                                 if (tmp == null) {
-                                    log.warn(Server.getInstance().getLanguage().translateString("nukkit.anvil.load.unknown-custom-block", namespaceId));
+                                    log.warn(Server.getInstance().getLanguage().tr("nukkit.anvil.load.unknown-custom-block", namespaceId));
                                     storage.setBlockState(bx, by, bz, BlockState.AIR);
                                     invalidCustomBlockWhenLoad = true;
                                     continue;
@@ -881,7 +881,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
                         int each = iterator.nextInt();
                         var namespaceId = Block.ID_TO_CUSTOM_BLOCK.get(each).getNamespaceId();
                         if (namespaceId == null) {
-                            log.warn(Server.getInstance().getLanguage().translateString("nukkit.anvil.save.unknown-custom-block", each));
+                            log.warn(Server.getInstance().getLanguage().tr("nukkit.anvil.save.unknown-custom-block", each));
                         } else {
                             customBlocksIdMap.putInt(namespaceId, each);
                         }

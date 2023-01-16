@@ -232,7 +232,7 @@ public class Network {
             try {
                 interfaz.process();
             } catch (Exception e) {
-                log.fatal(this.server.getLanguage().translateString("nukkit.server.networkError", interfaz.getClass().getName(), Utils.getExceptionMessage(e)), e);
+                log.fatal(this.server.getLanguage().tr("nukkit.server.networkError", interfaz.getClass().getName(), Utils.getExceptionMessage(e)), e);
                 interfaz.emergencyShutdown();
                 this.unregisterInterface(interfaz);
             }
