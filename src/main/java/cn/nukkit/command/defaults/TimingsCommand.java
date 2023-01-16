@@ -1,11 +1,16 @@
 package cn.nukkit.command.defaults;
 
+import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParameter;
-import cn.nukkit.lang.TranslationContainer;
+import cn.nukkit.command.tree.ParamList;
+import cn.nukkit.command.tree.ParamTree;
+import cn.nukkit.command.utils.CommandLogger;
 import co.aikar.timings.Timings;
 import co.aikar.timings.TimingsExport;
+
+import java.util.Map;
 
 /**
  * @author fromgate
@@ -20,55 +25,49 @@ public class TimingsCommand extends TestCommand {
         this.commandParameters.put("default", new CommandParameter[]{
                 CommandParameter.newEnum("action", new CommandEnum("TimingsAction", "on", "off", "paste", "verbon", "verboff", "reset", "report"))
         });
+        this.paramTree = new ParamTree(this);
     }
 
+    @Since("1.19.50-r4")
     @Override
-    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        if (!this.testPermission(sender)) {
-            return true;
-        }
-
-        if (args.length != 1) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", usageMessage));
-            return true;
-        }
-
-        String mode = args[0].toLowerCase();
+    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+        var list = result.getValue();
+        String mode = list.getResult(0);
 
         if (mode.equals("on")) {
             Timings.setTimingsEnabled(true);
             Timings.reset();
-            sender.sendMessage(new TranslationContainer("nukkit.command.timings.enable"));
-            return true;
+            log.addMessage("nukkit.command.timings.enable").output();
+            return 1;
         } else if (mode.equals("off")) {
             Timings.setTimingsEnabled(false);
-            sender.sendMessage(new TranslationContainer("nukkit.command.timings.disable"));
-            return true;
+            log.addMessage("nukkit.command.timings.disable").output();
+            return 1;
         }
 
         if (!Timings.isTimingsEnabled()) {
-            sender.sendMessage(new TranslationContainer("nukkit.command.timings.timingsDisabled"));
-            return true;
+            log.addMessage("nukkit.command.timings.timingsDisabled").output();
+            return 1;
         }
 
         switch (mode) {
             case "verbon":
-                sender.sendMessage(new TranslationContainer("nukkit.command.timings.verboseEnable"));
+                log.addMessage("nukkit.command.timings.verboseEnable").output();
                 Timings.setVerboseEnabled(true);
                 break;
             case "verboff":
-                sender.sendMessage(new TranslationContainer("nukkit.command.timings.verboseDisable"));
+                log.addMessage("nukkit.command.timings.verboseDisable").output();
                 Timings.setVerboseEnabled(true);
                 break;
             case "reset":
                 Timings.reset();
-                sender.sendMessage(new TranslationContainer("nukkit.command.timings.reset"));
+                log.addMessage("nukkit.command.timings.reset").output();
                 break;
             case "report":
             case "paste":
                 TimingsExport.reportTimings(sender);
                 break;
         }
-        return true;
+        return 1;
     }
 }

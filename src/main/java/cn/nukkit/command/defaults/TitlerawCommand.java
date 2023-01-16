@@ -1,20 +1,20 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
-import cn.nukkit.command.utils.EntitySelector;
+import cn.nukkit.command.tree.ParamList;
+import cn.nukkit.command.tree.ParamTree;
+import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.command.utils.RawText;
-import cn.nukkit.lang.TranslationContainer;
-import cn.nukkit.utils.TextFormat;
+import com.google.gson.JsonSyntaxException;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -44,77 +44,84 @@ public class TitlerawCommand extends VanillaCommand {
                 CommandParameter.newType("stay", CommandParamType.INT),
                 CommandParameter.newType("fadeOut", CommandParamType.INT)
         });
+        this.paramTree = new ParamTree(this);
     }
 
+    @Since("1.19.50-r4")
     @Override
-    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        if (!this.testPermission(sender)) {
-            return true;
-        }
-        if (args.length < 2) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-            return false;
-        }
-        List<Player> players = EntitySelector.hasArguments(args[0]) ? EntitySelector.matchEntities(sender, args[0]).stream().filter(e -> e instanceof Player).map(e -> (Player) e).toList() : null;
-        if (players == null) players = Collections.singletonList(Server.getInstance().getPlayerExact(args[0]));
-        if (players == null) {
-            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
-            return true;
-        }
+    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+        var list = result.getValue();
+        List<Player> players = list.getResult(0);
 
-        for (Player player : players) {
-            if (args.length == 2) {
-                switch (args[1].toLowerCase()) {
-                    case "clear":
-                        player.clearTitle();
-                        sender.sendMessage(new TranslationContainer("nukkit.command.title.clear", player.getName()));
-                        break;
-                    case "reset":
-                        player.resetTitleSettings();
-                        sender.sendMessage(new TranslationContainer("nukkit.command.title.reset", player.getName()));
-                        break;
-                    default:
-                        sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-                        return false;
+        switch (result.getKey()) {
+            case "clear" -> {
+                for (Player player : players) {
+                    player.clearTitle();
+                    log.addMessage("nukkit.command.title.clear", player.getName());
                 }
-            } else if (args.length == 3) {
-                RawText text = RawText.fromRawText(args[2]);
-                text.preParse(sender);
-                switch (args[1].toLowerCase()) {
-                    case "title":
-                        player.setRawTextTitle(text);
-                        sender.sendMessage(new TranslationContainer("commands.titleraw.success"));
-                        break;
-                    case "subtitle":
-                        player.setRawTextSubTitle(text);
-                        sender.sendMessage(new TranslationContainer("commands.titleraw.success"));
-                        break;
-                    case "actionbar":
-                        player.setRawTextActionBar(text);
-                        sender.sendMessage(new TranslationContainer("commands.titleraw.success"));
-                        break;
-                    default:
-                        sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-                        return false;
+                log.output();
+                return 1;
+            }
+            case "reset" -> {
+                for (Player player : players) {
+                    player.resetTitleSettings();
+                    log.addMessage("nukkit.command.title.reset", player.getName());
                 }
-            } else if (args.length == 5) {
-                if (args[1].toLowerCase().equals("times")) {
-                    try {
-                        sender.sendMessage(new TranslationContainer("nukkit.command.title.times.success",
-                                args[2], args[3], args[4], player.getName()));
-                    } catch (NumberFormatException exception) {
-                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%nukkit.command.title.times.fail"));
+                log.output();
+                return 1;
+            }
+            case "set" -> {
+                String titleLocation = list.getResult(1);
+                String titleText = list.getResult(2);
+                RawText rawText;
+                try {
+                    rawText = RawText.fromRawText(titleText);
+                } catch (JsonSyntaxException e) {
+                    log.addSyntaxErrors(2).output();
+                    return 0;
+                }
+                switch (titleLocation) {
+                    case "title" -> {
+                        for (Player player : players) {
+                            player.setRawTextTitle(rawText);
+                            log.addSuccess("commands.titleraw.success");
+                        }
+                        log.output();
                     }
-                } else {
-                    sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-                    return false;
+                    case "subtitle" -> {
+                        for (Player player : players) {
+                            player.setRawTextSubTitle(rawText);
+                            log.addSuccess("commands.titleraw.success");
+                        }
+                        log.output();
+                    }
+                    case "actionbar" -> {
+                        for (Player player : players) {
+                            player.setRawTextActionBar(rawText);
+                            log.addSuccess("commands.titleraw.success");
+                        }
+                        log.output();
+                    }
+                    default -> {
+                        log.addMessage("commands.generic.usage", "\n" + this.getCommandFormatTips());
+                        return 0;
+                    }
                 }
-            } else {
-                sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-                return false;
+                return 1;
+            }
+            case "times" -> {
+                int fadeIn = list.getResult(2);
+                int stay = list.getResult(3);
+                int fadeOut = list.getResult(4);
+                for (var player : players) {
+                    log.addMessage("nukkit.command.title.times.success", String.valueOf(fadeIn), String.valueOf(stay), String.valueOf(fadeOut), player.getName());
+                }
+                log.output();
+                return 1;
+            }
+            default -> {
+                return 0;
             }
         }
-
-        return true;
     }
 }

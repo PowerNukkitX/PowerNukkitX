@@ -3,6 +3,7 @@ package cn.nukkit.command.defaults;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
@@ -33,12 +34,10 @@ import java.util.concurrent.ExecutionException;
  * @author xtypr
  * @since 2015/11/12
  */
-public class VersionCommand extends VanillaCommand {
+public class VersionCommand extends Command implements CoreCommand {
 
     private List<Query> queryQueue = new LinkedList<>();
     private int lastUpdateTick = 0;
-
-    ;
     private JsonArray listVersionCache = null;
 
     {
@@ -59,9 +58,12 @@ public class VersionCommand extends VanillaCommand {
 
                             var infoBuilder = new StringBuilder();
                             infoBuilder.append("[").append(i + 1).append("] ");
-                            if (i == 0) infoBuilder.append("Name: §e").append(entry.get("name").getAsString()).append("§f, Time: §e").append(utcToLocal(entry.get("lastModified").getAsString())).append(" §e(LATEST)").append(matched ? " §b(CURRENT)" : "");
-                            else if (matched) infoBuilder.append("Name: §b").append(entry.get("name").getAsString()).append("§f, Time: §b").append(utcToLocal(entry.get("lastModified").getAsString())).append(" §b(CURRENT)");
-                            else infoBuilder.append("Name: §a").append(entry.get("name").getAsString()).append("§f, Time: §a").append(utcToLocal(entry.get("lastModified").getAsString()));
+                            if (i == 0)
+                                infoBuilder.append("Name: §e").append(entry.get("name").getAsString()).append("§f, Time: §e").append(utcToLocal(entry.get("lastModified").getAsString())).append(" §e(LATEST)").append(matched ? " §b(CURRENT)" : "");
+                            else if (matched)
+                                infoBuilder.append("Name: §b").append(entry.get("name").getAsString()).append("§f, Time: §b").append(utcToLocal(entry.get("lastModified").getAsString())).append(" §b(CURRENT)");
+                            else
+                                infoBuilder.append("Name: §a").append(entry.get("name").getAsString()).append("§f, Time: §a").append(utcToLocal(entry.get("lastModified").getAsString()));
                             //打印相关信息
                             query.sender.sendMessage(infoBuilder.toString());
 
@@ -197,7 +199,7 @@ public class VersionCommand extends VanillaCommand {
         });
     }
 
-    protected String utcToLocal(String utcTime){
+    protected String utcToLocal(String utcTime) {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -210,5 +212,6 @@ public class VersionCommand extends VanillaCommand {
         return df.format(utcDate);
     }
 
-    private record Query(CommandSender sender, CompletableFuture<JsonArray> jsonArrayFuture) { }
+    private record Query(CommandSender sender, CompletableFuture<JsonArray> jsonArrayFuture) {
+    }
 }

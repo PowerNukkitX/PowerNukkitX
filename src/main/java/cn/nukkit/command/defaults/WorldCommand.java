@@ -6,9 +6,12 @@ import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
-import cn.nukkit.command.exceptions.CommandSyntaxException;
-import cn.nukkit.command.utils.CommandParser;
-import cn.nukkit.lang.TranslationContainer;
+import cn.nukkit.command.tree.ParamList;
+import cn.nukkit.command.tree.ParamTree;
+import cn.nukkit.command.utils.CommandLogger;
+import cn.nukkit.utils.TextFormat;
+
+import java.util.Map;
 
 @PowerNukkitXOnly
 @Since("1.19.50-r3")
@@ -20,61 +23,47 @@ public class WorldCommand extends VanillaCommand {
         this.commandParameters.clear();
         this.commandParameters.put("tp",
                 new CommandParameter[]{
-                   CommandParameter.newEnum("tp", new String[]{"tp"}),
-                   CommandParameter.newType("world", CommandParamType.STRING)
+                        CommandParameter.newEnum("tp", new String[]{"tp"}),
+                        CommandParameter.newType("world", CommandParamType.STRING)
                 });
         this.commandParameters.put("list",
                 new CommandParameter[]{
-                   CommandParameter.newEnum("list", new String[]{"list"})
+                        CommandParameter.newEnum("list", new String[]{"list"})
                 });
+        this.paramTree = new ParamTree(this);
     }
 
+    @Since("1.19.50-r4")
     @Override
-    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        if (!this.testPermission(sender) || !sender.isPlayer()) {
-            return false;
-        }
-
-        CommandParser parser = new CommandParser(this, sender, args);
-
-        String form = parser.matchCommandForm();
-        if (form == null) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-            return false;
-        }
-
-        try {
-            switch (form) {
-                case "list" -> {
-                    var strBuilder = new StringBuilder();
-                    Server.getInstance().getLevels().values().forEach(level -> {
-                        strBuilder.append(level.getName());
-                        strBuilder.append(", ");
-                    });
-                    sender.sendMessage(new TranslationContainer("nukkit.command.world.availableLevels",strBuilder.toString()));
-                    return true;
-                }
-                case "tp" -> {
-                    parser.parseString();//skip "tp"
-                    var levelName = parser.parseString();
-                    var level = Server.getInstance().getLevelByName(levelName);
-                    if (level == null) {
-                        if (Server.getInstance().loadLevel(levelName)) {
-                            level = Server.getInstance().getLevelByName(levelName);
-                        } else {
-                            sender.sendMessage(new TranslationContainer("nukkit.command.world.levelNotFound", levelName));
-                            return false;
-                        }
-                    }
-                    sender.asPlayer().teleport(level.getSafeSpawn());
-                    sender.sendMessage(new TranslationContainer("nukkit.command.world.successTp", levelName));
-                    return true;
-                }
+    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+        switch (result.getKey()) {
+            case "list" -> {
+                var strBuilder = new StringBuilder();
+                Server.getInstance().getLevels().values().forEach(level -> {
+                    strBuilder.append(level.getName());
+                    strBuilder.append(", ");
+                });
+                log.addMessage("nukkit.command.world.availableLevels", strBuilder.toString()).output();
+                return 1;
             }
-        } catch (CommandSyntaxException e) {
-            e.printStackTrace();
+            case "tp" -> {
+                String levelName = result.getValue().getResult(1);
+                var level = Server.getInstance().getLevelByName(levelName);
+                if (level == null) {
+                    if (Server.getInstance().loadLevel(levelName)) {
+                        level = Server.getInstance().getLevelByName(levelName);
+                    } else {
+                        log.addMessage("nukkit.command.world.levelNotFound", levelName).output();
+                        return 0;
+                    }
+                }
+                sender.asPlayer().teleport(level.getSafeSpawn());
+                log.addMessage(TextFormat.WHITE + "%nukkit.command.world.successTp", levelName).output();
+                return 1;
+            }
+            default -> {
+                return 0;
+            }
         }
-
-        return false;
     }
 }
