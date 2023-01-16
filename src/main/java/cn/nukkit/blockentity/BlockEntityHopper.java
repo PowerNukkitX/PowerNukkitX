@@ -263,28 +263,20 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
                 if (!item.isNull()) {
                     Item itemToAdd = item.clone();
                     itemToAdd.count = 1;
-
-                    if (!this.inventory.canAddItem(itemToAdd)) {
+                    if (!this.inventory.canAddItem(itemToAdd))
                         continue;
-                    }
 
                     InventoryMoveItemEvent ev = new InventoryMoveItemEvent(inv, this.inventory, this, itemToAdd, InventoryMoveItemEvent.Action.SLOT_CHANGE);
                     this.server.getPluginManager().callEvent(ev);
-
-                    if (ev.isCancelled()) {
+                    if (ev.isCancelled())
                         continue;
-                    }
 
                     Item[] items = this.inventory.addItem(itemToAdd);
-
-                    if (items.length >= 1) {
+                    if (items.length >= 1)
                         continue;
-                    }
 
                     item.count--;
-
                     inv.setItem(i, item);
-
                     pickedUpItem = true;
                 }
             }
@@ -316,12 +308,12 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
     @Since("1.19.21-r3")
     public boolean pushItemsIntoMinecart() {
         for (var entity : this.level.getCollidingEntities(this.pushArea)) {
+            //漏斗矿车会自动吸取物品
             if (entity instanceof EntityMinecartAbstract && !(entity instanceof EntityMinecartHopper) && entity instanceof InventoryHolder holder) {
                 Inventory holderInventory = holder.getInventory();
 
-                if (holderInventory.isFull()) {
+                if (holderInventory.isFull())
                     return false;
-                }
 
                 for (int i = 0; i < this.inventory.getSize(); i++) {
                     Item item = this.inventory.getItem(i);
@@ -330,22 +322,19 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
                         Item itemToAdd = item.clone();
                         itemToAdd.setCount(1);
 
-                        if (!holderInventory.canAddItem(itemToAdd)) {
+                        if (!holderInventory.canAddItem(itemToAdd))
                             continue;
-                        }
 
                         InventoryMoveItemEvent ev = new InventoryMoveItemEvent(this.inventory, holderInventory, this, itemToAdd, InventoryMoveItemEvent.Action.SLOT_CHANGE);
                         this.server.getPluginManager().callEvent(ev);
 
-                        if (ev.isCancelled()) {
+                        if (ev.isCancelled())
                             continue;
-                        }
 
                         Item[] items = holderInventory.addItem(itemToAdd);
 
-                        if (items.length > 0) {
+                        if (items.length > 0)
                             continue;
-                        }
 
                         item.count--;
                         this.inventory.setItem(i, item);

@@ -288,17 +288,18 @@ public class BlockHopper extends BlockTransparentMeta implements RedstoneCompone
                 }
             } else if (blockSide instanceof BlockComposter blockComposter) {
                 if (blockComposter.isFull()) {
+                    //检查是否能输入
+                    if (!hopperInv.canAddItem(blockComposter.getOutPutItem()))
+                        return false;
+
                     //Will call BlockComposterEmptyEvent
-                    Item item = blockComposter.empty();
+                    var item = blockComposter.empty();
 
                     if (item == null || item.isNull())
                         return false;
 
                     Item itemToAdd = item.clone();
                     itemToAdd.count = 1;
-
-                    if (!hopperInv.canAddItem(itemToAdd))
-                        return false;
 
                     Item[] items = hopperInv.addItem(itemToAdd);
 

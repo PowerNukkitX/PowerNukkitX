@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.IntBlockProperty;
@@ -31,6 +32,9 @@ public class BlockComposter extends BlockSolidMeta implements ItemID {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(COMPOSTER_FILL_LEVEL);
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    public static final Item OUTPUT_ITEM = new ItemDye(DyeColor.BONE_MEAL, 1);
 
     static {
         registerDefaults();
@@ -192,6 +196,12 @@ public class BlockComposter extends BlockSolidMeta implements ItemID {
             return event.getDrop();
         }
         return null;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    public Item getOutPutItem() {
+        return OUTPUT_ITEM.clone();
     }
 
     @PowerNukkitOnly
