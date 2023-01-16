@@ -1,14 +1,17 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
-import cn.nukkit.command.Command;
+import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
-import cn.nukkit.lang.TranslationContainer;
+import cn.nukkit.command.tree.ParamList;
+import cn.nukkit.command.tree.ParamTree;
+import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.level.Level;
-import cn.nukkit.utils.TextFormat;
+
+import java.util.Map;
 
 /**
  * @author xtypr
@@ -38,125 +41,120 @@ public class TimeCommand extends VanillaCommand {
                 CommandParameter.newEnum("mode", new CommandEnum("TimeModeSet", "set")),
                 CommandParameter.newEnum("time", new CommandEnum("TimeSpec", "day", "night", "midnight", "noon", "sunrise", "sunset"))
         });
+        this.paramTree = new ParamTree(this);
     }
 
+    @Since("1.19.50-r4")
     @Override
-    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        if (args.length < 1) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-
-            return false;
-        }
-
-        if ("start".equals(args[0])) {
-            if (!sender.hasPermission("nukkit.command.time.start")) {
-                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%nukkit.command.generic.permission"));
-
-                return true;
-            }
-            for (Level level : sender.getServer().getLevels().values()) {
-                level.checkTime();
-                level.startTime();
-                level.checkTime();
-            }
-            Command.broadcastCommandMessage(sender, "Restarted the time");
-            return true;
-        } else if ("stop".equals(args[0])) {
-            if (!sender.hasPermission("nukkit.command.time.stop")) {
-                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%nukkit.command.generic.permission"));
-
-                return true;
-            }
-            for (Level level : sender.getServer().getLevels().values()) {
-                level.checkTime();
-                level.stopTime();
-                level.checkTime();
-            }
-            Command.broadcastCommandMessage(sender, "Stopped the time");
-            return true;
-        } else if ("query".equals(args[0])) {
-            if (!sender.hasPermission("nukkit.command.time.query")) {
-                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%nukkit.command.generic.permission"));
-
-                return true;
-            }
-            Level level;
-            if (sender instanceof Player) {
-                level = ((Player) sender).getLevel();
-            } else {
-                level = sender.getServer().getDefaultLevel();
-            }
-            sender.sendMessage(new TranslationContainer("commands.time.query.gametime", String.valueOf(level.getTime())));
-            return true;
-        }
-
-
-        if (args.length < 2) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-
-            return false;
-        }
-
-        if ("set".equals(args[0])) {
-            if (!sender.hasPermission("nukkit.command.time.set")) {
-                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%nukkit.command.generic.permission"));
-
-                return true;
-            }
-
-            int value;
-            if ("day".equals(args[1])) {
-                value = Level.TIME_DAY;
-            } else if ("night".equals(args[1])) {
-                value = Level.TIME_NIGHT;
-            } else if ("midnight".equals(args[1])) {
-                value = Level.TIME_MIDNIGHT;
-            } else if ("noon".equals(args[1])) {
-                value = Level.TIME_NOON;
-            } else if ("sunrise".equals(args[1])) {
-                value = Level.TIME_SUNRISE;
-            } else if ("sunset".equals(args[1])) {
-                value = Level.TIME_SUNSET;
-            } else {
-                try {
-                    value = Math.max(0, Integer.parseInt(args[1]));
-                } catch (Exception e) {
-                    sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-                    return true;
+    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+        var list = result.getValue();
+        switch (result.getKey()) {
+            case "1arg" -> {
+                String mode = list.getResult(0);
+                if ("start".equals(mode)) {
+                    if (!sender.hasPermission("nukkit.command.time.start")) {
+                        log.addMessage("nukkit.command.generic.permission").output();
+                        return 0;
+                    }
+                    for (Level level : sender.getServer().getLevels().values()) {
+                        level.checkTime();
+                        level.startTime();
+                        level.checkTime();
+                    }
+                    log.addSuccess("Restarted the time").output(true, true);
+                } else if ("stop".equals(mode)) {
+                    if (!sender.hasPermission("nukkit.command.time.stop")) {
+                        log.addMessage("nukkit.command.generic.permission").output();
+                        return 0;
+                    }
+                    for (Level level : sender.getServer().getLevels().values()) {
+                        level.checkTime();
+                        level.stopTime();
+                        level.checkTime();
+                    }
+                    log.addSuccess("Stopped the time").output(true, true);
+                } else if ("query".equals(mode)) {
+                    if (!sender.hasPermission("nukkit.command.time.query")) {
+                        log.addMessage("nukkit.command.generic.permission").output();
+                        return 0;
+                    }
+                    Level level;
+                    if (sender instanceof Player) {
+                        level = ((Player) sender).getLevel();
+                    } else {
+                        level = sender.getServer().getDefaultLevel();
+                    }
+                    log.addSuccess("commands.time.query.gametime", String.valueOf(level.getTime())).output(true, true);
                 }
+                return 1;
             }
-
-            for (Level level : sender.getServer().getLevels().values()) {
-                level.checkTime();
-                level.setTime(value);
-                level.checkTime();
+            case "add" -> {
+                if (!sender.hasPermission("nukkit.command.time.add")) {
+                    log.addMessage("nukkit.command.generic.permission").output();
+                    return 0;
+                }
+                int value = list.getResult(1);
+                if (value < 0) {
+                    log.addNumTooSmall(1, 0).output();
+                    return 0;
+                }
+                for (Level level : sender.getServer().getLevels().values()) {
+                    level.checkTime();
+                    level.setTime(level.getTime() + value);
+                    level.checkTime();
+                }
+                log.addSuccess("commands.time.added", String.valueOf(value)).output(true, true);
+                return 1;
             }
-            Command.broadcastCommandMessage(sender, new TranslationContainer("commands.time.set", String.valueOf(value)));
-        } else if ("add".equals(args[0])) {
-            if (!sender.hasPermission("nukkit.command.time.add")) {
-                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%nukkit.command.generic.permission"));
-
-                return true;
+            case "setAmount" -> {
+                if (!sender.hasPermission("nukkit.command.time.set")) {
+                    log.addMessage("nukkit.command.generic.permission").output();
+                    return 0;
+                }
+                int value = list.getResult(1);
+                if (value < 0) {
+                    log.addNumTooSmall(1, 0).output();
+                    return 0;
+                }
+                for (Level level : sender.getServer().getLevels().values()) {
+                    level.checkTime();
+                    level.setTime(value);
+                    level.checkTime();
+                }
+                log.addSuccess("commands.time.set", String.valueOf(value)).output(true, true);
+                return 1;
             }
-
-            int value;
-            try {
-                value = Math.max(0, Integer.parseInt(args[1]));
-            } catch (Exception e) {
-                sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-                return true;
+            case "setTime" -> {
+                if (!sender.hasPermission("nukkit.command.time.set")) {
+                    log.addMessage("nukkit.command.generic.permission").output();
+                    return 0;
+                }
+                int value = 0;
+                String str = list.getResult(1);
+                if ("day".equals(str)) {
+                    value = Level.TIME_DAY;
+                } else if ("night".equals(str)) {
+                    value = Level.TIME_NIGHT;
+                } else if ("midnight".equals(str)) {
+                    value = Level.TIME_MIDNIGHT;
+                } else if ("noon".equals(str)) {
+                    value = Level.TIME_NOON;
+                } else if ("sunrise".equals(str)) {
+                    value = Level.TIME_SUNRISE;
+                } else if ("sunset".equals(str)) {
+                    value = Level.TIME_SUNSET;
+                }
+                for (Level level : sender.getServer().getLevels().values()) {
+                    level.checkTime();
+                    level.setTime(value);
+                    level.checkTime();
+                }
+                log.addSuccess("commands.time.set", String.valueOf(value)).output(true, true);
+                return 1;
             }
-
-            for (Level level : sender.getServer().getLevels().values()) {
-                level.checkTime();
-                level.setTime(level.getTime() + value);
-                level.checkTime();
+            default -> {
+                return 0;
             }
-            Command.broadcastCommandMessage(sender, new TranslationContainer("commands.time.added", String.valueOf(value)));
-        } else {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
         }
-
-        return true;
     }
 }

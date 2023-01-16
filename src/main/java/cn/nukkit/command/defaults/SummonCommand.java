@@ -6,16 +6,16 @@ import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
-import cn.nukkit.command.exceptions.CommandSyntaxException;
-import cn.nukkit.command.utils.CommandParser;
+import cn.nukkit.command.tree.ParamList;
+import cn.nukkit.command.tree.ParamTree;
+import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.command.utils.EntitySelector;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Position;
-import cn.nukkit.utils.TextFormat;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -36,55 +36,48 @@ public class SummonCommand extends VanillaCommand {
                 CommandParameter.newType("nameTag", true, CommandParamType.STRING),
                 CommandParameter.newEnum("nameTagAlwaysVisible", true, CommandEnum.ENUM_BOOLEAN)
         });
+        this.paramTree = new ParamTree(this);
     }
 
+    @Since("1.19.50-r4")
     @Override
-    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        if (!this.testPermission(sender)) {
-            return false;
+    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+        var list = result.getValue();
+        String entityType = list.getResult(0);
+        if (!entityType.startsWith("minecraft:"))
+            entityType = "minecraft:" + entityType;
+        if (entityType.equals("minecraft:player")) {
+            log.addError("commands.summon.failed").output();
+            return 0;
         }
-
-        CommandParser parser = new CommandParser(this, sender, args);
-        try {
-            String entityType = parser.parseString();
-            if (!entityType.startsWith("minecraft:"))
-                entityType = "minecraft:" + entityType;
-            if (entityType.equals("minecraft:player")) {
-                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.summon.failed"));
-                return false;
-            }
-            Integer entityId = EntitySelector.ENTITY_NAME2ID.get(entityType);
-            if (entityId == null) {
-                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.summon.failed"));
-                return false;
-            }
-            Position pos = sender.getPosition();
-            String nameTag = null;
-            boolean nameTagAlwaysVisible = false;
-            if (parser.hasNext()) {
-                pos = parser.parsePosition();
-            }
-            if (!pos.level.isYInRange((int) pos.y) || !pos.getChunk().isLoaded()) {
-                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.summon.outOfWorld"));
-                return false;
-            }
-            if (parser.hasNext()) {
-                nameTag = parser.parseString();
-            }
-            if (parser.hasNext()) {
-                nameTagAlwaysVisible = parser.parseBoolean();
-            }
-            Entity entity = Entity.createEntity(entityId, pos);
-            if (nameTag != null) {
-                entity.setNameTag(nameTag);
-                entity.setNameTagAlwaysVisible(nameTagAlwaysVisible);
-            }
-            entity.spawnToAll();
-            sender.sendMessage(new TranslationContainer("commands.summon.success"));
-            return true;
-        } catch (CommandSyntaxException e) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-            return false;
+        Integer entityId = EntitySelector.ENTITY_NAME2ID.get(entityType);
+        if (entityId == null) {
+            log.addError("commands.summon.failed").output();
+            return 0;
         }
+        Position pos = sender.getPosition();
+        String nameTag = null;
+        boolean nameTagAlwaysVisible = false;
+        if (list.hasResult(1)) {
+            pos = list.getResult(1);
+        }
+        if (!pos.level.isYInRange((int) pos.y) || !pos.getChunk().isLoaded()) {
+            log.addError("commands.summon.outOfWorld").output();
+            return 0;
+        }
+        if (list.hasResult(2)) {
+            nameTag = list.getResult(2);
+        }
+        if (list.hasResult(3)) {
+            nameTagAlwaysVisible = list.getResult(3);
+        }
+        Entity entity = Entity.createEntity(entityId, pos);
+        if (nameTag != null) {
+            entity.setNameTag(nameTag);
+            entity.setNameTagAlwaysVisible(nameTagAlwaysVisible);
+        }
+        entity.spawnToAll();
+        log.addSuccess("commands.summon.success").output();
+        return 1;
     }
 }
