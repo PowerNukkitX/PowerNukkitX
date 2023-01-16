@@ -110,12 +110,9 @@ public abstract class BaseInventory implements Inventory {
         return this.slots.containsKey(index) ? this.slots.get(index).clone() : AIR_ITEM;
     }
 
-    /**
-     * 获得未克隆的Item对象<p/>
-     * 若调用方保证不会修改此方法返回的Item对象，则使用此方法将降低特定场景下的性能开销
-     */
     @PowerNukkitXOnly
     @Since("1.19.50-r4")
+    @Override
     public Item getUnclonedItem(int index) {
         return this.slots.getOrDefault(index, AIR_ITEM);
     }

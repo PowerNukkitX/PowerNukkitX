@@ -34,7 +34,7 @@ import java.util.HashSet;
  * @author CreeperFace
  * @since 8.5.2017
  */
-public class BlockEntityHopper extends BlockEntitySpawnable implements InventoryHolder, BlockEntityContainer, BlockEntityNameable {
+public class BlockEntityHopper extends BlockEntitySpawnable implements InventoryHolder, BlockEntityContainer, BlockEntityNameable, BlockHopper.IHopper {
 
     protected HopperInventory inventory;
 
@@ -221,9 +221,9 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
         boolean changed = pushItems() || pushItemsIntoMinecart();
 
         if (blockEntity instanceof InventoryHolder || blockSide instanceof BlockComposter) {
-            changed = pullItems() || changed;
+            changed = pullItems(this, this) || changed;
         } else {
-            changed = pullItemsFromMinecart() || pickupItems() || changed;
+            changed = pullItemsFromMinecart() || pickupItems(this, this, pickupArea) || changed;
         }
 
         if (changed) {
@@ -238,78 +238,6 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
     @PowerNukkitOnly
     @Override
     public boolean isObservable() {
-        return false;
-    }
-
-    @PowerNukkitDifference(info = "Check if the hopper above is locked, then don't pull items.", since = "1.4.0.0-PN")
-    public boolean pullItems() {
-        if (this.inventory.isFull()) {
-            return false;
-        }
-
-        Block blockSide = this.getBlock().getSide(BlockFace.UP);
-        BlockEntity blockEntity = this.level.getBlockEntity(temporalVector.setComponentsAdding(this, BlockFace.UP));
-
-        if (blockEntity instanceof BlockEntityHopper) {
-            BlockEntityHopper hopper = (BlockEntityHopper) blockEntity;
-            if (hopper.disabled)
-                return false;
-        }
-
-        if (blockEntity instanceof InventoryHolder) {
-            Inventory inv = blockEntity instanceof RecipeInventoryHolder recipeInventoryHolder ? recipeInventoryHolder.getProductView() : ((InventoryHolder) blockEntity).getInventory();
-
-            for (int i = 0; i < inv.getSize(); i++) {
-                Item item = inv.getItem(i);
-
-                if (!item.isNull()) {
-                    Item itemToAdd = item.clone();
-                    itemToAdd.count = 1;
-
-                    if (!this.inventory.canAddItem(itemToAdd)) {
-                        continue;
-                    }
-
-                    InventoryMoveItemEvent ev = new InventoryMoveItemEvent(inv, this.inventory, this, itemToAdd, InventoryMoveItemEvent.Action.SLOT_CHANGE);
-                    this.server.getPluginManager().callEvent(ev);
-
-                    if (ev.isCancelled()) {
-                        continue;
-                    }
-
-                    Item[] items = this.inventory.addItem(itemToAdd);
-
-                    if (items.length >= 1) {
-                        continue;
-                    }
-
-                    item.count--;
-
-                    inv.setItem(i, item);
-                    return true;
-                }
-            }
-        } else if (blockSide instanceof BlockComposter) {
-            BlockComposter blockComposter = (BlockComposter) blockSide;
-            if (blockComposter.isFull()) {
-                Item item = blockComposter.empty();
-
-                if (item == null || item.isNull()) {
-                    return false;
-                }
-
-                Item itemToAdd = item.clone();
-                itemToAdd.count = 1;
-
-                if (!this.inventory.canAddItem(itemToAdd)) {
-                    return false;
-                }
-
-                Item[] items = this.inventory.addItem(itemToAdd);
-
-                return items.length < 1;
-            }
-        }
         return false;
     }
 
@@ -359,55 +287,6 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
 
                     pickedUpItem = true;
                 }
-            }
-        }
-
-        return pickedUpItem;
-    }
-
-    public boolean pickupItems() {
-        if (this.inventory.isFull()) {
-            return false;
-        }
-
-        boolean pickedUpItem = false;
-
-        for (Entity entity : this.level.getCollidingEntities(this.pickupArea)) {
-            if (entity.isClosed() || !(entity instanceof EntityItem) || pushArea.intersectsWith(entity.getBoundingBox())) {
-                continue;
-            }
-
-            EntityItem itemEntity = (EntityItem) entity;
-            Item item = itemEntity.getItem();
-
-            if (item.isNull()) {
-                continue;
-            }
-
-            int originalCount = item.getCount();
-
-            if (!this.inventory.canAddItem(item)) {
-                continue;
-            }
-
-            InventoryMoveItemEvent ev = new InventoryMoveItemEvent(null, this.inventory, this, item, InventoryMoveItemEvent.Action.PICKUP);
-            this.server.getPluginManager().callEvent(ev);
-
-            if (ev.isCancelled()) {
-                continue;
-            }
-
-            Item[] items = this.inventory.addItem(item);
-
-            if (items.length == 0) {
-                entity.close();
-                pickedUpItem = true;
-                continue;
-            }
-
-            if (items[0].getCount() != originalCount) {
-                pickedUpItem = true;
-                item.setCount(items[0].getCount());
             }
         }
 
