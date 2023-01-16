@@ -297,6 +297,7 @@ public abstract class BaseInventory implements Inventory {
         List<Item> itemSlots = new ArrayList<>();
         for (Item slot : slots) {
             if (slot.getId() != 0 && slot.getCount() > 0) {
+                //todo: clone only if necessary
                 itemSlots.add(slot.clone());
             }
         }
@@ -369,19 +370,22 @@ public abstract class BaseInventory implements Inventory {
         }
 
         for (int i = 0; i < this.size; ++i) {
-            Item item = this.getItem(i);
+            Item item = this.getUnclonedItem(i);
             if (item.getId() == Item.AIR || item.getCount() <= 0) {
                 continue;
             }
 
-            for (Item slot : new ArrayList<>(itemSlots)) {
+            for (Iterator<Item> iterator = itemSlots.iterator(); iterator.hasNext(); ) {
+                Item slot = iterator.next();
                 if (slot.equals(item, item.hasMeta(), item.getCompoundTag() != null)) {
+                    item = item.clone();
                     int amount = Math.min(item.getCount(), slot.getCount());
                     slot.setCount(slot.getCount() - amount);
                     item.setCount(item.getCount() - amount);
                     this.setItem(i, item);
                     if (slot.getCount() <= 0) {
-                        itemSlots.remove(slot);
+//                        itemSlots.remove(slot);
+                        iterator.remove();
                     }
 
                 }
