@@ -396,6 +396,9 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         return maxSpeed;
     }
 
+    protected void activate(int x, int y, int z, boolean flag) {
+    }
+
     /**
      * 检查邻近的漏斗并通知它输出物品
      * @param pushArea 漏斗输出范围
@@ -403,7 +406,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
      */
     @PowerNukkitXOnly
     @Since("1.19.50-r4")
-    protected boolean checkPushHopper(AxisAlignedBB pushArea, InventoryHolder holder) {
+    private boolean checkPushHopper(AxisAlignedBB pushArea, InventoryHolder holder) {
         var hopperPushArray = this.level.getTickCachedCollisionBlocks(pushArea, true, false, b -> b instanceof BlockHopper);
         if (hopperPushArray.length >= 1) {
             ((BlockEntityHopper) hopperPushArray[0].getLevelBlockEntity()).setMinecartInvPushTo(holder);
@@ -417,6 +420,8 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
      * @param pickupArea 漏斗拉取范围
      * @return 是否有漏斗被通知
      */
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
     private boolean checkPickupHopper(AxisAlignedBB pickupArea, InventoryHolder holder) {
         var hopperPickupArray = this.level.getTickCachedCollisionBlocks(pickupArea, true, false, b -> b instanceof BlockHopper);
         if (hopperPickupArray.length >= 1) {
@@ -424,9 +429,6 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
             return true;
         }
         return false;
-    }
-
-    protected void activate(int x, int y, int z, boolean flag) {
     }
 
     private void setFalling() {
