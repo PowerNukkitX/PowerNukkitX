@@ -61,8 +61,10 @@ public class EntityMinecartHopper extends EntityMinecartAbstract implements Inve
         boolean changed;
 
         if (blockEntity instanceof InventoryHolder || blockSide instanceof BlockComposter) {
+            //从容器中拉取物品
             changed = pullItems(this, this);
         } else {
+            //收集掉落物
             changed = pickupItems(this, this, pickupArea);
         }
 

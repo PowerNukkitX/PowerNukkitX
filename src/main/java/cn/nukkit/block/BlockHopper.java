@@ -318,8 +318,7 @@ public class BlockHopper extends BlockTransparentMeta implements RedstoneCompone
             boolean pickedUpItem = false;
 
             for (Entity entity : hopperPos.level.getCollidingEntities(pickupArea)) {
-                //                                                                                      needn't?
-                if (entity.isClosed() || !(entity instanceof EntityItem itemEntity)/* || pushArea.intersectsWith(entity.getBoundingBox())*/)
+                if (entity.isClosed() || !(entity instanceof EntityItem itemEntity))
                     continue;
 
                 Item item = itemEntity.getItem();
