@@ -1,192 +1,210 @@
 package cn.nukkit.math;
 
-import cn.nukkit.api.DeprecationDetails;
+import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.level.Location;
-import lombok.Getter;
 
-@Deprecated
-@DeprecationDetails(since = "1.19.50-r4",
-        reason = "The implementation of this utility class is very crude and suspected to be buggy. Will be removed after a few versions",
-        replaceWith = "AngleMath.java")
+import static java.lang.StrictMath.*;
+
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-@Getter
-public class BVector3 {
-
-    private double xzAxisAngle;
-    private double yAxisAngle;//-90 -- 90
-    private Vector3 pos;
+@PowerNukkitXDifference(info = "update Angle algorithm", since = "1.19.50-r4")
+public final class BVector3 {
+    private Vector3 vector3;//标准化的方向向量,模长为1
+    private double yaw;
+    private double pitch;
     private double length;
 
-    //only use the location's pitch and yaw
+    /**
+     * From location to BVector 3.
+     *
+     * @param location the location
+     * @return the b vector 3
+     */
     public static BVector3 fromLocation(Location location) {
-        return fromLocation(location, 1);
+        return new BVector3(location.getYaw(), location.getPitch());
     }
 
-    public static BVector3 fromLocation(Location location, double length) {
-        return new BVector3(location.getYaw() - 270, -location.getPitch(), length);
+    /**
+     * From angle to BVector 3.
+     *
+     * @param yaw   the yaw
+     * @param pitch the pitch
+     * @return the b vector 3
+     */
+    public static BVector3 fromAngle(double yaw, double pitch) {
+        return new BVector3(yaw, pitch);
     }
 
-    public static BVector3 fromAngle(double xzAxisAngle, double yAxisAngle, double length) {
-        return new BVector3(xzAxisAngle, yAxisAngle, length);
-    }
-
+    /**
+     * From pos to BVector 3.
+     *
+     * @param pos the pos
+     * @return the b vector 3
+     */
     public static BVector3 fromPos(Vector3 pos) {
-        return new BVector3(pos.clone());
+        return new BVector3(pos);
     }
 
+    /**
+     * From pos to BVector 3.
+     *
+     * @param x the x
+     * @param y the y
+     * @param z the z
+     * @return the b vector 3
+     */
     public static BVector3 fromPos(double x, double y, double z) {
         return fromPos(new Vector3(x, y, z));
     }
 
-    private BVector3(double xzAxisAngle, double yAxisAngle, double length) {
-        convertAngle(xzAxisAngle, yAxisAngle);
-        this.length = length;
-        updatePos();
+    private BVector3(double yaw, double pitch) {
+        this.vector3 = getDirectionVector(yaw, pitch);
+        this.yaw = getYawFromVector(this.vector3);
+        this.pitch = getPitchFromVector(this.vector3);
+        this.length = 1;
     }
 
-    private BVector3(Vector3 pos) {
-        this.pos = pos;
-        updateAngle();
+    private BVector3(Vector3 vector3) {
+        this.yaw = getYawFromVector(vector3);
+        this.pitch = getPitchFromVector(vector3);
+        this.vector3 = getDirectionVector(yaw, pitch);
+        this.length = 1;
     }
 
-    public BVector3 extend(double length) {
-        this.length += length;
-        updatePos();
+    /**
+     * 设置Yaw
+     *
+     * @param yaw the yaw
+     * @return the yaw
+     */
+    public BVector3 setYaw(double yaw) {
+        this.vector3 = getDirectionVector(yaw, this.pitch);
+        this.yaw = getYawFromVector(this.vector3);
         return this;
     }
 
+    /**
+     * 设置 pitch.
+     *
+     * @param pitch the pitch
+     * @return the pitch
+     */
+    public BVector3 setPitch(double pitch) {
+        this.vector3 = getDirectionVector(this.yaw, pitch);
+        this.pitch = getPitchFromVector(this.vector3);
+        return this;
+    }
+
+    /**
+     * 旋转Yaw
+     *
+     * @param yaw the yaw
+     * @return the b vector 3
+     */
+    public BVector3 rotateYaw(double yaw) {
+        this.yaw += yaw;
+        this.vector3 = getDirectionVector(this.yaw, this.pitch);
+        this.yaw = getYawFromVector(this.vector3);
+        return this;
+    }
+
+    /**
+     * 旋转Pitch
+     *
+     * @param pitch the pitch
+     * @return the b vector 3
+     */
+    public BVector3 rotatePitch(double pitch) {
+        this.pitch += pitch;
+        this.vector3 = getDirectionVector(this.yaw, this.pitch);
+        this.pitch = getPitchFromVector(this.vector3);
+        return this;
+    }
+
+    /**
+     * 添加指定模长的方向向量到Vector3(0, 0, 0)
+     *
+     * @return the vector 3
+     */
+    public Vector3 addToPos() {
+        return addToPos(new Vector3(0, 0, 0));
+    }
+
+    /**
+     * 添加指定模长的方向向量到指定坐标
+     *
+     * @param pos the pos
+     * @return the vector 3
+     */
+    public Vector3 addToPos(Vector3 pos) {
+        return pos.add(this.vector3.x * this.length, this.vector3.y * this.length, this.vector3.z * this.length);
+    }
+
+    /**
+     * 设置该方向向量的模
+     *
+     * @param length the length
+     * @return the length
+     */
     public BVector3 setLength(double length) {
         this.length = length;
-        updatePos();
         return this;
-    }
-
-    public BVector3 setAngle(double xzAxisAngle, double yAxisAngle) {
-        convertAngle(xzAxisAngle, yAxisAngle);
-        updatePos();
-        return this;
-    }
-
-    public BVector3 setYAngle(double yAngle) {
-        this.yAxisAngle = yAngle;
-        updatePos();
-        return this;
-    }
-
-    public BVector3 setXZAngle(double xzAngle) {
-        this.xzAxisAngle = xzAngle;
-        updatePos();
-        return this;
-    }
-
-    public BVector3 addAngle(double xzAxisAngle, double yAxisAngle) {
-        convertAngle(this.xzAxisAngle + xzAxisAngle, this.yAxisAngle + yAxisAngle);
-        updatePos();
-        return this;
-    }
-
-    public BVector3 setPos(double x, double y, double z) {
-        this.pos = this.pos.setComponents(x, y, z);
-        updateAngle();
-        return this;
-    }
-
-    public BVector3 addPos(double x, double y, double z) {
-        this.pos = this.pos.add(x, y, z);
-        updateAngle();
-        return this;
-    }
-
-    public Vector3 addToPos(Vector3 pos) {
-        return pos.add(this.pos.x, this.pos.y, this.pos.z);
     }
 
     public double getYaw() {
-        double res = Double.isNaN(xzAxisAngle + 270) ? 0 : xzAxisAngle + 270;
-        return pos.x < 0 ? res + 180 : res;
-    }
-
-    public double getHeadYaw() {
-        return getYaw();
+        return yaw;
     }
 
     public double getPitch() {
-        if (-yAxisAngle > 90) {
-            return 90;
-        } else if (-yAxisAngle < -90) {
-            return -90;
-        }
-        return Double.isNaN(yAxisAngle) ? 0 : -yAxisAngle;
+        return pitch;
     }
 
-    private void updatePos() {
-        double y = sin(yAxisAngle) * length;
-        double projectEdge = cos(yAxisAngle) * length;
-        double x = cos(xzAxisAngle) * projectEdge;
-        double z = sin(xzAxisAngle) * projectEdge;
-        this.pos = new Vector3(x, y, z);
+    /**
+     * 获取单位方向向量
+     *
+     * @return the direction vector
+     */
+    public Vector3 getDirectionVector() {
+        return vector3.clone();
     }
 
-    private void updateAngle() {
-        this.xzAxisAngle = atan(pos.z / pos.x);
-        double projectEdge = Math.sqrt(Math.pow(pos.x, 2) + Math.pow(pos.z, 2));
-        this.yAxisAngle = atan(pos.y / projectEdge);
-        this.length = Math.sqrt(Math.pow(projectEdge, 2) + Math.pow(pos.y, 2));
+    /**
+     * 通过yaw与pitch计算出等价的Vector3方向向量
+     *
+     * @param yaw   yaw
+     * @param pitch pitch
+     * @return Vector3方向向量
+     */
+    public static Vector3 getDirectionVector(double yaw, double pitch) {
+        var pitch0 = toRadians(pitch + 90);
+        var yaw0 = toRadians(yaw + 90);
+        var x = sin(pitch0) * cos(yaw0);
+        var z = sin(pitch0) * sin(yaw0);
+        var y = cos(pitch0);
+        return new Vector3(x, y, z).normalize();
     }
 
-    //convert the values of yAxisAngle and xzAxisAngle if it's not suitable;
-    private void convertAngle(double xzAxisAngle, double yAxisAngle) {
-        yAxisAngle = yAxisAngle % 360;
-        if (Math.abs(yAxisAngle) <= 90) {
-            this.xzAxisAngle = xzAxisAngle;
-            this.yAxisAngle = yAxisAngle;
-            return;
-        }
-        if (yAxisAngle < -90) {
-            this.yAxisAngle = -(180 + yAxisAngle);
-            this.xzAxisAngle = xzAxisAngle + 180;
-            return;
-        }
-        if (yAxisAngle > 90) {
-            this.yAxisAngle = 180 - yAxisAngle;
-            this.xzAxisAngle = xzAxisAngle + 180;
-            return;
-        }
+    /**
+     * 通过方向向量计算出yaw
+     *
+     * @param vector 方向向量
+     * @return yaw
+     */
+    public static double getYawFromVector(Vector3 vector) {
+        double yaw = toDegrees(asin(-vector.x / sqrt(vector.x * vector.x + vector.z * vector.z)));
+        return -vector.z > 0.0D ? 180.0D - yaw : StrictMath.abs(yaw) < 1E-10 ? 0 : yaw;
     }
 
-    //Trigonometric functions which can use angle number
-    public static double sin(double angle) {
-        return Math.sin(Math.PI * (angle / 180));
-    }
-
-    public static double cos(double angle) {
-        return Math.cos(Math.PI * (angle / 180));
-    }
-
-    public static double tan(double angle) {
-        return Math.tan(Math.PI * (angle / 180));
-    }
-
-    public static double asin(double sin) {
-        return 180 * Math.asin(sin) / Math.PI;
-    }
-
-    public static double acos(double cos) {
-        return 180 * Math.acos(cos) / Math.PI;
-    }
-
-    public static double atan(double tan) {
-        return 180 * Math.atan(tan) / Math.PI;
-    }
-
-    public static double minAbs(double a, double b) {
-        return (Math.abs(a) < Math.abs(b)) ? a : b;
-    }
-
-    public static double maxAbs(double a, double b) {
-        return (Math.abs(a) > Math.abs(b)) ? a : b;
+    /**
+     * 通过方向向量计算出pitch
+     *
+     * @param vector 方向向量
+     * @return pitch
+     */
+    public static double getPitchFromVector(Vector3 vector) {
+        var pitch = toDegrees(asin(-vector.y / sqrt(vector.x * vector.x + vector.z * vector.z + vector.y * vector.y)));
+        return StrictMath.abs(pitch) < 1E-10 ? 0 : pitch;
     }
 }

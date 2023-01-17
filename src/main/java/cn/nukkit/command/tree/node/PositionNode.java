@@ -27,7 +27,6 @@ public abstract class PositionNode extends ParamNode<Position> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public <E> E get() {
         return this.get(this.parent.parent.getSender().getPosition());
     }
@@ -77,11 +76,11 @@ public abstract class PositionNode extends ParamNode<Position> {
                         } else {
                             switch (index) {
                                 case 0 ->
-                                        coordinate[index] = BVector3.fromLocation(loc).addAngle(-90, 0).setYAngle(0).setLength(Double.parseDouble(relativeAngleCoordinate)).getPos().getX();
+                                        coordinate[index] = BVector3.fromLocation(loc).rotateYaw(-90).setPitch(0).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos().getX();
                                 case 1 ->
-                                        coordinate[index] = BVector3.fromLocation(loc).addAngle(0, 90).setLength(Double.parseDouble(relativeAngleCoordinate)).getPos().getY();
+                                        coordinate[index] = BVector3.fromLocation(loc).rotatePitch(90).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos().getY();
                                 case 2 ->
-                                        coordinate[index] = BVector3.fromLocation(loc).setLength(Double.parseDouble(relativeAngleCoordinate)).getPos().getZ();
+                                        coordinate[index] = BVector3.fromLocation(loc).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos().getZ();
                                 default -> {
                                     this.error();
                                     return;

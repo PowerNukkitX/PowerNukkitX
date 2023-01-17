@@ -115,7 +115,7 @@ public class TestForBlocksCommand extends VanillaCommand {
                 }
             }
         }
-        log.addSuccess("commands.compare.success", String.valueOf(count));
+        log.addSuccess("commands.compare.success", String.valueOf(count)).output();
         return 1;
     }
 

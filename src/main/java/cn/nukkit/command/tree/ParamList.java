@@ -91,7 +91,7 @@ public class ParamList extends ArrayList<IParamNode<?>> {
      * @return 指定索引处的参数节点是否存在值
      */
     public boolean hasResult(int index) {
-        return index < this.size() && index > -1 && this.get(index).get() != null;
+        return index < this.size() && index > -1 && this.get(index).hasResult();
     }
 
     @Override

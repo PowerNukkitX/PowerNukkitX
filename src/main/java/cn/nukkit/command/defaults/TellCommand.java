@@ -9,6 +9,7 @@ import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.ParamTree;
 import cn.nukkit.command.tree.node.PlayersNode;
 import cn.nukkit.command.utils.CommandLogger;
+import cn.nukkit.lang.TranslationContainer;
 
 import java.util.List;
 import java.util.Map;
@@ -36,16 +37,17 @@ public class TellCommand extends VanillaCommand {
         var list = result.getValue();
         List<Player> players = list.getResult(0);
         StringBuilder msg = new StringBuilder();
-        String[] args = list.getResult(2);
-        for (int i = 1; i < args.length; i++) {
+        String[] args = list.getResult(1);
+        for (int i = 0; i < args.length; i++) {
             msg.append(args[i]).append(" ");
         }
         if (msg.length() > 0) {
             msg = new StringBuilder(msg.substring(0, msg.length() - 1));
         }
         for (Player player : players) {
+            if (player == sender) continue;
             log.addSuccess("commands.message.display.outgoing", player.getName(), msg.toString());
-            log.addSuccess("commands.message.display.incoming", sender.getName(), msg.toString());
+            player.sendMessage(new TranslationContainer("commands.message.display.incoming", sender.getName(), msg.toString()));
         }
         log.output();
         return 1;
