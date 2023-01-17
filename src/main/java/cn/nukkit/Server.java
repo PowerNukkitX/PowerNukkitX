@@ -30,6 +30,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.lang.BaseLang;
+import cn.nukkit.lang.LangCode;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.*;
@@ -252,6 +253,7 @@ public class Server {
     private int autoSaveTicks = 6000;
 
     private BaseLang baseLang;
+    private LangCode baseLangCode;
 
     private boolean forceLanguage = false;
 
@@ -375,7 +377,7 @@ public class Server {
         Files.createParentDirs(new File(tempDir, "players"));
 
         baseLang = new BaseLang(BaseLang.FALLBACK_LANGUAGE);
-
+        baseLangCode = mapInternalLang(BaseLang.FALLBACK_LANGUAGE);
         console = new NukkitConsole(this);
         consoleThread = new ConsoleThread();
         this.computeThreadPool = new ForkJoinPool(Math.min(0x7fff, Runtime.getRuntime().availableProcessors()), new ComputeThreadPoolThreadFactory(), null, false);
@@ -667,8 +669,9 @@ public class Server {
         }
 
         this.forceLanguage = this.getConfig("settings.force-language", false);
-        this.baseLang = new BaseLang(this.getConfig("settings.language", BaseLang.FALLBACK_LANGUAGE));
-
+        var langName = this.getConfig("settings.language", BaseLang.FALLBACK_LANGUAGE);
+        this.baseLang = new BaseLang(langName);
+        this.baseLangCode = mapInternalLang(langName);
         // 检测启动参数
         if (!StartArgUtils.isValidStart()) {
             log.fatal(getLanguage().tr("nukkit.start.invalid"));
@@ -835,7 +838,7 @@ public class Server {
             log.fatal("Failed to start the Position Tracking DB service!", e);
         }
 
-        this.pluginManager.loadPowerNukkitPlugins();
+        this.pluginManager.loadInternalPlugin();
         this.pluginManager.loadPlugins(this.pluginPath);
 
         this.enablePlugins(PluginLoadOrder.STARTUP);
@@ -2939,6 +2942,34 @@ public class Server {
 
     public BaseLang getLanguage() {
         return baseLang;
+    }
+
+    public LangCode getLanguageCode() {
+        return baseLangCode;
+    }
+
+    private LangCode mapInternalLang(String langName) {
+        return switch (langName) {
+            case "bra" -> LangCode.valueOf("pt_BR");
+            case "chs" -> LangCode.valueOf("zh_CN");
+            case "cht" -> LangCode.valueOf("zh_TW");
+            case "cze" -> LangCode.valueOf("cs_CZ");
+            case "deu" -> LangCode.valueOf("de_DE");
+            case "fin" -> LangCode.valueOf("fi_FI");
+            case "eng" -> LangCode.valueOf("en_US");
+            case "fra" -> LangCode.valueOf("en_US");
+            case "idn" -> LangCode.valueOf("id_ID");
+            case "jpn" -> LangCode.valueOf("ja_JP");
+            case "kor" -> LangCode.valueOf("ko_KR");
+            case "ltu" -> LangCode.valueOf("en_US");
+            case "pol" -> LangCode.valueOf("pl_PL");
+            case "rus" -> LangCode.valueOf("ru_RU");
+            case "spa" -> LangCode.valueOf("es_ES");
+            case "tur" -> LangCode.valueOf("tr_TR");
+            case "ukr" -> LangCode.valueOf("uk_UA");
+            case "vie" -> LangCode.valueOf("en_US");
+            default -> throw new IllegalArgumentException();
+        };
     }
 
     public boolean isLanguageForced() {

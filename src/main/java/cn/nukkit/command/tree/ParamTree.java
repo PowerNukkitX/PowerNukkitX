@@ -102,7 +102,10 @@ public class ParamTree {
                         case MESSAGE, JSON -> {
                             node = new RemainStringNode();
                         }
-                        case TEXT, RAWTEXT -> {
+                        case RAWTEXT -> {
+                            node = new RawTextNode();
+                        }
+                        case TEXT -> {
                             node = new StringNode();
                         }
                         default -> node = new VoidNode();

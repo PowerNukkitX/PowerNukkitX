@@ -19,13 +19,18 @@ import java.util.regex.Pattern;
 @Since("1.19.50-r4")
 @Log4j2
 public class PluginI18n {
+    /**
+     * 插件多语言的默认备选语言
+     */
+    private LangCode fallback;
     private final Pattern split = Pattern.compile("%[A-Za-z0-9_.-]+");
     private final String pluginName;
-    private final Map<LanguageCode, Map<String, String>> MULTI_LANGUAGE;
+    private final Map<LangCode, Map<String, String>> MULTI_LANGUAGE;
 
     public PluginI18n(String pluginName) {
         this.pluginName = pluginName;
         this.MULTI_LANGUAGE = new HashMap<>();
+        this.fallback = LangCode.en_US;
     }
 
 
@@ -35,7 +40,7 @@ public class PluginI18n {
      * @param key the key
      * @return the string
      */
-    public String tr(LanguageCode lang, String key) {
+    public String tr(LangCode lang, String key) {
         return tr(lang, key, EmptyArrays.EMPTY_STRINGS);
     }
 
@@ -47,7 +52,7 @@ public class PluginI18n {
      * @param args the args
      * @return the string
      */
-    public String tr(LanguageCode lang, String key, String... args) {
+    public String tr(LangCode lang, String key, String... args) {
         String baseText = parseLanguageText(lang, key);
         for (int i = 0; i < args.length; i++) {
             baseText = baseText.replace("{%" + i + "}", parseLanguageText(lang, String.valueOf(args[i])));
@@ -63,7 +68,7 @@ public class PluginI18n {
      * @param args the args
      * @return the string
      */
-    public String tr(LanguageCode lang, String key, Object... args) {
+    public String tr(LangCode lang, String key, Object... args) {
         String baseText = parseLanguageText(lang, key);
         for (int i = 0; i < args.length; i++) {
             baseText = baseText.replace("{%" + i + "}", parseLanguageText(lang, parseArg(args[i])));
@@ -71,7 +76,7 @@ public class PluginI18n {
         return baseText;
     }
 
-    public String tr(LanguageCode lang, TextContainer c) {
+    public String tr(LangCode lang, TextContainer c) {
         String baseText = this.parseLanguageText(lang, c.getText());
         if (c instanceof TranslationContainer cc) {
             for (int i = 0; i < cc.getParameters().length; i++) {
@@ -88,10 +93,13 @@ public class PluginI18n {
      * @param id the id
      * @return the string
      */
-    public String get(LanguageCode lang, String id) {
-        var map = this.MULTI_LANGUAGE.get(lang);
+    public String get(LangCode lang, String id) {
+        final var map = this.MULTI_LANGUAGE.get(lang);
+        final Map<String, String> fallbackMap;
         if (map.containsKey(id)) {
             return map.get(id);
+        } else if ((fallbackMap = this.MULTI_LANGUAGE.get(fallback)).containsKey(id)) {
+            return fallbackMap.get(id);
         }
         return null;
     }
@@ -103,15 +111,18 @@ public class PluginI18n {
      * @param id the id
      * @return the string
      */
-    public String getOrOriginal(LanguageCode lang, String id) {
-        var map = this.MULTI_LANGUAGE.get(lang);
+    public String getOrOriginal(LangCode lang, String id) {
+        final var map = this.MULTI_LANGUAGE.get(lang);
+        final Map<String, String> fallbackMap;
         if (map.containsKey(id)) {
             return map.get(id);
+        } else if ((fallbackMap = this.MULTI_LANGUAGE.get(fallback)).containsKey(id)) {
+            return fallbackMap.get(id);
         }
         return id;
     }
 
-    protected String parseLanguageText(LanguageCode lang, String str) {
+    protected String parseLanguageText(LangCode lang, String str) {
         String result = get(lang, str);
         if (result != null) {
             return result;
@@ -121,7 +132,7 @@ public class PluginI18n {
         }
     }
 
-    public boolean addLang(LanguageCode langName, String path) {
+    public boolean addLang(LangCode langName, String path) {
         try {
             File file = new File(path);
             if (!file.exists() || file.isDirectory()) {
@@ -137,7 +148,7 @@ public class PluginI18n {
         }
     }
 
-    public boolean addLang(LanguageCode langName, InputStream stream) {
+    public boolean addLang(LangCode langName, InputStream stream) {
         try {
             this.MULTI_LANGUAGE.put(langName, parseLang(new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))));
             return true;
@@ -164,6 +175,14 @@ public class PluginI18n {
 
     public boolean reloadLang(String langName, InputStream stream) {
         return reloadLang(langName, new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8)));
+    }
+
+    public LangCode getFallbackLanguage() {
+        return fallback;
+    }
+
+    public void setFallbackLanguage(LangCode fallback) {
+        this.fallback = fallback;
     }
 
     @Override

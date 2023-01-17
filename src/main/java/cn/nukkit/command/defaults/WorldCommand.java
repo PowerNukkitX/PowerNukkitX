@@ -43,7 +43,7 @@ public class WorldCommand extends VanillaCommand {
                     strBuilder.append(level.getName());
                     strBuilder.append(", ");
                 });
-                log.addMessage("nukkit.command.world.availableLevels", strBuilder.toString()).output();
+                log.addMessage(TextFormat.WHITE + "%nukkit.command.world.availableLevels", strBuilder.toString()).output();
                 return 1;
             }
             case "tp" -> {

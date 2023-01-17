@@ -1,10 +1,7 @@
 package cn.nukkit.plugin;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
+import cn.nukkit.api.*;
 import cn.nukkit.command.PluginCommand;
 import cn.nukkit.command.SimpleCommandMap;
 import cn.nukkit.event.*;
@@ -82,14 +79,15 @@ public class PluginManager {
 
     @PowerNukkitOnly
     @Since("1.3.0.0-PN")
-    public void loadPowerNukkitPlugins() {
+    @PowerNukkitXDifference(info = "rename")
+    public void loadInternalPlugin() {
         PluginLoader pluginLoader = fileAssociations.get(JavaPluginLoader.class.getName());
-        PowerNukkitPlugin plugin = PowerNukkitPlugin.getInstance();
+        InternalPlugin plugin = InternalPlugin.INSTANCE;
         Map<String, Object> info = new HashMap<>();
         info.put("name", "PowerNukkitX");
         info.put("version", server.getNukkitVersion());
         info.put("website", "https://github.com/PowerNukkitX/PowerNukkitX");
-        info.put("main", PowerNukkitPlugin.class.getName());
+        info.put("main", InternalPlugin.class.getName());
         File file;
         try {
             file = new File(Server.class.getProtectionDomain().getCodeSource().getLocation().toURI());
@@ -527,20 +525,21 @@ public class PluginManager {
     }
 
     @PowerNukkitDifference(info = "Makes sure the PowerNukkitPlugin is never disabled", since = "1.3.0.0-PN")
+    @PowerNukkitXDifference(info = "Makes sure the PowerNukkitX Internal Plugin is never disabled", since = "1.19.50-r4")
     public void disablePlugins() {
         ListIterator<Plugin> plugins = new ArrayList<>(this.getPlugins().values()).listIterator(this.getPlugins().size());
 
         while (plugins.hasPrevious()) {
             Plugin previous = plugins.previous();
-            if (previous != PowerNukkitPlugin.getInstance()) {
+            if (previous != InternalPlugin.INSTANCE) {
                 this.disablePlugin(previous);
             }
         }
     }
 
     public void disablePlugin(Plugin plugin) {
-        if (PowerNukkitPlugin.getInstance() == plugin) {
-            throw new UnsupportedOperationException("The PowerNukkit plugin can't be disabled.");
+        if (InternalPlugin.INSTANCE == plugin) {
+            throw new UnsupportedOperationException("The PowerNukkitX Internal plugin can't be disabled.");
         }
 
         if (plugin.isEnabled()) {

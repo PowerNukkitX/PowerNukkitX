@@ -11,7 +11,7 @@ import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.ParamTree;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.command.utils.RawText;
-import com.google.gson.JsonSyntaxException;
+import cn.nukkit.utils.TextFormat;
 
 import java.util.List;
 import java.util.Map;
@@ -57,7 +57,7 @@ public class TitlerawCommand extends VanillaCommand {
             case "clear" -> {
                 for (Player player : players) {
                     player.clearTitle();
-                    log.addMessage("nukkit.command.title.clear", player.getName());
+                    log.addMessage(TextFormat.WHITE + "%nukkit.command.title.clear", player.getName());
                 }
                 log.output();
                 return 1;
@@ -65,21 +65,14 @@ public class TitlerawCommand extends VanillaCommand {
             case "reset" -> {
                 for (Player player : players) {
                     player.resetTitleSettings();
-                    log.addMessage("nukkit.command.title.reset", player.getName());
+                    log.addMessage(TextFormat.WHITE + "%nukkit.command.title.reset", player.getName());
                 }
                 log.output();
                 return 1;
             }
             case "set" -> {
                 String titleLocation = list.getResult(1);
-                String titleText = list.getResult(2);
-                RawText rawText;
-                try {
-                    rawText = RawText.fromRawText(titleText);
-                } catch (JsonSyntaxException e) {
-                    log.addSyntaxErrors(2).output();
-                    return 0;
-                }
+                RawText rawText = list.getResult(2);
                 switch (titleLocation) {
                     case "title" -> {
                         for (Player player : players) {
@@ -114,7 +107,7 @@ public class TitlerawCommand extends VanillaCommand {
                 int stay = list.getResult(3);
                 int fadeOut = list.getResult(4);
                 for (var player : players) {
-                    log.addMessage("nukkit.command.title.times.success", String.valueOf(fadeIn), String.valueOf(stay), String.valueOf(fadeOut), player.getName());
+                    log.addMessage(TextFormat.WHITE + "%nukkit.command.title.times.success", String.valueOf(fadeIn), String.valueOf(stay), String.valueOf(fadeOut), player.getName());
                 }
                 log.output();
                 return 1;

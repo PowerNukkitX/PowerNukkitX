@@ -5,7 +5,7 @@ import cn.nukkit.api.Since;
 
 @PowerNukkitXOnly
 @Since("1.19.50-r4")
-public enum LanguageCode {
+public enum LangCode {
     en_US("English (United States)"),
     en_GB("English (United Kingdom)"),
     de_DE("Deutsch (Deutschland)"),
@@ -38,7 +38,7 @@ public enum LanguageCode {
 
     private final String string;
 
-    LanguageCode(String string) {
+    LangCode(String string) {
         this.string = string;
     }
 

@@ -39,8 +39,7 @@ public class TellrawCommand extends VanillaCommand {
         var list = result.getValue();
         try {
             List<Player> players = list.getResult(0);
-            String rawText = list.getResult(1);
-            RawText rawTextObject = RawText.fromRawText(rawText);
+            RawText rawTextObject = list.getResult(1);
             rawTextObject.preParse(sender);
             for (Player player : players) {
                 player.sendRawTextMessage(rawTextObject);

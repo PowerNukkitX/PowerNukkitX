@@ -47,7 +47,7 @@ import cn.nukkit.item.customitem.ItemCustom;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.enchantment.sideeffect.SideEffect;
 import cn.nukkit.lang.CommandOutputContainer;
-import cn.nukkit.lang.LanguageCode;
+import cn.nukkit.lang.LangCode;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.*;
@@ -6456,8 +6456,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @PowerNukkitXOnly
     @Since("1.19.50-r4")
-    public LanguageCode getLanguageCode() {
-        return LanguageCode.valueOf(this.getLoginChainData().getLanguageCode());
+    public LangCode getLanguageCode() {
+        return LangCode.valueOf(this.getLoginChainData().getLanguageCode());
     }
 
     @Override
@@ -7126,6 +7126,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             //Update time
             this.getLevel().sendTime(this);
             updateTrackingPositions(true);
+            //Update gamemode
+            this.setGamemode(this.gamemode, false, null, true);
             return true;
         }
 

@@ -11,10 +11,15 @@ import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.ConsoleCommandSender;
 import cn.nukkit.command.ExecutorCommandSender;
 import cn.nukkit.lang.CommandOutputContainer;
+import cn.nukkit.lang.PluginI18nManager;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.network.protocol.types.CommandOutputMessage;
 import cn.nukkit.permission.Permissible;
+import cn.nukkit.plugin.CommonJSPlugin;
+import cn.nukkit.plugin.InternalPlugin;
+import cn.nukkit.plugin.Plugin;
+import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.TextFormat;
 
 import java.util.Arrays;
@@ -25,12 +30,19 @@ import java.util.StringJoiner;
 @PowerNukkitXOnly
 @Since("1.19.50-r4")
 public record CommandLogger(Command command,
-                            CommandSender sender, String commandLabel, String[] args,
-                            CommandOutputContainer outputContainer) {
+                            CommandSender sender,
+                            String commandLabel,
+                            String[] args,
+                            CommandOutputContainer outputContainer,
+                            Plugin plugin) {
     private static final byte SYNTAX_ERROR_LENGTH_LIMIT = 23;
 
     public CommandLogger(Command command, CommandSender sender, String commandLabel, String[] args) {
-        this(command, sender, commandLabel, args, new CommandOutputContainer());
+        this(command, sender, commandLabel, args, new CommandOutputContainer(), InternalPlugin.INSTANCE);
+    }
+
+    public CommandLogger(Command command, CommandSender sender, String commandLabel, String[] args, Plugin plugin) {
+        this(command, sender, commandLabel, args, new CommandOutputContainer(), plugin);
     }
 
     public CommandLogger addSuccess(String message) {
@@ -92,7 +104,22 @@ public record CommandLogger(Command command,
      * @return the command logger
      */
     public CommandLogger addMessage(String key, String... params) {
-        this.outputContainer.getMessages().add(new CommandOutputMessage(Server.getInstance().getLanguage().tr(key, params), CommandOutputContainer.EMPTY_STRING));
+        if (this.plugin == InternalPlugin.INSTANCE) {
+            this.outputContainer.getMessages().add(new CommandOutputMessage(Server.getInstance().getLanguage().tr(key, params), CommandOutputContainer.EMPTY_STRING));
+        } else if (this.plugin instanceof CommonJSPlugin) {
+            //todo js plugin mulit_language
+        } else if (this.plugin instanceof PluginBase pluginBase) {
+            var i18n = PluginI18nManager.getI18n(pluginBase);
+            if (i18n != null) {
+                String text;
+                if (sender.isPlayer()) {
+                    text = i18n.tr(sender.asPlayer().getLanguageCode(), key, params);
+                } else {
+                    text = i18n.tr(Server.getInstance().getLanguageCode(), key, params);
+                }
+                this.outputContainer.getMessages().add(new CommandOutputMessage(text, CommandOutputContainer.EMPTY_STRING));
+            }
+        }
         return this;
     }
 
@@ -292,14 +319,7 @@ public record CommandLogger(Command command,
     private void broadcastConsole(String key, String[] value) {
         CommandSender target = sender;
         if (target instanceof ExecutorCommandSender executorCommandSender) target = executorCommandSender.getExecutor();
-        TranslationContainer message = broadcastMessage(key, value, target);
-
-        Set<Permissible> users = target.getServer().getPluginManager().getPermissionSubscriptions(Server.BROADCAST_CHANNEL_ADMINISTRATIVE);
-        for (Permissible user : users) {
-            if (user instanceof ConsoleCommandSender commandSender) {
-                commandSender.sendMessage(message);
-            }
-        }
+        Server.getInstance().getConsoleSender().sendMessage(broadcastMessage(key, value, target));
     }
 
     private TranslationContainer broadcastMessage(String key, String[] value, CommandSender target) {

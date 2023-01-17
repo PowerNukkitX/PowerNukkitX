@@ -47,7 +47,7 @@ public class XpCommand extends Command {
             case "default" -> {
                 int amount = list.getResult(0);
                 if (amount < 0) {
-                    log.addNumTooSmall(0, 0).output();
+                    log.addError("commands.xp.failure.widthdrawXp").output();
                     return 0;
                 }
                 if (list.hasResult(1)) {
@@ -82,11 +82,7 @@ public class XpCommand extends Command {
                     } else {
                         player.setExperience(player.getExperience(), newLevel, true);
                     }
-                    if (level > 0) {
-                        log.addSuccess("commands.xp.success.levels", String.valueOf(level), player.getName());
-                    } else {
-                        log.addSuccess("commands.xp.success.levels.minus", String.valueOf(-level), player.getName());
-                    }
+                    log.addSuccess("commands.xp.success.levels", String.valueOf(level), player.getName());
                 }
                 log.successCount(players.size()).output();
                 return players.size();

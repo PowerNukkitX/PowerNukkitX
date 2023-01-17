@@ -83,7 +83,7 @@ public final class PluginI18nManager {
                     // 开始读取文件内容
                     InputStream inputStream = plugin.getResource(name);
                     assert inputStream != null;
-                    pluginMultiLanguage.addLang(LanguageCode.valueOf(name.substring(9, name.indexOf("."))), inputStream);
+                    pluginMultiLanguage.addLang(LangCode.valueOf(name.substring(9, name.indexOf("."))), inputStream);
                     count++;
                     inputStream.close();
                 }
@@ -104,7 +104,7 @@ public final class PluginI18nManager {
             var pluginMultiLanguage = new PluginI18n(plugin.getFile().getName());
             for (var f : files) {
                 try (InputStream inputStream = new FileInputStream(f)) {
-                    pluginMultiLanguage.addLang(LanguageCode.valueOf(f.getName().replace(".lang", "")), inputStream);
+                    pluginMultiLanguage.addLang(LangCode.valueOf(f.getName().replace(".lang", "")), inputStream);
                     count++;
                 } catch (IOException e) {
                     throw new RuntimeException(e);
@@ -120,8 +120,6 @@ public final class PluginI18nManager {
 
 
     public static PluginI18n getI18n(PluginBase plugin) {
-        var i18n = PLUGINS_MULTI_LANGUAGE.get(plugin.getFile().getName());
-        if (i18n == null) throw new NullPointerException("Can't find the i18n for this plugin");
-        return i18n;
+        return PLUGINS_MULTI_LANGUAGE.get(plugin.getFile().getName());
     }
 }

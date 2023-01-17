@@ -3,6 +3,7 @@ package cn.nukkit.plugin;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
@@ -95,10 +96,11 @@ abstract public class PluginBase implements Plugin {
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */
     @PowerNukkitDifference(info = "Made impossible to disable special the PowerNukkitPlugin", since = "1.3.0.0-PN")
+    @PowerNukkitXDifference(info = "Made impossible to disable special the PowerNukkitX Internal Plugin", since = "1.19.50-r4")
     public final void setEnabled(boolean value) {
         if (isEnabled != value) {
-            if (!value && PowerNukkitPlugin.getInstance() == this) {
-                throw new UnsupportedOperationException("The PowerNukkitPlugin cannot be disabled");
+            if (!value && InternalPlugin.INSTANCE == this) {
+                throw new UnsupportedOperationException("The PowerNukkitX Internal Plugin cannot be disabled");
             }
             isEnabled = value;
             if (isEnabled) {
@@ -188,7 +190,7 @@ abstract public class PluginBase implements Plugin {
             return null;
         }
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Nullable
