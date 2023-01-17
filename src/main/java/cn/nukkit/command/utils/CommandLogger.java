@@ -38,7 +38,11 @@ public record CommandLogger(Command command,
     private static final byte SYNTAX_ERROR_LENGTH_LIMIT = 23;
 
     public CommandLogger(Command command, CommandSender sender, String commandLabel, String[] args) {
-        this(command, sender, commandLabel, args, new CommandOutputContainer(), InternalPlugin.INSTANCE);
+        this(command, sender, commandLabel, args, new CommandOutputContainer());
+    }
+
+    public CommandLogger(Command command, CommandSender sender, String commandLabel, String[] args, CommandOutputContainer outputContainer) {
+        this(command, sender, commandLabel, args, outputContainer, InternalPlugin.INSTANCE);
     }
 
     public CommandLogger(Command command, CommandSender sender, String commandLabel, String[] args, Plugin plugin) {

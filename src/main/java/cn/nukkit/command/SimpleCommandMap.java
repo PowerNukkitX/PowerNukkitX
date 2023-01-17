@@ -7,6 +7,7 @@ import cn.nukkit.command.simple.*;
 import cn.nukkit.command.tree.node.CommandNode;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.lang.TranslationContainer;
+import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.utils.TextFormat;
 import cn.nukkit.utils.Utils;
 import co.aikar.timings.Timings;
@@ -304,17 +305,18 @@ public class SimpleCommandMap implements CommandMap {
         target.timing.startTiming();
         try {
             if (target.hasParamTree()) {
+                var plugin = target instanceof PluginCommand<?> pluginCommand ? pluginCommand.getPlugin() : InternalPlugin.INSTANCE;
                 var result = target.getParamTree().matchAndParse(sender, sentCommandLabel, args);
                 if (result == null) output = 0;
                 else if (target.testPermissionSilent(sender)) {
                     try {
-                        output = target.execute(sender, sentCommandLabel, result, new CommandLogger(target, sender, sentCommandLabel, args, result.getValue().getMessageContainer()));
+                        output = target.execute(sender, sentCommandLabel, result, new CommandLogger(target, sender, sentCommandLabel, args, result.getValue().getMessageContainer(), plugin));
                     } catch (UnsupportedOperationException e) {
                         log.fatal("If you use paramtree, you must override execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) method to run the command!");
                         output = 0;
                     }
                 } else {
-                    var log = new CommandLogger(target, sender, sentCommandLabel, args, result.getValue().getMessageContainer());
+                    var log = new CommandLogger(target, sender, sentCommandLabel, args, plugin);
                     if (!target.getPermissionMessage().equals("")) {
                         log.addError(target.getPermissionMessage().replace("<permission>", target.getPermission())).output();
                     } else {

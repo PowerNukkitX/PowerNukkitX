@@ -1,6 +1,7 @@
 
 package cn.nukkit.lang;
 
+import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import io.netty.util.internal.EmptyArrays;
@@ -100,8 +101,9 @@ public class PluginI18n {
             return map.get(id);
         } else if ((fallbackMap = this.MULTI_LANGUAGE.get(fallback)).containsKey(id)) {
             return fallbackMap.get(id);
+        } else {
+            return Server.getInstance().getLanguage().internalGet(id);
         }
-        return null;
     }
 
 
@@ -118,8 +120,9 @@ public class PluginI18n {
             return map.get(id);
         } else if ((fallbackMap = this.MULTI_LANGUAGE.get(fallback)).containsKey(id)) {
             return fallbackMap.get(id);
+        } else {
+            return Server.getInstance().getLanguage().get(id);
         }
-        return id;
     }
 
     protected String parseLanguageText(LangCode lang, String str) {

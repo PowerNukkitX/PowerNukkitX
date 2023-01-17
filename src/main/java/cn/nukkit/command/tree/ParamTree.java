@@ -1,17 +1,16 @@
 package cn.nukkit.command.tree;
 
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.PluginCommand;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.node.*;
 import cn.nukkit.command.utils.CommandLogger;
-import cn.nukkit.lang.CommandOutputContainer;
-import cn.nukkit.network.protocol.types.CommandOutputMessage;
+import cn.nukkit.plugin.InternalPlugin;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -187,11 +186,11 @@ public class ParamTree {
                 return defaultList;
             });
 
-            final var container = new CommandOutputContainer();
-            final CommandLogger log = new CommandLogger(this.command, sender, commandLabel, args, container);
+            final CommandLogger log = new CommandLogger(this.command, sender, commandLabel, args, list.getMessageContainer(),
+                    command instanceof PluginCommand<?> pluginCommand ? pluginCommand.getPlugin() : InternalPlugin.INSTANCE);
             if (!list.getMessageContainer().getMessages().isEmpty()) {
                 for (var message : list.getMessageContainer().getMessages()) {
-                    container.getMessages().add(new CommandOutputMessage(Server.getInstance().getLanguage().tr(message.getMessageId(), message.getParameters()), CommandOutputContainer.EMPTY_STRING));
+                    log.addMessage(message.getMessageId(), message.getParameters());
                 }
             } else {
                 log.addSyntaxErrors(list.getError());
