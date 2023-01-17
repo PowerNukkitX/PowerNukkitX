@@ -2,6 +2,8 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntityChest;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
@@ -60,6 +62,13 @@ public class DoubleChestInventory extends ContainerInventory implements Inventor
     @Override
     public Item getItem(int index) {
         return index < this.left.getSize() ? this.left.getItem(index) : this.right.getItem(index - this.right.getSize());
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    @Override
+    public Item getUnclonedItem(int index) {
+        return index < this.left.getSize() ? this.left.getUnclonedItem(index) : this.right.getUnclonedItem(index - this.right.getSize());
     }
 
     @Override
@@ -188,7 +197,7 @@ public class DoubleChestInventory extends ContainerInventory implements Inventor
     public void sendSlot(Inventory inv, int index, Player... players) {
         InventorySlotPacket pk = new InventorySlotPacket();
         pk.slot = inv == this.right ? this.left.getSize() + index : index;
-        pk.item = inv.getItem(index).clone();
+        pk.item = inv.getUnclonedItem(index);
 
         for (Player player : players) {
             int id = player.getWindowId(this);

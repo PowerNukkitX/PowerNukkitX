@@ -595,7 +595,7 @@ public abstract class BaseInventory implements Inventory {
     public void sendSlot(int index, Player... players) {
         InventorySlotPacket pk = new InventorySlotPacket();
         pk.slot = index;
-        pk.item = this.getUnclonedItem(index).clone();
+        pk.item = this.getUnclonedItem(index);
 
         for (Player player : players) {
             int id = player.getWindowId(this);
