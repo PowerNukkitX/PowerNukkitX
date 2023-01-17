@@ -19,7 +19,6 @@ import cn.nukkit.network.protocol.InventoryContentPacket;
 import cn.nukkit.network.protocol.InventorySlotPacket;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntLists;
 
 import java.util.*;
 
@@ -295,7 +294,7 @@ public abstract class BaseInventory implements Inventory {
 
     @Override
     public Item[] addItem(Item... slots) {
-        List<Item> itemSlots = new ArrayList<>();
+        List<Item> itemSlots = new LinkedList<>();
         for (Item slot : slots) {
             if (slot.getId() != 0 && slot.getCount() > 0) {
                 //todo: clone only if necessary
@@ -363,7 +362,7 @@ public abstract class BaseInventory implements Inventory {
 
     @Override
     public Item[] removeItem(Item... slots) {
-        List<Item> itemSlots = new ArrayList<>();
+        List<Item> itemSlots = new LinkedList<>();
         for (Item slot : slots) {
             if (slot.getId() != 0 && slot.getCount() > 0) {
                 itemSlots.add(slot.clone());
