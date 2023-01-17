@@ -183,7 +183,7 @@ public abstract class BaseInventory implements Inventory {
             ((BlockEntity) holder).setDirty();
         }
 
-        Item old = this.getItem(index);
+        Item old = this.getUnclonedItem(index);
         this.slots.put(index, item.clone());
         this.onSlotChange(index, old, send);
 
@@ -249,7 +249,7 @@ public abstract class BaseInventory implements Inventory {
     @Override
     public int firstEmpty(Item item) {
         for (int i = 0; i < this.size; ++i) {
-            if (this.getItem(i).getId() == Item.AIR) {
+            if (this.getUnclonedItem(i).getId() == Item.AIR) {
                 return i;
             }
         }
@@ -259,9 +259,10 @@ public abstract class BaseInventory implements Inventory {
 
     @Override
     public void decreaseCount(int slot) {
-        Item item = this.getItem(slot);
+        Item item = this.getUnclonedItem(slot);
 
         if (item.getCount() > 0) {
+            item = item.clone();
             item.count--;
             this.setItem(slot, item);
         }
@@ -487,7 +488,7 @@ public abstract class BaseInventory implements Inventory {
             ((BlockEntity) holder).setDirty();
         }
 
-        if (before.getId() == ItemID.LODESTONE_COMPASS || getItem(index).getId() == ItemID.LODESTONE_COMPASS) {
+        if (before.getId() == ItemID.LODESTONE_COMPASS || getUnclonedItem(index).getId() == ItemID.LODESTONE_COMPASS) {
             if (holder instanceof Player) {
                 ((Player) holder).updateTrackingPositions(true);
             }
@@ -513,7 +514,7 @@ public abstract class BaseInventory implements Inventory {
         InventoryContentPacket pk = new InventoryContentPacket();
         pk.slots = new Item[this.getSize()];
         for (int i = 0; i < this.getSize(); ++i) {
-            pk.slots[i] = this.getItem(i);
+            pk.slots[i] = this.getUnclonedItem(i);
         }
 
         for (Player player : players) {
@@ -595,7 +596,7 @@ public abstract class BaseInventory implements Inventory {
     public void sendSlot(int index, Player... players) {
         InventorySlotPacket pk = new InventorySlotPacket();
         pk.slot = index;
-        pk.item = this.getItem(index).clone();
+        pk.item = this.getUnclonedItem(index).clone();
 
         for (Player player : players) {
             int id = player.getWindowId(this);

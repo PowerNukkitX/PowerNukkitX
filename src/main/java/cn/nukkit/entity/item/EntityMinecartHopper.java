@@ -55,7 +55,7 @@ public class EntityMinecartHopper extends EntityMinecartAbstract implements Inve
 
         this.updatePickupArea();
 
-        Block blockSide = this.getLevelBlock().getSide(BlockFace.UP);
+        Block blockSide = this.getSide(BlockFace.UP).getTickCachedLevelBlock();
         BlockEntity blockEntity = this.level.getBlockEntity(temporalVector.setComponentsAdding(this, BlockFace.UP));
 
         boolean changed;
