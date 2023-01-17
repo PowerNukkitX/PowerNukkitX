@@ -2022,7 +2022,7 @@ public abstract class Entity extends Location implements Metadatable {
         pk.yaw = this.yaw;
         pk.teleport = teleport;
         pk.onGround = this.onGround;
-        Server.broadcastPacket(this.getViewers().values(), pk);
+        Server.broadcastPacket(hasSpawned.values(), pk);
     }
 
     @PowerNukkitXDifference(info = "There is no need to set the temporalVector, because the result is prone to change in an asynchronous environment.")
