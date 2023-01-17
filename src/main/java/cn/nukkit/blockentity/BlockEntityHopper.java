@@ -224,7 +224,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
             return false;
         }
 
-        Block blockSide = this.getBlock().getSide(BlockFace.UP);
+        Block blockSide = this.getSide(BlockFace.UP).getTickCachedLevelBlock();
         BlockEntity blockEntity = this.level.getBlockEntity(temporalVector.setComponentsAdding(this, BlockFace.UP));
 
         boolean changed = pushItems() || pushItemsIntoMinecart();
