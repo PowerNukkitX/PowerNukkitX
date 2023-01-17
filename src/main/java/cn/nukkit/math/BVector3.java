@@ -12,8 +12,8 @@ import static java.lang.StrictMath.*;
 @PowerNukkitXDifference(info = "update Angle algorithm", since = "1.19.50-r4")
 public final class BVector3 {
     private Vector3 vector3;//标准化的方向向量,模长为1
-    private double yaw;
-    private double pitch;
+    private double yaw;//-90 270
+    private double pitch;//-90 90
     private double length;
 
     /**
@@ -29,7 +29,7 @@ public final class BVector3 {
     /**
      * From angle to BVector 3.
      *
-     * @param yaw   the yaw
+     * @param yaw   the yaw (-90 270)
      * @param pitch the pitch
      * @return the b vector 3
      */

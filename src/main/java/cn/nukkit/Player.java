@@ -7095,7 +7095,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         Location from = this.getLocation();
-        Location to = location;
+        Location to = location;//target
 
         if (cause != null) {
             PlayerTeleportEvent event = new PlayerTeleportEvent(this, from, to, cause);
@@ -7127,7 +7127,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.getLevel().sendTime(this);
             updateTrackingPositions(true);
             //Update gamemode
-            this.setGamemode(this.gamemode, false, null, true);
+            if (isSpectator()) {
+                this.setGamemode(this.gamemode, false, null, true);
+            }
             return true;
         }
 

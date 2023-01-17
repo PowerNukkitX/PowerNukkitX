@@ -1928,7 +1928,7 @@ public abstract class Entity extends Location implements Metadatable {
             this.headYaw = this.yaw;
         }
         double diffPosition = (this.x - this.lastX) * (this.x - this.lastX) + (this.y - this.lastY) * (this.y - this.lastY) + (this.z - this.lastZ) * (this.z - this.lastZ);
-        double diffRotation = enableHeadYaw() ? (this.headYaw - this.lastHeadYaw) * (this.headYaw - this.lastHeadYaw) : 0 + (this.yaw - this.lastYaw) * (this.yaw - this.lastYaw) + (this.pitch - this.lastPitch) * (this.pitch - this.lastPitch);
+        double diffRotation = (enableHeadYaw() ? (this.headYaw - this.lastHeadYaw) * (this.headYaw - this.lastHeadYaw) : 0) + (this.yaw - this.lastYaw) * (this.yaw - this.lastYaw) + (this.pitch - this.lastPitch) * (this.pitch - this.lastPitch);
 
         double diffMotion = (this.motionX - this.lastMotionX) * (this.motionX - this.lastMotionX) + (this.motionY - this.lastMotionY) * (this.motionY - this.lastMotionY) + (this.motionZ - this.lastMotionZ) * (this.motionZ - this.lastMotionZ);
 
@@ -2017,12 +2017,12 @@ public abstract class Entity extends Location implements Metadatable {
             pk.y = isSwimming() ? this.y + getBaseOffset() : this.y + this.getEyeHeight();
         } else pk.y = this.y + this.getEyeHeight();
         pk.z = this.z;
-        pk.headYaw = yaw;
-        pk.pitch = pitch;
-        pk.yaw = yaw;
+        pk.headYaw = this.yaw;
+        pk.pitch = this.pitch;
+        pk.yaw = this.yaw;
         pk.teleport = teleport;
         pk.onGround = this.onGround;
-        Server.broadcastPacket(hasSpawned.values(), pk);
+        Server.broadcastPacket(this.getViewers().values(), pk);
     }
 
     @PowerNukkitXDifference(info = "There is no need to set the temporalVector, because the result is prone to change in an asynchronous environment.")
@@ -3138,9 +3138,7 @@ public abstract class Entity extends Location implements Metadatable {
         if (this.setPositionAndRotation(to, yaw, pitch)) {
             this.resetFallDistance();
             this.onGround = !this.noClip;
-
             this.updateMovement();
-
             return true;
         }
 

@@ -5,6 +5,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.BVector3;
+import cn.nukkit.math.Vector3;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,18 +70,34 @@ public abstract class PositionNode extends ParamNode<Position> {
                             coordinate[index] = Double.parseDouble(relativeCoordinate);
                         }
                     } else if (s.charAt(0) == '^') {
+                        if (index == 0) {
+                            coordinate[0] = 0;
+                            coordinate[1] = 0;
+                            coordinate[2] = 0;
+                        }
                         this.setRelative(index);
                         String relativeAngleCoordinate = s.substring(1);
-                        if (relativeAngleCoordinate.isEmpty()) {
-                            coordinate[index] = 0;
-                        } else {
+                        if (!relativeAngleCoordinate.isEmpty()) {
+                            Vector3 vector3;
                             switch (index) {
-                                case 0 ->
-                                        coordinate[index] = BVector3.fromLocation(loc).rotateYaw(-90).setPitch(0).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos().getX();
-                                case 1 ->
-                                        coordinate[index] = BVector3.fromLocation(loc).rotatePitch(90).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos().getY();
-                                case 2 ->
-                                        coordinate[index] = BVector3.fromLocation(loc).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos().getZ();
+                                case 0 -> {
+                                    vector3 = BVector3.fromLocation(loc).rotateYaw(-90).setPitch(0).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos();
+                                    coordinate[0] += vector3.x;
+                                    coordinate[1] += vector3.y;
+                                    coordinate[2] += vector3.z;
+                                }
+                                case 1 -> {
+                                    vector3 = BVector3.fromLocation(loc).rotatePitch(90).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos();
+                                    coordinate[0] += vector3.x;
+                                    coordinate[1] += vector3.y;
+                                    coordinate[2] += vector3.z;
+                                }
+                                case 2 -> {
+                                    vector3 = BVector3.fromLocation(loc).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos();
+                                    coordinate[0] += vector3.x;
+                                    coordinate[1] += vector3.y;
+                                    coordinate[2] += vector3.z;
+                                }
                                 default -> {
                                     this.error();
                                     return;
