@@ -1,6 +1,7 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.DoNotModify;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -59,6 +60,7 @@ public interface Inventory {
      */
     @PowerNukkitXOnly
     @Since("1.19.50-r4")
+    @DoNotModify
     default Item getUnclonedItem(int index) {
         //你需要覆写它来实现
         return getItem(index);
