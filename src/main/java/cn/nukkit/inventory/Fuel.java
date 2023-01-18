@@ -2,7 +2,12 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
+import cn.nukkit.item.StringItem;
+import it.unimi.dsi.fastutil.objects.Object2IntAVLTreeMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -13,6 +18,7 @@ import java.util.TreeMap;
 @PowerNukkitXDifference(info = "Add blocks and items.", since = "1.19.50-r3")
 public abstract class Fuel {
     public static final Map<Integer, Short> duration = new TreeMap<>();
+    public static final Object2IntMap<String> durationByStringId = new Object2IntAVLTreeMap<>();
 
     static {
         addItem(ItemID.COAL, (short) 1600);
@@ -98,5 +104,28 @@ public abstract class Fuel {
 
     private static void addBlock(int blockID, short fuelDuration) {
         duration.put(blockID > 255 ? 255 - blockID : blockID, fuelDuration); // ItemBlock have a negative ID
+    }
+
+    private static void addItem(Item item, short fuelDuration) {
+        if (!(item instanceof StringItem)) {
+            duration.put(item.getId(), fuelDuration);
+        }
+        durationByStringId.put(item.getNamespaceId(), fuelDuration);
+    }
+
+    /**
+     * @param item item
+     * @return fuel duration, if it cannot be used as fuel, return -1.
+     */
+    public static short getFuelDuration(@NotNull Item item) {
+        var d = duration.get(item.getId());
+        if (d == null) {
+            return (short) durationByStringId.getOrDefault(item.getNamespaceId(), -1);
+        }
+        return duration.getOrDefault(item.getId(), (short) 0);
+    }
+
+    public static boolean isFuel(@NotNull Item item) {
+        return duration.containsKey(item.getId()) || durationByStringId.containsKey(item.getNamespaceId());
     }
 }

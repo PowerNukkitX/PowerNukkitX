@@ -1718,11 +1718,11 @@ public class Item implements Cloneable, BlockID, ItemID {
      */
 
     final public Short getFuelTime() {
-        if (!Fuel.duration.containsKey(id)) {
+        if (!Fuel.isFuel(this)) {
             return null;
         }
         if (this.id != BUCKET || this.meta == 10) {
-            return Fuel.duration.get(this.id);
+            return Fuel.getFuelDuration(this);
         }
         return null;
     }
