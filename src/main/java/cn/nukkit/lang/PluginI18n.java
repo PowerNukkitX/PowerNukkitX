@@ -135,7 +135,7 @@ public class PluginI18n {
         }
     }
 
-    public boolean addLang(LangCode langName, String path) {
+    public void addLang(LangCode langName, String path) {
         try {
             File file = new File(path);
             if (!file.exists() || file.isDirectory()) {
@@ -143,32 +143,28 @@ public class PluginI18n {
             }
             try (FileInputStream stream = new FileInputStream(file)) {
                 this.MULTI_LANGUAGE.put(langName, parseLang(new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))));
-                return true;
             }
         } catch (IOException e) {
             log.fatal("Failed to load language at {}", path, e);
-            return false;
         }
     }
 
-    public boolean addLang(LangCode langName, InputStream stream) {
+    public void addLang(LangCode langName, InputStream stream) {
         try {
             this.MULTI_LANGUAGE.put(langName, parseLang(new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))));
-            return true;
         } catch (IOException e) {
             log.error("Failed to parse the language input stream", e);
-            return false;
         }
     }
 
-    public boolean reloadLang(String langName, String path) {
+    public boolean reloadLang(LangCode lang, String path) {
         try {
             File file = new File(path);
             if (!file.exists() || file.isDirectory()) {
                 throw new FileNotFoundException();
             }
             try (FileInputStream stream = new FileInputStream(file)) {
-                return reloadLang(langName, new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8)));
+                return reloadLang(lang, new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8)));
             }
         } catch (IOException e) {
             log.fatal("Failed to load language at {}", path, e);
@@ -176,8 +172,8 @@ public class PluginI18n {
         }
     }
 
-    public boolean reloadLang(String langName, InputStream stream) {
-        return reloadLang(langName, new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8)));
+    public boolean reloadLang(LangCode lang, InputStream stream) {
+        return reloadLang(lang, new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8)));
     }
 
     public LangCode getFallbackLanguage() {
@@ -230,29 +226,10 @@ public class PluginI18n {
         }
     }
 
-    private boolean reloadLang(String langName, BufferedReader reader) {
-        Map<String, String> d = this.MULTI_LANGUAGE.get(langName);
-        String line;
+    private boolean reloadLang(LangCode lang, BufferedReader reader) {
+        Map<String, String> d = this.MULTI_LANGUAGE.get(lang);
         try {
-            while ((line = reader.readLine()) != null) {
-                line = line.trim();
-                if (line.isEmpty() || line.charAt(0) == '#') {
-                    continue;
-                }
-                String[] t = line.split("=", 2);
-                if (t.length < 2) {
-                    continue;
-                }
-                String key = t[0];
-                String value = t[1];
-                if (value.length() > 1 && value.charAt(0) == '"' && value.charAt(value.length() - 1) == '"') {
-                    value = value.substring(1, value.length() - 1).replace("\\\"", "\"").replace("\\\\", "\\");
-                }
-                if (value.isEmpty()) {
-                    continue;
-                }
-                d.putIfAbsent(key, value);
-            }
+            readAndWriteLang(reader, d);
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -262,6 +239,11 @@ public class PluginI18n {
 
     private Map<String, String> parseLang(BufferedReader reader) throws IOException {
         Map<String, String> d = new Object2ObjectOpenHashMap<>();
+        readAndWriteLang(reader, d);
+        return d;
+    }
+
+    static void readAndWriteLang(BufferedReader reader, Map<String, String> d) throws IOException {
         String line;
         while ((line = reader.readLine()) != null) {
             line = line.trim();
@@ -282,7 +264,6 @@ public class PluginI18n {
             }
             d.put(key, value);
         }
-        return d;
     }
 }
 

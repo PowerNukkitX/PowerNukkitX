@@ -47,7 +47,7 @@ public class BlockWood extends BlockLog {
 
     @Override
     public int getId() {
-        return WOOD;
+        return LOG;
     }
 
     @Since("1.4.0.0-PN")

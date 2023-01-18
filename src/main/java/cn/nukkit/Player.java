@@ -3902,13 +3902,18 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     } else {
 
                         movePlayerPacket.yaw %= 360;
+                        movePlayerPacket.headYaw %= 360;
                         movePlayerPacket.pitch %= 360;
 
                         if (movePlayerPacket.yaw < 0) {
                             movePlayerPacket.yaw += 360;
                         }
 
-                        this.setRotation(movePlayerPacket.yaw, movePlayerPacket.pitch);
+                        if (movePlayerPacket.headYaw < 0) {
+                            movePlayerPacket.headYaw += 360;
+                        }
+
+                        this.setRotation(movePlayerPacket.yaw, movePlayerPacket.pitch, movePlayerPacket.headYaw);
                         this.newPosition = newPos;
                         this.positionChanged = true;
                         this.forceMovement = null;
@@ -4062,12 +4067,16 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         this.sendPosition(this.forceMovement, authPacket.getYaw(), authPacket.getPitch(), MovePlayerPacket.MODE_RESET);
                     } else {
                         float yaw = authPacket.getYaw() % 360;
+                        float headYaw = authPacket.getHeadYaw() % 360;
                         float pitch = authPacket.getPitch() % 360;
                         if (yaw < 0) {
                             yaw += 360;
                         }
+                        if (headYaw < 0) {
+                            headYaw += 360;
+                        }
 
-                        this.setRotation(yaw, pitch);
+                        this.setRotation(yaw, pitch, headYaw);
                         this.newPosition = clientPosition;
                         this.clientMovements.offer(clientPosition);
                         this.forceMovement = null;
@@ -5940,9 +5949,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         TextPacket pk = new TextPacket();
         if (!this.server.isLanguageForced()) {
             pk.type = TextPacket.TYPE_TRANSLATION;
-            pk.message = this.server.getLanguage().translateString(message, parameters, "nukkit.");
+            pk.message = this.server.getLanguage().tr(message, parameters, "nukkit.", true);
             for (int i = 0; i < parameters.length; i++) {
-                parameters[i] = this.server.getLanguage().translateString(parameters[i], parameters, "nukkit.");
+                parameters[i] = this.server.getLanguage().tr(parameters[i], parameters, "nukkit.", true);
             }
             pk.parameters = parameters;
         } else {

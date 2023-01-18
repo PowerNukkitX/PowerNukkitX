@@ -113,26 +113,7 @@ public class BaseLang {
 
     private Map<String, String> parseLang(BufferedReader reader) throws IOException {
         Map<String, String> d = new HashMap<>();
-        String line;
-        while ((line = reader.readLine()) != null) {
-            line = line.trim();
-            if (line.isEmpty() || line.charAt(0) == '#') {
-                continue;
-            }
-            String[] t = line.split("=", 2);
-            if (t.length < 2) {
-                continue;
-            }
-            String key = t[0];
-            String value = t[1];
-            if (value.length() > 1 && value.charAt(0) == '"' && value.charAt(value.length() - 1) == '"') {
-                value = value.substring(1, value.length() - 1).replace("\\\"", "\"").replace("\\\\", "\\");
-            }
-            if (value.isEmpty()) {
-                continue;
-            }
-            d.put(key, value);
-        }
+        PluginI18n.readAndWriteLang(reader, d);
         return d;
     }
 
@@ -194,47 +175,10 @@ public class BaseLang {
         return baseText;
     }
 
-    @Deprecated
-    @DeprecationDetails(since = "1.19.50-r4", reason = "old", replaceWith = "BaseLang#tr(String)")
-    public String translateString(String str) {
-        return tr(str);
-    }
-
-    @Deprecated
-    @DeprecationDetails(since = "1.19.50-r4", reason = "old", replaceWith = "BaseLang#tr(String,String...)")
-    public String translateString(String str, @NotNull String... params) {
-        return this.tr(str, params);
-    }
-
-    @Deprecated
-    @DeprecationDetails(since = "1.19.50-r4", reason = "old", replaceWith = "BaseLang#tr(String,Object...)")
-    public String translateString(String str, @NotNull Object... params) {
-        return this.tr(str, params);
-    }
-
-    public String translateString(String str, String param, String onlyPrefix) {
-        return this.translateString(str, new String[]{param}, onlyPrefix);
-    }
-
-    public String translateString(String str, String[] params, String onlyPrefix) {
-        String baseText = this.get(str);
-        baseText = this.parseTranslation((baseText != null && (onlyPrefix == null || str.indexOf(onlyPrefix) == 0)) ? baseText : str, onlyPrefix);
+    public String tr(String str, String[] params, String prefix, boolean mode) {
+        String baseText = parseLanguageText(str, prefix, mode);
         for (int i = 0; i < params.length; i++) {
-            baseText = baseText.replace("{%" + i + "}", this.parseTranslation(params[i]));
-        }
-        return baseText;
-    }
-
-    @Deprecated
-    @DeprecationDetails(since = "1.19.50-r4", reason = "old", replaceWith = "BaseLang#tr(TextContainer)")
-    public String translate(TextContainer c) {
-        String baseText = this.parseTranslation(c.getText());
-        if (c instanceof TranslationContainer) {
-            baseText = this.internalGet(c.getText());
-            baseText = this.parseTranslation(baseText != null ? baseText : c.getText());
-            for (int i = 0; i < ((TranslationContainer) c).getParameters().length; i++) {
-                baseText = baseText.replace("{%" + i + "}", this.parseTranslation(((TranslationContainer) c).getParameters()[i]));
-            }
+            baseText = baseText.replace("{%" + i + "}", parseLanguageText(parseArg(params[i]), prefix, mode));
         }
         return baseText;
     }
@@ -308,10 +252,69 @@ public class BaseLang {
         }
     }
 
+    protected String parseLanguageText(String str, String prefix, boolean mode) {
+        String result = internalGet(str);
+        if (result != null) {
+            return result;
+        } else {
+            var matcher = split.matcher(str);
+            return matcher.replaceAll(m -> {
+                var s = m.group().substring(1);
+                if (mode) {
+                    if (s.startsWith(prefix)) {
+                        return this.get(s);
+                    } else return s;
+                } else {
+                    if (!s.startsWith(prefix)) {
+                        return this.get(s);
+                    } else return s;
+                }
+            });
+        }
+    }
+
+    @Deprecated
+    @DeprecationDetails(since = "1.19.50-r4", reason = "old", replaceWith = "BaseLang#tr(String)")
+    public String translateString(String str) {
+        return tr(str);
+    }
+
+    @Deprecated
+    @DeprecationDetails(since = "1.19.50-r4", reason = "old", replaceWith = "BaseLang#tr(String,String...)")
+    public String translateString(String str, @NotNull String... params) {
+        return this.tr(str, params);
+    }
+
+    @Deprecated
+    @DeprecationDetails(since = "1.19.50-r4", reason = "old", replaceWith = "BaseLang#tr(String,Object...)")
+    public String translateString(String str, @NotNull Object... params) {
+        return this.tr(str, params);
+    }
+
+    @Deprecated
+    @DeprecationDetails(since = "1.19.50-r4", reason = "old", replaceWith = "BaseLang#tr(String,Object...)")
+    public String translateString(String str, String param, String onlyPrefix) {
+        return this.tr(str, new String[]{param}, onlyPrefix, true);
+    }
+
+    @Deprecated
+    @DeprecationDetails(since = "1.19.50-r4", reason = "old", replaceWith = "BaseLang#tr(String,Object...)")
+    public String translateString(String str, String[] params, String onlyPrefix) {
+        return this.tr(str, params, onlyPrefix, true);
+    }
+
+    @Deprecated
+    @DeprecationDetails(since = "1.19.50-r4", reason = "old", replaceWith = "BaseLang#tr(TextContainer)")
+    public String translate(TextContainer c) {
+        return this.tr(c);
+    }
+
+    @Deprecated
     protected String parseTranslation(String text) {
         return this.parseTranslation(text, null);
     }
 
+    @Deprecated
     protected String parseTranslation(String text, String onlyPrefix) {
         StringBuilder newString = new StringBuilder();
         text = String.valueOf(text);

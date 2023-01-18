@@ -5,6 +5,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.plugin.PluginBase;
 import lombok.extern.log4j.Log4j2;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -15,6 +16,11 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 
+/**
+ * The Plugin i18n manager.
+ * <p>
+ * Only support Java Plugin {@link PluginBase}
+ */
 @PowerNukkitXOnly
 @Since("1.19.50-r4")
 @Log4j2
@@ -37,7 +43,7 @@ public final class PluginI18nManager {
                     // 开始读取文件内容
                     InputStream inputStream = plugin.getResource(name);
                     assert inputStream != null;
-                    i18n.reloadLang(name.substring(9, name.indexOf(".")), inputStream);
+                    i18n.reloadLang(LangCode.valueOf(name.substring(9, name.indexOf("."))), inputStream);
                     count++;
                     inputStream.close();
                 }
@@ -58,7 +64,7 @@ public final class PluginI18nManager {
             int count = 0;
             for (var f : files) {
                 try (InputStream inputStream = new FileInputStream(f)) {
-                    i18n.reloadLang(f.getName().replace(".lang", ""), inputStream);
+                    i18n.reloadLang(LangCode.valueOf(f.getName().replace(".lang", "")), inputStream);
                     count++;
                 } catch (IOException e) {
                     throw new RuntimeException(e);
@@ -119,6 +125,7 @@ public final class PluginI18nManager {
     }
 
 
+    @Nullable
     public static PluginI18n getI18n(PluginBase plugin) {
         return PLUGINS_MULTI_LANGUAGE.get(plugin.getFile().getName());
     }

@@ -8,10 +8,14 @@ import cn.nukkit.command.data.*;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.ParamTree;
 import cn.nukkit.command.utils.CommandLogger;
+import cn.nukkit.lang.CommandOutputContainer;
+import cn.nukkit.lang.PluginI18nManager;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.permission.Permissible;
+import cn.nukkit.plugin.InternalPlugin;
+import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.TextFormat;
 import co.aikar.timings.Timing;
 import co.aikar.timings.Timings;
@@ -53,6 +57,7 @@ public abstract class Command implements GenericParameter {
     protected ParamTree paramTree;
 
     protected CommandData commandData;
+
     public Command(String name) {
         this(name, "", null, EmptyArrays.EMPTY_STRINGS);
     }
@@ -114,7 +119,7 @@ public abstract class Command implements GenericParameter {
         if (!this.testPermission(player)) {
             return null;
         }
-
+        var plugin = this instanceof PluginCommand<?> pluginCommand ? pluginCommand.getPlugin() : InternalPlugin.INSTANCE;
         CommandData customData = this.commandData.clone();
 
         if (getAliases().length > 0) {
@@ -126,7 +131,15 @@ public abstract class Command implements GenericParameter {
             customData.aliases = new CommandEnum(this.name + "Aliases", aliases);
         }
 
-        customData.description = player.getServer().getLanguage().tr(this.getDescription());
+        if (plugin instanceof PluginBase pluginBase) {
+            var i18n = PluginI18nManager.getI18n(pluginBase);
+            if (i18n != null) {
+                customData.description = i18n.tr(player.getLanguageCode(), this.getDescription());
+            }
+        } else {
+            customData.description = player.getServer().getLanguage().tr(this.getDescription(), CommandOutputContainer.EMPTY_STRING, "commands.", false);
+        }
+
         this.commandParameters.forEach((key, par) -> {
             CommandOverload overload = new CommandOverload();
             overload.input.parameters = par;
