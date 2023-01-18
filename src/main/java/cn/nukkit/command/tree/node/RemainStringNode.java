@@ -9,6 +9,16 @@ import java.util.List;
 @PowerNukkitXOnly
 @Since("1.19.50-r4")
 public class RemainStringNode extends ParamNode<String[]> {
+    private final String defaultStr;
+
+    public RemainStringNode() {
+        defaultStr = null;
+    }
+
+    public RemainStringNode(String defaultStr) {
+        this.defaultStr = defaultStr;
+    }
+
     private final List<String> TMP = new ArrayList<>();
 
     @Override
@@ -22,7 +32,8 @@ public class RemainStringNode extends ParamNode<String[]> {
 
     @Override
     public void reset() {
-        super.reset();
+        if (defaultStr != null) this.value = new String[]{defaultStr};
+        else super.reset();
         TMP.clear();
     }
 }

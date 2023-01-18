@@ -67,6 +67,8 @@ public abstract class PositionNode extends ParamNode<Position> {
                         if (relativeCoordinate.isEmpty()) {
                             coordinate[index] = 0;
                         } else {
+                            if (relativeCoordinate.charAt(0) == '+')
+                                relativeCoordinate = relativeCoordinate.substring(1);
                             coordinate[index] = Double.parseDouble(relativeCoordinate);
                         }
                     } else if (s.charAt(0) == '^') {
@@ -79,6 +81,8 @@ public abstract class PositionNode extends ParamNode<Position> {
                         String relativeAngleCoordinate = s.substring(1);
                         if (!relativeAngleCoordinate.isEmpty()) {
                             Vector3 vector3;
+                            if (relativeAngleCoordinate.charAt(0) == '+')
+                                relativeAngleCoordinate = relativeAngleCoordinate.substring(1);
                             switch (index) {
                                 case 0 -> {
                                     vector3 = BVector3.fromLocation(loc).rotateYaw(-90).setPitch(0).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos();

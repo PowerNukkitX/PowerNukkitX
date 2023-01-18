@@ -93,9 +93,7 @@ public class CommandEnum {
     }
 
     /**
-     * 配合{@link cn.nukkit.Player#sendCommandData()}能实现动态枚举，性能可能很差，因为{@link cn.nukkit.network.protocol.AvailableCommandsPacket AvailableCommandsPacket}数据包量很大
-     * Instantiates a new Command enum.<br>
-     * todo 找到原版实现动态枚举的方法
+     * Instantiates a new Command enum.
      *
      * @param name            the name
      * @param strListSupplier the str list supplier

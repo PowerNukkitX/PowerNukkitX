@@ -46,9 +46,9 @@ public class PlaySoundCommand extends VanillaCommand {
         String sound = list.getResult(0);
         List<Player> targets = null;
         Position position = null;
-        double volume = 1;
-        double pitch = 1;
-        double minimumVolume = 0;
+        float volume = 1;
+        float pitch = 1;
+        float minimumVolume = 0;
         if (list.hasResult(1)) targets = list.getResult(1);
         if (list.hasResult(2)) position = list.getResult(2);
         if (list.hasResult(3)) volume = list.getResult(3);
@@ -77,19 +77,19 @@ public class PlaySoundCommand extends VanillaCommand {
                     continue;
                 }
 
-                packet.volume = (float) minimumVolume;
+                packet.volume = minimumVolume;
                 packet.x = player.getFloorX();
                 packet.y = player.getFloorY();
                 packet.z = player.getFloorZ();
             } else {
-                packet.volume = (float) volume;
+                packet.volume = volume;
                 packet.x = position.getFloorX();
                 packet.y = position.getFloorY();
                 packet.z = position.getFloorZ();
             }
 
             packet.name = sound;
-            packet.pitch = (float) pitch;
+            packet.pitch = pitch;
             player.dataPacket(packet);
 
             successes.add(name);

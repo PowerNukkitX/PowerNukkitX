@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 @PowerNukkitXOnly
 @Since("1.19.50-r4")
 public class IntPositionNode extends PositionNode {
-    private static final Pattern INT_POS_PATTERN = Pattern.compile("[~^]?(-?\\d+)|[~^]");
+    private static final Pattern INT_POS_PATTERN = Pattern.compile("[~^]?([-+]?\\d+)|[~^]");
 
     public IntPositionNode() {
         super(INT_POS_PATTERN);

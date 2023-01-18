@@ -42,9 +42,9 @@ public class SpreadPlayersCommand extends VanillaCommand {
         var list = result.getValue();
         double x = list.getResult(0);
         double z = list.getResult(1);
-        float spreadDistance = list.getResult(3);
-        float maxRange = list.getResult(4);
-        List<Entity> targets = list.getResult(5);
+        float spreadDistance = list.getResult(2);
+        float maxRange = list.getResult(3);
+        List<Entity> targets = list.getResult(4);
 
         if (spreadDistance < 0) {
             log.addDoubleTooSmall(3, 0).output();

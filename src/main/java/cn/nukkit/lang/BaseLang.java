@@ -253,6 +253,12 @@ public class BaseLang {
     }
 
     protected String parseLanguageText(String str, String prefix, boolean mode) {
+        if (mode && !str.startsWith(prefix)) {
+            return str;
+        }
+        if (!mode && str.startsWith(prefix)) {
+            return str;
+        }
         String result = internalGet(str);
         if (result != null) {
             return result;

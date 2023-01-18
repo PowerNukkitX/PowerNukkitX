@@ -112,7 +112,7 @@ public class GameruleCommand extends VanillaCommand {
             }
         }
         var str = list.getResult(1);
-        log.addSuccess("commands.gamerule.success", optionalRule.get().getName().toLowerCase(), str.toString());
+        log.addSuccess("commands.gamerule.success", optionalRule.get().getName().toLowerCase(), str.toString()).output();
         return 1;
     }
 }

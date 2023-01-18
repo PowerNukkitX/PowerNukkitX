@@ -9,6 +9,7 @@ import cn.nukkit.command.tree.ParamTree;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.command.utils.EntitySelector;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.utils.TextFormat;
 
 import java.util.Map;
@@ -23,9 +24,10 @@ public class MeCommand extends VanillaCommand {
         super(name, "commands.me.description", "nukkit.command.me.usage");
         this.setPermission("nukkit.command.me");
         this.commandParameters.clear();
-        this.commandParameters.put("default", new CommandParameter[]{
+        this.commandParameters.put("message", new CommandParameter[]{
                 CommandParameter.newType("message", CommandParamType.MESSAGE)
         });
+        this.commandParameters.put("default", CommandParameter.EMPTY_ARRAY);
         this.paramTree = new ParamTree(this);
     }
 
@@ -33,7 +35,10 @@ public class MeCommand extends VanillaCommand {
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         String name = sender.getName();
-        String[] args = result.getValue().getResult(0);
+        String[] args;
+        if (result.getKey().equals("message")) {
+            args = result.getValue().getResult(0);
+        } else args = new String[]{""};
         StringBuilder msg = new StringBuilder();
         for (String arg : args) {
             if (EntitySelector.hasArguments(arg)) {
@@ -48,8 +53,7 @@ public class MeCommand extends VanillaCommand {
         if (msg.length() > 0) {
             msg = new StringBuilder(msg.substring(0, msg.length() - 1));
         }
-
-        log.addSuccess("chat.type.emote", name, TextFormat.WHITE + msg.toString()).output(true, true);
+        broadcastCommandMessage(sender, new TranslationContainer("chat.type.emote", name, TextFormat.WHITE + msg.toString()), true);
         return 1;
     }
 }

@@ -16,7 +16,6 @@ import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.network.protocol.types.CommandOutputMessage;
 import cn.nukkit.permission.Permissible;
-import cn.nukkit.plugin.CommonJSPlugin;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.plugin.PluginBase;
@@ -110,8 +109,6 @@ public record CommandLogger(Command command,
     public CommandLogger addMessage(String key, String... params) {
         if (this.plugin == InternalPlugin.INSTANCE) {
             this.outputContainer.getMessages().add(new CommandOutputMessage(Server.getInstance().getLanguage().tr(key, params), CommandOutputContainer.EMPTY_STRING));
-        } else if (this.plugin instanceof CommonJSPlugin) {
-            //todo js plugin mulit_language
         } else if (this.plugin instanceof PluginBase pluginBase) {
             var i18n = PluginI18nManager.getI18n(pluginBase);
             if (i18n != null) {
@@ -123,6 +120,8 @@ public record CommandLogger(Command command,
                 }
                 this.outputContainer.getMessages().add(new CommandOutputMessage(text, CommandOutputContainer.EMPTY_STRING));
             }
+        } else {
+            this.outputContainer.getMessages().add(new CommandOutputMessage(key, params));
         }
         return this;
     }
