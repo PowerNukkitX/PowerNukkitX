@@ -3,6 +3,7 @@ package cn.nukkit.inventory;
 import cn.nukkit.Player;
 import cn.nukkit.api.API;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
@@ -226,8 +227,22 @@ public class GrindstoneInventory extends FakeBlockUIComponent {
         if (index == 2) {
             index = SLOT_RESULT;
         }
-        
+
         return super.getItem(index);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    @Override
+    public Item getUnclonedItem(int index) {
+        if (index < 0 || index > 3) {
+            return Item.get(0);
+        }
+        if (index == 2) {
+            index = SLOT_RESULT;
+        }
+
+        return super.getUnclonedItem(index);
     }
 
     @Override

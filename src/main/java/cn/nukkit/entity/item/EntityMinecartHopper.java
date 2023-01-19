@@ -6,16 +6,13 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockComposter;
+import cn.nukkit.block.BlockHopper;
 import cn.nukkit.block.BlockRailActivator;
 import cn.nukkit.blockentity.BlockEntity;
-import cn.nukkit.blockentity.BlockEntityHopper;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
-import cn.nukkit.event.inventory.InventoryMoveItemEvent;
-import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.MinecartHopperInventory;
-import cn.nukkit.inventory.RecipeInventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.*;
@@ -24,7 +21,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.MinecartType;
 
-public class EntityMinecartHopper extends EntityMinecartAbstract implements InventoryHolder {
+public class EntityMinecartHopper extends EntityMinecartAbstract implements InventoryHolder, BlockHopper.IHopper {
 
     public static final int NETWORK_ID = 96;
     private final BlockVector3 temporalVector = new BlockVector3();
@@ -43,160 +40,39 @@ public class EntityMinecartHopper extends EntityMinecartAbstract implements Inve
     @Since("1.19.21-r3")
     @Override
     public boolean onUpdate(int currentTick) {
-        if (super.onUpdate(currentTick)) {
-            if (isOnTransferCooldown()) {
-                this.transferCooldown--;
-                return true;
-            }
+        if (!super.onUpdate(currentTick)) return false;
 
-            checkDisabled();
-
-            if (isDisabled()) {
-                return false;
-            }
-
-            this.updatePickupArea();
-
-            Block blockSide = this.getLevelBlock().getSide(BlockFace.UP);
-            BlockEntity blockEntity = this.level.getBlockEntity(temporalVector.setComponentsAdding(this, BlockFace.UP));
-
-            boolean changed;
-
-            if (blockEntity instanceof InventoryHolder || blockSide instanceof BlockComposter) {
-                changed = pullItems();
-            } else {
-                changed = pickupItems();
-            }
-
-            if (changed) {
-                this.setTransferCooldown(1);
-            }
-
+        if (isOnTransferCooldown()) {
+            this.transferCooldown--;
             return true;
-        } else {
-            return false;
         }
-    }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r3")
-    public boolean pullItems() {
-        if (this.inventory.isFull()) {
+        checkDisabled();
+
+        if (isDisabled()) {
             return false;
         }
 
-        Block blockSide = this.getLevelBlock().getSide(BlockFace.UP);
+        this.updatePickupArea();
+
+        Block blockSide = this.getSide(BlockFace.UP).getTickCachedLevelBlock();
         BlockEntity blockEntity = this.level.getBlockEntity(temporalVector.setComponentsAdding(this, BlockFace.UP));
 
-        if (blockEntity instanceof BlockEntityHopper hopper) {
-            if (hopper.isDisabled())
-                return false;
+        boolean changed;
+
+        if (blockEntity instanceof InventoryHolder || blockSide instanceof BlockComposter) {
+            //从容器中拉取物品
+            changed = pullItems(this, this);
+        } else {
+            //收集掉落物
+            changed = pickupItems(this, this, pickupArea);
         }
 
-        if (blockEntity instanceof InventoryHolder) {
-            Inventory inv = blockEntity instanceof RecipeInventoryHolder recipeInventoryHolder ? recipeInventoryHolder.getProductView() : ((InventoryHolder) blockEntity).getInventory();
-
-            for (int i = 0; i < inv.getSize(); i++) {
-                Item item = inv.getItem(i);
-
-                if (!item.isNull()) {
-                    Item itemToAdd = item.clone();
-                    itemToAdd.count = 1;
-
-                    if (!this.inventory.canAddItem(itemToAdd)) {
-                        continue;
-                    }
-
-                    InventoryMoveItemEvent ev = new InventoryMoveItemEvent(inv, this.inventory, this, itemToAdd, InventoryMoveItemEvent.Action.SLOT_CHANGE);
-                    this.server.getPluginManager().callEvent(ev);
-
-                    if (ev.isCancelled()) {
-                        continue;
-                    }
-
-                    Item[] items = this.inventory.addItem(itemToAdd);
-
-                    if (items.length >= 1) {
-                        continue;
-                    }
-
-                    item.count--;
-
-                    inv.setItem(i, item);
-                    return true;
-                }
-            }
-        } else if (blockSide instanceof BlockComposter blockComposter) {
-            if (blockComposter.isFull()) {
-                Item item = blockComposter.empty();
-
-                if (item == null || item.isNull()) {
-                    return false;
-                }
-
-                Item itemToAdd = item.clone();
-                itemToAdd.count = 1;
-
-                if (!this.inventory.canAddItem(itemToAdd)) {
-                    return false;
-                }
-
-                Item[] items = this.inventory.addItem(itemToAdd);
-
-                return items.length < 1;
-            }
-        }
-        return false;
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.21-r3")
-    public boolean pickupItems() {
-        if (this.inventory.isFull()) {
-            return false;
+        if (changed) {
+            this.setTransferCooldown(1);
         }
 
-        boolean pickedUpItem = false;
-
-        for (Entity entity : this.level.getCollidingEntities(this.pickupArea)) {
-            if (entity.isClosed() || !(entity instanceof EntityItem itemEntity)) {
-                continue;
-            }
-
-            Item item = itemEntity.getItem();
-
-            if (item.isNull()) {
-                continue;
-            }
-
-            int originalCount = item.getCount();
-
-            if (!this.inventory.canAddItem(item)) {
-                continue;
-            }
-
-            InventoryMoveItemEvent ev = new InventoryMoveItemEvent(null, this.inventory, this, item, InventoryMoveItemEvent.Action.PICKUP);
-            this.server.getPluginManager().callEvent(ev);
-
-            if (ev.isCancelled()) {
-                continue;
-            }
-
-            Item[] items = this.inventory.addItem(item);
-
-            if (items.length == 0) {
-                entity.close();
-                pickedUpItem = true;
-                continue;
-            }
-
-            if (items[0].getCount() != originalCount) {
-                pickedUpItem = true;
-                item.setCount(items[0].getCount());
-            }
-        }
-
-        return pickedUpItem;
+        return true;
     }
 
     @PowerNukkitXOnly
