@@ -550,6 +550,9 @@ public abstract class Entity extends Location implements Metadatable {
     protected int age = 0;
     protected float health = 20;
     protected float absorption = 0;
+    /**
+     * Player not use
+     */
     protected float ySize = 0;
     @PowerNukkitOnly
     @Since("1.2.1.0-PN")
@@ -2010,12 +2013,7 @@ public abstract class Entity extends Location implements Metadatable {
         var pk = new MoveEntityAbsolutePacket();
         pk.eid = this.getId();
         pk.x = this.x;
-        /*todo HACK实现
-        当不启用服务器权威移动、玩家游泳时，以玩家当前位置发送MoveEntityAbsolutePacket会导致
-        玩家位置和实际位置不相符，需要+getBaseOffset()*/
-        if (getServer().getServerAuthoritativeMovement() == 0) {
-            pk.y = isSwimming() ? this.y + getBaseOffset() : this.y + this.getEyeHeight();
-        } else pk.y = this.y + this.getEyeHeight();
+        pk.y = isSwimming() ? this.y + getSwimmingHeight() : this.y + this.getEyeHeight();
         pk.z = this.z;
         pk.headYaw = yaw;
         pk.pitch = pitch;
@@ -2606,6 +2604,7 @@ public abstract class Entity extends Location implements Metadatable {
         return true;
     }
 
+    //player not use
     @PowerNukkitXDifference(since = "1.19.50-r4", info = "The onGround is updated when the entity motion is 0")
     public boolean move(double dx, double dy, double dz) {
         if (dx == 0 && dz == 0 && dy == 0) {
@@ -2948,22 +2947,16 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public boolean setPositionAndRotation(Vector3 pos, double yaw, double pitch) {
-        if (this.setPosition(pos)) {
-            this.setRotation(yaw, pitch);
-            return true;
-        }
-
-        return false;
+        this.setPosition(pos);
+        this.setRotation(yaw, pitch);
+        return true;
     }
 
     @Since("FUTURE")
     public boolean setPositionAndRotation(Vector3 pos, double yaw, double pitch, double headYaw) {
-        if (this.setPosition(pos)) {
-            this.setRotation(yaw, pitch, headYaw);
-            return true;
-        }
-
-        return false;
+        this.setPosition(pos);
+        this.setRotation(yaw, pitch, headYaw);
+        return true;
     }
 
     public void setRotation(double yaw, double pitch) {
