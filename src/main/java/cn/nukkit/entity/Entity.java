@@ -515,6 +515,9 @@ public abstract class Entity extends Location implements Metadatable {
     public boolean positionChanged;
     public boolean motionChanged;
     public int deadTicks = 0;
+    /**
+     * Player not use
+     */
     public boolean keepMovement = false;
     public float fallDistance = 0;
     public int ticksLived = 0;

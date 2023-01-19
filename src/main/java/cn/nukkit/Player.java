@@ -1180,6 +1180,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     //NK原始处理移动的方法
     @Deprecated
+    @DeprecationDetails(since = "1.19.50-r4", reason = "use handleMovement")
     protected void processMovement(int tickDiff) {
         if (!this.isAlive() || !this.spawned || this.newPosition == null || this.isSleeping()) {
             this.positionChanged = false;
