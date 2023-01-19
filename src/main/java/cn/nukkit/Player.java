@@ -7017,12 +7017,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.removeAllWindows();
         //switch level, update pos and rotation, update aabb
         if (to.level != null && this.level != to.level) {
-            this.switchLevel(to.level);
+            if (!this.switchLevel(to.level)) return false;
         }
         this.clientMovements.clear();
         this.clientMovements.offer(to);
         this.forceMovement = to;
         this.newPosition = to;
+        this.positionChanged = true;
         this.nextChunkOrderRun = 0;
 
         //DummyBossBar
