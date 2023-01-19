@@ -240,7 +240,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @Since("1.19.21-r1")
     protected TradingTransaction tradingTransaction;
     protected long randomClientId;
-    protected Location forceMovement = null;
+    @Deprecated
+    protected Vector3 forceMovement = null;
     @Deprecated
     protected Vector3 teleportPosition = null;
     protected boolean connected = true;
@@ -1028,13 +1029,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.positionChanged = false;
             return;
         }
-        boolean isTeleport = this.forceMovement != null;
-        if (isTeleport) {
-            clientPos = forceMovement.clone();
-        }
         boolean invalidMotion = false;
         double distance = clientPos.distanceSquared(this);
-        if (distance > 128 && !isTeleport) {
+        if (distance > 128) {
             invalidMotion = true;
         } else if (this.chunk == null || !this.chunk.isGenerated()) {
             BaseFullChunk chunk = this.level.getChunk(clientPos.getChunkX() >> 4, clientPos.getChunkX() >> 4, false);
@@ -1111,16 +1108,21 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.lastYaw = target.yaw;
             this.lastPitch = target.pitch;
 
+            List<Block> blocksAround = null;
+            List<Block> collidingBlocks = null;
+            if (this.blocksAround != null && this.collisionBlocks != null) {
+                blocksAround = new ArrayList<>(this.blocksAround);
+                collidingBlocks = new ArrayList<>(this.collisionBlocks);
+
+            }
             if (!isFirst) {
-                List<Block> blocksAround = new ArrayList<>(this.blocksAround);
-                List<Block> collidingBlocks = new ArrayList<>(this.collisionBlocks);
-
-                PlayerMoveEvent ev = new PlayerMoveEvent(this, source, target);
-
                 if (this.clientMovements.isEmpty()) {
                     this.blocksAround = null;
                     this.collisionBlocks = null;
                 }
+
+                PlayerMoveEvent ev = new PlayerMoveEvent(this, source, target);
+
 
                 this.server.getPluginManager().callEvent(ev);
 
@@ -1139,16 +1141,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                 this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.SWIM));
                             }
                         }
-                        if (isTeleport) {
-                            this.sendPosition(new Vector3(this.x, this.y, this.z), this.yaw, this.pitch, MovePlayerPacket.MODE_TELEPORT);
-                        } else this.broadcastMovement(false);
+                        this.broadcastMovement(false);
                     }
                 } else {
                     this.blocksAround = blocksAround;
                     this.collisionBlocks = collidingBlocks;
-                    if (isTeleport) {
-                        this.sendPosition(new Vector3(this.x, this.y, this.z), this.yaw, this.pitch, MovePlayerPacket.MODE_TELEPORT);
-                    } else this.broadcastMovement(false);
+                    this.broadcastMovement(false);
                 }
             }
 
@@ -1167,10 +1165,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (invalidMotion) {
             this.revertClientMotion(this.getLocation());
         } else {
-            if (forceMovement != null) {
-                this.forceMovement = null;
-                this.resetFallDistance();
-            }
             if (distance != 0 && this.nextChunkOrderRun > 20) {
                 this.nextChunkOrderRun = 20;
             }
@@ -1328,7 +1322,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (revert) {
             this.revertClientMotion(this.getLocation());
         } else {
-            this.forceMovement = null;
             if (distance != 0 && this.nextChunkOrderRun > 20) {
                 this.nextChunkOrderRun = 20;
             }
@@ -1755,7 +1748,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             pos.yaw = this.yaw;
             pos.pitch = this.pitch;
         }
-        this.teleportImmediate(pos.setY(Math.ceil(pos.getY())), TeleportCause.PLAYER_SPAWN);
+        this.teleport(pos.setY(Math.ceil(pos.getY())), TeleportCause.PLAYER_SPAWN);
         this.spawnToAll();
     }
 
@@ -1851,7 +1844,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.inventory.sendContents(this);
         this.inventory.sendArmorContents(this);
         this.offhandInventory.sendContents(this);
-        this.teleportImmediate(Location.fromObject(respawnPos.setY(Math.ceil(respawnPos.getY())), respawnPos.level), TeleportCause.PLAYER_SPAWN);
+        this.teleport(Location.fromObject(respawnPos.setY(Math.ceil(respawnPos.getY())), respawnPos.level), TeleportCause.PLAYER_SPAWN);
         this.spawnToAll();
         this.scheduleUpdate();
     }
@@ -7001,66 +6994,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         Location from = this.getLocation();
         Location to = location;
-
-        //handle event
-        if (cause != null) {
-            PlayerTeleportEvent event = new PlayerTeleportEvent(this, from, to, cause);
-            this.server.getPluginManager().callEvent(event);
-            if (event.isCancelled()) return false;
-            to = event.getTo();
-        }
-        //remove rider
-        final Entity currentRide = getRiding();
-        if (currentRide != null && !currentRide.dismountEntity(this)) {
-            return false;
-        }
-        //remove inventory
-        this.removeAllWindows();
-        //switch level, update pos and rotation, update aabb
-        if (to.level != null && this.level != to.level) {
-            if (!this.switchLevel(to.level)) return false;
-        }
-        this.clientMovements.clear();
-        this.clientMovements.offer(to);
-        this.forceMovement = to;
-        this.newPosition = to;
-        this.positionChanged = true;
-        this.nextChunkOrderRun = 0;
-
-        //DummyBossBar
-        this.getDummyBossBars().values().forEach(DummyBossBar::reshow);
-        //Weather
-        this.getLevel().sendWeather(this);
-        //Update time
-        this.getLevel().sendTime(this);
-        //Update gamemode
-        if (isSpectator()) {
-            this.setGamemode(this.gamemode, false, null, true);
-        }
-        this.scheduleUpdate();
-        return true;
-    }
-
-    public void teleportImmediate(Location location) {
-        this.teleportImmediate(location, TeleportCause.PLUGIN);
-    }
-
-    /**
-     * 立即令该玩家传送到指定的位置
-     * <p>
-     * Immediately cause the player to teleport to the specified location.
-     *
-     * @param location 传送位置<br>the location of teleport
-     * @param cause    传送原因<br>the cause of teleport
-     */
-    public void teleportImmediate(Location location, TeleportCause cause) {
-        Location from = this.getLocation();
-        Location to = location;
         //event
         if (cause != null) {
             PlayerTeleportEvent event = new PlayerTeleportEvent(this, from, to, cause);
             this.server.getPluginManager().callEvent(event);
-            if (event.isCancelled()) return;
+            if (event.isCancelled()) return false;
             to = event.getTo();
         }
         //remove inventory
@@ -7073,14 +7011,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         //remove ride
         final Entity currentRide = getRiding();
         if (currentRide != null && !currentRide.dismountEntity(this)) {
-            return;
+            return false;
         }
         //switch level, update pos and rotation, update aabb
         setPositionAndRotation(to, to.getYaw(), to.getPitch(), to.getHeadYaw());
         //send to client
         this.sendPosition(to, to.yaw, to.pitch, MovePlayerPacket.MODE_TELEPORT);
         //state update
-        this.resetFallDistance();
         this.newPosition = to;
         this.positionChanged = true;
         this.nextChunkOrderRun = 0;
@@ -7095,6 +7032,20 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (isSpectator()) {
             this.setGamemode(this.gamemode, false, null, true);
         }
+        this.resetFallDistance();
+        return true;
+    }
+
+    @Deprecated
+    @DeprecationDetails(since = "1.19.50-r4", reason = "same teleport")
+    public void teleportImmediate(Location location) {
+        this.teleportImmediate(location, TeleportCause.PLUGIN);
+    }
+
+    @Deprecated
+    @DeprecationDetails(since = "1.19.50-r4", reason = "same teleport")
+    public void teleportImmediate(Location location, TeleportCause cause) {
+        this.teleport(location, cause);
     }
 
     /**
