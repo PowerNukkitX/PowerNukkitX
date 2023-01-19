@@ -1,6 +1,7 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.DoNotModify;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -49,6 +50,21 @@ public interface Inventory {
      * @return the item
      */
     Item getItem(int index);
+
+    /**
+     * 获取该库存指定索引处的未克隆的物品<p/>
+     * 若调用方保证不会修改此方法返回的Item对象，则使用此方法将降低特定场景下Item::clone()造成的性能开销
+     *
+     * @param index the index
+     * @return the item
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    @DoNotModify
+    default Item getUnclonedItem(int index) {
+        //你需要覆写它来实现
+        return getItem(index);
+    }
 
     /**
      * 设置该库存指定索引处的物品

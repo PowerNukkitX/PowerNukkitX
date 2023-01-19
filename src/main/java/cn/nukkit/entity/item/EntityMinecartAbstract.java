@@ -5,7 +5,10 @@ import cn.nukkit.api.API;
 import cn.nukkit.api.API.Definition;
 import cn.nukkit.api.API.Usage;
 import cn.nukkit.api.PowerNukkitDifference;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.block.*;
+import cn.nukkit.blockentity.BlockEntityHopper;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.EntityLiving;
@@ -15,14 +18,13 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.vehicle.VehicleMoveEvent;
 import cn.nukkit.event.vehicle.VehicleUpdateEvent;
+import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemMinecart;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.format.FullChunk;
-import cn.nukkit.math.MathHelper;
-import cn.nukkit.math.NukkitMath;
-import cn.nukkit.math.Vector3;
+import cn.nukkit.math.*;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.MinecartType;
 import cn.nukkit.utils.Rail;
@@ -217,6 +219,18 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
                 }
             }
 
+            //使矿车通知漏斗更新而不是漏斗来检测矿车
+            //通常情况下，矿车的数量远远少于漏斗，所以说此举能大福提高性能
+            if (this instanceof InventoryHolder holder) {
+                var pickupArea = new SimpleAxisAlignedBB(this.x, this.y - 1, this.z, this.x + 1, this.y, this.z + 1);
+                checkPickupHopper(pickupArea, holder);
+                //漏斗矿车会自行拉取物品!
+                if (!(this instanceof EntityMinecartHopper)) {
+                    var pushArea = new SimpleAxisAlignedBB(this.x, this.y, this.z, this.x + 1, this.y + 2, this.z + 1);
+                    checkPushHopper(pushArea, holder);
+                }
+            }
+
             // No need to onGround or Motion diff! This always have an update
             return true;
         }
@@ -383,6 +397,38 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     }
 
     protected void activate(int x, int y, int z, boolean flag) {
+    }
+
+    /**
+     * 检查邻近的漏斗并通知它输出物品
+     * @param pushArea 漏斗输出范围
+     * @return 是否有漏斗被通知
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    private boolean checkPushHopper(AxisAlignedBB pushArea, InventoryHolder holder) {
+        var hopperPushArray = this.level.getTickCachedCollisionBlocks(pushArea, true, false, b -> b instanceof BlockHopper);
+        if (hopperPushArray.length >= 1) {
+            ((BlockEntityHopper) hopperPushArray[0].getLevelBlockEntity()).setMinecartInvPushTo(holder);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 检查邻近的漏斗并通知它获取物品
+     * @param pickupArea 漏斗拉取范围
+     * @return 是否有漏斗被通知
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    private boolean checkPickupHopper(AxisAlignedBB pickupArea, InventoryHolder holder) {
+        var hopperPickupArray = this.level.getTickCachedCollisionBlocks(pickupArea, true, false, b -> b instanceof BlockHopper);
+        if (hopperPickupArray.length >= 1) {
+            ((BlockEntityHopper) hopperPickupArray[0].getLevelBlockEntity()).setMinecartInvPickupFrom(holder);
+            return true;
+        }
+        return false;
     }
 
     private void setFalling() {
