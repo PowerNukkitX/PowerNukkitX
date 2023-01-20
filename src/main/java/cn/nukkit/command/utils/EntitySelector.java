@@ -26,6 +26,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static cn.nukkit.utils.StringUtils.fastSplit;
+
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public final class EntitySelector {
@@ -390,7 +392,7 @@ public final class EntitySelector {
 
     private static final String SCORE_SEPARATOR = ",";
     private static final String SCORE_JOINER = "=";
-    private static final String SCORE_SCOPE_SEPARATOR = "\\.\\.";
+    private static final String SCORE_SCOPE_SEPARATOR = "..";
 
     private static List<Predicate<Entity>> getScoresPredicate(Map<String, List<String>> params) {
         List<Predicate<Entity>> predicates = Lists.newArrayList();
@@ -404,9 +406,9 @@ public final class EntitySelector {
         for (String score_part : scores) {
             if (score_part != null) {
                 score_part = score_part.substring(1, score_part.length() - 1);
-                for (String score_entry : score_part.split(SCORE_SEPARATOR)) {
+                for (String score_entry : fastSplit(SCORE_SEPARATOR, score_part)) {
                     if (score_entry.isEmpty()) continue;
-                    var score_entry_split = score_entry.split(SCORE_JOINER, 2);
+                    var score_entry_split = fastSplit(SCORE_JOINER, score_entry, 2);
                     String objective = score_entry_split[0];
                     var scoreboard = Server.getInstance().getScoreboardManager().getScoreboard(objective);
                     if(scoreboard == null){
@@ -421,7 +423,7 @@ public final class EntitySelector {
                     if (score.contains("..")) {
                         int min = Integer.MIN_VALUE;
                         int max = Integer.MAX_VALUE;
-                        var score_scope_split = score.split(SCORE_SCOPE_SEPARATOR);
+                        var score_scope_split = fastSplit(SCORE_SCOPE_SEPARATOR, score);
                         String min_str = score_scope_split[0];
                         if (!min_str.isEmpty()) {
                             min = Integer.parseInt(min_str);
@@ -650,7 +652,7 @@ public final class EntitySelector {
 
         if (inputArguments != null) {
             for (String arg : separateArguments(inputArguments)) {
-                var split = arg.split(ARGUMENT_JOINER, 2);
+                var split = fastSplit(ARGUMENT_JOINER, arg, 2);
                 String argName = split[0];
 
                 if (!VALID_ARGUMENT.apply(argName)) {
