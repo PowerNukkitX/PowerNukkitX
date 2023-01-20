@@ -31,7 +31,7 @@ public class SetBlockCommand extends VanillaCommand {
                 CommandParameter.newType("tileData", true, CommandParamType.INT),
                 CommandParameter.newEnum("oldBlockHandling", true, new String[]{"destroy", "keep", "replace"})
         });
-        this.paramTree = new ParamTree(this);
+        this.enableParamTree();
     }
 
     @Since("1.19.50-r4")

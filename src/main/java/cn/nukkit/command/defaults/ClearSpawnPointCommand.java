@@ -26,7 +26,7 @@ public class ClearSpawnPointCommand extends VanillaCommand {
         this.addCommandParameters("default", new CommandParameter[]{
                 CommandParameter.newType("player", true, CommandParamType.TARGET, new PlayersNode()),
         });
-        this.paramTree = new ParamTree(this);
+        this.enableParamTree();
     }
 
     @Override

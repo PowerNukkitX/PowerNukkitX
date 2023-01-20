@@ -39,7 +39,7 @@ public class GamemodeCommand extends VanillaCommand {
                 CommandParameter.newEnum("gameMode", CommandEnum.ENUM_GAMEMODE),
                 CommandParameter.newType("player", true, CommandParamType.TARGET, new PlayersNode())
         });
-        this.paramTree = new ParamTree(this);
+        this.enableParamTree();
     }
 
     @Since("1.19.50-r4")

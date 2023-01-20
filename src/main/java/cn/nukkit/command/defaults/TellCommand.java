@@ -28,7 +28,7 @@ public class TellCommand extends VanillaCommand {
                 CommandParameter.newType("player", CommandParamType.TARGET, new PlayersNode()),
                 CommandParameter.newType("message", CommandParamType.MESSAGE)
         });
-        this.paramTree = new ParamTree(this);
+        this.enableParamTree();
     }
 
     @Since("1.19.50-r4")

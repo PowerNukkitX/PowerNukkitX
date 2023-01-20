@@ -62,7 +62,7 @@ public class GameruleCommand extends VanillaCommand {
                     CommandParameter.newType("value", true, CommandParamType.STRING)
             });
         }
-        this.paramTree = new ParamTree(this);
+        this.enableParamTree();
     }
 
     @Since("1.19.50-r4")

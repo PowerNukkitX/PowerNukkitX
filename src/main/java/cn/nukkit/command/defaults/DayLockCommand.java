@@ -25,7 +25,7 @@ public class DayLockCommand extends VanillaCommand {
         this.addCommandParameters("default", new CommandParameter[]{
                 CommandParameter.newEnum("lock", true, CommandEnum.ENUM_BOOLEAN)
         });
-        this.paramTree = new ParamTree(this);
+        this.enableParamTree();
     }
 
     @Since("1.19.50-r4")

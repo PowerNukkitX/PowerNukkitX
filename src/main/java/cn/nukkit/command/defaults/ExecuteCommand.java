@@ -165,7 +165,7 @@ public class ExecuteCommand extends VanillaCommand {
                 CommandParameter.newEnum("subcommand", false, new CommandEnum("Option_Run", "run")),
                 CommandParameter.newType("command", false, CommandParamType.COMMAND, CommandParamOption.HAS_SEMANTIC_CONSTRAINT)
         });
-        this.paramTree = new ParamTree(this);
+        this.enableParamTree();
     }
 
     @Override

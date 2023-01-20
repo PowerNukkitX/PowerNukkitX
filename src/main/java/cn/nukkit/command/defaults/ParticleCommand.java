@@ -34,7 +34,7 @@ public class ParticleCommand extends VanillaCommand {
                 CommandParameter.newType("position", CommandParamType.POSITION),
                 CommandParameter.newType("count", true, CommandParamType.INT)
         });
-        this.paramTree = new ParamTree(this);
+        this.enableParamTree();
     }
 
     @Since("1.19.50-r4")

@@ -35,7 +35,7 @@ public class GiveCommand extends VanillaCommand {
                 CommandParameter.newType("data", true, CommandParamType.INT),
                 CommandParameter.newType("components", true, CommandParamType.JSON, new RemainStringNode())
         });
-        this.paramTree = new ParamTree(this);
+        this.enableParamTree();
     }
 
     @Override

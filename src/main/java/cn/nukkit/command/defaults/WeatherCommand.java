@@ -26,7 +26,7 @@ public class WeatherCommand extends VanillaCommand {
                 CommandParameter.newEnum("type", new CommandEnum("WeatherType", "clear", "rain", "thunder")),
                 CommandParameter.newType("duration", true, CommandParamType.INT)
         });
-        this.paramTree = new ParamTree(this);
+        this.enableParamTree();
     }
 
     @Since("1.19.50-r4")

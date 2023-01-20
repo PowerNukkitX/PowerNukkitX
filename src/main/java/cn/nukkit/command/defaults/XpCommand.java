@@ -33,7 +33,7 @@ public class XpCommand extends Command {
                 CommandParameter.newType("level", CommandParamType.STRING, new XpLevelNode()),
                 CommandParameter.newType("player", true, CommandParamType.TARGET, new PlayersNode())
         });
-        this.paramTree = new ParamTree(this);
+        this.enableParamTree();
     }
 
     @Since("1.19.50-r4")

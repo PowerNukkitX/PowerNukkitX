@@ -25,7 +25,7 @@ public class BanListCommand extends VanillaCommand {
         this.commandParameters.put("default", new CommandParameter[]{
                 CommandParameter.newEnum("type", true, new CommandEnum("BanListType", "ips", "players"))
         });
-        this.paramTree = new ParamTree(this);
+        this.enableParamTree();
     }
 
     @Override

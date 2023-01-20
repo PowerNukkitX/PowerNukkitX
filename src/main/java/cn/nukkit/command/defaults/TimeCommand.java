@@ -41,7 +41,7 @@ public class TimeCommand extends VanillaCommand {
                 CommandParameter.newEnum("mode", new CommandEnum("TimeModeSet", "set")),
                 CommandParameter.newEnum("time", new CommandEnum("TimeSpec", "day", "night", "midnight", "noon", "sunrise", "sunset"))
         });
-        this.paramTree = new ParamTree(this);
+        this.enableParamTree();
     }
 
     @Since("1.19.50-r4")

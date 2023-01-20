@@ -75,7 +75,7 @@ public class TeleportCommand extends VanillaCommand {
                 CommandParameter.newType("lookAtEntity", CommandParamType.TARGET),
                 CommandParameter.newEnum("checkForBlocks", true, CommandEnum.ENUM_BOOLEAN)
         });
-        this.paramTree = new ParamTree(this);
+        this.enableParamTree();
     }
 
     @Override

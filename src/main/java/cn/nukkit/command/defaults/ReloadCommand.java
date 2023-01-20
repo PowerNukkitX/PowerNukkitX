@@ -28,7 +28,7 @@ public class ReloadCommand extends VanillaCommand {
                 CommandParameter.newEnum("plugin", new String[]{"plugin"}),
                 CommandParameter.newType("plugin", CommandParamType.STRING)
         });
-        this.paramTree = new ParamTree(this);
+        this.enableParamTree();
     }
 
     @Since("1.19.50-r4")

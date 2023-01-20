@@ -48,7 +48,7 @@ public class EffectCommand extends Command {
                 CommandParameter.newType("player", CommandParamType.TARGET),
                 CommandParameter.newEnum("clear", new CommandEnum("ClearEffects", "clear"))
         });
-        this.paramTree = new ParamTree(this);
+        this.enableParamTree();
     }
 
     @Since("1.19.50-r4")

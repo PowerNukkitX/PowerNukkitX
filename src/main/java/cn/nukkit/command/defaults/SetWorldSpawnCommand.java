@@ -26,7 +26,7 @@ public class SetWorldSpawnCommand extends VanillaCommand {
         this.commandParameters.put("spawnPoint", new CommandParameter[]{
                 CommandParameter.newType("spawnPoint", true, CommandParamType.POSITION)
         });
-        this.paramTree = new ParamTree(this);
+        this.enableParamTree();
     }
 
     @Since("1.19.50-r4")

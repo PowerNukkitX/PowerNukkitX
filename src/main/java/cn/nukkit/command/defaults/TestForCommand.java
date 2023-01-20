@@ -25,7 +25,7 @@ public class TestForCommand extends VanillaCommand {
         this.addCommandParameters("default", new CommandParameter[]{
                 CommandParameter.newType("victim", false, CommandParamType.TARGET)
         });
-        this.paramTree = new ParamTree(this);
+        this.enableParamTree();
     }
 
     @Since("1.19.50-r4")

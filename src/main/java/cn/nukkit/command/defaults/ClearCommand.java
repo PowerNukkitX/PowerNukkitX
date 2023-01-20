@@ -31,7 +31,7 @@ public class ClearCommand extends VanillaCommand {
                 CommandParameter.newType("data", true, CommandParamType.INT),
                 CommandParameter.newType("maxCount", true, CommandParamType.INT)
         });
-        this.paramTree = new ParamTree(this);
+        this.enableParamTree();
     }
 
     @Override

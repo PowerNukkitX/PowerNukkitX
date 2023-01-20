@@ -31,7 +31,7 @@ public class ParamTree {
      * {@link CommandParameter#newType(String, CommandParamType, IParamNode)}<br>
      * {@link CommandParameter#newEnum(String, boolean, CommandEnum, IParamNode)}<br>
      * 初始化指定的命令节点。
-     * 该方法应该在命令构造函数中commandParameters初始化完毕后调用，形如<br>
+     * 应该在命令构造函数中commandParameters初始化完毕后调用Command::enableParamTree()，形如<br>
      * <pre>
      *   public TestCommand(String name) {
      *       super(name, description, usage, aliases);
@@ -40,7 +40,7 @@ public class ParamTree {
      *       this.commandParameters.put("pos", new CommandParameter[]{
      *         CommandParameter.newType("destination", CommandParamType.POSITION)
      *       });
-     *       this.paramTree = new ParamTree(this);
+     *       this.enableParamTree();
      *   }
      * </pre>
      *

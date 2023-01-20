@@ -2,6 +2,7 @@ package cn.nukkit.command.utils;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.Command;
@@ -28,6 +29,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+/**
+ * 此命令解析器为旧的基于正则表达式的实现，存在性能问题且编写较混乱<p/>
+ * 目前已经重写了解析器，应使用新的ParamTree而不是继续使用此实现
+ */
+@Deprecated
+@DeprecationDetails(since = "1.19.50-r4", reason = "Using the new ParamTree instead", replaceWith = "ParamTree")
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 @Getter

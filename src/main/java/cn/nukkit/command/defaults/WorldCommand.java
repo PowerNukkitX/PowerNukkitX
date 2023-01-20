@@ -30,7 +30,7 @@ public class WorldCommand extends VanillaCommand {
                 new CommandParameter[]{
                         CommandParameter.newEnum("list", new String[]{"list"})
                 });
-        this.paramTree = new ParamTree(this);
+        this.enableParamTree();
     }
 
     @Since("1.19.50-r4")
