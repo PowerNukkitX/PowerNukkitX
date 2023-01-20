@@ -10,8 +10,9 @@ import java.util.Collections;
 import java.util.stream.Collectors;
 
 /**
- * 可以从玩家名或者目标选择器解析出一个{@link Player} {@link java.util.List List},不可能为空,当没有匹配时会返回一个空List<br>
- * 没有默认的对应参数类型，如果要使用需要手动指定
+ * 解析为{@code List<Player>}值
+ * <p>
+ * 不会默认使用，需要手动指定
  */
 @PowerNukkitXOnly
 @Since("1.19.50-r4")

@@ -7,6 +7,9 @@ import cn.nukkit.network.protocol.types.CommandOutputMessage;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * {@link cn.nukkit.network.protocol.CommandOutputPacket CommandOutputPacket} 负载消息的容器，支持同时发送多条消息
+ */
 @PowerNukkitXOnly
 @Since("1.19.50-r4")
 public class CommandOutputContainer implements Cloneable {
@@ -28,11 +31,6 @@ public class CommandOutputContainer implements Cloneable {
         this.successCount = successCount;
     }
 
-    /**
-     * 返回命令容器成功输出消息的数量
-     *
-     * @return the success count
-     */
     public int getSuccessCount() {
         return successCount;
     }

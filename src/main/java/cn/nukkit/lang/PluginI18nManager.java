@@ -17,7 +17,9 @@ import java.util.jar.JarFile;
 
 
 /**
- * The Plugin i18n manager.
+ * 注册插件多语言，要求插件资源文件中存在一个language文件夹，或者指定language文件夹的外部保存路径
+ * <p>
+ * 多语言文件要求以{@link LangCode}.lang的格式保存
  * <p>
  * Only support Java Plugin {@link PluginBase}
  */
@@ -30,6 +32,12 @@ public final class PluginI18nManager {
     private PluginI18nManager() {
     }
 
+    /**
+     * 重新加载指定插件的多语言，多语言保存在插件jar中的language文件夹下
+     *
+     * @param plugin the plugin
+     * @return the boolean
+     */
     public static boolean reload(PluginBase plugin) {
         var i18n = PLUGINS_MULTI_LANGUAGE.get(plugin.getFile().getName());
         if (i18n == null) return false;
@@ -54,6 +62,13 @@ public final class PluginI18nManager {
         }
     }
 
+    /**
+     * 重新加载指定插件的多语言
+     *
+     * @param plugin the plugin
+     * @param path   language文件夹的路径
+     * @return the boolean
+     */
     public static boolean reload(PluginBase plugin, String path) {
         var i18n = PLUGINS_MULTI_LANGUAGE.get(plugin.getFile().getName());
         if (i18n == null) return false;
@@ -77,11 +92,17 @@ public final class PluginI18nManager {
         }
     }
 
+    /**
+     * 注册插件多语言
+     *
+     * @param plugin the plugin
+     * @return the boolean
+     */
     public static boolean register(PluginBase plugin) {
         try (JarFile jarFile = new JarFile(plugin.getFile())) {
             Enumeration<JarEntry> jarEntrys = jarFile.entries();
             int count = 0;
-            var pluginMultiLanguage = new PluginI18n(plugin.getFile().getName());
+            var pluginMultiLanguage = new PluginI18n(plugin);
             while (jarEntrys.hasMoreElements()) {
                 JarEntry entry = jarEntrys.nextElement();
                 String name = entry.getName();
@@ -101,13 +122,20 @@ public final class PluginI18nManager {
         }
     }
 
+    /**
+     * 注册插件多语言
+     *
+     * @param plugin the plugin
+     * @param path   language文件夹的路径
+     * @return the boolean
+     */
     public static boolean register(PluginBase plugin, String path) {
         var file = new File(path);
         if (file.exists() && file.isDirectory()) {
             var files = file.listFiles();
             assert files != null;
             int count = 0;
-            var pluginMultiLanguage = new PluginI18n(plugin.getFile().getName());
+            var pluginMultiLanguage = new PluginI18n(plugin);
             for (var f : files) {
                 try (InputStream inputStream = new FileInputStream(f)) {
                     pluginMultiLanguage.addLang(LangCode.valueOf(f.getName().replace(".lang", "")), inputStream);
@@ -125,6 +153,12 @@ public final class PluginI18nManager {
     }
 
 
+    /**
+     * 获取指定插件多语言实例，用于翻译
+     *
+     * @param plugin the plugin
+     * @return the i 18 n
+     */
     @Nullable
     public static PluginI18n getI18n(PluginBase plugin) {
         return PLUGINS_MULTI_LANGUAGE.get(plugin.getFile().getName());

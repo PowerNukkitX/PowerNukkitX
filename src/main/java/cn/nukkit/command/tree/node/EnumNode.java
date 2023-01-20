@@ -11,8 +11,9 @@ import java.util.Set;
 
 
 /**
- * 会评估当前参数是否在枚举中，如果不在则标记错误<br>
- * 对应枚举参数类型{@link cn.nukkit.command.data.CommandEnum}
+ * 解析为{@link String}值
+ * <p>
+ * 所有命令枚举类型如果没有手动指定{@link IParamNode},则会默认使用这个解析
  */
 @PowerNukkitXOnly
 @Since("1.19.50-r4")

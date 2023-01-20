@@ -8,8 +8,9 @@ import java.util.HashSet;
 
 
 /**
- * {@link cn.nukkit.command.defaults.ExecuteCommand ExecuteCommand}命令中需要的的比较操作命令节点<br>
- * 对应参数类型{@link cn.nukkit.command.data.CommandParamType#COMPARE_OPERATOR COMPARE_OPERATOR}
+ * 负责解析ExecuteCommand中的比较操作，解析为{@link String}值
+ * <p>
+ * 所有命令参数类型为{@link cn.nukkit.command.data.CommandParamType#COMPARE_OPERATOR COMPARE_OPERATOR}如果没有手动指定{@link IParamNode},则会默认使用这个解析
  */
 @PowerNukkitXOnly
 @Since("1.19.50-r4")

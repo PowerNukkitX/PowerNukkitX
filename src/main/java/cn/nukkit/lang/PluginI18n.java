@@ -4,6 +4,7 @@ package cn.nukkit.lang;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.plugin.PluginBase;
 import io.netty.util.internal.EmptyArrays;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.extern.log4j.Log4j2;
@@ -28,8 +29,8 @@ public class PluginI18n {
     private final String pluginName;
     private final Map<LangCode, Map<String, String>> MULTI_LANGUAGE;
 
-    public PluginI18n(String pluginName) {
-        this.pluginName = pluginName;
+    public PluginI18n(PluginBase plugin) {
+        this.pluginName = plugin.getFile().getName();
         this.MULTI_LANGUAGE = new HashMap<>();
         this.fallback = LangCode.en_US;
     }
@@ -38,7 +39,8 @@ public class PluginI18n {
     /**
      * 翻译一个文本key，key从语言文件中查询
      *
-     * @param key the key
+     * @param lang 要翻译的语言
+     * @param key  the key
      * @return the string
      */
     public String tr(LangCode lang, String key) {
@@ -49,6 +51,7 @@ public class PluginI18n {
     /**
      * 翻译一个文本key，key从语言文件中查询，并且按照给定参数填充结果
      *
+     * @param lang 要翻译的语言
      * @param key  the key
      * @param args the args
      * @return the string
@@ -65,6 +68,7 @@ public class PluginI18n {
     /**
      * 翻译一个文本key，key从语言文件中查询，并且按照给定参数填充结果
      *
+     * @param lang 要翻译的语言
      * @param key  the key
      * @param args the args
      * @return the string
@@ -77,6 +81,13 @@ public class PluginI18n {
         return baseText;
     }
 
+    /**
+     * Tr string.
+     *
+     * @param lang 要翻译的语言
+     * @param c    the c
+     * @return the string
+     */
     public String tr(LangCode lang, TextContainer c) {
         String baseText = this.parseLanguageText(lang, c.getText());
         if (c instanceof TranslationContainer cc) {
@@ -135,6 +146,12 @@ public class PluginI18n {
         }
     }
 
+    /**
+     * Add lang.
+     *
+     * @param langName the lang name
+     * @param path     the path
+     */
     public void addLang(LangCode langName, String path) {
         try {
             File file = new File(path);
@@ -149,6 +166,12 @@ public class PluginI18n {
         }
     }
 
+    /**
+     * Add lang.
+     *
+     * @param langName the lang name
+     * @param stream   the stream
+     */
     public void addLang(LangCode langName, InputStream stream) {
         try {
             this.MULTI_LANGUAGE.put(langName, parseLang(new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))));
@@ -157,6 +180,13 @@ public class PluginI18n {
         }
     }
 
+    /**
+     * Reload lang boolean.
+     *
+     * @param lang the lang
+     * @param path the path
+     * @return the boolean
+     */
     public boolean reloadLang(LangCode lang, String path) {
         try {
             File file = new File(path);
@@ -172,14 +202,31 @@ public class PluginI18n {
         }
     }
 
+    /**
+     * Reload lang boolean.
+     *
+     * @param lang   the lang
+     * @param stream the stream
+     * @return the boolean
+     */
     public boolean reloadLang(LangCode lang, InputStream stream) {
         return reloadLang(lang, new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8)));
     }
 
+    /**
+     * Gets fallback language.
+     *
+     * @return the fallback language
+     */
     public LangCode getFallbackLanguage() {
         return fallback;
     }
 
+    /**
+     * Sets fallback language.
+     *
+     * @param fallback the fallback
+     */
     public void setFallbackLanguage(LangCode fallback) {
         this.fallback = fallback;
     }

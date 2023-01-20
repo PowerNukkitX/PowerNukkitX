@@ -6,9 +6,9 @@ import cn.nukkit.api.Since;
 import java.util.*;
 
 /**
- * 会填充所有剩余参数以空格分隔合并<br>
- * {@link cn.nukkit.command.defaults.ExecuteCommand ExecuteCommand}命令的子命令节点<br>
- * 对应参数类型{@link cn.nukkit.command.data.CommandParamType#COMMAND COMMAND}
+ * 将全部剩余的参数以空格为分隔符合并，解析为{@link String}值
+ * <p>
+ * 所有命令参数类型为{@link cn.nukkit.command.data.CommandParamType#COMMAND COMMAND}如果没有手动指定{@link IParamNode},则会默认使用这个解析
  */
 @PowerNukkitXOnly
 @Since("1.19.50-r4")

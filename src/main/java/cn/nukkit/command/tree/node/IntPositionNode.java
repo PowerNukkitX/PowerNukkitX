@@ -6,7 +6,9 @@ import cn.nukkit.api.Since;
 import java.util.regex.Pattern;
 
 /**
- * 整数坐标节点，对应参数类型{@link cn.nukkit.command.data.CommandParamType#BLOCK_POSITION BLOCK_POSITION},只能接受整数参数或者通配符输入
+ * 验证是否为整数坐标并将参数解析为{@link cn.nukkit.level.Position Position}值
+ * <p>
+ * 所有命令参数类型为{@link cn.nukkit.command.data.CommandParamType#BLOCK_POSITION BLOCK_POSITION}如果没有手动指定{@link IParamNode},则会默认使用这个解析
  */
 @PowerNukkitXOnly
 @Since("1.19.50-r4")

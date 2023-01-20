@@ -5,8 +5,10 @@ import cn.nukkit.api.Since;
 
 /**
  * 代表一个可以输入通配符 * 的{@link IntNode},当输入通配符时，将会解析结果将变成默认值{@link #defaultV}
- * <br>
- * 对应参数类型{@link cn.nukkit.command.data.CommandParamType#WILDCARD_INT WILDCARD_INT}
+ * <p>
+ * 所有命令参数类型为{@link cn.nukkit.command.data.CommandParamType#WILDCARD_INT WILDCARD_INT}如果没有手动指定{@link IParamNode},则会默认使用这个解析
+ * <p>
+ * {@code defaultV = Integer.MIN_VALUE}
  */
 @PowerNukkitXOnly
 @Since("1.19.50-r4")

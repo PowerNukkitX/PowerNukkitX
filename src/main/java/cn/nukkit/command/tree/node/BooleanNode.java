@@ -9,8 +9,8 @@ import java.util.Set;
 
 /**
  * 解析对应参数为{@link Boolean}值
- * <br>
- * 没有默认的对应参数类型，需要手动指定
+ * <p>
+ * 所有命令枚举{@link cn.nukkit.command.data.CommandEnum#ENUM_BOOLEAN ENUM_BOOLEAN}如果没有手动指定{@link IParamNode},则会默认使用这个解析
  */
 @PowerNukkitXOnly
 @Since("1.19.50-r4")

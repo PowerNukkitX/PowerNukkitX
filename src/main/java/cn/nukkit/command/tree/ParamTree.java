@@ -83,10 +83,7 @@ public class ParamTree {
                         case WILDCARD_TARGET -> {
                             node = new WildcardTargetStringNode();
                         }
-                        case STRING -> {
-                            node = new StringNode();
-                        }
-                        case FILE_PATH -> {
+                        case STRING, TEXT, FILE_PATH -> {
                             node = new StringNode();
                         }
                         case COMMAND -> {
@@ -103,9 +100,6 @@ public class ParamTree {
                         }
                         case RAWTEXT -> {
                             node = new RawTextNode();
-                        }
-                        case TEXT -> {
-                            node = new StringNode();
                         }
                         default -> node = new VoidNode();
                     }

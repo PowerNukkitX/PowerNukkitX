@@ -6,6 +6,11 @@ import cn.nukkit.api.Since;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
+/**
+ * 验证IP地址并解析为{@link String}值
+ * <p>
+ * 不会默认使用，需要手动指定
+ */
 @PowerNukkitXOnly
 @Since("1.19.50-r4")
 public class IPStringNode extends StringNode {
