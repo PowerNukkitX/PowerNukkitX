@@ -33,7 +33,7 @@ public class SpawnpointCommand extends VanillaCommand {
                 CommandParameter.newType("player", true, CommandParamType.TARGET, new PlayersNode()),
                 CommandParameter.newType("spawnPos", true, CommandParamType.POSITION),
         });
-        this.paramTree = new ParamTree(this);
+        this.enableParamTree();
     }
 
     @Since("1.19.50-r4")

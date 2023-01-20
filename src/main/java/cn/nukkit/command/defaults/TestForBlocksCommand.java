@@ -34,7 +34,7 @@ public class TestForBlocksCommand extends VanillaCommand {
                 CommandParameter.newType("destination", false, CommandParamType.BLOCK_POSITION),
                 CommandParameter.newEnum("mode", true, new String[]{"all", "masked"})
         });
-        this.paramTree = new ParamTree(this);
+        this.enableParamTree();
     }
 
     @Since("1.19.50-r4")

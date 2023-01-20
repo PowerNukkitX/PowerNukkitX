@@ -37,7 +37,7 @@ public class EnchantCommand extends VanillaCommand {
                 CommandParameter.newEnum("enchantmentName", Enchantment.getEnchantmentName2IDMap() != null ? Enchantment.getEnchantmentName2IDMap().keySet().toArray(String[]::new) : null),
                 CommandParameter.newType("level", true, CommandParamType.INT)
         });
-        this.paramTree = new ParamTree(this);
+        this.enableParamTree();
     }
 
     @Since("1.19.50-r4")

@@ -35,7 +35,7 @@ public class CameraShakeCommand extends VanillaCommand {
                 CommandParameter.newEnum("stop", false, new String[]{"stop"}),
                 CommandParameter.newType("player", false, CommandParamType.TARGET, new PlayersNode()),
         });
-        this.paramTree = new ParamTree(this);
+        this.enableParamTree();
     }
 
 

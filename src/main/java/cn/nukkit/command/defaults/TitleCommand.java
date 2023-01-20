@@ -44,7 +44,7 @@ public class TitleCommand extends VanillaCommand {
                 CommandParameter.newType("stay", CommandParamType.INT),
                 CommandParameter.newType("fadeOut", CommandParamType.INT)
         });
-        this.paramTree = new ParamTree(this);
+        this.enableParamTree();
     }
 
     @Since("1.19.50-r4")

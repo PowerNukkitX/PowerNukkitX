@@ -328,10 +328,23 @@ public abstract class Command implements GenericParameter {
         this.usageMessage = usageMessage;
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
     public boolean hasParamTree() {
         return this.paramTree != null;
     }
 
+    /**
+     * 若调用此方法，则将启用ParamTree用于解析命令参数
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    public void enableParamTree() {
+        this.paramTree = new ParamTree(this);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
     public ParamTree getParamTree() {
         return paramTree;
     }

@@ -20,7 +20,7 @@ public class SaveOffCommand extends VanillaCommand {
         this.setPermission("nukkit.command.save.disable");
         this.commandParameters.clear();
         this.commandParameters.put("default", CommandParameter.EMPTY_ARRAY);
-        this.paramTree = new ParamTree(this);
+        this.enableParamTree();
     }
 
     @Since("1.19.50-r4")

@@ -85,7 +85,7 @@ public class ReplaceItemCommand extends VanillaCommand {
                 CommandParameter.newType("data", true, CommandParamType.INT),
                 CommandParameter.newType("components", true, CommandParamType.JSON),
         });
-        this.paramTree = new ParamTree(this);
+        this.enableParamTree();
     }
 
     @Since("1.19.50-r4")

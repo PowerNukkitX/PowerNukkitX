@@ -30,7 +30,7 @@ public class AbilityCommand extends VanillaCommand {
                 CommandParameter.newEnum("ability", false, new String[]{"mayfly", "mute", "worldbuilder"}),
                 CommandParameter.newEnum("value", true, CommandEnum.ENUM_BOOLEAN, new BooleanNode())
         });
-        this.paramTree = new ParamTree(this);
+        this.enableParamTree();
     }
 
     @Override

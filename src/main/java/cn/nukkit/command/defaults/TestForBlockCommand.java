@@ -30,7 +30,7 @@ public class TestForBlockCommand extends VanillaCommand {
                 CommandParameter.newEnum("tileName", false, CommandEnum.ENUM_BLOCK),
                 CommandParameter.newType("dataValue", true, CommandParamType.INT)
         });
-        this.paramTree = new ParamTree(this);
+        this.enableParamTree();
     }
 
     @Since("1.19.50-r4")

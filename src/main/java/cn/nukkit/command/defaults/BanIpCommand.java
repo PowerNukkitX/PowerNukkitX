@@ -42,7 +42,7 @@ public class BanIpCommand extends VanillaCommand {
                 CommandParameter.newType("ip", CommandParamType.STRING, new IPStringNode()),
                 CommandParameter.newType("reason", true, CommandParamType.STRING, new CommandNode())
         });
-        this.paramTree = new ParamTree(this);
+        this.enableParamTree();
     }
 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed resource leak")

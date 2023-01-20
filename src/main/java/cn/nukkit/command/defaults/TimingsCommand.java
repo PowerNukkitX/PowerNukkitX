@@ -25,7 +25,7 @@ public class TimingsCommand extends TestCommand {
         this.commandParameters.put("default", new CommandParameter[]{
                 CommandParameter.newEnum("action", new CommandEnum("TimingsAction", "on", "off", "paste", "verbon", "verboff", "reset", "report"))
         });
-        this.paramTree = new ParamTree(this);
+        this.enableParamTree();
     }
 
     @Since("1.19.50-r4")
