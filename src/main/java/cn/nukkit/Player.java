@@ -87,8 +87,9 @@ import cn.nukkit.scoreboard.scorer.PlayerScorer;
 import cn.nukkit.utils.*;
 import co.aikar.timings.Timing;
 import co.aikar.timings.Timings;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.base.Strings;
-import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -320,7 +321,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      */
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    protected Cache<String, FormWindowDialog> dialogWindows = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
+    protected Cache<String, FormWindowDialog> dialogWindows = Caffeine.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
     protected Map<Long, DummyBossBar> dummyBossBars = new Long2ObjectLinkedOpenHashMap<>();
     protected boolean shouldLogin = false;
     protected double lastRightClickTime = 0.0;

@@ -14,11 +14,11 @@ import cn.nukkit.network.protocol.AddEntityPacket;
 import cn.nukkit.scoreboard.scorer.EntityScorer;
 import cn.nukkit.scoreboard.scorer.IScorer;
 import cn.nukkit.scoreboard.scorer.PlayerScorer;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.base.Splitter;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.*;
 
 import java.util.*;
@@ -68,7 +68,7 @@ public final class EntitySelector {
     private static final Set<String> LEVEL_ARGS = Sets.newHashSet(ARG_X, ARG_Y, ARG_Z, ARG_DX, ARG_DY, ARG_DZ, ARG_RM, ARG_R);
     private static final Predicate<String> VALID_ARGUMENT = arg -> arg != null && ARGS.contains(arg);
 
-    private static final Cache<String, Map<String, List<String>>> args_cache = CacheBuilder.newBuilder().maximumSize(65535).expireAfterAccess(1, TimeUnit.MINUTES).build();
+    private static final Cache<String, Map<String, List<String>>> args_cache = Caffeine.newBuilder().maximumSize(65535).expireAfterAccess(1, TimeUnit.MINUTES).build();
 
     private static String registerArgument(String arg) {
         ARGS.add(arg);

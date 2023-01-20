@@ -23,7 +23,7 @@ public class Function {
         this.fullPath = fullPath;
         try {
             commands = Files.readAllLines(fullPath);
-            commands = commands.stream().filter(s -> !s.isEmpty()).map(s -> s.split("#")[0]).toList();
+            commands = commands.stream().map(s -> s.split("#")[0]).filter(s -> !s.isEmpty()).toList();
         } catch (IOException e) {
             e.printStackTrace();
         }
