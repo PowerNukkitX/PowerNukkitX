@@ -22,19 +22,19 @@ import java.util.Map;
 public final class EntityComponentRegistery {
 
     @Getter
-    private static final Map<Class<?>, Class<? extends EntityComponent>> COMPONENTS_REGISTERY;
+    private static final Map<Class<?>, Class<? extends EntityComponent>> COMPONENTS_REGISTRY;
 
     static {
-        COMPONENTS_REGISTERY = new HashMap<>();
+        COMPONENTS_REGISTRY = new HashMap<>();
         registerDefaultComponents();
     }
 
     public static void register(Class<?> interfaceClazz, Class<? extends EntityComponent> componentClazz) {
-        COMPONENTS_REGISTERY.put(interfaceClazz, componentClazz);
+        COMPONENTS_REGISTRY.put(interfaceClazz, componentClazz);
     }
 
     public static Class<? extends EntityComponent> getInterfaceBoundEntityComponent(Class<?> interfaceClazz) {
-        return COMPONENTS_REGISTERY.get(interfaceClazz);
+        return COMPONENTS_REGISTRY.get(interfaceClazz);
     }
 
     private static void registerDefaultComponents() {

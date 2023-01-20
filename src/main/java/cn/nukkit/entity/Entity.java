@@ -515,6 +515,9 @@ public abstract class Entity extends Location implements Metadatable {
     public boolean positionChanged;
     public boolean motionChanged;
     public int deadTicks = 0;
+    /**
+     * Player do not use
+     */
     public boolean keepMovement = false;
     public float fallDistance = 0;
     public int ticksLived = 0;
@@ -550,6 +553,9 @@ public abstract class Entity extends Location implements Metadatable {
     protected int age = 0;
     protected float health = 20;
     protected float absorption = 0;
+    /**
+     * Player do not use
+     */
     protected float ySize = 0;
     @PowerNukkitOnly
     @Since("1.2.1.0-PN")
@@ -2006,21 +2012,18 @@ public abstract class Entity extends Location implements Metadatable {
 
     @PowerNukkitXOnly
     @Since("1.19.31-r1")
-    protected void broadcastMovement(boolean teleport) {
+    protected void broadcastMovement() {
         var pk = new MoveEntityAbsolutePacket();
         pk.eid = this.getId();
         pk.x = this.x;
-        /*todo HACK实现
-        当不启用服务器权威移动、玩家游泳时，以玩家当前位置发送MoveEntityAbsolutePacket会导致
-        玩家位置和实际位置不相符，需要+getBaseOffset()*/
-        if (getServer().getServerAuthoritativeMovement() == 0) {
-            pk.y = isSwimming() ? this.y + getBaseOffset() : this.y + this.getEyeHeight();
-        } else pk.y = this.y + this.getEyeHeight();
+        //因为以前处理MOVE_PLAYER_PACKET的时候是y - this.getBaseOffset()
+        //现在统一 MOVE_PLAYER_PACKET和PLAYER_AUTH_INPUT_PACKET 均为this.y - this.getEyeHeight()，所以这里不再需要对两种移动方式分别处理
+        pk.y = isSwimming() ? this.y + getSwimmingHeight() : this.y + this.getEyeHeight();
         pk.z = this.z;
-        pk.headYaw = this.yaw;
-        pk.pitch = this.pitch;
-        pk.yaw = this.yaw;
-        pk.teleport = teleport;
+        pk.headYaw = yaw;
+        pk.pitch = pitch;
+        pk.yaw = yaw;
+        pk.teleport = false;
         pk.onGround = this.onGround;
         Server.broadcastPacket(hasSpawned.values(), pk);
     }
@@ -2606,6 +2609,7 @@ public abstract class Entity extends Location implements Metadatable {
         return true;
     }
 
+    //Player do not use
     @PowerNukkitXDifference(since = "1.19.50-r4", info = "The onGround is updated when the entity motion is 0")
     public boolean move(double dx, double dy, double dz) {
         if (dx == 0 && dz == 0 && dy == 0) {
@@ -2948,22 +2952,16 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public boolean setPositionAndRotation(Vector3 pos, double yaw, double pitch) {
-        if (this.setPosition(pos)) {
-            this.setRotation(yaw, pitch);
-            return true;
-        }
-
-        return false;
+        this.setPosition(pos);
+        this.setRotation(yaw, pitch);
+        return true;
     }
 
     @Since("FUTURE")
     public boolean setPositionAndRotation(Vector3 pos, double yaw, double pitch, double headYaw) {
-        if (this.setPosition(pos)) {
-            this.setRotation(yaw, pitch, headYaw);
-            return true;
-        }
-
-        return false;
+        this.setPosition(pos);
+        this.setRotation(yaw, pitch, headYaw);
+        return true;
     }
 
     public void setRotation(double yaw, double pitch) {

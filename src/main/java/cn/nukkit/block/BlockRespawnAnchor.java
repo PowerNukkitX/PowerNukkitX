@@ -118,7 +118,7 @@ public class BlockRespawnAnchor extends BlockMeta {
             return true;
         }
         
-        if (Objects.equals(player.getSpawnBlock(), this)) {
+        if (Objects.equals(player.getSpawn(), this)) {
             return false;
         }
         player.setSpawnBlock(this);
