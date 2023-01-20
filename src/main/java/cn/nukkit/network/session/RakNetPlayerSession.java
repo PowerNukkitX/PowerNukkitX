@@ -11,7 +11,10 @@ import cn.nukkit.network.protocol.BatchPacket;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.utils.BinaryStream;
-import com.nukkitx.network.raknet.*;
+import com.nukkitx.network.raknet.EncapsulatedPacket;
+import com.nukkitx.network.raknet.RakNetServerSession;
+import com.nukkitx.network.raknet.RakNetSessionListener;
+import com.nukkitx.network.raknet.RakNetState;
 import com.nukkitx.network.util.DisconnectReason;
 import com.nukkitx.network.util.Preconditions;
 import io.netty.buffer.ByteBuf;
@@ -122,6 +125,29 @@ public class RakNetPlayerSession implements NetworkPlayerSession, RakNetSessionL
         });
     }
 
+    @Override
+    public void sendImmediatePacket(DataPacket packet) {
+        if (this.session.isClosed()) {
+            return;
+        }
+        packet.tryEncode();
+        BinaryStream batched = new BinaryStream();
+        Preconditions.checkArgument(!(packet instanceof BatchPacket), "Cannot batch BatchPacket");
+        Preconditions.checkState(packet.isEncoded, "Packet should have already been encoded");
+        byte[] buf = packet.getBuffer();
+        batched.putUnsignedVarInt(buf.length);
+        batched.put(buf);
+        try {
+            byte[] payload = Network.deflateRaw(batched.getBuffer(), server.getNetwork().getServer().networkCompressionLevel);
+            ByteBuf byteBuf = ByteBufAllocator.DEFAULT.ioBuffer(1 + payload.length);
+            byteBuf.writeByte(0xfe);
+            byteBuf.writeBytes(payload);
+            this.session.sendImmediate(byteBuf);
+        } catch (Exception e) {
+            log.error("Error occured while sending a packet immediately", e);
+        }
+    }
+
     private void networkTick() {
         if (this.session.isClosed()) {
             return;
@@ -225,24 +251,6 @@ public class RakNetPlayerSession implements NetworkPlayerSession, RakNetSessionL
             byteBuf.writeByte(0xfe);
             byteBuf.writeBytes(payload);
             this.session.send(byteBuf);
-        } catch (Exception e) {
-            log.error("Error occured while sending a packet immediately", e);
-        }
-    }
-
-    public void sendPacketImmediately(DataPacket packet) {
-        BinaryStream batched = new BinaryStream();
-        Preconditions.checkArgument(!(packet instanceof BatchPacket), "Cannot batch BatchPacket");
-        Preconditions.checkState(packet.isEncoded, "Packet should have already been encoded");
-        byte[] buf = packet.getBuffer();
-        batched.putUnsignedVarInt(buf.length);
-        batched.put(buf);
-        try {
-            byte[] payload = Network.deflateRaw(batched.getBuffer(), server.getNetwork().getServer().networkCompressionLevel);
-            ByteBuf byteBuf = ByteBufAllocator.DEFAULT.ioBuffer(1 + payload.length);
-            byteBuf.writeByte(0xfe);
-            byteBuf.writeBytes(payload);
-            this.session.send(byteBuf, RakNetPriority.IMMEDIATE);
         } catch (Exception e) {
             log.error("Error occured while sending a packet immediately", e);
         }

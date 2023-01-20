@@ -46,6 +46,8 @@ import cn.nukkit.item.*;
 import cn.nukkit.item.customitem.ItemCustom;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.enchantment.sideeffect.SideEffect;
+import cn.nukkit.lang.CommandOutputContainer;
+import cn.nukkit.lang.LangCode;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.*;
@@ -1089,7 +1091,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 PlayerInvalidMoveEvent event = new PlayerInvalidMoveEvent(this, true);
                 this.getServer().getPluginManager().callEvent(event);
                 if (!event.isCancelled() && (invalidMotion = event.isRevert())) {
-                    log.warn(this.getServer().getLanguage().translateString("nukkit.player.invalidMove", this.getName()));
+                    this.server.getLogger().warning(this.getServer().getLanguage().tr("nukkit.player.invalidMove", this.getName()));
                 }
             }
 
@@ -1551,7 +1553,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.setNameTagAlwaysVisible(true);
         this.setCanClimb(true);
 
-        log.info(this.getServer().getLanguage().translateString("nukkit.player.logIn",
+        log.info(this.getServer().getLanguage().tr("nukkit.player.logIn",
                 TextFormat.AQUA + this.username + TextFormat.WHITE,
                 this.getAddress(),
                 String.valueOf(this.getPort()),
@@ -2721,7 +2723,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             if (log.isTraceEnabled() && !server.isIgnoredPacket(packet.getClass())) {
                 log.trace("Outbound {}: {}", this.getName(), packet);
             }
-            this.interfaz.putPacket(this, packet, false, false);
+            this.getNetworkSession().sendPacket(packet);
         }
         return true;
     }
@@ -4213,7 +4215,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             break;
                         }
                         this.kick(PlayerKickEvent.Reason.INVALID_PVE, "Attempting to interact with an invalid entity");
-                        log.warn(this.getServer().getLanguage().translateString("nukkit.player.invalidEntity", this.getName()));
+                        log.warn(this.getServer().getLanguage().tr("nukkit.player.invalidEntity", this.getName()));
                         break;
                     }
 
@@ -5528,7 +5530,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 PlayerChatEvent chatEvent = new PlayerChatEvent(this, msg);
                 this.server.getPluginManager().callEvent(chatEvent);
                 if (!chatEvent.isCancelled()) {
-                    this.server.broadcastMessage(this.getServer().getLanguage().translateString(chatEvent.getFormat(), new String[]{chatEvent.getPlayer().getDisplayName(), chatEvent.getMessage()}), chatEvent.getRecipients());
+                    this.server.broadcastMessage(this.getServer().getLanguage().tr(chatEvent.getFormat(), new String[]{chatEvent.getPlayer().getDisplayName(), chatEvent.getMessage()}), chatEvent.getRecipients());
                 }
             }
         }
@@ -5652,7 +5654,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public void sendMessage(String message) {
         TextPacket pk = new TextPacket();
         pk.type = TextPacket.TYPE_RAW;
-        pk.message = this.server.getLanguage().translateString(message);
+        pk.message = this.server.getLanguage().tr(message);
         this.dataPacket(pk);
     }
 
@@ -5663,6 +5665,17 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return;
         }
         this.sendMessage(message.getText());
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    public void sendCommandOutput(CommandOutputContainer container) {
+        var pk = new CommandOutputPacket();
+        pk.messages.addAll(container.getMessages());
+        pk.commandOriginData = new CommandOriginData(CommandOriginData.Origin.PLAYER, this.getUniqueId(), "", null);//Only players can effect
+        pk.type = CommandOutputType.ALL_OUTPUT;//Useless
+        pk.successCount = container.getSuccessCount();//Useless,maybe used for server-client interaction
+        this.dataPacket(pk);
     }
 
     /**
@@ -5702,15 +5715,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         TextPacket pk = new TextPacket();
         if (!this.server.isLanguageForced()) {
             pk.type = TextPacket.TYPE_TRANSLATION;
-            pk.message = this.server.getLanguage().translateString(message, parameters, "nukkit.");
+            pk.message = this.server.getLanguage().tr(message, parameters, "nukkit.", true);
             for (int i = 0; i < parameters.length; i++) {
-                parameters[i] = this.server.getLanguage().translateString(parameters[i], parameters, "nukkit.");
-
+                parameters[i] = this.server.getLanguage().tr(parameters[i], parameters, "nukkit.", true);
             }
             pk.parameters = parameters;
         } else {
             pk.type = TextPacket.TYPE_RAW;
-            pk.message = this.server.getLanguage().translateString(message, parameters);
+            pk.message = this.server.getLanguage().tr(message, parameters);
         }
         this.dataPacket(pk);
     }
@@ -5733,7 +5745,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         TextPacket pk = new TextPacket();
         pk.type = TextPacket.TYPE_CHAT;
         pk.source = source;
-        pk.message = this.server.getLanguage().translateString(message);
+        pk.message = this.server.getLanguage().tr(message);
         this.dataPacket(pk);
     }
 
@@ -6090,11 +6102,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
             this.server.getPluginManager().unsubscribeFromPermission(Server.BROADCAST_CHANNEL_USERS, this);
             this.spawned = false;
-            log.info(this.getServer().getLanguage().translateString("nukkit.player.logOut",
+            log.info(this.getServer().getLanguage().tr("nukkit.player.logOut",
                     TextFormat.AQUA + (this.getName() == null ? "" : this.getName()) + TextFormat.WHITE,
                     this.getAddress(),
                     String.valueOf(this.getPort()),
-                    this.getServer().getLanguage().translateString(reason)));
+                    this.getServer().getLanguage().tr(reason)));
             this.windows.clear();
             this.usedChunks.clear();
             this.loadQueue.clear();
@@ -6215,6 +6227,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @Override
     public String getName() {
         return this.username;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    public LangCode getLanguageCode() {
+        return LangCode.valueOf(this.getLoginChainData().getLanguageCode());
     }
 
     @Override
@@ -7937,8 +7955,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             if (log.isTraceEnabled() && !server.isIgnoredPacket(packet.getClass())) {
                 log.trace("Immediate Outbound {}: {}", this.getName(), packet);
             }
-
-            this.interfaz.putPacket(this, packet, false, true);
+            this.getNetworkSession().sendImmediatePacket(packet);
         }
 
         return true;

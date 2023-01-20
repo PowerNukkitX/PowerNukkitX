@@ -5,14 +5,14 @@ import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
-import cn.nukkit.command.exceptions.CommandSyntaxException;
-import cn.nukkit.command.utils.CommandParser;
+import cn.nukkit.command.tree.ParamList;
+import cn.nukkit.command.tree.ParamTree;
+import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.lang.TranslationContainer;
-import cn.nukkit.utils.TextFormat;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -37,97 +37,86 @@ public class TagCommand extends VanillaCommand {
                 CommandParameter.newType("targets", CommandParamType.TARGET),
                 CommandParameter.newEnum("list", new String[]{"list"}),
         });
+        this.paramTree = new ParamTree(this);
     }
 
+    @Since("1.19.50-r4")
     @Override
-    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        if (!this.testPermission(sender)) {
-            return false;
-        }
-
-        CommandParser parser = new CommandParser(this, sender, args);
-        try {
-            String form = parser.matchCommandForm();
-            if (form == null) {
-                sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-                return false;
+    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+        var list = result.getValue();
+        List<Entity> entities = list.getResult(0);
+        switch (result.getKey()) {
+            case "add" -> {
+                String tag = list.getResult(2);
+                int success_count = 0;
+                for (Entity entity : entities) {
+                    if (entity.containTag(tag))
+                        continue;
+                    entity.addTag(tag);
+                    success_count++;
+                }
+                if (success_count == 0) {
+                    log.addError("commands.tag.add.failed").output();
+                    return 0;
+                }
+                if (entities.size() == 1) {
+                    log.addSuccess("commands.tag.add.success.single", tag, entities.get(0).getName());
+                } else {
+                    log.addSuccess("commands.tag.add.success.multiple", tag, String.valueOf(entities.size()));
+                }
+                log.output();
+                return 1;
             }
-
-            List<Entity> entities = parser.parseTargets();
-            if (entities.isEmpty()) {
-                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.noTargetMatch"));
-                return false;
+            case "remove" -> {
+                String tag = list.getResult(2);
+                int success_count = 0;
+                for (Entity entity : entities) {
+                    if (!entity.containTag(tag))
+                        continue;
+                    entity.removeTag(tag);
+                    success_count++;
+                }
+                if (success_count == 0) {
+                    log.addError("commands.tag.remove.failed").output();
+                    return 0;
+                }
+                if (entities.size() == 1) {
+                    log.addSuccess("commands.tag.remove.success.single", tag, entities.get(0).getName());
+                } else {
+                    log.addSuccess("commands.tag.remove.success.multiple", tag, String.valueOf(entities.size()));
+                }
+                log.output();
+                return 1;
             }
-            switch (form) {
-                case "add" -> {
-                    parser.parseString();//jump over "add"
-                    String tag = parser.parseString();
-                    int success_count = 0;
-                    for (Entity entity : entities) {
-                        if (entity.containTag(tag))
-                            continue;
-                        entity.addTag(tag);
-                        success_count++;
-                    }
-                    if (success_count == 0) {
-                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.tag.add.failed"));
-                        return false;
-                    }
+            case "list" -> {
+                Set<String> tagSet = new HashSet<>();
+                for (Entity entity : entities) {
+                    tagSet.addAll(entity.getAllTags().stream().map(t -> t.data).collect(Collectors.toSet()));
+                }
+                int tagCount = tagSet.size();
+                String tagStr = tagSet.stream().collect(Collectors.joining(" "));
+
+                if (tagStr.isEmpty()) {
                     if (entities.size() == 1) {
-                        sender.sendMessage(new TranslationContainer("commands.tag.add.success.single", tag, entities.get(0).getName()));
+                        log.addError("commands.tag.list.single.empty", entities.get(0).getName());
                     } else {
-                        sender.sendMessage(new TranslationContainer("commands.tag.add.success.multiple", tag, String.valueOf(entities.size())));
+                        log.addError("commands.tag.list.multiple.empty", String.valueOf(entities.size()));
                     }
-                    return true;
-                }
-                case "remove" -> {
-                    parser.parseString();//jump over "remove"
-                    String tag = parser.parseString();
-                    int success_count = 0;
-                    for (Entity entity : entities) {
-                        if (!entity.containTag(tag))
-                            continue;
-                        entity.removeTag(tag);
-                        success_count++;
-                    }
-                    if (success_count == 0) {
-                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.tag.remove.failed"));
-                        return false;
-                    }
+                    log.output();
+                    return 0;
+                } else {
                     if (entities.size() == 1) {
-                        sender.sendMessage(new TranslationContainer("commands.tag.remove.success.single", tag, entities.get(0).getName()));
+                        log.addSuccess("commands.tag.list.single.success", entities.get(0).getName(), String.valueOf(tagCount), tagStr);
                     } else {
-                        sender.sendMessage(new TranslationContainer("commands.tag.remove.success.multiple", tag, String.valueOf(entities.size())));
+                        log.addSuccess("commands.tag.list.multiple.success", String.valueOf(entities.size()), String.valueOf(tagCount), tagStr);
                     }
-                    return true;
-                }
-                case "list" -> {
-                    Set<String> tagSet = new HashSet<>();
-                    for (Entity entity : entities) {
-                        tagSet.addAll(entity.getAllTags().stream().map(t -> t.data).collect(Collectors.toSet()));
-                    }
-                    int tagCount = tagSet.size();
-                    String tagStr = tagSet.stream().collect(Collectors.joining(" "));
-
-                    if (tagStr.isEmpty()) {
-                        if (entities.size() == 1) {
-                            sender.sendMessage(new TranslationContainer("commands.tag.list.single.empty", entities.get(0).getName()));
-                        } else {
-                            sender.sendMessage(new TranslationContainer("commands.tag.list.multiple.empty", String.valueOf(entities.size())));
-                        }
-                    } else {
-                        if (entities.size() == 1) {
-                            sender.sendMessage(new TranslationContainer("commands.tag.list.single.success", entities.get(0).getName(), String.valueOf(tagCount), tagStr));
-                        } else {
-                            sender.sendMessage(new TranslationContainer("commands.tag.list.multiple.success", String.valueOf(entities.size()), String.valueOf(tagCount), tagStr));
-                        }
-                    }
-                    return true;
+                    log.output();
+                    return 1;
                 }
             }
-        } catch (CommandSyntaxException e) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
+            default -> {
+                return 0;
+            }
         }
-        return false;
     }
 }

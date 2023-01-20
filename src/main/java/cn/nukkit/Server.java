@@ -30,6 +30,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.lang.BaseLang;
+import cn.nukkit.lang.LangCode;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.*;
@@ -252,6 +253,7 @@ public class Server {
     private int autoSaveTicks = 6000;
 
     private BaseLang baseLang;
+    private LangCode baseLangCode;
 
     private boolean forceLanguage = false;
 
@@ -375,7 +377,7 @@ public class Server {
         Files.createParentDirs(new File(tempDir, "players"));
 
         baseLang = new BaseLang(BaseLang.FALLBACK_LANGUAGE);
-
+        baseLangCode = mapInternalLang(BaseLang.FALLBACK_LANGUAGE);
         console = new NukkitConsole(this);
         consoleThread = new ConsoleThread();
         this.computeThreadPool = new ForkJoinPool(Math.min(0x7fff, Runtime.getRuntime().availableProcessors()), new ComputeThreadPoolThreadFactory(), null, false);
@@ -385,10 +387,10 @@ public class Server {
         banByIP = new BanList(dataPath + "banned-ips.json");
         operators = new Config();
         whitelist = new Config();
-        commandMap = new SimpleCommandMap(this);
         scoreboardManager = new ScoreboardManager(new JSONScoreboardStorage(this.commandDataPath + "/scoreboard.json"));
         functionManager = new FunctionManager(this.commandDataPath + "/functions");
         tickingAreaManager = new SimpleTickingAreaManager(new JSONTickingAreaStorage(this.dataPath + "worlds/"));
+        commandMap = new SimpleCommandMap(this);
 
         setMaxPlayers(10);
 
@@ -667,24 +669,25 @@ public class Server {
         }
 
         this.forceLanguage = this.getConfig("settings.force-language", false);
-        this.baseLang = new BaseLang(this.getConfig("settings.language", BaseLang.FALLBACK_LANGUAGE));
-
+        var langName = this.getConfig("settings.language", BaseLang.FALLBACK_LANGUAGE);
+        this.baseLang = new BaseLang(langName);
+        this.baseLangCode = mapInternalLang(langName);
         // 检测启动参数
         if (!StartArgUtils.isValidStart()) {
-            log.fatal(getLanguage().translateString("nukkit.start.invalid"));
+            log.fatal(getLanguage().tr("nukkit.start.invalid"));
             return;
         }
 
         // 检测非法使用shaded包启动
         if (!this.properties.getBoolean("allow-shaded", false) && StartArgUtils.isShaded()) {
-            log.fatal(getLanguage().translateString("nukkit.start.shaded1"));
-            log.fatal(getLanguage().translateString("nukkit.start.shaded2"));
-            log.fatal(getLanguage().translateString("nukkit.start.shaded3"));
+            log.fatal(getLanguage().tr("nukkit.start.shaded1"));
+            log.fatal(getLanguage().tr("nukkit.start.shaded2"));
+            log.fatal(getLanguage().tr("nukkit.start.shaded3"));
             return;
         }
 
-        log.info(this.getLanguage().translateString("language.selected", new String[]{getLanguage().getName(), getLanguage().getLang()}));
-        log.info(getLanguage().translateString("nukkit.server.start", TextFormat.AQUA + this.getVersion() + TextFormat.RESET));
+        log.info(this.getLanguage().tr("language.selected", new String[]{getLanguage().getName(), getLanguage().getLang()}));
+        log.info(getLanguage().tr("nukkit.server.start", TextFormat.AQUA + this.getVersion() + TextFormat.RESET));
 
         Object poolSize = this.getConfig("settings.async-workers", (Object) "auto");
         if (!(poolSize instanceof Integer)) {
@@ -723,7 +726,7 @@ public class Server {
             try {
                 this.rcon = new RCON(this, this.getPropertyString("rcon.password", ""), (!this.getIp().equals("")) ? this.getIp() : "0.0.0.0", this.getPropertyInt("rcon.port", this.getPort()));
             } catch (IllegalArgumentException e) {
-                log.error(getLanguage().translateString(e.getMessage(), e.getCause().getMessage()));
+                log.error(getLanguage().tr(e.getMessage(), e.getCause().getMessage()));
             }
         }
 
@@ -756,15 +759,15 @@ public class Server {
             ExceptionHandler.registerExceptionHandler();
         }
 
-        log.info(this.getLanguage().translateString("nukkit.server.networkStart", new String[]{this.getIp().equals("") ? "*" : this.getIp(), String.valueOf(this.getPort())}));
+        log.info(this.getLanguage().tr("nukkit.server.networkStart", new String[]{this.getIp().equals("") ? "*" : this.getIp(), String.valueOf(this.getPort())}));
         this.serverID = UUID.randomUUID();
 
         this.network = new Network(this);
         this.network.setName(this.getMotd());
         this.network.setSubName(this.getSubMotd());
 
-        log.info(this.getLanguage().translateString("nukkit.server.info", this.getName(), TextFormat.YELLOW + this.getNukkitVersion() + " (" + this.getGitCommit() + ")" + TextFormat.WHITE, TextFormat.AQUA + this.getCodename() + TextFormat.WHITE, this.getApiVersion()));
-        log.info(this.getLanguage().translateString("nukkit.server.license", this.getName()));
+        log.info(this.getLanguage().tr("nukkit.server.info", this.getName(), TextFormat.YELLOW + this.getNukkitVersion() + " (" + this.getGitCommit() + ")" + TextFormat.WHITE, TextFormat.AQUA + this.getCodename() + TextFormat.WHITE, this.getApiVersion()));
+        log.info(this.getLanguage().tr("nukkit.server.license", this.getName()));
 
         this.consoleSender = new ConsoleCommandSender();
 
@@ -784,8 +787,6 @@ public class Server {
         Attribute.init();
         DispenseBehaviorRegister.init();
         GlobalBlockPalette.getOrCreateRuntimeId(0, 0); //Force it to load
-
-        this.commandMap = new SimpleCommandMap(this);
 
         freezableArrayManager = new FreezableArrayManager(
                 this.getConfig("memory-compression.enable", true),
@@ -818,6 +819,7 @@ public class Server {
         this.craftingManager = new CraftingManager();
         this.resourcePackManager = new ResourcePackManager(new File(Nukkit.DATA_PATH, "resource_packs"));
 
+        this.commandMap = new SimpleCommandMap(this);
         this.pluginManager = new PluginManager(this, this.commandMap);
         this.pluginManager.subscribeToPermission(Server.BROADCAST_CHANNEL_ADMINISTRATIVE, this.consoleSender);
 
@@ -836,7 +838,7 @@ public class Server {
             log.fatal("Failed to start the Position Tracking DB service!", e);
         }
 
-        this.pluginManager.loadPowerNukkitPlugins();
+        this.pluginManager.loadInternalPlugin();
         this.pluginManager.loadPlugins(this.pluginPath);
 
         this.enablePlugins(PluginLoadOrder.STARTUP);
@@ -913,7 +915,7 @@ public class Server {
         this.properties.save(true);
 
         if (this.getDefaultLevel() == null) {
-            log.fatal(this.getLanguage().translateString("nukkit.level.defaultError"));
+            log.fatal(this.getLanguage().tr("nukkit.level.defaultError"));
             this.forceShutdown();
 
             return;
@@ -1179,28 +1181,30 @@ public class Server {
      * @throws ServerException 服务器异常
      */
     public boolean dispatchCommand(CommandSender sender, String commandLine) throws ServerException {
+        return this.executeCommand(sender, commandLine) > 0;
+    }
+
+    public int executeCommand(CommandSender sender, String commandLine) throws ServerException {
         // First we need to check if this command is on the main thread or not, if not, warn the user
         if (!this.isPrimaryThread()) {
             log.warn("Command Dispatched Async: {}\nPlease notify author of plugin causing this execution to fix this bug!", commandLine,
                     new ConcurrentModificationException("Command Dispatched Async: " + commandLine));
 
-            this.scheduler.scheduleTask(null, () -> dispatchCommand(sender, commandLine));
-            return true;
+            this.scheduler.scheduleTask(null, () -> executeCommand(sender, commandLine));
+            return 1;
         }
 
         if (sender == null) {
             throw new ServerException("CommandSender is not valid");
         }
 
-        if (this.commandMap.getCommand((commandLine.startsWith("/") ? commandLine.substring(1) : commandLine).split(" ")[0]) == null) {
+        var command = (commandLine.startsWith("/") ? commandLine.substring(1) : commandLine);
+        int spaceIndex = command.indexOf(" ");
+        if (this.commandMap.getCommand(command.substring(0, spaceIndex == -1 ? command.length() : spaceIndex)) == null) {
             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.unknown", commandLine));
+            return 0;
         }
-
-        if (this.commandMap.dispatch(sender, commandLine)) {
-            return true;
-        }
-
-        return false;
+        return this.commandMap.executeCommand(sender, command);
     }
 
     /**
@@ -1375,9 +1379,9 @@ public class Server {
         //todo send usage setting
         this.tickCounter = 0;
 
-        log.info(this.getLanguage().translateString("nukkit.server.defaultGameMode", getGamemodeString(this.getGamemode())));
+        log.info(this.getLanguage().tr("nukkit.server.defaultGameMode", getGamemodeString(this.getGamemode())));
 
-        log.info(this.getLanguage().translateString("nukkit.server.startFinished", String.valueOf((double) (System.currentTimeMillis() - Nukkit.START_TIME) / 1000)));
+        log.info(this.getLanguage().tr("nukkit.server.startFinished", String.valueOf((double) (System.currentTimeMillis() - Nukkit.START_TIME) / 1000)));
 
         ServerStartedEvent serverStartedEvent = new ServerStartedEvent();
         getPluginManager().callEvent(serverStartedEvent);
@@ -1643,7 +1647,7 @@ public class Server {
                     }
                 }
             } catch (Exception e) {
-                log.error(this.getLanguage().translateString("nukkit.level.tickError",
+                log.error(this.getLanguage().tr("nukkit.level.tickError",
                         level.getFolderName(), Utils.getExceptionMessage(e)), e);
             }
         }
@@ -2419,7 +2423,7 @@ public class Server {
                 return NBTIO.readCompressed(dataStream.get());
             }
         } catch (IOException e) {
-            log.warn(this.getLanguage().translateString("nukkit.data.playerCorrupted", name), e);
+            log.warn(this.getLanguage().tr("nukkit.data.playerCorrupted", name), e);
         } finally {
             if (dataStream.isPresent()) {
                 try {
@@ -2432,7 +2436,7 @@ public class Server {
         CompoundTag nbt = null;
         if (create) {
             if (this.shouldSavePlayerData()) {
-                log.info(this.getLanguage().translateString("nukkit.data.playerNotFound", name));
+                log.info(this.getLanguage().tr("nukkit.data.playerNotFound", name));
             }
             Position spawn = this.getDefaultLevel().getSafeSpawn();
             nbt = new CompoundTag()
@@ -2533,7 +2537,7 @@ public class Server {
         try (OutputStream dataStream = serializer.write(name, uuid)) {
             NBTIO.writeGZIPCompressed(tag, dataStream, ByteOrder.BIG_ENDIAN);
         } catch (Exception e) {
-            log.error(this.getLanguage().translateString("nukkit.data.saveError", name, e));
+            log.error(this.getLanguage().tr("nukkit.data.saveError", name, e));
         }
     }
 
@@ -2779,7 +2783,7 @@ public class Server {
         if (this.isLevelLoaded(name)) {
             return true;
         } else if (!this.isLevelGenerated(name)) {
-            log.warn(this.getLanguage().translateString("nukkit.level.notFound", name));
+            log.warn(this.getLanguage().tr("nukkit.level.notFound", name));
 
             return false;
         }
@@ -2795,7 +2799,7 @@ public class Server {
         Class<? extends LevelProvider> provider = LevelProviderManager.getProvider(path);
 
         if (provider == null) {
-            log.error(this.getLanguage().translateString("nukkit.level.loadError", new String[]{name, "Unknown provider"}));
+            log.error(this.getLanguage().tr("nukkit.level.loadError", new String[]{name, "Unknown provider"}));
 
             return false;
         }
@@ -2804,7 +2808,7 @@ public class Server {
         try {
             level = new Level(this, name, path, provider);
         } catch (Exception e) {
-            log.error(this.getLanguage().translateString("nukkit.level.loadError", name, e.getMessage()), e);
+            log.error(this.getLanguage().tr("nukkit.level.loadError", name, e.getMessage()), e);
             return false;
         }
 
@@ -2876,7 +2880,7 @@ public class Server {
             level.initLevel(givenDimensionData);
             level.setTickRate(this.baseTickRate);
         } catch (Exception e) {
-            log.error(this.getLanguage().translateString("nukkit.level.generationError", new String[]{name, Utils.getExceptionMessage(e)}), e);
+            log.error(this.getLanguage().tr("nukkit.level.generationError", new String[]{name, Utils.getExceptionMessage(e)}), e);
             return false;
         }
 
@@ -2884,7 +2888,7 @@ public class Server {
 
         this.getPluginManager().callEvent(new LevelLoadEvent(level));
 
-        /*this.getLogger().notice(this.getLanguage().translateString("nukkit.level.backgroundGeneration", name));
+        /*this.getLogger().notice(this.getLanguage().tr("nukkit.level.backgroundGeneration", name));
 
         int centerX = (int) level.getSpawnLocation().getX() >> 4;
         int centerZ = (int) level.getSpawnLocation().getZ() >> 4;
@@ -2938,6 +2942,34 @@ public class Server {
 
     public BaseLang getLanguage() {
         return baseLang;
+    }
+
+    public LangCode getLanguageCode() {
+        return baseLangCode;
+    }
+
+    private LangCode mapInternalLang(String langName) {
+        return switch (langName) {
+            case "bra" -> LangCode.valueOf("pt_BR");
+            case "chs" -> LangCode.valueOf("zh_CN");
+            case "cht" -> LangCode.valueOf("zh_TW");
+            case "cze" -> LangCode.valueOf("cs_CZ");
+            case "deu" -> LangCode.valueOf("de_DE");
+            case "fin" -> LangCode.valueOf("fi_FI");
+            case "eng" -> LangCode.valueOf("en_US");
+            case "fra" -> LangCode.valueOf("en_US");
+            case "idn" -> LangCode.valueOf("id_ID");
+            case "jpn" -> LangCode.valueOf("ja_JP");
+            case "kor" -> LangCode.valueOf("ko_KR");
+            case "ltu" -> LangCode.valueOf("en_US");
+            case "pol" -> LangCode.valueOf("pl_PL");
+            case "rus" -> LangCode.valueOf("ru_RU");
+            case "spa" -> LangCode.valueOf("es_ES");
+            case "tur" -> LangCode.valueOf("tr_TR");
+            case "ukr" -> LangCode.valueOf("uk_UA");
+            case "vie" -> LangCode.valueOf("en_US");
+            default -> throw new IllegalArgumentException();
+        };
     }
 
     public boolean isLanguageForced() {

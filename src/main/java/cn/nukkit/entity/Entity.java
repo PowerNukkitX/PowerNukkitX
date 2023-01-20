@@ -1934,7 +1934,7 @@ public abstract class Entity extends Location implements Metadatable {
             this.headYaw = this.yaw;
         }
         double diffPosition = (this.x - this.lastX) * (this.x - this.lastX) + (this.y - this.lastY) * (this.y - this.lastY) + (this.z - this.lastZ) * (this.z - this.lastZ);
-        double diffRotation = enableHeadYaw() ? (this.headYaw - this.lastHeadYaw) * (this.headYaw - this.lastHeadYaw) : 0 + (this.yaw - this.lastYaw) * (this.yaw - this.lastYaw) + (this.pitch - this.lastPitch) * (this.pitch - this.lastPitch);
+        double diffRotation = (enableHeadYaw() ? (this.headYaw - this.lastHeadYaw) * (this.headYaw - this.lastHeadYaw) : 0) + (this.yaw - this.lastYaw) * (this.yaw - this.lastYaw) + (this.pitch - this.lastPitch) * (this.pitch - this.lastPitch);
 
         double diffMotion = (this.motionX - this.lastMotionX) * (this.motionX - this.lastMotionX) + (this.motionY - this.lastMotionY) * (this.motionY - this.lastMotionY) + (this.motionZ - this.lastMotionZ) * (this.motionZ - this.lastMotionZ);
 
@@ -3129,6 +3129,7 @@ public abstract class Entity extends Location implements Metadatable {
             return false;
         }
 
+        this.positionChanged = true;
         this.ySize = 0;
 
         this.setMotion(this.temporalVector.setComponents(0, 0, 0));
@@ -3136,9 +3137,7 @@ public abstract class Entity extends Location implements Metadatable {
         if (this.setPositionAndRotation(to, yaw, pitch)) {
             this.resetFallDistance();
             this.onGround = !this.noClip;
-
             this.updateMovement();
-
             return true;
         }
 

@@ -29,6 +29,7 @@ import org.mockito.internal.verification.Times;
 import org.powernukkit.tests.api.MockEntity;
 import org.powernukkit.tests.api.MockLevel;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
+import org.powernukkit.tests.mocks.DelegatePlayer;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -58,7 +59,7 @@ class PlayerTest {
     EntityBoat boat;
 
     Skin skin;
-    
+
     Player player;
 
     private MoveEntityAbsolutePacket buildMoveEntityAbsolutePacket(long eid) {
@@ -221,7 +222,7 @@ class PlayerTest {
     void tooManyFailedLoginAttempts() {
         PluginManager pluginManager = mock(PluginManager.class);
         when(player.getServer().getPluginManager()).thenReturn(pluginManager);
-        Player player = new Player(sourceInterface, clientId, clientIp, clientPort);
+        DelegatePlayer player = new DelegatePlayer(sourceInterface, clientId, clientIp, clientPort);
 
         FilterTextPacket packet = new FilterTextPacket();
         packet.text = "asd";
@@ -379,7 +380,7 @@ class PlayerTest {
         assertTrue(skin.isValid());
         
         /// Make player login ///
-        player = new Player(sourceInterface, clientId, clientIp, clientPort);
+        player = new DelegatePlayer(sourceInterface, clientId, clientIp, clientPort);
         LoginPacket loginPacket = new LoginPacket();
         loginPacket.username = "TestPlayer";
         loginPacket.protocol = ProtocolInfo.CURRENT_PROTOCOL;

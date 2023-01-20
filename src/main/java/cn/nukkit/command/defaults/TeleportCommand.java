@@ -1,21 +1,22 @@
 package cn.nukkit.command.defaults;
 
+import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
-import cn.nukkit.command.exceptions.CommandSyntaxException;
-import cn.nukkit.command.utils.CommandParser;
+import cn.nukkit.command.tree.ParamList;
+import cn.nukkit.command.tree.ParamTree;
+import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.BVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.types.PlayerAbility;
-import cn.nukkit.utils.TextFormat;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Pub4Game and milkice
@@ -74,6 +75,7 @@ public class TeleportCommand extends VanillaCommand {
                 CommandParameter.newType("lookAtEntity", CommandParamType.TARGET),
                 CommandParameter.newEnum("checkForBlocks", true, CommandEnum.ENUM_BOOLEAN)
         });
+        this.paramTree = new ParamTree(this);
     }
 
     @Override
@@ -83,323 +85,286 @@ public class TeleportCommand extends VanillaCommand {
         return super.testPermissionSilent(target);
     }
 
+    @Since("1.19.50-r4")
     @Override
-    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        if (!this.testPermission(sender)) {
-            return false;
-        }
-
-        CommandParser parser = new CommandParser(this, sender, args);
-        try {
-            String form = parser.matchCommandForm();
-            if (form == null) {
-                sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-                return false;
-            }
-
-            switch (form) {
-                case "->Entity" -> {
-                    if (!sender.isEntity()) {
-                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.noTargetMatch"));
-                        return false;
-                    }
-                    CommandParser p = new CommandParser(parser);
-                    List<Entity> destination = p.parseTargets();
-                    if (destination.size() == 0) {
-                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.noTargetMatch"));
-                        return false;
-                    }
-                    if (destination.size() > 1) {
-                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.tooManyTargets"));
-                        return false;
-                    }
-                    Location victim = sender.getLocation();
-                    Location target = destination.get(0).setYaw(victim.getYaw()).setPitch(victim.getPitch());
-                    boolean checkForBlocks = false;
-                    if (p.hasNext()) {
-                        checkForBlocks = p.parseBoolean();
-                    }
-                    if (checkForBlocks) {
-                        if (!target.getLevelBlock().isSolid() && !target.add(0, 1, 0).getLevelBlock().isSolid()) {
-                            sender.asEntity().teleport(target);
-                            sender.sendMessage(new TranslationContainer("commands.tp.successVictim", destination.get(0).getName()));
-                        } else {
-                            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.tp.safeTeleportFail", sender.asEntity().getName(), destination.get(0).getName()));
-                            return false;
-                        }
-                    } else {
-                        sender.asEntity().teleport(target);
-                        sender.sendMessage(new TranslationContainer("commands.tp.successVictim", destination.get(0).getName()));
-                    }
-                    return true;
+    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+        var list = result.getValue();
+        switch (result.getKey()) {
+            case "->Entity" -> {
+                if (!sender.isEntity()) {
+                    log.addNoTargetMatch().output();
+                    return 0;
                 }
-                case "Entity->Entity" -> {
-                    CommandParser p = new CommandParser(parser);
-                    List<Entity> victims = p.parseTargets();
-                    List<Entity> destination = p.parseTargets();
-                    if (destination.size() == 0) {
-                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.noTargetMatch"));
-                        return false;
-                    }
-                    if (destination.size() > 1) {
-                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.tooManyTargets"));
-                        return false;
-                    }
-                    Entity target = destination.get(0);
-                    boolean checkForBlocks = false;
-                    if (p.hasNext()) {
-                        checkForBlocks = p.parseBoolean();
-                    }
-                    StringBuilder sb = new StringBuilder();
-                    for (Entity victim : victims) {
-                        sb.append(victim.getName()).append(" ");
-                    }
-                    if (checkForBlocks) {
-                        if (!target.getLevelBlock().isSolid() && !target.add(0, 1, 0).getLevelBlock().isSolid()) {
-                            for (Entity victim : victims) {
-                                victim.teleport(target.getLocation().setYaw(victim.getYaw()).setPitch(victim.getPitch()));
-                            }
-                            sender.sendMessage(new TranslationContainer("commands.tp.success", sb.toString(), target.getName()));
-                        } else {
-                            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.tp.safeTeleportFail", sb.toString(), target.getName()));
-                            return false;
-                        }
+                List<Entity> destination = list.getResult(0);
+                if (destination.size() > 1) {
+                    log.addError("commands.generic.tooManyTargets").output();
+                    return 0;
+                }
+                Location victim = sender.getLocation();
+                Location target = destination.get(0).setYaw(victim.getYaw()).setPitch(victim.getPitch());
+                boolean checkForBlocks = false;
+                if (list.hasResult(1)) {
+                    checkForBlocks = list.getResult(1);
+                }
+                if (checkForBlocks) {
+                    if (!target.getLevelBlock().isSolid() && !target.add(0, 1, 0).getLevelBlock().isSolid()) {
+                        sender.asEntity().teleport(target);
+                        log.addSuccess("commands.tp.successVictim", destination.get(0).getName()).output();
                     } else {
+                        log.addError("commands.tp.safeTeleportFail", sender.asEntity().getName(), destination.get(0).getName()).output();
+                        return 0;
+                    }
+                } else {
+                    sender.asEntity().teleport(target);
+                    log.addSuccess("commands.tp.successVictim", destination.get(0).getName()).output();
+                }
+                return 1;
+            }
+            case "Entity->Entity" -> {
+                List<Entity> victims = list.getResult(0);
+                List<Entity> destination = list.getResult(1);
+                if (destination.size() > 1) {
+                    log.addError("commands.generic.tooManyTargets").output();
+                    return 0;
+                }
+                Entity target = destination.get(0);
+                boolean checkForBlocks = false;
+                if (list.hasResult(3)) {
+                    checkForBlocks = list.getResult(3);
+                }
+                StringBuilder sb = new StringBuilder();
+                for (Entity victim : victims) {
+                    sb.append(victim.getName()).append(" ");
+                }
+                if (checkForBlocks) {
+                    if (!target.getLevelBlock().isSolid() && !target.add(0, 1, 0).getLevelBlock().isSolid()) {
                         for (Entity victim : victims) {
                             victim.teleport(target.getLocation().setYaw(victim.getYaw()).setPitch(victim.getPitch()));
                         }
-                        sender.sendMessage(new TranslationContainer("commands.tp.success", sb.toString(), target.getName()));
+                        log.addSuccess("commands.tp.success", sb.toString(), target.getName());
+                    } else {
+                        log.addError("commands.tp.safeTeleportFail ", sb.toString(), target.getName()).output();
+                        return 0;
                     }
-                    return true;
-                }
-                case "Entity->Pos" -> {
-                    CommandParser p = new CommandParser(parser);
-                    List<Entity> victims = p.parseTargets();
-                    if (victims.isEmpty()) {
-                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.noTargetMatch"));
-                        return false;
-                    }
-                    Position pos = p.parsePosition();
-                    double yRot = sender.getLocation().pitch;
-                    if (p.hasNext()) {
-                        yRot = p.parseOffsetDouble(yRot);
-                    }
-                    double xRot = sender.getLocation().yaw;
-                    if (p.hasNext()) {
-                        xRot = p.parseOffsetDouble(xRot);
-                    }
-                    boolean checkForBlocks = false;
-                    if (p.hasNext()) {
-                        checkForBlocks = p.parseBoolean();
-                    }
-                    StringBuilder sb = new StringBuilder();
+                } else {
                     for (Entity victim : victims) {
-                        sb.append(victim.getName()).append(" ");
+                        victim.teleport(target.getLocation().setYaw(victim.getYaw()).setPitch(victim.getPitch()));
                     }
-                    Location target = Location.fromObject(pos, pos.level, xRot, yRot);
-                    if (checkForBlocks) {
-                        if (!target.getLevelBlock().isSolid() && !target.add(0, 1, 0).getLevelBlock().isSolid()) {
-                            for (Entity victim : victims) {
-                                victim.teleport(target);
-                            }
-                            sender.sendMessage(new TranslationContainer("commands.tp.success.coordinates", sb.toString(), String.valueOf(target.getFloorX()), String.valueOf(target.getFloorY()), String.valueOf(target.getFloorZ())));
-                        } else {
-                            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.tp.safeTeleportFail", sb.toString(), target.toString()));
-                            return false;
-                        }
-                    } else {
-                        for (Entity victim : victims) {
-                            victim.teleport(target);
-                        }
-                        sender.sendMessage(new TranslationContainer("commands.tp.success.coordinates", sb.toString(), String.valueOf(target.getFloorX()), String.valueOf(target.getFloorY()), String.valueOf(target.getFloorZ())));
-                    }
-                    return true;
+                    log.addSuccess("commands.tp.success", sb.toString(), target.getName());
                 }
-                case "Entity->Pos(FacingPos)" -> {
-                    CommandParser p = new CommandParser(parser);
-                    List<Entity> victims = p.parseTargets();
-                    if (victims.isEmpty()) {
-                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.noTargetMatch"));
-                        return false;
-                    }
-                    Position pos = p.parsePosition();
-                    p.parseString();//avoid "facing"
-                    Position lookAtPosition = p.parsePosition();
-                    boolean checkForBlocks = false;
-                    if (p.hasNext()) {
-                        checkForBlocks = p.parseBoolean();
-                    }
-                    StringBuilder sb = new StringBuilder();
-                    for (Entity victim : victims) {
-                        sb.append(victim.getName()).append(" ");
-                    }
-                    BVector3 bv = BVector3.fromPos(new Vector3(lookAtPosition.x - pos.x, lookAtPosition.y - pos.y, lookAtPosition.z - pos.z));
-                    Location target = Location.fromObject(pos, pos.level, bv.getYaw(), bv.getPitch());
-                    if (checkForBlocks) {
-                        if (!target.getLevelBlock().isSolid() && !target.add(0, 1, 0).getLevelBlock().isSolid()) {
-                            for (Entity victim : victims) {
-                                victim.teleport(target);
-                            }
-                            sender.sendMessage(new TranslationContainer("commands.tp.success.coordinates", sb.toString(), String.valueOf(target.getFloorX()), String.valueOf(target.getFloorY()), String.valueOf(target.getFloorZ())));
-                        } else {
-                            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.tp.safeTeleportFail", sb.toString(), target.getFloorX() + " " + target.getFloorY() + " " + target.getFloorZ()));
-                            return false;
-                        }
-                    } else {
-                        for (Entity victim : victims) {
-                            victim.teleport(target);
-                        }
-                        sender.sendMessage(new TranslationContainer("commands.tp.success.coordinates", sb.toString(), String.valueOf(target.getFloorX()), String.valueOf(target.getFloorY()), String.valueOf(target.getFloorZ())));
-                    }
-                    return true;
-                }
-                case "Entity->Pos(FacingEntity)" -> {
-                    CommandParser p = new CommandParser(parser);
-                    List<Entity> victims = p.parseTargets();
-                    if (victims.isEmpty()) {
-                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.noTargetMatch"));
-                        return false;
-                    }
-                    Position pos = p.parsePosition();
-                    p.parseString();//avoid "facing"
-                    List<Entity> lookAtEntity = p.parseTargets();
-                    if (lookAtEntity.size() != 1) {
-                        return false;
-                    }
-                    Position lookAtPosition = lookAtEntity.get(0);
-                    boolean checkForBlocks = false;
-                    if (p.hasNext()) {
-                        checkForBlocks = p.parseBoolean();
-                    }
-                    StringBuilder sb = new StringBuilder();
-                    for (Entity victim : victims) {
-                        sb.append(victim.getName()).append(" ");
-                    }
-                    BVector3 bv = BVector3.fromPos(new Vector3(lookAtPosition.x - pos.x, lookAtPosition.y - pos.y, lookAtPosition.z - pos.z));
-                    Location target = Location.fromObject(pos, pos.level, bv.getYaw(), bv.getPitch());
-                    if (checkForBlocks) {
-                        if (!target.getLevelBlock().isSolid() && !target.add(0, 1, 0).getLevelBlock().isSolid()) {
-                            for (Entity victim : victims) {
-                                victim.teleport(target);
-                            }
-                            sender.sendMessage(new TranslationContainer("commands.tp.success.coordinates", sb.toString(), String.valueOf(target.getFloorX()), String.valueOf(target.getFloorY()), String.valueOf(target.getFloorZ())));
-                        } else {
-                            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.tp.safeTeleportFail", sb.toString(), target.toString()));
-                            return false;
-                        }
-                    } else {
-                        for (Entity victim : victims) {
-                            victim.teleport(target);
-                        }
-                        sender.sendMessage(new TranslationContainer("commands.tp.success.coordinates", sb.toString(), String.valueOf(target.getFloorX()), String.valueOf(target.getFloorY()), String.valueOf(target.getFloorZ())));
-                    }
-                    return true;
-                }
-                case "->Pos" -> {
-                    if (!sender.isEntity()) {
-                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.noTargetMatch"));
-                        return false;
-                    }
-                    CommandParser p = new CommandParser(parser);
-                    Position pos = p.parsePosition();
-                    double yRot = sender.getLocation().pitch;
-                    if (p.hasNext()) {
-                        yRot = p.parseOffsetDouble(yRot);
-                    }
-                    double xRot = sender.getLocation().yaw;
-                    if (p.hasNext()) {
-                        xRot = p.parseOffsetDouble(xRot);
-                    }
-                    boolean checkForBlocks = false;
-                    if (p.hasNext()) {
-                        checkForBlocks = p.parseBoolean();
-                    }
-                    Location target = Location.fromObject(pos, pos.level, xRot, yRot);
-                    if (checkForBlocks) {
-                        if (!target.getLevelBlock().isSolid() && !target.add(0, 1, 0).getLevelBlock().isSolid()) {
-                            sender.asEntity().teleport(target);
-                            sender.sendMessage(new TranslationContainer("commands.tp.success.coordinates", sender.getName(), String.valueOf(target.getFloorX()), String.valueOf(target.getFloorY()), String.valueOf(target.getFloorZ())));
-                        } else {
-                            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.tp.safeTeleportFail", sender.getName(), target.toString()));
-                            return false;
-                        }
-                    } else {
-                        sender.asEntity().teleport(target);
-                        sender.sendMessage(new TranslationContainer("commands.tp.success.coordinates", sender.getName(), String.valueOf(target.getFloorX()), String.valueOf(target.getFloorY()), String.valueOf(target.getFloorZ())));
-                    }
-                    return true;
-                }
-                case "->Pos(FacingPos)" -> {
-                    if (!sender.isEntity()) {
-                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.noTargetMatch"));
-                        return false;
-                    }
-                    CommandParser p = new CommandParser(parser);
-                    Position pos = p.parsePosition();
-                    p.parseString();//avoid "facing"
-                    Position lookAtPosition = p.parsePosition();
-                    boolean checkForBlocks = false;
-                    if (p.hasNext()) {
-                        checkForBlocks = p.parseBoolean();
-                    }
-                    BVector3 bv = BVector3.fromPos(new Vector3(lookAtPosition.x - pos.x, lookAtPosition.y - pos.y, lookAtPosition.z - pos.z));
-                    Location target = Location.fromObject(pos, pos.level, bv.getYaw(), bv.getPitch());
-                    if (checkForBlocks) {
-                        if (!target.getLevelBlock().isSolid() && !target.add(0, 1, 0).getLevelBlock().isSolid()) {
-                            sender.asEntity().teleport(target);
-                            sender.sendMessage(new TranslationContainer("commands.tp.success.coordinates", sender.asEntity().getName(), String.valueOf(target.getFloorX()), String.valueOf(target.getFloorY()), String.valueOf(target.getFloorZ())));
-                        } else {
-                            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.tp.safeTeleportFail", sender.asEntity().getName(), target.toString()));
-                            return false;
-                        }
-                    } else {
-                        sender.asEntity().teleport(target);
-                        sender.sendMessage(new TranslationContainer("commands.tp.success.coordinates", sender.asEntity().getName(), String.valueOf(target.getFloorX()), String.valueOf(target.getFloorY()), String.valueOf(target.getFloorZ())));
-                    }
-                    return true;
-                }
-                case "->Pos(FacingEntity)" -> {
-                    if (!sender.isEntity()) {
-                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.noTargetMatch"));
-                        return false;
-                    }
-                    CommandParser p = new CommandParser(parser);
-                    Position pos = p.parsePosition();
-                    p.parseString();//avoid "facing"
-                    List<Entity> lookAtEntity = p.parseTargets();
-                    if (lookAtEntity.size() == 0) {
-                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.noTargetMatch"));
-                        return false;
-                    }
-                    if (lookAtEntity.size() > 1) {
-                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.tooManyTargets"));
-                        return false;
-                    }
-                    Position lookAtPosition = lookAtEntity.get(0);
-                    boolean checkForBlocks = false;
-                    if (p.hasNext()) {
-                        checkForBlocks = p.parseBoolean();
-                    }
-                    BVector3 bv = BVector3.fromPos(new Vector3(lookAtPosition.x - pos.x, lookAtPosition.y - pos.y, lookAtPosition.z - pos.z));
-                    Location target = Location.fromObject(pos, pos.level, bv.getYaw(), bv.getPitch());
-                    if (checkForBlocks) {
-                        if (!target.getLevelBlock().isSolid() && !target.add(0, 1, 0).getLevelBlock().isSolid()) {
-                            sender.asEntity().teleport(target);
-                            sender.sendMessage(new TranslationContainer("commands.tp.success.coordinates", sender.asEntity().getName(), String.valueOf(target.getFloorX()), String.valueOf(target.getFloorY()), String.valueOf(target.getFloorZ())));
-                        } else {
-                            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.tp.safeTeleportFail", sender.asEntity().getName(), target.toString()));
-                            return false;
-                        }
-                    } else {
-                        sender.asEntity().teleport(target);
-                        sender.sendMessage(new TranslationContainer("commands.tp.success.coordinates", sender.asEntity().getName(), String.valueOf(target.getFloorX()), String.valueOf(target.getFloorY()), String.valueOf(target.getFloorZ())));
-                    }
-                    return true;
-                }
+                log.output();
+                return victims.size();
             }
-        } catch (CommandSyntaxException e) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
+            case "Entity->Pos" -> {
+                List<Entity> victims = list.getResult(0);
+                Position pos = list.getResult(1);
+                double yRot = sender.getLocation().pitch;
+                if (list.hasResult(2)) {
+                    yRot = list.getResult(2);
+                }
+                double xRot = sender.getLocation().yaw;
+                if (list.hasResult(3)) {
+                    xRot = list.getResult(3);
+                }
+                boolean checkForBlocks = false;
+                if (list.hasResult(4)) {
+                    checkForBlocks = list.getResult(4);
+                }
+                StringBuilder sb = new StringBuilder();
+                for (Entity victim : victims) {
+                    sb.append(victim.getName()).append(" ");
+                }
+                Location target = Location.fromObject(pos, pos.level, xRot, yRot);
+                if (checkForBlocks) {
+                    if (!target.getLevelBlock().isSolid() && !target.add(0, 1, 0).getLevelBlock().isSolid()) {
+                        for (Entity victim : victims) {
+                            victim.teleport(target);
+                        }
+                        log.addSuccess("commands.tp.success.coordinates", sb.toString(), String.valueOf(target.getFloorX()), String.valueOf(target.getFloorY()), String.valueOf(target.getFloorZ()));
+                    } else {
+                        log.addError("commands.tp.safeTeleportFail ", sb.toString(), target.toString()).output();
+                        return 0;
+                    }
+                } else {
+                    for (Entity victim : victims) {
+                        victim.teleport(target);
+                    }
+                    log.addSuccess("commands.tp.success.coordinates", sb.toString(), String.valueOf(target.getFloorX()), String.valueOf(target.getFloorY()), String.valueOf(target.getFloorZ()));
+                }
+                return 1;
+            }
+            case "Entity->Pos(FacingPos)" -> {
+                List<Entity> victims = list.getResult(0);
+                Position pos = list.getResult(1);
+                Position lookAtPosition = list.getResult(2);
+                boolean checkForBlocks = false;
+                if (list.hasResult(3)) {
+                    checkForBlocks = list.getResult(3);
+                }
+                StringBuilder sb = new StringBuilder();
+                for (Entity victim : victims) {
+                    sb.append(victim.getName()).append(" ");
+                }
+                BVector3 bv = BVector3.fromPos(new Vector3(lookAtPosition.x - pos.x, lookAtPosition.y - pos.y, lookAtPosition.z - pos.z));
+                Location target = Location.fromObject(pos, pos.level, bv.getYaw(), bv.getPitch());
+                if (checkForBlocks) {
+                    if (!target.getLevelBlock().isSolid() && !target.add(0, 1, 0).getLevelBlock().isSolid()) {
+                        for (Entity victim : victims) {
+                            victim.teleport(target);
+                        }
+                        log.addSuccess("commands.tp.success.coordinates", sb.toString(), String.valueOf(target.getFloorX()), String.valueOf(target.getFloorY()), String.valueOf(target.getFloorZ()));
+                    } else {
+                        log.addError("commands.tp.safeTeleportFail ", sb.toString(), target.getFloorX() + " " + target.getFloorY() + " " + target.getFloorZ()).output();
+                        return 0;
+                    }
+                } else {
+                    for (Entity victim : victims) {
+                        victim.teleport(target);
+                    }
+                    log.addSuccess("commands.tp.success.coordinates", sb.toString(), String.valueOf(target.getFloorX()), String.valueOf(target.getFloorY()), String.valueOf(target.getFloorZ()));
+                }
+                log.output();
+                return 1;
+            }
+            case "Entity->Pos(FacingEntity)" -> {
+                List<Entity> victims = list.getResult(0);
+                if (victims.isEmpty()) {
+                    log.addError("commands.generic.noTargetMatch").output();
+                    return 0;
+                }
+                Position pos = list.getResult(1);
+                List<Entity> lookAtEntity = list.getResult(3);
+                if (lookAtEntity.size() != 1) {
+                    return 0;
+                }
+                Position lookAtPosition = lookAtEntity.get(0);
+                boolean checkForBlocks = false;
+                if (list.hasResult(4)) {
+                    checkForBlocks = list.getResult(4);
+                }
+                StringBuilder sb = new StringBuilder();
+                for (Entity victim : victims) {
+                    sb.append(victim.getName()).append(" ");
+                }
+                BVector3 bv = BVector3.fromPos(new Vector3(lookAtPosition.x - pos.x, lookAtPosition.y - pos.y, lookAtPosition.z - pos.z));
+                Location target = Location.fromObject(pos, pos.level, bv.getYaw(), bv.getPitch());
+                if (checkForBlocks) {
+                    if (!target.getLevelBlock().isSolid() && !target.add(0, 1, 0).getLevelBlock().isSolid()) {
+                        for (Entity victim : victims) {
+                            victim.teleport(target);
+                        }
+                        log.addSuccess("commands.tp.success.coordinates", sb.toString(), String.valueOf(target.getFloorX()), String.valueOf(target.getFloorY()), String.valueOf(target.getFloorZ()));
+                    } else {
+                        log.addError("commands.tp.safeTeleportFail ", sb.toString(), target.toString()).output();
+                        return 0;
+                    }
+                } else {
+                    for (Entity victim : victims) {
+                        victim.teleport(target);
+                    }
+                    log.addSuccess("commands.tp.success.coordinates", sb.toString(), String.valueOf(target.getFloorX()), String.valueOf(target.getFloorY()), String.valueOf(target.getFloorZ()));
+                }
+                log.output();
+                return 1;
+            }
+            case "->Pos" -> {
+                if (!sender.isEntity()) {
+                    log.addError("commands.generic.noTargetMatch").output();
+                    return 0;
+                }
+                Position pos = list.getResult(0);
+                double yRot = sender.getLocation().pitch;
+                if (list.hasResult(1)) {
+                    yRot = list.getResult(1);
+                }
+                double xRot = sender.getLocation().yaw;
+                if (list.hasResult(2)) {
+                    xRot = list.getResult(2);
+                }
+                boolean checkForBlocks = false;
+                if (list.hasResult(3)) {
+                    checkForBlocks = list.getResult(3);
+                }
+                Location target = Location.fromObject(pos, pos.level, xRot, yRot);
+                if (checkForBlocks) {
+                    if (!target.getLevelBlock().isSolid() && !target.add(0, 1, 0).getLevelBlock().isSolid()) {
+                        sender.asEntity().teleport(target);
+                        log.addSuccess("commands.tp.success.coordinates", sender.getName(), String.valueOf(target.getFloorX()), String.valueOf(target.getFloorY()), String.valueOf(target.getFloorZ()));
+                    } else {
+                        log.addError("commands.tp.safeTeleportFail ", sender.getName(), target.toString()).output();
+                        return 0;
+                    }
+                } else {
+                    sender.asEntity().teleport(target);
+                    log.addSuccess("commands.tp.success.coordinates", sender.getName(), String.valueOf(target.getFloorX()), String.valueOf(target.getFloorY()), String.valueOf(target.getFloorZ()));
+                }
+                log.output();
+                return 1;
+            }
+            case "->Pos(FacingPos)" -> {
+                if (!sender.isEntity()) {
+                    log.addError("commands.generic.noTargetMatch").output();
+                    return 0;
+                }
+                Position pos = list.getResult(0);
+                Position lookAtPosition = list.getResult(2);
+                boolean checkForBlocks = false;
+                if (list.hasResult(3)) {
+                    checkForBlocks = list.getResult(3);
+                }
+                BVector3 bv = BVector3.fromPos(new Vector3(lookAtPosition.x - pos.x, lookAtPosition.y - pos.y, lookAtPosition.z - pos.z));
+                Location target = Location.fromObject(pos, pos.level, bv.getYaw(), bv.getPitch());
+                if (checkForBlocks) {
+                    if (!target.getLevelBlock().isSolid() && !target.add(0, 1, 0).getLevelBlock().isSolid()) {
+                        sender.asEntity().teleport(target);
+                        log.addSuccess("commands.tp.success.coordinates", sender.asEntity().getName(), String.valueOf(target.getFloorX()), String.valueOf(target.getFloorY()), String.valueOf(target.getFloorZ()));
+                    } else {
+                        log.addError("commands.tp.safeTeleportFail ", sender.asEntity().getName(), target.toString()).output();
+                        return 0;
+                    }
+                } else {
+                    sender.asEntity().teleport(target);
+                    log.addSuccess("commands.tp.success.coordinates", sender.asEntity().getName(), String.valueOf(target.getFloorX()), String.valueOf(target.getFloorY()), String.valueOf(target.getFloorZ()));
+                }
+                log.output();
+                return 1;
+            }
+            case "->Pos(FacingEntity)" -> {
+                if (!sender.isEntity()) {
+                    log.addError("commands.generic.noTargetMatch").output();
+                    return 0;
+                }
+                Position pos = list.getResult(0);
+                List<Entity> lookAtEntity = list.getResult(2);
+                if (lookAtEntity.size() > 1) {
+                    log.addError("commands.generic.tooManyTargets").output();
+                    return 0;
+                }
+                Position lookAtPosition = lookAtEntity.get(0);
+                boolean checkForBlocks = false;
+                if (list.hasResult(3)) {
+                    checkForBlocks = list.getResult(3);
+                }
+                BVector3 bv = BVector3.fromPos(new Vector3(lookAtPosition.x - pos.x, lookAtPosition.y - pos.y, lookAtPosition.z - pos.z));
+                Location target = Location.fromObject(pos, pos.level, bv.getYaw(), bv.getPitch());
+                if (checkForBlocks) {
+                    if (!target.getLevelBlock().isSolid() && !target.add(0, 1, 0).getLevelBlock().isSolid()) {
+                        sender.asEntity().teleport(target);
+                        log.addSuccess("commands.tp.success.coordinates", sender.asEntity().getName(), String.valueOf(target.getFloorX()), String.valueOf(target.getFloorY()), String.valueOf(target.getFloorZ()));
+                    } else {
+                        log.addError("commands.tp.safeTeleportFail", sender.asEntity().getName(), target.toString()).output();
+                        return 0;
+                    }
+                } else {
+                    sender.asEntity().teleport(target);
+                    log.addSuccess("commands.tp.success.coordinates", sender.asEntity().getName(), String.valueOf(target.getFloorX()), String.valueOf(target.getFloorY()), String.valueOf(target.getFloorZ()));
+                }
+                log.output();
+                return 1;
+            }
+            default -> {
+                return 0;
+            }
         }
-        return false;
     }
 }

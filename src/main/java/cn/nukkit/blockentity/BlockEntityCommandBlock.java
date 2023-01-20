@@ -12,24 +12,25 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.event.command.CommandBlockExecuteEvent;
 import cn.nukkit.inventory.CommandBlockInventory;
 import cn.nukkit.inventory.Inventory;
+import cn.nukkit.lang.CommandOutputContainer;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
-import cn.nukkit.permission.PermissibleBase;
-import cn.nukkit.permission.Permission;
-import cn.nukkit.permission.PermissionAttachment;
-import cn.nukkit.permission.PermissionAttachmentInfo;
+import cn.nukkit.permission.*;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.utils.Faceable;
+import cn.nukkit.utils.TextFormat;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -296,7 +297,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
 
     @Override
     public boolean execute(int chain) {
-        if(!this.level.gameRules.getBoolean(GameRule.COMMAND_BLOCKS_ENABLED)){
+        if (!this.level.gameRules.getBoolean(GameRule.COMMAND_BLOCKS_ENABLED)) {
             return false;
         }
         if (this.getLevelBlock().getSide(((Faceable) this.getLevelBlock()).getBlockFace().getOpposite()) instanceof BlockCommandBlock lastCB) {
@@ -316,8 +317,8 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
                     if (cmd.equalsIgnoreCase("Searge")) {
                         this.lastOutput = "#itzlipofutzli";
                         this.successCount = 1;
-                    }else if(cmd.equalsIgnoreCase("Hello PNX!")){
-                        this.lastOutput = "superice666\nlt_name\ndaoge_cmd\nO(∩_∩)O\nzimzaza4";
+                    } else if (cmd.equalsIgnoreCase("Hello PNX!")) {
+                        this.lastOutput = "superice666\nlt_name\ndaoge_cmd\nCool_Loong\nzimzaza4";
                         this.successCount = 1;
                     } else {
                         this.lastOutput = null;
@@ -331,12 +332,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
                         if (event.isCancelled()) {
                             return false;
                         }
-
-                        if (Server.getInstance().dispatchCommand(this, cmd)) {
-                            this.successCount = 1; //TODO: >1
-                        } else {
-                            this.successCount = 0;
-                        }
+                        this.successCount = Server.getInstance().executeCommand(this, cmd);
                     }
                 }
 
@@ -591,9 +587,21 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
         return this;
     }
 
+    @Since("1.19.50-r4")
+    @NotNull
+    @Override
+    public Location getLocation() {
+        return Location.fromObject(this.getPosition(), this.getLevel());
+    }
+
     @Override
     public Server getServer() {
         return Server.getInstance();
+    }
+
+    @Override
+    public void sendMessage(String message) {
+        this.sendMessage(new TranslationContainer(message));
     }
 
     @Override
@@ -609,25 +617,20 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
             }
         }
         if (this.getLevel().getGameRules().getBoolean(GameRule.COMMAND_BLOCK_OUTPUT)) {
-            for (Player player : this.getLevel().getPlayers().values()) {
-                if (player.isOp()) {
+            message.setText(TextFormat.GRAY + "" + TextFormat.ITALIC + "[" + this.getName() + ": " + TextFormat.RESET +
+                    (!message.getText().equals(this.getServer().getLanguage().get(message.getText())) ? "%" : "") + message.getText() + "]");
+            Set<Permissible> users = this.getServer().getPluginManager().getPermissionSubscriptions(Server.BROADCAST_CHANNEL_ADMINISTRATIVE);
+            for (var user : users) {
+                if (user instanceof Player player) {
                     player.sendMessage(message);
                 }
             }
         }
     }
 
-    @Override
-    public void sendMessage(String message) {
-        if (this.isTrackingOutput()) {
-            this.lastOutput = message;
-        }
-        if (this.getLevel().getGameRules().getBoolean(GameRule.COMMAND_BLOCK_OUTPUT)) {
-            for (Player player : this.getLevel().getPlayers().values()) {
-                if (player.isOp()) {
-                    player.sendMessage(message);
-                }
-            }
+    public void sendCommandOutput(CommandOutputContainer container) {
+        for (var message : container.getMessages()) {
+            this.sendMessage(new TranslationContainer(message.getMessageId(), message.getParameters()));
         }
     }
 

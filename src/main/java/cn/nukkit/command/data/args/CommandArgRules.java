@@ -1,5 +1,6 @@
 package cn.nukkit.command.data.args;
 
+@Deprecated
 public class CommandArgRules {
 
     private boolean inverted;

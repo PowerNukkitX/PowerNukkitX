@@ -228,11 +228,11 @@ public class TimingsExport extends Thread {
             String location = con.getHeaderField("Location");
             this.sender.sendMessage(new TranslationContainer("nukkit.command.timings.timingsLocation", location));
             if (!(this.sender instanceof ConsoleCommandSender)) {
-                log.info(Server.getInstance().getLanguage().translateString("nukkit.command.timings.timingsLocation", location));
+                log.info(Server.getInstance().getLanguage().tr("nukkit.command.timings.timingsLocation", location));
             }
 
             if (response != null && !response.isEmpty()) {
-                log.info(Server.getInstance().getLanguage().translateString("nukkit.command.timings.timingsResponse", response));
+                log.info(Server.getInstance().getLanguage().tr("nukkit.command.timings.timingsResponse", response));
             }
 
             File timingFolder = new File(Server.getInstance().getDataPath() + File.separator + "timings");
@@ -240,11 +240,11 @@ public class TimingsExport extends Thread {
             String fileName = timingFolder + File.separator + new SimpleDateFormat("'timings-'yyyy-MM-dd-hh-mm'.txt'").format(new Date());
 
             FileWriter writer = new FileWriter(fileName);
-            writer.write(Server.getInstance().getLanguage().translateString("nukkit.command.timings.timingsLocation", location) + "\n\n");
+            writer.write(Server.getInstance().getLanguage().tr("nukkit.command.timings.timingsLocation", location) + "\n\n");
             writer.write(new GsonBuilder().setPrettyPrinting().create().toJson(this.out));
             writer.close();
 
-            log.info(Server.getInstance().getLanguage().translateString("nukkit.command.timings.timingsWrite", fileName));
+            log.info(Server.getInstance().getLanguage().tr("nukkit.command.timings.timingsWrite", fileName));
         } catch (IOException exception) {
             this.sender.sendMessage(TextFormat.RED + "" + new TranslationContainer("nukkit.command.timings.reportError"));
             if (response != null) {

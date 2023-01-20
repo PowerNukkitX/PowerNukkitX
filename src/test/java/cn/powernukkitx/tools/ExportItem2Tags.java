@@ -12,6 +12,9 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * item_2_tags from https://github.com/pmmp/BedrockData
+ */
 public class ExportItem2Tags {
     public static void main(String[] args) throws IOException {
         var gson = new Gson();

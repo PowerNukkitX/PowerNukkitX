@@ -34,7 +34,7 @@ public class JSPluginLoader implements PluginLoader {
             return null;
         }
         var pluginDescription = new PluginDescription(Files.readString(file.toPath().resolve("plugin.yml")));
-        log.info(this.server.getLanguage().translateString("nukkit.plugin.load", pluginDescription.getFullName()));
+        log.info(this.server.getLanguage().tr("nukkit.plugin.load", pluginDescription.getFullName()));
         var jsPlugin = new CommonJSPlugin();
         jsPlugin.init(this, file, pluginDescription);
         jsPlugin.onLoad();
@@ -64,7 +64,7 @@ public class JSPluginLoader implements PluginLoader {
     @Override
     public void enablePlugin(Plugin plugin) {
         if (plugin instanceof CommonJSPlugin jsPlugin && !plugin.isEnabled()) {
-            log.info(this.server.getLanguage().translateString("nukkit.plugin.enable", plugin.getDescription().getFullName()));
+            log.info(this.server.getLanguage().tr("nukkit.plugin.enable", plugin.getDescription().getFullName()));
             jsPlugin.onEnable();
             this.server.getPluginManager().callEvent(new PluginEnableEvent(plugin));
         }
@@ -73,7 +73,7 @@ public class JSPluginLoader implements PluginLoader {
     @Override
     public void disablePlugin(Plugin plugin) {
         if (plugin instanceof CommonJSPlugin jsPlugin && plugin.isEnabled()) {
-            log.info(this.server.getLanguage().translateString("nukkit.plugin.disable", plugin.getDescription().getFullName()));
+            log.info(this.server.getLanguage().tr("nukkit.plugin.disable", plugin.getDescription().getFullName()));
             this.server.getServiceManager().cancel(plugin);
             this.server.getPluginManager().callEvent(new PluginDisableEvent(plugin));
             jsPlugin.onDisable();

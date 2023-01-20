@@ -7,13 +7,14 @@ import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
-import cn.nukkit.command.exceptions.CommandSyntaxException;
-import cn.nukkit.command.utils.CommandParser;
-import cn.nukkit.lang.TranslationContainer;
+import cn.nukkit.command.tree.ParamList;
+import cn.nukkit.command.tree.ParamTree;
+import cn.nukkit.command.tree.node.PlayersNode;
+import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.network.protocol.StopSoundPacket;
-import cn.nukkit.utils.TextFormat;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @PowerNukkitXOnly
@@ -25,51 +26,34 @@ public class StopSoundCommand extends VanillaCommand {
         this.setPermission("nukkit.command.stopsound");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
-                CommandParameter.newType("player", false, CommandParamType.TARGET),
+                CommandParameter.newType("player", false, CommandParamType.TARGET, new PlayersNode()),
                 CommandParameter.newType("sound", true, CommandParamType.STRING)
         });
+        this.paramTree = new ParamTree(this);
     }
 
+    @Since("1.19.50-r4")
     @Override
-    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        if (!this.testPermission(sender)) {
-            return false;
+    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+        var list = result.getValue();
+        List<Player> targets = list.getResult(0);
+        String sound = "";
+
+        if (list.hasResult(1)) {
+            sound = list.getResult(1);
         }
-
-        CommandParser parser = new CommandParser(this, sender, args);
-        try {
-            List<Player> targets = parser.parseTargetPlayers();
-            String sound = "";
-
-            if (args.length > 1) {
-                sound = parser.parseString();
-            }
-
-            if (targets.size() == 0) {
-                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.noTargetMatch"));
-                return false;
-            }
-
-            StopSoundPacket packet = new StopSoundPacket();
-            packet.name = sound;
-            if (sound.isEmpty()) {
-                packet.stopAll = true;
-            }
-
-            Server.broadcastPacket(targets, packet);
-
-            String players_str = targets.stream().map(Player::getName).collect(Collectors.joining(" "));
-
-            if (packet.stopAll) {
-                sender.sendMessage(new TranslationContainer("commands.stopsound.success.all", players_str));
-            } else {
-                sender.sendMessage(new TranslationContainer("commands.stopsound.success", sound, players_str));
-            }
-        } catch (CommandSyntaxException e) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-            return false;
+        StopSoundPacket packet = new StopSoundPacket();
+        packet.name = sound;
+        if (sound.isEmpty()) {
+            packet.stopAll = true;
         }
-
-        return true;
+        Server.broadcastPacket(targets, packet);
+        String players_str = targets.stream().map(Player::getName).collect(Collectors.joining(" "));
+        if (packet.stopAll) {
+            log.addSuccess("commands.stopsound.success.all", players_str).output();
+        } else {
+            log.addSuccess("commands.stopsound.success", sound, players_str).output();
+        }
+        return 1;
     }
 }

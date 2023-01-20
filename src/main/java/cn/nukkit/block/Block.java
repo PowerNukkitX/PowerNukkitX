@@ -203,7 +203,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             list[GOLD_ORE] = BlockOreGold.class; //14
             list[IRON_ORE] = BlockOreIron.class; //15
             list[COAL_ORE] = BlockOreCoal.class; //16
-            list[WOOD] = BlockWood.class; //17
+            list[LOG] = BlockWood.class; //17
             list[LEAVES] = BlockLeaves.class; //18
             list[SPONGE] = BlockSponge.class; //19
             list[GLASS] = BlockGlass.class; //20
@@ -931,7 +931,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @PowerNukkitOnly
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", replaceWith = "BlockState.getBlock()", since = "1.4.0.0-PN")
-    @SuppressWarnings("unchecked")
     public static Block get(int id, Integer meta, Position pos, int layer) {
         Block block;
 

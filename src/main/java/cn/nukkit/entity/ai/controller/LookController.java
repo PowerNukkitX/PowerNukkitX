@@ -3,7 +3,7 @@ package cn.nukkit.entity.ai.controller;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.math.AngleMath;
+import cn.nukkit.math.BVector3;
 import cn.nukkit.math.Vector3;
 
 /**
@@ -30,18 +30,18 @@ public class LookController implements IController {
             Vector3 moveDirectionEnd = entity.getMoveDirectionEnd().clone();
             //构建路径方向向量
             var routeDirectionVector = new Vector3(moveDirectionEnd.x - entity.x, moveDirectionEnd.y - entity.y, moveDirectionEnd.z - entity.z);
-            var yaw = AngleMath.getYawFromVector(routeDirectionVector);
+            var yaw = BVector3.getYawFromVector(routeDirectionVector);
             entity.setYaw(yaw);
             if (!lookAtTarget) {
                 entity.setHeadYaw(yaw);
-                if (entity.isEnablePitch()) entity.setPitch(AngleMath.getPitchFromVector(routeDirectionVector));
+                if (entity.isEnablePitch()) entity.setPitch(BVector3.getPitchFromVector(routeDirectionVector));
             }
         }
         if (lookAtTarget && lookTarget != null) {
             //构建指向玩家的向量
             var toPlayerVector = new Vector3(lookTarget.x - entity.x, lookTarget.y - entity.y, lookTarget.z - entity.z);
-            if (entity.isEnablePitch()) entity.setPitch(AngleMath.getPitchFromVector(toPlayerVector));
-            entity.setHeadYaw(AngleMath.getYawFromVector(toPlayerVector));
+            if (entity.isEnablePitch()) entity.setPitch(BVector3.getPitchFromVector(toPlayerVector));
+            entity.setHeadYaw(BVector3.getYawFromVector(toPlayerVector));
         }
         if (!entity.isEnablePitch()) entity.setPitch(0);
         return true;

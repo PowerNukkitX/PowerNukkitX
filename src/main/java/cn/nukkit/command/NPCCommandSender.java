@@ -7,6 +7,7 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.passive.EntityNPCEntity;
+import cn.nukkit.lang.CommandOutputContainer;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
@@ -42,10 +43,17 @@ public class NPCCommandSender implements CommandSender {
     }
 
     @Override
-    public void sendMessage(String message) {}
+    public void sendMessage(String message) {
+    }
 
     @Override
-    public void sendMessage(TextContainer message) {}
+    public void sendMessage(TextContainer message) {
+    }
+
+    @Since("1.19.50-r4")
+    @Override
+    public void sendCommandOutput(CommandOutputContainer container) {
+    }
 
     @Override
     public Server getServer() {
