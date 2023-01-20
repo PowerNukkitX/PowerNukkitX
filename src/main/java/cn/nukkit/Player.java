@@ -1054,9 +1054,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             }
         }
 
+        var revertPos = this.getLocation().clone();
         if (invalidMotion) {
             this.positionChanged = false;
-            this.revertClientMotion(this.getLocation());
+            this.revertClientMotion(revertPos);
             return;
         }
 
@@ -1154,7 +1155,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 } else {
                     this.blocksAround = blocksAround;
                     this.collisionBlocks = collidingBlocks;
-                    this.broadcastMovement(false);
                 }
             }
 
@@ -1171,7 +1171,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         handleLogicInMove(invalidMotion, distance, delta);
 
         if (invalidMotion) {
-            this.revertClientMotion(this.getLocation());
+            this.setPositionAndRotation(revertPos.asVector3f().asVector3(), revertPos.getYaw(), revertPos.getPitch(), revertPos.getHeadYaw());
+            this.revertClientMotion(revertPos);
         } else {
             if (distance != 0 && this.nextChunkOrderRun > 20) {
                 this.nextChunkOrderRun = 20;
@@ -1830,6 +1831,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.setSneaking(false);
 
         this.setDataProperty(new ShortEntityData(Player.DATA_AIR, 400), false);
+        this.fireTicks = 0;
+        this.collisionBlocks = null;
         this.deadTicks = 0;
         this.noDamageTicks = 60;
 
@@ -2678,17 +2681,20 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     /**
-     * 获取该玩家个人重生点,
+     * 获取该玩家的可用重生点,
      * <p>
      * Get the player's Spawn point
      *
      * @return {@link Position}
      */
     public Position getSpawn() {
-        if (this.spawnPosition != null) {
-            return this.spawnPosition;
-        } else {
-            return this.server.getDefaultLevel().getSafeSpawn();
+        //level spawn point < block spawn = self spawn
+        if (spawnPosition != null && spawnBlockPosition == null) {//self spawn
+            return spawnPosition;
+        } else if (spawnBlockPosition != null && spawnPosition == null) {//block spawn
+            return spawnBlockPosition;
+        } else {//level spawn point
+            return this.getServer().getDefaultLevel().getSafeSpawn();
         }
     }
 
@@ -2703,10 +2709,42 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nullable
+    @Deprecated
+    @DeprecationDetails(since = "1.19.50-r4", reason = "same #getSpawn")
     public Position getSpawnBlock() {
-        return spawnBlockPosition;
+        return this.getSpawn();
     }
+
+    /**
+     * 设置玩家的出生点/复活点。
+     * <p>
+     * Set the player's birth point.
+     *
+     * @param pos 出生点位置
+     */
+    @PowerNukkitDifference(info = "pos can be null now and if it is null,the player's spawn will use the level's default spawn")
+    public void setSpawn(@Nullable Vector3 pos) {
+        if (pos != null) {
+            Level level;
+            if (pos instanceof Position position && position.isValid()) {
+                level = position.getLevel();
+            } else {
+                level = this.level;
+            }
+            this.spawnPosition = new Position(pos.x, pos.y, pos.z, level);
+            this.spawnBlockPosition = null;
+            SetSpawnPositionPacket pk = new SetSpawnPositionPacket();
+            pk.spawnType = SetSpawnPositionPacket.TYPE_PLAYER_SPAWN;
+            pk.x = (int) this.spawnPosition.x;
+            pk.y = (int) this.spawnPosition.y;
+            pk.z = (int) this.spawnPosition.z;
+            pk.dimension = this.spawnPosition.level.getDimension();
+            this.dataPacket(pk);
+        } else {
+            this.spawnPosition = null;
+        }
+    }
+
 
     /**
      * 设置保存玩家重生位置的方块的位置。当未知时可能为空。
@@ -2922,36 +2960,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.timeSinceRest = 0;
 
         return true;
-    }
-
-    /**
-     * 设置玩家的出生点/复活点。
-     * <p>
-     * Set the player's birth point.
-     *
-     * @param pos 出生点位置
-     */
-    @PowerNukkitDifference(info = "pos can be null now and if it is null,the player's spawn will use the level's default spawn")
-    public void setSpawn(@Nullable Vector3 pos) {
-        if (pos != null) {
-            Level level;
-            if (pos instanceof Position position && position.isValid()) {
-                level = position.getLevel();
-            } else {
-                level = this.level;
-            }
-            this.spawnPosition = new Position(pos.x, pos.y, pos.z, level);
-            this.spawnBlockPosition = null;
-            SetSpawnPositionPacket pk = new SetSpawnPositionPacket();
-            pk.spawnType = SetSpawnPositionPacket.TYPE_PLAYER_SPAWN;
-            pk.x = (int) this.spawnPosition.x;
-            pk.y = (int) this.spawnPosition.y;
-            pk.z = (int) this.spawnPosition.z;
-            pk.dimension = this.spawnPosition.level.getDimension();
-            this.dataPacket(pk);
-        } else {
-            this.spawnPosition = null;
-        }
     }
 
     public void stopSleep() {
