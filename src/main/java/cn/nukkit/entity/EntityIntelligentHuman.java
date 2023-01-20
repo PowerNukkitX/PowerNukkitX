@@ -2,7 +2,6 @@ package cn.nukkit.entity;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
@@ -45,11 +44,6 @@ import java.util.stream.Collectors;
 @PowerNukkitXOnly
 @Since("1.19.50-r3")
 public class EntityIntelligentHuman extends EntityIntelligent implements InventoryHolder {
-    public static final int DATA_PLAYER_FLAG_SLEEP = 1;
-    public static final int DATA_PLAYER_FLAG_DEAD = 2;
-    public static final int DATA_PLAYER_FLAGS = 26;
-    public static final int DATA_PLAYER_BED_POSITION = 28;
-    public static final int DATA_PLAYER_BUTTON_TEXT = 40;
     protected UUID uuid;
     protected byte[] rawUUID;
     protected Skin skin;
@@ -131,10 +125,10 @@ public class EntityIntelligentHuman extends EntityIntelligent implements Invento
     @Override
     protected void initEntity() {
         //EntityHuman
-        this.setDataFlag(DATA_PLAYER_FLAGS, DATA_PLAYER_FLAG_SLEEP, false);
+        this.setDataFlag(EntityHuman.DATA_PLAYER_FLAGS, EntityHuman.DATA_PLAYER_FLAG_SLEEP, false);
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_GRAVITY);
 
-        this.setDataProperty(new IntPositionEntityData(DATA_PLAYER_BED_POSITION, 0, 0, 0), false);
+        this.setDataProperty(new IntPositionEntityData(EntityHuman.DATA_PLAYER_BED_POSITION, 0, 0, 0), false);
 
         if (this.namedTag.contains("NameTag")) {
             this.setNameTag(this.namedTag.getString("NameTag"));
@@ -273,16 +267,13 @@ public class EntityIntelligentHuman extends EntityIntelligent implements Invento
                 }
             }
         }
-
         this.enderChestInventory = new FakeHumanEnderChestInventory(this);
-
         if (this.namedTag.contains("EnderItems") && this.namedTag.get("EnderItems") instanceof ListTag) {
             ListTag<CompoundTag> inventoryList = this.namedTag.getList("EnderItems", CompoundTag.class);
             for (CompoundTag item : inventoryList.getAll()) {
                 this.enderChestInventory.setItem(item.getByte("Slot"), NBTIO.getItemHelper(item));
             }
         }
-
         super.initEntity();
     }
 
@@ -307,7 +298,7 @@ public class EntityIntelligentHuman extends EntityIntelligent implements Invento
                     this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.SWIM));
                 }
             }
-            this.broadcastMovement(false);
+            this.broadcastMovement();
             this.lastX = this.x;
             this.lastY = this.y;
             this.lastZ = this.z;
@@ -493,7 +484,6 @@ public class EntityIntelligentHuman extends EntityIntelligent implements Invento
             if (source instanceof EntityDamageByEntityEvent) {
                 damager = ((EntityDamageByEntityEvent) source).getDamager();
             }
-
             for (int slot = 0; slot < 4; slot++) {
                 Item armorOld = this.inventory.getArmorItem(slot);
                 if (armorOld.isArmor()) {
@@ -501,7 +491,6 @@ public class EntityIntelligentHuman extends EntityIntelligent implements Invento
                     inventory.setArmorItem(slot, armor, armor.getId() != BlockID.AIR);
                 }
             }
-
             return true;
         } else {
             return false;
@@ -512,22 +501,18 @@ public class EntityIntelligentHuman extends EntityIntelligent implements Invento
         if (!item.hasEnchantments()) {
             return 0;
         }
-
         double epf = 0;
-
         if (item.applyEnchantments()) {
             for (Enchantment ench : item.getEnchantments()) {
                 epf += ench.getProtectionFactor(source);
             }
         }
-
         return epf;
     }
 
     @Override
     public void setOnFire(int seconds) {
         int level = 0;
-
         for (Item armor : this.inventory.getArmorContents()) {
             Enchantment fireProtection = armor.getEnchantment(Enchantment.ID_PROTECTION_FIRE);
 
@@ -535,9 +520,7 @@ public class EntityIntelligentHuman extends EntityIntelligent implements Invento
                 level = Math.max(level, fireProtection.getLevel());
             }
         }
-
         seconds = (int) (seconds * (1 - level * 0.15));
-
         super.setOnFire(seconds);
     }
 
@@ -546,9 +529,6 @@ public class EntityIntelligentHuman extends EntityIntelligent implements Invento
         return false;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    @PowerNukkitXDifference(since = "1.19.21-r4", info = "add EntityDamageEvent param to help cal the armor damage")
     protected Item damageArmor(Item armor, Entity damager, EntityDamageEvent event) {
         if (armor.hasEnchantments()) {
             if (damager != null) {
@@ -594,11 +574,9 @@ public class EntityIntelligentHuman extends EntityIntelligent implements Invento
         return armor;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
-        return "Human";
+        return "EntityIntelligentHuman";
     }
 
     @Override
@@ -674,7 +652,6 @@ public class EntityIntelligentHuman extends EntityIntelligent implements Invento
                     viewer.removeWindow(this.inventory);
                 }
             }
-
             super.close();
         }
     }

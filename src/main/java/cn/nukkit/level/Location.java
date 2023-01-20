@@ -122,6 +122,27 @@ public class Location extends Position {
         return this;
     }
 
+    @Since("1.19.50-r4")
+    @Override
+    public Location setX(double x) {
+        super.setX(x);
+        return this;
+    }
+
+    @Since("1.19.50-r4")
+    @Override
+    public Location setY(double y) {
+        super.setY(y);
+        return this;
+    }
+
+    @Since("1.19.50-r4")
+    @Override
+    public Location setZ(double z) {
+        super.setZ(z);
+        return this;
+    }
+
     @Override
     public String toString() {
         return "Location (level=" + (this.isValid() ? this.getLevel().getName() : "null") + ", x=" + this.x + ", y=" + this.y + ", z=" + this.z + ", yaw=" + this.yaw + ", pitch=" + this.pitch + ", headYaw=" + this.headYaw + ")";
