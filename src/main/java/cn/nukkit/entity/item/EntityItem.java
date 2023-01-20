@@ -301,7 +301,7 @@ public class EntityItem extends Entity {
         if (item == null) {
             return getOriginalName();
         }
-        return item.count + "x " + (this.item.hasCustomName() ? this.item.getCustomName() : this.item.getName());
+        return item.count + "x " + this.item.getName();
     }
 
     public Item getItem() {

@@ -64,7 +64,7 @@ public class CommandParser {
         this(command, sender, args, true);
     }
 
-    public CommandParser(Command command, CommandSender sender, String[] args, boolean useParsedArgs){
+    public CommandParser(Command command, CommandSender sender, String[] args, boolean useParsedArgs) {
         this.command = command;
         this.sender = sender;
         this.args = args;
@@ -73,7 +73,7 @@ public class CommandParser {
     }
 
     public CommandParser(CommandParser parser) {
-        this(parser,parser.getSender());
+        this(parser, parser.getSender());
     }
 
     public CommandParser(CommandParser parser, CommandSender sender) {
@@ -121,7 +121,7 @@ public class CommandParser {
             if (pcache != null) {
                 commandPatterns.put(entry.getKey(), pcache.pattern);
                 commandArgLength.put(entry.getKey(), pcache.length);
-            }else {
+            } else {
                 StringBuilder pattern = new StringBuilder();
                 pattern.append("^");
                 int length = 0;//non-optional args' length
@@ -179,7 +179,7 @@ public class CommandParser {
                             }
                         }
                     } else {
-                        if (parameter.enumData.getName().equals("Block") || parameter.enumData.getName().equals("Item") || !parameter.enumData.isLimited()) {
+                        if (parameter.enumData.getName().equals("Block") || parameter.enumData.getName().equals("Item") || parameter.enumData.isSoft()) {
                             pattern.append(STRING_PATTERN);
                         } else {
                             pattern.append("(");
@@ -211,10 +211,10 @@ public class CommandParser {
 
                 pattern.append("$");
                 Pattern compiled = Pattern.compile(pattern.toString());
-                commandPatterns.put(entry.getKey(),compiled);
+                commandPatterns.put(entry.getKey(), compiled);
                 commandArgLength.put(entry.getKey(), length);
 
-                pattern_cache.put(command.getName() + "_" + entry.getKey(),new PatternCache(compiled, length));//cache the compiled pattern
+                pattern_cache.put(command.getName() + "_" + entry.getKey(), new PatternCache(compiled, length));//cache the compiled pattern
             }
         }
 
@@ -407,7 +407,7 @@ public class CommandParser {
                 return EntitySelector.matchEntities(this.sender, arg);
             } else {
                 Player player = Server.getInstance().getPlayer(arg);
-                return player == null? Collections.emptyList() : Collections.singletonList(player);
+                return player == null ? Collections.emptyList() : Collections.singletonList(player);
             }
         } catch (Exception e) {
             throw new CommandSyntaxException();
@@ -513,9 +513,12 @@ public class CommandParser {
                     return baseVector3;
                 }
                 return switch (type) {
-                    case X -> BVector3.fromLocation(sender.getLocation()).addAngle(-90, 0).setYAngle(0).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(baseVector3);
-                    case Y -> BVector3.fromLocation(sender.getLocation()).addAngle(0, 90).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(baseVector3);
-                    case Z -> BVector3.fromLocation(sender.getLocation()).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(baseVector3);
+                    case X ->
+                            BVector3.fromLocation(sender.getLocation()).rotateYaw(-90).setPitch(0).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(baseVector3);
+                    case Y ->
+                            BVector3.fromLocation(sender.getLocation()).rotatePitch(90).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(baseVector3);
+                    case Z ->
+                            BVector3.fromLocation(sender.getLocation()).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(baseVector3);
                 };
             }
             return switch (type) {

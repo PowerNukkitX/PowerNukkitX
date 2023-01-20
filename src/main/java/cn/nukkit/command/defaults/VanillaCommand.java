@@ -3,6 +3,8 @@ package cn.nukkit.command.defaults;
 import cn.nukkit.command.Command;
 
 /**
+ * 代表原版命令的基类
+ *
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class VanillaCommand extends Command {

@@ -347,7 +347,7 @@ public class Level implements ChunkManager, Metadatable {
             this.setPreDeObfuscate(server.getConfig("anti-xray." + name + ".pre-deobfuscate", true));
         }
 
-        log.info(this.server.getLanguage().translateString("nukkit.level.preparing",
+        log.info(this.server.getLanguage().tr("nukkit.level.preparing",
                 TextFormat.GREEN + levelProvider.getName() + TextFormat.WHITE));
 
         this.generatorClass = Generator.getGenerator(levelProvider.getGenerator());
@@ -969,7 +969,7 @@ public class Level implements ChunkManager, Metadatable {
             return false;
         }
 
-        log.info(this.server.getLanguage().translateString("nukkit.level.unloading",
+        log.info(this.server.getLanguage().tr("nukkit.level.unloading",
                 TextFormat.GREEN + this.getName() + TextFormat.WHITE));
         Level defaultLevel = this.server.getDefaultLevel();
 
@@ -3001,11 +3001,11 @@ public class Level implements ChunkManager, Metadatable {
                 block = block.up();
             }
         }
-
+        //handle height limit
         if (!isYInRange((int) block.y)) {
             return null;
         }
-
+        //handle height limit in nether
         if (block.y > 127 && this.getDimension() == DIMENSION_NETHER) {
             return null;
         }
@@ -3015,13 +3015,12 @@ public class Level implements ChunkManager, Metadatable {
         }
 
         if (player != null) {
-            PlayerInteractEvent ev = new PlayerInteractEvent(player, item, target, face,
-                    target.getId() == 0 ? Action.RIGHT_CLICK_AIR : Action.RIGHT_CLICK_BLOCK);
+            PlayerInteractEvent ev = new PlayerInteractEvent(player, item, target, face, target.getId() == 0 ? Action.RIGHT_CLICK_AIR : Action.RIGHT_CLICK_BLOCK);
 
             if (player.getGamemode() > 2) {
                 ev.setCancelled();
             }
-
+            //handle spawn protect
             if (!player.isOp() && isInSpawnRadius(target)) {
                 ev.setCancelled();
             }
@@ -4062,7 +4061,7 @@ public class Level implements ChunkManager, Metadatable {
             }
             levelProvider.unloadChunk(x, z, safe);
         } catch (Exception e) {
-            log.error(this.server.getLanguage().translateString("nukkit.level.chunkUnloadError", e.toString()), e);
+            log.error(this.server.getLanguage().tr("nukkit.level.chunkUnloadError", e.toString()), e);
         }
 
         this.timings.doChunkUnload.stopTiming();

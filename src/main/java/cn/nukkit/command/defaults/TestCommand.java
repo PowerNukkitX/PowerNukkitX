@@ -2,6 +2,7 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.command.Command;
 import cn.nukkit.command.data.CommandData;
 
 /**
@@ -9,7 +10,7 @@ import cn.nukkit.command.data.CommandData;
  */
 @PowerNukkitXOnly
 @Since("1.19.50-r1")
-public abstract class TestCommand extends VanillaCommand {
+public abstract class TestCommand extends Command {
 
     public TestCommand(String name) {
         this(name, "");

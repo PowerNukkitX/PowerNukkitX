@@ -5,10 +5,17 @@ import cn.nukkit.Server;
 import cn.nukkit.api.*;
 import cn.nukkit.blockentity.ICommandBlock;
 import cn.nukkit.command.data.*;
+import cn.nukkit.command.tree.ParamList;
+import cn.nukkit.command.tree.ParamTree;
+import cn.nukkit.command.utils.CommandLogger;
+import cn.nukkit.lang.CommandOutputContainer;
+import cn.nukkit.lang.PluginI18nManager;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.permission.Permissible;
+import cn.nukkit.plugin.InternalPlugin;
+import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.TextFormat;
 import co.aikar.timings.Timing;
 import co.aikar.timings.Timings;
@@ -20,9 +27,8 @@ import java.util.stream.Collectors;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-public abstract class Command {
-
-    protected CommandData commandData;
+public abstract class Command implements GenericParameter {
+    public Timing timing;
 
     private final String name;
 
@@ -46,7 +52,11 @@ public abstract class Command {
 
     protected Map<String, CommandParameter[]> commandParameters = new HashMap<>();
 
-    public Timing timing;
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    protected ParamTree paramTree;
+
+    protected CommandData commandData;
 
     public Command(String name) {
         this(name, "", null, EmptyArrays.EMPTY_STRINGS);
@@ -109,7 +119,7 @@ public abstract class Command {
         if (!this.testPermission(player)) {
             return null;
         }
-
+        var plugin = this instanceof PluginCommand<?> pluginCommand ? pluginCommand.getPlugin() : InternalPlugin.INSTANCE;
         CommandData customData = this.commandData.clone();
 
         if (getAliases().length > 0) {
@@ -121,7 +131,15 @@ public abstract class Command {
             customData.aliases = new CommandEnum(this.name + "Aliases", aliases);
         }
 
-        customData.description = player.getServer().getLanguage().translateString(this.getDescription());
+        if (plugin != InternalPlugin.INSTANCE && plugin instanceof PluginBase pluginBase) {
+            var i18n = PluginI18nManager.getI18n(pluginBase);
+            if (i18n != null) {
+                customData.description = i18n.tr(player.getLanguageCode(), this.getDescription());
+            }
+        } else {
+            customData.description = player.getServer().getLanguage().tr(this.getDescription(), CommandOutputContainer.EMPTY_STRING, "commands.", false);
+        }
+
         this.commandParameters.forEach((key, par) -> {
             CommandOverload overload = new CommandOverload();
             overload.input.parameters = par;
@@ -147,8 +165,25 @@ public abstract class Command {
             return pos + Double.parseDouble(arg.substring(1));
         }
     }
-    
-    public abstract boolean execute(CommandSender sender, String commandLabel, String[] args);
+
+    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Execute int.
+     *
+     * @param sender       命令发送者
+     * @param commandLabel the command label
+     * @param result       解析的命令结果
+     * @param log          命令输出工具
+     * @return 返回0代表执行失败, 返回大于等于1代表执行成功
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+        throw new UnsupportedOperationException();
+    }
 
     public String getName() {
         return name;
@@ -249,7 +284,7 @@ public abstract class Command {
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public String getCommandFormatTips(){
+    public String getCommandFormatTips() {
         StringBuilder builder = new StringBuilder();
         for (String form : this.getCommandParameters().keySet()) {
             CommandParameter[] commandParameters = this.getCommandParameters().get(form);
@@ -258,14 +293,14 @@ public abstract class Command {
                 if (!commandParameter.optional) {
                     if (commandParameter.enumData == null) {
                         builder.append(" <").append(commandParameter.name + ": " + commandParameter.type.name().toLowerCase()).append(">");
-                    }else{
-                        builder.append(" <").append(commandParameter.enumData.getValues().subList(0,commandParameter.enumData.getValues().size() > 10 ? 10 : commandParameter.enumData.getValues().size()).stream().collect(Collectors.joining("|"))).append(commandParameter.enumData.getValues().size() > 10 ? "|..." : "").append(">");
+                    } else {
+                        builder.append(" <").append(commandParameter.enumData.getValues().subList(0, commandParameter.enumData.getValues().size() > 10 ? 10 : commandParameter.enumData.getValues().size()).stream().collect(Collectors.joining("|"))).append(commandParameter.enumData.getValues().size() > 10 ? "|..." : "").append(">");
                     }
-                }else{
+                } else {
                     if (commandParameter.enumData == null) {
                         builder.append(" [").append(commandParameter.name + ": " + commandParameter.type.name().toLowerCase()).append("]");
-                    }else{
-                        builder.append(" [").append(commandParameter.enumData.getValues().subList(0,commandParameter.enumData.getValues().size() > 10 ? 10 : commandParameter.enumData.getValues().size()).stream().collect(Collectors.joining("|"))).append(commandParameter.enumData.getValues().size() > 10 ? "|..." : "").append("]");
+                    } else {
+                        builder.append(" [").append(commandParameter.enumData.getValues().subList(0, commandParameter.enumData.getValues().size() > 10 ? 10 : commandParameter.enumData.getValues().size()).stream().collect(Collectors.joining("|"))).append(commandParameter.enumData.getValues().size() > 10 ? "|..." : "").append("]");
                     }
                 }
             }
@@ -291,6 +326,14 @@ public abstract class Command {
 
     public void setUsage(String usageMessage) {
         this.usageMessage = usageMessage;
+    }
+
+    public boolean hasParamTree() {
+        return this.paramTree != null;
+    }
+
+    public ParamTree getParamTree() {
+        return paramTree;
     }
 
     @Deprecated
@@ -338,7 +381,7 @@ public abstract class Command {
 
     public static void broadcastCommandMessage(CommandSender source, TextContainer message, boolean sendToSource) {
         if ((source instanceof ICommandBlock && !source.getPosition().getLevel().getGameRules().getBoolean(GameRule.COMMAND_BLOCK_OUTPUT)) ||
-            (source instanceof ExecutorCommandSender exeSender && exeSender.getExecutor() instanceof ICommandBlock && !source.getPosition().getLevel().getGameRules().getBoolean(GameRule.COMMAND_BLOCK_OUTPUT))) {
+                (source instanceof ExecutorCommandSender exeSender && exeSender.getExecutor() instanceof ICommandBlock && !source.getPosition().getLevel().getGameRules().getBoolean(GameRule.COMMAND_BLOCK_OUTPUT))) {
             return;
         }
 

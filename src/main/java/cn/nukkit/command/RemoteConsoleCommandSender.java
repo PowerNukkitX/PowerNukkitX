@@ -12,13 +12,13 @@ public class RemoteConsoleCommandSender extends ConsoleCommandSender {
 
     @Override
     public void sendMessage(String message) {
-        message = this.getServer().getLanguage().translateString(message);
+        message = this.getServer().getLanguage().tr(message);
         this.messages.append(message.trim()).append("\n");
     }
 
     @Override
     public void sendMessage(TextContainer message) {
-        this.sendMessage(this.getServer().getLanguage().translate(message));
+        this.sendMessage(this.getServer().getLanguage().tr(message));
     }
 
     public String getMessages() {

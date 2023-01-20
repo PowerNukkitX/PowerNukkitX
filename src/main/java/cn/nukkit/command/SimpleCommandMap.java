@@ -4,7 +4,10 @@ import cn.nukkit.Server;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.defaults.*;
 import cn.nukkit.command.simple.*;
+import cn.nukkit.command.tree.node.CommandNode;
+import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.lang.TranslationContainer;
+import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.utils.TextFormat;
 import cn.nukkit.utils.Utils;
 import co.aikar.timings.Timings;
@@ -31,35 +34,35 @@ public class SimpleCommandMap implements CommandMap {
     }
 
     private void setDefaultCommands() {
-        this.register("nukkit",new ExecuteCommand("execute"));
-        this.register("nukkit",new FogCommand("fog"));
-        this.register("nukkit",new ExecuteCommandOld("executeold"));
-        this.register("nukkit",new PlayAnimationCommand("playanimation"));
-        this.register("nukkit",new WorldCommand("world"));
-        this.register("nukkit",new TpsCommand("tps"));
-        this.register("nukkit",new TickingAreaCommand("tickingarea"));
-        this.register("nukkit",new TellrawCommand("tellraw"));
-        this.register("nukkit",new TitlerawCommand("titleraw"));
-        this.register("nukkit",new FunctionCommand("function"));
-        this.register("nukkit",new ReplaceItemCommand("replaceitem"));
-        this.register("nukkit",new SummonCommand("summon"));
-        this.register("nukkit",new DamageCommand("damage"));
-        this.register("nukkit",new ClearSpawnPointCommand("clearspawnpoint"));
-        this.register("nukkit",new AbilityCommand("ability"));
-        this.register("nukkit",new ScoreboardCommand("scoreboard"));
-        this.register("nukkit",new CameraShakeCommand("camerashake"));
-        this.register("nukkit",new TagCommand("tag"));
-        this.register("nukkit",new TestForCommand("testfor"));
-        this.register("nukkit",new TestForBlockCommand("testforblock"));
-        this.register("nukkit",new TestForBlocksCommand("testforblocks"));
-        this.register("nukkit",new SpreadPlayersCommand("spreadplayers"));
-        this.register("nukkit",new SetMaxPlayersCommand("setmaxplayers"));
-        this.register("nukkit",new PlaySoundCommand("playsound"));
-        this.register("nukkit",new StopSoundCommand("stopsound"));
-        this.register("nukkit",new FillCommand("fill"));
-        this.register("nukkit",new DayLockCommand("daylock"));
-        this.register("nukkit",new ClearCommand("clear"));
-        this.register("nukkit",new CloneCommand("clone"));
+        this.register("nukkit", new ExecuteCommand("execute"));
+        this.register("nukkit", new FogCommand("fog"));
+        this.register("nukkit", new ExecuteCommandOld("executeold"));
+        this.register("nukkit", new PlayAnimationCommand("playanimation"));
+        this.register("nukkit", new WorldCommand("world"));
+        this.register("nukkit", new TpsCommand("tps"));
+        this.register("nukkit", new TickingAreaCommand("tickingarea"));
+        this.register("nukkit", new TellrawCommand("tellraw"));
+        this.register("nukkit", new TitlerawCommand("titleraw"));
+        this.register("nukkit", new FunctionCommand("function"));
+        this.register("nukkit", new ReplaceItemCommand("replaceitem"));
+        this.register("nukkit", new SummonCommand("summon"));
+        this.register("nukkit", new DamageCommand("damage"));
+        this.register("nukkit", new ClearSpawnPointCommand("clearspawnpoint"));
+        this.register("nukkit", new AbilityCommand("ability"));
+        this.register("nukkit", new ScoreboardCommand("scoreboard"));
+        this.register("nukkit", new CameraShakeCommand("camerashake"));
+        this.register("nukkit", new TagCommand("tag"));
+        this.register("nukkit", new TestForCommand("testfor"));
+        this.register("nukkit", new TestForBlockCommand("testforblock"));
+        this.register("nukkit", new TestForBlocksCommand("testforblocks"));
+        this.register("nukkit", new SpreadPlayersCommand("spreadplayers"));
+        this.register("nukkit", new SetMaxPlayersCommand("setmaxplayers"));
+        this.register("nukkit", new PlaySoundCommand("playsound"));
+        this.register("nukkit", new StopSoundCommand("stopsound"));
+        this.register("nukkit", new FillCommand("fill"));
+        this.register("nukkit", new DayLockCommand("daylock"));
+        this.register("nukkit", new ClearCommand("clear"));
+        this.register("nukkit", new CloneCommand("clone"));
         this.register("nukkit", new VersionCommand("version"));
         this.register("nukkit", new PluginsCommand("plugins"));
         this.register("nukkit", new SeedCommand("seed"));
@@ -108,6 +111,7 @@ public class SimpleCommandMap implements CommandMap {
         if (this.server.getConfig("debug.commands", false)) {
             this.register("nukkit", new DebugCommand("debug"));
         }
+        CommandNode.setCommandNames(this.getCommands().keySet());
     }
 
     @Override
@@ -252,7 +256,7 @@ public class SimpleCommandMap implements CommandMap {
 //            }
             if ((sb.charAt(i) == '{' && curlyBraceCount >= 1) || (sb.charAt(i) == '{' && sb.charAt(i - 1) == ' ' && curlyBraceCount == 0)) {
                 curlyBraceCount++;
-            }else if (sb.charAt(i) == '}' && curlyBraceCount > 0) {
+            } else if (sb.charAt(i) == '}' && curlyBraceCount > 0) {
                 curlyBraceCount--;
                 if (curlyBraceCount == 0) {
                     args.add(sb.substring(start, i + 1));
@@ -283,27 +287,50 @@ public class SimpleCommandMap implements CommandMap {
 
     @Override
     public boolean dispatch(CommandSender sender, String cmdLine) {
+        return this.executeCommand(sender, cmdLine) > 0;
+    }
+
+    @Override
+    public int executeCommand(CommandSender sender, String cmdLine) {
         ArrayList<String> parsed = parseArguments(cmdLine);
         if (parsed.size() == 0) {
-            return false;
+            return 0;
         }
 
-        String sentCommandLabel = parsed.remove(0).toLowerCase();
+        String sentCommandLabel = parsed.remove(0).toLowerCase();//command name
         String[] args = parsed.toArray(EmptyArrays.EMPTY_STRINGS);
         Command target = this.getCommand(sentCommandLabel);
 
-        if (target == null) {
-            return false;
-        }
-
-        boolean output;
+        int output;
         target.timing.startTiming();
         try {
-            output = target.execute(sender, sentCommandLabel, args);
+            if (target.hasParamTree()) {
+                var plugin = target instanceof PluginCommand<?> pluginCommand ? pluginCommand.getPlugin() : InternalPlugin.INSTANCE;
+                var result = target.getParamTree().matchAndParse(sender, sentCommandLabel, args);
+                if (result == null) output = 0;
+                else if (target.testPermissionSilent(sender)) {
+                    try {
+                        output = target.execute(sender, sentCommandLabel, result, new CommandLogger(target, sender, sentCommandLabel, args, result.getValue().getMessageContainer(), plugin));
+                    } catch (UnsupportedOperationException e) {
+                        log.fatal("If you use paramtree, you must override execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) method to run the command!");
+                        output = 0;
+                    }
+                } else {
+                    var log = new CommandLogger(target, sender, sentCommandLabel, args, plugin);
+                    if (!target.getPermissionMessage().equals("")) {
+                        log.addError(target.getPermissionMessage().replace("<permission>", target.getPermission())).output();
+                    } else {
+                        log.addMessage("nukkit.command.generic.permission").output();
+                    }
+                    output = 0;
+                }
+            } else {
+                output = target.execute(sender, sentCommandLabel, args) ? 1 : 0;
+            }
         } catch (Exception e) {
             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.exception"));
-            log.fatal(this.server.getLanguage().translateString("nukkit.command.exception", cmdLine, target.toString(), Utils.getExceptionMessage(e)), e);
-            output = false;
+            log.fatal(this.server.getLanguage().tr("nukkit.command.exception", cmdLine, target.toString(), Utils.getExceptionMessage(e)), e);
+            output = 0;
         }
         target.timing.stopTiming();
 
@@ -338,7 +365,7 @@ public class SimpleCommandMap implements CommandMap {
             String alias = entry.getKey();
             List<String> commandStrings = entry.getValue();
             if (alias.contains(" ") || alias.contains(":")) {
-                log.warn(this.server.getLanguage().translateString("nukkit.command.alias.illegal", alias));
+                log.warn(this.server.getLanguage().tr("nukkit.command.alias.illegal", alias));
                 continue;
             }
             List<String> targets = new ArrayList<>();
@@ -360,7 +387,7 @@ public class SimpleCommandMap implements CommandMap {
             }
 
             if (bad.length() > 0) {
-                log.warn(this.server.getLanguage().translateString("nukkit.command.alias.notFound", new String[]{alias, bad.toString()}));
+                log.warn(this.server.getLanguage().tr("nukkit.command.alias.notFound", new String[]{alias, bad.toString()}));
                 continue;
             }
 

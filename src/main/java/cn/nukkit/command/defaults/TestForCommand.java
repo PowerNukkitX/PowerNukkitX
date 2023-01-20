@@ -5,12 +5,13 @@ import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
-import cn.nukkit.command.exceptions.CommandSyntaxException;
-import cn.nukkit.command.utils.CommandParser;
+import cn.nukkit.command.tree.ParamList;
+import cn.nukkit.command.tree.ParamTree;
+import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.lang.TranslationContainer;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @PowerNukkitXOnly
@@ -24,29 +25,14 @@ public class TestForCommand extends VanillaCommand {
         this.addCommandParameters("default", new CommandParameter[]{
                 CommandParameter.newType("victim", false, CommandParamType.TARGET)
         });
+        this.paramTree = new ParamTree(this);
     }
 
+    @Since("1.19.50-r4")
     @Override
-    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        if (!this.testPermission(sender)) {
-            return false;
-        }
-
-        CommandParser parser = new CommandParser(this, sender, args);
-        try {
-            List<Entity> targets = parser.parseTargets();
-
-            if (targets.size() == 0) {
-                sender.sendMessage(new TranslationContainer("commands.generic.noTargetMatch"));
-                return false;
-            }
-
-            sender.sendMessage(new TranslationContainer("commands.testfor.success", targets.stream().map(Entity::getName).collect(Collectors.joining(","))));
-        } catch (CommandSyntaxException e) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-            return false;
-        }
-
-        return true;
+    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+        List<Entity> targets = result.getValue().getResult(0);
+        log.addSuccess("commands.testfor.success", targets.stream().map(Entity::getName).collect(Collectors.joining(","))).output();
+        return 1;
     }
 }

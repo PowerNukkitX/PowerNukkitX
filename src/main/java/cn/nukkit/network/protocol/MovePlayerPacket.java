@@ -13,9 +13,9 @@ public class MovePlayerPacket extends DataPacket {
     public static final byte NETWORK_ID = ProtocolInfo.MOVE_PLAYER_PACKET;
 
     public static final int MODE_NORMAL = 0;
-    public static final int MODE_RESET = 1;
+    public static final int MODE_RESET = 1;//MODE_RESPAWN
     public static final int MODE_TELEPORT = 2;
-    public static final int MODE_PITCH = 3; //facepalm Mojang
+    public static final int MODE_PITCH = 3; //facepalm Mojang MODE_HEAD_ROTATION
 
     public long eid;
     public float x;
@@ -27,9 +27,10 @@ public class MovePlayerPacket extends DataPacket {
     public int mode = MODE_NORMAL;
     public boolean onGround;
     public long ridingEid;
-    public int int1 = 0;
-    public int int2 = 0;
-    @Since("1.4.0.0-PN") public long frame;
+    public int int1 = 0;//teleportationCause
+    public int int2 = 0;//entityType
+    @Since("1.4.0.0-PN")
+    public long frame;//tick
 
     @Override
     public void decode() {
@@ -73,5 +74,4 @@ public class MovePlayerPacket extends DataPacket {
     public byte pid() {
         return NETWORK_ID;
     }
-
 }

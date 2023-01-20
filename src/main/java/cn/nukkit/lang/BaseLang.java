@@ -1,25 +1,46 @@
 package cn.nukkit.lang;
 
+import cn.nukkit.api.DeprecationDetails;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import io.netty.util.internal.EmptyArrays;
 import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
+import java.util.regex.Pattern;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 @Log4j2
 public class BaseLang {
+    /**
+     * 默认备选语言，对应language文件夹
+     */
     public static final String FALLBACK_LANGUAGE = "eng";
 
+    /**
+     * The Lang name.
+     */
     protected final String langName;
 
+    /**
+     * 本地语言，从nukkit.yml中指定
+     */
     protected Map<String, String> lang;
+
+    /**
+     * 备选语言映射，当从本地语言映射中无法翻译时调用备选语言映射，默认为英文
+     */
     protected Map<String, String> fallbackLang = new HashMap<>();
+
+    //用于提取字符串中%后带有[a-zA-Z0-9_.-]这些字符的字符串的模式
+    private final Pattern split = Pattern.compile("%[A-Za-z0-9_.-]+");
 
 
     public BaseLang(String lang) {
@@ -48,8 +69,6 @@ public class BaseLang {
             if (useFallback) this.fallbackLang = this.loadLang(path + fallback + "/lang.ini");
         }
         if (this.fallbackLang == null) this.fallbackLang = this.lang;
-
-
     }
 
     public Map<String, String> getLangMap() {
@@ -94,74 +113,82 @@ public class BaseLang {
 
     private Map<String, String> parseLang(BufferedReader reader) throws IOException {
         Map<String, String> d = new HashMap<>();
-        String line;
-        while ((line = reader.readLine()) != null) {
-            line = line.trim();
-            if (line.isEmpty() || line.charAt(0) == '#') {
-                continue;
-            }
-            String[] t = line.split("=", 2);
-            if (t.length < 2) {
-                continue;
-            }
-            String key = t[0];
-            String value = t[1];
-            if (value.length() > 1 && value.charAt(0) == '"' && value.charAt(value.length() - 1) == '"') {
-                value = value.substring(1, value.length() - 1).replace("\\\"", "\"").replace("\\\\", "\\");
-            }
-            if (value.isEmpty()) {
-                continue;
-            }
-            d.put(key, value);
-        }
+        PluginI18n.readAndWriteLang(reader, d);
         return d;
     }
 
-    public String translateString(String str) {
-        return this.translateString(str, new String[]{}, null);
+    /**
+     * 翻译一个文本key，key从语言文件中查询
+     *
+     * @param key the key
+     * @return the string
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    public String tr(String key) {
+        return tr(key, EmptyArrays.EMPTY_STRINGS);
     }
 
-    public String translateString(String str, String... params) {
-        return this.translateString(str, Objects.requireNonNullElse(params, EmptyArrays.EMPTY_STRINGS), null);
-    }
-
-    public String translateString(String str, Object... params) {
-        if (params != null) {
-            String[] paramsToString = new String[params.length];
-            for (int i = 0; i < params.length; i++) {
-                paramsToString[i] = Objects.toString(params[i]);
-            }
-            return this.translateString(str, paramsToString, null);
+    /**
+     * 翻译一个文本key，key从语言文件中查询，并且按照给定参数填充结果
+     *
+     * @param key  the key
+     * @param args the args
+     * @return the string
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    public String tr(String key, String... args) {
+        String baseText = parseLanguageText(key);
+        for (int i = 0; i < args.length; i++) {
+            baseText = baseText.replace("{%" + i + "}", parseLanguageText(String.valueOf(args[i])));
         }
-        return this.translateString(str, EmptyArrays.EMPTY_STRINGS, null);
+        return baseText;
     }
 
-    public String translateString(String str, String param, String onlyPrefix) {
-        return this.translateString(str, new String[]{param}, onlyPrefix);
+    /**
+     * 翻译一个文本key，key从语言文件中查询，并且按照给定参数填充结果
+     *
+     * @param key  the key
+     * @param args the args
+     * @return the string
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    public String tr(String key, Object... args) {
+        String baseText = parseLanguageText(key);
+        for (int i = 0; i < args.length; i++) {
+            baseText = baseText.replace("{%" + i + "}", parseLanguageText(parseArg(args[i])));
+        }
+        return baseText;
     }
 
-    public String translateString(String str, String[] params, String onlyPrefix) {
-        String baseText = this.get(str);
-        baseText = this.parseTranslation((baseText != null && (onlyPrefix == null || str.indexOf(onlyPrefix) == 0)) ? baseText : str, onlyPrefix);
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    public String tr(TextContainer c) {
+        String baseText = this.parseLanguageText(c.getText());
+        if (c instanceof TranslationContainer cc) {
+            for (int i = 0; i < cc.getParameters().length; i++) {
+                baseText = baseText.replace("{%" + i + "}", this.parseLanguageText(cc.getParameters()[i]));
+            }
+        }
+        return baseText;
+    }
+
+    public String tr(String str, String[] params, String prefix, boolean mode) {
+        String baseText = parseLanguageText(str, prefix, mode);
         for (int i = 0; i < params.length; i++) {
-            baseText = baseText.replace("{%" + i + "}", this.parseTranslation(String.valueOf(params[i])));
-        }
-
-        return baseText;
-    }
-
-    public String translate(TextContainer c) {
-        String baseText = this.parseTranslation(c.getText());
-        if (c instanceof TranslationContainer) {
-            baseText = this.internalGet(c.getText());
-            baseText = this.parseTranslation(baseText != null ? baseText : c.getText());
-            for (int i = 0; i < ((TranslationContainer) c).getParameters().length; i++) {
-                baseText = baseText.replace("{%" + i + "}", this.parseTranslation(((TranslationContainer) c).getParameters()[i]));
-            }
+            baseText = baseText.replace("{%" + i + "}", parseLanguageText(parseArg(params[i]), prefix, mode));
         }
         return baseText;
     }
 
+    /**
+     * 获取指定id对应的多语言文本，若不存在则返回null
+     *
+     * @param id the id
+     * @return the string
+     */
     public String internalGet(String id) {
         if (this.lang.containsKey(id)) {
             return this.lang.get(id);
@@ -171,6 +198,12 @@ public class BaseLang {
         return null;
     }
 
+    /**
+     * 获取指定id对应的多语言文本，若不存在则返回id本身
+     *
+     * @param id the id
+     * @return the string
+     */
     public String get(String id) {
         if (this.lang.containsKey(id)) {
             return this.lang.get(id);
@@ -180,10 +213,114 @@ public class BaseLang {
         return id;
     }
 
+    protected String parseArg(Object arg) {
+        switch (arg.getClass().getSimpleName()) {
+            case "int[]" -> {
+                return Arrays.toString((int[]) arg);
+            }
+            case "double[]" -> {
+                return Arrays.toString((double[]) arg);
+            }
+            case "float[]" -> {
+                return Arrays.toString((float[]) arg);
+            }
+            case "short[]" -> {
+                return Arrays.toString((short[]) arg);
+            }
+            case "byte[]" -> {
+                return Arrays.toString((byte[]) arg);
+            }
+            case "long[]" -> {
+                return Arrays.toString((long[]) arg);
+            }
+            case "boolean[]" -> {
+                return Arrays.toString((boolean[]) arg);
+            }
+            default -> {
+                return String.valueOf(arg);
+            }
+        }
+    }
+
+    protected String parseLanguageText(String str) {
+        String result = internalGet(str);
+        if (result != null) {
+            return result;
+        } else {
+            var matcher = split.matcher(str);
+            return matcher.replaceAll(m -> this.get(m.group().substring(1)));
+        }
+    }
+
+    protected String parseLanguageText(String str, String prefix, boolean mode) {
+        if (mode && !str.startsWith(prefix)) {
+            return str;
+        }
+        if (!mode && str.startsWith(prefix)) {
+            return str;
+        }
+        String result = internalGet(str);
+        if (result != null) {
+            return result;
+        } else {
+            var matcher = split.matcher(str);
+            return matcher.replaceAll(m -> {
+                var s = m.group().substring(1);
+                if (mode) {
+                    if (s.startsWith(prefix)) {
+                        return this.get(s);
+                    } else return s;
+                } else {
+                    if (!s.startsWith(prefix)) {
+                        return this.get(s);
+                    } else return s;
+                }
+            });
+        }
+    }
+
+    @Deprecated
+    @DeprecationDetails(since = "1.19.50-r4", reason = "old", replaceWith = "BaseLang#tr(String)")
+    public String translateString(String str) {
+        return tr(str);
+    }
+
+    @Deprecated
+    @DeprecationDetails(since = "1.19.50-r4", reason = "old", replaceWith = "BaseLang#tr(String,String...)")
+    public String translateString(String str, @NotNull String... params) {
+        return this.tr(str, params);
+    }
+
+    @Deprecated
+    @DeprecationDetails(since = "1.19.50-r4", reason = "old", replaceWith = "BaseLang#tr(String,Object...)")
+    public String translateString(String str, @NotNull Object... params) {
+        return this.tr(str, params);
+    }
+
+    @Deprecated
+    @DeprecationDetails(since = "1.19.50-r4", reason = "old", replaceWith = "BaseLang#tr(String,Object...)")
+    public String translateString(String str, String param, String onlyPrefix) {
+        return this.tr(str, new String[]{param}, onlyPrefix, true);
+    }
+
+    @Deprecated
+    @DeprecationDetails(since = "1.19.50-r4", reason = "old", replaceWith = "BaseLang#tr(String,Object...)")
+    public String translateString(String str, String[] params, String onlyPrefix) {
+        return this.tr(str, params, onlyPrefix, true);
+    }
+
+    @Deprecated
+    @DeprecationDetails(since = "1.19.50-r4", reason = "old", replaceWith = "BaseLang#tr(TextContainer)")
+    public String translate(TextContainer c) {
+        return this.tr(c);
+    }
+
+    @Deprecated
     protected String parseTranslation(String text) {
         return this.parseTranslation(text, null);
     }
 
+    @Deprecated
     protected String parseTranslation(String text, String onlyPrefix) {
         StringBuilder newString = new StringBuilder();
         text = String.valueOf(text);

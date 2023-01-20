@@ -19,6 +19,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.util.internal.PlatformDependent;
+import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
 
 import java.lang.reflect.Constructor;
@@ -193,7 +194,7 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
                 session.sendPacket(packet);
             } else {
                 packet.tryEncode();
-                session.sendPacketImmediately(packet);
+                session.sendImmediatePacket(packet);
             }
         }
 
@@ -201,12 +202,12 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
     }
 
     @Override
-    public boolean onConnectionRequest(InetSocketAddress address, InetSocketAddress realAddress) {
+    public boolean onConnectionRequest(@NonNull InetSocketAddress address, @NonNull InetSocketAddress realAddress) {
         return true;
     }
 
     @Override
-    public byte[] onQuery(InetSocketAddress inetSocketAddress) {
+    public byte[] onQuery(@NonNull InetSocketAddress inetSocketAddress) {
         return this.advertisement;
     }
 
@@ -229,7 +230,7 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
     }
 
     @Override
-    public void onUnhandledDatagram(ChannelHandlerContext ctx, DatagramPacket datagramPacket) {
+    public void onUnhandledDatagram(@NonNull ChannelHandlerContext ctx, DatagramPacket datagramPacket) {
         this.server.handlePacket(datagramPacket.sender(), datagramPacket.content());
     }
 
