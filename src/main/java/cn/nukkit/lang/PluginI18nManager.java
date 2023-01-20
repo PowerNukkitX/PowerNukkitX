@@ -98,10 +98,9 @@ public final class PluginI18nManager {
      * @param plugin the plugin
      * @return the boolean
      */
-    public static boolean register(PluginBase plugin) {
+    public static PluginI18n register(PluginBase plugin) {
         try (JarFile jarFile = new JarFile(plugin.getFile())) {
             Enumeration<JarEntry> jarEntrys = jarFile.entries();
-            int count = 0;
             var pluginMultiLanguage = new PluginI18n(plugin);
             while (jarEntrys.hasMoreElements()) {
                 JarEntry entry = jarEntrys.nextElement();
@@ -111,14 +110,12 @@ public final class PluginI18nManager {
                     InputStream inputStream = plugin.getResource(name);
                     assert inputStream != null;
                     pluginMultiLanguage.addLang(LangCode.valueOf(name.substring(9, name.indexOf("."))), inputStream);
-                    count++;
                     inputStream.close();
                 }
             }
-            if (count > 0) PLUGINS_MULTI_LANGUAGE.put(plugin.getFile().getName(), pluginMultiLanguage);
-            return count > 0;
+            return PLUGINS_MULTI_LANGUAGE.put(plugin.getFile().getName(), pluginMultiLanguage);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("No language exists in the plugin resources folder");
         }
     }
 
@@ -129,36 +126,25 @@ public final class PluginI18nManager {
      * @param path   language文件夹的路径
      * @return the boolean
      */
-    public static boolean register(PluginBase plugin, String path) {
+    public static PluginI18n register(PluginBase plugin, String path) {
         var file = new File(path);
         if (file.exists() && file.isDirectory()) {
             var files = file.listFiles();
             assert files != null;
-            int count = 0;
             var pluginMultiLanguage = new PluginI18n(plugin);
             for (var f : files) {
                 try (InputStream inputStream = new FileInputStream(f)) {
                     pluginMultiLanguage.addLang(LangCode.valueOf(f.getName().replace(".lang", "")), inputStream);
-                    count++;
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             }
-            if (count > 0) PLUGINS_MULTI_LANGUAGE.put(plugin.getFile().getName(), pluginMultiLanguage);
-            return count > 0;
+            return PLUGINS_MULTI_LANGUAGE.put(plugin.getFile().getName(), pluginMultiLanguage);
         } else {
-            log.error("The path does not represent a folder!");
-            return false;
+            throw new RuntimeException("The path does not represent a folder or not exists!");
         }
     }
 
-
-    /**
-     * 获取指定插件多语言实例，用于翻译
-     *
-     * @param plugin the plugin
-     * @return the i 18 n
-     */
     @Nullable
     public static PluginI18n getI18n(PluginBase plugin) {
         return PLUGINS_MULTI_LANGUAGE.get(plugin.getFile().getName());

@@ -3019,10 +3019,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @Override
     public boolean fastMove(double dx, double dy, double dz) {
-        if (dx == 0 && dy == 0 && dz == 0) {
-            return true;
-        }
-
         Timings.entityMoveTimer.startTiming();
 
         this.x += dx;
@@ -3036,7 +3032,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             if (!this.onGround || dy != 0) {
                 AxisAlignedBB bb = this.boundingBox.clone();
                 bb.setMinY(bb.getMinY() - 0.75);
-
                 this.onGround = this.level.getCollisionBlocks(bb).length > 0;
             }
             this.isCollided = this.onGround;
