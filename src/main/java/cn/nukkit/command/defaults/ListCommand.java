@@ -7,6 +7,7 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.ParamTree;
 import cn.nukkit.command.utils.CommandLogger;
+import cn.nukkit.lang.TranslationContainer;
 
 import java.util.Map;
 
@@ -38,9 +39,9 @@ public class ListCommand extends VanillaCommand {
         if (online.length() > 0) {
             online = new StringBuilder(online.substring(0, online.length() - 2));
         }
-        log.addSuccess("commands.players.list", String.valueOf(onlineCount), String.valueOf(sender.getServer().getMaxPlayers()))
-                .addSuccess(online.toString())
-                .output();
+        sender.sendMessage(new TranslationContainer("commands.players.list",
+                String.valueOf(onlineCount), String.valueOf(sender.getServer().getMaxPlayers())));
+        sender.sendMessage(online.toString());
         return 1;
     }
 }
