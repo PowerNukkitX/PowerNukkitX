@@ -3129,6 +3129,7 @@ public abstract class Entity extends Location implements Metadatable {
             return false;
         }
 
+        this.positionChanged = true;
         this.ySize = 0;
 
         this.setMotion(this.temporalVector.setComponents(0, 0, 0));
