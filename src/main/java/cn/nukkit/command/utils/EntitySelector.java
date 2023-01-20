@@ -18,7 +18,6 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
-import com.google.common.base.Splitter;
 import com.google.common.collect.*;
 
 import java.util.*;
@@ -40,7 +39,7 @@ public final class EntitySelector {
     }
 
     private static final Pattern ENTITY_SELECTOR = Pattern.compile("^@([aeprs]|initiator)(?:\\[(.*)])?$");
-    private static final Splitter ARGUMENT_JOINER = Splitter.on('=').limit(2);
+    private static final String ARGUMENT_JOINER = "=";
 
     private static final Set<String> ARGS = Sets.newHashSet();
 
@@ -389,9 +388,9 @@ public final class EntitySelector {
         return List.of(e -> predicates.stream().allMatch(predicate -> predicate.apply(e)));
     }
 
-    private static final Splitter SCORE_SEPARATOR = Splitter.on(',').omitEmptyStrings();
-    private static final Splitter SCORE_JOINER = Splitter.on('=').limit(2);
-    private static final Splitter SCORE_SCOPE_SEPARATOR = Splitter.on("..").limit(2);
+    private static final String SCORE_SEPARATOR = ",";
+    private static final String SCORE_JOINER = "=";
+    private static final String SCORE_SCOPE_SEPARATOR = "\\.\\.";
 
     private static List<Predicate<Entity>> getScoresPredicate(Map<String, List<String>> params) {
         List<Predicate<Entity>> predicates = Lists.newArrayList();
@@ -405,15 +404,16 @@ public final class EntitySelector {
         for (String score_part : scores) {
             if (score_part != null) {
                 score_part = score_part.substring(1, score_part.length() - 1);
-                for (String score_entry : SCORE_SEPARATOR.splitToList(score_part)) {
-                    Iterator<String> score_entry_split = SCORE_JOINER.split(score_entry).iterator();
-                    String objective = score_entry_split.next();
+                for (String score_entry : score_part.split(SCORE_SEPARATOR)) {
+                    if (score_entry.isEmpty()) continue;
+                    var score_entry_split = score_entry.split(SCORE_JOINER, 2);
+                    String objective = score_entry_split[0];
                     var scoreboard = Server.getInstance().getScoreboardManager().getScoreboard(objective);
                     if(scoreboard == null){
                         predicates.add(entity -> false);
                         return List.of(e -> predicates.stream().allMatch(predicate -> predicate.apply(e)));
                     }
-                    String score = score_entry_split.next();
+                    String score = score_entry_split[1];
                     boolean inverted = score.startsWith("!");
                     if (inverted) {
                         score = score.substring(1);
@@ -421,12 +421,12 @@ public final class EntitySelector {
                     if (score.contains("..")) {
                         int min = Integer.MIN_VALUE;
                         int max = Integer.MAX_VALUE;
-                        Iterator<String> score_scope_split = SCORE_SCOPE_SEPARATOR.split(score).iterator();
-                        String min_str = score_scope_split.next();
+                        var score_scope_split = score.split(SCORE_SCOPE_SEPARATOR);
+                        String min_str = score_scope_split[0];
                         if (!min_str.isEmpty()) {
                             min = Integer.parseInt(min_str);
                         }
-                        String max_str = score_scope_split.next();
+                        String max_str = score_scope_split[1];
                         if (!max_str.isEmpty()) {
                             max = Integer.parseInt(max_str);
                         }
@@ -650,17 +650,17 @@ public final class EntitySelector {
 
         if (inputArguments != null) {
             for (String arg : separateArguments(inputArguments)) {
-                Iterator<String> iterator = ARGUMENT_JOINER.split(arg).iterator();
-                String argName = iterator.next();
+                var split = arg.split(ARGUMENT_JOINER, 2);
+                String argName = split[0];
 
                 if (!VALID_ARGUMENT.apply(argName)) {
                     throw new SelectorSyntaxException(); //Unknown command argument: argName
                 }
 
                 if (!args.containsKey(argName)) {
-                    args.put(argName, Lists.newArrayList(iterator.hasNext() ? iterator.next() : ""));
+                    args.put(argName, Lists.newArrayList(split.length > 1 ? split[1] : ""));
                 } else {
-                    args.get(argName).add(iterator.hasNext() ? iterator.next() : "");
+                    args.get(argName).add(split.length > 1 ? split[1] : "");
                 }
             }
         }
