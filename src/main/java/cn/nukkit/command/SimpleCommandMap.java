@@ -242,6 +242,12 @@ public class SimpleCommandMap implements CommandMap {
         return true;
     }
 
+    /**
+     * 解析给定文本，从中分割参数
+     *
+     * @param cmdLine the cmd line
+     * @return 参数数组
+     */
     public static ArrayList<String> parseArguments(String cmdLine) {
         StringBuilder sb = new StringBuilder(cmdLine);
         ArrayList<String> args = new ArrayList<>();
@@ -317,10 +323,10 @@ public class SimpleCommandMap implements CommandMap {
                     }
                 } else {
                     var log = new CommandLogger(target, sender, sentCommandLabel, args, plugin);
-                    if (!target.getPermissionMessage().equals("")) {
-                        log.addError(target.getPermissionMessage().replace("<permission>", target.getPermission())).output();
-                    } else {
+                    if (target.getPermissionMessage() == null) {
                         log.addMessage("nukkit.command.generic.permission").output();
+                    } else if (!target.getPermissionMessage().equals("")) {
+                        log.addError(target.getPermissionMessage().replace("<permission>", target.getPermission())).output();
                     }
                     output = 0;
                 }
@@ -355,10 +361,18 @@ public class SimpleCommandMap implements CommandMap {
         return null;
     }
 
+    /**
+     * 获取{@link #knownCommands}的未克隆实例
+     *
+     * @return the commands
+     */
     public Map<String, Command> getCommands() {
         return knownCommands;
     }
 
+    /**
+     * 注册插件在plugin.yml中定义的命令别名
+     */
     public void registerServerAliases() {
         Map<String, List<String>> values = this.server.getCommandAliases();
         for (Map.Entry<String, List<String>> entry : values.entrySet()) {
