@@ -1150,7 +1150,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                 this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.SWIM));
                             }
                         }
-                        this.broadcastMovement(false);
+                        this.broadcastMovement();
                     }
                 } else {
                     this.blocksAround = blocksAround;

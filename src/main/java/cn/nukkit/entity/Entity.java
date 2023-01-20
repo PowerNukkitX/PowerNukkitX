@@ -2012,7 +2012,7 @@ public abstract class Entity extends Location implements Metadatable {
 
     @PowerNukkitXOnly
     @Since("1.19.31-r1")
-    protected void broadcastMovement(boolean teleport) {
+    protected void broadcastMovement() {
         var pk = new MoveEntityAbsolutePacket();
         pk.eid = this.getId();
         pk.x = this.x;
@@ -2023,7 +2023,7 @@ public abstract class Entity extends Location implements Metadatable {
         pk.headYaw = yaw;
         pk.pitch = pitch;
         pk.yaw = yaw;
-        pk.teleport = teleport;
+        pk.teleport = false;
         pk.onGround = this.onGround;
         Server.broadcastPacket(hasSpawned.values(), pk);
     }
