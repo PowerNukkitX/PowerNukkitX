@@ -5,6 +5,7 @@ import cn.nukkit.api.Since;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -37,12 +38,12 @@ public final class StringUtils {
     }
 
     @Since("1.19.50-r4")
-    public static String[] fastSplit(String delimiter, String str) {
+    public static List<String> fastSplit(String delimiter, String str) {
         return fastSplit(delimiter, str, Integer.MAX_VALUE);
     }
 
     @Since("1.19.50-r4")
-    public static String[] fastSplit(String delimiter, String str, int limit) {
+    public static List<String> fastSplit(String delimiter, String str, int limit) {
         var tmp = str;
         var results = new ArrayList<String>();
         var count = 1;
@@ -60,6 +61,6 @@ public final class StringUtils {
                 break;
             }
         }
-        return results.toArray(new String[0]);
+        return results;
     }
 }

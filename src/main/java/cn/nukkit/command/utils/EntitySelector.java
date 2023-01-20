@@ -409,13 +409,13 @@ public final class EntitySelector {
                 for (String score_entry : fastSplit(SCORE_SEPARATOR, score_part)) {
                     if (score_entry.isEmpty()) continue;
                     var score_entry_split = fastSplit(SCORE_JOINER, score_entry, 2);
-                    String objective = score_entry_split[0];
+                    String objective = score_entry_split.get(0);
                     var scoreboard = Server.getInstance().getScoreboardManager().getScoreboard(objective);
                     if(scoreboard == null){
                         predicates.add(entity -> false);
                         return List.of(e -> predicates.stream().allMatch(predicate -> predicate.apply(e)));
                     }
-                    String score = score_entry_split[1];
+                    String score = score_entry_split.get(1);
                     boolean inverted = score.startsWith("!");
                     if (inverted) {
                         score = score.substring(1);
@@ -424,11 +424,11 @@ public final class EntitySelector {
                         int min = Integer.MIN_VALUE;
                         int max = Integer.MAX_VALUE;
                         var score_scope_split = fastSplit(SCORE_SCOPE_SEPARATOR, score);
-                        String min_str = score_scope_split[0];
+                        String min_str = score_scope_split.get(0);
                         if (!min_str.isEmpty()) {
                             min = Integer.parseInt(min_str);
                         }
-                        String max_str = score_scope_split[1];
+                        String max_str = score_scope_split.get(1);
                         if (!max_str.isEmpty()) {
                             max = Integer.parseInt(max_str);
                         }
@@ -653,16 +653,16 @@ public final class EntitySelector {
         if (inputArguments != null) {
             for (String arg : separateArguments(inputArguments)) {
                 var split = fastSplit(ARGUMENT_JOINER, arg, 2);
-                String argName = split[0];
+                String argName = split.get(0);
 
                 if (!VALID_ARGUMENT.apply(argName)) {
                     throw new SelectorSyntaxException(); //Unknown command argument: argName
                 }
 
                 if (!args.containsKey(argName)) {
-                    args.put(argName, Lists.newArrayList(split.length > 1 ? split[1] : ""));
+                    args.put(argName, Lists.newArrayList(split.size() > 1 ? split.get(1) : ""));
                 } else {
-                    args.get(argName).add(split.length > 1 ? split[1] : "");
+                    args.get(argName).add(split.size() > 1 ? split.get(1) : "");
                 }
             }
         }
