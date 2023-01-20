@@ -333,7 +333,6 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
                             return false;
                         }
                         this.successCount = Server.getInstance().executeCommand(this, cmd);
-                        System.out.println(this.successCount);
                     }
                 }
 
