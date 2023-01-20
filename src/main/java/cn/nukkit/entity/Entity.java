@@ -516,7 +516,7 @@ public abstract class Entity extends Location implements Metadatable {
     public boolean motionChanged;
     public int deadTicks = 0;
     /**
-     * Player not use
+     * Player do not use
      */
     public boolean keepMovement = false;
     public float fallDistance = 0;
@@ -554,7 +554,7 @@ public abstract class Entity extends Location implements Metadatable {
     protected float health = 20;
     protected float absorption = 0;
     /**
-     * Player not use
+     * Player do not use
      */
     protected float ySize = 0;
     @PowerNukkitOnly
@@ -2016,6 +2016,8 @@ public abstract class Entity extends Location implements Metadatable {
         var pk = new MoveEntityAbsolutePacket();
         pk.eid = this.getId();
         pk.x = this.x;
+        //因为以前处理MOVE_PLAYER_PACKET的时候是y - this.getBaseOffset()
+        //现在统一 MOVE_PLAYER_PACKET和PLAYER_AUTH_INPUT_PACKET 均为this.y - this.getEyeHeight()，所以这里不再需要对两种移动方式分别处理
         pk.y = isSwimming() ? this.y + getSwimmingHeight() : this.y + this.getEyeHeight();
         pk.z = this.z;
         pk.headYaw = yaw;
@@ -2607,7 +2609,7 @@ public abstract class Entity extends Location implements Metadatable {
         return true;
     }
 
-    //player not use
+    //Player do not use
     @PowerNukkitXDifference(since = "1.19.50-r4", info = "The onGround is updated when the entity motion is 0")
     public boolean move(double dx, double dy, double dz) {
         if (dx == 0 && dz == 0 && dy == 0) {
