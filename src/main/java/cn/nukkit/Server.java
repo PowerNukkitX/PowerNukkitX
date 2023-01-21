@@ -1197,9 +1197,9 @@ public class Server {
             throw new ServerException("CommandSender is not valid");
         }
         var result = this.commandMap.executeCommand(sender, commandLine);
-        if (result == 0) {
+        if (result == -1) {
             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.unknown", commandLine));
-            return 0;
+            return -1;
         }
         return result;
     }

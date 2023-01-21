@@ -302,13 +302,13 @@ public class SimpleCommandMap implements CommandMap {
     public int executeCommand(CommandSender sender, String cmdLine) {
         ArrayList<String> parsed = parseArguments(cmdLine);
         if (parsed.size() == 0) {
-            return 0;
+            return -1;
         }
 
         String sentCommandLabel = parsed.remove(0).toLowerCase();//command name
         String[] args = parsed.toArray(EmptyArrays.EMPTY_STRINGS);
         Command target = this.getCommand(sentCommandLabel);
-        if (target == null) return 0;
+        if (target == null) return -1;
         int output;
         target.timing.startTiming();
         try {

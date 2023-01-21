@@ -32,9 +32,6 @@ public class DeopCommand extends VanillaCommand {
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         List<IPlayer> IPlayers = result.getValue().getResult(0);
-        if (IPlayers.size() == 0) {
-            IPlayers.add(sender.getServer().getOfflinePlayer(result.getValue().getParent().getArgs()[0]));
-        }
 
         for (IPlayer player : IPlayers) {
             if (!player.isOp()) {
@@ -45,7 +42,7 @@ public class DeopCommand extends VanillaCommand {
             if (player.isOnline()) {
                 log.outputObjectWhisper(player.getPlayer(), TextFormat.GRAY + "%commands.deop.message");
             }
-            log.addSuccess("commands.deop.success", player.getName());
+            log.addSuccess("commands.deop.success", player.getName()).output(true, true);
         }
         return IPlayers.size();
     }
