@@ -1187,24 +1187,22 @@ public class Server {
     public int executeCommand(CommandSender sender, String commandLine) throws ServerException {
         // First we need to check if this command is on the main thread or not, if not, warn the user
         if (!this.isPrimaryThread()) {
-            log.warn("Command Dispatched Async: {}\nPlease notify author of plugin causing this execution to fix this bug!", commandLine,
-                    new ConcurrentModificationException("Command Dispatched Async: " + commandLine));
+            getLogger().warning("Command Dispatched Async: " + commandLine);
+            getLogger().warning("Please notify author of plugin causing this execution to fix this bug!", new Throwable());
 
-            this.scheduler.scheduleTask(null, () -> executeCommand(sender, commandLine));
+            this.scheduler.scheduleTask(null, () -> dispatchCommand(sender, commandLine));
             return 1;
         }
 
         if (sender == null) {
             throw new ServerException("CommandSender is not valid");
         }
-
-        var command = (commandLine.startsWith("/") ? commandLine.substring(1) : commandLine);
-        int spaceIndex = command.indexOf(" ");
-        if (this.commandMap.getCommand(command.substring(0, spaceIndex == -1 ? command.length() : spaceIndex)) == null) {
+        var result = this.commandMap.executeCommand(sender, commandLine);
+        if (result == 0) {
             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.unknown", commandLine));
             return 0;
         }
-        return this.commandMap.executeCommand(sender, command);
+        return result;
     }
 
     /**
