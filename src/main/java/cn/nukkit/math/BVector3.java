@@ -215,6 +215,19 @@ public final class BVector3 {
         return this;
     }
 
+    /**
+     * 增加该向量的模<p/>
+     * 当然你也可以传入负数，但请确保最终长度要大于0!
+     * @param length 增加/减少的模
+     * @return 自身
+     */
+    public BVector3 extend(double length) {
+        if ((this.length + length) <= 0)
+            throw new IllegalArgumentException("Vector length must bigger than zero");
+        this.length += length;
+        return this;
+    }
+
     public double getYaw() {
         return yaw;
     }
