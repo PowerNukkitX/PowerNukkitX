@@ -1170,6 +1170,13 @@ public class Server {
         this.pluginManager.disablePlugins();
     }
 
+
+    @Deprecated
+    @DeprecationDetails(since = "1.19.50-r4", reason = "use Server#executeCommand")
+    public boolean dispatchCommand(CommandSender sender, String commandLine) throws ServerException {
+        return this.executeCommand(sender, commandLine) > 0;
+    }
+
     /**
      * 以sender身份执行一行命令
      * <p>
@@ -1180,16 +1187,12 @@ public class Server {
      * @return boolean 执行是否成功
      * @throws ServerException 服务器异常
      */
-    public boolean dispatchCommand(CommandSender sender, String commandLine) throws ServerException {
-        return this.executeCommand(sender, commandLine) > 0;
-    }
-
     public int executeCommand(CommandSender sender, String commandLine) throws ServerException {
         // First we need to check if this command is on the main thread or not, if not, warn the user
         if (!this.isPrimaryThread()) {
             log.warn("Command Dispatched Async: {}\nPlease notify author of plugin causing this execution to fix this bug!", commandLine,
                     new ConcurrentModificationException("Command Dispatched Async: " + commandLine));
-            this.scheduler.scheduleTask(null, () -> dispatchCommand(sender, commandLine));
+            this.scheduler.scheduleTask(null, () -> executeCommand(sender, commandLine));
             return 1;
         }
 
