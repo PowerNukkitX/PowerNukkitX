@@ -1,20 +1,18 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.IPlayer;
-import cn.nukkit.Player;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.ParamTree;
-import cn.nukkit.command.tree.node.PlayersNode;
+import cn.nukkit.command.tree.node.IPlayersNode;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.utils.TextFormat;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @author xtypr
@@ -25,7 +23,7 @@ public class DeopCommand extends VanillaCommand {
         super(name, "commands.deop.description");
         this.setPermission("nukkit.command.op.take");
         this.commandParameters.put("default", new CommandParameter[]{
-                CommandParameter.newType("player", CommandParamType.TARGET, new PlayersNode())
+                CommandParameter.newType("player", CommandParamType.TARGET, new IPlayersNode())
         });
         this.paramTree = new ParamTree(this);
     }
@@ -33,13 +31,12 @@ public class DeopCommand extends VanillaCommand {
     @Since("1.19.50-r4")
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        List<Player> players = result.getValue().getResult(0);
-        List<IPlayer> IPlayers = players.stream().map(p -> (IPlayer) p).collect(Collectors.toList());
+        List<IPlayer> IPlayers = result.getValue().getResult(0);
         if (IPlayers.size() == 0) {
             IPlayers.add(sender.getServer().getOfflinePlayer(result.getValue().getParent().getArgs()[0]));
         }
 
-        for (IPlayer player : players) {
+        for (IPlayer player : IPlayers) {
             if (!player.isOp()) {
                 log.addError("Privileges cannot be revoked (revoked or with higher privileges)").output();//no translation in client
                 return 0;
@@ -50,6 +47,6 @@ public class DeopCommand extends VanillaCommand {
             }
             log.addSuccess("commands.deop.success", player.getName());
         }
-        return players.size();
+        return IPlayers.size();
     }
 }
