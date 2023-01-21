@@ -6886,11 +6886,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (setPositionAndRotation(to, to.getYaw(), to.getPitch(), to.getHeadYaw())) {
             this.resetFallDistance();
             this.onGround = !this.noClip;
+            //send to client
+            this.sendPosition(to, to.yaw, to.pitch, MovePlayerPacket.MODE_TELEPORT);
+            this.newPosition = to;
+        } else {
+            this.sendPosition(this, to.yaw, to.pitch, MovePlayerPacket.MODE_TELEPORT);
+            this.newPosition = this;
         }
-        //send to client
-        this.sendPosition(to, to.yaw, to.pitch, MovePlayerPacket.MODE_TELEPORT);
         //state update
-        this.newPosition = to;
         this.positionChanged = true;
         this.nextChunkOrderRun = 0;
         //DummyBossBar
