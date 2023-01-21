@@ -46,10 +46,10 @@ public class OpCommand extends VanillaCommand {
                 log.addError("commands.op.failed", player.getName()).output();
             } else {
                 player.setOp(true);
-                log.addSuccess("commands.op.success", player.getName()).output(true, true);
-                if (player instanceof Player player1) {
-                    log.outputObjectWhisper(player1, TextFormat.GRAY + "%commands.op.message");
+                if (player.isOnline()) {
+                    log.outputObjectWhisper(player.getPlayer(), TextFormat.GRAY + "%commands.op.message");
                 }
+                log.addSuccess("commands.op.success", player.getName()).output(true, true);
             }
         }
         return players.size();

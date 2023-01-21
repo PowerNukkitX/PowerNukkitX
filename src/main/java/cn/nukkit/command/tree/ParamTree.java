@@ -10,6 +10,7 @@ import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.node.*;
 import cn.nukkit.command.utils.CommandLogger;
+import cn.nukkit.lang.CommandOutputContainer;
 import cn.nukkit.plugin.InternalPlugin;
 
 import javax.annotation.Nullable;
@@ -180,7 +181,7 @@ public class ParamTree {
                 return defaultList;
             });
 
-            final CommandLogger log = new CommandLogger(this.command, sender, commandLabel, args, list.getMessageContainer(),
+            final CommandLogger log = new CommandLogger(this.command, sender, commandLabel, args, new CommandOutputContainer(),
                     command instanceof PluginCommand<?> pluginCommand ? pluginCommand.getPlugin() : InternalPlugin.INSTANCE);
             if (!list.getMessageContainer().getMessages().isEmpty()) {
                 for (var message : list.getMessageContainer().getMessages()) {

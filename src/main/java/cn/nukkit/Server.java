@@ -2343,7 +2343,6 @@ public class Server {
         nameLookup.put(nameBytes, buffer.array());
     }
 
-    @Deprecated
     public IPlayer getOfflinePlayer(final String name) {
         IPlayer result = this.getPlayerExact(name.toLowerCase());
         if (result != null) {
