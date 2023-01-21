@@ -1187,9 +1187,8 @@ public class Server {
     public int executeCommand(CommandSender sender, String commandLine) throws ServerException {
         // First we need to check if this command is on the main thread or not, if not, warn the user
         if (!this.isPrimaryThread()) {
-            getLogger().warning("Command Dispatched Async: " + commandLine);
-            getLogger().warning("Please notify author of plugin causing this execution to fix this bug!", new Throwable());
-
+            log.warn("Command Dispatched Async: {}\nPlease notify author of plugin causing this execution to fix this bug!", commandLine,
+                    new ConcurrentModificationException("Command Dispatched Async: " + commandLine));
             this.scheduler.scheduleTask(null, () -> dispatchCommand(sender, commandLine));
             return 1;
         }
