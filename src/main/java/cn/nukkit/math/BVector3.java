@@ -1,5 +1,6 @@
 package cn.nukkit.math;
 
+import cn.nukkit.api.DoNotModify;
 import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -7,40 +8,62 @@ import cn.nukkit.level.Location;
 
 import static java.lang.StrictMath.*;
 
+/**
+ * 向量计算工具，同时整合了yaw和pitch与坐标空间的转换功能
+ */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 @PowerNukkitXDifference(info = "update Angle algorithm", since = "1.19.50-r4")
 public final class BVector3 {
+    /**
+     * 向量的单位向量
+     */
     private Vector3 vector3;//标准化的方向向量,模长为1
     private double yaw;//-90 270
     private double pitch;//-90 90
+    /**
+     * 向量的模
+     */
     private double length;
 
     /**
-     * From location to BVector 3.
+     * 通过传入的Location的yaw与pitch初始化BVector3<p/>
+     * 此方法返回的BVector3的模长为1
      *
      * @param location the location
      * @return the b vector 3
      */
     public static BVector3 fromLocation(Location location) {
-        return new BVector3(location.getYaw(), location.getPitch());
+        return fromLocation(location, 1);
     }
 
     /**
-     * From angle to BVector 3.
+     * 通过传入的Location的yaw与pitch初始化BVector3<p/>
+     * 此方法返回的BVector3的模长为传入的length值
+     *
+     * @param location the location
+     * @return the b vector 3
+     */
+    public static BVector3 fromLocation(Location location, double length) {
+        return new BVector3(location.getYaw(), location.getPitch(), length);
+    }
+
+    /**
+     * 通过传入的yaw与pitch初始化BVector3<p/>
+     * 此方法返回的BVector3的模长为1
      *
      * @param yaw   the yaw (-90 270)
      * @param pitch the pitch
      * @return the b vector 3
      */
     public static BVector3 fromAngle(double yaw, double pitch) {
-        return new BVector3(yaw, pitch);
+        return new BVector3(yaw, pitch, 1);
     }
 
     /**
-     * From pos to BVector 3.
+     * 通过传入的向量坐标初始化BVector3
      *
-     * @param pos the pos
+     * @param pos 向量坐标
      * @return the b vector 3
      */
     public static BVector3 fromPos(Vector3 pos) {
@@ -48,7 +71,7 @@ public final class BVector3 {
     }
 
     /**
-     * From pos to BVector 3.
+     * 通过传入的向量坐标初始化BVector3
      *
      * @param x the x
      * @param y the y
@@ -59,18 +82,30 @@ public final class BVector3 {
         return fromPos(new Vector3(x, y, z));
     }
 
-    private BVector3(double yaw, double pitch) {
+    /**
+     * 通过传入的yaw、pitch和向量的模初始化BVector3
+     *
+     * @param yaw the yaw
+     * @param pitch the pitch
+     * @param length 向量模
+     */
+    private BVector3(double yaw, double pitch, double length) {
         this.vector3 = getDirectionVector(yaw, pitch);
         this.yaw = getYawFromVector(this.vector3);
         this.pitch = getPitchFromVector(this.vector3);
-        this.length = 1;
+        this.length = length;
     }
 
+    /**
+     * 通过传入的向量坐标初始化BVector3
+     *
+     * @param vector3 向量坐标
+     */
     private BVector3(Vector3 vector3) {
         this.yaw = getYawFromVector(vector3);
         this.pitch = getPitchFromVector(vector3);
         this.vector3 = getDirectionVector(yaw, pitch);
-        this.length = 1;
+        this.length = vector3.length();
     }
 
     /**
@@ -81,6 +116,7 @@ public final class BVector3 {
      */
     public BVector3 setYaw(double yaw) {
         this.vector3 = getDirectionVector(yaw, this.pitch);
+        //重新计算在范围内的等价yaw值
         this.yaw = getYawFromVector(this.vector3);
         return this;
     }
@@ -93,6 +129,7 @@ public final class BVector3 {
      */
     public BVector3 setPitch(double pitch) {
         this.vector3 = getDirectionVector(this.yaw, pitch);
+        //重新计算在范围内的等价pitch值
         this.pitch = getPitchFromVector(this.vector3);
         return this;
     }
@@ -106,6 +143,7 @@ public final class BVector3 {
     public BVector3 rotateYaw(double yaw) {
         this.yaw += yaw;
         this.vector3 = getDirectionVector(this.yaw, this.pitch);
+        //重新计算在范围内的等价yaw值
         this.yaw = getYawFromVector(this.vector3);
         return this;
     }
@@ -119,21 +157,45 @@ public final class BVector3 {
     public BVector3 rotatePitch(double pitch) {
         this.pitch += pitch;
         this.vector3 = getDirectionVector(this.yaw, this.pitch);
+        //重新计算在范围内的等价pitch值
         this.pitch = getPitchFromVector(this.vector3);
         return this;
     }
 
     /**
-     * 添加指定模长的方向向量到Vector3(0, 0, 0)
+     * 向量加法
+     * @return 结果向量
+     */
+    public BVector3 add(double x, double y, double z) {
+        var pos = this.vector3.multiply(this.length);
+        pos.add(x, y, z);
+        this.yaw = getYawFromVector(pos);
+        this.pitch = getPitchFromVector(pos);
+        this.vector3 = pos.normalize();
+        this.length = pos.length();
+        return this;
+    }
+
+    /**
+     * 向量加法
+     * @return 结果向量
+     */
+    public BVector3 add(Vector3 vector3) {
+        return add(vector3.x, vector3.y, vector3.z);
+    }
+
+    /**
+     * 添加指定模长的方向向量到Vector3(0, 0, 0)<p/>
+     * 其实就是返回此向量的坐标
      *
      * @return the vector 3
      */
     public Vector3 addToPos() {
-        return addToPos(new Vector3(0, 0, 0));
+        return new Vector3(this.vector3.x * this.length, this.vector3.y * this.length, this.vector3.z * this.length);
     }
 
     /**
-     * 添加指定模长的方向向量到指定坐标
+     * 将此向量的坐标添加到pos上
      *
      * @param pos the pos
      * @return the vector 3
@@ -143,7 +205,7 @@ public final class BVector3 {
     }
 
     /**
-     * 设置该方向向量的模
+     * 设置该向量的模
      *
      * @param length the length
      * @return the length
@@ -168,6 +230,16 @@ public final class BVector3 {
      */
     public Vector3 getDirectionVector() {
         return vector3.clone();
+    }
+
+    /**
+     * 获取未克隆的单位方向向量
+     *
+     * @return the direction vector
+     */
+    @DoNotModify
+    public Vector3 getUnclonedDirectionVector() {
+        return vector3;
     }
 
     /**
