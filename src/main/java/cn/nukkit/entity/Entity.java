@@ -2952,16 +2952,22 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public boolean setPositionAndRotation(Vector3 pos, double yaw, double pitch) {
-        this.setPosition(pos);
         this.setRotation(yaw, pitch);
-        return true;
+        return this.setPosition(pos);
     }
 
-    @Since("FUTURE")
+    /**
+     * Sets position and rotation.
+     *
+     * @param pos     the pos
+     * @param yaw     the yaw
+     * @param pitch   the pitch
+     * @param headYaw the head yaw
+     * @return 切换地图失败会返回false
+     */
     public boolean setPositionAndRotation(Vector3 pos, double yaw, double pitch, double headYaw) {
-        this.setPosition(pos);
         this.setRotation(yaw, pitch, headYaw);
-        return true;
+        return this.setPosition(pos);
     }
 
     public void setRotation(double yaw, double pitch) {

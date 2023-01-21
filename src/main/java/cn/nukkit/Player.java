@@ -6860,7 +6860,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (!this.isOnline()) {
             return false;
         }
-
         Location from = this.getLocation();
         Location to = location;
         //event
@@ -6882,8 +6881,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (currentRide != null && !currentRide.dismountEntity(this)) {
             return false;
         }
+        this.setMotion(this.temporalVector.setComponents(0, 0, 0));
         //switch level, update pos and rotation, update aabb
-        setPositionAndRotation(to, to.getYaw(), to.getPitch(), to.getHeadYaw());
+        if (setPositionAndRotation(to, to.getYaw(), to.getPitch(), to.getHeadYaw())) {
+            this.resetFallDistance();
+            this.onGround = !this.noClip;
+        }
         //send to client
         this.sendPosition(to, to.yaw, to.pitch, MovePlayerPacket.MODE_TELEPORT);
         //state update
@@ -6901,7 +6904,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (isSpectator()) {
             this.setGamemode(this.gamemode, false, null, true);
         }
-        this.resetFallDistance();
         return true;
     }
 
