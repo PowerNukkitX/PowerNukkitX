@@ -294,11 +294,6 @@ public class SimpleCommandMap implements CommandMap {
     }
 
     @Override
-    public boolean dispatch(CommandSender sender, String cmdLine) {
-        return this.executeCommand(sender, cmdLine) > 0;
-    }
-
-    @Override
     public int executeCommand(CommandSender sender, String cmdLine) {
         ArrayList<String> parsed = parseArguments(cmdLine);
         if (parsed.size() == 0) {

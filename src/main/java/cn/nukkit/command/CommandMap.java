@@ -1,5 +1,6 @@
 package cn.nukkit.command;
 
+import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 
@@ -44,6 +45,7 @@ public interface CommandMap {
      */
     void registerSimpleCommands(Object object);
 
+
     /**
      * 执行命令
      *
@@ -51,7 +53,11 @@ public interface CommandMap {
      * @param cmdLine the cmd line
      * @return the int
      */
-    boolean dispatch(CommandSender sender, String cmdLine);
+    @Deprecated
+    @DeprecationDetails(since = "1.19.50-r4", reason = "use CommandMap#executeCommand")
+    default boolean dispatch(CommandSender sender, String cmdLine) {
+        return executeCommand(sender, cmdLine) > 0;
+    }
 
     /**
      * 执行命令
