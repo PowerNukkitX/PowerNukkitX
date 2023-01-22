@@ -53,13 +53,13 @@ public class FloatTag extends NumberTag<Float> {
     }
 
     @Override
-    public String toSnbt() {
-        return "\"" + this.getName() + "\":" + data + "f";
+    public String toSNBT() {
+        return data + "f";
     }
 
     @Override
-    public String toSnbt(int space) {
-        return "\"" + this.getName() + "\": " + data + "f";
+    public String toSNBT(int space) {
+        return data + "f";
     }
 
     @Override

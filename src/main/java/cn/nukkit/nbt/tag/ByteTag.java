@@ -57,13 +57,13 @@ public class ByteTag extends NumberTag<Integer> {
     }
 
     @Override
-    public String toSnbt() {
-        return "\"" + this.getName() + "\":" + data + "b";
+    public String toSNBT() {
+        return data + "b";
     }
 
     @Override
-    public String toSnbt(int space) {
-        return "\"" + this.getName() + "\": " + data + "b";
+    public String toSNBT(int space) {
+        return data + "b";
     }
 
     @Override

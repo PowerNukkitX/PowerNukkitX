@@ -53,13 +53,13 @@ public class ShortTag extends NumberTag<Integer> {
     }
 
     @Override
-    public String toSnbt() {
-        return "\"" + this.getName() + "\":" + data + "s";
+    public String toSNBT() {
+        return data + "s";
     }
 
     @Override
-    public String toSnbt(int space) {
-        return "\"" + this.getName() + "\": " + data + "s";
+    public String toSNBT(int space) {
+        return data + "s";
     }
 
     @Override
