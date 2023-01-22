@@ -1,3 +1,4 @@
+//Powered by javacc21 https://github.com/javacc21/javacc21
 PARSER_PACKAGE="cn.nukkit.nbt.snbt";
 NODE_PACKAGE="cn.nukkit.nbt.snbt.ast";
 DEFAULT_LEXICAL_STATE=SNBT;
