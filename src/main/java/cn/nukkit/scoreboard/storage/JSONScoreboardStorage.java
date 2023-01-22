@@ -133,7 +133,7 @@ public class JSONScoreboardStorage implements IScoreboardStorage {
         SortOrder sortOrder = SortOrder.valueOf(map.get("sortOrder").toString());
         IScoreboard scoreboard = new Scoreboard(objectiveName, displayName, criteriaName, sortOrder);
         for (Map<String, Object> line : (List<Map<String, Object>>) map.get("lines")) {
-            int score = Integer.parseInt(line.get("score").toString());
+            int score = ((Double) line.get("score")).intValue();
             IScorer scorer = null;
             switch (line.get("scorerType").toString()) {
                 case "PLAYER":

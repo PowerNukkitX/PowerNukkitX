@@ -242,7 +242,15 @@ public class SimpleCommandMap implements CommandMap {
         return true;
     }
 
+    /**
+     * 解析给定文本，从中分割参数
+     *
+     * @param cmdLine the cmd line
+     * @return 参数数组
+     */
     public static ArrayList<String> parseArguments(String cmdLine) {
+        cmdLine = cmdLine.stripLeading();
+        cmdLine = cmdLine.charAt(0) == '/' ? cmdLine.substring(1) : cmdLine;
         StringBuilder sb = new StringBuilder(cmdLine);
         ArrayList<String> args = new ArrayList<>();
         boolean notQuoted = true;
@@ -286,21 +294,16 @@ public class SimpleCommandMap implements CommandMap {
     }
 
     @Override
-    public boolean dispatch(CommandSender sender, String cmdLine) {
-        return this.executeCommand(sender, cmdLine) > 0;
-    }
-
-    @Override
     public int executeCommand(CommandSender sender, String cmdLine) {
         ArrayList<String> parsed = parseArguments(cmdLine);
         if (parsed.size() == 0) {
-            return 0;
+            return -1;
         }
 
         String sentCommandLabel = parsed.remove(0).toLowerCase();//command name
         String[] args = parsed.toArray(EmptyArrays.EMPTY_STRINGS);
         Command target = this.getCommand(sentCommandLabel);
-
+        if (target == null) return -1;
         int output;
         target.timing.startTiming();
         try {
@@ -317,10 +320,10 @@ public class SimpleCommandMap implements CommandMap {
                     }
                 } else {
                     var log = new CommandLogger(target, sender, sentCommandLabel, args, plugin);
-                    if (!target.getPermissionMessage().equals("")) {
-                        log.addError(target.getPermissionMessage().replace("<permission>", target.getPermission())).output();
-                    } else {
+                    if (target.getPermissionMessage() == null) {
                         log.addMessage("nukkit.command.generic.permission").output();
+                    } else if (!target.getPermissionMessage().equals("")) {
+                        log.addError(target.getPermissionMessage().replace("<permission>", target.getPermission())).output();
                     }
                     output = 0;
                 }
@@ -355,10 +358,18 @@ public class SimpleCommandMap implements CommandMap {
         return null;
     }
 
+    /**
+     * 获取{@link #knownCommands}的未克隆实例
+     *
+     * @return the commands
+     */
     public Map<String, Command> getCommands() {
         return knownCommands;
     }
 
+    /**
+     * 注册插件在plugin.yml中定义的命令别名
+     */
     public void registerServerAliases() {
         Map<String, List<String>> values = this.server.getCommandAliases();
         for (Map.Entry<String, List<String>> entry : values.entrySet()) {

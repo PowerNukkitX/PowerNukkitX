@@ -19,24 +19,24 @@ public class Function {
     private final Path fullPath;
     private List<String> commands;
 
-    private Function(FunctionManager manager,Path fullPath){
+    private Function(Path fullPath) {
         this.fullPath = fullPath;
         try {
             commands = Files.readAllLines(fullPath);
-            commands = commands.stream().map(s -> s.split("#")[0]).toList();
+            commands = commands.stream().map(s -> s.split("#")[0]).filter(s -> !s.isEmpty()).toList();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static Function fromPath(FunctionManager manager,Path path){
-        return new Function(manager,path);
+    public static Function fromPath(Path path) {
+        return new Function(path);
     }
 
-    public boolean dispatch(CommandSender sender){
+    public boolean dispatch(CommandSender sender) {
         boolean success = true;
         for (String command : commands) {
-            if (!Server.getInstance().dispatchCommand(sender, command))
+            if (Server.getInstance().executeCommand(sender, command) <= 0)
                 success = false;
         }
         return success;

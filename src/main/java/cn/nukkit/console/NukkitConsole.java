@@ -2,6 +2,7 @@ package cn.nukkit.console;
 
 import cn.nukkit.Server;
 import cn.nukkit.event.server.ServerCommandEvent;
+import cn.nukkit.plugin.InternalPlugin;
 import co.aikar.timings.Timings;
 import lombok.RequiredArgsConstructor;
 import net.minecrell.terminalconsole.SimpleTerminalConsole;
@@ -32,7 +33,7 @@ public class NukkitConsole extends SimpleTerminalConsole {
                 server.getPluginManager().callEvent(event);
             }
             if (!event.isCancelled()) {
-                Server.getInstance().getScheduler().scheduleTask(() -> server.dispatchCommand(event.getSender(), event.getCommand()));
+                Server.getInstance().getScheduler().scheduleTask(InternalPlugin.INSTANCE, () -> server.executeCommand(event.getSender(), event.getCommand()));
             }
             Timings.serverCommandTimer.stopTiming();
         } else {

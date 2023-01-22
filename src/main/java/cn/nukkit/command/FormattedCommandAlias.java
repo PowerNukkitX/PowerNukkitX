@@ -46,7 +46,7 @@ public class FormattedCommandAlias extends Command {
         }
 
         for (String command : commands) {
-            result |= Server.getInstance().dispatchCommand(sender, command);
+            result |= Server.getInstance().executeCommand(sender, command) > 0;
         }
 
         return result;

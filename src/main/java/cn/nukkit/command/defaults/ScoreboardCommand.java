@@ -14,7 +14,6 @@ import cn.nukkit.command.tree.ParamTree;
 import cn.nukkit.command.tree.node.WildcardIntNode;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.command.utils.EntitySelector;
-import cn.nukkit.network.protocol.UpdateSoftEnumPacket;
 import cn.nukkit.scoreboard.data.DisplaySlot;
 import cn.nukkit.scoreboard.data.SortOrder;
 import cn.nukkit.scoreboard.manager.IScoreboardManager;
@@ -129,7 +128,6 @@ public class ScoreboardCommand extends VanillaCommand {
                     manager.addScoreboard(new Scoreboard(objectiveName, objectiveName, criteriaName, SortOrder.ASCENDING));
                 }
                 log.addSuccess("commands.scoreboard.objectives.add.success", objectiveName).output();
-                CommandEnum.SCOREBOARD_OBJECTIVES.updateSoftEnum(UpdateSoftEnumPacket.Type.ADD, objectiveName);
                 return 1;
             }
             case "objectives-list" -> {
@@ -149,7 +147,6 @@ public class ScoreboardCommand extends VanillaCommand {
                 if (manager.removeScoreboard(objectiveName)) {
                     log.addSuccess("commands.scoreboard.objectives.remove.success", objectiveName).output();
                 }
-                CommandEnum.SCOREBOARD_OBJECTIVES.updateSoftEnum(UpdateSoftEnumPacket.Type.REMOVE, objectiveName);
                 return 1;
             }
             case "objectives-setdisplay-list-sidebar" -> {

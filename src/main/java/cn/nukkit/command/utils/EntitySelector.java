@@ -14,11 +14,10 @@ import cn.nukkit.network.protocol.AddEntityPacket;
 import cn.nukkit.scoreboard.scorer.EntityScorer;
 import cn.nukkit.scoreboard.scorer.IScorer;
 import cn.nukkit.scoreboard.scorer.PlayerScorer;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
-import com.google.common.base.Splitter;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.*;
 
 import java.util.*;
@@ -26,6 +25,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import static cn.nukkit.utils.StringUtils.fastSplit;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -40,7 +41,7 @@ public final class EntitySelector {
     }
 
     private static final Pattern ENTITY_SELECTOR = Pattern.compile("^@([aeprs]|initiator)(?:\\[(.*)])?$");
-    private static final Splitter ARGUMENT_JOINER = Splitter.on('=').limit(2);
+    private static final String ARGUMENT_JOINER = "=";
 
     private static final Set<String> ARGS = Sets.newHashSet();
 
@@ -68,7 +69,7 @@ public final class EntitySelector {
     private static final Set<String> LEVEL_ARGS = Sets.newHashSet(ARG_X, ARG_Y, ARG_Z, ARG_DX, ARG_DY, ARG_DZ, ARG_RM, ARG_R);
     private static final Predicate<String> VALID_ARGUMENT = arg -> arg != null && ARGS.contains(arg);
 
-    private static final Cache<String, Map<String, List<String>>> args_cache = CacheBuilder.newBuilder().maximumSize(65535).expireAfterAccess(1, TimeUnit.MINUTES).build();
+    private static final Cache<String, Map<String, List<String>>> args_cache = Caffeine.newBuilder().maximumSize(65535).expireAfterAccess(1, TimeUnit.MINUTES).build();
 
     private static String registerArgument(String arg) {
         ARGS.add(arg);
@@ -389,9 +390,9 @@ public final class EntitySelector {
         return List.of(e -> predicates.stream().allMatch(predicate -> predicate.apply(e)));
     }
 
-    private static final Splitter SCORE_SEPARATOR = Splitter.on(',').omitEmptyStrings();
-    private static final Splitter SCORE_JOINER = Splitter.on('=').limit(2);
-    private static final Splitter SCORE_SCOPE_SEPARATOR = Splitter.on("..").limit(2);
+    private static final String SCORE_SEPARATOR = ",";
+    private static final String SCORE_JOINER = "=";
+    private static final String SCORE_SCOPE_SEPARATOR = "..";
 
     private static List<Predicate<Entity>> getScoresPredicate(Map<String, List<String>> params) {
         List<Predicate<Entity>> predicates = Lists.newArrayList();
@@ -405,15 +406,16 @@ public final class EntitySelector {
         for (String score_part : scores) {
             if (score_part != null) {
                 score_part = score_part.substring(1, score_part.length() - 1);
-                for (String score_entry : SCORE_SEPARATOR.splitToList(score_part)) {
-                    Iterator<String> score_entry_split = SCORE_JOINER.split(score_entry).iterator();
-                    String objective = score_entry_split.next();
+                for (String score_entry : fastSplit(SCORE_SEPARATOR, score_part)) {
+                    if (score_entry.isEmpty()) continue;
+                    var score_entry_split = fastSplit(SCORE_JOINER, score_entry, 2);
+                    String objective = score_entry_split.get(0);
                     var scoreboard = Server.getInstance().getScoreboardManager().getScoreboard(objective);
                     if(scoreboard == null){
                         predicates.add(entity -> false);
                         return List.of(e -> predicates.stream().allMatch(predicate -> predicate.apply(e)));
                     }
-                    String score = score_entry_split.next();
+                    String score = score_entry_split.get(1);
                     boolean inverted = score.startsWith("!");
                     if (inverted) {
                         score = score.substring(1);
@@ -421,12 +423,12 @@ public final class EntitySelector {
                     if (score.contains("..")) {
                         int min = Integer.MIN_VALUE;
                         int max = Integer.MAX_VALUE;
-                        Iterator<String> score_scope_split = SCORE_SCOPE_SEPARATOR.split(score).iterator();
-                        String min_str = score_scope_split.next();
+                        var score_scope_split = fastSplit(SCORE_SCOPE_SEPARATOR, score);
+                        String min_str = score_scope_split.get(0);
                         if (!min_str.isEmpty()) {
                             min = Integer.parseInt(min_str);
                         }
-                        String max_str = score_scope_split.next();
+                        String max_str = score_scope_split.get(1);
                         if (!max_str.isEmpty()) {
                             max = Integer.parseInt(max_str);
                         }
@@ -650,17 +652,17 @@ public final class EntitySelector {
 
         if (inputArguments != null) {
             for (String arg : separateArguments(inputArguments)) {
-                Iterator<String> iterator = ARGUMENT_JOINER.split(arg).iterator();
-                String argName = iterator.next();
+                var split = fastSplit(ARGUMENT_JOINER, arg, 2);
+                String argName = split.get(0);
 
                 if (!VALID_ARGUMENT.apply(argName)) {
                     throw new SelectorSyntaxException(); //Unknown command argument: argName
                 }
 
                 if (!args.containsKey(argName)) {
-                    args.put(argName, Lists.newArrayList(iterator.hasNext() ? iterator.next() : ""));
+                    args.put(argName, Lists.newArrayList(split.size() > 1 ? split.get(1) : ""));
                 } else {
-                    args.get(argName).add(iterator.hasNext() ? iterator.next() : "");
+                    args.get(argName).add(split.size() > 1 ? split.get(1) : "");
                 }
             }
         }

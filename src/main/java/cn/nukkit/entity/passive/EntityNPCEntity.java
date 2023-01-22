@@ -117,14 +117,14 @@ public class EntityNPCEntity extends EntityLiving implements EntityNPC, EntityIn
             if (response.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_ACTION) {
                 ElementDialogButton clickedButton = response.getClickedButton();
                 for (ElementDialogButton.CmdLine line : clickedButton.getData()) {
-                    Server.getInstance().dispatchCommand(new NPCCommandSender(this, player), line.cmd_line.startsWith("/") ? line.cmd_line.substring(1) : line.cmd_line);
+                    Server.getInstance().executeCommand(new NPCCommandSender(this, player), line.cmd_line.startsWith("/") ? line.cmd_line.substring(1) : line.cmd_line);
                 }
             }
             if (response.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_OPENING_COMMANDS) {
                 for (ElementDialogButton button : this.dialog.getButtons()) {
                     if (button.getMode() == ElementDialogButton.Mode.ON_ENTER) {
                         for (ElementDialogButton.CmdLine line : button.getData()) {
-                            Server.getInstance().dispatchCommand(new NPCCommandSender(this, player), line.cmd_line.startsWith("/") ? line.cmd_line.substring(1) : line.cmd_line);
+                            Server.getInstance().executeCommand(new NPCCommandSender(this, player), line.cmd_line.startsWith("/") ? line.cmd_line.substring(1) : line.cmd_line);
                         }
                     }
                 }
@@ -133,7 +133,7 @@ public class EntityNPCEntity extends EntityLiving implements EntityNPC, EntityIn
                 for (ElementDialogButton button : this.dialog.getButtons()) {
                     if (button.getMode() == ElementDialogButton.Mode.ON_EXIT) {
                         for (ElementDialogButton.CmdLine line : button.getData()) {
-                            Server.getInstance().dispatchCommand(new NPCCommandSender(this, player), line.cmd_line.startsWith("/") ? line.cmd_line.substring(1) : line.cmd_line);
+                            Server.getInstance().executeCommand(new NPCCommandSender(this, player), line.cmd_line.startsWith("/") ? line.cmd_line.substring(1) : line.cmd_line);
                         }
                     }
                 }

@@ -52,7 +52,7 @@ public class RCON {
             this.server.getPluginManager().callEvent(event);
 
             if (!event.isCancelled()) {
-                this.server.dispatchCommand(sender, command.getCommand());
+                this.server.executeCommand(sender, command.getCommand());
             }
 
             this.serverThread.respond(command.getSender(), command.getId(), TextFormat.clean(sender.getMessages()));

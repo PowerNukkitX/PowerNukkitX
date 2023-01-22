@@ -44,7 +44,7 @@ public class FunctionManager {
                 @Override
                 public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
                     if (path.toString().endsWith(".mcfunction")) {
-                        functions.put(path.toString().replace(rootPath.toString() + "\\", "").replaceAll("\\\\", "/").replace(".mcfunction", ""), Function.fromPath(FunctionManager.this, path));
+                        functions.put(path.toString().replace(rootPath + "\\", "").replaceAll("\\\\", "/").replace(".mcfunction", ""), Function.fromPath(path));
                     }
                     return FileVisitResult.CONTINUE;
                 }

@@ -57,7 +57,7 @@ public record CommandLogger(Command command,
     }
 
     /**
-     * 添加一条命令成功执行的消息，参数message可以是纯文本，也可以是客戶端的多语言文本key.<br>默认输出颜色白色
+     * 添加一条命令成功执行的消息，参数可以是纯文本，也可以是客戶端的多语言文本key.<br>默认输出颜色白色
      *
      * @param key    the key
      * @param params the params
@@ -73,12 +73,18 @@ public record CommandLogger(Command command,
         return this;
     }
 
+    /**
+     * 添加一条命令错误执行的消息，参数可以是纯文本，也可以是客戶端的多语言文本key.<br>默认输出颜色红色
+     *
+     * @param message the message
+     * @return the command logger
+     */
     public CommandLogger addError(String message) {
         return this.addError(message, CommandOutputContainer.EMPTY_STRING);
     }
 
     /**
-     * 添加一条命令执行失败的错误消息，参数message可以是纯文本，也可以是客戶端的多语言文本key.<br>默认输出颜色红色
+     * 添加一条命令执行失败的错误消息，参数可以是纯文本，也可以是客戶端的多语言文本key.<br>默认输出颜色红色
      *
      * @param key    语言文本key/错误信息
      * @param params 语言文本参数/空
@@ -90,7 +96,7 @@ public record CommandLogger(Command command,
     }
 
     /**
-     * 添加一条信息到{@link #outputContainer}中.
+     * 添加一条消息，参数可以是纯文本，也可以是客户端，服务端，以及{@link cn.nukkit.lang.PluginI18n PluginI18n}中的多语言文本，默认输出颜色红色
      *
      * @param key the key
      * @return the command logger
@@ -128,7 +134,7 @@ public record CommandLogger(Command command,
 
 
     /**
-     * 输出默认的命令格式错误信息,会提示命令发送者在指定索引处发生错误
+     * 添加一条默认的命令格式错误信息,会提示命令发送者在指定索引处发生错误
      *
      * @param errorIndex 发生错误的参数索引
      */
@@ -142,7 +148,7 @@ public record CommandLogger(Command command,
     }
 
     /**
-     * 输出一个目标选择器没有匹配目标的错误信息
+     * 添加一条目标选择器没有匹配目标的错误信息
      */
     public CommandLogger addNoTargetMatch() {
         this.addError("commands.generic.noTargetMatch", CommandOutputContainer.EMPTY_STRING);
@@ -150,7 +156,7 @@ public record CommandLogger(Command command,
     }
 
     /**
-     * 输出一个目标选择器匹配目标过多的错误信息
+     * 添加一条目标选择器匹配目标过多的错误信息
      */
     public CommandLogger addTooManyTargets() {
         this.addError("commands.generic.tooManyTargets", CommandOutputContainer.EMPTY_STRING);
@@ -158,7 +164,7 @@ public record CommandLogger(Command command,
     }
 
     /**
-     * 输出一个参数过小的错误信息，会提示命令发送者指定位置的参数最小值不能低于minimum
+     * 添加一条参数过小的错误信息，会提示命令发送者指定位置的参数最小值不能低于minimum
      *
      * @param errorIndex 发生错误的参数索引
      * @param minimum    允许的最小值
@@ -169,7 +175,7 @@ public record CommandLogger(Command command,
     }
 
     /**
-     * 输出一个Double参数过大的错误信息，会提示命令发送者指定位置的参数最大值不能超过maximum
+     * 添加一条Double参数过大的错误信息，会提示命令发送者指定位置的参数最大值不能超过maximum
      *
      * @param errorIndex 发生错误的参数索引
      * @param maximum    允许的最大值
@@ -180,7 +186,7 @@ public record CommandLogger(Command command,
     }
 
     /**
-     * 输出一个Double参数过小的错误信息，会提示命令发送者指定位置的参数最小值不能低于minimum
+     * 添加一条Double参数过小的错误信息，会提示命令发送者指定位置的参数最小值不能低于minimum
      *
      * @param errorIndex 发生错误的参数索引
      * @param minimum    允许的最小值
@@ -190,6 +196,11 @@ public record CommandLogger(Command command,
         return this;
     }
 
+    /**
+     * 添加一条无法访问世界外的方块的错误信息
+     *
+     * @return the command logger
+     */
     public CommandLogger addOutOfWorld() {
         this.addError("commands.generic.outOfWorld", CommandOutputContainer.EMPTY_STRING);
         return this;
@@ -247,7 +258,7 @@ public record CommandLogger(Command command,
     }
 
     /**
-     * 给命令目标的反馈信息
+     * 输出给指定目标一条反馈信息
      *
      * @param receiver 命令目标
      * @param key      the key
@@ -260,7 +271,7 @@ public record CommandLogger(Command command,
     }
 
     /**
-     * 给命令目标的反馈信息
+     * 输出给指定目标一条反馈信息
      *
      * @param rawtext  给命令目标的反馈信息
      * @param receiver 命令目标
