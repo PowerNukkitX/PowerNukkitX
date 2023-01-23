@@ -294,7 +294,7 @@ public final class JSEventManager {
                     @Override
                     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
                         synchronized (jsPlugin.getJsContext()) {
-                            var r = callback.execute(sender, result, log);
+                            var r = callback.execute(this, sender, result, log);
                             if (r.isBoolean()) {
                                 return r.asBoolean() ? 1 : 0;
                             } else if (r.isNumber()) {
