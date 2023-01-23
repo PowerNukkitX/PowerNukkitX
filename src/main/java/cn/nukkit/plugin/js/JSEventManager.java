@@ -56,6 +56,7 @@ public final class JSEventManager {
 
     public static final class CommandBuilder {
         private final CommonJSPlugin jsPlugin;
+        private Command command;
         private String commandName;
         private String description;
         private String usageMessage;
@@ -289,12 +290,12 @@ public final class JSEventManager {
                 if (alias == null) {
                     alias = new String[0];
                 }
-                var cmd = new Command(commandName, description, usageMessage, alias) {
+                command = new Command(commandName, description, usageMessage, alias) {
                     @Since("1.19.50-r4")
                     @Override
                     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
                         synchronized (jsPlugin.getJsContext()) {
-                            var r = callback.execute(this, sender, result, log);
+                            var r = callback.execute(sender, result, log);
                             if (r.isBoolean()) {
                                 return r.asBoolean() ? 1 : 0;
                             } else if (r.isNumber()) {
@@ -304,17 +305,21 @@ public final class JSEventManager {
                     }
                 };
                 if (permission != null) {
-                    cmd.setPermission(permission);
+                    command.setPermission(permission);
                 }
                 if (permissionMessage != null) {
-                    cmd.setPermissionMessage(permissionMessage);
+                    command.setPermissionMessage(permissionMessage);
                 }
-                cmd.setCommandParameters(commandParameters);
-                cmd.enableParamTree();
-                Server.getInstance().getCommandMap().register(jsPlugin.getName(), cmd);
+                command.setCommandParameters(commandParameters);
+                command.enableParamTree();
+                Server.getInstance().getCommandMap().register(jsPlugin.getName(), command);
                 return true;
             }
             return false;
+        }
+
+        public Command getBuildCommand() {
+            return command;
         }
     }
 }
