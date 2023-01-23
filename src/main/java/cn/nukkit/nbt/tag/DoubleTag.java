@@ -53,13 +53,13 @@ public class DoubleTag extends NumberTag<Double> {
     }
 
     @Override
-    public String toSnbt() {
-        return "\"" + this.getName() + "\":" + data + "d";
+    public String toSNBT() {
+        return data + "d";
     }
 
     @Override
-    public String toSnbt(int space) {
-        return "\"" + this.getName() + "\": " + data + "d";
+    public String toSNBT(int space) {
+        return data + "d";
     }
 
     @Override
