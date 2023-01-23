@@ -55,13 +55,13 @@ public class IntArrayTag extends Tag {
     }
 
     @Override
-    public String toSnbt() {
-        return "\"" + this.getName() + "\":" + Arrays.toString(data).replace("[", "[I;");
+    public String toSNBT() {
+        return Arrays.toString(data).replace("[", "[I;");
     }
 
     @Override
-    public String toSnbt(int space) {
-        return "\"" + this.getName() + "\": " + Arrays.toString(data).replace("[", "[I;");
+    public String toSNBT(int space) {
+        return Arrays.toString(data).replace("[", "[I;");
     }
 
     @Override

@@ -1,0 +1,96 @@
+//Powered by javacc21 https://github.com/javacc21/javacc21
+PARSER_PACKAGE="cn.nukkit.nbt.snbt";
+NODE_PACKAGE="cn.nukkit.nbt.snbt.ast";
+DEFAULT_LEXICAL_STATE=SNBT;
+LEGACY_GLITCHY_LOOKAHEAD=false;
+
+PARSER_BEGIN(SNBTParserImplement)
+PARSER_END(SNBTParserImplement)
+
+
+SKIP : <WHITESPACE : (" "| "\t"| "\n"| "\r")+>; 
+
+// Delimiters
+TOKEN #Delimiter :
+    <COLON : ':'>
+    |
+    <COMMA : ','>
+    |
+    <OPEN_BRACKET : '['>
+    |
+    <CLOSE_BRACKET : ']'>
+    |
+    <OPEN_BRACE : "{" >
+    |
+    <CLOSE_BRACE : "}">
+;
+
+// Literals
+TOKEN #Literal :
+    <#ZERO : "0">
+    |
+    <#NON_ZERO : (['1'-'9'])(["0"-"9"])*>
+    |
+    <#FRACTION : "." (["0"-"9"])+>
+    |
+    <#EXPONENT : ["E","e"](["+","-"])?(["1"-"9"])+>
+    |
+    <BOOLEAN: 'false' | 'true'>
+    |
+    <FLOAT : ("-")?(<ZERO>|<NON_ZERO>)(<FRACTION>)?(<EXPONENT>)? ('f'|'F')>
+    |
+    <DOUBLE : ("-")?(<ZERO>|<NON_ZERO>)(<FRACTION>)?(<EXPONENT>)? ('d'|'D')>
+    |
+    <INTEGER : ('-')?(<ZERO>|<NON_ZERO>)>
+    |
+    <LONG : <INTEGER> ('l'|'L')>
+    |
+    <BYTE : <INTEGER> ('b'|'B')>
+    |
+    <SHORT : <INTEGER> ('s'|'S')>
+    |
+    <STRING : '"' (~['"'] | ('\\' '"'))* '"' | "'" (~["'"] | ('\\' "'"))* "'">
+;
+
+//Special Node
+Value :
+    <BYTE>
+    |
+    <BOOLEAN>
+    |
+    <STRING> 
+    | 
+    <SHORT>
+    |
+    <FLOAT>
+    |
+    <DOUBLE>
+    |
+    <LONG>
+    |
+    <INTEGER>
+    |
+    ByteArrayNBT
+    |
+    IntArrayNBT
+    |
+    CompoundNBT
+    |
+    ListNBT
+;
+
+KeyValuePair : <STRING> <COLON> (Value)?;
+
+ByteArrayNBT :
+    <OPEN_BRACKET> "B" ";"=>|| ( (<BYTE> | <BOOLEAN>) (<COMMA> (<BYTE> | <BOOLEAN>))* (<COMMA>)?)? <CLOSE_BRACKET>
+;
+IntArrayNBT :
+    <OPEN_BRACKET> "I" ";"=>|| (<INTEGER> (<COMMA> <INTEGER>)* (<COMMA>)?)? <CLOSE_BRACKET>
+;
+ListNBT :
+    <OPEN_BRACKET> (Value (<COMMA> Value)*)? <CLOSE_BRACKET>
+;
+CompoundNBT : <OPEN_BRACE> (KeyValuePair (<COMMA> KeyValuePair)*)? <CLOSE_BRACE>;
+
+//Root Node
+Root : Value <EOF>;

@@ -83,7 +83,7 @@ public class EntityVillager extends EntityCreature implements InventoryHolder, E
         input12.setCount(2);
         var output1 = Item.fromString("minecraft:iron_sword");
         output1.setCount(1);
-        output1.setNamedTag(SNBTParser.parseSNBT("""
+        output1.setNamedTag(SNBTParser.parse("""
                         {
                           "Damage": 0i,
                           "ench": [
