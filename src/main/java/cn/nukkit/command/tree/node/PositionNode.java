@@ -50,6 +50,7 @@ public abstract class PositionNode extends ParamNode<Position> {
     @Override
     public void fill(String arg) {
         TMP.clear();
+        //check
         var matcher = pattern.matcher(arg);
         while (matcher.find()) {
             TMP.add(matcher.group());
@@ -57,6 +58,8 @@ public abstract class PositionNode extends ParamNode<Position> {
         var str = TMP.stream().reduce((s1, s2) -> s1 + s2);
         if (str.isEmpty()) this.error();
         else if (str.get().length() != arg.length()) this.error();
+
+            //parse
         else {
             try {
                 Location loc = this.parent.parent.getSender().getLocation();

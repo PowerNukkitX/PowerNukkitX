@@ -96,7 +96,10 @@ public class ParamTree {
                         case COMPARE_OPERATOR -> {
                             node = new CompareOperatorStringNode();
                         }
-                        case MESSAGE, JSON -> {
+                        case MESSAGE -> {
+                            node = new MessageStringNode();
+                        }
+                        case JSON -> {
                             node = new RemainStringNode();
                         }
                         case RAWTEXT -> {

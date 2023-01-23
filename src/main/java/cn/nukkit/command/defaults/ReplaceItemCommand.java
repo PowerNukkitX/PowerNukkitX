@@ -10,7 +10,6 @@ import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
-import cn.nukkit.command.tree.ParamTree;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.inventory.EntityInventoryHolder;
@@ -20,7 +19,6 @@ import cn.nukkit.level.Position;
 
 import java.util.List;
 import java.util.Map;
-import java.util.StringJoiner;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -133,10 +131,8 @@ public class ReplaceItemCommand extends VanillaCommand {
                     item.setDamage(data);
                 }
                 if (list.hasResult(8)) {
-                    String[] components = list.getResult(8);
-                    StringJoiner join = new StringJoiner("");
-                    for (var c : components) join.add(c);
-                    item.readItemJsonComponents(Item.ItemJsonComponents.fromJson(join.toString()));
+                    String components = list.getResult(8);
+                    item.readItemJsonComponents(Item.ItemJsonComponents.fromJson(components));
                 }
                 if (holder.getInventory().setItem(slotId, item)) {
                     log.addSuccess("commands.replaceitem.success", "slot.container", String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()).output();
@@ -169,10 +165,8 @@ public class ReplaceItemCommand extends VanillaCommand {
             item.setDamage(data);
         }
         if (list.hasResult(8)) {
-            String[] components = list.getResult(8);
-            StringJoiner join = new StringJoiner("");
-            for (var c : components) join.add(c);
-            item.readItemJsonComponents(Item.ItemJsonComponents.fromJson(join.toString()));
+            String components = list.getResult(8);
+            item.readItemJsonComponents(Item.ItemJsonComponents.fromJson(components));
         }
         int successCount = 0;
         for (Entity entity : entities) {

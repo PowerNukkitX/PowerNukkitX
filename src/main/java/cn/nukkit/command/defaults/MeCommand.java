@@ -5,10 +5,7 @@ import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
-import cn.nukkit.command.tree.ParamTree;
 import cn.nukkit.command.utils.CommandLogger;
-import cn.nukkit.command.utils.EntitySelector;
-import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.utils.TextFormat;
 
@@ -35,25 +32,12 @@ public class MeCommand extends VanillaCommand {
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         String name = sender.getName();
-        String[] args;
+        String message = "";
         if (result.getKey().equals("message")) {
-            args = result.getValue().getResult(0);
-        } else args = new String[]{""};
-        StringBuilder msg = new StringBuilder();
-        for (String arg : args) {
-            if (EntitySelector.hasArguments(arg)) {
-                for (Entity entity : EntitySelector.matchEntities(sender, arg)) {
-                    msg.append(entity.getName()).append(" ");
-                }
-            } else {
-                msg.append(arg).append(" ");
-            }
+            message = result.getValue().getResult(0);
         }
 
-        if (msg.length() > 0) {
-            msg = new StringBuilder(msg.substring(0, msg.length() - 1));
-        }
-        broadcastCommandMessage(sender, new TranslationContainer("chat.type.emote", name, TextFormat.WHITE + msg.toString()), true);
+        broadcastCommandMessage(sender, new TranslationContainer("chat.type.emote", name, TextFormat.WHITE + message), true);
         return 1;
     }
 }
