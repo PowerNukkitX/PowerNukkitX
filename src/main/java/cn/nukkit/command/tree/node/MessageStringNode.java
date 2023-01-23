@@ -7,6 +7,7 @@ import cn.nukkit.entity.Entity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.regex.Pattern;
 
 /**
@@ -42,13 +43,13 @@ public class MessageStringNode extends ParamNode<String> {
                     if (after == '”' || after == '\'' || after == '\\' || after == ';') return match.group();
                 }
                 var m = match.group();
-                StringBuilder builder = new StringBuilder();
                 if (EntitySelector.hasArguments(m)) {
+                    StringJoiner join = new StringJoiner(", ");
                     for (Entity entity : EntitySelector.matchEntities(this.parent.parent.getSender(), m)) {
-                        builder.append(entity.getName()).append(", ");
+                        join.add(entity.getName());
                     }
-                }
-                return builder.toString();
+                    return join.toString();
+                } else return m;
             });
         }
     }
