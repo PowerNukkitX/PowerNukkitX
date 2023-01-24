@@ -89,7 +89,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
 
     @Override
     public boolean entityBaseTick(int tickDiff) {
-        boolean hasUpdate = super.onUpdate(tickDiff);
+        boolean hasUpdate = super.entityBaseTick(tickDiff);
         //handle human entity freeze
         if (this.getTickCachedCollisionBlocks().stream().anyMatch(block -> block.getId() == Block.POWDER_SNOW && this.getFreezingTicks() < 140)) {
             this.addFreezingTicks(1);
