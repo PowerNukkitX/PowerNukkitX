@@ -2096,9 +2096,9 @@ public class Item implements Cloneable, BlockID, ItemID {
     /**
      * 判断两个物品是否相等
      *
-     * @param item          the item
+     * @param item          要比较的物品
      * @param checkDamage   是否检查数据值
-     * @param checkCompound 是否检查NBT，只有检查数据值通过了才会检查NBT
+     * @param checkCompound 是否检查NBT
      * @return the boolean
      */
     public final boolean equals(Item item, boolean checkDamage, boolean checkCompound) {
