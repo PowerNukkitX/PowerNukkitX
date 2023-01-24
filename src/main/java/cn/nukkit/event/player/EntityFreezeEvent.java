@@ -10,7 +10,7 @@ import cn.nukkit.event.entity.EntityEvent;
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public class EntityFreezeEvent extends EntityEvent implements Cancellable {
-    private Entity entity;
+    private final Entity entity;
 
     private static final HandlerList handlers = new HandlerList();
 

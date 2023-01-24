@@ -318,7 +318,7 @@ public class EntityHuman extends EntityHumanType {
     public boolean entityBaseTick(int tickDiff) {
         boolean hasUpdate = super.entityBaseTick(tickDiff);
         //handle human entity freeze
-        if (this.getTickCachedCollisionBlocks().stream().anyMatch(block -> block.getId() == Block.POWDER_SNOW && this.getFreezingTicks() < 140)) {
+        if (this.getFreezingTicks() < 140 && this.getTickCachedCollisionBlocks().stream().anyMatch(block -> block.getId() == Block.POWDER_SNOW)) {
             if (getFreezingTicks() == 0) {//玩家疾跑进来要设置为非疾跑，统一为默认速度0.1
                 this.setSprinting(false);
             }
@@ -328,7 +328,7 @@ public class EntityHuman extends EntityHumanType {
             if (!event.isCancelled()) {
                 this.setMovementSpeed((float) Math.max(0.05, getMovementSpeed() - 3.58e-4));
             }
-        } else if (this.getTickCachedCollisionBlocks().stream().noneMatch(block -> block.getId() == Block.POWDER_SNOW) && this.getFreezingTicks() > 0) {
+        } else if (this.getFreezingTicks() > 0 && this.getTickCachedCollisionBlocks().stream().noneMatch(block -> block.getId() == Block.POWDER_SNOW)) {
             this.addFreezingTicks(-1);
             this.setMovementSpeed((float) Math.min(Player.DEFAULT_SPEED, getMovementSpeed() + 3.58e-4));//This magic number is to change the player's 0.05 speed within 140tick
         }

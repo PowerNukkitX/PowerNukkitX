@@ -91,14 +91,14 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     public boolean entityBaseTick(int tickDiff) {
         boolean hasUpdate = super.entityBaseTick(tickDiff);
         //handle human entity freeze
-        if (this.getTickCachedCollisionBlocks().stream().anyMatch(block -> block.getId() == Block.POWDER_SNOW && this.getFreezingTicks() < 140)) {
+        if (this.getFreezingTicks() < 140 && this.getTickCachedCollisionBlocks().stream().anyMatch(block -> block.getId() == Block.POWDER_SNOW)) {
             this.addFreezingTicks(1);
             EntityFreezeEvent event = new EntityFreezeEvent(this);
             this.server.getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
                 //this.setMovementSpeed(); //todo 给物理实体添加freeze减速
             }
-        } else if (this.getTickCachedCollisionBlocks().stream().noneMatch(block -> block.getId() == Block.POWDER_SNOW) && this.getFreezingTicks() > 0) {
+        } else if (this.getFreezingTicks() > 0 && this.getTickCachedCollisionBlocks().stream().noneMatch(block -> block.getId() == Block.POWDER_SNOW)) {
             this.addFreezingTicks(-1);
             //this.setMovementSpeed();
         }
