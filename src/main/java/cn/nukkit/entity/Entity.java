@@ -26,7 +26,6 @@ import cn.nukkit.event.Event;
 import cn.nukkit.event.entity.*;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityPortalEnterEvent.PortalType;
-import cn.nukkit.event.player.PlayerFreezeEvent;
 import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.event.player.PlayerTeleportEvent;
@@ -1875,23 +1874,6 @@ public abstract class Entity extends Location implements Metadatable {
                 }
             }
         }
-
-        if (this.getTickCachedCollisionBlocks().stream().noneMatch(block -> block.getId() == Block.POWDER_SNOW) && this.getFreezingTicks() > 0) {
-            this.addFreezingTicks(-tickDiff);
-        }
-
-        if (this.getFreezingTicks() != 0 && this instanceof Player player) {
-            PlayerFreezeEvent event = new PlayerFreezeEvent(player, 0.05f, 0.1f);
-            this.server.getPluginManager().callEvent(event);
-            if (!event.isCancelled()) {
-                player.setMovementSpeed(event.getBaseSpeed() - event.getSpeedFactor() * (this.getFreezingTicks() / 140f));
-            }
-        }
-
-        if (this.getFreezingTicks() == 140 && this.getServer().getTick() % 40 == 0) {
-            this.attack(new EntityDamageEvent(this, DamageCause.FREEZING, getFrostbiteInjury()));
-        }
-
         this.age += tickDiff;
         this.ticksLived += tickDiff;
         TimingsHistory.activatedEntityTicks++;
@@ -3470,18 +3452,18 @@ public abstract class Entity extends Location implements Metadatable {
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public void setFreezingTicks(int ticks) {
-        if (ticks < 0 || ticks > 140)
-            throw new IllegalArgumentException("Freezing ticks must be between 0 and 140");
-        this.freezingTicks = ticks;
+        if (ticks < 0) this.freezingTicks = 0;
+        else if (ticks > 140) this.freezingTicks = 140;
+        else this.freezingTicks = ticks;
         setFreezingEffectStrength(ticks / 140f);
     }
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public void addFreezingTicks(int increments) {
-        if (freezingTicks + increments < 0 || freezingTicks + increments > 140)
-            throw new IllegalArgumentException("Freezing ticks must be between 0 and 140");
-        this.freezingTicks += increments;
+        if (freezingTicks + increments < 0) this.freezingTicks = 0;
+        else if (freezingTicks + increments > 140) this.freezingTicks = 140;
+        else this.freezingTicks += increments;
         setFreezingEffectStrength(this.freezingTicks / 140f);
     }
 
