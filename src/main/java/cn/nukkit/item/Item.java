@@ -2093,8 +2093,19 @@ public class Item implements Cloneable, BlockID, ItemID {
         return equals(item, checkDamage, true);
     }
 
+    /**
+     * 判断两个物品是否相等
+     *
+     * @param item          the item
+     * @param checkDamage   是否检查数据值
+     * @param checkCompound 是否检查NBT，只有检查数据值通过了才会检查NBT
+     * @return the boolean
+     */
     public final boolean equals(Item item, boolean checkDamage, boolean checkCompound) {
-        if (this.getId() == item.getId() && (!checkDamage || this.getDamage() == item.getDamage())) {
+        if (this.getId() == 255 || item.getId() == 255) {
+            if (!this.getNamespaceId().equals(item.getNamespaceId())) return false;
+        } else if (this.getId() != item.getId()) return false;
+        if (!checkDamage || this.getDamage() == item.getDamage()) {
             if (checkCompound) {
                 if (Arrays.equals(this.getCompoundTag(), item.getCompoundTag())) {
                     return true;
@@ -2105,7 +2116,6 @@ public class Item implements Cloneable, BlockID, ItemID {
                 return true;
             }
         }
-
         return false;
     }
 
