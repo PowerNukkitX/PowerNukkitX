@@ -249,8 +249,6 @@ public class SimpleCommandMap implements CommandMap {
      * @return 参数数组
      */
     public static ArrayList<String> parseArguments(String cmdLine) {
-        cmdLine = cmdLine.stripLeading();
-        cmdLine = cmdLine.charAt(0) == '/' ? cmdLine.substring(1) : cmdLine;
         StringBuilder sb = new StringBuilder(cmdLine);
         ArrayList<String> args = new ArrayList<>();
         boolean notQuoted = true;
@@ -300,10 +298,13 @@ public class SimpleCommandMap implements CommandMap {
             return -1;
         }
 
-        String sentCommandLabel = parsed.remove(0).toLowerCase();//command name
+        String sentCommandLabel = parsed.remove(0).toLowerCase();
         String[] args = parsed.toArray(EmptyArrays.EMPTY_STRINGS);
         Command target = this.getCommand(sentCommandLabel);
-        if (target == null) return -1;
+
+        if (target == null) {
+            return -1;
+        }
         int output;
         target.timing.startTiming();
         try {

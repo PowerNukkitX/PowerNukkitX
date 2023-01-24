@@ -4415,7 +4415,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     }
 
                     Timings.playerCommandTimer.startTiming();
-                    this.server.executeCommand(playerCommandPreprocessEvent.getPlayer(), playerCommandPreprocessEvent.getMessage().substring(1));
+                    this.server.executeCommand(playerCommandPreprocessEvent.getPlayer(), playerCommandPreprocessEvent.getMessage());
                     Timings.playerCommandTimer.stopTiming();
                     break;
                 case ProtocolInfo.COMMAND_BLOCK_UPDATE_PACKET:

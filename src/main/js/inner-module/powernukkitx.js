@@ -87,7 +87,8 @@ export const PowerNukkitX = {
      *     addEnumItemParameter: (name: string, optional: boolean) => this,
      *     addEnumBooleanParameter: (name: string, optional: boolean) => this,
      *     addEnumGameModeParameter: (name: string, optional: boolean) => this,
-     *     register: () => boolean
+     *     register: () => boolean,
+     *     getBuildCommand: () => Object
      * }}
      */
     commandBuilder: () => eventManager.commandBuilder()
