@@ -335,7 +335,6 @@ public class EntityHuman extends EntityHumanType {
         if (this.getFreezingTicks() == 140 && this.getServer().getTick() % 40 == 0) {
             this.attack(new EntityDamageEvent(this, EntityDamageEvent.DamageCause.FREEZING, getFrostbiteInjury()));
         }
-        System.out.println(getMovementSpeed());
         return hasUpdate;
     }
 
