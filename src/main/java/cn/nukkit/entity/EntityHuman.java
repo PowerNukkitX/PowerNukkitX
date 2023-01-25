@@ -329,7 +329,7 @@ public class EntityHuman extends EntityHumanType {
             if (!event.isCancelled()) {
                 this.setMovementSpeed((float) Math.max(0.05, getMovementSpeed() - 3.58e-4));
             }
-        } else if (this.getFreezingTicks() > 0 && collidedWithPowderSnow) {
+        } else if (this.getFreezingTicks() > 0 && !collidedWithPowderSnow) {
             this.addFreezingTicks(-1);
             this.setMovementSpeed((float) Math.min(Player.DEFAULT_SPEED, getMovementSpeed() + 3.58e-4));//This magic number is to change the player's 0.05 speed within 140tick
         }

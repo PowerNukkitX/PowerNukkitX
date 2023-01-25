@@ -99,7 +99,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
             if (!event.isCancelled()) {
                 //this.setMovementSpeed(); //todo 给物理实体添加freeze减速
             }
-        } else if (this.getFreezingTicks() > 0 && collidedWithPowderSnow) {
+        } else if (this.getFreezingTicks() > 0 && !collidedWithPowderSnow) {
             this.addFreezingTicks(-1);
             //this.setMovementSpeed();
         }
