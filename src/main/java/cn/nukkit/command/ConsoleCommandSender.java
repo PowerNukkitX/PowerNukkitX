@@ -2,7 +2,7 @@ package cn.nukkit.command;
 
 import cn.nukkit.Server;
 import cn.nukkit.api.Since;
-import cn.nukkit.event.server.ConsoleOutputEvent;
+import cn.nukkit.event.server.ConsoleCommandOutputEvent;
 import cn.nukkit.lang.CommandOutputContainer;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.lang.TranslationContainer;
@@ -104,7 +104,7 @@ public class ConsoleCommandSender implements CommandSender {
     public void sendCommandOutput(CommandOutputContainer container) {
         for (var msg : container.getMessages()) {
             var text = this.getServer().getLanguage().tr(new TranslationContainer(msg.getMessageId(), msg.getParameters()));
-            ConsoleOutputEvent event = new ConsoleOutputEvent(this, text);
+            ConsoleCommandOutputEvent event = new ConsoleCommandOutputEvent(this, text);
             this.getServer().getPluginManager().callEvent(event);
             if (event.isCancelled()) continue;
             text = event.getMessage();
