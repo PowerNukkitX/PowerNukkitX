@@ -65,6 +65,16 @@ public class ParseUtils {
     }
 
     /**
+     * 要求参数不能多于1
+     * @param args 参数列表
+     * @param keyName 参数键名
+     */
+    public static void singleArgument(String[] args, String keyName) {
+        if (args.length > 1)
+            throw new SelectorSyntaxException("Multiple arguments is not allow in arg " + keyName);
+    }
+
+    /**
      * 检查给定值是否在给定的两个数之间
      * @param bound1 边界1
      * @param bound2 边界2

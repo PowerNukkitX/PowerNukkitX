@@ -20,6 +20,7 @@ import java.util.function.Function;
 public class C extends CachedFilterSelectorArgument {
     @Override
     public Function<List<Entity>, List<Entity>> cache(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) {
+        ParseUtils.singleArgument(arguments, getKeyName());
         ParseUtils.cannotReversed(arguments[0]);
         final var c = Integer.parseInt(arguments[0]);
         if (c == 0) throw new SelectorSyntaxException("C cannot be zero!");

@@ -15,6 +15,7 @@ import java.util.function.Predicate;
 public class Y extends CoordinateArgument {
     @Override
     public Predicate<Entity> getPredicate(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) {
+        ParseUtils.singleArgument(arguments, getKeyName());
         ParseUtils.cannotReversed(arguments[0]);
         basePos.setY(ParseUtils.parseOffsetDouble(arguments[0], basePos.getY()));
         return null;

@@ -5,7 +5,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.selector.ParseUtils;
 import cn.nukkit.command.selector.SelectorType;
-import cn.nukkit.command.selector.args.ISelectorArgument;
+import cn.nukkit.command.selector.args.CachedSimpleSelectorArgument;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Location;
 
@@ -13,18 +13,20 @@ import java.util.function.Predicate;
 
 @PowerNukkitXOnly
 @Since("1.19.50-r4")
-public class R implements ISelectorArgument {
+public class Name extends CachedSimpleSelectorArgument {
     @Override
-    public Predicate<Entity> getPredicate(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) {
+    protected Predicate<Entity> cache(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) {
         ParseUtils.singleArgument(arguments, getKeyName());
-        ParseUtils.cannotReversed(arguments[0]);
-        final var r = Integer.parseInt(arguments[0]);
-        return entity -> entity.distanceSquared(basePos) < Math.pow(r, 2);
+        var name = arguments[0];
+        boolean reversed = ParseUtils.checkReversed(name);
+        if (reversed) name = name.substring(1);
+        String finalName = name;
+        return entity -> reversed != entity.getName().equals(finalName);
     }
 
     @Override
     public String getKeyName() {
-        return "r";
+        return "name";
     }
 
     @Override
