@@ -10,7 +10,7 @@ import cn.nukkit.block.BlockHopper;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.blockstate.BlockState;
-import cn.nukkit.event.entity.EventHopperSearchItemEvent;
+import cn.nukkit.event.entity.HopperSearchItemEvent;
 import cn.nukkit.event.inventory.InventoryMoveItemEvent;
 import cn.nukkit.inventory.*;
 import cn.nukkit.item.Item;
@@ -221,7 +221,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
             return false;
         }
 
-        EventHopperSearchItemEvent event = new EventHopperSearchItemEvent(this, false);
+        HopperSearchItemEvent event = new HopperSearchItemEvent(this, false);
         this.server.getPluginManager().callEvent(event);
         if (event.isCancelled()) return false;
 

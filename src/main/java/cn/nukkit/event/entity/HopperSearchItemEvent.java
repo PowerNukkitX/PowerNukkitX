@@ -5,7 +5,7 @@ import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.Event;
 import cn.nukkit.event.HandlerList;
 
-public class EventHopperSearchItemEvent extends Event implements Cancellable {
+public class HopperSearchItemEvent extends Event implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
 
     public static HandlerList getHandlers() {
@@ -16,7 +16,7 @@ public class EventHopperSearchItemEvent extends Event implements Cancellable {
 
     private final boolean isMinecart;
 
-    public EventHopperSearchItemEvent(BlockHopper.IHopper hopper, boolean isMinecart) {
+    public HopperSearchItemEvent(BlockHopper.IHopper hopper, boolean isMinecart) {
         this.hopper = hopper;
         this.isMinecart = isMinecart;
     }

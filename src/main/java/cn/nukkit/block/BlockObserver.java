@@ -109,12 +109,7 @@ public class BlockObserver extends BlockSolidMeta implements RedstoneComponent, 
             }
 
             if (!isPowered()) {
-                var event = new BlockRedstoneEvent(this, 0, 15);
-                this.level.getServer().getPluginManager().callEvent(event);
-                if (event.isCancelled()) {
-                    return 0;
-                }
-
+                level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 0, 15));
                 setPowered(true);
 
                 if (level.setBlock(this, this)) {
@@ -123,11 +118,7 @@ public class BlockObserver extends BlockSolidMeta implements RedstoneComponent, 
                     level.scheduleUpdate(this, 2);
                 }
             } else {
-                var event = new BlockRedstoneEvent(this, 15, 0);
-                this.level.getServer().getPluginManager().callEvent(event);
-                if (event.isCancelled()) {
-                    return 0;
-                }
+                pluginManager.callEvent(new BlockRedstoneEvent(this, 15, 0));
                 setPowered(false);
 
                 level.setBlock(this, this);
