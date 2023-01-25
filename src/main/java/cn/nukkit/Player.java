@@ -7510,6 +7510,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @Override
     public void setSprinting(boolean value) {
+        if (value && this.getFreezingTicks() > 0) return;
         if (isSprinting() != value) {
             super.setSprinting(value);
             this.setMovementSpeed(value ? getMovementSpeed() * 1.3f : getMovementSpeed() / 1.3f);
