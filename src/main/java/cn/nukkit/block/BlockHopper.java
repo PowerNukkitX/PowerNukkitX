@@ -8,7 +8,6 @@ import cn.nukkit.blockentity.BlockEntityHopper;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityItem;
-import cn.nukkit.event.block.ComposterEmptyEvent;
 import cn.nukkit.event.inventory.InventoryMoveItemEvent;
 import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.inventory.Inventory;
@@ -39,7 +38,7 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.TOGGLE;
 @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder only in PowerNukkit")
 @PowerNukkitDifference(info = "Implements RedstoneComponent.", since = "1.4.0.0-PN")
 public class BlockHopper extends BlockTransparentMeta implements RedstoneComponent, Faceable, BlockEntityHolder<BlockEntityHopper> {
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(FACING_DIRECTION, TOGGLE);
@@ -110,7 +109,7 @@ public class BlockHopper extends BlockTransparentMeta implements RedstoneCompone
         if (facing == BlockFace.UP) {
             facing = BlockFace.DOWN;
         }
-        
+
         setBlockFace(facing);
 
         if (this.level.getServer().isRedstoneEnabled()) {
@@ -130,7 +129,7 @@ public class BlockHopper extends BlockTransparentMeta implements RedstoneCompone
         if (player == null) {
             return false;
         }
-        
+
         BlockEntityHopper blockEntity = getOrCreateBlockEntity();
 
         return player.addWindow(blockEntity.getInventory()) != -1;
@@ -241,6 +240,8 @@ public class BlockHopper extends BlockTransparentMeta implements RedstoneCompone
     @PowerNukkitXOnly
     @Since("1.19.50-r4")
     public interface IHopper {
+        Position getPosition();
+
         default boolean pullItems(InventoryHolder hopperHolder, Position hopperPos) {
             var hopperInv = hopperHolder.getInventory();
 

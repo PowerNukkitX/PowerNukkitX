@@ -183,19 +183,25 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
         boolean isPowered = strength > 0;
 
         if (oldStrength != strength) {
+            if (!isPowered && wasPowered) {
+                var event = new BlockRedstoneEvent(this, 15, 0);
+                this.level.getServer().getPluginManager().callEvent(event);
+                if (event.isCancelled()) {
+                    return;
+                }
+                this.playOffSound();
+            } else if (isPowered && !wasPowered) {
+                var event = new BlockRedstoneEvent(this, 0, 15);
+                this.level.getServer().getPluginManager().callEvent(event);
+                if (event.isCancelled()) {
+                    return;
+                }
+                this.playOnSound();
+            }
             this.setRedstonePower(strength);
             this.level.setBlock(this, this, false, false);
-
             updateAroundRedstone();
             RedstoneComponent.updateAroundRedstone(this.getSide(BlockFace.DOWN));
-
-            if (!isPowered && wasPowered) {
-                this.playOffSound();
-                this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 15, 0));
-            } else if (isPowered && !wasPowered) {
-                this.playOnSound();
-                this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 0, 15));
-            }
         }
 
         if (isPowered) {

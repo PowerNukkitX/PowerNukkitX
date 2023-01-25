@@ -18,11 +18,15 @@
 
 package cn.nukkit.event.block;
 
+import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
+
+import javax.annotation.Nullable;
 
 /**
  * @author joserobjr
@@ -43,20 +47,35 @@ public class BlockExplosionPrimeEvent extends BlockEvent implements Cancellable 
     private double force;
     private boolean blockBreaking;
     private double fireChance;
+    private final Player player;
 
+    @Deprecated
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public BlockExplosionPrimeEvent(Block block, double force) {
         this(block, force, 0);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public BlockExplosionPrimeEvent(Block block, double force, double fireChance) {
+        this(block, null, force, fireChance);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    public BlockExplosionPrimeEvent(Block block, @Nullable Player player, double force) {
+        this(block, player, force, 0);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    public BlockExplosionPrimeEvent(Block block, @Nullable Player player, double force, double fireChance) {
         super(block);
         this.force = force;
         this.blockBreaking = true;
         this.fireChance = fireChance;
+        this.player = player;
     }
 
     @PowerNukkitOnly
@@ -95,7 +114,7 @@ public class BlockExplosionPrimeEvent extends BlockEvent implements Cancellable 
         if (!incendiary) {
             fireChance = 0;
         } else if (fireChance <= 0) {
-            fireChance = 1.0/3.0;
+            fireChance = 1.0 / 3.0;
         }
     }
 
@@ -109,5 +128,12 @@ public class BlockExplosionPrimeEvent extends BlockEvent implements Cancellable 
     @Since("1.4.0.0-PN")
     public void setFireChance(double fireChance) {
         this.fireChance = fireChance;
+    }
+
+    @Nullable
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    public Player getPlayer() {
+        return player;
     }
 }

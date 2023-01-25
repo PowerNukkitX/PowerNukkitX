@@ -23,6 +23,7 @@ import cn.nukkit.entity.provider.CustomEntityProvider;
 import cn.nukkit.entity.provider.EntityProvider;
 import cn.nukkit.entity.provider.EntityProviderWithClass;
 import cn.nukkit.event.Event;
+import cn.nukkit.event.block.FarmLandDecayEvent;
 import cn.nukkit.event.entity.*;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityPortalEnterEvent.PortalType;
@@ -2332,6 +2333,9 @@ public abstract class Entity extends Location implements Metadatable {
                 if (onPhysicalInteraction(down, false)) {
                     return;
                 }
+                var farmEvent = new FarmLandDecayEvent(this, down);
+                this.server.getPluginManager().callEvent(farmEvent);
+                if (farmEvent.isCancelled()) return;
                 this.level.setBlock(down, new BlockDirt(), false, true);
                 return;
             }

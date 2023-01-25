@@ -1,6 +1,7 @@
 package cn.nukkit.event.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.BlockEntityItemFrame;
 import cn.nukkit.event.Cancellable;
@@ -14,6 +15,8 @@ import javax.annotation.Nullable;
  * @author Pub4Game
  * @since 03.07.2016
  */
+@Deprecated
+@DeprecationDetails(since = "1.19.50-r4", reason = "use PlayerUseItemFrameEvent")
 public class ItemFrameDropItemEvent extends BlockEvent implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();
