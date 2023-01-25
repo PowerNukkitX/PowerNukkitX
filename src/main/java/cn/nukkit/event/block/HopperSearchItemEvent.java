@@ -1,4 +1,4 @@
-package cn.nukkit.event.entity;
+package cn.nukkit.event.block;
 
 import cn.nukkit.block.BlockHopper;
 import cn.nukkit.event.Cancellable;
