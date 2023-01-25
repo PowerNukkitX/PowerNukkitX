@@ -65,6 +65,8 @@ public class EntitySelectorAPI {
         API.registerArgument(new DY());
         API.registerArgument(new DZ());
         API.registerArgument(new C());
+        API.registerArgument(new R());
+        API.registerArgument(new RM());
     }
 
     /**
@@ -121,7 +123,9 @@ public class EntitySelectorAPI {
                     continue;
                 entities.removeIf(entity -> !predicate.test(entity));
             } else {
-                entities = arg.getFilter(selectorType, sender, basePos, arguments.get(arg.getKeyName()).toArray(new String[0])).apply(entities);
+                if (arguments.containsKey(arg.getKeyName()))
+                    entities = arg.getFilter(selectorType, sender, basePos, arguments.get(arg.getKeyName()).toArray(new String[0])).apply(entities);
+                else continue;
             }
             //没符合条件的实体了，return
             if (entities.isEmpty()) return entities;
