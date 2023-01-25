@@ -298,7 +298,7 @@ public class SimpleCommandMap implements CommandMap {
             return -1;
         }
 
-        String sentCommandLabel = parsed.remove(0).toLowerCase();
+        String sentCommandLabel = parsed.remove(0).toLowerCase();//command name
         String[] args = parsed.toArray(EmptyArrays.EMPTY_STRINGS);
         Command target = this.getCommand(sentCommandLabel);
 
