@@ -1,4 +1,4 @@
-package cn.nukkit.event.entity;
+package cn.nukkit.event.block;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -7,23 +7,25 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 
+import javax.annotation.Nullable;
+
 @PowerNukkitXOnly
 @Since("1.19.50-r4")
-public class FarmLandDecayEvent extends EntityEvent implements Cancellable {
+public class FarmLandDecayEvent extends BlockEvent implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
 
     public static HandlerList getHandlers() {
         return handlers;
     }
 
-    private final Block farm;
+    private final Entity entity;
 
-    public FarmLandDecayEvent(Entity entity, Block farm) {
+    public FarmLandDecayEvent(@Nullable Entity entity, Block farm) {
+        super(farm);
         this.entity = entity;
-        this.farm = farm;
     }
 
-    public Block getBlock() {
-        return farm;
+    public Entity getEntity() {
+        return entity;
     }
 }

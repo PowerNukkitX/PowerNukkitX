@@ -114,7 +114,7 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
         var event = new BlockRedstoneEvent(this, isPowerOn() ? 15 : 0, isPowerOn() ? 0 : 15);
         this.level.getServer().getPluginManager().callEvent(event);
         if (event.isCancelled()) {
-            return false;
+            return true;
         }
 
         toggleBooleanProperty(OPEN);

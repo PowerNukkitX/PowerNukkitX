@@ -5,6 +5,7 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.IntBlockProperty;
+import cn.nukkit.event.block.FarmLandDecayEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
@@ -78,6 +79,10 @@ public class BlockFarmland extends BlockTransparentMeta {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (this.up().isSolid()) {
+                var farmEvent = new FarmLandDecayEvent(null, this);
+                this.level.getServer().getPluginManager().callEvent(farmEvent);
+                if (farmEvent.isCancelled()) return 0;
+
                 this.level.setBlock(this, Block.get(BlockID.DIRT), false, true);
 
                 return type;
@@ -132,6 +137,9 @@ public class BlockFarmland extends BlockTransparentMeta {
                 this.setDamage(damage - 1);
                 this.level.setBlock(this, this, false, damage == 1);
             } else {
+                var farmEvent = new FarmLandDecayEvent(null, this);
+                this.level.getServer().getPluginManager().callEvent(farmEvent);
+                if (farmEvent.isCancelled()) return 0;
                 this.level.setBlock(this, Block.get(Block.DIRT), false, true);
             }
 

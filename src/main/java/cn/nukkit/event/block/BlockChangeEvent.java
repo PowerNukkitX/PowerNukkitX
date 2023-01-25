@@ -4,9 +4,6 @@ import cn.nukkit.block.Block;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 
-/**
- * 方块改变后会触发
- */
 public class BlockChangeEvent extends BlockEvent implements Cancellable {
     protected final Block after;
 

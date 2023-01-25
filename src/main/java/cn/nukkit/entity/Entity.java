@@ -23,6 +23,7 @@ import cn.nukkit.entity.provider.CustomEntityProvider;
 import cn.nukkit.entity.provider.EntityProvider;
 import cn.nukkit.entity.provider.EntityProviderWithClass;
 import cn.nukkit.event.Event;
+import cn.nukkit.event.block.FarmLandDecayEvent;
 import cn.nukkit.event.entity.*;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityPortalEnterEvent.PortalType;

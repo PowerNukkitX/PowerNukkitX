@@ -111,7 +111,7 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
             var event = new BlockRedstoneEvent(this, 0, 15);
             this.level.getServer().getPluginManager().callEvent(event);
             if (event.isCancelled()) {
-                return false;
+                return true;
             }
             updateAroundRedstone();
             RedstoneComponent.updateAroundRedstone(getSide(getFacing().getOpposite()), getFacing());
@@ -207,7 +207,7 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
             var event = new BlockRedstoneEvent(this, 15, 0);
             this.level.getServer().getPluginManager().callEvent(event);
             if (event.isCancelled()) {
-                return false;
+                return true;
             }
         }
 
