@@ -1192,19 +1192,23 @@ public class Server {
         if (!this.isPrimaryThread()) {
             log.warn("Command Dispatched Async: {}\nPlease notify author of plugin causing this execution to fix this bug!", commandLine,
                     new ConcurrentModificationException("Command Dispatched Async: " + commandLine));
+
             this.scheduler.scheduleTask(null, () -> executeCommand(sender, commandLine));
             return 1;
         }
-
         if (sender == null) {
             throw new ServerException("CommandSender is not valid");
         }
-        var result = this.commandMap.executeCommand(sender, commandLine);
-        if (result == -1) {
-            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.unknown", commandLine));
-            return -1;
+        //pre
+        var cmd = commandLine.stripLeading();
+        cmd = cmd.charAt(0) == '/' ? cmd.substring(1) : cmd;
+
+        if (this.commandMap.executeCommand(sender, cmd) > 0) {
+            return 1;
+        } else {
+            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.unknown", cmd));
+            return 0;
         }
-        return result;
     }
 
     /**
