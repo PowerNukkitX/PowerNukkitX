@@ -7,10 +7,8 @@ import cn.nukkit.command.selector.ParseUtils;
 import cn.nukkit.command.selector.SelectorType;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Location;
-import com.dfsek.terra.lib.google.common.collect.Lists;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.function.Predicate;
 
 @PowerNukkitXOnly

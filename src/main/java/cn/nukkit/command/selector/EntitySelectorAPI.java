@@ -64,6 +64,7 @@ public class EntitySelectorAPI {
         API.registerArgument(new DX());
         API.registerArgument(new DY());
         API.registerArgument(new DZ());
+        API.registerArgument(new C());
     }
 
     /**
@@ -109,15 +110,19 @@ public class EntitySelectorAPI {
         //参照坐标
         var basePos = sender.getLocation().clone();
         for (var arg : orderedArgs) {
-            Predicate<Entity> predicate;
-            if (arguments.containsKey(arg.getKeyName()))
-                predicate = arg.getPredicate(selectorType, sender, basePos, arguments.get(arg.getKeyName()).toArray(new String[0]));
-            else if (arg.getDefaultValue(arguments, selectorType, sender) != null)
-                predicate = arg.getPredicate(selectorType, sender, basePos, arg.getDefaultValue(arguments, selectorType, sender));
-            else continue;
-            if (predicate == null)
-                continue;
-            entities.removeIf(entity -> !predicate.test(entity));
+            if (!arg.isFilter()) {
+                Predicate<Entity> predicate;
+                if (arguments.containsKey(arg.getKeyName()))
+                    predicate = arg.getPredicate(selectorType, sender, basePos, arguments.get(arg.getKeyName()).toArray(new String[0]));
+                else if (arg.getDefaultValue(arguments, selectorType, sender) != null)
+                    predicate = arg.getPredicate(selectorType, sender, basePos, arg.getDefaultValue(arguments, selectorType, sender));
+                else continue;
+                if (predicate == null)
+                    continue;
+                entities.removeIf(entity -> !predicate.test(entity));
+            } else {
+                entities = arg.getFilter(selectorType, sender, basePos, arguments.get(arg.getKeyName()).toArray(new String[0])).apply(entities);
+            }
             //没符合条件的实体了，return
             if (entities.isEmpty()) return entities;
         }

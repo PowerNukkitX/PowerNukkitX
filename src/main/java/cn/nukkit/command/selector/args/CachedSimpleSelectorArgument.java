@@ -20,31 +20,28 @@ import java.util.function.Predicate;
  */
 @PowerNukkitXOnly
 @Since("1.19.50-r4")
-public abstract class CachedSelectorArgument implements ISelectorArgument {
+public abstract class CachedSimpleSelectorArgument implements ISelectorArgument {
 
     Cache<Set<String>, Predicate<Entity>> cache;
 
-    public CachedSelectorArgument() {
+    public CachedSimpleSelectorArgument() {
         this.cache = provideCacheService();
     }
 
     @Override
     public Predicate<Entity> getPredicate(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) {
-        return cache.get(Sets.newHashSet(arguments), (k) -> cache(k , selectorType));
+        return cache.get(Sets.newHashSet(arguments), (k) -> cache(selectorType, sender, basePos, arguments));
     }
 
     /**
      * 当未在缓存中找到解析结果时，则调用此方法对参数进行解析
-     * @param arguments 参数列表
-     * @param selectorType 目标选择器类型
-     * @return {@code List<Predicate<Entity>>}
      */
-    protected abstract Predicate<Entity> cache(Set<String> arguments, SelectorType selectorType);
+    protected abstract Predicate<Entity> cache(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments);
 
     /**
      * 初始化缓存时调用此方法<p/>
      * 若需要自己的缓存实现，则可覆写此方法
-     * @return {@code Cache<Set<String>, List<Predicate<Entity>>>}
+     * @return {@code Cache<Set<String>, Predicate<Entity>>}
      */
     protected Cache<Set<String>, Predicate<Entity>> provideCacheService() {
         return Caffeine.newBuilder().maximumSize(65535).expireAfterAccess(1, TimeUnit.MINUTES).build();
