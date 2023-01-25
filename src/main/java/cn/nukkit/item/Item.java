@@ -2102,7 +2102,7 @@ public class Item implements Cloneable, BlockID, ItemID {
      * @return the boolean
      */
     public final boolean equals(Item item, boolean checkDamage, boolean checkCompound) {
-        if (this.getId() == 255 || item.getId() == 255) {
+        if (this.getId() == 255 && item.getId() == 255) {
             if (!this.getNamespaceId().equals(item.getNamespaceId())) return false;
         } else if (this.getId() != item.getId()) return false;
         if (!checkDamage || this.getDamage() == item.getDamage()) {
