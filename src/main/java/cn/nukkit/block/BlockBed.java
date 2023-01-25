@@ -156,7 +156,7 @@ public class BlockBed extends BlockTransparentMeta implements Faceable, BlockEnt
                 return true;
             }
 
-            BlockExplosionPrimeEvent event = new BlockExplosionPrimeEvent(this, 5);
+            BlockExplosionPrimeEvent event = new BlockExplosionPrimeEvent(this, player, 5);
             event.setIncendiary(true);
             if (event.isCancelled()) {
                 return true;
