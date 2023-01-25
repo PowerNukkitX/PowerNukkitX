@@ -7,7 +7,6 @@ import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
-import cn.nukkit.command.tree.ParamTree;
 import cn.nukkit.command.tree.node.PlayersNode;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.utils.TextFormat;
@@ -71,8 +70,7 @@ public class TitleCommand extends VanillaCommand {
             }
             case "set" -> {
                 String titleLocation = list.getResult(1);
-                String[] message = list.getResult(2);
-                var titleText = String.join(" ", message);
+                String titleText = list.getResult(2);
                 switch (titleLocation) {
                     case "title" -> {
                         for (Player player : players) {

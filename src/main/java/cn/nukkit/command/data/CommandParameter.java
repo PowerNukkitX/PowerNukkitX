@@ -11,7 +11,7 @@ import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CommandParameter implements Cloneable {
+public class CommandParameter {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -141,9 +141,9 @@ public class CommandParameter implements Cloneable {
 
 
     /**
-     * optional = false
+     * optional = false,CommandParamOption=[]
      *
-     * @see #newType(String, boolean, CommandParamType, IParamNode)
+     * @see #newType(String, boolean, CommandParamType, IParamNode, CommandParamOption...)
      */
     @PowerNukkitXOnly
     @Since("1.19.50-r3")
@@ -153,31 +153,24 @@ public class CommandParameter implements Cloneable {
 
 
     /**
-     * 创建一个命令参数,参数解析节点{@link IParamNode}依据参数类型{@link CommandParamType}自动选取
+     * paramNode = null , CommandParamOption=[]
      *
-     * @param name     参数名
-     * @param optional 该参数是否为可选参数
-     * @param type     类型{@link CommandParamType}
-     * @return the command parameter
+     * @see #newType(String, boolean, CommandParamType, IParamNode, CommandParamOption...)
      */
     @Since("1.4.0.0-PN")
     public static CommandParameter newType(String name, boolean optional, CommandParamType type) {
-        return new CommandParameter(name, optional, type, null, null);
+        return newType(name, optional, type, null, new CommandParamOption[]{});
     }
 
     /**
-     * 创建一个命令参数,参数解析节点{@link IParamNode}依据参数类型{@link CommandParamType}自动选取
+     * paramNode = null
      *
-     * @param name     参数名
-     * @param optional 该参数是否为可选参数
-     * @param type     类型{@link CommandParamType}
-     * @return the command parameter
+     * @see #newType(String, boolean, CommandParamType, IParamNode, CommandParamOption...)
      */
+    @PowerNukkitXOnly
     @Since("1.19.50-r4")
     public static CommandParameter newType(String name, boolean optional, CommandParamType type, CommandParamOption... options) {
-        var result = new CommandParameter(name, optional, type, null, null);
-        result.paramOptions = Lists.newArrayList(options);
-        return result;
+        return newType(name, optional, type, null, options);
     }
 
     /**
@@ -187,12 +180,17 @@ public class CommandParameter implements Cloneable {
      * @param optional  该参数是否为可选参数
      * @param type      类型{@link CommandParamType}
      * @param paramNode 用于解析该参数的参数节点
+     * @param options   the options
      * @return the command parameter
      */
     @PowerNukkitXOnly
-    @Since("1.19.50-r3")
-    public static CommandParameter newType(String name, boolean optional, CommandParamType type, IParamNode<?> paramNode) {
-        return new CommandParameter(name, optional, type, null, null, paramNode);
+    @Since("1.19.50-r4")
+    public static CommandParameter newType(String name, boolean optional, CommandParamType type, IParamNode<?> paramNode, CommandParamOption... options) {
+        var result = new CommandParameter(name, optional, type, null, null, paramNode);
+        if (options.length != 0) {
+            result.paramOptions = Lists.newArrayList(options);
+        }
+        return result;
     }
 
     /**
@@ -219,7 +217,7 @@ public class CommandParameter implements Cloneable {
     /**
      * optional = false
      *
-     * @see #newEnum(String name, boolean optional, String type)
+     * @see #newEnum(String, boolean, CommandEnum, IParamNode, CommandParamOption...)
      */
     @Since("1.4.0.0-PN")
     public static CommandParameter newEnum(String name, String type) {
@@ -227,9 +225,9 @@ public class CommandParameter implements Cloneable {
     }
 
     /**
-     * isSoft = false
+     * optional = false
      *
-     * @see #newEnum(String name, boolean optional, String type, boolean isSoft)
+     * @see #newEnum(String, boolean, CommandEnum, IParamNode, CommandParamOption...)
      */
     @Since("1.4.0.0-PN")
     public static CommandParameter newEnum(String name, boolean optional, String type) {
@@ -238,13 +236,9 @@ public class CommandParameter implements Cloneable {
 
 
     /**
-     * 创建一个枚举参数，其枚举数据{@link CommandEnum#getValues()}为空列表
+     * optional = false
      *
-     * @param name     参数名(不会显示到命令中,仅作为标识)
-     * @param optional 该枚举参数是否可选
-     * @param type     枚举参数名(会显示到参数中)
-     * @param isSoft   当为False时，客户端显示枚举参数会带上枚举名称{@link CommandEnum#getName()}
-     * @return the command parameter
+     * @see #newEnum(String, boolean, CommandEnum, IParamNode, CommandParamOption...)
      */
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
@@ -263,12 +257,9 @@ public class CommandParameter implements Cloneable {
     }
 
     /**
-     * 创建一个枚举参数
+     * optional = false
      *
-     * @param name     参数名(不会显示到命令中,仅作为标识)
-     * @param optional 改参数是否可选
-     * @param data     枚举数据{@link CommandEnum},其中的{@link CommandEnum#getName()}才是真正的枚举参数名
-     * @return the command parameter
+     * @see #newEnum(String, boolean, CommandEnum, IParamNode, CommandParamOption...)
      */
     @Since("1.4.0.0-PN")
     public static CommandParameter newEnum(String name, boolean optional, CommandEnum data) {
@@ -276,45 +267,35 @@ public class CommandParameter implements Cloneable {
     }
 
     /**
-     * 创建一个枚举参数
+     * optional = false
      *
-     * @param name     参数名称
-     * @param optional 改参数是否可选
-     * @param data     枚举数据{@link CommandEnum},其中的{@link CommandEnum#getName()}才是真正的枚举参数名
-     * @param options  the options
-     * @return the command parameter
+     * @see #newEnum(String, boolean, CommandEnum, IParamNode, CommandParamOption...)
      */
     @PowerNukkitXOnly
     @Since("1.19.50-r4")
     public static CommandParameter newEnum(String name, boolean optional, CommandEnum data, CommandParamOption... options) {
-        var result = new CommandParameter(name, optional, null, data, null);
-        result.paramOptions = Lists.newArrayList(options);
-        return result;
+        return newEnum(name, optional, data, null, options);
     }
 
 
     /**
-     * New enum command parameter.
+     * optional = false
      *
-     * @param name      the name
-     * @param optional  the optional
-     * @param data      the data
-     * @param paramNode the enum node
-     * @return the command parameter
+     * @see #newEnum(String, boolean, CommandEnum, IParamNode, CommandParamOption...)
      */
     @PowerNukkitXOnly
     @Since("1.19.50-r4")
     public static CommandParameter newEnum(String name, boolean optional, CommandEnum data, IParamNode<?> paramNode) {
-        return new CommandParameter(name, optional, null, data, null, paramNode);
+        return newEnum(name, optional, data, paramNode, new CommandParamOption[]{});
     }
 
     /**
-     * New enum command parameter.
+     * 创建一个枚举参数
      *
-     * @param name      the name
-     * @param optional  the optional
-     * @param data      the data
-     * @param paramNode the enum node
+     * @param name      参数名称
+     * @param optional  改参数是否可选
+     * @param data      枚举数据{@link CommandEnum},其中的{@link CommandEnum#getName()}才是真正的枚举参数名
+     * @param paramNode 该参数对应的{@link IParamNode}
      * @param options   the options
      * @return the command parameter
      */
@@ -322,12 +303,14 @@ public class CommandParameter implements Cloneable {
     @Since("1.19.50-r4")
     public static CommandParameter newEnum(String name, boolean optional, CommandEnum data, IParamNode<?> paramNode, CommandParamOption... options) {
         var result = new CommandParameter(name, optional, null, data, null, paramNode);
-        result.paramOptions = Lists.newArrayList(options);
+        if (options.length != 0) {
+            result.paramOptions = Lists.newArrayList(options);
+        }
         return result;
     }
 
     //此方法使用不当会崩溃客户端，请谨慎使用！
-    //todo 注释掉创建Postfix的方法知道能够稳定运行
+    //todo 注释掉创建Postfix的方法直到能够稳定运行
     /*@Since("1.4.0.0-PN")
     public static CommandParameter newPostfix(String name, String postfix) {
         return newPostfix(name, false, postfix);
@@ -354,25 +337,6 @@ public class CommandParameter implements Cloneable {
                 return CommandParamType.INT;
         }
         return CommandParamType.RAWTEXT;
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.50-r4")
-    @Override
-    public CommandParameter clone() throws CloneNotSupportedException {
-        try {
-            CommandParameter commandParameter = (CommandParameter) super.clone();
-            commandParameter.type = this.type;
-            commandParameter.name = this.name;
-            commandParameter.enumData = this.enumData;
-            commandParameter.optional = this.optional;
-            commandParameter.paramOptions = this.paramOptions;
-            commandParameter.postFix = this.postFix;
-            commandParameter.paramNode = this.paramNode;
-            return commandParameter;
-        } catch (CloneNotSupportedException e) {
-            return null;
-        }
     }
 
     @Deprecated

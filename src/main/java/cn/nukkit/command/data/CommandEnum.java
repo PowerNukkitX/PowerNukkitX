@@ -4,18 +4,21 @@ import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.network.protocol.UpdateSoftEnumPacket;
+import cn.nukkit.potion.Effect;
 import com.google.common.collect.ImmutableList;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.*;
 import java.util.function.Supplier;
 
 /**
  * @author CreeperFace
  */
 public class CommandEnum {
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    public static final CommandEnum ENUM_EFFECT;
     @PowerNukkitXOnly
     @Since("1.19.50-r4")
     public static final CommandEnum FUNCTION_FILE = new CommandEnum("filepath", () -> Server.getInstance().getFunctionManager().getFunctions().keySet(), true);
@@ -54,6 +57,14 @@ public class CommandEnum {
         )*/ Collections.emptyList());
 
         ENUM_ENTITY = new CommandEnum("Entity", Collections.emptyList());
+
+        List<String> effects = new ArrayList<>();
+        for (Field field : Effect.class.getDeclaredFields()) {
+            if (field.getType() == int.class && field.getModifiers() == (Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL)) {
+                effects.add(field.getName().toLowerCase());
+            }
+        }
+        ENUM_EFFECT = new CommandEnum("Effect", effects, false);
     }
 
     private final String name;

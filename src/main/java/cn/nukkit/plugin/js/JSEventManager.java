@@ -1,11 +1,16 @@
 package cn.nukkit.plugin.js;
 
 import cn.nukkit.Server;
+import cn.nukkit.api.Since;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
+import cn.nukkit.command.data.CommandParamOption;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.command.tree.ParamList;
+import cn.nukkit.command.tree.node.IParamNode;
+import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.event.Event;
 import cn.nukkit.event.EventPriority;
 import cn.nukkit.plugin.CommonJSPlugin;
@@ -51,17 +56,17 @@ public final class JSEventManager {
 
     public static final class CommandBuilder {
         private final CommonJSPlugin jsPlugin;
+        private Command command;
         private String commandName;
         private String description;
         private String usageMessage;
         private String[] alias;
         private String permission;
         private String permissionMessage;
-        private Map<String, CommandParameter[]> commandParameters;
         private Value callback;
-
         private String currentCommandPatternId;
-        private List<CommandParameter> currentCommandParameterList;
+        private final List<CommandParameter> currentCommandParameterList = new ArrayList<>(3);
+        private final Map<String, CommandParameter[]> commandParameters = new HashMap<>(2);
 
         public CommandBuilder(CommonJSPlugin jsPlugin) {
             this.jsPlugin = jsPlugin;
@@ -140,7 +145,8 @@ public final class JSEventManager {
         }
 
         public CommandBuilder setCommandParameters(Map<String, CommandParameter[]> commandParameters) {
-            this.commandParameters = commandParameters;
+            this.commandParameters.clear();
+            this.commandParameters.putAll(commandParameters);
             return this;
         }
 
@@ -153,24 +159,24 @@ public final class JSEventManager {
             return this;
         }
 
-        public CommandBuilder createCommandPattern(String patternName) {
-            if (currentCommandPatternId != null && currentCommandParameterList != null && currentCommandParameterList.size() != 0) {
-                if (commandParameters == null) {
-                    commandParameters = new HashMap<>(2);
-                }
-                commandParameters.put(currentCommandPatternId, currentCommandParameterList.toArray(CommandParameter.EMPTY_ARRAY));
-            }
-            currentCommandPatternId = patternName;
-            currentCommandParameterList = new ArrayList<>(3);
-            return this;
-        }
-
         public CommandBuilder createDefaultPattern() {
             return createCommandPattern("default");
         }
 
+        public CommandBuilder createCommandPattern(String patternName) {
+            currentCommandPatternId = patternName;
+            commandParameters.put(patternName, currentCommandParameterList.toArray(CommandParameter.EMPTY_ARRAY));
+            currentCommandParameterList.clear();
+            return this;
+        }
+
         public CommandBuilder addTypeParameter(String name, boolean optional, CommandParamType commandParamType) {
             currentCommandParameterList.add(CommandParameter.newType(name, optional, commandParamType));
+            return this;
+        }
+
+        public CommandBuilder addCustomTypeParameter(String name, boolean optional, CommandParamType type, IParamNode<?> paramNode, CommandParamOption... options) {
+            currentCommandParameterList.add(CommandParameter.newType(name, optional, type, paramNode, options));
             return this;
         }
 
@@ -239,6 +245,11 @@ public final class JSEventManager {
             return this;
         }
 
+        public CommandBuilder addCustomEnumParameter(String name, boolean optional, CommandEnum data, IParamNode<?> paramNode, CommandParamOption... options) {
+            currentCommandParameterList.add(CommandParameter.newEnum(name, optional, data, paramNode, options));
+            return this;
+        }
+
         public CommandBuilder addEnumBlockParameter(String name, boolean optional) {
             currentCommandParameterList.add(CommandParameter.newEnum(name, optional, CommandEnum.ENUM_BLOCK));
             return this;
@@ -265,13 +276,11 @@ public final class JSEventManager {
         }
 
         public boolean register() {
-            if (currentCommandPatternId != null && currentCommandParameterList != null && currentCommandParameterList.size() != 0) {
-                if (commandParameters == null) {
-                    commandParameters = new HashMap<>(2);
-                }
+            if (currentCommandPatternId != null && currentCommandParameterList.size() != 0) {
                 commandParameters.put(currentCommandPatternId, currentCommandParameterList.toArray(CommandParameter.EMPTY_ARRAY));
             }
-            if (commandName.toLowerCase().equals(commandName)) {
+            if (commandParameters.isEmpty()) commandParameters.put("default", CommandParameter.EMPTY_ARRAY);
+            if (commandName.toLowerCase().equals(commandName)) {//强制命令名小写
                 if (!callback.canExecute()) {
                     return false;
                 }
@@ -281,32 +290,36 @@ public final class JSEventManager {
                 if (alias == null) {
                     alias = new String[0];
                 }
-                var cmd = new Command(commandName, description,
-                        usageMessage, alias) {
+                command = new Command(commandName, description, usageMessage, alias) {
+                    @Since("1.19.50-r4")
                     @Override
-                    public boolean execute(CommandSender sender, String commandLabel, String... args) {
+                    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
                         synchronized (jsPlugin.getJsContext()) {
-                            var result = callback.execute(sender, args);
-                            if (result.isBoolean()) {
-                                return result.asBoolean();
-                            } else return !result.isNull();
+                            var r = callback.execute(sender, result, log);
+                            if (r.isBoolean()) {
+                                return r.asBoolean() ? 1 : 0;
+                            } else if (r.isNumber()) {
+                                return r.asInt();
+                            } else return r.isNull() ? 0 : 1;
                         }
                     }
                 };
                 if (permission != null) {
-                    cmd.setPermission(permission);
+                    command.setPermission(permission);
                 }
                 if (permissionMessage != null) {
-                    cmd.setPermissionMessage(permissionMessage);
+                    command.setPermissionMessage(permissionMessage);
                 }
-                if (commandParameters != null) {
-                    cmd.setCommandParameters(commandParameters);
-                }
-                Server.getInstance().getCommandMap().register(jsPlugin.getName(), cmd);
+                command.setCommandParameters(commandParameters);
+                command.enableParamTree();
+                Server.getInstance().getCommandMap().register(jsPlugin.getName(), command);
                 return true;
             }
             return false;
         }
-    }
 
+        public Command getBuildCommand() {
+            return command;
+        }
+    }
 }
