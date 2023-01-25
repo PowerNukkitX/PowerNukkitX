@@ -41,7 +41,7 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
     public BlockButton() {
         this(0);
     }
-    
+
     @UsedByReflection
     public BlockButton(int meta) {
         super(meta);
@@ -77,13 +77,13 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
     }
 
     @PowerNukkitDifference(info = "Allow to be placed on top of the walls", since = "1.3.0.0-PN")
-    @PowerNukkitDifference(info = "Now, can be placed on solid blocks", since= "1.4.0.0-PN")
+    @PowerNukkitDifference(info = "Now, can be placed on solid blocks", since = "1.4.0.0-PN")
     @Override
     public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
         if (!BlockLever.isSupportValid(target, face)) {
             return false;
         }
-        
+
         setBlockFace(face);
         this.level.setBlock(block, this, true, true);
         return true;
@@ -108,8 +108,11 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
         this.level.setBlock(this, this, true, false);
         this.level.addLevelSoundEvent(this.add(0.5, 0.5, 0.5), LevelSoundEventPacket.SOUND_POWER_ON, GlobalBlockPalette.getOrCreateRuntimeId(this.getId(), this.getDamage()));
         if (this.level.getServer().isRedstoneEnabled()) {
-            this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 0, 15));
-
+            var event = new BlockRedstoneEvent(this, 0, 15);
+            this.level.getServer().getPluginManager().callEvent(event);
+            if (event.isCancelled()) {
+                return false;
+            }
             updateAroundRedstone();
             RedstoneComponent.updateAroundRedstone(getSide(getFacing().getOpposite()), getFacing());
         }
@@ -117,7 +120,7 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
         return true;
     }
 
-    @PowerNukkitDifference(info = "Now, can be placed on solid blocks", since= "1.4.0.0-PN")
+    @PowerNukkitDifference(info = "Now, can be placed on solid blocks", since = "1.4.0.0-PN")
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
@@ -135,8 +138,11 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
                 this.level.addLevelSoundEvent(this.add(0.5, 0.5, 0.5), LevelSoundEventPacket.SOUND_POWER_OFF, GlobalBlockPalette.getOrCreateRuntimeId(this.getId(), this.getDamage()));
 
                 if (this.level.getServer().isRedstoneEnabled()) {
-                    this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 15, 0));
-
+                    var event = new BlockRedstoneEvent(this, 15, 0);
+                    this.level.getServer().getPluginManager().callEvent(event);
+                    if (event.isCancelled()) {
+                        return 0;
+                    }
                     updateAroundRedstone();
                     RedstoneComponent.updateAroundRedstone(getSide(getFacing().getOpposite()), getFacing());
                 }
@@ -150,7 +156,7 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
     public boolean isActivated() {
         return getBooleanValue(BUTTON_PRESSED);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void setActivated(boolean activated) {
@@ -198,7 +204,11 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
     @Override
     public boolean onBreak(Item item) {
         if (isActivated()) {
-            this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 15, 0));
+            var event = new BlockRedstoneEvent(this, 15, 0);
+            this.level.getServer().getPluginManager().callEvent(event);
+            if (event.isCancelled()) {
+                return false;
+            }
         }
 
         return super.onBreak(item);
