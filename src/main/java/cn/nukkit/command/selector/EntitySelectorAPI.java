@@ -68,6 +68,7 @@ public class EntitySelectorAPI {
         API.registerArgument(new R());
         API.registerArgument(new RM());
         API.registerArgument(new Name());
+        API.registerArgument(new Tag());
     }
 
     /**
