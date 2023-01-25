@@ -300,7 +300,7 @@ public final class JSEventManager {
                                 return r.asBoolean() ? 1 : 0;
                             } else if (r.isNumber()) {
                                 return r.asInt();
-                            } else return !r.isNull() ? 1 : 0;
+                            } else return r.isNull() ? 0 : 1;
                         }
                     }
                 };
