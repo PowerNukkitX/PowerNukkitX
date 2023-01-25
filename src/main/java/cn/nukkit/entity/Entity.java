@@ -2332,6 +2332,9 @@ public abstract class Entity extends Location implements Metadatable {
                 if (onPhysicalInteraction(down, false)) {
                     return;
                 }
+                var farmEvent = new FarmLandDecayEvent(this, down);
+                this.server.getPluginManager().callEvent(farmEvent);
+                if (farmEvent.isCancelled()) return;
                 this.level.setBlock(down, new BlockDirt(), false, true);
                 return;
             }
