@@ -221,19 +221,19 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
             return false;
         }
 
-        HopperSearchItemEvent event = new HopperSearchItemEvent(this, false);
-        this.server.getPluginManager().callEvent(event);
-        if (event.isCancelled()) return false;
-
         Block blockSide = this.getSide(BlockFace.UP).getTickCachedLevelBlock();
         BlockEntity blockEntity = this.level.getBlockEntity(temporalVector.setComponentsAdding(this, BlockFace.UP));
 
         boolean changed = pushItems() || pushItemsIntoMinecart();
 
-        if (blockEntity instanceof InventoryHolder || blockSide instanceof BlockComposter) {
-            changed = pullItems(this, this) || changed;
-        } else {
-            changed = pullItemsFromMinecart() || pickupItems(this, this, pickupArea) || changed;
+        HopperSearchItemEvent event = new HopperSearchItemEvent(this, false);
+        this.server.getPluginManager().callEvent(event);
+        if (!event.isCancelled()) {
+            if (blockEntity instanceof InventoryHolder || blockSide instanceof BlockComposter) {
+                changed = pullItems(this, this) || changed;
+            } else {
+                changed = pullItemsFromMinecart() || pickupItems(this, this, pickupArea) || changed;
+            }
         }
 
         if (changed) {
