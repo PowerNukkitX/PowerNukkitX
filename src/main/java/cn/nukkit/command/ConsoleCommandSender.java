@@ -2,6 +2,7 @@ package cn.nukkit.command;
 
 import cn.nukkit.Server;
 import cn.nukkit.api.Since;
+import cn.nukkit.event.server.ConsoleOutputEvent;
 import cn.nukkit.lang.CommandOutputContainer;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.lang.TranslationContainer;
@@ -88,7 +89,6 @@ public class ConsoleCommandSender implements CommandSender {
 
     @Override
     public void sendMessage(String message) {
-        message = this.getServer().getLanguage().tr(message);
         for (String line : message.trim().split("\n")) {
             log.info(line);
         }
@@ -103,7 +103,12 @@ public class ConsoleCommandSender implements CommandSender {
     @Override
     public void sendCommandOutput(CommandOutputContainer container) {
         for (var msg : container.getMessages()) {
-            this.sendMessage(new TranslationContainer(msg.getMessageId(), msg.getParameters()));
+            var text = this.getServer().getLanguage().tr(new TranslationContainer(msg.getMessageId(), msg.getParameters()));
+            ConsoleOutputEvent event = new ConsoleOutputEvent(this, text);
+            this.getServer().getPluginManager().callEvent(event);
+            if (event.isCancelled()) continue;
+            text = event.getMessage();
+            this.sendMessage(text);
         }
     }
 
