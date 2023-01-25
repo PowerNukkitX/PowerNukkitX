@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 
 /**
@@ -29,7 +30,7 @@ public interface ISelectorArgument extends Comparable<ISelectorArgument>{
      * @return {@code List<Predicate<Entity>>}
      */
     @Nullable
-    List<Predicate<Entity>> getPredicates(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments);
+    Predicate<Entity> getPredicate(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments);
 
     /**
      * 获取此参数的名称
@@ -46,10 +47,14 @@ public interface ISelectorArgument extends Comparable<ISelectorArgument>{
 
     /**
      * 若一个参数有默认值（即此方法返回非null值），则在解析时若给定参数表中没有此参数，会以此默认值参与解析
+     *
+     * @param values 参数列表
+     * @param selectorType 选择器类型
+     * @param sender 命令执行者
      * @return 此参数的默认值
      */
     @Nullable
-    default String getDefaultValue() {
+    default String getDefaultValue(Map<String, List<String>> values, SelectorType selectorType, CommandSender sender) {
         return null;
     }
 

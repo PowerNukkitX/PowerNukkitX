@@ -10,7 +10,6 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.collect.Sets;
 
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
@@ -23,14 +22,14 @@ import java.util.function.Predicate;
 @Since("1.19.50-r4")
 public abstract class CachedSelectorArgument implements ISelectorArgument {
 
-    Cache<Set<String>, List<Predicate<Entity>>> cache;
+    Cache<Set<String>, Predicate<Entity>> cache;
 
-    public CachedSelectorArgument(Cache<Set<String>, List<Predicate<Entity>>> cache) {
+    public CachedSelectorArgument() {
         this.cache = provideCacheService();
     }
 
     @Override
-    public List<Predicate<Entity>> getPredicates(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) {
+    public Predicate<Entity> getPredicate(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) {
         return cache.get(Sets.newHashSet(arguments), (k) -> cache(k , selectorType));
     }
 
@@ -40,14 +39,14 @@ public abstract class CachedSelectorArgument implements ISelectorArgument {
      * @param selectorType 目标选择器类型
      * @return {@code List<Predicate<Entity>>}
      */
-    protected abstract List<Predicate<Entity>> cache(Set<String> arguments, SelectorType selectorType);
+    protected abstract Predicate<Entity> cache(Set<String> arguments, SelectorType selectorType);
 
     /**
      * 初始化缓存时调用此方法<p/>
      * 若需要自己的缓存实现，则可覆写此方法
      * @return {@code Cache<Set<String>, List<Predicate<Entity>>>}
      */
-    protected Cache<Set<String>, List<Predicate<Entity>>> provideCacheService() {
+    protected Cache<Set<String>, Predicate<Entity>> provideCacheService() {
         return Caffeine.newBuilder().maximumSize(65535).expireAfterAccess(1, TimeUnit.MINUTES).build();
     }
 }

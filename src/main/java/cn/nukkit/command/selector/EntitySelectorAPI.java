@@ -98,9 +98,9 @@ public class EntitySelectorAPI {
             else
                 return Lists.newArrayList();
         }
-        //对于玩家类型选择器，需要排除掉不是玩家的实体
+        //对于确定的玩家类型选择器，排除掉不是玩家的实体
         switch (selectorType) {
-            case ALL_PLAYERS, RANDOM_PLAYER, NEAREST_PLAYER ->
+            case ALL_PLAYERS, NEAREST_PLAYER ->
                 entities.removeIf(e -> !(e instanceof Player));
             default -> {}
         }
@@ -109,16 +109,15 @@ public class EntitySelectorAPI {
         //参照坐标
         var basePos = sender.getLocation().clone();
         for (var arg : orderedArgs) {
-            List<Predicate<Entity>> predicates;
+            Predicate<Entity> predicate;
             if (arguments.containsKey(arg.getKeyName()))
-                predicates = arg.getPredicates(selectorType, sender, basePos, arguments.get(arg.getKeyName()).toArray(new String[0]));
-            else if (arg.getDefaultValue() != null)
-                predicates = arg.getPredicates(selectorType, sender, basePos, arg.getDefaultValue());
+                predicate = arg.getPredicate(selectorType, sender, basePos, arguments.get(arg.getKeyName()).toArray(new String[0]));
+            else if (arg.getDefaultValue(arguments, selectorType, sender) != null)
+                predicate = arg.getPredicate(selectorType, sender, basePos, arg.getDefaultValue(arguments, selectorType, sender));
             else continue;
-            if (predicates == null || predicates.isEmpty())
+            if (predicate == null)
                 continue;
-            for (Predicate<Entity> predicate : predicates)
-                entities.removeIf(entity -> !predicate.test(entity));
+            entities.removeIf(entity -> !predicate.test(entity));
             //没符合条件的实体了，return
             if (entities.isEmpty()) return entities;
         }
@@ -135,6 +134,19 @@ public class EntitySelectorAPI {
                 i++;
             }
             return Lists.newArrayList(currentEntity);
+        }
+        //选择最近玩家
+        if (selectorType == NEAREST_PLAYER && entities.size() != 1) {
+            Entity nearest = null;
+            double min = Double.MAX_VALUE;
+            for (var entity : entities) {
+                var distanceSquared = 0d;
+                if ((distanceSquared = basePos.distanceSquared(entity)) < min) {
+                    min = distanceSquared;
+                    nearest = entity;
+                }
+            }
+            entities = Lists.newArrayList(nearest);
         }
         return entities;
     }

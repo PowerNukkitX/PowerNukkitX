@@ -18,10 +18,10 @@ import java.util.function.Predicate;
 public class DY extends ScopeArgument {
     @Nullable
     @Override
-    public List<Predicate<Entity>> getPredicates(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) {
+    public Predicate<Entity> getPredicate(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) {
         var y = basePos.getY();
         var dy = Double.parseDouble(arguments[0]);
-        return Lists.newArrayList(entity -> ParseUtils.checkBetween(y, y + dy, entity.getY()));
+        return entity -> ParseUtils.checkBetween(y, y + dy, entity.getY());
     }
 
     @Override

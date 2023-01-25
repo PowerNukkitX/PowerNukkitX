@@ -10,7 +10,6 @@ import cn.nukkit.level.Location;
 import com.dfsek.terra.lib.google.common.collect.Lists;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.function.Predicate;
 
 @PowerNukkitXOnly
@@ -18,10 +17,10 @@ import java.util.function.Predicate;
 public class DZ extends ScopeArgument {
     @Nullable
     @Override
-    public List<Predicate<Entity>> getPredicates(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) {
+    public Predicate<Entity> getPredicate(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) {
         var z = basePos.getZ();
         var dz = Double.parseDouble(arguments[0]);
-        return Lists.newArrayList(entity -> ParseUtils.checkBetween(z, z + dz, entity.getZ()));
+        return entity -> ParseUtils.checkBetween(z, z + dz, entity.getZ());
     }
 
     @Override
