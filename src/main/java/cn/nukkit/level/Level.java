@@ -15,7 +15,6 @@ import cn.nukkit.entity.item.EntityXPOrb;
 import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.entity.weather.EntityLightning;
 import cn.nukkit.event.block.BlockBreakEvent;
-import cn.nukkit.event.block.BlockChangeEvent;
 import cn.nukkit.event.block.BlockPlaceEvent;
 import cn.nukkit.event.block.BlockUpdateEvent;
 import cn.nukkit.event.level.*;
@@ -2590,9 +2589,6 @@ public class Level implements ChunkManager, Metadatable {
             //this.sendBlocks(this.getChunkPlayers(cx, cz).values().toArray(new Player[0]), new Block[]{block.getLevelBlockAtLayer(1)}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 1);
         } else {
             addBlockChange(index, x, y, z);
-            BlockChangeEvent blockChangeEvent = new BlockChangeEvent(blockPrevious, block);
-            this.server.getPluginManager().callEvent(blockChangeEvent);
-            if (blockChangeEvent.isCancelled()) return false;
         }
         for (ChunkLoader loader : this.getChunkLoaders(cx, cz)) {
             loader.onBlockChanged(block);
