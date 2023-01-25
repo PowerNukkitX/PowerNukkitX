@@ -45,12 +45,15 @@ public final class EntitySelector {
 
     private static final Set<String> ARGS = Sets.newHashSet();
 
+    //2
     private static final String ARG_X = registerArgument("x");
     private static final String ARG_Y = registerArgument("y");
     private static final String ARG_Z = registerArgument("z");
+    //1
     private static final String ARG_DX = registerArgument("dx");
     private static final String ARG_DY = registerArgument("dy");
     private static final String ARG_DZ = registerArgument("dz");
+
     private static final String ARG_R = registerArgument("r");
     private static final String ARG_RM = registerArgument("rm");
     private static final String ARG_C = registerArgument("c");

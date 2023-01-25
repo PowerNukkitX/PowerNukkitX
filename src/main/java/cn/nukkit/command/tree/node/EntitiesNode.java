@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.command.selector.EntitySelectorAPI;
 import cn.nukkit.command.utils.EntitySelector;
 import cn.nukkit.entity.Entity;
 
@@ -23,8 +24,8 @@ public class EntitiesNode extends TargetNode<Entity> {
     public void fill(String arg) {
         if (arg.isBlank()) {
             this.error();
-        } else if (EntitySelector.hasArguments(arg)) {
-            var entities = EntitySelector.matchEntities(this.parent.parent.getSender(), arg);
+        } else if (EntitySelectorAPI.getAPI().checkValid(arg)) {
+            var entities = EntitySelectorAPI.getAPI().matchEntities(this.parent.parent.getSender(), arg);
             if (entities != null) this.value = entities;
             else error("commands.generic.noTargetMatch");
         } else {

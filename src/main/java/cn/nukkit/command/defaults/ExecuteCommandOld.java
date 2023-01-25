@@ -48,11 +48,11 @@ public class ExecuteCommandOld extends VanillaCommand {
         int num = 0;
         var list = result.getValue();
         List<Entity> entities = list.getResult(0);
-        Position pos = list.getResult(1);
         switch (result.getKey()) {
             case "default" -> {
                 String command = list.getResult(2);
                 for (Entity entity : entities) {
+                    Position pos = ((PositionNode) list.get(1)).get(entity);
                     ExecutorCommandSender executeSender = new ExecutorCommandSender(sender, entity, Location.fromObject(pos));
                     int n = executeSender.getServer().executeCommand(executeSender, command);
                     if (n == 0) {
@@ -61,11 +61,12 @@ public class ExecuteCommandOld extends VanillaCommand {
                 }
             }
             case "detect" -> {
-                Position detect = ((PositionNode) list.get(3)).get(pos);
                 int blockid = list.getResult(4);
                 int meta = list.getResult(5);
                 String command = list.getResult(6);
                 for (Entity entity : entities) {
+                    Position pos = ((PositionNode) list.get(1)).get(entity);
+                    Position detect = ((PositionNode) list.get(3)).get(pos);
                     if (detect.getLevelBlock().getId() == blockid && detect.getLevelBlock().getDamage() == meta) {
                         ExecutorCommandSender executeSender = new ExecutorCommandSender(sender, entity, Location.fromObject(pos));
                         int n = executeSender.getServer().executeCommand(executeSender, command);
