@@ -2,6 +2,7 @@ package cn.nukkit.command.tree.node;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.command.exceptions.SelectorSyntaxException;
 import cn.nukkit.command.selector.EntitySelectorAPI;
 import cn.nukkit.entity.Entity;
 
@@ -31,26 +32,30 @@ public class MessageStringNode extends ParamNode<String> {
 
             var str = String.join(" ", TMP);
             var match = target.matcher(str);
-            this.value = match.replaceAll(r -> {
-                var start = Math.max(0, match.start() - 1);
-                var end = Math.min(str.length(), match.end());
-                if (start != 0) {
-                    char before = str.charAt(start);
-                    if (before == '”' || before == '\'' || before == '\\' || before == ';') return match.group();
-                }
-                if (end != str.length()) {
-                    char after = str.charAt(end);
-                    if (after == '”' || after == '\'' || after == '\\' || after == ';') return match.group();
-                }
-                var m = match.group();
-                if (EntitySelectorAPI.getAPI().checkValid(m)) {
-                    StringJoiner join = new StringJoiner(", ");
-                    for (Entity entity : EntitySelectorAPI.getAPI().matchEntities(this.parent.parent.getSender(), m)) {
-                        join.add(entity.getName());
+            try {
+                this.value = match.replaceAll(r -> {
+                    var start = Math.max(0, match.start() - 1);
+                    var end = Math.min(str.length(), match.end());
+                    if (start != 0) {
+                        char before = str.charAt(start);
+                        if (before == '”' || before == '\'' || before == '\\' || before == ';') return match.group();
                     }
-                    return join.toString();
-                } else return m;
-            });
+                    if (end != str.length()) {
+                        char after = str.charAt(end);
+                        if (after == '”' || after == '\'' || after == '\\' || after == ';') return match.group();
+                    }
+                    var m = match.group();
+                    if (EntitySelectorAPI.getAPI().checkValid(m)) {
+                        StringJoiner join = new StringJoiner(", ");
+                        for (Entity entity : EntitySelectorAPI.getAPI().matchEntities(this.parent.parent.getSender(), m)) {
+                            join.add(entity.getName());
+                        }
+                        return join.toString();
+                    } else return m;
+                });
+            } catch (SelectorSyntaxException e) {
+                error(e.getMessage());
+            }
         }
     }
 
