@@ -8,6 +8,7 @@ import cn.nukkit.command.selector.ParseUtils;
 import cn.nukkit.command.selector.SelectorType;
 import cn.nukkit.command.selector.args.CachedSimpleSelectorArgument;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.custom.CustomEntity;
 import cn.nukkit.level.Location;
 import cn.nukkit.network.protocol.AddEntityPacket;
 import com.google.common.collect.ImmutableMap;
@@ -56,14 +57,22 @@ public class Type extends CachedSimpleSelectorArgument {
     }
 
     protected String completionPrefix(String type) {
-        return type.startsWith("minecraft:") ? type : "minecraft:" + type;
+        var completed = type.startsWith("minecraft:") ? type : "minecraft:" + type;
+        if (!ENTITY_TYPE2ID.containsKey(type) && !ENTITY_TYPE2ID.containsKey(completed)) {
+            //是自定义生物，不需要补全
+            return type;
+        }
+        return completed;
     }
 
     protected boolean isType(Entity entity, String type) {
         if (entity instanceof Player)
             //player需要特判，因为EntityHuman的getNetworkId()返回-1
             return type.equals("minecraft:player");
+        else if (entity instanceof CustomEntity customEntity)
+            return customEntity.getDefinition().getStringId().equals(type);
         else
-            return entity.getNetworkId() == ENTITY_TYPE2ID.get(type);
+            return ENTITY_TYPE2ID.containsKey(type) && entity.getNetworkId() == ENTITY_TYPE2ID.get(type);
+
     }
 }
