@@ -1,5 +1,6 @@
 package cn.nukkit.command.selector;
 
+import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.exceptions.SelectorSyntaxException;
@@ -85,5 +86,22 @@ public class ParseUtils {
         return bound1 < bound2 ?
                 (value >= bound1 && value <= bound2) :
                 (value >= bound2 && value <= bound1);
+    }
+
+    /**
+     * 通过给定游戏模式字符串解析游戏模式数字<p/>
+     * 此方法可匹配参数与原版选择器参数m给定预定值相同
+     * @param token 字符串
+     * @return 游戏模式数字
+     */
+    public static int parseGameMode(String token) {
+        return switch (token) {
+            case "s", "survival", "0" -> 0;
+            case "c", "creative", "1" -> 1;
+            case "a", "adventure", "2" -> 2;
+            case "spectator", "3" -> 3;
+            case "d", "default" -> Server.getInstance().getDefaultGamemode();
+            default -> throw new SelectorSyntaxException("Unknown gamemode token: " + token);
+        };
     }
 }
