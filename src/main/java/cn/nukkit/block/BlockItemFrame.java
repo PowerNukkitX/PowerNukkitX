@@ -9,6 +9,7 @@ import cn.nukkit.blockentity.BlockEntityItemFrame;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BooleanBlockProperty;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
+import cn.nukkit.event.player.PlayerUseItemFrameEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemItemFrame;
@@ -167,11 +168,14 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
     public boolean onActivate(@Nonnull Item item, Player player) {
         BlockEntityItemFrame itemFrame = getOrCreateBlockEntity();
         if (itemFrame.getItem().isNull()) {
-        	Item itemOnFrame = item.clone();
-        	if (player != null && !player.isCreative()) {
-        		itemOnFrame.setCount(itemOnFrame.getCount() - 1);
+            Item itemOnFrame = item.clone();
+            PlayerUseItemFrameEvent event = new PlayerUseItemFrameEvent(player, this, itemFrame, itemOnFrame, PlayerUseItemFrameEvent.Action.PUT);
+            this.getLevel().getServer().getPluginManager().callEvent(event);
+            if (event.isCancelled()) return false;
+            if (player != null && !player.isCreative()) {
+                itemOnFrame.setCount(itemOnFrame.getCount() - 1);
                 player.getInventory().setItemInHand(itemOnFrame);
-        	}
+            }
             itemOnFrame.setCount(1);
             itemFrame.setItem(itemOnFrame);
             if (itemOnFrame.getId() == ItemID.MAP) {
@@ -180,6 +184,9 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
             }
             this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ITEM_FRAME_ITEM_ADDED);
         } else {
+            PlayerUseItemFrameEvent event = new PlayerUseItemFrameEvent(player, this, itemFrame, null, PlayerUseItemFrameEvent.Action.ROTATION);
+            this.getLevel().getServer().getPluginManager().callEvent(event);
+            if (event.isCancelled()) return false;
             itemFrame.setItemRotation((itemFrame.getItemRotation() + 1) % 8);
             if (isStoringMap()) {
                 setStoringMap(false);
@@ -193,7 +200,7 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
     @PowerNukkitDifference(info = "Allow to place on walls", since = "1.3.0.0-PN")
     @Override
     public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        if ((!(target.isSolid() || target instanceof BlockWall)  && !target.equals(block) || (block.isSolid() && !block.canBeReplaced()))) {
+        if ((!(target.isSolid() || target instanceof BlockWall) && !target.equals(block) || (block.isSolid() && !block.canBeReplaced()))) {
             return false;
         }
 
@@ -288,7 +295,7 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
 
     @Override
     @PowerNukkitOnly
-    public  boolean sticksToPiston() {
+    public boolean sticksToPiston() {
         return false;
     }
 
@@ -296,16 +303,16 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
         double[][] aabb = {
-                {2.0/16, 14.0/16},
-                {2.0/16, 14.0/16},
-                {2.0/16, 14.0/16}
+                {2.0 / 16, 14.0 / 16},
+                {2.0 / 16, 14.0 / 16},
+                {2.0 / 16, 14.0 / 16}
         };
 
         BlockFace facing = getFacing();
         if (facing.getAxisDirection() == POSITIVE) {
             int axis = facing.getAxis().ordinal();
             aabb[axis][0] = 0;
-            aabb[axis][1] = 1.0/16;
+            aabb[axis][1] = 1.0 / 16;
         }
 
         return new SimpleAxisAlignedBB(

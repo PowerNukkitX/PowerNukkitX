@@ -2590,7 +2590,6 @@ public class Level implements ChunkManager, Metadatable {
         } else {
             addBlockChange(index, x, y, z);
         }
-
         for (ChunkLoader loader : this.getChunkLoaders(cx, cz)) {
             loader.onBlockChanged(block);
         }

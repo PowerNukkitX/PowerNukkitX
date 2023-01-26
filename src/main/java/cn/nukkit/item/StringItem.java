@@ -14,7 +14,6 @@ import javax.annotation.Nullable;
  * @since 2021-06-12
  */
 @PowerNukkitOnly
-@Since("FUTURE")
 public class StringItem extends Item {
 
     private final String id;
@@ -27,7 +26,6 @@ public class StringItem extends Item {
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
     public StringItem(@Nonnull String id, @Nullable String name) {
         super(STRING_IDENTIFIED_ITEM, 0, 1, notEmpty(name));
         Preconditions.checkNotNull(id, "id can't be null");
@@ -41,14 +39,12 @@ public class StringItem extends Item {
         return true;
     }
 
-    @Since("FUTURE")
     @PowerNukkitOnly
     @Override
     public boolean hasCustomCompoundTag() {
         return customCompound != null && customCompound.length > 0;
     }
 
-    @Since("FUTURE")
     @PowerNukkitOnly
     @Override
     public byte[] getCustomCompoundTag() {

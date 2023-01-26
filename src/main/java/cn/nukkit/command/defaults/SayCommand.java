@@ -4,13 +4,10 @@ import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
-import cn.nukkit.command.selector.EntitySelectorAPI;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
-import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.TranslationContainer;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,22 +30,8 @@ public class SayCommand extends VanillaCommand {
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         String senderString = sender.getName();
-        String[] message = result.getValue().getResult(0);
-        StringBuilder msg = new StringBuilder();
-        for (String arg : message) {
-            if (EntitySelectorAPI.getAPI().checkValid(arg)) {
-                List<Entity> entities = EntitySelectorAPI.getAPI().matchEntities(sender, arg);
-                for (Entity entity : entities) {
-                    msg.append(entity.getName()).append(" ");
-                }
-            } else {
-                msg.append(arg).append(" ");
-            }
-        }
-        if (msg.length() > 0) {
-            msg = new StringBuilder(msg.substring(0, msg.length() - 1));
-        }
-        sender.getServer().broadcastMessage(new TranslationContainer("%chat.type.announcement", senderString, msg.toString()));
+        String message = result.getValue().getResult(0);
+        sender.getServer().broadcastMessage(new TranslationContainer("%chat.type.announcement", senderString, message));
         return 1;
     }
 }

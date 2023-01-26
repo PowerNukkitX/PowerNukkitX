@@ -7,6 +7,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockLava;
 import cn.nukkit.block.BlockLiquid;
 import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.event.player.EntityFreezeEvent;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.SimpleAxisAlignedBB;
@@ -79,6 +80,33 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
             this.attack(new EntityDamageEvent(this, EntityDamageEvent.DamageCause.COLLIDE, 3));
         }
         return super.onUpdate(currentTick);
+    }
+
+    @Override
+    public boolean entityBaseTick() {
+        return this.entityBaseTick(1);
+    }
+
+    @Override
+    public boolean entityBaseTick(int tickDiff) {
+        boolean hasUpdate = super.entityBaseTick(tickDiff);
+        //handle human entity freeze
+        var collidedWithPowderSnow = this.getTickCachedCollisionBlocks().stream().anyMatch(block -> block.getId() == Block.POWDER_SNOW);
+        if (this.getFreezingTicks() < 140 && collidedWithPowderSnow) {
+            this.addFreezingTicks(1);
+            EntityFreezeEvent event = new EntityFreezeEvent(this);
+            this.server.getPluginManager().callEvent(event);
+            if (!event.isCancelled()) {
+                //this.setMovementSpeed(); //todo 给物理实体添加freeze减速
+            }
+        } else if (this.getFreezingTicks() > 0 && !collidedWithPowderSnow) {
+            this.addFreezingTicks(-1);
+            //this.setMovementSpeed();
+        }
+        if (this.getFreezingTicks() == 140 && this.getServer().getTick() % 40 == 0) {
+            this.attack(new EntityDamageEvent(this, EntityDamageEvent.DamageCause.FREEZING, getFrostbiteInjury()));
+        }
+        return hasUpdate;
     }
 
     @Override

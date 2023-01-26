@@ -70,8 +70,7 @@ public class TitleCommand extends VanillaCommand {
             }
             case "set" -> {
                 String titleLocation = list.getResult(1);
-                String[] message = list.getResult(2);
-                var titleText = String.join(" ", message);
+                String titleText = list.getResult(2);
                 switch (titleLocation) {
                     case "title" -> {
                         for (Player player : players) {

@@ -1,6 +1,8 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.EntityHumanType;
 import cn.nukkit.item.Item;
@@ -13,6 +15,12 @@ public class PlayerOffhandInventory extends BaseInventory {
 
     public PlayerOffhandInventory(EntityHumanType holder) {
         super(holder, InventoryType.OFFHAND);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    public PlayerOffhandInventory(HumanInventoryHolder humanInventoryHolder) {
+        super(humanInventoryHolder, InventoryType.OFFHAND);
     }
 
     @Override

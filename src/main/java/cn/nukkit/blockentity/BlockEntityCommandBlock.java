@@ -322,11 +322,6 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
                         this.successCount = 1;
                     } else {
                         this.lastOutput = null;
-
-                        while (cmd.startsWith("/") || cmd.startsWith("\n") || cmd.startsWith(" ")) {
-                            cmd = cmd.substring(1);
-                        }
-
                         CommandBlockExecuteEvent event = new CommandBlockExecuteEvent(this.getLevelBlock(), cmd);
                         Server.getInstance().getPluginManager().callEvent(event);
                         if (event.isCancelled()) {

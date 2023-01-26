@@ -35,18 +35,11 @@ public class TellCommand extends VanillaCommand {
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         List<Player> players = list.getResult(0);
-        StringBuilder msg = new StringBuilder();
-        String[] args = list.getResult(1);
-        for (int i = 0; i < args.length; i++) {
-            msg.append(args[i]).append(" ");
-        }
-        if (msg.length() > 0) {
-            msg = new StringBuilder(msg.substring(0, msg.length() - 1));
-        }
+        String msg = list.getResult(1);
         for (Player player : players) {
             if (player == sender) continue;
-            log.addSuccess("commands.message.display.outgoing", player.getName(), msg.toString());
-            player.sendMessage(new TranslationContainer("commands.message.display.incoming", sender.getName(), msg.toString()));
+            log.addSuccess("commands.message.display.outgoing", player.getName(), msg);
+            player.sendMessage(new TranslationContainer("commands.message.display.incoming", sender.getName(), msg));
         }
         log.output();
         return 1;

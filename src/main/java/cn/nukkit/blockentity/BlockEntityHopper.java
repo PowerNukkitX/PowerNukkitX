@@ -1,7 +1,6 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -11,14 +10,12 @@ import cn.nukkit.block.BlockHopper;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.blockstate.BlockState;
-import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.item.EntityItem;
-import cn.nukkit.entity.item.EntityMinecartAbstract;
-import cn.nukkit.entity.item.EntityMinecartHopper;
+import cn.nukkit.event.entity.EventHopperSearchItemEvent;
 import cn.nukkit.event.inventory.InventoryMoveItemEvent;
 import cn.nukkit.inventory.*;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
+import cn.nukkit.level.Position;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
@@ -223,6 +220,10 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
         if (disabled) {
             return false;
         }
+
+        EventHopperSearchItemEvent event = new EventHopperSearchItemEvent(this, false);
+        this.server.getPluginManager().callEvent(event);
+        if (event.isCancelled()) return false;
 
         Block blockSide = this.getSide(BlockFace.UP).getTickCachedLevelBlock();
         BlockEntity blockEntity = this.level.getBlockEntity(temporalVector.setComponentsAdding(this, BlockFace.UP));
@@ -521,5 +522,10 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
         }
 
         return c;
+    }
+
+    @Override
+    public Position getPosition() {
+        return this.getBlock();
     }
 }

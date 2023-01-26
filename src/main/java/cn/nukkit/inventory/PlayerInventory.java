@@ -2,6 +2,8 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.EntityHuman;
@@ -39,7 +41,17 @@ public class PlayerInventory extends BaseInventory {
         for (int i = 0; i < this.hotbar.length; i++) {
             this.hotbar[i] = i;
         }
+    }
 
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    public PlayerInventory(HumanInventoryHolder humanInventoryHolder) {
+        super(humanInventoryHolder, InventoryType.PLAYER);
+        this.hotbar = new int[this.getHotbarSize()];
+
+        for (int i = 0; i < this.hotbar.length; i++) {
+            this.hotbar[i] = i;
+        }
     }
 
     @Override

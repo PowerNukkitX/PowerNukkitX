@@ -88,7 +88,7 @@ public class BlockObserver extends BlockSolidMeta implements RedstoneComponent, 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implemented")
     @Override
     public int getStrongPower(BlockFace side) {
-        return isPowered() && side == getBlockFace()? 15 : 0;
+        return isPowered() && side == getBlockFace() ? 15 : 0;
     }
 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implemented")
@@ -109,7 +109,12 @@ public class BlockObserver extends BlockSolidMeta implements RedstoneComponent, 
             }
 
             if (!isPowered()) {
-                level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 0, 15));
+                var event = new BlockRedstoneEvent(this, 0, 15);
+                this.level.getServer().getPluginManager().callEvent(event);
+                if (event.isCancelled()) {
+                    return 0;
+                }
+
                 setPowered(true);
 
                 if (level.setBlock(this, this)) {
@@ -118,7 +123,11 @@ public class BlockObserver extends BlockSolidMeta implements RedstoneComponent, 
                     level.scheduleUpdate(this, 2);
                 }
             } else {
-                pluginManager.callEvent(new BlockRedstoneEvent(this, 15, 0));
+                var event = new BlockRedstoneEvent(this, 15, 0);
+                this.level.getServer().getPluginManager().callEvent(event);
+                if (event.isCancelled()) {
+                    return 0;
+                }
                 setPowered(false);
 
                 level.setBlock(this, this);
@@ -183,13 +192,13 @@ public class BlockObserver extends BlockSolidMeta implements RedstoneComponent, 
     public boolean isPowered() {
         return getBooleanValue(POWERED);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void setPowered(boolean powered) {
         setBooleanValue(POWERED, powered);
     }
-    
+
     @Override
     public BlockFace getBlockFace() {
         return getPropertyValue(FACING_DIRECTION);

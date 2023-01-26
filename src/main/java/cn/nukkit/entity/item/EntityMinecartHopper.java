@@ -11,6 +11,7 @@ import cn.nukkit.block.BlockRailActivator;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
+import cn.nukkit.event.entity.EventHopperSearchItemEvent;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.MinecartHopperInventory;
 import cn.nukkit.item.Item;
@@ -52,6 +53,10 @@ public class EntityMinecartHopper extends EntityMinecartAbstract implements Inve
         if (isDisabled()) {
             return false;
         }
+
+        EventHopperSearchItemEvent event = new EventHopperSearchItemEvent(this, true);
+        this.server.getPluginManager().callEvent(event);
+        if (event.isCancelled()) return false;
 
         this.updatePickupArea();
 

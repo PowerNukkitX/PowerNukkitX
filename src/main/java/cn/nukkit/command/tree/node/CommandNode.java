@@ -3,7 +3,10 @@ package cn.nukkit.command.tree.node;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * 将全部剩余的参数以空格为分隔符合并，解析为{@link String}值
@@ -30,9 +33,7 @@ public class CommandNode extends ParamNode<String> {
             TMP.add(arg);
         } else {
             TMP.add(arg);
-            var join = new StringJoiner(" ");
-            TMP.forEach(join::add);
-            this.value = join.toString();
+            this.value = String.join(" ", TMP);
             first = true;
         }
     }
