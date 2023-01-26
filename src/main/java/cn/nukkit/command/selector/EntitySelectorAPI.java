@@ -208,7 +208,7 @@ public class EntitySelectorAPI {
                 String argName = split.get(0);
 
                 if (!registry.containsKey(argName)) {
-                    throw new SelectorSyntaxException("Unknown command argument: " + argName);
+                    throw new SelectorSyntaxException("Unknown selector argument: " + argName);
                 }
 
                 if (!args.containsKey(argName)) {
