@@ -15,7 +15,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.Getter;
 
-import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
@@ -124,20 +123,24 @@ public class EntitySelectorAPI {
         //参照坐标
         var basePos = sender.getLocation().clone();
         for (var arg : orderedArgs) {
-            if (!arg.isFilter()) {
-                Predicate<Entity> predicate;
-                if (arguments.containsKey(arg.getKeyName()))
-                    predicate = arg.getPredicate(selectorType, sender, basePos, arguments.get(arg.getKeyName()).toArray(new String[0]));
-                else if (arg.getDefaultValue(arguments, selectorType, sender) != null)
-                    predicate = arg.getPredicate(selectorType, sender, basePos, arg.getDefaultValue(arguments, selectorType, sender));
-                else continue;
-                if (predicate == null)
-                    continue;
-                entities.removeIf(entity -> !predicate.test(entity));
-            } else {
-                if (arguments.containsKey(arg.getKeyName()))
-                    entities = arg.getFilter(selectorType, sender, basePos, arguments.get(arg.getKeyName()).toArray(new String[0])).apply(entities);
-                else continue;
+            try {
+                if (!arg.isFilter()) {
+                    Predicate<Entity> predicate;
+                    if (arguments.containsKey(arg.getKeyName()))
+                        predicate = arg.getPredicate(selectorType, sender, basePos, arguments.get(arg.getKeyName()).toArray(new String[0]));
+                    else if (arg.getDefaultValue(arguments, selectorType, sender) != null)
+                        predicate = arg.getPredicate(selectorType, sender, basePos, arg.getDefaultValue(arguments, selectorType, sender));
+                    else continue;
+                    if (predicate == null)
+                        continue;
+                    entities.removeIf(entity -> !predicate.test(entity));
+                } else {
+                    if (arguments.containsKey(arg.getKeyName()))
+                        entities = arg.getFilter(selectorType, sender, basePos, arguments.get(arg.getKeyName()).toArray(new String[0])).apply(entities);
+                    else continue;
+                }
+            } catch (Throwable t) {
+                throw new SelectorSyntaxException("Error while parsing selector argument: " + arg.getKeyName(), t);
             }
             //没符合条件的实体了，return
             if (entities.isEmpty()) return entities;
@@ -205,7 +208,7 @@ public class EntitySelectorAPI {
                 String argName = split.get(0);
 
                 if (!registry.containsKey(argName)) {
-                    throw new SelectorSyntaxException("Unknown selector argument: " + argName);
+                    throw new SelectorSyntaxException("Unknown command argument: " + argName);
                 }
 
                 if (!args.containsKey(argName)) {
