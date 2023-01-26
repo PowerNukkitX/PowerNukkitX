@@ -53,7 +53,7 @@ public class Type extends CachedSimpleSelectorArgument {
 
     @Override
     public int getPriority() {
-        return 3;
+        return 4;
     }
 
     protected String completionPrefix(String type) {

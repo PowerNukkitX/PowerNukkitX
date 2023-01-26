@@ -69,7 +69,7 @@ public class Scores extends CachedSimpleSelectorArgument {
 
     @Override
     public int getPriority() {
-        return 4;
+        return 5;
     }
 
     protected record ScoreCondition(String objectiveName, int min, int max, boolean reversed){

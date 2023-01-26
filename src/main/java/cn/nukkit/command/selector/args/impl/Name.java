@@ -36,6 +36,6 @@ public class Name extends CachedSimpleSelectorArgument {
 
     @Override
     public int getPriority() {
-        return 3;
+        return 4;
     }
 }
