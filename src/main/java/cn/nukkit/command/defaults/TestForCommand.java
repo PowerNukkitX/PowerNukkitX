@@ -31,7 +31,12 @@ public class TestForCommand extends VanillaCommand {
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         List<Entity> targets = result.getValue().getResult(0);
-        log.addSuccess("commands.testfor.success", targets.stream().map(Entity::getName).collect(Collectors.joining(","))).output();
-        return 1;
+        if (targets.isEmpty()) {
+            log.addNoTargetMatch().output();
+            return 0;
+        } else {
+            log.addSuccess("commands.testfor.success", targets.stream().map(Entity::getName).collect(Collectors.joining(","))).output();
+            return targets.size();
+        }
     }
 }
