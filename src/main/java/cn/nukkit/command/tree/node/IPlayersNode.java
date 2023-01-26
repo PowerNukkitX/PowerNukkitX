@@ -34,7 +34,7 @@ public class IPlayersNode extends ParamNode<List<IPlayer>> {
                 error(exception.getMessage());
                 return;
             }
-            if (entities != null)
+            if (!entities.isEmpty())
                 this.value = entities.stream().filter(entity -> entity instanceof Player).map(entity -> (Player) entity).collect(Collectors.toList());
             else error("commands.generic.noTargetMatch");
         } else {

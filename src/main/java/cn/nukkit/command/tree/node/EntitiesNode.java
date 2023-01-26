@@ -33,7 +33,7 @@ public class EntitiesNode extends TargetNode<Entity> {
                 error(exception.getMessage());
                 return;
             }
-            if (entities != null) this.value = entities;
+            if (!entities.isEmpty()) this.value = entities;
             else error("commands.generic.noTargetMatch");
         } else {
             Player player = Server.getInstance().getPlayer(arg);

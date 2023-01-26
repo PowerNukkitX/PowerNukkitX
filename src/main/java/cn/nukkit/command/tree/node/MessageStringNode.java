@@ -20,7 +20,6 @@ import java.util.regex.Pattern;
 @PowerNukkitXOnly
 @Since("1.19.50-r4")
 public class MessageStringNode extends ParamNode<String> {
-    private final Pattern target = Pattern.compile("@([aeprs]|initiator)");
 
     private final List<String> TMP = new ArrayList<>();
 
@@ -31,7 +30,7 @@ public class MessageStringNode extends ParamNode<String> {
             TMP.add(arg);
 
             var str = String.join(" ", TMP);
-            var match = target.matcher(str);
+            var match = EntitySelectorAPI.getENTITY_SELECTOR().matcher(str);
             try {
                 this.value = match.replaceAll(r -> {
                     var start = Math.max(0, match.start() - 1);
