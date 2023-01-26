@@ -77,6 +77,7 @@ public class EntitySelectorAPI {
         API.registerArgument(new RXM());
         API.registerArgument(new RY());
         API.registerArgument(new RYM());
+        API.registerArgument(new Scores());
     }
 
     /**
