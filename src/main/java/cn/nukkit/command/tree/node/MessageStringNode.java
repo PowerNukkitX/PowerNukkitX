@@ -2,7 +2,7 @@ package cn.nukkit.command.tree.node;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.command.utils.EntitySelector;
+import cn.nukkit.command.selector.EntitySelectorAPI;
 import cn.nukkit.entity.Entity;
 
 import java.util.ArrayList;
@@ -43,9 +43,9 @@ public class MessageStringNode extends ParamNode<String> {
                     if (after == '”' || after == '\'' || after == '\\' || after == ';') return match.group();
                 }
                 var m = match.group();
-                if (EntitySelector.hasArguments(m)) {
+                if (EntitySelectorAPI.getAPI().checkValid(m)) {
                     StringJoiner join = new StringJoiner(", ");
-                    for (Entity entity : EntitySelector.matchEntities(this.parent.parent.getSender(), m)) {
+                    for (Entity entity : EntitySelectorAPI.getAPI().matchEntities(this.parent.parent.getSender(), m)) {
                         join.add(entity.getName());
                     }
                     return join.toString();
