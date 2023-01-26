@@ -9,10 +9,10 @@ import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamOption;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.command.selector.EntitySelectorAPI;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.node.WildcardIntNode;
 import cn.nukkit.command.utils.CommandLogger;
-import cn.nukkit.command.utils.EntitySelector;
 import cn.nukkit.scoreboard.data.DisplaySlot;
 import cn.nukkit.scoreboard.data.SortOrder;
 import cn.nukkit.scoreboard.manager.IScoreboardManager;
@@ -209,8 +209,8 @@ public class ScoreboardCommand extends VanillaCommand {
                         for (var scoreboard : manager.getScoreboards().values()) {
                             scorers.addAll(scoreboard.getLines().keySet());
                         }
-                    } else if (EntitySelector.hasArguments(wildcard_target_str)) {
-                        scorers = EntitySelector.matchEntities(sender, wildcard_target_str).stream().map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).collect(Collectors.toSet());
+                    } else if (EntitySelectorAPI.getAPI().checkValid(wildcard_target_str)) {
+                        scorers = EntitySelectorAPI.getAPI().matchEntities(sender, wildcard_target_str).stream().map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).collect(Collectors.toSet());
                     } else if (Server.getInstance().getPlayer(wildcard_target_str) != null) {
                         scorers.add(new PlayerScorer(Server.getInstance().getPlayer(wildcard_target_str)));
                     } else {
@@ -263,8 +263,8 @@ public class ScoreboardCommand extends VanillaCommand {
                     for (var scoreboard : manager.getScoreboards().values()) {
                         scorers.addAll(scoreboard.getLines().keySet());
                     }
-                } else if (EntitySelector.hasArguments(wildcard_target_str)) {
-                    scorers = EntitySelector.matchEntities(sender, wildcard_target_str).stream().map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).collect(Collectors.toSet());
+                } else if (EntitySelectorAPI.getAPI().checkValid(wildcard_target_str)) {
+                    scorers = EntitySelectorAPI.getAPI().matchEntities(sender, wildcard_target_str).stream().map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).collect(Collectors.toSet());
                 } else if (Server.getInstance().getPlayer(wildcard_target_str) != null) {
                     scorers.add(new PlayerScorer(Server.getInstance().getPlayer(wildcard_target_str)));
                 } else {
@@ -301,8 +301,8 @@ public class ScoreboardCommand extends VanillaCommand {
                     for (var scoreboard : manager.getScoreboards().values()) {
                         scorers.addAll(scoreboard.getLines().keySet());
                     }
-                } else if (EntitySelector.hasArguments(wildcard_target_str)) {
-                    scorers = EntitySelector.matchEntities(sender, wildcard_target_str).stream().map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).collect(Collectors.toSet());
+                } else if (EntitySelectorAPI.getAPI().checkValid(wildcard_target_str)) {
+                    scorers = EntitySelectorAPI.getAPI().matchEntities(sender, wildcard_target_str).stream().map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).collect(Collectors.toSet());
                 } else if (Server.getInstance().getPlayer(wildcard_target_str) != null) {
                     scorers.add(new PlayerScorer(Server.getInstance().getPlayer(wildcard_target_str)));
                 } else {
@@ -343,8 +343,8 @@ public class ScoreboardCommand extends VanillaCommand {
                     for (var scoreboard : manager.getScoreboards().values()) {
                         scorers.addAll(scoreboard.getLines().keySet());
                     }
-                } else if (EntitySelector.hasArguments(wildcard_target_str)) {
-                    scorers = EntitySelector.matchEntities(sender, wildcard_target_str).stream().map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).collect(Collectors.toSet());
+                } else if (EntitySelectorAPI.getAPI().checkValid(wildcard_target_str)) {
+                    scorers = EntitySelectorAPI.getAPI().matchEntities(sender, wildcard_target_str).stream().map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).collect(Collectors.toSet());
                 } else if (Server.getInstance().getPlayer(wildcard_target_str) != null) {
                     scorers.add(new PlayerScorer(Server.getInstance().getPlayer(wildcard_target_str)));
                 } else {
@@ -388,8 +388,8 @@ public class ScoreboardCommand extends VanillaCommand {
         boolean wildcard = false;
         if (wildcard_target_str.equals("*")) {
             wildcard = true;
-        } else if (EntitySelector.hasArguments(wildcard_target_str)) {
-            scorers = EntitySelector.matchEntities(sender, wildcard_target_str).stream().map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).collect(Collectors.toList());
+        } else if (EntitySelectorAPI.getAPI().checkValid(wildcard_target_str)) {
+            scorers = EntitySelectorAPI.getAPI().matchEntities(sender, wildcard_target_str).stream().map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).collect(Collectors.toList());
         } else if (Server.getInstance().getPlayer(wildcard_target_str) != null) {
             scorers.add(new PlayerScorer(Server.getInstance().getPlayer(wildcard_target_str)));
         } else {
@@ -467,8 +467,8 @@ public class ScoreboardCommand extends VanillaCommand {
             for (var scoreboard : manager.getScoreboards().values()) {
                 targetScorers.addAll(scoreboard.getLines().keySet());
             }
-        } else if (EntitySelector.hasArguments(wildcard_target_str)) {
-            targetScorers = EntitySelector.matchEntities(sender, wildcard_target_str).stream().map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).collect(Collectors.toSet());
+        } else if (EntitySelectorAPI.getAPI().checkValid(wildcard_target_str)) {
+            targetScorers = EntitySelectorAPI.getAPI().matchEntities(sender, wildcard_target_str).stream().map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).collect(Collectors.toSet());
         } else if (Server.getInstance().getPlayer(wildcard_target_str) != null) {
             targetScorers.add(new PlayerScorer(Server.getInstance().getPlayer(wildcard_target_str)));
         } else {
@@ -490,8 +490,8 @@ public class ScoreboardCommand extends VanillaCommand {
             for (var scoreboard : manager.getScoreboards().values()) {
                 selectorScorers.addAll(scoreboard.getLines().keySet());
             }
-        } else if (EntitySelector.hasArguments(wildcard_target_str)) {
-            selectorScorers = EntitySelector.matchEntities(sender, wildcard_target_str).stream().map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).collect(Collectors.toSet());
+        } else if (EntitySelectorAPI.getAPI().checkValid(wildcard_target_str)) {
+            selectorScorers = EntitySelectorAPI.getAPI().matchEntities(sender, wildcard_target_str).stream().map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).collect(Collectors.toSet());
         } else if (Server.getInstance().getPlayer(wildcard_target_str) != null) {
             selectorScorers.add(new PlayerScorer(Server.getInstance().getPlayer(wildcard_target_str)));
         } else {

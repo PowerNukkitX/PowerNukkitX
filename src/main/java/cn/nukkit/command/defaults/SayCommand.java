@@ -4,9 +4,9 @@ import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.command.selector.EntitySelectorAPI;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
-import cn.nukkit.command.utils.EntitySelector;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.TranslationContainer;
 
@@ -36,8 +36,8 @@ public class SayCommand extends VanillaCommand {
         String[] message = result.getValue().getResult(0);
         StringBuilder msg = new StringBuilder();
         for (String arg : message) {
-            if (EntitySelector.hasArguments(arg)) {
-                List<Entity> entities = EntitySelector.matchEntities(sender, arg);
+            if (EntitySelectorAPI.getAPI().checkValid(arg)) {
+                List<Entity> entities = EntitySelectorAPI.getAPI().matchEntities(sender, arg);
                 for (Entity entity : entities) {
                     msg.append(entity.getName()).append(" ");
                 }

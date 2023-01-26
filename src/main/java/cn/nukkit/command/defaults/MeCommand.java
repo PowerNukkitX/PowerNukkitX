@@ -4,9 +4,9 @@ import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.command.selector.EntitySelectorAPI;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
-import cn.nukkit.command.utils.EntitySelector;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.utils.TextFormat;
@@ -40,8 +40,8 @@ public class MeCommand extends VanillaCommand {
         } else args = new String[]{""};
         StringBuilder msg = new StringBuilder();
         for (String arg : args) {
-            if (EntitySelector.hasArguments(arg)) {
-                for (Entity entity : EntitySelector.matchEntities(sender, arg)) {
+            if (EntitySelectorAPI.getAPI().checkValid(arg)) {
+                for (Entity entity : EntitySelectorAPI.getAPI().matchEntities(sender, arg)) {
                     msg.append(entity.getName()).append(" ");
                 }
             } else {

@@ -4,7 +4,7 @@ package cn.nukkit.command.tree.node;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.command.utils.EntitySelector;
+import cn.nukkit.command.selector.EntitySelectorAPI;
 
 
 /**
@@ -18,7 +18,7 @@ public class WildcardTargetStringNode extends StringNode {
 
     @Override
     public void fill(String arg) {
-        if (arg.equals("*") || EntitySelector.hasArguments(arg) || Server.getInstance().getPlayer(arg) != null) {//temp not support entity uuid query
+        if (arg.equals("*") || EntitySelectorAPI.getAPI().checkValid(arg) || Server.getInstance().getPlayer(arg) != null) {//temp not support entity uuid query
             this.value = arg;
         } else this.error();
     }

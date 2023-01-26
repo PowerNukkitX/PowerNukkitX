@@ -5,7 +5,6 @@ import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.selector.EntitySelectorAPI;
-import cn.nukkit.command.utils.EntitySelector;
 import cn.nukkit.entity.Entity;
 
 import java.util.Collections;

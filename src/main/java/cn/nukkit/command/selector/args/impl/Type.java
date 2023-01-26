@@ -22,8 +22,8 @@ import java.util.function.Predicate;
 @Since("1.19.50-r4")
 public class Type extends CachedSimpleSelectorArgument {
 
-    protected static final Map<Integer, String> ENTITY_ID2TYPE = AddEntityPacket.LEGACY_IDS;
-    protected static final Map<String, Integer> ENTITY_TYPE2ID;
+    public static final Map<Integer, String> ENTITY_ID2TYPE = AddEntityPacket.LEGACY_IDS;
+    public static final Map<String, Integer> ENTITY_TYPE2ID;
 
     static {
         ImmutableMap.Builder<String, Integer> builder = ImmutableMap.builder();

@@ -4,7 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.command.utils.EntitySelector;
+import cn.nukkit.command.selector.EntitySelectorAPI;
 
 import java.util.Collections;
 import java.util.stream.Collectors;
@@ -22,8 +22,8 @@ public class PlayersNode extends TargetNode<Player> {
     public void fill(String arg) {
         if (arg.isBlank()) {
             this.error();
-        } else if (EntitySelector.hasArguments(arg)) {
-            var entities = EntitySelector.matchEntities(this.parent.parent.getSender(), arg);
+        } else if (EntitySelectorAPI.getAPI().checkValid(arg)) {
+            var entities = EntitySelectorAPI.getAPI().matchEntities(this.parent.parent.getSender(), arg);
             if (entities != null)
                 this.value = entities.stream().filter(entity -> entity instanceof Player).map(entity -> (Player) entity).collect(Collectors.toList());
             else error("commands.generic.noTargetMatch");

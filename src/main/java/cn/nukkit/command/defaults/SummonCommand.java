@@ -6,9 +6,9 @@ import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.command.selector.args.impl.Type;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
-import cn.nukkit.command.utils.EntitySelector;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Position;
 import cn.nukkit.network.protocol.AddEntityPacket;
@@ -51,7 +51,7 @@ public class SummonCommand extends VanillaCommand {
             log.addError("commands.summon.failed").output();
             return 0;
         }
-        Integer entityId = EntitySelector.ENTITY_NAME2ID.get(entityType);
+        Integer entityId = Type.ENTITY_TYPE2ID.get(entityType);
         if (entityId == null) {
             log.addError("commands.summon.failed").output();
             return 0;
