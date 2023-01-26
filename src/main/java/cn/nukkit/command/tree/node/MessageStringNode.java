@@ -9,7 +9,6 @@ import cn.nukkit.entity.Entity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
-import java.util.regex.Pattern;
 
 /**
  * 解析全部剩余参数拼接为{@code String}值
