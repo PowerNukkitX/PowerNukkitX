@@ -7,16 +7,17 @@ import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
-import cn.nukkit.command.tree.ParamTree;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.command.utils.EntitySelector;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Position;
+import cn.nukkit.network.protocol.AddEntityPacket;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+//TODO: 不支持自定义生物
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public class SummonCommand extends VanillaCommand {
@@ -26,7 +27,7 @@ public class SummonCommand extends VanillaCommand {
         this.setPermission("nukkit.command.summon");
         this.commandParameters.clear();
         List<String> entity_key = new ArrayList<>();
-        for (String key : EntitySelector.ENTITY_ID2NAME.values()) {
+        for (String key : AddEntityPacket.LEGACY_IDS.values()) {
             entity_key.add(key);
             entity_key.add(key.substring(10));
         }
