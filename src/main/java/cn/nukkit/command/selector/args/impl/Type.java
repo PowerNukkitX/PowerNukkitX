@@ -12,8 +12,10 @@ import cn.nukkit.entity.custom.CustomEntity;
 import cn.nukkit.level.Location;
 import cn.nukkit.network.protocol.AddEntityPacket;
 import com.google.common.collect.ImmutableMap;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
@@ -42,8 +44,13 @@ public class Type extends CachedSimpleSelectorArgument {
                 dontHave.add(type);
             } else have.add(completionPrefix(type));
         }
-        //predicates.add(entity -> entity != null && (entity instanceof Player && identifier.equals("minecraft:player") || ENTITY_NAME2ID.get(identifier) == entity.getNetworkId()) != inverted);
         return entity -> have.stream().allMatch(type -> isType(entity, type)) && dontHave.stream().noneMatch(type ->isType(entity, type));
+    }
+
+    @Nullable
+    @Override
+    public String getDefaultValue(Map<String, List<String>> values, SelectorType selectorType, CommandSender sender) {
+        return selectorType == SelectorType.RANDOM_PLAYER ? "minecraft:player" : null;
     }
 
     @Override
