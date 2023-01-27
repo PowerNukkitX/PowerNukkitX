@@ -5,7 +5,7 @@ import cn.nukkit.api.Since;
 
 @PowerNukkitXOnly
 @Since("1.19.50-r4")
-public class SelectorSyntaxException extends RuntimeException {
+public class SelectorSyntaxException extends Exception {
 
     public SelectorSyntaxException() {}
 
