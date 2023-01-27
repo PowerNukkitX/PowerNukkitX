@@ -4,10 +4,12 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.command.utils.EntitySelector;
+import cn.nukkit.command.exceptions.SelectorSyntaxException;
+import cn.nukkit.command.selector.EntitySelectorAPI;
 import cn.nukkit.entity.Entity;
 
 import java.util.Collections;
+import java.util.List;
 
 /**
  * 解析为{@code List<Entity>}值
@@ -23,9 +25,15 @@ public class EntitiesNode extends TargetNode<Entity> {
     public void fill(String arg) {
         if (arg.isBlank()) {
             this.error();
-        } else if (EntitySelector.hasArguments(arg)) {
-            var entities = EntitySelector.matchEntities(this.parent.parent.getSender(), arg);
-            if (entities != null) this.value = entities;
+        } else if (EntitySelectorAPI.getAPI().checkValid(arg)) {
+            List<Entity> entities = null;
+            try {
+                entities = EntitySelectorAPI.getAPI().matchEntities(this.parent.parent.getSender(), arg);
+            } catch (SelectorSyntaxException exception) {
+                error(exception.getMessage());
+                return;
+            }
+            if (!entities.isEmpty()) this.value = entities;
             else error("commands.generic.noTargetMatch");
         } else {
             Player player = Server.getInstance().getPlayer(arg);

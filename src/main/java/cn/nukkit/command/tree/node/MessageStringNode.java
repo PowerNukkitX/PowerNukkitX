@@ -2,13 +2,13 @@ package cn.nukkit.command.tree.node;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.command.utils.EntitySelector;
+import cn.nukkit.command.exceptions.SelectorSyntaxException;
+import cn.nukkit.command.selector.EntitySelectorAPI;
 import cn.nukkit.entity.Entity;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
-import java.util.regex.Pattern;
 
 /**
  * 解析全部剩余参数拼接为{@code String}值
@@ -19,7 +19,6 @@ import java.util.regex.Pattern;
 @PowerNukkitXOnly
 @Since("1.19.50-r4")
 public class MessageStringNode extends ParamNode<String> {
-    private final Pattern target = Pattern.compile("@([aeprs]|initiator)");
 
     private final List<String> TMP = new ArrayList<>();
 
@@ -30,7 +29,7 @@ public class MessageStringNode extends ParamNode<String> {
             TMP.add(arg);
 
             var str = String.join(" ", TMP);
-            var match = target.matcher(str);
+            var match = EntitySelectorAPI.getENTITY_SELECTOR().matcher(str);
             this.value = match.replaceAll(r -> {
                 var start = Math.max(0, match.start() - 1);
                 var end = Math.min(str.length(), match.end());
@@ -43,10 +42,14 @@ public class MessageStringNode extends ParamNode<String> {
                     if (after == '”' || after == '\'' || after == '\\' || after == ';') return match.group();
                 }
                 var m = match.group();
-                if (EntitySelector.hasArguments(m)) {
+                if (EntitySelectorAPI.getAPI().checkValid(m)) {
                     StringJoiner join = new StringJoiner(", ");
-                    for (Entity entity : EntitySelector.matchEntities(this.parent.parent.getSender(), m)) {
-                        join.add(entity.getName());
+                    try {
+                        for (Entity entity : EntitySelectorAPI.getAPI().matchEntities(this.parent.parent.getSender(), m)) {
+                            join.add(entity.getName());
+                        }
+                    } catch (SelectorSyntaxException e) {
+                        error(e.getMessage());
                     }
                     return join.toString();
                 } else return m;

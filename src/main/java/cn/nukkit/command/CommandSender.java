@@ -149,7 +149,7 @@ public interface CommandSender extends Permissible {
 
 
     /**
-     * @return 返回发送者的Location<br>return the sender's location.
+     * @return 返回发送者克隆过的Location<br>return the sender's location.
      */
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
