@@ -48,6 +48,7 @@ public class EntitySelectorAPI {
      * 对目标选择器文本的预解析缓存
      */
     private static final Cache<String, Map<String, List<String>>> ARGS_CACHE = Caffeine.newBuilder().maximumSize(65535).expireAfterAccess(1, TimeUnit.MINUTES).build();
+    private static final Cache<String, Boolean> MATCHES_CACHE = Caffeine.newBuilder().maximumSize(65535).expireAfterAccess(1, TimeUnit.MINUTES).build();
 
     Map<String, ISelectorArgument> registry;
     List<ISelectorArgument> orderedArgs;
@@ -87,22 +88,31 @@ public class EntitySelectorAPI {
      * @return 目标实体
      */
     public List<Entity> matchEntities(CommandSender sender, String token) throws SelectorSyntaxException {
+        var cachedMatches = MATCHES_CACHE.getIfPresent(token);
+        //先从缓存确认不是非法选择器
+        if (cachedMatches != null && !cachedMatches)
+            throw new SelectorSyntaxException("Malformed entity selector token");
         Matcher matcher = ENTITY_SELECTOR.matcher(token);
         //非法目标选择器文本
-        if (!matcher.matches())
+        if (!matcher.matches()) {
+            //记录非法选择器到缓存
+            MATCHES_CACHE.put(token, false);
             throw new SelectorSyntaxException("Malformed entity selector token");
+        }
         //查询是否存在预解析结果。若不存在则解析
         Map<String, List<String>> arguments = ARGS_CACHE.getIfPresent(token);
         if (arguments == null) {
             arguments = parseArgumentMap(matcher.group(2));
             ARGS_CACHE.put(token, arguments);
         }
+        //获取克隆过的执行者位置信息
+        var senderLocation = sender.getLocation();
         //获取选择器类型
         var selectorType = parseSelectorType(matcher.group(1));
         //根据选择器类型先确定实体检测范围
         List<Entity> entities;
         if (selectorType != SELF) {
-            entities = Lists.newArrayList(sender.getLocation().level.getEntities());
+            entities = Lists.newArrayList(senderLocation.level.getEntities());
         } else {
             if (sender.isEntity())
                 entities = Lists.newArrayList(sender.asEntity());
@@ -125,22 +135,21 @@ public class EntitySelectorAPI {
         //没符合条件的实体了，return
         if (entities.isEmpty()) return entities;
         //参照坐标
-        var basePos = sender.getLocation().clone();
         for (var arg : orderedArgs) {
             try {
                 if (!arg.isFilter()) {
                     Predicate<Entity> predicate;
                     if (arguments.containsKey(arg.getKeyName()))
-                        predicate = arg.getPredicate(selectorType, sender, basePos, arguments.get(arg.getKeyName()).toArray(new String[0]));
+                        predicate = arg.getPredicate(selectorType, sender, senderLocation, arguments.get(arg.getKeyName()).toArray(new String[0]));
                     else if (arg.getDefaultValue(arguments, selectorType, sender) != null)
-                        predicate = arg.getPredicate(selectorType, sender, basePos, arg.getDefaultValue(arguments, selectorType, sender));
+                        predicate = arg.getPredicate(selectorType, sender, senderLocation, arg.getDefaultValue(arguments, selectorType, sender));
                     else continue;
                     if (predicate == null)
                         continue;
                     entities.removeIf(entity -> !predicate.test(entity));
                 } else {
                     if (arguments.containsKey(arg.getKeyName()))
-                        entities = arg.getFilter(selectorType, sender, basePos, arguments.get(arg.getKeyName()).toArray(new String[0])).apply(entities);
+                        entities = arg.getFilter(selectorType, sender, senderLocation, arguments.get(arg.getKeyName()).toArray(new String[0])).apply(entities);
                     else continue;
                 }
             } catch (Throwable t) {
@@ -169,7 +178,7 @@ public class EntitySelectorAPI {
             double min = Double.MAX_VALUE;
             for (var entity : entities) {
                 var distanceSquared = 0d;
-                if ((distanceSquared = basePos.distanceSquared(entity)) < min) {
+                if ((distanceSquared = senderLocation.distanceSquared(entity)) < min) {
                     min = distanceSquared;
                     nearest = entity;
                 }
@@ -185,7 +194,7 @@ public class EntitySelectorAPI {
      * @return 是否是合法目标选择器
      */
     public boolean checkValid(String token) {
-        return ENTITY_SELECTOR.matcher(token).matches();
+        return MATCHES_CACHE.get(token, k -> ENTITY_SELECTOR.matcher(token).matches());
     }
 
     /**
