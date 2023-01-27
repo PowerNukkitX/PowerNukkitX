@@ -34,6 +34,7 @@ public class BlockCommandBlock  extends BlockSolidMeta implements Faceable, Bloc
         super(meta);
     }
 
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;

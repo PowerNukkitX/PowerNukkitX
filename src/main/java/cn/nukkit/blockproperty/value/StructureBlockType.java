@@ -33,7 +33,7 @@ public enum StructureBlockType {
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     EXPORT("Export Structure Block");
-    
+
     private final String englishName;
 
     @Since("1.4.0.0-PN")
@@ -41,5 +41,11 @@ public enum StructureBlockType {
     @Nonnull
     public String getEnglishName() {
         return englishName;
+    }
+
+    private static final StructureBlockType[] VALUES = StructureBlockType.values();
+
+    public static StructureBlockType from(int id) {
+        return VALUES[id];
     }
 }
