@@ -16,6 +16,7 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BlockColor;
 
 import javax.annotation.Nonnull;
@@ -24,7 +25,7 @@ import javax.annotation.Nullable;
 /**
  * @author Nukkit Project Team
  */
-public class BlockCactus extends BlockTransparentMeta {
+public class BlockCactus extends BlockTransparentMeta implements BlockFlowerPot.FlowerPotBlock {
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.AGE_15);
@@ -194,5 +195,20 @@ public class BlockCactus extends BlockTransparentMeta {
     @PowerNukkitOnly
     public  boolean sticksToPiston() {
         return false;
+    }
+
+    @Override
+    public CompoundTag getPlantBlockTag() {
+        var plantBlock = new CompoundTag("PlantBlock");
+        var states = new CompoundTag("states");
+        plantBlock.putString("name", "minecraft:cactus");
+        states.putInt("age", getPropertyValue(CommonBlockProperties.AGE_15));
+        plantBlock.putCompound("states", states);
+        plantBlock.putInt("version", VERSION);
+        var item = this.toItem();
+        //only exist in PNX
+        plantBlock.putInt("itemId", item.getId());
+        plantBlock.putInt("itemMeta", item.getDamage());
+        return plantBlock;
     }
 }

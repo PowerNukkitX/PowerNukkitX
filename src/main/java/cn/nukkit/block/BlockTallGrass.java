@@ -15,6 +15,7 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BlockColor;
 
 import javax.annotation.Nonnull;
@@ -25,7 +26,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * @author Angelic47 (Nukkit Project)
  */
-public class BlockTallGrass extends BlockFlowable {
+public class BlockTallGrass extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
@@ -180,5 +181,25 @@ public class BlockTallGrass extends BlockFlowable {
     @Override
     public BlockColor getColor() {
         return BlockColor.FOLIAGE_BLOCK_COLOR;
+    }
+
+    @Override
+    public CompoundTag getPlantBlockTag() {
+        var plantBlock = new CompoundTag("PlantBlock");
+        var states = new CompoundTag("states");
+        plantBlock.putString("name", "minecraft:tallgrass");
+        states.putString("tall_grass_type", "fern");
+        plantBlock.putCompound("states", states);
+        plantBlock.putInt("version", VERSION);
+        var item = this.toItem();
+        //only exist in PNX
+        plantBlock.putInt("itemId", item.getId());
+        plantBlock.putInt("itemMeta", item.getDamage());
+        return plantBlock;
+    }
+
+    @Override
+    public boolean isPotBlockState() {
+        return getPropertyValue(TALL_GRASS_TYPE) == TallGrassType.FERN;
     }
 }

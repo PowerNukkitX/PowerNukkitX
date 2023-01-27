@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BlockColor;
 
 import javax.annotation.Nullable;
@@ -43,5 +44,18 @@ public class BlockFungusCrimson extends BlockFungus {
     @Override
     public BlockColor getColor() {
         return BlockColor.NETHERRACK_BLOCK_COLOR;
+    }
+
+    @Override
+    public CompoundTag getPlantBlockTag() {
+        var plantBlock = new CompoundTag("PlantBlock");
+        plantBlock.putString("name", "minecraft:crimson_fungus");
+        plantBlock.putCompound("states", new CompoundTag("states"));
+        plantBlock.putInt("version", VERSION);
+        var item = this.toItem();
+        //only exist in PNX
+        plantBlock.putInt("itemId", item.getId());
+        plantBlock.putInt("itemMeta", item.getDamage());
+        return plantBlock;
     }
 }

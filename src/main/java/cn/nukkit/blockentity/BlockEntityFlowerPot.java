@@ -1,7 +1,9 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockFlowerPot;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
@@ -16,16 +18,14 @@ public class BlockEntityFlowerPot extends BlockEntitySpawnable {
 
     @Override
     protected void initBlockEntity() {
-        if (!namedTag.contains("item")) {
-            namedTag.putShort("item", 0);
-        }
-
-        if (!namedTag.contains("data")) {
-            if (namedTag.contains("mData")) {
-                namedTag.putInt("data", namedTag.getInt("mData"));
-                namedTag.remove("mData");
-            } else {
-                namedTag.putInt("data", 0);
+        //转换旧形式
+        if (namedTag.contains("item")) {
+            var data = 0;
+            if (namedTag.contains("data")) data = namedTag.getInt("data");
+            else if (namedTag.contains("mData")) data = namedTag.getInt("mData");
+            var item = Item.get(namedTag.getInt("item"), data);
+            if (item.getBlock() instanceof BlockFlowerPot.FlowerPotBlock potBlock && potBlock.isPotBlockState()) {
+                namedTag.putCompound("PlantBlock", potBlock.getPlantBlockTag());
             }
         }
 
@@ -46,11 +46,8 @@ public class BlockEntityFlowerPot extends BlockEntitySpawnable {
                 .putInt("y", (int) this.y)
                 .putInt("z", (int) this.z);
 
-        int item = namedTag.getShort("item");
-        if (item != BlockID.AIR) {
-            tag.putShort("item", this.namedTag.getShort("item"))
-                    .putInt("mData", this.namedTag.getInt("data"));
-        }
+        if (namedTag.containsCompound("PlantBlock"))
+            tag.putCompound("PlantBlock", namedTag.getCompound("PlantBlock"));
         return tag;
     }
 

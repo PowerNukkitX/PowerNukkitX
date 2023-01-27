@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityFlowerPot;
@@ -44,14 +45,6 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
-    }
-
-    protected static boolean canPlaceIntoFlowerPot(int id) {
-        return switch (id) {
-            case SAPLING, DEAD_BUSH, DANDELION, RED_FLOWER, RED_MUSHROOM, BROWN_MUSHROOM, CACTUS, WITHER_ROSE, WARPED_FUNGUS, CRIMSON_FUNGUS, WARPED_ROOTS, CRIMSON_ROOTS, BAMBOO ->
-                    true;
-            default -> false;
-        };
     }
 
     @PowerNukkitOnly
@@ -115,9 +108,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
             return false;
         }
 
-        CompoundTag nbt = new CompoundTag()
-                .putShort("item", 0)
-                .putInt("data", 0);
+        CompoundTag nbt = new CompoundTag();
         if (item.hasCustomBlockData()) {
             for (Tag aTag : item.getCustomBlockData().getAllTags()) {
                 nbt.put(aTag.getName(), aTag);
@@ -132,19 +123,13 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
     @Nonnull
     public Item getFlower() {
         BlockEntityFlowerPot blockEntity = getBlockEntity();
-        if (blockEntity == null) {
+        if (blockEntity == null || !blockEntity.namedTag.containsCompound("PlantBlock")) {
             return Item.get(0, 0, 0);
         }
-        int id = blockEntity.namedTag.getShort("item");
-
-        if (id == 0) {
-            return Item.get(0, 0, 0);
-        }
-
-        if (id > 255) id = 255 - id;
-
-        int data = blockEntity.namedTag.getInt("data");
-        return Item.get(id, data, 1);
+        var plantBlockTag = blockEntity.namedTag.getCompound("PlantBlock");
+        var id = plantBlockTag.getInt("itemId");
+        var meta = plantBlockTag.getInt("itemMeta");
+        return Item.get(id, meta);
     }
 
     @PowerNukkitOnly
@@ -155,35 +140,39 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
             return true;
         }
 
-        BlockEntityFlowerPot blockEntity = getOrCreateBlockEntity();
-        int contentId = item.getBlockId();
-        if (contentId == -1 || !canPlaceIntoFlowerPot(contentId)) {
-//            contentId = item.getId();
-//            if (!canPlaceIntoFlowerPot(contentId)) {
-            return false;
-//            }
-        }
-        //todo WARPED_ROOTS CRIMSON_ROOTS 放置后看不见,需要进一步检查修复
-        int itemMeta = item.getDamage();
-        blockEntity.namedTag.putShort("item", contentId);
-        blockEntity.namedTag.putInt("data", itemMeta);
+        if (item.getBlock() instanceof FlowerPotBlock potBlock && potBlock.isPotBlockState()) {
+            BlockEntityFlowerPot blockEntity = getOrCreateBlockEntity();
+            blockEntity.namedTag.putCompound("PlantBlock", potBlock.getPlantBlockTag());
 
-        setBooleanValue(UPDATE, true);
-        getLevel().setBlock(this, this, true);
-        blockEntity.spawnToAll();
-        return true;
+            setBooleanValue(UPDATE, true);
+            getLevel().setBlock(this, this, true);
+            blockEntity.spawnToAll();
+            return true;
+        }
+
+        return false;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void removeFlower() {
         BlockEntityFlowerPot blockEntity = getOrCreateBlockEntity();
-        blockEntity.namedTag.putShort("item", 0);
-        blockEntity.namedTag.putInt("data", 0);
+        blockEntity.namedTag.remove("PlantBlock");
 
         setBooleanValue(UPDATE, false);
         getLevel().setBlock(this, this, true);
         blockEntity.spawnToAll();
+    }
+
+    /**
+     * @return 花盆是否有花
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    public boolean hasFlower() {
+        var blockEntity = getBlockEntity();
+        if (blockEntity == null) return false;
+        return blockEntity.namedTag.containsCompound("PlantBlock");
     }
 
     @Override
@@ -198,13 +187,11 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
                 return false;
             }
 
-            int contentId = item.getBlockId();
-            if (canPlaceIntoFlowerPot(contentId)) {
+            if (!(item.getBlock() instanceof FlowerPotBlock))
                 return false;
-            }
 
-            Item flower = getFlower();
-            if (flower.getId() != 0) {
+            if (hasFlower()) {
+                var flower = getFlower();
                 removeFlower();
                 player.giveItem(flower);
                 return true;
@@ -216,7 +203,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
         }
 
         BlockEntityFlowerPot blockEntity = getOrCreateBlockEntity();
-        if (blockEntity.namedTag.getShort("item") != 0 || blockEntity.namedTag.getInt("mData") != 0) {
+        if (blockEntity.namedTag.containsCompound("PlantBlock")) {
             return false;
         }
 
@@ -292,5 +279,41 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
     @Override
     public Item toItem() {
         return new ItemFlowerPot();
+    }
+
+    /**
+     * 实现了此接口的方块可以放入花盆中
+     */
+    public interface FlowerPotBlock {
+
+        //NBT标签中"version"键对应的值
+        int VERSION = 17959425;
+
+        /**
+         * 获取方块在花盆NBT中的标签<p/>
+         * 形如以下形式：<p/>
+         * {@code
+         * "PlantBlock": {
+         *     "name": "minecraft:red_flower",
+         *     "states": {
+         *       "flower_type": "poppy"
+         *     },
+         *     "version": 17959425i
+         *     "itemId": xxx,
+         *     "itemMeta": xxx
+         *   }
+         * }<p/>
+         * 请注意，必须在这个tag中包含键"itemId"与"itemMeta"。服务端将通过读取这两个参数快速重建Item对象，而不是通过stateId重建。这太慢了
+         * @return 方块在花盆NBT中的标签
+         */
+        CompoundTag getPlantBlockTag();
+
+        /**
+         * 对于高草丛来说，只有状态为"fern"的方块才能放入花盆中
+         * @return 是否是可作为花盆方块的状态
+         */
+        default boolean isPotBlockState() {
+            return true;
+        }
     }
 }

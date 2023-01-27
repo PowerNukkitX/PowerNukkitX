@@ -19,7 +19,7 @@ import cn.nukkit.utils.BlockColor;
 import javax.annotation.Nonnull;
 import java.util.concurrent.ThreadLocalRandom;
 
-public abstract class BlockMushroom extends BlockFlowable {
+public abstract class BlockMushroom extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
 
     public BlockMushroom() {
         this(0);

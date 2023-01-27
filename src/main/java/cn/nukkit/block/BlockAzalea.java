@@ -17,9 +17,12 @@ import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 
 import javax.annotation.Nonnull;
 import java.util.concurrent.ThreadLocalRandom;
+
+import static cn.nukkit.block.BlockSapling.AGED;
 
 /**
  * @author LoboMetalurgico
@@ -28,7 +31,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @PowerNukkitOnly
 @Since("FUTURE")
-public class BlockAzalea extends BlockFlowable {
+public class BlockAzalea extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
 
 
     public static final BlockProperties PROPERTIES = CommonBlockProperties.EMPTY_PROPERTIES;
@@ -191,5 +194,18 @@ public class BlockAzalea extends BlockFlowable {
             this.level.setBlock(block, block);
         }
         this.level.setBlock(this, Block.get(LOG));
+    }
+
+    @Override
+    public CompoundTag getPlantBlockTag() {
+        var plantBlock = new CompoundTag("PlantBlock");
+        plantBlock.putString("name", "minecraft:azalea");
+        plantBlock.putCompound("states", new CompoundTag("states"));
+        plantBlock.putInt("version", VERSION);
+        var item = this.toItem();
+        //only exist in PNX
+        plantBlock.putInt("itemId", item.getId());
+        plantBlock.putInt("itemMeta", item.getDamage());
+        return plantBlock;
     }
 }

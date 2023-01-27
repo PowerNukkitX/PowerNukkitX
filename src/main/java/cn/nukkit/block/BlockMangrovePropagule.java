@@ -12,6 +12,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BlockColor;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,7 +21,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class BlockMangrovePropagule extends BlockFlowable{
+public class BlockMangrovePropagule extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
 
     public static final BooleanBlockProperty HANGING = new BooleanBlockProperty("hanging",false);
     public static final IntBlockProperty PROPAGULE_STAGE = new IntBlockProperty("propagule_stage",false,4,0);
@@ -101,5 +102,21 @@ public class BlockMangrovePropagule extends BlockFlowable{
     @Override
     public BlockColor getColor() {
         return BlockColor.FOLIAGE_BLOCK_COLOR;
+    }
+
+    @Override
+    public CompoundTag getPlantBlockTag() {
+        var plantBlock = new CompoundTag("PlantBlock");
+        var states = new CompoundTag("states");
+        plantBlock.putString("name", "minecraft:mangrove_propagule");
+        states.putBoolean("hanging", false);
+        states.putInt("propagule_stage", getPropertyValue(PROPAGULE_STAGE));
+        plantBlock.putCompound("states", states);
+        plantBlock.putInt("version", VERSION);
+        var item = this.toItem();
+        //only exist in PNX
+        plantBlock.putInt("itemId", item.getId());
+        plantBlock.putInt("itemMeta", item.getDamage());
+        return plantBlock;
     }
 }

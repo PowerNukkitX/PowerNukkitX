@@ -15,6 +15,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BlockColor;
 
 import javax.annotation.Nonnull;
@@ -24,7 +25,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author xtypr
  * @since 2015/11/23
  */
-public class BlockFlower extends BlockFlowable {
+public class BlockFlower extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockProperty<SmallFlowerType> RED_FLOWER_TYPE = new ArrayBlockProperty<>("flower_type", true, new SmallFlowerType[]{
@@ -224,5 +225,20 @@ public class BlockFlower extends BlockFlowable {
 
     protected Block getUncommonFlower() {
         return get(DANDELION);
+    }
+
+    @Override
+    public CompoundTag getPlantBlockTag() {
+        var plantBlock = new CompoundTag("PlantBlock");
+        var states = new CompoundTag("states");
+        plantBlock.putString("name", "minecraft:red_flower");
+        states.putString("flower_type", getFlowerType().getNetworkFlowerType());
+        plantBlock.putCompound("states", states);
+        plantBlock.putInt("version", VERSION);
+        var item = this.toItem();
+        //only exist in PNX
+        plantBlock.putInt("itemId", item.getId());
+        plantBlock.putInt("itemMeta", item.getDamage());
+        return plantBlock;
     }
 }

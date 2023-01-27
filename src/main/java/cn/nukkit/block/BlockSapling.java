@@ -22,6 +22,7 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BlockColor;
 
 import javax.annotation.Nonnull;
@@ -33,7 +34,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * @author Angelic47 (Nukkit Project)
  */
-public class BlockSapling extends BlockFlowable {
+public class BlockSapling extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockProperty<WoodType> SAPLING_TYPE = new ArrayBlockProperty<>("sapling_type", true, WoodType.class);
@@ -341,5 +342,31 @@ public class BlockSapling extends BlockFlowable {
     @Override
     public BlockColor getColor() {
         return BlockColor.FOLIAGE_BLOCK_COLOR;
+    }
+
+    /**
+     * "PlantBlock": {
+     *     "name": "minecraft:sapling",
+     *     "states": {
+     *       "age_bit": 0b,
+     *       "sapling_type": "oak"
+     *     },
+     *     "version": 17959425i
+     *   }
+     */
+    @Override
+    public CompoundTag getPlantBlockTag() {
+        var plantBlock = new CompoundTag("PlantBlock");
+        var states = new CompoundTag("states");
+        plantBlock.putString("name", "minecraft:sapling");
+        states.putBoolean("age_bit", getPropertyValue(AGED));
+        states.putString("sapling_type", getPropertyValue(SAPLING_TYPE).name().toLowerCase());
+        plantBlock.putCompound("states", states);
+        plantBlock.putInt("version", VERSION);
+        var item = this.toItem();
+        //only exist in PNX
+        plantBlock.putInt("itemId", item.getId());
+        plantBlock.putInt("itemMeta", item.getDamage());
+        return plantBlock;
     }
 }
