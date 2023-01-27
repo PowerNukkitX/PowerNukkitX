@@ -72,6 +72,11 @@ public class EntityHuman extends EntityHumanType {
         return (float) (boundingBox.getMaxY() - boundingBox.getMinY() - 0.18);
     }
 
+    /**
+     * 偏移客户端传输玩家位置的y轴误差
+     *
+     * @return the base offset
+     */
     @Override
     protected float getBaseOffset() {
         return 1.62f;

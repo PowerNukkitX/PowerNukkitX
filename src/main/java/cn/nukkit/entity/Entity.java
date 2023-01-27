@@ -2001,7 +2001,7 @@ public abstract class Entity extends Location implements Metadatable {
         pk.x = this.x;
         //因为以前处理MOVE_PLAYER_PACKET的时候是y - this.getBaseOffset()
         //现在统一 MOVE_PLAYER_PACKET和PLAYER_AUTH_INPUT_PACKET 均为this.y - this.getEyeHeight()，所以这里不再需要对两种移动方式分别处理
-        pk.y = isSwimming() ? this.y + getSwimmingHeight() : this.y + this.getEyeHeight();
+        pk.y = this.y + this.getBaseOffset();
         pk.z = this.z;
         pk.headYaw = yaw;
         pk.pitch = pitch;
