@@ -279,7 +279,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     protected void handleCollideMovement(int currentTick) {
         var selfAABB = getOffsetBoundingBox().getOffsetBoundingBox(this.motionX, this.motionY, this.motionZ);
         var collidingEntities = this.level.fastCollidingEntities(selfAABB, this);
-        collidingEntities.removeIf(entity -> !(entity instanceof EntityPhysical || entity instanceof Player));
+        collidingEntities.removeIf(entity -> !(entity.canCollide() && (entity instanceof EntityPhysical || entity instanceof Player)));
         var size = collidingEntities.size();
         if (size == 0) {
             this.previousCollideMotion.setX(0);
@@ -335,7 +335,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
      */
     protected boolean onCollide(int currentTick, List<Entity> collidingEntities) {
         if (currentTick % 10 == 0) {
-            if (collidingEntities.stream().filter(Entity::canCollide).count() > 24) {
+            if (collidingEntities.size() > 24) {
                 this.needsCollisionDamage = true;
             }
         }
