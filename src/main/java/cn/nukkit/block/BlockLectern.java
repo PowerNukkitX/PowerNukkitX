@@ -205,11 +205,7 @@ public class BlockLectern extends BlockTransparentMeta implements RedstoneCompon
         if (isActivated()) {
             level.cancelSheduledUpdate(this, this);
         } else {
-            var event = new BlockRedstoneEvent(this, 0, 15);
-            this.level.getServer().getPluginManager().callEvent(event);
-            if (event.isCancelled()) {
-                return;
-            }
+            this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 0, 15));
         }
 
         level.scheduleUpdate(this, this, 4);
@@ -237,11 +233,8 @@ public class BlockLectern extends BlockTransparentMeta implements RedstoneCompon
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
             if (isActivated()) {
-                var event = new BlockRedstoneEvent(this, 15, 0);
-                this.level.getServer().getPluginManager().callEvent(event);
-                if (event.isCancelled()) {
-                    return 0;
-                }
+                this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 15, 0));
+
                 setActivated(false);
                 level.setBlock(this, this, true, false);
                 updateAroundRedstone();

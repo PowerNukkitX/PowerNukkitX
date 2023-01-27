@@ -275,6 +275,47 @@ public final class JSEventManager {
             return this;
         }
 
+        public boolean registerOld() {
+            if (currentCommandPatternId != null && currentCommandParameterList.size() != 0) {
+                commandParameters.put(currentCommandPatternId, currentCommandParameterList.toArray(CommandParameter.EMPTY_ARRAY));
+            }
+            if (commandName.toLowerCase().equals(commandName)) {
+                if (!callback.canExecute()) {
+                    return false;
+                }
+                if (description == null) {
+                    description = "";
+                }
+                if (alias == null) {
+                    alias = new String[0];
+                }
+                command = new Command(commandName, description,
+                        usageMessage, alias) {
+                    @Override
+                    public boolean execute(CommandSender sender, String commandLabel, String... args) {
+                        synchronized (jsPlugin.getJsContext()) {
+                            var result = callback.execute(sender, args);
+                            if (result.isBoolean()) {
+                                return result.asBoolean();
+                            } else return !result.isNull();
+                        }
+                    }
+                };
+                if (permission != null) {
+                    command.setPermission(permission);
+                }
+                if (permissionMessage != null) {
+                    command.setPermissionMessage(permissionMessage);
+                }
+                if (!commandParameters.isEmpty()) {
+                    command.setCommandParameters(commandParameters);
+                }
+                Server.getInstance().getCommandMap().register(jsPlugin.getName(), command);
+                return true;
+            }
+            return false;
+        }
+
         public boolean register() {
             if (currentCommandPatternId != null && currentCommandParameterList.size() != 0) {
                 commandParameters.put(currentCommandPatternId, currentCommandParameterList.toArray(CommandParameter.EMPTY_ARRAY));

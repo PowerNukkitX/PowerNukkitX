@@ -8,12 +8,12 @@ import cn.nukkit.event.HandlerList;
 
 @PowerNukkitXOnly
 @Since("1.19.50-r4")
-public class ConsoleOutputEvent extends ServerEvent implements Cancellable {
+public class ConsoleCommandOutputEvent extends ServerEvent implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
     protected final CommandSender sender;
     protected String message;
 
-    public ConsoleOutputEvent(CommandSender sender, String message) {
+    public ConsoleCommandOutputEvent(CommandSender sender, String message) {
         this.sender = sender;
         this.message = message;
     }

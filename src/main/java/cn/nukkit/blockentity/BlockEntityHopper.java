@@ -10,7 +10,7 @@ import cn.nukkit.block.BlockHopper;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.blockstate.BlockState;
-import cn.nukkit.event.entity.EventHopperSearchItemEvent;
+import cn.nukkit.event.block.HopperSearchItemEvent;
 import cn.nukkit.event.inventory.InventoryMoveItemEvent;
 import cn.nukkit.inventory.*;
 import cn.nukkit.item.Item;
@@ -221,19 +221,19 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
             return false;
         }
 
-        EventHopperSearchItemEvent event = new EventHopperSearchItemEvent(this, false);
-        this.server.getPluginManager().callEvent(event);
-        if (event.isCancelled()) return false;
-
         Block blockSide = this.getSide(BlockFace.UP).getTickCachedLevelBlock();
         BlockEntity blockEntity = this.level.getBlockEntity(temporalVector.setComponentsAdding(this, BlockFace.UP));
 
         boolean changed = pushItems() || pushItemsIntoMinecart();
 
-        if (blockEntity instanceof InventoryHolder || blockSide instanceof BlockComposter) {
-            changed = pullItems(this, this) || changed;
-        } else {
-            changed = pullItemsFromMinecart() || pickupItems(this, this, pickupArea) || changed;
+        HopperSearchItemEvent event = new HopperSearchItemEvent(this, false);
+        this.server.getPluginManager().callEvent(event);
+        if (!event.isCancelled()) {
+            if (blockEntity instanceof InventoryHolder || blockSide instanceof BlockComposter) {
+                changed = pullItems(this, this) || changed;
+            } else {
+                changed = pullItemsFromMinecart() || pickupItems(this, this, pickupArea) || changed;
+            }
         }
 
         if (changed) {
