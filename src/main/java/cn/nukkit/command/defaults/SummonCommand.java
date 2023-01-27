@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-//TODO: 不支持自定义生物
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public class SummonCommand extends VanillaCommand {
@@ -32,7 +31,7 @@ public class SummonCommand extends VanillaCommand {
             entity_key.add(key.substring(10));
         }
         this.commandParameters.put("default", new CommandParameter[]{
-                CommandParameter.newEnum("entityType", false, entity_key.toArray(new String[0])),
+                CommandParameter.newEnum("entityType", false, entity_key.toArray(new String[0]), true),
                 CommandParameter.newType("spawnPos", true, CommandParamType.POSITION),
                 CommandParameter.newType("nameTag", true, CommandParamType.STRING),
                 CommandParameter.newEnum("nameTagAlwaysVisible", true, CommandEnum.ENUM_BOOLEAN)
@@ -44,21 +43,13 @@ public class SummonCommand extends VanillaCommand {
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
-        String entityType = list.getResult(0);
-        if (!entityType.startsWith("minecraft:"))
-            entityType = "minecraft:" + entityType;
+        String entityType = completionPrefix(list.getResult(0));
         if (entityType.equals("minecraft:player")) {
             log.addError("commands.summon.failed").output();
             return 0;
         }
         Integer entityId = Type.ENTITY_TYPE2ID.get(entityType);
-        if (entityId == null) {
-            log.addError("commands.summon.failed").output();
-            return 0;
-        }
         Position pos = sender.getPosition();
-        String nameTag = null;
-        boolean nameTagAlwaysVisible = false;
         if (list.hasResult(1)) {
             pos = list.getResult(1);
         }
@@ -66,13 +57,26 @@ public class SummonCommand extends VanillaCommand {
             log.addError("commands.summon.outOfWorld").output();
             return 0;
         }
+        String nameTag = null;
         if (list.hasResult(2)) {
             nameTag = list.getResult(2);
         }
+        boolean nameTagAlwaysVisible = false;
         if (list.hasResult(3)) {
             nameTagAlwaysVisible = list.getResult(3);
         }
-        Entity entity = Entity.createEntity(entityId, pos);
+        Entity entity;
+        if (entityId != null) {
+            //原版生物
+            entity = Entity.createEntity(entityId, pos);
+        } else {
+            //自定义生物
+            entity = Entity.createEntity(entityType, pos);
+        }
+        if (entity == null) {
+            log.addError("commands.summon.failed").output();
+            return 0;
+        }
         if (nameTag != null) {
             entity.setNameTag(nameTag);
             entity.setNameTagAlwaysVisible(nameTagAlwaysVisible);
@@ -80,5 +84,14 @@ public class SummonCommand extends VanillaCommand {
         entity.spawnToAll();
         log.addSuccess("commands.summon.success").output();
         return 1;
+    }
+
+    protected String completionPrefix(String type) {
+        var completed = type.startsWith("minecraft:") ? type : "minecraft:" + type;
+        if (!Type.ENTITY_TYPE2ID.containsKey(type) && !Type.ENTITY_TYPE2ID.containsKey(completed)) {
+            //是自定义生物，不需要补全
+            return type;
+        }
+        return completed;
     }
 }

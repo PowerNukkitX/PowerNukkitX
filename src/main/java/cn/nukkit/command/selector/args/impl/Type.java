@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
-//TODO: 不支持自定义生物
 @PowerNukkitXOnly
 @Since("1.19.50-r4")
 public class Type extends CachedSimpleSelectorArgument {

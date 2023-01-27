@@ -9,6 +9,7 @@ import cn.nukkit.item.Item;
 import com.google.common.collect.Lists;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class CommandParameter {
@@ -215,6 +216,15 @@ public class CommandParameter {
     }
 
     /**
+     * @see #newEnum(String name, boolean optional, CommandEnum data)
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    public static CommandParameter newEnum(String name, boolean optional, String[] values, boolean isSoft) {
+        return newEnum(name, optional, new CommandEnum(name + "Enums", Arrays.asList(values), isSoft));
+    }
+
+    /**
      * optional = false
      *
      * @see #newEnum(String, boolean, CommandEnum, IParamNode, CommandParamOption...)
@@ -232,18 +242,6 @@ public class CommandParameter {
     @Since("1.4.0.0-PN")
     public static CommandParameter newEnum(String name, boolean optional, String type) {
         return newEnum(name, optional, new CommandEnum(type, new ArrayList<>()));
-    }
-
-
-    /**
-     * optional = false
-     *
-     * @see #newEnum(String, boolean, CommandEnum, IParamNode, CommandParamOption...)
-     */
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
-    public static CommandParameter newEnum(String name, boolean optional, String type, boolean isSoft) {
-        return newEnum(name, optional, new CommandEnum(type, new ArrayList<>(), isSoft));
     }
 
     /**
