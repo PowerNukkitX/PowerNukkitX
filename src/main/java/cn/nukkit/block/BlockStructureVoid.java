@@ -82,7 +82,7 @@ public class BlockStructureVoid extends BlockSolid {
     @PowerNukkitOnly
     @Override
     public boolean isSolid(BlockFace side) {
-        return true;
+        return false;
     }
 
     @Override
