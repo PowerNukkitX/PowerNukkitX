@@ -165,21 +165,6 @@ public class BlockTripWireHook extends BlockTransparentMeta implements RedstoneC
 
         canConnect = canConnect & distance > 1;
         nextPowered = nextPowered & canConnect;
-
-        if (nextPowered && !powered) {
-            var event = new BlockRedstoneEvent(this, 0, 15);
-            this.level.getServer().getPluginManager().callEvent(event);
-            if (event.isCancelled()) {
-                return;
-            }
-        } else if (!nextPowered && powered) {
-            var event = new BlockRedstoneEvent(this, 15, 0);
-            this.level.getServer().getPluginManager().callEvent(event);
-            if (event.isCancelled()) {
-                return;
-            }
-        }
-
         BlockTripWireHook hook = (BlockTripWireHook) Block.get(BlockID.TRIPWIRE_HOOK);
         hook.setLevel(this.level);
         hook.setAttached(canConnect);
@@ -227,8 +212,10 @@ public class BlockTripWireHook extends BlockTransparentMeta implements RedstoneC
     private void addSound(Vector3 pos, boolean canConnect, boolean nextPowered, boolean attached, boolean powered) {
         if (nextPowered && !powered) {
             this.level.addLevelSoundEvent(pos, LevelSoundEventPacket.SOUND_POWER_ON);
+            this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 0, 15));
         } else if (!nextPowered && powered) {
             this.level.addLevelSoundEvent(pos, LevelSoundEventPacket.SOUND_POWER_OFF);
+            this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 15, 0));
         } else if (canConnect && !attached) {
             this.level.addLevelSoundEvent(pos, LevelSoundEventPacket.SOUND_ATTACH);
         } else if (!canConnect && attached) {

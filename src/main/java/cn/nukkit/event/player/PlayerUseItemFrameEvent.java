@@ -41,6 +41,11 @@ public class PlayerUseItemFrameEvent extends PlayerEvent implements Cancellable 
     }
 
     @Nonnull
+    public Block getBlock() {
+        return block;
+    }
+
+    @Nonnull
     public Action getAction() {
         return action;
     }

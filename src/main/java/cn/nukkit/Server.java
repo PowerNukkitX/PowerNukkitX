@@ -1203,12 +1203,7 @@ public class Server {
         var cmd = commandLine.stripLeading();
         cmd = cmd.charAt(0) == '/' ? cmd.substring(1) : cmd;
 
-        if (this.commandMap.executeCommand(sender, cmd) > 0) {
-            return 1;
-        } else {
-            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.unknown", cmd));
-            return 0;
-        }
+        return this.commandMap.executeCommand(sender, cmd);
     }
 
     /**

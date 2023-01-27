@@ -8,7 +8,6 @@ import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.function.Function;
 import cn.nukkit.command.tree.ParamList;
-import cn.nukkit.command.tree.ParamTree;
 import cn.nukkit.command.utils.CommandLogger;
 
 import java.util.Map;

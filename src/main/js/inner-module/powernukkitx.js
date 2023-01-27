@@ -88,6 +88,7 @@ export const PowerNukkitX = {
      *     addEnumBooleanParameter: (name: string, optional: boolean) => this,
      *     addEnumGameModeParameter: (name: string, optional: boolean) => this,
      *     register: () => boolean,
+     *     registerOld: () => boolean,
      *     getBuildCommand: () => Object
      * }}
      */

@@ -1137,7 +1137,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, ev.getTo().clone(), VibrationType.TELEPORT));
                         this.teleport(ev.getTo(), null);
                     } else {
-                        if (this.getGamemode() != Player.SPECTATOR) {
+                        if (this.getGamemode() != Player.SPECTATOR && (last.x != now.x || last.y != now.y || last.z != now.z)) {
                             if (this.isOnGround() && this.isGliding()) {
                                 this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.ELYTRA_GLIDE));
                             } else if (this.isOnGround() && this.getSide(BlockFace.DOWN).getLevelBlock().getId() != BlockID.WOOL && !this.isSneaking()) {

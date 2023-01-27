@@ -5,6 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.selector.EntitySelectorAPI;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.scoreboard.scorer.EntityScorer;
 import cn.nukkit.scoreboard.scorer.FakeScorer;
@@ -14,6 +15,7 @@ import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 
 import java.util.List;
 import java.util.Map;
@@ -72,7 +74,8 @@ public class RawText {
         }
     }
 
-    private static Component preParseScore(Component component,CommandSender sender){
+    @SneakyThrows
+    private static Component preParseScore(Component component, CommandSender sender){
         var scoreboard = Server.getInstance().getScoreboardManager().getScoreboard(component.component_score.objective);
         if (scoreboard == null)
             return null;
@@ -84,8 +87,8 @@ public class RawText {
             if (!sender.isEntity())
                 return null;
             scorer = sender.isPlayer() ? new PlayerScorer(sender.asPlayer()) : new EntityScorer(sender.asEntity());
-        } else if (EntitySelector.hasArguments(name_str)) {
-            List<IScorer> scorers = EntitySelector.matchEntities(sender, name_str).stream().map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).toList();
+        } else if (EntitySelectorAPI.getAPI().checkValid(name_str)) {
+            List<IScorer> scorers = EntitySelectorAPI.getAPI().matchEntities(sender, name_str).stream().map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).toList();
             if (scorers.isEmpty())
                 return null;
             scorer = scorers.get(0);
@@ -107,7 +110,7 @@ public class RawText {
     private static Component preParseSelector(Component component,CommandSender sender){
         List<Entity> entities;
         try {
-            entities = EntitySelector.matchEntities(sender, component.component_selector);
+            entities = EntitySelectorAPI.getAPI().matchEntities(sender, component.component_selector);
         }catch (Exception e){
             return null;
         }
