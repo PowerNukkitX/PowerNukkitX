@@ -3,6 +3,7 @@ package cn.nukkit.command.selector.args;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.exceptions.SelectorSyntaxException;
 import cn.nukkit.command.selector.SelectorType;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Location;
@@ -30,8 +31,13 @@ public abstract class CachedFilterSelectorArgument implements ISelectorArgument 
     }
 
     @Override
-    public Function<List<Entity>, List<Entity>> getFilter(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) {
-        return cache.get(Sets.newHashSet(arguments), (k) -> cache(selectorType, sender, basePos, arguments));
+    public Function<List<Entity>, List<Entity>> getFilter(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) throws SelectorSyntaxException {
+        var value = cache.getIfPresent(Sets.newHashSet(arguments));
+        if (value == null) {
+            value = cache(selectorType, sender, basePos, arguments);
+            cache.put(Sets.newHashSet(arguments), value);
+        }
+        return value;
     }
 
     @Override
@@ -42,7 +48,7 @@ public abstract class CachedFilterSelectorArgument implements ISelectorArgument 
     /**
      * 当未在缓存中找到解析结果时，则调用此方法对参数进行解析
      */
-    protected abstract Function<List<Entity>, List<Entity>> cache(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments);
+    protected abstract Function<List<Entity>, List<Entity>> cache(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) throws SelectorSyntaxException;
 
     /**
      * 初始化缓存时调用此方法<p/>

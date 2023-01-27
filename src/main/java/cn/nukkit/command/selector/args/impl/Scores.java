@@ -29,7 +29,7 @@ public class Scores extends CachedSimpleSelectorArgument {
     protected static final String SCORE_SCOPE_SEPARATOR = "..";
 
     @Override
-    protected Predicate<Entity> cache(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) {
+    protected Predicate<Entity> cache(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) throws SelectorSyntaxException {
         ParseUtils.singleArgument(arguments, getKeyName());
         final var conditions = new ArrayList<ScoreCondition>();
         for (String entry : fastSplit(SCORE_SEPARATOR, arguments[0].substring(1, arguments[0].length() - 1))) {

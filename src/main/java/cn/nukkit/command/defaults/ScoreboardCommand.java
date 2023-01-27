@@ -387,7 +387,7 @@ public class ScoreboardCommand extends VanillaCommand {
         return 0;
     }
 
-    private int playersCRUD(ParamList list, CommandSender sender, IScoreboardManager manager, CommandLogger log) {
+    private int playersCRUD(ParamList list, CommandSender sender, IScoreboardManager manager, CommandLogger log) throws SelectorSyntaxException {
         String ars = list.getResult(1);
         String wildcard_target_str = list.getResult(2);
         List<IScorer> scorers = new ArrayList<>();
@@ -466,7 +466,7 @@ public class ScoreboardCommand extends VanillaCommand {
         return 0;
     }
 
-    private int playersOperate(ParamList list, CommandSender sender, IScoreboardManager manager, CommandLogger log) {
+    private int playersOperate(ParamList list, CommandSender sender, IScoreboardManager manager, CommandLogger log) throws SelectorSyntaxException {
         String wildcard_target_str = list.getResult(2);
         Set<IScorer> targetScorers = new HashSet<>();
         if (wildcard_target_str.equals("*")) {

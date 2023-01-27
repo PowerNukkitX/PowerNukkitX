@@ -17,7 +17,7 @@ public class ParseUtils {
      * @param base 基础值
      * @return 偏移值
      */
-    public static int parseOffsetInt(String value, int base) {
+    public static int parseOffsetInt(String value, int base) throws SelectorSyntaxException {
         try {
             if (value.startsWith("~")) {
                 return value.length() != 1 ? base + Integer.parseInt(value.substring(1)) : base;
@@ -35,7 +35,7 @@ public class ParseUtils {
      * @param base 基础值
      * @return 偏移值
      */
-    public static double parseOffsetDouble(String value, double base) {
+    public static double parseOffsetDouble(String value, double base) throws SelectorSyntaxException {
         try {
             if (value.startsWith("~")) {
                 return value.length() != 1 ? base + Double.parseDouble(value.substring(1)) : base;
@@ -60,7 +60,7 @@ public class ParseUtils {
      * 要求参数不能取反。若取反，则抛出{@link SelectorSyntaxException}
      * @param value 给定字符串
      */
-    public static void cannotReversed(String value) {
+    public static void cannotReversed(String value) throws SelectorSyntaxException {
         if (checkReversed(value))
             throw new SelectorSyntaxException("Argument cannot be reversed!");
     }
@@ -70,7 +70,7 @@ public class ParseUtils {
      * @param args 参数列表
      * @param keyName 参数键名
      */
-    public static void singleArgument(String[] args, String keyName) {
+    public static void singleArgument(String[] args, String keyName) throws SelectorSyntaxException {
         if (args.length > 1)
             throw new SelectorSyntaxException("Multiple arguments is not allow in arg " + keyName);
     }
@@ -94,7 +94,7 @@ public class ParseUtils {
      * @param token 字符串
      * @return 游戏模式数字
      */
-    public static int parseGameMode(String token) {
+    public static int parseGameMode(String token) throws SelectorSyntaxException {
         return switch (token) {
             case "s", "survival", "0" -> 0;
             case "c", "creative", "1" -> 1;

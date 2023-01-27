@@ -3,6 +3,7 @@ package cn.nukkit.command.selector.args;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.exceptions.SelectorSyntaxException;
 import cn.nukkit.command.selector.SelectorType;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Location;
@@ -29,9 +30,10 @@ public interface ISelectorArgument extends Comparable<ISelectorArgument>{
      *                若此参数需要修改参照坐标(例如x,y,z参数)，则应当在这个参数上修改<p/>
      *                在一条解析链上的参数只会使用一个Location对象
      * @return {@code Predicate<Entity>}
+     * @throws SelectorSyntaxException 当解析出错
      */
     @Nullable
-    default Predicate<Entity> getPredicate(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) {
+    default Predicate<Entity> getPredicate(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) throws SelectorSyntaxException {
         return null;
     }
 
@@ -45,8 +47,9 @@ public interface ISelectorArgument extends Comparable<ISelectorArgument>{
      *                若此参数需要修改参照坐标(例如x,y,z参数)，则应当在这个参数上修改<p/>
      *                在一条解析链上的参数只会使用一个Location对象
      * @return 实体过滤器
+     * @throws SelectorSyntaxException 当解析出错
      */
-    default Function<List<Entity>, List<Entity>> getFilter(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) {
+    default Function<List<Entity>, List<Entity>> getFilter(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) throws SelectorSyntaxException {
         return null;
     }
 

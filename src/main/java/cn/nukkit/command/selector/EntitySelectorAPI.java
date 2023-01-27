@@ -92,7 +92,11 @@ public class EntitySelectorAPI {
         if (!matcher.matches())
             throw new SelectorSyntaxException("Malformed entity selector token");
         //查询是否存在预解析结果。若不存在则解析
-        Map<String, List<String>> arguments = ARGS_CACHE.get(token, k -> parseArgumentMap(matcher.group(2)));
+        Map<String, List<String>> arguments = ARGS_CACHE.getIfPresent(token);
+        if (arguments == null) {
+            arguments = parseArgumentMap(matcher.group(2));
+            ARGS_CACHE.put(token, arguments);
+        }
         //获取选择器类型
         var selectorType = parseSelectorType(matcher.group(1));
         //根据选择器类型先确定实体检测范围
@@ -199,7 +203,7 @@ public class EntitySelectorAPI {
         return false;
     }
 
-    protected Map<String, List<String>> parseArgumentMap(String inputArguments) {
+    protected Map<String, List<String>> parseArgumentMap(String inputArguments) throws SelectorSyntaxException {
         Map<String, List<String>> args = Maps.newHashMap();
 
         if (inputArguments != null) {

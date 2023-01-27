@@ -15,6 +15,7 @@ import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 
 import java.util.List;
 import java.util.Map;
@@ -73,7 +74,8 @@ public class RawText {
         }
     }
 
-    private static Component preParseScore(Component component,CommandSender sender){
+    @SneakyThrows
+    private static Component preParseScore(Component component, CommandSender sender){
         var scoreboard = Server.getInstance().getScoreboardManager().getScoreboard(component.component_score.objective);
         if (scoreboard == null)
             return null;

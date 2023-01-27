@@ -27,7 +27,7 @@ public enum SelectorType {
         this.token = token;
     }
 
-    public static SelectorType parseSelectorType(String type) {
+    public static SelectorType parseSelectorType(String type) throws SelectorSyntaxException {
         return switch (type) {
             case "a" -> SelectorType.ALL_PLAYERS;
             case "e" -> SelectorType.ALL_ENTITIES;

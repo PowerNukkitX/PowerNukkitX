@@ -19,7 +19,7 @@ import java.util.function.Function;
 @Since("1.19.50-r4")
 public class C extends CachedFilterSelectorArgument {
     @Override
-    public Function<List<Entity>, List<Entity>> cache(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) {
+    public Function<List<Entity>, List<Entity>> cache(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) throws SelectorSyntaxException {
         ParseUtils.singleArgument(arguments, getKeyName());
         ParseUtils.cannotReversed(arguments[0]);
         final var c = Integer.parseInt(arguments[0]);
