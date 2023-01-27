@@ -2181,6 +2181,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     @Override
+    public boolean canCollide() {
+        return gamemode != SPECTATOR;
+    }
+
+    @Override
     public void resetFallDistance() {
         super.resetFallDistance();
         if (this.inAirTicks != 0) {
