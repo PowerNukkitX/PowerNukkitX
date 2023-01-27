@@ -41,7 +41,7 @@ public class ClearCommand extends VanillaCommand {
             Item item = null;
 
             if (list.hasResult(0)) {
-                targets = list.getResult(1);
+                targets = list.getResult(0);
                 if (list.hasResult(1)) {
                     item = list.getResult(1);
                     int data = -1;
