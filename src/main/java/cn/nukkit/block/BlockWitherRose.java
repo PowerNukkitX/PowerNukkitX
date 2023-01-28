@@ -93,7 +93,7 @@ public class BlockWitherRose extends BlockFlower {
     @Override
     public CompoundTag getPlantBlockTag() {
         var plantBlock = new CompoundTag("PlantBlock");
-        plantBlock.putString("name", "minecraft:minecraft:wither_rose");
+        plantBlock.putString("name", "minecraft:wither_rose");
         plantBlock.putCompound("states", new CompoundTag("states"));
         plantBlock.putInt("version", VERSION);
         var item = this.toItem();
