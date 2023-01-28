@@ -17,16 +17,16 @@ import java.util.function.Supplier;
  */
 public class CommandEnum {
     @PowerNukkitXOnly
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     public static final CommandEnum ENUM_EFFECT;
     @PowerNukkitXOnly
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     public static final CommandEnum FUNCTION_FILE = new CommandEnum("filepath", () -> Server.getInstance().getFunctionManager().getFunctions().keySet(), true);
     @PowerNukkitXOnly
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     public static final CommandEnum SCOREBOARD_OBJECTIVES = new CommandEnum("ScoreboardObjectives", () -> Server.getInstance().getScoreboardManager().getScoreboards().keySet(), true);
     @PowerNukkitXOnly
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     public static final CommandEnum CHAINED_COMMAND_ENUM = new CommandEnum("ExecuteChainedOption_0", "run", "as", "at", "positioned", "if", "unless", "in", "align", "anchored", "rotated", "facing");
     @Since("1.4.0.0-PN")
     public static final CommandEnum ENUM_BOOLEAN = new CommandEnum("Boolean", ImmutableList.of("true", "false"));
@@ -71,11 +71,11 @@ public class CommandEnum {
     private final List<String> values;
 
     @PowerNukkitXOnly
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     private final boolean isSoft;//softEnum
 
     @PowerNukkitXOnly
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     private final Supplier<Collection<String>> strListSupplier;
 
     @Since("1.4.0.0-PN")
@@ -111,7 +111,7 @@ public class CommandEnum {
      * @param isSoft          the is soft
      */
     @PowerNukkitXOnly
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     public CommandEnum(String name, Supplier<Collection<String>> strListSupplier, boolean isSoft) {
         this.name = name;
         this.values = null;
@@ -138,7 +138,7 @@ public class CommandEnum {
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     public void updateSoftEnum(UpdateSoftEnumPacket.Type mode, String... value) {
         if (!this.isSoft) return;
         UpdateSoftEnumPacket pk = new UpdateSoftEnumPacket();
@@ -149,7 +149,7 @@ public class CommandEnum {
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     public void updateSoftEnum() {
         if (!this.isSoft && this.strListSupplier == null) return;
         UpdateSoftEnumPacket pk = new UpdateSoftEnumPacket();

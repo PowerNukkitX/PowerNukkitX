@@ -4,7 +4,7 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 
 @PowerNukkitXOnly
-@Since("1.19.50-r4")
+@Since("1.19.60-r1")
 public class SetDefaultGameTypePacket extends DataPacket {
     public static final byte NETWORK_ID = ProtocolInfo.SET_DEFAULT_GAME_TYPE_PACKET;
 

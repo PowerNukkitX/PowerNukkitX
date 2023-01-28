@@ -9,7 +9,7 @@ import cn.nukkit.entity.component.AbstractEntityComponent;
  * 实体生气组件
  */
 @PowerNukkitXOnly
-@Since("1.19.50-r4")
+@Since("1.19.60-r1")
 public class EntityAngryComponent extends AbstractEntityComponent {
 
     protected boolean angry;

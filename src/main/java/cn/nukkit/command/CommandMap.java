@@ -54,7 +54,7 @@ public interface CommandMap {
      * @return the int
      */
     @Deprecated
-    @DeprecationDetails(since = "1.19.50-r4", reason = "use CommandMap#executeCommand")
+    @DeprecationDetails(since = "1.19.60-r1", reason = "use CommandMap#executeCommand")
     default boolean dispatch(CommandSender sender, String cmdLine) {
         return executeCommand(sender, cmdLine) > 0;
     }
@@ -67,7 +67,7 @@ public interface CommandMap {
      * @return the int
      */
     @PowerNukkitXOnly
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     int executeCommand(CommandSender sender, String cmdLine);
 
     /**

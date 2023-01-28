@@ -28,7 +28,7 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
 
     public static final IBehaviorGroup EMPTY_BEHAVIOR_GROUP = new EmptyBehaviorGroup();
 
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     protected IBehaviorGroup behaviorGroup;
 
     /**
@@ -66,7 +66,7 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
      *
      * @return 新创建的行为组
      */
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     protected IBehaviorGroup requireBehaviorGroup() {
         return EMPTY_BEHAVIOR_GROUP;
     }

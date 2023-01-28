@@ -19,7 +19,7 @@ import java.util.function.Predicate;
  * 此接口描述了一个选择器参数<p/>
  */
 @PowerNukkitXOnly
-@Since("1.19.50-r4")
+@Since("1.19.60-r1")
 public interface ISelectorArgument extends Comparable<ISelectorArgument>{
     /**
      * 根据给定的参数表返回特定的{@code List<Predicate<Entity>>}

@@ -24,7 +24,7 @@ public class PluginCommand<T extends Plugin> extends Command implements PluginId
         this.usageMessage = "";
     }
 
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         if (!this.owningPlugin.isEnabled()) {

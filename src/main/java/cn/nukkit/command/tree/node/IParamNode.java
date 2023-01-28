@@ -12,7 +12,7 @@ import cn.nukkit.network.protocol.types.CommandOutputMessage;
  * 代表一个抽象的命令节点，类型T对应节点解析结果类型<br>
  */
 @PowerNukkitXOnly
-@Since("1.19.50-r4")
+@Since("1.19.60-r1")
 public interface IParamNode<T> {
 
     /**

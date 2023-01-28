@@ -9,7 +9,7 @@ import cn.nukkit.command.exceptions.SelectorSyntaxException;
  * 一些有关目标选择器解析的常用静态函数
  */
 @PowerNukkitXOnly
-@Since("1.19.50-r4")
+@Since("1.19.60-r1")
 public class ParseUtils {
     /**
      * 解析偏移int值

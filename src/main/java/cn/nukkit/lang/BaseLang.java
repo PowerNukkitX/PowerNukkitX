@@ -124,7 +124,7 @@ public class BaseLang {
      * @return the string
      */
     @PowerNukkitXOnly
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     public String tr(String key) {
         return tr(key, EmptyArrays.EMPTY_STRINGS);
     }
@@ -137,7 +137,7 @@ public class BaseLang {
      * @return the string
      */
     @PowerNukkitXOnly
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     public String tr(String key, String... args) {
         String baseText = parseLanguageText(key);
         for (int i = 0; i < args.length; i++) {
@@ -154,7 +154,7 @@ public class BaseLang {
      * @return the string
      */
     @PowerNukkitXOnly
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     public String tr(String key, Object... args) {
         String baseText = parseLanguageText(key);
         for (int i = 0; i < args.length; i++) {
@@ -164,7 +164,7 @@ public class BaseLang {
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     public String tr(TextContainer c) {
         String baseText = this.parseLanguageText(c.getText());
         if (c instanceof TranslationContainer cc) {
@@ -280,37 +280,37 @@ public class BaseLang {
     }
 
     @Deprecated
-    @DeprecationDetails(since = "1.19.50-r4", reason = "old", replaceWith = "BaseLang#tr(String)")
+    @DeprecationDetails(since = "1.19.60-r1", reason = "old", replaceWith = "BaseLang#tr(String)")
     public String translateString(String str) {
         return tr(str);
     }
 
     @Deprecated
-    @DeprecationDetails(since = "1.19.50-r4", reason = "old", replaceWith = "BaseLang#tr(String,String...)")
+    @DeprecationDetails(since = "1.19.60-r1", reason = "old", replaceWith = "BaseLang#tr(String,String...)")
     public String translateString(String str, @NotNull String... params) {
         return this.tr(str, params);
     }
 
     @Deprecated
-    @DeprecationDetails(since = "1.19.50-r4", reason = "old", replaceWith = "BaseLang#tr(String,Object...)")
+    @DeprecationDetails(since = "1.19.60-r1", reason = "old", replaceWith = "BaseLang#tr(String,Object...)")
     public String translateString(String str, @NotNull Object... params) {
         return this.tr(str, params);
     }
 
     @Deprecated
-    @DeprecationDetails(since = "1.19.50-r4", reason = "old", replaceWith = "BaseLang#tr(String,Object...)")
+    @DeprecationDetails(since = "1.19.60-r1", reason = "old", replaceWith = "BaseLang#tr(String,Object...)")
     public String translateString(String str, String param, String onlyPrefix) {
         return this.tr(str, new String[]{param}, onlyPrefix, true);
     }
 
     @Deprecated
-    @DeprecationDetails(since = "1.19.50-r4", reason = "old", replaceWith = "BaseLang#tr(String,Object...)")
+    @DeprecationDetails(since = "1.19.60-r1", reason = "old", replaceWith = "BaseLang#tr(String,Object...)")
     public String translateString(String str, String[] params, String onlyPrefix) {
         return this.tr(str, params, onlyPrefix, true);
     }
 
     @Deprecated
-    @DeprecationDetails(since = "1.19.50-r4", reason = "old", replaceWith = "BaseLang#tr(TextContainer)")
+    @DeprecationDetails(since = "1.19.60-r1", reason = "old", replaceWith = "BaseLang#tr(TextContainer)")
     public String translate(TextContainer c) {
         return this.tr(c);
     }

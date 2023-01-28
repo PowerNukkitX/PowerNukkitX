@@ -1480,7 +1480,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      * 对于不可穿过的方块，若未覆写，此值始终为1（无效）<p/>
      */
     @PowerNukkitXOnly
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     public double getPassableBlockFrictionFactor() {
         if (!this.canPassThrough()) return 1;
         return DEFAULT_AIR_FLUID_FRICTION;

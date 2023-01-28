@@ -21,7 +21,7 @@ import java.util.function.Function;
  * @see CachedSimpleSelectorArgument
  */
 @PowerNukkitXOnly
-@Since("1.19.50-r4")
+@Since("1.19.60-r1")
 public abstract class CachedFilterSelectorArgument implements ISelectorArgument {
 
     Cache<Set<String>, Function<List<Entity>, List<Entity>>> cache;

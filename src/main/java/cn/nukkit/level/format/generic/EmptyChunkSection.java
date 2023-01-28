@@ -283,13 +283,13 @@ public class EmptyChunkSection implements ChunkSection, ChunkSection3DBiome {
         stream.put(EMPTY_CHUNK_DATA);
     }
 
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     @Override
     public long getBlockChanges() {
         return 0;
     }
 
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     @Override
     public void addBlockChange() {
 

@@ -31,7 +31,7 @@ import static cn.nukkit.utils.StringUtils.fastSplit;
  * 通过{@code getAPI()}方法获取API对象
  */
 @PowerNukkitXOnly
-@Since("1.19.50-r4")
+@Since("1.19.60-r1")
 public class EntitySelectorAPI {
     @Getter
     private static final EntitySelectorAPI API = new EntitySelectorAPI();

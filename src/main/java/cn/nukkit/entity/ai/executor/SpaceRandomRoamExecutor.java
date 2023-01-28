@@ -11,7 +11,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * 3D随机漫游
  */
 @PowerNukkitXOnly
-@Since("1.19.50-r4")
+@Since("1.19.60-r1")
 public class SpaceRandomRoamExecutor extends FlatRandomRoamExecutor {
 
     protected int maxYRoamRange;

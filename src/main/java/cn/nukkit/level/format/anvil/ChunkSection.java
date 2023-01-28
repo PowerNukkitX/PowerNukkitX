@@ -70,7 +70,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
     @Since("1.19.21-r1")
     protected boolean invalidCustomBlockWhenLoad = false;
     @PowerNukkitXOnly
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     protected long blockChanges = 0;
     private LayerStorage layerStorage;
     private int contentVersion;
@@ -1063,13 +1063,13 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
         layerStorage.setNeedReObfuscate();
     }
 
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     @Override
     public long getBlockChanges() {
         return this.blockChanges;
     }
 
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     @Override
     public void addBlockChange() {
         this.blockChanges++;

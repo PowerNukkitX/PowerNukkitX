@@ -18,7 +18,7 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 @PowerNukkitXOnly
-@Since("1.19.50-r4")
+@Since("1.19.60-r1")
 @Log4j2
 public class PluginI18n {
     /**

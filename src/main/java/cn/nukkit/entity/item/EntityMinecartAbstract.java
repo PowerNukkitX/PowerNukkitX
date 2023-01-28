@@ -405,7 +405,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
      * @return 是否有漏斗被通知
      */
     @PowerNukkitXOnly
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     private boolean checkPushHopper(AxisAlignedBB pushArea, InventoryHolder holder) {
         var hopperPushArray = this.level.getTickCachedCollisionBlocks(pushArea, true, false, b -> b instanceof BlockHopper);
         if (hopperPushArray.length >= 1) {
@@ -421,7 +421,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
      * @return 是否有漏斗被通知
      */
     @PowerNukkitXOnly
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     private boolean checkPickupHopper(AxisAlignedBB pickupArea, InventoryHolder holder) {
         var hopperPickupArray = this.level.getTickCachedCollisionBlocks(pickupArea, true, false, b -> b instanceof BlockHopper);
         if (hopperPickupArray.length >= 1) {

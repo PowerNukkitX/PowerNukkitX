@@ -17,7 +17,7 @@ import java.util.Map;
  * 注意！实现了此接口的类必须具有一个形参只有{@link cn.nukkit.entity.Entity}的构造函数，对象将会反射创建
  */
 @PowerNukkitXOnly
-@Since("1.19.50-r4")
+@Since("1.19.60-r1")
 public interface EntityComponent {
 
     /**

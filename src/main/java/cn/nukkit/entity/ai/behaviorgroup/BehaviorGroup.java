@@ -278,7 +278,7 @@ public class BehaviorGroup implements IBehaviorGroup {
      *
      * @return 是否需要更新路径
      */
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     protected boolean shouldUpdateRoute(EntityIntelligent entity) {
         //此优化只针对处于非active区块的实体
         if (entity.isActive()) return true;
@@ -304,7 +304,7 @@ public class BehaviorGroup implements IBehaviorGroup {
     /**
      * 缓存section的blockChanges到blockChangeCache
      */
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     protected void cacheSectionBlockChange(Level level, Set<ChunkSectionVector> vecs) {
         this.blockChangeCache = vecs.stream().mapToLong(vector3 -> getSectionBlockChange(level, vector3)).sum();
     }
@@ -312,7 +312,7 @@ public class BehaviorGroup implements IBehaviorGroup {
     /**
      * 返回sectionVector对应的section的blockChanges
      */
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     protected long getSectionBlockChange(Level level, ChunkSectionVector vector) {
         var chunk = level.getChunk(vector.chunkX, vector.chunkZ);
         //TODO: 此处强转未经检查，可能在未来导致兼容性问题
@@ -324,7 +324,7 @@ public class BehaviorGroup implements IBehaviorGroup {
      *
      * @return (chunkX | chunkSectionY | chunkZ)
      */
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     protected Set<ChunkSectionVector> calPassByChunkSections(Collection<Vector3> nodes, Level level) {
         return nodes.stream().map(vector3 -> new ChunkSectionVector(vector3.getChunkX(), ((int) vector3.y - level.getMinHeight()) >> 4, vector3.getChunkZ())).collect(Collectors.toSet());
     }

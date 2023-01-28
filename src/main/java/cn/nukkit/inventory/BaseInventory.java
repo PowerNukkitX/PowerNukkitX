@@ -110,7 +110,7 @@ public abstract class BaseInventory implements Inventory {
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     @Override
     public Item getUnclonedItem(int index) {
         return this.slots.getOrDefault(index, AIR_ITEM);
@@ -264,7 +264,7 @@ public abstract class BaseInventory implements Inventory {
         }
     }
 
-    @PowerNukkitXDifference(info = "Using BaseInventory::getUnclonedItem() to improve performance", since = "1.19.50-r4")
+    @PowerNukkitXDifference(info = "Using BaseInventory::getUnclonedItem() to improve performance", since = "1.19.60-r1")
     @Override
     public boolean canAddItem(Item item) {
         item = item.clone();

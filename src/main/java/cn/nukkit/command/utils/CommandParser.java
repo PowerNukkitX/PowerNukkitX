@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
  * 目前已经重写了解析器，应使用新的ParamTree而不是继续使用此实现
  */
 @Deprecated
-@DeprecationDetails(since = "1.19.50-r4", reason = "Using the new ParamTree instead", replaceWith = "ParamTree")
+@DeprecationDetails(since = "1.19.60-r1", reason = "Using the new ParamTree instead", replaceWith = "ParamTree")
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 @Getter

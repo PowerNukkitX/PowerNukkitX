@@ -33,7 +33,7 @@ public class BlockComposter extends BlockSolidMeta implements ItemID {
     @Since("1.4.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(COMPOSTER_FILL_LEVEL);
     @PowerNukkitXOnly
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     public static final Item OUTPUT_ITEM = new ItemDye(DyeColor.BONE_MEAL, 1);
 
     static {
@@ -199,7 +199,7 @@ public class BlockComposter extends BlockSolidMeta implements ItemID {
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     public Item getOutPutItem() {
         return OUTPUT_ITEM.clone();
     }

@@ -9,7 +9,7 @@ import cn.nukkit.network.protocol.types.CommandOutputMessage;
 import java.util.ArrayList;
 
 @PowerNukkitXOnly
-@Since("1.19.50-r4")
+@Since("1.19.60-r1")
 public class ParamList extends ArrayList<IParamNode<?>> {
     private int error = Integer.MIN_VALUE;
     private int index = 0;

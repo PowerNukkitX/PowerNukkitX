@@ -129,7 +129,7 @@ public class JavaPluginLoader implements PluginLoader {
     }
 
     @PowerNukkitDifference(info = "Made impossible to disable special the PowerNukkitPlugin", since = "1.3.0.0-PN")
-    @PowerNukkitDifference(info = "Made impossible to disable special the PowerNukkitX Internal Plugin", since = "1.19.50-r4")
+    @PowerNukkitDifference(info = "Made impossible to disable special the PowerNukkitX Internal Plugin", since = "1.19.60-r1")
     @Override
     public void disablePlugin(Plugin plugin) {
         if (plugin instanceof PluginBase && plugin.isEnabled()) {

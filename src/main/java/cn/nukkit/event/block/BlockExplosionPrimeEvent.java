@@ -63,13 +63,13 @@ public class BlockExplosionPrimeEvent extends BlockEvent implements Cancellable 
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     public BlockExplosionPrimeEvent(Block block, @Nullable Player player, double force) {
         this(block, player, force, 0);
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     public BlockExplosionPrimeEvent(Block block, @Nullable Player player, double force, double fireChance) {
         super(block);
         this.force = force;
@@ -132,7 +132,7 @@ public class BlockExplosionPrimeEvent extends BlockEvent implements Cancellable 
 
     @Nullable
     @PowerNukkitXOnly
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     public Player getPlayer() {
         return player;
     }

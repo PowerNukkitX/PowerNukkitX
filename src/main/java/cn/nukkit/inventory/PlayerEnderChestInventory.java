@@ -20,7 +20,7 @@ public class PlayerEnderChestInventory extends BaseInventory {
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     public PlayerEnderChestInventory(HumanInventoryHolder humanInventoryHolder) {
         super(humanInventoryHolder, InventoryType.ENDER_CHEST);
     }
