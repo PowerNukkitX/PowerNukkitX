@@ -581,6 +581,14 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
 
+    /**
+     * 从mc标准实体标识符创建实体，形如(minecraft:sheep)
+     *
+     * @param identifier the identifier
+     * @param pos        the pos
+     * @param args       the args
+     * @return the entity
+     */
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
     @Nullable
