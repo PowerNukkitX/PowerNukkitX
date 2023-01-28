@@ -16,7 +16,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @Since("1.4.0.0-PN")
 @PowerNukkitOnly
-public abstract class BlockFungus extends BlockFlowable {
+public abstract class BlockFungus extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     protected BlockFungus() {

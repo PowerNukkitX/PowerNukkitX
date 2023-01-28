@@ -5,6 +5,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.blockproperty.value.SmallFlowerType;
+import cn.nukkit.nbt.tag.CompoundTag;
 
 import javax.annotation.Nonnull;
 
@@ -51,5 +52,18 @@ public class BlockDandelion extends BlockFlower {
     @Override
     public SmallFlowerType getFlowerType() {
         return SmallFlowerType.DANDELION;
+    }
+
+    @Override
+    public CompoundTag getPlantBlockTag() {
+        var plantBlock = new CompoundTag("PlantBlock");
+        plantBlock.putString("name", "minecraft:yellow_flower");
+        plantBlock.putCompound("states", new CompoundTag("states"));
+        plantBlock.putInt("version", VERSION);
+        var item = this.toItem();
+        //only exist in PNX
+        plantBlock.putInt("itemId", item.getId());
+        plantBlock.putInt("itemMeta", item.getDamage());
+        return plantBlock;
     }
 }

@@ -10,6 +10,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemStick;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BlockColor;
 
 import javax.annotation.Nonnull;
@@ -19,7 +20,7 @@ import java.util.Random;
  * @author xtypr
  * @since 2015/12/2
  */
-public class BlockDeadBush extends BlockFlowable {
+public class BlockDeadBush extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
     public BlockDeadBush() {
         this(0);
     }
@@ -111,5 +112,18 @@ public class BlockDeadBush extends BlockFlowable {
     @Override
     public BlockColor getColor() {
         return BlockColor.FOLIAGE_BLOCK_COLOR;
+    }
+
+    @Override
+    public CompoundTag getPlantBlockTag() {
+        var plantBlock = new CompoundTag("PlantBlock");
+        plantBlock.putString("name", "minecraft:deadbush");
+        plantBlock.putCompound("states", new CompoundTag("states"));
+        plantBlock.putInt("version", VERSION);
+        var item = this.toItem();
+        //only exist in PNX
+        plantBlock.putInt("itemId", item.getId());
+        plantBlock.putInt("itemMeta", item.getDamage());
+        return plantBlock;
     }
 }
