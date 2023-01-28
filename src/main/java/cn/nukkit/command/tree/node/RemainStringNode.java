@@ -13,7 +13,7 @@ import java.util.List;
  * 如果没有手动指定{@link IParamNode},则会默认使用这个解析
  */
 @PowerNukkitXOnly
-@Since("1.19.50-r4")
+@Since("1.19.60-r1")
 public class RemainStringNode extends ParamNode<String> {
     private final List<String> TMP = new ArrayList<>();
 

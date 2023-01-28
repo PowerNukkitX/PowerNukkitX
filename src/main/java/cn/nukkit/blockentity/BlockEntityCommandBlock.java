@@ -582,7 +582,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
         return this;
     }
 
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     @NotNull
     @Override
     public Location getLocation() {

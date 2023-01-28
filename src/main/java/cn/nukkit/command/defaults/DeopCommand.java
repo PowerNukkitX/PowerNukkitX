@@ -27,7 +27,7 @@ public class DeopCommand extends VanillaCommand {
         this.enableParamTree();
     }
 
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         List<IPlayer> IPlayers = result.getValue().getResult(0);

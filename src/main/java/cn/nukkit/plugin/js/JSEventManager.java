@@ -332,7 +332,7 @@ public final class JSEventManager {
                     alias = new String[0];
                 }
                 command = new Command(commandName, description, usageMessage, alias) {
-                    @Since("1.19.50-r4")
+                    @Since("1.19.60-r1")
                     @Override
                     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
                         synchronized (jsPlugin.getJsContext()) {

@@ -10,7 +10,7 @@ import java.util.Map;
  * 实体组件组
  */
 @PowerNukkitXOnly
-@Since("1.19.50-r4")
+@Since("1.19.60-r1")
 public interface EntityComponentGroup {
 
     /**

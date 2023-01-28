@@ -16,7 +16,7 @@ import javax.annotation.Nullable;
  * @since 03.07.2016
  */
 @Deprecated
-@DeprecationDetails(since = "1.19.50-r4", reason = "use PlayerUseItemFrameEvent")
+@DeprecationDetails(since = "1.19.60-r1", reason = "use PlayerUseItemFrameEvent")
 public class ItemFrameDropItemEvent extends BlockEvent implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();

@@ -52,19 +52,19 @@ public class Vector3 implements Cloneable {
         return this.z;
     }
 
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     public Vector3 setX(double x) {
         this.x = x;
         return this;
     }
 
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     public Vector3 setY(double y) {
         this.y = y;
         return this;
     }
 
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     public Vector3 setZ(double z) {
         this.z = z;
         return this;

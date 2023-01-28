@@ -8,7 +8,7 @@ import cn.nukkit.command.tree.ParamList;
  * 一个用来占位的空参数节点
  */
 @PowerNukkitXOnly
-@Since("1.19.50-r4")
+@Since("1.19.60-r1")
 public class VoidNode implements IParamNode<Void> {
     @Override
     public void fill(String arg) {

@@ -18,7 +18,7 @@ import java.util.Map;
  * 通过将一个特定接口绑定到一个特定组件上后，实体将在实例化时依据类实现的接口自动创建组件对象
  */
 @PowerNukkitXOnly
-@Since("1.19.50-r4")
+@Since("1.19.60-r1")
 public final class EntityComponentRegistery {
 
     @Getter

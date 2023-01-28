@@ -21,7 +21,7 @@ import java.util.Set;
  * 所有鱼的基类
  */
 @PowerNukkitXOnly
-@Since("1.19.50-r4")
+@Since("1.19.60-r1")
 public abstract class EntityFish extends EntityAnimal implements EntitySwimmable {
 
     public EntityFish(FullChunk chunk, CompoundTag nbt) {

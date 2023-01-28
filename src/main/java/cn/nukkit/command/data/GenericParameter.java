@@ -6,7 +6,7 @@ import cn.nukkit.command.tree.node.ChainedCommandNode;
 import cn.nukkit.command.tree.node.ItemNode;
 
 @PowerNukkitXOnly
-@Since("1.19.50-r4")
+@Since("1.19.60-r1")
 public interface GenericParameter {
     CommandParameterSupplier<CommandParameter> OBJECTIVES = (optional) -> CommandParameter.newEnum("objective", optional, CommandEnum.SCOREBOARD_OBJECTIVES);
     CommandParameterSupplier<CommandParameter> TARGET_OBJECTIVES = (optional) -> CommandParameter.newEnum("targetObjective", optional, CommandEnum.SCOREBOARD_OBJECTIVES);

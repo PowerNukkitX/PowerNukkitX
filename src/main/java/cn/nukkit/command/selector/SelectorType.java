@@ -9,7 +9,7 @@ import lombok.Getter;
  * 所有可能的选择器类型
  */
 @PowerNukkitXOnly
-@Since("1.19.50-r4")
+@Since("1.19.60-r1")
 public enum SelectorType {
     ALL_PLAYERS("a"),
     ALL_ENTITIES("e"),

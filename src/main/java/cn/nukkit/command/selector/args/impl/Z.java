@@ -12,7 +12,7 @@ import cn.nukkit.level.Location;
 import java.util.function.Predicate;
 
 @PowerNukkitXOnly
-@Since("1.19.50-r4")
+@Since("1.19.60-r1")
 public class Z extends CoordinateArgument {
     @Override
     public Predicate<Entity> getPredicate(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) throws SelectorSyntaxException {

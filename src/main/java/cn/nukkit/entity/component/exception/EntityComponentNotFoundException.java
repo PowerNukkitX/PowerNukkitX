@@ -7,7 +7,7 @@ import cn.nukkit.api.Since;
  * 组件不存在错误
  */
 @PowerNukkitXOnly
-@Since("1.19.50-r4")
+@Since("1.19.60-r1")
 public class EntityComponentNotFoundException extends RuntimeException {
     public EntityComponentNotFoundException() {
     }

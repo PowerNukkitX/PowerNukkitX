@@ -38,7 +38,7 @@ public class PlaySoundCommand extends VanillaCommand {
         this.enableParamTree();
     }
 
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();

@@ -59,7 +59,7 @@ public interface Inventory {
      * @return the item
      */
     @PowerNukkitXOnly
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     @DoNotModify
     default Item getUnclonedItem(int index) {
         //你需要覆写它来实现

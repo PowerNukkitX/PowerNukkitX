@@ -120,7 +120,7 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
         return super.onUpdate(currentTick);
     }
 
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     @Override
     public double getFloatingForceFactor() {
         return 0.7;

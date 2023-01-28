@@ -37,12 +37,12 @@ public final class StringUtils {
         return str.substring(0, 1).toUpperCase() + str.substring(1);
     }
 
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     public static List<String> fastSplit(String delimiter, String str) {
         return fastSplit(delimiter, str, Integer.MAX_VALUE);
     }
 
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     public static List<String> fastSplit(String delimiter, String str, int limit) {
         var tmp = str;
         var results = new ArrayList<String>();

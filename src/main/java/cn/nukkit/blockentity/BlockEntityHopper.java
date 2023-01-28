@@ -49,12 +49,12 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
     @Getter
     @Setter
     @PowerNukkitXOnly
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     private InventoryHolder MinecartInvPickupFrom = null;
     @Getter
     @Setter
     @PowerNukkitXOnly
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     private InventoryHolder MinecartInvPushTo = null;
 
     public BlockEntityHopper(FullChunk chunk, CompoundTag nbt) {

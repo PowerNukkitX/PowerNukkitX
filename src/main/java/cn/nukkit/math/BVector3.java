@@ -13,7 +13,7 @@ import static java.lang.StrictMath.*;
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-@PowerNukkitXDifference(info = "update Angle algorithm", since = "1.19.50-r4")
+@PowerNukkitXDifference(info = "update Angle algorithm", since = "1.19.60-r1")
 public final class BVector3 {
     /**
      * 向量的单位向量

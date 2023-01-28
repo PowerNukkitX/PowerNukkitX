@@ -6,7 +6,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @PowerNukkitXOnly
-@Since("1.19.50-r4")
+@Since("1.19.60-r1")
 @NoArgsConstructor(onConstructor = @__(@PowerNukkitXOnly), access = AccessLevel.PRIVATE)
 public final class InternalPlugin extends PluginBase {
     public static final InternalPlugin INSTANCE = new InternalPlugin();

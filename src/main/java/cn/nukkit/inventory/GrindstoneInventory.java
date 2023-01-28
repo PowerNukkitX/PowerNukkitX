@@ -232,7 +232,7 @@ public class GrindstoneInventory extends FakeBlockUIComponent {
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     @Override
     public Item getUnclonedItem(int index) {
         if (index < 0 || index > 3) {

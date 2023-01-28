@@ -99,7 +99,7 @@ public enum SmallFlowerType {
      * PlantBlock Tag中states.flower_type的值
      */
     @PowerNukkitXOnly
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     private final String networkFlowerType;
     private final DyeColor dyeColor;
     private final int blockId;
@@ -117,7 +117,7 @@ public enum SmallFlowerType {
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     public String getNetworkFlowerType() {
         return networkFlowerType;
     }

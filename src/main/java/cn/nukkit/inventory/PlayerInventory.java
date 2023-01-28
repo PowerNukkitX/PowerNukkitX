@@ -44,7 +44,7 @@ public class PlayerInventory extends BaseInventory {
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     public PlayerInventory(HumanInventoryHolder humanInventoryHolder) {
         super(humanInventoryHolder, InventoryType.PLAYER);
         this.hotbar = new int[this.getHotbarSize()];

@@ -243,10 +243,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected TradingTransaction tradingTransaction;
     protected long randomClientId;
     @Deprecated
-    @DeprecationDetails(since = "1.19.50-r4", reason = "Useless, use teleport directly")
+    @DeprecationDetails(since = "1.19.60-r1", reason = "Useless, use teleport directly")
     protected Vector3 forceMovement = null;
     @Deprecated
-    @DeprecationDetails(since = "1.19.50-r4", reason = "Useless, use teleport directly")
+    @DeprecationDetails(since = "1.19.60-r1", reason = "Useless, use teleport directly")
     protected Vector3 teleportPosition = null;
     protected boolean connected = true;
     protected InetSocketAddress socketAddress;
@@ -1183,7 +1183,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     //NK原始处理移动的方法
     @Deprecated
-    @DeprecationDetails(since = "1.19.50-r4", reason = "use handleMovement")
+    @DeprecationDetails(since = "1.19.60-r1", reason = "use handleMovement")
     protected void processMovement(int tickDiff) {
     }
 
@@ -2562,7 +2562,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Deprecated
-    @DeprecationDetails(since = "1.19.50-r4", reason = "same #getSpawn")
+    @DeprecationDetails(since = "1.19.60-r1", reason = "same #getSpawn")
     public Position getSpawnBlock() {
         return this.getSpawn();
     }
@@ -3109,7 +3109,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     @Override
-    @PowerNukkitXDifference(info = "Calculate fall distance when wearing elytra", since = "1.19.50-r4")
+    @PowerNukkitXDifference(info = "Calculate fall distance when wearing elytra", since = "1.19.60-r1")
     public boolean onUpdate(int currentTick) {
         if (!this.loggedIn) {
             return false;
@@ -5680,7 +5680,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     public void sendCommandOutput(CommandOutputContainer container) {
         var pk = new CommandOutputPacket();
         pk.messages.addAll(container.getMessages());
@@ -6242,7 +6242,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     public LangCode getLanguageCode() {
         return LangCode.valueOf(this.getLoginChainData().getLanguageCode());
     }
@@ -6931,13 +6931,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     @Deprecated
-    @DeprecationDetails(since = "1.19.50-r4", reason = "same teleport")
+    @DeprecationDetails(since = "1.19.60-r1", reason = "same teleport")
     public void teleportImmediate(Location location) {
         this.teleportImmediate(location, TeleportCause.PLUGIN);
     }
 
     @Deprecated
-    @DeprecationDetails(since = "1.19.50-r4", reason = "same teleport")
+    @DeprecationDetails(since = "1.19.60-r1", reason = "same teleport")
     public void teleportImmediate(Location location, TeleportCause cause) {
         this.teleport(location, cause);
     }

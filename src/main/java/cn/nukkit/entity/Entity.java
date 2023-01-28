@@ -462,7 +462,7 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_FLAG_HAS_DASH_COOLDOWN = dynamic(108);
     @Since("1.19.50-r1")
     public static final int DATA_FLAG_PUSH_TOWARDS_CLOSEST_SPACE = dynamic(109);
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     public static final int DATA_FLAG_LARGE = dynamic(110);
     private static final Set<CustomEntityDefinition> entityDefinitions = new HashSet<>();
     private static final Map<String, EntityProvider<? extends Entity>> knownEntities = new HashMap<>();
@@ -565,7 +565,7 @@ public abstract class Entity extends Location implements Metadatable {
     protected Timing timing;
     protected boolean isPlayer = this instanceof Player;
     @PowerNukkitXOnly
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     @Getter
     protected EntityComponentGroup componentGroup;
     private int maxHealth = 20;
@@ -2482,13 +2482,13 @@ public abstract class Entity extends Location implements Metadatable {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @PowerNukkitXDifference(info = "Make as public method", since = "1.19.50-r4")
+    @PowerNukkitXDifference(info = "Make as public method", since = "1.19.60-r1")
     public boolean hasWaterAt(float height) {
         return hasWaterAt(height, false);
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     protected boolean hasWaterAt(float height, boolean tickCached) {
         double y = this.y + height;
         Block block = tickCached ?
@@ -2596,7 +2596,7 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     //Player do not use
-    @PowerNukkitXDifference(since = "1.19.50-r4", info = "The onGround is updated when the entity motion is 0")
+    @PowerNukkitXDifference(since = "1.19.60-r1", info = "The onGround is updated when the entity motion is 0")
     public boolean move(double dx, double dy, double dz) {
         if (dx == 0 && dz == 0 && dy == 0) {
             this.onGround = !this.getPosition().setComponents(this.down()).getTickCachedLevelBlock().canPassThrough();
@@ -3525,7 +3525,7 @@ public abstract class Entity extends Location implements Metadatable {
      * 通过反射获取类实现的接口并查询{@link cn.nukkit.entity.component.EntityComponentRegistery}创建对应组件
      */
     @PowerNukkitXOnly
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     protected EntityComponentGroup requireEntityComponentGroup() throws InvocationTargetException, InstantiationException, IllegalAccessException {
         var components = new HashSet<EntityComponent>();
 

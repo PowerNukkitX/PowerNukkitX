@@ -1172,7 +1172,7 @@ public class Server {
 
 
     @Deprecated
-    @DeprecationDetails(since = "1.19.50-r4", reason = "use Server#executeCommand")
+    @DeprecationDetails(since = "1.19.60-r1", reason = "use Server#executeCommand")
     public boolean dispatchCommand(CommandSender sender, String commandLine) throws ServerException {
         return this.executeCommand(sender, commandLine) > 0;
     }

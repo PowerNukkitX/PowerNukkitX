@@ -136,7 +136,7 @@ public class BlockRespawnAnchor extends BlockMeta {
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     public void explode(Player player) {
         BlockExplosionPrimeEvent event = new BlockExplosionPrimeEvent(this, player, 5);
         event.setIncendiary(true);

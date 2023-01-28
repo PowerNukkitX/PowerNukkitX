@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 @PowerNukkitXOnly
-@Since("1.19.50-r4")
+@Since("1.19.60-r1")
 public class SimpleEntityComponentGroup implements EntityComponentGroup {
 
     protected Map<Class<? extends EntityComponent>, EntityComponent> components = new ConcurrentHashMap<>();

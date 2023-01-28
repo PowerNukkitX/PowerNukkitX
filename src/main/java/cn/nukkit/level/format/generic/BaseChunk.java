@@ -83,7 +83,7 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
      * @return 指定section的方块更改总数
      */
     @PowerNukkitXOnly
-    @Since("1.19.50-r4")
+    @Since("1.19.60-r1")
     public long getSectionBlockChanges(int sectionY) {
         return sections[sectionY].getBlockChanges();
     }
