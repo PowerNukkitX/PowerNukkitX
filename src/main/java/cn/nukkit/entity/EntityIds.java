@@ -9,6 +9,10 @@ import cn.nukkit.entity.projectile.*;
 import cn.nukkit.entity.weather.EntityLightning;
 import com.google.common.collect.ImmutableMap;
 
+/**
+ * 从mc标准实体标识符获取Nukkit的实体网络ID{@link Entity#getNetworkId()}
+ * Link {@link cn.nukkit.network.protocol.AddEntityPacket#LEGACY_IDS LEGACY_IDS}
+ */
 @PowerNukkitXOnly
 @Since("1.19.60-r1")
 public final class EntityIds {
