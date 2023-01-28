@@ -49,6 +49,7 @@ import cn.nukkit.plugin.Plugin;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.scheduler.Task;
 import cn.nukkit.utils.ChunkException;
+import cn.nukkit.utils.Identifier;
 import cn.nukkit.utils.TextFormat;
 import cn.nukkit.utils.Utils;
 import co.aikar.timings.Timing;
@@ -579,14 +580,32 @@ public abstract class Entity extends Location implements Metadatable {
         this.init(chunk, nbt);
     }
 
+
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    @Nullable
+    public static Entity createEntity(Identifier identifier, @Nonnull Position pos, @Nullable Object... args) {
+        Integer id = EntityIds.IDENTIFIER_2_IDS.get(identifier.toString());
+        String name;
+        if (id == null) {
+            name = identifier.toString();
+        } else name = id.toString();
+        return createEntity(name, pos, args);
+    }
+
     @Nullable
     public static Entity createEntity(@Nonnull String name, @Nonnull Position pos, @Nullable Object... args) {
-        return createEntity(name, pos.getChunk(), getDefaultNBT(pos), args);
+        return createEntity(name, Objects.requireNonNull(pos.getChunk()), getDefaultNBT(pos), args);
     }
 
     @Nullable
     public static Entity createEntity(int type, @Nonnull Position pos, @Nullable Object... args) {
-        return createEntity(String.valueOf(type), pos.getChunk(), getDefaultNBT(pos), args);
+        return createEntity(String.valueOf(type), Objects.requireNonNull(pos.getChunk()), getDefaultNBT(pos), args);
+    }
+
+    @Nullable
+    public static Entity createEntity(int type, @Nonnull FullChunk chunk, @Nonnull CompoundTag nbt, @Nullable Object... args) {
+        return createEntity(String.valueOf(type), chunk, nbt, args);
     }
 
     @Nullable
@@ -596,11 +615,6 @@ public abstract class Entity extends Location implements Metadatable {
             return provider.provideEntity(chunk, nbt, args);
         }
         return null;
-    }
-
-    @Nullable
-    public static Entity createEntity(int type, @Nonnull FullChunk chunk, @Nonnull CompoundTag nbt, @Nullable Object... args) {
-        return createEntity(String.valueOf(type), chunk, nbt, args);
     }
 
     public static boolean registerEntity(String name, Class<? extends Entity> clazz) {
