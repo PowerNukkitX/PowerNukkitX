@@ -186,7 +186,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
                 return false;
             }
 
-            if (!(item.getBlock() instanceof FlowerPotBlock))
+            if (!item.isNull())
                 return false;
 
             if (hasFlower()) {
@@ -201,8 +201,8 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
             return false;
         }
 
-        BlockEntityFlowerPot blockEntity = getOrCreateBlockEntity();
-        if (blockEntity.namedTag.containsCompound("PlantBlock")) {
+        getOrCreateBlockEntity();
+        if (hasFlower()) {
             return false;
         }
 
