@@ -3239,7 +3239,7 @@ public class Server {
         Entity.registerEntity("Zoglin", EntityZoglin.class);
         Entity.registerEntity("ZombiePigman", EntityZombiePigman.class);
         Entity.registerEntity("ZombieVillager", EntityZombieVillager.class);
-//        Entity.registerEntity("ZombieVillagerV1", EntityZombieVillagerV1.class);
+        Entity.registerEntity("ZombieVillagerV1", EntityZombieVillagerV1.class);
         //Passive
         Entity.registerEntity("Allay", EntityAllay.class);
         Entity.registerEntity("Axolotl", EntityAxolotl.class);
@@ -3274,7 +3274,7 @@ public class Server {
         Entity.registerEntity("TropicalFish", EntityTropicalFish.class);
         Entity.registerEntity("Turtle", EntityTurtle.class);
         Entity.registerEntity("Villager", EntityVillager.class);
-//        Entity.registerEntity("VillagerV1", EntityVillagerV1.class);
+        Entity.registerEntity("VillagerV1", EntityVillagerV1.class);
         Entity.registerEntity("WanderingTrader", EntityWanderingTrader.class);
         Entity.registerEntity("Wolf", EntityWolf.class);
         Entity.registerEntity("ZombieHorse", EntityZombieHorse.class);

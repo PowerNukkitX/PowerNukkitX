@@ -13,7 +13,6 @@ import cn.nukkit.potion.Effect;
 /**
  * @author PikyCZ
  */
-@Deprecated
 public class EntityZombieVillagerV1 extends EntityMob implements EntityWalkable, EntitySmite {
 
     public static final int NETWORK_ID = 44;

@@ -85,7 +85,7 @@ public class EntityVillager extends EntityCreature implements InventoryHolder, E
         output1.setCount(1);
         output1.setNamedTag(SNBTParser.parse("""
                         {
-                          "Damage": 0i,
+                          "Damage": 0,
                           "ench": [
                             {
                               "id": 17s,
