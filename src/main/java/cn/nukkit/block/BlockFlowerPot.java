@@ -8,7 +8,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityFlowerPot;
 import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemFlowerPot;
 import cn.nukkit.level.Level;
@@ -225,14 +224,14 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
         BlockEntityFlowerPot blockEntity = getBlockEntity();
         if (blockEntity != null) {
             dropInside = true;
-            insideID = blockEntity.namedTag.getShort("item");
-            insideMeta = blockEntity.namedTag.getInt("data");
+            insideID = blockEntity.namedTag.getCompound("PlantBlock").getInt("itemId");
+            insideMeta = blockEntity.namedTag.getCompound("PlantBlock").getInt("itemMeta");
         }
 
         if (dropInside) {
             return new Item[]{
                     new ItemFlowerPot(),
-                    BlockState.of(insideID, insideMeta).getBlock(this).toItem()
+                    Item.get(insideID, insideMeta)
             };
         } else {
             return new Item[]{
