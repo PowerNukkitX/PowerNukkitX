@@ -23,8 +23,8 @@ public class BlockEntityFlowerPot extends BlockEntitySpawnable {
             var data = 0;
             if (namedTag.contains("data")) data = namedTag.getInt("data");
             else if (namedTag.contains("mData")) data = namedTag.getInt("mData");
-            var item = Item.get(namedTag.getInt("item"), data);
-            if (item.getBlock() instanceof BlockFlowerPot.FlowerPotBlock potBlock && potBlock.isPotBlockState()) {
+            var block = Block.get(namedTag.getInt("item"), data);
+            if (block instanceof BlockFlowerPot.FlowerPotBlock potBlock && potBlock.isPotBlockState()) {
                 namedTag.putCompound("PlantBlock", potBlock.getPlantBlockTag());
             }
         }
