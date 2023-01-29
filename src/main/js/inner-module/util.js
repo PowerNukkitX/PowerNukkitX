@@ -11,6 +11,7 @@ import {ItemCustomTool} from "cn.nukkit.item.customitem.ItemCustomTool";
 import {ItemCustomArmor} from "cn.nukkit.item.customitem.ItemCustomArmor";
 import {CustomItemDefinition} from "cn.nukkit.item.customitem.CustomItemDefinition";
 import {ItemCreativeCategory} from "cn.nukkit.item.customitem.data.ItemCreativeCategory";
+import {Map} from "java.util.Map";
 
 const JPrimitiveBoolean = Java.type("boolean");
 const JPrimitiveInt = Java.type("int");
@@ -191,8 +192,11 @@ export class BlockItemUtil {
             getMaxStackSize() {
                 return stackSize;
             },
-            getEatTick() {
-                return consumeTime;
+            getFood() {
+                const foodNormal = new FoodNormal(restoreFood, restoreSaturation);
+                foodNormal.addRelative(id, 0, jsPlugin);
+                Food.registerFood(foodNormal, jsPlugin);
+                return Map.entry(jsPlugin, foodNormal);
             },
             isDrink() {
                 return isDrink;
@@ -202,14 +206,11 @@ export class BlockItemUtil {
             }
         }).addJavaConstructor("new", "constructor", [JString, JString, JString])
             .addJavaMethod("getMaxStackSize", "getMaxStackSize", JPrimitiveInt)
-            .addJavaMethod("getEatTick", "getEatTick", JPrimitiveInt)
+            .addJavaMethod("getFood", "getFood", Map.Entry)
             .addJavaMethod("isDrink", "isDrink", JPrimitiveBoolean)
             .addJavaMethod("canAlwaysEat", "canAlwaysEat", JPrimitiveBoolean)
             .addJavaMethod("getDefinition", "getDefinition", CustomItemDefinition);
         Item.registerCustomItem(jClassBuilder.compileToJavaClass());
-        const foodNormal = new FoodNormal(restoreFood, restoreSaturation);
-        foodNormal.addRelative(id, 0, jsPlugin);
-        Food.registerFood(foodNormal, jsPlugin);
     }
 
     /**
