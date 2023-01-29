@@ -13,14 +13,23 @@ import cn.nukkit.api.Since;
 @PowerNukkitXOnly
 @Since("1.19.31-r1")
 public enum ItemCreativeCategory {
-    CONSTRUCTOR,
-    NATURE,
-    EQUIPMENT,
-    ITEMS;
+    CONSTRUCTOR(2),
+    EQUIPMENT(3),
+    ITEMS(4),
+    NATURE(5);
+    final int id;
+
+    ItemCreativeCategory(int id) {
+        this.id = id;
+    }
+
+    public int getId() {
+        return id;
+    }
 
     public static ItemCreativeCategory fromID(int num) {
         return switch (num) {
-            case 1 -> CONSTRUCTOR;
+            case 2 -> CONSTRUCTOR;
             case 3 -> EQUIPMENT;
             case 4 -> ITEMS;
             default -> NATURE;

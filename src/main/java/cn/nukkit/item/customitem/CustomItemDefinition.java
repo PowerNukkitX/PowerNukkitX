@@ -123,7 +123,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
             //定义在创造栏的大分类
             this.nbt.getCompound("components")
                     .getCompound("item_properties")//1 none
-                    .putInt("creative_category", creativeCategory.ordinal() + 1);
+                    .putInt("creative_category", creativeCategory.getId());
         }
 
         /**

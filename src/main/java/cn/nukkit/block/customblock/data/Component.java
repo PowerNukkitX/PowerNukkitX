@@ -13,7 +13,7 @@ import java.util.Locale;
 
 @Since("1.19.60-r1")
 @PowerNukkitXOnly
-@Builder(buildMethodName = "toCompoundTag")
+@Builder
 @Getter
 public class Component implements NBTData {
     private final CompoundTag result = new CompoundTag("components");
