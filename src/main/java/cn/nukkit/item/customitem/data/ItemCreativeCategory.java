@@ -13,10 +13,14 @@ import cn.nukkit.api.Since;
 @PowerNukkitXOnly
 @Since("1.19.31-r1")
 public enum ItemCreativeCategory {
-    CONSTRUCTOR(2),
+    CONSTRUCTOR(1),
     EQUIPMENT(3),
+    /**
+     * 可能是客户端bug，使用ITEMS 4会分类去到Nature栏食物那边，自定义方块那边也一样
+     */
     ITEMS(4),
-    NATURE(5);
+    NATURE(2),
+    NONE(5);
     final int id;
 
     ItemCreativeCategory(int id) {
@@ -25,14 +29,5 @@ public enum ItemCreativeCategory {
 
     public int getId() {
         return id;
-    }
-
-    public static ItemCreativeCategory fromID(int num) {
-        return switch (num) {
-            case 2 -> CONSTRUCTOR;
-            case 3 -> EQUIPMENT;
-            case 4 -> ITEMS;
-            default -> NATURE;
-        };
     }
 }

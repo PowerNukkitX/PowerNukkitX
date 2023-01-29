@@ -12,10 +12,6 @@ import cn.nukkit.api.Since;
 @Since("1.19.31-r1")
 public enum BlockCreativeCategory {
     /**
-     * Commands block creative category.
-     */
-    COMMANDS,
-    /**
      * 对应创造栏第一个
      * <p>
      * Construction block creative category.

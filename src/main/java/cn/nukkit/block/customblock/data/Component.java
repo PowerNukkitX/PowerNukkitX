@@ -43,12 +43,17 @@ public class Component implements NBTData {
     List<BoneCondition> partVisibility;
     @Nullable
     Vector3f rotation;
+    @Nullable
+    Boolean unitCube;
 
     public CompoundTag toCompoundTag() {
         if (this.geometry != null) {
             this.result.putCompound("minecraft:geometry", new CompoundTag()
                     .putString("value", geometry.toLowerCase(Locale.ENGLISH)));
-        } else this.result.putCompound("minecraft:unit_cube", new CompoundTag());
+        }
+        if (unitCube != null) {
+            this.result.putCompound("minecraft:unit_cube", new CompoundTag());
+        }
         if (collisionBox != null) {
             this.result.putCompound(collisionBox.toCompoundTag());
         }

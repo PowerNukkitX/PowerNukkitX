@@ -13,6 +13,10 @@ public record BoneCondition(@NotNull String conditionName,
                             @NotNull String conditionExpr) implements NBTData {
     private static final int molangVersion = 6;
 
+    public BoneCondition(@NotNull String boneName, @NotNull String conditionExpr) {
+        this(boneName, boneName, conditionExpr);
+    }
+
     @Override
     public CompoundTag toCompoundTag() {
         return new CompoundTag(conditionName)
