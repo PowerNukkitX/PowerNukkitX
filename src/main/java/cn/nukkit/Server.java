@@ -2168,14 +2168,14 @@ public class Server {
     }
 
     /**
-     * @return 是否强制使用服务器整合包<br>Whether to force the use of server resourcepack
+     * @return 是否强制使用服务器资源包<br>Whether to force the use of server resourcepack
      */
     public boolean getForceResources() {
         return this.getPropertyBoolean("force-resources", false);
     }
 
     /**
-     * @return 是否强制使用服务器整合包的同时允许加载客户端资源包<br>Whether to force the use of server resourcepack while allowing the loading of client resourcepack
+     * @return 是否强制使用服务器资源包的同时允许加载客户端资源包<br>Whether to force the use of server resourcepack while allowing the loading of client resourcepack
      */
     public boolean getForceResourcesAllowOwnPacks() {
         return this.getPropertyBoolean("force-resources-allow-client-packs", false);
