@@ -118,6 +118,20 @@ public class CompoundTag extends Tag implements Cloneable {
         return this;
     }
 
+    @PowerNukkitOnly
+    @Since("1.19.60-r1")
+    public CompoundTag putList(String name, ListTag<? extends Tag> listTag) {
+        tags.put(name, listTag.setName(name));
+        return this;
+    }
+
+    @PowerNukkitOnly
+    @Since("1.19.60-r1")
+    public CompoundTag putCompound(CompoundTag value) {
+        tags.put(value.getName(), value);
+        return this;
+    }
+
     public CompoundTag putCompound(String name, CompoundTag value) {
         tags.put(name, value.setName(name));
         return this;

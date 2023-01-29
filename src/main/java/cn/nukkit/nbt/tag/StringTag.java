@@ -1,6 +1,8 @@
 package cn.nukkit.nbt.tag;
 
 import cn.nukkit.api.PowerNukkitDifference;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.stream.NBTOutputStream;
 import com.google.common.base.Preconditions;
@@ -11,6 +13,13 @@ import java.util.Objects;
 
 public class StringTag extends Tag {
     public String data;
+
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    public StringTag(CharSequence data) {
+        super("");
+        this.data = data.toString();
+    }
 
     public StringTag(String name) {
         super(name);
@@ -70,7 +79,7 @@ public class StringTag extends Tag {
         }
         return false;
     }
-    
+
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), data);
