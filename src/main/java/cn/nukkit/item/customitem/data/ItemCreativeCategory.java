@@ -22,7 +22,7 @@ public enum ItemCreativeCategory {
     public static ItemCreativeCategory fromID(int num) {
         return switch (num) {
             case 1 -> CONSTRUCTOR;
-            case 2 -> EQUIPMENT;
+            case 2 -> NATURE;
             case 3 -> EQUIPMENT;
             case 4 -> ITEMS;
             default -> NONE;
