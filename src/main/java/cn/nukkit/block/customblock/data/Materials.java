@@ -14,7 +14,7 @@ import java.util.Locale;
  */
 @PowerNukkitXOnly
 @Since("1.19.31-r1")
-public class Materials {
+public class Materials implements NBTData {
     private final CompoundTag tag;
 
     private Materials() {
@@ -238,7 +238,7 @@ public class Materials {
                 .putString("texture", texture));
     }
 
-    public CompoundTag build() {
+    public CompoundTag toCompoundTag() {
         return tag;
     }
 
