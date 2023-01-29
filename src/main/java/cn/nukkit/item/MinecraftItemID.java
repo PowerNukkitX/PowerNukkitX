@@ -1118,7 +1118,29 @@ public enum MinecraftItemID {
     @PowerNukkitXOnly @Since("1.6.0.0-PNX") MANGROVE_CHEST_BOAT,
     @PowerNukkitXOnly @Since("1.6.0.0-PNX") CHEST_BOAT,
     @PowerNukkitXOnly @Since("1.19.50-r1") DISC_FRAGMENT_5,
-    @PowerNukkitXOnly @Since("1.19.50-r1") ECHO_SHARD;
+    @PowerNukkitXOnly @Since("1.19.50-r1") ECHO_SHARD,
+    @PowerNukkitXOnly @Since("1.19.60-r1") SCULK,
+    @PowerNukkitXOnly @Since("1.19.60-r1") SCULK_VEIN,
+    @PowerNukkitXOnly @Since("1.19.60-r1") SCULK_CATALYST,
+    @PowerNukkitXOnly @Since("1.19.60-r1") SCULK_SHRIEKER,
+    @PowerNukkitXOnly @Since("1.19.60-r1") REINFORCED_DEEPSLATE,
+    @PowerNukkitXOnly @Since("1.19.60-r1") FROG_SPAWN,
+    @PowerNukkitXOnly @Since("1.19.60-r1") PEARLESCENT_FROGLIGHT,
+    @PowerNukkitXOnly @Since("1.19.60-r1") VERDANT_FROGLIGHT,
+    @PowerNukkitXOnly @Since("1.19.60-r1") OCHRE_FROGLIGHT,
+    @PowerNukkitXOnly @Since("1.19.60-r1") MUD,
+    @PowerNukkitXOnly @Since("1.19.60-r1") MANGROVE_PROPAGULE,
+    @PowerNukkitXOnly @Since("1.19.60-r1") MUD_BRICKS,
+    @PowerNukkitXOnly @Since("1.19.60-r1") MANGROVE_PROPAGULE_HANGING,
+    @PowerNukkitXOnly @Since("1.19.60-r1") PACKED_MUD,
+    @PowerNukkitXOnly @Since("1.19.60-r1") MUD_BRICK_SLAB,
+    @PowerNukkitXOnly @Since("1.19.60-r1") MUD_BRICK_DOUBLE_SLAB,
+    @PowerNukkitXOnly @Since("1.19.60-r1") MUD_BRICK_STAIRS,
+    @PowerNukkitXOnly @Since("1.19.60-r1") MUD_BRICK_WALL,
+    @PowerNukkitXOnly @Since("1.19.60-r1") MANGROVE_STANDING_SIGN,
+    @PowerNukkitXOnly @Since("1.19.60-r1") MANGROVE_WALL_SIGN,
+    ;
+
     private static final Map<String, MinecraftItemID> namespacedIdMap = Arrays.stream(values())
             .flatMap(id ->
                     Stream.concat(Arrays.stream(id.aliases), Stream.of(id.getNamespacedId()))
