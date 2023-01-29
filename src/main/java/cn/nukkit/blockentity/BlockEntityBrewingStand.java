@@ -126,18 +126,6 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
         namedTag.putShort("FuelTotal", this.fuelTotal);
     }
 
-    @Since("1.6.0.0-PNX")
-    @Override
-    public void loadNBT() {
-        super.loadNBT();
-        for (int i = 0; i < getSize(); i++) {
-            inventory.setItem(i, this.getItem(i));
-        }
-        brewTime = namedTag.getShort("CookTime");
-        fuelAmount = namedTag.getShort("FuelAmount");
-        fuelTotal = namedTag.getShort("FuelTotal");
-    }
-
     @Override
     public boolean isBlockEntityValid() {
         return getBlock().getId() == BlockID.BREWING_STAND_BLOCK;

@@ -2934,21 +2934,16 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public void cloneTo(Position pos) {
-        pos.level.setBlock(pos, this.layer, this.clone(), true, true);
         if (this instanceof BlockEntityHolder<?> holder) {
-            if (holder.getBlockEntity() != null) {
-                CompoundTag tag = holder.getBlockEntity().getCleanedNBT();
-                tag.putInt("x", pos.getFloorX());
-                tag.putInt("y", pos.getFloorY());
-                tag.putInt("z", pos.getFloorZ());
-                if (pos.getLevelBlockEntity() == null || !pos.getLevelBlockEntity().getSaveId().equals(holder.getBlockEntity().getSaveId())) {
-                    BlockEntity.createBlockEntity(holder.getBlockEntityType(), this.level.getChunk(pos.getChunkX(), pos.getChunkZ()), tag);
-                } else {
-                    pos.getLevelBlockEntity().namedTag = tag;
-                    pos.getLevelBlockEntity().loadNBT();
-                }
+            var blockEntity = holder.getBlockEntity();
+            if (blockEntity != null) {
+                var clonedBlock =this.clone();
+                clonedBlock.position(pos);
+                CompoundTag tag = blockEntity.getCleanedNBT();
+                BlockEntityHolder.setBlockAndCreateEntity((BlockEntityHolder<?>) clonedBlock, true, true, tag);
             }
         }
+        pos.level.setBlock(pos, this.layer, this.clone(), true, true);
     }
 
     @PowerNukkitXOnly

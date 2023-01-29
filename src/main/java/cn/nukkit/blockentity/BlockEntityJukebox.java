@@ -87,13 +87,6 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
         this.namedTag.putCompound("RecordItem", NBTIO.putItemHelper(this.recordItem));
     }
 
-    @Since("1.6.0.0-PNX")
-    @Override
-    public void loadNBT() {
-        super.loadNBT();
-        this.recordItem = NBTIO.getItemHelper(this.namedTag.getCompound("RecordItem"));
-    }
-
     @Override
     public CompoundTag getSpawnCompound() {
         return getDefaultCompound(this, JUKEBOX)

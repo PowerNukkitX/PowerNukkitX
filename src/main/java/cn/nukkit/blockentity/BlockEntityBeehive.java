@@ -93,17 +93,6 @@ public class BlockEntityBeehive extends BlockEntity {
         }
     }
 
-    @Since("1.6.0.0-PNX")
-    @Override
-    public void loadNBT() {
-        super.loadNBT();
-        ListTag<CompoundTag> occupantsTag = namedTag.getList("Occupants", CompoundTag.class);
-        for (int i = 0; i < occupantsTag.size(); i++) {
-            this.occupants.add(new Occupant(occupantsTag.get(i)));
-        }
-
-    }
-
     @PowerNukkitOnly
     public int getHoneyLevel() {
         Block block = getBlock();

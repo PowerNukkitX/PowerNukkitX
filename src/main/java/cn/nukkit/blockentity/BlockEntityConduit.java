@@ -69,14 +69,6 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
         super.saveNBT();
     }
 
-    @Since("1.6.0.0-PNX")
-    @Override
-    public void loadNBT() {
-        super.loadNBT();
-        target = namedTag.getLong("Target");
-        active = namedTag.getBoolean("Active");
-    }
-
     @Override
     public String getName() {
         return "Conduit";

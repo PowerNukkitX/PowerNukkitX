@@ -40,13 +40,6 @@ public class BlockEntityBed extends BlockEntitySpawnable {
         this.namedTag.putByte("color", this.color);
     }
 
-    @Since("1.6.0.0-PNX")
-    @Override
-    public void loadNBT() {
-        super.loadNBT();
-        this.color = this.namedTag.getByte("color");
-    }
-
     @Override
     public CompoundTag getSpawnCompound() {
         return new CompoundTag()

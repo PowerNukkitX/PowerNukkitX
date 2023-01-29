@@ -179,16 +179,6 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
         this.namedTag.putInt("TransferCooldown", this.transferCooldown);
     }
 
-    @Since("1.6.0.0-PNX")
-    @Override
-    public void loadNBT() {
-        super.loadNBT();
-        this.transferCooldown = this.namedTag.getInt("TransferCooldown");
-        for (int i = 0; i < this.getSize(); i++) {
-            this.inventory.setItem(i, this.getItem(i));
-        }
-    }
-
     @Override
     public HopperInventory getInventory() {
         return inventory;

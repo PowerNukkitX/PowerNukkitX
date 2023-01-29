@@ -66,17 +66,6 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Inven
         }
     }
 
-    @Since("1.6.0.0-PNX")
-    @Override
-    public void loadNBT() {
-        super.loadNBT();
-        ListTag<CompoundTag> list = (ListTag<CompoundTag>) this.namedTag.getList("Items");
-        for (CompoundTag compound : list.getAll()) {
-            Item item = NBTIO.getItemHelper(compound);
-            this.inventory.slots.put(compound.getByte("Slot"), item);
-        }
-    }
-
     @Override
     public boolean isBlockEntityValid() {
         int blockID = this.getBlock().getId();

@@ -58,15 +58,6 @@ public class BlockEntityBell extends BlockEntitySpawnable {
         namedTag.putInt("Ticks", ticks);
     }
 
-    @Since("1.6.0.0-PNX")
-    @Override
-    public void loadNBT() {
-        super.loadNBT();
-        ringing = namedTag.getBoolean("Ringing");
-        direction = namedTag.getInt("Direction");
-        ticks = namedTag.getInt("Ticks");
-    }
-
     @Override
     public boolean onUpdate() {
         if (ringing) {

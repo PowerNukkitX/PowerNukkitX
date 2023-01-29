@@ -217,21 +217,6 @@ public abstract class BlockEntity extends Position {
         this.namedTag.putBoolean("isMovable", this.movable);
     }
 
-    /*
-     * load data from namedtag (used after you editd it's namedtag)
-     */
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
-    @Deprecated
-    @DeprecationDetails(since = "1.19.60-r1", reason = "非常劣质的实现", toBeRemovedAt = "1.19.60-r2")
-    //TODO: remove this and find another way to implement block cloneing
-    public void loadNBT() {
-        this.x = this.namedTag.getInt("x");
-        this.y = this.namedTag.getInt("y");
-        this.z = this.namedTag.getInt("z");
-        this.movable = this.namedTag.getBoolean("isMovable");
-    }
-
     public CompoundTag getCleanedNBT() {
         this.saveNBT();
         CompoundTag tag = this.namedTag.clone();

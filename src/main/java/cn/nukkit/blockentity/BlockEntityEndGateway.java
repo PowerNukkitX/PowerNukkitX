@@ -76,15 +76,6 @@ public class BlockEntityEndGateway extends BlockEntitySpawnable {
         );
     }
 
-    @Since("1.6.0.0-PNX")
-    @Override
-    public void loadNBT() {
-        super.loadNBT();
-        this.age = this.namedTag.getInt("Age");
-        ListTag<IntTag> exitPortalList = this.namedTag.getList("ExitPortal", IntTag.class);
-        this.exitPortal = new BlockVector3(exitPortalList.get(0).data, exitPortalList.get(1).data, exitPortalList.get(2).data);
-    }
-
     @Override
     public boolean onUpdate() {
         if (this.closed) {
