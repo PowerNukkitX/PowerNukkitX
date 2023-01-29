@@ -3,12 +3,14 @@ package cn.nukkit.block.customblock.data;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.nbt.tag.CompoundTag;
-import lombok.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 @Since("1.19.50-r3")
 @PowerNukkitXOnly
-public record BoneCondition(@NonNull String conditionName, @NonNull String conditionExpr,
-                            @NonNull String boneName) implements NBTData {
+
+public record BoneCondition(@NotNull String conditionName,
+                            @NotNull String boneName,
+                            @NotNull String conditionExpr) implements NBTData {
     private static final int molangVersion = 6;
 
     @Override

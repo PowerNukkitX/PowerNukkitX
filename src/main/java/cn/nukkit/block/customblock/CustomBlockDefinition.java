@@ -165,7 +165,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
          * <p>
          * Partially render the content of the custom block with conditional rendering.
          */
-        public Builder partVisibility(@NotNull BoneCondition... boneConditions) {
+        public Builder partVisibility(BoneCondition... boneConditions) {
             var components = this.nbt.getCompound("components");
             var boneConditionsNBT = new CompoundTag("boneConditions");
             for (var boneCondition : boneConditions) {
