@@ -32,7 +32,6 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.lang.BaseLang;
 import cn.nukkit.lang.LangCode;
 import cn.nukkit.lang.TextContainer;
-import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.*;
 import cn.nukkit.level.biome.EnumBiome;
 import cn.nukkit.level.format.LevelProvider;
@@ -646,6 +645,7 @@ public class Server {
                 put("rcon.password", Base64.getEncoder().encodeToString(UUID.randomUUID().toString().replace("-", "").getBytes()).substring(3, 13));
                 put("auto-save", true);
                 put("force-resources", false);
+                put("force-resources-allow-client-packs", false);
                 put("xbox-auth", true);
                 put("check-login-time", true);
                 put("disable-auto-bug-report", false);
@@ -2168,11 +2168,19 @@ public class Server {
     }
 
     /**
-     * @return 是否强制使用服务器整合包<br>Whether to force the use of server resources
+     * @return 是否强制使用服务器资源包<br>Whether to force the use of server resourcepack
      */
     public boolean getForceResources() {
         return this.getPropertyBoolean("force-resources", false);
     }
+
+    /**
+     * @return 是否强制使用服务器资源包的同时允许加载客户端资源包<br>Whether to force the use of server resourcepack while allowing the loading of client resourcepack
+     */
+    public boolean getForceResourcesAllowOwnPacks() {
+        return this.getPropertyBoolean("force-resources-allow-client-packs", false);
+    }
+
 
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", reason = "Use your own logger, sharing loggers makes bug analyses harder.",

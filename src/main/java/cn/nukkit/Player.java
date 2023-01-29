@@ -3563,7 +3563,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             break;
                         case ResourcePackClientResponsePacket.STATUS_HAVE_ALL_PACKS:
                             ResourcePackStackPacket stackPacket = new ResourcePackStackPacket();
-                            stackPacket.mustAccept = this.server.getForceResources();
+                            stackPacket.mustAccept = this.server.getForceResources() && !this.server.getForceResourcesAllowOwnPacks();
                             stackPacket.resourcePackStack = this.server.getResourcePackManager().getResourceStack();
 
                             if (this.getServer().isEnableExperimentMode() && !this.getServer().getConfig("settings.waterdogpe", false)) {
