@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityItemFrame;
@@ -14,6 +15,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemItemFrame;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.Position;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
@@ -319,5 +321,11 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
                 aabb[0][0] + x, aabb[1][0] + y, aabb[2][0] + z,
                 aabb[0][1] + x, aabb[1][1] + y, aabb[2][1] + z
         );
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public boolean cloneTo(Position pos, boolean tryDirect, boolean update) {
+        return super.cloneTo(pos, true, update);
     }
 }

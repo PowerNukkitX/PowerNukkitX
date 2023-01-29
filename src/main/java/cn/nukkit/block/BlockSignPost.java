@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySign;
@@ -17,6 +18,7 @@ import cn.nukkit.item.ItemSign;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.StringItem;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.Position;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.CompassRoseDirection;
@@ -317,5 +319,11 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable, Blo
             return true;
         }
         return false;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public boolean cloneTo(Position pos, boolean tryDirect, boolean update) {
+        return super.cloneTo(pos, true, update);
     }
 }
