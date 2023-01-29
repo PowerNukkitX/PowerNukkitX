@@ -1,5 +1,7 @@
 package cn.nukkit.nbt.tag;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.stream.NBTOutputStream;
 
@@ -8,14 +10,11 @@ import java.io.IOException;
 public class ByteTag extends NumberTag<Integer> {
     public int data;
 
-    @Override
-    public Integer getData() {
-        return data;
-    }
-
-    @Override
-    public void setData(Integer data) {
-        this.data = data == null ? 0 : data;
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    public ByteTag(int data) {
+        super("");
+        this.data = data;
     }
 
     public ByteTag(String name) {
@@ -25,6 +24,16 @@ public class ByteTag extends NumberTag<Integer> {
     public ByteTag(String name, int data) {
         super(name);
         this.data = data;
+    }
+
+    @Override
+    public Integer getData() {
+        return data;
+    }
+
+    @Override
+    public void setData(Integer data) {
+        this.data = data == null ? 0 : data;
     }
 
     @Override

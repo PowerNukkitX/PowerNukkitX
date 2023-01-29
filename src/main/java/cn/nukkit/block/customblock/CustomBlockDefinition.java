@@ -6,7 +6,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.customblock.data.BlockCreativeCategory;
 import cn.nukkit.block.customblock.data.BoneCondition;
 import cn.nukkit.block.customblock.data.Materials;
-import cn.nukkit.block.customblock.data.Permutations;
+import cn.nukkit.block.customblock.data.Permutation;
 import cn.nukkit.blockproperty.*;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.*;
@@ -69,8 +69,8 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
             //设置一些与PNX内部对应的方块属性
             components.putCompound("minecraft:friction", new CompoundTag()
                             .putFloat("value", (float) Math.abs(1 - customBlock.getFrictionFactor()))) // in vanilla, the closer factor to 0, the more slippery the block is. But in PNX it's reversed.
-                    .putCompound("minecraft:explosion_resistance", new CompoundTag()
-                            .putInt("value", (int) customBlock.getResistance()))
+                    .putCompound("minecraft:destructible_by_explosion", new CompoundTag()
+                            .putInt("explosion_resistance", (int) customBlock.getResistance()))
                     .putCompound("minecraft:light_dampening", new CompoundTag()
                             .putByte("lightLevel", (byte) customBlock.getLightFilter()))
                     .putCompound("minecraft:light_emission", new CompoundTag()
@@ -80,7 +80,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
             //设置材质
             components.putCompound("minecraft:material_instances", new CompoundTag()
                     .putCompound("mappings", new CompoundTag())
-                    .putCompound("materials", materials.build()));
+                    .putCompound("materials", materials.toCompoundTag()));
             //默认单位立方体方块
             components.putCompound("minecraft:unit_cube", new CompoundTag());
             //设置方块在创造栏的分类
@@ -151,9 +151,11 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
          * <p>
          * Control custom block permutation features such as conditional rendering, partial rendering, etc.
          */
-        public Builder permutations(@NonNull Permutations permutations) {
-            var per = permutations.data();
-            per.setName("permutations");
+        public Builder permutations(Permutation... permutations) {
+            var per = new ListTag<CompoundTag>("permutations");
+            for (var permutation : permutations) {
+                per.add(permutation.toCompoundTag());
+            }
             this.nbt.putList(per);
             return this;
         }
@@ -163,17 +165,13 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
          * <p>
          * Partially render the content of the custom block with conditional rendering.
          */
-        public Builder partVisibility(@NotNull BoneCondition... boneConditions) {
+        public Builder partVisibility(BoneCondition... boneConditions) {
             var components = this.nbt.getCompound("components");
             var boneConditionsNBT = new CompoundTag("boneConditions");
             for (var boneCondition : boneConditions) {
-                var tag = new CompoundTag(boneCondition.getConditionName());
-                tag.putString("bone_condition", boneCondition.getConditionExpr());
-                tag.putString("bone_name", boneCondition.getBoneName());
-                tag.putInt("molang_version", boneCondition.getMolangVersion());
-                boneConditionsNBT.putCompound(tag.getName(), tag);
+                boneConditionsNBT.putCompound(boneCondition.toCompoundTag());
             }
-            components.put(boneConditionsNBT.getName(), boneConditionsNBT);
+            components.putCompound("minecraft:part_visibility", new CompoundTag().putCompound(boneConditionsNBT));
             return this;
         }
 
@@ -190,13 +188,13 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
                     .putCompound("minecraft:collision_box", new CompoundTag()
                             .putBoolean("enabled", true)
                             .putList(new ListTag<FloatTag>("origin")
-                                    .add(new FloatTag("", -3.25f))
-                                    .add(new FloatTag("", 4.75f))
-                                    .add(new FloatTag("", -3.25f)))
+                                    .add(new FloatTag("", origin.x))
+                                    .add(new FloatTag("", origin.y))
+                                    .add(new FloatTag("", origin.z)))
                             .putList(new ListTag<FloatTag>("size")
-                                    .add(new FloatTag("", 6.5f))
-                                    .add(new FloatTag("", 6.5f))
-                                    .add(new FloatTag("", 6.5f))));
+                                    .add(new FloatTag("", size.x))
+                                    .add(new FloatTag("", size.y))
+                                    .add(new FloatTag("", size.z))));
             return this;
         }
 
@@ -213,13 +211,13 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
                     .putCompound("minecraft:selection_box", new CompoundTag()
                             .putBoolean("enabled", true)
                             .putList(new ListTag<FloatTag>("origin")
-                                    .add(new FloatTag("", -3.25f))
-                                    .add(new FloatTag("", 4.75f))
-                                    .add(new FloatTag("", -3.25f)))
+                                    .add(new FloatTag("", origin.x))
+                                    .add(new FloatTag("", origin.y))
+                                    .add(new FloatTag("", origin.z)))
                             .putList(new ListTag<FloatTag>("size")
-                                    .add(new FloatTag("", 6.5f))
-                                    .add(new FloatTag("", 6.5f))
-                                    .add(new FloatTag("", 6.5f))));
+                                    .add(new FloatTag("", size.x))
+                                    .add(new FloatTag("", size.y))
+                                    .add(new FloatTag("", size.z))));
             return this;
         }
 

@@ -1,5 +1,7 @@
 package cn.nukkit.nbt.tag;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.stream.NBTOutputStream;
 
@@ -8,14 +10,11 @@ import java.io.IOException;
 public class FloatTag extends NumberTag<Float> {
     public float data;
 
-    @Override
-    public Float getData() {
-        return data;
-    }
-
-    @Override
-    public void setData(Float data) {
-        this.data = data == null ? 0 : data;
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    public FloatTag(float data) {
+        super("");
+        this.data = data;
     }
 
     public FloatTag(String name) {
@@ -25,6 +24,16 @@ public class FloatTag extends NumberTag<Float> {
     public FloatTag(String name, float data) {
         super(name);
         this.data = data;
+    }
+
+    @Override
+    public Float getData() {
+        return data;
+    }
+
+    @Override
+    public void setData(Float data) {
+        this.data = data == null ? 0 : data;
     }
 
     @Override

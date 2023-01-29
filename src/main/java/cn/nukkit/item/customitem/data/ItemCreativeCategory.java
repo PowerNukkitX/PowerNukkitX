@@ -16,14 +16,16 @@ public enum ItemCreativeCategory {
     CONSTRUCTOR,
     NATURE,
     EQUIPMENT,
-    ITEMS;
+    ITEMS,
+    NONE;
 
     public static ItemCreativeCategory fromID(int num) {
         return switch (num) {
             case 1 -> CONSTRUCTOR;
+            case 2 -> NATURE;
             case 3 -> EQUIPMENT;
             case 4 -> ITEMS;
-            default -> NATURE;
+            default -> NONE;
         };
     }
 }
