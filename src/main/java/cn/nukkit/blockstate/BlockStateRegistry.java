@@ -461,7 +461,7 @@ public class BlockStateRegistry {
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
-    public synchronized static void registerCustomBlockState(List<CustomBlock> blockCustoms) {
+    public synchronized static boolean registerCustomBlockState(List<CustomBlock> blockCustoms) {
         //清空原本的数据
         blockStateRegistration.clear();
         stateIdRegistration.clear();
@@ -471,7 +471,8 @@ public class BlockStateRegistry {
         //处理原版方块
         try (InputStream stream = Server.class.getModule().getResourceAsStream("canonical_block_states.nbt")) {
             if (stream == null) {
-                throw new AssertionError("Unable to locate block state nbt");
+                new AssertionError("Unable to locate block state nbt").printStackTrace();
+                return false;
             }
             try (BufferedInputStream bis = new BufferedInputStream(stream)) {
                 while (bis.available() > 0) {
@@ -486,7 +487,8 @@ public class BlockStateRegistry {
                 }
             }
         } catch (IOException e) {
-            throw new AssertionError(e);
+            e.printStackTrace();
+            return false;
         }
 
         var version = -1;
@@ -603,7 +605,8 @@ public class BlockStateRegistry {
             }
         }
         if (infoUpdateRuntimeId == null) {
-            throw new IllegalStateException("Could not find the minecraft:info_update runtime id!");
+            new IllegalStateException("Could not find the minecraft:info_update runtime id!").printStackTrace();
+            return false;
         }
 
         updateBlockRegistration = findRegistrationByRuntimeId(infoUpdateRuntimeId);
@@ -611,8 +614,10 @@ public class BlockStateRegistry {
         try {
             blockPaletteBytes = NBTIO.write(tags, ByteOrder.LITTLE_ENDIAN, true);
         } catch (IOException e) {
-            throw new ExceptionInInitializerError(e);
+            e.printStackTrace();
+            return false;
         }
+        return true;
     }
 
     @PowerNukkitXOnly

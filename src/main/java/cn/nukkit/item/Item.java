@@ -632,8 +632,8 @@ public class Item implements Cloneable, BlockID, ItemID {
      */
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public static void registerCustomItem(Class<? extends CustomItem> c) {
-        registerCustomItem(List.of(c));
+    public static boolean registerCustomItem(Class<? extends CustomItem> c) {
+        return registerCustomItem(List.of(c));
     }
 
     /**
@@ -645,10 +645,10 @@ public class Item implements Cloneable, BlockID, ItemID {
      */
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public static void registerCustomItem(@Nonnull List<Class<? extends CustomItem>> itemClassList) {
+    public static boolean registerCustomItem(@Nonnull List<Class<? extends CustomItem>> itemClassList) {
         if (!Server.getInstance().isEnableExperimentMode() || Server.getInstance().getConfig("settings.waterdogpe", false)) {
             log.warn("The server does not have the custom item feature enabled. Unable to register the customItemList!");
-            return;
+            return false;
         }
         for (var clazz : itemClassList) {
             try {
@@ -678,7 +678,7 @@ public class Item implements Cloneable, BlockID, ItemID {
                     };
                 }
 
-                if (CUSTOM_ITEMS.containsKey(customItem.getNamespaceId())) return;
+                if (CUSTOM_ITEMS.containsKey(customItem.getNamespaceId())) continue;
                 CUSTOM_ITEMS.put(customItem.getNamespaceId(), supplier);
                 var customDef = customItem.getDefinition();
                 CUSTOM_ITEM_DEFINITIONS.put(customItem.getNamespaceId(), customDef);
@@ -694,11 +694,14 @@ public class Item implements Cloneable, BlockID, ItemID {
                 RuntimeItems.getRuntimeMapping().registerCustomItem(customItem, supplier);
                 addCreativeItem((Item) customItem);
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-                throw new RuntimeException(e);
+                new RuntimeException(e).printStackTrace();
+                return false;
             } catch (NoSuchMethodException e) {
                 log.error("Cannot find the parameterless constructor for this custom item:" + clazz.getCanonicalName());
+                return false;
             }
         }
+        return true;
     }
 
     /**

@@ -1233,10 +1233,10 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      * @param blockClassList 传入自定义方块class List
      */
     @PowerNukkitXOnly
-    public static void registerCustomBlock(@Nonnull List<Class<? extends CustomBlock>> blockClassList) {
+    public static boolean registerCustomBlock(@Nonnull List<Class<? extends CustomBlock>> blockClassList) {
         if (!Server.getInstance().isEnableExperimentMode() || Server.getInstance().getConfig("settings.waterdogpe", false)) {
             log.warn("The server does not have the experiment mode feature enabled.Unable to register custom block!");
-            return;
+            return false;
         }
         SortedMap<String, CustomBlock> sortedCustomBlock = new TreeMap<>(MinecraftNamespaceComparator::compareFNV);
 
@@ -1250,9 +1250,11 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
                     sortedCustomBlock.put(block.getNamespaceId(), block);
                 }
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
+                return false;
             } catch (NoSuchMethodException e) {
                 log.error("Cannot find the parameterless constructor for this custom block:" + each.getCanonicalName());
+                return false;
             }
         }
         if (!sortedCustomBlock.isEmpty()) {
@@ -1263,10 +1265,11 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
                 ++nextBlockId;
             }
             var blocks = ID_TO_CUSTOM_BLOCK.values().stream().toList();
-            BlockStateRegistry.registerCustomBlockState(blocks);//注册方块state
+            if (!BlockStateRegistry.registerCustomBlockState(blocks)) return false;//注册方块state
             RuntimeItems.getRuntimeMapping().registerCustomBlock(blocks);//注册物品
             blocks.forEach(b -> Item.addCreativeItem(b.toItem()));//注册创造栏物品
         }
+        return true;
     }
 
     /**
@@ -1275,10 +1278,10 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      * @param blockNamespaceClassMap 传入自定义方块classMap { key: NamespaceID, value: Class }
      */
     @PowerNukkitXOnly
-    public static void registerCustomBlock(@Nonnull Map<String, Class<? extends CustomBlock>> blockNamespaceClassMap) {
+    public static boolean registerCustomBlock(@Nonnull Map<String, Class<? extends CustomBlock>> blockNamespaceClassMap) {
         if (!Server.getInstance().isEnableExperimentMode() || Server.getInstance().getConfig("settings.waterdogpe", false)) {
             log.warn("The server does not have the experiment mode feature enabled.Unable to register custom block!");
-            return;
+            return false;
         }
         //方块升序排序
         SortedMap<String, Class<? extends CustomBlock>> sortedCustomBlockClasses = new TreeMap<>(MinecraftNamespaceComparator::compareFNV);
@@ -1301,16 +1304,19 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
                     CUSTOM_BLOCK_DEFINITIONS.add(block.getDefinition());//行为包数据
                     ++nextBlockId;
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-                    throw new RuntimeException(e);
+                    e.printStackTrace();
+                    return false;
                 } catch (NoSuchMethodException e) {
                     log.error("Cannot find the parameterless constructor for this custom block:" + entry.getValue().getCanonicalName());
+                    return false;
                 }
             }
             var blocks = ID_TO_CUSTOM_BLOCK.values().stream().toList();
-            BlockStateRegistry.registerCustomBlockState(blocks);//注册方块state
+            if (!BlockStateRegistry.registerCustomBlockState(blocks)) return false;//注册方块state
             RuntimeItems.getRuntimeMapping().registerCustomBlock(blocks);//注册物品
             blocks.forEach((block) -> Item.addCreativeItem(block.toItem()));//注册创造栏物品
         }
+        return true;
     }
 
     @PowerNukkitXOnly

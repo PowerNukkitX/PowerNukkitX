@@ -685,13 +685,13 @@ public abstract class Entity extends Location implements Metadatable {
 
     @PowerNukkitXOnly
     @Since("1.19.21-r2")
-    public static void registerCustomEntity(CustomEntityProvider customEntityProvider) {
+    public static boolean registerCustomEntity(CustomEntityProvider customEntityProvider) {
         if (!Server.getInstance().isEnableExperimentMode() || Server.getInstance().getConfig("settings.waterdogpe", false)) {
             log.warn("The server does not have the experiment mode feature enabled.Unable to register custom entity!");
-            return;
+            return false;
         }
         entityDefinitions.add(customEntityProvider.getCustomEntityDefinition());
-        registerEntity(customEntityProvider, true);
+        return registerEntity(customEntityProvider, true);
     }
 
     @Nonnull
