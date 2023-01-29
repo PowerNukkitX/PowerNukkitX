@@ -43,7 +43,6 @@ import cn.nukkit.inventory.transaction.data.ReleaseItemData;
 import cn.nukkit.inventory.transaction.data.UseItemData;
 import cn.nukkit.inventory.transaction.data.UseItemOnEntityData;
 import cn.nukkit.item.*;
-import cn.nukkit.item.customitem.ItemCustom;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.enchantment.sideeffect.SideEffect;
 import cn.nukkit.lang.CommandOutputContainer;
@@ -1509,20 +1508,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         //写入自定义物品数据
         ItemComponentPacket itemComponentPacket = new ItemComponentPacket();
-        if (this.getServer().isEnableExperimentMode() && !Item.getCustomItems().isEmpty()) {
+        if (this.getServer().isEnableExperimentMode() && !Item.getCustomItemDefinition().isEmpty()) {
             Int2ObjectOpenHashMap<ItemComponentPacket.Entry> entries = new Int2ObjectOpenHashMap<>();
             int i = 0;
-            for (String id : Item.getCustomItems().keySet()) {
+            for (var entry : Item.getCustomItemDefinition().entrySet()) {
                 try {
-                    Item item = Item.fromString(id);
-                    if (item instanceof ItemCustom itemCustom) {
-                        CompoundTag data = Item.getCustomItemDefinition().get(itemCustom.getNamespaceId()).nbt();
-                        data.putShort("minecraft:identifier", i);
-
-                        entries.put(i, new ItemComponentPacket.Entry(item.getNamespaceId(), data));
-
-                        i++;
-                    }
+                    CompoundTag data = entry.getValue().nbt();
+                    data.putShort("minecraft:identifier", i);
+                    entries.put(i, new ItemComponentPacket.Entry(entry.getKey(), data));
+                    i++;
                 } catch (Exception e) {
                     log.error("ItemComponentPacket encoding error", e);
                 }

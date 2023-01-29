@@ -1,14 +1,14 @@
 package cn.nukkit.item.customitem;
 
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemID;
 import cn.nukkit.item.StringItem;
-import lombok.Getter;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Locale;
 
 /**
  * 继承这个类实现自定义物品,重写{@link Item}中的方法控制方块属性
@@ -19,17 +19,31 @@ import java.util.Locale;
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public abstract class ItemCustom extends StringItem {
-    @Getter
-    private String textureName;
+public abstract class ItemCustom extends Item implements CustomItem {
+    private final String id;
+    private final String textureName;
 
     public ItemCustom(@Nonnull String id, @Nullable String name) {
-        super(id.toLowerCase(Locale.ENGLISH), name);
+        super(ItemID.STRING_IDENTIFIED_ITEM, 0, 1, StringItem.notEmpty(name));
+        this.id = id;
+        this.textureName = name;
     }
 
     public ItemCustom(@Nonnull String id, @Nullable String name, @Nonnull String textureName) {
-        this(id, name);
+        super(ItemID.STRING_IDENTIFIED_ITEM, 0, 1, StringItem.notEmpty(name));
+        this.id = id;
         this.textureName = textureName;
+    }
+
+    public String getTextureName() {
+        return textureName;
+    }
+
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    @Override
+    public String getNamespaceId() {
+        return id;
     }
 
     /**
@@ -38,6 +52,11 @@ public abstract class ItemCustom extends StringItem {
      * This method sets the definition of custom item
      */
     public abstract CustomItemDefinition getDefinition();
+
+    @Override
+    public final int getId() {
+        return super.getId();
+    }
 
     @Override
     public ItemCustom clone() {
