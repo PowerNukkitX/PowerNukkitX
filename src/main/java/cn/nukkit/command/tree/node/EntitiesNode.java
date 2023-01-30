@@ -26,7 +26,7 @@ public class EntitiesNode extends TargetNode<Entity> {
         if (arg.isBlank()) {
             this.error();
         } else if (EntitySelectorAPI.getAPI().checkValid(arg)) {
-            List<Entity> entities = null;
+            List<Entity> entities;
             try {
                 entities = EntitySelectorAPI.getAPI().matchEntities(this.parent.parent.getSender(), arg);
             } catch (SelectorSyntaxException exception) {
