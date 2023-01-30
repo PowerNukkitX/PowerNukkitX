@@ -1,6 +1,5 @@
 package cn.nukkit.event.entity;
 
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.potion.Effect;
@@ -41,17 +40,8 @@ public class EntityDamageByEntityEvent extends EntityDamageEvent {
         this(damager, entity, cause, modifiers, knockBack, null);
     }
 
-    @Since("FUTURE")
     public EntityDamageByEntityEvent(@Nonnull Entity damager, @Nonnull Entity entity, @Nonnull DamageCause cause, @Nonnull Map<DamageModifier, Float> modifiers, float knockBack, @Nullable Enchantment[] enchantments) {
         super(entity, cause, modifiers);
-        if (enchantments != null) {
-            enchantments = enchantments.length == 0 ? Enchantment.EMPTY_ARRAY : enchantments.clone();
-            for (Enchantment enchantment : enchantments) {
-                if (enchantment != null) {
-                    addSideEffects(enchantment.getAttackSideEffects(damager, entity));
-                }
-            }
-        }
         this.damager = damager;
         this.knockBack = knockBack;
         this.enchantments = enchantments;
@@ -81,7 +71,6 @@ public class EntityDamageByEntityEvent extends EntityDamageEvent {
         this.knockBack = knockBack;
     }
 
-    @Since("FUTURE")
     @Nullable
     public Enchantment[] getWeaponEnchantments() {
         if (enchantments == null) {

@@ -33,7 +33,6 @@ import cn.nukkit.event.player.PlayerTeleportEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.item.enchantment.sideeffect.SideEffect;
 import cn.nukkit.level.*;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.particle.ExplodeParticle;
@@ -1599,10 +1598,6 @@ public abstract class Entity extends Location implements Metadatable {
 
         Entity attacker = source instanceof EntityDamageByEntityEvent ? ((EntityDamageByEntityEvent) source).getDamager() : null;
 
-        //计算一些反伤之类的附魔
-        for (SideEffect sideEffect : source.getSideEffects()) {
-            sideEffect.doPreHealthChange(this, source, attacker);
-        }
         setHealth(newHealth);
 
         if (!(this instanceof EntityArmorStand)) {

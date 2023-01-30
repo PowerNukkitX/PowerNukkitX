@@ -45,7 +45,6 @@ import cn.nukkit.inventory.transaction.data.UseItemOnEntityData;
 import cn.nukkit.item.*;
 import cn.nukkit.item.customitem.ItemCustom;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.item.enchantment.sideeffect.SideEffect;
 import cn.nukkit.lang.CommandOutputContainer;
 import cn.nukkit.lang.LangCode;
 import cn.nukkit.lang.TextContainer;
@@ -5277,16 +5276,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                     } finally {
                                         if (target instanceof EntityLiving) {
                                             ((EntityLiving) target).postAttack(this);
-                                        }
-                                    }
-
-                                    for (SideEffect sideEffect : entityDamageByEntityEvent.getSideEffects()) {
-                                        sideEffect.doPostAttack(this, entityDamageByEntityEvent, target);
-                                    }
-
-                                    if (item.applyEnchantments()) {
-                                        for (Enchantment enchantment : item.getEnchantments()) {
-                                            enchantment.doPostAttack(this, target);
                                         }
                                     }
 

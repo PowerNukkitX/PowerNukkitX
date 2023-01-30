@@ -18,7 +18,6 @@ import cn.nukkit.inventory.ItemTag;
 import cn.nukkit.item.customitem.CustomItemDefinition;
 import cn.nukkit.item.customitem.ItemCustom;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.item.enchantment.sideeffect.SideEffect;
 import cn.nukkit.item.randomitem.ItemEchoShard;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
@@ -1190,13 +1189,8 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     /**
-     * 使用该物品是否应用附魔效果例如锋利等....
-     * <p>
-     * Whether to apply the enchantment effect when using this item
-     *
-     * @return
+     * 该物品是否可以应用附魔效果
      */
-
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public boolean applyEnchantments() {
@@ -1220,7 +1214,7 @@ public class Item implements Cloneable, BlockID, ItemID {
 
 
     /**
-     * 通过附魔id来查找附魔等级
+     * 通过附魔id来查找对应附魔的等级
      * <p>
      * Find the enchantment level by the enchantment id.
      *
@@ -1244,14 +1238,10 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     /**
-     * 定义附魔的id
+     * 从给定的附魔id查找该物品是否存在对应的附魔效果，如果查找不到返回null
      * <p>
      * Get the id of the enchantment
-     *
-     * @param id
-     * @return
      */
-
     public Enchantment getEnchantment(int id) {
         return getEnchantment((short) (id & 0xffff));
     }
@@ -1323,7 +1313,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      *
      * @return 如果没有附魔效果返回Enchantment.EMPTY_ARRAY<br>If there is no enchanting effect return Enchantment.EMPTY_ARRAY
      */
-
     public Enchantment[] getEnchantments() {
         if (!this.hasEnchantments()) {
             return Enchantment.EMPTY_ARRAY;
@@ -1353,17 +1342,6 @@ public class Item implements Cloneable, BlockID, ItemID {
     @Since("1.4.0.0-PN")
     public boolean hasEnchantment(int id) {
         return this.getEnchantmentLevel(id) > 0;
-    }
-
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
-    @Nonnull
-    public SideEffect[] getAttackSideEffects(@Nonnull Entity attacker, @Nonnull Entity entity) {
-        return Arrays.stream(getEnchantments())
-                .flatMap(enchantment -> Arrays.stream(enchantment.getAttackSideEffects(attacker, entity)))
-                .filter(Objects::nonNull)
-                .toArray(SideEffect[]::new)
-                ;
     }
 
     @Since("1.4.0.0-PN")
