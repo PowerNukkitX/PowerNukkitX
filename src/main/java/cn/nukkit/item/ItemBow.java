@@ -10,6 +10,7 @@ import cn.nukkit.event.entity.EntityShootBowEvent;
 import cn.nukkit.event.entity.ProjectileLaunchEvent;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.item.enchantment.bow.EnchantmentBow;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -120,6 +121,13 @@ public class ItemBow extends ItemTool {
             if (infinity && (projectile = entityShootBowEvent.getProjectile()) instanceof EntityArrow) {
                 ((EntityArrow) projectile).setPickupMode(EntityProjectile.PICKUP_CREATIVE);
             }
+
+            for (var enc : this.getEnchantments()) {
+                if (enc instanceof EnchantmentBow enchantmentBow) {
+                    enchantmentBow.onBowShoot(player, arrow, this);
+                }
+            }
+
             if (player.isAdventure() || player.isSurvival()) {
                 if (!infinity) {
                     inventory.removeItem(itemArrow);
@@ -128,7 +136,7 @@ public class ItemBow extends ItemTool {
                     Enchantment durability = this.getEnchantment(Enchantment.ID_DURABILITY);
                     if (!(durability != null && durability.getLevel() > 0 && (100 / (durability.getLevel() + 1)) <= new Random().nextInt(100))) {
                         this.setDamage(this.getDamage() + 1);
-                        if (this.getDamage() >= getMaxDurability()) { 
+                        if (this.getDamage() >= getMaxDurability()) {
                             player.getLevel().addSound(player, Sound.RANDOM_BREAK);
                             this.count--;
                         }

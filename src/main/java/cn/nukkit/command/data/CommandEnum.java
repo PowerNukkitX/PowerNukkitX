@@ -3,8 +3,10 @@ package cn.nukkit.command.data;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.network.protocol.UpdateSoftEnumPacket;
 import cn.nukkit.potion.Effect;
+import cn.nukkit.utils.Identifier;
 import com.google.common.collect.ImmutableList;
 
 import java.lang.reflect.Field;
@@ -16,6 +18,9 @@ import java.util.function.Supplier;
  * @author CreeperFace
  */
 public class CommandEnum {
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    public static final CommandEnum ENUM_ENCHANTMENT;
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
     public static final CommandEnum ENUM_EFFECT;
@@ -65,6 +70,13 @@ public class CommandEnum {
             }
         }
         ENUM_EFFECT = new CommandEnum("Effect", effects, false);
+
+        var enchs = new ArrayList<String>();
+        Enchantment.getEnchantmentName2IDMap().forEach((key, value) -> {
+            if (key.startsWith(Identifier.DEFAULT_NAMESPACE)) enchs.add(key.substring(10));
+            else enchs.add(key);
+        });
+        ENUM_ENCHANTMENT = new CommandEnum("enchantmentName", enchs);
     }
 
     private final String name;

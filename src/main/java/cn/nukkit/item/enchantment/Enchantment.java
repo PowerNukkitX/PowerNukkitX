@@ -18,117 +18,199 @@ import cn.nukkit.item.enchantment.loot.EnchantmentLootDigging;
 import cn.nukkit.item.enchantment.loot.EnchantmentLootFishing;
 import cn.nukkit.item.enchantment.loot.EnchantmentLootWeapon;
 import cn.nukkit.item.enchantment.protection.*;
-import cn.nukkit.item.enchantment.sideeffect.SideEffect;
 import cn.nukkit.item.enchantment.trident.EnchantmentTridentChanneling;
 import cn.nukkit.item.enchantment.trident.EnchantmentTridentImpaling;
 import cn.nukkit.item.enchantment.trident.EnchantmentTridentLoyalty;
 import cn.nukkit.item.enchantment.trident.EnchantmentTridentRiptide;
 import cn.nukkit.math.NukkitMath;
+import cn.nukkit.utils.Identifier;
 import io.netty.util.internal.EmptyArrays;
-import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
+import lombok.extern.log4j.Log4j2;
 
 import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
+import static cn.nukkit.utils.Utils.dynamic;
+
 /**
  * An enchantment that can be to applied to an item.
- * 
+ *
  * @author MagicDroidX (Nukkit Project)
  */
+@Log4j2
 public abstract class Enchantment implements Cloneable {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final Enchantment[] EMPTY_ARRAY = new Enchantment[0];
+    public static final int CUSTOM_ENCHANTMENT_ID = dynamic(256);
 
     protected static Enchantment[] enchantments;
+    protected static Map<Identifier, Enchantment> customEnchantments = new Object2ObjectLinkedOpenHashMap<>();
+    public static final int ID_PROTECTION_ALL = 0;
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    protected static Map<String,Integer> enchantmentName2IDMap = new Object2IntArrayMap<>();
-
-    public static final int ID_PROTECTION_ALL = 0;
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_PROTECTION_ALL = "protection";
+    public static final String NAME_PROTECTION_ALL = "protection";
     public static final int ID_PROTECTION_FIRE = 1;
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_PROTECTION_FIRE = "fire_protection";
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final String NAME_PROTECTION_FIRE = "fire_protection";
     public static final int ID_PROTECTION_FALL = 2;
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_PROTECTION_FALL = "feather_falling";
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final String NAME_PROTECTION_FALL = "feather_falling";
     public static final int ID_PROTECTION_EXPLOSION = 3;
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_PROTECTION_EXPLOSION = "blast_protection";
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final String NAME_PROTECTION_EXPLOSION = "blast_protection";
     public static final int ID_PROTECTION_PROJECTILE = 4;
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_PROTECTION_PROJECTILE = "projectile_protection";
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final String NAME_PROTECTION_PROJECTILE = "projectile_protection";
     public static final int ID_THORNS = 5;
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_THORNS = "thorns";
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final String NAME_THORNS = "thorns";
     public static final int ID_WATER_BREATHING = 6;
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_WATER_BREATHING = "respiration";
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final String NAME_WATER_BREATHING = "respiration";
     public static final int ID_WATER_WALKER = 7;
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_WATER_WALKER = "depth_strider";
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final String NAME_WATER_WALKER = "depth_strider";
     public static final int ID_WATER_WORKER = 8;
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_WATER_WORKER = "aqua_affinity";
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final String NAME_WATER_WORKER = "aqua_affinity";
     public static final int ID_DAMAGE_ALL = 9;
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_DAMAGE_ALL = "sharpness";
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final String NAME_DAMAGE_ALL = "sharpness";
     public static final int ID_DAMAGE_SMITE = 10;
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_DAMAGE_SMITE = "smite";
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final String NAME_DAMAGE_SMITE = "smite";
     public static final int ID_DAMAGE_ARTHROPODS = 11;
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_DAMAGE_ARTHROPODS = "bane_of_arthropods";
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final String NAME_DAMAGE_ARTHROPODS = "bane_of_arthropods";
     public static final int ID_KNOCKBACK = 12;
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_KNOCKBACK = "knockback";
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final String NAME_KNOCKBACK = "knockback";
     public static final int ID_FIRE_ASPECT = 13;
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_FIRE_ASPECT = "fire_aspect";
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final String NAME_FIRE_ASPECT = "fire_aspect";
     public static final int ID_LOOTING = 14;
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_LOOTING = "looting";
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final String NAME_LOOTING = "looting";
     public static final int ID_EFFICIENCY = 15;
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_EFFICIENCY = "efficiency";
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final String NAME_EFFICIENCY = "efficiency";
     public static final int ID_SILK_TOUCH = 16;
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_SILK_TOUCH = "silk_touch";
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final String NAME_SILK_TOUCH = "silk_touch";
     public static final int ID_DURABILITY = 17;
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_DURABILITY = "unbreaking";
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final String NAME_DURABILITY = "unbreaking";
     public static final int ID_FORTUNE_DIGGING = 18;
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_FORTUNE_DIGGING = "fortune";
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final String NAME_FORTUNE_DIGGING = "fortune";
     public static final int ID_BOW_POWER = 19;
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_BOW_POWER = "power";
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final String NAME_BOW_POWER = "power";
     public static final int ID_BOW_KNOCKBACK = 20;
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_BOW_KNOCKBACK = "punch";
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final String NAME_BOW_KNOCKBACK = "punch";
     public static final int ID_BOW_FLAME = 21;
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_BOW_FLAME = "flame";
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final String NAME_BOW_FLAME = "flame";
     public static final int ID_BOW_INFINITY = 22;
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_BOW_INFINITY = "infinity";
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final String NAME_BOW_INFINITY = "infinity";
     public static final int ID_FORTUNE_FISHING = 23;
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_FORTUNE_FISHING = "luck_of_the_sea";
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final String NAME_FORTUNE_FISHING = "luck_of_the_sea";
     public static final int ID_LURE = 24;
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_LURE = "lure";
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final String NAME_LURE = "lure";
     public static final int ID_FROST_WALKER = 25;
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_FROST_WALKER = "frost_walker";
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final String NAME_FROST_WALKER = "frost_walker";
 
     public static final int ID_MENDING = 26;
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_MENDING = "mending";
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final String NAME_MENDING = "mending";
     public static final int ID_BINDING_CURSE = 27;
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_BINDING_CURSE = "binding";
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final String NAME_BINDING_CURSE = "binding";
     public static final int ID_VANISHING_CURSE = 28;
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_VANISHING_CURSE = "vanishing";
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final String NAME_VANISHING_CURSE = "vanishing";
     public static final int ID_TRIDENT_IMPALING = 29;
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_TRIDENT_IMPALING = "impaling";
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final String NAME_TRIDENT_IMPALING = "impaling";
     public static final int ID_TRIDENT_RIPTIDE = 30;
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_TRIDENT_RIPTIDE = "riptide";
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final String NAME_TRIDENT_RIPTIDE = "riptide";
     public static final int ID_TRIDENT_LOYALTY = 31;
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_TRIDENT_LOYALTY = "loyalty";
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final String NAME_TRIDENT_LOYALTY = "loyalty";
     public static final int ID_TRIDENT_CHANNELING = 32;
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_TRIDENT_CHANNELING = "channeling";
-    @Since("1.4.0.0-PN") public static final int ID_CROSSBOW_MULTISHOT = 33;
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_CROSSBOW_MULTISHOT = "multishot";
-    @Since("1.4.0.0-PN") public static final int ID_CROSSBOW_PIERCING = 34;
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_CROSSBOW_PIERCING = "piercing";
-    @Since("1.4.0.0-PN") public static final int ID_CROSSBOW_QUICK_CHARGE = 35;
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_CROSSBOW_QUICK_CHARGE = "quick_charge";
-    @Since("1.4.0.0-PN") public static final int ID_SOUL_SPEED = 36;
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_SOUL_SPEED = "soul_speed";
-    @Since("1.4.0.0-PN") public static final int ID_SWIFT_SNEAK = 37;
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_SWIFT_SNEAK = "swift_sneak";
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final String NAME_TRIDENT_CHANNELING = "channeling";
+    @Since("1.4.0.0-PN")
+    public static final int ID_CROSSBOW_MULTISHOT = 33;
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final String NAME_CROSSBOW_MULTISHOT = "multishot";
+    @Since("1.4.0.0-PN")
+    public static final int ID_CROSSBOW_PIERCING = 34;
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final String NAME_CROSSBOW_PIERCING = "piercing";
+    @Since("1.4.0.0-PN")
+    public static final int ID_CROSSBOW_QUICK_CHARGE = 35;
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final String NAME_CROSSBOW_QUICK_CHARGE = "quick_charge";
+    @Since("1.4.0.0-PN")
+    public static final int ID_SOUL_SPEED = 36;
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final String NAME_SOUL_SPEED = "soul_speed";
+    @Since("1.4.0.0-PN")
+    public static final int ID_SWIFT_SNEAK = 37;
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final String NAME_SWIFT_SNEAK = "swift_sneak";
 
 
     public static void init() {
         enchantments = new Enchantment[256];
-
         enchantments[ID_PROTECTION_ALL] = new EnchantmentProtectionAll();
         enchantments[ID_PROTECTION_FIRE] = new EnchantmentProtectionFire();
         enchantments[ID_PROTECTION_FALL] = new EnchantmentProtectionFall();
@@ -155,63 +237,79 @@ public abstract class Enchantment implements Cloneable {
         enchantments[ID_FORTUNE_FISHING] = new EnchantmentLootFishing();
         enchantments[ID_LURE] = new EnchantmentLure();
         enchantments[ID_FROST_WALKER] = new EnchantmentFrostWalker();
-        enchantments[ID_MENDING]  = new EnchantmentMending();
-        enchantments[ID_BINDING_CURSE]  = new EnchantmentBindingCurse();
-        enchantments[ID_VANISHING_CURSE]  = new EnchantmentVanishingCurse();
-        enchantments[ID_TRIDENT_IMPALING]  = new EnchantmentTridentImpaling();
-        enchantments[ID_TRIDENT_RIPTIDE]  = new EnchantmentTridentRiptide();
-        enchantments[ID_TRIDENT_LOYALTY]  = new EnchantmentTridentLoyalty();
-        enchantments[ID_TRIDENT_CHANNELING]  = new EnchantmentTridentChanneling();
-        enchantments[ID_CROSSBOW_MULTISHOT]  = new EnchantmentCrossbowMultishot();
-        enchantments[ID_CROSSBOW_PIERCING]  = new EnchantmentCrossbowPiercing();
-        enchantments[ID_CROSSBOW_QUICK_CHARGE]  = new EnchantmentCrossbowQuickCharge();
-        enchantments[ID_SOUL_SPEED]  = new EnchantmentSoulSpeed();
+        enchantments[ID_MENDING] = new EnchantmentMending();
+        enchantments[ID_BINDING_CURSE] = new EnchantmentBindingCurse();
+        enchantments[ID_VANISHING_CURSE] = new EnchantmentVanishingCurse();
+        enchantments[ID_TRIDENT_IMPALING] = new EnchantmentTridentImpaling();
+        enchantments[ID_TRIDENT_RIPTIDE] = new EnchantmentTridentRiptide();
+        enchantments[ID_TRIDENT_LOYALTY] = new EnchantmentTridentLoyalty();
+        enchantments[ID_TRIDENT_CHANNELING] = new EnchantmentTridentChanneling();
+        enchantments[ID_CROSSBOW_MULTISHOT] = new EnchantmentCrossbowMultishot();
+        enchantments[ID_CROSSBOW_PIERCING] = new EnchantmentCrossbowPiercing();
+        enchantments[ID_CROSSBOW_QUICK_CHARGE] = new EnchantmentCrossbowQuickCharge();
+        enchantments[ID_SOUL_SPEED] = new EnchantmentSoulSpeed();
         enchantments[ID_SWIFT_SNEAK] = new EnchantmentSwiftSneak();
+        //custom
+        customEnchantments.put(new Identifier("minecraft", NAME_PROTECTION_ALL), enchantments[0]);
+        customEnchantments.put(new Identifier("minecraft", NAME_PROTECTION_FIRE), enchantments[1]);
+        customEnchantments.put(new Identifier("minecraft", NAME_PROTECTION_FALL), enchantments[2]);
+        customEnchantments.put(new Identifier("minecraft", NAME_PROTECTION_EXPLOSION), enchantments[3]);
+        customEnchantments.put(new Identifier("minecraft", NAME_PROTECTION_PROJECTILE), enchantments[4]);
+        customEnchantments.put(new Identifier("minecraft", NAME_THORNS), enchantments[5]);
+        customEnchantments.put(new Identifier("minecraft", NAME_WATER_BREATHING), enchantments[6]);
+        customEnchantments.put(new Identifier("minecraft", NAME_WATER_WORKER), enchantments[7]);
+        customEnchantments.put(new Identifier("minecraft", NAME_WATER_WALKER), enchantments[8]);
+        customEnchantments.put(new Identifier("minecraft", NAME_DAMAGE_ALL), enchantments[9]);
+        customEnchantments.put(new Identifier("minecraft", NAME_DAMAGE_SMITE), enchantments[10]);
+        customEnchantments.put(new Identifier("minecraft", NAME_DAMAGE_ARTHROPODS), enchantments[11]);
+        customEnchantments.put(new Identifier("minecraft", NAME_KNOCKBACK), enchantments[12]);
+        customEnchantments.put(new Identifier("minecraft", NAME_FIRE_ASPECT), enchantments[13]);
+        customEnchantments.put(new Identifier("minecraft", NAME_LOOTING), enchantments[14]);
+        customEnchantments.put(new Identifier("minecraft", NAME_EFFICIENCY), enchantments[15]);
+        customEnchantments.put(new Identifier("minecraft", NAME_SILK_TOUCH), enchantments[16]);
+        customEnchantments.put(new Identifier("minecraft", NAME_DURABILITY), enchantments[17]);
+        customEnchantments.put(new Identifier("minecraft", NAME_FORTUNE_DIGGING), enchantments[18]);
+        customEnchantments.put(new Identifier("minecraft", NAME_BOW_POWER), enchantments[19]);
+        customEnchantments.put(new Identifier("minecraft", NAME_BOW_KNOCKBACK), enchantments[20]);
+        customEnchantments.put(new Identifier("minecraft", NAME_BOW_FLAME), enchantments[21]);
+        customEnchantments.put(new Identifier("minecraft", NAME_BOW_INFINITY), enchantments[22]);
+        customEnchantments.put(new Identifier("minecraft", NAME_FORTUNE_FISHING), enchantments[23]);
+        customEnchantments.put(new Identifier("minecraft", NAME_LURE), enchantments[24]);
+        customEnchantments.put(new Identifier("minecraft", NAME_FROST_WALKER), enchantments[25]);
+        customEnchantments.put(new Identifier("minecraft", NAME_MENDING), enchantments[26]);
+        customEnchantments.put(new Identifier("minecraft", NAME_BINDING_CURSE), enchantments[27]);
+        customEnchantments.put(new Identifier("minecraft", NAME_VANISHING_CURSE), enchantments[28]);
+        customEnchantments.put(new Identifier("minecraft", NAME_TRIDENT_IMPALING), enchantments[29]);
+        customEnchantments.put(new Identifier("minecraft", NAME_TRIDENT_RIPTIDE), enchantments[30]);
+        customEnchantments.put(new Identifier("minecraft", NAME_TRIDENT_LOYALTY), enchantments[31]);
+        customEnchantments.put(new Identifier("minecraft", NAME_TRIDENT_CHANNELING), enchantments[32]);
+        customEnchantments.put(new Identifier("minecraft", NAME_CROSSBOW_MULTISHOT), enchantments[33]);
+        customEnchantments.put(new Identifier("minecraft", NAME_CROSSBOW_PIERCING), enchantments[34]);
+        customEnchantments.put(new Identifier("minecraft", NAME_CROSSBOW_QUICK_CHARGE), enchantments[35]);
+        customEnchantments.put(new Identifier("minecraft", NAME_SOUL_SPEED), enchantments[36]);
+        customEnchantments.put(new Identifier("minecraft", NAME_SWIFT_SNEAK), enchantments[37]);
+    }
 
-
-        enchantmentName2IDMap.put(NAME_PROTECTION_ALL, ID_PROTECTION_ALL);
-        enchantmentName2IDMap.put(NAME_PROTECTION_FIRE, ID_PROTECTION_FIRE);
-        enchantmentName2IDMap.put(NAME_PROTECTION_FALL, ID_PROTECTION_FALL);
-        enchantmentName2IDMap.put(NAME_PROTECTION_EXPLOSION, ID_PROTECTION_EXPLOSION);
-        enchantmentName2IDMap.put(NAME_PROTECTION_PROJECTILE, ID_PROTECTION_PROJECTILE);
-        enchantmentName2IDMap.put(NAME_THORNS, ID_THORNS);
-        enchantmentName2IDMap.put(NAME_WATER_BREATHING, ID_WATER_BREATHING);
-        enchantmentName2IDMap.put(NAME_WATER_WORKER, ID_WATER_WORKER);
-        enchantmentName2IDMap.put(NAME_WATER_WALKER, ID_WATER_WALKER);
-        enchantmentName2IDMap.put(NAME_DAMAGE_ALL, ID_DAMAGE_ALL);
-        enchantmentName2IDMap.put(NAME_DAMAGE_SMITE, ID_DAMAGE_SMITE);
-        enchantmentName2IDMap.put(NAME_DAMAGE_ARTHROPODS, ID_DAMAGE_ARTHROPODS);
-        enchantmentName2IDMap.put(NAME_KNOCKBACK, ID_KNOCKBACK);
-        enchantmentName2IDMap.put(NAME_FIRE_ASPECT, ID_FIRE_ASPECT);
-        enchantmentName2IDMap.put(NAME_LOOTING, ID_LOOTING);
-        enchantmentName2IDMap.put(NAME_EFFICIENCY, ID_EFFICIENCY);
-        enchantmentName2IDMap.put(NAME_SILK_TOUCH, ID_SILK_TOUCH);
-        enchantmentName2IDMap.put(NAME_DURABILITY, ID_DURABILITY);
-        enchantmentName2IDMap.put(NAME_FORTUNE_DIGGING, ID_FORTUNE_DIGGING);
-        enchantmentName2IDMap.put(NAME_BOW_POWER, ID_BOW_POWER);
-        enchantmentName2IDMap.put(NAME_BOW_KNOCKBACK, ID_BOW_KNOCKBACK);
-        enchantmentName2IDMap.put(NAME_BOW_FLAME, ID_BOW_FLAME);
-        enchantmentName2IDMap.put(NAME_BOW_INFINITY, ID_BOW_INFINITY);
-        enchantmentName2IDMap.put(NAME_FORTUNE_FISHING, ID_FORTUNE_FISHING);
-        enchantmentName2IDMap.put(NAME_LURE, ID_LURE);
-        enchantmentName2IDMap.put(NAME_FROST_WALKER, ID_FROST_WALKER);
-        enchantmentName2IDMap.put(NAME_MENDING, ID_MENDING);
-        enchantmentName2IDMap.put(NAME_BINDING_CURSE, ID_BINDING_CURSE);
-        enchantmentName2IDMap.put(NAME_VANISHING_CURSE, ID_VANISHING_CURSE);
-        enchantmentName2IDMap.put(NAME_TRIDENT_IMPALING, ID_TRIDENT_IMPALING);
-        enchantmentName2IDMap.put(NAME_TRIDENT_RIPTIDE, ID_TRIDENT_RIPTIDE);
-        enchantmentName2IDMap.put(NAME_TRIDENT_LOYALTY, ID_TRIDENT_LOYALTY);
-        enchantmentName2IDMap.put(NAME_TRIDENT_CHANNELING, ID_TRIDENT_CHANNELING);
-        enchantmentName2IDMap.put(NAME_CROSSBOW_MULTISHOT, ID_CROSSBOW_MULTISHOT);
-        enchantmentName2IDMap.put(NAME_CROSSBOW_PIERCING, ID_CROSSBOW_PIERCING);
-        enchantmentName2IDMap.put(NAME_CROSSBOW_QUICK_CHARGE, ID_CROSSBOW_QUICK_CHARGE);
-        enchantmentName2IDMap.put(NAME_SOUL_SPEED, ID_SOUL_SPEED);
-        enchantmentName2IDMap.put(NAME_SWIFT_SNEAK, ID_SWIFT_SNEAK);
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    public static boolean register(Identifier identifier, Enchantment enchantment) {
+        Objects.requireNonNull(identifier);
+        Objects.requireNonNull(enchantment);
+        if (customEnchantments.containsKey(identifier)) {
+            log.warn("This identifier already exists,register custom enchantment failed!");
+            return false;
+        }
+        if (identifier.getNamespace().equals(Identifier.DEFAULT_NAMESPACE)) {
+            log.warn("Please do not use the reserved namespace `minecraft` !");
+        }
+        customEnchantments.put(identifier, enchantment);
+        return true;
     }
 
     /**
-     * Returns the enchantment object registered with this ID, any change to the returned object affects 
+     * Returns the enchantment object registered with this ID, any change to the returned object affects
      * the creation of new enchantments as the returned object is not a copy.
+     *
      * @param id The enchantment id.
      * @return The enchantment, if no enchantment is found with that id, {@link UnknownEnchantment} is returned.
      * The UnknownEnchantment will be always a new instance and changes to it does not affects other calls.
@@ -232,6 +330,7 @@ public abstract class Enchantment implements Cloneable {
 
     /**
      * The same as {@link #get(int)} but returns a safe copy of the enchantment.
+     *
      * @param id The enchantment id
      * @return A new enchantment object.
      */
@@ -239,52 +338,47 @@ public abstract class Enchantment implements Cloneable {
         return get(id).clone();
     }
 
+    /**
+     * 使用附魔标识符来获取附魔，原版附魔可以不加命名空间，但是自定义附魔必须加上命名空间才能获取
+     * <p>
+     * Gets enchantment.
+     *
+     * @param name Enchantment Identifier
+     * @return the enchantment
+     */
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public static Enchantment getEnchantment(String name) {
-        return getEnchantment(enchantmentName2IDMap.get(name));
+        if (Identifier.isValid(name)) {
+            return customEnchantments.get(Identifier.tryParse(name));
+        } else return customEnchantments.get(new Identifier(Identifier.DEFAULT_NAMESPACE, name));
     }
 
     /**
      * Gets an array of all registered enchantments, the objects in the array are linked to the registry,
      * it's not safe to change them. Changing them can cause the same issue as documented in {@link #get(int)}
+     *
      * @return An array with the enchantment objects, the array may contain null objects but is very unlikely.
      */
-    @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", 
-            reason = "The objects returned by this method are not safe to use and the implementation may skip some enchantments",
-            replaceWith = "getRegisteredEnchantments()"
-    )
     public static Enchantment[] getEnchantments() {
-        ArrayList<Enchantment> list = new ArrayList<>();
-        for (Enchantment enchantment : enchantments) {
-            if (enchantment == null) {
-                break;
-            }
-
-            list.add(enchantment);
-        }
-
-        return list.toArray(Enchantment.EMPTY_ARRAY);
+        return customEnchantments.values().toArray(EMPTY_ARRAY);
     }
 
     /**
      * Gets a collection with a safe copy of all enchantments that are currently registered.
+     *
      * @return The objects can be modified without affecting the registry and the collection will not have null values.
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static Collection<Enchantment> getRegisteredEnchantments() {
-        return Arrays.stream(enchantments)
-                .filter(Objects::nonNull)
-                .map(Enchantment::clone)
-                .collect(Collectors.toList());
+        return new ArrayList<>(customEnchantments.values());
     }
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public static Map<String,Integer> getEnchantmentName2IDMap() {
-        return enchantmentName2IDMap;
+    public static Map<String, Integer> getEnchantmentName2IDMap() {
+        return customEnchantments.entrySet().stream().collect(Collectors.toMap(e -> e.getKey().toString(), e -> e.getValue().getId()));
     }
 
     /**
@@ -305,21 +399,23 @@ public abstract class Enchantment implements Cloneable {
     protected int level = 1;
 
     /**
-     * The name visible by the player, this is used in conjunction with {@link #getName()}, 
-     * unless modified with an override, the getter will automatically add 
-     * "%enchantment." as prefix to grab the translation key 
+     * The name visible by the player, this is used in conjunction with {@link #getName()},
+     * unless modified with an override, the getter will automatically add
+     * "%enchantment." as prefix to grab the translation key
      */
     protected final String name;
 
     /**
      * Constructs this instance using the given data and with level 1.
-     * @param id The enchantment ID
-     * @param name The translation key without the "%enchantment." suffix
+     *
+     * @param id     The enchantment ID
+     * @param name   The translation key without the "%enchantment." suffix
      * @param weight How rare this enchantment is, from {@code 1} to {@code 10} both inclusive where {@code 1} is the rarest
-     * @param type Where the enchantment can be applied
+     * @param type   Where the enchantment can be applied
      */
     @PowerNukkitOnly("Was removed from Nukkit in 1.4.0.0-PN, keeping it in PowerNukkit for backward compatibility")
-    @Deprecated @DeprecationDetails(by = "Cloudburst Nukkit", since = "1.4.0.0-PN", reason = "Changed the signature without backward compatibility",
+    @Deprecated
+    @DeprecationDetails(by = "Cloudburst Nukkit", since = "1.4.0.0-PN", reason = "Changed the signature without backward compatibility",
             replaceWith = "Enchantment(int, String, Rarity, EnchantmentType)")
     protected Enchantment(int id, String name, int weight, EnchantmentType type) {
         this(id, name, Rarity.fromWeight(weight), type);
@@ -327,22 +423,39 @@ public abstract class Enchantment implements Cloneable {
 
     /**
      * Constructs this instance using the given data and with level 1.
-     * @param id The enchantment ID
-     * @param name The translation key without the "%enchantment." suffix
+     *
+     * @param id     The enchantment ID
+     * @param name   The translation key without the "%enchantment." suffix
      * @param rarity How rare this enchantment is
-     * @param type Where the enchantment can be applied
+     * @param type   Where the enchantment can be applied
      */
     @Since("1.4.0.0-PN")
     protected Enchantment(int id, String name, Rarity rarity, EnchantmentType type) {
         this.id = id;
         this.rarity = rarity;
         this.type = type;
+        this.name = name;
+    }
 
+    /**
+     * 自定义附魔使用的构造函数
+     *
+     * @param name   The translation key without the "%enchantment." suffix
+     * @param rarity How rare this enchantment is
+     * @param type   Where the enchantment can be applied
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    protected Enchantment(String name, Rarity rarity, EnchantmentType type) {
+        this.id = CUSTOM_ENCHANTMENT_ID;
+        this.rarity = rarity;
+        this.type = type;
         this.name = name;
     }
 
     /**
      * The current level of this enchantment. {@code 0} means that the enchantment is not applied.
+     *
      * @return The level starting from {@code 1}.
      */
     public int getLevel() {
@@ -352,7 +465,7 @@ public abstract class Enchantment implements Cloneable {
     /**
      * Changes the level of this enchantment.
      * The level is clamped between the values returned in {@link #getMinLevel()} and {@link #getMaxLevel()}.
-     * 
+     *
      * @param level The level starting from {@code 1}.
      * @return This object so you can do chained calls
      */
@@ -364,11 +477,11 @@ public abstract class Enchantment implements Cloneable {
 
     /**
      * Changes the level of this enchantment.
-     * When the {@code safe} param is {@code true}, the level is clamped between the values 
+     * When the {@code safe} param is {@code true}, the level is clamped between the values
      * returned in {@link #getMinLevel()} and {@link #getMaxLevel()}.
      *
      * @param level The level starting from {@code 1}.
-     * @param safe If the level should clamped or applied directly
+     * @param safe  If the level should clamped or applied directly
      * @return This object so you can do chained calls
      */
     @Nonnull
@@ -384,7 +497,7 @@ public abstract class Enchantment implements Cloneable {
     }
 
     /**
-     * The ID of this enchantment. 
+     * The ID of this enchantment.
      */
     public int getId() {
         return id;
@@ -401,10 +514,11 @@ public abstract class Enchantment implements Cloneable {
 
     /**
      * How rare this enchantment is, from {@code 1} to {@code 10} where {@code 1} is the rarest.
+     *
      * @deprecated use {@link Rarity#getWeight()} instead
      */
-    @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit", 
-            reason = "Refactored enchantments and now uses a Rarity enum", 
+    @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit",
+            reason = "Refactored enchantments and now uses a Rarity enum",
             replaceWith = "getRarity().getWeight()")
     @Deprecated
     public int getWeight() {
@@ -434,6 +548,7 @@ public abstract class Enchantment implements Cloneable {
 
     /**
      * The minimum enchantability for the given level as described in https://minecraft.gamepedia.com/Enchanting/Levels
+     *
      * @param level The level being checked
      * @return The minimum value
      */
@@ -443,6 +558,7 @@ public abstract class Enchantment implements Cloneable {
 
     /**
      * The maximum enchantability for the given level as described in https://minecraft.gamepedia.com/Enchanting/Levels
+     *
      * @param level The level being checked
      * @return The maximum value
      */
@@ -450,37 +566,78 @@ public abstract class Enchantment implements Cloneable {
         return this.getMinEnchantAbility(level) + 5;
     }
 
+    /**
+     * 当实体盔甲具有附魔时触发
+     * <p>
+     * 覆写该方法提供当实体被攻击时盔甲提供的保护值
+     * <p>
+     * 目前只生效于{@link cn.nukkit.entity.EntityHumanType HumanType} 和 {@link cn.nukkit.entity.mob.EntityMob EntityMob}
+     *
+     * @param event 该实体被攻击的事件
+     * @return the protection factor
+     */
     public float getProtectionFactor(EntityDamageEvent event) {
         return 0;
     }
 
+    /**
+     * 当实体武器具有附魔时触发
+     * <p>
+     * 覆写该方法提供当实体使用附魔武器攻击所增益的攻击力
+     * <p>
+     * 目前只生效于{@link cn.nukkit.Player Player} 和 使用了{@link cn.nukkit.entity.ai.executor.MeleeAttackExecutor MeleeAttackExecutor}行为的实体
+     *
+     * @param entity 攻击的目标实体
+     * @return the damage value
+     */
     public double getDamageBonus(Entity entity) {
         return 0;
     }
 
+    /**
+     * 当实体entity穿着附魔盔甲，被实体attacker攻击时触发
+     * <p>
+     * 覆写该方法实现该过程中的逻辑
+     *
+     * @param attacker the attacker
+     * @param entity   the entity
+     */
+    @PowerNukkitXDifference(info = "移除在InventoryTransactionPacket.USE_ITEM_ON_ENTITY_ACTION_ATTACK中的切入点，因为这会与#doAttack混淆，他们是一样的作用")
     public void doPostAttack(Entity attacker, Entity entity) {
-
-    }
-
-    @Since("FUTURE")
-    public void doAttack(Entity attacker, Entity entity) {
-
-    }
-
-    public void doPostHurt(Entity attacker, Entity entity) {
-
     }
 
     /**
-     * Returns true if and only if this enchantment is compatible with the other and 
-     * the other is also compatible with this enchantment. 
+     * 当实体attacker使用具有附魔的武器攻击实体entity时触发
+     * <p>
+     * 覆写该方法实现该过程中的逻辑
+     *
+     * @param attacker the attacker
+     * @param entity   the entity
+     */
+    public void doAttack(Entity attacker, Entity entity) {
+    }
+
+    /**
+     * 目前没有任何作用
+     *
+     * @param attacker the attacker
+     * @param entity   the entity
+     */
+    @Since("FUTURE")
+    public void doPostHurt(Entity attacker, Entity entity) {
+    }
+
+    /**
+     * Returns true if and only if this enchantment is compatible with the other and
+     * the other is also compatible with this enchantment.
+     *
      * @param enchantment The enchantment which is being checked
      * @return If both enchantments are compatible
      * @implNote Cloudburst Nukkit added the final modifier, PowerNukkit removed it to maintain backward compatibility.
      * The right way to implement compatibility now is to override {@link #checkCompatibility(Enchantment)}
-     *  and also make sure to keep it protected! Some overrides was incorrectly made public, let's avoid this mistake
+     * and also make sure to keep it protected! Some overrides was incorrectly made public, let's avoid this mistake
      */
-    @PowerNukkitDifference(since = "1.4.0.0-PN", 
+    @PowerNukkitDifference(since = "1.4.0.0-PN",
             info = "Cloudburst Nukkit added the final modifier, we removed it to maintain backward compatibility. " +
                     "The right way to implement compatibility now is to override checkCompatibility(Enchantment enchantment) " +
                     "and also make sure to keep it protected! Some overrides was incorrectly made public, let's avoid this mistake."
@@ -491,6 +648,7 @@ public abstract class Enchantment implements Cloneable {
 
     /**
      * Checks if this enchantment can be applied to an item that have the give enchantment without doing reverse check.
+     *
      * @param enchantment The enchantment to be checked
      * @return If this enchantment is compatible with the other enchantment.
      */
@@ -506,13 +664,14 @@ public abstract class Enchantment implements Cloneable {
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public String getOriginalName(){
+    public String getOriginalName() {
         return this.name;
     }
 
     /**
      * Checks if the given item have a type which is compatible with this enchantment. This method does not check
      * if the item already have incompatible enchantments.
+     *
      * @param item The item to be checked
      * @return If the type of the item is valid for this enchantment
      */
@@ -522,13 +681,6 @@ public abstract class Enchantment implements Cloneable {
 
     public boolean isMajor() {
         return false;
-    }
-
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
-    @Nonnull
-    public SideEffect[] getAttackSideEffects(@Nonnull Entity attacker, @Nonnull Entity entity) {
-        return SideEffect.EMPTY_ARRAY;
     }
 
     @Override
@@ -543,8 +695,10 @@ public abstract class Enchantment implements Cloneable {
     /**
      * Checks if an item can have this enchantment. It's not strict to the enchantment table.
      */
-    @PowerNukkitOnly @Since("1.2.1.0-PN")
-    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN", 
+    @PowerNukkitOnly
+    @Since("1.2.1.0-PN")
+    @Deprecated
+    @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN",
             reason = "Does the same as canEnchant(item)", replaceWith = "canEnchant(item)")
     public boolean isItemAcceptable(Item item) {
         return canEnchant(item);
@@ -593,6 +747,7 @@ public abstract class Enchantment implements Cloneable {
 
         /**
          * Converts the weight to the closest rarity using floor semantic.
+         *
          * @param weight The enchantment weight
          * @return The closest rarity
          */
