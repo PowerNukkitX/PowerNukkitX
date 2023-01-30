@@ -26,10 +26,10 @@ public class CommandEnum {
     public static final CommandEnum ENUM_EFFECT;
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
-    public static final CommandEnum FUNCTION_FILE = new CommandEnum("filepath", () -> Server.getInstance().getFunctionManager().getFunctions().keySet(), true);
+    public static final CommandEnum FUNCTION_FILE = new CommandEnum("filepath", () -> Server.getInstance().getFunctionManager().getFunctions().keySet());
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
-    public static final CommandEnum SCOREBOARD_OBJECTIVES = new CommandEnum("ScoreboardObjectives", () -> Server.getInstance().getScoreboardManager().getScoreboards().keySet(), true);
+    public static final CommandEnum SCOREBOARD_OBJECTIVES = new CommandEnum("ScoreboardObjectives", () -> Server.getInstance().getScoreboardManager().getScoreboards().keySet());
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
     public static final CommandEnum CHAINED_COMMAND_ENUM = new CommandEnum("ExecuteChainedOption_0", "run", "as", "at", "positioned", "if", "unless", "in", "align", "anchored", "rotated", "facing");
@@ -71,12 +71,14 @@ public class CommandEnum {
         }
         ENUM_EFFECT = new CommandEnum("Effect", effects, false);
 
-        var enchs = new ArrayList<String>();
-        Enchantment.getEnchantmentName2IDMap().forEach((key, value) -> {
-            if (key.startsWith(Identifier.DEFAULT_NAMESPACE)) enchs.add(key.substring(10));
-            else enchs.add(key);
+        ENUM_ENCHANTMENT = new CommandEnum("enchantmentName", () -> {
+            var names = new ArrayList<String>();
+            Enchantment.getEnchantmentName2IDMap().forEach((key, value) -> {
+                if (key.startsWith(Identifier.DEFAULT_NAMESPACE)) names.add(key.substring(10));
+                else names.add(key);
+            });
+            return names;
         });
-        ENUM_ENCHANTMENT = new CommandEnum("enchantmentName", enchs);
     }
 
     private final String name;
@@ -116,18 +118,17 @@ public class CommandEnum {
     }
 
     /**
-     * Instantiates a new Command enum.
+     * Instantiates a new Soft Command enum.
      *
      * @param name            the name
      * @param strListSupplier the str list supplier
-     * @param isSoft          the is soft
      */
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
-    public CommandEnum(String name, Supplier<Collection<String>> strListSupplier, boolean isSoft) {
+    public CommandEnum(String name, Supplier<Collection<String>> strListSupplier) {
         this.name = name;
         this.values = null;
-        this.isSoft = isSoft;
+        this.isSoft = true;
         this.strListSupplier = strListSupplier;
     }
 

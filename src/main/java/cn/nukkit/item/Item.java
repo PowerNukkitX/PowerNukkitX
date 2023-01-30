@@ -26,6 +26,7 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.*;
 import cn.nukkit.utils.Binary;
 import cn.nukkit.utils.Config;
+import cn.nukkit.utils.TextFormat;
 import cn.nukkit.utils.Utils;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
@@ -1207,11 +1208,13 @@ public class Item implements Cloneable, BlockID, ItemID {
         if (tag.contains("ench")) {
             Tag enchTag = tag.get("ench");
             return enchTag instanceof ListTag;
+        } else if (tag.contains("custom_ench")) {
+            Tag enchTag = tag.get("custom_ench");
+            return enchTag instanceof ListTag;
         }
 
         return false;
     }
-
 
     /**
      * 通过附魔id来查找对应附魔的等级
@@ -1235,6 +1238,66 @@ public class Item implements Cloneable, BlockID, ItemID {
         }
 
         return 0;
+    }
+
+
+    /**
+     * 通过附魔id来查找对应附魔的等级
+     * <p>
+     * Find the enchantment level by the enchantment id.
+     *
+     * @param id 要查询的附魔标识符
+     * @return {@code 0} if the item don't have that enchantment or the current level of the given enchantment.
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    public int getCustomEnchantmentLevel(String id) {
+        if (!this.hasEnchantments()) {
+            return 0;
+        }
+        for (CompoundTag entry : this.getNamedTag().getList("custom_ench", CompoundTag.class).getAll()) {
+            if (entry.getString("id").equals(id)) {
+                return entry.getShort("lvl");
+            }
+        }
+        return 0;
+    }
+
+
+    /**
+     * @param id 要查询的附魔标识符
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    public Enchantment getCustomEnchantment(String id) {
+        if (!this.hasEnchantments()) {
+            return null;
+        }
+
+        for (CompoundTag entry : this.getNamedTag().getList("custom_ench", CompoundTag.class).getAll()) {
+            if (entry.getString("id").equals(id)) {
+                Enchantment e = Enchantment.getEnchantment(entry.getString("id"));
+                if (e != null) {
+                    e.setLevel(entry.getShort("lvl"), false);
+                    return e;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * 检测该物品是否有该附魔
+     * <p>
+     * Detect if the item has the enchantment
+     *
+     * @param id 要查询的附魔标识符
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    public boolean hasCustomEnchantment(String id) {
+        return this.getCustomEnchantmentLevel(id) > 0;
     }
 
     /**
@@ -1279,31 +1342,74 @@ public class Item implements Cloneable, BlockID, ItemID {
         } else {
             ench = tag.getList("ench", CompoundTag.class);
         }
+        ListTag<CompoundTag> custom_ench;
+        if (!tag.contains("custom_ench")) {
+            custom_ench = new ListTag<>("custom_ench");
+            tag.putList(custom_ench);
+        } else {
+            custom_ench = tag.getList("custom_ench", CompoundTag.class);
+        }
 
         for (Enchantment enchantment : enchantments) {
             boolean found = false;
-
-            for (int k = 0; k < ench.size(); k++) {
-                CompoundTag entry = ench.get(k);
-                if (entry.getShort("id") == enchantment.getId()) {
-                    ench.add(k, new CompoundTag()
+            if (enchantment.getIdentifier() == null) {
+                for (int k = 0; k < ench.size(); k++) {
+                    CompoundTag entry = ench.get(k);
+                    if (entry.getShort("id") == enchantment.getId()) {
+                        ench.add(k, new CompoundTag()
+                                .putShort("id", enchantment.getId())
+                                .putShort("lvl", enchantment.getLevel())
+                        );
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    ench.add(new CompoundTag()
                             .putShort("id", enchantment.getId())
                             .putShort("lvl", enchantment.getLevel())
                     );
-                    found = true;
-                    break;
+                }
+            } else {
+                for (int k = 0; k < custom_ench.size(); k++) {
+                    CompoundTag entry = custom_ench.get(k);
+                    if (entry.getString("id").equals(enchantment.getIdentifier().toString())) {
+                        custom_ench.add(k, new CompoundTag()
+                                .putString("id", enchantment.getIdentifier().toString())
+                                .putShort("lvl", enchantment.getLevel())
+                        );
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    custom_ench.add(new CompoundTag()
+                            .putString("id", enchantment.getIdentifier().toString())
+                            .putShort("lvl", enchantment.getLevel())
+                    );
                 }
             }
-
-            if (!found) {
-                ench.add(new CompoundTag()
-                        .putShort("id", enchantment.getId())
-                        .putShort("lvl", enchantment.getLevel())
+        }
+        if (custom_ench.size() != 0) {
+            var customName = setCustomEnchantDisplay(custom_ench);
+            if (tag.contains("display") && tag.get("display") instanceof CompoundTag) {
+                tag.getCompound("display").putString("Name", customName);
+            } else {
+                tag.putCompound("display", new CompoundTag("display")
+                        .putString("Name", customName)
                 );
             }
         }
-
         this.setNamedTag(tag);
+    }
+
+    private String setCustomEnchantDisplay(ListTag<CompoundTag> custom_ench) {
+        StringJoiner joiner = new StringJoiner("\n", "" + TextFormat.RESET + TextFormat.AQUA + this.name + "\n", "");
+        for (var ench : custom_ench.getAll()) {
+            var enchantment = Enchantment.getEnchantment(ench.getString("id"));
+            joiner.add(TextFormat.GRAY + enchantment.getName() + " " + Enchantment.getLevelString(enchantment.getLevel()));
+        }
+        return joiner.toString();
     }
 
     /**
@@ -1317,7 +1423,6 @@ public class Item implements Cloneable, BlockID, ItemID {
         if (!this.hasEnchantments()) {
             return Enchantment.EMPTY_ARRAY;
         }
-
         List<Enchantment> enchantments = new ArrayList<>();
 
         ListTag<CompoundTag> ench = this.getNamedTag().getList("ench", CompoundTag.class);
@@ -1328,7 +1433,15 @@ public class Item implements Cloneable, BlockID, ItemID {
                 enchantments.add(e);
             }
         }
-
+        //custom ench
+        ListTag<CompoundTag> custom_ench = this.getNamedTag().getList("custom_ench", CompoundTag.class);
+        for (CompoundTag entry : custom_ench.getAll()) {
+            Enchantment e = Enchantment.getEnchantment(entry.getString("id"));
+            if (e != null) {
+                e.setLevel(entry.getShort("lvl"), false);
+                enchantments.add(e);
+            }
+        }
         return enchantments.toArray(Enchantment.EMPTY_ARRAY);
     }
 

@@ -27,8 +27,10 @@ import cn.nukkit.utils.Identifier;
 import io.netty.util.internal.EmptyArrays;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
@@ -290,20 +292,46 @@ public abstract class Enchantment implements Cloneable {
         customEnchantments.put(new Identifier("minecraft", NAME_SWIFT_SNEAK), enchantments[37]);
     }
 
+    public static String getLevelString(int level) {
+        return switch (level) {
+            case 1 -> "I";
+            case 2 -> "II";
+            case 3 -> "III";
+            case 4 -> "IV";
+            case 5 -> "V";
+            case 6 -> "VI";
+            case 7 -> "VII";
+            case 8 -> "VIII";
+            case 9 -> "IX";
+            case 10 -> "X";
+            default -> "∞";
+        };
+    }
+
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
-    public static boolean register(Identifier identifier, Enchantment enchantment) {
-        Objects.requireNonNull(identifier);
+    public static boolean register(Enchantment enchantment) {
         Objects.requireNonNull(enchantment);
-        if (customEnchantments.containsKey(identifier)) {
+        Objects.requireNonNull(enchantment.getIdentifier());
+        if (customEnchantments.containsKey(enchantment.getIdentifier())) {
             log.warn("This identifier already exists,register custom enchantment failed!");
             return false;
         }
-        if (identifier.getNamespace().equals(Identifier.DEFAULT_NAMESPACE)) {
+        if (enchantment.getIdentifier().getNamespace().equals(Identifier.DEFAULT_NAMESPACE)) {
             log.warn("Please do not use the reserved namespace `minecraft` !");
         }
-        customEnchantments.put(identifier, enchantment);
+        customEnchantments.put(enchantment.getIdentifier(), enchantment);
         return true;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    public static boolean register(Enchantment... enchantments) {
+        boolean result = true;
+        for (var ench : enchantments) {
+            if (!register(ench)) result = false;
+        }
+        return result;
     }
 
     /**
@@ -405,6 +433,9 @@ public abstract class Enchantment implements Cloneable {
      */
     protected final String name;
 
+    @Nullable
+    protected final Identifier identifier;
+
     /**
      * Constructs this instance using the given data and with level 1.
      *
@@ -417,7 +448,7 @@ public abstract class Enchantment implements Cloneable {
     @Deprecated
     @DeprecationDetails(by = "Cloudburst Nukkit", since = "1.4.0.0-PN", reason = "Changed the signature without backward compatibility",
             replaceWith = "Enchantment(int, String, Rarity, EnchantmentType)")
-    protected Enchantment(int id, String name, int weight, EnchantmentType type) {
+    protected Enchantment(int id, String name, int weight, @NotNull EnchantmentType type) {
         this(id, name, Rarity.fromWeight(weight), type);
     }
 
@@ -430,7 +461,8 @@ public abstract class Enchantment implements Cloneable {
      * @param type   Where the enchantment can be applied
      */
     @Since("1.4.0.0-PN")
-    protected Enchantment(int id, String name, Rarity rarity, EnchantmentType type) {
+    protected Enchantment(int id, String name, Rarity rarity, @NotNull EnchantmentType type) {
+        this.identifier = null;
         this.id = id;
         this.rarity = rarity;
         this.type = type;
@@ -446,11 +478,24 @@ public abstract class Enchantment implements Cloneable {
      */
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
-    protected Enchantment(String name, Rarity rarity, EnchantmentType type) {
+    protected Enchantment(@NotNull Identifier identifier, String name, Rarity rarity, @NotNull EnchantmentType type) {
+        this.identifier = identifier;
         this.id = CUSTOM_ENCHANTMENT_ID;
         this.rarity = rarity;
         this.type = type;
         this.name = name;
+    }
+
+    /**
+     * 获取该附魔的标识符，只有自定义附魔才有
+     *
+     * @return the identifier
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    @Nullable
+    public Identifier getIdentifier() {
+        return identifier;
     }
 
     /**
@@ -659,7 +704,8 @@ public abstract class Enchantment implements Cloneable {
 
     //return the translation key for the enchantment
     public String getName() {
-        return "%enchantment." + this.name;
+        if (this.identifier == null) return "%enchantment." + this.name;
+        else return this.name;
     }
 
     @PowerNukkitXOnly
