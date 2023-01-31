@@ -169,14 +169,8 @@
             </snapshots>
         </repository>
         <repository>
-            <id>maven-powernukkitx-cn</id>
-            <url>https://maven.powernukkitx.cn/repository/maven-public/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
         </repository>
         <repository>
             <id>central</id>
@@ -207,14 +201,14 @@
         </dependency>
         <dependency>
             <!-- 不要换成NKX的依赖，这个版本具有特定接口 -->
-            <groupId>org.powernukkit.bedrock.network</groupId>
+            <groupId>cn.powernukkitx.PowerNukkitX-Network</groupId>
             <artifactId>raknet</artifactId>
             <version>1.6.28-PNX.5</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>cn.powernukkitx</groupId>
-            <artifactId>powernukkitx-tests-junit5</artifactId>
+            <artifactId>PowerNukkitX-JUnit5-Framework</artifactId>
             <version>0.0.2</version>
             <scope>test</scope>
             <exclusions>
@@ -503,9 +497,9 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>com.dfsek.terra</groupId>
-            <artifactId>Terra</artifactId>
-            <version>6.2.0+BETA</version>
+            <groupId>cn.powernukkitx</groupId>
+            <artifactId>Terra-Binary</artifactId>
+            <version>6.2.0-BETA</version>
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
@@ -765,6 +759,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.3.0</version>
                 <executions>
                     <execution>
                         <id>copy-dependencies</id>
@@ -809,7 +804,7 @@
                             </excludes>
                         </filter>
                         <filter>
-                            <artifact>com.dfsek.terra:Terra</artifact>
+                            <artifact>cn.powernukkitx:Terra-Binary</artifact>
                             <excludes>
                                 <exclude>config.yml</exclude>
                             </excludes>
