@@ -172,16 +172,6 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
-<!--        <repository>-->
-<!--            <id>maven-powernukkitx-cn</id>-->
-<!--            <url>https://maven.powernukkitx.cn/repository/maven-public/</url>-->
-<!--            <releases>-->
-<!--                <enabled>true</enabled>-->
-<!--            </releases>-->
-<!--            <snapshots>-->
-<!--                <enabled>true</enabled>-->
-<!--            </snapshots>-->
-<!--        </repository>-->
         <repository>
             <id>central</id>
             <name>Maven Central</name>
