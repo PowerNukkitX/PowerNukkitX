@@ -18,7 +18,6 @@ import cn.nukkit.inventory.ItemTag;
 import cn.nukkit.item.customitem.CustomItem;
 import cn.nukkit.item.customitem.CustomItemDefinition;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.item.enchantment.sideeffect.SideEffect;
 import cn.nukkit.item.randomitem.ItemEchoShard;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
@@ -28,6 +27,7 @@ import cn.nukkit.nbt.tag.*;
 import cn.nukkit.utils.Binary;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.OK;
+import cn.nukkit.utils.TextFormat;
 import cn.nukkit.utils.Utils;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
@@ -1212,13 +1212,8 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     /**
-     * 使用该物品是否应用附魔效果例如锋利等....
-     * <p>
-     * Whether to apply the enchantment effect when using this item
-     *
-     * @return
+     * 该物品是否可以应用附魔效果
      */
-
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public boolean applyEnchantments() {
@@ -1235,14 +1230,16 @@ public class Item implements Cloneable, BlockID, ItemID {
         if (tag.contains("ench")) {
             Tag enchTag = tag.get("ench");
             return enchTag instanceof ListTag;
+        } else if (tag.contains("custom_ench")) {
+            Tag enchTag = tag.get("custom_ench");
+            return enchTag instanceof ListTag;
         }
 
         return false;
     }
 
-
     /**
-     * 通过附魔id来查找附魔等级
+     * 通过附魔id来查找对应附魔的等级
      * <p>
      * Find the enchantment level by the enchantment id.
      *
@@ -1265,15 +1262,71 @@ public class Item implements Cloneable, BlockID, ItemID {
         return 0;
     }
 
+
     /**
-     * 定义附魔的id
+     * 通过附魔id来查找对应附魔的等级
+     * <p>
+     * Find the enchantment level by the enchantment id.
+     *
+     * @param id 要查询的附魔标识符
+     * @return {@code 0} if the item don't have that enchantment or the current level of the given enchantment.
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    public int getCustomEnchantmentLevel(String id) {
+        if (!this.hasEnchantments()) {
+            return 0;
+        }
+        for (CompoundTag entry : this.getNamedTag().getList("custom_ench", CompoundTag.class).getAll()) {
+            if (entry.getString("id").equals(id)) {
+                return entry.getShort("lvl");
+            }
+        }
+        return 0;
+    }
+
+
+    /**
+     * @param id 要查询的附魔标识符
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    public Enchantment getCustomEnchantment(String id) {
+        if (!this.hasEnchantments()) {
+            return null;
+        }
+
+        for (CompoundTag entry : this.getNamedTag().getList("custom_ench", CompoundTag.class).getAll()) {
+            if (entry.getString("id").equals(id)) {
+                Enchantment e = Enchantment.getEnchantment(entry.getString("id"));
+                if (e != null) {
+                    e.setLevel(entry.getShort("lvl"), false);
+                    return e;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * 检测该物品是否有该附魔
+     * <p>
+     * Detect if the item has the enchantment
+     *
+     * @param id 要查询的附魔标识符
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    public boolean hasCustomEnchantment(String id) {
+        return this.getCustomEnchantmentLevel(id) > 0;
+    }
+
+    /**
+     * 从给定的附魔id查找该物品是否存在对应的附魔效果，如果查找不到返回null
      * <p>
      * Get the id of the enchantment
-     *
-     * @param id
-     * @return
      */
-
     public Enchantment getEnchantment(int id) {
         return getEnchantment((short) (id & 0xffff));
     }
@@ -1311,31 +1364,74 @@ public class Item implements Cloneable, BlockID, ItemID {
         } else {
             ench = tag.getList("ench", CompoundTag.class);
         }
+        ListTag<CompoundTag> custom_ench;
+        if (!tag.contains("custom_ench")) {
+            custom_ench = new ListTag<>("custom_ench");
+            tag.putList(custom_ench);
+        } else {
+            custom_ench = tag.getList("custom_ench", CompoundTag.class);
+        }
 
         for (Enchantment enchantment : enchantments) {
             boolean found = false;
-
-            for (int k = 0; k < ench.size(); k++) {
-                CompoundTag entry = ench.get(k);
-                if (entry.getShort("id") == enchantment.getId()) {
-                    ench.add(k, new CompoundTag()
+            if (enchantment.getIdentifier() == null) {
+                for (int k = 0; k < ench.size(); k++) {
+                    CompoundTag entry = ench.get(k);
+                    if (entry.getShort("id") == enchantment.getId()) {
+                        ench.add(k, new CompoundTag()
+                                .putShort("id", enchantment.getId())
+                                .putShort("lvl", enchantment.getLevel())
+                        );
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    ench.add(new CompoundTag()
                             .putShort("id", enchantment.getId())
                             .putShort("lvl", enchantment.getLevel())
                     );
-                    found = true;
-                    break;
+                }
+            } else {
+                for (int k = 0; k < custom_ench.size(); k++) {
+                    CompoundTag entry = custom_ench.get(k);
+                    if (entry.getString("id").equals(enchantment.getIdentifier().toString())) {
+                        custom_ench.add(k, new CompoundTag()
+                                .putString("id", enchantment.getIdentifier().toString())
+                                .putShort("lvl", enchantment.getLevel())
+                        );
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    custom_ench.add(new CompoundTag()
+                            .putString("id", enchantment.getIdentifier().toString())
+                            .putShort("lvl", enchantment.getLevel())
+                    );
                 }
             }
-
-            if (!found) {
-                ench.add(new CompoundTag()
-                        .putShort("id", enchantment.getId())
-                        .putShort("lvl", enchantment.getLevel())
+        }
+        if (custom_ench.size() != 0) {
+            var customName = setCustomEnchantDisplay(custom_ench);
+            if (tag.contains("display") && tag.get("display") instanceof CompoundTag) {
+                tag.getCompound("display").putString("Name", customName);
+            } else {
+                tag.putCompound("display", new CompoundTag("display")
+                        .putString("Name", customName)
                 );
             }
         }
-
         this.setNamedTag(tag);
+    }
+
+    private String setCustomEnchantDisplay(ListTag<CompoundTag> custom_ench) {
+        StringJoiner joiner = new StringJoiner("\n", "" + TextFormat.RESET + TextFormat.AQUA + this.name + "\n", "");
+        for (var ench : custom_ench.getAll()) {
+            var enchantment = Enchantment.getEnchantment(ench.getString("id"));
+            joiner.add(TextFormat.GRAY + enchantment.getName() + " " + Enchantment.getLevelString(enchantment.getLevel()));
+        }
+        return joiner.toString();
     }
 
     /**
@@ -1345,12 +1441,10 @@ public class Item implements Cloneable, BlockID, ItemID {
      *
      * @return 如果没有附魔效果返回Enchantment.EMPTY_ARRAY<br>If there is no enchanting effect return Enchantment.EMPTY_ARRAY
      */
-
     public Enchantment[] getEnchantments() {
         if (!this.hasEnchantments()) {
             return Enchantment.EMPTY_ARRAY;
         }
-
         List<Enchantment> enchantments = new ArrayList<>();
 
         ListTag<CompoundTag> ench = this.getNamedTag().getList("ench", CompoundTag.class);
@@ -1361,7 +1455,15 @@ public class Item implements Cloneable, BlockID, ItemID {
                 enchantments.add(e);
             }
         }
-
+        //custom ench
+        ListTag<CompoundTag> custom_ench = this.getNamedTag().getList("custom_ench", CompoundTag.class);
+        for (CompoundTag entry : custom_ench.getAll()) {
+            Enchantment e = Enchantment.getEnchantment(entry.getString("id"));
+            if (e != null) {
+                e.setLevel(entry.getShort("lvl"), false);
+                enchantments.add(e);
+            }
+        }
         return enchantments.toArray(Enchantment.EMPTY_ARRAY);
     }
 
@@ -1375,17 +1477,6 @@ public class Item implements Cloneable, BlockID, ItemID {
     @Since("1.4.0.0-PN")
     public boolean hasEnchantment(int id) {
         return this.getEnchantmentLevel(id) > 0;
-    }
-
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
-    @Nonnull
-    public SideEffect[] getAttackSideEffects(@Nonnull Entity attacker, @Nonnull Entity entity) {
-        return Arrays.stream(getEnchantments())
-                .flatMap(enchantment -> Arrays.stream(enchantment.getAttackSideEffects(attacker, entity)))
-                .filter(Objects::nonNull)
-                .toArray(SideEffect[]::new)
-                ;
     }
 
     @Since("1.4.0.0-PN")

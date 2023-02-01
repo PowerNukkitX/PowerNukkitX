@@ -26,15 +26,17 @@ public class PlayersNode extends TargetNode<Player> {
         if (arg.isBlank()) {
             this.error();
         } else if (EntitySelectorAPI.getAPI().checkValid(arg)) {
-            List<Entity> entities = null;
+            List<Entity> entities;
+            List<Player> result;
             try {
                 entities = EntitySelectorAPI.getAPI().matchEntities(this.parent.parent.getSender(), arg);
             } catch (SelectorSyntaxException exception) {
                 error(exception.getMessage());
                 return;
             }
-            if (!entities.isEmpty())
-                this.value = entities.stream().filter(entity -> entity instanceof Player).map(entity -> (Player) entity).collect(Collectors.toList());
+            result = entities.stream().filter(entity -> entity instanceof Player).map(entity -> (Player) entity).collect(Collectors.toList());
+            if (!result.isEmpty())
+                this.value = result;
             else error("commands.generic.noTargetMatch");
         } else {
             Player player = Server.getInstance().getPlayer(arg);

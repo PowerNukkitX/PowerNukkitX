@@ -1,11 +1,13 @@
 package cn.nukkit.command.defaults;
 
+import cn.nukkit.IPlayer;
 import cn.nukkit.Player;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
+import cn.nukkit.command.tree.node.IPlayersNode;
 import cn.nukkit.command.tree.node.PlayersNode;
 import cn.nukkit.command.utils.CommandLogger;
 
@@ -23,7 +25,7 @@ public class PardonCommand extends VanillaCommand {
         this.setAliases(new String[]{"unban"});
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
-                CommandParameter.newType("player", CommandParamType.TARGET, new PlayersNode())
+                CommandParameter.newType("player", CommandParamType.TARGET, new IPlayersNode())
         });
         this.enableParamTree();
     }
@@ -31,7 +33,7 @@ public class PardonCommand extends VanillaCommand {
     @Since("1.19.60-r1")
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        List<Player> players = result.getValue().getResult(0);
+        List<IPlayer> players = result.getValue().getResult(0);
         for (var player : players) {
             sender.getServer().getNameBans().remove(player.getName());
             log.addSuccess("commands.unban.success", player.getName());

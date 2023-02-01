@@ -1,17 +1,21 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
-import cn.nukkit.entity.EntityHuman;
-import cn.nukkit.entity.EntityHumanType;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
+import cn.nukkit.entity.EntityIntelligentHuman;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.InventoryContentPacket;
-import cn.nukkit.network.protocol.InventorySlotPacket;
 import cn.nukkit.network.protocol.MobEquipmentPacket;
 import cn.nukkit.network.protocol.types.ContainerIds;
 
-public class PlayerOffhandInventory extends BaseInventory {
-
-    public PlayerOffhandInventory(EntityHumanType holder) {
+/**
+ * 这个Inventory是一个hack实现，用来实现{@link EntityIntelligentHuman}的背包实现，它无法被open 和 close，因为虚拟人类不会自己打开物品栏<p>
+ * 它的{@link FakeHumanInventory#viewers}永远为空,因为不允许打开它
+ */
+@PowerNukkitXOnly
+@Since("1.19.50-r3")
+public class FakeHumanOffhandInventory extends BaseInventory {
+    public FakeHumanOffhandInventory(EntityIntelligentHuman holder) {
         super(holder, InventoryType.OFFHAND);
     }
 
@@ -22,12 +26,7 @@ public class PlayerOffhandInventory extends BaseInventory {
 
     @Override
     public void onSlotChange(int index, Item before, boolean send) {
-        EntityHuman holder = this.getHolder();
-        if (holder instanceof Player && !((Player) holder).spawned) {
-            return;
-        }
-
-        this.sendContents(this.getViewers());
+        EntityIntelligentHuman holder = this.getHolder();
         this.sendContents(holder.getViewers().values());
     }
 
@@ -37,14 +36,7 @@ public class PlayerOffhandInventory extends BaseInventory {
         MobEquipmentPacket pk = this.createMobEquipmentPacket(item);
 
         for (Player player : players) {
-            if (player == this.getHolder()) {
-                InventoryContentPacket pk2 = new InventoryContentPacket();
-                pk2.inventoryId = ContainerIds.OFFHAND;
-                pk2.slots = new Item[]{item};
-                player.dataPacket(pk2);
-            } else {
-                player.dataPacket(pk);
-            }
+            player.dataPacket(pk);
         }
     }
 
@@ -54,14 +46,7 @@ public class PlayerOffhandInventory extends BaseInventory {
         MobEquipmentPacket pk = this.createMobEquipmentPacket(item);
 
         for (Player player : players) {
-            if (player == this.getHolder()) {
-                InventorySlotPacket pk2 = new InventorySlotPacket();
-                pk2.inventoryId = ContainerIds.OFFHAND;
-                pk2.item = item;
-                player.dataPacket(pk2);
-            } else {
-                player.dataPacket(pk);
-            }
+            player.dataPacket(pk);
         }
     }
 
@@ -76,7 +61,25 @@ public class PlayerOffhandInventory extends BaseInventory {
     }
 
     @Override
-    public EntityHuman getHolder() {
-        return (EntityHuman) super.getHolder();
+    public EntityIntelligentHuman getHolder() {
+        return (EntityIntelligentHuman) super.getHolder();
+    }
+
+    //non
+    @Override
+    public void close(Player who) {
+    }
+
+    @Override
+    public void onOpen(Player who) {
+    }
+
+    @Override
+    public void onClose(Player who) {
+    }
+
+    @Override
+    public boolean open(Player who) {
+        return false;
     }
 }
