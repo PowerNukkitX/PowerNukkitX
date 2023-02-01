@@ -48,10 +48,7 @@ import cn.nukkit.network.protocol.types.EntityLink;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.scheduler.Task;
-import cn.nukkit.utils.ChunkException;
-import cn.nukkit.utils.Identifier;
-import cn.nukkit.utils.TextFormat;
-import cn.nukkit.utils.Utils;
+import cn.nukkit.utils.*;
 import co.aikar.timings.Timing;
 import co.aikar.timings.Timings;
 import co.aikar.timings.TimingsHistory;
@@ -685,13 +682,12 @@ public abstract class Entity extends Location implements Metadatable {
 
     @PowerNukkitXOnly
     @Since("1.19.21-r2")
-    public static boolean registerCustomEntity(CustomEntityProvider customEntityProvider) {
+    public static OK<?> registerCustomEntity(CustomEntityProvider customEntityProvider) {
         if (!Server.getInstance().isEnableExperimentMode() || Server.getInstance().getConfig("settings.waterdogpe", false)) {
-            log.warn("The server does not have the experiment mode feature enabled.Unable to register custom entity!");
-            return false;
+            return new OK<>(false, "The server does not have the experiment mode feature enabled.Unable to register custom entity!");
         }
         entityDefinitions.add(customEntityProvider.getCustomEntityDefinition());
-        return registerEntity(customEntityProvider, true);
+        return new OK<>(registerEntity(customEntityProvider, true));
     }
 
     @Nonnull

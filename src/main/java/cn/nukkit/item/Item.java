@@ -27,6 +27,7 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.*;
 import cn.nukkit.utils.Binary;
 import cn.nukkit.utils.Config;
+import cn.nukkit.utils.OK;
 import cn.nukkit.utils.Utils;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
@@ -632,7 +633,7 @@ public class Item implements Cloneable, BlockID, ItemID {
      */
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public static boolean registerCustomItem(Class<? extends CustomItem> c) {
+    public static OK<?> registerCustomItem(Class<? extends CustomItem> c) {
         return registerCustomItem(List.of(c));
     }
 
@@ -645,28 +646,29 @@ public class Item implements Cloneable, BlockID, ItemID {
      */
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public static boolean registerCustomItem(@Nonnull List<Class<? extends CustomItem>> itemClassList) {
+    public static OK<?> registerCustomItem(@Nonnull List<Class<? extends CustomItem>> itemClassList) {
         if (!Server.getInstance().isEnableExperimentMode() || Server.getInstance().getConfig("settings.waterdogpe", false)) {
-            log.warn("The server does not have the custom item feature enabled. Unable to register the customItemList!");
-            return false;
+            return new OK<>(false, "The server does not have the custom item feature enabled. Unable to register the customItemList!");
         }
         for (var clazz : itemClassList) {
-            try {
-                CustomItem customItem;
-                Supplier<Item> supplier;
+            CustomItem customItem;
+            Supplier<Item> supplier;
 
+            try {
+                var method = clazz.getDeclaredConstructor();
+                method.setAccessible(true);
+                customItem = method.newInstance();
+                supplier = () -> {
+                    try {
+                        return (Item) method.newInstance();
+                    } catch (ReflectiveOperationException e) {
+                        throw new UnsupportedOperationException(e);
+                    }
+                };
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                return new OK<>(false, e);
+            } catch (NoSuchMethodException ignore) {
                 try {
-                    var method = clazz.getDeclaredConstructor();
-                    method.setAccessible(true);
-                    customItem = method.newInstance();
-                    supplier = () -> {
-                        try {
-                            return (Item) method.newInstance();
-                        } catch (ReflectiveOperationException e) {
-                            throw new UnsupportedOperationException(e);
-                        }
-                    };
-                } catch (NoSuchMethodException e) {
                     var method = clazz.getDeclaredConstructor(int.class);
                     customItem = method.newInstance(ItemID.STRING_IDENTIFIED_ITEM);
                     supplier = () -> {
@@ -676,32 +678,29 @@ public class Item implements Cloneable, BlockID, ItemID {
                             throw new UnsupportedOperationException(e1);
                         }
                     };
+                } catch (InstantiationException | IllegalAccessException | InvocationTargetException e2) {
+                    return new OK<>(false, e2);
+                } catch (NoSuchMethodException e2) {
+                    return new OK<>(false, "The custom item class cannot find an parameterless constructor or a single int parameter constructor" + clazz.getCanonicalName());
                 }
-
-                if (CUSTOM_ITEMS.containsKey(customItem.getNamespaceId())) continue;
-                CUSTOM_ITEMS.put(customItem.getNamespaceId(), supplier);
-                var customDef = customItem.getDefinition();
-                CUSTOM_ITEM_DEFINITIONS.put(customItem.getNamespaceId(), customDef);
-
-                // 在服务端注册自定义物品的tag
-                if (customDef.nbt().get("components") instanceof CompoundTag componentTag) {
-                    var tagList = componentTag.getList("item_tags", StringTag.class);
-                    if (tagList.size() != 0) {
-                        ItemTag.registerItemTag(customItem.getNamespaceId(), tagList.getAll().stream().map(tag -> tag.data).collect(Collectors.toSet()));
-                    }
-                }
-
-                RuntimeItems.getRuntimeMapping().registerCustomItem(customItem, supplier);
-                addCreativeItem((Item) customItem);
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-                new RuntimeException(e).printStackTrace();
-                return false;
-            } catch (NoSuchMethodException e) {
-                log.error("Cannot find the parameterless constructor for this custom item:" + clazz.getCanonicalName());
-                return false;
             }
+
+            if (CUSTOM_ITEMS.containsKey(customItem.getNamespaceId())) continue;
+            CUSTOM_ITEMS.put(customItem.getNamespaceId(), supplier);
+            var customDef = customItem.getDefinition();
+            CUSTOM_ITEM_DEFINITIONS.put(customItem.getNamespaceId(), customDef);
+
+            // 在服务端注册自定义物品的tag
+            if (customDef.nbt().get("components") instanceof CompoundTag componentTag) {
+                var tagList = componentTag.getList("item_tags", StringTag.class);
+                if (tagList.size() != 0) {
+                    ItemTag.registerItemTag(customItem.getNamespaceId(), tagList.getAll().stream().map(tag -> tag.data).collect(Collectors.toSet()));
+                }
+            }
+            RuntimeItems.getRuntimeMapping().registerCustomItem(customItem, supplier);
+            addCreativeItem((Item) customItem);
         }
-        return true;
+        return new OK<>(true);
     }
 
     /**

@@ -19,6 +19,7 @@ import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.HumanStringComparator;
 import cn.nukkit.utils.MinecraftNamespaceComparator;
+import cn.nukkit.utils.OK;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -461,7 +462,7 @@ public class BlockStateRegistry {
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
-    public synchronized static boolean registerCustomBlockState(List<CustomBlock> blockCustoms) {
+    public synchronized static OK<?> registerCustomBlockState(List<CustomBlock> blockCustoms) {
         //清空原本的数据
         blockStateRegistration.clear();
         stateIdRegistration.clear();
@@ -471,8 +472,7 @@ public class BlockStateRegistry {
         //处理原版方块
         try (InputStream stream = Server.class.getModule().getResourceAsStream("canonical_block_states.nbt")) {
             if (stream == null) {
-                new AssertionError("Unable to locate block state nbt").printStackTrace();
-                return false;
+                return new OK<>(false, "Unable to locate block state nbt!");
             }
             try (BufferedInputStream bis = new BufferedInputStream(stream)) {
                 while (bis.available() > 0) {
@@ -487,8 +487,7 @@ public class BlockStateRegistry {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
-            return false;
+            return new OK<>(false, e);
         }
 
         var version = -1;
@@ -605,8 +604,7 @@ public class BlockStateRegistry {
             }
         }
         if (infoUpdateRuntimeId == null) {
-            new IllegalStateException("Could not find the minecraft:info_update runtime id!").printStackTrace();
-            return false;
+            return new OK<>(false, new IllegalStateException("Could not find the minecraft:info_update runtime id!"));
         }
 
         updateBlockRegistration = findRegistrationByRuntimeId(infoUpdateRuntimeId);
@@ -615,9 +613,9 @@ public class BlockStateRegistry {
             blockPaletteBytes = NBTIO.write(tags, ByteOrder.LITTLE_ENDIAN, true);
         } catch (IOException e) {
             e.printStackTrace();
-            return false;
+            return new OK<>(false, e);
         }
-        return true;
+        return new OK<>(true);
     }
 
     @PowerNukkitXOnly
