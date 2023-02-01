@@ -320,10 +320,4 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable, Blo
         }
         return false;
     }
-
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
-    public boolean cloneTo(Position pos, boolean tryDirect, boolean update) {
-        return super.cloneTo(pos, true, update);
-    }
 }

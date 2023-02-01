@@ -322,10 +322,4 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
                 aabb[0][1] + x, aabb[1][1] + y, aabb[2][1] + z
         );
     }
-
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
-    public boolean cloneTo(Position pos, boolean tryDirect, boolean update) {
-        return super.cloneTo(pos, true, update);
-    }
 }

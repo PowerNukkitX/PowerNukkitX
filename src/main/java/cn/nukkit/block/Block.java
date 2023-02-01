@@ -2934,13 +2934,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
     public boolean cloneTo(Position pos) {
-        return cloneTo(pos, false, true);
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
-    public boolean cloneTo(Position pos, boolean direct) {
-        return cloneTo(pos, direct, true);
+        return cloneTo(pos, true);
     }
 
     /**
@@ -2948,22 +2942,22 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      * 此方法会连带克隆方块实体<p/>
      * 注意，此方法会先清除指定位置的方块为空气再进行克隆
      * @param pos 要克隆到的位置
-     * @param tryDirect 若条件允许，是否立即向客户端同步克隆的方块。请注意，设置此值为false不保证一定奏效，对于一些方块来说，此值必须且被强制设置为true（eg: 告示牌，（发光）展示框）
      * @param update 是否需要更新克隆的方块
      * @return 是否克隆成功
      */
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public boolean cloneTo(Position pos, boolean tryDirect, boolean update) {
+    public boolean cloneTo(Position pos, boolean update) {
         //清除旧方块
         level.setBlock(pos, this.layer, Block.get(Block.AIR), false, false);
         if (this instanceof BlockEntityHolder<?> holder && holder.getBlockEntity() != null) {
             var clonedBlock = this.clone();
             clonedBlock.position(pos);
             CompoundTag tag = holder.getBlockEntity().getCleanedNBT();
-            return BlockEntityHolder.setBlockAndCreateEntity((BlockEntityHolder<?>) clonedBlock, tryDirect, update, tag) != null;
+            //方块实体要求direct=true
+            return BlockEntityHolder.setBlockAndCreateEntity((BlockEntityHolder<?>) clonedBlock, true, update, tag) != null;
         } else {
-            return pos.level.setBlock(pos, this.layer, this.clone(), tryDirect, update);
+            return pos.level.setBlock(pos, this.layer, this.clone(), true, update);
         }
     }
 
