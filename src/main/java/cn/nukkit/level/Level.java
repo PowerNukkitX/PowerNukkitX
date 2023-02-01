@@ -2564,7 +2564,7 @@ public class Level implements ChunkManager, Metadatable {
      * @param z 方块的z坐标
      * @param layer 设置的方块层级。例如含水方块位置上的layer1对应的方块为水
      * @param block 方块
-     * @param direct 是否立即同步方块变更到客户端。若你进行了大量方块设置，建议将此值设置为false，然后在最后一次setBlock时设置此值为true。
+     * @param direct 是否立即同步方块变更到客户端。
      * @param update 是否进行方块更新
      * @return 是否设置成功
      */
