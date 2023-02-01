@@ -1304,7 +1304,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
                     return new OK<>(false, e);
                 } catch (NoSuchMethodException e) {
-                    return new OK<>(false, "Cannot find the parameterless constructor for this custom block:" + each.getCanonicalName());
+                    return new OK<>(false, "Cannot find the parameterless constructor for this custom block:" + entry.getValue().getCanonicalName());
                 }
             }
             var blocks = ID_TO_CUSTOM_BLOCK.values().stream().toList();
