@@ -700,7 +700,7 @@ public class Item implements Cloneable, BlockID, ItemID {
             RuntimeItems.getRuntimeMapping().registerCustomItem(customItem, supplier);
             addCreativeItem((Item) customItem);
         }
-        return new OK<>(true);
+        return new OK<Void>(true);
     }
 
     /**

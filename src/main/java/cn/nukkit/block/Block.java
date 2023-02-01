@@ -1268,7 +1268,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             RuntimeItems.getRuntimeMapping().registerCustomBlock(blocks);//注册物品
             blocks.forEach(b -> Item.addCreativeItem(b.toItem()));//注册创造栏物品
         }
-        return new OK<>(true);
+        return new OK<Void>(true);
     }
 
     /**
@@ -1313,7 +1313,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             RuntimeItems.getRuntimeMapping().registerCustomBlock(blocks);//注册物品
             blocks.forEach((block) -> Item.addCreativeItem(block.toItem()));//注册创造栏物品
         }
-        return new OK<>(true);
+        return new OK<Void>(true);
     }
 
     @PowerNukkitXOnly

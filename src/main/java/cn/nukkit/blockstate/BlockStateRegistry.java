@@ -615,7 +615,7 @@ public class BlockStateRegistry {
             e.printStackTrace();
             return new OK<>(false, e);
         }
-        return new OK<>(true);
+        return new OK<Void>(true);
     }
 
     @PowerNukkitXOnly

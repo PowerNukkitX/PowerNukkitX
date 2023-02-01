@@ -687,7 +687,7 @@ public abstract class Entity extends Location implements Metadatable {
             return new OK<>(false, "The server does not have the experiment mode feature enabled.Unable to register custom entity!");
         }
         entityDefinitions.add(customEntityProvider.getCustomEntityDefinition());
-        return new OK<>(registerEntity(customEntityProvider, true));
+        return new OK<Void>(registerEntity(customEntityProvider, true));
     }
 
     @Nonnull
