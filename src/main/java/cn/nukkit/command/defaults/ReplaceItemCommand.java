@@ -185,12 +185,12 @@ public class ReplaceItemCommand extends VanillaCommand {
                             log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
                         }
                     } else if (entity instanceof EntityInventoryHolder entityMob) {
-                        Item old = entityMob.getEquipmentInventory().getItemInHand();
+                        Item old = entityMob.getItemInHand();
                         if (oldItemHandling.equals("keep") && !old.isNull()) {
                             log.addError("commands.replaceitem.keepFailed", slotType, String.valueOf(slotId));
                             continue;
                         }
-                        if (entityMob.getEquipmentInventory().setItemInHand(item, true)) {
+                        if (entityMob.setItemInHand(item)) {
                             log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
                             successCount++;
                         } else {
@@ -212,12 +212,12 @@ public class ReplaceItemCommand extends VanillaCommand {
                             log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
                         }
                     } else if (entity instanceof EntityInventoryHolder entityMob) {
-                        Item old = entityMob.getEquipmentInventory().getItemInOffhand();
+                        Item old = entityMob.getItemInOffhand();
                         if (oldItemHandling.equals("keep") && !old.isNull()) {
                             log.addError("commands.replaceitem.keepFailed", slotType, String.valueOf(slotId));
                             continue;
                         }
-                        if (entityMob.getEquipmentInventory().setItemInOffhand(item, true)) {
+                        if (entityMob.setItemInOffhand(item)) {
                             log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
                             successCount++;
                         } else {

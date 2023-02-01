@@ -9,10 +9,7 @@ import cn.nukkit.entity.data.IntPositionEntityData;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
-import cn.nukkit.inventory.FakeHumanEnderChestInventory;
-import cn.nukkit.inventory.FakeHumanInventory;
-import cn.nukkit.inventory.FakeHumanOffhandInventory;
-import cn.nukkit.inventory.InventoryHolder;
+import cn.nukkit.inventory.*;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
@@ -43,7 +40,7 @@ import java.util.stream.Collectors;
  */
 @PowerNukkitXOnly
 @Since("1.19.50-r3")
-public class EntityIntelligentHuman extends EntityIntelligent implements InventoryHolder {
+public class EntityIntelligentHuman extends EntityIntelligent implements EntityInventoryHolder {
     protected UUID uuid;
     protected byte[] rawUUID;
     protected Skin skin;
@@ -669,5 +666,99 @@ public class EntityIntelligentHuman extends EntityIntelligent implements Invento
             shieldOffhand = damageArmor(shieldOffhand, entity, event);
             getOffhandInventory().setItem(0, shieldOffhand);
         }
+    }
+
+    @Override
+    public EntityArmorInventory getArmorInventory() {
+        return null;
+    }
+
+    @Override
+    public EntityEquipmentInventory getEquipmentInventory() {
+        return null;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public Item getHelmet() {
+        return this.getInventory().getHelmet();
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public boolean setHelmet(Item item) {
+        return this.getInventory().setHelmet();
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public Item getChestplate() {
+        return this.getInventory().getChestplate();
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public boolean setChestplate(Item item) {
+        return this.getInventory().setChestplate(item);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public Item getLeggings() {
+        return getInventory().getLeggings();
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public boolean setLeggings(Item item) {
+        return getInventory().setLeggings(item);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public Item getBoots() {
+        return getInventory().getBoots();
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public boolean setBoots(Item item) {
+        return getInventory().setBoots(item);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public Item getItemInHand() {
+        return getInventory().getItemInHand();
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    public Item getItemInOffhand() {
+        return this.getOffhandInventory().getItem(0);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public boolean setItemInHand(Item item) {
+        return getInventory().setItemInHand(item);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    public boolean setItemInHand(Item item, boolean send) {
+        return getInventory().setItemInHand(item, send);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    public boolean setItemInOffhand(Item item) {
+        return this.getOffhandInventory().setItem(0, item, true);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    public boolean setItemInOffhand(Item item, boolean send) {
+        return this.getOffhandInventory().setItem(0, item, send);
     }
 }
