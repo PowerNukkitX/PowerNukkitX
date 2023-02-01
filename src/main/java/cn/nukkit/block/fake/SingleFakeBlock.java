@@ -1,6 +1,8 @@
 package cn.nukkit.block.fake;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
@@ -12,6 +14,8 @@ import java.io.IOException;
 import java.nio.ByteOrder;
 import java.util.List;
 
+@PowerNukkitXOnly
+@Since("1.19.60-r1")
 public class SingleFakeBlock implements FakeBlock {
 
     protected final int blockId;

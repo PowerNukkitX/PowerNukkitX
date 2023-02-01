@@ -1,11 +1,15 @@
 package cn.nukkit.block.fake;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.math.Vector3;
 
 import java.util.Collections;
 import java.util.List;
 
+@PowerNukkitXOnly
+@Since("1.19.60-r1")
 public interface FakeBlock {
 
     void create(Player player);
