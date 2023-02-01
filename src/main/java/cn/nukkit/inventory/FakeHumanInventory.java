@@ -2,44 +2,39 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.entity.EntityHuman;
-import cn.nukkit.entity.EntityHumanType;
+import cn.nukkit.entity.EntityIntelligentHuman;
 import cn.nukkit.event.entity.EntityArmorChangeEvent;
 import cn.nukkit.event.entity.EntityInventoryChangeEvent;
-import cn.nukkit.event.player.PlayerItemHeldEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemArmor;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
-import cn.nukkit.network.protocol.*;
-import cn.nukkit.network.protocol.types.ContainerIds;
+import cn.nukkit.network.protocol.MobArmorEquipmentPacket;
+import cn.nukkit.network.protocol.MobEquipmentPacket;
 
 import java.util.Collection;
 
 /**
- * 0-8 物品栏<br>
- * 9-35 背包<br>
- * 36-39 盔甲栏<br>
- * 想获取副手库存请用{@link PlayerOffhandInventory}<br>
- *
- * @author MagicDroidX (Nukkit Project)
+ * 这个Inventory是一个hack实现，用来实现{@link EntityIntelligentHuman}的背包实现，它无法被open 和 close，因为虚拟人类不会自己打开物品栏<p>
+ * 它的{@link FakeHumanInventory#viewers}永远为空,因为不允许打开它
  */
-public class PlayerInventory extends BaseInventory {
-
+@PowerNukkitXOnly
+@Since("1.19.50-r3")
+public class FakeHumanInventory extends BaseInventory {
     protected int itemInHandIndex = 0;
     private int[] hotbar;
 
-    public PlayerInventory(EntityHumanType player) {
+    public FakeHumanInventory(EntityIntelligentHuman player) {
         super(player, InventoryType.PLAYER);
         this.hotbar = new int[this.getHotbarSize()];
-
         for (int i = 0; i < this.hotbar.length; i++) {
             this.hotbar[i] = i;
         }
-
     }
 
     @Override
@@ -50,77 +45,39 @@ public class PlayerInventory extends BaseInventory {
     @Override
     public void setSize(int size) {
         super.setSize(size + 4);
-        this.sendContents(this.getViewers());
     }
 
     /**
-     * Called when a client equips a hotbar inventorySlot. This method should not be used by plugins.
-     * This method will call PlayerItemHeldEvent.
+     * 判断这个格子位置是否在物品栏(0-9)
      *
-     * @param slot hotbar slot Number of the hotbar slot to equip.
-     * @return boolean if the equipment change was successful, false if not.
+     * @param slot 格子位置
      */
-    public boolean equipItem(int slot) {
-        if (!isHotbarSlot(slot)) {
-            this.sendContents((Player) this.getHolder());
-            return false;
-        }
-
-        if (this.getHolder() instanceof Player) {
-            Player player = (Player) this.getHolder();
-            PlayerItemHeldEvent ev = new PlayerItemHeldEvent(player, this.getItem(slot), slot);
-            this.getHolder().getLevel().getServer().getPluginManager().callEvent(ev);
-
-            if (ev.isCancelled()) {
-                this.sendContents(this.getViewers());
-                return false;
-            }
-
-            if (player.fishing != null) {
-                if (!(this.getItem(slot).equals(player.fishing.rod))) {
-                    player.stopFishing(false);
-                }
-            }
-        }
-
-        this.setHeldItemIndex(slot, false);
-        return true;
-    }
-
-    private boolean isHotbarSlot(int slot) {
+    public boolean isHotbarSlot(int slot) {
         return slot >= 0 && slot <= this.getHotbarSize();
     }
 
-    @Deprecated
-    public int getHotbarSlotIndex(int index) {
-        return index;
-    }
-
-    @Deprecated
-    public void setHotbarSlotIndex(int index, int slot) {
-
-    }
-
+    /**
+     * 获取{@link EntityIntelligentHuman}的手持物品的索引位置
+     */
     public int getHeldItemIndex() {
         return this.itemInHandIndex;
     }
 
+    /**
+     * 设置{@link EntityIntelligentHuman}的手持物品的索引位置
+     *
+     * @param index 索引位置
+     */
     public void setHeldItemIndex(int index) {
-        setHeldItemIndex(index, true);
-    }
-
-    public void setHeldItemIndex(int index, boolean send) {
         if (index >= 0 && index < this.getHotbarSize()) {
             this.itemInHandIndex = index;
-
-            if (this.getHolder() instanceof Player && send) {
-                this.sendHeldItem((Player) this.getHolder());
-            }
-
             this.sendHeldItem(this.getHolder().getViewers().values());
         }
     }
 
+    /**
+     * 获取{@link EntityIntelligentHuman}的手持物品
+     */
     public Item getItemInHand() {
         Item item = this.getItem(this.getHeldItemIndex());
         if (item != null) {
@@ -130,29 +87,16 @@ public class PlayerInventory extends BaseInventory {
         }
     }
 
+    /**
+     * 设置{@link EntityIntelligentHuman}的手持物品，这个方法会自动刷新客户端显示
+     */
     public boolean setItemInHand(Item item) {
         return this.setItem(this.getHeldItemIndex(), item);
     }
 
-    @Deprecated
-    public int getHeldItemSlot() {
-        return this.itemInHandIndex;
-    }
-
-    public void setHeldItemSlot(int slot) {
-        if (!isHotbarSlot(slot)) {
-            return;
-        }
-
-        this.itemInHandIndex = slot;
-
-        if (this.getHolder() instanceof Player) {
-            this.sendHeldItem((Player) this.getHolder());
-        }
-
-        this.sendHeldItem(this.getViewers());
-    }
-
+    /**
+     * 发送数据包给客户端，这个方法可以刷新被更改的手持物品显示
+     */
     public void sendHeldItem(Player... players) {
         Item item = this.getItemInHand();
 
@@ -162,81 +106,132 @@ public class PlayerInventory extends BaseInventory {
 
         for (Player player : players) {
             pk.eid = this.getHolder().getId();
-            if (player.equals(this.getHolder())) {
-                pk.eid = player.getId();
-                this.sendSlot(this.getHeldItemIndex(), player);
-            }
-
             player.dataPacket(pk);
         }
     }
 
+    /**
+     * 发送数据包给客户端，这个方法可以刷新被更改的手持物品显示
+     */
     public void sendHeldItem(Collection<Player> players) {
         this.sendHeldItem(players.toArray(Player.EMPTY_ARRAY));
     }
 
     @Override
     public void onSlotChange(int index, Item before, boolean send) {
-        EntityHuman holder = this.getHolder();
-        if (holder instanceof Player && !((Player) holder).spawned) {
-            return;
-        }
-
-        if (index >= this.getSize()) {
-            this.sendArmorSlot(index, this.getViewers());
-            this.sendArmorSlot(index, this.getHolder().getViewers().values());
-            if (this.getItem(index) instanceof ItemArmor) {
-                this.getHolder().level.getVibrationManager().callVibrationEvent(new VibrationEvent(getHolder(), this.getHolder().clone(), VibrationType.EQUIP));
+        if (send) {
+            if (index >= this.getSize()) {
+                this.sendArmorSlot(index, this.getHolder().getViewers().values());
+                if (this.getItem(index) instanceof ItemArmor) {
+                    this.getHolder().level.getVibrationManager().callVibrationEvent(new VibrationEvent(getHolder(), this.getHolder().clone(), VibrationType.EQUIP));
+                }
+            } else if (isHotbarSlot(index)) {
+                this.sendArmorSlot(index, this.getHolder().getViewers().values());
             }
-        } else {
-            super.onSlotChange(index, before, send);
         }
     }
 
+    /**
+     * 获取物品栏大小
+     */
     public int getHotbarSize() {
         return 9;
     }
 
+    /**
+     * 获取盔甲栏对应索引位置的物品
+     *
+     * @param index 索引位置(0-4)
+     */
     public Item getArmorItem(int index) {
         return this.getItem(this.getSize() + index);
     }
 
+    /**
+     * 设置盔甲栏对应索引位置的物品
+     *
+     * @param index 索引位置(0-4)
+     * @param item  要设置的物品
+     */
     public boolean setArmorItem(int index, Item item) {
         return this.setArmorItem(index, item, false);
     }
 
+    /**
+     * 设置盔甲栏对应索引位置的物品
+     *
+     * @param index             索引位置(0-4)
+     * @param item              要设置的物品
+     * @param ignoreArmorEvents 是否忽略盔甲更新事件
+     */
     public boolean setArmorItem(int index, Item item, boolean ignoreArmorEvents) {
         return this.setItem(this.getSize() + index, item, ignoreArmorEvents);
     }
 
+    /**
+     * 获取盔甲栏中头盔位置对应的物品
+     */
     public Item getHelmet() {
         return this.getItem(this.getSize());
     }
 
+    /**
+     * 获取盔甲栏中胸甲位置对应的物品
+     */
     public Item getChestplate() {
         return this.getItem(this.getSize() + 1);
     }
 
+    /**
+     * 获取盔甲栏中裤腿位置对应的物品
+     */
     public Item getLeggings() {
         return this.getItem(this.getSize() + 2);
     }
 
+    /**
+     * 获取盔甲栏中鞋子位置对应的物品
+     */
     public Item getBoots() {
         return this.getItem(this.getSize() + 3);
     }
 
+    /**
+     * 设置盔甲栏中头盔位置对应的物品
+     *
+     * @param helmet the helmet
+     * @return the helmet
+     */
     public boolean setHelmet(Item helmet) {
         return this.setItem(this.getSize(), helmet);
     }
 
+    /**
+     * 设置盔甲栏中胸甲位置对应的物品
+     *
+     * @param chestplate the chestplate
+     * @return the chestplate
+     */
     public boolean setChestplate(Item chestplate) {
         return this.setItem(this.getSize() + 1, chestplate);
     }
 
+    /**
+     * 设置盔甲栏中裤腿位置对应的物品
+     *
+     * @param leggings the leggings
+     * @return the leggings
+     */
     public boolean setLeggings(Item leggings) {
         return this.setItem(this.getSize() + 2, leggings);
     }
 
+    /**
+     * 设置盔甲栏中鞋子位置对应的物品
+     *
+     * @param boots the boots
+     * @return the boots
+     */
     public boolean setBoots(Item boots) {
         return this.setItem(this.getSize() + 3, boots);
     }
@@ -257,13 +252,12 @@ public class PlayerInventory extends BaseInventory {
         } else if (item.getId() == 0 || item.getCount() <= 0) {
             return this.clear(index);
         }
-
         //Armor change
         if (!ignoreArmorEvents && index >= this.getSize()) {
             EntityArmorChangeEvent ev = new EntityArmorChangeEvent(this.getHolder(), this.getItem(index), item, index);
             Server.getInstance().getPluginManager().callEvent(ev);
             if (ev.isCancelled() && this.getHolder() != null) {
-                this.sendArmorSlot(index, this.getViewers());
+                this.sendArmorSlot(index, this.getHolder().getViewers().values());
                 return false;
             }
             item = ev.getNewItem();
@@ -321,10 +315,12 @@ public class PlayerInventory extends BaseInventory {
 
             this.onSlotChange(index, old, send);
         }
-
         return true;
     }
 
+    /**
+     * @return 获取盔甲栏0-4格的物品
+     */
     public Item[] getArmorContents() {
         Item[] armor = new Item[4];
         for (int i = 0; i < 4; i++) {
@@ -343,10 +339,20 @@ public class PlayerInventory extends BaseInventory {
         getHolder().getOffhandInventory().clearAll();
     }
 
+    /**
+     * 刷新指定玩家看到的该inventory对应实体盔甲栏显示
+     *
+     * @param player 指定玩家
+     */
     public void sendArmorContents(Player player) {
         this.sendArmorContents(new Player[]{player});
     }
 
+    /**
+     * 刷新指定玩家看到的该inventory对应实体盔甲栏显示
+     *
+     * @param players 指定的玩家数组
+     */
     public void sendArmorContents(Player[] players) {
         Item[] armor = this.getArmorContents();
 
@@ -356,17 +362,15 @@ public class PlayerInventory extends BaseInventory {
         pk.tryEncode();
 
         for (Player player : players) {
-            if (player.equals(this.getHolder())) {
-                InventoryContentPacket pk2 = new InventoryContentPacket();
-                pk2.inventoryId = InventoryContentPacket.SPECIAL_ARMOR;
-                pk2.slots = armor;
-                player.dataPacket(pk2);
-            } else {
-                player.dataPacket(pk);
-            }
+            player.dataPacket(pk);
         }
     }
 
+    /**
+     * 设置全部盔甲栏的物品
+     *
+     * @param items 要设置的物品，分布对应盔甲栏的格子
+     */
     public void setArmorContents(Item[] items) {
         if (items.length < 4) {
             Item[] newItems = new Item[4];
@@ -387,14 +391,30 @@ public class PlayerInventory extends BaseInventory {
         }
     }
 
+
+    /**
+     * @see #sendArmorContents(Player[])
+     */
     public void sendArmorContents(Collection<Player> players) {
         this.sendArmorContents(players.toArray(Player.EMPTY_ARRAY));
     }
 
+    /**
+     * 对指定玩家更新指定格子处的盔甲栏物品显示
+     *
+     * @param index  指定的格子
+     * @param player 指定的玩家
+     */
     public void sendArmorSlot(int index, Player player) {
         this.sendArmorSlot(index, new Player[]{player});
     }
 
+    /**
+     * 对指定玩家更新指定格子处的盔甲栏物品显示
+     *
+     * @param index   指定的格子
+     * @param players 指定的玩家数组
+     */
     public void sendArmorSlot(int index, Player[] players) {
         Item[] armor = this.getArmorContents();
 
@@ -404,105 +424,18 @@ public class PlayerInventory extends BaseInventory {
         pk.tryEncode();
 
         for (Player player : players) {
-            if (player.equals(this.getHolder())) {
-                InventorySlotPacket pk2 = new InventorySlotPacket();
-                pk2.inventoryId = InventoryContentPacket.SPECIAL_ARMOR;
-                pk2.slot = index - this.getSize();
-                pk2.item = this.getItem(index);
-                player.dataPacket(pk2);
-            } else {
-                player.dataPacket(pk);
-            }
+            player.dataPacket(pk);
         }
     }
 
+
+    /**
+     * @see #sendArmorSlot(int, Player[])
+     */
     public void sendArmorSlot(int index, Collection<Player> players) {
         this.sendArmorSlot(index, players.toArray(Player.EMPTY_ARRAY));
     }
 
-    @Override
-    public void sendContents(Player player) {
-        this.sendContents(new Player[]{player});
-    }
-
-    @Override
-    public void sendContents(Collection<Player> players) {
-        this.sendContents(players.toArray(Player.EMPTY_ARRAY));
-    }
-
-    @Override
-    public void sendContents(Player[] players) {
-        InventoryContentPacket pk = new InventoryContentPacket();
-        pk.slots = new Item[this.getSize()];
-        for (int i = 0; i < this.getSize(); ++i) {
-            pk.slots[i] = this.getItem(i);
-        }
-
-        /*//Because PE is stupid and shows 9 less slots than you send it, give it 9 dummy slots so it shows all the REAL slots.
-        for(int i = this.getSize(); i < this.getSize() + this.getHotbarSize(); ++i){
-            pk.slots[i] = new ItemBlock(Block.get(BlockID.AIR));
-        }
-            pk.slots[i] = new ItemBlock(Block.get(BlockID.AIR));
-        }*/
-
-        for (Player player : players) {
-            int id = player.getWindowId(this);
-            if (id == -1 || !player.spawned) {
-                if (this.getHolder() != player) this.close(player);
-                continue;
-            }
-            pk.inventoryId = id;
-            player.dataPacket(pk.clone());
-
-        }
-    }
-
-    @Override
-    public void sendSlot(int index, Player player) {
-        this.sendSlot(index, new Player[]{player});
-    }
-
-    @Override
-    public void sendSlot(int index, Collection<Player> players) {
-        this.sendSlot(index, players.toArray(Player.EMPTY_ARRAY));
-    }
-
-    @Override
-    public void sendSlot(int index, Player... players) {
-        InventorySlotPacket pk = new InventorySlotPacket();
-        pk.slot = index;
-        pk.item = this.getItem(index).clone();
-
-        for (Player player : players) {
-            if (player.equals(this.getHolder())) {
-                pk.inventoryId = ContainerIds.INVENTORY;
-                player.dataPacket(pk);
-            } else {
-                int id = player.getWindowId(this);
-                if (id == -1) {
-                    this.close(player);
-                    continue;
-                }
-                pk.inventoryId = id;
-                player.dataPacket(pk.clone());
-            }
-        }
-    }
-
-    public void sendCreativeContents() {
-        if (!(this.getHolder() instanceof Player)) {
-            return;
-        }
-        Player p = (Player) this.getHolder();
-
-        CreativeContentPacket pk = new CreativeContentPacket();
-
-        pk.entries = Item.getCreativeItems().toArray(Item.EMPTY_ARRAY);
-
-        p.dataPacket(pk);
-    }
-
-    //由于NK从PlayerInventory中分离了盔甲栏，并且getSize值修改为36，但实际上slots最大容量为40，按照逻辑应该将solts size也减4
     @Override
     public int getFreeSpace(Item item) {
         int maxStackSize = Math.min(item.getMaxStackSize(), this.getMaxStackSize());
@@ -523,34 +456,49 @@ public class PlayerInventory extends BaseInventory {
     }
 
     @Override
-    public EntityHuman getHolder() {
-        return (EntityHuman) super.getHolder();
+    public EntityIntelligentHuman getHolder() {
+        return (EntityIntelligentHuman) super.getHolder();
+    }
+
+    //non
+    @Override
+    public void sendContents(Player player) {
+    }
+
+    @Override
+    public void sendContents(Collection<Player> players) {
+    }
+
+    @Override
+    public void sendContents(Player[] players) {
+    }
+
+    @Override
+    public void sendSlot(int index, Player player) {
+    }
+
+    @Override
+    public void sendSlot(int index, Collection<Player> players) {
+    }
+
+    @Override
+    public void sendSlot(int index, Player... players) {
+    }
+
+    @Override
+    public void close(Player who) {
     }
 
     @Override
     public void onOpen(Player who) {
-        super.onOpen(who);
-        if (who.spawned) {
-            ContainerOpenPacket pk = new ContainerOpenPacket();
-            pk.windowId = who.getWindowId(this);
-            pk.type = this.getType().getNetworkType();
-            pk.x = who.getFloorX();
-            pk.y = who.getFloorY();
-            pk.z = who.getFloorZ();
-            pk.entityId = who.getId();
-            who.dataPacket(pk);
-        }
     }
 
     @Override
     public void onClose(Player who) {
-        ContainerClosePacket pk = new ContainerClosePacket();
-        pk.windowId = who.getWindowId(this);
-        pk.wasServerInitiated = who.getClosingWindowId() != pk.windowId;
-        who.dataPacket(pk);
-        // player can never stop viewing their own inventory
-        if (who != holder) {
-            super.onClose(who);
-        }
+    }
+
+    @Override
+    public boolean open(Player who) {
+        return false;
     }
 }

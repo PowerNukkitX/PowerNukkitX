@@ -2,8 +2,6 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockEnderChest;
 import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.EntityHumanType;
@@ -17,12 +15,6 @@ public class PlayerEnderChestInventory extends BaseInventory {
 
     public PlayerEnderChestInventory(EntityHumanType player) {
         super(player, InventoryType.ENDER_CHEST);
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
-    public PlayerEnderChestInventory(HumanInventoryHolder humanInventoryHolder) {
-        super(humanInventoryHolder, InventoryType.ENDER_CHEST);
     }
 
     @Override
