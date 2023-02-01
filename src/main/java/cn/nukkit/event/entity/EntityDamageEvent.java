@@ -6,14 +6,12 @@ import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
-import cn.nukkit.item.enchantment.sideeffect.SideEffect;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.EventException;
 import com.google.common.collect.ImmutableMap;
 
-import javax.annotation.Nonnull;
-import java.util.*;
-import java.util.stream.Stream;
+import java.util.EnumMap;
+import java.util.Map;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -30,8 +28,6 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
 
     private final Map<DamageModifier, Float> modifiers;
     private final Map<DamageModifier, Float> originals;
-
-    private SideEffect[] sideEffects = SideEffect.EMPTY_ARRAY;
 
     private boolean breakShield = false;
 
@@ -120,52 +116,6 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
 
     public void setAttackCooldown(int attackCooldown) {
         this.attackCooldown = attackCooldown;
-    }
-
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
-    @Nonnull
-    public SideEffect[] getSideEffects() {
-        SideEffect[] sideEffectsArray = this.sideEffects;
-        if (sideEffectsArray.length == 0) {
-            return sideEffectsArray;
-        }
-        return Arrays.stream(sideEffectsArray)
-                .map(SideEffect::cloneSideEffect)
-                .toArray(SideEffect[]::new)
-                ;
-    }
-
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
-    public void setSideEffects(@Nonnull SideEffect... sideEffects) {
-        this.sideEffects = Arrays.stream(sideEffects)
-                .filter(Objects::nonNull)
-                .map(SideEffect::cloneSideEffect)
-                .toArray(SideEffect[]::new)
-        ;
-    }
-
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
-    public void setSideEffects(@Nonnull Collection<SideEffect> sideEffects) {
-        this.setSideEffects(sideEffects.toArray(SideEffect.EMPTY_ARRAY));
-    }
-
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
-    public void addSideEffects(@Nonnull SideEffect... sideEffects) {
-        Stream<SideEffect> safeStream = Arrays.stream(sideEffects)
-                .filter(Objects::nonNull)
-                .map(SideEffect::cloneSideEffect);
-
-        this.sideEffects = Stream.concat(Arrays.stream(this.sideEffects), safeStream).toArray(SideEffect[]::new);
-    }
-
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
-    public void addSideEffects(@Nonnull Collection<SideEffect> sideEffects) {
-        this.addSideEffects(sideEffects.toArray(SideEffect.EMPTY_ARRAY));
     }
 
     public boolean canBeReducedByArmor() {

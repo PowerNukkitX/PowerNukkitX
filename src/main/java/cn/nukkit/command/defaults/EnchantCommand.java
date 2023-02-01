@@ -3,6 +3,7 @@ package cn.nukkit.command.defaults;
 import cn.nukkit.Player;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
@@ -33,7 +34,7 @@ public class EnchantCommand extends VanillaCommand {
         });
         this.commandParameters.put("byName", new CommandParameter[]{
                 CommandParameter.newType("player", CommandParamType.TARGET),
-                CommandParameter.newEnum("enchantmentName", Enchantment.getEnchantmentName2IDMap() != null ? Enchantment.getEnchantmentName2IDMap().keySet().toArray(String[]::new) : null),
+                CommandParameter.newEnum("enchantmentName", CommandEnum.ENUM_ENCHANTMENT),
                 CommandParameter.newType("level", true, CommandParamType.INT)
         });
         this.enableParamTree();
