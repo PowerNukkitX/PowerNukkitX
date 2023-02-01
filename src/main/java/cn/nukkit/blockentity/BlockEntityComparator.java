@@ -14,12 +14,17 @@ public class BlockEntityComparator extends BlockEntity {
 
     public BlockEntityComparator(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
+    }
 
-        if (!nbt.contains("OutputSignal")) {
-            nbt.putInt("OutputSignal", 0);
+    @Since("1.19.60-r1")
+    @Override
+    public void loadNBT() {
+        super.loadNBT();
+        if (!namedTag.contains("OutputSignal")) {
+            namedTag.putInt("OutputSignal", 0);
         }
 
-        this.outputSignal = nbt.getInt("OutputSignal");
+        this.outputSignal = namedTag.getInt("OutputSignal");
     }
 
     @Override

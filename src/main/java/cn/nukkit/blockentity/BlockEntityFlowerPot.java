@@ -1,5 +1,6 @@
 package cn.nukkit.blockentity;
 
+import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockFlowerPot;
 import cn.nukkit.block.BlockID;
@@ -16,8 +17,10 @@ public class BlockEntityFlowerPot extends BlockEntitySpawnable {
         super(chunk, nbt);
     }
 
+    @Since("1.19.60-r1")
     @Override
-    protected void initBlockEntity() {
+    public void loadNBT() {
+        super.loadNBT();
         //转换旧形式
         if (namedTag.contains("item")) {
             var data = 0;
@@ -28,8 +31,6 @@ public class BlockEntityFlowerPot extends BlockEntitySpawnable {
                 namedTag.putCompound("PlantBlock", potBlock.getPlantBlockTag());
             }
         }
-
-        super.initBlockEntity();
     }
 
     @Override

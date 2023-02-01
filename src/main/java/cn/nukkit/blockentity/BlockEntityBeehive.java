@@ -34,6 +34,16 @@ public class BlockEntityBeehive extends BlockEntity {
 
     @Override
     protected void initBlockEntity() {
+        super.initBlockEntity();
+        if (!isEmpty()) {
+            scheduleUpdate();
+        }
+    }
+
+    @Since("1.19.60-r1")
+    @Override
+    public void loadNBT() {
+        super.loadNBT();
         this.occupants = new ArrayList<>(4);
         if (!this.namedTag.contains("ShouldSpawnBees")) {
             this.namedTag.putByte("ShouldSpawnBees", 0);
@@ -47,7 +57,7 @@ public class BlockEntityBeehive extends BlockEntity {
                 this.occupants.add(new Occupant(occupantsTag.get(i)));
             }
         }
-        
+
         // Backward compatibility
         if (this.namedTag.contains("HoneyLevel")) {
             int faceHorizontalIndex = 0;
@@ -61,10 +71,6 @@ public class BlockEntityBeehive extends BlockEntity {
                 beehive.getLevel().setBlock(beehive, beehive, true, true);
             }
             this.namedTag.remove("HoneyLevel");
-        }
-
-        if (!isEmpty()) {
-            scheduleUpdate();
         }
     }
 

@@ -20,8 +20,10 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
     
     private int mouthTickCount;
 
+    @Since("1.19.60-r1")
     @Override
-    protected void initBlockEntity() {
+    public void loadNBT() {
+        super.loadNBT();
         if (!namedTag.contains("SkullType")) {
             namedTag.putByte("SkullType", 0);
         }
@@ -36,8 +38,6 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
         if (namedTag.containsInt("MouthTickCount")) {
             mouthTickCount = NukkitMath.clamp(namedTag.getInt("MouthTickCount"), 0, 60);
         }
-
-        super.initBlockEntity();
     }
 
     @Override

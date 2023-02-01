@@ -24,15 +24,15 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
         super(chunk, nbt);
     }
 
+    @Since("1.19.60-r1")
     @Override
-    protected void initBlockEntity() {
+    public void loadNBT() {
+        super.loadNBT();
         if (namedTag.contains("RecordItem")) {
             this.recordItem = NBTIO.getItemHelper(namedTag.getCompound("RecordItem"));
         } else {
             this.recordItem = Item.get(0);
         }
-
-        super.initBlockEntity();
     }
 
     @Override

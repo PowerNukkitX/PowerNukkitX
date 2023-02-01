@@ -18,15 +18,15 @@ public class BlockEntityBed extends BlockEntitySpawnable {
         super(chunk, nbt);
     }
 
+    @Since("1.19.60-r1")
     @Override
-    protected void initBlockEntity() {
+    public void loadNBT() {
+        super.loadNBT();
         if (!this.namedTag.contains("color")) {
             this.namedTag.putByte("color", 0);
         }
 
         this.color = this.namedTag.getByte("color");
-
-        super.initBlockEntity();
     }
 
     @Override

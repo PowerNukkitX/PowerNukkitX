@@ -66,6 +66,16 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
 
     @Override
     protected void initBlockEntity() {
+        super.initBlockEntity();
+        if (this.getMode() == MODE_REPEATING) {
+            this.scheduleUpdate();
+        }
+    }
+
+    @Since("1.19.60-r1")
+    @Override
+    public void loadNBT() {
+        super.loadNBT();
         this.perm = new PermissibleBase(this);
         this.currentTick = 0;
 
@@ -157,12 +167,6 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
             this.executingOnFirstTick = this.namedTag.getBoolean(TAG_EXECUTE_ON_FIRST_TICK);
         } else {
             this.executingOnFirstTick = false;
-        }
-
-        super.initBlockEntity();
-
-        if (this.getMode() == MODE_REPEATING) {
-            this.scheduleUpdate();
         }
     }
 

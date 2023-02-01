@@ -27,8 +27,10 @@ public class BlockEntitySign extends BlockEntitySpawnable {
         super(chunk, nbt);
     }
 
+    @Since("1.19.60-r1")
     @Override
-    protected void initBlockEntity() {
+    public void loadNBT() {
+        super.loadNBT();
         text = new String[4];
 
         if (!namedTag.contains("Text")) {
@@ -66,8 +68,6 @@ public class BlockEntitySign extends BlockEntitySpawnable {
         if (!this.namedTag.contains("IgnoreLighting") || !(this.namedTag.get("IgnoreLighting") instanceof ByteTag)) {
             this.setGlowing(false);
         }
-
-        super.initBlockEntity();
     }
 
     @Override

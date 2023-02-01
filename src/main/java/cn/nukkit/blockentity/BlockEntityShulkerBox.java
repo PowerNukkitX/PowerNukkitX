@@ -27,8 +27,10 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Inven
         super(chunk, nbt);
     }
 
+    @Since("1.19.60-r1")
     @Override
-    protected void initBlockEntity() {
+    public void loadNBT() {
+        super.loadNBT();
         this.inventory = new ShulkerBoxInventory(this);
 
         if (!this.namedTag.contains("Items") || !(this.namedTag.get("Items") instanceof ListTag)) {
@@ -44,8 +46,6 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Inven
         if (!this.namedTag.contains("facing")) {
             this.namedTag.putByte("facing", 0);
         }
-
-        super.initBlockEntity();
     }
 
     @Override

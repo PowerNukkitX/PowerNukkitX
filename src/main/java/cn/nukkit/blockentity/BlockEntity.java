@@ -126,7 +126,7 @@ public abstract class BlockEntity extends Position {
     }
 
     protected void initBlockEntity() {
-
+        loadNBT();
     }
 
     @PowerNukkitOnly
@@ -209,6 +209,9 @@ public abstract class BlockEntity extends Position {
         return id;
     }
 
+    /**
+     * 存储方块实体数据到namedtag
+     */
     public void saveNBT() {
         this.namedTag.putString("id", this.getSaveId());
         this.namedTag.putInt("x", (int) this.getX());
@@ -216,6 +219,13 @@ public abstract class BlockEntity extends Position {
         this.namedTag.putInt("z", (int) this.getZ());
         this.namedTag.putBoolean("isMovable", this.movable);
     }
+
+    /**
+     * 从方块实体的namedtag中读取数据
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    public void loadNBT() {}
 
     public CompoundTag getCleanedNBT() {
         this.saveNBT();

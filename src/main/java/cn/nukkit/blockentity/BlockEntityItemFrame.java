@@ -31,8 +31,10 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
         super(chunk, nbt);
     }
 
+    @Since("1.19.60-r1")
     @Override
-    protected void initBlockEntity() {
+    public void loadNBT() {
+        super.loadNBT();
         if (!namedTag.contains("Item")) {
             namedTag.putCompound("Item", NBTIO.putItemHelper(new ItemBlock(Block.get(BlockID.AIR))));
         }
@@ -42,10 +44,7 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
         if (!namedTag.contains("ItemDropChance")) {
             namedTag.putFloat("ItemDropChance", 1.0f);
         }
-
         this.level.updateComparatorOutputLevel(this);
-
-        super.initBlockEntity();
     }
 
     @Override

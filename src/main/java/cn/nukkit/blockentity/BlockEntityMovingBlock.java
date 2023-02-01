@@ -30,8 +30,10 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
         super(chunk, nbt);
     }
 
+    @Since("1.19.60-r1")
     @Override
-    protected void initBlockEntity() {
+    public void loadNBT() {
+        super.loadNBT();
         if (namedTag.contains("movingBlock")) {
             CompoundTag blockData = namedTag.getCompound("movingBlock");
 
@@ -46,8 +48,6 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
         } else {
             this.piston = new BlockVector3(0, -1, 0);
         }
-
-        super.initBlockEntity();
     }
 
     @PowerNukkitOnly

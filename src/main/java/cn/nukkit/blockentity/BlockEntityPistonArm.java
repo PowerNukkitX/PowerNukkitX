@@ -63,8 +63,10 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         super(chunk, nbt);
     }
 
+    @Since("1.19.60-r1")
     @Override
-    protected void initBlockEntity() {
+    public void loadNBT() {
+        super.loadNBT();
         if (namedTag.contains("Progress")) {
             this.progress = namedTag.getFloat("Progress");
         }
@@ -105,8 +107,6 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         } else {
             namedTag.putList(new ListTag<>("AttachedBlocks"));
         }
-
-        super.initBlockEntity();
     }
 
     private void moveCollidedEntities() {

@@ -29,12 +29,13 @@ public class BlockEntityLodestone extends BlockEntitySpawnable {
         super(chunk, nbt);
     }
 
+    @Since("1.19.60-r1")
     @Override
-    protected void initBlockEntity() {
+    public void loadNBT() {
+        super.loadNBT();
         if (namedTag.containsInt("trackingHandler")) {
             namedTag.put("trackingHandle", namedTag.removeAndGet("trackingHandler"));
         }
-        super.initBlockEntity();
     }
 
     @PowerNukkitOnly

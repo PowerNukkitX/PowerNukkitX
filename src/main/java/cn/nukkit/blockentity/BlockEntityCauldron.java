@@ -55,26 +55,25 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
         super(chunk, nbt);
     }
 
+    @Since("1.19.60-r1")
     @Override
-    protected void initBlockEntity() {
+    public void loadNBT() {
+        super.loadNBT();
         int potionId;
         if (!namedTag.contains("PotionId")) {
             namedTag.putShort("PotionId", 0xffff);
         }
         potionId = namedTag.getShort("PotionId");
-        
+
         int potionType = (potionId & 0xFFFF) == 0xFFFF? POTION_TYPE_EMPTY : POTION_TYPE_NORMAL;
         if (namedTag.getBoolean("SplashPotion")) {
             potionType = POTION_TYPE_SPLASH;
             namedTag.remove("SplashPotion");
         }
-        
+
         if (!namedTag.contains("PotionType")) {
             namedTag.putShort("PotionType", potionType);
         }
-
-
-        super.initBlockEntity();
     }
 
     @Override

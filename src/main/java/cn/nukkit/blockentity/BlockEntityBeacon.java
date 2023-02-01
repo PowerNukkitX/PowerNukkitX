@@ -2,6 +2,7 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
+import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.inventory.BeaconInventory;
@@ -24,6 +25,14 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
 
     @Override
     protected void initBlockEntity() {
+        super.initBlockEntity();
+        scheduleUpdate();
+    }
+
+    @Since("1.19.60-r1")
+    @Override
+    public void loadNBT() {
+        super.loadNBT();
         if (!namedTag.contains("Lock")) {
             namedTag.putString("Lock", "");
         }
@@ -39,10 +48,6 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
         if (!namedTag.contains("Secondary")) {
             namedTag.putInt("Secondary", 0);
         }
-
-        scheduleUpdate();
-
-        super.initBlockEntity();
     }
 
     @Override

@@ -51,6 +51,16 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
 
     @Override
     protected void initBlockEntity() {
+        super.initBlockEntity();
+        if (burnTime > 0) {
+            this.scheduleUpdate();
+        }
+    }
+
+    @Since("1.19.60-r1")
+    @Override
+    public void loadNBT() {
+        super.loadNBT();
         this.inventory = new FurnaceInventory(this, getInventoryType());
 
         if (!this.namedTag.contains("Items") || !(this.namedTag.get("Items") instanceof ListTag)) {
@@ -96,12 +106,6 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
         } else {
             storedXP = 0;
         }
-
-        if (burnTime > 0) {
-            this.scheduleUpdate();
-        }
-
-        super.initBlockEntity();
     }
 
     @PowerNukkitOnly

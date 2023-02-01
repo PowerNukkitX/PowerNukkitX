@@ -28,6 +28,14 @@ public class BlockEntityBell extends BlockEntitySpawnable {
 
     @Override
     protected void initBlockEntity() {
+        super.initBlockEntity();
+        scheduleUpdate();
+    }
+
+    @Since("1.19.60-r1")
+    @Override
+    public void loadNBT() {
+        super.loadNBT();
         if (!namedTag.contains("Ringing") || !(namedTag.get("Ringing") instanceof ByteTag)) {
             ringing = false;
         } else {
@@ -45,9 +53,6 @@ public class BlockEntityBell extends BlockEntitySpawnable {
         } else {
             ticks = namedTag.getInt("Ticks");
         }
-
-        super.initBlockEntity();
-        scheduleUpdate();
     }
 
     @Override
