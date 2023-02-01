@@ -9,10 +9,7 @@ import cn.nukkit.entity.data.IntPositionEntityData;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
-import cn.nukkit.inventory.HumanInventoryHolder;
-import cn.nukkit.inventory.PlayerEnderChestInventory;
-import cn.nukkit.inventory.PlayerInventory;
-import cn.nukkit.inventory.PlayerOffhandInventory;
+import cn.nukkit.inventory.*;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
@@ -43,13 +40,13 @@ import java.util.stream.Collectors;
  */
 @PowerNukkitXOnly
 @Since("1.19.50-r3")
-public class EntityIntelligentHuman extends EntityIntelligent implements HumanInventoryHolder {
+public class EntityIntelligentHuman extends EntityIntelligent implements EntityInventoryHolder {
     protected UUID uuid;
     protected byte[] rawUUID;
     protected Skin skin;
-    protected PlayerInventory inventory;
-    protected PlayerEnderChestInventory enderChestInventory;
-    protected PlayerOffhandInventory offhandInventory;
+    protected FakeHumanInventory inventory;
+    protected FakeHumanEnderChestInventory enderChestInventory;
+    protected FakeHumanOffhandInventory offhandInventory;
 
     public EntityIntelligentHuman(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -110,15 +107,15 @@ public class EntityIntelligentHuman extends EntityIntelligent implements HumanIn
     }
 
     @Override
-    public PlayerInventory getInventory() {
+    public FakeHumanInventory getInventory() {
         return inventory;
     }
 
-    public PlayerEnderChestInventory getEnderChestInventory() {
+    public FakeHumanEnderChestInventory getEnderChestInventory() {
         return enderChestInventory;
     }
 
-    public PlayerOffhandInventory getOffhandInventory() {
+    public FakeHumanOffhandInventory getOffhandInventory() {
         return offhandInventory;
     }
 
@@ -245,11 +242,11 @@ public class EntityIntelligentHuman extends EntityIntelligent implements HumanIn
         this.uuid = Utils.dataToUUID(String.valueOf(this.getId()).getBytes(StandardCharsets.UTF_8), this.getSkin()
                 .getSkinData().data, this.getNameTag().getBytes(StandardCharsets.UTF_8));
         //EntityHumanType
-        this.inventory = new PlayerInventory(this);
+        this.inventory = new FakeHumanInventory(this);
         if (namedTag.containsNumber("SelectedInventorySlot")) {
             this.inventory.setHeldItemIndex(NukkitMath.clamp(this.namedTag.getInt("SelectedInventorySlot"), 0, 8));
         }
-        this.offhandInventory = new PlayerOffhandInventory(this);
+        this.offhandInventory = new FakeHumanOffhandInventory(this);
 
         if (this.namedTag.contains("Inventory") && this.namedTag.get("Inventory") instanceof ListTag) {
             ListTag<CompoundTag> inventoryList = this.namedTag.getList("Inventory", CompoundTag.class);
@@ -267,7 +264,7 @@ public class EntityIntelligentHuman extends EntityIntelligent implements HumanIn
                 }
             }
         }
-        this.enderChestInventory = new PlayerEnderChestInventory(this);
+        this.enderChestInventory = new FakeHumanEnderChestInventory(this);
         if (this.namedTag.contains("EnderItems") && this.namedTag.get("EnderItems") instanceof ListTag) {
             ListTag<CompoundTag> inventoryList = this.namedTag.getList("EnderItems", CompoundTag.class);
             for (CompoundTag item : inventoryList.getAll()) {
@@ -669,5 +666,99 @@ public class EntityIntelligentHuman extends EntityIntelligent implements HumanIn
             shieldOffhand = damageArmor(shieldOffhand, entity, event);
             getOffhandInventory().setItem(0, shieldOffhand);
         }
+    }
+
+    @Override
+    public EntityArmorInventory getArmorInventory() {
+        return null;
+    }
+
+    @Override
+    public EntityEquipmentInventory getEquipmentInventory() {
+        return null;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public Item getHelmet() {
+        return this.getInventory().getHelmet();
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public boolean setHelmet(Item item) {
+        return this.getInventory().setHelmet(item);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public Item getChestplate() {
+        return this.getInventory().getChestplate();
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public boolean setChestplate(Item item) {
+        return this.getInventory().setChestplate(item);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public Item getLeggings() {
+        return getInventory().getLeggings();
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public boolean setLeggings(Item item) {
+        return getInventory().setLeggings(item);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public Item getBoots() {
+        return getInventory().getBoots();
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public boolean setBoots(Item item) {
+        return getInventory().setBoots(item);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public Item getItemInHand() {
+        return getInventory().getItemInHand();
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    public Item getItemInOffhand() {
+        return this.getOffhandInventory().getItem(0);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public boolean setItemInHand(Item item) {
+        return getInventory().setItemInHand(item);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    public boolean setItemInHand(Item item, boolean send) {
+        return this.getInventory().setItem(getInventory().getHeldItemIndex(), item, send);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    public boolean setItemInOffhand(Item item) {
+        return this.getOffhandInventory().setItem(0, item, true);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    public boolean setItemInOffhand(Item item, boolean send) {
+        return this.getOffhandInventory().setItem(0, item, send);
     }
 }

@@ -22,7 +22,7 @@ public interface EntityInventoryHolder extends InventoryHolder {
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    default boolean setHelmet(Item item){
+    default boolean setHelmet(Item item) {
         return getArmorInventory().setHelmet(item);
     }
 
@@ -34,7 +34,7 @@ public interface EntityInventoryHolder extends InventoryHolder {
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    default boolean setChestplate(Item item){
+    default boolean setChestplate(Item item) {
         return getArmorInventory().setChestplate(item);
     }
 
@@ -46,7 +46,7 @@ public interface EntityInventoryHolder extends InventoryHolder {
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    default boolean setLeggings(Item item){
+    default boolean setLeggings(Item item) {
         return getArmorInventory().setLeggings(item);
     }
 
@@ -58,19 +58,43 @@ public interface EntityInventoryHolder extends InventoryHolder {
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    default boolean setBoots(Item item){
+    default boolean setBoots(Item item) {
         return getArmorInventory().setBoots(item);
     }
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    default Item getItemInHand(){
+    default Item getItemInHand() {
         return getEquipmentInventory().getItemInHand();
     }
 
     @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    default Item getItemInOffhand() {
+        return this.getEquipmentInventory().getItemInOffhand();
+    }
+
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    default boolean setItemInHand(Item item){
+    default boolean setItemInHand(Item item) {
         return getEquipmentInventory().setItemInHand(item);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    default boolean setItemInHand(Item item, boolean send) {
+        return getEquipmentInventory().setItemInHand(item, send);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    default boolean setItemInOffhand(Item item) {
+        return this.getEquipmentInventory().setItemInOffhand(item, true);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    default boolean setItemInOffhand(Item item, boolean send) {
+        return this.getEquipmentInventory().setItemInOffhand(item, send);
     }
 }
