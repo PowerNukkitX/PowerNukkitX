@@ -687,7 +687,7 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public boolean setHelmet(Item item) {
-        return this.getInventory().setHelmet();
+        return this.getInventory().setHelmet(item);
     }
 
     @PowerNukkitXOnly
