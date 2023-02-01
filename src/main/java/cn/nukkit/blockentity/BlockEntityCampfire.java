@@ -36,11 +36,18 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements Invento
 
     @Override
     protected void initBlockEntity() {
+        super.initBlockEntity();
+        scheduleUpdate();
+    }
+
+    @Since("1.19.60-r1")
+    @Override
+    public void loadNBT() {
+        super.loadNBT();
         this.inventory = new CampfireInventory(this, InventoryType.CAMPFIRE);
         this.burnTime = new int[4];
         this.recipes = new CampfireRecipe[4];
         this.keepItem = new boolean[4];
-
         for (int i = 1; i <= burnTime.length; i++) {
             burnTime[i -1] = namedTag.getInt("ItemTime" + i);
             keepItem[i -1] = namedTag.getBoolean("KeepItem" + 1);
@@ -48,11 +55,7 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements Invento
             if (this.namedTag.contains("Item" + i) && this.namedTag.get("Item" + i) instanceof CompoundTag) {
                 inventory.setItem(i - 1, NBTIO.getItemHelper(this.namedTag.getCompound("Item" + i)));
             }
-
         }
-
-        super.initBlockEntity();
-        scheduleUpdate();
     }
 
     @Override
@@ -142,21 +145,6 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements Invento
         }
 
         super.saveNBT();
-    }
-
-    @Since("1.6.0.0-PNX")
-    @Override
-    public void loadNBT() {
-        super.loadNBT();
-        for (int i = 1; i <= burnTime.length; i++) {
-            burnTime[i -1] = namedTag.getInt("ItemTime" + i);
-            keepItem[i -1] = namedTag.getBoolean("KeepItem" + 1);
-
-            if (this.namedTag.contains("Item" + i) && this.namedTag.get("Item" + i) instanceof CompoundTag) {
-                inventory.setItem(i - 1, NBTIO.getItemHelper(this.namedTag.getCompound("Item" + i)));
-            }
-
-        }
     }
 
     @PowerNukkitOnly

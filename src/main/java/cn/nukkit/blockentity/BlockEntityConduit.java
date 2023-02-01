@@ -46,6 +46,14 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
 
     @Override
     protected void initBlockEntity() {
+        super.initBlockEntity();
+        this.scheduleUpdate();
+    }
+
+    @Since("1.19.60-r1")
+    @Override
+    public void loadNBT() {
+        super.loadNBT();
         validBlocks = -1;
         if (!namedTag.contains("Target")) {
             namedTag.putLong("Target", -1);
@@ -56,9 +64,6 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
         }
 
         active = namedTag.getBoolean("Active");
-
-        super.initBlockEntity();
-        this.scheduleUpdate();
     }
 
     @Override
@@ -67,14 +72,6 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
         namedTag.putLong("Target", targetEntity != null? targetEntity.getId() : -1);
         namedTag.putBoolean("Active", active);
         super.saveNBT();
-    }
-
-    @Since("1.6.0.0-PNX")
-    @Override
-    public void loadNBT() {
-        super.loadNBT();
-        target = namedTag.getLong("Target");
-        active = namedTag.getBoolean("Active");
     }
 
     @Override

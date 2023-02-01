@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityBrewingStand;
@@ -18,11 +19,12 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.BlockColor;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.Map;
 
-public class BlockBrewingStand extends BlockTransparentMeta {
+public class BlockBrewingStand extends BlockTransparentMeta implements BlockEntityHolder<BlockEntityBrewingStand> {
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
     public static final BooleanBlockProperty HAS_POTION_A = new BooleanBlockProperty("brewing_stand_slot_a_bit", false);
@@ -220,5 +222,21 @@ public class BlockBrewingStand extends BlockTransparentMeta {
     @Override
     public boolean canHarvestWithHand() {
         return false;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    @NotNull
+    @Override
+    public Class<? extends BlockEntityBrewingStand> getBlockEntityClass() {
+        return BlockEntityBrewingStand.class;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    @NotNull
+    @Override
+    public String getBlockEntityType() {
+        return BlockEntity.BREWING_STAND;
     }
 }

@@ -6,6 +6,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.inventory.BaseInventory;
 import cn.nukkit.inventory.ChestInventory;
+import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.inventory.DoubleChestInventory;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
@@ -24,10 +25,10 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer implements B
         super(chunk, nbt);
     }
 
+    @Since("1.19.60-r1")
     @Override
-    protected void initBlockEntity() {
-        this.inventory = new ChestInventory(this);
-        super.initBlockEntity();
+    protected ContainerInventory requireContainerInventory() {
+        return new ChestInventory(this);
     }
 
     @Override
@@ -64,10 +65,6 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer implements B
         }
 
         return this.doubleInventory != null ? this.doubleInventory : this.inventory;
-    }
-
-    public boolean holdingDoubleInventory(){
-        return this.doubleInventory != null;
     }
 
     public ChestInventory getRealInventory() {

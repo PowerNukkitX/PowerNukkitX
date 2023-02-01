@@ -2,6 +2,7 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
@@ -24,6 +25,14 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
 
     @Override
     protected void initBlockEntity() {
+        super.initBlockEntity();
+        updateTotalPages();
+    }
+
+    @Since("1.19.60-r1")
+    @Override
+    public void loadNBT() {
+        super.loadNBT();
         if (!(this.namedTag.get("book") instanceof CompoundTag)) {
             this.namedTag.remove("book");
         }
@@ -31,14 +40,6 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
         if (!(this.namedTag.get("page") instanceof IntTag)) {
             this.namedTag.remove("page");
         }
-
-        updateTotalPages();
-    }
-
-    @Override
-    public void loadNBT() {
-        super.loadNBT();
-        updateTotalPages();
     }
 
     @Override

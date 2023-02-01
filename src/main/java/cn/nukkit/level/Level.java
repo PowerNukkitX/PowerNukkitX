@@ -2557,6 +2557,17 @@ public class Level implements ChunkManager, Metadatable {
         return setBlock(x, y, z, 0, block, direct, update);
     }
 
+    /**
+     * 设置一个方块
+     * @param x 方块的x坐标
+     * @param y 方块的y坐标
+     * @param z 方块的z坐标
+     * @param layer 设置的方块层级。例如含水方块位置上的layer1对应的方块为水
+     * @param block 方块
+     * @param direct 是否立即同步方块变更到客户端。
+     * @param update 是否进行方块更新
+     * @return 是否设置成功
+     */
     @PowerNukkitOnly
     public boolean setBlock(int x, int y, int z, int layer, Block block, boolean direct, boolean update) {
         if (!isYInRange(y) || layer < 0 || layer > this.requireProvider().getMaximumLayer()) {

@@ -1,5 +1,7 @@
 package cn.nukkit.block.customblock;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockFallableMeta;
 import cn.nukkit.block.BlockMeta;
@@ -13,6 +15,8 @@ import java.util.Locale;
  * <p>
  * Inherit this class to implement a custom block, override the methods in the {@link Block} to control the feature of the block.
  */
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 public interface CustomBlock {
     /**
      * 覆写该方法设置自定义方块的摩擦因数

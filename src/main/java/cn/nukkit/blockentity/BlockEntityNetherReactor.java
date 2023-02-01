@@ -57,13 +57,15 @@ public class BlockEntityNetherReactor extends BlockEntitySpawnable {
         this.progress = MathHelper.clamp(progress, 0, 900);
     }
 
+    @Since("1.19.60-r1")
     @Override
-    protected void initBlockEntity() {
+    public void loadNBT() {
+        super.loadNBT();
         reactorState = NetherReactorState.READY;
         if (namedTag.containsShort("Progress")) {
             progress = (short) namedTag.getShort("Progress");
         }
-        
+
         if (namedTag.containsByte("HasFinished") && namedTag.getBoolean("HasFinished")) {
             reactorState = NetherReactorState.FINISHED;
         } else if (namedTag.containsByte("IsInitialized") && namedTag.getBoolean("IsInitialized")) {
@@ -71,7 +73,6 @@ public class BlockEntityNetherReactor extends BlockEntitySpawnable {
         } else {
             reactorState = NetherReactorState.READY;
         }
-        super.initBlockEntity();
     }
 
     @Override
@@ -81,20 +82,6 @@ public class BlockEntityNetherReactor extends BlockEntitySpawnable {
         namedTag.putShort("Progress", getProgress());
         namedTag.putBoolean("HasFinished", reactorState == NetherReactorState.FINISHED);
         namedTag.putBoolean("IsInitialized", reactorState == NetherReactorState.INITIALIZED);
-    }
-
-    @Since("1.6.0.0-PNX")
-    @Override
-    public void loadNBT() {
-        super.loadNBT();
-        progress = namedTag.getShort("Progress");
-        if (namedTag.containsByte("HasFinished") && namedTag.getBoolean("HasFinished")) {
-            reactorState = NetherReactorState.FINISHED;
-        } else if (namedTag.containsByte("IsInitialized") && namedTag.getBoolean("IsInitialized")) {
-            reactorState = NetherReactorState.INITIALIZED;
-        } else {
-            reactorState = NetherReactorState.READY;
-        }
     }
 
     @Override

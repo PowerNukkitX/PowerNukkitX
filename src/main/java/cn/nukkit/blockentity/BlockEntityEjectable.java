@@ -34,8 +34,10 @@ public abstract class BlockEntityEjectable  extends BlockEntitySpawnable impleme
     @Since("1.4.0.0-PN")
     protected abstract String getBlockEntityName();
 
+    @Since("1.19.60-r1")
     @Override
-    protected void initBlockEntity() {
+    public void loadNBT() {
+        super.loadNBT();
         this.inventory = createInventory();
 
         if (!this.namedTag.contains("Items") || !(this.namedTag.get("Items") instanceof ListTag)) {
@@ -45,8 +47,6 @@ public abstract class BlockEntityEjectable  extends BlockEntitySpawnable impleme
         for (int i = 0; i < this.getSize(); i++) {
             this.inventory.setItem(i, this.getItem(i));
         }
-
-        super.initBlockEntity();
     }
 
     @Override
@@ -123,15 +123,6 @@ public abstract class BlockEntityEjectable  extends BlockEntitySpawnable impleme
         }
 
         super.saveNBT();
-    }
-
-    @Since("1.6.0.0-PNX")
-    @Override
-    public void loadNBT() {
-        super.loadNBT();
-        for (int i = 0; i < this.getSize(); i++) {
-            this.inventory.setItem(i, this.getItem(i));
-        }
     }
 
     @Override

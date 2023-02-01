@@ -2,6 +2,7 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.inventory.ContainerInventory;
@@ -25,8 +26,11 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
         super(chunk, nbt);
     }
 
+    @Since("1.19.60-r1")
     @Override
-    protected void initBlockEntity() {
+    public void loadNBT() {
+        super.loadNBT();
+        this.inventory = requireContainerInventory();
         if (!this.namedTag.contains("Items") || !(this.namedTag.get("Items") instanceof ListTag)) {
             this.namedTag.putList(new ListTag<CompoundTag>("Items"));
         }
@@ -36,8 +40,6 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
             Item item = NBTIO.getItemHelper(compound);
             this.inventory.slots.put(compound.getByte("Slot"), item);
         }
-
-        super.initBlockEntity();
     }
 
     @Override
@@ -64,18 +66,6 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
         this.namedTag.putList(new ListTag<CompoundTag>("Items"));
         for (int index = 0; index < this.getSize(); index++) {
             this.setItem(index, this.inventory.getItem(index));
-        }
-    }
-
-    @Since("1.6.0.0-PNX")
-    @Override
-    public void loadNBT() {
-        super.loadNBT();
-        this.inventory.clearAll();
-        ListTag<CompoundTag> list = (ListTag<CompoundTag>) this.namedTag.getList("Items");
-        for (CompoundTag compound : list.getAll()) {
-            Item item = NBTIO.getItemHelper(compound);
-            this.inventory.setItem(compound.getByte("Slot"), item);
         }
     }
 
@@ -121,4 +111,12 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
             (this.namedTag.getList("Items", CompoundTag.class)).add(i, d);
         }
     }
+
+    /**
+     * 继承于此类的容器方块实体必须实现此方法
+     * @return ContainerInventory
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    protected abstract ContainerInventory requireContainerInventory();
 }

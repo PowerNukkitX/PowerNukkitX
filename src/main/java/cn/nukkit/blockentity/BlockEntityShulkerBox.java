@@ -27,8 +27,10 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Inven
         super(chunk, nbt);
     }
 
+    @Since("1.19.60-r1")
     @Override
-    protected void initBlockEntity() {
+    public void loadNBT() {
+        super.loadNBT();
         this.inventory = new ShulkerBoxInventory(this);
 
         if (!this.namedTag.contains("Items") || !(this.namedTag.get("Items") instanceof ListTag)) {
@@ -44,8 +46,6 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Inven
         if (!this.namedTag.contains("facing")) {
             this.namedTag.putByte("facing", 0);
         }
-
-        super.initBlockEntity();
     }
 
     @Override
@@ -63,17 +63,6 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Inven
         this.namedTag.putList(new ListTag<CompoundTag>("Items"));
         for (int index = 0; index < this.getSize(); index++) {
             this.setItem(index, this.inventory.getItem(index));
-        }
-    }
-
-    @Since("1.6.0.0-PNX")
-    @Override
-    public void loadNBT() {
-        super.loadNBT();
-        ListTag<CompoundTag> list = (ListTag<CompoundTag>) this.namedTag.getList("Items");
-        for (CompoundTag compound : list.getAll()) {
-            Item item = NBTIO.getItemHelper(compound);
-            this.inventory.slots.put(compound.getByte("Slot"), item);
         }
     }
 

@@ -49,8 +49,17 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
 
     @Override
     protected void initBlockEntity() {
-        inventory = new BrewingInventory(this);
+        super.initBlockEntity();
+        if (brewTime < MAX_BREW_TIME) {
+            this.scheduleUpdate();
+        }
+    }
 
+    @Since("1.19.60-r1")
+    @Override
+    public void loadNBT() {
+        super.loadNBT();
+        inventory = new BrewingInventory(this);
         if (!namedTag.contains("Items") || !(namedTag.get("Items") instanceof ListTag)) {
             namedTag.putList(new ListTag<>("Items"));
         }
@@ -67,12 +76,6 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
 
         this.fuelAmount = namedTag.getShort("FuelAmount");
         this.fuelTotal = namedTag.getShort("FuelTotal");
-
-        if (brewTime < MAX_BREW_TIME) {
-            this.scheduleUpdate();
-        }
-
-        super.initBlockEntity();
     }
 
     @Override
@@ -124,18 +127,6 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
         namedTag.putShort("CookTime", brewTime);
         namedTag.putShort("FuelAmount", this.fuelAmount);
         namedTag.putShort("FuelTotal", this.fuelTotal);
-    }
-
-    @Since("1.6.0.0-PNX")
-    @Override
-    public void loadNBT() {
-        super.loadNBT();
-        for (int i = 0; i < getSize(); i++) {
-            inventory.setItem(i, this.getItem(i));
-        }
-        brewTime = namedTag.getShort("CookTime");
-        fuelAmount = namedTag.getShort("FuelAmount");
-        fuelTotal = namedTag.getShort("FuelTotal");
     }
 
     @Override

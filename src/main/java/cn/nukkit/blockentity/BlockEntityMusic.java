@@ -1,5 +1,6 @@
 package cn.nukkit.blockentity;
 
+import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -10,16 +11,16 @@ public class BlockEntityMusic extends BlockEntity {
         super(chunk, nbt);
     }
 
+    @Since("1.19.60-r1")
     @Override
-    protected void initBlockEntity() {
+    public void loadNBT() {
+        super.loadNBT();
         if (!this.namedTag.contains("note")) {
             this.namedTag.putByte("note", 0);
         }
         if (!this.namedTag.contains("powered")) {
             this.namedTag.putBoolean("powered", false);
         }
-
-        super.initBlockEntity();
     }
 
     @Override

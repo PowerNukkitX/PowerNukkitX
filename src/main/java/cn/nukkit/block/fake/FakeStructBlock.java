@@ -1,6 +1,8 @@
 package cn.nukkit.block.fake;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.IStructBlock;
@@ -16,6 +18,8 @@ import java.io.IOException;
 import java.nio.ByteOrder;
 import java.util.List;
 
+@PowerNukkitXOnly
+@Since("1.19.60-r1")
 public class FakeStructBlock extends SingleFakeBlock {
 
     public FakeStructBlock() {

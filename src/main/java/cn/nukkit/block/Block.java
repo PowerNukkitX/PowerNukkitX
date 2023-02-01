@@ -2932,22 +2932,32 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    public boolean cloneTo(Position pos) {
+        return cloneTo(pos, true);
+    }
+
+    /**
+     * 将方块克隆到指定位置<p/>
+     * 此方法会连带克隆方块实体<p/>
+     * 注意，此方法会先清除指定位置的方块为空气再进行克隆
+     * @param pos 要克隆到的位置
+     * @param update 是否需要更新克隆的方块
+     * @return 是否克隆成功
+     */
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public void cloneTo(Position pos) {
-        pos.level.setBlock(pos, this.layer, this.clone(), true, true);
-        if (this instanceof BlockEntityHolder<?> holder) {
-            if (holder.getBlockEntity() != null) {
-                CompoundTag tag = holder.getBlockEntity().getCleanedNBT();
-                tag.putInt("x", pos.getFloorX());
-                tag.putInt("y", pos.getFloorY());
-                tag.putInt("z", pos.getFloorZ());
-                if (pos.getLevelBlockEntity() == null || !pos.getLevelBlockEntity().getSaveId().equals(holder.getBlockEntity().getSaveId())) {
-                    BlockEntity.createBlockEntity(holder.getBlockEntityType(), this.level.getChunk(pos.getChunkX(), pos.getChunkZ()), tag);
-                } else {
-                    pos.getLevelBlockEntity().namedTag = tag;
-                    pos.getLevelBlockEntity().loadNBT();
-                }
-            }
+    public boolean cloneTo(Position pos, boolean update) {
+        //清除旧方块
+        level.setBlock(pos, this.layer, Block.get(Block.AIR), false, false);
+        if (this instanceof BlockEntityHolder<?> holder && holder.getBlockEntity() != null) {
+            var clonedBlock = this.clone();
+            clonedBlock.position(pos);
+            CompoundTag tag = holder.getBlockEntity().getCleanedNBT();
+            //方块实体要求direct=true
+            return BlockEntityHolder.setBlockAndCreateEntity((BlockEntityHolder<?>) clonedBlock, true, update, tag) != null;
+        } else {
+            return pos.level.setBlock(pos, this.layer, this.clone(), true, update);
         }
     }
 

@@ -51,6 +51,16 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
 
     @Override
     protected void initBlockEntity() {
+        super.initBlockEntity();
+        if (burnTime > 0) {
+            this.scheduleUpdate();
+        }
+    }
+
+    @Since("1.19.60-r1")
+    @Override
+    public void loadNBT() {
+        super.loadNBT();
         this.inventory = new FurnaceInventory(this, getInventoryType());
 
         if (!this.namedTag.contains("Items") || !(this.namedTag.get("Items") instanceof ListTag)) {
@@ -96,12 +106,6 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
         } else {
             storedXP = 0;
         }
-
-        if (burnTime > 0) {
-            this.scheduleUpdate();
-        }
-
-        super.initBlockEntity();
     }
 
     @PowerNukkitOnly
@@ -170,24 +174,6 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
         this.namedTag.putShort("BurnDuration", burnDuration);
         this.namedTag.putShort("MaxTime", maxTime);
         this.namedTag.putShort("StoredXpInt", (int) storedXP);
-    }
-
-    @Since("1.6.0.0-PNX")
-    @Override
-    public void loadNBT() {
-        super.loadNBT();
-        for (int i = 0; i < this.getSize(); i++) {
-            this.inventory.setItem(i, this.getItem(i));
-        }
-        cookTime = this.namedTag.getShort("CookTime");
-        burnTime = this.namedTag.getShort("BurnTime");
-        burnDuration = this.namedTag.getShort("BurnDuration");
-        maxTime = this.namedTag.getShort("MaxTime");
-        burnDuration = this.namedTag.getShort("BurnTicks");
-        if (this.namedTag.containsShort("StoredXpInt")) {
-            storedXP = this.namedTag.getShort("StoredXpInt");
-        }
-        this.namedTag.remove("BurnTicks");
     }
 
     @Override

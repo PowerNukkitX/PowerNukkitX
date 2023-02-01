@@ -225,7 +225,7 @@ public class BlockPointedDripstone extends BlockFallableMeta {
                 hanging = 1;
             }
             case 3 -> {
-                if (downBlockID != AIR) {
+                if (face.equals(BlockFace.UP)) {
                     setTipBlock(placeX, placeY, placeZ, 0);
                 } else {
                     setTipBlock(placeX, placeY, placeZ, 1);
@@ -426,33 +426,33 @@ public class BlockPointedDripstone extends BlockFallableMeta {
         Random rand = new Random();
         double nextDouble;
         Block filledWith = isWaterloggingBlock ? highestPDS.getSideAtLayer(1,BlockFace.UP,2) : highestPDS.getSide(BlockFace.UP,2);
-        switch (filledWith.getId()){
-            case FLOWING_LAVA:
+        switch (filledWith.getId()) {
+            case FLOWING_LAVA -> {
                 nextDouble = rand.nextDouble();
                 if ((cauldron.getCauldronLiquid() == CauldronLiquid.LAVA || cauldron.isEmpty()) && cauldron.getFillLevel() < 6 && nextDouble <= 15.0 / 256.0) {
-                    CauldronFilledByDrippingLiquidEvent event = new CauldronFilledByDrippingLiquidEvent(cauldron, CauldronLiquid.LAVA,1);
+                    CauldronFilledByDrippingLiquidEvent event = new CauldronFilledByDrippingLiquidEvent(cauldron, CauldronLiquid.LAVA, 1);
                     Server.getInstance().getPluginManager().callEvent(event);
-                    if(event.isCancelled())
+                    if (event.isCancelled())
                         return;
                     cauldron.setCauldronLiquid(event.getLiquid());
                     cauldron.setFillLevel(cauldron.getFillLevel() + event.getLiquidLevelIncrement());
-                    cauldron.level.setBlock(cauldron,cauldron,true,true);
+                    cauldron.level.setBlock(cauldron, cauldron, true, true);
                     this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.CAULDRON_DRIP_LAVA_POINTED_DRIPSTONE);
                 }
-                break;
-            case FLOWING_WATER:
+            }
+            case FLOWING_WATER -> {
                 nextDouble = rand.nextDouble();
                 if ((cauldron.getCauldronLiquid() == CauldronLiquid.WATER || cauldron.isEmpty()) && cauldron.getFillLevel() < 6 && nextDouble <= 45.0 / 256.0) {
-                    CauldronFilledByDrippingLiquidEvent event = new CauldronFilledByDrippingLiquidEvent(cauldron, CauldronLiquid.WATER,1);
+                    CauldronFilledByDrippingLiquidEvent event = new CauldronFilledByDrippingLiquidEvent(cauldron, CauldronLiquid.WATER, 1);
                     Server.getInstance().getPluginManager().callEvent(event);
-                    if(event.isCancelled())
+                    if (event.isCancelled())
                         return;
                     cauldron.setCauldronLiquid(event.getLiquid());
                     cauldron.setFillLevel(cauldron.getFillLevel() + event.getLiquidLevelIncrement());
-                    cauldron.level.setBlock(cauldron,cauldron,true,true);
+                    cauldron.level.setBlock(cauldron, cauldron, true, true);
                     this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.CAULDRON_DRIP_WATER_POINTED_DRIPSTONE);
                 }
-                break;
+            }
         }
     }
 }

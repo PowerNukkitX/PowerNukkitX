@@ -126,7 +126,7 @@ public abstract class BlockEntity extends Position {
     }
 
     protected void initBlockEntity() {
-
+        loadNBT();
     }
 
     @PowerNukkitOnly
@@ -209,6 +209,9 @@ public abstract class BlockEntity extends Position {
         return id;
     }
 
+    /**
+     * 存储方块实体数据到namedtag
+     */
     public void saveNBT() {
         this.namedTag.putString("id", this.getSaveId());
         this.namedTag.putInt("x", (int) this.getX());
@@ -217,20 +220,12 @@ public abstract class BlockEntity extends Position {
         this.namedTag.putBoolean("isMovable", this.movable);
     }
 
-    /*
-     * load data from namedtag (used after you editd it's namedtag)
+    /**
+     * 从方块实体的namedtag中读取数据
      */
     @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
-    @Deprecated
-    @DeprecationDetails(since = "1.19.60-r1", reason = "非常劣质的实现", toBeRemovedAt = "1.19.60-r2")
-    //TODO: remove this and find another way to implement block cloneing
-    public void loadNBT() {
-        this.x = this.namedTag.getInt("x");
-        this.y = this.namedTag.getInt("y");
-        this.z = this.namedTag.getInt("z");
-        this.movable = this.namedTag.getBoolean("isMovable");
-    }
+    @Since("1.19.60-r1")
+    public void loadNBT() {}
 
     public CompoundTag getCleanedNBT() {
         this.saveNBT();

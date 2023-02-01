@@ -1,8 +1,10 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.inventory.BarrelInventory;
+import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
@@ -14,10 +16,10 @@ public class BlockEntityBarrel extends BlockEntitySpawnableContainer implements 
         super(chunk, nbt);
     }
 
+    @Since("1.19.60-r1")
     @Override
-    protected void initBlockEntity() {
-        inventory = new BarrelInventory(this);
-        super.initBlockEntity();
+    protected ContainerInventory requireContainerInventory() {
+        return new BarrelInventory(this);
     }
 
     @Override

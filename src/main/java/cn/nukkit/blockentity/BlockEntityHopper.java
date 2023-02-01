@@ -63,6 +63,14 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
 
     @Override
     protected void initBlockEntity() {
+        super.initBlockEntity();
+        this.scheduleUpdate();
+    }
+
+    @Since("1.19.60-r1")
+    @Override
+    public void loadNBT() {
+        super.loadNBT();
         if (this.namedTag.contains("TransferCooldown")) {
             this.transferCooldown = this.namedTag.getInt("TransferCooldown");
         } else {
@@ -80,10 +88,6 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
         }
 
         this.pickupArea = new SimpleAxisAlignedBB(this.x, this.y, this.z, this.x + 1, this.y + 2, this.z + 1);
-
-        this.scheduleUpdate();
-
-        super.initBlockEntity();
 
         Block block = getBlock();
         if (block instanceof BlockHopper) {
@@ -177,16 +181,6 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
         }
 
         this.namedTag.putInt("TransferCooldown", this.transferCooldown);
-    }
-
-    @Since("1.6.0.0-PNX")
-    @Override
-    public void loadNBT() {
-        super.loadNBT();
-        this.transferCooldown = this.namedTag.getInt("TransferCooldown");
-        for (int i = 0; i < this.getSize(); i++) {
-            this.inventory.setItem(i, this.getItem(i));
-        }
     }
 
     @Override

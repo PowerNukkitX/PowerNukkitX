@@ -8,6 +8,7 @@ import cn.nukkit.item.ItemRecord;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.network.protocol.PlaySoundPacket;
 import cn.nukkit.network.protocol.StopSoundPacket;
 
@@ -24,15 +25,15 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
         super(chunk, nbt);
     }
 
+    @Since("1.19.60-r1")
     @Override
-    protected void initBlockEntity() {
+    public void loadNBT() {
+        super.loadNBT();
         if (namedTag.contains("RecordItem")) {
             this.recordItem = NBTIO.getItemHelper(namedTag.getCompound("RecordItem"));
         } else {
             this.recordItem = Item.get(0);
         }
-
-        super.initBlockEntity();
     }
 
     @Override
@@ -85,13 +86,6 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
     public void saveNBT() {
         super.saveNBT();
         this.namedTag.putCompound("RecordItem", NBTIO.putItemHelper(this.recordItem));
-    }
-
-    @Since("1.6.0.0-PNX")
-    @Override
-    public void loadNBT() {
-        super.loadNBT();
-        this.recordItem = NBTIO.getItemHelper(this.namedTag.getCompound("RecordItem"));
     }
 
     @Override

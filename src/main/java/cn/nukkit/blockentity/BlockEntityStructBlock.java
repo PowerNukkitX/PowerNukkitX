@@ -1,5 +1,6 @@
 package cn.nukkit.blockentity;
 
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.blockproperty.value.StructureBlockType;
@@ -14,6 +15,8 @@ import cn.nukkit.network.protocol.types.StructureMirror;
 import cn.nukkit.network.protocol.types.StructureRedstoneSaveMode;
 import cn.nukkit.network.protocol.types.StructureRotation;
 
+@PowerNukkitXOnly
+@Since("1.19.60-r1")
 public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStructBlock {
     private StructureAnimationMode animationMode;
     private float animationSeconds;
@@ -38,9 +41,10 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
         super(chunk, nbt);
     }
 
-    //方块实体构造函数中调用
+    @Since("1.19.60-r1")
     @Override
-    protected void initBlockEntity() {
+    public void loadNBT() {
+        super.loadNBT();
         if (this.namedTag.contains(TAG_ANIMATION_MODE)) {
             this.animationMode = StructureAnimationMode.from(this.namedTag.getByte(TAG_ANIMATION_MODE));
         } else {
@@ -126,7 +130,6 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
         } else {
             this.size = new BlockVector3(5, 5, 5);
         }
-        super.initBlockEntity();
     }
 
     @Override
@@ -179,29 +182,6 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
                 .putInt(TAG_X_STRUCTURE_SIZE, size.x)
                 .putInt(TAG_Y_STRUCTURE_SIZE, size.y)
                 .putInt(TAG_Z_STRUCTURE_SIZE, size.z);
-    }
-
-    @Since("1.6.0.0-PNX")
-    @Override
-    public void loadNBT() {
-        super.loadNBT();
-        this.animationMode = StructureAnimationMode.from(this.namedTag.getByte(TAG_ANIMATION_MODE));
-        this.animationSeconds = this.namedTag.getFloat(TAG_ANIMATION_SECONDS);
-        this.data = StructureBlockType.from(this.namedTag.getByte(TAG_DATA));
-        this.dataField = this.namedTag.getString(TAG_DATA_FIELD);
-        this.ignoreEntities = this.namedTag.getBoolean(TAG_IGNORE_ENTITIES);
-        this.includePlayers = this.namedTag.getBoolean(TAG_INCLUDE_PLAYERS);
-        this.integrity = this.namedTag.getFloat(TAG_INTEGRITY);
-        this.isPowered = this.namedTag.getBoolean(TAG_IS_POWERED);
-        this.mirror = StructureMirror.from(this.namedTag.getByte(TAG_MIRROR));
-        this.redstoneSaveMode = StructureRedstoneSaveMode.from(this.namedTag.getByte(TAG_REDSTONE_SAVEMODE));
-        this.removeBlocks = this.namedTag.getBoolean(TAG_REMOVE_BLOCKS);
-        this.rotation = StructureRotation.from(this.namedTag.getByte(TAG_ROTATION));
-        this.seed = this.namedTag.getLong(TAG_SEED);
-        this.showBoundingBox = this.namedTag.getBoolean(TAG_SHOW_BOUNDING_BOX);
-        this.structureName = this.namedTag.getString(TAG_STRUCTURE_NAME);
-        this.offset = new BlockVector3(this.namedTag.getInt(TAG_X_STRUCTURE_OFFSET), this.namedTag.getInt(TAG_Y_STRUCTURE_OFFSET), this.namedTag.getInt(TAG_Z_STRUCTURE_OFFSET));
-        this.size = new BlockVector3(this.namedTag.getInt(TAG_X_STRUCTURE_SIZE), this.namedTag.getInt(TAG_Y_STRUCTURE_SIZE), this.namedTag.getInt(TAG_Z_STRUCTURE_SIZE));
     }
 
     @Override
