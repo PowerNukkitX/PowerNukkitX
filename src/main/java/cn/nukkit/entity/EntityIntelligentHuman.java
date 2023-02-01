@@ -747,7 +747,7 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
     public boolean setItemInHand(Item item, boolean send) {
-        return getInventory().setItemInHand(item, send);
+        return this.getInventory().setItem(getInventory().getHeldItemIndex(), item, send);
     }
 
     @PowerNukkitXOnly
