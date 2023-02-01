@@ -14,6 +14,8 @@ import java.util.Objects;
 @PowerNukkitXOnly
 @Since("1.19.60-r1")
 public record OK<E>(boolean ok, @Nullable E error) {
+    public static final OK<Void> TRUE = new OK<>(true);
+
     public OK(boolean ok) {
         this(ok, null);
     }
