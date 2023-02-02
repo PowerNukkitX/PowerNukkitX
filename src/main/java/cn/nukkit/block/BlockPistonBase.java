@@ -278,11 +278,14 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
             }
 
             List<Block> newBlocks = calculator.getBlocksToMove();
-            Collections.reverse(newBlocks);
 
             attached = newBlocks.stream().map(Vector3::asBlockVector3).collect(Collectors.toList());
 
             BlockFace side = extending ? direction : direction.getOpposite();
+
+            var oldPosList = new ArrayList<Vector3>();
+            var blockEntityHolderList = new ArrayList<BlockEntityHolder<?>>();
+            var nbtList = new ArrayList<CompoundTag>();
 
             for (Block newBlock : newBlocks) {
                 Vector3 oldPos = new Vector3(newBlock.x, newBlock.y, newBlock.z);
@@ -317,10 +320,19 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
                     blockEntity.close();
                 }
 
-                BlockEntityHolder.setBlockAndCreateEntity((BlockEntityHolder<?>) BlockState.of(BlockID.MOVING_BLOCK).getBlock(Position.fromObject(newPos, this.level)),
-                        true, true, nbt);
+                oldPosList.add(oldPos);
+                blockEntityHolderList.add((BlockEntityHolder<?>) BlockState.of(BlockID.MOVING_BLOCK).getBlock(Position.fromObject(newPos, this.level)));
+                nbtList.add(nbt);
+            }
 
-                if (this.level.getBlockIdAt(oldPos.getFloorX(), oldPos.getFloorY(), oldPos.getFloorZ()) != BlockID.MOVING_BLOCK) {
+            for (int i = 0; i < oldPosList.size(); i++) {
+                Vector3 oldPos = oldPosList.get(i);
+                BlockEntityHolder<?> blockEntityHolder = blockEntityHolderList.get(i);
+                CompoundTag nbt = nbtList.get(i);
+
+                BlockEntityHolder.setBlockAndCreateEntity(blockEntityHolder, true, true, nbt);
+
+                if (this.level.getBlock(oldPos).getId() != BlockID.MOVING_BLOCK) {
                     this.level.setBlock(oldPos, Block.get(BlockID.AIR));
                 }
             }

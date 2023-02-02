@@ -239,7 +239,6 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
 
     @Override
     public boolean isMovable() {
-//        return !extending;
         return super.isMovable();
     }
 }
