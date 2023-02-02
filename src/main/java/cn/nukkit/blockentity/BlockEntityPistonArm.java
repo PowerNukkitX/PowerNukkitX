@@ -20,6 +20,7 @@ import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.BlockEntityDataPacket;
 import cn.nukkit.utils.Faceable;
+import cn.nukkit.utils.RedstoneComponent;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import java.util.List;
@@ -52,10 +53,12 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
             }
         }
 
-        AxisAlignedBB bb = new SimpleAxisAlignedBB(0, 0, 0, 1, 1, 1).getOffsetBoundingBox(
-                this.x + (pushDir.getXOffset()),
-                this.y + (pushDir.getYOffset()),
-                this.z + (pushDir.getZOffset())
+        var horizontal = pushDir != BlockFace.UP && pushDir != BlockFace.DOWN;
+
+        AxisAlignedBB bb = new SimpleAxisAlignedBB(0, 0, 0, 1, horizontal ? 2 : 1, 1).getOffsetBoundingBox(
+                this.x + pushDir.getXOffset() * (this.extending && horizontal ? 1 : -2),
+                this.y + pushDir.getYOffset() * (this.extending ? 1 : -2),
+                this.z + pushDir.getZOffset() * (this.extending && horizontal ? 1 : -2)
         );
 
         Entity[] entities = this.level.getCollidingEntities(bb);
@@ -77,19 +80,22 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
             return;
         }
 
-        if (entity instanceof Player) {
-            return;
-        }
-
         entity.onPushByPiston(this);
 
         if (!entity.closed) {
-
-            entity.move(
-                    moveDirection.getXOffset(),
-                    moveDirection.getYOffset(),
-                    moveDirection.getZOffset()
-            );
+            if (entity instanceof Player player) {
+                player.sendPosition(new Vector3(
+                        player.x + moveDirection.getXOffset(),
+                        player.y + moveDirection.getYOffset(),
+                        player.z + moveDirection.getZOffset()
+                ));
+            } else {
+                entity.move(
+                        moveDirection.getXOffset(),
+                        moveDirection.getYOffset(),
+                        moveDirection.getZOffset()
+                );
+            }
         }
     }
 
@@ -138,6 +144,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
 
                 //活塞更新
                 moved.onUpdate(Level.BLOCK_UPDATE_MOVED);
+                RedstoneComponent.updateAroundRedstone(moved);
                 this.level.scheduleUpdate(moved, 1);
             }
         }
@@ -208,6 +215,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         this.namedTag.putList(getAttachedBlocks());
         this.namedTag.putInt("facing", this.facing.getIndex());
         this.namedTag.putBoolean("Sticky", this.sticky);
+        this.namedTag.putBoolean("Extending", this.extending);
     }
 
     @Override

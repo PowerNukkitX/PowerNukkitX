@@ -377,6 +377,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
 
     public class BlocksCalculator {
 
+        private static final int MOVE_BLOCK_LIMIT = 12;
         private final Vector3 pistonPos;
         private Vector3 armPos;
         private final Block blockToMove;
@@ -483,7 +484,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
                 return true;
             }
 
-            if (this.toMove.size() >= 12) {
+            if (this.toMove.size() >= MOVE_BLOCK_LIMIT) {
                 return false;
             }
 
@@ -504,7 +505,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
                     break;
                 }
 
-                if (++count + this.toMove.size() > 12) {
+                if (++count + this.toMove.size() > MOVE_BLOCK_LIMIT) {
                     return false;
                 }
 
@@ -550,7 +551,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
                     return true;
                 }
 
-                if (this.toMove.size() >= 12) {
+                if (this.toMove.size() >= MOVE_BLOCK_LIMIT) {
                     return false;
                 }
 

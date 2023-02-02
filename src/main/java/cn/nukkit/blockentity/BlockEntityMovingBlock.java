@@ -85,10 +85,12 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
             return;
         }
 
+        var horizontal = moveDirection != BlockFace.UP && moveDirection != BlockFace.DOWN;
+
         bb = bb.getOffsetBoundingBox(
-                this.x + moveDirection.getXOffset(),
-                this.y + moveDirection.getYOffset(),
-                this.z + moveDirection.getZOffset()
+                this.x + moveDirection.getXOffset() * (piston.extending && horizontal ? 1 : -2),
+                this.y + moveDirection.getYOffset() * (piston.extending ? 1 : -2),
+                this.z + moveDirection.getZOffset() * (piston.extending && horizontal ? 1 : -2)
         );
 
         Entity[] entities = this.level.getCollidingEntities(bb);
