@@ -162,7 +162,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
 
                     //推出未成功
                     if (powered && !isExtended()) {
-                        //下一个红石刻自检
+                        //下一个计划刻自检
                         level.scheduleUpdate(this, 1);
                     }
 
@@ -171,7 +171,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
 
                 //上一次推出未成功
                 if (type == Level.BLOCK_UPDATE_SCHEDULED && powered && !isExtended() && !checkState(true)) {
-                    //依然不成功，下一个红石刻继续自检
+                    //依然不成功，下一个计划刻继续自检
                     level.scheduleUpdate(this, 1);
                 }
             }

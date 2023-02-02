@@ -124,6 +124,9 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
 
                 Block moved = movingBlockBlockEntity.getMovingBlock();
 
+                this.level.setBlock(movingBlock, 1, Block.get(BlockID.AIR), true, false);
+                this.level.setBlock(movingBlock, moved, true);
+
                 CompoundTag movedBlockEntity = movingBlockBlockEntity.getMovingBlockEntityCompound();
                 if (movedBlockEntity != null) {
                     movedBlockEntity.putInt("x", movingBlock.getFloorX());
@@ -132,8 +135,6 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                     BlockEntity.createBlockEntity(movedBlockEntity.getString("id"), this.level.getChunk(movingBlock.getChunkX(), movingBlock.getChunkZ()), movedBlockEntity);
                 }
 
-                this.level.setBlock(movingBlock, 1, Block.get(BlockID.AIR), true, false);
-                this.level.setBlock(movingBlock, moved, true);
                 //活塞更新
                 moved.onUpdate(Level.BLOCK_UPDATE_MOVED);
             }
