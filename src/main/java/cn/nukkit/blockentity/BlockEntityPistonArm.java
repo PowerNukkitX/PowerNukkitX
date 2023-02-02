@@ -8,6 +8,7 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockPistonHead;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityMoveByPistonEvent;
+import cn.nukkit.level.Level;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
@@ -133,6 +134,8 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
 
                 this.level.setBlock(movingBlock, 1, Block.get(BlockID.AIR), true, false);
                 this.level.setBlock(movingBlock, moved, true);
+                //活塞更新
+                moved.onUpdate(Level.BLOCK_UPDATE_MOVED);
             }
         }
 
