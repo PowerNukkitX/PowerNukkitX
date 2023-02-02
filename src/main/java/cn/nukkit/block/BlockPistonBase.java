@@ -224,27 +224,30 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
         return false;
     }
 
-//    private boolean isPowered() {
-//        BlockFace face = getBlockFace();
-//
-//        for (BlockFace side : BlockFace.values()) {
-//            if (side == face) {
-//                continue;
-//            }
-//
-//            Block b = this.getSide(side);
-//
-//            if (b.getId() == Block.REDSTONE_WIRE && b.getDamage() > 0) {
-//                return true;
-//            }
-//
-//            if (this.level.isSidePowered(b, side)) {
-//                return true;
-//            }
-//        }
-//
-//        return false;
-//    }
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    @Override
+    public boolean isGettingPower() {
+        BlockFace face = getBlockFace();
+
+        for (BlockFace side : BlockFace.values()) {
+            if (side == face) {
+                continue;
+            }
+
+            Block b = this.getSide(side);
+
+            if (b.getId() == Block.REDSTONE_WIRE && b.getDamage() > 0) {
+                return true;
+            }
+
+            if (this.level.isSidePowered(b, side)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     private boolean doMove(boolean extending) {
         BlockFace direction = getBlockFace();
@@ -275,6 +278,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
             }
 
             List<Block> newBlocks = calculator.getBlocksToMove();
+            Collections.reverse(newBlocks);
 
             attached = newBlocks.stream().map(Vector3::asBlockVector3).collect(Collectors.toList());
 
@@ -338,9 +342,11 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
     }
 
     public static boolean canPush(Block block, BlockFace face, boolean destroyBlocks, boolean extending) {
+        var min = block.level.getMinHeight();
+        var max = block.level.getMaxHeight() - 1;
         if (
-                block.getY() >= 0 && (face != BlockFace.DOWN || block.getY() != 0) &&
-                        block.getY() <= 255 && (face != BlockFace.UP || block.getY() != 255)
+                block.getY() >= min && (face != BlockFace.DOWN || block.getY() != min) &&
+                        block.getY() <= max && (face != BlockFace.UP || block.getY() != max)
         ) {
             if (extending && !block.canBePushed() || !extending && !block.canBePulled()) {
                 return false;

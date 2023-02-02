@@ -123,9 +123,10 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                 movingBlock.close();
 
                 Block moved = movingBlockBlockEntity.getMovingBlock();
+                moved.position(movingBlock);
 
                 this.level.setBlock(movingBlock, 1, Block.get(BlockID.AIR), true, false);
-                this.level.setBlock(movingBlock, moved, true);
+                this.level.setBlock(movingBlock, moved, true, false);
 
                 CompoundTag movedBlockEntity = movingBlockBlockEntity.getMovingBlockEntityCompound();
                 if (movedBlockEntity != null) {
@@ -137,14 +138,17 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
 
                 //活塞更新
                 moved.onUpdate(Level.BLOCK_UPDATE_MOVED);
+                this.level.scheduleUpdate(moved, 1);
             }
         }
 
         Vector3 pos = getSide(facing);
-        if (!extending && this.level.getBlock(pos) instanceof BlockPistonHead) {
-            this.level.setBlock(pos, 1, Block.get(Block.AIR), true, false);
-            this.level.setBlock(pos, Block.get(Block.AIR), true);
+        if (!extending) {
             this.movable = true;
+            if (this.level.getBlock(pos) instanceof BlockPistonHead) {
+                this.level.setBlock(pos, 1, Block.get(Block.AIR), true, false);
+                this.level.setBlock(pos, Block.get(Block.AIR), true);
+            }
         }
 
         this.level.scheduleUpdate(this.getLevelBlock(), 1);
@@ -164,6 +168,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         super.loadNBT();
         this.sticky = namedTag.getBoolean("Sticky");
         this.extending = namedTag.getBoolean("Extending");
+        this.movable = !this.extending;
         this.powered = namedTag.getBoolean("powered");
 
         if (namedTag.contains("facing")) {
@@ -230,5 +235,11 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         }
 
         return attachedBlocks;
+    }
+
+    @Override
+    public boolean isMovable() {
+//        return !extending;
+        return super.isMovable();
     }
 }
