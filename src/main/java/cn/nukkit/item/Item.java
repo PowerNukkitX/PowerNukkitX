@@ -24,11 +24,7 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.*;
-import cn.nukkit.utils.Binary;
-import cn.nukkit.utils.Config;
-import cn.nukkit.utils.OK;
-import cn.nukkit.utils.TextFormat;
-import cn.nukkit.utils.Utils;
+import cn.nukkit.utils.*;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import io.netty.util.internal.EmptyArrays;
@@ -665,26 +661,10 @@ public class Item implements Cloneable, BlockID, ItemID {
                         throw new UnsupportedOperationException(e);
                     }
                 };
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                     NoSuchMethodException e) {
                 return new OK<>(false, e);
-            } catch (NoSuchMethodException ignore) {
-                try {
-                    var method = clazz.getDeclaredConstructor(int.class);
-                    customItem = method.newInstance(ItemID.STRING_IDENTIFIED_ITEM);
-                    supplier = () -> {
-                        try {
-                            return (Item) method.newInstance(ItemID.STRING_IDENTIFIED_ITEM);
-                        } catch (ReflectiveOperationException e1) {
-                            throw new UnsupportedOperationException(e1);
-                        }
-                    };
-                } catch (InstantiationException | IllegalAccessException | InvocationTargetException e2) {
-                    return new OK<>(false, e2);
-                } catch (NoSuchMethodException e2) {
-                    return new OK<>(false, "The custom item class cannot find an parameterless constructor or a single int parameter constructor" + clazz.getCanonicalName());
-                }
             }
-
             if (CUSTOM_ITEMS.containsKey(customItem.getNamespaceId())) continue;
             CUSTOM_ITEMS.put(customItem.getNamespaceId(), supplier);
             var customDef = customItem.getDefinition();
