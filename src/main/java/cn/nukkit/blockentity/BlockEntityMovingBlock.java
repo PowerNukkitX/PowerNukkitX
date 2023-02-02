@@ -86,9 +86,9 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
         }
 
         bb = bb.getOffsetBoundingBox(
-                this.x + (piston.progress * moveDirection.getXOffset()) - moveDirection.getXOffset(),
-                this.y + (piston.progress * moveDirection.getYOffset()) - moveDirection.getYOffset(),
-                this.z + (piston.progress * moveDirection.getZOffset()) - moveDirection.getZOffset()
+                this.x + moveDirection.getXOffset(),
+                this.y + moveDirection.getYOffset(),
+                this.z + moveDirection.getZOffset()
         );
 
         Entity[] entities = this.level.getCollidingEntities(bb);
@@ -100,6 +100,6 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
 
     @Override
     public boolean isBlockEntityValid() {
-        return this.level.getBlockIdAt(getFloorX(), getFloorY(), getFloorZ()) == BlockID.MOVING_BLOCK;
+        return this.getBlock().getId() == BlockID.MOVING_BLOCK;
     }
 }

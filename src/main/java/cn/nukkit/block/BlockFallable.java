@@ -4,7 +4,6 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityFallingBlock;
 import cn.nukkit.event.block.BlockFallEvent;
-import cn.nukkit.level.Position;
 import cn.nukkit.nbt.tag.*;
 
 
@@ -20,8 +19,7 @@ public abstract class BlockFallable extends BlockSolid {
     public int onUpdate(int type) {
         Block down = this.down();
         if ((down.getId() == AIR || down instanceof BlockFire || down instanceof BlockLiquid ||
-                (down instanceof BlockBubbleColumn && down.getLevelBlockAtLayer(1) instanceof BlockLiquid)) &&
-                !BlockPistonBase.isBlockLocked(new Position(down.x, down.y, down.z, this.getLevel()))) {
+                (down instanceof BlockBubbleColumn && down.getLevelBlockAtLayer(1) instanceof BlockLiquid))) {
             BlockFallEvent event = new BlockFallEvent(this);
             this.level.getServer().getPluginManager().callEvent(event);
             if (event.isCancelled()) {
