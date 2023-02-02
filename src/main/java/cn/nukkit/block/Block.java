@@ -33,6 +33,7 @@ import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.InvalidBlockDamageException;
 import cn.nukkit.utils.MinecraftNamespaceComparator;
+import cn.nukkit.utils.OK;
 import com.google.common.base.Preconditions;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -1233,15 +1234,14 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      * @param blockClassList 传入自定义方块class List
      */
     @PowerNukkitXOnly
-    public static void registerCustomBlock(@Nonnull List<Class<? extends CustomBlock>> blockClassList) {
+    public static OK<?> registerCustomBlock(@Nonnull List<Class<? extends CustomBlock>> blockClassList) {
         if (!Server.getInstance().isEnableExperimentMode() || Server.getInstance().getConfig("settings.waterdogpe", false)) {
-            log.warn("The server does not have the experiment mode feature enabled.Unable to register custom block!");
-            return;
+            return new OK<>(false, "The server does not have the experiment mode feature enabled.Unable to register custom block!");
         }
         SortedMap<String, CustomBlock> sortedCustomBlock = new TreeMap<>(MinecraftNamespaceComparator::compareFNV);
 
         for (var each : blockClassList) {
-            CustomBlock block = null;
+            CustomBlock block;
             try {
                 var method = each.getDeclaredConstructor();
                 method.setAccessible(true);
@@ -1250,9 +1250,9 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
                     sortedCustomBlock.put(block.getNamespaceId(), block);
                 }
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-                throw new RuntimeException(e);
+                return new OK<>(false, e);
             } catch (NoSuchMethodException e) {
-                log.error("Cannot find the parameterless constructor for this custom block:" + each.getCanonicalName());
+                return new OK<>(false, "Cannot find the parameterless constructor for this custom block:" + each.getCanonicalName());
             }
         }
         if (!sortedCustomBlock.isEmpty()) {
@@ -1263,10 +1263,12 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
                 ++nextBlockId;
             }
             var blocks = ID_TO_CUSTOM_BLOCK.values().stream().toList();
-            BlockStateRegistry.registerCustomBlockState(blocks);//注册方块state
+            var result = BlockStateRegistry.registerCustomBlockState(blocks);//注册方块state
+            if (!result.ok()) return result;
             RuntimeItems.getRuntimeMapping().registerCustomBlock(blocks);//注册物品
             blocks.forEach(b -> Item.addCreativeItem(b.toItem()));//注册创造栏物品
         }
+        return new OK<Void>(true);
     }
 
     /**
@@ -1275,10 +1277,9 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      * @param blockNamespaceClassMap 传入自定义方块classMap { key: NamespaceID, value: Class }
      */
     @PowerNukkitXOnly
-    public static void registerCustomBlock(@Nonnull Map<String, Class<? extends CustomBlock>> blockNamespaceClassMap) {
+    public static OK<?> registerCustomBlock(@Nonnull Map<String, Class<? extends CustomBlock>> blockNamespaceClassMap) {
         if (!Server.getInstance().isEnableExperimentMode() || Server.getInstance().getConfig("settings.waterdogpe", false)) {
-            log.warn("The server does not have the experiment mode feature enabled.Unable to register custom block!");
-            return;
+            return new OK<>(false, "The server does not have the experiment mode feature enabled.Unable to register custom block!");
         }
         //方块升序排序
         SortedMap<String, Class<? extends CustomBlock>> sortedCustomBlockClasses = new TreeMap<>(MinecraftNamespaceComparator::compareFNV);
@@ -1301,16 +1302,18 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
                     CUSTOM_BLOCK_DEFINITIONS.add(block.getDefinition());//行为包数据
                     ++nextBlockId;
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-                    throw new RuntimeException(e);
+                    return new OK<>(false, e);
                 } catch (NoSuchMethodException e) {
-                    log.error("Cannot find the parameterless constructor for this custom block:" + entry.getValue().getCanonicalName());
+                    return new OK<>(false, "Cannot find the parameterless constructor for this custom block:" + entry.getValue().getCanonicalName());
                 }
             }
             var blocks = ID_TO_CUSTOM_BLOCK.values().stream().toList();
-            BlockStateRegistry.registerCustomBlockState(blocks);//注册方块state
+            var result = BlockStateRegistry.registerCustomBlockState(blocks);//注册方块state
+            if (!result.ok()) return result;
             RuntimeItems.getRuntimeMapping().registerCustomBlock(blocks);//注册物品
             blocks.forEach((block) -> Item.addCreativeItem(block.toItem()));//注册创造栏物品
         }
+        return new OK<Void>(true);
     }
 
     @PowerNukkitXOnly

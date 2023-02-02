@@ -22,7 +22,7 @@ public class PlayerUseItemFrameEvent extends PlayerEvent implements Cancellable 
     private final Item item;
     private final Action action;
 
-    public PlayerUseItemFrameEvent(@Nullable Player player, @Nonnull Block block, @Nonnull BlockEntityItemFrame itemFrame, @Nullable Item item, Action action) {
+    public PlayerUseItemFrameEvent(@Nonnull Player player, @Nonnull Block block, @Nonnull BlockEntityItemFrame itemFrame, @Nullable Item item, Action action) {
         this.player = player;
         this.itemFrame = itemFrame;
         this.block = block;

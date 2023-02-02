@@ -15,8 +15,8 @@ import cn.nukkit.blockstate.exception.InvalidBlockStateException;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.inventory.Fuel;
 import cn.nukkit.inventory.ItemTag;
+import cn.nukkit.item.customitem.CustomItem;
 import cn.nukkit.item.customitem.CustomItemDefinition;
-import cn.nukkit.item.customitem.ItemCustom;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.randomitem.ItemEchoShard;
 import cn.nukkit.level.Level;
@@ -26,6 +26,7 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.*;
 import cn.nukkit.utils.Binary;
 import cn.nukkit.utils.Config;
+import cn.nukkit.utils.OK;
 import cn.nukkit.utils.TextFormat;
 import cn.nukkit.utils.Utils;
 import com.google.gson.Gson;
@@ -46,6 +47,7 @@ import java.lang.reflect.Modifier;
 import java.nio.ByteOrder;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -74,7 +76,7 @@ public class Item implements Cloneable, BlockID, ItemID {
             //       1:namespace    2:name           3:damage   4:num-id    5:damage
             "^(?:(?:([a-z_]\\w*):)?([a-z._]\\w*)(?::(-?\\d+))?|(-?\\d+)(?::(-?\\d+))?)$");
 
-    protected static String UNKNOWN_STR = "Unknown";
+    public static String UNKNOWN_STR = "Unknown";
     public static Class[] list = null;
 
     private static Map<String, Integer> itemIds = Arrays.stream(ItemID.class.getDeclaredFields())
@@ -113,7 +115,7 @@ public class Item implements Cloneable, BlockID, ItemID {
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    private static final HashMap<String, Class<? extends Item>> CUSTOM_ITEMS = new HashMap<>();
+    private static final HashMap<String, Supplier<Item>> CUSTOM_ITEMS = new HashMap<>();
 
     @PowerNukkitXOnly
     @Since("1.19.31-r1")
@@ -631,8 +633,8 @@ public class Item implements Cloneable, BlockID, ItemID {
      */
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public static void registerCustomItem(Class<? extends ItemCustom> c) {
-        registerCustomItem(List.of(c));
+    public static OK<?> registerCustomItem(Class<? extends CustomItem> c) {
+        return registerCustomItem(List.of(c));
     }
 
     /**
@@ -644,35 +646,61 @@ public class Item implements Cloneable, BlockID, ItemID {
      */
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public static void registerCustomItem(@Nonnull List<Class<? extends ItemCustom>> itemClassList) {
+    public static OK<?> registerCustomItem(@Nonnull List<Class<? extends CustomItem>> itemClassList) {
         if (!Server.getInstance().isEnableExperimentMode() || Server.getInstance().getConfig("settings.waterdogpe", false)) {
-            log.warn("The server does not have the custom item feature enabled. Unable to register the customItemList!");
-            return;
+            return new OK<>(false, "The server does not have the custom item feature enabled. Unable to register the customItemList!");
         }
         for (var clazz : itemClassList) {
+            CustomItem customItem;
+            Supplier<Item> supplier;
+
             try {
                 var method = clazz.getDeclaredConstructor();
                 method.setAccessible(true);
-                ItemCustom itemCustom = method.newInstance();
-                if (CUSTOM_ITEMS.containsKey(itemCustom.getNamespaceId())) return;
-                CUSTOM_ITEMS.put(itemCustom.getNamespaceId(), clazz);
-                var customDef = itemCustom.getDefinition();
-                CUSTOM_ITEM_DEFINITIONS.put(itemCustom.getNamespaceId(), customDef);
-                // 在服务端注册自定义物品的tag
-                if (customDef.nbt().get("components") instanceof CompoundTag componentTag) {
-                    var tagList = componentTag.getList("item_tags", StringTag.class);
-                    if (tagList.size() != 0) {
-                        ItemTag.registerItemTag(itemCustom.getNamespaceId(), tagList.getAll().stream().map(tag -> tag.data).collect(Collectors.toSet()));
+                customItem = method.newInstance();
+                supplier = () -> {
+                    try {
+                        return (Item) method.newInstance();
+                    } catch (ReflectiveOperationException e) {
+                        throw new UnsupportedOperationException(e);
                     }
-                }
-                RuntimeItems.getRuntimeMapping().registerCustomItem(itemCustom);
-                addCreativeItem(itemCustom);
+                };
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-                throw new RuntimeException(e);
-            } catch (NoSuchMethodException e) {
-                log.error("Cannot find the parameterless constructor for this custom item:" + clazz.getCanonicalName());
+                return new OK<>(false, e);
+            } catch (NoSuchMethodException ignore) {
+                try {
+                    var method = clazz.getDeclaredConstructor(int.class);
+                    customItem = method.newInstance(ItemID.STRING_IDENTIFIED_ITEM);
+                    supplier = () -> {
+                        try {
+                            return (Item) method.newInstance(ItemID.STRING_IDENTIFIED_ITEM);
+                        } catch (ReflectiveOperationException e1) {
+                            throw new UnsupportedOperationException(e1);
+                        }
+                    };
+                } catch (InstantiationException | IllegalAccessException | InvocationTargetException e2) {
+                    return new OK<>(false, e2);
+                } catch (NoSuchMethodException e2) {
+                    return new OK<>(false, "The custom item class cannot find an parameterless constructor or a single int parameter constructor" + clazz.getCanonicalName());
+                }
             }
+
+            if (CUSTOM_ITEMS.containsKey(customItem.getNamespaceId())) continue;
+            CUSTOM_ITEMS.put(customItem.getNamespaceId(), supplier);
+            var customDef = customItem.getDefinition();
+            CUSTOM_ITEM_DEFINITIONS.put(customItem.getNamespaceId(), customDef);
+
+            // 在服务端注册自定义物品的tag
+            if (customDef.nbt().get("components") instanceof CompoundTag componentTag) {
+                var tagList = componentTag.getList("item_tags", StringTag.class);
+                if (tagList.size() != 0) {
+                    ItemTag.registerItemTag(customItem.getNamespaceId(), tagList.getAll().stream().map(tag -> tag.data).collect(Collectors.toSet()));
+                }
+            }
+            RuntimeItems.getRuntimeMapping().registerCustomItem(customItem, supplier);
+            addCreativeItem((Item) customItem);
         }
+        return new OK<Void>(true);
     }
 
     /**
@@ -686,11 +714,11 @@ public class Item implements Cloneable, BlockID, ItemID {
     @Since("1.6.0.0-PNX")
     public static void deleteCustomItem(String namespaceId) {
         if (CUSTOM_ITEMS.containsKey(namespaceId)) {
-            ItemCustom itemCustom = (ItemCustom) fromString(namespaceId);
-            removeCreativeItem(itemCustom);
+            Item customItem = fromString(namespaceId);
+            removeCreativeItem(customItem);
             CUSTOM_ITEMS.remove(namespaceId);
             CUSTOM_ITEM_DEFINITIONS.remove(namespaceId);
-            RuntimeItems.getRuntimeMapping().deleteCustomItem(itemCustom);
+            RuntimeItems.getRuntimeMapping().deleteCustomItem((CustomItem) customItem);
         }
     }
 
@@ -703,11 +731,11 @@ public class Item implements Cloneable, BlockID, ItemID {
     @Since("1.6.0.0-PNX")
     public static void deleteAllCustomItem() {
         for (String name : CUSTOM_ITEMS.keySet()) {
-            ItemCustom itemCustom = (ItemCustom) fromString(name);
-            removeCreativeItem(itemCustom);
+            Item customItem = fromString(name);
+            removeCreativeItem(customItem);
             CUSTOM_ITEMS.remove(name);
             CUSTOM_ITEM_DEFINITIONS.remove(name);
-            RuntimeItems.getRuntimeMapping().deleteCustomItem(itemCustom);
+            RuntimeItems.getRuntimeMapping().deleteCustomItem((CustomItem) customItem);
         }
     }
 
@@ -721,7 +749,7 @@ public class Item implements Cloneable, BlockID, ItemID {
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public static HashMap<String, Class<? extends Item>> getCustomItems() {
+    public static HashMap<String, Supplier<? extends Item>> getCustomItems() {
         return new HashMap<>(CUSTOM_ITEMS);
     }
 
@@ -950,30 +978,24 @@ public class Item implements Cloneable, BlockID, ItemID {
             }
             if (CUSTOM_ITEMS.containsKey(namespacedId)) {
                 var item = RuntimeItems.getRuntimeMapping().getItemByNamespaceId(namespacedId, 1);
-                ItemCustom itemCustom;
-
+                Item customItem;
                 /*
                  * 因为getDefinition中如果需要使用Item.fromString()获取自定义物品,此时RuntimeItems中还没注册自定义物品,所以留一个反射构造。
                  * 主要用于getDefinition中addRepairItems
                  */
                 if (item.getName() != null && item.getName().equals(Item.UNKNOWN_STR)) {
-                    try {
-                        itemCustom = (ItemCustom) CUSTOM_ITEMS.get(namespacedId).getDeclaredConstructor().newInstance();
-                    } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                             NoSuchMethodException e) {
-                        throw new RuntimeException(e);
-                    }
-                } else itemCustom = (ItemCustom) item;
+                    customItem = CUSTOM_ITEMS.get(namespacedId).get();
+                } else customItem = item;
 
                 if (meta.isPresent()) {
                     int damage = meta.getAsInt();
                     if (damage < 0) {
-                        itemCustom = (ItemCustom) itemCustom.createFuzzyCraftingRecipe();
+                        customItem = customItem.createFuzzyCraftingRecipe();
                     } else {
-                        itemCustom.setDamage(damage);
+                        customItem.setDamage(damage);
                     }
                 }
-                return itemCustom;
+                return customItem;
             } else if (Block.CUSTOM_BLOCK_ID_MAP.containsKey(namespacedId)) {
                 ItemBlock customItemBlock = (ItemBlock) RuntimeItems.getRuntimeMapping().getItemByNamespaceId(namespacedId, 1);
                 if (meta.isPresent()) {
