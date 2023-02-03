@@ -27,6 +27,7 @@ import com.google.common.collect.Lists;
 import lombok.extern.log4j.Log4j2;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -48,6 +49,24 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
 
     public BlockPistonBase(int meta) {
         super(meta);
+    }
+
+    public static boolean canPush(Block block, BlockFace face, boolean destroyBlocks, boolean extending) {
+        var min = block.level.getMinHeight();
+        var max = block.level.getMaxHeight() - 1;
+        if (
+                block.getY() >= min && (face != BlockFace.DOWN || block.getY() != min) &&
+                        block.getY() <= max && (face != BlockFace.UP || block.getY() != max)
+        ) {
+            if (extending && !block.canBePushed() || !extending && !block.canBePulled())
+                return false;
+            if (block.breaksWhenMoved())
+                return destroyBlocks || block.sticksToPiston();
+            var blockEntity = block.getLevelBlockEntity();
+            return blockEntity == null || blockEntity.isMovable();
+        }
+
+        return false;
     }
 
     @Since("1.4.0.0-PN")
@@ -84,8 +103,15 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
         return 0.5;
     }
 
+    @PowerNukkitOnly
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public int getWaterloggingLevel() {
+        return 1;
+    }
+
+    @Override
+    @PowerNukkitDifference(info = "Using new method for checking if powered", since = "1.4.0.0-PN")
+    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (player != null) {
             if (Math.abs(player.getFloorX() - this.x) <= 1 && Math.abs(player.getFloorZ() - this.z) <= 1) {
                 double y = player.y + player.getEyeHeight();
@@ -102,14 +128,12 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
             }
         }
         this.level.setBlock(block, this, true, true);
-
-        CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.PISTON_ARM)
+        var nbt = BlockEntity.getDefaultCompound(this, BlockEntity.PISTON_ARM)
                 .putInt("facing", this.getBlockFace().getIndex())
-                .putBoolean("Sticky", this.sticky);
-
-        BlockEntityPistonArm piston = (BlockEntityPistonArm) BlockEntity.createBlockEntity(BlockEntity.PISTON_ARM, this.level.getChunk(getChunkX(), getChunkZ()), nbt);
+                .putBoolean("Sticky", this.sticky)
+                .putBoolean("powered", isGettingPower());
+        var piston = (BlockEntityPistonArm) BlockEntity.createBlockEntity(BlockEntity.PISTON_ARM, this.level.getChunk(getChunkX(), getChunkZ()), nbt);
         piston.powered = isGettingPower();
-
         this.checkState(piston.powered);
         return true;
     }
@@ -117,261 +141,210 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
     @Override
     public boolean onBreak(Item item) {
         this.level.setBlock(this, Block.get(BlockID.AIR), true, true);
-
-        Block block = this.getSide(getBlockFace());
-
-        if (block instanceof BlockPistonHead b && b.getBlockFace() == this.getBlockFace()) {
+        var block = this.getSide(getBlockFace());
+        if (block instanceof BlockPistonHead b && b.getBlockFace() == this.getBlockFace())
             block.onBreak(item);
-        }
         return true;
     }
 
     public boolean isExtended() {
-        BlockFace face = getBlockFace();
-        Block block = getSide(face);
-
+        var face = getBlockFace();
+        var block = getSide(face);
         return block instanceof BlockPistonHead b && b.getBlockFace() == face;
     }
 
     @Override
+    @PowerNukkitDifference(info = "Using new method for checking if powered + update all around redstone torches, " +
+            "even if the piston can't move.", since = "1.4.0.0-PN")
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_REDSTONE) {
-            if (!this.level.getServer().isRedstoneEnabled()) {
+        if (type == Level.BLOCK_UPDATE_REDSTONE || type == Level.BLOCK_UPDATE_MOVED) {
+            if (!this.level.getServer().isRedstoneEnabled())
                 return 0;
-            }
-
             level.scheduleUpdate(this, 1);
             return type;
         }
-
         if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_SCHEDULED) {
             if (!this.level.getServer().isRedstoneEnabled()) {
                 return 0;
             }
-
-            BlockEntity blockEntity = this.level.getBlockEntity(this);
-            if (blockEntity instanceof BlockEntityPistonArm arm) {
-                boolean powered = this.isGettingPower();
-
-                if (arm.state % 2 == 0 && arm.powered != powered && checkState(powered)) {
-                    arm.powered = powered;
-
-                    if (arm.chunk != null) {
-                        arm.chunk.setChanged();
-                    }
-
-                    //推出未成功
-                    if (powered && !isExtended()) {
-                        //下一个计划刻自检
-                        level.scheduleUpdate(this, 1);
-                    }
-
-                    return type;
-                }
-
-                //上一次推出未成功
-                if (type == Level.BLOCK_UPDATE_SCHEDULED && powered && !isExtended() && !checkState(true)) {
-                    //依然不成功，下一个计划刻继续自检
+            // We can't use getOrCreateBlockEntity(), because the update method is called on block place,
+            // before the "real" BlockEntity is set. That means, if we'd use the other method here,
+            // it would create two BlockEntities.
+            var arm = this.getBlockEntity();
+            if (arm == null) return 0;
+            boolean powered = this.isGettingPower();
+            this.updateAroundRedstoneTorches(powered);
+            if (arm.state % 2 == 0 && arm.powered != powered && checkState(powered)) {
+                arm.powered = powered;
+                if (arm.chunk != null)
+                    arm.chunk.setChanged();
+                if (powered && !isExtended())
+                    //推出未成功,下一个计划刻再次自检
+                    //TODO: 这里可以记录阻挡的方块并在阻挡因素移除后同步更新到活塞，而不是使用计划刻
                     level.scheduleUpdate(this, 1);
-                }
+                return type;
             }
-
+            //上一次推出未成功
+            if (type == Level.BLOCK_UPDATE_SCHEDULED && powered && !isExtended() && !checkState(true))
+                //依然不成功，下一个计划刻继续自检
+                level.scheduleUpdate(this, 1);
             return type;
         }
-
         return 0;
-    }
-
-    private boolean checkState(Boolean isPowered) {
-        if (!this.level.getServer().isRedstoneEnabled()) {
-            return false;
-        }
-
-        if (isPowered == null) {
-            isPowered = this.isGettingPower();
-        }
-
-        BlockFace face = getBlockFace();
-        Block block = getSide(face);
-
-        boolean isExtended;
-        if (block instanceof BlockPistonHead b) {
-            if (b.getBlockFace() != face) {
-                return false;
-            }
-
-            isExtended = true;
-        } else {
-            isExtended = false;
-        }
-
-        if (isPowered && !isExtended) {
-            if (!this.doMove(true)) {
-                return false;
-            }
-
-            this.getLevel().addSound(this, Sound.TILE_PISTON_OUT);
-            return true;
-        } else if (!isPowered && isExtended) {
-            if (!this.doMove(false)) {
-                return false;
-            }
-
-            this.getLevel().addSound(this, Sound.TILE_PISTON_IN);
-            return true;
-        }
-
-        return false;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Override
     public boolean isGettingPower() {
-        BlockFace face = getBlockFace();
-
-        for (BlockFace side : BlockFace.values()) {
-            if (side == face) {
+        var face = getBlockFace();
+        for (var side : BlockFace.values()) {
+            if (side == face)
                 continue;
-            }
-
-            Block b = this.getSide(side);
-
-            if (b.getId() == Block.REDSTONE_WIRE && b.getDamage() > 0) {
+            var b = this.getSide(side);
+            if (b.getId() == Block.REDSTONE_WIRE && b.getDamage() > 0)
                 return true;
-            }
-
-            if (this.level.isSidePowered(b, side)) {
+            if (this.level.isSidePowered(b, side))
                 return true;
-            }
         }
-
         return false;
     }
 
-    private boolean doMove(boolean extending) {
-        BlockFace direction = getBlockFace();
+    protected void updateAroundRedstoneTorches(boolean powered) {
+        for (BlockFace side : BlockFace.values()) {
+            if ((getSide(side) instanceof BlockRedstoneTorch && powered)
+                    || (getSide(side) instanceof BlockRedstoneTorchUnlit && !powered)) {
+                BlockTorch torch = (BlockTorch) getSide(side);
 
-        BlocksCalculator calculator = new BlocksCalculator(extending);
+                BlockTorch.TorchAttachment torchAttachment = torch.getTorchAttachment();
+                Block support = torch.getSide(torchAttachment.getAttachedFace());
 
+                if (support.getLocation().equals(this.getLocation())) {
+                    torch.onUpdate(Level.BLOCK_UPDATE_REDSTONE);
+                }
+            }
+        }
+    }
+
+    protected boolean checkState(Boolean isPowered) {
+        if (!this.level.getServer().isRedstoneEnabled())
+            return false;
+        if (isPowered == null)
+            isPowered = this.isGettingPower();
+        var face = getBlockFace();
+        var block = getSide(face);
+        boolean isExtended;
+        if (block instanceof BlockPistonHead b) {
+            if (b.getBlockFace() != face)
+                return false;
+            isExtended = true;
+        } else isExtended = false;
+        if (isPowered && !isExtended) {
+            if (!this.doMove(true))
+                return false;
+            this.getLevel().addSound(this, Sound.TILE_PISTON_OUT);
+            return true;
+        } else if (!isPowered && isExtended) {
+            if (!this.doMove(false))
+                return false;
+            this.getLevel().addSound(this, Sound.TILE_PISTON_IN);
+            return true;
+        }
+        return false;
+    }
+
+    protected boolean doMove(boolean extending) {
+        var pistonFace = getBlockFace();
+        var calculator = new BlocksCalculator(extending);
         boolean canMove = calculator.canMove();
-
-        if (!canMove && extending) {
+        if (!canMove && extending)
             return false;
-        }
-
-        List<BlockVector3> attached = Collections.emptyList();
-
-        BlockPistonEvent event = new BlockPistonEvent(this, direction, calculator.getBlocksToMove(), calculator.getBlocksToDestroy(), extending);
+        List<BlockVector3> toMoveBlockVec = new ArrayList<>();
+        var event = new BlockPistonEvent(this, pistonFace, calculator.getBlocksToMove(), calculator.getBlocksToDestroy(), extending);
         this.level.getServer().getPluginManager().callEvent(event);
-
-        if (event.isCancelled()) {
+        if (event.isCancelled())
             return false;
-        }
-
         if (canMove && (this.sticky || extending)) {
-            List<Block> destroyBlocks = calculator.getBlocksToDestroy();
+            var destroyBlocks = calculator.getBlocksToDestroy();
+            //破坏需要破坏的方块
             for (int i = destroyBlocks.size() - 1; i >= 0; --i) {
-                Block block = destroyBlocks.get(i);
+                var block = destroyBlocks.get(i);
+                //清除位置上所含的水等
                 level.setBlock(block, 1, Block.get(BlockID.AIR), true, false);
                 this.level.useBreakOn(block);
             }
-
-            List<Block> newBlocks = calculator.getBlocksToMove();
-
-            attached = newBlocks.stream().map(Vector3::asBlockVector3).collect(Collectors.toList());
-
-            BlockFace side = extending ? direction : direction.getOpposite();
-
+            var blocksToMove = calculator.getBlocksToMove();
+            toMoveBlockVec = blocksToMove.stream().map(Vector3::asBlockVector3).collect(Collectors.toList());
+            var moveDirection = extending ? pistonFace : pistonFace.getOpposite();
             var oldPosList = new ArrayList<Vector3>();
             var blockEntityHolderList = new ArrayList<BlockEntityHolder<?>>();
             var nbtList = new ArrayList<CompoundTag>();
-
-            for (Block newBlock : newBlocks) {
-                Vector3 oldPos = new Vector3(newBlock.x, newBlock.y, newBlock.z);
-                Vector3 newPos = newBlock.getSidePos(side);
-
-                BlockEntity blockEntity = this.level.getBlockEntity(oldPos);
-
+            for (Block blockToMove : blocksToMove) {
+                var oldPos = new Vector3(blockToMove.x, blockToMove.y, blockToMove.z);
+                var newPos = blockToMove.getSidePos(moveDirection);
+                //清除位置上所含的水等
                 level.setBlock(newPos, 1, Block.get(AIR), true, false);
-
                 CompoundTag movingBlockTag = new CompoundTag()
-                        .putInt("id", newBlock.getId()) //only for nukkit purpose
-                        .putInt("meta", newBlock.getDamage()); //only for nukkit purpose
-                String blockName = BlockStateRegistry.getPersistenceName(newBlock.getId());
-                movingBlockTag.putString("name", blockName)
-                            .putShort("val", newBlock.getDamage());
-
+                        .putInt("id", blockToMove.getId()) //only for nukkit purpose
+                        .putInt("meta", blockToMove.getDamage()) //only for nukkit purpose
+                        .putString("name", BlockStateRegistry.getPersistenceName(blockToMove.getId()))
+                        .putShort("val", blockToMove.getDamage());
                 CompoundTag nbt = BlockEntity.getDefaultCompound(newPos, BlockEntity.MOVING_BLOCK)
                         .putInt("pistonPosX", this.getFloorX())
                         .putInt("pistonPosY", this.getFloorY())
                         .putInt("pistonPosZ", this.getFloorZ())
                         .putCompound("movingBlock", movingBlockTag);
-
+                var blockEntity = this.level.getBlockEntity(oldPos);
+                //移动方块实体
                 if (blockEntity != null && !(blockEntity instanceof BlockEntityMovingBlock)) {
                     blockEntity.saveNBT();
-
                     nbt.putCompound("movingEntity", new CompoundTag(blockEntity.namedTag.getTags()));
-
-                    if (blockEntity instanceof InventoryHolder) {
+                    if (blockEntity instanceof InventoryHolder)
                         ((InventoryHolder) blockEntity).getInventory().clearAll();
-                    }
-
                     blockEntity.close();
                 }
-
                 oldPosList.add(oldPos);
                 blockEntityHolderList.add((BlockEntityHolder<?>) BlockState.of(BlockID.MOVING_BLOCK).getBlock(Position.fromObject(newPos, this.level)));
                 nbtList.add(nbt);
             }
-
+            //生成moving_block
             for (int i = 0; i < oldPosList.size(); i++) {
-                Vector3 oldPos = oldPosList.get(i);
-                BlockEntityHolder<?> blockEntityHolder = blockEntityHolderList.get(i);
-                CompoundTag nbt = nbtList.get(i);
-
+                var oldPos = oldPosList.get(i);
+                var blockEntityHolder = blockEntityHolderList.get(i);
+                var nbt = nbtList.get(i);
                 BlockEntityHolder.setBlockAndCreateEntity(blockEntityHolder, true, true, nbt);
-
-                if (this.level.getBlock(oldPos).getId() != BlockID.MOVING_BLOCK) {
+                if (this.level.getBlock(oldPos).getId() != BlockID.MOVING_BLOCK)
                     this.level.setBlock(oldPos, Block.get(BlockID.AIR));
-                }
             }
         }
-
+        //创建活塞臂方块
         if (extending) {
-            Vector3 pos = this.getSide(direction);
-            level.setBlock(pos, 1, Block.get(AIR), true, false);
-            if (this.sticky && Block.list[STICKY_PISTON_ARM_COLLISION] != null) {
-                this.level.setBlock(pos, get(STICKY_PISTON_ARM_COLLISION, this.getDamage()), true);
-            } else {
-                this.level.setBlock(pos, get(PISTON_ARM_COLLISION, this.getDamage()), true);
-            }
+            var pistonArmPos = this.getSide(pistonFace);
+            //清除位置上所含的水等
+            level.setBlock(pistonArmPos, 1, Block.get(AIR), true, false);
+            this.level.setBlock(pistonArmPos, createHead(this.getDamage()));
         }
-
-        BlockEntityPistonArm blockEntity = (BlockEntityPistonArm) this.level.getBlockEntity(this);
-        blockEntity.move(extending, attached);
+        //开始移动
+        this.getBlockEntity().move(extending, toMoveBlockVec);
         return true;
     }
 
-    public static boolean canPush(Block block, BlockFace face, boolean destroyBlocks, boolean extending) {
-        var min = block.level.getMinHeight();
-        var max = block.level.getMaxHeight() - 1;
-        if (
-                block.getY() >= min && (face != BlockFace.DOWN || block.getY() != min) &&
-                        block.getY() <= max && (face != BlockFace.UP || block.getY() != max)
-        ) {
-            if (extending && !block.canBePushed() || !extending && !block.canBePulled()) {
-                return false;
-            }
+    @PowerNukkitOnly
+    protected BlockPistonHead createHead(int damage) {
+        return (BlockPistonHead) Block.get(getPistonHeadBlockId(), damage);
+    }
 
-            if (block.breaksWhenMoved()) {
-                return destroyBlocks || block.sticksToPiston();
-            }
+    @PowerNukkitOnly
+    public abstract int getPistonHeadBlockId();
 
-            BlockEntity be = block.level.getBlockEntity(block);
-            return be == null || be.isMovable();
-        }
+    @Override
+    public BlockFace getBlockFace() {
+        var face = BlockFace.fromIndex(this.getDamage());
+        return face.getHorizontalIndex() >= 0 ? face.getOpposite() : face;
+    }
 
+    @Override
+    public boolean isSolid() {
         return false;
     }
 
@@ -379,11 +352,9 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
 
         private static final int MOVE_BLOCK_LIMIT = 12;
         private final Vector3 pistonPos;
-        private Vector3 armPos;
         private final Block blockToMove;
         private final BlockFace moveDirection;
         private final boolean extending;
-
         private final List<Block> toMove = new ArrayList<>() {
             @Override
             public int indexOf(Object o) {
@@ -406,6 +377,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
             }
         };
         private final List<Block> toDestroy = new ArrayList<>();
+        private Vector3 armPos;
 
         public BlocksCalculator(boolean extending) {
             this.pistonPos = getLocation();
@@ -430,154 +402,115 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
         }
 
         public boolean canMove() {
-            if (!sticky && !extending) {
+            //普通活塞缩回，不需要检查
+            if (!sticky && !extending)
                 return true;
-            }
-
             this.toMove.clear();
             this.toDestroy.clear();
-            Block block = this.blockToMove;
-
-            if (!canPush(block, this.moveDirection, true, extending)) {
+            var block = this.blockToMove;
+            if (!canPush(block, this.moveDirection, true, extending))
                 return false;
-            }
-
             if (block.breaksWhenMoved()) {
-                if (extending || block.sticksToPiston()) {
+                if (extending || block.sticksToPiston())
                     this.toDestroy.add(this.blockToMove);
-                }
-
                 return true;
             }
-
-            if (!this.addBlockLine(this.blockToMove, this.moveDirection)) {
+            if (!this.addBlockLine(this.blockToMove, this.blockToMove.getSide(this.moveDirection.getOpposite()), true))
                 return false;
-            }
-
             for (int i = 0; i < this.toMove.size(); ++i) {
-                Block b = this.toMove.get(i);
-
-                if (b.getId() == SLIME_BLOCK && !this.addBranchingBlocks(b)) {
+                var b = this.toMove.get(i);
+                int blockId = b.getId();
+                if ((blockId == SLIME_BLOCK || blockId == HONEY_BLOCK) && !this.addBranchingBlocks(b)) {
                     return false;
                 }
             }
-
             return true;
         }
 
-        private boolean addBlockLine(Block origin, BlockFace from) {
-            Block block = origin.clone();
-
-            if (block.getId() == AIR) {
+        protected boolean addBlockLine(Block origin, Block from, boolean mainBlockLine) {
+            var block = origin.clone();
+            if (block.getId() == AIR)
                 return true;
-            }
-
-            if (!canPush(origin, this.moveDirection, false, extending)) {
+            //粘液块和蜂蜜块互不干扰
+            if (!mainBlockLine && (block.getId() == SLIME_BLOCK && from.getId() == HONEY_BLOCK
+                    || block.getId() == HONEY_BLOCK && from.getId() == SLIME_BLOCK))
                 return true;
-            }
-
-            if (origin.equals(this.pistonPos)) {
+            if (!canPush(origin, this.moveDirection, false, extending))
                 return true;
-            }
-
-            if (this.toMove.contains(origin)) {
+            if (origin.equals(this.pistonPos))
                 return true;
-            }
-
-            if (this.toMove.size() >= MOVE_BLOCK_LIMIT) {
+            if (this.toMove.contains(origin))
+                return true;
+            if (this.toMove.size() >= MOVE_BLOCK_LIMIT)
                 return false;
-            }
-
             this.toMove.add(block);
-
-            int count = 1;
-            List<Block> sticked = new ArrayList<>();
-
-            while (block.getId() == SLIME_BLOCK) {
+            var count = 1;
+            var beStuck = new ArrayList<Block>();
+            while (block.getId() == SLIME_BLOCK || block.getId() == HONEY_BLOCK) {
+                var oldBlock = block.clone();
                 block = origin.getSide(this.moveDirection.getOpposite(), count);
-
-                if (block.getId() == AIR || !canPush(block, this.moveDirection, false, extending) || block.equals(this.pistonPos)) {
+                //蜂蜜块和粘液块互不干扰
+                if (!extending && (block.getId() == SLIME_BLOCK && oldBlock.getId() == HONEY_BLOCK
+                        || block.getId() == HONEY_BLOCK && oldBlock.getId() == SLIME_BLOCK))
                     break;
-                }
-
+                if (block.getId() == AIR || !canPush(block, this.moveDirection, false, extending) || block.equals(this.pistonPos))
+                    break;
                 if (block.breaksWhenMoved() && block.sticksToPiston()) {
                     this.toDestroy.add(block);
                     break;
                 }
-
-                if (++count + this.toMove.size() > MOVE_BLOCK_LIMIT) {
+                if (count + this.toMove.size() > MOVE_BLOCK_LIMIT)
                     return false;
-                }
-
-                sticked.add(block);
+                count++;
+                beStuck.add(block);
             }
-
-            int stickedCount = sticked.size();
-
-            if (stickedCount > 0) {
-                this.toMove.addAll(Lists.reverse(sticked));
-            }
-
+            int beStuckCount = beStuck.size();
+            if (beStuckCount > 0)
+                this.toMove.addAll(Lists.reverse(beStuck));
             int step = 1;
-
             while (true) {
-                Block nextBlock = origin.getSide(this.moveDirection, step);
+                var nextBlock = origin.getSide(this.moveDirection, step);
                 int index = this.toMove.indexOf(nextBlock);
-
                 if (index > -1) {
-                    this.reorderListAtCollision(stickedCount, index);
-
-                    for (int i = 0; i <= index + stickedCount; ++i) {
-                        Block b = this.toMove.get(i);
-
-                        if (b.getId() == SLIME_BLOCK && !this.addBranchingBlocks(b)) {
+                    this.reorderListAtCollision(beStuckCount, index);
+                    for (int i = 0; i <= index + beStuckCount; ++i) {
+                        var b = this.toMove.get(i);
+                        if ((b.getId() == SLIME_BLOCK || b.getId() == HONEY_BLOCK) && !this.addBranchingBlocks(b))
                             return false;
-                        }
                     }
-
                     return true;
                 }
-
-                if (nextBlock.getId() == AIR || nextBlock.equals(armPos)) {
+                if (nextBlock.getId() == AIR || nextBlock.equals(armPos))
                     return true;
-                }
-
-                if (!canPush(nextBlock, this.moveDirection, true, extending) || nextBlock.equals(this.pistonPos)) {
+                if (!canPush(nextBlock, this.moveDirection, true, extending) || nextBlock.equals(this.pistonPos))
                     return false;
-                }
-
                 if (nextBlock.breaksWhenMoved()) {
                     this.toDestroy.add(nextBlock);
                     return true;
                 }
-
-                if (this.toMove.size() >= MOVE_BLOCK_LIMIT) {
+                if (this.toMove.size() >= MOVE_BLOCK_LIMIT)
                     return false;
-                }
-
                 this.toMove.add(nextBlock);
-                ++stickedCount;
+                ++beStuckCount;
                 ++step;
             }
         }
 
         private void reorderListAtCollision(int count, int index) {
-            List<Block> list = new ArrayList<>(this.toMove.subList(0, index));
-            List<Block> list1 = new ArrayList<>(this.toMove.subList(this.toMove.size() - count, this.toMove.size()));
-            List<Block> list2 = new ArrayList<>(this.toMove.subList(index, this.toMove.size() - count));
+            var list = new ArrayList<>(this.toMove.subList(0, index));
+            var list1 = new ArrayList<>(this.toMove.subList(this.toMove.size() - count, this.toMove.size()));
+            var list2 = new ArrayList<>(this.toMove.subList(index, this.toMove.size() - count));
             this.toMove.clear();
             this.toMove.addAll(list);
             this.toMove.addAll(list1);
             this.toMove.addAll(list2);
         }
 
-        private boolean addBranchingBlocks(Block block) {
+        protected boolean addBranchingBlocks(Block block) {
             for (BlockFace face : BlockFace.values()) {
-                if (face.getAxis() != this.moveDirection.getAxis() && !this.addBlockLine(block.getSide(face), face)) {
+                if (face.getAxis() != this.moveDirection.getAxis() && !this.addBlockLine(block.getSide(face), block, false))
                     return false;
-                }
             }
-
             return true;
         }
 
@@ -588,17 +521,5 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
         public List<Block> getBlocksToDestroy() {
             return this.toDestroy;
         }
-    }
-
-    @Override
-    public BlockFace getBlockFace() {
-        BlockFace face = BlockFace.fromIndex(this.getDamage());
-
-        return face.getHorizontalIndex() >= 0 ? face.getOpposite() : face;
-    }
-
-    @Override
-    public boolean isSolid() {
-        return false;
     }
 }

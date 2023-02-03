@@ -26,4 +26,10 @@ public class BlockPiston extends BlockPistonBase {
     public String getName() {
         return "Piston";
     }
+
+    @PowerNukkitOnly
+    @Override
+    public int getPistonHeadBlockId() {
+        return PISTON_ARM_COLLISION;
+    }
 }

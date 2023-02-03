@@ -87,6 +87,7 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
 
         var horizontal = moveDirection != BlockFace.UP && moveDirection != BlockFace.DOWN;
 
+        //TODO: 修复移动
         bb = bb.getOffsetBoundingBox(
                 this.x + moveDirection.getXOffset() * (piston.extending && horizontal ? 1 : -2),
                 this.y + moveDirection.getYOffset() * (piston.extending ? 1 : -2),
