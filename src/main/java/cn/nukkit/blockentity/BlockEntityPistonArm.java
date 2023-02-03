@@ -155,7 +155,6 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         super.loadNBT();
         this.sticky = namedTag.getBoolean("Sticky");
         this.extending = namedTag.getBoolean("Extending");
-        this.movable = !this.extending;
         this.powered = namedTag.getBoolean("powered");
         if (namedTag.contains("facing")) {
             this.facing = BlockFace.fromIndex(namedTag.getInt("facing"));

@@ -17,6 +17,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.Sound;
+import cn.nukkit.level.vibration.VibrationEvent;
+import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
@@ -242,11 +244,13 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
             if (!this.doMove(true))
                 return false;
             this.getLevel().addSound(this, Sound.TILE_PISTON_OUT);
+            this.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.add(0.5, 0.5, 0.5), VibrationType.PISTON_EXTEND));
             return true;
         } else if (!isPowered && isExtended) {
             if (!this.doMove(false))
                 return false;
             this.getLevel().addSound(this, Sound.TILE_PISTON_IN);
+            this.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.add(0.5, 0.5, 0.5), VibrationType.PISTON_CONTRACT));
             return true;
         }
         return false;
