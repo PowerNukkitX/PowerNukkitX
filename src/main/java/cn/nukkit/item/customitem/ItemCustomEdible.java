@@ -50,7 +50,8 @@ public abstract class ItemCustomEdible extends ItemEdible implements CustomItem 
         return super.getId();
     }
 
-    abstract Map.Entry<Plugin, Food> getFood();
+    @Since("1.19.60-r1")
+    public abstract Map.Entry<Plugin, Food> getFood();
 
     public boolean isDrink() {
         return false;

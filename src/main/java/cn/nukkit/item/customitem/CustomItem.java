@@ -23,7 +23,5 @@ public interface CustomItem {
      */
     CustomItemDefinition getDefinition();
 
-    default String getNamespaceId() {
-        return getDefinition().identifier();
-    }
+    String getNamespaceId();
 }
