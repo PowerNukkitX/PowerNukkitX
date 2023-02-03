@@ -1,64 +1,28 @@
 package cn.nukkit.block;
 
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityMinecartAbstract;
-import cn.nukkit.level.Position;
+import cn.nukkit.inventory.ContainerInventory;
+import cn.nukkit.inventory.InventoryHolder;
+import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.utils.OptionalBoolean;
 import cn.nukkit.utils.RedstoneComponent;
 
 import javax.annotation.Nonnull;
-import java.util.HashSet;
-import java.util.Set;
+import javax.annotation.Nullable;
 
 /**
  * @author CreeperFace (Nukkit Project), larryTheCoder (Minecart and Riding Project)
  * @since 2015/11/22 
  */
-public class BlockRailDetector extends BlockRail {
+public class BlockRailDetector extends BlockRail implements RedstoneComponent {
 
-    public static Set<Position> activeDetectors = new HashSet<>();
-
-    static{
-        if (Server.getInstance() != null) {
-            Server.getInstance().getScheduler().scheduleRepeatingTask(() -> {
-                for (Position pos : activeDetectors.toArray(new Position[0])) {
-                    BlockRailDetector detector;
-                    if (pos.getLevel().getBlock(pos) instanceof BlockRailDetector) {
-                        detector = (BlockRailDetector) pos.getLevel().getBlock(pos);
-                    } else {
-                        activeDetectors.remove(pos);
-                        return;
-                    }
-                    for (Entity entity : detector.level.getNearbyEntities(new SimpleAxisAlignedBB(
-                            detector.getFloorX() + 0.2D,
-                            detector.getFloorY(),
-                            detector.getFloorZ() + 0.2D,
-                            detector.getFloorX() + 0.8D,
-                            detector.getFloorY() + 0.8D,
-                            detector.getFloorZ() + 0.8D))) {
-                        if (entity instanceof EntityMinecartAbstract) {
-                            return;
-                        }
-                    }
-                    detector.setActive(false);
-                    detector.level.setBlock(detector, detector, true, true);
-                    activeDetectors.remove(detector);
-
-                    //update redstone
-                    RedstoneComponent.updateAroundRedstone(detector.down());
-                    if (detector.getOrientation().isAscending()) {
-                        RedstoneComponent.updateAroundRedstone(detector.up());
-                    }
-                }
-            }, 20);
-        }
-    }
+    protected int comparatorInput = 0;
 
     public BlockRailDetector() {
         this(0);
@@ -93,30 +57,67 @@ public class BlockRailDetector extends BlockRail {
     }
 
     @Override
+    public boolean hasComparatorInputOverride() {
+        return true;
+    }
+
+    @Override
+    public int getComparatorInputOverride() {
+        return findMinecart() instanceof InventoryHolder inventoryHolder ? ContainerInventory.calculateRedstone(inventoryHolder.getInventory()) : 0;
+    }
+
+    @Override
     public int getWeakPower(BlockFace side) {
         return isActive() ? 15 : 0;
     }
 
     @Override
     public int getStrongPower(BlockFace side) {
-        return isActive() ? 0 : (side == BlockFace.UP ? 15 : 0);
+        return isActive() ? (side == BlockFace.UP ? 15 : 0) : 0;
     }
 
-    public void setActive() {
-        if (this.isActive()){
-            return;
+    @Override
+    public int onUpdate(int type) {
+        if (type == Level.BLOCK_UPDATE_SCHEDULED || type == Level.BLOCK_UPDATE_NORMAL) {
+            checkMinecart();
+            return type;
         }
-        setActive(true);
-        this.level.setBlock(this, this, true, true);
+        return super.onUpdate(type);
+    }
 
-        //update redstone
-        RedstoneComponent.updateAroundRedstone(down());
-        if (getOrientation().isAscending()) {
-            RedstoneComponent.updateAroundRedstone(up());
+    public void checkMinecart() {
+        if (findMinecart() != null) updateState(true);
+        else updateState(false);
+    }
+
+    @Nullable
+    public EntityMinecartAbstract findMinecart() {
+        for (Entity entity : level.getNearbyEntities(new SimpleAxisAlignedBB(
+                getFloorX() + 0.2,
+                getFloorY(),
+                getFloorZ() + 0.2,
+                getFloorX() + 0.8,
+                getFloorY() + 0.8,
+                getFloorZ() + 0.8))) {
+            if (entity instanceof EntityMinecartAbstract minecart)
+                return minecart;
         }
-        level.updateComparatorOutputLevel(this);
+        return null;
+    }
 
-        activeDetectors.add(this);
+    public void updateState(boolean powered) {
+        var wasPowered = isActive();
+        if (powered != wasPowered) {
+            this.setActive(powered);
+            updateAroundRedstone();
+            RedstoneComponent.updateAroundRedstone(this.getSide(BlockFace.DOWN));
+        }
+        if (powered) {
+            //每20gt检查一遍
+            level.scheduleUpdate(this, 20);
+            //更新比较器输出
+            level.updateComparatorOutputLevel(this);
+        }
     }
 
     @Override
