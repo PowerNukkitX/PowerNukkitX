@@ -10,15 +10,12 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityMoveByPistonEvent;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.FullChunk;
-import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.SimpleAxisAlignedBB;
-import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.BlockEntityDataPacket;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -38,6 +35,8 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
     public int newState;
     public List<BlockVector3> attachedBlocks;
     public boolean powered;
+
+    protected boolean half = false;
 
     public BlockEntityPistonArm(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -73,11 +72,11 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
             return;
         if (entity instanceof Player player) {
             //TODO: 优化
-            player.sendPosition(new Vector3(
-                    player.x + moveDirection.getXOffset(),
-                    player.y + moveDirection.getYOffset(),
-                    player.z + moveDirection.getZOffset()
-            ));
+//            player.sendPosition(new Vector3(
+//                    player.x + moveDirection.getXOffset(),
+//                    player.y + moveDirection.getYOffset(),
+//                    player.z + moveDirection.getZOffset()
+//            ));
         } else {
             entity.move(
                     moveDirection.getXOffset(),
@@ -92,9 +91,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         this.state = this.newState = extending ? 1 : 3;
         this.attachedBlocks = attachedBlocks;
         this.movable = false;
-        var packet = this.getSpawnPacket();
-        if (packet != null)
-            this.level.addChunkPacket(getChunkX(), getChunkZ(), packet);
+        updateBlockEntityData();
         this.moveCollidedEntities();
         this.scheduleUpdate();
     }
@@ -104,6 +101,11 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
      */
     @Override
     public boolean onUpdate() {
+        if (!this.half) {
+            this.half = true;
+//            updateBlockEntityData();
+            return true;
+        }
         this.state = this.newState = extending ? 2 : 0;
         var pushDirection = this.extending ? facing : facing.getOpposite();
         for (var pos : this.attachedBlocks) {
@@ -126,7 +128,6 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                 moved.onUpdate(Level.BLOCK_UPDATE_MOVED);
                 //红石更新
                 RedstoneComponent.updateAroundRedstone(moved);
-//                this.level.scheduleUpdate(moved, 1);
             }
         }
         var pos = getSide(facing);
@@ -138,11 +139,11 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                 this.level.setBlock(pos, Block.get(Block.AIR), true);
             }
         }
-//        this.level.scheduleUpdate(this.getLevelBlock(), 1);
+        //对和活塞接触的方块进行更新
+        this.level.neighborChangeAroundImmediately(this);
         this.attachedBlocks.clear();
-        var packet = this.getSpawnPacket();
-        if (packet != null)
-            this.level.addChunkPacket(getChunkX(), getChunkZ(), packet);
+        this.half = false;
+        updateBlockEntityData();
         return false;
     }
 
@@ -197,6 +198,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
 
     public CompoundTag getSpawnCompound() {
         return getDefaultCompound(this, PISTON_ARM)
+//                .putFloat("Progress", half ? 0.5f : (extending ? 0 : 1))
                 .putBoolean("isMovable", this.movable)
                 .putList(getAttachedBlocks())
                 .putList(new ListTag<>("BreakBlocks"))
@@ -205,7 +207,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                 .putByte("NewState", this.newState);
     }
 
-    private ListTag<IntTag> getAttachedBlocks() {
+    protected ListTag<IntTag> getAttachedBlocks() {
         var attachedBlocks = new ListTag<IntTag>("AttachedBlocks");
         for (var block : this.attachedBlocks) {
             attachedBlocks.add(new IntTag("", block.x));
@@ -213,5 +215,11 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
             attachedBlocks.add(new IntTag("", block.z));
         }
         return attachedBlocks;
+    }
+
+    protected void updateBlockEntityData() {
+        var packet = this.getSpawnPacket();
+        if (packet != null)
+            this.level.addChunkPacket(getChunkX(), getChunkZ(), packet);
     }
 }
