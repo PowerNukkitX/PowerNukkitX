@@ -92,6 +92,7 @@ public abstract class BlockEntity extends Position {
     protected Server server;
     protected Timing timing;
 
+    @PowerNukkitXDifference(since = "1.19.60-r1", info = "Do not call initBlockEntity() here, it will be called later")
     public BlockEntity(FullChunk chunk, CompoundTag nbt) {
         if (chunk == null || chunk.getProvider() == null) {
             throw new ChunkException("Invalid garbage Chunk given to Block Entity");
@@ -115,12 +116,14 @@ public abstract class BlockEntity extends Position {
             namedTag.putBoolean("isMovable", true);
         }
 
-        this.initBlockEntity();
-        
+        // We don't call it since it may cause some filed overwrote bugs
+        // If you call the constructor directly, you must call initBlockEntity() later
+        // this.initBlockEntity();
+
         if (closed) {
             throw new IllegalStateException("Could not create the entity "+getClass().getName()+", the initializer closed it on construction.");
         }
-        
+
         this.chunk.addBlockEntity(this);
         this.getLevel().addBlockEntity(this);
     }
@@ -183,6 +186,8 @@ public abstract class BlockEntity extends Position {
                     }
                 }
                 log.error("Could not create a block entity of type {} with {} args", type, args == null? 0 : args.length, cause);
+            } else {
+                blockEntity.initBlockEntity();
             }
         } else {
             log.debug("Block entity type {} is unknown", type);
