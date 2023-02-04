@@ -8,7 +8,9 @@ import cn.nukkit.item.Item;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.potion.Effect;
 
+import javax.annotation.Nullable;
 import java.util.*;
+import java.util.function.IntSupplier;
 
 /**
  * @author Snake1999
@@ -83,19 +85,19 @@ public abstract class Food {
             .addRelative(Item.PUFFERFISH));
     public static final Food dried_kelp = registerDefaultFood(new FoodNormal(1, 0.6F).addRelative(Item.DRIED_KELP).setEatingTick(16));
     public static final Food sweet_berries = registerDefaultFood(new FoodNormal(2, 0.4F).addRelative(Item.SWEET_BERRIES));
-    
+
     @PowerNukkitOnly
     public static final Food suspicious_stew_night_vision = registerDefaultFood(new FoodEffectiveInBow(6, 7.2F)
             .addEffect(Effect.getEffect(Effect.NIGHT_VISION).setAmplifier(1).setDuration(4 * 20)).addRelative(Item.SUSPICIOUS_STEW, 0));
-    
+
     @PowerNukkitOnly
     public static final Food suspicious_stew_jump = registerDefaultFood(new FoodEffectiveInBow(6, 7.2F)
             .addEffect(Effect.getEffect(Effect.JUMP).setAmplifier(1).setDuration(4 * 20)).addRelative(Item.SUSPICIOUS_STEW, 1));
-    
+
     @PowerNukkitOnly
     public static final Food suspicious_stew_weakness = registerDefaultFood(new FoodEffectiveInBow(6, 7.2F)
             .addEffect(Effect.getEffect(Effect.WEAKNESS).setAmplifier(1).setDuration(7 * 20)).addRelative(Item.SUSPICIOUS_STEW, 2));
-    
+
     @PowerNukkitOnly
     public static final Food suspicious_stew_blindness = registerDefaultFood(new FoodEffectiveInBow(6, 7.2F)
             .addEffect(Effect.getEffect(Effect.BLINDNESS).setAmplifier(1).setDuration(6 * 20)).addRelative(Item.SUSPICIOUS_STEW, 3));
@@ -120,7 +122,8 @@ public abstract class Food {
     public static final Food suspicious_stew_wither = registerDefaultFood(new FoodEffectiveInBow(6, 7.2F)
             .addEffect(Effect.getEffect(Effect.WITHER).setAmplifier(1).setDuration(6 * 20)).addRelative(Item.SUSPICIOUS_STEW, 9));
 
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", reason = "Was added in Cloudburst Nukkit with another name", replaceWith = "honey_bottle")
+    @Deprecated
+    @DeprecationDetails(since = "1.4.0.0-PN", reason = "Was added in Cloudburst Nukkit with another name", replaceWith = "honey_bottle")
     @PowerNukkitOnly
     public static final Food honey = registerDefaultFood(new FoodHoney(6, 1.2F).addRelative(Item.HONEY_BOTTLE));
 
@@ -167,7 +170,8 @@ public abstract class Food {
     public static Food getByRelative(int relativeID, String stringID, int meta) {
         final Food[] result = {null};
         registryCustom.forEach((n, f) -> {
-            if (n.id == relativeID && n.meta == meta && n.plugin.isEnabled() && (n instanceof NodeStringIDMeta ns && ns.stringID.equals(stringID))) result[0] = f;
+            if (n.id == relativeID && n.meta == meta && n.plugin.isEnabled() && (n instanceof NodeStringIDMeta ns && ns.stringID.equals(stringID)))
+                result[0] = f;
         });
         if (result[0] == null) {
             registryDefault.forEach((n, f) -> {
@@ -231,24 +235,42 @@ public abstract class Food {
         this.restoreSaturation = restoreSaturation;
         return this;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.5.1.0-PN")
     protected int eatingTick = 31;
-    
+
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    protected IntSupplier eatingTickSupplier;
+
     @PowerNukkitOnly
     @Since("1.5.1.0-PN")
     public int getEatingTick() {
         return eatingTick;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.5.1.0-PN")
     public Food setEatingTick(int eatingTick) {
         this.eatingTick = eatingTick;
         return this;
     }
-    
+
+    @Nullable
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    public IntSupplier getEatingTickSupplier() {
+        return eatingTickSupplier;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    public Food setEatingTickSupplier(IntSupplier eatingTickSupplier) {
+        this.eatingTickSupplier = eatingTickSupplier;
+        return this;
+    }
+
     static class NodeIDMeta {
         final int id;
         final int meta;
