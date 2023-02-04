@@ -282,4 +282,23 @@ public class BlockChest extends BlockTransparentMeta implements Faceable, BlockE
     public BlockFace getBlockFace() {
         return BlockFace.fromHorizontalIndex(this.getDamage() & 0x7);
     }
+
+    @Override
+    public boolean canBePushed() {
+        return canMove();
+    }
+
+    @PowerNukkitOnly
+    @Override
+    public boolean canBePulled() {
+        return canMove();
+    }
+
+    /**
+     * 大箱子在PNX不能推动
+     */
+    protected boolean canMove() {
+        var blockEntity = this.getBlockEntity();
+        return blockEntity != null && blockEntity.isPaired();
+    }
 }
