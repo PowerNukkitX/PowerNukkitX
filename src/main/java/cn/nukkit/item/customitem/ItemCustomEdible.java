@@ -47,7 +47,7 @@ public abstract class ItemCustomEdible extends ItemEdible implements CustomItem 
 
     @Override
     public final int getId() {
-        return super.getId();
+        return CustomItem.super.getId();
     }
 
     @Since("1.19.60-r1")

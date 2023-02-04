@@ -11,7 +11,7 @@ import javax.annotation.Nonnull;
  */
 @PowerNukkitOnly
 @Since("FUTURE")
-public final class StringItemUnknown extends StringItem {
+public final class StringItemUnknown extends StringItemBase {
     @PowerNukkitOnly
     @Since("FUTURE")
     public StringItemUnknown(@Nonnull String id) {

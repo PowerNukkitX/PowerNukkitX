@@ -1108,6 +1108,10 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     public Item setCompoundTag(byte[] tags) {
+        if (this.id == STRING_IDENTIFIED_ITEM) {
+            CompoundTag compoundTag = (tags == null || tags.length == 0) ? new CompoundTag() : Item.parseCompoundTag(tags);
+            return this.setNamedTag(compoundTag);
+        }
         this.tags = tags;
         this.cachedNBT = null;
         return this;
@@ -1645,6 +1649,7 @@ public class Item implements Cloneable, BlockID, ItemID {
 
     public CompoundTag getNamedTag() {
         if (!this.hasCompoundTag()) {
+            clearNamedTag();
             return null;
         }
 
@@ -1655,8 +1660,7 @@ public class Item implements Cloneable, BlockID, ItemID {
         if (this.cachedNBT != null) {
             this.cachedNBT.setName("");
         }
-
-        return this.cachedNBT;
+        return this.id == STRING_IDENTIFIED_ITEM ? this.cachedNBT.putString("Name", getNamespaceId()) : this.cachedNBT;
     }
 
     public CompoundTag getOrCreateNamedTag() {
@@ -1670,6 +1674,9 @@ public class Item implements Cloneable, BlockID, ItemID {
         if (tag.isEmpty()) {
             return this.clearNamedTag();
         }
+        if (this.id == STRING_IDENTIFIED_ITEM) {
+            tag = tag.putString("Name", getNamespaceId());
+        }
         tag.setName(null);
 
         this.cachedNBT = tag;
@@ -1679,6 +1686,9 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     public Item clearNamedTag() {
+        if (this.id == STRING_IDENTIFIED_ITEM) {
+            return this.setCompoundTag(new CompoundTag().putString("Name", getNamespaceId()));
+        }
         return this.setCompoundTag(EmptyArrays.EMPTY_BYTES);
     }
 
@@ -1751,9 +1761,7 @@ public class Item implements Cloneable, BlockID, ItemID {
     @Since("1.4.0.0-PN")
     public String getNamespaceId() {
         RuntimeItemMapping runtimeMapping = RuntimeItems.getRuntimeMapping();
-        return runtimeMapping.getNamespacedIdByNetworkId(
-                RuntimeItems.getNetworkId(runtimeMapping.getNetworkFullId(this))
-        );
+        return runtimeMapping.getNamespacedIdByNetworkId(RuntimeItems.getNetworkId(runtimeMapping.getNetworkFullId(this)));
     }
 
     @PowerNukkitOnly

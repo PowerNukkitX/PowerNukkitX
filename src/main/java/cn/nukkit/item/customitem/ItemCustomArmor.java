@@ -44,6 +44,6 @@ public abstract class ItemCustomArmor extends ItemArmor implements CustomItem {
 
     @Override
     public final int getId() {
-        return super.getId();
+        return CustomItem.super.getId();
     }
 }

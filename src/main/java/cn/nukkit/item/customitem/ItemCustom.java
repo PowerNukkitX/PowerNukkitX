@@ -1,11 +1,10 @@
 package cn.nukkit.item.customitem;
 
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemID;
 import cn.nukkit.item.StringItem;
+import cn.nukkit.item.StringItemBase;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -19,31 +18,21 @@ import javax.annotation.Nullable;
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public abstract class ItemCustom extends Item implements CustomItem {
-    private final String id;
+public abstract class ItemCustom extends StringItemBase implements CustomItem {
     private final String textureName;
 
     public ItemCustom(@Nonnull String id, @Nullable String name) {
-        super(ItemID.STRING_IDENTIFIED_ITEM, 0, 1, StringItem.notEmpty(name));
-        this.id = id;
+        super(id, StringItem.notEmpty(name));
         this.textureName = name;
     }
 
     public ItemCustom(@Nonnull String id, @Nullable String name, @Nonnull String textureName) {
-        super(ItemID.STRING_IDENTIFIED_ITEM, 0, 1, StringItem.notEmpty(name));
-        this.id = id;
+        super(id, StringItem.notEmpty(name));
         this.textureName = textureName;
     }
 
     public String getTextureName() {
         return textureName;
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @Override
-    public String getNamespaceId() {
-        return id;
     }
 
     /**
@@ -52,11 +41,6 @@ public abstract class ItemCustom extends Item implements CustomItem {
      * This method sets the definition of custom item
      */
     public abstract CustomItemDefinition getDefinition();
-
-    @Override
-    public final int getId() {
-        return super.getId();
-    }
 
     @Override
     public ItemCustom clone() {
