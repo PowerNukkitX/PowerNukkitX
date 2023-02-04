@@ -14,6 +14,7 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.SimpleAxisAlignedBB;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
@@ -64,12 +65,16 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                 this.x + (pushDirection.getXOffset() * progress),
                 this.y + (pushDirection.getYOffset() * progress),
                 this.z + (pushDirection.getZOffset() * progress)
-        );
+                //带动站在移动方块上的实体
+        ).addCoord(0, pushDirection.getAxis().isHorizontal() ? 0.25 : 0, 0);;
         for (var entity : this.level.getCollidingEntities(bb))
             moveEntity(entity, pushDirection);
     }
 
     void moveEntity(Entity entity, BlockFace moveDirection) {
+        //不需要给予向下的力
+        if (moveDirection == BlockFace.DOWN)
+            return;
         var diff = Math.abs(this.progress - this.lastProgress);
         //玩家客户端会自动处理移动
         if (diff == 0 || !entity.canBePushed() || entity instanceof Player)
@@ -81,11 +86,12 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         entity.onPushByPiston(this);
         if (entity.closed)
             return;
-        entity.move(
-                diff * moveDirection.getXOffset(),
-                diff * moveDirection.getYOffset(),
-                diff * moveDirection.getZOffset()
-        );
+        entity.teleport(new Vector3(
+                entity.x + diff * moveDirection.getXOffset(),
+                //需要抵消重力
+                entity.y + diff * moveDirection.getYOffset() * (moveDirection == BlockFace.UP ? 2 : 1),
+                entity.z + diff * moveDirection.getZOffset()
+        ));
     }
 
     public void move(boolean extending, List<BlockVector3> attachedBlocks) {
