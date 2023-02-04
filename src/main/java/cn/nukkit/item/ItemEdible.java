@@ -45,34 +45,34 @@ public abstract class ItemEdible extends Item {
             player.getInventory().sendContents(player);
             return false;
         }
-        
+
         Food food = Food.getByRelative(this);
-        
-        if (food == null || ticksUsed < food.getEatingTick()) {
+        int eatingtick = food.getEatingTickSupplier() == null ? food.getEatingTick() : food.getEatingTickSupplier().getAsInt();
+        if (food == null || ticksUsed < eatingtick) {
             return false;
         }
-        
+
         PlayerItemConsumeEvent consumeEvent = new PlayerItemConsumeEvent(player, this);
-        
+
         player.getServer().getPluginManager().callEvent(consumeEvent);
         if (consumeEvent.isCancelled()) {
             player.getInventory().sendContents(player);
             return false;
         }
-        
+
         if (food.eatenBy(player)) {
             player.completeUsingItem(this.getNetworkId(), CompletedUsingItemPacket.ACTION_EAT);
-            
+
             if (player.isAdventure() || player.isSurvival()) {
                 --this.count;
                 player.getInventory().setItemInHand(this);
-                
+
                 player.getLevel().addSound(player, Sound.RANDOM_BURP);
             }
         }
 
         player.level.getVibrationManager().callVibrationEvent(new VibrationEvent(player, player.add(0, player.getEyeHeight()), VibrationType.EAT));
-        
+
         return true;
     }
 }
