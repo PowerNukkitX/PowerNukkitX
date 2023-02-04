@@ -1672,7 +1672,7 @@ public class Item implements Cloneable, BlockID, ItemID {
         }
         tag.setName(null);
 
-        if (this.id == STRING_IDENTIFIED_ITEM) {
+        if (this.id == STRING_IDENTIFIED_ITEM && !tag.containsString("Name")) {
             tag.putString("Name", getNamespaceId());
         }
 
@@ -1684,7 +1684,7 @@ public class Item implements Cloneable, BlockID, ItemID {
 
     public Item clearNamedTag() {
         if (this.id == STRING_IDENTIFIED_ITEM) {
-            return setCompoundTag(new CompoundTag().putString("Name", getNamespaceId()));
+            return setCompoundTag(new CompoundTag());
         }
         return this.setCompoundTag(EmptyArrays.EMPTY_BYTES);
     }
