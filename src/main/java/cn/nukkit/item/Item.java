@@ -1103,11 +1103,19 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     public Item setCompoundTag(CompoundTag tag) {
+        if (this.id == STRING_IDENTIFIED_ITEM) {
+            return this.setNamedTag(tag.putString("Name", getNamespaceId()));
+        }
+
         this.setNamedTag(tag);
         return this;
     }
 
     public Item setCompoundTag(byte[] tags) {
+        if (this.id == STRING_IDENTIFIED_ITEM) {
+            CompoundTag compoundTag = (tags == null || tags.length == 0) ? new CompoundTag() : parseCompoundTag(tags);
+            return this.setNamedTag(compoundTag);
+        }
         this.tags = tags;
         this.cachedNBT = null;
         return this;
@@ -1644,6 +1652,10 @@ public class Item implements Cloneable, BlockID, ItemID {
             this.cachedNBT.setName("");
         }
 
+        if (this.id == STRING_IDENTIFIED_ITEM) {
+            return this.cachedNBT.putString("Name", getNamespaceId());
+        }
+
         return this.cachedNBT;
     }
 
@@ -1660,6 +1672,10 @@ public class Item implements Cloneable, BlockID, ItemID {
         }
         tag.setName(null);
 
+        if (this.id == STRING_IDENTIFIED_ITEM) {
+            tag.putString("Name", getNamespaceId());
+        }
+
         this.cachedNBT = tag;
         this.tags = writeCompoundTag(tag);
 
@@ -1667,6 +1683,9 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     public Item clearNamedTag() {
+        if (this.id == STRING_IDENTIFIED_ITEM) {
+            return setCompoundTag(new CompoundTag().putString("Name", getNamespaceId()));
+        }
         return this.setCompoundTag(EmptyArrays.EMPTY_BYTES);
     }
 

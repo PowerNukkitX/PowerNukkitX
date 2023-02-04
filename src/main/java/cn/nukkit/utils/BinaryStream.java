@@ -646,6 +646,9 @@ public class BinaryStream {
                 } else {
                     tag = NBTIO.read(nbt, ByteOrder.LITTLE_ENDIAN);
                 }
+
+                if (tag.containsString("Name")) tag.remove("Name");
+
                 if (tag.contains("Damage")) {
                     tag.put("__DamageConflict__", tag.removeAndGet("Damage"));
                 }
@@ -656,7 +659,9 @@ public class BinaryStream {
             } else if (item.hasCompoundTag()) {
                 stream.writeShort(-1);
                 stream.writeByte(1); // Hardcoded in current version
-                stream.write(item.getCompoundTag());
+                var tag = item.getNamedTag();
+                if (tag.containsString("Name")) tag.remove("Name");
+                stream.write(NBTIO.write(tag, ByteOrder.LITTLE_ENDIAN));
             } else {
                 userDataBuf.writeShortLE(0);
             }
