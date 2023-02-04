@@ -299,6 +299,6 @@ public class BlockChest extends BlockTransparentMeta implements Faceable, BlockE
      */
     protected boolean canMove() {
         var blockEntity = this.getBlockEntity();
-        return blockEntity != null && blockEntity.isPaired();
+        return blockEntity == null || !blockEntity.isPaired();
     }
 }
