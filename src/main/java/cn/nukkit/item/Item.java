@@ -1121,18 +1121,6 @@ public class Item implements Cloneable, BlockID, ItemID {
         return this.tags != null && this.tags.length > 0;
     }
 
-    @PowerNukkitOnly
-    @Since("FUTURE")
-    public boolean hasCustomCompoundTag() {
-        return hasCompoundTag();
-    }
-
-    @PowerNukkitOnly
-    @Since("FUTURE")
-    public byte[] getCustomCompoundTag() {
-        return getCompoundTag();
-    }
-
     public boolean hasCustomBlockData() {
         if (!this.hasCompoundTag()) {
             return false;
@@ -2103,7 +2091,7 @@ public class Item implements Cloneable, BlockID, ItemID {
                 " (" + (this instanceof StringItem ? this.getNamespaceId() : this.id)
                 + ":" + (!this.hasMeta ? "?" : this.meta)
                 + ")x" + this.count
-                + (this.hasCustomCompoundTag() ? " tags:0x" + Binary.bytesToHexString(this.getCustomCompoundTag()) : "");
+                + (this.hasCompoundTag() ? " tags:0x" + Binary.bytesToHexString(this.getCompoundTag()) : "");
     }
 
     public int getDestroySpeed(Block block, Player player) {
