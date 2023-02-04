@@ -240,6 +240,10 @@ public class Server {
     @Since("1.19.30-r2")
     private int maximumSizePerChunk = 1048576;
 
+    @Since("1.19.60-r1")
+    @PowerNukkitXOnly
+    private int serverAuthoritativeMovementMode = 0;
+
     private boolean autoTickRate = true;
     private int autoTickRateLimit = 20;
     private boolean alwaysTickPlayers = false;
@@ -715,6 +719,12 @@ public class Server {
         this.safeSpawn = this.getConfig().getBoolean("settings.safe-spawn", true);
         this.forceSkinTrusted = this.getConfig().getBoolean("player.force-skin-trusted", false);
         this.checkMovement = this.getConfig().getBoolean("player.check-movement", true);
+        this.serverAuthoritativeMovementMode = switch (this.properties.get("server-authoritative-movement", "client-auth")) {
+            case "client-auth" -> 0;
+            case "server-auth" -> 1;
+            case "server-auth-with-rewind" -> 2;
+            default -> throw new IllegalArgumentException();
+        };
 
         this.maximumSizePerChunk = this.getConfig("chunk-saving.maximum-size-per-chunk", 1048576);
         //unlimited if value == -1
@@ -3440,12 +3450,7 @@ public class Server {
     @PowerNukkitXOnly
     @Since("1.19.40-r3")
     public int getServerAuthoritativeMovement() {
-        return switch (this.properties.get("server-authoritative-movement", "client-auth")) {
-            case "client-auth" -> 0;
-            case "server-auth" -> 1;
-            case "server-auth-with-rewind" -> 2;
-            default -> throw new IllegalArgumentException();
-        };
+        return serverAuthoritativeMovementMode;
     }
 
     //todo NukkitConsole 会阻塞关不掉

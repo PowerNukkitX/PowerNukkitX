@@ -203,7 +203,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public Vector3 speed = null;
     public int craftingType = CRAFTING_SMALL;
     public long creationTime = 0;
+    @Since("1.19.60-r1")
+    @PowerNukkitXOnly
+    long startBreakingBlockTime = 0;
     public Block breakingBlock = null;
+    @Since("1.19.60-r1")
+    @PowerNukkitXOnly
+    public BlockFace breakingBlockFace = null;
     public int pickedXPOrb = 0;
     public EntityFishingHook fishing = null;
     public long lastSkinChange;
@@ -485,10 +491,18 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return this.server.getNetwork().unpackBatchedPackets(packet, CompressionProvider.ZLIB);
     }
 
+    @PowerNukkitXDifference(since = "1.19.60-r1", info = "Auto-break custom blocks if client doesn't send the break data-pack.")
     private void onBlockBreakContinue(Vector3 pos, BlockFace face) {
         if (this.isBreakingBlock()) {
             Block block = this.level.getBlock(pos, false);
-            this.level.addParticle(new PunchBlockParticle(pos, block, face));
+            var miningTimeRequired = block.calculateBreakTime(this.inventory.getItemInHand(), this);
+            // Here we wait another 10ms to avoid animate collision on player model
+            if (System.currentTimeMillis() - startBreakingBlockTime > miningTimeRequired * 1000 + 10) {
+                this.onBlockBreakAbort(pos, face);
+                this.onBlockBreakComplete(pos.asBlockVector3(), face);
+            } else {
+                this.level.addParticle(new PunchBlockParticle(pos, block, face));
+            }
         }
     }
 
@@ -554,6 +568,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         if (!this.isCreative()) {
             double breakTime = Math.ceil(target.getBreakTime(this.inventory.getItemInHand(), this) * 20);
+            this.startBreakingBlockTime = currentBreak;
             if (breakTime > 0) {
                 LevelEventPacket pk = new LevelEventPacket();
                 pk.evid = LevelEventPacket.EVENT_BLOCK_START_BREAK;
@@ -586,6 +601,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         this.breakingBlock = target;
+        this.breakingBlockFace = face;
         this.lastBreak = currentBreak;
         this.lastBreakPosition = blockPos;
     }
@@ -601,6 +617,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.getLevel().addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, pk);
         }
         this.breakingBlock = null;
+        this.breakingBlockFace = null;
     }
 
     private void onBlockBreakComplete(BlockVector3 blockPos, BlockFace face) {
@@ -3218,6 +3235,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
             if (!this.isSleeping()) {
                 this.timeSinceRest++;
+            }
+
+            if (this.isSurvival() && this.server.getServerAuthoritativeMovement() != 0 && this.isBreakingBlock()) {
+                this.onBlockBreakContinue(breakingBlock, breakingBlockFace);
             }
         }
 
