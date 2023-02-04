@@ -3747,7 +3747,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                     this.onBlockBreakAbort(blockPos.asVector3(), blockFace);
                                     break;
                                 case CONTINUE_DESTROY_BLOCK:
-                                    this.onBlockBreakContinue(blockPos.asVector3(), blockFace);
                                     break;
                                 case PREDICT_DESTROY_BLOCK:
                                     this.onBlockBreakAbort(blockPos.asVector3(), blockFace);
