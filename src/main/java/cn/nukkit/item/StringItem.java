@@ -1,12 +1,14 @@
 package cn.nukkit.item;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXDifference;
 
 /**
  * @author joserobjr
  * @since 2021-06-12
  */
 @PowerNukkitOnly
+@PowerNukkitXDifference(info = "Change to interface")
 public interface StringItem {
     String getNamespaceId();
 

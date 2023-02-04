@@ -1,12 +1,15 @@
 package cn.nukkit.item;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import com.google.common.base.Preconditions;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+@PowerNukkitXOnly
+@Since("1.19.60-r1")
 public abstract class StringItemBase extends Item implements StringItem {
     private final String id;
 
