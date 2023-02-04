@@ -279,6 +279,7 @@ public abstract class EntityProjectile extends Entity {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     protected void onCollideWithBlock(Position position, Vector3 motion) {
+        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.PROJECTILE_LAND));
         for (Block collisionBlock : level.getCollisionBlocks(getBoundingBox().grow(0.1, 0.1, 0.1))) {
             onCollideWithBlock(position, motion, collisionBlock);
         }
@@ -287,7 +288,6 @@ public abstract class EntityProjectile extends Entity {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     protected boolean onCollideWithBlock(Position position, Vector3 motion, Block collisionBlock) {
-        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.PROJECTILE_LAND));
         return collisionBlock.onProjectileHit(this, position, motion);
     }
 

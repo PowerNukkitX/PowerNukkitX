@@ -3,6 +3,8 @@ package cn.nukkit.dispenser;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.ItemID;
+import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.Vector3;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -48,6 +50,26 @@ public final class DispenseBehaviorRegister {
         //TODO: spectral arrow
         registerBehavior(ItemID.EGG, new ProjectileDispenseBehavior("Egg"));
         registerBehavior(ItemID.SNOWBALL, new ProjectileDispenseBehavior("Snowball"));
+        registerBehavior(ItemID.FIRE_CHARGE, new ProjectileDispenseBehavior("Small FireBall") {
+            @Override
+            protected float getAccuracy() {
+                return 0;
+            }
+
+            @Override
+            protected Vector3 initMotion(BlockFace face) {
+                return new Vector3(
+                        face.getXOffset(),
+                        face.getYOffset()/* + 0.1f*/,
+                        face.getZOffset())
+                        .normalize();
+            }
+
+            @Override
+            protected double getMotion() {
+                return super.getMotion() * 1.5;
+            }
+        });
         registerBehavior(ItemID.EXPERIENCE_BOTTLE, new ProjectileDispenseBehavior("ThrownExpBottle") {
             @Override
             protected float getAccuracy() {

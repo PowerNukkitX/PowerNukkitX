@@ -55,7 +55,7 @@ public final class EntityIds {
             .put("minecraft:tnt_minecart", EntityMinecartTNT.NETWORK_ID)
             .put("minecraft:hopper_minecart", EntityMinecartHopper.NETWORK_ID)
             .put("minecraft:area_effect_cloud", EntityAreaEffectCloud.NETWORK_ID)
-            .put("minecraft:small_fireball", 94)
+            .put("minecraft:small_fireball", EntitySmallFireBall.NETWORK_ID)
             .put("minecraft:lightning_bolt", EntityLightning.NETWORK_ID)
             .put("minecraft:wither_skull_dangerous", 91)
             .put("minecraft:boat", EntityBoat.NETWORK_ID)

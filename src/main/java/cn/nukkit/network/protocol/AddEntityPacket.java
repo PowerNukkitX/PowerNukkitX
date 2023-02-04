@@ -64,7 +64,7 @@ public class AddEntityPacket extends DataPacket {
             .put(EntityMinecartTNT.NETWORK_ID, "minecraft:tnt_minecart")
             .put(EntityMinecartHopper.NETWORK_ID, "minecraft:hopper_minecart")
             .put(EntityAreaEffectCloud.NETWORK_ID, "minecraft:area_effect_cloud")
-            .put(94, "minecraft:small_fireball")
+            .put(EntitySmallFireBall.NETWORK_ID, "minecraft:small_fireball")
             .put(EntityLightning.NETWORK_ID, "minecraft:lightning_bolt")
             .put(91, "minecraft:wither_skull_dangerous")
             .put(EntityBoat.NETWORK_ID, "minecraft:boat")

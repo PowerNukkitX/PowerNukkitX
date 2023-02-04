@@ -2,6 +2,8 @@ package cn.nukkit.dispenser;
 
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockDispenser;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.projectile.EntityProjectile;
@@ -36,8 +38,7 @@ public class ProjectileDispenseBehavior extends DefaultDispenseBehavior {
             return super.dispense(source, face, item);
         }
 
-        Vector3 motion = new Vector3(face.getXOffset(), face.getYOffset() + 0.1f, face.getZOffset())
-                .normalize();
+        Vector3 motion = initMotion(face);
 
         projectile.setMotion(motion);
         ((EntityProjectile) projectile).inaccurate(getAccuracy());
@@ -49,6 +50,13 @@ public class ProjectileDispenseBehavior extends DefaultDispenseBehavior {
 
         source.level.addSound(source, Sound.RANDOM_BOW);
         return null;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    protected Vector3 initMotion(BlockFace face) {
+        return new Vector3(face.getXOffset(), face.getYOffset() + 0.1f, face.getZOffset())
+                .normalize();
     }
 
     @PowerNukkitOnly

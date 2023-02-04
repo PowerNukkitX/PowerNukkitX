@@ -70,7 +70,7 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
                 fire.y = block.y;
                 fire.z = block.z;
                 fire.level = level;
-                this.getLevel().setBlock(fire, fire, true);
+//                this.getLevel().setBlock(fire, fire, true); WTF???
                 if (fire.isBlockTopFacingSurfaceSolid(fire.down()) || fire.canNeighborBurn()) {
 
                     BlockIgniteEvent e = new BlockIgniteEvent(block, null, this, BlockIgniteEvent.BlockIgniteCause.LIGHTNING);
