@@ -639,13 +639,16 @@ public class BinaryStream {
         ByteBuf userDataBuf = ByteBufAllocator.DEFAULT.ioBuffer();
         try (LittleEndianByteBufOutputStream stream = new LittleEndianByteBufOutputStream(userDataBuf)) {
             if ((item instanceof ItemDurable && data != 0) || block != null && block.getDamage() > 0) {
-                byte[] nbt = item.getCustomCompoundTag();
+                byte[] nbt = item.getCompoundTag();
                 CompoundTag tag;
                 if (nbt == null || nbt.length == 0) {
                     tag = new CompoundTag();
                 } else {
                     tag = NBTIO.read(nbt, ByteOrder.LITTLE_ENDIAN);
                 }
+
+                if (tag.containsString("Name")) tag.remove("Name");
+
                 if (tag.contains("Damage")) {
                     tag.put("__DamageConflict__", tag.removeAndGet("Damage"));
                 }
@@ -653,10 +656,12 @@ public class BinaryStream {
                 stream.writeShort(-1);
                 stream.writeByte(1); // Hardcoded in current version
                 stream.write(NBTIO.write(tag, ByteOrder.LITTLE_ENDIAN));
-            } else if (item.hasCustomCompoundTag()) {
+            } else if (item.hasCompoundTag()) {
                 stream.writeShort(-1);
                 stream.writeByte(1); // Hardcoded in current version
-                stream.write(item.getCustomCompoundTag());
+                var tag = item.getNamedTag();
+                if (tag.containsString("Name")) tag.remove("Name");
+                stream.write(NBTIO.write(tag, ByteOrder.LITTLE_ENDIAN));
             } else {
                 userDataBuf.writeShortLE(0);
             }

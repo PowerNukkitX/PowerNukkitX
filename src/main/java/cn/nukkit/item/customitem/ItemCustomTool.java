@@ -51,7 +51,7 @@ public abstract class ItemCustomTool extends ItemTool implements ItemDurable, Cu
 
     @Override
     public final int getId() {
-        return super.getId();
+        return CustomItem.super.getId();
     }
 
     public final Integer getSpeed() {

@@ -3,6 +3,7 @@ package cn.nukkit.item.customitem;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.StringItem;
 
 /**
  * 继承这个类实现自定义物品,重写{@link Item}中的方法控制方块属性
@@ -13,7 +14,7 @@ import cn.nukkit.item.Item;
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public interface CustomItem {
+public interface CustomItem extends StringItem {
     String getTextureName();
 
     /**
@@ -22,6 +23,4 @@ public interface CustomItem {
      * This method sets the definition of custom item
      */
     CustomItemDefinition getDefinition();
-
-    String getNamespaceId();
 }

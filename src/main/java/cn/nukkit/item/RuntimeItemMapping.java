@@ -161,7 +161,7 @@ public class RuntimeItemMapping {
         );
         this.customItemEntries.put(customItem.getNamespaceId(), entry);
         this.entries.add(entry);
-        this.registerCustomItemToNamespacedIdItem(customItem.getNamespaceId(), constructor);
+        this.registerNamespacedIdItem(customItem.getNamespaceId(), constructor);
         this.namespaceNetworkMap.put(customItem.getNamespaceId(), OptionalInt.of(runtimeId));
         this.networkNamespaceMap.put(runtimeId, customItem.getNamespaceId());
         this.generatePalette();
@@ -228,9 +228,8 @@ public class RuntimeItemMapping {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public int getNetworkFullId(Item item) {
-        if (item instanceof StringItem || item instanceof CustomItem) {
-            return namespaceNetworkMap.getOrDefault(item.getNamespaceId(), OptionalInt.empty())
-                    .orElseThrow(() -> new IllegalArgumentException("Unknown item mapping " + item)) << 1;
+        if (item instanceof StringItem) {
+            return namespaceNetworkMap.getOrDefault(item.getNamespaceId(), OptionalInt.empty()).orElseThrow(() -> new IllegalArgumentException("Unknown item mapping " + item)) << 1;
         }
 
         int fullId = RuntimeItems.getFullId(item.getId(), item.hasMeta() ? item.getDamage() : -1);
@@ -328,7 +327,7 @@ public class RuntimeItemMapping {
             );
         } catch (IllegalArgumentException e) {
             log.debug("Found an unknown item {}", namespaceId, e);
-            Item item = new StringItem(namespaceId, Item.UNKNOWN_STR);
+            Item item = new StringItemUnknown(namespaceId);
             item.setCount(amount);
             return item;
         }
@@ -342,11 +341,13 @@ public class RuntimeItemMapping {
         }
     }
 
-    @PowerNukkitXOnly
-    public void registerCustomItemToNamespacedIdItem(@Nonnull String namespacedId, @Nonnull Supplier<Item> constructor) {
-        Preconditions.checkNotNull(namespacedId, "namespacedId is null");
-        Preconditions.checkNotNull(constructor, "constructor is null");
-        this.namespacedIdItem.put(namespacedId.toLowerCase(Locale.ENGLISH), constructor);
+
+    @SneakyThrows
+    @PowerNukkitOnly
+    public void registerNamespacedIdItem(@Nonnull Class<? extends StringItem> item) {
+        Constructor<? extends StringItem> declaredConstructor = item.getDeclaredConstructor();
+        var Item = declaredConstructor.newInstance();
+        registerNamespacedIdItem(Item.getNamespaceId(), stritemSupplier(declaredConstructor));
     }
 
     @PowerNukkitOnly
@@ -358,14 +359,10 @@ public class RuntimeItemMapping {
 
     @SneakyThrows
     @PowerNukkitOnly
-    public void registerNamespacedIdItem(@Nonnull StringItem item) {
-        registerNamespacedIdItem(item.getNamespaceId(), item.getClass().getConstructor());
-    }
-
-    @SneakyThrows
-    @PowerNukkitOnly
-    public void registerNamespacedIdItem(@Nonnull Class<? extends StringItem> item) {
-        registerNamespacedIdItem(item.getDeclaredConstructor().newInstance());
+    public void registerNamespacedIdItem(@Nonnull String namespacedId, @Nonnull Supplier<Item> constructor) {
+        Preconditions.checkNotNull(namespacedId, "namespacedId is null");
+        Preconditions.checkNotNull(constructor, "constructor is null");
+        this.namespacedIdItem.put(namespacedId.toLowerCase(Locale.ENGLISH), constructor);
     }
 
     @Nonnull
@@ -379,11 +376,13 @@ public class RuntimeItemMapping {
         };
     }
 
+    @Since("1.19.60-r1")
+    @PowerNukkitXOnly
     @Nonnull
-    private static Supplier<Item> customItemSupplier(@Nonnull Constructor<? extends CustomItem> constructor) {
+    private static Supplier<Item> stritemSupplier(@Nonnull Constructor<? extends StringItem> constructor) {
         return () -> {
             try {
-                return (Item) constructor.newInstance(ItemID.STRING_IDENTIFIED_ITEM);
+                return (Item) constructor.newInstance();
             } catch (ReflectiveOperationException e) {
                 throw new UnsupportedOperationException(e);
             }
