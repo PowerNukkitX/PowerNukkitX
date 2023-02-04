@@ -79,26 +79,16 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
 
     @PowerNukkitOnly
     public void moveCollidedEntities(BlockEntityPistonArm piston, BlockFace moveDirection) {
-        AxisAlignedBB bb = block.getBoundingBox();
-
-        if (bb == null) {
+        var bb = block.getBoundingBox();
+        if (bb == null)
             return;
-        }
-
-        var horizontal = moveDirection != BlockFace.UP && moveDirection != BlockFace.DOWN;
-
-        //TODO: 修复移动
         bb = bb.getOffsetBoundingBox(
-                this.x + moveDirection.getXOffset() * (piston.extending && horizontal ? 1 : -2),
-                this.y + moveDirection.getYOffset() * (piston.extending ? 1 : -2),
-                this.z + moveDirection.getZOffset() * (piston.extending && horizontal ? 1 : -2)
+                this.x + (piston.progress * moveDirection.getXOffset()) - moveDirection.getXOffset(),
+                this.y + (piston.progress * moveDirection.getYOffset()) - moveDirection.getYOffset(),
+                this.z + (piston.progress * moveDirection.getZOffset()) - moveDirection.getZOffset()
         );
-
-        Entity[] entities = this.level.getCollidingEntities(bb);
-
-        for (Entity entity : entities) {
+        for (Entity entity : this.level.getCollidingEntities(bb))
             piston.moveEntity(entity, moveDirection);
-        }
     }
 
     @Override

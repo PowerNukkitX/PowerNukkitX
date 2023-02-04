@@ -165,9 +165,8 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
             return type;
         }
         if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_SCHEDULED) {
-            if (!this.level.getServer().isRedstoneEnabled()) {
+            if (!this.level.getServer().isRedstoneEnabled())
                 return 0;
-            }
             // We can't use getOrCreateBlockEntity(), because the update method is called on block place,
             // before the "real" BlockEntity is set. That means, if we'd use the other method here,
             // it would create two BlockEntities.

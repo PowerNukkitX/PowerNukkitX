@@ -1,6 +1,7 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
@@ -18,6 +19,7 @@ import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
+import cn.nukkit.utils.Utils;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import java.util.List;
@@ -28,21 +30,29 @@ import java.util.List;
 @PowerNukkitXDifference(info = "活塞速度现在匹配原版")
 @Since("1.19.60-r1")
 public class BlockEntityPistonArm extends BlockEntitySpawnable {
+    @PowerNukkitOnly
+    public static final float MOVE_STEP = Utils.dynamic(0.25f);
+
     public BlockFace facing;
     public boolean extending;
     public boolean sticky;
-    public int state;
-    public int newState;
+    @Since("1.19.60-r1")
+    public byte state;
+    @Since("1.19.60-r1")
+    public byte newState = 1;
+    @PowerNukkitOnly
     public List<BlockVector3> attachedBlocks;
     public boolean powered;
-
-    protected boolean half = false;
+    public float progress;
+    public float lastProgress = 1;
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public boolean finished = true;
 
     public BlockEntityPistonArm(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    //TODO: 修复移动
     protected void moveCollidedEntities() {
         var pushDirection = this.extending ? facing : facing.getOpposite();
         for (var pos : this.attachedBlocks) {
@@ -50,18 +60,19 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
             if (blockEntity instanceof BlockEntityMovingBlock be)
                 be.moveCollidedEntities(this, pushDirection);
         }
-        var horizontal = pushDirection != BlockFace.UP && pushDirection != BlockFace.DOWN;
-        var bb = new SimpleAxisAlignedBB(0, 0, 0, 1, horizontal ? 2 : 1, 1).getOffsetBoundingBox(
-                this.x + pushDirection.getXOffset() * (this.extending && horizontal ? 1 : -2),
-                this.y + pushDirection.getYOffset() * (this.extending ? 1 : -2),
-                this.z + pushDirection.getZOffset() * (this.extending && horizontal ? 1 : -2)
+        var bb = new SimpleAxisAlignedBB(0, 0, 0, 1, 1, 1).getOffsetBoundingBox(
+                this.x + (pushDirection.getXOffset() * progress),
+                this.y + (pushDirection.getYOffset() * progress),
+                this.z + (pushDirection.getZOffset() * progress)
         );
         for (var entity : this.level.getCollidingEntities(bb))
             moveEntity(entity, pushDirection);
     }
 
     void moveEntity(Entity entity, BlockFace moveDirection) {
-        if (!entity.canBePushed())
+        var diff = Math.abs(this.progress - this.lastProgress);
+        //玩家客户端会自动处理移动
+        if (diff == 0 || !entity.canBePushed() || entity instanceof Player)
             return;
         EntityMoveByPistonEvent event = new EntityMoveByPistonEvent(entity, entity.getPosition());
         this.level.getServer().getPluginManager().callEvent(event);
@@ -70,28 +81,23 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         entity.onPushByPiston(this);
         if (entity.closed)
             return;
-        if (entity instanceof Player player) {
-            //TODO: 优化
-//            player.sendPosition(new Vector3(
-//                    player.x + moveDirection.getXOffset(),
-//                    player.y + moveDirection.getYOffset(),
-//                    player.z + moveDirection.getZOffset()
-//            ));
-        } else {
-            entity.move(
-                    moveDirection.getXOffset(),
-                    moveDirection.getYOffset(),
-                    moveDirection.getZOffset()
-            );
-        }
+        entity.move(
+                diff * moveDirection.getXOffset(),
+                diff * moveDirection.getYOffset(),
+                diff * moveDirection.getZOffset()
+        );
     }
 
     public void move(boolean extending, List<BlockVector3> attachedBlocks) {
+        this.finished = false;
         this.extending = extending;
-        this.state = this.newState = extending ? 1 : 3;
+        this.lastProgress = this.progress = extending ? 0 : 1;
+        this.state = this.newState = (byte) (extending ? 1 : 3);
         this.attachedBlocks = attachedBlocks;
         this.movable = false;
+        //开始推动
         updateBlockEntityData();
+        this.lastProgress = extending ? -MOVE_STEP : 1 + MOVE_STEP;
         this.moveCollidedEntities();
         this.scheduleUpdate();
     }
@@ -101,58 +107,73 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
      */
     @Override
     public boolean onUpdate() {
-        if (!this.half) {
-            this.half = true;
-//            updateBlockEntityData();
-            return true;
+        //此bool标记下一gt是否需要继续更新
+        var hasUpdate = true;
+        //推动过程
+        if (this.extending) {
+            this.progress = Math.min(1, this.progress + MOVE_STEP);
+            this.lastProgress = Math.min(1, this.lastProgress + MOVE_STEP);
+        } else {
+            this.progress = Math.max(0, this.progress - MOVE_STEP);
+            this.lastProgress = Math.max(0, this.lastProgress - MOVE_STEP);
         }
-        this.state = this.newState = extending ? 2 : 0;
-        var pushDirection = this.extending ? facing : facing.getOpposite();
-        for (var pos : this.attachedBlocks) {
-            var movingBlock = this.level.getBlockEntity(pos.getSide(pushDirection));
-            if (movingBlock instanceof BlockEntityMovingBlock movingBlockBlockEntity) {
-                movingBlock.close();
-                var moved = movingBlockBlockEntity.getMovingBlock();
-                moved.position(movingBlock);
-                this.level.setBlock(movingBlock, 1, Block.get(BlockID.AIR), true, false);
-                //普通方块更新
-                this.level.setBlock(movingBlock, moved, true, true);
-                var movedBlockEntity = movingBlockBlockEntity.getMovingBlockEntityCompound();
-                if (movedBlockEntity != null) {
-                    movedBlockEntity.putInt("x", movingBlock.getFloorX());
-                    movedBlockEntity.putInt("y", movingBlock.getFloorY());
-                    movedBlockEntity.putInt("z", movingBlock.getFloorZ());
-                    BlockEntity.createBlockEntity(movedBlockEntity.getString("id"), this.level.getChunk(movingBlock.getChunkX(), movingBlock.getChunkZ()), movedBlockEntity);
+        moveCollidedEntities();
+        if (this.progress == this.lastProgress) {
+            //结束推动
+            this.state = this.newState = (byte) (extending ? 2 : 0);
+            var pushDirection = this.extending ? facing : facing.getOpposite();
+            for (var pos : this.attachedBlocks) {
+                var movingBlock = this.level.getBlockEntity(pos.getSide(pushDirection));
+                if (movingBlock instanceof BlockEntityMovingBlock movingBlockBlockEntity) {
+                    movingBlock.close();
+                    var moved = movingBlockBlockEntity.getMovingBlock();
+                    moved.position(movingBlock);
+                    this.level.setBlock(movingBlock, 1, Block.get(BlockID.AIR), true, false);
+                    //普通方块更新
+                    this.level.setBlock(movingBlock, moved, true, true);
+                    var movedBlockEntity = movingBlockBlockEntity.getMovingBlockEntityCompound();
+                    if (movedBlockEntity != null) {
+                        movedBlockEntity.putInt("x", movingBlock.getFloorX());
+                        movedBlockEntity.putInt("y", movingBlock.getFloorY());
+                        movedBlockEntity.putInt("z", movingBlock.getFloorZ());
+                        BlockEntity.createBlockEntity(movedBlockEntity.getString("id"), this.level.getChunk(movingBlock.getChunkX(), movingBlock.getChunkZ()), movedBlockEntity);
+                    }
+                    //活塞更新
+                    moved.onUpdate(Level.BLOCK_UPDATE_MOVED);
+                    //红石更新
+                    RedstoneComponent.updateAroundRedstone(moved);
                 }
-                //活塞更新
-                moved.onUpdate(Level.BLOCK_UPDATE_MOVED);
-                //红石更新
-                RedstoneComponent.updateAroundRedstone(moved);
             }
-        }
-        var pos = getSide(facing);
-        if (!extending) {
-            this.movable = true;
-            if (this.level.getBlock(pos) instanceof BlockPistonHead) {
-                this.level.setBlock(pos, 1, Block.get(Block.AIR), true, false);
-                //方块更新
-                this.level.setBlock(pos, Block.get(Block.AIR), true);
+            var pos = getSide(facing);
+            if (!extending) {
+                //未伸出的活塞可以被推动
+                this.movable = true;
+                if (this.level.getBlock(pos) instanceof BlockPistonHead) {
+                    this.level.setBlock(pos, 1, Block.get(Block.AIR), true, false);
+                    //方块更新
+                    this.level.setBlock(pos, Block.get(Block.AIR), true);
+                }
             }
+            //对和活塞接触的方块进行更新
+            this.level.neighborChangeAroundImmediately(this);
+            //下一计划刻再自检一遍，防止出错
+            this.level.scheduleUpdate(this.getLevelBlock(), 1);
+            this.attachedBlocks.clear();
+            this.finished = true;
+            hasUpdate = false;
+            updateBlockEntityData();
         }
-        //对和活塞接触的方块进行更新
-        this.level.neighborChangeAroundImmediately(this);
-        //下一计划刻再自检一遍，防止出错
-        this.level.scheduleUpdate(this.getLevelBlock(), 1);
-        this.attachedBlocks.clear();
-        this.half = false;
-        updateBlockEntityData();
-        return false;
+        return super.onUpdate() || hasUpdate;
     }
 
     @Since("1.19.60-r1")
     @Override
     public void loadNBT() {
         super.loadNBT();
+        if (namedTag.contains("Progress"))
+            this.progress = namedTag.getFloat("Progress");
+        if (namedTag.contains("LastProgress"))
+            this.lastProgress = namedTag.getFloat("LastProgress");
         this.sticky = namedTag.getBoolean("Sticky");
         this.extending = namedTag.getBoolean("Extending");
         this.powered = namedTag.getBoolean("powered");
@@ -184,6 +205,8 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         super.saveNBT();
         this.namedTag.putByte("State", this.state);
         this.namedTag.putByte("NewState", this.newState);
+        this.namedTag.putFloat("Progress", this.progress);
+        this.namedTag.putFloat("LastProgress", this.lastProgress);
         this.namedTag.putBoolean("powered", this.powered);
         this.namedTag.putList(getAttachedBlocks());
         this.namedTag.putInt("facing", this.facing.getIndex());
@@ -199,7 +222,8 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
 
     public CompoundTag getSpawnCompound() {
         return getDefaultCompound(this, PISTON_ARM)
-//                .putFloat("Progress", half ? 0.5f : (extending ? 0 : 1))
+                .putFloat("Progress", this.progress)
+                .putFloat("LastProgress", this.lastProgress)
                 .putBoolean("isMovable", this.movable)
                 .putList(getAttachedBlocks())
                 .putList(new ListTag<>("BreakBlocks"))
