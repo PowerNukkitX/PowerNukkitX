@@ -31,6 +31,7 @@ public final class DispenseBehaviorRegister {
 
     @PowerNukkitOnly
     public static void init() {
+        registerBehavior(ItemID.SHEARS, new ShearsDispenseBehavior());
         registerBehavior(ItemID.CHEST_BOAT, new ChestBoatDispenseBehavior());
         registerBehavior(ItemID.BIRCH_CHEST_BOAT, new ChestBoatDispenseBehavior());
         registerBehavior(ItemID.ACACIA_CHEST_BOAT, new ChestBoatDispenseBehavior());
