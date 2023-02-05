@@ -8,6 +8,7 @@ import cn.nukkit.block.BlockWater;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityBoat;
 import cn.nukkit.item.Item;
+import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 
@@ -32,16 +33,17 @@ public class BoatDispenseBehavior extends DefaultDispenseBehavior {
             return super.dispense(block, face, item);
         }
 
-        pos = target.getLocation().setYaw(face.getHorizontalAngle());
+        spawnBoatEntity(block.level, target.getLocation().add(face.getXOffset() * 0.75, face.getYOffset() * 0.75, face.getZOffset() * 0.75).setYaw(face.getHorizontalAngle()), item);
 
-        EntityBoat boat = new EntityBoat(block.level.getChunk(target.getChunkX(), target.getChunkZ()),
+        return null;
+    }
+
+    protected void spawnBoatEntity(Level level, Vector3 pos, Item item) {
+        EntityBoat boat = new EntityBoat(level.getChunk(pos.getChunkX(), pos.getChunkZ()),
                 Entity.getDefaultNBT(pos)
                         .putInt("Variant", item.getDamage())
         );
-
         boat.spawnToAll();
-
-        return null;
     }
 
 }

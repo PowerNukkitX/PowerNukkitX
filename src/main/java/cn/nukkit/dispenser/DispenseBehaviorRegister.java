@@ -31,6 +31,14 @@ public final class DispenseBehaviorRegister {
 
     @PowerNukkitOnly
     public static void init() {
+        registerBehavior(ItemID.CHEST_BOAT, new ChestBoatDispenseBehavior());
+        registerBehavior(ItemID.BIRCH_CHEST_BOAT, new ChestBoatDispenseBehavior());
+        registerBehavior(ItemID.ACACIA_CHEST_BOAT, new ChestBoatDispenseBehavior());
+        registerBehavior(ItemID.DARK_OAK_CHEST_BOAT, new ChestBoatDispenseBehavior());
+        registerBehavior(ItemID.JUNGLE_CHEST_BOAT, new ChestBoatDispenseBehavior());
+        registerBehavior(ItemID.SPRUCE_CHEST_BOAT, new ChestBoatDispenseBehavior());
+        registerBehavior(ItemID.OAK_CHEST_BOAT, new ChestBoatDispenseBehavior());
+        registerBehavior(ItemID.MANGROVE_CHEST_BOAT, new ChestBoatDispenseBehavior());
         registerBehavior(ItemID.BOAT, new BoatDispenseBehavior());
         registerBehavior(ItemID.BUCKET, new BucketDispenseBehavior());
         registerBehavior(ItemID.DYE, new DyeDispenseBehavior());
@@ -99,5 +107,11 @@ public final class DispenseBehaviorRegister {
                 return super.getMotion() * 1.25;
             }
         });
+        registerBehavior(ItemID.GLASS_BOTTLE, new GlassBottleDispenseBehavior());
+        registerBehavior(ItemID.MINECART, new MinecartDispenseBehavior("MinecartRideable"));
+        registerBehavior(ItemID.CHEST_MINECART, new MinecartDispenseBehavior("MinecartChest"));
+        registerBehavior(ItemID.HOPPER_MINECART, new MinecartDispenseBehavior("MinecartHopper"));
+        registerBehavior(ItemID.TNT_MINECART, new MinecartDispenseBehavior("MinecartTnt"));
+        //TODO: 命令方块矿车
     }
 }
