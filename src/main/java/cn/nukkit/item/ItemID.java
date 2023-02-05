@@ -9,7 +9,6 @@ import static cn.nukkit.utils.Utils.dynamic;
 
 public interface ItemID {
     @PowerNukkitOnly
-    @Since("FUTURE")
     int STRING_IDENTIFIED_ITEM = dynamic(255);
     int IRON_SHOVEL = 256;
     int IRON_PICKAXE = 257;
