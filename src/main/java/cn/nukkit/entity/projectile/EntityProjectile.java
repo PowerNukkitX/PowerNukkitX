@@ -254,7 +254,6 @@ public abstract class EntityProjectile extends Entity {
             }
 
             this.updateMovement();
-
         }
 
         return hasUpdate;

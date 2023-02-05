@@ -64,11 +64,6 @@ public final class DispenseBehaviorRegister {
                         face.getZOffset())
                         .normalize();
             }
-
-            @Override
-            protected double getMotion() {
-                return super.getMotion() * 1.5;
-            }
         });
         registerBehavior(ItemID.EXPERIENCE_BOTTLE, new ProjectileDispenseBehavior("ThrownExpBottle") {
             @Override

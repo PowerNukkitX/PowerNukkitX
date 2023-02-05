@@ -17,8 +17,6 @@ import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 
-import java.util.concurrent.ThreadLocalRandom;
-
 @PowerNukkitXOnly
 @Since("1.19.60-r1")
 public class EntitySmallFireBall extends EntityProjectile {
@@ -59,7 +57,7 @@ public class EntitySmallFireBall extends EntityProjectile {
 
         boolean hasUpdate = super.onUpdate(currentTick);
 
-        if (this.age > 1200) {
+        if (this.age > 1200 || this.isCollided) {
             this.kill();
             hasUpdate = true;
         }
@@ -97,23 +95,25 @@ public class EntitySmallFireBall extends EntityProjectile {
     @PowerNukkitOnly
     @Override
     protected void onCollideWithBlock(Position position, Vector3 motion) {
-        super.onCollideWithBlock(position, motion);
-        //TODO: 点燃tnt、篝火。消除细雪
-        //https://minecraft.fandom.com/zh/wiki/%E7%81%AB%E7%84%B0%E5%BC%B9#%E5%B0%8F%E7%81%AB%E7%90%83
-        BlockFire fire = (BlockFire) Block.get(BlockID.FIRE);
-        fire.x = this.x;
-        fire.y = this.y;
-        fire.z = this.z;
-        fire.level = level;
+        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.PROJECTILE_LAND));
+        var affect = false;
+        for (Block collisionBlock : level.getCollisionBlocks(getBoundingBox().grow(0.1, 0.1, 0.1)))
+            affect = onCollideWithBlock(position, motion, collisionBlock);
+        if (!affect && this.getLevelBlock().getId() == BlockID.AIR) {
+            BlockFire fire = (BlockFire) Block.get(BlockID.FIRE);
+            fire.x = this.x;
+            fire.y = this.y;
+            fire.z = this.z;
+            fire.level = level;
 
-        if (fire.isBlockTopFacingSurfaceSolid(fire.down()) || fire.canNeighborBurn()) {
-            BlockIgniteEvent e = new BlockIgniteEvent(this.getLevelBlock(), null, null, BlockIgniteEvent.BlockIgniteCause.FIREBALL);
-            level.getServer().getPluginManager().callEvent(e);
-            if (!e.isCancelled()) {
-                level.setBlock(fire, fire, true);
+            if (fire.isBlockTopFacingSurfaceSolid(fire.down()) || fire.canNeighborBurn()) {
+                BlockIgniteEvent e = new BlockIgniteEvent(this.getLevelBlock(), null, null, BlockIgniteEvent.BlockIgniteCause.FIREBALL);
+                level.getServer().getPluginManager().callEvent(e);
+                if (!e.isCancelled()) {
+                    level.setBlock(fire, fire, true);
+                }
             }
         }
-        this.kill();
     }
 
     @Override

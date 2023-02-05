@@ -12,6 +12,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityPotion;
 import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.entity.projectile.EntityProjectile;
+import cn.nukkit.entity.projectile.EntitySmallFireBall;
 import cn.nukkit.event.entity.EntityCombustByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -268,7 +269,7 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
     @PowerNukkitOnly
     @Override
     public boolean onProjectileHit(@Nonnull Entity projectile, @Nonnull Position position, @Nonnull Vector3 motion) {
-        if (projectile.isOnFire() && projectile instanceof EntityArrow && isExtinguished()) {
+        if ((projectile instanceof EntitySmallFireBall || (projectile.isOnFire() && projectile instanceof EntityArrow)) && isExtinguished()) {
             setExtinguished(false);
             level.setBlock(this, this, true);
             return true;
