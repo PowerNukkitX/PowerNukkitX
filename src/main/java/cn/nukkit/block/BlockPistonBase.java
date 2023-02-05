@@ -454,7 +454,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
                 var oldBlock = block.clone();
                 block = origin.getSide(this.moveDirection.getOpposite(), count);
                 //蜂蜜块和粘液块互不干扰
-                if (!extending && (block.getId() == SLIME_BLOCK && oldBlock.getId() == HONEY_BLOCK
+                if ((!extending || !mainBlockLine) && (block.getId() == SLIME_BLOCK && oldBlock.getId() == HONEY_BLOCK
                         || block.getId() == HONEY_BLOCK && oldBlock.getId() == SLIME_BLOCK))
                     break;
                 if (block.getId() == AIR || !canPush(block, this.moveDirection, false, extending) || block.equals(this.pistonPos))
