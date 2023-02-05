@@ -7,74 +7,34 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.*;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.block.BigDripleafTiltChangeEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.ParticleEffect;
 import cn.nukkit.level.Position;
+import cn.nukkit.level.Sound;
+import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
+
+import static cn.nukkit.block.BlockBigDripleaf.Tilt.*;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public class BlockBigDripleaf extends BlockFlowable implements Faceable {
 
-    public static Map<Position, TiltAction> actions = new HashMap<>();
-    public static Set<Position> fullTiltBlocks = new HashSet<>();
-
-    static {
-        if (Server.getInstance() != null) {
-            Server.getInstance().getScheduler().scheduleRepeatingTask(() -> {
-                for (Map.Entry<Position, TiltAction> entry : actions.entrySet().toArray(new Map.Entry[actions.size()])) {
-                    if (--entry.getValue().delay == 0) {
-                        if (checkTiltAction(entry.getKey())) {
-                            BlockBigDripleaf blockBigDripleaf = (BlockBigDripleaf) entry.getKey().getLevelBlock();
-                            BigDripleafTiltChangeEvent event = new BigDripleafTiltChangeEvent(blockBigDripleaf, blockBigDripleaf.getTilt(), entry.getValue().targetState);
-                            Server.getInstance().getPluginManager().callEvent(event);
-                            if (event.isCancelled()) {
-                                return;
-                            }
-                            entry.getValue().targetState = event.getNewTilt();
-                            blockBigDripleaf.setTilt(entry.getValue().targetState);
-                            entry.getKey().getLevel().setBlock(entry.getKey(), blockBigDripleaf, true, true);
-                            if (entry.getValue().targetState == Tilt.FULL_TILT) {
-                                fullTiltBlocks.add(entry.getKey());
-                            }
-                        }
-                        actions.remove(entry.getKey());
-                        if (entry.getValue().nextAction != null) {
-                            actions.put(entry.getKey(), entry.getValue().nextAction);
-                        }
-                    }
-                }
-            }, 1);
-            Server.getInstance().getScheduler().scheduleRepeatingTask(() -> {
-                for (Position pos : fullTiltBlocks.toArray(new Position[0])) {
-                    if (pos.getLevelBlock() instanceof BlockBigDripleaf blockBigDripleaf && blockBigDripleaf.getTilt() == Tilt.FULL_TILT) {
-                        pos.getLevelBlock().onUpdate(Level.BLOCK_UPDATE_NORMAL);
-                    } else {
-                        fullTiltBlocks.remove(pos);
-                    }
-                }
-            }, 1);
-        }
-    }
-
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public static final BlockProperty<Tilt> TILT = new ArrayBlockProperty<>("big_dripleaf_tilt", false, new Tilt[]{Tilt.NONE, Tilt.PARTIAL_TILT, Tilt.FULL_TILT, Tilt.UNSTABLE});
+    public static final BlockProperty<Tilt> TILT = new ArrayBlockProperty<>("big_dripleaf_tilt", false, new Tilt[]{Tilt.NONE, PARTIAL_TILT, Tilt.FULL_TILT, Tilt.UNSTABLE});
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
@@ -83,28 +43,6 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.DIRECTION, TILT, HEAD);
-
-    public static boolean checkTiltAction(Position pos) {
-        if (!actions.containsKey(pos)) {
-            return true;
-        }
-        TiltAction action = actions.get(pos);
-        if (pos.getLevelBlock() instanceof BlockBigDripleaf blockBigDripleaf && blockBigDripleaf.isHead()) {
-            return true;
-        }
-        return false;
-    }
-
-    public static void addTiltAction(Position pos, TiltAction action) {
-        if (!actions.containsKey(pos) || !checkTiltAction(pos))
-            actions.put(pos, action);
-    }
-
-    public static void removeTiltAction(Position pos) {
-        if (actions.containsKey(pos)) {
-            actions.remove(pos);
-        }
-    }
 
     protected BlockBigDripleaf() {
         super(0);
@@ -152,8 +90,12 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
         return this.getPropertyValue(TILT);
     }
 
-    public void setTilt(Tilt tilt) {
+    public boolean setTilt(Tilt tilt) {
+        BigDripleafTiltChangeEvent event = new BigDripleafTiltChangeEvent(this, this.getTilt(), tilt);
+        Server.getInstance().getPluginManager().callEvent(event);
+        if (event.isCancelled()) return false;
         this.setPropertyValue(TILT, tilt);
+        return true;
     }
 
     @PowerNukkitOnly
@@ -173,123 +115,154 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
     }
 
     @Override
+    public double getHardness() {
+        return 0;
+    }
+
+    @Override
+    public double getResistance() {
+        return 0;
+    }
+
+    @Override
+    public int getBurnChance() {
+        return 15;
+    }
+
+    @Override
+    public int getBurnAbility() {
+        return 100;
+    }
+
+    @Override
     public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        BlockBigDripleaf blockBigDripleafTop = new BlockBigDripleaf();
-        blockBigDripleafTop.setHead(true);
-        blockBigDripleafTop.setBlockFace(player.getDirection().getOpposite());
-        if (canKeepAlive(block)) {
-            this.level.setBlock(block, blockBigDripleafTop, true, true);
-            return true;
-        }
-        if (block.getSide(BlockFace.DOWN) instanceof BlockBigDripleaf) {
-            BlockBigDripleaf blockDown = (BlockBigDripleaf) this.level.getBlock(block.getSide(BlockFace.DOWN));
-            blockDown.setHead(false);
-            blockBigDripleafTop.setBlockFace(((BlockBigDripleaf) block.getSide(BlockFace.DOWN)).getBlockFace());
-            this.level.setBlock(blockDown, blockDown, true, true);
-            this.level.setBlock(block, blockBigDripleafTop, true, true);
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean onActivate(@Nonnull Item item, Player player) {
-        if (item.isFertilizer()) {
-            boolean state = this.grow(this, 1);
-            if (state) {
-                this.level.addParticleEffect(this.add(0.5, 0.5, 0.5), ParticleEffect.CROP_GROWTH);
-                item.count--;
-                return true;
-            }
+        Block below = block.down();
+        int id = below.getId();
+        if (!isValidSupportBlock(id))
             return false;
+
+        if (id == BIG_DRIPLEAF) {
+            var b = new BlockBigDripleaf();
+            var bf = ((BlockBigDripleaf) below).getBlockFace();
+            b.setBlockFace(bf);
+            b.setHead(false);
+            level.setBlock(below, b, true, false);
+            setHead(true);
+            setBlockFace(bf);
+        } else {
+            setBlockFace(player.getHorizontalFacing().getOpposite());
+            setHead(true);
         }
-        return false;
+
+        if (block instanceof BlockWater)
+            level.setBlock(this, 1, block, true, false);
+        return super.place(item, block, target, face, fx, fy, fz, player);
     }
 
     @Override
-    public boolean onBreak(@Nonnull Item item) {
-        removeTiltAction(this);
-        this.level.setBlock(this, new BlockAir(), true, true);
-        this.level.dropItem(this, this.toItem());
-        if (this.getSide(BlockFace.UP).getId() == BlockID.BIG_DRIPLEAF) {
-            this.level.getBlock(this.getSide(BlockFace.UP)).onBreak(null);
+    public boolean onActivate(@NotNull Item item, @org.jetbrains.annotations.Nullable Player player) {
+        if (item.isFertilizer()) {
+            Block head = this;
+            Block up;
+            while ((up = head.up()).getId() == BIG_DRIPLEAF)
+                head = up;
+            if (head.getFloorY() + 1 >= level.getMaxHeight())
+                return false;
+            Block above = head.up();
+            if (!(above.getId() == AIR) && !(above instanceof BlockWater))
+                return false;
+            if (player != null && !player.isCreative())
+                item.count--;
+            level.addParticle(new BoneMealParticle(this));
+            var aboveDownBlock = new BlockBigDripleaf();
+            aboveDownBlock.setBlockFace(this.getBlockFace());
+            level.setBlock(above.getSideVec(BlockFace.DOWN), aboveDownBlock, true, false);
+            if (above instanceof BlockWater)
+                level.setBlock(above, 1, above, true, false);
+            var aboveBock = new BlockBigDripleaf();
+            aboveBock.setBlockFace(this.getBlockFace());
+            aboveBock.setHead(true);
+            level.setBlock(above, aboveBock, true);
+            return true;
         }
-        if (this.getSide(BlockFace.DOWN).getId() == BlockID.BIG_DRIPLEAF) {
-            this.level.getBlock(this.getSide(BlockFace.DOWN)).onBreak(null);
-        }
-        return true;
-    }
 
+        return false;
+    }
 
     @Override
     public int onUpdate(int type) {
-        if (this.isGettingPower()) {
-            removeTiltAction(this);
-            this.setTilt(Tilt.NONE);
-            this.level.setBlock(this, this, true, true);
-            return 0;
+        if (type == Level.BLOCK_UPDATE_NORMAL) {
+            level.scheduleUpdate(this, 1);
+            return Level.BLOCK_UPDATE_NORMAL;
         }
-        if (!canKeepAlive(this)) {
-            this.level.setBlock(this, new BlockAir(), true, true);
-            removeTiltAction(this);
-            this.level.dropItem(this, this.toItem());
-        }
-        if (this.isHead()) {
-            AtomicBoolean hasEntityOn = new AtomicBoolean(false);
-            this.getChunk().getEntities().values().stream().parallel().forEach(entity -> {
-                if (entity.getBoundingBox().getMaxY() - this.getMinY() > 0.05 && -0.05 < this.getMaxY() - entity.getBoundingBox().getMinY()) {
-                    hasEntityOn.set(true);
+
+        if (type == Level.BLOCK_UPDATE_SCHEDULED) {
+            if (!canSurvive()) {
+                level.useBreakOn(this);
+                return Level.BLOCK_UPDATE_NORMAL;
+            }
+
+            if (!isHead()) {
+                if (up().getId() == BIG_DRIPLEAF) {
+                    return 0;
                 }
-            });
-            if (hasEntityOn.get() && this.getLevelBlock() instanceof BlockBigDripleaf blockBigDripleaf && blockBigDripleaf.getTilt() == Tilt.NONE) {
-                addTiltAction(this, new TiltAction(Tilt.PARTIAL_TILT, 15, new TiltAction(Tilt.FULL_TILT, 15, null)));
-            } else {
-                if (this.getLevelBlock() instanceof BlockBigDripleaf blockBigDripleaf && blockBigDripleaf.getTilt() == Tilt.FULL_TILT) {
-                    addTiltAction(this, new TiltAction(Tilt.NONE, 100, null));
+
+                level.useBreakOn(this);
+                return Level.BLOCK_UPDATE_NORMAL;
+            }
+
+            var tilt = getTilt();
+            if (tilt == Tilt.NONE) {
+                return 0;
+            }
+
+            if (level.isBlockPowered(this)) {
+                setTilt(Tilt.NONE);
+                level.setBlock(this, this, true, false);
+                return Level.BLOCK_UPDATE_SCHEDULED;
+            }
+
+            switch (tilt) {
+                case UNSTABLE -> setTiltAndScheduleTick(PARTIAL_TILT);
+                case PARTIAL_TILT -> setTiltAndScheduleTick(FULL_TILT);
+                case FULL_TILT -> {
+                    level.addSound(this, Sound.TILT_UP_BIG_DRIPLEAF);
+                    setTilt(NONE);
+                    level.setBlock(this, this, true, false);
                 }
             }
+            return Level.BLOCK_UPDATE_SCHEDULED;
         }
-        return super.onUpdate(type);
+
+        if (type == Level.BLOCK_UPDATE_REDSTONE) {
+            if (!isHead())
+                return 0;
+            var tilt = getTilt();
+            if (tilt == NONE)
+                return 0;
+            if (!level.isBlockPowered(this))
+                return 0;
+            if (tilt != UNSTABLE)
+                level.addSound(this, Sound.TILT_UP_BIG_DRIPLEAF);
+            setTilt(NONE);
+            level.setBlock(this, this, true, false);
+
+            level.cancelSheduledUpdate(this, this);
+            return Level.BLOCK_UPDATE_SCHEDULED;
+        }
+
+        return 0;
     }
 
-    public boolean canKeepAlive(Position pos) {
-        Block blockDown = this.level.getBlock(pos.getSide(BlockFace.DOWN));
-        if (this.level.getBlock(blockDown) instanceof BlockBigDripleaf && !((BlockBigDripleaf) this.level.getBlock(blockDown)).isHead()) {
-            return true;
-        }
-        if (blockDown instanceof BlockDirt || blockDown instanceof BlockDirtWithRoots || blockDown instanceof BlockMoss || blockDown instanceof BlockClay) {
-            return true;
-        }
-        return false;
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
-    public boolean grow(Position pos, int heightIncreased) {
-        Block block = pos.getLevelBlock();
-        if (block instanceof BlockBigDripleaf) {
-            while (block.getSide(BlockFace.UP) instanceof BlockBigDripleaf) {
-                block = block.getSide(BlockFace.UP);
-            }
-        }
-        removeTiltAction(block);
-
-        int maxHeightIncreased = 0;
-        Block blockUp = block.getBlock();
-        for (int i = 1; i <= heightIncreased; i++) {
-            if ((blockUp = blockUp.getSide(BlockFace.UP)) instanceof BlockAir && blockUp.getY() < 320)
-                maxHeightIncreased++;
-        }
-        BlockBigDripleaf blockBigDripleafDown = new BlockBigDripleaf();
-        BlockBigDripleaf blockBigDripleafHead = new BlockBigDripleaf();
-        blockBigDripleafDown.setBlockFace(((BlockBigDripleaf) block).getBlockFace());
-        blockBigDripleafHead.setBlockFace(((BlockBigDripleaf) block).getBlockFace());
-        blockBigDripleafHead.setHead(true);
-        for (int height = 0; height < maxHeightIncreased; height++) {
-            this.level.setBlock(block.add(0, height, 0), blockBigDripleafDown, true, true);
-        }
-        this.level.setBlock(block.add(0, maxHeightIncreased, 0), blockBigDripleafHead, true, true);
+    @Override
+    public boolean hasEntityCollision() {
         return true;
+    }
+
+    @Override
+    public void onEntityCollide(Entity entity) {
+        if (!isHead() || getTilt() != NONE || entity instanceof EntityProjectile) return;
+        setTiltAndScheduleTick(UNSTABLE);
     }
 
     @Override
@@ -301,50 +274,97 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
     @PowerNukkitOnly
     @Override
     public boolean onProjectileHit(@Nonnull Entity projectile, @Nonnull Position position, @Nonnull Vector3 motion) {
-        this.setTilt(Tilt.FULL_TILT);
-        this.level.setBlock(this, this, true, true);
+        setTiltAndScheduleTick(FULL_TILT);
         return true;
     }
 
     @Override
-    protected AxisAlignedBB recalculateBoundingBox() {
-        if (this.isHead()) {
-            if (this.getTilt() == Tilt.NONE) return this;
-            else if (this.getTilt() == Tilt.FULL_TILT) return null;
-            else if (this.getTilt() == Tilt.PARTIAL_TILT) {
-                return new SimpleAxisAlignedBB(this.x, this.y + 0.05, this.z, this.x + 1, this.y + 0.05, this.z + 1);
-            }
-            return this;
-        } else return null;
-    }
-
-    @Override
     public boolean canPassThrough() {
-        return !this.isHead();
+        return isHead() && getTilt() == FULL_TILT;
     }
 
     @Override
-    public double getMinY() {
-        return this.y + 0.95;
+    protected AxisAlignedBB recalculateBoundingBox() {
+        //1 / 16 * 3 == 0.1875
+        //1 / 16 * 5 == 0.3125
+        //1 / 16 * 6 == 0.375
+        if (!isHead()) {
+            var face = this.getBlockFace().getOpposite();
+            return new SimpleAxisAlignedBB(
+                    0.3125,
+                    0,
+                    0.3125,
+                    0.6875,
+                    1,
+                    0.6875)
+                    .offset(
+                            this.x + face.getXOffset() * 0.1875,
+                            this.y,
+                            this.z + face.getZOffset() * 0.1875
+                    );
+        } else {
+            return new SimpleAxisAlignedBB(
+                    this.x,
+                    this.y,
+                    this.z,
+                    this.x + 1,
+                    this.y + 0.9375,
+                    this.z + 1
+            );
+        }
+    }
+
+    @Override
+    protected AxisAlignedBB recalculateCollisionBoundingBox() {
+        var bb = getBoundingBox();
+        if (isHead())
+            bb = bb.addCoord(0, 0.0625, 0);
+        return bb;
+    }
+
+    @Since("1.3.0.0-PN")
+    @PowerNukkitOnly
+    @Override
+    public boolean isSolid(BlockFace side) {
+        return false;
+    }
+
+    @Override
+    public BlockColor getColor() {
+        return BlockColor.FOLIAGE_BLOCK_COLOR;
+    }
+
+    private boolean canSurvive() {
+        return isValidSupportBlock(down().getId());
+    }
+
+    private boolean isValidSupportBlock(int id) {
+        return id == BIG_DRIPLEAF || id == GRASS || id == DIRT || id == MYCELIUM || id == PODZOL || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == CLAY_BLOCK;
+    }
+
+    private boolean setTiltAndScheduleTick(Tilt tilt) {
+        if (!setTilt(tilt))
+            return false;
+        level.setBlock(this, this, true, false);
+
+        switch (tilt) {
+            case NONE -> level.scheduleUpdate(this, 1);
+            case UNSTABLE -> {
+                level.scheduleUpdate(this, 15);
+                return true;
+            }
+            case PARTIAL_TILT -> level.scheduleUpdate(this, 15);
+            case FULL_TILT -> level.scheduleUpdate(this, 100);
+        }
+
+        level.addSound(this, Sound.TILT_DOWN_BIG_DRIPLEAF);
+        return true;
     }
 
     public enum Tilt {
         NONE,
+        UNSTABLE,
         PARTIAL_TILT,
-        FULL_TILT,
-        UNSTABLE
-    }
-
-    public class TiltAction {
-
-        public Tilt targetState;
-        public int delay;
-        public TiltAction nextAction;
-
-        public TiltAction(Tilt targetState, int delay, TiltAction nextAction) {
-            this.targetState = targetState;
-            this.delay = delay;
-            this.nextAction = nextAction;
-        }
+        FULL_TILT
     }
 }
