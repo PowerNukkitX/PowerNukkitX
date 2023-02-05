@@ -9,6 +9,8 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockCommandBlock;
 import cn.nukkit.block.BlockCommandBlockChain;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.ConsoleCommandSender;
 import cn.nukkit.event.command.CommandBlockExecuteEvent;
 import cn.nukkit.inventory.CommandBlockInventory;
 import cn.nukkit.inventory.Inventory;
@@ -599,8 +601,8 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
                     (!message.getText().equals(this.getServer().getLanguage().get(message.getText())) ? "%" : "") + message.getText() + "]");
             Set<Permissible> users = this.getServer().getPluginManager().getPermissionSubscriptions(Server.BROADCAST_CHANNEL_ADMINISTRATIVE);
             for (var user : users) {
-                if (user instanceof Player player) {
-                    player.sendMessage(message);
+                if (user instanceof Player || user instanceof ConsoleCommandSender) {
+                    ((CommandSender) user).sendMessage(message);
                 }
             }
         }
