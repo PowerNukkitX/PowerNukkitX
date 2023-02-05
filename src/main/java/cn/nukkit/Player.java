@@ -684,7 +684,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     private void updateBlockingFlag() {
         boolean shouldBlock = getNoShieldTicks() == 0
                 && (this.isSneaking() || getRiding() != null)
-                && (this.getInventory().getItemInHand().getId() == ItemID.SHIELD || this.getOffhandInventory().getItem(0).getId() == ItemID.SHIELD);
+                && (this.getInventory().getItemInHand() instanceof ItemShield || this.getOffhandInventory().getItem(0) instanceof ItemShield);
 
         if (isBlocking() != shouldBlock) {
             this.setBlocking(shouldBlock);
