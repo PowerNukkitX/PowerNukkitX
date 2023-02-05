@@ -20,6 +20,7 @@ import cn.nukkit.inventory.EntityInventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemArmor;
 import cn.nukkit.item.ItemID;
+import cn.nukkit.item.ItemShield;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.particle.DestroyBlockParticle;
@@ -173,7 +174,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
             slot = EntityArmorInventory.SLOT_HEAD;
         } else if (hasItemInHand) {
             isArmor = false;
-            if (item.getId() == ItemID.SHIELD) {
+            if (item instanceof ItemShield) {
                 slot = EntityEquipmentInventory.OFFHAND;
             } else {
                 slot = EntityEquipmentInventory.MAIN_HAND;

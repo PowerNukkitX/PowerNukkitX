@@ -551,8 +551,9 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
                 this.nbt.getCompound("components").putCompound("minecraft:food", new CompoundTag().putBoolean("can_always_eat", item.canAlwaysEat()));
             }
 
+            int eatingtick = food.getEatingTickSupplier() == null ? food.getEatingTick() : food.getEatingTickSupplier().getAsInt();
             this.nbt.getCompound("components").getCompound("item_properties")
-                    .putInt("use_duration", food.getEatingTick());
+                    .putInt("use_duration", eatingtick);
 
             this.nbt.getCompound("components").getCompound("item_properties")
                     .putInt("use_animation", item.isDrink() ? 2 : 1);

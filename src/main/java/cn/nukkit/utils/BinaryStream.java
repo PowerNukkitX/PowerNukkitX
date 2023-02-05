@@ -1,9 +1,6 @@
 package cn.nukkit.utils;
 
-import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
+import cn.nukkit.api.*;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.blockstate.BlockStateRegistry;
@@ -397,6 +394,7 @@ public class BinaryStream {
         return new SerializedImage(width, height, data);
     }
 
+    @PowerNukkitXDifference(info = "Remove the name from the tag, this function will be removed in the future")
     public Item getSlot() {
         int networkId = getVarInt();
         if (networkId == 0) {
@@ -522,6 +520,10 @@ public class BinaryStream {
                 namedTag.put("CanPlaceOn", listTag);
             }
 
+            if (namedTag.containsString("Name")) {//todo 临时修复物品NBT，未来移除
+                namedTag.remove("Name");
+            }
+
             item.setNamedTag(namedTag);
         }
 
@@ -594,6 +596,7 @@ public class BinaryStream {
         this.putSlot(item, false);
     }
 
+    @PowerNukkitXDifference(info = "Remove the name from the tag, this function will be removed in the future")
     @Since("1.4.0.0-PN")
     public void putSlot(Item item, boolean instanceItem) {
         if (item == null || item.getId() == 0) {
@@ -647,7 +650,7 @@ public class BinaryStream {
                     tag = NBTIO.read(nbt, ByteOrder.LITTLE_ENDIAN);
                 }
 
-                if (tag.containsString("Name")) tag.remove("Name");
+                if (tag.containsString("Name")) tag.remove("Name");//todo 未来移除
 
                 if (tag.contains("Damage")) {
                     tag.put("__DamageConflict__", tag.removeAndGet("Damage"));
@@ -660,7 +663,7 @@ public class BinaryStream {
                 stream.writeShort(-1);
                 stream.writeByte(1); // Hardcoded in current version
                 var tag = item.getNamedTag();
-                if (tag.containsString("Name")) tag.remove("Name");
+                if (tag.containsString("Name")) tag.remove("Name");//todo 未来移除
                 stream.write(NBTIO.write(tag, ByteOrder.LITTLE_ENDIAN));
             } else {
                 userDataBuf.writeShortLE(0);
