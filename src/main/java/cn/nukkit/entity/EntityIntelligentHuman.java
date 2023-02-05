@@ -11,7 +11,7 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.inventory.*;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemID;
+import cn.nukkit.item.ItemShield;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.FullChunk;
@@ -557,7 +557,7 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
                 return armor;
             }
 
-            if (armor.getId() == ItemID.SHIELD)
+            if (armor instanceof ItemShield)
                 armor.setDamage(armor.getDamage() + (event.getDamage() >= 3 ? (int) event.getDamage() + 1 : 0));
             else
                 armor.setDamage(armor.getDamage() + Math.max(1, (int) (event.getDamage() / 4.0f)));
@@ -659,10 +659,10 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
         super.onBlock(entity, event, animate);
         Item shield = getInventory().getItemInHand();
         Item shieldOffhand = getOffhandInventory().getItem(0);
-        if (shield.getId() == ItemID.SHIELD) {
+        if (shield instanceof ItemShield) {
             shield = damageArmor(shield, entity, event);
             getInventory().setItemInHand(shield);
-        } else if (shieldOffhand.getId() == ItemID.SHIELD) {
+        } else if (shieldOffhand instanceof ItemShield) {
             shieldOffhand = damageArmor(shieldOffhand, entity, event);
             getOffhandInventory().setItem(0, shieldOffhand);
         }
