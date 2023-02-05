@@ -108,6 +108,7 @@ public final class DispenseBehaviorRegister {
             }
         });
         registerBehavior(ItemID.GLASS_BOTTLE, new GlassBottleDispenseBehavior());
+        registerBehavior(ItemID.POTION, new WaterBottleDispenseBehavior());
         registerBehavior(ItemID.MINECART, new MinecartDispenseBehavior("MinecartRideable"));
         registerBehavior(ItemID.CHEST_MINECART, new MinecartDispenseBehavior("MinecartChest"));
         registerBehavior(ItemID.HOPPER_MINECART, new MinecartDispenseBehavior("MinecartHopper"));
