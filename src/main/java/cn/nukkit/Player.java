@@ -4595,6 +4595,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         this.setGamemode(switch (setPlayerGameTypePacket.gamemode) {
                             case 0, 1, 2 -> setPlayerGameTypePacket.gamemode;
                             case 6 -> 3;
+                            case 5 -> this.server.getDefaultGamemode();
                             default ->
                                     throw new IllegalStateException("Unexpected value: " + setPlayerGameTypePacket.gamemode);
                         });
