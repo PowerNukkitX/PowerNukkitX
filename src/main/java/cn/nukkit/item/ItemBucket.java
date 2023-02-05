@@ -3,6 +3,7 @@ package cn.nukkit.item;
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.*;
 import cn.nukkit.entity.Entity;
@@ -10,6 +11,7 @@ import cn.nukkit.event.player.PlayerBucketEmptyEvent;
 import cn.nukkit.event.player.PlayerBucketFillEvent;
 import cn.nukkit.event.player.PlayerItemConsumeEvent;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.Position;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.particle.ExplodeParticle;
 import cn.nukkit.level.vibration.VibrationEvent;
@@ -351,34 +353,21 @@ public class ItemBucket extends Item {
             level.addSound(block, Sound.BUCKET_EMPTY_WATER);
         }
 
-        switch (this.getDamage()) {
-            case 2:
-                Entity e2 = Entity.createEntity("Cod", block);
-                if (e2 != null) e2.spawnToAll();
-                break;
-            case 3:
-                Entity e3 = Entity.createEntity("Salmon", block);
-                if (e3 != null) e3.spawnToAll();
-                break;
-            case 4:
-                Entity e4 = Entity.createEntity("TropicalFish", block);
-                if (e4 != null) e4.spawnToAll();
-                break;
-            case 5:
-                Entity e5 = Entity.createEntity("Pufferfish", block);
-                if (e5 != null) e5.spawnToAll();
-                break;
-            case 12:
-                //TODO: Uncomment this code after adding the entity
-                /*
-                Entity e12 = Entity.createEntity("Axolotl", block);
-                if (e12 != null) e12.spawnToAll();
-                */
-            case 13:
-                //TODO: Uncomment this code after adding the entity
-                break;
+        spawnFishEntity(block.add(0.5, 0.5, 0.5));
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    public void spawnFishEntity(Position spawnPos) {
+        var fishEntityId = getFishEntityId();
+        if (fishEntityId != null) {
+            var fishEntity = Entity.createEntity(fishEntityId, spawnPos);
+            if (fishEntity != null)
+                fishEntity.spawnToAll();
         }
     }
+
+
 
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
