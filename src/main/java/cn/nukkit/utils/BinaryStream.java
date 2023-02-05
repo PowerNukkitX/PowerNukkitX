@@ -522,6 +522,10 @@ public class BinaryStream {
                 namedTag.put("CanPlaceOn", listTag);
             }
 
+            if (namedTag.containsString("Name")) {//todo 临时修复物品NBT，未来移除
+                namedTag.remove("Name");
+            }
+
             item.setNamedTag(namedTag);
         }
 
@@ -647,7 +651,7 @@ public class BinaryStream {
                     tag = NBTIO.read(nbt, ByteOrder.LITTLE_ENDIAN);
                 }
 
-                if (tag.containsString("Name")) tag.remove("Name");
+                if (tag.containsString("Name")) tag.remove("Name");//todo 未来移除
 
                 if (tag.contains("Damage")) {
                     tag.put("__DamageConflict__", tag.removeAndGet("Damage"));
@@ -660,7 +664,7 @@ public class BinaryStream {
                 stream.writeShort(-1);
                 stream.writeByte(1); // Hardcoded in current version
                 var tag = item.getNamedTag();
-                if (tag.containsString("Name")) tag.remove("Name");
+                if (tag.containsString("Name")) tag.remove("Name");//todo 未来移除
                 stream.write(NBTIO.write(tag, ByteOrder.LITTLE_ENDIAN));
             } else {
                 userDataBuf.writeShortLE(0);
