@@ -1,8 +1,10 @@
 package cn.nukkit.dispenser;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.ItemID;
+import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 
@@ -73,6 +75,12 @@ public final class DispenseBehaviorRegister {
                         face.getZOffset())
                         .normalize();
             }
+
+            @Since("1.19.60-r1")
+            @Override
+            protected Sound getShootingSound() {
+                return Sound.MOB_BLAZE_SHOOT;
+            }
         });
         registerBehavior(ItemID.EXPERIENCE_BOTTLE, new ProjectileDispenseBehavior("ThrownExpBottle") {
             @Override
@@ -106,6 +114,12 @@ public final class DispenseBehaviorRegister {
             @Override
             protected double getMotion() {
                 return super.getMotion() * 1.25;
+            }
+
+            @Since("1.19.60-r1")
+            @Override
+            protected Sound getShootingSound() {
+                return Sound.ITEM_TRIDENT_THROW;
             }
         });
         registerBehavior(ItemID.GLASS_BOTTLE, new GlassBottleDispenseBehavior());

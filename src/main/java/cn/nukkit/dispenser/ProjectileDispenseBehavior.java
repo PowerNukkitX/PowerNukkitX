@@ -48,8 +48,15 @@ public class ProjectileDispenseBehavior extends DefaultDispenseBehavior {
 
         projectile.spawnToAll();
 
-        source.level.addSound(source, Sound.RANDOM_BOW);
+        source.level.addSound(source, getShootingSound());
+
         return null;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    protected Sound getShootingSound() {
+        return Sound.RANDOM_BOW;
     }
 
     @PowerNukkitXOnly
