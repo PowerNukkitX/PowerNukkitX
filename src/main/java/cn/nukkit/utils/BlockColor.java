@@ -103,8 +103,16 @@ public class BlockColor {
     public static final BlockColor WARPED_WART_BLOCK_COLOR = new BlockColor(0x14, 0xB4, 0x85);
 
     @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    public static final BlockColor SCULK_BLOCK_COLOR = new BlockColor(0x0d, 0x12, 0x17);
+
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public static final BlockColor DEEPSLATE_GRAY = new BlockColor(0x64, 0x64, 0x64);
+
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    public static final BlockColor RAW_IRON_BLOCK_COLOR = new BlockColor(0xd8, 0xaf, 0x93);
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
