@@ -4,6 +4,7 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockDispenser;
+import cn.nukkit.entity.EntityShearable;
 import cn.nukkit.entity.passive.EntitySheep;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
@@ -22,9 +23,9 @@ public class ShearsDispenseBehavior extends DefaultDispenseBehavior {
                 1, 1, 1)
                 .offset(target.x, target.y, target.z);
         for (var entity : block.level.getCollidingEntities(bb)) {
-            if (entity instanceof EntitySheep sheep) {
-                sheep.shear();
-                item.useOn(sheep);
+            if (entity instanceof EntityShearable shearable) {
+                shearable.shear();
+                item.useOn(entity);
                 return item.getDamage() >= item.getMaxDurability() ? null : item;
             }
         }
