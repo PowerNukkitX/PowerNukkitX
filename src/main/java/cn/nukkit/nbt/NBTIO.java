@@ -37,6 +37,7 @@ public class NBTIO {
         return putItemHelper(item, null);
     }
 
+    @PowerNukkitXDifference(info = "Remove the name from the tag, this function will be removed in the future")
     public static CompoundTag putItemHelper(Item item, Integer slot) {
         CompoundTag tag = new CompoundTag((String) null)
                 .putByte("Count", item.getCount())
@@ -53,7 +54,7 @@ public class NBTIO {
 
         if (item.hasCompoundTag()) {
             if (id == ItemID.STRING_IDENTIFIED_ITEM) {
-                CompoundTag realCompound = item.getNamedTag().clone().remove("Name");
+                CompoundTag realCompound = item.getNamedTag().clone().remove("Name");//todo 未来移除
                 if (!realCompound.isEmpty()) {
                     tag.putCompound("tag", realCompound);
                 }
@@ -65,6 +66,7 @@ public class NBTIO {
         return tag;
     }
 
+    @PowerNukkitXDifference(info = "Remove the name from the tag, this function will be removed in the future")
     @PowerNukkitXDifference(info = "not limit name and id because the return value of fromString not null")
     public static Item getItemHelper(CompoundTag tag) {
         if (!tag.containsByte("Count")) {
@@ -97,8 +99,11 @@ public class NBTIO {
         }
 
         Tag tagTag = tag.get("tag");
-        if (tagTag instanceof CompoundTag) {
-            item.setNamedTag((CompoundTag) tagTag);
+        if (tagTag instanceof CompoundTag compoundTag) {//todo 临时修复物品NBT，未来移除
+            if (compoundTag.containsString("Name")) {
+                compoundTag.remove("Name");
+            }
+            item.setNamedTag(compoundTag);
         }
 
         return item;
