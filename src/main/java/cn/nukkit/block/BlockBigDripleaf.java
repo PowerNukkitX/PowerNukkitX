@@ -7,7 +7,6 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.*;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.block.BigDripleafTiltChangeEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
@@ -256,13 +255,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
 
     @Override
     public boolean hasEntityCollision() {
-        return true;
-    }
-
-    @Override
-    public void onEntityCollide(Entity entity) {
-        if (!isHead() || getTilt() != NONE || entity instanceof EntityProjectile) return;
-        setTiltAndScheduleTick(UNSTABLE);
+        return isHead() && getTilt() != FULL_TILT;
     }
 
     @Override
@@ -280,46 +273,25 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
 
     @Override
     public boolean canPassThrough() {
-        return isHead() && getTilt() == FULL_TILT;
+        return !isHead() || (isHead() && getTilt() == FULL_TILT);
     }
 
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
-        //1 / 16 * 3 == 0.1875
-        //1 / 16 * 5 == 0.3125
-        //1 / 16 * 6 == 0.375
-        if (!isHead()) {
-            var face = this.getBlockFace().getOpposite();
-            return new SimpleAxisAlignedBB(
-                    0.3125,
-                    0,
-                    0.3125,
-                    0.6875,
-                    1,
-                    0.6875)
-                    .offset(
-                            this.x + face.getXOffset() * 0.1875,
-                            this.y,
-                            this.z + face.getZOffset() * 0.1875
-                    );
-        } else {
+        if (this.isHead()) {
+            if (this.getTilt() == Tilt.FULL_TILT) return null;
+            else if (this.getTilt() == Tilt.PARTIAL_TILT) {
+                return new SimpleAxisAlignedBB(this.x, this.y + 0.8, this.z, this.x + 1, this.y + 0.9, this.z + 1);
+            }
             return new SimpleAxisAlignedBB(
                     this.x,
-                    this.y,
+                    this.y + 0.9,
                     this.z,
                     this.x + 1,
-                    this.y + 0.9375,
+                    this.y + 1,
                     this.z + 1
-            );
-        }
-    }
-
-    @Override
-    protected AxisAlignedBB recalculateCollisionBoundingBox() {
-        var bb = getBoundingBox();
-        if (isHead())
-            bb = bb.addCoord(0, 0.0625, 0);
-        return bb;
+            );//NONE,UNSTABLE
+        } else return null;
     }
 
     @Since("1.3.0.0-PN")
@@ -342,7 +314,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
         return id == BIG_DRIPLEAF || id == GRASS || id == DIRT || id == MYCELIUM || id == PODZOL || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == CLAY_BLOCK;
     }
 
-    private boolean setTiltAndScheduleTick(Tilt tilt) {
+    public boolean setTiltAndScheduleTick(Tilt tilt) {
         if (!setTilt(tilt))
             return false;
         level.setBlock(this, this, true, false);

@@ -20,7 +20,7 @@ import javax.annotation.Nonnull;
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class BlockSculkSensor extends BlockSolid implements BlockEntityHolder<BlockEntitySculkSensor>, RedstoneComponent {
+public class BlockSculkSensor extends Block implements BlockEntityHolder<BlockEntitySculkSensor>, RedstoneComponent {
 
     public static final BooleanBlockProperty POWERED_BIT = new BooleanBlockProperty("powered_bit", false);
     public static final BlockProperties PROPERTIES = new BlockProperties(POWERED_BIT);

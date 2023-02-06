@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.*;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockBigDripleaf;
 import cn.nukkit.block.BlockCactus;
 import cn.nukkit.block.BlockMagma;
 import cn.nukkit.entity.data.ShortEntityData;
@@ -30,6 +31,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
+import static cn.nukkit.block.BlockBigDripleaf.Tilt.NONE;
+import static cn.nukkit.block.BlockBigDripleaf.Tilt.UNSTABLE;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -304,7 +308,11 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         // Used to check collisions with magma / cactus blocks
         var block = this.level.getTickCachedBlock((int) Math.floor(x), (int) y - 1, (int) Math.floor(z));
         if (block instanceof BlockMagma || block instanceof BlockCactus) block.onEntityCollide(this);
-
+        //BlockBigDripleaf update
+        if (block instanceof BlockBigDripleaf dripleaf) {
+            if (dripleaf.isHead() && dripleaf.getTilt() == NONE)
+                dripleaf.setTiltAndScheduleTick(UNSTABLE);
+        }
         Timings.livingEntityBaseTickTimer.stopTiming();
 
         return hasUpdate;
