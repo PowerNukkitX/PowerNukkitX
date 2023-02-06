@@ -71,8 +71,8 @@ public class ExecuteCommand extends VanillaCommand {
         });
         this.addCommandParameters("rotated", new CommandParameter[]{
                 CommandParameter.newEnum("subcommand", false, new CommandEnum("Option_Rotated", "rotated")),
-                CommandParameter.newType("yaw", true, CommandParamType.VALUE),
-                CommandParameter.newType("pitch", true, CommandParamType.VALUE),
+                CommandParameter.newType("yaw", false, CommandParamType.VALUE),
+                CommandParameter.newType("pitch", false, CommandParamType.VALUE),
                 CHAINED_COMMAND.get(false)
         });
         this.addCommandParameters("rotated as", new CommandParameter[]{
@@ -107,7 +107,7 @@ public class ExecuteCommand extends VanillaCommand {
                 CommandParameter.newEnum("secondary subcommand", false, new CommandEnum("Option_Block", "block")),
                 CommandParameter.newType("position", CommandParamType.BLOCK_POSITION),
                 CommandParameter.newEnum("block", false, CommandEnum.ENUM_BLOCK),
-                CHAINED_COMMAND.get(false)
+                CHAINED_COMMAND.get(true)
         });
         /*todo 暂时没实现，因为我也不知道这个blockStates填什么
         this.addCommandParameters("if-unless-block-blockStates", new CommandParameter[]{
@@ -124,7 +124,7 @@ public class ExecuteCommand extends VanillaCommand {
                 CommandParameter.newType("position", CommandParamType.BLOCK_POSITION),
                 CommandParameter.newEnum("block", false, CommandEnum.ENUM_BLOCK),
                 CommandParameter.newType("data", CommandParamType.INT),
-                CHAINED_COMMAND.get(false)
+                CHAINED_COMMAND.get(true)
         });
         this.addCommandParameters("if-unless-blocks", new CommandParameter[]{
                 CommandParameter.newEnum("subcommand", false, new CommandEnum("Option_If_Unless", "if", "unless")),
@@ -133,13 +133,13 @@ public class ExecuteCommand extends VanillaCommand {
                 CommandParameter.newType("end", CommandParamType.BLOCK_POSITION),
                 CommandParameter.newType("destination", CommandParamType.BLOCK_POSITION),
                 CommandParameter.newEnum("scan mode", true, new String[]{"all", "masked"}),
-                CHAINED_COMMAND.get(false)
+                CHAINED_COMMAND.get(true)
         });
         this.addCommandParameters("if-unless-entity", new CommandParameter[]{
                 CommandParameter.newEnum("subcommand", false, new CommandEnum("Option_If_Unless", "if", "unless")),
                 CommandParameter.newEnum("secondary subcommand", false, new CommandEnum("Option_Entity", "entity")),
                 CommandParameter.newType("target", CommandParamType.TARGET),
-                CHAINED_COMMAND.get(false)
+                CHAINED_COMMAND.get(true)
         });
         this.addCommandParameters("if-unless-score", new CommandParameter[]{
                 CommandParameter.newEnum("subcommand", false, new CommandEnum("Option_If_Unless", "if", "unless")),
@@ -149,7 +149,7 @@ public class ExecuteCommand extends VanillaCommand {
                 CommandParameter.newType("operation", CommandParamType.COMPARE_OPERATOR),
                 CommandParameter.newType("source", CommandParamType.TARGET),
                 CommandParameter.newEnum("objective", false, new CommandEnum("ScoreboardObjectives", List.of(), true)),
-                CHAINED_COMMAND.get(false)
+                CHAINED_COMMAND.get(true)
         });
         this.addCommandParameters("if-unless-score-matches", new CommandParameter[]{
                 CommandParameter.newEnum("subcommand", false, new CommandEnum("Option_If_Unless", "if", "unless")),
@@ -158,7 +158,7 @@ public class ExecuteCommand extends VanillaCommand {
                 CommandParameter.newEnum("objective", false, new CommandEnum("ScoreboardObjectives", List.of(), true)),
                 CommandParameter.newEnum("matches", new String[]{"matches"}),
                 CommandParameter.newType("range", CommandParamType.STRING),
-                CHAINED_COMMAND.get(false)
+                CHAINED_COMMAND.get(true)
         });
         this.addCommandParameters("run", new CommandParameter[]{
                 CommandParameter.newEnum("subcommand", false, new CommandEnum("Option_Run", "run")),
@@ -324,15 +324,22 @@ public class ExecuteCommand extends VanillaCommand {
                 Block block = pos.getLevelBlock();
                 Block blockName = list.getResult(3);
                 int id = blockName.getId();
-                String chainCommand = list.getResult(4);
                 String isIF = list.getResult(0);
 
                 boolean matched = block.getId() == id;
                 boolean shouldMatch = isIF.equals("if");
-                if ((matched && shouldMatch) || (!matched && !shouldMatch)) {
+                boolean condition = (matched && shouldMatch) || (!matched && !shouldMatch);
+
+                if (list.hasResult(4) && condition) {
+                    String chainCommand = list.getResult(4);
                     return sender.getServer().executeCommand(sender, chainCommand);
+                } else if (condition) {
+                    log.addSuccess("commands.execute.trueCondition").output();
+                    return 1;
+                } else {
+                    log.addError("commands.execute.falseCondition", isIF, "block");
+                    return 0;
                 }
-                return 0;
             }
             case "if-unless-block-data" -> {
                 Position pos = list.getResult(2);
@@ -340,15 +347,22 @@ public class ExecuteCommand extends VanillaCommand {
                 Block blockName = list.getResult(3);
                 int id = blockName.getId();
                 int data = list.getResult(4);
-                String chainCommand = list.getResult(5);
                 String isIF = list.getResult(0);
 
                 boolean matched = id == block.getId() && (data == -1 || data == block.getDamage());
                 boolean shouldMatch = isIF.equals("if");
-                if ((matched && shouldMatch) || (!matched && !shouldMatch)) {
+                boolean condition = (matched && shouldMatch) || (!matched && !shouldMatch);
+
+                if (list.hasResult(5) && condition) {
+                    String chainCommand = list.getResult(5);
                     return sender.getServer().executeCommand(sender, chainCommand);
+                } else if (condition) {
+                    log.addSuccess("commands.execute.trueCondition").output();
+                    return 1;
+                } else {
+                    log.addError("commands.execute.falseCondition", isIF, "block");
+                    return 0;
                 }
-                return 0;
             }
             case "if-unless-blocks" -> {
                 String isIF = list.getResult(0);
@@ -361,7 +375,6 @@ public class ExecuteCommand extends VanillaCommand {
                     String str5 = list.getResult(5);
                     mode = TestForBlocksCommand.TestForBlocksMode.valueOf(str5.toUpperCase(Locale.ENGLISH));
                 }
-                String chainCommand = list.getResult(6);
 
                 AxisAlignedBB blocksAABB = new SimpleAxisAlignedBB(Math.min(begin.getX(), end.getX()), Math.min(begin.getY(), end.getY()), Math.min(begin.getZ(), end.getZ()), Math.max(begin.getX(), end.getX()), Math.max(begin.getY(), end.getY()), Math.max(begin.getZ(), end.getZ()));
                 int size = NukkitMath.floorDouble((blocksAABB.getMaxX() - blocksAABB.getMinX() + 1) * (blocksAABB.getMaxY() - blocksAABB.getMinY() + 1) * (blocksAABB.getMaxZ() - blocksAABB.getMinZ() + 1));
@@ -377,9 +390,6 @@ public class ExecuteCommand extends VanillaCommand {
 
                 if (blocksAABB.getMinY() < 0 || blocksAABB.getMaxY() > 255 || destinationAABB.getMinY() < 0 || destinationAABB.getMaxY() > 255) {
                     log.addError("commands.testforblock.outOfWorld").output();
-                    if (!shouldMatch) {
-                        return sender.getServer().executeCommand(sender, chainCommand);
-                    }
                     return 0;
                 }
 
@@ -389,16 +399,10 @@ public class ExecuteCommand extends VanillaCommand {
                     for (int sourceChunkZ = NukkitMath.floorDouble(blocksAABB.getMinZ()) >> 4, destinationChunkZ = NukkitMath.floorDouble(destinationAABB.getMinZ()) >> 4; sourceChunkZ <= NukkitMath.floorDouble(blocksAABB.getMaxZ()) >> 4; sourceChunkZ++, destinationChunkZ++) {
                         if (level.getChunkIfLoaded(sourceChunkX, sourceChunkZ) == null) {
                             log.addError("commands.testforblock.outOfWorld").output();
-                            if (!shouldMatch) {
-                                return sender.getServer().executeCommand(sender, chainCommand);
-                            }
                             return 0;
                         }
                         if (level.getChunkIfLoaded(destinationChunkX, destinationChunkZ) == null) {
                             log.addError("commands.testforblock.outOfWorld").output();
-                            if (!shouldMatch) {
-                                return sender.getServer().executeCommand(sender, chainCommand);
-                            }
                             return 0;
                         }
                     }
@@ -445,21 +449,34 @@ public class ExecuteCommand extends VanillaCommand {
 
                 log.addSuccess("commands.compare.success", String.valueOf(count)).output();
 
-                if ((matched && shouldMatch) || (!matched && !shouldMatch)) {
+                boolean condition = (matched && shouldMatch) || (!matched && !shouldMatch);
+                if (list.hasResult(6) && condition) {
+                    String chainCommand = list.getResult(6);
                     return sender.getServer().executeCommand(sender, chainCommand);
+                } else if (condition) {
+                    log.addSuccess("commands.execute.trueConditionWithCount", String.valueOf(count)).output();
+                    return count;
+                } else {
+                    log.addError("commands.execute.falseConditionWithCount", isIF, "blocks", String.valueOf(count));
+                    return 0;
                 }
-                return 0;
             }
             case "if-unless-entity" -> {
                 String isIF = list.getResult(0);
                 boolean shouldMatch = isIF.equals("if");
                 List<Entity> targets = list.getResult(2);
-                String chainCommand = list.getResult(3);
                 boolean found = !targets.isEmpty();
-                if ((found && shouldMatch) || (!found && !shouldMatch)) {
+                boolean condition = (found && shouldMatch) || (!found && !shouldMatch);
+                if (list.hasResult(3) && condition) {
+                    String chainCommand = list.getResult(3);
                     return sender.getServer().executeCommand(sender, chainCommand);
+                } else if (condition) {
+                    log.addSuccess("commands.execute.trueCondition").output();
+                    return 1;
+                } else {
+                    log.addError("commands.execute.falseCondition", isIF, "entity");
+                    return 0;
                 }
-                return 0;
             }
             case "if-unless-score" -> {
                 boolean matched = false;
@@ -515,11 +532,17 @@ public class ExecuteCommand extends VanillaCommand {
                     default -> false;
                 };
 
-                String chainCommand = list.getResult(7);
-                if ((matched && shouldMatch) || (!matched && !shouldMatch)) {
+                boolean condition = (matched && shouldMatch) || (!matched && !shouldMatch);
+                if (list.hasResult(7) && condition) {
+                    String chainCommand = list.getResult(7);
                     return sender.getServer().executeCommand(sender, chainCommand);
+                } else if (condition) {
+                    log.addSuccess("commands.execute.trueCondition").output();
+                    return 1;
+                } else {
+                    log.addError("commands.execute.falseCondition", isIF, "score");
+                    return 0;
                 }
-                return 0;
             }
             case "if-unless-score-matches" -> {
                 boolean matched = false;
@@ -561,11 +584,18 @@ public class ExecuteCommand extends VanillaCommand {
                     int score = Integer.parseInt(range);
                     matched = targetScore == score;
                 }
-                String chainCommand = list.getResult(6);
-                if ((matched && shouldMatch) || (!matched && !shouldMatch)) {
+
+                boolean condition = (matched && shouldMatch) || (!matched && !shouldMatch);
+                if (list.hasResult(6) && condition) {
+                    String chainCommand = list.getResult(6);
                     return sender.getServer().executeCommand(sender, chainCommand);
+                } else if (condition) {
+                    log.addSuccess("commands.execute.trueCondition").output();
+                    return 1;
+                } else {
+                    log.addError("commands.execute.falseCondition", isIF, "score");
+                    return 0;
                 }
-                return 0;
             }
             default -> {
                 return 0;

@@ -141,7 +141,7 @@ public record CommandLogger(Command command,
     public CommandLogger addSyntaxErrors(int errorIndex) {
         if (sender instanceof ConsoleCommandSender) {
             this.addMessage("commands.generic.usage", "\n" + command.getCommandFormatTips());
-        } else if (isSend()) {
+        } else if (isSend(sender)) {
             this.addError("commands.generic.syntax", this.syntaxErrorsValue(errorIndex));
         }
         return this;
@@ -220,25 +220,32 @@ public record CommandLogger(Command command,
     /**
      * 输出{@link #outputContainer}中的所有信息.
      *
-     * @param broadcastAdminChannel 是否广播消息给其他在管理员频道的玩家
+     * @param broadcastAdminChannel 在发送命令反馈给玩家时，是否广播消息给其他在管理员频道的玩家
      * @param broadcastConsole      是否广播消息给控制台
      */
     public void output(boolean broadcastAdminChannel, boolean broadcastConsole) {
-        if (sender instanceof ConsoleCommandSender) {
+        if (sender instanceof ICommandBlock || sender instanceof ExecutorCommandSender executorCommandSender && executorCommandSender.getExecutor() instanceof ICommandBlock) {
             this.sender.sendCommandOutput(this.outputContainer);
             this.outputContainer.setSuccessCount(0);
             this.outputContainer.getMessages().clear();
             return;
-        } else if (broadcastConsole) {
-            for (var msg : this.outputContainer.getMessages()) {
-                broadcastConsole(msg.getMessageId(), msg.getParameters());
-            }
-        }
-        if (isSend()) {
-            this.sender.sendCommandOutput(this.outputContainer);
-            if (broadcastAdminChannel) {
+        } else {
+            if (sender instanceof ConsoleCommandSender) {
+                this.sender.sendCommandOutput(this.outputContainer);
+                this.outputContainer.setSuccessCount(0);
+                this.outputContainer.getMessages().clear();
+                return;
+            } else if (broadcastConsole) {
                 for (var msg : this.outputContainer.getMessages()) {
-                    broadcastAdminChannel(msg.getMessageId(), msg.getParameters());
+                    broadcastConsole(msg.getMessageId(), msg.getParameters());
+                }
+            }
+            if (isSend(sender)) {
+                this.sender.sendCommandOutput(this.outputContainer);
+                if (broadcastAdminChannel) {
+                    for (var msg : this.outputContainer.getMessages()) {
+                        broadcastAdminChannel(msg.getMessageId(), msg.getParameters());
+                    }
                 }
             }
         }
@@ -265,7 +272,7 @@ public record CommandLogger(Command command,
      * @param params   给命令目标的反馈信息参数
      */
     public void outputObjectWhisper(Player receiver, String key, String... params) {
-        if (isSend()) {
+        if (isSend(receiver)) {
             receiver.sendMessage(new TranslationContainer(key, params));
         }
     }
@@ -278,7 +285,7 @@ public record CommandLogger(Command command,
      * @param params   给命令目标的反馈信息参数
      */
     public void outputObjectWhisper(Player receiver, String rawtext, Object... params) {
-        if (isSend()) {
+        if (isSend(receiver)) {
             receiver.sendRawTextMessage(RawText.fromRawText(String.format(rawtext, params)));
         }
     }
@@ -345,9 +352,9 @@ public record CommandLogger(Command command,
     }
 
     //only player
-    private boolean isSend() {
-        if (sender instanceof Player || sender instanceof ExecutorCommandSender executorCommandSender && executorCommandSender.getExecutor() instanceof Player) {
-            return sender.getPosition().getLevel().getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK);
+    private boolean isSend(CommandSender target) {
+        if (target instanceof Player || target instanceof ExecutorCommandSender executorCommandSender && executorCommandSender.getExecutor() instanceof Player) {
+            return target.getPosition().getLevel().getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK);
         } else return true;
     }
 }
