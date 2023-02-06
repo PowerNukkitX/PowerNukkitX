@@ -131,4 +131,10 @@ public class BlockHoney extends BlockSolid {
             entity.attack(new EntityDamageEvent(entity, EntityDamageEvent.DamageCause.FALL, damage));
         }
     }
+
+    @Since("1.19.60-r1")
+    @Override
+    public boolean canSticksBlock() {
+        return true;
+    }
 }

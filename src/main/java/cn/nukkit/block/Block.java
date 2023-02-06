@@ -1568,23 +1568,44 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return false;
     }
 
+    /**
+     * @return 方块是否可以被活塞推动
+     */
     public boolean canBePushed() {
         return true;
     }
 
+    /**
+     * @return 方块是否可以被活塞拉动
+     */
     @PowerNukkitOnly
     public boolean canBePulled() {
         return true;
     }
 
+    /**
+     * @return 当被活塞移动时是否会被破坏
+     */
     @PowerNukkitOnly
     public boolean breaksWhenMoved() {
         return false;
     }
 
+    /**
+     * @return 是否可以粘在粘性活塞上
+     */
     @PowerNukkitOnly
     public boolean sticksToPiston() {
         return true;
+    }
+
+    /**
+     * @return 被活塞移动的时候是否可以粘住其他方块。eg:粘液块，蜂蜜块
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    public boolean canSticksBlock() {
+        return false;
     }
 
     public boolean hasComparatorInputOverride() {

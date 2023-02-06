@@ -435,8 +435,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
                 return false;
             for (int i = 0; i < this.toMove.size(); ++i) {
                 var b = this.toMove.get(i);
-                int blockId = b.getId();
-                if ((blockId == SLIME_BLOCK || blockId == HONEY_BLOCK) && !this.addBranchingBlocks(b)) {
+                if (b.canSticksBlock() && !this.addBranchingBlocks(b)) {
                     return false;
                 }
             }
@@ -448,8 +447,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
             if (block.getId() == AIR)
                 return true;
             //粘液块和蜂蜜块互不干扰
-            if (!mainBlockLine && (block.getId() == SLIME_BLOCK && from.getId() == HONEY_BLOCK
-                    || block.getId() == HONEY_BLOCK && from.getId() == SLIME_BLOCK))
+            if (!mainBlockLine && block.canSticksBlock() && from.canSticksBlock() && block.getId() != from.getId())
                 return true;
             if (!canPush(origin, this.moveDirection, false, extending))
                 return true;
@@ -462,12 +460,11 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
             this.toMove.add(block);
             var count = 1;
             var beStuck = new ArrayList<Block>();
-            while (block.getId() == SLIME_BLOCK || block.getId() == HONEY_BLOCK) {
+            while (block.canSticksBlock()) {
                 var oldBlock = block.clone();
                 block = origin.getSide(this.moveDirection.getOpposite(), count);
                 //蜂蜜块和粘液块互不干扰
-                if ((!extending || !mainBlockLine) && (block.getId() == SLIME_BLOCK && oldBlock.getId() == HONEY_BLOCK
-                        || block.getId() == HONEY_BLOCK && oldBlock.getId() == SLIME_BLOCK))
+                if ((!extending || !mainBlockLine) && block.canSticksBlock() && from.canSticksBlock() && block.getId() != from.getId())
                     break;
                 if (block.getId() == AIR || !canPush(block, this.moveDirection, false, extending) || block.equals(this.pistonPos))
                     break;
@@ -491,7 +488,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
                     this.reorderListAtCollision(beStuckCount, index);
                     for (int i = 0; i <= index + beStuckCount; ++i) {
                         var b = this.toMove.get(i);
-                        if ((b.getId() == SLIME_BLOCK || b.getId() == HONEY_BLOCK) && !this.addBranchingBlocks(b))
+                        if ((b.canSticksBlock()) && !this.addBranchingBlocks(b))
                             return false;
                     }
                     return true;
