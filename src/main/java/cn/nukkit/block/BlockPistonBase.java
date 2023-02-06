@@ -53,6 +53,9 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
         super(meta);
     }
 
+    /**
+     * @return 指定方块是否能向指定方向推动
+     */
     public static boolean canPush(Block block, BlockFace face, boolean destroyBlocks, boolean extending) {
         var min = block.level.getMinHeight();
         var max = block.level.getMaxHeight() - 1;
@@ -418,7 +421,6 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
         }
 
         public boolean canMove() {
-            //普通活塞缩回，不需要检查
             if (!sticky && !extending)
                 return true;
             this.toMove.clear();
@@ -446,7 +448,6 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
             var block = origin.clone();
             if (block.getId() == AIR)
                 return true;
-            //粘液块和蜂蜜块互不干扰
             if (!mainBlockLine && block.canSticksBlock() && from.canSticksBlock() && block.getId() != from.getId())
                 return true;
             if (!canPush(origin, this.moveDirection, false, extending))
@@ -463,8 +464,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
             while (block.canSticksBlock()) {
                 var oldBlock = block.clone();
                 block = origin.getSide(this.moveDirection.getOpposite(), count);
-                //蜂蜜块和粘液块互不干扰
-                if ((!extending || !mainBlockLine) && block.canSticksBlock() && from.canSticksBlock() && block.getId() != from.getId())
+                if ((!extending || !mainBlockLine) && block.canSticksBlock() && oldBlock.canSticksBlock() && block.getId() != oldBlock.getId())
                     break;
                 if (block.getId() == AIR || !canPush(block, this.moveDirection, false, extending) || block.equals(this.pistonPos))
                     break;
