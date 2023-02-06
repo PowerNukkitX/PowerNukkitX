@@ -295,7 +295,7 @@ public class BlockChest extends BlockTransparentMeta implements Faceable, BlockE
     }
 
     /**
-     * 大箱子在PNX不能推动
+     * TODO: 大箱子在PNX不能推动
      */
     protected boolean canMove() {
         var blockEntity = this.getBlockEntity();
