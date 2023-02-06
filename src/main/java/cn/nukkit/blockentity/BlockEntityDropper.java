@@ -24,7 +24,7 @@ public class BlockEntityDropper extends BlockEntityEjectable {
     @PowerNukkitOnly
     @Override
     protected String getBlockEntityName() {
-        return BlockEntity. DROPPER;
+        return BlockEntity.DROPPER;
     }
 
     @Override
