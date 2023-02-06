@@ -50,12 +50,12 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
     @Setter
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
-    private InventoryHolder MinecartInvPickupFrom = null;
+    private InventoryHolder minecartInvPickupFrom = null;
     @Getter
     @Setter
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
-    private InventoryHolder MinecartInvPushTo = null;
+    private InventoryHolder minecartInvPushTo = null;
 
     public BlockEntityHopper(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -218,6 +218,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
         Block blockSide = this.getSide(BlockFace.UP).getTickCachedLevelBlock();
         BlockEntity blockEntity = this.level.getBlockEntity(temporalVector.setComponentsAdding(this, BlockFace.UP));
 
+        
         boolean changed = pushItems() || pushItemsIntoMinecart();
 
         HopperSearchItemEvent event = new HopperSearchItemEvent(this, false);
@@ -363,7 +364,8 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
         Block blockSide = this.getSide(side).getTickCachedLevelBlock();
         BlockEntity be = this.level.getBlockEntity(temporalVector.setComponentsAdding(this, side));
 
-        if (be instanceof BlockEntityHopper && levelBlockState.isDefaultState() || !(be instanceof InventoryHolder) && !(blockSide instanceof BlockComposter)) {
+        //漏斗应该有主动向被锁住的漏斗推送物品的能力
+        if (be instanceof BlockEntityHopper sideHopper && levelBlockState.isDefaultState() && !sideHopper.isDisabled() || !(be instanceof InventoryHolder) && !(blockSide instanceof BlockComposter)) {
             return false;
         }
 

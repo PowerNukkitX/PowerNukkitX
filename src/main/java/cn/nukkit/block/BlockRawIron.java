@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.utils.BlockColor;
 
 /**
  * @author LoboMetalurgico
@@ -31,5 +32,10 @@ public class BlockRawIron extends BlockRaw {
     @Override
     public int getId() {
         return RAW_IRON_BLOCK;
+    }
+
+    @Override
+    public BlockColor getColor() {
+        return BlockColor.RAW_IRON_BLOCK_COLOR;
     }
 }

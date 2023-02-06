@@ -290,4 +290,21 @@ public class BlockTripWireHook extends BlockTransparentMeta implements RedstoneC
     public Item toItem() {
         return new ItemBlock(this, 0);
     }
+
+    @Override
+    public boolean isSolid() {
+        return false;
+    }
+
+    @Since("1.3.0.0-PN")
+    @PowerNukkitOnly
+    @Override
+    public boolean isSolid(BlockFace side) {
+        return false;
+    }
+
+    @Override
+    public boolean canPassThrough() {
+        return false;
+    }
 }

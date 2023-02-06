@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
+import cn.nukkit.entity.EntityShearable;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
@@ -25,6 +26,7 @@ import cn.nukkit.entity.data.ByteEntityData;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDye;
+import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
@@ -38,7 +40,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * @author BeYkeRYkt (Nukkit Project)
  */
-public class EntitySheep extends EntityAnimal implements EntityWalkable {
+public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityShearable {
 
     public static final int NETWORK_ID = 13;
     public boolean sheared = false;
@@ -159,7 +161,7 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable {
             return true;
         }
 
-        return item.getId() == Item.SHEARS && shear();
+        return item.isShears() && shear();
     }
 
     public boolean shear() {
@@ -172,6 +174,7 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable {
 
         this.level.dropItem(this, Item.get(Item.WOOL, getColor(), ThreadLocalRandom.current().nextInt(2) + 1));
 
+        level.addSound(this, Sound.MOB_SHEEP_SHEAR);
         level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.SHEAR));
         return true;
     }

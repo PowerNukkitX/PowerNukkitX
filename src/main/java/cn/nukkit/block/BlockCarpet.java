@@ -59,7 +59,7 @@ public class BlockCarpet extends BlockFlowable {
 
     @Override
     public boolean isSolid() {
-        return true;
+        return false;
     }
 
     @Since("1.3.0.0-PN")

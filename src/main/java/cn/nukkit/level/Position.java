@@ -86,6 +86,13 @@ public class Position extends NamedPosition {
         return Position.fromObject(super.getSide(face, step), getValidLevel());
     }
 
+    // Get as a Position for better performance. Do not override it!
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    public Position getSidePos(BlockFace face) {
+        return Position.fromObject(super.getSide(face, 1), getValidLevel());
+    }
+
     @Override
     public String toString() {
         return "Position(level=" + (this.isValid() ? this.getLevel().getName() : "null") + ",x=" + this.x + ",y=" + this.y + ",z=" + this.z + ")";

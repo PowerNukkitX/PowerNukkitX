@@ -8,6 +8,7 @@ import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BooleanBlockProperty;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.projectile.EntityArrow;
+import cn.nukkit.entity.projectile.EntitySmallFireBall;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
@@ -163,7 +164,7 @@ public class BlockTNT extends BlockSolid implements RedstoneComponent {
     @PowerNukkitOnly
     @Override
     public boolean onProjectileHit(@Nonnull Entity projectile, @Nonnull Position position, @Nonnull Vector3 motion) {
-        if (projectile.isOnFire() && projectile instanceof EntityArrow) {
+        if (projectile instanceof EntitySmallFireBall || (projectile.isOnFire() && projectile instanceof EntityArrow)) {
             prime(80, projectile);
             return true;
         }

@@ -8,6 +8,7 @@ import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.IntBlockProperty;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.projectile.EntityArrow;
+import cn.nukkit.entity.projectile.EntitySmallFireBall;
 import cn.nukkit.entity.projectile.EntitySnowball;
 import cn.nukkit.event.block.BlockGrowEvent;
 import cn.nukkit.item.Item;
@@ -222,9 +223,8 @@ public class BlockChorusFlower extends BlockTransparentMeta {
     @Since("1.4.0.0-PN")
     @Override
     public boolean onProjectileHit(@Nonnull Entity projectile, @Nonnull Position position, @Nonnull Vector3 motion) {
-        if (projectile instanceof EntityArrow || projectile instanceof EntitySnowball) { // TODO: Check Fire Charge too
+        if (projectile instanceof EntityArrow || projectile instanceof EntitySnowball || projectile instanceof EntitySmallFireBall) {
             this.getLevel().useBreakOn(this);
-            projectile.kill();
             return true;
         }
         return super.onProjectileHit(projectile, position, motion);

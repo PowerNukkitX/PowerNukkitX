@@ -31,6 +31,6 @@ public class BlockPistonSticky extends BlockPistonBase {
     @PowerNukkitOnly
     @Override
     public int getPistonHeadBlockId() {
-        return PISTON_HEAD_STICKY;
+        return STICKY_PISTON_ARM_COLLISION;
     }
 }

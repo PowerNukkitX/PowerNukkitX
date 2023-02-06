@@ -68,6 +68,6 @@ public class BlockSculk extends BlockSolid {
 
     @Override
     public BlockColor getColor() {
-        return BlockColor.BLACK_BLOCK_COLOR;
+        return BlockColor.SCULK_BLOCK_COLOR;
     }
 }

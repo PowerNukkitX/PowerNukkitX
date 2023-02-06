@@ -342,4 +342,10 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
     public BlockColor getColor() {
         return BlockColor.AIR_BLOCK_COLOR;
     }
+
+    @PowerNukkitOnly
+    @Override
+    public boolean breaksWhenMoved() {
+        return true;
+    }
 }

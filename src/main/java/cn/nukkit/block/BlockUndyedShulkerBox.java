@@ -209,6 +209,11 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
         return false;
     }
 
+    @Override
+    public boolean isSolid() {
+        return false;
+    }
+
     @Since("1.3.0.0-PN")
     @PowerNukkitOnly
     @Override

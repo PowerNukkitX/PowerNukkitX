@@ -139,7 +139,7 @@ public class BlockObserver extends BlockSolidMeta implements RedstoneComponent, 
     public void onNeighborChange(@Nonnull BlockFace side) {
         Server server = level.getServer();
         BlockFace blockFace = getBlockFace();
-        if (!server.isRedstoneEnabled() || isPowered() || side != blockFace || level.isUpdateScheduled(this, this)) {
+        if (!server.isRedstoneEnabled() || side != blockFace || level.isUpdateScheduled(this, this)) {
             return;
         }
 
