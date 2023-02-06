@@ -25,6 +25,7 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
+import cn.nukkit.utils.Utils;
 import com.google.common.collect.Lists;
 import lombok.extern.log4j.Log4j2;
 
@@ -354,7 +355,18 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
 
     public class BlocksCalculator {
 
-        private static final int MOVE_BLOCK_LIMIT = 12;
+        private static int MOVE_BLOCK_LIMIT = 12;
+
+        public static int getMoveBlockLimit() {
+            return MOVE_BLOCK_LIMIT;
+        }
+
+        public static void setMoveBlockLimit(int moveBlockLimit) {
+            if (moveBlockLimit < 0)
+                throw new IllegalArgumentException("The move block limit must be greater than or equal to 0");
+            MOVE_BLOCK_LIMIT = moveBlockLimit;
+        }
+
         private final Vector3 pistonPos;
         private final Block blockToMove;
         private final BlockFace moveDirection;
