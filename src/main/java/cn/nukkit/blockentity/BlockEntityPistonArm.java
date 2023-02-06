@@ -161,7 +161,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                 }
             }
             //对和活塞接触的方块进行更新
-            this.level.neighborChangeAroundImmediately(this);
+            this.level.updateAroundObserver(this);
             //下一计划刻再自检一遍，防止出错
             this.level.scheduleUpdate(this.getLevelBlock(), 1);
             this.attachedBlocks.clear();
