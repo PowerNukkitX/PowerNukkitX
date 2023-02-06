@@ -3,6 +3,7 @@ package cn.nukkit;
 import cn.nukkit.AdventureSettings.Type;
 import cn.nukkit.api.*;
 import cn.nukkit.block.*;
+import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.blockentity.*;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
@@ -496,8 +497,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (this.isBreakingBlock()) {
             Block block = this.level.getBlock(pos, false);
             var miningTimeRequired = block.calculateBreakTime(this.inventory.getItemInHand(), this);
-            // Here we wait another 10ms to avoid animate collision on player model
-            if (System.currentTimeMillis() - startBreakingBlockTime > miningTimeRequired * 1000 + 10) {
+            if (System.currentTimeMillis() - startBreakingBlockTime > miningTimeRequired * 1000 + 10 -
+                    ((block instanceof CustomBlock && miningTimeRequired >= 0.1) ? 60 : 0)) {
                 this.onBlockBreakAbort(pos, face);
                 this.onBlockBreakComplete(pos.asBlockVector3(), face);
             } else {
@@ -3749,8 +3750,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                 case CONTINUE_DESTROY_BLOCK:
                                     break;
                                 case PREDICT_DESTROY_BLOCK:
-                                    this.onBlockBreakAbort(blockPos.asVector3(), blockFace);
-                                    this.onBlockBreakComplete(blockPos, blockFace);
+                                    if (this.isBreakingBlock()) {
+                                        this.onBlockBreakAbort(blockPos.asVector3(), blockFace);
+                                        this.onBlockBreakComplete(blockPos, blockFace);
+                                    } else {
+                                        this.onBlockBreakAbort(blockPos.asVector3(), blockFace);
+                                    }
                                     break;
                             }
                             this.lastBlockAction = action;
