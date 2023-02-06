@@ -7,12 +7,14 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.item.customitem.data.ItemCreativeCategory;
 import cn.nukkit.item.customitem.data.RenderOffsets;
+import cn.nukkit.item.food.Food;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
 import com.google.gson.Gson;
 import lombok.NonNull;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +32,21 @@ import java.util.function.Consumer;
 public record CustomItemDefinition(String identifier, CompoundTag nbt) {
     private static final ConcurrentHashMap<String, Integer> INTERNAL_ALLOCATION_ID_MAP = new ConcurrentHashMap<>();
     private static final AtomicInteger nextRuntimeId = new AtomicInteger(10000);
+
+    /**
+     * 自定义物品的定义构造器
+     * <p>
+     * Definition builder for custom simple item
+     *
+     * @param item             the item
+     * @param creativeCategory the creative category
+     * @return the custom item definition . simple builder
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    public static CustomItemDefinition.SimpleBuilder customBuilder(CustomItem item, ItemCreativeCategory creativeCategory) {
+        return new CustomItemDefinition.SimpleBuilder(item, creativeCategory);
+    }
 
     /**
      * 简单物品的定义构造器
@@ -79,7 +96,9 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
         return new CustomItemDefinition.EdibleBuilder(item, creativeCategory);
     }
 
+    @Nullable
     public String getDisplayName() {
+        if (!this.nbt.getCompound("components").contains("minecraft:display_name")) return null;
         return this.nbt.getCompound("components").getCompound("minecraft:display_name").getString("value");
     }
 
@@ -101,17 +120,19 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
                 .putCompound("components", new CompoundTag()
                         .putCompound("item_properties", new CompoundTag()
                                 .putCompound("minecraft:icon", new CompoundTag())));
+        private final Item item;
 
-
-        protected SimpleBuilder(ItemCustom item, ItemCreativeCategory creativeCategory) {
-            this.identifier = item.getNamespaceId();
+        protected SimpleBuilder(CustomItem customItem, ItemCreativeCategory creativeCategory) {
+            this.item = (Item) customItem;
+            this.identifier = customItem.getNamespaceId();
             //定义材质
             this.nbt.getCompound("components")
                     .getCompound("item_properties")
                     .getCompound("minecraft:icon")
-                    .putString("texture", item.getTextureName());
+                    .putString("texture", customItem.getTextureName());
+
             //定义显示名
-            if (item.getName() != null) {
+            if (item.getName() != null && item.getName().equals(Item.UNKNOWN_STR)) {
                 this.nbt.getCompound("components")
                         .putCompound("minecraft:display_name", new CompoundTag().putString("value", item.getName()));
             }
@@ -120,10 +141,11 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
             this.nbt.getCompound("components")
                     .getCompound("item_properties")
                     .putInt("max_stack_size", item.getMaxStackSize());
-            //定义在创造栏的大分类
+            //定义在创造栏的分类
             this.nbt.getCompound("components")
                     .getCompound("item_properties")//1 none
-                    .putInt("creative_category", creativeCategory.ordinal() + 1);
+                    .putInt("creative_category", creativeCategory.ordinal() + 1)
+                    .putString("creative_group", "none");
         }
 
         /**
@@ -522,14 +544,16 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
     public static class EdibleBuilder extends SimpleBuilder {
         private EdibleBuilder(ItemCustomEdible item, ItemCreativeCategory creativeCategory) {
             super(item, creativeCategory);
+            var food = Food.registerFood(item.getFood().getValue(), item.getFood().getKey());
             if (this.nbt.getCompound("components").contains("minecraft:food")) {
                 this.nbt.getCompound("components").getCompound("minecraft:food").putBoolean("can_always_eat", item.canAlwaysEat());
             } else {
                 this.nbt.getCompound("components").putCompound("minecraft:food", new CompoundTag().putBoolean("can_always_eat", item.canAlwaysEat()));
             }
 
+            int eatingtick = food.getEatingTickSupplier() == null ? food.getEatingTick() : food.getEatingTickSupplier().getAsInt();
             this.nbt.getCompound("components").getCompound("item_properties")
-                    .putInt("use_duration", item.getEatTick());
+                    .putInt("use_duration", eatingtick);
 
             this.nbt.getCompound("components").getCompound("item_properties")
                     .putInt("use_animation", item.isDrink() ? 2 : 1);

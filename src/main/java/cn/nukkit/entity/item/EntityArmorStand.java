@@ -20,7 +20,7 @@ import cn.nukkit.inventory.EntityInventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemArmor;
 import cn.nukkit.item.ItemID;
-import cn.nukkit.item.customitem.ItemCustomArmor;
+import cn.nukkit.item.ItemShield;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.particle.DestroyBlockParticle;
@@ -64,18 +64,6 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
     }
 
     private static int getArmorSlot(ItemArmor armorItem) {
-        if (armorItem.isHelmet()) {
-            return EntityArmorInventory.SLOT_HEAD;
-        } else if (armorItem.isChestplate()) {
-            return EntityArmorInventory.SLOT_CHEST;
-        } else if (armorItem.isLeggings()) {
-            return EntityArmorInventory.SLOT_LEGS;
-        } else {
-            return EntityArmorInventory.SLOT_FEET;
-        }
-    }
-
-    private static int getArmorSlot(ItemCustomArmor armorItem) {
         if (armorItem.isHelmet()) {
             return EntityArmorInventory.SLOT_HEAD;
         } else if (armorItem.isChestplate()) {
@@ -181,15 +169,12 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         if (hasItemInHand && item instanceof ItemArmor itemArmor) {
             isArmor = true;
             slot = getArmorSlot(itemArmor);
-        } else if (hasItemInHand && item instanceof ItemCustomArmor itemArmor) {
-            isArmor = true;
-            slot = getArmorSlot(itemArmor);
         } else if (hasItemInHand && (item.getId() == ItemID.SKULL) || item.getBlockId() == BlockID.CARVED_PUMPKIN) {
             isArmor = true;
             slot = EntityArmorInventory.SLOT_HEAD;
         } else if (hasItemInHand) {
             isArmor = false;
-            if (item.getId() == ItemID.SHIELD) {
+            if (item instanceof ItemShield) {
                 slot = EntityEquipmentInventory.OFFHAND;
             } else {
                 slot = EntityEquipmentInventory.MAIN_HAND;

@@ -9,7 +9,7 @@ import cn.nukkit.entity.data.Skin;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.player.EntityFreezeEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemID;
+import cn.nukkit.item.ItemShield;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
@@ -429,10 +429,10 @@ public class EntityHuman extends EntityHumanType {
         super.onBlock(entity, event, animate);
         Item shield = getInventory().getItemInHand();
         Item shieldOffhand = getOffhandInventory().getItem(0);
-        if (shield.getId() == ItemID.SHIELD) {
+        if (shield instanceof ItemShield) {
             shield = damageArmor(shield, entity, event);
             getInventory().setItemInHand(shield);
-        } else if (shieldOffhand.getId() == ItemID.SHIELD) {
+        } else if (shieldOffhand instanceof ItemShield) {
             shieldOffhand = damageArmor(shieldOffhand, entity, event);
             getOffhandInventory().setItem(0, shieldOffhand);
         }

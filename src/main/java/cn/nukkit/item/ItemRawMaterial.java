@@ -12,7 +12,7 @@ import javax.annotation.Nullable;
  */
 @PowerNukkitOnly
 @Since("FUTURE")
-public abstract class ItemRawMaterial extends StringItem {
+public abstract class ItemRawMaterial extends StringItemBase {
     @PowerNukkitOnly
     @Since("FUTURE")
     public ItemRawMaterial(@Nonnull String id, @Nullable String name) {

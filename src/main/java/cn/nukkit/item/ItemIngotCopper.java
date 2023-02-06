@@ -5,7 +5,7 @@ import cn.nukkit.api.Since;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class ItemIngotCopper extends StringItem{
+public class ItemIngotCopper extends StringItemBase {
     public ItemIngotCopper() {
         super(MinecraftItemID.COPPER_INGOT.getNamespacedId(), "Copper Ingot");
     }

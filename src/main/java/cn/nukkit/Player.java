@@ -43,7 +43,6 @@ import cn.nukkit.inventory.transaction.data.ReleaseItemData;
 import cn.nukkit.inventory.transaction.data.UseItemData;
 import cn.nukkit.inventory.transaction.data.UseItemOnEntityData;
 import cn.nukkit.item.*;
-import cn.nukkit.item.customitem.ItemCustom;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.lang.CommandOutputContainer;
 import cn.nukkit.lang.LangCode;
@@ -204,7 +203,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public Vector3 speed = null;
     public int craftingType = CRAFTING_SMALL;
     public long creationTime = 0;
+    @Since("1.19.60-r1")
+    @PowerNukkitXOnly
+    long startBreakingBlockTime = 0;
     public Block breakingBlock = null;
+    @Since("1.19.60-r1")
+    @PowerNukkitXOnly
+    public BlockFace breakingBlockFace = null;
     public int pickedXPOrb = 0;
     public EntityFishingHook fishing = null;
     public long lastSkinChange;
@@ -486,10 +491,18 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return this.server.getNetwork().unpackBatchedPackets(packet, CompressionProvider.ZLIB);
     }
 
+    @PowerNukkitXDifference(since = "1.19.60-r1", info = "Auto-break custom blocks if client doesn't send the break data-pack.")
     private void onBlockBreakContinue(Vector3 pos, BlockFace face) {
         if (this.isBreakingBlock()) {
             Block block = this.level.getBlock(pos, false);
-            this.level.addParticle(new PunchBlockParticle(pos, block, face));
+            var miningTimeRequired = block.calculateBreakTime(this.inventory.getItemInHand(), this);
+            // Here we wait another 10ms to avoid animate collision on player model
+            if (System.currentTimeMillis() - startBreakingBlockTime > miningTimeRequired * 1000 + 10) {
+                this.onBlockBreakAbort(pos, face);
+                this.onBlockBreakComplete(pos.asBlockVector3(), face);
+            } else {
+                this.level.addParticle(new PunchBlockParticle(pos, block, face));
+            }
         }
     }
 
@@ -555,6 +568,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         if (!this.isCreative()) {
             double breakTime = Math.ceil(target.getBreakTime(this.inventory.getItemInHand(), this) * 20);
+            this.startBreakingBlockTime = currentBreak;
             if (breakTime > 0) {
                 LevelEventPacket pk = new LevelEventPacket();
                 pk.evid = LevelEventPacket.EVENT_BLOCK_START_BREAK;
@@ -587,6 +601,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         this.breakingBlock = target;
+        this.breakingBlockFace = face;
         this.lastBreak = currentBreak;
         this.lastBreakPosition = blockPos;
     }
@@ -602,6 +617,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.getLevel().addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, pk);
         }
         this.breakingBlock = null;
+        this.breakingBlockFace = null;
     }
 
     private void onBlockBreakComplete(BlockVector3 blockPos, BlockFace face) {
@@ -668,7 +684,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     private void updateBlockingFlag() {
         boolean shouldBlock = getNoShieldTicks() == 0
                 && (this.isSneaking() || getRiding() != null)
-                && (this.getInventory().getItemInHand().getId() == ItemID.SHIELD || this.getOffhandInventory().getItem(0).getId() == ItemID.SHIELD);
+                && (this.getInventory().getItemInHand() instanceof ItemShield || this.getOffhandInventory().getItem(0) instanceof ItemShield);
 
         if (isBlocking() != shouldBlock) {
             this.setBlocking(shouldBlock);
@@ -1508,20 +1524,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         //写入自定义物品数据
         ItemComponentPacket itemComponentPacket = new ItemComponentPacket();
-        if (this.getServer().isEnableExperimentMode() && !Item.getCustomItems().isEmpty()) {
+        if (this.getServer().isEnableExperimentMode() && !Item.getCustomItemDefinition().isEmpty()) {
             Int2ObjectOpenHashMap<ItemComponentPacket.Entry> entries = new Int2ObjectOpenHashMap<>();
             int i = 0;
-            for (String id : Item.getCustomItems().keySet()) {
+            for (var entry : Item.getCustomItemDefinition().entrySet()) {
                 try {
-                    Item item = Item.fromString(id);
-                    if (item instanceof ItemCustom itemCustom) {
-                        CompoundTag data = Item.getCustomItemDefinition().get(itemCustom.getNamespaceId()).nbt();
-                        data.putShort("minecraft:identifier", i);
-
-                        entries.put(i, new ItemComponentPacket.Entry(item.getNamespaceId(), data));
-
-                        i++;
-                    }
+                    CompoundTag data = entry.getValue().nbt();
+                    data.putShort("minecraft:identifier", i);
+                    entries.put(i, new ItemComponentPacket.Entry(entry.getKey(), data));
+                    i++;
                 } catch (Exception e) {
                     log.error("ItemComponentPacket encoding error", e);
                 }
@@ -3225,6 +3236,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             if (!this.isSleeping()) {
                 this.timeSinceRest++;
             }
+
+            if (this.isSurvival() && this.server.getServerAuthoritativeMovement() != 0 && this.isBreakingBlock()) {
+                this.onBlockBreakContinue(breakingBlock, breakingBlockFace);
+            }
         }
 
         if (currentTick % 10 == 0) {
@@ -3732,7 +3747,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                     this.onBlockBreakAbort(blockPos.asVector3(), blockFace);
                                     break;
                                 case CONTINUE_DESTROY_BLOCK:
-                                    this.onBlockBreakContinue(blockPos.asVector3(), blockFace);
                                     break;
                                 case PREDICT_DESTROY_BLOCK:
                                     this.onBlockBreakAbort(blockPos.asVector3(), blockFace);

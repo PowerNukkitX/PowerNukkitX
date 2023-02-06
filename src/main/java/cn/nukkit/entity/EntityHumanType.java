@@ -14,7 +14,7 @@ import cn.nukkit.inventory.PlayerEnderChestInventory;
 import cn.nukkit.inventory.PlayerInventory;
 import cn.nukkit.inventory.PlayerOffhandInventory;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemID;
+import cn.nukkit.item.ItemShield;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.FullChunk;
@@ -283,7 +283,7 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
                 return armor;
             }
 
-            if (armor.getId() == ItemID.SHIELD)
+            if (armor instanceof ItemShield)
                 armor.setDamage(armor.getDamage() + (event.getDamage() >= 3 ? (int) event.getDamage() + 1 : 0));
             else
                 armor.setDamage(armor.getDamage() + Math.max(1, (int) (event.getDamage() / 4.0f)));

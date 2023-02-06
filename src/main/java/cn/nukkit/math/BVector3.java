@@ -85,8 +85,8 @@ public final class BVector3 {
     /**
      * 通过传入的yaw、pitch和向量的模初始化BVector3
      *
-     * @param yaw the yaw
-     * @param pitch the pitch
+     * @param yaw    the yaw
+     * @param pitch  the pitch
      * @param length 向量模
      */
     private BVector3(double yaw, double pitch, double length) {
@@ -163,7 +163,25 @@ public final class BVector3 {
     }
 
     /**
+     * 旋转yaw和Pitch
+     *
+     * @param yaw   the yaw
+     * @param pitch the pitch
+     * @return the b vector 3
+     */
+    public BVector3 rotate(double yaw, double pitch) {
+        this.pitch += pitch;
+        this.yaw += yaw;
+        this.vector3 = getDirectionVector(this.yaw, this.pitch);
+        //重新计算在范围内的等价pitch值
+        this.pitch = getPitchFromVector(this.vector3);
+        this.pitch = getYawFromVector(this.vector3);
+        return this;
+    }
+
+    /**
      * 向量加法
+     *
      * @return 结果向量
      */
     public BVector3 add(double x, double y, double z) {
@@ -178,6 +196,7 @@ public final class BVector3 {
 
     /**
      * 向量加法
+     *
      * @return 结果向量
      */
     public BVector3 add(Vector3 vector3) {
@@ -218,6 +237,7 @@ public final class BVector3 {
     /**
      * 增加该向量的模<p/>
      * 当然你也可以传入负数，但请确保最终长度要大于0!
+     *
      * @param length 增加/减少的模
      * @return 自身
      */
