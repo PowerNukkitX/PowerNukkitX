@@ -2090,11 +2090,6 @@ public abstract class Entity extends Location implements Metadatable {
             this.updateMovement();
         }
 
-        if (this.add(0, -0.1).getTickCachedLevelBlock() instanceof BlockBigDripleaf block) {
-            if (block.isHead())
-                block.onUpdate(Level.BLOCK_UPDATE_NORMAL);
-        }
-
         return hasUpdate;
     }
 
