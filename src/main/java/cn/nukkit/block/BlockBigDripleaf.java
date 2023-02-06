@@ -286,8 +286,9 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
         if (!isHead()) {
-            var face = this.getBlockFace().getOpposite();
-            return new SimpleAxisAlignedBB(
+            //杆没有碰撞箱
+//            var face = this.getBlockFace().getOpposite();
+            return /*new SimpleAxisAlignedBB(
                     0.3125,
                     0,
                     0.3125,
@@ -298,14 +299,14 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
                             this.x + face.getXOffset() * 0.1875,
                             this.y,
                             this.z + face.getZOffset() * 0.1875
-                    );
+                    );*/null;
         } else {
             return new SimpleAxisAlignedBB(
                     this.x,
-                    this.y + 0.8125,
+                    this.y + 0.6875,
                     this.z,
                     this.x + 1,
-                    this.y + (getTilt() == PARTIAL_TILT ? 0.875 : 0.9375),
+                    this.y + (getTilt() == PARTIAL_TILT ? 0.8125 : 0.9375),
                     this.z + 1
             );
         }
