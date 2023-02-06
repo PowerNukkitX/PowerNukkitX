@@ -280,14 +280,11 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
 
     @Override
     public boolean canPassThrough() {
-        return isHead() && getTilt() == FULL_TILT;
+        return !isHead() || getTilt() == FULL_TILT;
     }
 
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
-        //1 / 16 * 3 == 0.1875
-        //1 / 16 * 5 == 0.3125
-        //1 / 16 * 6 == 0.375
         if (!isHead()) {
             var face = this.getBlockFace().getOpposite();
             return new SimpleAxisAlignedBB(
@@ -305,10 +302,10 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
         } else {
             return new SimpleAxisAlignedBB(
                     this.x,
-                    this.y,
+                    this.y + 0.8125,
                     this.z,
                     this.x + 1,
-                    this.y + 0.9375,
+                    this.y + (getTilt() == PARTIAL_TILT ? 0.875 : 0.9375),
                     this.z + 1
             );
         }
@@ -317,8 +314,9 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
     @Override
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
         var bb = getBoundingBox();
+        //使方块碰撞检测箱的maxY向上取整，使当实体站在方块上面的时候可以触发碰撞
         if (isHead())
-            bb = bb.addCoord(0, 0.0625, 0);
+            bb.setMaxY(Math.ceil(bb.getMaxY()));
         return bb;
     }
 
