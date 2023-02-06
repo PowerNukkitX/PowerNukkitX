@@ -1753,9 +1753,41 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     private double toolBreakTimeBonus0(Item item) {
         if (item instanceof ItemCustomTool itemCustomTool && itemCustomTool.getSpeed() != null) {
-            return customToolBreakTimeBonus0(toolType0(item, getId()), itemCustomTool.getSpeed(), getId());
+            return customToolBreakTimeBonus(customToolType(item), itemCustomTool.getSpeed());
         } else return toolBreakTimeBonus0(toolType0(item, getId()), item.getTier(), getId());
     }
+
+    private double customToolBreakTimeBonus(int toolType, @Nullable Integer speed) {
+        if (speed != null) return speed;
+        else if (toolType == ItemTool.TYPE_SWORD) {
+            if (this instanceof BlockCobweb) {
+                return 15.0;
+            } else if (this instanceof BlockBamboo) {
+                return 30.0;
+            } else return 1.0;
+        } else if (toolType == ItemTool.TYPE_SHEARS) {
+            if (this instanceof BlockWool || this instanceof BlockLeaves) {
+                return 5.0;
+            } else if (this instanceof BlockCobweb) {
+                return 15.0;
+            } else return 1.0;
+        } else if (toolType == ItemTool.TYPE_NONE) return 1.0;
+        return 0;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    private int customToolType(Item item) {
+        if (this instanceof BlockLeaves && item.isHoe()) return ItemTool.TYPE_SHEARS;
+        if (item.isSword()) return ItemTool.TYPE_SWORD;
+        if (item.isShovel()) return ItemTool.TYPE_SHOVEL;
+        if (item.isPickaxe()) return ItemTool.TYPE_PICKAXE;
+        if (item.isAxe()) return ItemTool.TYPE_AXE;
+        if (item.isHoe()) return ItemTool.TYPE_HOE;
+        if (item.isShears()) return ItemTool.TYPE_SHEARS;
+        return ItemTool.TYPE_NONE;
+    }
+
 
     private static double toolBreakTimeBonus0(int toolType, int toolTier, int blockId) {
         if (toolType == ItemTool.TYPE_SWORD) {
@@ -1795,28 +1827,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
                 }
                 return 1.0;
         }
-    }
-
-    private static double customToolBreakTimeBonus0(int toolType, int speed, int blockId) {
-        if (toolType == ItemTool.TYPE_SWORD) {
-            if (blockId == BlockID.COBWEB) {
-                return 15.0;
-            }
-            if (blockId == BlockID.BAMBOO) {
-                return 30.0;
-            }
-            return 1.0;
-        }
-        if (toolType == ItemTool.TYPE_SHEARS) {
-            if (blockId == Block.WOOL || blockId == LEAVES || blockId == LEAVES2) {
-                return 5.0;
-            } else if (blockId == COBWEB) {
-                return 15.0;
-            }
-            return 1.0;
-        }
-        if (toolType == ItemTool.TYPE_NONE) return 1.0;
-        return speed;
     }
 
     private static double speedBonusByEfficiencyLore0(int efficiencyLoreLevel) {
@@ -1871,17 +1881,9 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return 1.0 / speed;
     }
 
-    @Nonnull
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
-    public double calculateBreakTime() {
-        return calculateBreakTime(Item.get(AIR), null);
-    }
-
     /**
      * @link calculateBreakTime(@ Nonnull Item item, @ Nullable Player player)
      */
-    @Nonnull
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public double calculateBreakTime(@Nonnull Item item) {
@@ -1895,7 +1897,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      * @param player 挖掘该方块的玩家
      * @return 方块的挖掘时间
      */
-    @Nonnull
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public double calculateBreakTime(@Nonnull Item item, @Nullable Player player) {
@@ -2965,7 +2966,8 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      * 将方块克隆到指定位置<p/>
      * 此方法会连带克隆方块实体<p/>
      * 注意，此方法会先清除指定位置的方块为空气再进行克隆
-     * @param pos 要克隆到的位置
+     *
+     * @param pos    要克隆到的位置
      * @param update 是否需要更新克隆的方块
      * @return 是否克隆成功
      */
