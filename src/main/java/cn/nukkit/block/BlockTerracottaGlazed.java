@@ -75,4 +75,17 @@ public abstract class BlockTerracottaGlazed extends BlockSolidMeta implements Fa
     public BlockFace getBlockFace() {
         return BlockFace.fromHorizontalIndex(this.getDamage() & 0x07);
     }
+
+    //带釉陶瓦可以被推动但不能被收回
+    //see: https://minecraft.fandom.com/zh/wiki/%E5%B8%A6%E9%87%89%E9%99%B6%E7%93%A6
+
+    @Override
+    public boolean canBePushed() {
+        return true;
+    }
+
+    @Override
+    public boolean canBePulled() {
+        return false;
+    }
 }
