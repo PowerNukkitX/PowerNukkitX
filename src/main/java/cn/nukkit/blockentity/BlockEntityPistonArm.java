@@ -185,6 +185,8 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
     @Override
     public void loadNBT() {
         super.loadNBT();
+        this.state = (byte) this.namedTag.getByte("State");
+        this.newState = (byte) this.namedTag.getByte("NewState");
         if (namedTag.contains("Progress"))
             this.progress = namedTag.getFloat("Progress");
         if (namedTag.contains("LastProgress"))
