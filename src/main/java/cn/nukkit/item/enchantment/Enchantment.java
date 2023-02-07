@@ -24,7 +24,6 @@ import cn.nukkit.item.enchantment.trident.EnchantmentTridentImpaling;
 import cn.nukkit.item.enchantment.trident.EnchantmentTridentLoyalty;
 import cn.nukkit.item.enchantment.trident.EnchantmentTridentRiptide;
 import cn.nukkit.math.NukkitMath;
-import cn.nukkit.plugin.js.compiler.DelegateCompiler;
 import cn.nukkit.utils.Identifier;
 import cn.nukkit.utils.OK;
 import io.netty.util.internal.EmptyArrays;
@@ -35,10 +34,11 @@ import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
+import java.lang.ref.WeakReference;
+import java.lang.reflect.InaccessibleObjectException;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
@@ -395,7 +395,7 @@ public abstract class Enchantment implements Cloneable {
             classWriter.visitEnd();
             BOOK_NUMBER++;
             try {
-                Class<? extends CustomItem> clazz = (Class<? extends CustomItem>) DelegateCompiler.loadClass(Thread.currentThread().getContextClassLoader(), "cn.nukkit.item.customitem." + className, classWriter.toByteArray());
+                Class<? extends CustomItem> clazz = (Class<? extends CustomItem>) loadClass(Thread.currentThread().getContextClassLoader(), "cn.nukkit.item.customitem." + className, classWriter.toByteArray());
                 Item.registerCustomItem(clazz).assertOK();
             } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException |
                      IllegalAccessException | AssertionError e) {
@@ -403,6 +403,33 @@ public abstract class Enchantment implements Cloneable {
             }
         }
         return OK.TRUE;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    private static WeakReference<Method> defineClassMethodRef = new WeakReference<>(null);
+
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    @SuppressWarnings("DuplicatedCode")
+    private static Class<?> loadClass(ClassLoader loader, String className, byte[] b) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InaccessibleObjectException {
+        Class<?> clazz;
+        java.lang.reflect.Method method;
+        if (defineClassMethodRef.get() == null) {
+            var cls = Class.forName("java.lang.ClassLoader");
+            method = cls.getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class);
+            defineClassMethodRef = new WeakReference<>(method);
+        } else {
+            method = defineClassMethodRef.get();
+        }
+        Objects.requireNonNull(method).setAccessible(true);
+        try {
+            var args = new Object[]{className, b, 0, b.length};
+            clazz = (Class<?>) method.invoke(loader, args);
+        } finally {
+            method.setAccessible(false);
+        }
+        return clazz;
     }
 
     /**

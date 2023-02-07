@@ -34,7 +34,7 @@ public final class DelegateCompiler {
     }
 
     public Class<?> compileToClass(ClassLoader classLoader) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        return loadClass(classLoader, this.builder.getClassName(), compile());
+        return loadClass(classLoader, compile());
     }
 
     public void compileSuperField(ClassWriter classWriter, JSuperField jSuperField) {
@@ -501,10 +501,10 @@ public final class DelegateCompiler {
         }
     }
 
-    public static WeakReference<Method> defineClassMethodRef = new WeakReference<>(null);
+    private static WeakReference<Method> defineClassMethodRef = new WeakReference<>(null);
 
     @SuppressWarnings("DuplicatedCode")
-    public static Class<?> loadClass(ClassLoader loader, String className, byte[] b) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InaccessibleObjectException {
+    private Class<?> loadClass(ClassLoader loader, byte[] b) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InaccessibleObjectException {
         Class<?> clazz;
         java.lang.reflect.Method method;
         if (defineClassMethodRef.get() == null) {
@@ -516,7 +516,7 @@ public final class DelegateCompiler {
         }
         Objects.requireNonNull(method).setAccessible(true);
         try {
-            var args = new Object[]{className, b, 0, b.length};
+            var args = new Object[]{builder.getClassName(), b, 0, b.length};
             clazz = (Class<?>) method.invoke(loader, args);
         } finally {
             method.setAccessible(false);
