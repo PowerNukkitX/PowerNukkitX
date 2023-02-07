@@ -1,7 +1,11 @@
 package cn.nukkit.level.biome.impl.extremehills;
 
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockSapling;
 import cn.nukkit.level.biome.type.GrassyBiome;
+import cn.nukkit.level.generator.object.ore.OreType;
+import cn.nukkit.level.generator.populator.impl.PopulatorOre;
 import cn.nukkit.level.generator.populator.impl.PopulatorOreEmerald;
 import cn.nukkit.level.generator.populator.impl.PopulatorTree;
 
@@ -22,6 +26,9 @@ public class ExtremeHillsBiome extends GrassyBiome {
 
         PopulatorOreEmerald oreEmerald = new PopulatorOreEmerald();
         this.addPopulator(oreEmerald);
+        this.addPopulator(new PopulatorOre(STONE, new OreType[]{
+                new OreType(Block.get(BlockID.MONSTER_EGG), 7, 9, 0, 63)
+        }));
 
         if (tree) {
             PopulatorTree trees = new PopulatorTree(BlockSapling.SPRUCE);
