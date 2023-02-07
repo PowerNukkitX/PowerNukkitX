@@ -325,14 +325,14 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
         }
 
         @Since("1.19.60-r1")
-        public ToolBuilder addRepairItemNames(@NonNull List<String> repairItemNames, String molang) {
-            super.addRepairs(repairItemNames, molang);
+        public ToolBuilder addRepairItemName(@NonNull String repairItemName, String molang) {
+            super.addRepairs(List.of(repairItemName), molang);
             return this;
         }
 
         @Since("1.19.60-r1")
-        public ToolBuilder addRepairItemNames(@NonNull List<String> repairItemNames, int repairAmount) {
-            super.addRepairs(repairItemNames, String.valueOf(repairAmount));
+        public ToolBuilder addRepairItemName(@NonNull String repairItemName, int repairAmount) {
+            super.addRepairs(List.of(repairItemName), String.valueOf(repairAmount));
             return this;
         }
 
@@ -508,14 +508,14 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
         }
 
         @Since("1.19.60-r1")
-        public ArmorBuilder addRepairItemNames(@NonNull List<String> repairItemNames, String molang) {
-            super.addRepairs(repairItemNames, molang);
+        public ArmorBuilder addRepairItemName(@NonNull String repairItemName, String molang) {
+            super.addRepairs(List.of(repairItemName), molang);
             return this;
         }
 
         @Since("1.19.60-r1")
-        public ArmorBuilder addRepairItemNames(@NonNull List<String> repairItemNames, int repairAmount) {
-            super.addRepairs(repairItemNames, String.valueOf(repairAmount));
+        public ArmorBuilder addRepairItemName(@NonNull String repairItemName, int repairAmount) {
+            super.addRepairs(List.of(repairItemName), String.valueOf(repairAmount));
             return this;
         }
 
