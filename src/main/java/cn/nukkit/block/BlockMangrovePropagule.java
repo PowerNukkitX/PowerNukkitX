@@ -16,7 +16,8 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BlockColor;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.concurrent.ThreadLocalRandom;
 
 @PowerNukkitXOnly
@@ -47,7 +48,7 @@ public class BlockMangrovePropagule extends BlockFlowable implements BlockFlower
     }
 
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         //todo: 实现红树树苗放置逻辑
         if (BlockFlower.isSupportValid(down())) {
             this.getLevel().setBlock(block, this, true, true);
@@ -63,7 +64,7 @@ public class BlockMangrovePropagule extends BlockFlowable implements BlockFlower
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player) {
         if (item.isFertilizer()) { // BoneMeal
             if (player != null && !player.isCreative()) {
                 item.count--;

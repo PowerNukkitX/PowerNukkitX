@@ -12,7 +12,7 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 public class BlockLantern extends BlockFlowable {
@@ -40,7 +40,7 @@ public class BlockLantern extends BlockFlowable {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -84,8 +84,8 @@ public class BlockLantern extends BlockFlowable {
     }
 
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
-        if(this.getLevelBlock() instanceof BlockLiquid || this.getLevelBlockAtLayer(1) instanceof BlockLiquid) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+        if (this.getLevelBlock() instanceof BlockLiquid || this.getLevelBlockAtLayer(1) instanceof BlockLiquid) {
             return false;
         }
 
@@ -93,7 +93,7 @@ public class BlockLantern extends BlockFlowable {
         if (!isBlockUnderValid() && !hanging) {
             return false;
         }
-        
+
         setHanging(hanging);
 
         this.getLevel().setBlock(this, this, true, true);

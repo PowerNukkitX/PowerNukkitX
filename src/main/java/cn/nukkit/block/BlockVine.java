@@ -17,7 +17,8 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.utils.BlockColor;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.Random;
@@ -55,7 +56,7 @@ public class BlockVine extends BlockTransparentMeta {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -175,7 +176,7 @@ public class BlockVine extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (block.getId() != VINE && target.isSolid() && face.getHorizontalIndex() != -1) {
             this.setDamage(getMetaFromFace(face.getOpposite()));
             this.getLevel().setBlock(block, this, true, true);

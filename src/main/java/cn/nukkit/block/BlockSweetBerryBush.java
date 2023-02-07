@@ -21,7 +21,8 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.MathHelper;
 import cn.nukkit.utils.BlockColor;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.concurrent.ThreadLocalRandom;
 
 @PowerNukkitOnly
@@ -47,7 +48,7 @@ public class BlockSweetBerryBush extends BlockFlowable {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -84,7 +85,7 @@ public class BlockSweetBerryBush extends BlockFlowable {
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player) {
 
         int age = MathHelper.clamp(getDamage(), 0, 3);
 
@@ -163,7 +164,7 @@ public class BlockSweetBerryBush extends BlockFlowable {
     }
 
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (target.getId() == SWEET_BERRY_BUSH || block.getId() != AIR) {
             return false;
         }

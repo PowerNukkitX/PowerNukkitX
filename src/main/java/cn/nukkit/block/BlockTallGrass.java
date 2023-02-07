@@ -18,7 +18,8 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BlockColor;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -51,7 +52,7 @@ public class BlockTallGrass extends BlockFlowable implements BlockFlowerPot.Flow
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -89,7 +90,7 @@ public class BlockTallGrass extends BlockFlowable implements BlockFlowerPot.Flow
     }
 
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (BlockSweetBerryBush.isSupportValid(down())) {
             this.getLevel().setBlock(block, this, true);
             return true;
@@ -110,7 +111,7 @@ public class BlockTallGrass extends BlockFlowable implements BlockFlowerPot.Flow
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player) {
         if (item.isFertilizer()) {
             Block up = this.up();
 

@@ -7,7 +7,8 @@ import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 
 public class PlayerUseItemFrameEvent extends PlayerEvent implements Cancellable {
@@ -22,7 +23,7 @@ public class PlayerUseItemFrameEvent extends PlayerEvent implements Cancellable 
     private final Item item;
     private final Action action;
 
-    public PlayerUseItemFrameEvent(@Nonnull Player player, @Nonnull Block block, @Nonnull BlockEntityItemFrame itemFrame, @Nullable Item item, Action action) {
+    public PlayerUseItemFrameEvent(@NotNull Player player, @NotNull Block block, @NotNull BlockEntityItemFrame itemFrame, @Nullable Item item, Action action) {
         this.player = player;
         this.itemFrame = itemFrame;
         this.block = block;
@@ -30,7 +31,7 @@ public class PlayerUseItemFrameEvent extends PlayerEvent implements Cancellable 
         this.item = item;
     }
 
-    @Nonnull
+    @NotNull
     public BlockEntityItemFrame getItemFrame() {
         return itemFrame;
     }
@@ -40,12 +41,12 @@ public class PlayerUseItemFrameEvent extends PlayerEvent implements Cancellable 
         return item;
     }
 
-    @Nonnull
+    @NotNull
     public Block getBlock() {
         return block;
     }
 
-    @Nonnull
+    @NotNull
     public Action getAction() {
         return action;
     }

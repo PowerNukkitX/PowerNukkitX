@@ -7,8 +7,7 @@ import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.IntBlockProperty;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -28,7 +27,7 @@ public class BlockCaveVinesHeadWithBerries extends BlockCaveVines {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;

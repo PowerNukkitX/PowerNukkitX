@@ -36,7 +36,8 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.TextFormat;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import java.util.Objects;
 
@@ -73,7 +74,7 @@ public class BlockRespawnAnchor extends BlockMeta {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -85,7 +86,7 @@ public class BlockRespawnAnchor extends BlockMeta {
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item, @Nullable Player player) {
+    public boolean onActivate(@NotNull Item item, @Nullable Player player) {
         int charge = getCharge();
         if (item.getBlockId() == BlockID.GLOWSTONE && charge < RESPAWN_ANCHOR_CHARGE.getMaxValue()) {
             if (player == null || !player.isCreative()) {
@@ -111,7 +112,7 @@ public class BlockRespawnAnchor extends BlockMeta {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    protected boolean attemptToSetSpawn(@Nonnull Player player) {
+    protected boolean attemptToSetSpawn(@NotNull Player player) {
         if (this.level.getDimension() != Level.DIMENSION_NETHER) {
             if (this.level.getGameRules().getBoolean(GameRule.TNT_EXPLODES)) {
                 explode(player);

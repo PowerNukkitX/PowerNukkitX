@@ -8,7 +8,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author PikyCZ
@@ -43,7 +43,7 @@ public class EntityEnderDragon extends EntityMob implements EntityFlyable {
     }
 
     @Override
-    protected boolean applyNameTag(@Nonnull Player player, @Nonnull Item item) {
+    protected boolean applyNameTag(@NotNull Player player, @NotNull Item item) {
         return false;
     }
 

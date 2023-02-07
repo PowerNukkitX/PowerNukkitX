@@ -9,6 +9,7 @@ import cn.nukkit.nbt.tag.*;
 import com.google.common.primitives.Bytes;
 import com.google.common.primitives.Ints;
 import lombok.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ import java.util.Map;
 public class SNBTParser {
     private final cn.nukkit.nbt.snbt.Node root;
 
-    private SNBTParser(@NonNull String SNBT) {
+    private SNBTParser(@NotNull String SNBT) {
         SNBTParserImplement parser = new SNBTParserImplement(new StringReader(SNBT));
         parser.Root();
         root = parser.rootNode();

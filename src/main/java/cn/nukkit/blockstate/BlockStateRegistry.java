@@ -29,7 +29,8 @@ import lombok.ToString;
 import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.*;
@@ -181,7 +182,7 @@ public class BlockStateRegistry {
         return blockId != -1 && !name.equals("minecraft:wood") || blockId == BlockID.WOOD_BARK;
     }
 
-    @Nonnull
+    @NotNull
     private String getStateId(CompoundTag block) {
         Map<String, String> propertyMap = new TreeMap<>(HumanStringComparator.getInstance());
         for (Tag tag : block.getCompound("states").getAllTags()) {
@@ -430,7 +431,7 @@ public class BlockStateRegistry {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public String getPersistenceName(int blockId) {
         String persistenceName = blockIdToPersistenceName.get(blockId);
         if (persistenceName == null) {
@@ -666,7 +667,7 @@ public class BlockStateRegistry {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public byte[] getBlockPaletteBytes() {
         return blockPaletteBytes.clone();
     }
@@ -692,7 +693,7 @@ public class BlockStateRegistry {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @SuppressWarnings({"deprecation", "squid:CallToDepreca"})
-    @Nonnull
+    @NotNull
     public BlockProperties getProperties(int blockId) {
         int fullId = blockId << Block.DATA_BITS;
         if (blockId > Block.MAX_BLOCK_ID && Block.ID_TO_CUSTOM_BLOCK.get(blockId) instanceof Block block1) {
@@ -707,14 +708,14 @@ public class BlockStateRegistry {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public MutableBlockState createMutableState(int blockId) {
         return getProperties(blockId).createMutableState(blockId);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public MutableBlockState createMutableState(int blockId, int bigMeta) {
         MutableBlockState blockState = createMutableState(blockId);
         blockState.setDataStorageFromInt(bigMeta);
@@ -726,7 +727,7 @@ public class BlockStateRegistry {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public MutableBlockState createMutableState(int blockId, Number storage) {
         MutableBlockState blockState = createMutableState(blockId);
         blockState.setDataStorage(storage);

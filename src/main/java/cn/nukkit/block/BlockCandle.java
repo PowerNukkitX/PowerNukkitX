@@ -10,8 +10,8 @@ import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -48,12 +48,12 @@ public class BlockCandle extends BlockFlowable {
     }
 
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (target.getId() == BlockID.CAKE_BLOCK && target.getDamage() == 0) {//必须是完整的蛋糕才能插蜡烛
             target.getLevel().setBlock(target, toCakeForm(), true, true);
             return true;
         }
-        if(target.up().getId() == getId()) {
+        if (target.up().getId() == getId()) {
             target = target.up();
         }
         if (target.getId() == getId()) {
@@ -74,7 +74,7 @@ public class BlockCandle extends BlockFlowable {
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player) {
 
         if (item.getId() != ItemID.FLINT_AND_STEEL && !item.isNull()) {
             return false;
@@ -134,7 +134,7 @@ public class BlockCandle extends BlockFlowable {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;

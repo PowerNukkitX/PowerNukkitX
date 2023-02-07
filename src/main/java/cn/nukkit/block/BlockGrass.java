@@ -20,7 +20,8 @@ import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.BlockColor;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
@@ -42,7 +43,7 @@ public class BlockGrass extends BlockDirt {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return CommonBlockProperties.EMPTY_PROPERTIES;
@@ -70,7 +71,7 @@ public class BlockGrass extends BlockDirt {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public Optional<DirtType> getDirtType() {
         return Optional.empty();
@@ -86,16 +87,16 @@ public class BlockGrass extends BlockDirt {
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item) {
+    public boolean onActivate(@NotNull Item item) {
         return this.onActivate(item, null);
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player) {
         if (!this.up().canBeReplaced()) {
             return false;
         }
-        
+
         if (item.isFertilizer()) {
             if (player != null && (player.gamemode & 0x01) == 0) {
                 item.count--;

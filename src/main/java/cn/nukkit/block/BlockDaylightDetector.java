@@ -17,8 +17,7 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.MathHelper;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.RedstoneComponent;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author CreeperFace
@@ -43,7 +42,7 @@ public class BlockDaylightDetector extends BlockTransparentMeta implements Redst
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -56,7 +55,7 @@ public class BlockDaylightDetector extends BlockTransparentMeta implements Redst
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     @Override
     public String getBlockEntityType() {
         return BlockEntity.DAYLIGHT_DETECTOR;
@@ -64,7 +63,7 @@ public class BlockDaylightDetector extends BlockTransparentMeta implements Redst
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public Class<? extends BlockEntityDaylightDetector> getBlockEntityClass() {
         return BlockEntityDaylightDetector.class;
@@ -102,7 +101,7 @@ public class BlockDaylightDetector extends BlockTransparentMeta implements Redst
     }
 
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         BlockEntityDaylightDetector detector = BlockEntityHolder.setBlockAndCreateEntity(this);
         if (detector == null) {
             return false;
@@ -114,7 +113,7 @@ public class BlockDaylightDetector extends BlockTransparentMeta implements Redst
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player) {
         checkAndRecoveryBlockEntity();
         BlockDaylightDetectorInverted block = new BlockDaylightDetectorInverted();
         getLevel().setBlock(this, block, true, true);

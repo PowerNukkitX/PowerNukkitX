@@ -1,11 +1,14 @@
 package cn.nukkit.item.customitem;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.ItemBookEnchanted;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.customitem.data.ItemCreativeCategory;
 
+@PowerNukkitXOnly
+@Since("1.19.60-r1")
 public abstract class ItemCustomBookEnchanted extends ItemBookEnchanted implements CustomItem {
     private final String id;
 

@@ -11,8 +11,7 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.DyeColor;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author xtypr
@@ -40,7 +39,7 @@ public class BlockCarpet extends BlockFlowable {
         return CARPET;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @PowerNukkitOnly
     public BlockProperties getProperties() {
@@ -96,7 +95,7 @@ public class BlockCarpet extends BlockFlowable {
     }
 
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         Block down = this.down();
         if (down.getId() != Item.AIR) {
             this.getLevel().setBlock(block, this, true, true);
@@ -129,7 +128,7 @@ public class BlockCarpet extends BlockFlowable {
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
-    public void setDyeColor(@Nonnull DyeColor color) {
+    public void setDyeColor(@NotNull DyeColor color) {
         setPropertyValue(CommonBlockProperties.COLOR, color);
     }
 

@@ -10,7 +10,8 @@ import cn.nukkit.level.Position;
 import cn.nukkit.level.particle.WaxOffParticle;
 import cn.nukkit.level.particle.WaxOnParticle;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 
 /**
@@ -22,12 +23,12 @@ import javax.annotation.Nullable;
 public interface Waxable {
     @PowerNukkitOnly
     @Since("FUTURE")
-    @Nonnull
+    @NotNull
     Location getLocation();
 
     @PowerNukkitOnly
     @Since("FUTURE")
-    default boolean onActivate(@Nonnull Item item, @Nullable Player player) {
+    default boolean onActivate(@NotNull Item item, @Nullable Player player) {
         boolean waxed = isWaxed();
         if ((item.getId() != ItemID.HONEYCOMB || waxed) && (!item.isAxe() || !waxed)) {
             return false;

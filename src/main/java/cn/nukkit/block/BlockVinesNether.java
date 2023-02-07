@@ -16,7 +16,8 @@ import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.OptionalBoolean;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.OptionalInt;
@@ -54,7 +55,7 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public abstract BlockFace getGrowthDirection();
 
     /**
@@ -106,12 +107,12 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         Block support = getSide(getGrowthDirection().getOpposite());
         if (!isSupportValid(support)) {
             return false;
         }
-        
+
         if (support.getId() == getId()) {
             setVineAge(Math.min(getMaxVineAge(), ((BlockVinesNether) support).getVineAge() + 1));
         } else {
@@ -232,7 +233,7 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public OptionalInt findVineAge(boolean base) {
         return findVineBlock(base)
                 .map(vine-> OptionalInt.of(vine.getVineAge()))
@@ -247,7 +248,7 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public Optional<BlockVinesNether> findVineBlock(boolean base) {
         return findVine(base)
                 .map(Position::getLevelBlock)
@@ -262,7 +263,7 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public Optional<Position> findVine(boolean base) {
         BlockFace supportFace = getGrowthDirection();
         if (base) {
@@ -293,7 +294,7 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public OptionalBoolean increaseRootAge() {
         Block base = findVine(true).map(Position::getLevelBlock).orElse(null);
         if (!(base instanceof BlockVinesNether)) {
@@ -313,14 +314,14 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item, @Nullable Player player) {
+    public boolean onActivate(@NotNull Item item, @Nullable Player player) {
         if (!item.isFertilizer()) {
             return false;
         }
 
         getLevel().addParticle(new BoneMealParticle(this));
         findVineBlock(false).ifPresent(BlockVinesNether::growMultiple);
-        
+
         if (player != null && !player.isCreative()) {
             item.count--;
         }
@@ -352,7 +353,7 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    protected boolean isSupportValid(@Nonnull Block support) {
+    protected boolean isSupportValid(@NotNull Block support) {
         return support.getId() == getId() || !support.isTransparent();
     }
 

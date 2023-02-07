@@ -9,7 +9,8 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.StringItem;
 import cn.nukkit.nbt.tag.CompoundTag;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 
 /**
@@ -21,13 +22,13 @@ public abstract class ItemCustomTool extends ItemTool implements ItemDurable, Cu
     private final String id;
     private final String textureName;
 
-    public ItemCustomTool(@Nonnull String id, @Nullable String name) {
+    public ItemCustomTool(@NotNull String id, @Nullable String name) {
         super(ItemID.STRING_IDENTIFIED_ITEM, 0, 1, StringItem.notEmpty(name));
         this.id = id;
         this.textureName = name;
     }
 
-    public ItemCustomTool(@Nonnull String id, @Nullable String name, @Nonnull String textureName) {
+    public ItemCustomTool(@NotNull String id, @Nullable String name, @NotNull String textureName) {
         super(ItemID.STRING_IDENTIFIED_ITEM, 0, 1, StringItem.notEmpty(name));
         this.id = id;
         this.textureName = textureName;

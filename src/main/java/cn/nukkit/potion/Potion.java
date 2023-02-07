@@ -14,7 +14,7 @@ import cn.nukkit.event.potion.PotionApplyEvent;
 import cn.nukkit.utils.ServerException;
 import lombok.EqualsAndHashCode;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -446,7 +446,7 @@ public class Potion implements Cloneable {
 
     @PowerNukkitOnly
     @Since("FUTURE")
-    @Nonnull
+    @NotNull
     public String getPotionTypeName() {
         switch (getId()) {
             case WATER:
@@ -519,7 +519,7 @@ public class Potion implements Cloneable {
 
     @PowerNukkitOnly
     @Since("FUTURE")
-    @Nonnull
+    @NotNull
     public String getName() {
         String name = getPotionTypeName();
         StringBuilder finalName = new StringBuilder(255).append("Potion");
@@ -544,7 +544,7 @@ public class Potion implements Cloneable {
 
     @PowerNukkitOnly
     @Since("FUTURE")
-    @Nonnull
+    @NotNull
     public String getRomanLevel() {
         int currentLevel = getLevel();
         if (currentLevel == 0) {

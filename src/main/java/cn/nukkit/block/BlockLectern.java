@@ -20,7 +20,8 @@ import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 
 import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
@@ -54,7 +55,7 @@ public class BlockLectern extends BlockTransparentMeta implements RedstoneCompon
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -62,7 +63,7 @@ public class BlockLectern extends BlockTransparentMeta implements RedstoneCompon
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public Class<? extends BlockEntityLectern> getBlockEntityClass() {
         return BlockEntityLectern.class;
@@ -70,7 +71,7 @@ public class BlockLectern extends BlockTransparentMeta implements RedstoneCompon
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     @Override
     public String getBlockEntityType() {
         return BlockEntity.LECTERN;
@@ -142,7 +143,7 @@ public class BlockLectern extends BlockTransparentMeta implements RedstoneCompon
     }
 
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         setBlockFace(player != null ? player.getDirection().getOpposite() : BlockFace.SOUTH);
         return BlockEntityHolder.setBlockAndCreateEntity(this) != null;
     }
@@ -158,7 +159,7 @@ public class BlockLectern extends BlockTransparentMeta implements RedstoneCompon
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item, @Nullable Player player) {
+    public boolean onActivate(@NotNull Item item, @Nullable Player player) {
         BlockEntityLectern lectern = getOrCreateBlockEntity();
         Item currentBook = lectern.getBook();
         if (!currentBook.isNull()) {

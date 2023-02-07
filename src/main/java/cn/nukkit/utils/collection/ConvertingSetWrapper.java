@@ -21,7 +21,8 @@ package cn.nukkit.utils.collection;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.AbstractSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -47,7 +48,7 @@ public class ConvertingSetWrapper<V1, V2> extends AbstractSet<V1> {
     }
 
     @Override
-    @Nonnull
+    @NotNull
     public Iterator<V1> iterator() {
         return new ConvertingIterator();
     }

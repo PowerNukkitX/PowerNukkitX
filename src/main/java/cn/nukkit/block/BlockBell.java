@@ -26,8 +26,8 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
@@ -89,7 +89,7 @@ public class BlockBell extends BlockTransparentMeta implements RedstoneComponent
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -97,7 +97,7 @@ public class BlockBell extends BlockTransparentMeta implements RedstoneComponent
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public Class<? extends BlockEntityBell> getBlockEntityClass() {
         return BlockEntityBell.class;
@@ -105,7 +105,7 @@ public class BlockBell extends BlockTransparentMeta implements RedstoneComponent
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     @Override
     public String getBlockEntityType() {
         return BlockEntity.BELL;
@@ -209,8 +209,8 @@ public class BlockBell extends BlockTransparentMeta implements RedstoneComponent
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item, Player player) {
-        return ring(player, player != null? BellRingEvent.RingCause.HUMAN_INTERACTION : BellRingEvent.RingCause.UNKNOWN);
+    public boolean onActivate(@NotNull Item item, Player player) {
+        return ring(player, player != null ? BellRingEvent.RingCause.HUMAN_INTERACTION : BellRingEvent.RingCause.UNKNOWN);
     }
 
     @PowerNukkitOnly
@@ -382,11 +382,11 @@ public class BlockBell extends BlockTransparentMeta implements RedstoneComponent
     }
 
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (block.canBeReplaced() && block.getId() != AIR && block.getId() != BUBBLE_COLUMN && !(block instanceof BlockLiquid)) {
             face = BlockFace.UP;
         }
-        BlockFace playerDirection = player != null? player.getDirection() : BlockFace.EAST;
+        BlockFace playerDirection = player != null ? player.getDirection() : BlockFace.EAST;
         switch (face) {
             case UP:
                 setAttachment(AttachmentType.STANDING);
@@ -413,7 +413,7 @@ public class BlockBell extends BlockTransparentMeta implements RedstoneComponent
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     @Override
-    public boolean onProjectileHit(@Nonnull Entity projectile, @Nonnull Position position, @Nonnull Vector3 motion) {
+    public boolean onProjectileHit(@NotNull Entity projectile, @NotNull Position position, @NotNull Vector3 motion) {
         ring(projectile, BellRingEvent.RingCause.PROJECTILE);
         if (projectile.isOnFire() && projectile instanceof EntityArrow && level.getBlock(projectile).getId() == BlockID.AIR) {
             level.setBlock(projectile, Block.get(BlockID.FIRE), true);

@@ -20,7 +20,8 @@ import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.utils.Faceable;
 import lombok.extern.log4j.Log4j2;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import java.util.EnumMap;
 import java.util.Iterator;
@@ -78,7 +79,7 @@ public abstract class BlockWallBase extends BlockTransparentMeta implements Bloc
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -207,7 +208,7 @@ public abstract class BlockWallBase extends BlockTransparentMeta implements Bloc
 
     @PowerNukkitDifference(info = "Will be placed on the right state", since = "1.4.0.0-PN")
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         autoConfigureState();
         return super.place(item, block, target, face, fx, fy, fz, player);
     }

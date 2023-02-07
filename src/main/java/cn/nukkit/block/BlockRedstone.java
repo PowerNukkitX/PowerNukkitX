@@ -12,7 +12,8 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.RedstoneComponent;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 
 /*
@@ -37,7 +38,7 @@ public class BlockRedstone extends BlockSolidMeta implements RedstoneComponent {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return CommonBlockProperties.EMPTY_PROPERTIES;
@@ -76,7 +77,7 @@ public class BlockRedstone extends BlockSolidMeta implements RedstoneComponent {
 
     @Override
     @PowerNukkitDifference(info = "Update around redstone", since = "1.4.0.0-PN")
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (super.place(item, block, target, face, fx, fy, fz, player)) {
             updateAroundRedstone();
 

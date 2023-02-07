@@ -7,7 +7,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.Vector3;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * An entity which can be named by name tags.
@@ -46,13 +46,13 @@ public interface EntityNameable {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    default boolean playerApplyNameTag(@Nonnull Player player, @Nonnull Item item) {
+    default boolean playerApplyNameTag(@NotNull Player player, @NotNull Item item) {
         return playerApplyNameTag(player, item, true);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    default boolean playerApplyNameTag(@Nonnull Player player, @Nonnull Item item, boolean consume) {
+    default boolean playerApplyNameTag(@NotNull Player player, @NotNull Item item, boolean consume) {
         if (item.hasCustomName()) {
             this.setNameTag(item.getCustomName());
             this.setNameTagVisible(true);

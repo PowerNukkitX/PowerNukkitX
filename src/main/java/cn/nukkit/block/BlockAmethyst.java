@@ -6,8 +6,7 @@ import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author LoboMetalurgico
@@ -28,7 +27,7 @@ public class BlockAmethyst extends BlockSolid {
 
     @PowerNukkitOnly
     @Since("FUTURE")
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;

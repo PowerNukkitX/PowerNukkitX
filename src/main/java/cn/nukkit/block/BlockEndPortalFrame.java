@@ -14,7 +14,8 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +53,7 @@ public class BlockEndPortalFrame extends BlockTransparentMeta implements Faceabl
     
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -122,7 +123,7 @@ public class BlockEndPortalFrame extends BlockTransparentMeta implements Faceabl
 
     @PowerNukkitDifference(info = "Using new method to play sounds", since = "1.4.0.0-PN")
     @Override
-    public boolean onActivate(@Nonnull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player) {
         if (!this.isEndPortalEye() && player != null && item.getId() == Item.ENDER_EYE) {
             this.setEndPortalEye(true);
             this.getLevel().setBlock(this, this, true, true);
@@ -234,7 +235,7 @@ public class BlockEndPortalFrame extends BlockTransparentMeta implements Faceabl
     }
 
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (player == null) {
             setBlockFace(BlockFace.SOUTH);
         } else {

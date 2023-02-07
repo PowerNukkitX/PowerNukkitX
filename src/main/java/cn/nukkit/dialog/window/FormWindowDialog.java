@@ -11,7 +11,8 @@ import com.google.gson.Gson;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,7 +73,7 @@ public class FormWindowDialog implements Dialog{
         return buttons;
     }
 
-    public void setButtons(@Nonnull List<ElementDialogButton> buttons) {
+    public void setButtons(@NotNull List<ElementDialogButton> buttons) {
         this.buttons = buttons;
     }
 

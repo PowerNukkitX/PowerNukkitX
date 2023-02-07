@@ -21,7 +21,8 @@ import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
@@ -64,7 +65,7 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -151,10 +152,10 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
     @PowerNukkitDifference(info = "InWall property is now properly set, returns false if setBlock fails", since = "1.4.0.0-PN")
     @PowerNukkitDifference(info = "Open door if redstone signal is detected.", since = "1.4.0.0-PN")
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         BlockFace direction = player.getDirection();
         setBlockFace(direction);
-        
+
         if (getSide(direction.rotateY()) instanceof BlockWallBase
                 || getSide(direction.rotateYCCW()) instanceof BlockWallBase) {
             setInWall(true);
@@ -172,7 +173,7 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player) {
         return toggle(player);
     }
 

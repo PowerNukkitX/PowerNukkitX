@@ -10,8 +10,7 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.BlockColor;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author CoolLoong
@@ -45,17 +44,17 @@ public class BlockDirtWithRoots extends BlockSolid {
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item, Player player) {
-        Vector3 vector = new Vector3(this.x,this.y-1,this.z);
+    public boolean onActivate(@NotNull Item item, Player player) {
+        Vector3 vector = new Vector3(this.x, this.y - 1, this.z);
         if (!this.up().canBeReplaced()) {
             return false;
         }
-        if (item.isFertilizer() && this.level.getBlock(vector).getId()==BlockID.AIR) {
+        if (item.isFertilizer() && this.level.getBlock(vector).getId() == BlockID.AIR) {
             if (player != null && (player.gamemode & 0x01) == 0) {
                 item.count--;
             }
             this.level.addParticle(new BoneMealParticle(this));
-            this.level.setBlock(vector,Block.get(BlockID.HANGING_ROOTS));
+            this.level.setBlock(vector, Block.get(BlockID.HANGING_ROOTS));
             return true;
         }
         if (item.isHoe()) {

@@ -16,8 +16,8 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.utils.Faceable;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -58,7 +58,7 @@ public class BlockCocoa extends BlockTransparentMeta implements Faceable {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -134,7 +134,7 @@ public class BlockCocoa extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (target.getId() == Block.WOOD && (target.getDamage() & 0x03) == BlockWood.JUNGLE) {
             if (face != BlockFace.DOWN && face != BlockFace.UP) {
                 int[] faces = new int[]{
@@ -188,7 +188,7 @@ public class BlockCocoa extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player) {
         if (item.isFertilizer()) {
             if (this.getGrowthStage() < 2) {
                 if (!this.grow()) {

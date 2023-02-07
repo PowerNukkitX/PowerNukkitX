@@ -8,7 +8,7 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.TerracottaColor;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author xtypr
@@ -34,7 +34,7 @@ public class BlockTerracotta extends BlockSolidMeta {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return CommonBlockProperties.EMPTY_PROPERTIES;

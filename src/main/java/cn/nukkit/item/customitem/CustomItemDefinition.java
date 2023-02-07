@@ -13,6 +13,7 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
 import com.google.gson.Gson;
 import lombok.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -205,7 +206,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
          * <p>
          * Control rendering offsets of custom items at different viewpoints
          */
-        public SimpleBuilder renderOffsets(@NonNull RenderOffsets renderOffsets) {
+        public SimpleBuilder renderOffsets(@NotNull RenderOffsets renderOffsets) {
             this.nbt.getCompound("components")
                     .putCompound("minecraft:render_offsets", renderOffsets.nbt);
             return this;
@@ -257,7 +258,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
         }
 
         @Since("1.19.40-r1")
-        protected SimpleBuilder addRepairItems(@NonNull List<Item> repairItems, String molang) {
+        protected SimpleBuilder addRepairItems(@NotNull List<Item> repairItems, String molang) {
             if (molang.isBlank()) {
                 System.out.println("repairAmount has an invalid value!");
                 return this;
@@ -319,13 +320,13 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
         }
 
         @Since("1.19.40-r1")
-        public ToolBuilder addRepairItems(@NonNull List<Item> repairItems, String molang) {
+        public ToolBuilder addRepairItems(@NotNull List<Item> repairItems, String molang) {
             super.addRepairItems(repairItems, molang);
             return this;
         }
 
         @Since("1.19.40-r1")
-        public ToolBuilder addRepairItems(@NonNull List<Item> repairItems, int repairAmount) {
+        public ToolBuilder addRepairItems(@NotNull List<Item> repairItems, int repairAmount) {
             super.addRepairItems(repairItems, String.valueOf(repairAmount));
             return this;
         }
@@ -353,7 +354,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
          * @param speed 挖掘速度
          * @return the tool builder
          */
-        public ToolBuilder addExtraBlockTag(@NonNull Block block, int speed) {
+        public ToolBuilder addExtraBlockTag(@NotNull Block block, int speed) {
             if (speed < 0) {
                 System.out.println("speed has an invalid value!");
                 return this;
@@ -370,7 +371,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
          * @param blockTags 挖掘速度
          * @return the tool builder
          */
-        public ToolBuilder addExtraBlockTags(@NonNull Map<Block, Integer> blockTags) {
+        public ToolBuilder addExtraBlockTags(@NotNull Map<Block, Integer> blockTags) {
             if (item.isPickaxe() || item.isShovel() || item.isHoe() || item.isAxe() || item.isShears()) {
                 blockTags.forEach((block, speed) -> {
                     if (speed < 0) {
@@ -494,13 +495,13 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
         }
 
         @Since("1.19.40-r1")
-        public ArmorBuilder addRepairItems(@NonNull List<Item> repairItems, String molang) {
+        public ArmorBuilder addRepairItems(@NotNull List<Item> repairItems, String molang) {
             super.addRepairItems(repairItems, molang);
             return this;
         }
 
         @Since("1.19.40-r1")
-        public ArmorBuilder addRepairItems(@NonNull List<Item> repairItems, int repairAmount) {
+        public ArmorBuilder addRepairItems(@NotNull List<Item> repairItems, int repairAmount) {
             super.addRepairItems(repairItems, String.valueOf(repairAmount));
             return this;
         }

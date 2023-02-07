@@ -7,8 +7,8 @@ import cn.nukkit.blockproperty.exception.InvalidBlockPropertyPersistenceValueExc
 import cn.nukkit.blockproperty.exception.InvalidBlockPropertyValueException;
 import cn.nukkit.math.NukkitMath;
 import com.google.common.base.Preconditions;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.Serializable;
@@ -22,8 +22,8 @@ import java.util.Set;
 @ParametersAreNonnullByDefault
 public final class ArrayBlockProperty<E extends Serializable> extends BlockProperty<E> {
     private static final long serialVersionUID = 507174531989068430L;
-    
-    @Nonnull
+
+    @NotNull
     private final E[] universe;
 
     /**
@@ -140,7 +140,7 @@ public final class ArrayBlockProperty<E extends Serializable> extends BlockPrope
         throw new InvalidBlockPropertyValueException(this, null, value, "Element is not part of this property");
     }
 
-    @Nonnull
+    @NotNull
     @PowerNukkitOnly
     @Override
     public E getValueForMeta(int meta) {
@@ -157,8 +157,8 @@ public final class ArrayBlockProperty<E extends Serializable> extends BlockPrope
         }
         return meta;
     }
-    
-    @Nonnull
+
+    @NotNull
     @PowerNukkitOnly
     @Override
     public String getPersistenceValueForMeta(int meta) {
@@ -217,14 +217,14 @@ public final class ArrayBlockProperty<E extends Serializable> extends BlockPrope
     }
 
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public Class<E> getValueClass() {
         return eClass;
     }
 
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     public E[] getUniverse() {
         return universe.clone();
     }
@@ -237,7 +237,7 @@ public final class ArrayBlockProperty<E extends Serializable> extends BlockPrope
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public E getDefaultValue() {
         return universe[0];

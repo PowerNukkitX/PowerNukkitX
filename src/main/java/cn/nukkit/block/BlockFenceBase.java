@@ -8,7 +8,8 @@ import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.blockproperty.exception.InvalidBlockPropertyValueException;
 import cn.nukkit.blockproperty.value.WoodType;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import java.util.Optional;
 
@@ -29,7 +30,7 @@ public abstract class BlockFenceBase extends BlockFence {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return CommonBlockProperties.EMPTY_PROPERTIES;

@@ -16,7 +16,8 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.util.*;
@@ -291,8 +292,8 @@ public class RuntimeItemMapping {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
-    public OptionalInt getNetworkIdByNamespaceId(@Nonnull String namespaceId) {
+    @NotNull
+    public OptionalInt getNetworkIdByNamespaceId(@NotNull String namespaceId) {
         return namespaceNetworkMap.getOrDefault(namespaceId, OptionalInt.empty());
     }
 
@@ -306,8 +307,8 @@ public class RuntimeItemMapping {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
-    public Item getItemByNamespaceId(@Nonnull String namespaceId, int amount) {
+    @NotNull
+    public Item getItemByNamespaceId(@NotNull String namespaceId, int amount) {
         Supplier<Item> constructor = this.namespacedIdItem.get(namespaceId.toLowerCase(Locale.ENGLISH));
         if (constructor != null) {
             try {
@@ -344,14 +345,14 @@ public class RuntimeItemMapping {
 
     @SneakyThrows
     @PowerNukkitOnly
-    public void registerNamespacedIdItem(@Nonnull Class<? extends StringItem> item) {
+    public void registerNamespacedIdItem(@NotNull Class<? extends StringItem> item) {
         Constructor<? extends StringItem> declaredConstructor = item.getDeclaredConstructor();
         var Item = declaredConstructor.newInstance();
         registerNamespacedIdItem(Item.getNamespaceId(), stritemSupplier(declaredConstructor));
     }
 
     @PowerNukkitOnly
-    public void registerNamespacedIdItem(@Nonnull String namespacedId, @Nonnull Constructor<? extends Item> constructor) {
+    public void registerNamespacedIdItem(@NotNull String namespacedId, @NotNull Constructor<? extends Item> constructor) {
         Preconditions.checkNotNull(namespacedId, "namespacedId is null");
         Preconditions.checkNotNull(constructor, "constructor is null");
         this.namespacedIdItem.put(namespacedId.toLowerCase(Locale.ENGLISH), itemSupplier(constructor));
@@ -359,14 +360,14 @@ public class RuntimeItemMapping {
 
     @SneakyThrows
     @PowerNukkitOnly
-    public void registerNamespacedIdItem(@Nonnull String namespacedId, @Nonnull Supplier<Item> constructor) {
+    public void registerNamespacedIdItem(@NotNull String namespacedId, @NotNull Supplier<Item> constructor) {
         Preconditions.checkNotNull(namespacedId, "namespacedId is null");
         Preconditions.checkNotNull(constructor, "constructor is null");
         this.namespacedIdItem.put(namespacedId.toLowerCase(Locale.ENGLISH), constructor);
     }
 
-    @Nonnull
-    private static Supplier<Item> itemSupplier(@Nonnull Constructor<? extends Item> constructor) {
+    @NotNull
+    private static Supplier<Item> itemSupplier(@NotNull Constructor<? extends Item> constructor) {
         return () -> {
             try {
                 return constructor.newInstance();
@@ -378,8 +379,8 @@ public class RuntimeItemMapping {
 
     @Since("1.19.60-r1")
     @PowerNukkitXOnly
-    @Nonnull
-    private static Supplier<Item> stritemSupplier(@Nonnull Constructor<? extends StringItem> constructor) {
+    @NotNull
+    private static Supplier<Item> stritemSupplier(@NotNull Constructor<? extends StringItem> constructor) {
         return () -> {
             try {
                 return (Item) constructor.newInstance();

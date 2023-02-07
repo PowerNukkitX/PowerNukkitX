@@ -9,8 +9,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemString;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author xtypr
@@ -37,7 +36,7 @@ public class BlockCobweb extends BlockFlowable {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return CommonBlockProperties.EMPTY_PROPERTIES;

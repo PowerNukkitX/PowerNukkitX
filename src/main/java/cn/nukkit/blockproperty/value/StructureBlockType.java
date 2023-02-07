@@ -4,7 +4,7 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import lombok.RequiredArgsConstructor;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 @Since("1.4.0.0-PN")
 @PowerNukkitOnly
@@ -38,7 +38,7 @@ public enum StructureBlockType {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     public String getEnglishName() {
         return englishName;
     }

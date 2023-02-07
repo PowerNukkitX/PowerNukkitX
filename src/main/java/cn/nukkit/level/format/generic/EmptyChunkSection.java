@@ -17,7 +17,8 @@ import cn.nukkit.utils.ChunkException;
 import cn.nukkit.utils.collection.ByteArrayWrapper;
 import cn.nukkit.utils.collection.FreezableArrayManager;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Arrays;
 import java.util.Collections;
@@ -110,7 +111,7 @@ public class EmptyChunkSection implements ChunkSection, ChunkSection3DBiome {
     }
 
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockState getBlockState(int x, int y, int z, int layer) {
         return BlockState.AIR;
@@ -124,14 +125,14 @@ public class EmptyChunkSection implements ChunkSection, ChunkSection3DBiome {
     }
 
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public Block getAndSetBlock(int x, int y, int z, int layer, Block block) {
         if (block.getId() != 0) throw new ChunkException(MODIFICATION_ERROR_MESSAGE);
         return Block.get(0);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Block getAndSetBlock(int x, int y, int z, Block block) {
         if (block.getId() != 0) throw new ChunkException(MODIFICATION_ERROR_MESSAGE);
@@ -140,7 +141,7 @@ public class EmptyChunkSection implements ChunkSection, ChunkSection3DBiome {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     @Override
     public BlockState getAndSetBlockState(int x, int y, int z, int layer, BlockState state) {
         if (!BlockState.AIR.equals(state)) throw new ChunkException(MODIFICATION_ERROR_MESSAGE);
@@ -279,7 +280,7 @@ public class EmptyChunkSection implements ChunkSection, ChunkSection3DBiome {
     }
 
     @Override
-    public void writeTo(@Nonnull BinaryStream stream) {
+    public void writeTo(@NotNull BinaryStream stream) {
         stream.put(EMPTY_CHUNK_DATA);
     }
 
@@ -302,7 +303,7 @@ public class EmptyChunkSection implements ChunkSection, ChunkSection3DBiome {
     }
 
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public CompoundTag toNBT() {
         var s = new CompoundTag();
@@ -312,7 +313,7 @@ public class EmptyChunkSection implements ChunkSection, ChunkSection3DBiome {
         return s;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public EmptyChunkSection copy() {
         return new EmptyChunkSection(this.y, this.biomeId.getRawBytes());

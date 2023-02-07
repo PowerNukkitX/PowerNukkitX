@@ -17,8 +17,7 @@ import cn.nukkit.item.MinecraftItemID;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.potion.Effect;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 public class BlockCauldronLava extends BlockCauldron {
@@ -80,17 +79,17 @@ public class BlockCauldronLava extends BlockCauldron {
             entity.attack(new EntityDamageByBlockEvent(this, entity, EntityDamageEvent.DamageCause.LAVA, 4));
         }
     }
-    
+
     @Override
-    public boolean onActivate(@Nonnull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player) {
         BlockEntity be = this.level.getBlockEntity(this);
-    
+
         if (!(be instanceof BlockEntityCauldron)) {
             return false;
         }
-    
+
         BlockEntityCauldron cauldron = (BlockEntityCauldron) be;
-    
+
         switch (item.getId()) {
             case Item.BUCKET:
                 ItemBucket bucket = (ItemBucket) item;

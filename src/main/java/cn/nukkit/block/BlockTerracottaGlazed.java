@@ -10,7 +10,7 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Faceable;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author CreeperFace
@@ -32,7 +32,7 @@ public abstract class BlockTerracottaGlazed extends BlockSolidMeta implements Fa
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -60,7 +60,7 @@ public abstract class BlockTerracottaGlazed extends BlockSolidMeta implements Fa
     }
 
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         int[] faces = {2, 5, 3, 4};
         this.setDamage(faces[player != null ? player.getDirection().getHorizontalIndex() : 0]);
         return this.getLevel().setBlock(block, this, true, true);

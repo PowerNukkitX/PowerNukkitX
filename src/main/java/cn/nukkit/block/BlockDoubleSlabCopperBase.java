@@ -9,8 +9,8 @@ import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -29,7 +29,7 @@ public abstract class BlockDoubleSlabCopperBase extends BlockDoubleSlabBase impl
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return BlockSlab.SIMPLE_SLAB_PROPERTIES;
@@ -68,7 +68,7 @@ public abstract class BlockDoubleSlabCopperBase extends BlockDoubleSlabBase impl
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item, @Nullable Player player) {
+    public boolean onActivate(@NotNull Item item, @Nullable Player player) {
         return Waxable.super.onActivate(item, player)
                 || Oxidizable.super.onActivate(item, player);
     }
@@ -86,14 +86,14 @@ public abstract class BlockDoubleSlabCopperBase extends BlockDoubleSlabBase impl
     @Since("FUTURE")
     @PowerNukkitOnly
     @Override
-    public BlockState getStateWithOxidizationLevel(@Nonnull OxidizationLevel oxidizationLevel) {
+    public BlockState getStateWithOxidizationLevel(@NotNull OxidizationLevel oxidizationLevel) {
         return getCurrentState().withBlockId(getCopperId(isWaxed(), oxidizationLevel));
     }
 
     @Since("FUTURE")
     @PowerNukkitOnly
     @Override
-    public boolean setOxidizationLevel(@Nonnull OxidizationLevel oxidizationLevel) {
+    public boolean setOxidizationLevel(@NotNull OxidizationLevel oxidizationLevel) {
         if (getOxidizationLevel().equals(oxidizationLevel)) {
             return true;
         }

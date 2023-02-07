@@ -26,7 +26,7 @@ import cn.nukkit.event.HandlerList;
 import cn.nukkit.inventory.GrindstoneInventory;
 import cn.nukkit.item.Item;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author joserobjr
@@ -43,15 +43,15 @@ public class GrindstoneEvent extends InventoryEvent implements Cancellable {
         return handlers;
     }
 
-    private final @Nonnull Item firstItem;
-    private final @Nonnull Item resultItem;
-    private final @Nonnull Item secondItem;
+    private final @NotNull Item firstItem;
+    private final @NotNull Item resultItem;
+    private final @NotNull Item secondItem;
     private int experienceDropped;
-    private final @Nonnull Player player;
+    private final @NotNull Player player;
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public GrindstoneEvent(GrindstoneInventory inventory, @Nonnull Item firstItem, @Nonnull Item resultItem, @Nonnull Item secondItem, int cost, @Nonnull Player player) {
+    public GrindstoneEvent(GrindstoneInventory inventory, @NotNull Item firstItem, @NotNull Item resultItem, @NotNull Item secondItem, int cost, @NotNull Player player) {
         super(inventory);
         this.firstItem = firstItem;
         this.resultItem = resultItem;
@@ -62,21 +62,21 @@ public class GrindstoneEvent extends InventoryEvent implements Cancellable {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public Item getFirstItem() {
         return this.firstItem;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public Item getResultItem() {
         return this.resultItem;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public Item getSecondItem() {
         return this.secondItem;
     }
@@ -95,7 +95,7 @@ public class GrindstoneEvent extends InventoryEvent implements Cancellable {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public Player getPlayer() {
         return this.player;
     }

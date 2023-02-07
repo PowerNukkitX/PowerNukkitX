@@ -9,7 +9,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 
 /**
@@ -24,7 +25,7 @@ public abstract class BlockStairsCopperBase extends BlockStairs implements Waxab
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item, @Nullable Player player) {
+    public boolean onActivate(@NotNull Item item, @Nullable Player player) {
         return Waxable.super.onActivate(item, player)
                 || Oxidizable.super.onActivate(item, player);
     }
@@ -75,14 +76,14 @@ public abstract class BlockStairsCopperBase extends BlockStairs implements Waxab
     @Since("FUTURE")
     @PowerNukkitOnly
     @Override
-    public BlockState getStateWithOxidizationLevel(@Nonnull OxidizationLevel oxidizationLevel) {
+    public BlockState getStateWithOxidizationLevel(@NotNull OxidizationLevel oxidizationLevel) {
         return getCurrentState().withBlockId(getCopperId(isWaxed(), oxidizationLevel));
     }
 
     @Since("FUTURE")
     @PowerNukkitOnly
     @Override
-    public boolean setOxidizationLevel(@Nonnull OxidizationLevel oxidizationLevel) {
+    public boolean setOxidizationLevel(@NotNull OxidizationLevel oxidizationLevel) {
         if (getOxidizationLevel().equals(oxidizationLevel)) {
             return true;
         }

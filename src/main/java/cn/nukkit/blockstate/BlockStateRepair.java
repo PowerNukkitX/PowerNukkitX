@@ -10,7 +10,8 @@ import lombok.Getter;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import java.io.Serializable;
 
@@ -35,7 +36,7 @@ public class BlockStateRepair {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     BlockProperties properties;
     
     /**
@@ -43,7 +44,7 @@ public class BlockStateRepair {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     Number originalState;
 
     /**
@@ -51,7 +52,7 @@ public class BlockStateRepair {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     Number currentState;
 
     /**
@@ -59,7 +60,7 @@ public class BlockStateRepair {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     Number nextState;
 
     /**
@@ -99,7 +100,7 @@ public class BlockStateRepair {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     Serializable fixedPropertyValue;
 
     /**
@@ -109,7 +110,7 @@ public class BlockStateRepair {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @NonFinal
-    @Nonnull
+    @NotNull
     Serializable proposedPropertyValue;
 
     /**

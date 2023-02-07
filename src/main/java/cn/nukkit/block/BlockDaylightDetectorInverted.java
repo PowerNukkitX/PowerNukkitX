@@ -5,8 +5,7 @@ import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author CreeperFace
@@ -33,7 +32,7 @@ public class BlockDaylightDetectorInverted extends BlockDaylightDetector {
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player) {
         BlockDaylightDetector block = new BlockDaylightDetector();
         getLevel().setBlock(this, block, true, true);
         block.updatePower();

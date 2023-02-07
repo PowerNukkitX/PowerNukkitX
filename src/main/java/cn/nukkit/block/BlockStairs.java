@@ -15,7 +15,8 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.utils.Faceable;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 
 /**
@@ -48,7 +49,7 @@ public abstract class BlockStairs extends BlockTransparentMeta implements Faceab
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -72,11 +73,11 @@ public abstract class BlockStairs extends BlockTransparentMeta implements Faceab
     }
 
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (player != null) {
             setBlockFace(player.getDirection());
         }
-        
+
         if ((fy > 0.5 && face != BlockFace.UP) || face == BlockFace.DOWN) {
             setUpsideDown(true);
         }

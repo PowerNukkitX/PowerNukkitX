@@ -35,7 +35,8 @@ import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -55,10 +56,17 @@ public abstract class Enchantment implements Cloneable {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final Enchantment[] EMPTY_ARRAY = new Enchantment[0];
+
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
     public static final int CUSTOM_ENCHANTMENT_ID = dynamic(256);
 
     protected static Enchantment[] enchantments;
+
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
     protected static Map<Identifier, Enchantment> customEnchantments = new Object2ObjectLinkedOpenHashMap<>();
+
     public static final int ID_PROTECTION_ALL = 0;
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
@@ -300,6 +308,8 @@ public abstract class Enchantment implements Cloneable {
         customEnchantments.put(new Identifier("minecraft", NAME_SWIFT_SNEAK), enchantments[37]);
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
     public static String getLevelString(int level) {
         return switch (level) {
             case 1 -> "I";
@@ -346,8 +356,12 @@ public abstract class Enchantment implements Cloneable {
         return OK.TRUE;
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
     private static int BOOK_NUMBER = 1;
 
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
     private static OK<?> registerCustomEnchantBook(Enchantment enchantment) {
         var identifier = enchantment.getIdentifier();
         assert identifier != null;
@@ -475,7 +489,7 @@ public abstract class Enchantment implements Cloneable {
     /**
      * The group of objects that this enchantment can be applied.
      */
-    @Nonnull
+    @NotNull
     public EnchantmentType type;
 
     /**
@@ -572,7 +586,7 @@ public abstract class Enchantment implements Cloneable {
      * @return This object so you can do chained calls
      */
 
-    @Nonnull
+    @NotNull
     public Enchantment setLevel(int level) {
         return this.setLevel(level, true);
     }
@@ -586,7 +600,7 @@ public abstract class Enchantment implements Cloneable {
      * @param safe  If the level should clamped or applied directly
      * @return This object so you can do chained calls
      */
-    @Nonnull
+    @NotNull
     public Enchantment setLevel(int level, boolean safe) {
         if (!safe) {
             this.level = level;
@@ -609,7 +623,7 @@ public abstract class Enchantment implements Cloneable {
      * How rare this enchantment is.
      */
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public Rarity getRarity() {
         return this.rarity;
     }
@@ -744,7 +758,7 @@ public abstract class Enchantment implements Cloneable {
                     "The right way to implement compatibility now is to override checkCompatibility(Enchantment enchantment) " +
                     "and also make sure to keep it protected! Some overrides was incorrectly made public, let's avoid this mistake."
     )
-    public boolean isCompatibleWith(@Nonnull Enchantment enchantment) {
+    public boolean isCompatibleWith(@NotNull Enchantment enchantment) {
         return this.checkCompatibility(enchantment) && enchantment.checkCompatibility(this);
     }
 
@@ -778,7 +792,7 @@ public abstract class Enchantment implements Cloneable {
      * @param item The item to be checked
      * @return If the type of the item is valid for this enchantment
      */
-    public boolean canEnchant(@Nonnull Item item) {
+    public boolean canEnchant(@NotNull Item item) {
         return this.type.canEnchantItem(item);
     }
 

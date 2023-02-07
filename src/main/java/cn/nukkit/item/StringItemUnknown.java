@@ -2,7 +2,7 @@ package cn.nukkit.item;
 
 import cn.nukkit.api.PowerNukkitOnly;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author joserobjr
@@ -11,7 +11,7 @@ import javax.annotation.Nonnull;
 @PowerNukkitOnly
 public final class StringItemUnknown extends StringItemBase {
     @PowerNukkitOnly
-    public StringItemUnknown(@Nonnull String id) {
+    public StringItemUnknown(@NotNull String id) {
         super(id, UNKNOWN_STR);
     }
 }

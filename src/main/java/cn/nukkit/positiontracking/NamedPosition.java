@@ -4,7 +4,7 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.math.Vector3;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author joserobjr
@@ -37,7 +37,7 @@ public abstract class NamedPosition extends Vector3 {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public abstract String getLevelName();
 
     @PowerNukkitOnly

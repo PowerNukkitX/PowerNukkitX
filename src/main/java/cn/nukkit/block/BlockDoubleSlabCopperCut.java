@@ -3,8 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.value.OxidizationLevel;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Locale;
 
@@ -78,7 +78,7 @@ public class BlockDoubleSlabCopperCut extends BlockDoubleSlabCopperBase {
 
     @Since("FUTURE")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public OxidizationLevel getOxidizationLevel() {
         return OxidizationLevel.UNAFFECTED;

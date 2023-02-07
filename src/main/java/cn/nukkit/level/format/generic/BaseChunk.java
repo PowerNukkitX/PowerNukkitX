@@ -16,8 +16,8 @@ import cn.nukkit.level.format.updater.ChunkUpdater;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.utils.ChunkException;
 import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteBuffer;
@@ -117,7 +117,7 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public Stream<Block> scanBlocks(BlockVector3 min, BlockVector3 max, BiPredicate<BlockVector3, BlockState> condition) {
         int offsetX = getX() << 4;
@@ -472,7 +472,7 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
         return true;
     }
 
-    @Nonnull
+    @NotNull
     @PowerNukkitOnly
     @Override
     public List<Block> findBorders(int x, int z) {

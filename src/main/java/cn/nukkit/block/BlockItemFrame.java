@@ -25,7 +25,8 @@ import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.utils.Faceable;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -65,7 +66,7 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -73,7 +74,7 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockFace getBlockFace() {
         return getPropertyValue(FACING_DIRECTION);
@@ -82,7 +83,7 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     @Override
-    public void setBlockFace(@Nonnull BlockFace face) {
+    public void setBlockFace(@NotNull BlockFace face) {
         setPropertyValue(FACING_DIRECTION, face);
     }
 
@@ -112,7 +113,7 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     @Override
     public String getBlockEntityType() {
         return BlockEntity.ITEM_FRAME;
@@ -120,7 +121,7 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public Class<? extends BlockEntityItemFrame> getBlockEntityClass() {
         return BlockEntityItemFrame.class;
@@ -167,7 +168,7 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player) {
         BlockEntityItemFrame itemFrame = getOrCreateBlockEntity();
         if (itemFrame.getItem().isNull()) {
             Item itemOnFrame = item.clone();
@@ -201,7 +202,7 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
 
     @PowerNukkitDifference(info = "Allow to place on walls", since = "1.3.0.0-PN")
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if ((!(target.isSolid() || target instanceof BlockWall) && !target.equals(block) || (block.isSolid() && !block.canBeReplaced()))) {
             return false;
         }

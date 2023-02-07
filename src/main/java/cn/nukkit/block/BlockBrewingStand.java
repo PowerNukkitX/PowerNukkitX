@@ -21,7 +21,6 @@ import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.BlockColor;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.Map;
 
 public class BlockBrewingStand extends BlockTransparentMeta implements BlockEntityHolder<BlockEntityBrewingStand> {
@@ -87,7 +86,7 @@ public class BlockBrewingStand extends BlockTransparentMeta implements BlockEnti
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -100,7 +99,7 @@ public class BlockBrewingStand extends BlockTransparentMeta implements BlockEnti
 
     @PowerNukkitDifference(info = "Remove placement restrictions, they don't exists in vanilla", since = "1.3.1.2-PN")
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         getLevel().setBlock(block, this, true, true);
 
         CompoundTag nbt = new CompoundTag()
@@ -126,7 +125,7 @@ public class BlockBrewingStand extends BlockTransparentMeta implements BlockEnti
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player) {
         if (player != null) {
             BlockEntity t = getLevel().getBlockEntity(this);
             BlockEntityBrewingStand brewing;

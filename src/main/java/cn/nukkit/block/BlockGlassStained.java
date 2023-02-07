@@ -7,7 +7,7 @@ import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.DyeColor;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.blockproperty.CommonBlockProperties.COLOR;
 
@@ -33,7 +33,7 @@ public class BlockGlassStained extends BlockGlass {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -54,14 +54,14 @@ public class BlockGlassStained extends BlockGlass {
         return getDyeColor().getColor();
     }
 
-    @Nonnull
+    @NotNull
     public DyeColor getDyeColor() {
         return getPropertyValue(COLOR);
     }
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
-    public void setDyeColor(@Nonnull DyeColor color) {
+    public void setDyeColor(@NotNull DyeColor color) {
         setPropertyValue(COLOR, color);
     }
 

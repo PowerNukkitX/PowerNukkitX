@@ -10,8 +10,7 @@ import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Faceable;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.blockproperty.CommonBlockProperties.PERMANENTLY_DEAD;
 
@@ -50,7 +49,7 @@ public class BlockCoralFanHang extends BlockCoralFan implements Faceable {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;

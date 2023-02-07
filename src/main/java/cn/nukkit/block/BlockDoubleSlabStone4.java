@@ -7,7 +7,7 @@ import cn.nukkit.blockproperty.value.StoneSlab4Type;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 public class BlockDoubleSlabStone4 extends BlockDoubleSlabBase {
@@ -34,7 +34,7 @@ public class BlockDoubleSlabStone4 extends BlockDoubleSlabBase {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return BlockSlabStone4.PROPERTIES;

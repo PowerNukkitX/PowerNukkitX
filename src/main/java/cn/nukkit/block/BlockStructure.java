@@ -14,7 +14,7 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author good777LUCKY
@@ -51,7 +51,7 @@ public class BlockStructure extends BlockSolidMeta implements BlockEntityHolder<
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -75,7 +75,7 @@ public class BlockStructure extends BlockSolidMeta implements BlockEntityHolder<
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player) {
         if (player != null) {
             if (player.isCreative() && player.isOp()) {
                 BlockEntityStructBlock tile = this.getOrCreateBlockEntity();
@@ -87,7 +87,7 @@ public class BlockStructure extends BlockSolidMeta implements BlockEntityHolder<
     }
 
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (player != null && (!player.isCreative() || !player.isOp())) {
             return false;
         }

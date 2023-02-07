@@ -11,7 +11,8 @@ import cn.nukkit.utils.TextFormat;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Map;
 import java.util.function.Function;
 
@@ -23,12 +24,12 @@ import java.util.function.Function;
 public class CapturingCommandSender implements CommandSender {
     private final StringBuilder captured = new StringBuilder();
 
-    @NonNull
+    @NotNull
     private String name;
 
     private boolean isOp;
 
-    @NonNull
+    @NotNull
     private final Permissible perms;
 
     @PowerNukkitOnly
@@ -37,33 +38,33 @@ public class CapturingCommandSender implements CommandSender {
     }
 
     @PowerNukkitOnly
-    public CapturingCommandSender(@NonNull String name) {
+    public CapturingCommandSender(@NotNull String name) {
         this.name = name;
         this.perms = new PermissibleBase(this);
     }
 
     @PowerNukkitOnly
-    public CapturingCommandSender(@NonNull String name, boolean isOp) {
+    public CapturingCommandSender(@NotNull String name, boolean isOp) {
         this.name = name;
         this.isOp = isOp;
         this.perms = new PermissibleBase(this);
     }
 
     @PowerNukkitOnly
-    public CapturingCommandSender(@NonNull String name, boolean isOp, @NonNull Function<ServerOperator, Permissible> permissibleFactory) {
+    public CapturingCommandSender(@NotNull String name, boolean isOp, @NotNull Function<ServerOperator, Permissible> permissibleFactory) {
         this.name = name;
         this.isOp = isOp;
         this.perms = permissibleFactory.apply(this);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getName() {
         return name;
     }
 
     @PowerNukkitOnly
-    public void setName(@Nonnull String name) {
+    public void setName(@NotNull String name) {
         this.name = name;
     }
 

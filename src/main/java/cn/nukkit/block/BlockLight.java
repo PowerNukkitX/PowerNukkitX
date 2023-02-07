@@ -7,7 +7,7 @@ import cn.nukkit.blockproperty.IntBlockProperty;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.AxisAlignedBB;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 public class BlockLight extends BlockTransparentMeta {
@@ -41,7 +41,7 @@ public class BlockLight extends BlockTransparentMeta {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;

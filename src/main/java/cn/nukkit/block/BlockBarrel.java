@@ -17,8 +17,8 @@ import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.Map;
 
 import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
@@ -53,7 +53,7 @@ public class BlockBarrel extends BlockSolidMeta implements Faceable, BlockEntity
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -61,7 +61,7 @@ public class BlockBarrel extends BlockSolidMeta implements Faceable, BlockEntity
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     @Override
     public String getBlockEntityType() {
         return BlockEntity.BARREL;
@@ -69,14 +69,14 @@ public class BlockBarrel extends BlockSolidMeta implements Faceable, BlockEntity
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public Class<? extends BlockEntityBarrel> getBlockEntityClass() {
         return BlockEntityBarrel.class;
     }
 
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (Math.abs(player.x - this.x) < 2 && Math.abs(player.z - this.z) < 2) {
             double y = player.y + player.getEyeHeight();
 
@@ -108,14 +108,14 @@ public class BlockBarrel extends BlockSolidMeta implements Faceable, BlockEntity
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player) {
         if (player == null) {
             return false;
         }
 
         BlockEntityBarrel barrel = getOrCreateBlockEntity();
 
-        if (barrel.namedTag.contains("Lock") && barrel.namedTag.get("Lock") instanceof StringTag 
+        if (barrel.namedTag.contains("Lock") && barrel.namedTag.get("Lock") instanceof StringTag
                 && !barrel.namedTag.getString("Lock").equals(item.getCustomName())) {
             return false;
         }

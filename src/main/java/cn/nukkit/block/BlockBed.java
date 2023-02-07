@@ -27,8 +27,8 @@ import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.TextFormat;
 import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
@@ -67,7 +67,7 @@ public class BlockBed extends BlockTransparentMeta implements Faceable, BlockEnt
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -75,7 +75,7 @@ public class BlockBed extends BlockTransparentMeta implements Faceable, BlockEnt
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public Class<? extends BlockEntityBed> getBlockEntityClass() {
         return BlockEntityBed.class;
@@ -83,7 +83,7 @@ public class BlockBed extends BlockTransparentMeta implements Faceable, BlockEnt
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     @Override
     public String getBlockEntityType() {
         return BlockEntity.BED;
@@ -121,18 +121,18 @@ public class BlockBed extends BlockTransparentMeta implements Faceable, BlockEnt
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item) {
+    public boolean onActivate(@NotNull Item item) {
         return this.onActivate(item, null);
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player) {
 
         BlockFace dir = getBlockFace();
 
         boolean shouldExplode = this.level.getDimension() != Level.DIMENSION_OVERWORLD;
         boolean willExplode = shouldExplode && this.level.getGameRules().getBoolean(GameRule.TNT_EXPLODES);
-        
+
         Block head;
         if (isHeadPiece()) {
             head = this;
@@ -224,13 +224,13 @@ public class BlockBed extends BlockTransparentMeta implements Faceable, BlockEnt
 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed support logic")
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         Block down = this.down();
         if (!(BlockLever.isSupportValid(down, BlockFace.UP) || down instanceof BlockCauldron)) {
             return false;
         }
-        
-        BlockFace direction = player == null? BlockFace.NORTH : player.getDirection();
+
+        BlockFace direction = player == null ? BlockFace.NORTH : player.getDirection();
         Block next = this.getSide(direction);
         Block downNext = next.down();
 

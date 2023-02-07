@@ -99,7 +99,8 @@ import org.iq80.leveldb.Options;
 import org.iq80.leveldb.impl.Iq80DBFactory;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.io.*;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -3395,7 +3396,7 @@ public class Server {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public PositionTrackingService getPositionTrackingService() {
         return positionTrackingService;
     }

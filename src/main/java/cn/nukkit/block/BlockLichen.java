@@ -13,7 +13,8 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitRandom;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Optional;
@@ -32,7 +33,7 @@ public abstract class BlockLichen extends BlockTransparent {
 
     @Since("FUTURE")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -50,7 +51,7 @@ public abstract class BlockLichen extends BlockTransparent {
         }
     }
 
-    public boolean isGrowthToSide(@Nonnull BlockFace side) {
+    public boolean isGrowthToSide(@NotNull BlockFace side) {
         return ((getPropertyValue(MULTI_FACE_DIRECTION_BITS) >> side.getDUSWNEIndex()) & 0x1) > 0;
     }
 
@@ -62,7 +63,7 @@ public abstract class BlockLichen extends BlockTransparent {
     }
 
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
 
         if (!target.isSolid() && target instanceof BlockLichen) {
             return false;

@@ -28,8 +28,8 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.utils.Faceable;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
@@ -76,7 +76,7 @@ public abstract class BlockCropsStem extends BlockCrops implements Faceable {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;

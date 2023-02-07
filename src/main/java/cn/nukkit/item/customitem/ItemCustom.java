@@ -6,7 +6,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.StringItem;
 import cn.nukkit.item.StringItemBase;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 
 /**
@@ -21,12 +22,12 @@ import javax.annotation.Nullable;
 public abstract class ItemCustom extends StringItemBase implements CustomItem {
     private final String textureName;
 
-    public ItemCustom(@Nonnull String id, @Nullable String name) {
+    public ItemCustom(@NotNull String id, @Nullable String name) {
         super(id, StringItem.notEmpty(name));
         this.textureName = name;
     }
 
-    public ItemCustom(@Nonnull String id, @Nullable String name, @Nonnull String textureName) {
+    public ItemCustom(@NotNull String id, @Nullable String name, @NotNull String textureName) {
         super(id, StringItem.notEmpty(name));
         this.textureName = textureName;
     }

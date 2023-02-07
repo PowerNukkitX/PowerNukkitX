@@ -4,7 +4,8 @@ import cn.nukkit.api.Since;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
@@ -14,7 +15,7 @@ public class LittleEndianByteBufOutputStream extends ByteBufOutputStream {
     private final ByteBuf buffer;
 
     @Since("1.4.0.0-PN")
-    public LittleEndianByteBufOutputStream(@Nonnull ByteBuf buffer) {
+    public LittleEndianByteBufOutputStream(@NotNull ByteBuf buffer) {
         super(buffer);
         this.buffer = buffer;
     }

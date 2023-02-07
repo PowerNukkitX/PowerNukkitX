@@ -14,8 +14,8 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static cn.nukkit.blockproperty.CommonBlockProperties.UPPER_BLOCK;
@@ -72,7 +72,7 @@ public class BlockDoublePlant extends BlockFlowable {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -80,14 +80,14 @@ public class BlockDoublePlant extends BlockFlowable {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public DoublePlantType getDoublePlantType() {
         return getPropertyValue(DOUBLE_PLANT_TYPE);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public void setDoublePlantType(@Nonnull DoublePlantType type) {
+    public void setDoublePlantType(@NotNull DoublePlantType type) {
         setPropertyValue(DOUBLE_PLANT_TYPE, type);
     }
 
@@ -135,7 +135,7 @@ public class BlockDoublePlant extends BlockFlowable {
     }
 
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         Block up = up();
 
         if (up.getId() == AIR && isSupportValid(down())) {
@@ -226,7 +226,7 @@ public class BlockDoublePlant extends BlockFlowable {
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player) {
         if (item.isFertilizer()) { //Bone meal
             switch (getDoublePlantType()) {
                 case SUNFLOWER:

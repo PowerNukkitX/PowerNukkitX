@@ -5,8 +5,7 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.item.Item;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
@@ -28,7 +27,7 @@ public abstract class BlockDoubleSlabBase extends BlockSolidMeta {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return BlockSlab.SIMPLE_SLAB_PROPERTIES;

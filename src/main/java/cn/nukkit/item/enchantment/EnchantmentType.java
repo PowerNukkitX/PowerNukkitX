@@ -4,7 +4,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockCarvedPumpkin;
 import cn.nukkit.item.*;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -25,7 +25,7 @@ public enum EnchantmentType {
     TRIDENT,
     @Since("1.4.0.0-PN") CROSSBOW;
 
-    public boolean canEnchantItem(@Nonnull Item item) {
+    public boolean canEnchantItem(@NotNull Item item) {
         if (this == ALL) {
             return true;
 

@@ -17,7 +17,8 @@ import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Map;
@@ -52,7 +53,7 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable, B
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -60,7 +61,7 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable, B
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     @Override
     public String getBlockEntityType() {
         return BlockEntity.ENDER_CHEST;
@@ -68,7 +69,7 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable, B
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public Class<? extends BlockEntityEnderChest> getBlockEntityClass() {
         return BlockEntityEnderChest.class;
@@ -131,7 +132,7 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable, B
     }
 
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         int[] faces = {2, 5, 3, 4};
         this.setDamage(faces[player != null ? player.getDirection().getHorizontalIndex() : 0]);
 
@@ -152,11 +153,11 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable, B
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player) {
         if (player == null) {
             return false;
         }
-        
+
         Block top = this.up();
         if (!top.isTransparent()) {
             return false;

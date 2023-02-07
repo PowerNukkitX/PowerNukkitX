@@ -12,8 +12,8 @@ import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Sound;
 import cn.nukkit.utils.BlockColor;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Optional;
 
@@ -45,7 +45,7 @@ public class BlockDirt extends BlockSolidMeta {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -53,7 +53,7 @@ public class BlockDirt extends BlockSolidMeta {
     
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public Optional<DirtType> getDirtType() {
         return Optional.of(getPropertyValue(DIRT_TYPE));
     }
@@ -90,11 +90,11 @@ public class BlockDirt extends BlockSolidMeta {
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player) {
         if (!this.up().canBeReplaced()) {
             return false;
         }
-        
+
         if (item.isHoe()) {
             item.useOn(this);
             this.getLevel().setBlock(this, this.getDamage() == 0 ? get(FARMLAND) : get(DIRT), true);

@@ -10,7 +10,9 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
+
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import static cn.nukkit.api.API.Definition.INTERNAL;
@@ -56,7 +58,7 @@ public abstract class MutableBlockState implements IMutableBlockState {
     }
 
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public final BlockProperties getProperties() {
         return properties;
@@ -100,6 +102,6 @@ public abstract class MutableBlockState implements IMutableBlockState {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public abstract MutableBlockState copy();
 }

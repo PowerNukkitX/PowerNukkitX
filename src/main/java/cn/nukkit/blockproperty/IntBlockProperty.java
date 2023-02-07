@@ -8,7 +8,8 @@ import cn.nukkit.blockproperty.exception.InvalidBlockPropertyValueException;
 import cn.nukkit.math.NukkitMath;
 import com.google.common.base.Preconditions;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 
 @PowerNukkitOnly
@@ -86,7 +87,7 @@ public class IntBlockProperty extends BlockProperty<Integer> {
     }
 
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public Integer getValueForMeta(int meta) {
         return getIntValueForMeta(meta);
@@ -112,7 +113,7 @@ public class IntBlockProperty extends BlockProperty<Integer> {
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     @Override
-    public int getMetaForPersistenceValue(@Nonnull String persistenceValue) {
+    public int getMetaForPersistenceValue(@NotNull String persistenceValue) {
         try {
             return getMetaForValue(Integer.parseInt(persistenceValue));
         } catch (NumberFormatException | InvalidBlockPropertyValueException e) {
@@ -162,7 +163,7 @@ public class IntBlockProperty extends BlockProperty<Integer> {
     @Override
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public Integer getDefaultValue() {
         return minValue;
     }
@@ -189,7 +190,7 @@ public class IntBlockProperty extends BlockProperty<Integer> {
     }
 
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public Class<Integer> getValueClass() {
         return Integer.class;

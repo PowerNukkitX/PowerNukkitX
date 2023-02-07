@@ -49,7 +49,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
      * @param blockCreativeCategory 自定义方块在创造栏的大分类<br>the block creative category
      * @return the custom block definition builder.
      */
-    public static CustomBlockDefinition.Builder builder(@NonNull CustomBlock customBlock, @NonNull Materials materials, BlockCreativeCategory blockCreativeCategory) {
+    public static CustomBlockDefinition.Builder builder(@NotNull CustomBlock customBlock, @NotNull Materials materials, BlockCreativeCategory blockCreativeCategory) {
         return new CustomBlockDefinition.Builder(customBlock, materials, blockCreativeCategory);
     }
 
@@ -134,7 +134,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
          * <p>
          * Set the rotation of the block around the center of the block in degrees, the rotation order is xyz. The angle must be a multiple of 90.
          */
-        public Builder rotation(@NonNull Vector3f rotation) {
+        public Builder rotation(@NotNull Vector3f rotation) {
             this.nbt.putCompound("minecraft:rotation", new CompoundTag()
                     .putFloat("x", rotation.x)
                     .putFloat("y", rotation.y)
@@ -310,7 +310,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
          * <p>
          * Custom processing of the block to be sent to the client ComponentNBT, which contains all definitions for custom block. You can modify them as much as you want, under the right conditions.
          */
-        public CustomBlockDefinition customBuild(@NonNull Consumer<CompoundTag> nbt) {
+        public CustomBlockDefinition customBuild(@NotNull Consumer<CompoundTag> nbt) {
             var def = this.build();
             nbt.accept(def.nbt);
             return def;

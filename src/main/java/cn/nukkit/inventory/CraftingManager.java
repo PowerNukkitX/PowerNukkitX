@@ -19,7 +19,8 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
 import lombok.extern.log4j.Log4j2;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
@@ -380,7 +381,7 @@ public class CraftingManager {
     }
 
     @PowerNukkitOnly
-    public static int getContainerHash(@Nonnull Item ingredient, @Nonnull Item container) {
+    public static int getContainerHash(@NotNull Item ingredient, @NotNull Item container) {
         int ingredientId = ingredient.getId();
         int containerId = container.getId();
         int hash = 17;
@@ -820,7 +821,7 @@ public class CraftingManager {
 
     @Since("1.19.50-r3")
     @PowerNukkitXOnly
-    public void registerModProcessRecipe(@Nonnull ModProcessRecipe recipe) {
+    public void registerModProcessRecipe(@NotNull ModProcessRecipe recipe) {
         this.addRecipe(recipe);
         var map = getModProcessRecipeMap().computeIfAbsent(recipe.getCategory(), k -> new HashMap<>());
         var inputHash = getShapelessItemDescriptorHash(recipe.getIngredients());
@@ -830,7 +831,7 @@ public class CraftingManager {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public void registerSmithingRecipe(@Nonnull SmithingRecipe recipe) {
+    public void registerSmithingRecipe(@NotNull SmithingRecipe recipe) {
         this.addRecipe(recipe);
         List<Item> list1 = recipe.getIngredientsAggregate();
         List<ItemDescriptor> list2 = recipe.getNewIngredients();
@@ -884,7 +885,7 @@ public class CraftingManager {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Nullable
-    public SmithingRecipe matchSmithingRecipe(@Nonnull List<Item> inputList) {
+    public SmithingRecipe matchSmithingRecipe(@NotNull List<Item> inputList) {
         inputList.sort(recipeComparator);
         UUID inputHash = getMultiItemHash(inputList);
 
@@ -901,14 +902,14 @@ public class CraftingManager {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Nullable
-    public SmithingRecipe matchSmithingRecipe(@Nonnull Item equipment, @Nonnull Item ingredient, @Nonnull Item primaryOutput) {
+    public SmithingRecipe matchSmithingRecipe(@NotNull Item equipment, @NotNull Item ingredient, @NotNull Item primaryOutput) {
         List<Item> inputList = Arrays.asList(equipment, ingredient);
         return matchSmithingRecipe(inputList, primaryOutput);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public SmithingRecipe matchSmithingRecipe(@Nonnull List<Item> inputList, @Nonnull Item primaryOutput) {
+    public SmithingRecipe matchSmithingRecipe(@NotNull List<Item> inputList, @NotNull Item primaryOutput) {
         int outputHash = getItemHash(primaryOutput);
         if (!getSmithingRecipeMap().containsKey(outputHash)) {
             return null;
@@ -1055,7 +1056,7 @@ public class CraftingManager {
     @Since("1.19.50-r3")
     @PowerNukkitXOnly
     @Nullable
-    public ModProcessRecipe matchModProcessRecipe(@Nonnull String category, @Nonnull List<Item> inputList) {
+    public ModProcessRecipe matchModProcessRecipe(@NotNull String category, @NotNull List<Item> inputList) {
         var recipeMap = getModProcessRecipeMap();
         var subMap = recipeMap.get(category);
         if (subMap != null) {

@@ -33,7 +33,8 @@ import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -642,7 +643,7 @@ public class Item implements Cloneable, BlockID, ItemID {
      */
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public static OK<?> registerCustomItem(@Nonnull List<Class<? extends CustomItem>> itemClassList) {
+    public static OK<?> registerCustomItem(@NotNull List<Class<? extends CustomItem>> itemClassList) {
         if (!Server.getInstance().isEnableExperimentMode() || Server.getInstance().getConfig("settings.waterdogpe", false)) {
             return new OK<>(false, "The server does not have the custom item feature enabled. Unable to register the customItemList!");
         }

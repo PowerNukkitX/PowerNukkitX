@@ -4,7 +4,8 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperty;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.ParametersAreNullableByDefault;
 
 @PowerNukkitOnly
@@ -17,39 +18,39 @@ public class InvalidBlockPropertyException extends IllegalArgumentException {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public InvalidBlockPropertyException(@Nonnull BlockProperty<?> property) {
+    public InvalidBlockPropertyException(@NotNull BlockProperty<?> property) {
         super(buildMessage(property));
         this.property = property;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public InvalidBlockPropertyException(@Nonnull BlockProperty<?> property, String message) {
-        super(buildMessage(property)+". "+message);
+    public InvalidBlockPropertyException(@NotNull BlockProperty<?> property, String message) {
+        super(buildMessage(property) + ". " + message);
         this.property = property;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public InvalidBlockPropertyException(@Nonnull BlockProperty<?> property, String message, Throwable cause) {
-        super(buildMessage(property)+". "+message, cause);
+    public InvalidBlockPropertyException(@NotNull BlockProperty<?> property, String message, Throwable cause) {
+        super(buildMessage(property) + ". " + message, cause);
         this.property = property;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public InvalidBlockPropertyException(@Nonnull BlockProperty<?> property, Throwable cause) {
+    public InvalidBlockPropertyException(@NotNull BlockProperty<?> property, Throwable cause) {
         super(buildMessage(property), cause);
         this.property = property;
     }
 
-    private static String buildMessage(@Nonnull BlockProperty<?> property) {
-        return "Property: "+property.getName();
+    private static String buildMessage(@NotNull BlockProperty<?> property) {
+        return "Property: " + property.getName();
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public BlockProperty<?> getProperty() {
         return property;
     }

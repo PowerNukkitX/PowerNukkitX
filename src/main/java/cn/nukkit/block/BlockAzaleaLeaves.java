@@ -5,8 +5,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.value.WoodType;
 import cn.nukkit.item.Item;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public class BlockAzaleaLeaves extends BlockLeaves {
 
@@ -45,7 +44,7 @@ public class BlockAzaleaLeaves extends BlockLeaves {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;

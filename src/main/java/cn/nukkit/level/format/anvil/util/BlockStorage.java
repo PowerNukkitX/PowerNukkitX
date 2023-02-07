@@ -16,7 +16,9 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import lombok.extern.log4j.Log4j2;
 
 import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
+
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Arrays;
@@ -447,7 +449,7 @@ public class BlockStorage {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public ImmutableBlockStorage immutableCopy() {
         return new ImmutableBlockStorage(states, flags, palette, denyStates);
     }

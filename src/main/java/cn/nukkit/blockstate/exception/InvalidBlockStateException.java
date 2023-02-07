@@ -4,7 +4,8 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockstate.BlockState;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNullableByDefault;
 
@@ -16,39 +17,39 @@ import javax.annotation.ParametersAreNullableByDefault;
 @ParametersAreNullableByDefault
 public class InvalidBlockStateException extends IllegalStateException {
     private static final long serialVersionUID = 643372054081065905L;
-    
-    @Nonnull
+
+    @NotNull
     private final BlockState state;
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public InvalidBlockStateException(@Nonnull BlockState state) {
+    public InvalidBlockStateException(@NotNull BlockState state) {
         super(createMessage(state, null));
         this.state = state;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public InvalidBlockStateException(@Nonnull BlockState state, String message) {
+    public InvalidBlockStateException(@NotNull BlockState state, String message) {
         super(createMessage(state, message));
         this.state = state;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public InvalidBlockStateException(@Nonnull BlockState state, String message, Throwable cause) {
+    public InvalidBlockStateException(@NotNull BlockState state, String message, Throwable cause) {
         super(createMessage(state, message), cause);
         this.state = state;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public InvalidBlockStateException(@Nonnull BlockState state, Throwable cause) {
+    public InvalidBlockStateException(@NotNull BlockState state, Throwable cause) {
         super(createMessage(state, null), cause);
         this.state = state;
     }
-    
-    private static String createMessage(@Nonnull BlockState state, @Nullable String message) {
+
+    private static String createMessage(@NotNull BlockState state, @Nullable String message) {
         StringBuilder sb = new StringBuilder(500);
         sb.append("The block state ").append(state).append(" is invalid");
         if (message != null && !message.isEmpty()) {
@@ -65,7 +66,7 @@ public class InvalidBlockStateException extends IllegalStateException {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public BlockState getState() {
         return state;
     }

@@ -11,7 +11,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
 import cn.nukkit.utils.BlockColor;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import java.util.Optional;
 
@@ -32,7 +33,7 @@ public class BlockPodzol extends BlockDirt {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return CommonBlockProperties.EMPTY_PROPERTIES;
@@ -50,7 +51,7 @@ public class BlockPodzol extends BlockDirt {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public Optional<DirtType> getDirtType() {
         return Optional.empty();
@@ -71,11 +72,11 @@ public class BlockPodzol extends BlockDirt {
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player) {
         if (!this.up().canBeReplaced()) {
             return false;
         }
-        
+
         if (item.isShovel()) {
             item.useOn(this);
             this.getLevel().setBlock(this, Block.get(BlockID.GRASS_PATH));

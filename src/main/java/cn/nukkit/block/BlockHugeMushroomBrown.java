@@ -10,7 +10,7 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.utils.BlockColor;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Pub4Game
@@ -46,7 +46,7 @@ public class BlockHugeMushroomBrown extends BlockSolidMeta {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;

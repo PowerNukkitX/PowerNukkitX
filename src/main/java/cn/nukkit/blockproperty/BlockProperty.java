@@ -7,7 +7,8 @@ import cn.nukkit.blockproperty.exception.InvalidBlockPropertyPersistenceValueExc
 import cn.nukkit.blockproperty.exception.InvalidBlockPropertyValueException;
 import com.google.common.base.Preconditions;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.Serializable;
@@ -221,7 +222,7 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public T getValue(int currentMeta, int bitOffset) {
         int meta = getMetaFromInt(currentMeta, bitOffset);
         try {
@@ -237,7 +238,7 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public T getValue(long currentBigMeta, int bitOffset) {
         int meta = getMetaFromLong(currentBigMeta, bitOffset);
         try {
@@ -253,7 +254,7 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public T getValue(BigInteger currentHugeMeta, int bitOffset) {
         int meta = getMetaFromBigInt(currentHugeMeta, bitOffset);
         try {
@@ -314,7 +315,7 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public String getPersistenceValue(int currentMeta, int bitOffset) {
         int meta = getMetaFromInt(currentMeta, bitOffset);
         try {
@@ -330,7 +331,7 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public String getPersistenceValue(long currentMeta, int bitOffset) {
         int meta = getMetaFromLong(currentMeta, bitOffset);
         try {
@@ -346,7 +347,7 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public String getPersistenceValue(BigInteger currentMeta, int bitOffset) {
         int meta = getMetaFromBigInt(currentMeta, bitOffset);
         try {
@@ -368,7 +369,7 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public abstract T getValueForMeta(int meta);
 
     /**
@@ -461,21 +462,21 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public String getName() {
         return name;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public String getPersistenceName() {
         return persistenceName;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public abstract Class<T> getValueClass();
 
     @PowerNukkitOnly
@@ -500,7 +501,7 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
 
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
-    public final boolean isDefaultPersistentValue(@Nonnull String value) {
+    public final boolean isDefaultPersistentValue(@NotNull String value) {
         int meta = getMetaForPersistenceValue(value);
         int intValue = getIntValueForMeta(meta);
         int defaultIntValue = getDefaultIntValue();
@@ -509,7 +510,7 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public abstract T getDefaultValue();
 
     @PowerNukkitOnly

@@ -11,8 +11,8 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Faceable;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 
@@ -78,7 +78,7 @@ public abstract class BlockAmethystBud extends BlockTransparentMeta implements F
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -97,8 +97,8 @@ public abstract class BlockAmethystBud extends BlockTransparentMeta implements F
     }
 
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        if(!target.isSolid())
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+        if (!target.isSolid())
             return false;
         setBlockFace(face);
         this.level.setBlock(block, this, true, true);

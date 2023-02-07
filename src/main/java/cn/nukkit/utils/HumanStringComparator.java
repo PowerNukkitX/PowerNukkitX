@@ -4,7 +4,8 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import lombok.NoArgsConstructor;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -173,7 +174,7 @@ public class HumanStringComparator implements Comparator<String> {
         return list;
     }
 
-    @Nonnull
+    @NotNull
     private List<String> split(String str) {
         int length = str.length();
         if (length == 0) {
