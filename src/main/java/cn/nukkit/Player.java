@@ -3070,6 +3070,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.sendPosition(new Vector3(x, y, z), yaw, pitch, MovePlayerPacket.MODE_NORMAL, this.getViewers().values().toArray(EMPTY_ARRAY));
     }
 
+    /**
+     * 每次调用此方法都会向客户端发送motion包。若多次调用，motion将在客户端叠加<p/>
+     * @param motion 运动向量<br>a motion vector
+     * @return 调用是否成功
+     */
     @Override
     public boolean setMotion(Vector3 motion) {
         if (super.setMotion(motion)) {

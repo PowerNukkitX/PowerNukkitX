@@ -22,32 +22,34 @@ import cn.nukkit.event.entity.EntityExplodeEvent;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
-import cn.nukkit.level.particle.HugeExplodeSeedParticle;
 import cn.nukkit.math.*;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.utils.Hash;
 import it.unimi.dsi.fastutil.longs.LongArraySet;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author Angelic47 (Nukkit Project)
  */
 public class Explosion {
+    private final int RAYS = 16; //Rays
+    private final double STEP_LEN = 0.3d;
 
-    private final int rays = 16; //Rays
     private final Level level;
     private final Position source;
     private final double size;
-    private final double stepLen = 0.3d;
-    private final Object what;
     private double fireChance;
+
     private Set<Block> affectedBlocks;
     private Set<Block> fireIgnitions;
     private boolean doesDamage = true;
+
+    private final Object what;
 
     public Explosion(Position center, double size, Entity what) {
         this(center, size, (Object) what);
@@ -59,6 +61,13 @@ public class Explosion {
         this(center, size, (Object) what);
     }
 
+    /**
+     * Creates explosion at given position with given power.
+     *
+     * @param center center position
+     * @param size the power of explosion
+     * @param what the source object, used for tracking damage
+     */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     protected Explosion(Position center, double size, Object what) {
@@ -108,7 +117,10 @@ public class Explosion {
     }
 
     /**
-     * @return bool
+     * Calculates which blocks will be destroyed by this explosion. If {@link #explodeB()} is called without calling this,
+     * no blocks will be destroyed.
+     *
+     * @return {@code true} if success
      */
     public boolean explodeA() {
         if (what instanceof EntityExplosive) {
@@ -141,19 +153,19 @@ public class Explosion {
         Vector3 vector = new Vector3(0, 0, 0);
         Vector3 vBlock = new Vector3(0, 0, 0);
 
-        int mRays = this.rays - 1;
-        for (int i = 0; i < this.rays; ++i) {
-            for (int j = 0; j < this.rays; ++j) {
-                for (int k = 0; k < this.rays; ++k) {
+        int mRays = this.RAYS - 1;
+        for (int i = 0; i < this.RAYS; ++i) {
+            for (int j = 0; j < this.RAYS; ++j) {
+                for (int k = 0; k < this.RAYS; ++k) {
                     if (i == 0 || i == mRays || j == 0 || j == mRays || k == 0 || k == mRays) {
                         vector.setComponents((double) i / (double) mRays * 2d - 1, (double) j / (double) mRays * 2d - 1, (double) k / (double) mRays * 2d - 1);
                         double len = vector.length();
-                        vector.setComponents((vector.x / len) * this.stepLen, (vector.y / len) * this.stepLen, (vector.z / len) * this.stepLen);
+                        vector.setComponents((vector.x / len) * this.STEP_LEN, (vector.y / len) * this.STEP_LEN, (vector.z / len) * this.STEP_LEN);
                         double pointerX = this.source.x;
                         double pointerY = this.source.y;
                         double pointerZ = this.source.z;
 
-                        for (double blastForce = this.size * (random.nextInt(700, 1301)) / 1000d; blastForce > 0; blastForce -= this.stepLen * 0.75d) {
+                        for (double blastForce = this.size * (random.nextInt(700, 1301)) / 1000d; blastForce > 0; blastForce -= this.STEP_LEN * 0.75d) {
                             int x = (int) pointerX;
                             int y = (int) pointerY;
                             int z = (int) pointerZ;
@@ -168,7 +180,7 @@ public class Explosion {
                             if (block.getId() != 0) {
                                 Block layer1 = block.getLevelBlockAtLayer(1);
                                 double resistance = Math.max(block.getResistance(), layer1.getResistance());
-                                blastForce -= (resistance / 5 + 0.3d) * this.stepLen;
+                                blastForce -= (resistance / 5 + 0.3d) * this.STEP_LEN;
                                 if (blastForce > 0) {
                                     if (this.affectedBlocks.add(block)) {
                                         if (incendiary && random.nextDouble() <= fireChance) {
@@ -192,6 +204,12 @@ public class Explosion {
         return true;
     }
 
+    /**
+     * Executes the explosion's effects on the world. This includes destroying blocks (if any),
+     * harming and knocking back entities, and creating sounds and particles.
+     *
+     * @return {@code false} if explosion was canceled, otherwise {@code true}
+     */
     @PowerNukkitDifference(info = "Using new method to play sounds", since = "1.4.0.0-PN")
     public boolean explodeB() {
 
@@ -270,10 +288,12 @@ public class Explosion {
 
         ItemBlock air = new ItemBlock(Block.get(BlockID.AIR));
         BlockEntity container;
+        List<Vector3> smokePositions = this.affectedBlocks.isEmpty() ? Collections.emptyList() : new ObjectArrayList<>();
+        ThreadLocalRandom random = ThreadLocalRandom.current();
 
         for (Block block : this.affectedBlocks) {
             if (block.getId() == BlockID.TNT) {
-                ((BlockTNT) block).prime(new NukkitRandom().nextRange(10, 30), this.what instanceof Entity ? (Entity) this.what : null);
+                ((BlockTNT) block).prime(random.nextInt(10, 31), this.what instanceof Entity ? (Entity) this.what : null);
             } else if ((container = block.getLevel().getBlockEntity(block)) instanceof InventoryHolder) {
                 if (container instanceof BlockEntityShulkerBox) {
                     this.level.dropItem(block.add(0.5, 0.5, 0.5), block.toItem());
@@ -284,10 +304,14 @@ public class Explosion {
                     }
                     ((InventoryHolder) container).getInventory().clearAll();
                 }
-            } else if (Math.random() * 100 < yield) {
+            } else if (random.nextDouble() * 100 < yield) {
                 for (Item drop : block.getDrops(air)) {
                     this.level.dropItem(block.add(0.5, 0.5, 0.5), drop);
                 }
+            }
+
+            if (random.nextInt(8) == 0) {
+                smokePositions.add(block);
             }
 
             this.level.setBlockAtLayer((int) block.x, (int) block.y, (int) block.z, block.layer, BlockID.AIR);
@@ -328,8 +352,23 @@ public class Explosion {
             }
         }
 
-        this.level.addParticle(new HugeExplodeSeedParticle(this.source));
-        this.level.addSound(source, Sound.RANDOM_EXPLODE);
+        int count = smokePositions.size();
+        CompoundTag data = new CompoundTag(new Object2ObjectOpenHashMap<>(count, 0.999999f))
+                .putFloat("originX", (float) this.source.x)
+                .putFloat("originY", (float) this.source.y)
+                .putFloat("originZ", (float) this.source.z)
+                .putFloat("radius", (float) this.size)
+                .putInt("size", count);
+        for (int i = 0; i < count; i++) {
+            Vector3 pos = smokePositions.get(i);
+            String prefix = "pos" + i;
+            data.putFloat(prefix + "x", (float) pos.x);
+            data.putFloat(prefix + "y", (float) pos.y);
+            data.putFloat(prefix + "z", (float) pos.z);
+        }
+        this.level.addSound(this.source, Sound.RANDOM_EXPLODE);
+        this.level.addLevelEvent(this.source, LevelEventPacket.EVENT_PARTICLE_EXPLOSION, Math.round((float) this.size));
+        this.level.addLevelEvent(this.source, LevelEventPacket.EVENT_PARTICLE_BLOCK_EXPLOSION, data);
 
         return true;
     }
