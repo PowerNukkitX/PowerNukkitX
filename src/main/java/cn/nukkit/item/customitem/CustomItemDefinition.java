@@ -425,7 +425,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
             }
             if (item.isPickaxe()) {
                 //添加可挖掘方块Tags
-                this.blockTags.addAll(List.of("'stone'", "'metal'", "diamond_pick_diggable", "'mob_spawner'", "'rail'", "'slab_block'", "'stair_block'", "'smooth stone slab'", "'sandstone slab'", "'cobblestone slab'", "'brick slab'", "'stone bricks slab'", "'quartz slab'", "'nether brick slab'"));
+                this.blockTags.addAll(List.of("'stone'", "'metal'", "'diamond_pick_diggable'", "'mob_spawner'", "'rail'", "'slab_block'", "'stair_block'", "'smooth stone slab'", "'sandstone slab'", "'cobblestone slab'", "'brick slab'", "'stone bricks slab'", "'quartz slab'", "'nether brick slab'"));
 
                 //添加可挖掘方块
                 for (var name : pickaxeBlocks) {
