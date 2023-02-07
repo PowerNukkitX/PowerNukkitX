@@ -257,7 +257,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
         }
 
         @Since("1.19.40-r1")
-        protected SimpleBuilder addRepairItems(@NonNull List<String> repairItemNames, String molang) {
+        protected SimpleBuilder addRepairs(@NonNull List<String> repairItemNames, String molang) {
             if (molang.isBlank()) {
                 System.out.println("repairAmount has an invalid value!");
                 return this;
@@ -324,15 +324,27 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
                     .putFloat("mining_speed", 1f);
         }
 
-        @Since("1.19.40-r1")
-        public ToolBuilder addRepairItems(@NonNull List<String> repairItemNames, String molang) {
-            super.addRepairItems(repairItemNames, molang);
+        @Since("1.19.60-r1")
+        public ToolBuilder addRepairItemNames(@NonNull List<String> repairItemNames, String molang) {
+            super.addRepairs(repairItemNames, molang);
+            return this;
+        }
+
+        @Since("1.19.60-r1")
+        public ToolBuilder addRepairItemNames(@NonNull List<String> repairItemNames, int repairAmount) {
+            super.addRepairs(repairItemNames, String.valueOf(repairAmount));
             return this;
         }
 
         @Since("1.19.40-r1")
-        public ToolBuilder addRepairItems(@NonNull List<String> repairItemNames, int repairAmount) {
-            super.addRepairItems(repairItemNames, String.valueOf(repairAmount));
+        public ToolBuilder addRepairItems(@NonNull List<Item> repairItems, String molang) {
+            super.addRepairs(repairItems.stream().map(Item::getNamespaceId).toList(), molang);
+            return this;
+        }
+
+        @Since("1.19.40-r1")
+        public ToolBuilder addRepairItems(@NonNull List<Item> repairItems, int repairAmount) {
+            super.addRepairs(repairItems.stream().map(Item::getNamespaceId).toList(), String.valueOf(repairAmount));
             return this;
         }
 
@@ -495,15 +507,27 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
                     .putInt("enchantable_value", item.getEnchantAbility());
         }
 
-        @Since("1.19.40-r1")
-        public ArmorBuilder addRepairItems(@NonNull List<String> repairItemNames, String molang) {
-            super.addRepairItems(repairItemNames, molang);
+        @Since("1.19.60-r1")
+        public ArmorBuilder addRepairItemNames(@NonNull List<String> repairItemNames, String molang) {
+            super.addRepairs(repairItemNames, molang);
+            return this;
+        }
+
+        @Since("1.19.60-r1")
+        public ArmorBuilder addRepairItemNames(@NonNull List<String> repairItemNames, int repairAmount) {
+            super.addRepairs(repairItemNames, String.valueOf(repairAmount));
             return this;
         }
 
         @Since("1.19.40-r1")
-        public ArmorBuilder addRepairItems(@NonNull List<String> repairItemNames, int repairAmount) {
-            super.addRepairItems(repairItemNames, String.valueOf(repairAmount));
+        public ArmorBuilder addRepairItems(@NonNull List<Item> repairItems, String molang) {
+            super.addRepairs(repairItems.stream().map(Item::getNamespaceId).toList(), molang);
+            return this;
+        }
+
+        @Since("1.19.40-r1")
+        public ArmorBuilder addRepairItems(@NonNull List<Item> repairItems, int repairAmount) {
+            super.addRepairs(repairItems.stream().map(Item::getNamespaceId).toList(), String.valueOf(repairAmount));
             return this;
         }
 
