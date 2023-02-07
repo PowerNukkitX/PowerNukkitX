@@ -14,7 +14,8 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.utils.Faceable;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 
 @Since("1.6.0.0-PNX")
@@ -40,7 +41,7 @@ public class BlockSmallDripleaf extends BlockFlowable implements Faceable {
 
     @Since("1.6.0.0-PNX")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -78,15 +79,15 @@ public class BlockSmallDripleaf extends BlockFlowable implements Faceable {
     }
 
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         BlockSmallDripleaf dripleaf = new BlockSmallDripleaf();
         BlockSmallDripleaf dripleafTop = new BlockSmallDripleaf();
         dripleafTop.setUpperBlock(true);
         dripleaf.setBlockFace(player.getDirection().getOpposite());
         dripleafTop.setBlockFace(player.getDirection().getOpposite());
-        if (canKeepAlive(block)){
+        if (canKeepAlive(block)) {
             this.level.setBlock(block, dripleaf, true, true);
-            this.level.setBlock(block.getSide(BlockFace.UP),dripleafTop, true, true);
+            this.level.setBlock(block.getSide(BlockFace.UP), dripleafTop, true, true);
             return true;
         }
         return false;
@@ -102,14 +103,14 @@ public class BlockSmallDripleaf extends BlockFlowable implements Faceable {
     }
 
     @Override
-    public boolean onBreak(@Nonnull Item item) {
+    public boolean onBreak(@NotNull Item item) {
         this.level.setBlock(this, new BlockAir(), true, true);
         if (item != null && item.isShears())
             this.level.dropItem(this, this.toItem());
-        if(this.getSide(BlockFace.UP).getId() == BlockID.SMALL_DRIPLEAF_BLOCK){
+        if (this.getSide(BlockFace.UP).getId() == BlockID.SMALL_DRIPLEAF_BLOCK) {
             this.level.getBlock(this.getSide(BlockFace.UP)).onBreak(null);
         }
-        if(this.getSide(BlockFace.DOWN).getId() == BlockID.SMALL_DRIPLEAF_BLOCK){
+        if (this.getSide(BlockFace.DOWN).getId() == BlockID.SMALL_DRIPLEAF_BLOCK) {
             this.level.getBlock(this.getSide(BlockFace.DOWN)).onBreak(null);
         }
         return true;
@@ -130,8 +131,8 @@ public class BlockSmallDripleaf extends BlockFlowable implements Faceable {
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item, @Nullable Player player) {
-        if (item.isFertilizer()){
+    public boolean onActivate(@NotNull Item item, @Nullable Player player) {
+        if (item.isFertilizer()) {
             NukkitRandom random = new NukkitRandom();
             int height = random.nextBoundedInt(4) + 2;
 

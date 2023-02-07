@@ -4,7 +4,8 @@ import cn.nukkit.Player;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.entity.component.impl.EntityTameComponent;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 
 /**
@@ -17,7 +18,7 @@ public interface EntityOwnable {
         return getTameComponent().getOwnerName();
     }
 
-    default void setOwnerName(@Nonnull String playerName) {
+    default void setOwnerName(@NotNull String playerName) {
         getTameComponent().setOwnerName(playerName);
     }
 

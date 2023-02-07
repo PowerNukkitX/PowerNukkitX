@@ -24,7 +24,9 @@ import cn.nukkit.api.Unsigned;
 import cn.nukkit.blockproperty.BlockProperties;
 
 import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
+
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.Serializable;
@@ -57,7 +59,7 @@ public class ZeroMutableBlockState extends MutableBlockState {
     }
 
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public ZeroMutableBlockState copy() {
         return this;
@@ -116,7 +118,7 @@ public class ZeroMutableBlockState extends MutableBlockState {
     @Nonnegative
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public Number getDataStorage() {
         return 0;
@@ -148,7 +150,7 @@ public class ZeroMutableBlockState extends MutableBlockState {
     @Nonnegative
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BigInteger getHugeDamage() {
         return BigInteger.ZERO;
@@ -156,7 +158,7 @@ public class ZeroMutableBlockState extends MutableBlockState {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public Serializable getPropertyValue(String propertyName) {
         throw new NoSuchElementException("ZeroMutableBlockState can't have properties. Attempted get property "+propertyName);
@@ -178,7 +180,7 @@ public class ZeroMutableBlockState extends MutableBlockState {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public String getPersistenceValue(String propertyName) {
         throw new NoSuchElementException("ZeroMutableBlockState can't have properties. Attempted get property "+propertyName);
@@ -186,7 +188,7 @@ public class ZeroMutableBlockState extends MutableBlockState {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockState getCurrentState() {
         return state;

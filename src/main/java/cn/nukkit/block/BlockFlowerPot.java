@@ -16,7 +16,8 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 
 import static cn.nukkit.block.BlockLeaves.UPDATE;
@@ -40,7 +41,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -64,7 +65,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public Class<? extends BlockEntityFlowerPot> getBlockEntityClass() {
         return BlockEntityFlowerPot.class;
@@ -72,7 +73,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     @Override
     public String getBlockEntityType() {
         return BlockEntity.FLOWER_POT;
@@ -102,7 +103,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed support logic")
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (!BlockLever.isSupportValid(down(), BlockFace.UP)) {
             return false;
         }
@@ -119,7 +120,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public Item getFlower() {
         BlockEntityFlowerPot blockEntity = getBlockEntity();
         if (blockEntity == null || !blockEntity.namedTag.containsCompound("PlantBlock")) {
@@ -180,7 +181,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item, @Nullable Player player) {
+    public boolean onActivate(@NotNull Item item, @Nullable Player player) {
         if (getBooleanValue(UPDATE)) {
             if (player == null) {
                 return false;

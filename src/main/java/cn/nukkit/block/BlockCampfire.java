@@ -34,8 +34,8 @@ import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Map;
 
@@ -69,7 +69,7 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -77,7 +77,7 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     @Override
     public String getBlockEntityType() {
         return BlockEntity.CAMPFIRE;
@@ -85,7 +85,7 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public Class<? extends BlockEntityCampfire> getBlockEntityClass() {
         return BlockEntityCampfire.class;
@@ -127,17 +127,17 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
     }
 
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (down().getId() == CAMPFIRE_BLOCK) {
             return false;
         }
-        
+
         final Block layer0 = level.getBlock(this, 0);
         final Block layer1 = level.getBlock(this, 1);
-        
+
         setBlockFace(player != null ? player.getDirection().getOpposite() : null);
-        boolean defaultLayerCheck = (block instanceof BlockWater && ((BlockWater)block).isSourceOrFlowingDown()) || block instanceof BlockIceFrosted;
-        boolean layer1Check = (layer1 instanceof BlockWater && ((BlockWater)layer1).isSourceOrFlowingDown()) || layer1 instanceof BlockIceFrosted;
+        boolean defaultLayerCheck = (block instanceof BlockWater && ((BlockWater) block).isSourceOrFlowingDown()) || block instanceof BlockIceFrosted;
+        boolean layer1Check = (layer1 instanceof BlockWater && ((BlockWater) layer1).isSourceOrFlowingDown()) || layer1 instanceof BlockIceFrosted;
         if (defaultLayerCheck || layer1Check) {
             setExtinguished(true);
             this.level.addSound(this, Sound.RANDOM_FIZZ, 0.5f, 2.2f);
@@ -226,7 +226,7 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item, @Nullable Player player) {
+    public boolean onActivate(@NotNull Item item, @Nullable Player player) {
         if (item.getId() == BlockID.AIR || item.getCount() <= 0) {
             return false;
         }
@@ -268,12 +268,12 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     @Override
-    public boolean onProjectileHit(@Nonnull Entity projectile, @Nonnull Position position, @Nonnull Vector3 motion) {
+    public boolean onProjectileHit(@NotNull Entity projectile, @NotNull Position position, @NotNull Vector3 motion) {
         if ((projectile instanceof EntitySmallFireBall || (projectile.isOnFire() && projectile instanceof EntityArrow)) && isExtinguished()) {
             setExtinguished(false);
             level.setBlock(this, this, true);
             return true;
-        } else if (projectile instanceof EntityPotion && !isExtinguished() 
+        } else if (projectile instanceof EntityPotion && !isExtinguished()
                 && ((EntityPotion) projectile).potionId == 0) {
             setExtinguished(true);
             level.setBlock(this, this, true);

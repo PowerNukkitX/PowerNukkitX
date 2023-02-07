@@ -9,8 +9,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.utils.BlockColor;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 @Since("1.6.0.0-PNX")
 @PowerNukkitOnly
@@ -44,7 +43,7 @@ public class BlockBuddingAmethyst extends BlockSolid {
 
     @Since("1.6.0.0-PNX")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return CommonBlockProperties.EMPTY_PROPERTIES;

@@ -6,7 +6,7 @@ import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author GoodLucky777
@@ -36,8 +36,8 @@ public class BlockSlabTileDeepslate extends BlockSlab {
     public String getSlabName() {
         return "Deepslate Tile";
     }
-    
-    @Nonnull
+
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return SIMPLE_SLAB_PROPERTIES;

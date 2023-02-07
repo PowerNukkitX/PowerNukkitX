@@ -9,8 +9,7 @@ import cn.nukkit.blockproperty.BlockProperty;
 import cn.nukkit.blockproperty.value.StoneBrickType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -55,7 +54,7 @@ public class BlockBricksStone extends BlockSolidMeta {
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;

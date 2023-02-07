@@ -6,8 +6,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -35,7 +34,7 @@ public class BlockDoubleSlabMangrove extends BlockDoubleSlabBase {
         return DOUBLE_MANGROVE_SLAB;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return BlockSlab.SIMPLE_SLAB_PROPERTIES;

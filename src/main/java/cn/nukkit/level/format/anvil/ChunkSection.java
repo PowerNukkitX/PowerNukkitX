@@ -28,7 +28,8 @@ import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
@@ -434,7 +435,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
     }
 
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockState getBlockState(int x, int y, int z, int layer) {
         sectionLock.readLock().lock();
@@ -469,14 +470,14 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
         return setBlockStateAtLayer(x, y, z, layer, BlockState.of(blockId));
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Block getAndSetBlock(int x, int y, int z, Block block) {
         return getAndSetBlock(x, y, z, 0, block);
     }
 
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public Block getAndSetBlock(int x, int y, int z, int layer, Block block) {
         sectionLock.writeLock().lock();
@@ -721,7 +722,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
     }
 
     @Override
-    public synchronized void writeTo(@Nonnull BinaryStream stream) {
+    public synchronized void writeTo(@NotNull BinaryStream stream) {
         layerStorage.writeTo(stream);
     }
 
@@ -816,7 +817,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
     }
 
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public synchronized CompoundTag toNBT() {
         CompoundTag s = new CompoundTag();
@@ -993,7 +994,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
 
     @Override
     @SneakyThrows(CloneNotSupportedException.class)
-    @Nonnull
+    @NotNull
     public ChunkSection copy() {
         return new ChunkSection(
                 this.y,

@@ -18,7 +18,8 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector2;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.concurrent.ThreadLocalRandom;
 
 @PowerNukkitOnly
@@ -52,7 +53,7 @@ public class BlockSeaPickle extends BlockFlowable {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -109,7 +110,7 @@ public class BlockSeaPickle extends BlockFlowable {
     }
 
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (target.getId() == SEA_PICKLE && (target.getDamage() & 0b11) < 3) {
             target.setDamage(target.getDamage() + 1);
             this.getLevel().setBlock(target, target, true, true);
@@ -148,7 +149,7 @@ public class BlockSeaPickle extends BlockFlowable {
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player) {
 
         //Bone meal
         if (item.isFertilizer() && down().getId() == CORAL_BLOCK && !isDead()) {

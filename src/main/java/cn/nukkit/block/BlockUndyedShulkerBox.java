@@ -23,7 +23,8 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.BlockColor;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import java.util.Map;
 
@@ -50,7 +51,7 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public Class<? extends BlockEntityShulkerBox> getBlockEntityClass() {
         return BlockEntityShulkerBox.class;
@@ -58,7 +59,7 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     @Override
     public String getBlockEntityType() {
         return BlockEntity.SHULKER_BOX;
@@ -130,7 +131,7 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
     }
 
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         CompoundTag nbt = new CompoundTag().putByte("facing", face.getIndex());
 
         if (item.hasCustomName()) {
@@ -161,11 +162,11 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item, @Nullable Player player) {
+    public boolean onActivate(@NotNull Item item, @Nullable Player player) {
         if (player == null) {
             return false;
         }
-        
+
         BlockEntityShulkerBox box = getOrCreateBlockEntity();
         Block block = this.getSide(BlockFace.fromIndex(box.namedTag.getByte("facing")));
         if (!(block instanceof BlockAir) && !(block instanceof BlockLiquid) && !(block instanceof BlockFlowable)) {

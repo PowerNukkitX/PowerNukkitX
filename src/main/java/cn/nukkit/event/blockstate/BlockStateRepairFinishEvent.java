@@ -7,7 +7,8 @@ import cn.nukkit.blockstate.BlockStateRepair;
 import cn.nukkit.event.HandlerList;
 import com.google.common.base.Preconditions;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -18,15 +19,15 @@ import java.util.List;
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
 public class BlockStateRepairFinishEvent extends BlockStateRepairEvent {
-    @Nonnull
+    @NotNull
     private final List<BlockStateRepair> allRepairs;
-    
-    @Nonnull
+
+    @NotNull
     private Block result;
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public BlockStateRepairFinishEvent(@Nonnull List<BlockStateRepair> allRepairs, @Nonnull Block result) {
+    public BlockStateRepairFinishEvent(@NotNull List<BlockStateRepair> allRepairs, @NotNull Block result) {
         super(allRepairs.get(allRepairs.size() - 1));
         this.allRepairs = Collections.unmodifiableList(new ArrayList<>(allRepairs));
         this.result = result;
@@ -34,29 +35,29 @@ public class BlockStateRepairFinishEvent extends BlockStateRepairEvent {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public List<BlockStateRepair> getAllRepairs() {
         return allRepairs;
     }
 
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     public Block getResult() {
         return result;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public void setResult(@Nonnull Block result) {
+    public void setResult(@NotNull Block result) {
         this.result = Preconditions.checkNotNull(result);
     }
 
-    @Nonnull
+    @NotNull
     private static final HandlerList handlers = new HandlerList();
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public static HandlerList getHandlers() {
         return handlers;
     }

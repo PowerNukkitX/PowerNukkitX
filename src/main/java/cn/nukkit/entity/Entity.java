@@ -57,7 +57,8 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -588,7 +589,7 @@ public abstract class Entity extends Location implements Metadatable {
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
     @Nullable
-    public static Entity createEntity(Identifier identifier, @Nonnull Position pos, @Nullable Object... args) {
+    public static Entity createEntity(Identifier identifier, @NotNull Position pos, @Nullable Object... args) {
         Integer id = EntityIds.IDENTIFIER_2_IDS.get(identifier.toString());
         String name;
         if (id == null) {
@@ -598,22 +599,22 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     @Nullable
-    public static Entity createEntity(@Nonnull String name, @Nonnull Position pos, @Nullable Object... args) {
+    public static Entity createEntity(@NotNull String name, @NotNull Position pos, @Nullable Object... args) {
         return createEntity(name, Objects.requireNonNull(pos.getChunk()), getDefaultNBT(pos), args);
     }
 
     @Nullable
-    public static Entity createEntity(int type, @Nonnull Position pos, @Nullable Object... args) {
+    public static Entity createEntity(int type, @NotNull Position pos, @Nullable Object... args) {
         return createEntity(String.valueOf(type), Objects.requireNonNull(pos.getChunk()), getDefaultNBT(pos), args);
     }
 
     @Nullable
-    public static Entity createEntity(int type, @Nonnull FullChunk chunk, @Nonnull CompoundTag nbt, @Nullable Object... args) {
+    public static Entity createEntity(int type, @NotNull FullChunk chunk, @NotNull CompoundTag nbt, @Nullable Object... args) {
         return createEntity(String.valueOf(type), chunk, nbt, args);
     }
 
     @Nullable
-    public static Entity createEntity(@Nonnull String name, @Nonnull FullChunk chunk, @Nonnull CompoundTag nbt, @Nullable Object... args) {
+    public static Entity createEntity(@NotNull String name, @NotNull FullChunk chunk, @NotNull CompoundTag nbt, @Nullable Object... args) {
         var provider = knownEntities.get(name);
         if (provider != null) {
             return provider.provideEntity(chunk, nbt, args);
@@ -689,7 +690,7 @@ public abstract class Entity extends Location implements Metadatable {
         return new OK<Void>(registerEntity(customEntityProvider, true));
     }
 
-    @Nonnull
+    @NotNull
     @PowerNukkitOnly
     @Since("1.5.1.0-PN")
     public static IntCollection getKnownEntityIds() {
@@ -699,7 +700,7 @@ public abstract class Entity extends Location implements Metadatable {
                 .collect(IntArrayList::new, IntArrayList::add, IntArrayList::addAll);
     }
 
-    @Nonnull
+    @NotNull
     @PowerNukkitXOnly
     @Since("1.19.20-r4")
     @Deprecated
@@ -710,7 +711,7 @@ public abstract class Entity extends Location implements Metadatable {
                 .collect(Collectors.toMap(OldStringClass::key, OldStringClass::value));
     }
 
-    @Nonnull
+    @NotNull
     @PowerNukkitXOnly
     @Since("1.19.20-r4")
     @Deprecated
@@ -718,14 +719,14 @@ public abstract class Entity extends Location implements Metadatable {
         return Collections.unmodifiableMap(knownEntities);
     }
 
-    @Nonnull
+    @NotNull
     @PowerNukkitOnly
     @Since("1.5.1.0-PN")
     public static List<String> getSaveIds() {
         return new ArrayList<>(shortNames.values());
     }
 
-    @Nonnull
+    @NotNull
     @PowerNukkitOnly
     @Since("1.5.1.0-PN")
     public static OptionalInt getSaveId(String id) {
@@ -752,13 +753,13 @@ public abstract class Entity extends Location implements Metadatable {
         return shortNames.get(entityProvider.getSimpleName());
     }
 
-    @Nonnull
-    public static CompoundTag getDefaultNBT(@Nonnull Vector3 pos) {
+    @NotNull
+    public static CompoundTag getDefaultNBT(@NotNull Vector3 pos) {
         return getDefaultNBT(pos, null);
     }
 
-    @Nonnull
-    public static CompoundTag getDefaultNBT(@Nonnull Vector3 pos, @Nullable Vector3 motion) {
+    @NotNull
+    public static CompoundTag getDefaultNBT(@NotNull Vector3 pos, @Nullable Vector3 motion) {
         Location loc = pos instanceof Location ? (Location) pos : null;
 
         if (loc != null) {
@@ -768,8 +769,8 @@ public abstract class Entity extends Location implements Metadatable {
         return getDefaultNBT(pos, motion, 0, 0);
     }
 
-    @Nonnull
-    public static CompoundTag getDefaultNBT(@Nonnull Vector3 pos, @Nullable Vector3 motion, float yaw, float pitch) {
+    @NotNull
+    public static CompoundTag getDefaultNBT(@NotNull Vector3 pos, @Nullable Vector3 motion, float yaw, float pitch) {
         return new CompoundTag()
                 .putList(new ListTag<DoubleTag>("Pos")
                         .add(new DoubleTag("", pos.x))
@@ -1387,7 +1388,7 @@ public abstract class Entity extends Location implements Metadatable {
     /**
      * The current name used by this entity in the name tag, or the static name if the entity don't have nametag.
      */
-    @Nonnull
+    @NotNull
     public String getName() {
         if (this.hasCustomName()) {
             return this.getNameTag();
@@ -2465,7 +2466,7 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     @Override
-    @Nonnull
+    @NotNull
     public Location getLocation() {
         return new Location(this.x, this.y, this.z, this.yaw, this.pitch, this.headYaw, this.level);
     }

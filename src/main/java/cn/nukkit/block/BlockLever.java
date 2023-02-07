@@ -19,7 +19,8 @@ import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 
 import static cn.nukkit.blockproperty.CommonBlockProperties.OPEN;
@@ -59,7 +60,7 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -108,7 +109,7 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player) {
         if (!player.getAdventureSettings().get(AdventureSettings.Type.DOORS_AND_SWITCHED))
             return false;
         this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, isPowerOn() ? 15 : 0, isPowerOn() ? 0 : 15));
@@ -147,14 +148,14 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
     }
 
     @PowerNukkitDifference(info = "Allows to be placed on walls", since = "1.3.0.0-PN")
-    @PowerNukkitDifference(info = "Now, can be placed on solid blocks and always returns false if the placement fails", since= "1.4.0.0-PN")
+    @PowerNukkitDifference(info = "Now, can be placed on solid blocks and always returns false if the placement fails", since = "1.4.0.0-PN")
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (target.canBeReplaced()) {
             target = target.down();
             face = BlockFace.UP;
         }
-        
+
         if (!isSupportValid(target, face)) {
             return false;
         }

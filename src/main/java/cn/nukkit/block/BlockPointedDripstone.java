@@ -23,7 +23,8 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.potion.Effect;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import java.util.Random;
 
@@ -99,7 +100,7 @@ public class BlockPointedDripstone extends BlockFallableMeta {
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -190,7 +191,7 @@ public class BlockPointedDripstone extends BlockFallableMeta {
     }
 
     @Override
-    public boolean place(@Nullable Item item, @Nonnull Block block, @Nullable Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(@Nullable Item item, @NotNull Block block, @Nullable Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         int placeX = block.getFloorX();
         int placeY = block.getFloorY();
         int placeZ = block.getFloorZ();

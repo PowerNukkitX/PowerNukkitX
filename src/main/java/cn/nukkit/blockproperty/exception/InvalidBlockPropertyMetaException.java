@@ -4,7 +4,8 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperty;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @PowerNukkitOnly
@@ -12,11 +13,11 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 public class InvalidBlockPropertyMetaException extends InvalidBlockPropertyException {
     private static final long serialVersionUID = -8493494844859767053L;
-    
-    @Nonnull
+
+    @NotNull
     private final Number currentMeta;
-    
-    @Nonnull
+
+    @NotNull
     private final Number invalidMeta;
 
     @PowerNukkitOnly
@@ -57,14 +58,14 @@ public class InvalidBlockPropertyMetaException extends InvalidBlockPropertyExcep
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public Number getCurrentMeta() {
         return this.currentMeta;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public Number getInvalidMeta() {
         return this.invalidMeta;
     }

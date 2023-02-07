@@ -29,8 +29,8 @@ import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
@@ -79,7 +79,7 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -87,7 +87,7 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     @Override
     public String getBlockEntityType() {
         return BlockEntity.DISPENSER;
@@ -105,7 +105,7 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public Class<? extends BlockEntityEjectable> getBlockEntityClass() {
         return BlockEntityDispenser.class;
@@ -148,7 +148,7 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player) {
         if (player == null) {
             return false;
         }
@@ -165,7 +165,7 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
 
     @PowerNukkitDifference(info = "BlockData is implemented.", since = "1.4.0.0-PN")
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (player != null) {
             if (Math.abs(player.x - this.x) < 2 && Math.abs(player.z - this.z) < 2) {
                 double y = player.y + player.getEyeHeight();

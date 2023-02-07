@@ -6,8 +6,7 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityBlastFurnace;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 public class BlockBlastFurnaceBurning extends BlockFurnaceBurning {
@@ -33,7 +32,7 @@ public class BlockBlastFurnaceBurning extends BlockFurnaceBurning {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     @Override
     public String getBlockEntityType() {
         return BlockEntity.BLAST_FURNACE;
@@ -41,7 +40,7 @@ public class BlockBlastFurnaceBurning extends BlockFurnaceBurning {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public Class<? extends BlockEntityBlastFurnace> getBlockEntityClass() {
         return BlockEntityBlastFurnace.class;

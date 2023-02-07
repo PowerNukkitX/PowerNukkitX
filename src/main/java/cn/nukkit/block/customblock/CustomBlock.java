@@ -7,6 +7,7 @@ import cn.nukkit.block.BlockFallableMeta;
 import cn.nukkit.block.BlockMeta;
 import cn.nukkit.item.Item;
 import lombok.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
 
@@ -58,7 +59,7 @@ public interface CustomBlock {
      * <p>
      * {@code @Override} this method to set the namespace ID of the custom block
      */
-    @NonNull
+    @NotNull
     String getNamespaceId();
 
     /**

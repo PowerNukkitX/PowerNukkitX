@@ -4,7 +4,8 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.value.OxidizationLevel;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import java.util.Locale;
 
@@ -69,7 +70,7 @@ public class BlockStairsCopperCut extends BlockStairsCopperBase {
 
     @Since("FUTURE")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public OxidizationLevel getOxidizationLevel() {
         return OxidizationLevel.UNAFFECTED;

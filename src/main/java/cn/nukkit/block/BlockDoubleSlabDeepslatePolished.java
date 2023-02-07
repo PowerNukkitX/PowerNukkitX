@@ -5,8 +5,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @autor GoodLucky777
@@ -41,8 +40,8 @@ public class BlockDoubleSlabDeepslatePolished extends BlockDoubleSlabBase {
     public String getSlabName() {
         return "Double Polished Deepslate Slab";
     }
-    
-    @Nonnull
+
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return BlockSlab.SIMPLE_SLAB_PROPERTIES;

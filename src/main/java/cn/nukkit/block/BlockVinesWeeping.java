@@ -8,7 +8,7 @@ import cn.nukkit.blockproperty.exception.InvalidBlockPropertyMetaException;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Properties and behaviour definitions of the {@link BlockID#WEEPING_VINES} block.
@@ -52,7 +52,7 @@ public class BlockVinesWeeping extends BlockVinesNether {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -68,7 +68,7 @@ public class BlockVinesWeeping extends BlockVinesNether {
         return "Weeping Vines";
     }
 
-    @Nonnull
+    @NotNull
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     @Override

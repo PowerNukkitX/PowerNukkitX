@@ -5,7 +5,7 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import lombok.ToString;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Tee7even
@@ -65,7 +65,7 @@ public class SetTitlePacket extends DataPacket {
 
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
-    @Nonnull
+    @NotNull
     public TitleAction getTitleAction() {
         int currentType = this.type;
         if (currentType >= 0 && currentType < TITLE_ACTIONS.length) {
@@ -76,20 +76,20 @@ public class SetTitlePacket extends DataPacket {
 
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
-    public void setTitleAction(@Nonnull TitleAction type) {
+    public void setTitleAction(@NotNull TitleAction type) {
         this.type = type.ordinal();
     }
 
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
-    @Nonnull
+    @NotNull
     public String getText() {
         return text;
     }
 
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
-    public void setText(@Nonnull String text) {
+    public void setText(@NotNull String text) {
         this.text = text;
     }
 

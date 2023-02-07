@@ -30,7 +30,8 @@ import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Faceable;
 import lombok.extern.log4j.Log4j2;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 
 import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
@@ -70,7 +71,7 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable, Blo
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public Class<? extends BlockEntitySign> getBlockEntityClass() {
         return BlockEntitySign.class;
@@ -78,7 +79,7 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable, Blo
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     @Override
     public String getBlockEntityType() {
         return BlockEntity.SIGN;
@@ -86,7 +87,7 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable, Blo
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -141,7 +142,7 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable, Blo
     }
 
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (face == BlockFace.DOWN) {
             return false;
         }

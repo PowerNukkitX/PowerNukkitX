@@ -21,7 +21,7 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author joserobjr
@@ -89,66 +89,66 @@ public class NPCDialoguePacket extends DataPacket {
 
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
-    @Nonnull
+    @NotNull
     public NPCDialogAction getAction() {
         return action;
     }
 
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
-    public void setAction(@Nonnull NPCDialogAction action) {
+    public void setAction(@NotNull NPCDialogAction action) {
         this.action = action;
     }
 
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
-    @Nonnull
+    @NotNull
     public String getDialogue() {
         return dialogue;
     }
 
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
-    public void setDialogue(@Nonnull String dialogue) {
+    public void setDialogue(@NotNull String dialogue) {
         this.dialogue = dialogue;
     }
 
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
-    @Nonnull
+    @NotNull
     public String getSceneName() {
         return sceneName;
     }
 
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
-    public void setSceneName(@Nonnull String sceneName) {
+    public void setSceneName(@NotNull String sceneName) {
         this.sceneName = sceneName;
     }
 
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
-    @Nonnull
+    @NotNull
     public String getNpcName() {
         return npcName;
     }
 
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
-    public void setNpcName(@Nonnull String npcName) {
+    public void setNpcName(@NotNull String npcName) {
         this.npcName = npcName;
     }
 
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
-    @Nonnull
+    @NotNull
     public String getActionJson() {
         return actionJson;
     }
 
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
-    public void setActionJson(@Nonnull String actionJson) {
+    public void setActionJson(@NotNull String actionJson) {
         this.actionJson = actionJson;
     }
 

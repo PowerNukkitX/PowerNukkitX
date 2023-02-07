@@ -12,7 +12,8 @@ import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.particle.ScrapeParticle;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -25,7 +26,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public interface Oxidizable {
     @PowerNukkitOnly
     @Since("FUTURE")
-    @Nonnull
+    @NotNull
     Location getLocation();
 
     @PowerNukkitOnly
@@ -100,7 +101,7 @@ public interface Oxidizable {
 
     @PowerNukkitOnly
     @Since("FUTURE")
-    default boolean onActivate(@Nonnull Item item, @Nullable Player player) {
+    default boolean onActivate(@NotNull Item item, @Nullable Player player) {
         if (!item.isAxe()) {
             return false;
         }
@@ -125,14 +126,14 @@ public interface Oxidizable {
 
     @PowerNukkitOnly
     @Since("FUTURE")
-    @Nonnull
+    @NotNull
     OxidizationLevel getOxidizationLevel();
 
     @PowerNukkitOnly
     @Since("FUTURE")
-    boolean setOxidizationLevel(@Nonnull OxidizationLevel oxidizationLevel);
+    boolean setOxidizationLevel(@NotNull OxidizationLevel oxidizationLevel);
 
     @PowerNukkitOnly
     @Since("FUTURE")
-    BlockState getStateWithOxidizationLevel(@Nonnull OxidizationLevel oxidizationLevel);
+    BlockState getStateWithOxidizationLevel(@NotNull OxidizationLevel oxidizationLevel);
 }

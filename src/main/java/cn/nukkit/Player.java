@@ -107,7 +107,8 @@ import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.powernukkit.version.Version;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -6812,7 +6813,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      */
     @Since("1.4.0.0-PN")
     @Nullable
-    public EntityItem dropAndGetItem(@Nonnull Item item) {
+    public EntityItem dropAndGetItem(@NotNull Item item) {
         if (!this.spawned || !this.isAlive()) {
             return null;
         }

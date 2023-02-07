@@ -18,7 +18,8 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.RedstoneComponent;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
@@ -56,7 +57,7 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -64,7 +65,7 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Removed unneeded replaceable check")
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (!canBePlacedOn(block.down())) {
             return false;
         }

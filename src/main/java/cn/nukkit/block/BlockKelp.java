@@ -14,7 +14,8 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.concurrent.ThreadLocalRandom;
 
 @PowerNukkitOnly
@@ -46,7 +47,7 @@ public class BlockKelp extends BlockFlowable {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -68,9 +69,9 @@ public class BlockKelp extends BlockFlowable {
     public void setAge(int age) {
         setIntValue(KELP_AGE, age);
     }
-    
+
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         Block down = down();
         Block layer1Block = block.getLevelBlockAtLayer(1);
         if ((down.getId() == BLOCK_KELP || down.isSolid()) && down.getId() != MAGMA && down.getId() != ICE && down.getId() != SOUL_SAND &&
@@ -155,9 +156,9 @@ public class BlockKelp extends BlockFlowable {
         this.getLevel().setBlock(this, get(AIR), true, true);
         return true;
     }
-    
+
     @Override
-    public boolean onActivate(@Nonnull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player) {
         //Bone meal
         if (item.isFertilizer()) {
             int x = (int) this.x;
@@ -167,7 +168,7 @@ public class BlockKelp extends BlockFlowable {
                 int blockIdAbove = blockStateAbove.getBlockId();
                 if (blockIdAbove != BLOCK_KELP) {
                     if (blockIdAbove == FLOWING_WATER || blockIdAbove == STILL_WATER) {
-                        if (((BlockWater)blockStateAbove.getBlock()).isSourceOrFlowingDown()) {
+                        if (((BlockWater) blockStateAbove.getBlock()).isSourceOrFlowingDown()) {
                             BlockKelp highestKelp = (BlockKelp) getLevel().getBlock(x, y - 1, z);
                             if (highestKelp.grow()) {
                                 this.level.addParticle(new BoneMealParticle(this));

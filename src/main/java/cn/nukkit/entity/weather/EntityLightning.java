@@ -20,7 +20,8 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
@@ -43,7 +44,7 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
         super(chunk, nbt);
     }
 
-    private static boolean isVulnerableOxidizable(@Nonnull Block block) {
+    private static boolean isVulnerableOxidizable(@NotNull Block block) {
         return block instanceof Oxidizable && (!(block instanceof Waxable) || !((Waxable) block).isWaxed());
     }
 

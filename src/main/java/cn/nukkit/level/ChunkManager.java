@@ -7,7 +7,7 @@ import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.math.ChunkVector2;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -93,7 +93,7 @@ public interface ChunkManager {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    default BaseFullChunk getChunk(@Nonnull ChunkVector2 pos) {
+    default BaseFullChunk getChunk(@NotNull ChunkVector2 pos) {
         return getChunk(pos.getX(), pos.getZ());
     }
 

@@ -7,7 +7,7 @@ import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.value.MonsterEggStoneType;
 import cn.nukkit.item.Item;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public class BlockMonsterEgg extends BlockSolidMeta {
     @PowerNukkitOnly
@@ -50,7 +50,7 @@ public class BlockMonsterEgg extends BlockSolidMeta {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -58,14 +58,14 @@ public class BlockMonsterEgg extends BlockSolidMeta {
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
-    @Nonnull
+    @NotNull
     public MonsterEggStoneType getMonsterEggStoneType() {
         return getPropertyValue(MONSTER_EGG_STONE_TYPE);
     }
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
-    public void setMonsterEggStoneType(@Nonnull MonsterEggStoneType value) {
+    public void setMonsterEggStoneType(@NotNull MonsterEggStoneType value) {
         setPropertyValue(MONSTER_EGG_STONE_TYPE, value);
     }
 

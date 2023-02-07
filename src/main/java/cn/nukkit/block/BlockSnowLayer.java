@@ -23,7 +23,8 @@ import cn.nukkit.network.protocol.UpdateBlockPacket;
 import cn.nukkit.utils.BlockColor;
 import com.google.common.base.Preconditions;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Optional;
@@ -62,7 +63,7 @@ public class BlockSnowLayer extends BlockFallableMeta {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -142,16 +143,16 @@ public class BlockSnowLayer extends BlockFallableMeta {
 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Will increase the layers and behave as expected in vanilla and will cover grass blocks")
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         Optional<BlockSnowLayer> increment = Stream.of(target, block)
                 .filter(b -> b.getId() == SNOW_LAYER).map(BlockSnowLayer.class::cast)
                 .filter(b -> b.getSnowHeight() < SNOW_HEIGHT.getMaxValue())
                 .findFirst();
-        
+
         if (increment.isPresent()) {
             BlockSnowLayer other = increment.get();
             if (Arrays.stream(level.getCollidingEntities(new SimpleAxisAlignedBB(
-                    other.x, other.y, other.z, 
+                    other.x, other.y, other.z,
                     other.x + 1, other.y + 1, other.z + 1
                     ))).anyMatch(e-> e instanceof EntityLiving)) {
                 return false;

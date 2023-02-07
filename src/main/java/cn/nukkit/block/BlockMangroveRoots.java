@@ -9,7 +9,7 @@ import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 //todo 2022/06/09 实现未完成的功能
 @PowerNukkitXOnly
@@ -19,7 +19,7 @@ public class BlockMangroveRoots extends BlockTransparentMeta{
         super(0);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return CommonBlockProperties.EMPTY_PROPERTIES;
@@ -62,7 +62,7 @@ public class BlockMangroveRoots extends BlockTransparentMeta{
     }
 
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         return true;
     }
 }

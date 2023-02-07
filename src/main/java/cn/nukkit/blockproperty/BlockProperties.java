@@ -12,7 +12,8 @@ import cn.nukkit.utils.functional.TriFunction;
 import com.google.common.base.Preconditions;
 import lombok.Value;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.Serializable;
@@ -76,14 +77,14 @@ public final class BlockProperties {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public BlockProperties getItemBlockProperties() {
         return itemBlockProperties;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public MutableBlockState createMutableState(int blockId) {
         if (bitSize == 0) {
             return new ZeroMutableBlockState(blockId, this);
@@ -119,7 +120,7 @@ public final class BlockProperties {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     @SuppressWarnings("java:S1452")
     public BlockProperty<?> getBlockProperty(String propertyName) {
         return requireRegisteredProperty(propertyName).property;
@@ -130,7 +131,7 @@ public final class BlockProperties {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public <T extends BlockProperty<?>> T getBlockProperty(String propertyName, Class<T> tClass) {
         return tClass.cast(requireRegisteredProperty(propertyName).property);
     }
@@ -146,14 +147,14 @@ public final class BlockProperties {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public Set<String> getNames() {
         return byName.keySet();
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public Collection<RegisteredBlockProperty> getAllProperties() {
         return byName.values();
     }
@@ -163,7 +164,7 @@ public final class BlockProperties {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public RegisteredBlockProperty requireRegisteredProperty(String propertyName) {
         RegisteredBlockProperty registry = byName.get(propertyName);
         if (registry == null) {
@@ -363,7 +364,7 @@ public final class BlockProperties {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @SuppressWarnings("unchecked")
-    @Nonnull
+    @NotNull
     public BigInteger setValue(BigInteger currentMeta, String propertyName, @Nullable Serializable value) {
         RegisteredBlockProperty registry = requireRegisteredProperty(propertyName);
         @SuppressWarnings({"rawtypes", "java:S3740"})
@@ -377,7 +378,7 @@ public final class BlockProperties {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public Serializable getValue(int currentMeta, String propertyName) {
         RegisteredBlockProperty registry = requireRegisteredProperty(propertyName);
         return registry.property.getValue(currentMeta, registry.offset);
@@ -389,7 +390,7 @@ public final class BlockProperties {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public Serializable getValue(long currentMeta, String propertyName) {
         RegisteredBlockProperty registry = requireRegisteredProperty(propertyName);
         return registry.property.getValue(currentMeta, registry.offset);
@@ -401,7 +402,7 @@ public final class BlockProperties {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public Serializable getValue(BigInteger currentMeta, String propertyName) {
         RegisteredBlockProperty registry = requireRegisteredProperty(propertyName);
         return registry.property.getValue(currentMeta, registry.offset);
@@ -414,7 +415,7 @@ public final class BlockProperties {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public <T> T getCheckedValue(int currentMeta, String propertyName, Class<T> tClass) {
         RegisteredBlockProperty registry = requireRegisteredProperty(propertyName);
         return tClass.cast(registry.property.getValue(currentMeta, registry.offset));
@@ -427,7 +428,7 @@ public final class BlockProperties {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public <T> T getCheckedValue(long currentMeta, String propertyName, Class<T> tClass) {
         RegisteredBlockProperty registry = requireRegisteredProperty(propertyName);
         return tClass.cast(registry.property.getValue(currentMeta, registry.offset));
@@ -440,7 +441,7 @@ public final class BlockProperties {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public <T> T getCheckedValue(BigInteger currentMeta, String propertyName, Class<T> tClass) {
         RegisteredBlockProperty registry = requireRegisteredProperty(propertyName);
         return tClass.cast(registry.property.getValue(currentMeta, registry.offset));
@@ -452,7 +453,7 @@ public final class BlockProperties {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     @SuppressWarnings("unchecked")
     public <T> T getUncheckedValue(int currentMeta, String propertyName) {
         RegisteredBlockProperty registry = requireRegisteredProperty(propertyName);
@@ -465,7 +466,7 @@ public final class BlockProperties {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     @SuppressWarnings("unchecked")
     public <T> T getUncheckedValue(long currentMeta, String propertyName) {
         RegisteredBlockProperty registry = requireRegisteredProperty(propertyName);
@@ -478,7 +479,7 @@ public final class BlockProperties {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     @SuppressWarnings("unchecked")
     public <T> T getUncheckedValue(BigInteger currentMeta, String propertyName) {
         RegisteredBlockProperty registry = requireRegisteredProperty(propertyName);
@@ -651,7 +652,7 @@ public final class BlockProperties {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public List<String> getItemPropertyNames() {
         List<String> itemProperties = new ArrayList<>(byName.size());
         for (RegisteredBlockProperty registry : byName.values()) {
@@ -720,7 +721,7 @@ public final class BlockProperties {
     public static class RegisteredBlockProperty {
         @PowerNukkitOnly
         @Since("1.4.0.0-PN")
-        @Nonnull
+        @NotNull
         BlockProperty<?> property;
 
         @PowerNukkitOnly

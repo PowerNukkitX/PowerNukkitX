@@ -9,7 +9,8 @@ import cn.nukkit.utils.BlockColor;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -54,13 +55,13 @@ public class BlockNetherrack extends BlockSolid {
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item, @Nullable Player player) {
+    public boolean onActivate(@NotNull Item item, @Nullable Player player) {
         if (item.isNull() || !item.isFertilizer() || up().getId() != AIR) {
             return false;
         }
 
         IntList options = new IntArrayList(2);
-        for(BlockFace face: BlockFace.Plane.HORIZONTAL) {
+        for (BlockFace face : BlockFace.Plane.HORIZONTAL) {
             int id = getSide(face).getId();
             if ((id == CRIMSON_NYLIUM || id == WARPED_NYLIUM) && !options.contains(id)) {
                 options.add(id);

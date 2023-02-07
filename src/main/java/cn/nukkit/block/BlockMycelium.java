@@ -12,7 +12,7 @@ import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.BlockColor;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Pub4Game
@@ -93,13 +93,13 @@ public class BlockMycelium extends BlockSolid {
     public boolean canBeActivated() {
         return true;
     }
-    
+
     @Override
-    public boolean onActivate(@Nonnull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player) {
         if (!this.up().canBeReplaced()) {
             return false;
         }
-        
+
         if (item.isShovel()) {
             item.useOn(this);
             this.getLevel().setBlock(this, Block.get(BlockID.GRASS_PATH));

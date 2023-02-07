@@ -24,7 +24,8 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.Utils;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -238,7 +239,7 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
     }
 
     @Override
-    protected boolean applyNameTag(@Nonnull Player player, @Nonnull Item item) {
+    protected boolean applyNameTag(@NotNull Player player, @NotNull Item item) {
         return false;
     }
 

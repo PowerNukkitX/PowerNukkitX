@@ -6,7 +6,8 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
@@ -41,7 +42,7 @@ public interface RedstoneComponent {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    default void updateAroundRedstone(@Nonnull List<BlockFace> ignoredFaces) {
+    default void updateAroundRedstone(@NotNull List<BlockFace> ignoredFaces) {
         if (this instanceof Position) updateAroundRedstone((Position) this, ignoredFaces);
     }
 
@@ -64,7 +65,7 @@ public interface RedstoneComponent {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    default void updateAllAroundRedstone(@Nonnull List<BlockFace> ignoredFaces) {
+    default void updateAllAroundRedstone(@NotNull List<BlockFace> ignoredFaces) {
         if (this instanceof Position) updateAllAroundRedstone((Position) this, ignoredFaces);
     }
 
@@ -80,7 +81,7 @@ public interface RedstoneComponent {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    static void updateAroundRedstone(@Nonnull Position pos, @Nullable BlockFace... ignoredFaces) {
+    static void updateAroundRedstone(@NotNull Position pos, @Nullable BlockFace... ignoredFaces) {
         if (ignoredFaces == null) ignoredFaces = new BlockFace[0];
         updateAroundRedstone(pos, Arrays.asList(ignoredFaces));
     }
@@ -93,7 +94,7 @@ public interface RedstoneComponent {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    static void updateAroundRedstone(@Nonnull Position pos, @Nonnull List<BlockFace> ignoredFaces) {
+    static void updateAroundRedstone(@NotNull Position pos, @NotNull List<BlockFace> ignoredFaces) {
         for (BlockFace face : BlockFace.values()) {
             if (ignoredFaces.contains(face)) continue;
 
@@ -109,7 +110,7 @@ public interface RedstoneComponent {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    static void updateAllAroundRedstone(@Nonnull Position pos, @Nullable BlockFace... ignoredFaces) {
+    static void updateAllAroundRedstone(@NotNull Position pos, @Nullable BlockFace... ignoredFaces) {
         if (ignoredFaces == null) ignoredFaces = new BlockFace[0];
         updateAllAroundRedstone(pos, Arrays.asList(ignoredFaces));
     }
@@ -122,7 +123,7 @@ public interface RedstoneComponent {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    static void updateAllAroundRedstone(@Nonnull Position pos, @Nonnull List<BlockFace> ignoredFaces) {
+    static void updateAllAroundRedstone(@NotNull Position pos, @NotNull List<BlockFace> ignoredFaces) {
         updateAroundRedstone(pos, ignoredFaces);
 
         for (BlockFace face : BlockFace.values()) {

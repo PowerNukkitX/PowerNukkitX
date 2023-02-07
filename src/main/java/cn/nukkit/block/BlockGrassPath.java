@@ -11,7 +11,7 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author xtypr
@@ -75,11 +75,11 @@ public class BlockGrassPath extends BlockGrass {
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player) {
         if (item.isHoe()) {
             item.useOn(this);
             this.getLevel().setBlock(this, get(FARMLAND), true);
-            if(player != null){
+            if (player != null) {
                 player.getLevel().addSound(player, Sound.USE_GRASS);
             }
             return true;

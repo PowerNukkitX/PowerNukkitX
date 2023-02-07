@@ -6,7 +6,8 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import lombok.SneakyThrows;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 
 /**
@@ -360,7 +361,7 @@ public class Vector3 implements Cloneable {
      * @return intermediate vector
      */
     @Nullable
-    public Vector3 getIntermediateWithXValue(@Nonnull Vector3 v, double x) {
+    public Vector3 getIntermediateWithXValue(@NotNull Vector3 v, double x) {
         double xDiff = v.x - this.x;
         double yDiff = v.y - this.y;
         double zDiff = v.z - this.z;
@@ -384,7 +385,7 @@ public class Vector3 implements Cloneable {
      * @return intermediate vector
      */
     @Nullable
-    public Vector3 getIntermediateWithYValue(@Nonnull Vector3 v, double y) {
+    public Vector3 getIntermediateWithYValue(@NotNull Vector3 v, double y) {
         double xDiff = v.x - this.x;
         double yDiff = v.y - this.y;
         double zDiff = v.z - this.z;
@@ -408,7 +409,7 @@ public class Vector3 implements Cloneable {
      * @return intermediate vector
      */
     @Nullable
-    public Vector3 getIntermediateWithZValue(@Nonnull Vector3 v, double z) {
+    public Vector3 getIntermediateWithZValue(@NotNull Vector3 v, double z) {
         double xDiff = v.x - this.x;
         double yDiff = v.y - this.y;
         double zDiff = v.z - this.z;
@@ -432,7 +433,7 @@ public class Vector3 implements Cloneable {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public Vector3 setComponentsAdding(double x, double y, double z, double ax, double ay, double az) {
         this.x = x + ax;
         this.y = y + ay;
@@ -442,15 +443,15 @@ public class Vector3 implements Cloneable {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
-    public Vector3 setComponentsAdding(@Nonnull Vector3 pos, @Nonnull BlockFace face) {
+    @NotNull
+    public Vector3 setComponentsAdding(@NotNull Vector3 pos, @NotNull BlockFace face) {
         return setComponentsAdding(pos.x, pos.y, pos.z, face.getXOffset(), face.getYOffset(), face.getZOffset());
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
-    public Vector3 setComponents(@Nonnull Vector3 pos) {
+    @NotNull
+    public Vector3 setComponents(@NotNull Vector3 pos) {
         this.x = pos.x;
         this.y = pos.y;
         this.z = pos.z;

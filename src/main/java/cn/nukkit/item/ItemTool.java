@@ -9,7 +9,8 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.nbt.tag.ByteTag;
 import cn.nukkit.nbt.tag.Tag;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Random;
 
 import static cn.nukkit.utils.Utils.dynamic;
@@ -57,7 +58,7 @@ public abstract class ItemTool extends Item implements ItemDurable {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public static Item getBestTool(int toolType) {
         switch (toolType) {
             case TYPE_NONE:

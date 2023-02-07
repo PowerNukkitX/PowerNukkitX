@@ -16,7 +16,8 @@ import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 import lombok.RequiredArgsConstructor;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 
 /**
@@ -52,7 +53,7 @@ public class BlockTorch extends BlockFlowable implements Faceable {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -95,12 +96,12 @@ public class BlockTorch extends BlockFlowable implements Faceable {
 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed the logic to follow the same behaviour has vanilla")
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (target.canBeReplaced()) {
             target = target.down();
             face = BlockFace.UP;
         }
-        
+
         if (face == BlockFace.DOWN || !BlockLever.isSupportValid(target, face)) {
             BlockFace valid = findValidSupport();
             if (valid == null) {
@@ -181,7 +182,7 @@ public class BlockTorch extends BlockFlowable implements Faceable {
         @PowerNukkitOnly
         @Since("1.4.0.0-PN")
         @Nullable
-        public static TorchAttachment getByTorchDirection(@Nonnull BlockFace face) {
+        public static TorchAttachment getByTorchDirection(@NotNull BlockFace face) {
             switch (face) {
                 default:
                 case DOWN:
@@ -204,7 +205,7 @@ public class BlockTorch extends BlockFlowable implements Faceable {
          */
         @PowerNukkitOnly
         @Since("1.4.0.0-PN")
-        @Nonnull
+        @NotNull
         public BlockFace getAttachedFace() {
             switch (this) {
                 default:
@@ -225,7 +226,7 @@ public class BlockTorch extends BlockFlowable implements Faceable {
         @PowerNukkitOnly
         @Since("1.4.0.0-PN")
         @Nullable
-        public static TorchAttachment getByAttachedFace(@Nonnull BlockFace face) {
+        public static TorchAttachment getByAttachedFace(@NotNull BlockFace face) {
             switch (face) {
                 default:
                 case UP:

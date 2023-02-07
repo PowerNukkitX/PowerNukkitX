@@ -17,7 +17,8 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.RedstoneComponent;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 
 import static cn.nukkit.block.BlockTripWire.ATTACHED;
@@ -54,7 +55,7 @@ public class BlockTripWireHook extends BlockTransparentMeta implements RedstoneC
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -82,7 +83,7 @@ public class BlockTripWireHook extends BlockTransparentMeta implements RedstoneC
     }
 
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         var supportBlock = this.getSide(face.getOpposite());
         if (face == BlockFace.DOWN || face == BlockFace.UP || (!supportBlock.isNormalBlock() && !(supportBlock instanceof BlockGlass))) {
             return false;

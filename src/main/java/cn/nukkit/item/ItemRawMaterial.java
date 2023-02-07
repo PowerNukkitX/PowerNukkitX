@@ -3,7 +3,8 @@ package cn.nukkit.item;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 
 /**
@@ -15,7 +16,7 @@ import javax.annotation.Nullable;
 public abstract class ItemRawMaterial extends StringItemBase {
     @PowerNukkitOnly
     @Since("FUTURE")
-    public ItemRawMaterial(@Nonnull String id, @Nullable String name) {
+    public ItemRawMaterial(@NotNull String id, @Nullable String name) {
         super(id, name);
     }
 }

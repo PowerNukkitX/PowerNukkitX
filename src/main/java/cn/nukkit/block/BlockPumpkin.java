@@ -12,7 +12,7 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
 
@@ -46,7 +46,7 @@ public class BlockPumpkin extends BlockSolidMeta implements Faceable {
     }
 
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -76,9 +76,9 @@ public class BlockPumpkin extends BlockSolidMeta implements Faceable {
     public boolean canBeActivated() {
         return true;
     }
-    
+
     @Override
-    public boolean onActivate(@Nonnull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player) {
         if (item.isShears()) {
             BlockCarvedPumpkin carvedPumpkin = new BlockCarvedPumpkin();
             // TODO: Use the activated block face not the player direction
@@ -94,9 +94,9 @@ public class BlockPumpkin extends BlockSolidMeta implements Faceable {
         }
         return false;
     }
-    
+
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (player == null) {
             setBlockFace(BlockFace.SOUTH);
         } else {

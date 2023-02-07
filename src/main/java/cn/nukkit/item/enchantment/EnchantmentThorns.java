@@ -9,7 +9,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemArmor;
 import cn.nukkit.item.ItemElytra;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -60,7 +61,7 @@ public class EnchantmentThorns extends Enchantment {
     }
 
     @Override
-    public boolean canEnchant(@Nonnull Item item) {
+    public boolean canEnchant(@NotNull Item item) {
         return !(item instanceof ItemElytra) && super.canEnchant(item);
     }
 

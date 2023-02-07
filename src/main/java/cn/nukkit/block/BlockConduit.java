@@ -10,8 +10,8 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BlockColor;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 @PowerNukkitOnly
@@ -33,7 +33,7 @@ public class BlockConduit extends BlockTransparent implements BlockEntityHolder<
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public Class<? extends BlockEntityConduit> getBlockEntityClass() {
         return BlockEntityConduit.class;
@@ -41,7 +41,7 @@ public class BlockConduit extends BlockTransparent implements BlockEntityHolder<
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     @Override
     public String getBlockEntityType() {
         return BlockEntity.CONDUIT;
@@ -64,7 +64,7 @@ public class BlockConduit extends BlockTransparent implements BlockEntityHolder<
     }
 
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (item.getBlock() != null && item.getBlockId() == CONDUIT && target.getId() == CONDUIT) {
             return false;
         }

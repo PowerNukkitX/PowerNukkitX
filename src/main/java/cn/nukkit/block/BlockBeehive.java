@@ -18,8 +18,8 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 
 import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
@@ -46,7 +46,7 @@ public class BlockBeehive extends BlockSolidMeta implements Faceable, BlockEntit
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -59,7 +59,7 @@ public class BlockBeehive extends BlockSolidMeta implements Faceable, BlockEntit
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     @Override
     public String getBlockEntityType() {
         return BlockEntity.BEEHIVE;
@@ -67,7 +67,7 @@ public class BlockBeehive extends BlockSolidMeta implements Faceable, BlockEntit
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public Class<? extends BlockEntityBeehive> getBlockEntityClass() {
         return BlockEntityBeehive.class;
@@ -102,19 +102,19 @@ public class BlockBeehive extends BlockSolidMeta implements Faceable, BlockEntit
     public BlockColor getColor() {
         return BlockColor.WOOD_BLOCK_COLOR;
     }
-    
+
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (player == null) {
             setBlockFace(BlockFace.SOUTH);
         } else {
             setBlockFace(player.getDirection().getOpposite());
         }
-    
+
         int honeyLevel = item.hasCustomBlockData() ? item.getCustomBlockData().getByte("HoneyLevel") : 0;
         setHoneyLevel(honeyLevel);
         BlockEntityBeehive beehive = BlockEntityHolder.setBlockAndCreateEntity(this, true, true, item.getCustomBlockData());
-        if(beehive == null) {
+        if (beehive == null) {
             return false;
         }
         
@@ -128,14 +128,14 @@ public class BlockBeehive extends BlockSolidMeta implements Faceable, BlockEntit
         }
         return true;
     }
-    
+
     @Override
-    public boolean onActivate(@Nonnull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player) {
         if (item.getId() == ItemID.SHEARS && isFull()) {
             honeyCollected(player);
             level.addSound(add(0.5, 0.5, 0.5), Sound.BLOCK_BEEHIVE_SHEAR);
             item.useOn(this);
-            for(int i = 0; i < 3; ++i) {
+            for (int i = 0; i < 3; ++i) {
                 level.dropItem(this, Item.get(ItemID.HONEYCOMB));
             }
             level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.add(0.5, 0.5, 0.5), VibrationType.SHEAR));

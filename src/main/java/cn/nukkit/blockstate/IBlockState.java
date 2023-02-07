@@ -23,7 +23,9 @@ import cn.nukkit.plugin.PluginManager;
 import cn.nukkit.utils.HumanStringComparator;
 
 import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
+
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.Serializable;
@@ -45,7 +47,7 @@ public interface IBlockState {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     @Nonnegative
     Number getDataStorage();
 
@@ -55,7 +57,7 @@ public interface IBlockState {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     BlockProperties getProperties();
 
     @PowerNukkitOnly
@@ -83,7 +85,7 @@ public interface IBlockState {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     @Nonnegative
     BigInteger getHugeDamage();
 
@@ -93,7 +95,7 @@ public interface IBlockState {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     Serializable getPropertyValue(String propertyName);
 
     /**
@@ -103,7 +105,7 @@ public interface IBlockState {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     default <V extends Serializable> V getPropertyValue(BlockProperty<V> property) {
         return getCheckedPropertyValue(property.getName(), property.getValueClass());
     }
@@ -114,7 +116,7 @@ public interface IBlockState {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     default <V extends Serializable> V getUncheckedPropertyValue(BlockProperty<V> property) {
         return getUncheckedPropertyValue(property.getName());
     }
@@ -163,7 +165,7 @@ public interface IBlockState {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     String getPersistenceValue(String propertyName);
 
     /**
@@ -172,14 +174,14 @@ public interface IBlockState {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     default String getPersistenceValue(BlockProperty<?> property) {
         return getPersistenceValue(property.getName());
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     default String getPersistenceName() {
         return BlockStateRegistry.getPersistenceName(getBlockId());
     }
@@ -190,7 +192,7 @@ public interface IBlockState {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     default String getStateId() {
         BlockProperties properties = getProperties();
         Map<String, String> propertyMap = new TreeMap<>(HumanStringComparator.getInstance());
@@ -231,14 +233,14 @@ public interface IBlockState {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     default String getLegacyStateId() {
         return getPersistenceName()+";nukkit-unknown="+getDataStorage();
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     BlockState getCurrentState();
 
     /**
@@ -246,7 +248,7 @@ public interface IBlockState {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     default Block getBlock() {
         Block block = Block.get(getBlockId());
         return block.forState(this);
@@ -257,7 +259,7 @@ public interface IBlockState {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     default Block getBlock(@Nullable Level level, int x, int y, int z) {
         return getBlock(level, x, y, z, 0, false, null);
     }
@@ -267,7 +269,7 @@ public interface IBlockState {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     default Block getBlock(@Nullable Level level, int x, int y, int z, int layer) {
         return getBlock(level, x, y, z, layer, false, null);
     }
@@ -277,7 +279,7 @@ public interface IBlockState {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     default Block getBlock(@Nullable Level level, int x, int y, int z, int layer, boolean repair) {
         return getBlock(level, x, y, z, layer, repair, null);
     }
@@ -287,7 +289,7 @@ public interface IBlockState {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     default Block getBlock(@Nullable Level level, int x, int y, int z, int layer, boolean repair, @Nullable Consumer<BlockStateRepair> callback) {
         Block block = Block.get(getBlockId());
         block.level = level;
@@ -317,7 +319,7 @@ public interface IBlockState {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     default Block getBlock(Position position) {
         return getBlock(position, 0);
     }
@@ -327,7 +329,7 @@ public interface IBlockState {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     default Block getBlock(Block position) {
         return getBlock(position, position.layer);
     }
@@ -337,7 +339,7 @@ public interface IBlockState {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     default Block getBlock(Position position, int layer) {
         return getBlock(position.getLevel(), position.getFloorX(), position.getFloorY(), position.getFloorZ(), layer);
     }
@@ -345,49 +347,49 @@ public interface IBlockState {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     default Block getBlockRepairing(Block pos) {
         return getBlockRepairing(pos, pos.layer);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     default Block getBlockRepairing(Position position, int layer) {
         return getBlockRepairing(position.level, position, layer);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     default Block getBlockRepairing(@Nullable Level level, BlockVector3 pos, int layer) {
         return getBlockRepairing(level, pos.x, pos.y, pos.z, layer);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     default Block getBlockRepairing(@Nullable Level level, Vector3 pos) {
         return getBlockRepairing(level, pos, 0);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     default Block getBlockRepairing(@Nullable Level level, Vector3 pos, int layer) {
         return getBlockRepairing(level, pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     default Block getBlockRepairing(@Nullable Level level, int x, int y, int z) {
         return getBlockRepairing(level, x, y, z, 0);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     default Block getBlockRepairing(@Nullable Level level, int x, int y, int z, int layer) {
         return getBlockRepairing(level, x, y, z, layer, null);
     }
@@ -395,7 +397,7 @@ public interface IBlockState {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     default Block getBlockRepairing(@Nullable Level level, int x, int y, int z, int layer, @Nullable Consumer<BlockStateRepair> callback) {
         List<BlockStateRepair> repairs = new ArrayList<>(0);
         
@@ -452,35 +454,35 @@ public interface IBlockState {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @SuppressWarnings("rawtypes")
-    @Nonnull
+    @NotNull
     default BlockProperty getProperty(String propertyName) {
         return getProperties().getBlockProperty(propertyName);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     default <T extends BlockProperty<?>> T getCheckedProperty(String propertyName, Class<T> tClass) {
         return getProperties().getBlockProperty(propertyName, tClass);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     default Set<String> getPropertyNames() {
         return getProperties().getNames();
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     default <T> T getCheckedPropertyValue(String propertyName, Class<T> tClass) {
         return tClass.cast(getPropertyValue(propertyName));
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     @SuppressWarnings("unchecked")
     default <T> T getUncheckedPropertyValue(String propertyName) {
         return (T) getPropertyValue(propertyName);
@@ -499,14 +501,14 @@ public interface IBlockState {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     default ItemBlock asItemBlock() {
         return asItemBlock(1);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     default ItemBlock asItemBlock(int count) {
         return getCurrentState().asItemBlock(count);
     }

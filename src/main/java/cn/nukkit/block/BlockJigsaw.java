@@ -9,7 +9,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Faceable;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
 
@@ -43,7 +43,7 @@ public class BlockJigsaw extends BlockSolidMeta implements Faceable {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -78,12 +78,12 @@ public class BlockJigsaw extends BlockSolidMeta implements Faceable {
     public BlockFace getBlockFace() {
         return BlockFace.fromIndex(getDamage());
     }
-    
+
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (Math.abs(player.x - this.x) < 2 && Math.abs(player.z - this.z) < 2) {
             double y = player.y + player.getEyeHeight();
-        
+
             if (y - this.y > 2) {
                 this.setDamage(BlockFace.UP.getIndex());
             } else if (this.y - y > 0) {

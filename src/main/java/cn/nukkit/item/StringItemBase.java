@@ -5,7 +5,8 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import com.google.common.base.Preconditions;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 
 @PowerNukkitXOnly
@@ -13,7 +14,7 @@ import javax.annotation.Nullable;
 public abstract class StringItemBase extends Item implements StringItem {
     private final String id;
 
-    public StringItemBase(@Nonnull String id, @Nullable String name) {
+    public StringItemBase(@NotNull String id, @Nullable String name) {
         super(STRING_IDENTIFIED_ITEM, 0, 1, StringItem.notEmpty(name));
         Preconditions.checkNotNull(id, "id can't be null");
         Preconditions.checkArgument(id.contains(":"), "The ID must be a namespaced ID, like minecraft:stone");

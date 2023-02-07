@@ -7,7 +7,8 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.component.AbstractEntityComponent;
 import cn.nukkit.entity.data.LongEntityData;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 
 @PowerNukkitXOnly
@@ -61,7 +62,7 @@ public class EntityTameComponent extends AbstractEntityComponent {
     /**
      * 设置这个实体主人的名字,相当于设置这个实体的主人<br>The name of the owner of this entity,Equivalent to set the owner of this entity.
      */
-    public void setOwnerName(@Nonnull String playerName) {
+    public void setOwnerName(@NotNull String playerName) {
         if (playerName.isEmpty()) throw new IllegalArgumentException("Owner's name cannot be empty!");
         this.ownerName = playerName;
         var player = entity.getServer().getPlayerExact(playerName);

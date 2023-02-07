@@ -10,7 +10,8 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -25,14 +26,14 @@ public abstract class BlockFungus extends BlockFlowable implements BlockFlowerPo
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return CommonBlockProperties.EMPTY_PROPERTIES;
     }
 
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (!isValidSupport(down())) {
             return false;
         }
@@ -50,13 +51,13 @@ public abstract class BlockFungus extends BlockFlowable implements BlockFlowerPo
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player) {
         if (item.isNull() || !item.isFertilizer()) {
             return false;
         }
 
         level.addParticle(new BoneMealParticle(this));
-        
+
         if (player != null && !player.isCreative()) {
             item.count--;
         }
@@ -82,7 +83,7 @@ public abstract class BlockFungus extends BlockFlowable implements BlockFlowerPo
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    protected boolean isValidSupport(@Nonnull Block support) {
+    protected boolean isValidSupport(@NotNull Block support) {
         switch (support.getId()) {
             case GRASS:
             case DIRT:

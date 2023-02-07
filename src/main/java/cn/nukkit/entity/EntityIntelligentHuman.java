@@ -27,7 +27,8 @@ import cn.nukkit.network.protocol.RemoveEntityPacket;
 import cn.nukkit.network.protocol.SetEntityLinkPacket;
 import cn.nukkit.utils.*;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -522,7 +523,7 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
     }
 
     @Override
-    protected boolean applyNameTag(@Nonnull Player player, @Nonnull Item item) {
+    protected boolean applyNameTag(@NotNull Player player, @NotNull Item item) {
         return false;
     }
 

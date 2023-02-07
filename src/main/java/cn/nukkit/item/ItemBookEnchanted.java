@@ -1,6 +1,7 @@
 package cn.nukkit.item;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 
 /**
@@ -18,6 +19,12 @@ public class ItemBookEnchanted extends Item {
 
     public ItemBookEnchanted(Integer meta, int count) {
         super(ENCHANTED_BOOK, meta, count, "Enchanted Book");
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    public ItemBookEnchanted(int id, Integer meta, int count, String name) {
+        super(id, meta, count, name);
     }
 
     @Override
