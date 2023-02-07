@@ -1777,6 +1777,12 @@ public class Level implements ChunkManager, Metadatable {
         }
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    public void neighborChangeAroundImmediately(int x, int y, int z) {
+        neighborChangeAroundImmediately(new Vector3(x, y, z));
+    }
+
     /**
      * 立即对围绕指定位置的方块发送neighborChange更新
      * @param pos 指定位置
@@ -1792,8 +1798,12 @@ public class Level implements ChunkManager, Metadatable {
 
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
-    public void neighborChangeAroundImmediately(int x, int y, int z) {
-        neighborChangeAroundImmediately(new Vector3(x, y, z));
+    public void updateAroundObserver(Vector3 pos) {
+        for (var face : BlockFace.values()) {
+            var neighborBlock = getBlock(pos.getSide(face));
+            if (neighborBlock.getId() == BlockID.OBSERVER)
+                neighborBlock.onNeighborChange(face.getOpposite());
+        }
     }
 
     public void updateAround(int x, int y, int z) {
