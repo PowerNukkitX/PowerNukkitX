@@ -362,6 +362,7 @@ public abstract class Enchantment implements Cloneable {
 
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
+    @SuppressWarnings("unchecked")
     private static OK<?> registerCustomEnchantBook(Enchantment enchantment) {
         var identifier = enchantment.getIdentifier();
         assert identifier != null;
