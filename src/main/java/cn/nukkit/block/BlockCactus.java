@@ -137,14 +137,14 @@ public class BlockCactus extends BlockTransparentMeta implements BlockFlowerPot.
                             if (!event.isCancelled()) {
                                 this.getLevel().setBlock(b, event.getNewState(), true);
                             }
+                            break;
                         }
                     }
                     this.setDamage(0);
-                    this.getLevel().setBlock(this, this);
                 } else {
                     this.setDamage(this.getDamage() + 1);
-                    this.getLevel().setBlock(this, this);
                 }
+                this.getLevel().setBlock(this, this);
             }
         }
 
