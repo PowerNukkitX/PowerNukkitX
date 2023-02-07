@@ -80,7 +80,7 @@ public class EffectCommand extends Command {
 
                 if (list.hasResult(4)) {
                     boolean v = list.getResult(4);
-                    effect.setVisible(v);
+                    effect.setVisible(!v);
                 }
 
                 int success = 0;
