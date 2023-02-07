@@ -366,7 +366,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
                 System.out.println("speed has an invalid value!");
                 return this;
             }
-            blocks.put(blockName, speed);
+            this.blocks.put(blockName, speed);
             return this;
         }
 
@@ -375,11 +375,11 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
          * <p>
          * Add a diggable block to the tool and define dig speed
          *
-         * @param blockTags 挖掘速度
+         * @param blocks the blocks
          * @return the tool builder
          */
-        public ToolBuilder addExtraBlock(@NotNull Map<String, Integer> blockTags) {
-            blockTags.forEach((blockName, speed) -> {
+        public ToolBuilder addExtraBlocks(@NotNull Map<String, Integer> blocks) {
+            blocks.forEach((blockName, speed) -> {
                 if (speed < 0) {
                     System.out.println("speed has an invalid value!");
                     return;
