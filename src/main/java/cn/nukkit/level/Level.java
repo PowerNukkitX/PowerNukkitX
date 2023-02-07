@@ -825,6 +825,16 @@ public class Level implements ChunkManager, Metadatable {
         addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, pk);
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    public void addLevelEvent(Vector3 pos, int event, CompoundTag data) {
+        LevelEventGenericPacket pk = new LevelEventGenericPacket();
+        pk.eventId = event;
+        pk.tag = data;
+
+        this.addChunkPacket(pos.getChunkX(), pos.getChunkZ(), pk);
+    }
+
     @PowerNukkitDifference(info = "Default sound method changed to addSound", since = "1.4.0.0-PN")
     @Deprecated
     @DeprecationDetails(reason = "Old method, use addSound(pos, Sound.<SOUND_VALUE>).", since = "1.4.0.0-PN")
