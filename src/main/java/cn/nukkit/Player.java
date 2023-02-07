@@ -3155,6 +3155,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         if (this.spawned) {
+            if (this.motionX != 0 || this.motionY != 0 || this.motionZ != 0) {
+                this.setMotion(new Vector3(motionX, motionY, motionZ));
+                motionX = motionY = motionZ = 0;
+            }
+
             while (!this.clientMovements.isEmpty()) {
                 this.handleMovement(this.clientMovements.poll());
             }
