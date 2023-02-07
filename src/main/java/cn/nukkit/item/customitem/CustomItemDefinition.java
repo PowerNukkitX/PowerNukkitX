@@ -132,7 +132,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
                     .putString("texture", customItem.getTextureName());
 
             //定义显示名
-            if (item.getName() != null && item.getName().equals(Item.UNKNOWN_STR)) {
+            if (item.getName() != null && !item.getName().equals(Item.UNKNOWN_STR)) {
                 this.nbt.getCompound("components")
                         .putCompound("minecraft:display_name", new CompoundTag().putString("value", item.getName()));
             }
