@@ -34,7 +34,7 @@ public final class DelegateCompiler {
     }
 
     public Class<?> compileToClass(ClassLoader classLoader) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        return loadClass(classLoader, compile());
+        return loadClass(classLoader, this.builder.getClassName(), compile());
     }
 
     public void compileSuperField(ClassWriter classWriter, JSuperField jSuperField) {
@@ -50,7 +50,7 @@ public final class DelegateCompiler {
             }
         }
         // 编译Getter
-        if (field != null && (Modifier.isPublic(field.getModifiers()) || Modifier.isProtected(field.getModifiers()))){
+        if (field != null && (Modifier.isPublic(field.getModifiers()) || Modifier.isProtected(field.getModifiers()))) {
             var methodType = Type.getMethodType(asmType);
             var methodVisitor = classWriter.visitMethod(ACC_PUBLIC, "get" + StringUtils.capitalize(jSuperField.name()), methodType.getDescriptor(), null, null);
             methodVisitor.visitCode();
@@ -461,34 +461,50 @@ public final class DelegateCompiler {
 
     private void unBox(MethodVisitor methodVisitor, String boxType) {
         switch (boxType) {
-            case "java/lang/Boolean" -> methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Boolean", "booleanValue", "()Z", false);
-            case "java/lang/Byte" -> methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Byte", "byteValue", "()B", false);
-            case "java/lang/Short" -> methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Short", "shortValue", "()S", false);
-            case "java/lang/Character" -> methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Character", "charValue", "()C", false);
-            case "java/lang/Integer" -> methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Integer", "intValue", "()I", false);
-            case "java/lang/Long" -> methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Long", "longValue", "()J", false);
-            case "java/lang/Float" -> methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Float", "floatValue", "()F", false);
-            case "java/lang/Double" -> methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Double", "doubleValue", "()D", false);
+            case "java/lang/Boolean" ->
+                    methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Boolean", "booleanValue", "()Z", false);
+            case "java/lang/Byte" ->
+                    methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Byte", "byteValue", "()B", false);
+            case "java/lang/Short" ->
+                    methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Short", "shortValue", "()S", false);
+            case "java/lang/Character" ->
+                    methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Character", "charValue", "()C", false);
+            case "java/lang/Integer" ->
+                    methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Integer", "intValue", "()I", false);
+            case "java/lang/Long" ->
+                    methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Long", "longValue", "()J", false);
+            case "java/lang/Float" ->
+                    methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Float", "floatValue", "()F", false);
+            case "java/lang/Double" ->
+                    methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Double", "doubleValue", "()D", false);
         }
     }
 
     private void box(MethodVisitor methodVisitor, String primitiveType) {
         switch (primitiveType) {
-            case "boolean" -> methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Boolean", "valueOf", "(Z)Ljava/lang/Boolean;", false);
-            case "byte" -> methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Byte", "valueOf", "(B)Ljava/lang/Byte;", false);
-            case "char" -> methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Character", "valueOf", "(C)Ljava/lang/Character;", false);
-            case "short" -> methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Short", "valueOf", "(S)Ljava/lang/Short;", false);
-            case "int" -> methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;", false);
-            case "long" -> methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Long", "valueOf", "(J)Ljava/lang/Long;", false);
-            case "float" -> methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Float", "valueOf", "(F)Ljava/lang/Float;", false);
-            case "double" -> methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Double", "valueOf", "(D)Ljava/lang/Double;", false);
+            case "boolean" ->
+                    methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Boolean", "valueOf", "(Z)Ljava/lang/Boolean;", false);
+            case "byte" ->
+                    methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Byte", "valueOf", "(B)Ljava/lang/Byte;", false);
+            case "char" ->
+                    methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Character", "valueOf", "(C)Ljava/lang/Character;", false);
+            case "short" ->
+                    methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Short", "valueOf", "(S)Ljava/lang/Short;", false);
+            case "int" ->
+                    methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;", false);
+            case "long" ->
+                    methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Long", "valueOf", "(J)Ljava/lang/Long;", false);
+            case "float" ->
+                    methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Float", "valueOf", "(F)Ljava/lang/Float;", false);
+            case "double" ->
+                    methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Double", "valueOf", "(D)Ljava/lang/Double;", false);
         }
     }
 
-    private static WeakReference<Method> defineClassMethodRef = new WeakReference<>(null);
+    public static WeakReference<Method> defineClassMethodRef = new WeakReference<>(null);
 
     @SuppressWarnings("DuplicatedCode")
-    private Class<?> loadClass(ClassLoader loader, byte[] b) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InaccessibleObjectException {
+    public static Class<?> loadClass(ClassLoader loader, String className, byte[] b) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InaccessibleObjectException {
         Class<?> clazz;
         java.lang.reflect.Method method;
         if (defineClassMethodRef.get() == null) {
@@ -500,7 +516,7 @@ public final class DelegateCompiler {
         }
         Objects.requireNonNull(method).setAccessible(true);
         try {
-            var args = new Object[]{builder.getClassName(), b, 0, b.length};
+            var args = new Object[]{className, b, 0, b.length};
             clazz = (Class<?>) method.invoke(loader, args);
         } finally {
             method.setAccessible(false);
