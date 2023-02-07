@@ -47,6 +47,6 @@ class BlockDropperTest {
         assertNotNull(entityDropper);
         assertTrue(entityDropper.isBlockEntityValid());
         assertNotNull(entityDropper.getInventory());
-        assertEquals(BlockEntity.DISPENSER, entityDropper.getSpawnCompound().getString("id"));
+        assertEquals(BlockEntity.DROPPER, entityDropper.getSpawnCompound().getString("id"));
     }
 }
