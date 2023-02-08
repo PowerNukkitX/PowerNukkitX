@@ -7,7 +7,8 @@ import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 
 /**
@@ -16,49 +17,49 @@ import javax.annotation.Nullable;
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
 public class PositionTracking extends NamedPosition {
-    @Nonnull
+    @NotNull
     private String levelName;
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public PositionTracking(@Nonnull String levelName, double x, double y, double z) {
+    public PositionTracking(@NotNull String levelName, double x, double y, double z) {
         super(x, y, z);
         this.levelName = levelName;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public PositionTracking(@Nonnull Level level, double x, double y, double z) {
+    public PositionTracking(@NotNull Level level, double x, double y, double z) {
         this(level.getName(), x, y, z);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public PositionTracking(@Nonnull Level level, Vector3 v) {
+    public PositionTracking(@NotNull Level level, Vector3 v) {
         this(level, v.x, v.y, v.z);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public PositionTracking(@Nonnull String levelName, Vector3 v) {
+    public PositionTracking(@NotNull String levelName, Vector3 v) {
         this(levelName, v.x, v.y, v.z);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public PositionTracking(@Nonnull Position pos) {
+    public PositionTracking(@NotNull Position pos) {
         this(pos.getLevel(), pos.x, pos.y, pos.z);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public PositionTracking(@Nonnull NamedPosition pos) {
+    public PositionTracking(@NotNull NamedPosition pos) {
         this(pos.getLevelName(), pos.x, pos.y, pos.z);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     @Override
     public String getLevelName() {
         return levelName;
@@ -66,11 +67,11 @@ public class PositionTracking extends NamedPosition {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public void setLevelName(@Nonnull String levelName) {
+    public void setLevelName(@NotNull String levelName) {
         this.levelName = levelName;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public PositionTracking add(double x) {
         return add(x, 0, 0);
@@ -218,7 +219,7 @@ public class PositionTracking extends NamedPosition {
 
     @Nullable
     @Override
-    public PositionTracking getIntermediateWithXValue(@Nonnull Vector3 v, double x) {
+    public PositionTracking getIntermediateWithXValue(@NotNull Vector3 v, double x) {
         Vector3 intermediateWithXValue = super.getIntermediateWithXValue(v, x);
         if (intermediateWithXValue == null) {
             return null;
@@ -228,7 +229,7 @@ public class PositionTracking extends NamedPosition {
 
     @Nullable
     @Override
-    public Vector3 getIntermediateWithYValue(@Nonnull Vector3 v, double y) {
+    public Vector3 getIntermediateWithYValue(@NotNull Vector3 v, double y) {
         Vector3 intermediateWithYValue = super.getIntermediateWithYValue(v, y);
         if (intermediateWithYValue == null) {
             return null;
@@ -238,7 +239,7 @@ public class PositionTracking extends NamedPosition {
 
     @Nullable
     @Override
-    public Vector3 getIntermediateWithZValue(@Nonnull Vector3 v, double z) {
+    public Vector3 getIntermediateWithZValue(@NotNull Vector3 v, double z) {
         Vector3 intermediateWithZValue = super.getIntermediateWithZValue(v, z);
         if (intermediateWithZValue == null) {
             return null;

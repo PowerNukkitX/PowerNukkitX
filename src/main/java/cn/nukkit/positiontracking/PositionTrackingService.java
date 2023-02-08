@@ -18,7 +18,8 @@ import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import lombok.extern.log4j.Log4j2;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.*;
@@ -313,9 +314,9 @@ public class PositionTrackingService implements Closeable {
         
         detectNeededUpdates(player);
     }
-    
+
     @Nullable
-    private synchronized Integer findStorageForHandler(@Nonnull Integer handler) {
+    private synchronized Integer findStorageForHandler(@NotNull Integer handler) {
         Integer best = null;
         for (Integer startIndex : storage.keySet()) {
             int comp = startIndex.compareTo(handler);
@@ -328,25 +329,25 @@ public class PositionTrackingService implements Closeable {
         }
         return best;
     }
-    
-    @Nonnull
-    private synchronized PositionTrackingStorage loadStorage(@Nonnull Integer startIndex) throws IOException {
+
+    @NotNull
+    private synchronized PositionTrackingStorage loadStorage(@NotNull Integer startIndex) throws IOException {
         PositionTrackingStorage trackingStorage = storage.get(startIndex).get();
         if (trackingStorage != null) {
             return trackingStorage;
         }
-        PositionTrackingStorage positionTrackingStorage = new PositionTrackingStorage(startIndex, new File(folder, startIndex+".pnt"));
+        PositionTrackingStorage positionTrackingStorage = new PositionTrackingStorage(startIndex, new File(folder, startIndex + ".pnt"));
         storage.put(startIndex, new WeakReference<>(positionTrackingStorage));
         return positionTrackingStorage;
     }
-    
+
     @Nullable
-    private synchronized PositionTrackingStorage getStorageForHandler(@Nonnull Integer trackingHandler) throws IOException{
+    private synchronized PositionTrackingStorage getStorageForHandler(@NotNull Integer trackingHandler) throws IOException {
         Integer startIndex = findStorageForHandler(trackingHandler);
         if (startIndex == null) {
             return null;
         }
-        
+
         PositionTrackingStorage storage = loadStorage(startIndex);
         if (trackingHandler > storage.getMaxHandler()) {
             return null;
@@ -413,7 +414,7 @@ public class PositionTrackingService implements Closeable {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public OptionalInt findTrackingHandler(NamedPosition position) throws IOException {
         IntList handlers = findTrackingHandlers(position, true, 1);
         if (!handlers.isEmpty()) {
@@ -538,21 +539,21 @@ public class PositionTrackingService implements Closeable {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public synchronized IntList findTrackingHandlers(NamedPosition pos) throws IOException {
         return findTrackingHandlers(pos, true);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public synchronized IntList findTrackingHandlers(NamedPosition pos, boolean onlyEnabled) throws IOException {
         return findTrackingHandlers(pos, onlyEnabled, Integer.MAX_VALUE);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public synchronized IntList findTrackingHandlers(NamedPosition pos, boolean onlyEnabled, int limit) throws IOException {
         checkClosed();
         IntList list = new IntArrayList();

@@ -4,6 +4,7 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.nbt.tag.CompoundTag;
 import lombok.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
 
@@ -222,7 +223,7 @@ public class Materials implements NBTData {
      * @param renderMethodName 要使用的渲染方法<br>Rendering method to be used
      * @param texture          材质名称<br>Specify the texture's name
      */
-    public void process(@NonNull String face, boolean ambientOcclusion, boolean faceDimming, @NonNull String renderMethodName, @NonNull String texture) {
+    public void process(@NotNull String face, boolean ambientOcclusion, boolean faceDimming, @NotNull String renderMethodName, @NotNull String texture) {
         this.tag.putCompound(face, new CompoundTag()
                 .putBoolean("ambient_occlusion", ambientOcclusion)
                 .putBoolean("face_dimming", faceDimming)
@@ -230,7 +231,7 @@ public class Materials implements NBTData {
                 .putString("texture", texture));
     }
 
-    private void process(@NonNull String face, boolean ambientOcclusion, boolean faceDimming, @NonNull RenderMethod renderMethod, @NonNull String texture) {
+    private void process(@NotNull String face, boolean ambientOcclusion, boolean faceDimming, @NotNull RenderMethod renderMethod, @NotNull String texture) {
         this.tag.putCompound(face, new CompoundTag()
                 .putBoolean("ambient_occlusion", ambientOcclusion)
                 .putBoolean("face_dimming", faceDimming)

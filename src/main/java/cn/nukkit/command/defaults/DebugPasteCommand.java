@@ -16,7 +16,8 @@ import com.nimbusds.jose.util.IOUtils;
 import lombok.extern.log4j.Log4j2;
 import org.iq80.leveldb.util.FileUtils;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.net.HttpURLConnection;
@@ -196,7 +197,7 @@ public class DebugPasteCommand extends TestCommand implements CoreCommand {
         }
     }
 
-    @Nonnull
+    @NotNull
     private static String eval(String... command) {
         try {
             try (InputStream in = Runtime.getRuntime().exec(command).getInputStream()) {

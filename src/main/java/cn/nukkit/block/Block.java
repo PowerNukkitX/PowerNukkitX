@@ -39,9 +39,9 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
@@ -1124,7 +1124,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static void registerBlockImplementation(int blockId, @Nonnull Class<? extends Block> blockClass, @Nonnull String persistenceName, boolean receivesRandomTick) {
+    public static void registerBlockImplementation(int blockId, @NotNull Class<? extends Block> blockClass, @NotNull String persistenceName, boolean receivesRandomTick) {
         Preconditions.checkArgument(blockId >= 0, "Negative block id %s", blockId);
         Preconditions.checkNotNull(blockClass, "blockClass was null");
         Preconditions.checkNotNull(persistenceName, "persistenceName was null");
@@ -1234,7 +1234,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      * @param blockClassList 传入自定义方块class List
      */
     @PowerNukkitXOnly
-    public static OK<?> registerCustomBlock(@Nonnull List<Class<? extends CustomBlock>> blockClassList) {
+    public static OK<?> registerCustomBlock(@NotNull List<Class<? extends CustomBlock>> blockClassList) {
         if (!Server.getInstance().isEnableExperimentMode() || Server.getInstance().getConfig("settings.waterdogpe", false)) {
             return new OK<>(false, "The server does not have the experiment mode feature enabled.Unable to register custom block!");
         }
@@ -1277,7 +1277,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      * @param blockNamespaceClassMap 传入自定义方块classMap { key: NamespaceID, value: Class }
      */
     @PowerNukkitXOnly
-    public static OK<?> registerCustomBlock(@Nonnull Map<String, Class<? extends CustomBlock>> blockNamespaceClassMap) {
+    public static OK<?> registerCustomBlock(@NotNull Map<String, Class<? extends CustomBlock>> blockNamespaceClassMap) {
         if (!Server.getInstance().isEnableExperimentMode() || Server.getInstance().getConfig("settings.waterdogpe", false)) {
             return new OK<>(false, "The server does not have the experiment mode feature enabled.Unable to register custom block!");
         }
@@ -1352,7 +1352,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public final MutableBlockState getMutableState() {
         if (mutableState == null) {
             mutableState = getProperties().createMutableState(getId());
@@ -1374,7 +1374,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      * @param player The player that is placing the block. May be null.
      * @return {@code true} if the block was properly place. The implementation is responsible for reverting any partial change.
      */
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         return this.getLevel().setBlock(this, this, true, true);
     }
 
@@ -1407,15 +1407,15 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public void onNeighborChange(@Nonnull BlockFace side) {
+    public void onNeighborChange(@NotNull BlockFace side) {
 
     }
 
-    public boolean onActivate(@Nonnull Item item) {
+    public boolean onActivate(@NotNull Item item) {
         return this.onActivate(item, null);
     }
 
-    public boolean onActivate(@Nonnull Item item, @Nullable Player player) {
+    public boolean onActivate(@NotNull Item item, @Nullable Player player) {
         return false;
     }
 
@@ -1676,7 +1676,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      * The properties that fully describe all possible and valid states that this block can have.
      */
     @Override
-    @Nonnull
+    @NotNull
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public BlockProperties getProperties() {
@@ -1686,7 +1686,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @Override
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public final BlockState getCurrentState() {
         return mutableState == null ? BlockState.of(getId()) : mutableState.getCurrentState();
     }
@@ -1886,7 +1886,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public double calculateBreakTime(@Nonnull Item item) {
+    public double calculateBreakTime(@NotNull Item item) {
         return calculateBreakTime(item, null);
     }
 
@@ -1899,7 +1899,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public double calculateBreakTime(@Nonnull Item item, @Nullable Player player) {
+    public double calculateBreakTime(@NotNull Item item, @Nullable Player player) {
         double seconds = 0;
         double blockHardness = getHardness();
         boolean canHarvest = canHarvest(item);
@@ -1971,7 +1971,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      * @return 挖掘耗费的tick
      */
     @PowerNukkitXOnly
-    public double calculateBreakTick(@Nonnull Item item, @Nullable Player player) {
+    public double calculateBreakTick(@NotNull Item item, @Nullable Player player) {
         double blockHardness = getHardness();
         boolean canHarvest = canHarvest(item);
         double speedMultiplier = 1;
@@ -2635,7 +2635,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return false;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @PowerNukkitOnly
     public final ItemBlock asItemBlock() {
@@ -2679,7 +2679,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Override
-    public void setState(@Nonnull IBlockState state) throws InvalidBlockStateException {
+    public void setState(@NotNull IBlockState state) throws InvalidBlockStateException {
         if (state.getBlockId() == getId() && this.isDefaultState() && state.isDefaultState()) {
             return;
         }
@@ -2689,15 +2689,15 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @Since("1.5.1.0-PN")
     @PowerNukkitOnly
     @Override
-    @Nonnull
-    public Block forState(@Nonnull IBlockState state) throws InvalidBlockStateException {
+    @NotNull
+    public Block forState(@NotNull IBlockState state) throws InvalidBlockStateException {
         return (Block) IMutableBlockState.super.forState(state);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Override
-    public void setDataStorage(@Nonnegative @Nonnull Number storage) {
+    public void setDataStorage(@Nonnegative @NotNull Number storage) {
         if (NukkitMath.isZero(storage) && isDefaultState()) {
             return;
         }
@@ -2717,7 +2717,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     @Override
-    public boolean setDataStorage(@Nonnegative @Nonnull Number storage, boolean repair, Consumer<BlockStateRepair> callback) {
+    public boolean setDataStorage(@Nonnegative @NotNull Number storage, boolean repair, Consumer<BlockStateRepair> callback) {
         if (NukkitMath.isZero(storage) && isDefaultState()) {
             return false;
         }
@@ -2737,7 +2737,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Override
-    public void setPropertyValue(@Nonnull String propertyName, @Nullable Serializable value) {
+    public void setPropertyValue(@NotNull String propertyName, @Nullable Serializable value) {
         if (isDefaultState() && getProperties().isDefaultValue(propertyName, value)) {
             return;
         }
@@ -2747,7 +2747,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Override
-    public void setBooleanValue(@Nonnull String propertyName, boolean value) {
+    public void setBooleanValue(@NotNull String propertyName, boolean value) {
         if (isDefaultState() && getProperties().isDefaultBooleanValue(propertyName, value)) {
             return;
         }
@@ -2757,7 +2757,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Override
-    public void setIntValue(@Nonnull String propertyName, int value) {
+    public void setIntValue(@NotNull String propertyName, int value) {
         if (isDefaultState() && getProperties().isDefaultIntValue(propertyName, value)) {
             return;
         }
@@ -2777,7 +2777,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @Nonnegative
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     @Override
     public final Number getDataStorage() {
         return mutableState == null ? 0 : mutableState.getDataStorage();
@@ -2816,7 +2816,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @Nonnegative
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     @Override
     public BigInteger getHugeDamage() {
         return mutableState == null ? BigInteger.ZERO : mutableState.getHugeDamage();
@@ -2824,9 +2824,9 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     @Override
-    public Serializable getPropertyValue(@Nonnull String propertyName) {
+    public Serializable getPropertyValue(@NotNull String propertyName) {
         if (isDefaultState()) {
             return getProperties().getBlockProperty(propertyName).getDefaultValue();
         }
@@ -2836,7 +2836,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Override
-    public int getIntValue(@Nonnull String propertyName) {
+    public int getIntValue(@NotNull String propertyName) {
         if (isDefaultState()) {
             return getProperties().getBlockProperty(propertyName).getDefaultIntValue();
         }
@@ -2846,7 +2846,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Override
-    public boolean getBooleanValue(@Nonnull String propertyName) {
+    public boolean getBooleanValue(@NotNull String propertyName) {
         if (isDefaultState()) {
             return getProperties().getBlockProperty(propertyName).getDefaultBooleanValue();
         }
@@ -2855,9 +2855,9 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     @Override
-    public String getPersistenceValue(@Nonnull String propertyName) {
+    public String getPersistenceValue(@NotNull String propertyName) {
         if (isDefaultState()) {
             return getProperties().getBlockProperty(propertyName).getPersistenceValueForMeta(0);
         }
@@ -2873,7 +2873,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public boolean isBreakable(@Nonnull Vector3 vector, int layer, @Nonnull BlockFace face, @Nonnull Item item, @Nullable Player player, boolean setBlockDestroy) {
+    public boolean isBreakable(@NotNull Vector3 vector, int layer, @NotNull BlockFace face, @NotNull Item item, @Nullable Player player, boolean setBlockDestroy) {
         return true;
     }
 
@@ -2911,12 +2911,12 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public boolean onProjectileHit(@Nonnull Entity projectile, @Nonnull Position position, @Nonnull Vector3 motion) {
+    public boolean onProjectileHit(@NotNull Entity projectile, @NotNull Position position, @NotNull Vector3 motion) {
         return false;
     }
 
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public final Block getBlock() {
         return clone();

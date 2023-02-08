@@ -5,8 +5,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.network.protocol.ContainerOpenPacket;
 import cn.nukkit.utils.BlockColor;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -48,7 +48,7 @@ public class BlockCraftingTable extends BlockSolid {
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item, @Nullable Player player) {
+    public boolean onActivate(@NotNull Item item, @Nullable Player player) {
         if (player != null) {
             player.craftingType = Player.CRAFTING_BIG;
             player.setCraftingGrid(player.getUIInventory().getBigCraftingGrid());

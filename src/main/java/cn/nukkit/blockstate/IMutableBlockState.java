@@ -11,7 +11,9 @@ import cn.nukkit.math.NukkitMath;
 import cn.nukkit.utils.Validation;
 
 import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
+
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.Serializable;
@@ -61,8 +63,8 @@ public interface IMutableBlockState extends IBlockState {
      */
     @PowerNukkitOnly
     @Since("1.5.1.0-PN")
-    @Nonnull
-    default IMutableBlockState forState(@Nonnull IBlockState state) throws InvalidBlockStateException {
+    @NotNull
+    default IMutableBlockState forState(@NotNull IBlockState state) throws InvalidBlockStateException {
         setState(state);
         return this;
     }
@@ -220,9 +222,9 @@ public interface IMutableBlockState extends IBlockState {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @SuppressWarnings("unchecked")
-    @Nonnull
+    @NotNull
     static BigInteger repairStorage(
-            @Nonnegative int blockId, @Nonnull final BigInteger storage, @Nonnull final BlockProperties properties, 
+            @Nonnegative int blockId, @NotNull final BigInteger storage, @NotNull final BlockProperties properties,
             @Nullable final Consumer<BlockStateRepair> callback) {
         Validation.checkPositive("blockId", blockId);
         
@@ -282,7 +284,7 @@ public interface IMutableBlockState extends IBlockState {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     static RuntimeException handleUnsupportedStorageType(@Nonnegative int blockId, @Nonnegative Number storage, RuntimeException e) {
         InvalidBlockStateException ex;
         try {

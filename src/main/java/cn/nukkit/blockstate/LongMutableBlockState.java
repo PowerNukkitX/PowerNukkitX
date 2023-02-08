@@ -15,7 +15,9 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
+
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.Serializable;
@@ -142,14 +144,14 @@ public class LongMutableBlockState extends MutableBlockState {
     @Nonnegative
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     @Override
     public BigInteger getHugeDamage() {
         return BigInteger.valueOf(storage);
     }
 
     @Nonnegative
-    @Nonnull
+    @NotNull
     @Override
     @PowerNukkitOnly
     public Number getDataStorage() {
@@ -185,7 +187,7 @@ public class LongMutableBlockState extends MutableBlockState {
     }
 
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public Serializable getPropertyValue(String propertyName) {
         return properties.getValue(storage, propertyName);
@@ -204,13 +206,13 @@ public class LongMutableBlockState extends MutableBlockState {
     }
 
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public String getPersistenceValue(String propertyName) {
         return properties.getPersistenceValue(storage, propertyName);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @PowerNukkitOnly
     public BlockState getCurrentState() {
@@ -229,7 +231,7 @@ public class LongMutableBlockState extends MutableBlockState {
     }
 
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public LongMutableBlockState copy() {
         return new LongMutableBlockState(getBlockId(), properties, storage);

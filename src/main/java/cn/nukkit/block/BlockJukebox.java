@@ -12,7 +12,8 @@ import cn.nukkit.item.ItemRecord;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 
 /**
@@ -38,7 +39,7 @@ public class BlockJukebox extends BlockSolid implements BlockEntityHolder<BlockE
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public Class<? extends BlockEntityJukebox> getBlockEntityClass() {
         return BlockEntityJukebox.class;
@@ -46,7 +47,7 @@ public class BlockJukebox extends BlockSolid implements BlockEntityHolder<BlockE
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     @Override
     public String getBlockEntityType() {
         return BlockEntity.JUKEBOX;
@@ -68,13 +69,13 @@ public class BlockJukebox extends BlockSolid implements BlockEntityHolder<BlockE
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item, @Nullable Player player) {
+    public boolean onActivate(@NotNull Item item, @Nullable Player player) {
         BlockEntityJukebox jukebox = getOrCreateBlockEntity();
         if (jukebox.getRecordItem().getId() != 0) {
             jukebox.dropItem();
             return true;
-        } 
-        
+        }
+
         if (!item.isNull() && item instanceof ItemRecord) {
             Item record = item.clone();
             record.count = 1;
@@ -88,7 +89,7 @@ public class BlockJukebox extends BlockSolid implements BlockEntityHolder<BlockE
     }
 
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         return BlockEntityHolder.setBlockAndCreateEntity(this) != null;
     }
 

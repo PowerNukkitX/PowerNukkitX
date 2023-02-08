@@ -4,7 +4,8 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperty;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNullableByDefault;
 import java.io.Serializable;
@@ -23,7 +24,7 @@ public class InvalidBlockPropertyValueException extends InvalidBlockPropertyExce
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public InvalidBlockPropertyValueException(@Nonnull BlockProperty<?> property, Serializable currentValue, Serializable invalidValue) {
+    public InvalidBlockPropertyValueException(@NotNull BlockProperty<?> property, Serializable currentValue, Serializable invalidValue) {
         super(property, buildMessage(currentValue, invalidValue));
         this.currentValue = currentValue;
         this.invalidValue = invalidValue;
@@ -31,23 +32,23 @@ public class InvalidBlockPropertyValueException extends InvalidBlockPropertyExce
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public InvalidBlockPropertyValueException(@Nonnull BlockProperty<?> property, Serializable currentValue, Serializable invalidValue, String message) {
-        super(property, buildMessage(currentValue, invalidValue)+". "+message);
+    public InvalidBlockPropertyValueException(@NotNull BlockProperty<?> property, Serializable currentValue, Serializable invalidValue, String message) {
+        super(property, buildMessage(currentValue, invalidValue) + ". " + message);
         this.currentValue = currentValue;
         this.invalidValue = invalidValue;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public InvalidBlockPropertyValueException(@Nonnull BlockProperty<?> property, Serializable currentValue, Serializable invalidValue, String message, Throwable cause) {
-        super(property, buildMessage(currentValue, invalidValue)+". "+message, cause);
+    public InvalidBlockPropertyValueException(@NotNull BlockProperty<?> property, Serializable currentValue, Serializable invalidValue, String message, Throwable cause) {
+        super(property, buildMessage(currentValue, invalidValue) + ". " + message, cause);
         this.currentValue = currentValue;
         this.invalidValue = invalidValue;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public InvalidBlockPropertyValueException(@Nonnull BlockProperty<?> property, Serializable currentValue, Serializable invalidValue, Throwable cause) {
+    public InvalidBlockPropertyValueException(@NotNull BlockProperty<?> property, Serializable currentValue, Serializable invalidValue, Throwable cause) {
         super(property, buildMessage(currentValue, invalidValue), cause);
         this.currentValue = currentValue;
         this.invalidValue = invalidValue;

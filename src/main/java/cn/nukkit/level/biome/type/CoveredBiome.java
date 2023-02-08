@@ -8,7 +8,8 @@ import cn.nukkit.level.biome.Biome;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.generator.Normal;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -76,7 +77,7 @@ public abstract class CoveredBiome extends Biome {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public BlockState getCoverState(int x, int z) {
         if (useNewRakNetCover()) {
             int fullId = getCoverId(x, z);
@@ -273,7 +274,7 @@ public abstract class CoveredBiome extends Biome {
         // Does nothing
     }
 
-    public void doCover(int x, int z, @Nonnull FullChunk chunk) {
+    public void doCover(int x, int z, @NotNull FullChunk chunk) {
         final int fullX = (chunk.getX() << 4) | x;
         final int fullZ = (chunk.getZ() << 4) | z;
         preCover(fullX, fullZ);

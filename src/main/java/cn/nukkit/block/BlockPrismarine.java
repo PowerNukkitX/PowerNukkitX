@@ -10,7 +10,7 @@ import cn.nukkit.blockproperty.value.PrismarineBlockType;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 
 public class BlockPrismarine extends BlockSolidMeta {
@@ -47,7 +47,7 @@ public class BlockPrismarine extends BlockSolidMeta {
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;

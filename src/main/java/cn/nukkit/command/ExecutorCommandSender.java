@@ -15,7 +15,8 @@ import cn.nukkit.permission.PermissionAttachment;
 import cn.nukkit.permission.PermissionAttachmentInfo;
 import cn.nukkit.plugin.Plugin;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import java.util.Map;
 
@@ -28,7 +29,7 @@ public class ExecutorCommandSender implements CommandSender {
     private final Entity entity;
     private final Location executeLocation;
 
-    public ExecutorCommandSender(@Nonnull CommandSender executor, @Nullable Entity entity, @Nullable Location executeLocation) {
+    public ExecutorCommandSender(@NotNull CommandSender executor, @Nullable Entity entity, @Nullable Location executeLocation) {
         if (executor instanceof ExecutorCommandSender executorCommandSender) {
             this.executor = executorCommandSender.getExecutor();
         } else {
@@ -59,7 +60,7 @@ public class ExecutorCommandSender implements CommandSender {
         return executor.getServer();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getName() {
         return entity.getName();
@@ -92,7 +93,7 @@ public class ExecutorCommandSender implements CommandSender {
 
     @Since("1.6.0.0-PNX")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public Location getLocation() {
         return (executeLocation == null ? entity : executeLocation).clone();

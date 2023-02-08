@@ -12,7 +12,8 @@ import cn.nukkit.level.ParticleEffect;
 import cn.nukkit.level.Position;
 import cn.nukkit.utils.BlockColor;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import java.util.Random;
 
@@ -54,7 +55,7 @@ public class BlockMoss extends BlockSolid {
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item,@Nullable Player player) {
+    public boolean onActivate(@NotNull Item item, @Nullable Player player) {
         if (item.isFertilizer()) {
             convertToMoss(this);
             populateRegion(this);

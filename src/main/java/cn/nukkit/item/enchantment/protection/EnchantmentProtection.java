@@ -8,7 +8,7 @@ import cn.nukkit.item.ItemElytra;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.enchantment.EnchantmentType;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -43,7 +43,7 @@ public abstract class EnchantmentProtection extends Enchantment {
     }
 
     @Override
-    public boolean canEnchant(@Nonnull Item item) {
+    public boolean canEnchant(@NotNull Item item) {
         return !(item instanceof ItemElytra) && super.canEnchant(item);
     }
 

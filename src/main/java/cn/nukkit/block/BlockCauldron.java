@@ -23,8 +23,8 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.utils.BlockColor;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Map;
 
@@ -61,7 +61,7 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -69,7 +69,7 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     @Override
     public String getBlockEntityType() {
         return BlockEntity.CAULDRON;
@@ -77,7 +77,7 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public Class<? extends BlockEntityCauldron> getBlockEntityClass() {
         return BlockEntityCauldron.class;
@@ -152,7 +152,7 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player) {
         BlockEntityCauldron cauldron = getBlockEntity();
 
         if (cauldron == null) {
@@ -478,9 +478,9 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
             this.getLevel().addParticle(new SmokeParticle(add(Math.random(), 1.2, Math.random())));
         }
     }
-    
+
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         CompoundTag nbt = new CompoundTag()
                 .putShort("PotionId", -1)
                 .putByte("SplashPotion", 0);

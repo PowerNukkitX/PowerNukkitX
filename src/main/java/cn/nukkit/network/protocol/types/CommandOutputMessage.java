@@ -1,27 +1,27 @@
 package cn.nukkit.network.protocol.types;
 
-import lombok.NonNull;
 import lombok.Value;
+import org.jetbrains.annotations.NotNull;
 
 @Value
 public class CommandOutputMessage {
-    public CommandOutputMessage(@NonNull String messageId) {
+    public CommandOutputMessage(@NotNull String messageId) {
         this(false, messageId, new String[]{});
     }
 
-    public CommandOutputMessage(@NonNull String messageId, @NonNull String... parameters) {
+    public CommandOutputMessage(@NotNull String messageId, @NotNull String... parameters) {
         this(false, messageId, parameters);
     }
 
-    public CommandOutputMessage(boolean internal, @NonNull String messageId, @NonNull String[] parameters) {
+    public CommandOutputMessage(boolean internal, @NotNull String messageId, @NotNull String[] parameters) {
         this.internal = internal;
         this.messageId = messageId;
         this.parameters = parameters;
     }
 
     boolean internal;
-    @NonNull
+    @NotNull
     String messageId;
-    @NonNull
+    @NotNull
     String[] parameters;
 }

@@ -24,7 +24,8 @@ import cn.nukkit.api.Since;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.util.PalettedBlockStorage;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import java.util.BitSet;
 
@@ -51,7 +52,7 @@ public final class ImmutableBlockStorage extends BlockStorage {
 
     @PowerNukkitOnly
     @Override
-    protected BlockState setBlockState(int index, @Nonnull BlockState state) {
+    protected BlockState setBlockState(int index, @NotNull BlockState state) {
         throw new UnsupportedOperationException("This BlockStorage is immutable");
     }
 
@@ -71,7 +72,7 @@ public final class ImmutableBlockStorage extends BlockStorage {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public ImmutableBlockStorage immutableCopy() {
         return this;

@@ -13,7 +13,7 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.RedstoneComponent;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author LT_Name
@@ -40,13 +40,13 @@ public class BlockSculkSensor extends BlockSolid implements BlockEntityHolder<Bl
         return PROPERTIES;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Class<? extends BlockEntitySculkSensor> getBlockEntityClass() {
         return BlockEntitySculkSensor.class;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getBlockEntityType() {
         return BlockEntity.SCULK_SENSOR;

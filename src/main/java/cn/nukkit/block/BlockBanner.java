@@ -22,8 +22,8 @@ import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Faceable;
 import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import static cn.nukkit.block.BlockSignPost.GROUND_SIGN_DIRECTION;
@@ -49,7 +49,7 @@ public class BlockBanner extends BlockTransparentMeta implements Faceable, Block
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return BlockSignPost.PROPERTIES;
@@ -57,7 +57,7 @@ public class BlockBanner extends BlockTransparentMeta implements Faceable, Block
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     @Override
     public String getBlockEntityType() {
         return BlockEntity.BANNER;
@@ -65,7 +65,7 @@ public class BlockBanner extends BlockTransparentMeta implements Faceable, Block
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public Class<? extends BlockEntityBanner> getBlockEntityClass() {
         return BlockEntityBanner.class;
@@ -108,7 +108,7 @@ public class BlockBanner extends BlockTransparentMeta implements Faceable, Block
     }
 
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (face == BlockFace.DOWN) {
             return false;
         }
@@ -118,7 +118,7 @@ public class BlockBanner extends BlockTransparentMeta implements Faceable, Block
 
         if (face == BlockFace.UP) {
             CompassRoseDirection direction = GROUND_SIGN_DIRECTION.getValueForMeta(
-                    (int) Math.floor((((player != null? player.yaw : 0) + 180) * 16 / 360) + 0.5) & 0x0f
+                    (int) Math.floor((((player != null ? player.yaw : 0) + 180) * 16 / 360) + 0.5) & 0x0f
             );
             setDirection(direction);
             if (!this.getLevel().setBlock(block, this, true)) {

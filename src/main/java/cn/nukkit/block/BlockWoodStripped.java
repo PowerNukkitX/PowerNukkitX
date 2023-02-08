@@ -9,7 +9,7 @@ import cn.nukkit.blockproperty.value.WoodType;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.item.Item;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 public abstract class BlockWoodStripped extends BlockWood {
@@ -28,7 +28,7 @@ public abstract class BlockWoodStripped extends BlockWood {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PILLAR_PROPERTIES;
@@ -58,9 +58,9 @@ public abstract class BlockWoodStripped extends BlockWood {
     public boolean canBeActivated() {
         return false;
     }
-    
+
     @Override
-    public boolean onActivate(@Nonnull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player) {
         return false;
     }
 }

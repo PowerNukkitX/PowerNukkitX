@@ -16,7 +16,8 @@ import lombok.extern.log4j.Log4j2;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
@@ -194,7 +195,7 @@ abstract public class PluginBase implements Plugin {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Nullable
-    public PluginCommand<?> getPluginCommand(@Nonnull String name) {
+    public PluginCommand<?> getPluginCommand(@NotNull String name) {
         PluginIdentifiableCommand command = getCommand(name);
         if (command instanceof PluginCommand<?>) {
             return (PluginCommand<?>) command;

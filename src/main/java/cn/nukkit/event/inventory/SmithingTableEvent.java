@@ -26,7 +26,7 @@ import cn.nukkit.event.HandlerList;
 import cn.nukkit.inventory.SmithingInventory;
 import cn.nukkit.item.Item;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author joserobjr
@@ -43,14 +43,14 @@ public class SmithingTableEvent extends InventoryEvent implements Cancellable {
         return handlers;
     }
 
-    private final @Nonnull Item equipmentItem;
-    private final @Nonnull Item resultItem;
-    private final @Nonnull Item ingredientItem;
-    private final @Nonnull Player player;
+    private final @NotNull Item equipmentItem;
+    private final @NotNull Item resultItem;
+    private final @NotNull Item ingredientItem;
+    private final @NotNull Player player;
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public SmithingTableEvent(SmithingInventory inventory, @Nonnull Item equipmentItem, @Nonnull Item resultItem, @Nonnull Item ingredientItem, @Nonnull Player player) {
+    public SmithingTableEvent(SmithingInventory inventory, @NotNull Item equipmentItem, @NotNull Item resultItem, @NotNull Item ingredientItem, @NotNull Player player) {
         super(inventory);
         this.equipmentItem = equipmentItem;
         this.resultItem = resultItem;
@@ -60,28 +60,28 @@ public class SmithingTableEvent extends InventoryEvent implements Cancellable {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public Item getEquipmentItem() {
         return this.equipmentItem;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public Item getResultItem() {
         return this.resultItem;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public Item getIngredientItem() {
         return this.ingredientItem;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public Player getPlayer() {
         return this.player;
     }

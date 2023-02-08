@@ -69,7 +69,8 @@ import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import java.io.File;
 import java.lang.ref.SoftReference;
@@ -717,7 +718,7 @@ public class Level implements ChunkManager, Metadatable {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public final LevelProvider requireProvider() {
         LevelProvider levelProvider = getProvider();
         if (levelProvider == null) {
@@ -823,6 +824,16 @@ public class Level implements ChunkManager, Metadatable {
         pk.data = data;
 
         addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, pk);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    public void addLevelEvent(Vector3 pos, int event, CompoundTag data) {
+        LevelEventGenericPacket pk = new LevelEventGenericPacket();
+        pk.eventId = event;
+        pk.tag = data;
+
+        this.addChunkPacket(pos.getChunkX(), pos.getChunkZ(), pk);
     }
 
     @PowerNukkitDifference(info = "Default sound method changed to addSound", since = "1.4.0.0-PN")
@@ -1873,7 +1884,7 @@ public class Level implements ChunkManager, Metadatable {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public List<Block> scanBlocks(@Nonnull AxisAlignedBB bb, @Nonnull BiPredicate<BlockVector3, BlockState> condition) {
+    public List<Block> scanBlocks(@NotNull AxisAlignedBB bb, @NotNull BiPredicate<BlockVector3, BlockState> condition) {
         BlockVector3 min = new BlockVector3(NukkitMath.floorDouble(bb.getMinX()), NukkitMath.floorDouble(bb.getMinY()), NukkitMath.floorDouble(bb.getMinZ()));
         BlockVector3 max = new BlockVector3(NukkitMath.floorDouble(bb.getMaxX()), NukkitMath.floorDouble(bb.getMaxY()), NukkitMath.floorDouble(bb.getMaxZ()));
         ChunkVector2 minChunk = min.getChunkVector();
@@ -2719,25 +2730,25 @@ public class Level implements ChunkManager, Metadatable {
 
     @Since("1.4.0.0-PN")
     @Nullable
-    public EntityItem dropAndGetItem(@Nonnull Vector3 source, @Nonnull Item item) {
+    public EntityItem dropAndGetItem(@NotNull Vector3 source, @NotNull Item item) {
         return this.dropAndGetItem(source, item, null);
     }
 
     @Since("1.4.0.0-PN")
     @Nullable
-    public EntityItem dropAndGetItem(@Nonnull Vector3 source, @Nonnull Item item, @Nullable Vector3 motion) {
+    public EntityItem dropAndGetItem(@NotNull Vector3 source, @NotNull Item item, @Nullable Vector3 motion) {
         return this.dropAndGetItem(source, item, motion, 10);
     }
 
     @Since("1.4.0.0-PN")
     @Nullable
-    public EntityItem dropAndGetItem(@Nonnull Vector3 source, @Nonnull Item item, @Nullable Vector3 motion, int delay) {
+    public EntityItem dropAndGetItem(@NotNull Vector3 source, @NotNull Item item, @Nullable Vector3 motion, int delay) {
         return this.dropAndGetItem(source, item, motion, false, delay);
     }
 
     @Since("1.4.0.0-PN")
     @Nullable
-    public EntityItem dropAndGetItem(@Nonnull Vector3 source, @Nonnull Item item, @Nullable Vector3 motion, boolean dropAround, int delay) {
+    public EntityItem dropAndGetItem(@NotNull Vector3 source, @NotNull Item item, @Nullable Vector3 motion, boolean dropAround, int delay) {
         EntityItem itemEntity = null;
 
         if (motion == null) {
@@ -5125,7 +5136,7 @@ public class Level implements ChunkManager, Metadatable {
     @AllArgsConstructor
     @Data
     private static class QueuedUpdate {
-        @Nonnull
+        @NotNull
         private Block block;
         private BlockFace neighbor;
     }

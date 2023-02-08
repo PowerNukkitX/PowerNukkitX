@@ -4,6 +4,7 @@ import cn.nukkit.api.*;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.customitem.CustomItem;
 import cn.nukkit.item.enchantment.bow.EnchantmentBowFlame;
 import cn.nukkit.item.enchantment.bow.EnchantmentBowInfinity;
 import cn.nukkit.item.enchantment.bow.EnchantmentBowKnockback;
@@ -24,18 +25,26 @@ import cn.nukkit.item.enchantment.trident.EnchantmentTridentLoyalty;
 import cn.nukkit.item.enchantment.trident.EnchantmentTridentRiptide;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.utils.Identifier;
+import cn.nukkit.utils.OK;
 import io.netty.util.internal.EmptyArrays;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Label;
+import org.objectweb.asm.MethodVisitor;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.lang.ref.WeakReference;
+import java.lang.reflect.InaccessibleObjectException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import static cn.nukkit.utils.Utils.dynamic;
+import static org.objectweb.asm.Opcodes.*;
 
 /**
  * An enchantment that can be to applied to an item.
@@ -47,10 +56,17 @@ public abstract class Enchantment implements Cloneable {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final Enchantment[] EMPTY_ARRAY = new Enchantment[0];
+
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
     public static final int CUSTOM_ENCHANTMENT_ID = dynamic(256);
 
     protected static Enchantment[] enchantments;
+
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
     protected static Map<Identifier, Enchantment> customEnchantments = new Object2ObjectLinkedOpenHashMap<>();
+
     public static final int ID_PROTECTION_ALL = 0;
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
@@ -292,6 +308,8 @@ public abstract class Enchantment implements Cloneable {
         customEnchantments.put(new Identifier("minecraft", NAME_SWIFT_SNEAK), enchantments[37]);
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
     public static String getLevelString(int level) {
         return switch (level) {
             case 1 -> "I";
@@ -310,28 +328,109 @@ public abstract class Enchantment implements Cloneable {
 
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
-    public static boolean register(Enchantment enchantment) {
+    public static OK<?> register(Enchantment enchantment, boolean registerItem) {
         Objects.requireNonNull(enchantment);
         Objects.requireNonNull(enchantment.getIdentifier());
         if (customEnchantments.containsKey(enchantment.getIdentifier())) {
-            log.warn("This identifier already exists,register custom enchantment failed!");
-            return false;
+            return new OK<>(false, "This identifier already exists,register custom enchantment failed!");
         }
         if (enchantment.getIdentifier().getNamespace().equals(Identifier.DEFAULT_NAMESPACE)) {
-            log.warn("Please do not use the reserved namespace `minecraft` !");
+            return new OK<>(false, "Please do not use the reserved namespace `minecraft` !");
         }
         customEnchantments.put(enchantment.getIdentifier(), enchantment);
-        return true;
+        if (registerItem) {
+            return registerCustomEnchantBook(enchantment);
+        }
+        return OK.TRUE;
     }
 
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
-    public static boolean register(Enchantment... enchantments) {
-        boolean result = true;
+    public static OK<?> register(Enchantment... enchantments) {
         for (var ench : enchantments) {
-            if (!register(ench)) result = false;
+            var msg = register(ench, true);
+            if (!msg.ok()) {
+                return msg;
+            }
         }
-        return result;
+        return OK.TRUE;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    private static int BOOK_NUMBER = 1;
+
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    @SuppressWarnings("unchecked")
+    private static OK<?> registerCustomEnchantBook(Enchantment enchantment) {
+        var identifier = enchantment.getIdentifier();
+        assert identifier != null;
+        for (int i = 1; i <= enchantment.getMaxLevel(); i++) {
+            var name = "§eEnchanted Book\n§7" + enchantment.getName() + " " + getLevelString(i);
+            ClassWriter classWriter = new ClassWriter(0);
+            MethodVisitor methodVisitor;
+            String className = "CustomBookEnchanted" + BOOK_NUMBER;
+            classWriter.visit(V17, ACC_PUBLIC | ACC_SUPER, "cn/nukkit/item/customitem/" + className, null, "cn/nukkit/item/customitem/ItemCustomBookEnchanted", null);
+            classWriter.visitSource(className + ".java", null);
+            {
+                methodVisitor = classWriter.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
+                methodVisitor.visitCode();
+                Label label0 = new Label();
+                methodVisitor.visitLabel(label0);
+                methodVisitor.visitLineNumber(6, label0);
+                methodVisitor.visitVarInsn(ALOAD, 0);
+                methodVisitor.visitLdcInsn(identifier.toString());
+                methodVisitor.visitLdcInsn(name);
+                methodVisitor.visitMethodInsn(INVOKESPECIAL, "cn/nukkit/item/customitem/ItemCustomBookEnchanted", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V", false);
+                Label label1 = new Label();
+                methodVisitor.visitLabel(label1);
+                methodVisitor.visitLineNumber(7, label1);
+                methodVisitor.visitInsn(RETURN);
+                Label label2 = new Label();
+                methodVisitor.visitLabel(label2);
+                methodVisitor.visitLocalVariable("this", "Lcn/nukkit/item/customitem/" + className + ";", null, label0, label2, 0);
+                methodVisitor.visitMaxs(3, 1);
+                methodVisitor.visitEnd();
+            }
+            classWriter.visitEnd();
+            BOOK_NUMBER++;
+            try {
+                Class<? extends CustomItem> clazz = (Class<? extends CustomItem>) loadClass(Thread.currentThread().getContextClassLoader(), "cn.nukkit.item.customitem." + className, classWriter.toByteArray());
+                Item.registerCustomItem(clazz).assertOK();
+            } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException |
+                     IllegalAccessException | AssertionError e) {
+                return new OK<>(false, e);
+            }
+        }
+        return OK.TRUE;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    private static WeakReference<Method> defineClassMethodRef = new WeakReference<>(null);
+
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    @SuppressWarnings("DuplicatedCode")
+    private static Class<?> loadClass(ClassLoader loader, String className, byte[] b) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InaccessibleObjectException {
+        Class<?> clazz;
+        java.lang.reflect.Method method;
+        if (defineClassMethodRef.get() == null) {
+            var cls = Class.forName("java.lang.ClassLoader");
+            method = cls.getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class);
+            defineClassMethodRef = new WeakReference<>(method);
+        } else {
+            method = defineClassMethodRef.get();
+        }
+        Objects.requireNonNull(method).setAccessible(true);
+        try {
+            var args = new Object[]{className, b, 0, b.length};
+            clazz = (Class<?>) method.invoke(loader, args);
+        } finally {
+            method.setAccessible(false);
+        }
+        return clazz;
     }
 
     /**
@@ -418,7 +517,7 @@ public abstract class Enchantment implements Cloneable {
     /**
      * The group of objects that this enchantment can be applied.
      */
-    @Nonnull
+    @NotNull
     public EnchantmentType type;
 
     /**
@@ -515,7 +614,7 @@ public abstract class Enchantment implements Cloneable {
      * @return This object so you can do chained calls
      */
 
-    @Nonnull
+    @NotNull
     public Enchantment setLevel(int level) {
         return this.setLevel(level, true);
     }
@@ -529,7 +628,7 @@ public abstract class Enchantment implements Cloneable {
      * @param safe  If the level should clamped or applied directly
      * @return This object so you can do chained calls
      */
-    @Nonnull
+    @NotNull
     public Enchantment setLevel(int level, boolean safe) {
         if (!safe) {
             this.level = level;
@@ -552,7 +651,7 @@ public abstract class Enchantment implements Cloneable {
      * How rare this enchantment is.
      */
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public Rarity getRarity() {
         return this.rarity;
     }
@@ -687,7 +786,7 @@ public abstract class Enchantment implements Cloneable {
                     "The right way to implement compatibility now is to override checkCompatibility(Enchantment enchantment) " +
                     "and also make sure to keep it protected! Some overrides was incorrectly made public, let's avoid this mistake."
     )
-    public boolean isCompatibleWith(@Nonnull Enchantment enchantment) {
+    public boolean isCompatibleWith(@NotNull Enchantment enchantment) {
         return this.checkCompatibility(enchantment) && enchantment.checkCompatibility(this);
     }
 
@@ -721,7 +820,7 @@ public abstract class Enchantment implements Cloneable {
      * @param item The item to be checked
      * @return If the type of the item is valid for this enchantment
      */
-    public boolean canEnchant(@Nonnull Item item) {
+    public boolean canEnchant(@NotNull Item item) {
         return this.type.canEnchantItem(item);
     }
 

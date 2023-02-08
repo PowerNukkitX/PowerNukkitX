@@ -5,7 +5,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockSignPost;
 import lombok.RequiredArgsConstructor;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Represents a 16 direction compass rose.
@@ -84,13 +84,14 @@ public enum CompassRoseDirection {
 
     /**
      * Gets the closes direction based on the given {@link cn.nukkit.entity.Entity} yaw.
+     *
      * @param yaw An entity yaw
      * @return The closest direction
      * @since 1.4.0.0-PN
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static CompassRoseDirection getClosestFromYaw(double yaw, @Nonnull Precision precision) {
+    public static CompassRoseDirection getClosestFromYaw(double yaw, @NotNull Precision precision) {
         return BlockSignPost.GROUND_SIGN_DIRECTION.getValueForMeta(
                 (int) Math.round(Math.round((yaw + 180.0) * precision.directions / 360.0) * (16.0 / precision.directions)) & 0x0f
         );

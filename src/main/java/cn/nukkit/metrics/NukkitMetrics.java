@@ -10,7 +10,8 @@ import cn.nukkit.utils.Config;
 import cn.nukkit.utils.LoginChainData;
 import lombok.extern.log4j.Log4j2;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -79,7 +80,7 @@ public class NukkitMetrics {
         return nukkitMetrics.metrics != null;
     }
 
-    private static NukkitMetrics getOrCreateMetrics(@Nonnull final Server server) {
+    private static NukkitMetrics getOrCreateMetrics(@NotNull final Server server) {
         Map<Server, NukkitMetrics> current = metricsStarted.get();
         NukkitMetrics metrics = current.get(server);
         if (metrics != null) {
@@ -100,8 +101,8 @@ public class NukkitMetrics {
         return metrics;
     }
 
-    @Nonnull
-    private static NukkitMetrics createMetrics(@Nonnull final Server server) {
+    @NotNull
+    private static NukkitMetrics createMetrics(@NotNull final Server server) {
         NukkitMetrics nukkitMetrics = new NukkitMetrics(server, false);
         if (!nukkitMetrics.enabled) {
             return nukkitMetrics;

@@ -10,7 +10,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemRedstoneRepeater;
 import cn.nukkit.math.BlockFace;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
 
@@ -30,7 +30,7 @@ public abstract class BlockRedstoneRepeater extends BlockRedstoneDiode {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -43,7 +43,7 @@ public abstract class BlockRedstoneRepeater extends BlockRedstoneDiode {
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player) {
         int repeaterDelay = getPropertyValue(REPEATER_DELAY);
         if (repeaterDelay == 3) {
             setPropertyValue(REPEATER_DELAY, 0);
@@ -57,7 +57,7 @@ public abstract class BlockRedstoneRepeater extends BlockRedstoneDiode {
 
     @PowerNukkitDifference(info = "Allow to be placed on top of the walls", since = "1.3.0.0-PN")
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (!isSupportValid(down())) {
             return false;
         }

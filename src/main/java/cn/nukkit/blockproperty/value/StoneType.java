@@ -23,7 +23,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.utils.BlockColor;
 import lombok.AllArgsConstructor;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.utils.BlockColor.*;
 
@@ -68,14 +68,14 @@ public enum StoneType {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public String getEnglishName() {
         return englishName;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public BlockColor getColor() {
         return color;
     }

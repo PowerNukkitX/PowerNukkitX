@@ -7,7 +7,8 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 
 /**
@@ -16,7 +17,7 @@ import javax.annotation.Nullable;
 @PowerNukkitXOnly
 @Since("1.19.21-r2")
 public interface EntityProvider<T extends Entity> {
-    T provideEntity(@Nonnull FullChunk chunk, @Nonnull CompoundTag nbt, @Nullable Object... args);
+    T provideEntity(@NotNull FullChunk chunk, @NotNull CompoundTag nbt, @Nullable Object... args);
 
     int getNetworkId();
 

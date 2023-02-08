@@ -9,7 +9,7 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * 实体生物
@@ -34,7 +34,7 @@ public abstract class EntityCreature extends EntityLiving implements EntityNamea
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Override
-    public final boolean playerApplyNameTag(@Nonnull Player player, @Nonnull Item item) {
+    public final boolean playerApplyNameTag(@NotNull Player player, @NotNull Item item) {
         return applyNameTag(player, item);
     }
 

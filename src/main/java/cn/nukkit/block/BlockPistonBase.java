@@ -29,7 +29,8 @@ import cn.nukkit.utils.Utils;
 import com.google.common.collect.Lists;
 import lombok.extern.log4j.Log4j2;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,7 +77,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -84,7 +85,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public Class<? extends BlockEntityPistonArm> getBlockEntityClass() {
         return BlockEntityPistonArm.class;
@@ -92,7 +93,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     @Override
     public String getBlockEntityType() {
         return BlockEntity.PISTON_ARM;
@@ -116,7 +117,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
 
     @Override
     @PowerNukkitDifference(info = "Using new method for checking if powered", since = "1.4.0.0-PN")
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (player != null) {
             if (Math.abs(player.getFloorX() - this.x) <= 1 && Math.abs(player.getFloorZ() - this.z) <= 1) {
                 double y = player.y + player.getEyeHeight();

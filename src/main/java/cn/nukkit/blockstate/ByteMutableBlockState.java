@@ -30,7 +30,9 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
+
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.Serializable;
@@ -87,14 +89,14 @@ public class ByteMutableBlockState extends MutableBlockState {
     @Nonnegative
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     @Override
     public BigInteger getHugeDamage() {
         return BigInteger.valueOf(storage);
     }
 
     @Nonnegative
-    @Nonnull
+    @NotNull
     @Override
     @PowerNukkitOnly
     public Byte getDataStorage() {
@@ -200,7 +202,7 @@ public class ByteMutableBlockState extends MutableBlockState {
     }
 
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public Serializable getPropertyValue(String propertyName) {
         return properties.getValue(storage, propertyName);
@@ -219,14 +221,14 @@ public class ByteMutableBlockState extends MutableBlockState {
     }
 
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public String getPersistenceValue(String propertyName) {
         return properties.getPersistenceValue(storage, propertyName);
     }
 
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockState getCurrentState() {
         return BlockState.of(blockId, storage);
@@ -240,7 +242,7 @@ public class ByteMutableBlockState extends MutableBlockState {
     }
 
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public ByteMutableBlockState copy() {
         return new ByteMutableBlockState(blockId, properties, storage);

@@ -7,7 +7,7 @@ import cn.nukkit.blockentity.BlockEntitySmoker;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 public class BlockSmokerBurning extends BlockFurnaceBurning {
@@ -33,7 +33,7 @@ public class BlockSmokerBurning extends BlockFurnaceBurning {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     @Override
     public String getBlockEntityType() {
         return BlockEntity.SMOKER;
@@ -41,7 +41,7 @@ public class BlockSmokerBurning extends BlockFurnaceBurning {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public Class<? extends BlockEntitySmoker> getBlockEntityClass() {
         return BlockEntitySmoker.class;

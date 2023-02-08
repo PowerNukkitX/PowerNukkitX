@@ -9,7 +9,7 @@ import cn.nukkit.blockproperty.exception.InvalidBlockPropertyValueException;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Properties and behaviour definitions of the {@link BlockID#TWISTING_VINES} block.
@@ -54,7 +54,7 @@ public class BlockVinesTwisting extends BlockVinesNether {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -70,7 +70,7 @@ public class BlockVinesTwisting extends BlockVinesNether {
         return "Twisting Vines";
     }
 
-    @Nonnull
+    @NotNull
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     @Override

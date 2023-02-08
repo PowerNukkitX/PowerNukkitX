@@ -25,7 +25,8 @@ import cn.nukkit.event.HandlerList;
 import cn.nukkit.inventory.AnvilInventory;
 import lombok.ToString;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 
 /**
@@ -51,7 +52,7 @@ public class PlayerTypingAnvilInventoryEvent extends InventoryEvent {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public PlayerTypingAnvilInventoryEvent(@Nonnull Player player, @Nonnull AnvilInventory inventory, @Nullable String previousName, @Nonnull String typedName) {
+    public PlayerTypingAnvilInventoryEvent(@NotNull Player player, @NotNull AnvilInventory inventory, @Nullable String previousName, @NotNull String typedName) {
         super(inventory);
         this.player = player;
         this.previousName = previousName;
@@ -59,21 +60,21 @@ public class PlayerTypingAnvilInventoryEvent extends InventoryEvent {
     }
 
     @Override
-    @Nonnull
+    @NotNull
     public AnvilInventory getInventory() {
         return (AnvilInventory) super.getInventory();
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public Player getPlayer() {
         return player;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public String getTypedName() {
         return typedName;
     }

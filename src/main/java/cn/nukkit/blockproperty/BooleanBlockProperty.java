@@ -6,7 +6,8 @@ import cn.nukkit.blockproperty.exception.InvalidBlockPropertyMetaException;
 import cn.nukkit.blockproperty.exception.InvalidBlockPropertyPersistenceValueException;
 import com.google.common.base.Preconditions;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import java.math.BigInteger;
 
@@ -69,7 +70,7 @@ public final class BooleanBlockProperty extends BlockProperty<Boolean> {
         return newValue? (currentMeta | mask) : (currentMeta & ~mask);
     }
 
-    @Nonnull
+    @NotNull
     @PowerNukkitOnly
     @Override
     public Boolean getValue(int currentMeta, int bitOffset) {
@@ -77,7 +78,7 @@ public final class BooleanBlockProperty extends BlockProperty<Boolean> {
     }
 
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public Boolean getValue(long currentBigMeta, int bitOffset) {
         return getBooleanValue(currentBigMeta, bitOffset);
@@ -131,7 +132,7 @@ public final class BooleanBlockProperty extends BlockProperty<Boolean> {
     /**
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
      */
-    @Nonnull
+    @NotNull
     @PowerNukkitOnly
     @Override
     public Boolean getValueForMeta(int meta) {
@@ -156,7 +157,7 @@ public final class BooleanBlockProperty extends BlockProperty<Boolean> {
     @Override
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     public Boolean getDefaultValue() {
         return Boolean.FALSE;
     }
@@ -175,7 +176,7 @@ public final class BooleanBlockProperty extends BlockProperty<Boolean> {
     }
 
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public Class<Boolean> getValueClass() {
         return Boolean.class;
@@ -196,10 +197,10 @@ public final class BooleanBlockProperty extends BlockProperty<Boolean> {
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     @Override
-    public int getMetaForPersistenceValue(@Nonnull String persistenceValue) {
+    public int getMetaForPersistenceValue(@NotNull String persistenceValue) {
         if ("1".equals(persistenceValue)) {
             return 1;
-        } else if ("0".equals(persistenceValue)){
+        } else if ("0".equals(persistenceValue)) {
             return 0;
         } else {
             throw new InvalidBlockPropertyPersistenceValueException(this, null, persistenceValue, "Only 1 or 0 was expected");

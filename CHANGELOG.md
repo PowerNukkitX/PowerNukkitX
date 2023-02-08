@@ -1059,7 +1059,7 @@ PowerNukkit now has its own [discord guild], click the link below to join and ha
 
 ### Added
 - [#PN-330] The [discord guild] link to the readme
-- [#PN-352] The library jsr305 library at version `3.0.2` to add `@Nullable`, `@Nonnull` and related annotations
+- [#PN-352] The library jsr305 library at version `3.0.2` to add `@Nullable`, `@NotNull` and related annotations
 - [#PN-326] A couple of new classes, methods and fields to interact with the enchanting table transactions
 - [#PN-326] The entities without AI: Hoglin, Piglin, Zoglin, Strider
 - [#PN-352] Adds default runtime id to the new blocks with meta `0`

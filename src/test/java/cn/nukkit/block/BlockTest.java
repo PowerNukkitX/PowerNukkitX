@@ -33,7 +33,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.util.function.Consumer;
@@ -512,7 +513,7 @@ class BlockTest {
 
         @Since("1.4.0.0-PN")
         @PowerNukkitOnly
-        @Nonnull
+        @NotNull
         @Override
         public BlockProperties getProperties() {
             return PROPERTIES;

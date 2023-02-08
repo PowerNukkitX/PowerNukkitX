@@ -9,7 +9,8 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.BannerPattern;
 import cn.nukkit.utils.DyeColor;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Objects;
 
 /**
@@ -50,13 +51,13 @@ public class ItemBanner extends Item {
         return this.getDamage() & 0x0f;
     }
 
-    public void setBaseColor(@Nonnull DyeColor color) {
+    public void setBaseColor(@NotNull DyeColor color) {
         this.setDamage(color.getDyeData() & 0x0f);
     }
 
     @PowerNukkitOnly
     @Since("FUTURE")
-    @Nonnull
+    @NotNull
     public DyeColor getBaseDyeColor() {
         return Objects.requireNonNull(DyeColor.getByDyeData(getBaseColor()));
     }

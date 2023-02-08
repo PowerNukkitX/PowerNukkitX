@@ -5,7 +5,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.value.OxidizationLevel;
 import cn.nukkit.utils.BlockColor;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author joserobjr
@@ -39,7 +39,7 @@ public class BlockSlabCopperCutExposed extends BlockSlabCopperCut {
 
     @Since("FUTURE")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public OxidizationLevel getOxidizationLevel() {
         return OxidizationLevel.EXPOSED;

@@ -26,7 +26,8 @@ import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
@@ -85,7 +86,7 @@ public class BlockTrapdoor extends BlockTransparentMeta implements RedstoneCompo
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -253,7 +254,7 @@ public class BlockTrapdoor extends BlockTransparentMeta implements RedstoneCompo
 
     @PowerNukkitDifference(info = "Will return false if setBlock fails and the direction is relative to where the player is facing", since = "1.4.0.0-PN")
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (face.getAxis().isHorizontal()) {
             setBlockFace(player == null ? face : player.getDirection().getOpposite());
             setTop(fy > 0.5);
@@ -274,7 +275,7 @@ public class BlockTrapdoor extends BlockTransparentMeta implements RedstoneCompo
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player) {
         return toggle(player);
     }
 

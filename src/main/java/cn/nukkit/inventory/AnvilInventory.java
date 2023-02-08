@@ -11,7 +11,7 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Position;
 import cn.nukkit.nbt.tag.CompoundTag;
 import io.netty.util.internal.StringUtil;
-import lombok.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -36,7 +36,7 @@ public class AnvilInventory extends FakeBlockUIComponent {
     private int cost;
     private String newItemName;
 
-    @NonNull
+    @NotNull
     private Item currentResult = Item.get(0);
 
     public AnvilInventory(PlayerUIInventory playerUI, Position position) {

@@ -107,7 +107,8 @@ import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.powernukkit.version.Version;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -3070,6 +3071,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.sendPosition(new Vector3(x, y, z), yaw, pitch, MovePlayerPacket.MODE_NORMAL, this.getViewers().values().toArray(EMPTY_ARRAY));
     }
 
+    /**
+     * 每次调用此方法都会向客户端发送motion包。若多次调用，motion将在客户端叠加<p/>
+     * @param motion 运动向量<br>a motion vector
+     * @return 调用是否成功
+     */
     @Override
     public boolean setMotion(Vector3 motion) {
         if (super.setMotion(motion)) {
@@ -6807,7 +6813,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      */
     @Since("1.4.0.0-PN")
     @Nullable
-    public EntityItem dropAndGetItem(@Nonnull Item item) {
+    public EntityItem dropAndGetItem(@NotNull Item item) {
         if (!this.spawned || !this.isAlive()) {
             return null;
         }

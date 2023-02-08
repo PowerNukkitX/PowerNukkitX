@@ -11,7 +11,8 @@ import lombok.extern.log4j.Log4j2;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
@@ -190,7 +191,7 @@ public class Config {
 
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
-    public boolean loadAsJson(@Nullable InputStream inputStream, @Nonnull Gson gson) {
+    public boolean loadAsJson(@Nullable InputStream inputStream, @NotNull Gson gson) {
         if (inputStream == null) return false;
         if (this.correct) {
             String content;
@@ -232,7 +233,7 @@ public class Config {
 
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
-    public boolean saveAsJson(@Nonnull File file, boolean async, @Nonnull Gson gson) {
+    public boolean saveAsJson(@NotNull File file, boolean async, @NotNull Gson gson) {
         this.file = file;
         return saveAsJson(async, gson);
     }
@@ -243,7 +244,7 @@ public class Config {
 
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
-    public boolean saveAsJson(boolean async, @Nonnull Gson gson) {
+    public boolean saveAsJson(boolean async, @NotNull Gson gson) {
         if (!this.correct) {
             return false;
         }

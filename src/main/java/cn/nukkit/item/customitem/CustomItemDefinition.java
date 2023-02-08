@@ -205,7 +205,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
          * <p>
          * Control rendering offsets of custom items at different viewpoints
          */
-        public SimpleBuilder renderOffsets(@NonNull RenderOffsets renderOffsets) {
+        public SimpleBuilder renderOffsets(@NotNull RenderOffsets renderOffsets) {
             this.nbt.getCompound("components")
                     .putCompound("minecraft:render_offsets", renderOffsets.nbt);
             return this;
@@ -257,7 +257,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
         }
 
         @Since("1.19.40-r1")
-        protected SimpleBuilder addRepairs(@NonNull List<String> repairItemNames, String molang) {
+        protected SimpleBuilder addRepairs(@NotNull List<String> repairItemNames, String molang) {
             if (molang.isBlank()) {
                 System.out.println("repairAmount has an invalid value!");
                 return this;
@@ -337,13 +337,13 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
         }
 
         @Since("1.19.40-r1")
-        public ToolBuilder addRepairItems(@NonNull List<Item> repairItems, String molang) {
+        public ToolBuilder addRepairItems(@NotNull List<Item> repairItems, String molang) {
             super.addRepairs(repairItems.stream().map(Item::getNamespaceId).toList(), molang);
             return this;
         }
 
         @Since("1.19.40-r1")
-        public ToolBuilder addRepairItems(@NonNull List<Item> repairItems, int repairAmount) {
+        public ToolBuilder addRepairItems(@NotNull List<Item> repairItems, int repairAmount) {
             super.addRepairs(repairItems.stream().map(Item::getNamespaceId).toList(), String.valueOf(repairAmount));
             return this;
         }
@@ -520,13 +520,13 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
         }
 
         @Since("1.19.40-r1")
-        public ArmorBuilder addRepairItems(@NonNull List<Item> repairItems, String molang) {
+        public ArmorBuilder addRepairItems(@NotNull List<Item> repairItems, String molang) {
             super.addRepairs(repairItems.stream().map(Item::getNamespaceId).toList(), molang);
             return this;
         }
 
         @Since("1.19.40-r1")
-        public ArmorBuilder addRepairItems(@NonNull List<Item> repairItems, int repairAmount) {
+        public ArmorBuilder addRepairItems(@NotNull List<Item> repairItems, int repairAmount) {
             super.addRepairs(repairItems.stream().map(Item::getNamespaceId).toList(), String.valueOf(repairAmount));
             return this;
         }

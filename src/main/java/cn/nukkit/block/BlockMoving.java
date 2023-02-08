@@ -8,7 +8,8 @@ import cn.nukkit.blockentity.BlockEntityMovingBlock;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 
 @PowerNukkitOnly
@@ -36,7 +37,7 @@ public class BlockMoving extends BlockTransparent implements BlockEntityHolder<B
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     @Override
     public String getBlockEntityType() {
         return BlockEntity.MOVING_BLOCK;
@@ -44,14 +45,14 @@ public class BlockMoving extends BlockTransparent implements BlockEntityHolder<B
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public Class<? extends BlockEntityMovingBlock> getBlockEntityClass() {
         return BlockEntityMovingBlock.class;
     }
 
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         return false;
     }
 

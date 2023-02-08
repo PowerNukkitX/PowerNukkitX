@@ -19,7 +19,7 @@ import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.RedstoneComponent;
 import lombok.extern.log4j.Log4j2;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
 
@@ -53,7 +53,7 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -61,7 +61,7 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public Class<? extends BlockEntityComparator> getBlockEntityClass() {
         return BlockEntityComparator.class;
@@ -69,7 +69,7 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     @Override
     public String getBlockEntityType() {
         return BlockEntity.COMPARATOR;
@@ -156,7 +156,7 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
 
     @PowerNukkitDifference(info = "Trigger observer.", since = "1.4.0.0-PN")
     @Override
-    public boolean onActivate(@Nonnull Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player) {
         if (getMode() == Mode.SUBTRACT) {
             this.setDamage(this.getDamage() - 4);
         } else {
@@ -218,13 +218,13 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
     }
 
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         Block layer0 = level.getBlock(this, 0);
         Block layer1 = level.getBlock(this, 1);
         if (!super.place(item, block, target, face, fx, fy, fz, player)) {
             return false;
         }
-        
+
         try {
             createBlockEntity(new CompoundTag().putList(new ListTag<>("Items")));
         } catch (Exception e) {

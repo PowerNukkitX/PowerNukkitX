@@ -21,6 +21,7 @@ import io.netty.channel.socket.DatagramPacket;
 import io.netty.util.internal.PlatformDependent;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Constructor;
 import java.net.InetAddress;
@@ -202,12 +203,12 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
     }
 
     @Override
-    public boolean onConnectionRequest(@NonNull InetSocketAddress address, @NonNull InetSocketAddress realAddress) {
+    public boolean onConnectionRequest(@NotNull InetSocketAddress address, @NotNull InetSocketAddress realAddress) {
         return true;
     }
 
     @Override
-    public byte[] onQuery(@NonNull InetSocketAddress inetSocketAddress) {
+    public byte[] onQuery(@NotNull InetSocketAddress inetSocketAddress) {
         return this.advertisement;
     }
 
@@ -230,7 +231,7 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
     }
 
     @Override
-    public void onUnhandledDatagram(@NonNull ChannelHandlerContext ctx, DatagramPacket datagramPacket) {
+    public void onUnhandledDatagram(@NotNull ChannelHandlerContext ctx, DatagramPacket datagramPacket) {
         this.server.handlePacket(datagramPacket.sender(), datagramPacket.content());
     }
 

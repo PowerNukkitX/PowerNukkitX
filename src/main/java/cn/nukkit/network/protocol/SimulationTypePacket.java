@@ -21,7 +21,7 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author joserobjr
@@ -62,14 +62,14 @@ public class SimulationTypePacket extends DataPacket {
 
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
-    @Nonnull
+    @NotNull
     public SimulationType getSimulationType() {
         return type;
     }
 
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
-    public void setSimulationType(@Nonnull SimulationType type) {
+    public void setSimulationType(@NotNull SimulationType type) {
         this.type = type;
     }
     

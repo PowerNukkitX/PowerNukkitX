@@ -3,6 +3,7 @@ package cn.nukkit.blockentity;
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXDifference;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
@@ -10,6 +11,7 @@ import cn.nukkit.block.BlockPistonHead;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityMoveByPistonEvent;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.Position;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
@@ -23,6 +25,7 @@ import cn.nukkit.utils.RedstoneComponent;
 import cn.nukkit.utils.Utils;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,8 +40,10 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
     public BlockFace facing;
     public boolean extending;
     public boolean sticky;
+    @PowerNukkitXOnly
     @Since("1.19.60-r1")
     public byte state;
+    @PowerNukkitXOnly
     @Since("1.19.60-r1")
     public byte newState = 1;
     @PowerNukkitOnly
@@ -128,7 +133,10 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
             //结束推动
             this.state = this.newState = (byte) (extending ? 2 : 0);
             var pushDirection = this.extending ? facing : facing.getOpposite();
+            var redstoneUpdateList = new ArrayList<BlockVector3>();
             for (var pos : this.attachedBlocks) {
+                redstoneUpdateList.add(pos);
+                redstoneUpdateList.add(pos.getSide(pushDirection));
                 var movingBlock = this.level.getBlockEntity(pos.getSide(pushDirection));
                 if (movingBlock instanceof BlockEntityMovingBlock movingBlockBlockEntity) {
                     movingBlock.close();
@@ -146,10 +154,11 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                     }
                     //活塞更新
                     moved.onUpdate(Level.BLOCK_UPDATE_MOVED);
-                    //红石更新
-                    RedstoneComponent.updateAroundRedstone(moved);
                 }
             }
+            for (var update : redstoneUpdateList)
+                //红石更新
+                RedstoneComponent.updateAllAroundRedstone(new Position(update.x, update.y, update.z, this.level));
             var pos = getSide(facing);
             if (!extending) {
                 //未伸出的活塞可以被推动
@@ -160,7 +169,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                     this.level.setBlock(pos, Block.get(Block.AIR), true);
                 }
             }
-            //对和活塞接触的方块进行更新
+            //对和活塞直接接触的观察者进行更新
             this.level.updateAroundObserver(this);
             //下一计划刻再自检一遍，防止出错
             this.level.scheduleUpdate(this.getLevelBlock(), 1);
@@ -176,6 +185,8 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
     @Override
     public void loadNBT() {
         super.loadNBT();
+        this.state = (byte) this.namedTag.getByte("State");
+        this.newState = (byte) this.namedTag.getByte("NewState");
         if (namedTag.contains("Progress"))
             this.progress = namedTag.getFloat("Progress");
         if (namedTag.contains("LastProgress"))

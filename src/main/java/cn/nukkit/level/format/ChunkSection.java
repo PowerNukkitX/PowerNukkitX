@@ -11,7 +11,8 @@ import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BinaryStream;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,14 +59,14 @@ public interface ChunkSection {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     default BlockState getBlockState(int x, int y, int z) {
         return getBlockState(x, y, z, 0);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     default BlockState getBlockState(int x, int y, int z, int layer) {
         return BlockState.of(getBlockId(x, y, z, layer), getBlockData(x, y, z, layer));
     }
@@ -74,13 +75,13 @@ public interface ChunkSection {
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "If the stored state is invalid, returns a BlockUnknown",
             replaceWith = "getAndSetBlockState")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     Block getAndSetBlock(int x, int y, int z, int layer, Block block);
 
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "If the stored state is invalid, returns a BlockUnknown",
             replaceWith = "getAndSetBlockState")
-    @Nonnull
+    @NotNull
     Block getAndSetBlock(int x, int y, int z, Block block);
 
     @PowerNukkitOnly
@@ -172,10 +173,10 @@ public interface ChunkSection {
     int getMaximumLayer();
 
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     CompoundTag toNBT();
 
-    @Nonnull
+    @NotNull
     ChunkSection copy();
 
     @PowerNukkitOnly("Needed for level backward compatibility")

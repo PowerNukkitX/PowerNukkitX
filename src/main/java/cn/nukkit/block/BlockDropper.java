@@ -9,7 +9,7 @@ import cn.nukkit.dispenser.DropperDispenseBehavior;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 public class BlockDropper extends BlockDispenser {
@@ -36,7 +36,7 @@ public class BlockDropper extends BlockDispenser {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public Class<? extends BlockEntityDropper> getBlockEntityClass() {
         return BlockEntityDropper.class;
@@ -44,7 +44,7 @@ public class BlockDropper extends BlockDispenser {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nonnull
+    @NotNull
     @Override
     public String getBlockEntityType() {
         return BlockEntity.DROPPER;

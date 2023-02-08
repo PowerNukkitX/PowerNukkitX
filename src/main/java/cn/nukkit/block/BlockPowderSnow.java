@@ -13,7 +13,7 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.BlockColor;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 @Since("1.6.0.0-PNX")
 @PowerNukkitOnly
@@ -67,7 +67,7 @@ public class BlockPowderSnow extends BlockTransparentMeta {
 
     @Since("1.6.0.0-PNX")
     @PowerNukkitOnly
-    @Nonnull
+    @NotNull
     @Override
     public BlockProperties getProperties() {
         return CommonBlockProperties.EMPTY_PROPERTIES;

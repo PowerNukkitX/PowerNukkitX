@@ -6,7 +6,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nullable;
 import java.util.*;
 
@@ -27,7 +28,7 @@ public class BlockGlowLichen extends BlockLichen{
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item, @Nullable Player player) {
+    public boolean onActivate(@NotNull Item item, @Nullable Player player) {
 
         if (!item.isFertilizer()) {
             return false;
@@ -62,7 +63,7 @@ public class BlockGlowLichen extends BlockLichen{
         return true;
     }
 
-    @Nonnull
+    @NotNull
     private Map<Block, BlockFace> getCandidates() {
         Map<Block, BlockFace> candidates = new HashMap<>();
         for (BlockFace side : BlockFace.values()) {
@@ -104,7 +105,7 @@ public class BlockGlowLichen extends BlockLichen{
         return 7;
     }
 
-    private boolean isSupportNeighborAdded(@Nonnull Map<Block, BlockFace> candidates, @Nonnull BlockFace side, @Nonnull Block supportNeighbor) {
+    private boolean isSupportNeighborAdded(@NotNull Map<Block, BlockFace> candidates, @NotNull BlockFace side, @NotNull Block supportNeighbor) {
         // Air is a valid candidate!
         if (supportNeighbor.getId() == BlockID.AIR) {
             candidates.put(supportNeighbor, side);
@@ -114,7 +115,7 @@ public class BlockGlowLichen extends BlockLichen{
         return supportNeighbor.isSolid(side);
     }
 
-    private boolean shouldAddSupportNeighborOppositeSide(@Nonnull BlockFace side, @Nonnull Block supportNeighborOppositeSide) {
+    private boolean shouldAddSupportNeighborOppositeSide(@NotNull BlockFace side, @NotNull Block supportNeighborOppositeSide) {
         if (supportNeighborOppositeSide.getId() == BlockID.AIR || supportNeighborOppositeSide.getId() == BlockID.GLOW_LICHEN) {
             return supportNeighborOppositeSide.getId() != BlockID.GLOW_LICHEN ||
                     (!((BlockGlowLichen) supportNeighborOppositeSide).isGrowthToSide(side) &&
