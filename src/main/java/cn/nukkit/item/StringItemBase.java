@@ -3,6 +3,7 @@ package cn.nukkit.item;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -14,7 +15,8 @@ public abstract class StringItemBase extends Item implements StringItem {
 
     public StringItemBase(@NotNull String id, @Nullable String name) {
         super(STRING_IDENTIFIED_ITEM, 0, 1, StringItem.notEmpty(name));
-
+        Preconditions.checkNotNull(id, "id can't be null");
+        Preconditions.checkArgument(id.contains(":"), "The ID must be a namespaced ID, like minecraft:stone");
         this.id = id;
         clearNamedTag();
     }
