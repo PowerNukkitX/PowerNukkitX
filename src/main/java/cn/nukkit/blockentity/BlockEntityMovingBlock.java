@@ -9,7 +9,6 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
-import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 import javax.annotation.Nullable;
@@ -38,7 +37,7 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
             CompoundTag blockData = namedTag.getCompound("movingBlock");
 
             this.blockString = blockData.getString("name");
-            this.block = NBTIO.getBlockHelper(blockData);
+            this.block = Block.get(blockData.getInt("id"), blockData.getInt("meta"));
         } else {
             this.close();
         }

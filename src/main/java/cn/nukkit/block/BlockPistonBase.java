@@ -293,12 +293,12 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
                 //清除位置上所含的水等
                 level.setBlock(newPos, 1, Block.get(AIR), true, false);
                 //TODO: 使用Block-State Tag而不是id-meta
-                CompoundTag movingBlockTag = NBTIO.putBlockHelper(blockToMove);/*new CompoundTag()
+                //2023/2/8: NBTIO.putBlockHelper()有性能问题，先不换用
+                CompoundTag movingBlockTag = /*NBTIO.putBlockHelper(blockToMove);*/new CompoundTag()
                         .putInt("id", blockToMove.getId()) //only for nukkit purpose
                         .putInt("meta", blockToMove.getDamage()) //only for nukkit purpose
                         .putString("name", BlockStateRegistry.getPersistenceName(blockToMove.getId()))
-                        .putShort("val", blockToMove.getDamage());*/
-
+                        .putShort("val", blockToMove.getDamage());
                 CompoundTag nbt = BlockEntity.getDefaultCompound(newPos, BlockEntity.MOVING_BLOCK)
                         .putBoolean("expanding", extending)
                         .putInt("pistonPosX", this.getFloorX())
