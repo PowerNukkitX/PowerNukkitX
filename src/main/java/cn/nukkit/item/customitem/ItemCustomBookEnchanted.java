@@ -6,6 +6,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.item.ItemBookEnchanted;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.customitem.data.ItemCreativeCategory;
+import cn.nukkit.utils.Identifier;
 
 @PowerNukkitXOnly
 @Since("1.19.60-r1")
@@ -14,6 +15,7 @@ public abstract class ItemCustomBookEnchanted extends ItemBookEnchanted implemen
 
     public ItemCustomBookEnchanted(String id, String name) {
         super(ItemID.STRING_IDENTIFIED_ITEM, 0, 1, name);
+        new Identifier(id);
         this.id = id;
     }
 

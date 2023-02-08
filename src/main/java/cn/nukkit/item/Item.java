@@ -14,7 +14,6 @@ import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.inventory.Fuel;
-import cn.nukkit.inventory.ItemTag;
 import cn.nukkit.item.customitem.CustomItem;
 import cn.nukkit.item.customitem.CustomItemDefinition;
 import cn.nukkit.item.enchantment.Enchantment;
@@ -32,7 +31,6 @@ import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -675,7 +673,7 @@ public class Item implements Cloneable, BlockID, ItemID {
             if (customDef.nbt().get("components") instanceof CompoundTag componentTag) {
                 var tagList = componentTag.getList("item_tags", StringTag.class);
                 if (tagList.size() != 0) {
-                    ItemTag.registerItemTag(customItem.getNamespaceId(), tagList.getAll().stream().map(tag -> tag.data).collect(Collectors.toSet()));
+                    ItemTags.registerItemTag(customItem.getNamespaceId(), tagList.getAll().stream().map(tag -> tag.data).collect(Collectors.toSet()));
                 }
             }
             RuntimeItems.getRuntimeMapping().registerCustomItem(customItem, supplier);

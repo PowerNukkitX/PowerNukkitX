@@ -8,7 +8,7 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.item.StringItem;
 import cn.nukkit.item.food.Food;
 import cn.nukkit.plugin.Plugin;
-
+import cn.nukkit.utils.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -25,12 +25,14 @@ public abstract class ItemCustomEdible extends ItemEdible implements CustomItem 
 
     public ItemCustomEdible(@NotNull String id, @Nullable String name) {
         super(ItemID.STRING_IDENTIFIED_ITEM, 0, 1, StringItem.notEmpty(name));
+        new Identifier(id);
         this.id = id;
         this.textureName = name;
     }
 
     public ItemCustomEdible(@NotNull String id, @Nullable String name, @NotNull String textureName) {
         super(ItemID.STRING_IDENTIFIED_ITEM, 0, 1, StringItem.notEmpty(name));
+        new Identifier(id);
         this.id = id;
         this.textureName = textureName;
     }
