@@ -22,6 +22,7 @@ import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
@@ -292,11 +293,12 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
                 //清除位置上所含的水等
                 level.setBlock(newPos, 1, Block.get(AIR), true, false);
                 //TODO: 使用Block-State Tag而不是id-meta
-                CompoundTag movingBlockTag = new CompoundTag()
+                CompoundTag movingBlockTag = NBTIO.putBlockHelper(blockToMove);/*new CompoundTag()
                         .putInt("id", blockToMove.getId()) //only for nukkit purpose
                         .putInt("meta", blockToMove.getDamage()) //only for nukkit purpose
                         .putString("name", BlockStateRegistry.getPersistenceName(blockToMove.getId()))
-                        .putShort("val", blockToMove.getDamage());
+                        .putShort("val", blockToMove.getDamage());*/
+
                 CompoundTag nbt = BlockEntity.getDefaultCompound(newPos, BlockEntity.MOVING_BLOCK)
                         .putBoolean("expanding", extending)
                         .putInt("pistonPosX", this.getFloorX())
