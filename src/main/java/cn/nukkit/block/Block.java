@@ -42,6 +42,7 @@ import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnegative;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
@@ -2873,7 +2874,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public boolean isBreakable(@NotNull Vector3 vector, int layer, @NotNull BlockFace face, @NotNull Item item, @Nullable Player player, boolean setBlockDestroy) {
+    public boolean isBreakable(@Nonnull Vector3 vector, int layer, @Nonnull BlockFace face, @Nonnull Item item, @Nonnull Player player, boolean setBlockDestroy) {
         return true;
     }
 

@@ -28,7 +28,6 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
-
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -154,6 +153,7 @@ public class BlockStateRegistry {
             }
         }
 
+        //update block_ids.csv
         /*for (var block : warned) {
             var id = 255-RuntimeItems.getRuntimeMapping().getNetworkIdByNamespaceId(block).getAsInt();
             try {

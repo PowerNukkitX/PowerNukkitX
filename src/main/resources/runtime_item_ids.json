@@ -1,5 +1,13 @@
 [
   {
+    "name": "minecraft:stripped_bamboo_block",
+    "id": -528
+  },
+  {
+    "name": "minecraft:bamboo_block",
+    "id": -527
+  },
+  {
     "name": "minecraft:chiseled_bookshelf",
     "id": -526
   },
@@ -5096,6 +5104,10 @@
     "oldData": 127
   },
   {
+    "name": "minecraft:sniffer_spawn_egg",
+    "id": 500
+  },
+  {
     "name": "minecraft:axolotl_spawn_egg",
     "id": 501,
     "oldId": 383,
@@ -5112,6 +5124,22 @@
     "id": 503,
     "oldId": 383,
     "oldData": 129
+  },
+  {
+    "name": "minecraft:iron_golem_spawn_egg",
+    "id": 504
+  },
+  {
+    "name": "minecraft:snow_golem_spawn_egg",
+    "id": 505
+  },
+  {
+    "name": "minecraft:ender_dragon_spawn_egg",
+    "id": 506
+  },
+  {
+    "name": "minecraft:wither_spawn_egg",
+    "id": 507
   },
   {
     "name": "minecraft:glow_ink_sac",
@@ -5769,10 +5797,6 @@
     "oldData": 131
   },
   {
-    "name": "minecraft:camel_spawn_egg",
-    "id": 657
-  },
-  {
     "name": "minecraft:mangrove_door",
     "id": 638,
     "oldId": 633
@@ -5787,14 +5811,6 @@
     "id": 640,
     "oldId": 333,
     "oldData": 6
-  },
-  {
-    "name": "minecraft:bamboo_sign",
-    "id": 654
-  },
-  {
-    "name": "minecraft:bamboo_raft",
-    "id": 655
   },
   {
     "name": "minecraft:music_disc_5",
@@ -5842,10 +5858,6 @@
     "oldId": 644
   },
   {
-    "name": "minecraft:bamboo_chest_raft",
-    "id": 656
-  },
-  {
     "name": "minecraft:chest_boat",
     "id": 650,
     "oldId": 645
@@ -5862,6 +5874,22 @@
   {
     "name": "minecraft:trader_llama_spawn_egg",
     "id": 653
+  },
+  {
+    "name": "minecraft:bamboo_sign",
+    "id": 654
+  },
+  {
+    "name": "minecraft:bamboo_raft",
+    "id": 655
+  },
+  {
+    "name": "minecraft:bamboo_chest_raft",
+    "id": 656
+  },
+  {
+    "name": "minecraft:camel_spawn_egg",
+    "id": 657
   },
   {
     "name": "minecraft:boat",
@@ -5895,33 +5923,5 @@
     "name": "minecraft:glow_berries",
     "id": 663,
     "oldId": 654
-  },
-  {
-    "name": "minecraft:bamboo_block",
-    "id": -527
-  },
-  {
-    "name": "minecraft:ender_dragon_spawn_egg",
-    "id": 506
-  },
-  {
-    "name": "minecraft:iron_golem_spawn_egg",
-    "id": 504
-  },
-  {
-    "name": "minecraft:sniffer_spawn_egg",
-    "id": 500
-  },
-  {
-    "name": "minecraft:snow_golem_spawn_egg",
-    "id": 505
-  },
-  {
-    "name": "minecraft:stripped_bamboo_block",
-    "id": -528
-  },
-  {
-    "name": "minecraft:wither_spawn_egg",
-    "id": 507
   }
 ]
