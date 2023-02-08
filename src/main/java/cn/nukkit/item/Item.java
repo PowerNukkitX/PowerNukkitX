@@ -961,7 +961,7 @@ public class Item implements Cloneable, BlockID, ItemID {
                 var item = RuntimeItems.getRuntimeMapping().getItemByNamespaceId(namespacedId, 1);
                 Item customItem;
                 /*
-                 * 因为getDefinition中如果需要使用Item.fromString()获取自定义物品,此时RuntimeItems中还没注册自定义物品,所以留一个反射构造。
+                 * 因为getDefinition中如果需要使用Item.fromString()获取自定义物品,此时RuntimeItems中还没注册自定义物品,留一个备用构造。
                  * 主要用于getDefinition中addRepairItems
                  */
                 if (item.getName() != null && item.getName().equals(Item.UNKNOWN_STR)) {

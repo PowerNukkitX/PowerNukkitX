@@ -3,10 +3,7 @@ package cn.nukkit.item.customitem;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.item.ItemDurable;
-import cn.nukkit.item.ItemID;
-import cn.nukkit.item.ItemTool;
-import cn.nukkit.item.StringItem;
+import cn.nukkit.item.*;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 import org.jetbrains.annotations.NotNull;
@@ -56,8 +53,8 @@ public abstract class ItemCustomTool extends ItemTool implements ItemDurable, Cu
     }
 
     public final Integer getSpeed() {
-        var nbt = this.getDefinition().nbt();
-        if (!nbt.getCompound("components").contains("minecraft:digger")) return null;
+        var nbt = Item.getCustomItemDefinition().get(this.getNamespaceId()).nbt();
+        if (nbt == null || !nbt.getCompound("components").contains("minecraft:digger")) return null;
         return nbt.getCompound("components")
                 .getCompound("minecraft:digger")
                 .getList("destroy_speeds", CompoundTag.class).get(0).getInt("speed");
