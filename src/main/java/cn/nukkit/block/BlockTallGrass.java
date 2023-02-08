@@ -185,21 +185,6 @@ public class BlockTallGrass extends BlockFlowable implements BlockFlowerPot.Flow
     }
 
     @Override
-    public CompoundTag getPlantBlockTag() {
-        var plantBlock = new CompoundTag("PlantBlock");
-        var states = new CompoundTag("states");
-        plantBlock.putString("name", "minecraft:tallgrass");
-        states.putString("tall_grass_type", "fern");
-        plantBlock.putCompound("states", states);
-        plantBlock.putInt("version", VERSION);
-        var item = this.toItem();
-        //only exist in PNX
-        plantBlock.putInt("itemId", item.getId());
-        plantBlock.putInt("itemMeta", item.getDamage());
-        return plantBlock;
-    }
-
-    @Override
     public boolean isPotBlockState() {
         return getPropertyValue(TALL_GRASS_TYPE) == TallGrassType.FERN;
     }

@@ -344,30 +344,4 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
     public BlockColor getColor() {
         return BlockColor.FOLIAGE_BLOCK_COLOR;
     }
-
-    /**
-     * "PlantBlock": {
-     *     "name": "minecraft:sapling",
-     *     "states": {
-     *       "age_bit": 0b,
-     *       "sapling_type": "oak"
-     *     },
-     *     "version": 17959425i
-     *   }
-     */
-    @Override
-    public CompoundTag getPlantBlockTag() {
-        var plantBlock = new CompoundTag("PlantBlock");
-        var states = new CompoundTag("states");
-        plantBlock.putString("name", "minecraft:sapling");
-        states.putBoolean("age_bit", getPropertyValue(AGED));
-        states.putString("sapling_type", getPropertyValue(SAPLING_TYPE).name().toLowerCase());
-        plantBlock.putCompound("states", states);
-        plantBlock.putInt("version", VERSION);
-        var item = this.toItem();
-        //only exist in PNX
-        plantBlock.putInt("itemId", item.getId());
-        plantBlock.putInt("itemMeta", item.getDamage());
-        return plantBlock;
-    }
 }

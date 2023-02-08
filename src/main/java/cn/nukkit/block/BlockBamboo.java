@@ -387,21 +387,4 @@ public class BlockBamboo extends BlockTransparentMeta implements BlockFlowerPot.
     public boolean breaksWhenMoved() {
         return true;
     }
-
-    @Override
-    public CompoundTag getPlantBlockTag() {
-        var plantBlock = new CompoundTag("PlantBlock");
-        plantBlock.putString("name", "minecraft:bamboo");
-        var states = new CompoundTag("states");
-        states.putBoolean("age_bit", getPropertyValue(AGED));
-        states.putString("bamboo_leaf_size", getPropertyValue(LEAF_SIZE).name().toLowerCase());
-        states.putString("bamboo_stalk_thickness", getPropertyValue(STALK_THICKNESS).name().toLowerCase());
-        plantBlock.putCompound("states", states);
-        plantBlock.putInt("version", VERSION);
-        var item = this.toItem();
-        //only exist in PNX
-        plantBlock.putInt("itemId", item.getId());
-        plantBlock.putInt("itemMeta", item.getDamage());
-        return plantBlock;
-    }
 }

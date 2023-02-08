@@ -104,20 +104,4 @@ public class BlockMangrovePropagule extends BlockFlowable implements BlockFlower
     public BlockColor getColor() {
         return BlockColor.FOLIAGE_BLOCK_COLOR;
     }
-
-    @Override
-    public CompoundTag getPlantBlockTag() {
-        var plantBlock = new CompoundTag("PlantBlock");
-        var states = new CompoundTag("states");
-        plantBlock.putString("name", "minecraft:mangrove_propagule");
-        states.putBoolean("hanging", false);
-        states.putInt("propagule_stage", getPropertyValue(PROPAGULE_STAGE));
-        plantBlock.putCompound("states", states);
-        plantBlock.putInt("version", VERSION);
-        var item = this.toItem();
-        //only exist in PNX
-        plantBlock.putInt("itemId", item.getId());
-        plantBlock.putInt("itemMeta", item.getDamage());
-        return plantBlock;
-    }
 }

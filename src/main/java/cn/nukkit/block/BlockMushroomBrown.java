@@ -34,17 +34,4 @@ public class BlockMushroomBrown extends BlockMushroom {
     protected int getType() {
         return 0;
     }
-
-    @Override
-    public CompoundTag getPlantBlockTag() {
-        var plantBlock = new CompoundTag("PlantBlock");
-        plantBlock.putString("name", "minecraft:brown_mushroom");
-        plantBlock.putCompound("states", new CompoundTag("states"));
-        plantBlock.putInt("version", VERSION);
-        var item = this.toItem();
-        //only exist in PNX
-        plantBlock.putInt("itemId", item.getId());
-        plantBlock.putInt("itemMeta", item.getDamage());
-        return plantBlock;
-    }
 }
