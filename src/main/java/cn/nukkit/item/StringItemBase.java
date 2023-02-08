@@ -3,7 +3,6 @@ package cn.nukkit.item;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.utils.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -15,7 +14,7 @@ public abstract class StringItemBase extends Item implements StringItem {
 
     public StringItemBase(@NotNull String id, @Nullable String name) {
         super(STRING_IDENTIFIED_ITEM, 0, 1, StringItem.notEmpty(name));
-        Identifier.assertValid(id);
+
         this.id = id;
         clearNamedTag();
     }

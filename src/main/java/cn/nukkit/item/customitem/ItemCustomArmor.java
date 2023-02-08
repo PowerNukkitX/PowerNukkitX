@@ -6,7 +6,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.item.ItemArmor;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.StringItem;
-import cn.nukkit.utils.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -22,14 +21,12 @@ public abstract class ItemCustomArmor extends ItemArmor implements CustomItem {
 
     public ItemCustomArmor(@NotNull String id, @Nullable String name) {
         super(ItemID.STRING_IDENTIFIED_ITEM, 0, 1, StringItem.notEmpty(name));
-        Identifier.assertValid(id);
         this.id = id;
         this.textureName = name;
     }
 
     public ItemCustomArmor(@NotNull String id, @Nullable String name, @NotNull String textureName) {
         super(ItemID.STRING_IDENTIFIED_ITEM, 0, 1, StringItem.notEmpty(name));
-        Identifier.assertValid(id);
         this.id = id;
         this.textureName = textureName;
     }
