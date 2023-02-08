@@ -421,6 +421,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
          * @param speed     挖掘速度
          * @return the tool builder
          */
+        @Since("1.19.60-r1")
         public ToolBuilder addExtraBlock(@NotNull String blockName, int speed) {
             if (speed < 0) {
                 System.out.println("speed has an invalid value!");
@@ -444,6 +445,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
          * @param blocks the blocks
          * @return the tool builder
          */
+        @Since("1.19.60-r1")
         public ToolBuilder addExtraBlocks(@NotNull Map<String, Integer> blocks) {
             blocks.forEach((blockName, speed) -> {
                 if (speed < 0) {
@@ -470,6 +472,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
          * @param property  the property
          * @return the tool builder
          */
+        @Since("1.19.60-r1")
         public ToolBuilder addExtraBlocks(@NotNull String blockName, DigProperty property) {
             if (property.getSpeed() != null && property.getSpeed() < 0) {
                 System.out.println("speed has an invalid value!");
@@ -493,6 +496,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
          * @param blockTags 挖掘速度
          * @return the tool builder
          */
+        @Since("1.19.60-r1")
         public ToolBuilder addExtraBlockTags(@NotNull List<String> blockTags) {
             if (!blockTags.isEmpty()) {
                 this.blockTags.addAll(blockTags);
