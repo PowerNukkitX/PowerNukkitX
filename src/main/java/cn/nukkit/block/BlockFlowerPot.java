@@ -229,7 +229,6 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
             insideID = blockEntity.namedTag.getCompound("PlantBlock").getInt("itemId");
             insideMeta = blockEntity.namedTag.getCompound("PlantBlock").getInt("itemMeta");
         }
-
         if (dropInside) {
             return new Item[]{
                     new ItemFlowerPot(),
