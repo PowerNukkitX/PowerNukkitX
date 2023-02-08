@@ -138,9 +138,7 @@ public class NBTIO {
         if (!block.containsString("name")) return Block.get(0);
         StringBuilder state = new StringBuilder(block.getString("name"));
         CompoundTag states = block.getCompound("states");
-        states.getTags().forEach((k, v) -> {
-            state.append(';').append(k).append('=').append(v);
-        });
+        states.getTags().forEach((k, v) -> state.append(';').append(k).append('=').append(v.parseValue()));
         return BlockState.of(state.toString()).getBlock();
     }
 
