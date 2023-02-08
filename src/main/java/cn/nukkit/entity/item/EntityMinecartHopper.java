@@ -177,7 +177,7 @@ public class EntityMinecartHopper extends EntityMinecartAbstract implements Inve
     @PowerNukkitXOnly
     @Since("1.19.21-r3")
     public void updatePickupArea() {
-        this.pickupArea = new SimpleAxisAlignedBB(this.x, this.y, this.z, this.x + 1, this.y + 2, this.z + 1);
+        this.pickupArea = new SimpleAxisAlignedBB(this.x - 0.5, this.y - 0.5, this.z - 0.5, this.x + 1, this.y + 2.5, this.z + 1).expand(0.25, 0, 0.25);
     }
 
     @PowerNukkitXOnly
