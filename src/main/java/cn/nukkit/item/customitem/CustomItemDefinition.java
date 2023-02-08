@@ -232,6 +232,21 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
         }
 
         /**
+         * 控制拿该物品的玩家是否可以在创造模式挖掘方块
+         * <p>
+         * Control whether the player with the item can dig the block in creation mode
+         *
+         * @param value the value
+         * @return the simple builder
+         */
+        public SimpleBuilder canDestroyInCreative(boolean value) {
+            this.nbt.getCompound("components")
+                    .getCompound("item_properties")
+                    .putBoolean("can_destroy_in_creative", value);
+            return this;
+        }
+
+        /**
          * 对要发送给客户端的物品ComponentNBT进行自定义处理，这里包含了所有对自定义物品的定义。在符合条件的情况下，你可以任意修改。
          * <p>
          * Custom processing of the item to be sent to the client ComponentNBT, which contains all definitions for custom item. You can modify them as much as you want, under the right conditions.
@@ -303,7 +318,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
         private Integer speed = null;
         private final Map<String, Integer> blocks = new HashMap<>();
         private final List<String> blockTags = new ArrayList<>();
-        private final CompoundTag diggerRoot = new CompoundTag()
+        private final CompoundTag diggerRoot = new CompoundTag("minecraft:digger")
                 .putBoolean("use_efficiency", true)
                 .putList(new ListTag<>("destroy_speeds"));
 
@@ -321,7 +336,8 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
 
             this.nbt.getCompound("components")
                     .getCompound("item_properties")
-                    .putFloat("mining_speed", 1f);
+                    .putFloat("mining_speed", 1f)
+                    .putBoolean("can_destroy_in_creative", true);
         }
 
         @Since("1.19.60-r1")
@@ -438,15 +454,14 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
             if (item.isPickaxe()) {
                 //添加可挖掘方块Tags
                 this.blockTags.addAll(List.of("'stone'", "'metal'", "'diamond_pick_diggable'", "'mob_spawner'", "'rail'", "'slab_block'", "'stair_block'", "'smooth stone slab'", "'sandstone slab'", "'cobblestone slab'", "'brick slab'", "'stone bricks slab'", "'quartz slab'", "'nether brick slab'"));
-
                 //添加可挖掘方块
                 for (var name : pickaxeBlocks) {
                     this.blocks.put(name, speed);
                 }
-
                 //附加附魔信息
                 this.nbt.getCompound("components").getCompound("item_properties")
                         .putString("enchantable_slot", "pickaxe");
+                this.tag("minecraft:is_pickaxe");
             } else if (item.isAxe()) {
                 this.blockTags.addAll(List.of("'wood'", "'pumpkin'", "'plant'"));
                 for (var name : axeBlocks) {
@@ -454,6 +469,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
                 }
                 this.nbt.getCompound("components").getCompound("item_properties")
                         .putString("enchantable_slot", "axe");
+                this.tag("minecraft:is_axe");
             } else if (item.isShovel()) {
                 this.blockTags.addAll(List.of("'sand'", "'dirt'", "'gravel'", "'grass'", "'snow'"));
                 for (var name : shovelBlocks) {
@@ -461,35 +477,44 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
                 }
                 this.nbt.getCompound("components").getCompound("item_properties")
                         .putString("enchantable_slot", "shovel");
+                this.tag("minecraft:is_shovel");
             } else if (item.isHoe()) {
                 this.nbt.getCompound("components").getCompound("item_properties")
                         .putString("enchantable_slot", "hoe");
-
                 for (var name : hoeBlocks) {
                     this.blocks.put(name, speed);
                 }
+                this.tag("minecraft:is_hoe");
             } else if (item.isSword()) {
                 this.nbt.getCompound("components").getCompound("item_properties")
                         .putString("enchantable_slot", "sword");
-
                 this.blocks.put("minecraft:web", speed);
                 this.blocks.put("minecraft:bamboo", speed);
             }
 
             //添加可挖掘的方块tags
-            var cmp = new CompoundTag();
             if (!this.blockTags.isEmpty()) {
-                cmp.putCompound("block", new CompoundTag().putString("tags", "q.any_tag(" + String.join(", ", this.blockTags) + ")")).putInt("speed", speed);
+                var cmp = new CompoundTag();
+                cmp.putCompound("block", new CompoundTag()
+                                .putString("name", "")
+                                .putCompound("states", new CompoundTag())
+                                .putString("tags", "q.any_tag(" + String.join(", ", this.blockTags) + ")")
+                        )
+                        .putInt("speed", speed);
+                this.diggerRoot.getList("destroy_speeds", CompoundTag.class).add(cmp);
+                this.nbt.getCompound("components")
+                        .putCompound("minecraft:digger", this.diggerRoot);
             }
-            this.diggerRoot.getList("destroy_speeds", CompoundTag.class).add(cmp);
-            this.nbt.getCompound("components")
-                    .putCompound("minecraft:digger", this.diggerRoot);
 
             //添加可挖掘的方块
             for (var k : this.blocks.entrySet()) {
                 this.diggerRoot.getList("destroy_speeds", CompoundTag.class)
                         .add(new CompoundTag()
-                                .putString("block", k.getKey())
+                                .putCompound("block", new CompoundTag()
+                                        .putString("name", k.getKey())
+                                        .putCompound("states", new CompoundTag())
+                                        .putString("tags", "")
+                                )
                                 .putInt("speed", k.getValue()));
             }
             return calculateID();
@@ -504,7 +529,8 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
             this.item = item;
             this.nbt.getCompound("components")
                     .getCompound("item_properties")
-                    .putInt("enchantable_value", item.getEnchantAbility());
+                    .putInt("enchantable_value", item.getEnchantAbility())
+                    .putBoolean("can_destroy_in_creative", true);
         }
 
         @Since("1.19.60-r1")
@@ -578,11 +604,11 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
             }
 
             int eatingtick = food.getEatingTickSupplier() == null ? food.getEatingTick() : food.getEatingTickSupplier().getAsInt();
-            this.nbt.getCompound("components").getCompound("item_properties")
-                    .putInt("use_duration", eatingtick);
-
-            this.nbt.getCompound("components").getCompound("item_properties")
-                    .putInt("use_animation", item.isDrink() ? 2 : 1);
+            this.nbt.getCompound("components")
+                    .getCompound("item_properties")
+                    .putInt("use_duration", eatingtick)
+                    .putInt("use_animation", item.isDrink() ? 2 : 1)
+                    .putBoolean("can_destroy_in_creative", true);
         }
 
         @Override

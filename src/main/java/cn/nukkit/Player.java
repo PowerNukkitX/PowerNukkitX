@@ -498,7 +498,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (this.isBreakingBlock()) {
             Block block = this.level.getBlock(pos, false);
             var miningTimeRequired = block.calculateBreakTime(this.inventory.getItemInHand(), this);
-            if (System.currentTimeMillis() - startBreakingBlockTime > miningTimeRequired * 1000 + 10 -
+            //创造模式破坏让客户端决定，防止与自定义物品的can_destroy_in_creative冲突
+            if (this.isSurvival() && System.currentTimeMillis() - startBreakingBlockTime > miningTimeRequired * 1000 + 10 -
                     ((block instanceof CustomBlock && miningTimeRequired >= 0.1) ? 60 : 0)) {
                 this.onBlockBreakAbort(pos, face);
                 this.onBlockBreakComplete(pos.asBlockVector3(), face);
