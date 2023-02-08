@@ -5,7 +5,6 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.*;
 import cn.nukkit.nbt.tag.CompoundTag;
-
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;

@@ -32,7 +32,6 @@ import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -666,6 +665,13 @@ public class Item implements Cloneable, BlockID, ItemID {
                      NoSuchMethodException e) {
                 return new OK<>(false, e);
             }
+
+            try {
+                Identifier.assertValid(customItem.getNamespaceId());
+            } catch (InvalidIdentifierException e) {
+                return new OK<>(false, e);
+            }
+
             if (CUSTOM_ITEMS.containsKey(customItem.getNamespaceId())) continue;
             CUSTOM_ITEMS.put(customItem.getNamespaceId(), supplier);
             var customDef = customItem.getDefinition();

@@ -8,7 +8,6 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.item.StringItem;
 import cn.nukkit.item.food.Food;
 import cn.nukkit.plugin.Plugin;
-
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;

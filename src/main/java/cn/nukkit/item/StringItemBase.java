@@ -4,7 +4,6 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import com.google.common.base.Preconditions;
-
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
