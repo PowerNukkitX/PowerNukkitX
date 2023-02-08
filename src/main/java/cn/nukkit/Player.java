@@ -2392,7 +2392,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public void setSkin(Skin skin) {
         super.setSkin(skin);
         if (this.spawned) {
-            this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getDisplayName(), skin, this.getLoginChainData().getXUID());
+//            this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getDisplayName(), skin, this.getLoginChainData().getXUID());
+            var skinPacket = new PlayerSkinPacket();
+            skinPacket.uuid = this.getUniqueId();
+            skinPacket.skin = this.getSkin();
+            skinPacket.newSkinName = this.getSkin().getSkinId();
+            skinPacket.oldSkinName = "";
+            Server.broadcastPacket(Server.getInstance().getOnlinePlayers().values(), skinPacket);
         }
     }
 
