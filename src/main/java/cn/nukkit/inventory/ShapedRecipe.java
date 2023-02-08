@@ -8,7 +8,6 @@ import cn.nukkit.inventory.recipe.ItemDescriptor;
 import cn.nukkit.inventory.recipe.ItemDescriptorType;
 import cn.nukkit.inventory.recipe.ItemTagDescriptor;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTags;
 import com.google.common.collect.Maps;
 import io.netty.util.collection.CharObjectHashMap;
 
@@ -306,7 +305,7 @@ public class ShapedRecipe implements CraftingRecipe {
             if (!haveInputs.isEmpty()) {
                 Set<String> tags = new HashSet<>();
                 for (var hInput : haveInputs) {
-                    var t = ItemTags.getTags(hInput.getNamespaceId());
+                    var t = ItemTag.getTags(hInput.getNamespaceId());
                     if (t != null) tags.addAll(t);
                 }
                 if (!tags.containsAll(needTags)) return false;

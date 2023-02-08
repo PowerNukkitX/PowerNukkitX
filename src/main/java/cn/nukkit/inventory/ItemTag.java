@@ -1,4 +1,4 @@
-package cn.nukkit.item;
+package cn.nukkit.inventory;
 
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 @PowerNukkitXOnly
 @Since("1.19.50-r2")
-public final class ItemTags {
+public final class ItemTag {
     public final static Identifier ARROW = new Identifier("minecraft:arrow");
     public final static Identifier BANNER = new Identifier("minecraft:banner");
     public final static Identifier BOAT = new Identifier("minecraft:boat");

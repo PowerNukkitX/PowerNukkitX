@@ -15,7 +15,7 @@ public abstract class StringItemBase extends Item implements StringItem {
 
     public StringItemBase(@NotNull String id, @Nullable String name) {
         super(STRING_IDENTIFIED_ITEM, 0, 1, StringItem.notEmpty(name));
-        new Identifier(id);
+        Identifier.assertValid(id);
         this.id = id;
         clearNamedTag();
     }

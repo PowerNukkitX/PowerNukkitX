@@ -2,8 +2,8 @@ package cn.nukkit.inventory.recipe;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.inventory.ItemTag;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTags;
 
 import java.util.Objects;
 
@@ -30,7 +30,7 @@ public class ItemTagDescriptor implements ItemDescriptor {
 
     @Override
     public boolean match(Item item) {
-        return item.getCount() >= count && ItemTags.getTagSet(item.getNamespaceId()).contains(itemTag);
+        return item.getCount() >= count && ItemTag.getTagSet(item.getNamespaceId()).contains(itemTag);
     }
 
     @Override

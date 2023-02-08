@@ -22,14 +22,14 @@ public abstract class ItemCustomArmor extends ItemArmor implements CustomItem {
 
     public ItemCustomArmor(@NotNull String id, @Nullable String name) {
         super(ItemID.STRING_IDENTIFIED_ITEM, 0, 1, StringItem.notEmpty(name));
-        new Identifier(id);
+        Identifier.assertValid(id);
         this.id = id;
         this.textureName = name;
     }
 
     public ItemCustomArmor(@NotNull String id, @Nullable String name, @NotNull String textureName) {
         super(ItemID.STRING_IDENTIFIED_ITEM, 0, 1, StringItem.notEmpty(name));
-        new Identifier(id);
+        Identifier.assertValid(id);
         this.id = id;
         this.textureName = textureName;
     }

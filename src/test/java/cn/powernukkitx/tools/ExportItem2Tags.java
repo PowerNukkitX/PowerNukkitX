@@ -1,6 +1,6 @@
 package cn.powernukkitx.tools;
 
-import cn.nukkit.item.ItemTags;
+import cn.nukkit.inventory.ItemTag;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -19,7 +19,7 @@ public class ExportItem2Tags {
     public static void main(String[] args) throws IOException {
         var gson = new Gson();
         Map<String, Set<String>> test = new LinkedHashMap<>();
-        for (var entry : ItemTags.getTag2Items().entrySet()) {
+        for (var entry : ItemTag.getTag2Items().entrySet()) {
             for (var v : entry.getValue()) {
                 test.computeIfAbsent(v, k -> new LinkedHashSet<>());
                 test.get(v).add(entry.getKey());

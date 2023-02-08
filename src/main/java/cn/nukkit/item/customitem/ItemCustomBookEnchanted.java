@@ -15,7 +15,7 @@ public abstract class ItemCustomBookEnchanted extends ItemBookEnchanted implemen
 
     public ItemCustomBookEnchanted(String id, String name) {
         super(ItemID.STRING_IDENTIFIED_ITEM, 0, 1, name);
-        new Identifier(id);
+        Identifier.assertValid(id);
         this.id = id;
     }
 

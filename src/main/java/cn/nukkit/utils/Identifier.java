@@ -43,7 +43,8 @@ public class Identifier {
 
     /**
      * 通过自定义的命名空间分割符分割并返回一个Identifier对象
-     * @param id 字符串
+     *
+     * @param id        字符串
      * @param delimiter 分割符
      * @return 命名空间对象
      */
@@ -112,6 +113,20 @@ public class Identifier {
     public static boolean isValid(String id) {
         String[] strings = Identifier.split(id, ':');
         return Identifier.isNamespaceValid(strings[0].isEmpty() ? DEFAULT_NAMESPACE : strings[0]) && Identifier.isPathValid(strings[1]);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    public static void assertValid(String id) {
+        String[] strings = Identifier.split(id, ':');
+        var namespace = strings[0].isEmpty() ? DEFAULT_NAMESPACE : strings[0];
+        var path = strings[1];
+        if (!Identifier.isNamespaceValid(namespace)) {
+            throw new InvalidIdentifierException("Non [a-z0-9_.-] character in namespace of location: " + namespace + ":" + path);
+        }
+        if (!Identifier.isPathValid(path)) {
+            throw new InvalidIdentifierException("Non [a-z0-9/._-] character in path of location: " + namespace + ":" + path);
+        }
     }
 
     public String getPath() {
