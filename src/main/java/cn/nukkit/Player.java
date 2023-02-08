@@ -3657,7 +3657,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     Skin skin = skinPacket.skin;
 
                     if (!skin.isValid()) {
-                        this.getServer().getLogger().debug(username + ": PlayerSkinPacket with invalid skin");
+                        this.getServer().getLogger().warning(username + ": PlayerSkinPacket with invalid skin");
                         break;
                     }
 
@@ -3666,7 +3666,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     }
 
                     PlayerChangeSkinEvent playerChangeSkinEvent = new PlayerChangeSkinEvent(this, skin);
-                    playerChangeSkinEvent.setCancelled(TimeUnit.SECONDS.toMillis(this.server.getPlayerSkinChangeCooldown()) > System.currentTimeMillis() - this.lastSkinChange);
+                    var tooQuick = TimeUnit.SECONDS.toMillis(this.server.getPlayerSkinChangeCooldown()) > System.currentTimeMillis() - this.lastSkinChange;
+                    if (tooQuick) {
+                        playerChangeSkinEvent.setCancelled(true);
+                        Server.getInstance().getLogger().warning("Player " + username + " change skin too quick!");
+                    }
                     this.server.getPluginManager().callEvent(playerChangeSkinEvent);
                     if (!playerChangeSkinEvent.isCancelled()) {
                         this.lastSkinChange = System.currentTimeMillis();
