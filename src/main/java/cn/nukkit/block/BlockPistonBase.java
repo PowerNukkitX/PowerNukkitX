@@ -22,11 +22,9 @@ import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
-import cn.nukkit.utils.Utils;
 import com.google.common.collect.Lists;
 import lombok.extern.log4j.Log4j2;
 
@@ -272,6 +270,9 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
         this.level.getServer().getPluginManager().callEvent(event);
         if (event.isCancelled())
             return false;
+        var oldPosList = new ArrayList<Vector3>();
+        var blockEntityHolderList = new ArrayList<BlockEntityHolder<?>>();
+        var nbtList = new ArrayList<CompoundTag>();
         if (canMove && (this.sticky || extending)) {
             var destroyBlocks = calculator.getBlocksToDestroy();
             //破坏需要破坏的方块
@@ -284,9 +285,6 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
             var blocksToMove = calculator.getBlocksToMove();
             toMoveBlockVec = blocksToMove.stream().map(Vector3::asBlockVector3).collect(Collectors.toList());
             var moveDirection = extending ? pistonFace : pistonFace.getOpposite();
-            var oldPosList = new ArrayList<Vector3>();
-            var blockEntityHolderList = new ArrayList<BlockEntityHolder<?>>();
-            var nbtList = new ArrayList<CompoundTag>();
             for (Block blockToMove : blocksToMove) {
                 var oldPos = new Vector3(blockToMove.x, blockToMove.y, blockToMove.z);
                 var newPos = blockToMove.getSidePos(moveDirection);
@@ -318,7 +316,10 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
                 blockEntityHolderList.add((BlockEntityHolder<?>) BlockState.of(BlockID.MOVING_BLOCK).getBlock(Position.fromObject(newPos, this.level)));
                 nbtList.add(nbt);
             }
-            //生成moving_block
+        }
+        this.getBlockEntity().preMove(extending, toMoveBlockVec);
+        //生成moving_block
+        if (!oldPosList.isEmpty()) {
             for (int i = 0; i < oldPosList.size(); i++) {
                 var oldPos = oldPosList.get(i);
                 var blockEntityHolder = blockEntityHolderList.get(i);
@@ -336,7 +337,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
             this.level.setBlock(pistonArmPos, createHead(this.getDamage()));
         }
         //开始移动
-        this.getBlockEntity().move(extending, toMoveBlockVec);
+        this.getBlockEntity().move();
         return true;
     }
 
