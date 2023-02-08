@@ -27,6 +27,11 @@ public class CommandRequestPacket extends DataPacket {
 
     public String command;
     public CommandOriginData data;
+    public boolean internal;
+    /**
+     * @since v567
+     */
+    public int version;
 
     @Override
     public byte pid() {
