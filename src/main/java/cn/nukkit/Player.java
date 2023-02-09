@@ -3730,6 +3730,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         this.clientMovements.offer(Location.fromObject(newPos, this.level, movePlayerPacket.yaw, movePlayerPacket.pitch, movePlayerPacket.headYaw));
                     } else {
                         this.positionChanged = false;
+                        if (this.speed == null) {
+                            this.speed = new Vector3(0, 0, 0);
+                        } else {
+                            this.speed.setComponents(0, 0, 0);
+                        }
                     }
                     break;
                 case ProtocolInfo.PLAYER_AUTH_INPUT_PACKET:
@@ -3876,6 +3881,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         this.clientMovements.offer(Location.fromObject(clientPosition, this.level, yaw, pitch, headYaw));
                     } else {
                         this.positionChanged = false;
+                        if (this.speed == null) {
+                            this.speed = new Vector3(0, 0, 0);
+                        } else {
+                            this.speed.setComponents(0, 0, 0);
+                        }
                     }
                     break;
                 /* PowerNukkit disabled to use our own boat implementation
