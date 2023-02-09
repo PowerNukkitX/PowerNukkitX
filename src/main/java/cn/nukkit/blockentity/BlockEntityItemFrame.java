@@ -5,6 +5,7 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.block.BlockItemFrame;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.event.block.ItemFrameDropItemEvent;
 import cn.nukkit.event.player.PlayerUseItemFrameEvent;
@@ -54,7 +55,7 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
 
     @Override
     public boolean isBlockEntityValid() {
-        return this.getBlock().getId() == Block.ITEM_FRAME_BLOCK;
+        return this.getBlock() instanceof BlockItemFrame;
     }
 
     public int getItemRotation() {
@@ -122,6 +123,9 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
                 itemTag.remove("id");
                 itemTag.putShort("Damage", networkDamage);
                 itemTag.putString("Name", namespacedId);
+            }
+            if (item instanceof ItemBlock itemBlock) {
+                itemTag.putCompound("Block", NBTIO.putBlockHelper(itemBlock.getBlock()));
             }
             tag.putCompound("Item", itemTag)
                     .putByte("ItemRotation", this.getItemRotation());

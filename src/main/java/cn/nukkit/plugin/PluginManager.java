@@ -624,7 +624,7 @@ public class PluginManager {
             for (Class<?> clazz = eventClass; Event.class.isAssignableFrom(clazz); clazz = clazz.getSuperclass()) {
                 // This loop checks for extending deprecated events
                 if (clazz.getAnnotation(Deprecated.class) != null) {
-                    if (Boolean.parseBoolean(String.valueOf(this.server.getConfig("settings.deprecated-verbpse", true)))) {
+                    if (Boolean.parseBoolean(String.valueOf(this.server.getConfig("settings.deprecated-verbose", true)))) {
                         log.warn(this.server.getLanguage().tr("nukkit.plugin.deprecatedEvent", plugin.getName(), clazz.getName(), listener.getClass().getName() + "." + method.getName() + "()"));
                     }
                     break;

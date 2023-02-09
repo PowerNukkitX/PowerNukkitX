@@ -137,14 +137,14 @@ public class BlockCactus extends BlockTransparentMeta implements BlockFlowerPot.
                             if (!event.isCancelled()) {
                                 this.getLevel().setBlock(b, event.getNewState(), true);
                             }
+                            break;
                         }
                     }
                     this.setDamage(0);
-                    this.getLevel().setBlock(this, this);
                 } else {
                     this.setDamage(this.getDamage() + 1);
-                    this.getLevel().setBlock(this, this);
                 }
+                this.getLevel().setBlock(this, this);
             }
         }
 
@@ -195,20 +195,5 @@ public class BlockCactus extends BlockTransparentMeta implements BlockFlowerPot.
     @PowerNukkitOnly
     public  boolean sticksToPiston() {
         return false;
-    }
-
-    @Override
-    public CompoundTag getPlantBlockTag() {
-        var plantBlock = new CompoundTag("PlantBlock");
-        var states = new CompoundTag("states");
-        plantBlock.putString("name", "minecraft:cactus");
-        states.putInt("age", getPropertyValue(CommonBlockProperties.AGE_15));
-        plantBlock.putCompound("states", states);
-        plantBlock.putInt("version", VERSION);
-        var item = this.toItem();
-        //only exist in PNX
-        plantBlock.putInt("itemId", item.getId());
-        plantBlock.putInt("itemMeta", item.getDamage());
-        return plantBlock;
     }
 }

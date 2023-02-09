@@ -56,7 +56,6 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
-
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -3508,7 +3507,7 @@ public abstract class Entity extends Location implements Metadatable {
     @PowerNukkitXOnly
     @Since("1.19.50-r3")
     public void playAnimation(AnimateEntityPacket.Animation animation) {
-        var viewers = this.getViewers().values();
+        var viewers = new HashSet<>(this.getViewers().values());
         if (this.isPlayer) viewers.add((Player) this);
         playAnimation(animation, viewers);
     }
@@ -3527,6 +3526,34 @@ public abstract class Entity extends Location implements Metadatable {
         var pk = new AnimateEntityPacket();
         pk.parseFromAnimation(animation);
         pk.getEntityRuntimeIds().add(this.getId());
+        pk.encode();
+        Server.broadcastPacket(players, pk);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    public void playActionAnimation(AnimatePacket.Action action, float rowingTime) {
+        var viewers = new HashSet<>(this.getViewers().values());
+        if (this.isPlayer) viewers.add((Player) this);
+        playActionAnimation(action, rowingTime, viewers);
+    }
+
+    /**
+     * Play the action animation of this entity to a specified group of players
+     * <p>
+     * 向指定玩家群体播放此实体的action动画
+     *
+     * @param action     the action
+     * @param rowingTime the rowing time
+     * @param players    可视玩家 Visible Player
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    public void playActionAnimation(AnimatePacket.Action action, float rowingTime, Collection<Player> players) {
+        var pk = new AnimatePacket();
+        pk.action = action;
+        pk.rowingTime = rowingTime;
+        pk.eid = this.getId();
         pk.encode();
         Server.broadcastPacket(players, pk);
     }

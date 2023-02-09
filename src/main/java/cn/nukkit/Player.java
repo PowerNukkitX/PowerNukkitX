@@ -2393,7 +2393,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public void setSkin(Skin skin) {
         super.setSkin(skin);
         if (this.spawned) {
-            this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getDisplayName(), skin, this.getLoginChainData().getXUID());
+//            this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getDisplayName(), skin, this.getLoginChainData().getXUID());
+            var skinPacket = new PlayerSkinPacket();
+            skinPacket.uuid = this.getUniqueId();
+            skinPacket.skin = this.getSkin();
+            skinPacket.newSkinName = this.getSkin().getSkinId();
+            skinPacket.oldSkinName = "";
+            Server.broadcastPacket(Server.getInstance().getOnlinePlayers().values(), skinPacket);
         }
     }
 
@@ -3652,7 +3658,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     Skin skin = skinPacket.skin;
 
                     if (!skin.isValid()) {
-                        this.getServer().getLogger().debug(username + ": PlayerSkinPacket with invalid skin");
+                        this.getServer().getLogger().warning(username + ": PlayerSkinPacket with invalid skin");
                         break;
                     }
 
@@ -3661,7 +3667,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     }
 
                     PlayerChangeSkinEvent playerChangeSkinEvent = new PlayerChangeSkinEvent(this, skin);
-                    playerChangeSkinEvent.setCancelled(TimeUnit.SECONDS.toMillis(this.server.getPlayerSkinChangeCooldown()) > System.currentTimeMillis() - this.lastSkinChange);
+                    var tooQuick = TimeUnit.SECONDS.toMillis(this.server.getPlayerSkinChangeCooldown()) > System.currentTimeMillis() - this.lastSkinChange;
+                    if (tooQuick) {
+                        playerChangeSkinEvent.setCancelled(true);
+                        Server.getInstance().getLogger().warning("Player " + username + " change skin too quick!");
+                    }
                     this.server.getPluginManager().callEvent(playerChangeSkinEvent);
                     if (!playerChangeSkinEvent.isCancelled()) {
                         this.lastSkinChange = System.currentTimeMillis();

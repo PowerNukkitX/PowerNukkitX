@@ -1,6 +1,7 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.api.PowerNukkitXOnly;
@@ -99,16 +100,21 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         ));
     }
 
-    public void move(boolean extending, List<BlockVector3> attachedBlocks) {
+    public void preMove(boolean extending, List<BlockVector3> attachedBlocks) {
         this.finished = false;
         this.extending = extending;
         this.lastProgress = this.progress = extending ? 0 : 1;
         this.state = this.newState = (byte) (extending ? 1 : 3);
         this.attachedBlocks = attachedBlocks;
         this.movable = false;
+        //必须先于MOVING_BLOCK发包过去，所以immediately=true
+        updateMovingData(true);
+    }
+
+    //需要先调用preMove
+    public void move() {
         //开始推动
-        updateBlockEntityData();
-        this.lastProgress = extending ? -MOVE_STEP : 1 + MOVE_STEP;
+        this.lastProgress = this.extending ? -MOVE_STEP : 1 + MOVE_STEP;
         this.moveCollidedEntities();
         this.scheduleUpdate();
     }
@@ -176,7 +182,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
             this.attachedBlocks.clear();
             this.finished = true;
             hasUpdate = false;
-            updateBlockEntityData();
+            updateMovingData(false);
         }
         return super.onUpdate() || hasUpdate;
     }
@@ -259,9 +265,13 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         return attachedBlocks;
     }
 
-    protected void updateBlockEntityData() {
+    public void updateMovingData(boolean immediately) {
         var packet = this.getSpawnPacket();
-        if (packet != null)
-            this.level.addChunkPacket(getChunkX(), getChunkZ(), packet);
+        if (!immediately) {
+            if (packet != null)
+                this.level.addChunkPacket(getChunkX(), getChunkZ(), packet);
+        } else {
+            Server.broadcastPacket(this.getLevel().getChunkPlayers(this.chunk.getX(), this.chunk.getZ()).values(), packet);
+        }
     }
 }

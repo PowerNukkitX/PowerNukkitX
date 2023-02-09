@@ -13,6 +13,7 @@ public enum RecipeType {
     SHULKER_BOX(5),
     SHAPELESS_CHEMISTRY(6),
     SHAPED_CHEMISTRY(7),
+    SMITHING_TRANSFORM(8),
     @PowerNukkitOnly BLAST_FURNACE(2),
     @PowerNukkitOnly BLAST_FURNACE_DATA(3),
     @PowerNukkitOnly SMOKER(2),

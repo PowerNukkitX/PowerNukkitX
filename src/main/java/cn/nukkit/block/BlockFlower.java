@@ -227,19 +227,4 @@ public class BlockFlower extends BlockFlowable implements BlockFlowerPot.FlowerP
     protected Block getUncommonFlower() {
         return get(DANDELION);
     }
-
-    @Override
-    public CompoundTag getPlantBlockTag() {
-        var plantBlock = new CompoundTag("PlantBlock");
-        var states = new CompoundTag("states");
-        plantBlock.putString("name", "minecraft:red_flower");
-        states.putString("flower_type", getFlowerType().getNetworkFlowerType());
-        plantBlock.putCompound("states", states);
-        plantBlock.putInt("version", VERSION);
-        var item = this.toItem();
-        //only exist in PNX
-        plantBlock.putInt("itemId", item.getId());
-        plantBlock.putInt("itemMeta", item.getDamage());
-        return plantBlock;
-    }
 }

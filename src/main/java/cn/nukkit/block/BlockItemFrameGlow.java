@@ -1,9 +1,12 @@
 package cn.nukkit.block;
 
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemItemFrameGlow;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author LoboMetalurgico
@@ -33,6 +36,14 @@ public class BlockItemFrameGlow extends BlockItemFrame {
     @Override
     public int getId() {
         return GLOW_FRAME;
+    }
+
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    @NotNull
+    @Override
+    public String getBlockEntityType() {
+        return BlockEntity.GLOW_ITEM_FRAME;
     }
 
     @Override

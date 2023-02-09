@@ -113,6 +113,10 @@ public class StartGamePacket extends DataPacket {
     public boolean isDisablingCustomSkins;
 
     public boolean clientSideGenerationEnabled;
+    /**
+     * @since v567
+     */
+    public boolean emoteChatMuted;
 
     public byte chatRestrictionLevel;
 
@@ -160,16 +164,14 @@ public class StartGamePacket extends DataPacket {
         if (Server.getInstance().isEnableExperimentMode() && !Server.getInstance().getConfig("settings.waterdogpe", false)) {
             this.putLInt(3); // Experiment count
             {
-//                this.putString("spectator_mode");
-//                this.putBoolean(true);
                 this.putString("data_driven_items");
                 this.putBoolean(true);
-//                this.putString("data_driven_biomes");
-//                this.putBoolean(true);
+                //this.putString("data_driven_biomes");
+                //this.putBoolean(true);
                 this.putString("upcoming_creator_features");
                 this.putBoolean(true);
-//                this.putString("gametest");
-//                this.putBoolean(true);
+                //this.putString("gametest");
+                //this.putBoolean(true);
                 this.putString("experimental_molang_features");
                 this.putBoolean(true);
             }
@@ -191,6 +193,7 @@ public class StartGamePacket extends DataPacket {
         this.putBoolean(this.isOnlySpawningV1Villagers);
         this.putBoolean(this.isDisablingPersonas);
         this.putBoolean(this.isDisablingCustomSkins);
+        this.putBoolean(this.emoteChatMuted);
         this.putString("*"); // vanillaVersion
         this.putLInt(16); // Limited world width
         this.putLInt(16); // Limited world height

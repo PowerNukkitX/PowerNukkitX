@@ -99,8 +99,6 @@ import org.iq80.leveldb.Options;
 import org.iq80.leveldb.impl.Iq80DBFactory;
 import org.jetbrains.annotations.NotNull;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.io.*;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -3365,6 +3363,7 @@ public class Server {
         BlockEntity.registerBlockEntity(BlockEntity.SCULK_CATALYST, BlockEntitySculkCatalyst.class);
         BlockEntity.registerBlockEntity(BlockEntity.SCULK_SHRIEKER, BlockEntitySculkShrieker.class);
         BlockEntity.registerBlockEntity(BlockEntity.STRUCTURE_BLOCK, BlockEntityStructBlock.class);
+        BlockEntity.registerBlockEntity(BlockEntity.GLOW_ITEM_FRAME, BlockEntityGlowItemFrame.class);
     }
 
     public boolean isNetherAllowed() {

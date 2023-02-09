@@ -69,8 +69,6 @@ import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
 import java.io.File;
 import java.lang.ref.SoftReference;
@@ -1799,6 +1797,7 @@ public class Level implements ChunkManager, Metadatable {
 
     /**
      * 立即对围绕指定位置的方块发送neighborChange更新
+     *
      * @param pos 指定位置
      */
     @PowerNukkitXOnly
@@ -2602,11 +2601,12 @@ public class Level implements ChunkManager, Metadatable {
 
     /**
      * 设置一个方块
-     * @param x 方块的x坐标
-     * @param y 方块的y坐标
-     * @param z 方块的z坐标
-     * @param layer 设置的方块层级。例如含水方块位置上的layer1对应的方块为水
-     * @param block 方块
+     *
+     * @param x      方块的x坐标
+     * @param y      方块的y坐标
+     * @param z      方块的z坐标
+     * @param layer  设置的方块层级。例如含水方块位置上的layer1对应的方块为水
+     * @param block  方块
      * @param direct 是否立即同步方块变更到客户端。
      * @param update 是否进行方块更新
      * @return 是否设置成功

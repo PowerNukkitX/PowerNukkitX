@@ -54,7 +54,11 @@ public class PopulatorOre extends Populator {
                 if (level.getBlockIdAt(x, y, z) != replaceId) {
                     continue;
                 }
-                type.spawn(level, random, replaceId, x, y, z);
+                if (type.clusterSize == 1) {
+                    level.setBlockAt(x, y, z, type.blockId, type.blockData);
+                } else {
+                    type.spawn(level, random, replaceId, x, y, z);
+                }
             }
         }
     }

@@ -101,7 +101,7 @@ public class BlockObserver extends BlockSolidMeta implements RedstoneComponent, 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implemented")
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_SCHEDULED) {
+        if (type == Level.BLOCK_UPDATE_SCHEDULED || type == Level.BLOCK_UPDATE_MOVED) {
             RedstoneUpdateEvent ev = new RedstoneUpdateEvent(this);
             PluginManager pluginManager = level.getServer().getPluginManager();
             pluginManager.callEvent(ev);
@@ -126,9 +126,6 @@ public class BlockObserver extends BlockSolidMeta implements RedstoneComponent, 
                 getSide(getBlockFace().getOpposite()).onUpdate(Level.BLOCK_UPDATE_REDSTONE);
                 RedstoneComponent.updateAroundRedstone(getSide(getBlockFace().getOpposite()));
             }
-            return Level.BLOCK_UPDATE_SCHEDULED;
-        } else if (type == Level.BLOCK_UPDATE_MOVED) {
-            onNeighborChange(getBlockFace());
             return type;
         }
         return 0;

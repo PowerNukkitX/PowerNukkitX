@@ -13,6 +13,7 @@ import cn.nukkit.item.ItemFlowerPot;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 
@@ -228,7 +229,6 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
             insideID = blockEntity.namedTag.getCompound("PlantBlock").getInt("itemId");
             insideMeta = blockEntity.namedTag.getCompound("PlantBlock").getInt("itemMeta");
         }
-
         if (dropInside) {
             return new Item[]{
                     new ItemFlowerPot(),
@@ -286,9 +286,6 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
      */
     public interface FlowerPotBlock {
 
-        //NBT标签中"version"键对应的值
-        int VERSION = 17959425;
-
         /**
          * 获取方块在花盆NBT中的标签<p/>
          * 形如以下形式：<p/>
@@ -306,7 +303,16 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
          * 请注意，必须在这个tag中包含键"itemId"与"itemMeta"。服务端将通过读取这两个参数快速重建Item对象，而不是通过stateId重建。这太慢了
          * @return 方块在花盆NBT中的标签
          */
-        CompoundTag getPlantBlockTag();
+        default CompoundTag getPlantBlockTag() {
+            var block = (Block) this;
+            var tag = NBTIO.putBlockHelper(block);
+            tag.setName("PlantBlock");
+            var item = block.toItem();
+            //only exist in PNX
+            tag.putInt("itemId", item.getId());
+            tag.putInt("itemMeta", item.getDamage());
+            return tag;
+        }
 
         /**
          * 对于高草丛来说，只有状态为"fern"的方块才能放入花盆中

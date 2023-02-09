@@ -21,6 +21,7 @@ minecraft:azalea
 minecraft:azalea_leaves
 minecraft:azalea_leaves_flowered
 minecraft:bamboo
+minecraft:bamboo_block
 minecraft:bamboo_button
 minecraft:bamboo_door
 minecraft:bamboo_double_slab
@@ -662,6 +663,7 @@ minecraft:stonebrick
 minecraft:stonecutter
 minecraft:stonecutter_block
 minecraft:stripped_acacia_log
+minecraft:stripped_bamboo_block
 minecraft:stripped_birch_log
 minecraft:stripped_crimson_hyphae
 minecraft:stripped_crimson_stem

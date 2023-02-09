@@ -252,12 +252,6 @@ public class BlockHopper extends BlockTransparentMeta implements RedstoneCompone
             Block blockSide = hopperPos.getSide(BlockFace.UP).getTickCachedLevelBlock();
             BlockEntity blockEntity = hopperPos.level.getBlockEntity(new Vector3().setComponentsAdding(hopperPos, BlockFace.UP));
 
-            if (blockEntity instanceof BlockEntityHopper) {
-                BlockEntityHopper hopper = (BlockEntityHopper) blockEntity;
-                if (hopper.isDisabled())
-                    return false;
-            }
-
             if (blockEntity instanceof InventoryHolder) {
                 Inventory inv = blockEntity instanceof RecipeInventoryHolder recipeInventoryHolder ? recipeInventoryHolder.getProductView() : ((InventoryHolder) blockEntity).getInventory();
 

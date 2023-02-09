@@ -21,7 +21,7 @@ import java.util.UUID;
  * @author MagicDroidX (Nukkit Project)
  */
 @ToString(exclude = {"geometryData", "animationData"})
-@EqualsAndHashCode(exclude = {"fullSkinId", "trusted"})
+@EqualsAndHashCode(exclude = {"trusted"})
 public class Skin {
     public static final String GEOMETRY_CUSTOM = convertLegacyGeometryName("geometry.humanoid.custom");
     public static final String GEOMETRY_CUSTOM_SLIM = convertLegacyGeometryName("geometry.humanoid.customSlim");
@@ -30,7 +30,6 @@ public class Skin {
     public static final int DOUBLE_SKIN_SIZE = 64 * 64 * PIXEL_SIZE;
     public static final int SKIN_128_64_SIZE = 128 * 64 * PIXEL_SIZE;
     public static final int SKIN_128_128_SIZE = 128 * 128 * PIXEL_SIZE;
-    private final String fullSkinId = UUID.randomUUID().toString();
     private final List<SkinAnimation> animations = new ArrayList<>();
     private final List<PersonaPiece> personaPieces = new ArrayList<>();
     private final List<PersonaPieceTint> tintColors = new ArrayList<>();
@@ -306,7 +305,7 @@ public class Skin {
     }
 
     public String getFullSkinId() {
-        return fullSkinId;
+        return this.skinId + (this.capeId != null ? this.capeId : "");
     }
 
     @Since("1.4.0.0-PN")
@@ -315,7 +314,7 @@ public class Skin {
             try {
                 this.playFabId = this.skinId.split("-")[5];
             } catch (Exception e) {
-                this.playFabId = this.fullSkinId.replace("-", "").substring(16);
+                this.playFabId = this.getFullSkinId().replace("-", "").substring(16);
             }
         }
         return this.playFabId;

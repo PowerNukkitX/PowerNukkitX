@@ -3,6 +3,7 @@ package cn.nukkit.inventory;
 import cn.nukkit.Server;
 import cn.nukkit.api.*;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.inventory.recipe.CraftingDataType;
 import cn.nukkit.inventory.recipe.DefaultDescriptor;
 import cn.nukkit.inventory.recipe.ItemDescriptor;
 import cn.nukkit.inventory.recipe.ItemTagDescriptor;
@@ -18,7 +19,6 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
 import lombok.extern.log4j.Log4j2;
-
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -156,7 +156,7 @@ public class CraftingManager {
     private CraftingManager(Boolean Test) {
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private void loadRecipes(Config config) {
         List<Map> recipes = config.getMapList("recipes");
         var furnaceXpConfig = new Config(Config.JSON);
@@ -166,15 +166,13 @@ public class CraftingManager {
             log.warn("Failed to load furnace xp config");
         }
         log.info("Loading recipes...");
-        toNextRecipe:
         for (Map<String, Object> recipe : recipes) {
             try {
-                int type = Utils.toInt(recipe.get("type"));
+                CraftingDataType type = CraftingDataType.byId(Utils.toInt(recipe.get("type")));
+                String craftingBlock = (String) recipe.get("block");
                 switch (type) {
-                    case 0:
-                    case 5:
-                        String craftingBlock = (String) recipe.get("block");
-                        if (type == 5) {
+                    case SHAPELESS, SHULKER_BOX -> {
+                        if (type == CraftingDataType.SHULKER_BOX) {
                             craftingBlock = "shulker_box";
                         }
                         if (!"crafting_table".equals(craftingBlock) && !"stonecutter".equals(craftingBlock)
@@ -185,26 +183,23 @@ public class CraftingManager {
                         }
                         var reg = parseUnShapeRecipe(recipe, craftingBlock);
                         if (reg == null) {
-                            //System.out.println(recipe);
-                            continue toNextRecipe;
+                            continue;
                         }
                         this.registerRecipe(reg);
-                        break;
-                    case 1:
+                    }
+                    case SHAPED -> {
                         craftingBlock = (String) recipe.get("block");
                         if (!"crafting_table".equals(craftingBlock)) {
                             // Ignore other recipes than crafting table ones
                             continue;
                         }
-                        reg = parseShapeRecipe(recipe);
+                        var reg = parseShapeRecipe(recipe);
                         if (reg == null) {
-                            //System.out.println(recipe);
-                            continue toNextRecipe;
+                            continue;
                         }
                         this.registerRecipe(reg);
-                        break;
-                    case 2:
-                    case 3:
+                    }
+                    case FURNACE, FURNACE_DATA -> {
                         craftingBlock = (String) recipe.get("block");
                         if (!"furnace".equals(craftingBlock) && !"blast_furnace".equals(craftingBlock)
                                 && !"smoker".equals(craftingBlock) && !"campfire".equals(craftingBlock)) {
@@ -214,7 +209,7 @@ public class CraftingManager {
                         Map<String, Object> resultMap = (Map) recipe.get("output");
                         Item resultItem = parseRecipeItem(resultMap);
                         if (resultItem.isNull()) {
-                            continue toNextRecipe;
+                            continue;
                         }
                         Item inputItem;
                         try {
@@ -224,33 +219,27 @@ public class CraftingManager {
                             inputItem = Item.get(Utils.toInt(recipe.get("inputId")), recipe.containsKey("inputDamage") ? Utils.toInt(recipe.get("inputDamage")) : -1, 1);
                         }
                         if (inputItem.isNull()) {
-                            continue toNextRecipe;
+                            continue;
                         }
                         Recipe furnaceRecipe = null;
                         switch (craftingBlock) {
-                            case "furnace":
-                                this.registerRecipe(furnaceRecipe = new FurnaceRecipe(resultItem, inputItem));
-                                break;
-                            case "blast_furnace":
-                                this.registerRecipe(furnaceRecipe = new BlastFurnaceRecipe(resultItem, inputItem));
-                                break;
-                            case "smoker":
-                                this.registerRecipe(furnaceRecipe = new SmokerRecipe(resultItem, inputItem));
-                                break;
-                            case "campfire":
-                                this.registerRecipe(furnaceRecipe = new CampfireRecipe(resultItem, inputItem));
-                                break;
+                            case "furnace" ->
+                                    this.registerRecipe(furnaceRecipe = new FurnaceRecipe(resultItem, inputItem));
+                            case "blast_furnace" ->
+                                    this.registerRecipe(furnaceRecipe = new BlastFurnaceRecipe(resultItem, inputItem));
+                            case "smoker" ->
+                                    this.registerRecipe(furnaceRecipe = new SmokerRecipe(resultItem, inputItem));
+                            case "campfire" ->
+                                    this.registerRecipe(furnaceRecipe = new CampfireRecipe(resultItem, inputItem));
                         }
                         var xp = furnaceXpConfig.getDouble(inputItem.getNamespaceId() + ":" + inputItem.getDamage());
                         if (xp != 0) {
                             this.setRecipeXp(furnaceRecipe, xp);
                         }
-                        break;
-                    case 4:
-                        this.registerRecipe(new MultiRecipe(UUID.fromString((String) recipe.get("uuid"))));
-                        break;
-                    default:
-                        break;
+                    }
+                    case MULTI -> this.registerRecipe(new MultiRecipe(UUID.fromString((String) recipe.get("uuid"))));
+                    default -> {
+                    }
                 }
             } catch (Exception e) {
                 log.error("Exception during registering recipe", e);

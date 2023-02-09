@@ -500,7 +500,11 @@ public class LevelSoundEventPacket extends DataPacket {
     public static final int TRAPDOOR_CLOSE = 455;
     public static final int FENCE_GATE_OPEN = 456;
     public static final int FENCE_GATE_CLOSE = 457;
-    public static final int SOUND_UNDEFINED = 458;
+    public static final int INSERT = 458;
+    public static final int PICKUP = 459;
+    public static final int INSERT_ENCHANTED = 460;
+    public static final int PICKUP_ENCHANTED = 461;
+    public static final int SOUND_UNDEFINED = 462;
 
     public int sound;
     public float x;
