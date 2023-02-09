@@ -3530,6 +3530,34 @@ public abstract class Entity extends Location implements Metadatable {
         Server.broadcastPacket(players, pk);
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    public void playActionAnimation(AnimatePacket.Action action, float rowingTime) {
+        var viewers = new HashSet<>(this.getViewers().values());
+        if (this.isPlayer) viewers.add((Player) this);
+        playActionAnimation(action, rowingTime, viewers);
+    }
+
+    /**
+     * Play the action animation of this entity to a specified group of players
+     * <p>
+     * 向指定玩家群体播放此实体的action动画
+     *
+     * @param action     the action
+     * @param rowingTime the rowing time
+     * @param players    可视玩家 Visible Player
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.60-r1")
+    public void playActionAnimation(AnimatePacket.Action action, float rowingTime, Collection<Player> players) {
+        var pk = new AnimatePacket();
+        pk.action = action;
+        pk.rowingTime = rowingTime;
+        pk.eid = this.getId();
+        pk.encode();
+        Server.broadcastPacket(players, pk);
+    }
+
     /**
      * 通过反射获取类实现的接口并查询{@link cn.nukkit.entity.component.EntityComponentRegistery}创建对应组件
      */

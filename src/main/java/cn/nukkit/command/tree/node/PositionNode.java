@@ -93,7 +93,7 @@ public abstract class PositionNode extends ParamNode<Position> {
                                     coordinate[2] += vector3.z;
                                 }
                                 case 1 -> {
-                                    vector3 = BVector3.fromLocation(loc).rotatePitch(90).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos();
+                                    vector3 = BVector3.fromLocation(loc).rotatePitch(-90).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos();
                                     coordinate[0] += vector3.x;
                                     coordinate[1] += vector3.y;
                                     coordinate[2] += vector3.z;
