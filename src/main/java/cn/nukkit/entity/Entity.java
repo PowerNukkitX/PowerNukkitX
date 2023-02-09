@@ -56,7 +56,6 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
-
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -3508,7 +3507,7 @@ public abstract class Entity extends Location implements Metadatable {
     @PowerNukkitXOnly
     @Since("1.19.50-r3")
     public void playAnimation(AnimateEntityPacket.Animation animation) {
-        var viewers = this.getViewers().values();
+        var viewers = new HashSet<>(this.getViewers().values());
         if (this.isPlayer) viewers.add((Player) this);
         playAnimation(animation, viewers);
     }
