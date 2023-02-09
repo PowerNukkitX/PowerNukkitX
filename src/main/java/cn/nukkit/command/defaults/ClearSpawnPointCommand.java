@@ -33,7 +33,7 @@ public class ClearSpawnPointCommand extends VanillaCommand {
             var list = result.getValue();
             List<Player> players = sender.isPlayer() ? List.of(sender.asPlayer()) : null;
             if (list.hasResult(0)) players = list.getResult(0);
-            if (players == null) {
+            if (players == null || players.isEmpty()) {
                 log.addNoTargetMatch().output();
                 return 0;
             }

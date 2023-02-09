@@ -33,6 +33,10 @@ public class OpCommand extends VanillaCommand {
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         List<IPlayer> IPlayers = result.getValue().getResult(0);
+        if (IPlayers.isEmpty()) {
+            log.addNoTargetMatch().output();
+            return 0;
+        }
 
         for (IPlayer player : IPlayers) {
             if (player.isOp()) {

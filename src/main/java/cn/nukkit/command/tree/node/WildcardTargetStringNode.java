@@ -18,9 +18,8 @@ public class WildcardTargetStringNode extends StringNode {
 
     @Override
     public void fill(String arg) {
-        if (arg.equals("*") || EntitySelectorAPI.getAPI().checkValid(arg) || Server.getInstance().getPlayer(arg) != null) {//temp not support entity uuid query
-            this.value = arg;
-        } else this.error();
+        //WILDCARD_TARGET不可能解析错误
+        this.value = arg;
     }
 
 }

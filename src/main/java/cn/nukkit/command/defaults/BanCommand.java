@@ -6,6 +6,7 @@ import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.node.CommandNode;
+import cn.nukkit.command.tree.node.StringNode;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.event.player.PlayerKickEvent;
 
@@ -23,7 +24,7 @@ public class BanCommand extends VanillaCommand {
         this.commandParameters.put("default",
                 new CommandParameter[]{
                         CommandParameter.newType("player", CommandParamType.STRING),
-                        CommandParameter.newType("reason", true, CommandParamType.STRING, new CommandNode())
+                        CommandParameter.newType("reason", true, CommandParamType.STRING)
                 });
         this.enableParamTree();
     }

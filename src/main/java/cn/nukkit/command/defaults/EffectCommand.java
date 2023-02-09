@@ -45,6 +45,10 @@ public class EffectCommand extends Command {
         var list = result.getValue();
         List<Entity> entities = list.getResult(0);
         entities = entities.stream().filter(e -> !(e instanceof EntityItem)).toList();
+        if (entities.isEmpty()) {
+            log.addNoTargetMatch().output();
+            return 0;
+        }
         switch (result.getKey()) {
             case "default" -> {
                 Effect effect;

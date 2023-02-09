@@ -120,18 +120,19 @@ public class ReplaceItemCommand extends VanillaCommand {
                     log.addError("commands.replaceitem.keepFailed", "slot.container", String.valueOf(slotId)).output();
                     return 0;
                 }
-                Item item = list.getResult(5);
+                var notOldItemHandling = result.getKey().equals("block");
+                Item item = list.getResult(notOldItemHandling ? 4 : 5);
                 item.setCount(1);
-                if (list.hasResult(6)) {
-                    int count = list.getResult(6);
-                    item.setCount(count);
+                if (list.hasResult(notOldItemHandling ? 5 : 6)) {
+                    int amount = list.getResult(notOldItemHandling ? 5 : 6);
+                    item.setCount(amount);
                 }
-                if (list.hasResult(7)) {
-                    int data = list.getResult(7);
+                if (list.hasResult(notOldItemHandling ? 6 : 7)) {
+                    int data = list.getResult(notOldItemHandling ? 6 : 7);
                     item.setDamage(data);
                 }
-                if (list.hasResult(8)) {
-                    String components = list.getResult(8);
+                if (list.hasResult(notOldItemHandling ? 7 : 8)) {
+                    String components = list.getResult(notOldItemHandling ? 7 : 8);
                     item.readItemJsonComponents(Item.ItemJsonComponents.fromJson(components));
                 }
                 if (holder.getInventory().setItem(slotId, item)) {
@@ -151,21 +152,26 @@ public class ReplaceItemCommand extends VanillaCommand {
 
     private int entity(CommandSender sender, String key, ParamList list, CommandLogger log) {
         List<Entity> entities = list.getResult(1);
+        if (entities.isEmpty()) {
+            log.addNoTargetMatch().output();
+            return 0;
+        }
+        var notOldItemHandling = key.equals("entity");
         String slotType = list.getResult(2);
         int slotId = list.getResult(3);
-        String oldItemHandling = key.equals("entity") ? "destroy" : list.getResult(4);
-        Item item = list.getResult(5);
+        String oldItemHandling = notOldItemHandling ? "destroy" : list.getResult(4);
+        Item item = list.getResult(notOldItemHandling ? 4 : 5);
         item.setCount(1);
-        if (list.hasResult(6)) {
-            int amount = list.getResult(6);
+        if (list.hasResult(notOldItemHandling ? 5 : 6)) {
+            int amount = list.getResult(notOldItemHandling ? 5 : 6);
             item.setCount(amount);
         }
-        if (list.hasResult(7)) {
-            int data = list.getResult(7);
+        if (list.hasResult(notOldItemHandling ? 6 : 7)) {
+            int data = list.getResult(notOldItemHandling ? 6 : 7);
             item.setDamage(data);
         }
-        if (list.hasResult(8)) {
-            String components = list.getResult(8);
+        if (list.hasResult(notOldItemHandling ? 7 : 8)) {
+            String components = list.getResult(notOldItemHandling ? 7 : 8);
             item.readItemJsonComponents(Item.ItemJsonComponents.fromJson(components));
         }
         int successCount = 0;

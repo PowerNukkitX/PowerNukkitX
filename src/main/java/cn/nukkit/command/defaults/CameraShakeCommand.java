@@ -41,9 +41,13 @@ public class CameraShakeCommand extends VanillaCommand {
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
+        List<Player> players = list.getResult(1);
+        if (players.isEmpty()) {
+            log.addNoTargetMatch().output();
+            return 0;
+        }
         switch (result.getKey()) {
             case "add" -> {
-                List<Player> players = list.getResult(1);
                 String players_str = players.stream().map(Player::getName).collect(Collectors.joining(" "));
                 float intensity = list.getResult(2);
                 float second = list.getResult(3);
@@ -63,7 +67,6 @@ public class CameraShakeCommand extends VanillaCommand {
                 return 1;
             }
             case "stop" -> {
-                List<Player> players = list.getResult(1);
                 String players_str = players.stream().map(Player::getName).collect(Collectors.joining(" "));
                 CameraShakePacket packet = new CameraShakePacket();
                 packet.shakeAction = CameraShakePacket.CameraShakeAction.STOP;

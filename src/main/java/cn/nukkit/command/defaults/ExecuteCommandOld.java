@@ -47,6 +47,10 @@ public class ExecuteCommandOld extends VanillaCommand {
         int num = 0;
         var list = result.getValue();
         List<Entity> entities = list.getResult(0);
+        if (entities.isEmpty()) {
+            log.addNoTargetMatch().output();
+            return 0;
+        }
         switch (result.getKey()) {
             case "default" -> {
                 String command = list.getResult(2);

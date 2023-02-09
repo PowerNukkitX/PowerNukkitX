@@ -43,6 +43,10 @@ public class SpawnpointCommand extends VanillaCommand {
         DecimalFormat round2 = new DecimalFormat("##0.00");
         if (list.hasResult(0)) {
             players = list.getResult(0);
+            if (players.isEmpty()) {
+                log.addNoTargetMatch().output();
+                return 0;
+            }
             Level level = sender.getPosition().getLevel();
             if (list.hasResult(1)) {
                 if (level != null) {

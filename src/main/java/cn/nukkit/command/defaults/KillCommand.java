@@ -1,6 +1,7 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
@@ -42,6 +43,11 @@ public class KillCommand extends VanillaCommand {
                 }
 
                 List<Entity> entities = result.getValue().getResult(0);
+                entities.removeIf(entity -> !entity.isAlive());
+                if (entities.isEmpty()) {
+                    log.addNoTargetMatch().output();
+                    return 0;
+                }
                 AtomicBoolean creativePlayer = new AtomicBoolean(false);
                 entities = entities.stream().filter(entity -> {
                     if (entity instanceof Player player)

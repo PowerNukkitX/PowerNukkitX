@@ -44,6 +44,10 @@ public class SpreadPlayersCommand extends VanillaCommand {
         float spreadDistance = list.getResult(2);
         float maxRange = list.getResult(3);
         List<Entity> targets = list.getResult(4);
+        if (targets.isEmpty()) {
+            log.addNoTargetMatch().output();
+            return 0;
+        }
 
         if (spreadDistance < 0) {
             log.addDoubleTooSmall(3, 0).output();

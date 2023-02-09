@@ -46,7 +46,9 @@ public class MessageStringNode extends ParamNode<String> {
                     StringJoiner join = new StringJoiner(", ");
                     try {
                         for (Entity entity : EntitySelectorAPI.getAPI().matchEntities(this.parent.parent.getSender(), m)) {
-                            join.add(entity.getName());
+                            var name = entity.getName();
+                            if (name.isBlank()) name = entity.getSaveId();
+                            join.add(name);
                         }
                     } catch (SelectorSyntaxException e) {
                         error(e.getMessage());

@@ -23,6 +23,9 @@ public class ChainedCommandNode extends EnumNode {
 
     @Override
     public void fill(String arg) {
+        if (arg.contains(" ")) {
+            arg = "\"" + arg + "\"";
+        }
         if (!remain) {
             if (!CHAINED.contains(arg)) {
                 this.error();

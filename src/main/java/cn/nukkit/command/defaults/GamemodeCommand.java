@@ -69,6 +69,11 @@ public class GamemodeCommand extends VanillaCommand {
             players = sender.isPlayer() ? List.of(sender.asPlayer()) : List.of();
         }
 
+        if (players.isEmpty()) {
+            log.addNoTargetMatch().output();
+            return 0;
+        }
+
         if ((gameMode == 0 && !sender.hasPermission("nukkit.command.gamemode.survival")) ||
                 (gameMode == 1 && !sender.hasPermission("nukkit.command.gamemode.creative")) ||
                 (gameMode == 2 && !sender.hasPermission("nukkit.command.gamemode.adventure")) ||

@@ -56,7 +56,7 @@ public class WorldCommand extends VanillaCommand {
                         return 0;
                     }
                 }
-                sender.asPlayer().teleport(level.getSafeSpawn());
+                sender.asEntity().teleport(level.getSafeSpawn());
                 log.addMessage(TextFormat.WHITE + "%nukkit.command.world.successTp", levelName).output();
                 return 1;
             }

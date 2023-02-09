@@ -55,7 +55,7 @@ public class ClearCommand extends VanillaCommand {
                 }
             }
 
-            if (targets == null) {
+            if (targets == null || targets.isEmpty()) {
                 log.addNoTargetMatch().output();
                 return 0;
             }

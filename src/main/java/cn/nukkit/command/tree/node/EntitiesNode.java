@@ -33,12 +33,9 @@ public class EntitiesNode extends TargetNode<Entity> {
                 error(exception.getMessage());
                 return;
             }
-            if (!entities.isEmpty()) this.value = entities;
-            else error("commands.generic.noTargetMatch");
+            this.value = entities;
         } else {
-            Player player = Server.getInstance().getPlayer(arg);
-            if (player != null) this.value = Collections.singletonList(player);
-            else error("commands.generic.player.notFound");
+            this.value = Collections.singletonList(Server.getInstance().getPlayer(arg));
         }
     }
 }

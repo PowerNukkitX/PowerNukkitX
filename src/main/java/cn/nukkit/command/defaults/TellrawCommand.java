@@ -38,6 +38,10 @@ public class TellrawCommand extends VanillaCommand {
         var list = result.getValue();
         try {
             List<Player> players = list.getResult(0);
+            if (players.isEmpty()) {
+                log.addNoTargetMatch().output();
+                return 0;
+            }
             RawText rawTextObject = list.getResult(1);
             rawTextObject.preParse(sender);
             for (Player player : players) {

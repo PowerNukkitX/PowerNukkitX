@@ -47,6 +47,10 @@ public class DamageCommand extends VanillaCommand {
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         List<Entity> entities = list.getResult(0);
+        if (entities.isEmpty()) {
+            log.addNoTargetMatch().output();
+            return 0;
+        }
         String entities_str = entities.stream().map(Entity::getName).collect(Collectors.joining(" "));
         int amount = list.getResult(1);
         if (amount < 0) {
@@ -81,8 +85,12 @@ public class DamageCommand extends VanillaCommand {
             }
             case "damager" -> {
                 String str = list.getResult(2);
-                EntityDamageEvent.DamageCause cause = EntityDamageEvent.DamageCause.valueOf(str);
+                EntityDamageEvent.DamageCause cause = EntityDamageEvent.DamageCause.valueOf(str.toUpperCase());
                 List<Entity> damagers = list.getResult(4);
+                if (damagers.isEmpty()) {
+                    log.addNoTargetMatch().output();
+                    return 0;
+                }
                 if (damagers.size() > 1) {
                     log.addError("commands.damage.tooManySources").output();
                     return 0;

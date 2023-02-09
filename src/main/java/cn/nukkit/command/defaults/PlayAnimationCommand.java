@@ -36,6 +36,10 @@ public class PlayAnimationCommand extends VanillaCommand {
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         List<Entity> entities = list.getResult(0);
+        if (entities.isEmpty()) {
+            log.addNoTargetMatch().output();
+            return 0;
+        }
         var animationBuilder = AnimateEntityPacket.Animation.builder();
         String animation = list.getResult(1);
         animationBuilder.animation(animation);
