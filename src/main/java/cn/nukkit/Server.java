@@ -849,6 +849,7 @@ public class Server {
 
         this.pluginManager.loadInternalPlugin();
         this.pluginManager.loadPlugins(this.pluginPath);
+        Block.initCustomBlock();
 
         this.enablePlugins(PluginLoadOrder.STARTUP);
 
