@@ -15,7 +15,13 @@
 
 ## BUG修復
 
+- [#1028] 修復`Player#positionChanged`錯亂的BUG。
 - [#1029] 修復大量命令相關問題。
+- [#1035] 修復一些紅石BUG。
+
+## 修改記錄
+
+- [#1039] 修正觀察者NC延遲。
 
 ## [1.19.60-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - 2023-2-9
 該版本目前支持了Minecraft:BE `1.19.60 (協議版本567)`.
@@ -2179,7 +2185,11 @@ Need to switch languages?
 [#1023]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1023
 [#1024]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1024
 [#1026]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1026
+[#1028]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1028
 [#1029]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1029
+[#1031]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1031
+[#1035]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1035
+[#1039]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1039
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->
