@@ -34,6 +34,10 @@ public class PardonCommand extends VanillaCommand {
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         List<IPlayer> players = result.getValue().getResult(0);
+        if (players.isEmpty()) {
+            log.addNoTargetMatch().output();
+            return 0;
+        }
         for (var player : players) {
             sender.getServer().getNameBans().remove(player.getName());
             log.addSuccess("commands.unban.success", player.getName());

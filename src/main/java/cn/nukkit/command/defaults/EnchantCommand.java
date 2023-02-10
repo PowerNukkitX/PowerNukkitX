@@ -45,6 +45,10 @@ public class EnchantCommand extends VanillaCommand {
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         List<Entity> entities = list.getResult(0);
+        if (entities.isEmpty()) {
+            log.addNoTargetMatch().output();
+            return 0;
+        }
         Enchantment enchantment;
         int enchantLevel = 1;
         switch (result.getKey()) {

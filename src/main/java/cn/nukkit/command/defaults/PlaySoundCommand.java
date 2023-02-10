@@ -57,7 +57,7 @@ public class PlaySoundCommand extends VanillaCommand {
             log.addNumTooSmall(5, 0).output();
             return 0;
         }
-        if (targets == null) {
+        if (targets == null || targets.isEmpty()) {
             if (sender.isPlayer()) {
                 targets = Lists.newArrayList(sender.asPlayer());
             } else {

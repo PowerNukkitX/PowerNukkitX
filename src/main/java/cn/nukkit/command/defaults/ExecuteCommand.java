@@ -11,6 +11,7 @@ import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamOption;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.command.selector.args.impl.Scores;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.entity.Entity;
@@ -28,13 +29,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static cn.nukkit.utils.StringUtils.fastSplit;
 import static cn.nukkit.utils.Utils.getLevelBlocks;
 
 @PowerNukkitXOnly
 @Since("1.19.20-r2")
 public class ExecuteCommand extends VanillaCommand {
 
-    private static final Splitter SCORE_SCOPE_SEPARATOR = Splitter.on("..").limit(2);
+    protected static final String SCORE_SCOPE_SEPARATOR = "..";
 
     private static final Pattern ERROR_COMMAND_NAME = Pattern.compile("(?<=run\\s).*?(?=\\s|$)");
 
@@ -179,9 +181,13 @@ public class ExecuteCommand extends VanillaCommand {
             }
             case "as" -> {
                 List<Entity> executors = list.getResult(1);
+                if (executors.isEmpty()) {
+                    log.addNoTargetMatch().output();
+                    return 0;
+                }
                 String chainCommand = list.getResult(2);
                 for (Entity executor : executors) {
-                    ExecutorCommandSender executorCommandSender = new ExecutorCommandSender(sender, executor, sender.getLocation());
+                    ExecutorCommandSender executorCommandSender = new ExecutorCommandSender(sender, executor, executor.getLocation());
                     int n = executorCommandSender.getServer().executeCommand(executorCommandSender, chainCommand);
                     if (n == 0) {
                         var names = new ArrayList<String>();
@@ -200,6 +206,10 @@ public class ExecuteCommand extends VanillaCommand {
             }
             case "at" -> {
                 List<Entity> locations = list.getResult(1);
+                if (locations.isEmpty()) {
+                    log.addNoTargetMatch().output();
+                    return 0;
+                }
                 String chainCommand = list.getResult(2);
                 for (Location location : locations) {
                     ExecutorCommandSender executorCommandSender = new ExecutorCommandSender(sender, sender.asEntity(), location);
@@ -231,6 +241,10 @@ public class ExecuteCommand extends VanillaCommand {
             }
             case "facing-entity" -> {
                 List<Entity> targets = list.getResult(2);
+                if (targets.isEmpty()) {
+                    log.addNoTargetMatch().output();
+                    return 0;
+                }
                 String anchor = list.getResult(3);
                 boolean anchorAtEyes = anchor.equals("eyes");
                 String chainCommand = list.getResult(4);
@@ -258,6 +272,10 @@ public class ExecuteCommand extends VanillaCommand {
             }
             case "rotated as" -> {
                 List<Entity> executors = list.getResult(2);
+                if (executors.isEmpty()) {
+                    log.addNoTargetMatch().output();
+                    return 0;
+                }
                 String chainCommand = list.getResult(3);
                 for (Entity executor : executors) {
                     Location location = sender.getLocation();
@@ -308,6 +326,10 @@ public class ExecuteCommand extends VanillaCommand {
             }
             case "positioned as" -> {
                 List<Entity> targets = list.getResult(2);
+                if (targets.isEmpty()) {
+                    log.addNoTargetMatch().output();
+                    return 0;
+                }
                 String chainCommand = list.getResult(3);
                 for (Vector3 vec : targets) {
                     Location newLoc = sender.getLocation();
@@ -479,7 +501,7 @@ public class ExecuteCommand extends VanillaCommand {
                 }
             }
             case "if-unless-score" -> {
-                boolean matched = false;
+                boolean matched;
                 String isIF = list.getResult(0);
                 boolean shouldMatch = isIF.equals("if");
                 var manager = Server.getInstance().getScoreboardManager();
@@ -488,6 +510,10 @@ public class ExecuteCommand extends VanillaCommand {
                 Set<IScorer> targetScorers = targets.stream().filter(Objects::nonNull).map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).collect(Collectors.toSet());
                 if (targetScorers.size() > 1) {
                     log.addTooManyTargets().output();
+                    return 0;
+                }
+                if (targetScorers.isEmpty()) {
+                    log.addNoTargetMatch().output();
                     return 0;
                 }
                 IScorer targetScorer = targetScorers.iterator().next();
@@ -504,6 +530,10 @@ public class ExecuteCommand extends VanillaCommand {
                 Set<IScorer> selectorScorers = scorers.stream().filter(t -> t != null).map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).collect(Collectors.toSet());
                 if (selectorScorers.size() > 1) {
                     log.addTooManyTargets().output();
+                    return 0;
+                }
+                if (selectorScorers.isEmpty()) {
+                    log.addNoTargetMatch().output();
                     return 0;
                 }
                 IScorer sourceScorer = selectorScorers.iterator().next();
@@ -545,7 +575,7 @@ public class ExecuteCommand extends VanillaCommand {
                 }
             }
             case "if-unless-score-matches" -> {
-                boolean matched = false;
+                boolean matched;
                 String isIF = list.getResult(0);
                 boolean shouldMatch = isIF.equals("if");
                 var manager = Server.getInstance().getScoreboardManager();
@@ -554,6 +584,10 @@ public class ExecuteCommand extends VanillaCommand {
                 Set<IScorer> targetScorers = targets.stream().filter(Objects::nonNull).map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).collect(Collectors.toSet());
                 if (targetScorers.size() > 1) {
                     log.addTooManyTargets().output();
+                    return 0;
+                }
+                if (targetScorers.isEmpty()) {
+                    log.addNoTargetMatch().output();
                     return 0;
                 }
                 IScorer targetScorer = targetScorers.iterator().next();
@@ -568,19 +602,21 @@ public class ExecuteCommand extends VanillaCommand {
                 int targetScore = targetScoreboard.getLines().get(targetScorer).getScore();
                 String range = list.getResult(5);
                 if (range.contains("..")) {
+                    //条件为一个区间
                     int min = Integer.MIN_VALUE;
                     int max = Integer.MAX_VALUE;
-                    Iterator<String> score_scope_split = SCORE_SCOPE_SEPARATOR.split(range).iterator();
-                    String min_str = score_scope_split.next();
+                    var splittedScoreScope = fastSplit(SCORE_SCOPE_SEPARATOR, range);
+                    String min_str = splittedScoreScope.get(0);
                     if (!min_str.isEmpty()) {
                         min = Integer.parseInt(min_str);
                     }
-                    String max_str = score_scope_split.next();
+                    String max_str = splittedScoreScope.get(1);
                     if (!max_str.isEmpty()) {
                         max = Integer.parseInt(max_str);
                     }
                     matched = targetScore >= min && targetScore <= max;
                 } else {
+                    //条件为单个数字
                     int score = Integer.parseInt(range);
                     matched = targetScore == score;
                 }

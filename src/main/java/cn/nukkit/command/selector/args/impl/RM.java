@@ -21,7 +21,7 @@ public class RM implements ISelectorArgument {
     public Predicate<Entity> getPredicate(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) throws SelectorSyntaxException {
         ParseUtils.singleArgument(arguments, getKeyName());
         ParseUtils.cannotReversed(arguments[0]);
-        final var rm = Integer.parseInt(arguments[0]);
+        final var rm = Double.parseDouble(arguments[0]);
         return entity -> entity.distanceSquared(basePos) > Math.pow(rm, 2);
     }
 

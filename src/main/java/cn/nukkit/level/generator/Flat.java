@@ -96,17 +96,17 @@ public class Flat extends Generator {
             int y = 0;
             for (String block : blocks.split(",")) {
                 int id, meta = 0, cnt = 1;
-                if (Pattern.matches("^[0-9]{1,3}x[0-9]$", block)) {
+                if (Pattern.matches("^[0-9]{1,3}x[0-9]{1,4}$", block)) {
                     //AxB
                     String[] s = block.split("x");
                     cnt = Integer.parseInt(s[0]);
                     id = Integer.parseInt(s[1]);
-                } else if (Pattern.matches("^[0-9]{1,3}:[0-9]{0,2}$", block)) {
+                } else if (Pattern.matches("^[0-9]{1,3}:[0-9]{1,4}$", block)) {
                     //A:B
                     String[] s = block.split(":");
                     id = Integer.parseInt(s[0]);
                     meta = Integer.parseInt(s[1]);
-                } else if (Pattern.matches("^[0-9]{1,3}$", block)) {
+                } else if (Pattern.matches("^[0-9]{1,4}$", block)) {
                     //A
                     id = Integer.parseInt(block);
                 } else {

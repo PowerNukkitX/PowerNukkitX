@@ -39,6 +39,12 @@ public class GiveCommand extends VanillaCommand {
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
+        List<Player> players = list.getResult(0);
+
+        if (players.isEmpty()) {
+            log.addNoTargetMatch().output();
+            return 0;
+        }
 
         Item item = list.getResult(1);
         if (item.isNull() && item.getId() != 0) {
@@ -68,7 +74,6 @@ public class GiveCommand extends VanillaCommand {
             item.readItemJsonComponents(components);
         }
 
-        List<Player> players = list.getResult(0);
         for (Player player : players) {
             Item[] returns = player.getInventory().addItem(item.clone());
             List<Item> drops = new ArrayList<>();

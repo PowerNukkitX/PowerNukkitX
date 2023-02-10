@@ -35,7 +35,11 @@ public class TestForCommand extends VanillaCommand {
             log.addNoTargetMatch().output();
             return 0;
         } else {
-            log.addSuccess("commands.testfor.success", targets.stream().map(Entity::getName).collect(Collectors.joining(","))).output();
+            log.addSuccess("commands.testfor.success", targets.stream().map(entity -> {
+                var name = entity.getName();
+                if (name.isBlank()) name = entity.getSaveId();
+                return name;
+            }).collect(Collectors.joining(","))).output();
             return targets.size();
         }
     }

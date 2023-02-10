@@ -95,6 +95,10 @@ public class TeleportCommand extends VanillaCommand {
                     return 0;
                 }
                 List<Entity> destination = list.getResult(0);
+                if (destination.isEmpty()) {
+                    log.addNoTargetMatch().output();
+                    return 0;
+                }
                 if (destination.size() > 1) {
                     log.addError("commands.generic.tooManyTargets").output();
                     return 0;
@@ -121,7 +125,15 @@ public class TeleportCommand extends VanillaCommand {
             }
             case "Entity->Entity" -> {
                 List<Entity> victims = list.getResult(0);
+                if (victims.isEmpty()) {
+                    log.addNoTargetMatch().output();
+                    return 0;
+                }
                 List<Entity> destination = list.getResult(1);
+                if (destination.isEmpty()) {
+                    log.addNoTargetMatch().output();
+                    return 0;
+                }
                 if (destination.size() > 1) {
                     log.addError("commands.generic.tooManyTargets").output();
                     return 0;
@@ -156,6 +168,10 @@ public class TeleportCommand extends VanillaCommand {
             }
             case "Entity->Pos" -> {
                 List<Entity> victims = list.getResult(0);
+                if (victims.isEmpty()) {
+                    log.addNoTargetMatch().output();
+                    return 0;
+                }
                 Position pos = list.getResult(1);
                 double yRot = sender.getLocation().pitch;
                 if (list.hasResult(2)) {
@@ -194,6 +210,10 @@ public class TeleportCommand extends VanillaCommand {
             }
             case "Entity->Pos(FacingPos)" -> {
                 List<Entity> victims = list.getResult(0);
+                if (victims.isEmpty()) {
+                    log.addNoTargetMatch().output();
+                    return 0;
+                }
                 Position pos = list.getResult(1);
                 Position lookAtPosition = list.getResult(2);
                 boolean checkForBlocks = false;
@@ -228,12 +248,17 @@ public class TeleportCommand extends VanillaCommand {
             case "Entity->Pos(FacingEntity)" -> {
                 List<Entity> victims = list.getResult(0);
                 if (victims.isEmpty()) {
-                    log.addError("commands.generic.noTargetMatch").output();
+                    log.addNoTargetMatch().output();
                     return 0;
                 }
                 Position pos = list.getResult(1);
                 List<Entity> lookAtEntity = list.getResult(3);
-                if (lookAtEntity.size() != 1) {
+                if (lookAtEntity.isEmpty()) {
+                    log.addNoTargetMatch().output();
+                    return 0;
+                }
+                if (lookAtEntity.size() > 1) {
+                    log.addTooManyTargets().output();
                     return 0;
                 }
                 Position lookAtPosition = lookAtEntity.get(0);
@@ -335,8 +360,12 @@ public class TeleportCommand extends VanillaCommand {
                 }
                 Position pos = list.getResult(0);
                 List<Entity> lookAtEntity = list.getResult(2);
+                if (lookAtEntity.isEmpty()) {
+                    log.addNoTargetMatch().output();
+                    return 0;
+                }
                 if (lookAtEntity.size() > 1) {
-                    log.addError("commands.generic.tooManyTargets").output();
+                    log.addTooManyTargets().output();
                     return 0;
                 }
                 Position lookAtPosition = lookAtEntity.get(0);

@@ -52,7 +52,7 @@ public class XpCommand extends Command {
                 if (list.hasResult(1)) {
                     players = list.getResult(1);
                 }
-                if (players == null) {
+                if (players == null || players.isEmpty()) {
                     log.addNoTargetMatch().output();
                     return 0;
                 }
@@ -68,7 +68,7 @@ public class XpCommand extends Command {
                 if (list.hasResult(1)) {
                     players = list.getResult(1);
                 }
-                if (players == null) {
+                if (players == null || players.isEmpty()) {
                     log.addNoTargetMatch().output();
                     return 0;
                 }

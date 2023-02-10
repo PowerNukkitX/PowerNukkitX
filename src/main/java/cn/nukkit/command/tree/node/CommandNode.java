@@ -24,6 +24,9 @@ public class CommandNode extends ParamNode<String> {
 
     @Override
     public void fill(String arg) {
+        if (arg.contains(" ")) {
+            arg = "\"" + arg + "\"";
+        }
         if (first && !COMMAND_NAMES.contains(arg)) {
             this.error("commands.generic.unknown", arg);
             return;

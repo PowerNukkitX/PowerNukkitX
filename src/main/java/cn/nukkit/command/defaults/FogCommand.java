@@ -43,6 +43,10 @@ public class FogCommand extends VanillaCommand {
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         List<Player> targets = list.getResult(0);
+        if (targets.isEmpty()) {
+            log.addNoTargetMatch().output();
+            return 0;
+        }
         switch (result.getKey()) {
             case "push" -> {
                 String fogIdStr = list.getResult(2);

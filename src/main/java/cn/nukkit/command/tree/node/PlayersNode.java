@@ -35,14 +35,9 @@ public class PlayersNode extends TargetNode<Player> {
                 return;
             }
             result = entities.stream().filter(entity -> entity instanceof Player).map(entity -> (Player) entity).collect(Collectors.toList());
-            if (!result.isEmpty())
-                this.value = result;
-            else error("commands.generic.noTargetMatch");
+            this.value = result;
         } else {
-            Player player = Server.getInstance().getPlayer(arg);
-            if (player != null) {
-                this.value = Collections.singletonList(player);
-            } else error("commands.generic.player.notFound");
+            this.value = Collections.singletonList(Server.getInstance().getPlayer(arg));
         }
     }
 }

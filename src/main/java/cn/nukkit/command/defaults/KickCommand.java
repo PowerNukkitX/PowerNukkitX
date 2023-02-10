@@ -35,6 +35,10 @@ public class KickCommand extends VanillaCommand {
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         List<Player> players = list.getResult(0);
+        if (players.isEmpty()) {
+            log.addNoTargetMatch().output();
+            return 0;
+        }
         String reason = "";
         if (list.hasResult(1)) {
             reason = list.getResult(1);

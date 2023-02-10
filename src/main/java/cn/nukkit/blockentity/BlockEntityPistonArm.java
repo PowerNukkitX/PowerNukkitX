@@ -92,12 +92,12 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         entity.onPushByPiston(this);
         if (entity.closed)
             return;
-        entity.teleport(new Vector3(
-                entity.x + diff * moveDirection.getXOffset(),
-                //需要抵消重力
-                entity.y + diff * moveDirection.getYOffset() * (moveDirection == BlockFace.UP ? 2 : 1),
-                entity.z + diff * moveDirection.getZOffset()
-        ));
+        //需要抵消重力
+        entity.move(
+                diff * moveDirection.getXOffset(),
+                diff * moveDirection.getYOffset() * (moveDirection == BlockFace.UP ? 2 : 1),
+                diff * moveDirection.getZOffset()
+        );
     }
 
     public void preMove(boolean extending, List<BlockVector3> attachedBlocks) {

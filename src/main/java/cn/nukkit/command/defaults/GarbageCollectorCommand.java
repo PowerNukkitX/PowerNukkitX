@@ -27,7 +27,8 @@ public class GarbageCollectorCommand extends TestCommand implements CoreCommand 
         int chunksCollected = 0;
         int entitiesCollected = 0;
         int tilesCollected = 0;
-        long memory = Runtime.getRuntime().freeMemory();
+        var runtime = Runtime.getRuntime();
+        long usedMemory = runtime.totalMemory() - runtime.freeMemory();
 
         for (Level level : sender.getServer().getLevels().values()) {
             int chunksCount = level.getChunks().size();
@@ -43,7 +44,7 @@ public class GarbageCollectorCommand extends TestCommand implements CoreCommand 
         ThreadCache.clean();
         System.gc();
 
-        long freedMemory = Runtime.getRuntime().freeMemory() - memory;
+        long freedMemory = usedMemory - (runtime.totalMemory() - runtime.freeMemory());
 
         sender.sendMessage(TextFormat.GREEN + "---- " + TextFormat.WHITE + "Garbage collection result" + TextFormat.GREEN + " ----");
         sender.sendMessage(TextFormat.GOLD + "Chunks: " + TextFormat.RED + chunksCollected);
