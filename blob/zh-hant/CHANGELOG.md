@@ -13,15 +13,17 @@
 ## [Dev-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - Future
 該版本目前支持了Minecraft:BE `1.19.60 (協議版本567)`.
 
+## 修改記錄
+
+- [#1031] 優化註冊自定義方塊。
+- [#1039] 修正觀察者NC延遲。
+
+
 ## BUG修復
 
 - [#1028] 修復`Player#positionChanged`錯亂的BUG。
 - [#1029] 修復大量命令相關問題。
 - [#1035] 修復一些紅石BUG。
-
-## 修改記錄
-
-- [#1039] 修正觀察者NC延遲。
 
 ## [1.19.60-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - 2023-2-9
 該版本目前支持了Minecraft:BE `1.19.60 (協議版本567)`.
