@@ -125,7 +125,7 @@ https://hub.docker.com/r/coolloong/powernukkitx
 🛠 創建插件
 ---
 
-* 添加PowerNukkit至您的依賴項中（它由Maven Central託管，因此您無需指定自定義存儲庫）。
+* 添加PowerNukkitX至您的依賴項中（它由Maven Central託管，因此您無需指定自定義存儲庫）。
 
 [點此查看完整的Gradle示例](https://github.com/PowerNukkitX/ExamplePlugin-Gradle)
 
