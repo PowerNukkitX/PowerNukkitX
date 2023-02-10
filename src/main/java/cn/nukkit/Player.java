@@ -1054,15 +1054,30 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     protected void handleMovement(Location clientPos) {
-        if (!this.isAlive() || !this.spawned || this.isSleeping()) {
+        double distance = clientPos.distanceSquared(this);
+        boolean updatePosition = (float) Math.sqrt(distance) > MOVEMENT_DISTANCE_THRESHOLD;//sqrt distance
+        boolean updateRotation = (float) Math.abs(this.getPitch() - clientPos.pitch) > ROTATION_UPDATE_THRESHOLD
+                || (float) Math.abs(this.getYaw() - clientPos.yaw) > ROTATION_UPDATE_THRESHOLD
+                || (float) Math.abs(this.getHeadYaw() - clientPos.headYaw) > ROTATION_UPDATE_THRESHOLD;
+        boolean isHandle = this.isAlive() && this.spawned && !this.isSleeping() && (updatePosition || updateRotation);
+        if (isHandle) {
+            this.positionChanged = true;
+            this.newPosition = clientPos;
+        } else {
             this.positionChanged = false;
+            this.newPosition = null;
+            if (this.speed == null) {
+                this.speed = new Vector3(0, 0, 0);
+            } else {
+                this.speed.setComponents(0, 0, 0);
+            }
             return;
         }
+
         if (this.firstMove) this.firstMove = false;
 
         boolean invalidMotion = false;
         var revertPos = this.getLocation().clone();
-        double distance = clientPos.distanceSquared(this);
 
         //before check
         if (distance > 128) {
@@ -3719,23 +3734,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     if (movePlayerPacket.headYaw < 0) {
                         movePlayerPacket.headYaw += 360;
                     }
-
-                    boolean updatePosition = (float) Math.sqrt(this.distanceSquared(newPos)) > MOVEMENT_DISTANCE_THRESHOLD;
-                    boolean updateRotation = (float) Math.abs(this.getPitch() - movePlayerPacket.pitch) > ROTATION_UPDATE_THRESHOLD
-                            || (float) Math.abs(this.getYaw() - movePlayerPacket.yaw) > ROTATION_UPDATE_THRESHOLD
-                            || (float) Math.abs(this.getHeadYaw() - movePlayerPacket.headYaw) > ROTATION_UPDATE_THRESHOLD;
-                    if (updateRotation || updatePosition) {
-                        this.positionChanged = true;
-                        this.newPosition = newPos;
-                        this.clientMovements.offer(Location.fromObject(newPos, this.level, movePlayerPacket.yaw, movePlayerPacket.pitch, movePlayerPacket.headYaw));
-                    } else {
-                        this.positionChanged = false;
-                        if (this.speed == null) {
-                            this.speed = new Vector3(0, 0, 0);
-                        } else {
-                            this.speed.setComponents(0, 0, 0);
-                        }
-                    }
+                    this.clientMovements.offer(Location.fromObject(newPos, this.level, movePlayerPacket.yaw, movePlayerPacket.pitch, movePlayerPacket.headYaw));
                     break;
                 case ProtocolInfo.PLAYER_AUTH_INPUT_PACKET:
                     if (!locallyInitialized) break;
@@ -3870,23 +3869,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     if (yaw < 0) {
                         yaw += 360;
                     }
-
-                    boolean uPosition = (float) Math.sqrt(this.distanceSquared(clientPosition)) > MOVEMENT_DISTANCE_THRESHOLD;
-                    boolean uRotation = (float) Math.abs(this.getPitch() - pitch) > ROTATION_UPDATE_THRESHOLD
-                            || (float) Math.abs(this.getYaw() - yaw) > ROTATION_UPDATE_THRESHOLD
-                            || (float) Math.abs(this.getHeadYaw() - headYaw) > ROTATION_UPDATE_THRESHOLD;
-                    if (uPosition || uRotation) {
-                        this.positionChanged = true;
-                        this.newPosition = clientPosition;
-                        this.clientMovements.offer(Location.fromObject(clientPosition, this.level, yaw, pitch, headYaw));
-                    } else {
-                        this.positionChanged = false;
-                        if (this.speed == null) {
-                            this.speed = new Vector3(0, 0, 0);
-                        } else {
-                            this.speed.setComponents(0, 0, 0);
-                        }
-                    }
+                    this.clientMovements.offer(Location.fromObject(clientPosition, this.level, yaw, pitch, headYaw));
                     break;
                 /* PowerNukkit disabled to use our own boat implementation
                 case ProtocolInfo.MOVE_ENTITY_ABSOLUTE_PACKET:
