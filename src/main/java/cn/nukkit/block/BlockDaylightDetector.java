@@ -131,7 +131,6 @@ public class BlockDaylightDetector extends BlockTransparentMeta implements Redst
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
-        checkAndRecoveryBlockEntity();
         BlockDaylightDetectorInverted block = new BlockDaylightDetectorInverted();
         getLevel().setBlock(this, block, true, true);
         if (this.level.getServer().isRedstoneEnabled()) {
@@ -149,14 +148,6 @@ public class BlockDaylightDetector extends BlockTransparentMeta implements Redst
             return true;
         }
         return false;
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.20-r3")
-    private void checkAndRecoveryBlockEntity() {
-        if (!(this.getLevel().getBlockEntity(this) instanceof BlockEntityDaylightDetector)) {
-            BlockEntityHolder.setBlockAndCreateEntity(this);
-        }
     }
 
     @Override
