@@ -22,7 +22,8 @@ public class BlockEntityDaylightDetector extends BlockEntity {
 
     @Override
     public boolean isBlockEntityValid() {
-        return getLevelBlock().getId() == BlockID.DAYLIGHT_DETECTOR;
+        var id = getLevelBlock().getId();
+        return id == BlockID.DAYLIGHT_DETECTOR || id == BlockID.DAYLIGHT_DETECTOR_INVERTED;
     }
 
     @Override
