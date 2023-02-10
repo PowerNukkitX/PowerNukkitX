@@ -69,6 +69,7 @@
 - [#889] 修復1.19.50中小地圖不顯示的BUG。
 - [#890] 修復`AdventureSettings`的NPE問題。
 - [#900] 修復Item與Tag無法雙向查找的BUG。
+- [#903] 修復`ItemCreativeCategory`枚舉序數錯誤（在[#1000]中修復）。
 - [#909] 修復`InventorySlice#isFull`的異常行為。
 - [#911] 修復EntityCanAttack ArrayIndexOutOfBoundsException。
 - [#916] 嘗試修復crafting grid sync問題。
@@ -2176,6 +2177,7 @@ Need to switch languages?
 [#1021]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1021
 [#1022]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1022
 [#1023]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1023
+[#1024]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1024
 [#1026]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1026
 [#1029]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1029
 <!--PowerNukkitX Version history-->
