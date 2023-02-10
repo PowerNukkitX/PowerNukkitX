@@ -135,7 +135,7 @@ few key advantages over other server software:
 🛠 Creating Plugins
 ---
 
-* Add PowerNukkit to your dependencies (it is hosted by Maven Central, so you don't need to specify a custom repository)
+* Add PowerNukkitX to your dependencies (it is hosted by Maven Central, so you don't need to specify a custom repository)
   .
 
 [Click here to see full Gradle Example](https://github.com/PowerNukkitX/ExamplePlugin-Gradle)
