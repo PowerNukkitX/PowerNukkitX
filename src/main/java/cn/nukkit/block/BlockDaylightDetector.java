@@ -101,13 +101,30 @@ public class BlockDaylightDetector extends BlockTransparentMeta implements Redst
     }
 
     @Override
+    public int onUpdate(int type) {
+        if (!this.level.getServer().isRedstoneEnabled()) {
+            return 0;
+        }
+
+        if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_REDSTONE) {
+            var be = getBlockEntity();
+            if (be != null) {
+                be.scheduleUpdate();
+            }
+        }
+        return type;
+    }
+
+    @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         BlockEntityDaylightDetector detector = BlockEntityHolder.setBlockAndCreateEntity(this);
         if (detector == null) {
             return false;
         }
         if (getLevel().getDimension() == Level.DIMENSION_OVERWORLD) {
-            updatePower();
+            if (this.level.getServer().isRedstoneEnabled()) {
+                updatePower();
+            }
         }
         return true;
     }
@@ -117,7 +134,9 @@ public class BlockDaylightDetector extends BlockTransparentMeta implements Redst
         checkAndRecoveryBlockEntity();
         BlockDaylightDetectorInverted block = new BlockDaylightDetectorInverted();
         getLevel().setBlock(this, block, true, true);
-        block.updatePower();
+        if (this.level.getServer().isRedstoneEnabled()) {
+            block.updatePower();
+        }
         return true;
     }
 

@@ -27,6 +27,9 @@ public class BlockEntityDaylightDetector extends BlockEntity {
 
     @Override
     public boolean onUpdate() {
+        if (!this.level.getServer().isRedstoneEnabled()) {
+            return false;
+        }
         if (this.level.getCurrentTick() % 20 != 0) {
             //阳光传感器每20gt更新一次
             return true;
