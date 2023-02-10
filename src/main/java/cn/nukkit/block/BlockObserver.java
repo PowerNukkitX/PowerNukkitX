@@ -147,7 +147,7 @@ public class BlockObserver extends BlockSolidMeta implements RedstoneComponent, 
             return;
         }
 
-        level.scheduleUpdate(this, 5);
+        level.scheduleUpdate(this, 1);
     }
 
     @Override
