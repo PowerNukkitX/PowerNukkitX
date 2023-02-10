@@ -20,6 +20,14 @@ public record OK<E>(boolean ok, @Nullable E error) {
         this(ok, null);
     }
 
+    public Throwable getError() {
+        if (error instanceof Throwable throwable) {
+            return new AssertionError(throwable);
+        } else {
+            return new AssertionError(Objects.toString(error, "Unknown error"));
+        }
+    }
+
     public void assertOK() throws AssertionError {
         if (!ok) {
             if (error instanceof Throwable throwable) {
