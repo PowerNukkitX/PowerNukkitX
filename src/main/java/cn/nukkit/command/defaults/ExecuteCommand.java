@@ -187,7 +187,7 @@ public class ExecuteCommand extends VanillaCommand {
                 }
                 String chainCommand = list.getResult(2);
                 for (Entity executor : executors) {
-                    ExecutorCommandSender executorCommandSender = new ExecutorCommandSender(sender, executor, sender.getLocation());
+                    ExecutorCommandSender executorCommandSender = new ExecutorCommandSender(sender, executor, executor.getLocation());
                     int n = executorCommandSender.getServer().executeCommand(executorCommandSender, chainCommand);
                     if (n == 0) {
                         var names = new ArrayList<String>();
