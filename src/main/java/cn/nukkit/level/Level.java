@@ -2370,7 +2370,7 @@ public class Level implements ChunkManager, Metadatable {
             newHeightMap = chunk.recalculateHeightMapColumn(x & 0x0f, z & 0x0f);
         } else if (yPlusOne > oldHeightMap) { // Block changed above the heightmap
             if (Block.getLightFilter(sourceId) > 1 || Block.diffusesSkyLight(sourceId)) {
-                chunk.setHeightMap(x & 0xf, y & 0xf, yPlusOne);
+                chunk.setHeightMap(x & 0xf, z & 0xf, yPlusOne);
                 newHeightMap = yPlusOne;
             } else { // Block changed which has no effect on direct sky light, for example placing or removing glass.
                 return;

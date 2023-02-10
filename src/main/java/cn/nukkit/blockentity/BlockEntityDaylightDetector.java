@@ -22,11 +22,15 @@ public class BlockEntityDaylightDetector extends BlockEntity {
 
     @Override
     public boolean isBlockEntityValid() {
-        return getLevelBlock().getId() == BlockID.DAYLIGHT_DETECTOR;
+        var id = getLevelBlock().getId();
+        return id == BlockID.DAYLIGHT_DETECTOR || id == BlockID.DAYLIGHT_DETECTOR_INVERTED;
     }
 
     @Override
     public boolean onUpdate() {
+        if (!this.level.getServer().isRedstoneEnabled()) {
+            return false;
+        }
         if (this.level.getCurrentTick() % 20 != 0) {
             //阳光传感器每20gt更新一次
             return true;
