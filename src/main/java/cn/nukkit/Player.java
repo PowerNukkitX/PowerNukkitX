@@ -105,9 +105,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.powernukkit.version.Version;
-
 import org.jetbrains.annotations.NotNull;
+import org.powernukkit.version.Version;
 
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -1055,148 +1054,153 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     protected void handleMovement(Location clientPos) {
-        if (!this.isAlive() || !this.spawned || this.isSleeping()) {
+        double distance = clientPos.distanceSquared(this);
+        boolean updatePosition = (float) Math.sqrt(distance) > MOVEMENT_DISTANCE_THRESHOLD;//sqrt distance
+        boolean updateRotation = (float) Math.abs(this.getPitch() - clientPos.pitch) > ROTATION_UPDATE_THRESHOLD
+                || (float) Math.abs(this.getYaw() - clientPos.yaw) > ROTATION_UPDATE_THRESHOLD
+                || (float) Math.abs(this.getHeadYaw() - clientPos.headYaw) > ROTATION_UPDATE_THRESHOLD;
+        boolean isHandle = this.isAlive() && this.spawned && !this.isSleeping() && (updatePosition || updateRotation);
+        if (isHandle) {
+            this.positionChanged = true;
+            this.newPosition = clientPos;
+        } else {
             this.positionChanged = false;
+            this.newPosition = null;
+            if (this.speed == null) {
+                this.speed = new Vector3(0, 0, 0);
+            } else {
+                this.speed.setComponents(0, 0, 0);
+            }
             return;
         }
+
         if (this.firstMove) this.firstMove = false;
 
-        boolean updatePosition = (float) Math.sqrt(this.distanceSquared(clientPos)) > MOVEMENT_DISTANCE_THRESHOLD;
-        boolean updateRotation = (float) Math.abs(this.getPitch() - clientPos.getPitch()) > ROTATION_UPDATE_THRESHOLD
-                || (float) Math.abs(this.getYaw() - clientPos.getYaw()) > ROTATION_UPDATE_THRESHOLD
-                || (float) Math.abs(this.getHeadYaw() - clientPos.getHeadYaw()) > ROTATION_UPDATE_THRESHOLD;
-        if (updateRotation || updatePosition) {
-            boolean invalidMotion = false;
-            var revertPos = this.getLocation().clone();
-            double distance = clientPos.distanceSquared(this);
+        boolean invalidMotion = false;
+        var revertPos = this.getLocation().clone();
 
-            //before check
-            if (distance > 128) {
+        //before check
+        if (distance > 128) {
+            invalidMotion = true;
+        } else if (this.chunk == null || !this.chunk.isGenerated()) {
+            BaseFullChunk chunk = this.level.getChunk(clientPos.getChunkX() >> 4, clientPos.getChunkX() >> 4, false);
+            if (chunk == null || !chunk.isGenerated()) {
                 invalidMotion = true;
-            } else if (this.chunk == null || !this.chunk.isGenerated()) {
-                BaseFullChunk chunk = this.level.getChunk(clientPos.getChunkX() >> 4, clientPos.getChunkX() >> 4, false);
-                if (chunk == null || !chunk.isGenerated()) {
-                    invalidMotion = true;
-                    this.nextChunkOrderRun = 0;
-                } else {
-                    if (this.chunk != null) {
-                        this.chunk.removeEntity(this);
-                    }
-                    this.chunk = chunk;
-                }
-            }
-
-            if (invalidMotion) {
-                this.positionChanged = false;
-                this.revertClientMotion(revertPos);
-                this.resetClientMovement();
-                return;
-            }
-
-            //update server-side position and rotation and aabb
-            double diffX = clientPos.getX() - this.x;
-            double diffY = clientPos.getY() - this.y;
-            double diffZ = clientPos.getZ() - this.z;
-            this.fastMove(diffX, diffY, diffZ);
-            this.setRotation(clientPos.getYaw(), clientPos.getPitch(), clientPos.getHeadYaw());
-
-            //after check
-            double corrX = this.x - clientPos.getX();
-            double corrY = this.y - clientPos.getY();
-            double corrZ = this.z - clientPos.getZ();
-            if (this.checkMovement && (Math.abs(corrX) > 0.5 || Math.abs(corrY) > 0.5 || Math.abs(corrZ) > 0.5) && this.riding == null && !this.hasEffect(Effect.LEVITATION) && !this.hasEffect(Effect.SLOW_FALLING) && !server.getAllowFlight()) {
-                double diff = corrX * corrX + corrZ * corrZ;
-                //这里放宽了判断，否则对角穿过脚手架会判断非法移动。
-                if (diff > 1.2) {
-                    PlayerInvalidMoveEvent event = new PlayerInvalidMoveEvent(this, true);
-                    this.getServer().getPluginManager().callEvent(event);
-                    if (!event.isCancelled() && (invalidMotion = event.isRevert())) {
-                        log.warn(this.getServer().getLanguage().tr("nukkit.player.invalidMove", this.getName()));
-                    }
-                }
-                if (invalidMotion) {
-                    this.positionChanged = false;
-                    this.setPositionAndRotation(revertPos.asVector3f().asVector3(), revertPos.getYaw(), revertPos.getPitch(), revertPos.getHeadYaw());
-                    this.revertClientMotion(revertPos);
-                    this.resetClientMovement();
-                    return;
-                }
-            }
-
-            //update server-side position and rotation and aabb
-            Location last = new Location(this.lastX, this.lastY, this.lastZ, this.lastYaw, this.lastPitch, this.lastHeadYaw, this.level);
-            Location now = this.getLocation();
-            this.lastX = now.x;
-            this.lastY = now.y;
-            this.lastZ = now.z;
-            this.lastYaw = now.yaw;
-            this.lastPitch = now.pitch;
-            this.lastHeadYaw = now.headYaw;
-
-            List<Block> blocksAround = null;
-            List<Block> collidingBlocks = null;
-            if (this.blocksAround != null && this.collisionBlocks != null) {
-                blocksAround = new ArrayList<>(this.blocksAround);
-                collidingBlocks = new ArrayList<>(this.collisionBlocks);
-
-            }
-
-            if (!this.firstMove) {
-                if (this.clientMovements.isEmpty()) {
-                    this.blocksAround = null;
-                    this.collisionBlocks = null;
-                }
-                PlayerMoveEvent ev = new PlayerMoveEvent(this, last, now);
-                this.server.getPluginManager().callEvent(ev);
-
-                if (!(invalidMotion = ev.isCancelled())) { //Yes, this is intended
-                    if (!now.equals(ev.getTo()) && this.riding == null) { //If plugins modify the destination
-                        if (this.getGamemode() != Player.SPECTATOR)
-                            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, ev.getTo().clone(), VibrationType.TELEPORT));
-                        this.teleport(ev.getTo(), null);
-                    } else {
-                        if (this.getGamemode() != Player.SPECTATOR && (last.x != now.x || last.y != now.y || last.z != now.z)) {
-                            if (this.isOnGround() && this.isGliding()) {
-                                this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.ELYTRA_GLIDE));
-                            } else if (this.isOnGround() && this.getSide(BlockFace.DOWN).getLevelBlock().getId() != BlockID.WOOL && !this.isSneaking()) {
-                                this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.STEP));
-                            } else if (this.isTouchingWater()) {
-                                this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.SWIM));
-                            }
-                        }
-                        this.broadcastMovement();
-                    }
-                } else {
-                    this.blocksAround = blocksAround;
-                    this.collisionBlocks = collidingBlocks;
-                }
-            }
-
-            //update speed
-            if (this.speed == null) {
-                this.speed = new Vector3(last.x - now.x, last.y - now.y, last.z - now.z);
+                this.nextChunkOrderRun = 0;
             } else {
-                this.speed.setComponents(last.x - now.x, last.y - now.y, last.z - now.z);
+                if (this.chunk != null) {
+                    this.chunk.removeEntity(this);
+                }
+                this.chunk = chunk;
             }
+        }
 
-            handleLogicInMove(invalidMotion, distance);
+        if (invalidMotion) {
+            this.positionChanged = false;
+            this.revertClientMotion(revertPos);
+            this.resetClientMovement();
+            return;
+        }
 
-            //if plugin cancel move
+        //update server-side position and rotation and aabb
+        double diffX = clientPos.getX() - this.x;
+        double diffY = clientPos.getY() - this.y;
+        double diffZ = clientPos.getZ() - this.z;
+        this.fastMove(diffX, diffY, diffZ);
+        this.setRotation(clientPos.getYaw(), clientPos.getPitch(), clientPos.getHeadYaw());
+
+        //after check
+        double corrX = this.x - clientPos.getX();
+        double corrY = this.y - clientPos.getY();
+        double corrZ = this.z - clientPos.getZ();
+        if (this.checkMovement && (Math.abs(corrX) > 0.5 || Math.abs(corrY) > 0.5 || Math.abs(corrZ) > 0.5) && this.riding == null && !this.hasEffect(Effect.LEVITATION) && !this.hasEffect(Effect.SLOW_FALLING) && !server.getAllowFlight()) {
+            double diff = corrX * corrX + corrZ * corrZ;
+            //这里放宽了判断，否则对角穿过脚手架会判断非法移动。
+            if (diff > 1.2) {
+                PlayerInvalidMoveEvent event = new PlayerInvalidMoveEvent(this, true);
+                this.getServer().getPluginManager().callEvent(event);
+                if (!event.isCancelled() && (invalidMotion = event.isRevert())) {
+                    log.warn(this.getServer().getLanguage().tr("nukkit.player.invalidMove", this.getName()));
+                }
+            }
             if (invalidMotion) {
                 this.positionChanged = false;
                 this.setPositionAndRotation(revertPos.asVector3f().asVector3(), revertPos.getYaw(), revertPos.getPitch(), revertPos.getHeadYaw());
                 this.revertClientMotion(revertPos);
-            } else {
-                if (distance != 0 && this.nextChunkOrderRun > 20) {
-                    this.nextChunkOrderRun = 20;
-                }
+                this.resetClientMovement();
+                return;
             }
-            this.resetClientMovement();
-        } else {
-            this.positionChanged = false;
-            if (this.speed == null) speed = new Vector3(0, 0, 0);
-            else this.speed.setComponents(0, 0, 0);
         }
+
+        //update server-side position and rotation and aabb
+        Location last = new Location(this.lastX, this.lastY, this.lastZ, this.lastYaw, this.lastPitch, this.lastHeadYaw, this.level);
+        Location now = this.getLocation();
+        this.lastX = now.x;
+        this.lastY = now.y;
+        this.lastZ = now.z;
+        this.lastYaw = now.yaw;
+        this.lastPitch = now.pitch;
+        this.lastHeadYaw = now.headYaw;
+
+        List<Block> blocksAround = null;
+        List<Block> collidingBlocks = null;
+        if (this.blocksAround != null && this.collisionBlocks != null) {
+            blocksAround = new ArrayList<>(this.blocksAround);
+            collidingBlocks = new ArrayList<>(this.collisionBlocks);
+
+        }
+
+        if (!this.firstMove) {
+            if (this.clientMovements.isEmpty()) {
+                this.blocksAround = null;
+                this.collisionBlocks = null;
+            }
+            PlayerMoveEvent ev = new PlayerMoveEvent(this, last, now);
+            this.server.getPluginManager().callEvent(ev);
+
+            if (!(invalidMotion = ev.isCancelled())) { //Yes, this is intended
+                if (!now.equals(ev.getTo()) && this.riding == null) { //If plugins modify the destination
+                    if (this.getGamemode() != Player.SPECTATOR)
+                        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, ev.getTo().clone(), VibrationType.TELEPORT));
+                    this.teleport(ev.getTo(), null);
+                } else {
+                    if (this.getGamemode() != Player.SPECTATOR && (last.x != now.x || last.y != now.y || last.z != now.z)) {
+                        if (this.isOnGround() && this.isGliding()) {
+                            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.ELYTRA_GLIDE));
+                        } else if (this.isOnGround() && this.getSide(BlockFace.DOWN).getLevelBlock().getId() != BlockID.WOOL && !this.isSneaking()) {
+                            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.STEP));
+                        } else if (this.isTouchingWater()) {
+                            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.SWIM));
+                        }
+                    }
+                    this.broadcastMovement();
+                }
+            } else {
+                this.blocksAround = blocksAround;
+                this.collisionBlocks = collidingBlocks;
+            }
+        }
+
+        //update speed
+        if (this.speed == null) {
+            this.speed = new Vector3(last.x - now.x, last.y - now.y, last.z - now.z);
+        } else {
+            this.speed.setComponents(last.x - now.x, last.y - now.y, last.z - now.z);
+        }
+
+        handleLogicInMove(invalidMotion, distance);
+
+        //if plugin cancel move
+        if (invalidMotion) {
+            this.positionChanged = false;
+            this.setPositionAndRotation(revertPos.asVector3f().asVector3(), revertPos.getYaw(), revertPos.getPitch(), revertPos.getHeadYaw());
+            this.revertClientMotion(revertPos);
+        } else {
+            if (distance != 0 && this.nextChunkOrderRun > 20) {
+                this.nextChunkOrderRun = 20;
+            }
+        }
+        this.resetClientMovement();
     }
 
     //NK原始处理移动的方法
@@ -3080,6 +3084,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     /**
      * 每次调用此方法都会向客户端发送motion包。若多次调用，motion将在客户端叠加<p/>
+     *
      * @param motion 运动向量<br>a motion vector
      * @return 调用是否成功
      */
@@ -3719,7 +3724,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     }
                     MovePlayerPacket movePlayerPacket = (MovePlayerPacket) packet;
                     Vector3 newPos = new Vector3(movePlayerPacket.x, movePlayerPacket.y - getBaseOffset(), movePlayerPacket.z);
-                    double dist = newPos.distanceSquared(this);
+
                     movePlayerPacket.yaw %= 360;
                     movePlayerPacket.headYaw %= 360;
                     movePlayerPacket.pitch %= 360;
@@ -3729,12 +3734,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     if (movePlayerPacket.headYaw < 0) {
                         movePlayerPacket.headYaw += 360;
                     }
-                    if (dist == 0.0 && movePlayerPacket.yaw == this.yaw && movePlayerPacket.pitch == this.pitch && movePlayerPacket.headYaw == this.headYaw) {
-                        this.positionChanged = false;
-                        break;
-                    }
-                    this.positionChanged = true;
-                    this.newPosition = newPos;
                     this.clientMovements.offer(Location.fromObject(newPos, this.level, movePlayerPacket.yaw, movePlayerPacket.pitch, movePlayerPacket.headYaw));
                     break;
                 case ProtocolInfo.PLAYER_AUTH_INPUT_PACKET:
@@ -3861,7 +3860,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         }
                     }
                     Vector3 clientPosition = authPacket.getPosition().asVector3().subtract(0, getBaseOffset(), 0);
-                    double distSqrt = clientPosition.distanceSquared(this);
                     float yaw = authPacket.getYaw() % 360;
                     float pitch = authPacket.getPitch() % 360;
                     float headYaw = authPacket.getHeadYaw() % 360;
@@ -3871,13 +3869,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     if (yaw < 0) {
                         yaw += 360;
                     }
-                    if (distSqrt == 0.0 && yaw == this.yaw && pitch == this.pitch && headYaw == this.headYaw) {
-                        this.positionChanged = false;
-                        break;
-                    }
-
-                    this.positionChanged = true;
-                    this.newPosition = clientPosition;
                     this.clientMovements.offer(Location.fromObject(clientPosition, this.level, yaw, pitch, headYaw));
                     break;
                 /* PowerNukkit disabled to use our own boat implementation
