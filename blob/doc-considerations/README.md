@@ -19,15 +19,15 @@
 ## [PNX版本号](版本下载链接) - 2020-1-1 (说明请看上面)
 该版本目前支持了Minecraft:BE `游戏版本号 (协议版本号)`.
 
-## 新增内容
+## 新增内容 / Added
  
-## 修改记录
+## 修改记录 / Changed
 
-## BUG修复
+## BUG修复 / Fixes
 
-## 安全漏洞修复
+## 安全漏洞修复 / CRITICAL SECURITY FIX
 
-## 文档内容
+## 文档内容 / Documentation
 
 ## <a id="Catalogs-Swlang"></a>🌐 多语言文档
 
@@ -48,3 +48,5 @@ Need to switch languages?
 4.安全漏洞修复
 5.文档内容
 -->
+
+<!-- Hello，这是一条注释，很酷的注释 :P -->
