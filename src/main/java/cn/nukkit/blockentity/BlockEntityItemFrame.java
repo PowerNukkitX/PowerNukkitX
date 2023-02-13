@@ -8,7 +8,6 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockItemFrame;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.event.block.ItemFrameDropItemEvent;
-import cn.nukkit.event.player.PlayerUseItemFrameEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.MinecraftItemID;
@@ -164,11 +163,9 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
             return null;
         }
 
-        PlayerUseItemFrameEvent event1 = new PlayerUseItemFrameEvent(player, getLevelBlock(), this, drop, PlayerUseItemFrameEvent.Action.DROP);
-        ItemFrameDropItemEvent event2 = new ItemFrameDropItemEvent(player, getLevelBlock(), this, drop);
-        level.getServer().getPluginManager().callEvent(event1);
-        level.getServer().getPluginManager().callEvent(event2);
-        if (event1.isCancelled() || event2.isCancelled()) {
+        ItemFrameDropItemEvent event = new ItemFrameDropItemEvent(player, getLevelBlock(), this, drop);
+        level.getServer().getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
             if (player != null) {
                 spawnTo(player);
             }
