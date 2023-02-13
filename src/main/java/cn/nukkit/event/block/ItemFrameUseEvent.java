@@ -1,6 +1,8 @@
 package cn.nukkit.event.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.BlockEntityItemFrame;
 import cn.nukkit.event.Cancellable;
@@ -16,6 +18,8 @@ import javax.annotation.Nullable;
  * <p>
  * The event that the item display box is used will be called when an item is placed, rotated, or dropped
  */
+@PowerNukkitXOnly
+@Since("1.19.60-r2")
 public class ItemFrameUseEvent extends BlockEvent implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
     protected final Player player;

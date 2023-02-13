@@ -11,9 +11,9 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
 /**
- * ItemFrameUseEvent的子事件，仅代表物品展示框被使用的事件，会在放置物品，旋转物品，掉落物品时调用
+ * ItemFrameUseEvent的子事件，仅代表物品展示框掉落物品的事件
  * <p>
- * The event that the item display box is used will be called when an item is placed, rotated, or dropped
+ * The event that the item display box is used will be called when an item is dropped
  *
  * @author Pub4Game
  * @since 03.07.2016
