@@ -135,7 +135,7 @@ public abstract class Food {
     @Since("1.6.0.0-PNX")
     public static final Food glow_berries = registerDefaultFood(new FoodNormal(2, 0.4F).addRelative(Item.GLOW_BERRIES));
 
-    @PowerNukkitDifference
+    @PowerNukkitXDifference
     //Opened API for plugins
     public static Food registerFood(Food food, Plugin plugin) {
         Objects.requireNonNull(food);
