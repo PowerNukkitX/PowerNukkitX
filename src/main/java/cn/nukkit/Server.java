@@ -2841,7 +2841,7 @@ public class Server {
             log.info(Server.getInstance().getLanguage().tr("nukkit.anvil.converter.update"));
             var scan = new Scanner(System.in);
             var result = scan.nextLine();
-            if (result.equals("true") || result.equals("TRUE") || result.equals("True") || result.equals("t") || result.equals("T")) {
+            if (result.equalsIgnoreCase("true") || result.equalsIgnoreCase("t")) {
                 var bid = Server.getInstance().addBusying(System.currentTimeMillis());
                 File file = new File(Path.of(path).resolve("region").toUri());
                 if (file.exists()) {
