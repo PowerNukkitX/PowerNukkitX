@@ -23,11 +23,10 @@ public final class OldNukkitLevelConvert {
                 if (chunk == null) {
                     continue;
                 }
-                chunk.load(true);//强制加载区块有助于防止区块拔高失败
                 if (levelProvider instanceof Anvil) {
                     for (int dx = 0; dx < 16; dx++) {
                         for (int dz = 0; dz < 16; dz++) {
-                            for (int dy = 191; dy >= -64; --dy) {
+                            for (int dy = 255; dy >= -64; --dy) {
                                 chunk.setBlockState(dx, dy + 64, dz, chunk.getBlockState(dx, dy, dz));
                                 chunk.setBlockStateAtLayer(dx, dy + 64, dz, 1, chunk.getBlockState(dx, dy, dz, 1));
                                 chunk.setBlockState(dx, dy, dz, BlockState.AIR);
@@ -35,7 +34,7 @@ public final class OldNukkitLevelConvert {
                             }
                         }
                     }
-                    loader.writeChunk(chunk);
+                    levelProvider.setChunk(chunk.getX(), chunk.getZ(), chunk);//使用levelProvider.setChunk，用loader.writeChunk()在世界重生点会失效，不知道为什么
                 }
             }
         }
