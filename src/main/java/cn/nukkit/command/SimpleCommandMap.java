@@ -304,7 +304,7 @@ public class SimpleCommandMap implements CommandMap {
         Command target = this.getCommand(sentCommandLabel);
 
         if (target == null) {
-            sender.sendCommandOutput(new CommandOutputContainer("commands.generic.unknown", new String[]{sentCommandLabel}, 0));
+            sender.sendCommandOutput(new CommandOutputContainer(TextFormat.RED + "%commands.generic.unknown", new String[]{sentCommandLabel}, 0));
             return -1;
         }
         int output;
