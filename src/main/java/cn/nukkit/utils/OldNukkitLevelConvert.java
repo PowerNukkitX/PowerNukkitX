@@ -16,17 +16,18 @@ public final class OldNukkitLevelConvert {
     //更新旧的Nukkit 256世界到384世界
     @SneakyThrows
     public static void convertToPNXWorld(@NotNull LevelProvider levelProvider, @NotNull BaseRegionLoader loader) {
+        log.info(Server.getInstance().getLanguage().tr("nukkit.anvil.converter.update-region", levelProvider.getName(), loader.getX(), loader.getZ()));
         for (int chunkX = 0; chunkX < 32; chunkX++) {
             for (int chunkZ = 0; chunkZ < 32; chunkZ++) {
                 var chunk = loader.readChunk(chunkX, chunkZ);
                 if (chunk == null) {
                     continue;
                 }
+                chunk.load(true);//强制加载区块有助于防止区块拔高失败
                 if (levelProvider instanceof Anvil) {
-                    log.info(Server.getInstance().getLanguage().tr("nukkit.anvil.converter.update-chunk", levelProvider.getName(), chunk.getX() << 4, chunk.getZ() << 4));
                     for (int dx = 0; dx < 16; dx++) {
                         for (int dz = 0; dz < 16; dz++) {
-                            for (int dy = 255; dy >= -64; --dy) {
+                            for (int dy = 191; dy >= -64; --dy) {
                                 chunk.setBlockState(dx, dy + 64, dz, chunk.getBlockState(dx, dy, dz));
                                 chunk.setBlockStateAtLayer(dx, dy + 64, dz, 1, chunk.getBlockState(dx, dy, dz, 1));
                                 chunk.setBlockState(dx, dy, dz, BlockState.AIR);

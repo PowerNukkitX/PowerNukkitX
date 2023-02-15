@@ -2842,37 +2842,43 @@ public class Server {
             var scan = new Scanner(System.in);
             var result = scan.nextLine();
             if (result.equalsIgnoreCase("true") || result.equalsIgnoreCase("t")) {
-                var bid = Server.getInstance().addBusying(System.currentTimeMillis());
                 File file = new File(Path.of(path).resolve("region").toUri());
                 if (file.exists()) {
                     var regions = file.listFiles();
                     if (regions != null) {
-                        Method loadRegion = null;
+                        var bid = Server.getInstance().addBusying(System.currentTimeMillis());
+                        final Method loadRegion;
                         try {
                             loadRegion = Anvil.class.getDeclaredMethod("loadRegion", int.class, int.class);
                             loadRegion.setAccessible(true);
-                            for (var region : regions) {
+                        } catch (NoSuchMethodException e) {
+                            throw new RuntimeException(e);
+                        }
+                        var allTask = new ArrayList<CompletableFuture<?>>();
+                        for (var region : regions) {
+                            allTask.add(CompletableFuture.runAsync(() -> {
                                 var regionPos = region.getName().split("\\.");
                                 var regionX = Integer.parseInt(regionPos[1]);
                                 var regionZ = Integer.parseInt(regionPos[2]);
-                                var loader = (BaseRegionLoader) loadRegion.invoke(anvil, regionX, regionZ);
+                                BaseRegionLoader loader;
+                                try {
+                                    loader = (BaseRegionLoader) loadRegion.invoke(anvil, regionX, regionZ);
+                                } catch (IllegalAccessException | InvocationTargetException e) {
+                                    throw new RuntimeException(e);
+                                }
                                 OldNukkitLevelConvert.convertToPNXWorld(anvil, loader);
-                            }
-                        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                            throw new RuntimeException(e);
-                        } finally {
-                            if (loadRegion != null) loadRegion.setAccessible(false);
+                            }, this.computeThreadPool));
                         }
+                        CompletableFuture.allOf(allTask.toArray(new CompletableFuture<?>[]{})).join();
+                        Server.getInstance().removeBusying(bid);
+                        loadRegion.setAccessible(false);
                     }
                 }
-                Server.getInstance().removeBusying(bid);
             } else System.exit(0);
         }
 
         this.getPluginManager().callEvent(new LevelLoadEvent(level));
-
         level.setTickRate(this.baseTickRate);
-
         return true;
     }
 
