@@ -2840,7 +2840,7 @@ public class Server {
         if (level.getProvider() instanceof Anvil anvil && anvil.isOldAnvil() && level.isOverWorld()) {
             log.info(Server.getInstance().getLanguage().tr("nukkit.anvil.converter.update"));
             var scan = new Scanner(System.in);
-            var result = scan.nextLine();
+            var result = scan.next();
             if (result.equalsIgnoreCase("true") || result.equalsIgnoreCase("t")) {
                 File file = new File(Path.of(path).resolve("region").toUri());
                 if (file.exists()) {
