@@ -1195,7 +1195,7 @@ public class Server {
      *
      * @param sender      命令执行者
      * @param commandLine 一行命令
-     * @return boolean 执行是否成功
+     * @return 返回0代表执行失败, 返回大于等于1代表执行成功<br>Returns 0 for failed execution, greater than or equal to 1 for successful execution
      * @throws ServerException 服务器异常
      */
     public int executeCommand(CommandSender sender, String commandLine) throws ServerException {

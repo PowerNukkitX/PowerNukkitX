@@ -177,7 +177,7 @@ public abstract class Command implements GenericParameter {
      * @param commandLabel the command label
      * @param result       解析的命令结果
      * @param log          命令输出工具
-     * @return 返回0代表执行失败, 返回大于等于1代表执行成功
+     * @return int 返回0代表执行失败, 返回大于等于1代表执行成功
      */
     @PowerNukkitXOnly
     @Since("1.19.60-r1")

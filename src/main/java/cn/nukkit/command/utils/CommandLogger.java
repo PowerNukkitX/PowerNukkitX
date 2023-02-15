@@ -58,6 +58,7 @@ public record CommandLogger(Command command,
 
     /**
      * 添加一条命令成功执行的消息，参数可以是纯文本，也可以是客戶端的多语言文本key.<br>默认输出颜色白色
+     * <p>
      *
      * @param key    the key
      * @param params the params
@@ -75,6 +76,8 @@ public record CommandLogger(Command command,
 
     /**
      * 添加一条命令错误执行的消息，参数可以是纯文本，也可以是客戶端的多语言文本key.<br>默认输出颜色红色
+     * <p>
+     * Translate to English: Add a message when a command is executed incorrectly, the parameter can be plain text or a client-side multilingual text key. <br> The default output color is red
      *
      * @param message the message
      * @return the command logger
@@ -85,6 +88,8 @@ public record CommandLogger(Command command,
 
     /**
      * 添加一条命令执行失败的错误消息，参数可以是纯文本，也可以是客戶端的多语言文本key.<br>默认输出颜色红色
+     * <p>
+     * Translate to English: Add an error message when a command execution fails, the parameter can be plain text or a client-side multilingual text key. <br> The default output color is red
      *
      * @param key    语言文本key/错误信息
      * @param params 语言文本参数/空
@@ -97,6 +102,8 @@ public record CommandLogger(Command command,
 
     /**
      * 添加一条消息，参数可以是纯文本，也可以是客户端，服务端，以及{@link cn.nukkit.lang.PluginI18n PluginI18n}中的多语言文本，默认输出颜色红色
+     * <p>
+     * Add a message, the parameter can be plain text, or client, server, and multilingual text in {@link cn.nukkit.lang.PluginI18n PluginI18n}, the default output color is red.
      *
      * @param key the key
      * @return the command logger
@@ -107,6 +114,8 @@ public record CommandLogger(Command command,
 
     /**
      * 添加一条信息到{@link #outputContainer}中.参数message可以是纯文本，也可以是服务端的多语言文本key.<br>默认输出颜色红色
+     * <p>
+     * Add a message to {@link #outputContainer}. The parameter message can be plain text or a server-side multilingual text key. <br> The default output color is red
      *
      * @param key    the key
      * @param params the params
@@ -135,6 +144,8 @@ public record CommandLogger(Command command,
 
     /**
      * 添加一条默认的命令格式错误信息,会提示命令发送者在指定索引处发生错误
+     * <p>
+     * Add a default command format error message that will alert the command sender of an error at the specified index
      *
      * @param errorIndex 发生错误的参数索引
      */
@@ -147,6 +158,8 @@ public record CommandLogger(Command command,
 
     /**
      * 添加一条目标选择器没有匹配目标的错误信息
+     * <p>
+     * Add an error message that the target selector matches too many targets
      */
     public CommandLogger addNoTargetMatch() {
         this.addError("commands.generic.noTargetMatch", CommandOutputContainer.EMPTY_STRING);
@@ -163,6 +176,8 @@ public record CommandLogger(Command command,
 
     /**
      * 添加一条参数过小的错误信息，会提示命令发送者指定位置的参数最小值不能低于minimum
+     * <p>
+     * Add an error message that the parameter is too small, prompting the command sender to specify a location where the minimum value of the parameter cannot be less than minimum
      *
      * @param errorIndex 发生错误的参数索引
      * @param minimum    允许的最小值
@@ -174,6 +189,8 @@ public record CommandLogger(Command command,
 
     /**
      * 添加一条Double参数过大的错误信息，会提示命令发送者指定位置的参数最大值不能超过maximum
+     * <p>
+     * Add a Double parameter too large error message, which will prompt the command sender to specify that the maximum value of the parameter at the location cannot exceed maximum
      *
      * @param errorIndex 发生错误的参数索引
      * @param maximum    允许的最大值
@@ -185,6 +202,8 @@ public record CommandLogger(Command command,
 
     /**
      * 添加一条Double参数过小的错误信息，会提示命令发送者指定位置的参数最小值不能低于minimum
+     * <p>
+     * Add a Double parameter is too small error message, which will prompt the command sender to specify the minimum value of the parameter at the location cannot be less than minimum
      *
      * @param errorIndex 发生错误的参数索引
      * @param minimum    允许的最小值
@@ -196,6 +215,8 @@ public record CommandLogger(Command command,
 
     /**
      * 添加一条无法访问世界外的方块的错误信息
+     * <p>
+     * Add an error message about not being able to access squares outside the world
      *
      * @return the command logger
      */
@@ -240,6 +261,8 @@ public record CommandLogger(Command command,
 
     /**
      * 输出给指定目标一条反馈信息
+     * <p>
+     * Output a feedback message to the specified receiver
      *
      * @param receiver 命令目标
      * @param key      the key
@@ -253,6 +276,8 @@ public record CommandLogger(Command command,
 
     /**
      * 输出给指定目标一条反馈信息
+     * <p>
+     * Output a feedback message to the specified receiver
      *
      * @param rawtext  给命令目标的反馈信息
      * @param receiver 命令目标
