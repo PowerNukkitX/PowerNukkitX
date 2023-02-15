@@ -37,6 +37,7 @@ import cn.nukkit.level.biome.EnumBiome;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.LevelProviderManager;
 import cn.nukkit.level.format.anvil.Anvil;
+import cn.nukkit.level.format.generic.BaseRegionLoader;
 import cn.nukkit.level.generator.*;
 import cn.nukkit.level.terra.PNXPlatform;
 import cn.nukkit.level.tickingarea.manager.SimpleTickingAreaManager;
@@ -100,12 +101,15 @@ import org.iq80.leveldb.impl.Iq80DBFactory;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.security.*;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -2831,6 +2835,39 @@ public class Server {
         this.levels.put(level.getId(), level);
 
         level.initLevel();
+
+        //convert old Nukkit World
+        if (level.getProvider() instanceof Anvil anvil && anvil.isOldAnvil() && level.isOverWorld()) {
+            log.info(Server.getInstance().getLanguage().tr("nukkit.anvil.converter.update"));
+            var scan = new Scanner(System.in);
+            var result = scan.nextLine();
+            if (result.equals("true") || result.equals("TRUE") || result.equals("True") || result.equals("t") || result.equals("T")) {
+                var bid = Server.getInstance().addBusying(System.currentTimeMillis());
+                File file = new File(Path.of(path).resolve("region").toUri());
+                if (file.exists()) {
+                    var regions = file.listFiles();
+                    if (regions != null) {
+                        Method loadRegion = null;
+                        try {
+                            loadRegion = Anvil.class.getDeclaredMethod("loadRegion", int.class, int.class);
+                            loadRegion.setAccessible(true);
+                            for (var region : regions) {
+                                var regionPos = region.getName().split("\\.");
+                                var regionX = Integer.parseInt(regionPos[1]);
+                                var regionZ = Integer.parseInt(regionPos[2]);
+                                var loader = (BaseRegionLoader) loadRegion.invoke(anvil, regionX, regionZ);
+                                OldNukkitLevelConvert.convertToPNXWorld(anvil, loader);
+                            }
+                        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                            throw new RuntimeException(e);
+                        } finally {
+                            if (loadRegion != null) loadRegion.setAccessible(false);
+                        }
+                    }
+                }
+                Server.getInstance().removeBusying(bid);
+            } else System.exit(0);
+        }
 
         this.getPluginManager().callEvent(new LevelLoadEvent(level));
 
