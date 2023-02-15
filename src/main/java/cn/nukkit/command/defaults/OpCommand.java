@@ -46,7 +46,7 @@ public class OpCommand extends VanillaCommand {
                 if (player.isOnline()) {
                     log.outputObjectWhisper(player.getPlayer(), TextFormat.GRAY + "%commands.op.message");
                 }
-                log.addSuccess("commands.op.success", player.getName()).output(true, true);
+                log.addSuccess("commands.op.success", player.getName()).output(true);
             }
         }
         return IPlayers.size();

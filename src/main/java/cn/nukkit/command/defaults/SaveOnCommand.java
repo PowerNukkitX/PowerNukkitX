@@ -26,7 +26,7 @@ public class SaveOnCommand extends VanillaCommand {
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         sender.getServer().setAutoSave(true);
-        log.addSuccess("commands.save.enabled").output(true, true);
+        log.addSuccess("commands.save.enabled").output(true);
         return 1;
     }
 }

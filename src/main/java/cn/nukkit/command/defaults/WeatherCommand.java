@@ -46,20 +46,20 @@ public class WeatherCommand extends VanillaCommand {
                 level.setThundering(false);
                 level.setRainTime(seconds * 20);
                 level.setThunderTime(seconds * 20);
-                log.addSuccess("commands.weather.clear").output(true, true);
+                log.addSuccess("commands.weather.clear").output(true);
                 return 1;
             }
             case "rain" -> {
                 level.setRaining(true);
                 level.setRainTime(seconds * 20);
-                log.addSuccess("commands.weather.rain").output(true, true);
+                log.addSuccess("commands.weather.rain").output(true);
                 return 1;
             }
             case "thunder" -> {
                 level.setThundering(true);
                 level.setRainTime(seconds * 20);
                 level.setThunderTime(seconds * 20);
-                log.addSuccess("commands.weather.thunder").output(true, true);
+                log.addSuccess("commands.weather.thunder").output(true);
                 return 1;
             }
             default -> {

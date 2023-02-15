@@ -44,7 +44,7 @@ public class DeopCommand extends VanillaCommand {
             if (player.isOnline()) {
                 log.outputObjectWhisper(player.getPlayer(), TextFormat.GRAY + "%commands.deop.message");
             }
-            log.addSuccess("commands.deop.success", player.getName()).output(true, true);
+            log.addSuccess("commands.deop.success", player.getName()).output(true);
         }
         return IPlayers.size();
     }

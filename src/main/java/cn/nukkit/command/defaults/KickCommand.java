@@ -52,7 +52,7 @@ public class KickCommand extends VanillaCommand {
                 log.addSuccess("commands.kick.success", player.getName());
             }
         }
-        log.successCount(players.size()).output(true, true);
+        log.successCount(players.size()).output(true);
         return players.size();
     }
 }

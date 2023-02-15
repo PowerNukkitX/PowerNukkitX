@@ -5,8 +5,6 @@ import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
-import cn.nukkit.command.tree.node.CommandNode;
-import cn.nukkit.command.tree.node.StringNode;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.event.player.PlayerKickEvent;
 
@@ -40,7 +38,7 @@ public class BanCommand extends VanillaCommand {
         if (player != null) {
             player.kick(PlayerKickEvent.Reason.NAME_BANNED, (reason.length() > 0) ? "Banned by admin. Reason: " + reason : "Banned by admin");
         }
-        log.addSuccess("commands.ban.success", player != null ? player.getName() : name).output(true, true);
+        log.addSuccess("commands.ban.success", player != null ? player.getName() : name).output(true);
         return 1;
     }
 }

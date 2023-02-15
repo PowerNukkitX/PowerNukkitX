@@ -5,12 +5,11 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.lang.CommandOutputContainer;
 import cn.nukkit.lang.TextContainer;
+import cn.nukkit.level.GameRule;
 import cn.nukkit.permission.*;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.utils.TextFormat;
 import lombok.AllArgsConstructor;
-import lombok.NonNull;
-
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -113,7 +112,7 @@ public class CapturingCommandSender implements CommandSender {
     @Since("1.19.60-r1")
     @Override
     public void sendCommandOutput(CommandOutputContainer container) {
-        if (!container.getMessages().isEmpty()) {
+        if (!container.getMessages().isEmpty() && this.getLocation().getLevel().getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK)) {
             sendMessage(container.getMessages().get(container.getMessages().size() - 1).getMessageId());
         }
     }

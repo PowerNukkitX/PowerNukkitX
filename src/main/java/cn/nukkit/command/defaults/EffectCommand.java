@@ -100,7 +100,7 @@ public class EffectCommand extends Command {
                         effect.setDuration(duration).setAmplifier(amplification);
                         entity.addEffect(effect.clone());
                         log.addSuccess("%commands.effect.success", effect.getName(), String.valueOf(effect.getAmplifier()), entity.getName(), String.valueOf(effect.getDuration() / 20))
-                                .output(true, true);
+                                .output(true);
                     }
                     success++;
                 }

@@ -98,6 +98,7 @@ import org.iq80.leveldb.DB;
 import org.iq80.leveldb.Options;
 import org.iq80.leveldb.impl.Iq80DBFactory;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -1217,7 +1218,54 @@ public class Server {
     }
 
     /**
+     * 以该控制台身份静音执行这些命令，无视权限
+     * <p>
+     * Execute these commands silently as the console, ignoring permissions.
+     *
+     * @param commands the commands
+     * @throws ServerException 服务器异常
+     */
+    public void silentExecuteCommand(String... commands) {
+        this.silentExecuteCommand(null, commands);
+    }
+
+    /**
+     * 以该玩家身份静音执行这些命令无视权限
+     * <p>
+     * Execute these commands silently as this player, ignoring permissions.
+     *
+     * @param sender   命令执行者<br>command sender
+     * @param commands the commands
+     * @throws ServerException 服务器异常
+     */
+    public void silentExecuteCommand(@Nullable Player sender, String... commands) {
+        final var revert = new ArrayList<Level>();
+        final var server = Server.getInstance();
+        for (var level : server.getLevels().values()) {
+            if (level.getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK)) {
+                level.getGameRules().setGameRule(GameRule.SEND_COMMAND_FEEDBACK, false);
+                revert.add(level);
+            }
+        }
+        if (sender == null) {
+            for (var cmd : commands) {
+                server.executeCommand(server.getConsoleSender(), cmd);
+            }
+        } else {
+            for (var cmd : commands) {
+                server.executeCommand(server.getConsoleSender(), "execute as " + "\"" + sender.getName() + "\" run " + cmd);
+            }
+        }
+
+        for (var level : revert) {
+            level.getGameRules().setGameRule(GameRule.SEND_COMMAND_FEEDBACK, true);
+        }
+    }
+
+    /**
      * 得到控制台发送者
+     * <p>
+     * Get the console sender
      *
      * @return {@link ConsoleCommandSender}
      */

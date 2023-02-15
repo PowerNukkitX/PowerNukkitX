@@ -60,7 +60,7 @@ public class TimeCommand extends VanillaCommand {
                         level.startTime();
                         level.checkTime();
                     }
-                    log.addSuccess("Restarted the time").output(true, true);
+                    log.addSuccess("Restarted the time").output(true);
                 } else if ("stop".equals(mode)) {
                     if (!sender.hasPermission("nukkit.command.time.stop")) {
                         log.addMessage("nukkit.command.generic.permission").output();
@@ -71,7 +71,7 @@ public class TimeCommand extends VanillaCommand {
                         level.stopTime();
                         level.checkTime();
                     }
-                    log.addSuccess("Stopped the time").output(true, true);
+                    log.addSuccess("Stopped the time").output(true);
                 } else if ("query".equals(mode)) {
                     if (!sender.hasPermission("nukkit.command.time.query")) {
                         log.addMessage("nukkit.command.generic.permission").output();
@@ -83,7 +83,7 @@ public class TimeCommand extends VanillaCommand {
                     } else {
                         level = sender.getServer().getDefaultLevel();
                     }
-                    log.addSuccess("commands.time.query.gametime", String.valueOf(level.getTime())).output(true, true);
+                    log.addSuccess("commands.time.query.gametime", String.valueOf(level.getTime())).output(true);
                 }
                 return 1;
             }
@@ -102,7 +102,7 @@ public class TimeCommand extends VanillaCommand {
                     level.setTime(level.getTime() + value);
                     level.checkTime();
                 }
-                log.addSuccess("commands.time.added", String.valueOf(value)).output(true, true);
+                log.addSuccess("commands.time.added", String.valueOf(value)).output(true);
                 return 1;
             }
             case "setAmount" -> {
@@ -120,7 +120,7 @@ public class TimeCommand extends VanillaCommand {
                     level.setTime(value);
                     level.checkTime();
                 }
-                log.addSuccess("commands.time.set", String.valueOf(value)).output(true, true);
+                log.addSuccess("commands.time.set", String.valueOf(value)).output(true);
                 return 1;
             }
             case "setTime" -> {
@@ -148,7 +148,7 @@ public class TimeCommand extends VanillaCommand {
                     level.setTime(value);
                     level.checkTime();
                 }
-                log.addSuccess("commands.time.set", String.valueOf(value)).output(true, true);
+                log.addSuccess("commands.time.set", String.valueOf(value)).output(true);
                 return 1;
             }
             default -> {
