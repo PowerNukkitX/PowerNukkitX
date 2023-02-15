@@ -37,6 +37,7 @@ import cn.nukkit.level.biome.EnumBiome;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.LevelProviderManager;
 import cn.nukkit.level.format.anvil.Anvil;
+import cn.nukkit.level.format.generic.BaseRegionLoader;
 import cn.nukkit.level.generator.*;
 import cn.nukkit.level.terra.PNXPlatform;
 import cn.nukkit.level.tickingarea.manager.SimpleTickingAreaManager;
@@ -100,12 +101,15 @@ import org.iq80.leveldb.impl.Iq80DBFactory;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.security.*;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -2832,10 +2836,49 @@ public class Server {
 
         level.initLevel();
 
+        //convert old Nukkit World
+        if (level.getProvider() instanceof Anvil anvil && anvil.isOldAnvil() && level.isOverWorld()) {
+            log.info(Server.getInstance().getLanguage().tr("nukkit.anvil.converter.update"));
+            var scan = new Scanner(System.in);
+            var result = scan.next();
+            if (result.equalsIgnoreCase("true") || result.equalsIgnoreCase("t")) {
+                File file = new File(Path.of(path).resolve("region").toUri());
+                if (file.exists()) {
+                    var regions = file.listFiles();
+                    if (regions != null) {
+                        var bid = Server.getInstance().addBusying(System.currentTimeMillis());
+                        final Method loadRegion;
+                        try {
+                            loadRegion = Anvil.class.getDeclaredMethod("loadRegion", int.class, int.class);
+                            loadRegion.setAccessible(true);
+                        } catch (NoSuchMethodException e) {
+                            throw new RuntimeException(e);
+                        }
+                        var allTask = new ArrayList<CompletableFuture<?>>();
+                        for (var region : regions) {
+                            allTask.add(CompletableFuture.runAsync(() -> {
+                                var regionPos = region.getName().split("\\.");
+                                var regionX = Integer.parseInt(regionPos[1]);
+                                var regionZ = Integer.parseInt(regionPos[2]);
+                                BaseRegionLoader loader;
+                                try {
+                                    loader = (BaseRegionLoader) loadRegion.invoke(anvil, regionX, regionZ);
+                                } catch (IllegalAccessException | InvocationTargetException e) {
+                                    throw new RuntimeException(e);
+                                }
+                                OldNukkitLevelConvert.convertToPNXWorld(anvil, loader);
+                            }, this.computeThreadPool));
+                        }
+                        CompletableFuture.allOf(allTask.toArray(new CompletableFuture<?>[]{})).join();
+                        Server.getInstance().removeBusying(bid);
+                        loadRegion.setAccessible(false);
+                    }
+                }
+            } else System.exit(0);
+        }
+
         this.getPluginManager().callEvent(new LevelLoadEvent(level));
-
         level.setTickRate(this.baseTickRate);
-
         return true;
     }
 
