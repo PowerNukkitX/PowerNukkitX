@@ -579,6 +579,8 @@ public abstract class Entity extends Location implements Metadatable {
 
     /**
      * 从mc标准实体标识符创建实体，形如(minecraft:sheep)
+     * <p>
+     * Create an entity from the entity identifier, like (minecraft:sheep)
      *
      * @param identifier the identifier
      * @param pos        the pos
@@ -597,21 +599,55 @@ public abstract class Entity extends Location implements Metadatable {
         return createEntity(name, pos, args);
     }
 
+    /**
+     * 创建一个实体从实体名,名称从{@link Server#registerEntities registerEntities}源代码查询
+     * <p>
+     * Create an entity from entity name, name from {@link Server#registerEntities registerEntities} source code query
+     *
+     * @param name the name
+     * @param pos  the pos
+     * @param args the args
+     * @return the entity
+     */
     @Nullable
     public static Entity createEntity(@NotNull String name, @NotNull Position pos, @Nullable Object... args) {
         return createEntity(name, Objects.requireNonNull(pos.getChunk()), getDefaultNBT(pos), args);
     }
 
+    /**
+     * 创建一个实体从网络id
+     * <p>
+     * Create an entity from the network id
+     *
+     * @param type 网络ID<br> network id
+     * @param pos  the pos
+     * @param args the args
+     * @return the entity
+     */
     @Nullable
     public static Entity createEntity(int type, @NotNull Position pos, @Nullable Object... args) {
         return createEntity(String.valueOf(type), Objects.requireNonNull(pos.getChunk()), getDefaultNBT(pos), args);
     }
 
+    /**
+     * 创建一个实体从网络id
+     * <p>
+     * Create an entity from the network id
+     *
+     * @param type  网络ID<br> network id
+     * @param chunk the chunk
+     * @param nbt   the nbt
+     * @param args  the args
+     * @return the entity
+     */
     @Nullable
     public static Entity createEntity(int type, @NotNull FullChunk chunk, @NotNull CompoundTag nbt, @Nullable Object... args) {
         return createEntity(String.valueOf(type), chunk, nbt, args);
     }
 
+    /**
+     * @see #registerEntity(String, Class<? extends Entity>, boolean)
+     */
     @Nullable
     public static Entity createEntity(@NotNull String name, @NotNull FullChunk chunk, @NotNull CompoundTag nbt, @Nullable Object... args) {
         var provider = knownEntities.get(name);
@@ -621,10 +657,23 @@ public abstract class Entity extends Location implements Metadatable {
         return null;
     }
 
+    /**
+     * @see #registerEntity(String, Class<? extends Entity>, boolean)
+     */
     public static boolean registerEntity(String name, Class<? extends Entity> clazz) {
         return registerEntity(name, clazz, false);
     }
 
+    /**
+     * 注册一个实体，仅供内部使用，自定义实体请使用{@link #registerCustomEntity registerCustomEntity}
+     * <p>
+     * Register an entity for internal use only, for custom entities please use {@link #registerCustomEntity registerCustomEntity}
+     *
+     * @param name  the name
+     * @param clazz the clazz
+     * @param force the force
+     * @return the boolean
+     */
     @PowerNukkitXDifference(since = "1.19.21-r1", info = "Use internal provider instead.")
     public static boolean registerEntity(String name, Class<? extends Entity> clazz, boolean force) {
         if (clazz == null) {
@@ -648,12 +697,24 @@ public abstract class Entity extends Location implements Metadatable {
         return true;
     }
 
+    /**
+     * @see #registerEntity(EntityProvider<? extends Entity>, boolean)
+     */
     @PowerNukkitXOnly
     @Since("1.19.21-r2")
     public static boolean registerEntity(EntityProvider<? extends Entity> provider) {
         return registerEntity(provider, false);
     }
 
+    /**
+     * 注册一个实体，仅供内部使用，自定义实体请使用{@link #registerCustomEntity registerCustomEntity}
+     * <p>
+     * Register an entity for internal use only, for custom entities please use {@link #registerCustomEntity registerCustomEntity}
+     *
+     * @param provider the provider
+     * @param force    the force
+     * @return the boolean
+     */
     @PowerNukkitXOnly
     @Since("1.19.21-r2")
     public static boolean registerEntity(EntityProvider<? extends Entity> provider, boolean force) {
@@ -674,11 +735,26 @@ public abstract class Entity extends Location implements Metadatable {
         return true;
     }
 
+    /**
+     * 获取全部自定义实体定义的拷贝
+     * <p>
+     * Get a copy of all custom entity definitions
+     *
+     * @return the entity definitions
+     */
     @PowerNukkitXOnly
     public static Set<CustomEntityDefinition> getEntityDefinitions() {
         return new HashSet<>(entityDefinitions);
     }
 
+    /**
+     * 注册一个自定义实体
+     * <p>
+     * Register a custom entity
+     *
+     * @param customEntityProvider the custom entity provider
+     * @return the ok
+     */
     @PowerNukkitXOnly
     @Since("1.19.21-r2")
     public static OK<?> registerCustomEntity(CustomEntityProvider customEntityProvider) {
@@ -689,6 +765,13 @@ public abstract class Entity extends Location implements Metadatable {
         return new OK<Void>(registerEntity(customEntityProvider, true));
     }
 
+    /**
+     * 获得全部实体的网络id
+     * <p>
+     * Get the network id of all entities
+     *
+     * @return the known entity ids
+     */
     @NotNull
     @PowerNukkitOnly
     @Since("1.5.1.0-PN")
@@ -699,6 +782,13 @@ public abstract class Entity extends Location implements Metadatable {
                 .collect(IntArrayList::new, IntArrayList::add, IntArrayList::addAll);
     }
 
+    /**
+     * 获取全部已经注册的实体，包括自定义实体
+     * <p>
+     * Get all registered entities, including custom entities
+     *
+     * @return the known entities
+     */
     @NotNull
     @PowerNukkitXOnly
     @Since("1.19.20-r4")
@@ -718,6 +808,13 @@ public abstract class Entity extends Location implements Metadatable {
         return Collections.unmodifiableMap(knownEntities);
     }
 
+    /**
+     * 获取全部已经注册的实体提供者
+     * <p>
+     * Get all registered entity providers
+     *
+     * @return the known entity providers
+     */
     @NotNull
     @PowerNukkitOnly
     @Since("1.5.1.0-PN")
@@ -725,6 +822,14 @@ public abstract class Entity extends Location implements Metadatable {
         return new ArrayList<>(shortNames.values());
     }
 
+    /**
+     * 从key id 查询该实体的网络id,{@link #knownEntities}
+     * <p>
+     * Query the network id of the entity from the key id,{@link #knownEntities}
+     *
+     * @param id the id
+     * @return the save id
+     */
     @NotNull
     @PowerNukkitOnly
     @Since("1.5.1.0-PN")
@@ -741,6 +846,14 @@ public abstract class Entity extends Location implements Metadatable {
                 .findFirst();
     }
 
+    /**
+     * 从网络id 查询该实体的Name,对应{@link #knownEntities} key
+     * <p>
+     * Query the name of the entity from its network id, corresponding to {@link #knownEntities} key
+     *
+     * @param id the id
+     * @return the save id
+     */
     @Nullable
     @PowerNukkitOnly
     @Since("1.5.1.0-PN")
@@ -752,6 +865,36 @@ public abstract class Entity extends Location implements Metadatable {
         return shortNames.get(entityProvider.getSimpleName());
     }
 
+
+    /**
+     * 获取该实体的标识符
+     * <p>
+     * Get the identifier of the entity
+     *
+     * @return the identifier
+     */
+    @Nullable
+    public Identifier getIdentifier() {
+        return Entity.getIdentifier(this.getNetworkId());
+    }
+
+    /**
+     * 获取指定网络id实体的标识符
+     * <p>
+     * Get the identifier of the specified network id entity
+     *
+     * @return the identifier
+     */
+    @Nullable
+    public static Identifier getIdentifier(int networkID) {
+        var str = AddEntityPacket.LEGACY_IDS.get(networkID);
+        if (str == null) return null;
+        return new Identifier(str);
+    }
+
+    /**
+     * @see #getDefaultNBT(Vector3, Vector3, float, float)
+     */
     @NotNull
     public static CompoundTag getDefaultNBT(@NotNull Vector3 pos) {
         return getDefaultNBT(pos, null);
@@ -768,6 +911,17 @@ public abstract class Entity extends Location implements Metadatable {
         return getDefaultNBT(pos, motion, 0, 0);
     }
 
+    /**
+     * 获得该实体的默认NBT，带有位置,motion，yaw pitch等信息
+     * <p>
+     * Get the default NBT of the entity, with information such as position, motion, yaw pitch, etc.
+     *
+     * @param pos    the pos
+     * @param motion the motion
+     * @param yaw    the yaw
+     * @param pitch  the pitch
+     * @return the default nbt
+     */
     @NotNull
     public static CompoundTag getDefaultNBT(@NotNull Vector3 pos, @Nullable Vector3 motion, float yaw, float pitch) {
         return new CompoundTag()
@@ -805,6 +959,10 @@ public abstract class Entity extends Location implements Metadatable {
         Server.broadcastPacket(players, pk);
     }
 
+
+    /**
+     * @see #playAnimationOnEntities(AnimateEntityPacket.Animation, Collection<Entity>, Collection<Player>)
+     */
     @PowerNukkitXOnly
     @Since("1.19.50-r3")
     public static void playAnimationOnEntities(AnimateEntityPacket.Animation animation, Collection<Entity> entities) {
@@ -816,8 +974,22 @@ public abstract class Entity extends Location implements Metadatable {
         playAnimationOnEntities(animation, entities, viewers);
     }
 
+    /**
+     * 获得该实体的网络ID
+     * <p>
+     * Get the network ID of the entity
+     *
+     * @return the network id
+     */
     public abstract int getNetworkId();
 
+    /**
+     * 实体高度
+     * <p>
+     * entity Height
+     *
+     * @return the height
+     */
     public float getHeight() {
         return 0;
     }

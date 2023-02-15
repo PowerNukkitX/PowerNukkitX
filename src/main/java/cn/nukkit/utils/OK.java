@@ -28,6 +28,13 @@ public record OK<E>(boolean ok, @Nullable E error) {
         }
     }
 
+    /**
+     * 断言该结果是否为真，如果不为真则会抛出AssertionError
+     * <p>
+     * Asserts whether the result is true or not, and throws an AssertionError if it is not true
+     *
+     * @throws AssertionError the assertion error
+     */
     public void assertOK() throws AssertionError {
         if (!ok) {
             if (error instanceof Throwable throwable) {

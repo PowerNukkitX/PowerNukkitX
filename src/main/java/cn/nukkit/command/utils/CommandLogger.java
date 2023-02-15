@@ -58,6 +58,8 @@ public record CommandLogger(Command command,
 
     /**
      * 添加一条命令成功执行的消息，参数可以是纯文本，也可以是客戶端的多语言文本key.<br>默认输出颜色白色
+     * <p>
+     * Add a message that the command was successfully executed, the parameters can be plain text or the client's multilingual text key.<br>Default output color white
      *
      * @param key    the key
      * @param params the params
@@ -75,6 +77,8 @@ public record CommandLogger(Command command,
 
     /**
      * 添加一条命令错误执行的消息，参数可以是纯文本，也可以是客戶端的多语言文本key.<br>默认输出颜色红色
+     * <p>
+     * Add a command error message, either plain text or the client's multilingual text key.<br>Default output color red
      *
      * @param message the message
      * @return the command logger
@@ -85,6 +89,8 @@ public record CommandLogger(Command command,
 
     /**
      * 添加一条命令执行失败的错误消息，参数可以是纯文本，也可以是客戶端的多语言文本key.<br>默认输出颜色红色
+     * <p>
+     * Add a command execution failure error message, either plain text or the client's multilingual text key.<br>Default output color red
      *
      * @param key    语言文本key/错误信息
      * @param params 语言文本参数/空
@@ -97,6 +103,8 @@ public record CommandLogger(Command command,
 
     /**
      * 添加一条消息，参数可以是纯文本，也可以是客户端，服务端，以及{@link cn.nukkit.lang.PluginI18n PluginI18n}中的多语言文本，默认输出颜色红色
+     * <p>
+     * Add a message, the parameters can be plain text, or client-side, server-side, and multilingual text in {@link cn.nukkit.lang.PluginI18n PluginI18n}, default output color red
      *
      * @param key the key
      * @return the command logger
@@ -106,7 +114,9 @@ public record CommandLogger(Command command,
     }
 
     /**
-     * 添加一条信息到{@link #outputContainer}中.参数message可以是纯文本，也可以是服务端的多语言文本key.<br>默认输出颜色红色
+     * 添加一条消息，参数可以是纯文本，也可以是客户端，服务端，以及{@link cn.nukkit.lang.PluginI18n PluginI18n}中的多语言文本，默认输出颜色红色
+     * <p>
+     * Add a message, the parameters can be plain text, or client-side, server-side, and multilingual text in {@link cn.nukkit.lang.PluginI18n PluginI18n}, default output color red
      *
      * @param key    the key
      * @param params the params
