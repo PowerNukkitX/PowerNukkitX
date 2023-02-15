@@ -26,7 +26,7 @@ public final class OldNukkitLevelConvert {
                 if (levelProvider instanceof Anvil) {
                     for (int dx = 0; dx < 16; dx++) {
                         for (int dz = 0; dz < 16; dz++) {
-                            for (int dy = 255; dy >= -64; --dy) {
+                            for (int dy = 191; dy >= -64; --dy) {
                                 chunk.setBlockState(dx, dy + 64, dz, chunk.getBlockState(dx, dy, dz));
                                 chunk.setBlockStateAtLayer(dx, dy + 64, dz, 1, chunk.getBlockState(dx, dy, dz, 1));
                                 chunk.setBlockState(dx, dy, dz, BlockState.AIR);
