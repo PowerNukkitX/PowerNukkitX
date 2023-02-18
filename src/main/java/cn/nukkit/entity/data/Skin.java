@@ -307,7 +307,8 @@ public class Skin {
     }
 
     public String getFullSkinId() {
-        return this.fullSkinId;
+        if (fullSkinId == null) fullSkinId = skinId + (capeId != null ? capeId : "");
+        return fullSkinId;
     }
 
     @Since("1.4.0.0-PN")
