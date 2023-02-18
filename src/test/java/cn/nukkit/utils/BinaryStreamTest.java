@@ -81,6 +81,7 @@ class BinaryStreamTest {
         Skin skin = new Skin();
         skin.setSkinData(new byte[Skin.SINGLE_SKIN_SIZE]);
         skin.setSkinId("id");
+        skin.setFullSkinId("idid");
         skin.setCapeData(new byte[Skin.SINGLE_SKIN_SIZE]);
         skin.setTrusted(true);
         skin.setAnimationData("animation");
