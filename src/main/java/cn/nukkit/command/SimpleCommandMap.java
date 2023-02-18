@@ -6,6 +6,7 @@ import cn.nukkit.command.defaults.*;
 import cn.nukkit.command.simple.*;
 import cn.nukkit.command.tree.node.CommandNode;
 import cn.nukkit.command.utils.CommandLogger;
+import cn.nukkit.lang.CommandOutputContainer;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.utils.TextFormat;
@@ -303,6 +304,7 @@ public class SimpleCommandMap implements CommandMap {
         Command target = this.getCommand(sentCommandLabel);
 
         if (target == null) {
+            sender.sendCommandOutput(new CommandOutputContainer(TextFormat.RED + "%commands.generic.unknown", new String[]{sentCommandLabel}, 0));
             return -1;
         }
         int output;

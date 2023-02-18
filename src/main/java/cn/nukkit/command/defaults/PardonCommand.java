@@ -1,14 +1,12 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.IPlayer;
-import cn.nukkit.Player;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.node.IPlayersNode;
-import cn.nukkit.command.tree.node.PlayersNode;
 import cn.nukkit.command.utils.CommandLogger;
 
 import java.util.List;
@@ -42,7 +40,7 @@ public class PardonCommand extends VanillaCommand {
             sender.getServer().getNameBans().remove(player.getName());
             log.addSuccess("commands.unban.success", player.getName());
         }
-        log.successCount(players.size()).output(true, true);
+        log.successCount(players.size()).output(true);
         return players.size();
     }
 }

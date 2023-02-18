@@ -26,7 +26,7 @@ public class SaveOffCommand extends VanillaCommand {
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         sender.getServer().setAutoSave(false);
-        log.addSuccess("commands.save.disabled").output(true, true);
+        log.addSuccess("commands.save.disabled").output(true);
         return 1;
     }
 }

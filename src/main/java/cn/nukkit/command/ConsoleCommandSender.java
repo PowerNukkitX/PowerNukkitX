@@ -6,6 +6,7 @@ import cn.nukkit.event.server.ConsoleCommandOutputEvent;
 import cn.nukkit.lang.CommandOutputContainer;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.lang.TranslationContainer;
+import cn.nukkit.level.GameRule;
 import cn.nukkit.permission.PermissibleBase;
 import cn.nukkit.permission.Permission;
 import cn.nukkit.permission.PermissionAttachment;
@@ -102,13 +103,15 @@ public class ConsoleCommandSender implements CommandSender {
     @Since("1.19.60-r1")
     @Override
     public void sendCommandOutput(CommandOutputContainer container) {
-        for (var msg : container.getMessages()) {
-            var text = this.getServer().getLanguage().tr(new TranslationContainer(msg.getMessageId(), msg.getParameters()));
-            ConsoleCommandOutputEvent event = new ConsoleCommandOutputEvent(this, text);
-            this.getServer().getPluginManager().callEvent(event);
-            if (event.isCancelled()) continue;
-            text = event.getMessage();
-            this.sendMessage(text);
+        if (this.getLocation().getLevel().getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK)) {
+            for (var msg : container.getMessages()) {
+                var text = this.getServer().getLanguage().tr(new TranslationContainer(msg.getMessageId(), msg.getParameters()));
+                ConsoleCommandOutputEvent event = new ConsoleCommandOutputEvent(this, text);
+                this.getServer().getPluginManager().callEvent(event);
+                if (event.isCancelled()) continue;
+                text = event.getMessage();
+                this.sendMessage(text);
+            }
         }
     }
 

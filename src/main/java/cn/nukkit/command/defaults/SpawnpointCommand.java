@@ -64,7 +64,7 @@ public class SpawnpointCommand extends VanillaCommand {
                     log.addSuccess("commands.spawnpoint.success.multiple.specific", players.stream().map(Player::getName).collect(Collectors.joining(" ")),
                             round2.format(position.x),
                             round2.format(position.y),
-                            round2.format(position.z)).successCount(players.size()).output(true, true);
+                            round2.format(position.z)).successCount(players.size()).output(true);
                     return players.size();
                 }
             }
@@ -77,7 +77,7 @@ public class SpawnpointCommand extends VanillaCommand {
             log.addSuccess("commands.spawnpoint.success.single", sender.getName(),
                     round2.format(pos.x),
                     round2.format(pos.y),
-                    round2.format(pos.z)).output(true, true);
+                    round2.format(pos.z)).output(true);
             return 1;
         } else {
             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.noTargetMatch"));

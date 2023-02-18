@@ -103,7 +103,7 @@ public class GiveCommand extends VanillaCommand {
         }
         log.addSuccess("commands.give.success", item.getName() + " (" + item.getNamespaceId() + (item.getDamage() != 0 ? ":" + item.getDamage() : "") + ")",
                 String.valueOf(item.getCount()),
-                players.stream().map(Player::getName).collect(Collectors.joining(","))).successCount(players.size()).output(true, true);
+                players.stream().map(Player::getName).collect(Collectors.joining(","))).successCount(players.size()).output(true);
         return players.size();
     }
 }

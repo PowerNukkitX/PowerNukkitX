@@ -24,7 +24,7 @@ public class StopCommand extends VanillaCommand {
     @Since("1.19.60-r1")
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        log.addSuccess("commands.stop.start").output(true, true);
+        log.addSuccess("commands.stop.start").output(true);
         sender.getServer().shutdown();
         return 1;
     }

@@ -6,7 +6,6 @@ import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
-import cn.nukkit.command.tree.node.CommandNode;
 import cn.nukkit.command.tree.node.IPStringNode;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.event.player.PlayerKickEvent;
@@ -56,7 +55,7 @@ public class BanIpCommand extends VanillaCommand {
                 Player player = sender.getServer().getPlayer(value);
                 if (player != null) {
                     this.processIPBan(player.getAddress(), sender, reason);
-                    log.addSuccess("commands.banip.success.players", player.getAddress(), player.getName()).output(true, true);
+                    log.addSuccess("commands.banip.success.players", player.getAddress(), player.getName()).output(true);
                     return 1;
                 } else {
                     String name = value.toLowerCase();
@@ -73,7 +72,7 @@ public class BanIpCommand extends VanillaCommand {
 
                     if (nbt != null && nbt.contains("lastIP") && Pattern.matches("^(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9])\\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[0-9])$", (value = nbt.getString("lastIP")))) {
                         this.processIPBan(value, sender, reason);
-                        log.addSuccess("commands.banip.success", value).output(true, true);
+                        log.addSuccess("commands.banip.success", value).output(true);
                         return 1;
                     } else {
                         log.addError("commands.banip.invalid").output();
@@ -85,7 +84,7 @@ public class BanIpCommand extends VanillaCommand {
                 String ip = list.getResult(0);
                 if (list.hasResult(1)) reason = list.getResult(1);
                 this.processIPBan(ip, sender, reason);
-                log.addSuccess("commands.banip.success", ip).output(true, true);
+                log.addSuccess("commands.banip.success", ip).output(true);
             }
             default -> {
                 return 0;

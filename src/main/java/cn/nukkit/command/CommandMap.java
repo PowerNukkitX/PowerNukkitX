@@ -64,7 +64,7 @@ public interface CommandMap {
      *
      * @param sender  the sender
      * @param cmdLine the cmd line
-     * @return the int
+     * @return the int 返回0代表执行失败, 返回大于等于1代表执行成功<br>Returns 0 for failed execution, greater than or equal to 1 for successful execution
      */
     @PowerNukkitXOnly
     @Since("1.19.60-r1")

@@ -27,14 +27,14 @@ public class SaveCommand extends VanillaCommand {
     @Since("1.19.60-r1")
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        log.addSuccess("commands.save.start").output(true, true);
+        log.addSuccess("commands.save.start").output(true);
         for (Player player : sender.getServer().getOnlinePlayers().values()) {
             player.save();
         }
         for (Level level : sender.getServer().getLevels().values()) {
             level.save(true);
         }
-        log.addSuccess("commands.save.success").output(true, true);
+        log.addSuccess("commands.save.success").output(true);
         return 1;
     }
 }

@@ -5699,12 +5699,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
     public void sendCommandOutput(CommandOutputContainer container) {
-        var pk = new CommandOutputPacket();
-        pk.messages.addAll(container.getMessages());
-        pk.commandOriginData = new CommandOriginData(CommandOriginData.Origin.PLAYER, this.getUniqueId(), "", null);//Only players can effect
-        pk.type = CommandOutputType.ALL_OUTPUT;//Useless
-        pk.successCount = container.getSuccessCount();//Useless,maybe used for server-client interaction
-        this.dataPacket(pk);
+        if (this.level.getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK)) {
+            var pk = new CommandOutputPacket();
+            pk.messages.addAll(container.getMessages());
+            pk.commandOriginData = new CommandOriginData(CommandOriginData.Origin.PLAYER, this.getUniqueId(), "", null);//Only players can effect
+            pk.type = CommandOutputType.ALL_OUTPUT;//Useless
+            pk.successCount = container.getSuccessCount();//Useless,maybe used for server-client interaction
+            this.dataPacket(pk);
+        }
     }
 
     /**

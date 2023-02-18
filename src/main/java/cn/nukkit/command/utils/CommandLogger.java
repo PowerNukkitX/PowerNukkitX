@@ -145,20 +145,22 @@ public record CommandLogger(Command command,
 
     /**
      * 添加一条默认的命令格式错误信息,会提示命令发送者在指定索引处发生错误
+     * <p>
+     * Add a default command format error message that will alert the command sender of an error at the specified index
      *
      * @param errorIndex 发生错误的参数索引
      */
     public CommandLogger addSyntaxErrors(int errorIndex) {
         if (sender instanceof ConsoleCommandSender) {
             this.addMessage("commands.generic.usage", "\n" + command.getCommandFormatTips());
-        } else if (isSend(sender)) {
-            this.addError("commands.generic.syntax", this.syntaxErrorsValue(errorIndex));
-        }
+        } else this.addError("commands.generic.syntax", this.syntaxErrorsValue(errorIndex));
         return this;
     }
 
     /**
      * 添加一条目标选择器没有匹配目标的错误信息
+     * <p>
+     * Add an error message that the target selector matches too many targets
      */
     public CommandLogger addNoTargetMatch() {
         this.addError("commands.generic.noTargetMatch", CommandOutputContainer.EMPTY_STRING);
@@ -175,6 +177,8 @@ public record CommandLogger(Command command,
 
     /**
      * 添加一条参数过小的错误信息，会提示命令发送者指定位置的参数最小值不能低于minimum
+     * <p>
+     * Add an error message that the parameter is too small, prompting the command sender to specify a location where the minimum value of the parameter cannot be less than minimum
      *
      * @param errorIndex 发生错误的参数索引
      * @param minimum    允许的最小值
@@ -186,6 +190,8 @@ public record CommandLogger(Command command,
 
     /**
      * 添加一条Double参数过大的错误信息，会提示命令发送者指定位置的参数最大值不能超过maximum
+     * <p>
+     * Add a Double parameter too large error message, which will prompt the command sender to specify that the maximum value of the parameter at the location cannot exceed maximum
      *
      * @param errorIndex 发生错误的参数索引
      * @param maximum    允许的最大值
@@ -197,6 +203,8 @@ public record CommandLogger(Command command,
 
     /**
      * 添加一条Double参数过小的错误信息，会提示命令发送者指定位置的参数最小值不能低于minimum
+     * <p>
+     * Add a Double parameter is too small error message, which will prompt the command sender to specify the minimum value of the parameter at the location cannot be less than minimum
      *
      * @param errorIndex 发生错误的参数索引
      * @param minimum    允许的最小值
@@ -208,6 +216,8 @@ public record CommandLogger(Command command,
 
     /**
      * 添加一条无法访问世界外的方块的错误信息
+     * <p>
+     * Add an error message about not being able to access squares outside the world
      *
      * @return the command logger
      */
@@ -220,43 +230,19 @@ public record CommandLogger(Command command,
      * 输出{@link #outputContainer}中的所有信息.
      */
     public void output() {
-        this.output(false, false);
-    }
-
-    public void output(boolean broadcastAdminChannel) {
-        this.output(broadcastAdminChannel, false);
+        this.output(false);
     }
 
     /**
      * 输出{@link #outputContainer}中的所有信息.
      *
-     * @param broadcastAdminChannel 在发送命令反馈给玩家时，是否广播消息给其他在管理员频道的玩家
-     * @param broadcastConsole      是否广播消息给控制台
+     * @param broadcast the broadcast
      */
-    public void output(boolean broadcastAdminChannel, boolean broadcastConsole) {
-        if (sender instanceof ICommandBlock || sender instanceof ExecutorCommandSender executorCommandSender && executorCommandSender.getExecutor() instanceof ICommandBlock) {
-            this.sender.sendCommandOutput(this.outputContainer);
-            this.outputContainer.setSuccessCount(0);
-            this.outputContainer.getMessages().clear();
-            return;
-        } else {
-            if (sender instanceof ConsoleCommandSender) {
-                this.sender.sendCommandOutput(this.outputContainer);
-                this.outputContainer.setSuccessCount(0);
-                this.outputContainer.getMessages().clear();
-                return;
-            } else if (broadcastConsole) {
-                for (var msg : this.outputContainer.getMessages()) {
-                    broadcastConsole(msg.getMessageId(), msg.getParameters());
-                }
-            }
-            if (isSend(sender)) {
-                this.sender.sendCommandOutput(this.outputContainer);
-                if (broadcastAdminChannel) {
-                    for (var msg : this.outputContainer.getMessages()) {
-                        broadcastAdminChannel(msg.getMessageId(), msg.getParameters());
-                    }
-                }
+    public void output(boolean broadcast) {
+        this.sender.sendCommandOutput(this.outputContainer);
+        if (broadcast) {
+            for (var msg : this.outputContainer.getMessages()) {
+                broadcastAdminChannel(msg.getMessageId(), msg.getParameters());
             }
         }
         this.outputContainer.setSuccessCount(0);
@@ -276,26 +262,30 @@ public record CommandLogger(Command command,
 
     /**
      * 输出给指定目标一条反馈信息
+     * <p>
+     * Output a feedback message to the specified receiver
      *
      * @param receiver 命令目标
      * @param key      the key
      * @param params   给命令目标的反馈信息参数
      */
     public void outputObjectWhisper(Player receiver, String key, String... params) {
-        if (isSend(receiver)) {
+        if (receiver.level.getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK)) {
             receiver.sendMessage(new TranslationContainer(key, params));
         }
     }
 
     /**
      * 输出给指定目标一条反馈信息
+     * <p>
+     * Output a feedback message to the specified receiver
      *
      * @param rawtext  给命令目标的反馈信息
      * @param receiver 命令目标
      * @param params   给命令目标的反馈信息参数
      */
     public void outputObjectWhisper(Player receiver, String rawtext, Object... params) {
-        if (isSend(receiver)) {
+        if (receiver.level.getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK)) {
             receiver.sendRawTextMessage(RawText.fromRawText(String.format(rawtext, params)));
         }
     }
@@ -340,17 +330,9 @@ public record CommandLogger(Command command,
         users.remove(target);
         for (Permissible user : users) {
             if (user instanceof CommandSender commandSender) {
-                if (!(commandSender instanceof ConsoleCommandSender)) {
-                    commandSender.sendMessage(message);
-                }
+                commandSender.sendMessage(message);
             }
         }
-    }
-
-    private void broadcastConsole(String key, String[] value) {
-        CommandSender target = sender;
-        if (target instanceof ExecutorCommandSender executorCommandSender) target = executorCommandSender.getExecutor();
-        Server.getInstance().getConsoleSender().sendMessage(broadcastMessage(key, value, target));
     }
 
     private TranslationContainer broadcastMessage(String key, String[] value, CommandSender target) {
@@ -359,12 +341,5 @@ public record CommandLogger(Command command,
         String coloredStr = TextFormat.GRAY + "" + TextFormat.ITALIC + resultStr;
         message.setText(coloredStr);
         return message;
-    }
-
-    //only player
-    private boolean isSend(CommandSender target) {
-        if (target instanceof Player || target instanceof ExecutorCommandSender executorCommandSender && executorCommandSender.getExecutor() instanceof Player) {
-            return target.getPosition().getLevel().getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK);
-        } else return true;
     }
 }

@@ -91,7 +91,7 @@ public class GamemodeCommand extends VanillaCommand {
                 log.addSuccess("commands.gamemode.success.other", Server.getGamemodeString(gameMode), target.getName());
             }
         }
-        log.successCount(players.size()).output(true, true);
+        log.successCount(players.size()).output(true);
         return players.size();
     }
 }

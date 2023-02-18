@@ -59,17 +59,17 @@ public class WhitelistCommand extends VanillaCommand {
                 switch (action.toLowerCase()) {
                     case "reload" -> {
                         sender.getServer().reloadWhitelist();
-                        log.addSuccess("commands.allowlist.reloaded").output(true, true);
+                        log.addSuccess("commands.allowlist.reloaded").output(true);
                         return 1;
                     }
                     case "on" -> {
                         sender.getServer().setPropertyBoolean("white-list", true);
-                        log.addSuccess("commands.allowlist.enabled").output(true, true);
+                        log.addSuccess("commands.allowlist.enabled").output(true);
                         return 1;
                     }
                     case "off" -> {
                         sender.getServer().setPropertyBoolean("white-list", false);
-                        log.addSuccess("commands.allowlist.disabled").output(true, true);
+                        log.addSuccess("commands.allowlist.disabled").output(true);
                         return 1;
                     }
                     case "list" -> {
@@ -94,12 +94,12 @@ public class WhitelistCommand extends VanillaCommand {
                 switch (action.toLowerCase()) {
                     case "add" -> {
                         sender.getServer().getOfflinePlayer(name).setWhitelisted(true);
-                        log.addSuccess("commands.allowlist.add.success", name).output(true, true);
+                        log.addSuccess("commands.allowlist.add.success", name).output(true);
                         return 1;
                     }
                     case "remove" -> {
                         sender.getServer().getOfflinePlayer(name).setWhitelisted(false);
-                        log.addSuccess("commands.allowlist.remove.success", name).output(true, true);
+                        log.addSuccess("commands.allowlist.remove.success", name).output(true);
                         return 1;
                     }
                 }

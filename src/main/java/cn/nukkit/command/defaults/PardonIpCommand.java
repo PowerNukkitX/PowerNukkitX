@@ -40,7 +40,7 @@ public class PardonIpCommand extends VanillaCommand {
                 log.addError("commands.unbanip.invalid").output();
                 return 0;
             }
-            log.addSuccess("commands.unbanip.success", value).output(true, true);
+            log.addSuccess("commands.unbanip.success", value).output(true);
             return 1;
         } else {
             log.addError("commands.unbanip.invalid").output();
