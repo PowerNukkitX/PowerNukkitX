@@ -5,9 +5,11 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.resourcepacks.loader.ResourcePackLoader;
+import cn.nukkit.resourcepacks.loader.ZippedResourcePackLoader;
 import com.dfsek.terra.lib.google.common.collect.Sets;
 import lombok.extern.log4j.Log4j2;
 
+import java.io.File;
 import java.util.*;
 
 @Log4j2
@@ -19,13 +21,25 @@ public class ResourcePackManager {
     private final Set<ResourcePack> resourcePacks = new HashSet<>();
     private final Set<ResourcePackLoader> loaders;
 
+    @PowerNukkitXOnly
+    @Since("1.19.60-r2")
     public ResourcePackManager(Set<ResourcePackLoader> loaders) {
         this.loaders = loaders;
         reloadPacks();
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.60-r2")
     public ResourcePackManager(ResourcePackLoader... loaders) {
         this(Sets.newHashSet(loaders));
+    }
+
+    /**
+     * 保留此方法仅仅为了向后兼容性以及测试<p/>
+     * 请不要使用它
+     */
+    public ResourcePackManager(File resourcePacksDir) {
+        this(new ZippedResourcePackLoader(resourcePacksDir));
     }
 
     public ResourcePack[] getResourceStack() {
