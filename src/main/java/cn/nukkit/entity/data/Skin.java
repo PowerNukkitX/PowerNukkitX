@@ -307,7 +307,7 @@ public class Skin {
     }
 
     public String getFullSkinId() {
-        if (fullSkinId == null) fullSkinId = skinId + capeId != null ? capeId : "";
+        if (fullSkinId == null) fullSkinId = skinId + (capeId != null ? capeId : "");
         return fullSkinId;
     }
 
