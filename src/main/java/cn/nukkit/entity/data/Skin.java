@@ -34,6 +34,7 @@ public class Skin {
     private final List<PersonaPiece> personaPieces = new ArrayList<>();
     private final List<PersonaPieceTint> tintColors = new ArrayList<>();
     private String skinId;
+    private String fullSkinId;
     @Since("1.4.0.0-PN")
     private String playFabId = "";
     private String skinResourcePatch = GEOMETRY_CUSTOM;
@@ -306,7 +307,7 @@ public class Skin {
     }
 
     public String getFullSkinId() {
-        return this.skinId + (this.capeId != null ? this.capeId : "");
+        return this.fullSkinId;
     }
 
     @Since("1.4.0.0-PN")
@@ -332,5 +333,9 @@ public class Skin {
 
     public boolean isOverridingPlayerAppearance() {
         return this.overridingPlayerAppearance;
+    }
+
+    public void setFullSkinId(String fullSkinId) {
+        this.fullSkinId = fullSkinId;
     }
 }

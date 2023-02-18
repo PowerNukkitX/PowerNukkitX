@@ -351,8 +351,7 @@ public class BinaryStream {
         skin.setGeometryDataEngineVersion(this.getString());
         skin.setAnimationData(this.getString());
         skin.setCapeId(this.getString());
-        //fullSkinId == skinId + capeId 所以说我们事实上不需要这个值
-        this.getString();
+        skin.setFullSkinId(this.getString());
         skin.setArmSize(this.getString());
         skin.setSkinColor(this.getString());
 
