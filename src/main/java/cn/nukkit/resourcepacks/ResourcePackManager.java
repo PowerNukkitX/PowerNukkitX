@@ -15,7 +15,7 @@ import java.util.*;
 @Log4j2
 public class ResourcePackManager {
 
-    private int maxChunkSize = 1024 * 64;// 64kb is default
+    private int maxChunkSize = 1024 * 32;// 32kb is default
     
     private final Map<UUID, ResourcePack> resourcePacksById = new HashMap<>();
     private final Set<ResourcePack> resourcePacks = new HashSet<>();
