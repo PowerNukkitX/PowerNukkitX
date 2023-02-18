@@ -94,9 +94,6 @@ public class JarPluginResourcePack extends AbstractResourcePack {
             } catch (Exception e) {
                 log.error("Failed to parse the SHA-256 of the resource pack inside of jar plugin {}", jarPluginFile.getName(), e);
             }
-
-            //debug
-            Files.write(Path.of("C:\\Users\\daoge_cmd\\IdeaProjects\\PowerNukkitX\\test\\test.zip"), bytes);
         } catch (IOException e) {
             log.error("An error occurred while loading the resource pack inside of a jar plugin {}", jarPluginFile, e);
         }
