@@ -148,6 +148,8 @@ public class BaseLang {
 
     /**
      * 翻译一个文本key，key从语言文件中查询，并且按照给定参数填充结果
+     * <p>
+     * Translate a text key, the key is queried from the language file and the result is populated according to the given parameters
      *
      * @param key  the key
      * @param args the args
@@ -175,6 +177,17 @@ public class BaseLang {
         return baseText;
     }
 
+    /**
+     * 翻译一个文本key，key从语言文件中查询，并且按照给定参数填充结果
+     * <p>
+     * Translate a text key, the key is queried from the language file and the result is populated according to the given parameters
+     *
+     * @param str    the str
+     * @param params the params
+     * @param prefix str的前缀<br>Prefix of str
+     * @param mode   为true，则只翻译以指定前缀的多语言文本，为false则只翻译不带有指定前缀的多语言文本<br>If true translate only multilingual text with the specified prefix, false translate only multilingual text without the specified prefix
+     * @return the string
+     */
     public String tr(String str, String[] params, String prefix, boolean mode) {
         String baseText = parseLanguageText(str, prefix, mode);
         for (int i = 0; i < params.length; i++) {

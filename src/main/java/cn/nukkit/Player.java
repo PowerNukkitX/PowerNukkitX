@@ -7528,6 +7528,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return false;
     }
 
+    /**
+     * 设置是否检查该玩家移动
+     * <p>
+     * Set whether to check for this player movement
+     *
+     * @param checkMovement the check movement
+     */
     public void setCheckMovement(boolean checkMovement) {
         this.checkMovement = checkMovement;
     }
@@ -7561,6 +7568,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
+    /**
+     * 传送该玩家到另一个服务器
+     * <p>
+     * Teleport the player to another server
+     *
+     * @param address the address
+     */
     public void transfer(InetSocketAddress address) {
         String hostName = address.getAddress().getHostAddress();
         int port = address.getPort();
@@ -7570,6 +7584,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(pk);
     }
 
+    /**
+     * 获取该玩家的登录链数据
+     * <p>
+     * Get the login chain data of this player
+     *
+     * @return the login chain data
+     */
     public LoginChainData getLoginChainData() {
         return this.loginChainData;
     }
@@ -7762,11 +7783,20 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return Objects.equals(this.getUniqueId(), other.getUniqueId()) && this.getId() == other.getId();
     }
 
+    /**
+     * 玩家是否在挖掘方块
+     * <p>
+     * Whether the player is digging block
+     *
+     * @return the boolean
+     */
     public boolean isBreakingBlock() {
         return this.breakingBlock != null;
     }
 
     /**
+     * 显示一个XBOX账户的资料窗口
+     * <p>
      * Show a window of a XBOX account's profile
      *
      * @param xuid XUID
@@ -7851,6 +7881,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     /**
+     * 将物品添加到玩家的主要库存中，并将任何多余的物品丢在地上。
+     * <p>
      * Adds the items to the main player inventory and drops on the floor any excess.
      *
      * @param items The items to give to the player.
@@ -8022,6 +8054,16 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return true;
     }
 
+    /**
+     * 玩家屏幕振动效果
+     * <p>
+     * Player screen shake effect
+     *
+     * @param intensity   the intensity
+     * @param duration    the duration
+     * @param shakeType   the shake type
+     * @param shakeAction the shake action
+     */
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public void shakeCamera(float intensity, float duration, CameraShakePacket.CameraShakeType shakeType, CameraShakePacket.CameraShakeAction shakeAction) {
@@ -8033,6 +8075,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(packet);
     }
 
+    /**
+     * 设置指定itemCategory物品的冷却显示效果，注意该方法仅为客户端显示效果，冷却逻辑实现仍需自己实现
+     * <p>
+     * Set the cooling display effect of the specified itemCategory items, note that this method is only for client-side display effect, cooling logic implementation still needs to be implemented by itself
+     *
+     * @param coolDown     the cool down
+     * @param itemCategory the item category
+     */
     @PowerNukkitXOnly
     @Since("1.19.21-r4")
     public void setItemCoolDown(int coolDown, String itemCategory) {
@@ -8042,6 +8092,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(pk);
     }
 
+    /**
+     * 发送一个下弹消息框给玩家
+     * <p>
+     * Send a Toast message box to the player
+     *
+     * @param title   the title
+     * @param content the content
+     */
     public void sendToast(String title, String content) {
         ToastRequestPacket pk = new ToastRequestPacket();
         pk.title = title;

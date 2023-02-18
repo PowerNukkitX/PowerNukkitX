@@ -274,6 +274,15 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
             return result;
         }
 
+        /**
+         * 添加一个可修理该物品的物品
+         * <p>
+         * Add an item that can repair the item
+         *
+         * @param repairItems the repair items
+         * @param molang      the molang
+         * @return the simple builder
+         */
         @Since("1.19.40-r1")
         protected SimpleBuilder addRepairs(@NotNull List<String> repairItemNames, String molang) {
             if (molang.isBlank()) {

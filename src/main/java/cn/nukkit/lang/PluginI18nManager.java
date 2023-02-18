@@ -21,6 +21,10 @@ import java.util.jar.JarFile;
  * <p>
  * 多语言文件要求以{@link LangCode}.lang的格式保存
  * <p>
+ * To register a plugin for multiple languages, require the existence of a language folder in the plugin resource file, or specify an external path to the language folder
+ * <p>
+ * Multi-language files are required to be saved in the format {@link LangCode}.lang
+ * <p>
  * Only support Java Plugin {@link PluginBase}
  */
 @PowerNukkitXOnly
@@ -34,6 +38,8 @@ public final class PluginI18nManager {
 
     /**
      * 重新加载指定插件的多语言，多语言保存在插件jar中的language文件夹下
+     * <p>
+     * Reload the multilanguage of the specified plugin, which is stored in the language folder of the plugin jar
      *
      * @param plugin the plugin
      * @return the boolean
@@ -64,6 +70,8 @@ public final class PluginI18nManager {
 
     /**
      * 重新加载指定插件的多语言
+     * <p>
+     * Reload multilingual for a given plugin
      *
      * @param plugin the plugin
      * @param path   language文件夹的路径
@@ -94,6 +102,8 @@ public final class PluginI18nManager {
 
     /**
      * 注册插件多语言
+     * <p>
+     * Register Plugin Multilanguage
      *
      * @param plugin the plugin
      * @return the boolean
@@ -121,9 +131,11 @@ public final class PluginI18nManager {
 
     /**
      * 注册插件多语言
+     * <p>
+     * Register Plugin Multilanguage
      *
      * @param plugin the plugin
-     * @param path   language文件夹的路径
+     * @param path   language文件夹的路径<br>Path to the language folder
      * @return the boolean
      */
     public static PluginI18n register(PluginBase plugin, String path) {

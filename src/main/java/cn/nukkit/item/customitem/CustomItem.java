@@ -15,6 +15,13 @@ import cn.nukkit.item.StringItem;
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public interface CustomItem extends StringItem {
+    /**
+     * 定义该自定义物品的材质
+     * <p>
+     * Define the texture of this custom item
+     *
+     * @return the texture name
+     */
     String getTextureName();
 
     /**

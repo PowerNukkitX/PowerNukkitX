@@ -38,6 +38,8 @@ public class PluginI18n {
 
     /**
      * 翻译一个文本key，key从语言文件中查询
+     * <p>
+     * Translate a text key, the key is queried from the language file
      *
      * @param lang 要翻译的语言
      * @param key  the key
@@ -49,7 +51,9 @@ public class PluginI18n {
 
 
     /**
-     * 翻译一个文本key，key从语言文件中查询，并且按照给定参数填充结果
+     * 翻译一个文本key，key从语言文件中查询，并且按照给定参数填充其中参数
+     * <p>
+     * Translate a text key, the key is queried from the language file and the parameters are filled according to the given parameters
      *
      * @param lang 要翻译的语言
      * @param key  the key
@@ -66,7 +70,9 @@ public class PluginI18n {
 
 
     /**
-     * 翻译一个文本key，key从语言文件中查询，并且按照给定参数填充结果
+     * 翻译一个文本key，key从语言文件中查询，并且按照给定参数填充其中参数
+     * <p>
+     * Translate a text key, the key is queried from the language file and the parameters are filled according to the given parameters
      *
      * @param lang 要翻译的语言
      * @param key  the key
@@ -82,6 +88,8 @@ public class PluginI18n {
     }
 
     /**
+     * 翻译文本容器
+     * <p>
      * Tr string.
      *
      * @param lang 要翻译的语言
@@ -101,6 +109,8 @@ public class PluginI18n {
 
     /**
      * 获取指定id对应的多语言文本，若不存在则返回null
+     * <p>
+     * Get the multilingual text corresponding to the specified id, or return null if it does not exist
      *
      * @param id the id
      * @return the string
@@ -120,6 +130,8 @@ public class PluginI18n {
 
     /**
      * 获取指定id对应的多语言文本，若不存在则返回id本身
+     * <p>
+     * Get the multilingual text corresponding to the specified id, or return the id itself if it does not exist
      *
      * @param id the id
      * @return the string

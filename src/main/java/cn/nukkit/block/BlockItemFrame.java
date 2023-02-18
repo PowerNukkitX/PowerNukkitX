@@ -3,19 +3,17 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityItemFrame;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BooleanBlockProperty;
+import cn.nukkit.event.block.ItemFrameUseEvent;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
-import cn.nukkit.event.player.PlayerUseItemFrameEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemItemFrame;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.Position;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
@@ -24,7 +22,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.utils.Faceable;
-
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -172,7 +169,7 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
         BlockEntityItemFrame itemFrame = getOrCreateBlockEntity();
         if (itemFrame.getItem().isNull()) {
             Item itemOnFrame = item.clone();
-            PlayerUseItemFrameEvent event = new PlayerUseItemFrameEvent(player, this, itemFrame, itemOnFrame, PlayerUseItemFrameEvent.Action.PUT);
+            ItemFrameUseEvent event = new ItemFrameUseEvent(player, this, itemFrame, itemOnFrame, ItemFrameUseEvent.Action.PUT);
             this.getLevel().getServer().getPluginManager().callEvent(event);
             if (event.isCancelled()) return false;
             if (player != null && !player.isCreative()) {
@@ -187,7 +184,7 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
             }
             this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ITEM_FRAME_ITEM_ADDED);
         } else {
-            PlayerUseItemFrameEvent event = new PlayerUseItemFrameEvent(player, this, itemFrame, null, PlayerUseItemFrameEvent.Action.ROTATION);
+            ItemFrameUseEvent event = new ItemFrameUseEvent(player, this, itemFrame, null, ItemFrameUseEvent.Action.ROTATION);
             this.getLevel().getServer().getPluginManager().callEvent(event);
             if (event.isCancelled()) return false;
             itemFrame.setItemRotation((itemFrame.getItemRotation() + 1) % 8);
