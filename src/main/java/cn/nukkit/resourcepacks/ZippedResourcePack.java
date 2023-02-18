@@ -2,12 +2,13 @@ package cn.nukkit.resourcepacks;
 
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitDifference;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import com.google.gson.JsonParser;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.MessageDigest;
@@ -17,6 +18,9 @@ import java.util.zip.ZipFile;
 @Log4j2
 public class ZippedResourcePack extends AbstractResourcePack {
     protected File file;
+    @PowerNukkitXOnly
+    @Since("1.19.60-r2")
+    protected ByteBuffer byteBuffer;
     protected byte[] sha256;
     protected String encryptionKey = "";
 
@@ -64,6 +68,12 @@ public class ZippedResourcePack extends AbstractResourcePack {
                 this.encryptionKey = new String(Files.readAllBytes(keyFile.toPath()), StandardCharsets.UTF_8);
                 log.debug(this.encryptionKey);
             }
+
+            var bytes = Files.readAllBytes(file.toPath());
+            //使用java nio bytebuffer以获得更好性能
+            byteBuffer = ByteBuffer.allocateDirect(bytes.length);
+            byteBuffer.put(bytes);
+            byteBuffer.flip();
         } catch (IOException e) {
             log.error("An error occurred while loading the zipped resource pack {}", file, e);
         }
@@ -83,9 +93,8 @@ public class ZippedResourcePack extends AbstractResourcePack {
             chunk = new byte[this.getPackSize() - off];
         }
 
-        try (InputStream fis = new FileInputStream(this.file)) {
-            fis.skip(off);
-            fis.read(chunk);
+        try{
+            byteBuffer.get(off, chunk);
         } catch (Exception e) {
             log.error("An error occurred while processing the resource pack {} at offset:{} and length:{}", getPackName(), off, len, e);
         }

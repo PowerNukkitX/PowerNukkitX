@@ -9,8 +9,6 @@ import lombok.extern.log4j.Log4j2;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -69,7 +67,7 @@ public class JarPluginResourcePack extends AbstractResourcePack {
             }
 
             jar.stream().forEach(entry -> {
-                if (entry.getName().startsWith(RESOURCE_PACK_PATH) && !entry.isDirectory()) {
+                if (entry.getName().startsWith(RESOURCE_PACK_PATH) && !entry.isDirectory() && !entry.getName().equals(RESOURCE_PACK_PATH + "encryption.key")) {
                     try {
                         zipOutputStream.putNextEntry(new ZipEntry(entry.getName().substring(RESOURCE_PACK_PATH.length())));
                         zipOutputStream.write(jar.getInputStream(entry).readAllBytes());
@@ -83,11 +81,10 @@ public class JarPluginResourcePack extends AbstractResourcePack {
             zipOutputStream.close();
             byteArrayOutputStream.close();
 
-            zippedByteBuffer = ByteBuffer.allocate(byteArrayOutputStream.size());
+            zippedByteBuffer = ByteBuffer.allocateDirect(byteArrayOutputStream.size());
             var bytes = byteArrayOutputStream.toByteArray();
             zippedByteBuffer.put(bytes);
             zippedByteBuffer.flip();
-
 
             try {
                 this.sha256 = MessageDigest.getInstance("SHA-256").digest(bytes);
@@ -128,7 +125,12 @@ public class JarPluginResourcePack extends AbstractResourcePack {
             chunk = new byte[this.getPackSize() - off];
         }
 
-        zippedByteBuffer.get(off, chunk);
+        try{
+            zippedByteBuffer.get(off, chunk);
+        } catch (Exception e) {
+            log.error("An error occurred while processing the resource pack {} at offset:{} and length:{}", getPackName(), off, len, e);
+        }
+
         return chunk;
     }
 }

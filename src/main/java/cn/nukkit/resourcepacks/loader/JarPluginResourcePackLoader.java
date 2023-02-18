@@ -1,6 +1,5 @@
 package cn.nukkit.resourcepacks.loader;
 
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.resourcepacks.JarPluginResourcePack;
