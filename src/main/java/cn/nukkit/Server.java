@@ -76,6 +76,8 @@ import cn.nukkit.positiontracking.PositionTrackingService;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.potion.Potion;
 import cn.nukkit.resourcepacks.ResourcePackManager;
+import cn.nukkit.resourcepacks.loader.JarPluginResourcePackLoader;
+import cn.nukkit.resourcepacks.loader.ZippedResourcePackLoader;
 import cn.nukkit.scheduler.ServerScheduler;
 import cn.nukkit.scheduler.Task;
 import cn.nukkit.scoreboard.manager.IScoreboardManager;
@@ -831,7 +833,10 @@ public class Server {
         convertLegacyPlayerData();
 
         this.craftingManager = new CraftingManager();
-        this.resourcePackManager = new ResourcePackManager(new File(Nukkit.DATA_PATH, "resource_packs"));
+        this.resourcePackManager = new ResourcePackManager(
+                new ZippedResourcePackLoader(new File(Nukkit.DATA_PATH, "resource_packs")),
+                new JarPluginResourcePackLoader(new File(this.pluginPath))
+        );
 
         this.commandMap = new SimpleCommandMap(this);
         this.pluginManager = new PluginManager(this, this.commandMap);

@@ -2,13 +2,12 @@ package cn.nukkit.resourcepacks;
 
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitDifference;
+import cn.nukkit.api.Since;
 import com.google.gson.JsonParser;
 import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.MessageDigest;
@@ -17,9 +16,9 @@ import java.util.zip.ZipFile;
 
 @Log4j2
 public class ZippedResourcePack extends AbstractResourcePack {
-    private File file;
-    private byte[] sha256 = null;
-    private String encryptionKey = "";
+    protected File file;
+    protected byte[] sha256;
+    protected String encryptionKey = "";
 
     @PowerNukkitDifference(info = "Accepts resource packs with subfolder structure", since = "1.4.0.0-PN")
     public ZippedResourcePack(File file) {
@@ -29,6 +28,12 @@ public class ZippedResourcePack extends AbstractResourcePack {
         }
 
         this.file = file;
+
+        try {
+            this.sha256 = MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(this.file.toPath()));
+        } catch (Exception e) {
+            log.error("Failed to parse the SHA-256 of the resource pack {}", file, e);
+        }
 
         try (ZipFile zip = new ZipFile(file)) {
             ZipEntry entry = zip.getEntry("manifest.json");
@@ -57,7 +62,7 @@ public class ZippedResourcePack extends AbstractResourcePack {
             File keyFile = new File(parentFolder, this.file.getName() + ".key");
             if (keyFile.exists()) {
                 this.encryptionKey = new String(Files.readAllBytes(keyFile.toPath()), StandardCharsets.UTF_8);
-                System.out.println(this.encryptionKey);
+                log.debug(this.encryptionKey);
             }
         } catch (IOException e) {
             log.error("An error occurred while loading the zipped resource pack {}", file, e);
@@ -70,24 +75,6 @@ public class ZippedResourcePack extends AbstractResourcePack {
     }
 
     @Override
-    public int getPackSize() {
-        return (int) this.file.length();
-    }
-
-    @Override
-    public byte[] getSha256() {
-        if (this.sha256 == null) {
-            try {
-                this.sha256 = MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(this.file.toPath()));
-            } catch (Exception e) {
-                log.error("Failed to parse the SHA-256 of the resource pack {}", file, e);
-            }
-        }
-
-        return this.sha256;
-    }
-
-    @Override
     public byte[] getPackChunk(int off, int len) {
         byte[] chunk;
         if (this.getPackSize() - off > len) {
@@ -96,18 +83,28 @@ public class ZippedResourcePack extends AbstractResourcePack {
             chunk = new byte[this.getPackSize() - off];
         }
 
-        try (FileInputStream fis = new FileInputStream(this.file)) {
+        try (InputStream fis = new FileInputStream(this.file)) {
             fis.skip(off);
             fis.read(chunk);
         } catch (Exception e) {
-            log.error("An error occurred while processing the resource pack {} at offset:{} and length:{}", file, off, len, e);
+            log.error("An error occurred while processing the resource pack {} at offset:{} and length:{}", getPackName(), off, len, e);
         }
 
         return chunk;
     }
 
     @Override
+    public int getPackSize() {
+        return (int) this.file.length();
+    }
+
+    @Override
+    public byte[] getSha256() {
+        return this.sha256;
+    }
+
+    @Override
     public String getEncryptionKey() {
-        return this.encryptionKey;
+        return encryptionKey;
     }
 }
