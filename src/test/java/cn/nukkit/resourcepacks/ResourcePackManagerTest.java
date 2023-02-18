@@ -37,13 +37,13 @@ class ResourcePackManagerTest {
 
     @Test
     void maxChunkSize() {
-        assertEquals(1024 * 128, resourcePackManager.getMaxChunkSize());
+        assertEquals(1024 * 64, resourcePackManager.getMaxChunkSize());
         resourcePackManager.setMaxChunkSize(1024);
         assertEquals(1024, resourcePackManager.getMaxChunkSize());
         ResourcePackManager other = new ResourcePackManager(
                 new ZippedResourcePackLoader(temp.toFile())
         );
-        assertEquals(1024 * 128, other.getMaxChunkSize());
+        assertEquals(1024 * 64, other.getMaxChunkSize());
         assertEquals(1024, resourcePackManager.getMaxChunkSize());
     }
 }
