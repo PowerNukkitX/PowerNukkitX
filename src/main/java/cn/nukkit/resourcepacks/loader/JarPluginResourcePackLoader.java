@@ -1,5 +1,6 @@
 package cn.nukkit.resourcepacks.loader;
 
+import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.resourcepacks.JarPluginResourcePack;
@@ -24,19 +25,24 @@ public class JarPluginResourcePackLoader implements ResourcePackLoader {
 
     @Override
     public List<ResourcePack> loadPacks() {
+        var baseLang = Server.getInstance().getLanguage();
         List<ResourcePack> loadedResourcePacks = new ArrayList<>();
         for (File jar : jarPath.listFiles()) {
-            ResourcePack resourcePack = null;
-            String fileExt = Files.getFileExtension(jar.getName());
-            if (!jar.isDirectory()) {
-                if (fileExt.equals("jar")) {
-                    try {
+            try {
+                ResourcePack resourcePack = null;
+                String fileExt = Files.getFileExtension(jar.getName());
+                if (!jar.isDirectory()) {
+                    if (fileExt.equals("jar") && JarPluginResourcePack.hasResourcePack(jar)) {
+                        log.info(baseLang.tr("nukkit.resources.plugin.loading", jar.getName()));
                         resourcePack = new JarPluginResourcePack(jar);
-                    } catch (IllegalArgumentException ignore) {}
+                    }
                 }
-            }
-            if (resourcePack != null) {
-                loadedResourcePacks.add(resourcePack);
+                if (resourcePack != null) {
+                    loadedResourcePacks.add(resourcePack);
+                    log.info(baseLang.tr("nukkit.resources.plugin.loaded", jar.getName(), resourcePack.getPackName()));
+                }
+            } catch (IllegalArgumentException e) {
+                log.warn(baseLang.tr("nukkit.resources.fail", jar.getName(), e.getMessage()), e);
             }
         }
         return loadedResourcePacks;

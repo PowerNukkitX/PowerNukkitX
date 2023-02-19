@@ -32,23 +32,25 @@ public class ZippedResourcePackLoader implements ResourcePackLoader {
 
     @Override
     public List<ResourcePack> loadPacks() {
+        var baseLang = Server.getInstance().getLanguage();
         List<ResourcePack> loadedResourcePacks = new ArrayList<>();
         for (File pack : path.listFiles()) {
+            log.info(baseLang.tr("nukkit.resources.zip.loading", pack.getName()));
             try {
                 ResourcePack resourcePack = null;
                 String fileExt = Files.getFileExtension(pack.getName());
                 if (!pack.isDirectory() && !fileExt.equals("key")) { //directory resource packs temporarily unsupported
                     switch (fileExt) {
                         case "zip", "mcpack" -> resourcePack = new ZippedResourcePack(pack);
-                        default -> log.warn(Server.getInstance().getLanguage()
-                                .tr("nukkit.resources.unknown-format", pack.getName()));
+                        default -> log.warn(baseLang.tr("nukkit.resources.unknown-format", pack.getName()));
                     }
                 }
                 if (resourcePack != null) {
                     loadedResourcePacks.add(resourcePack);
+                    log.info(baseLang.tr("nukkit.resources.zip.loaded", pack.getName()));
                 }
             } catch (IllegalArgumentException e) {
-                log.warn(Server.getInstance().getLanguage().tr("nukkit.resources.fail", pack.getName(), e.getMessage()), e);
+                log.warn(baseLang.tr("nukkit.resources.fail", pack.getName(), e.getMessage()), e);
             }
         }
         return loadedResourcePacks;

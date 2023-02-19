@@ -6,6 +6,7 @@ import cn.nukkit.api.Since;
 import com.google.gson.JsonParser;
 import lombok.extern.log4j.Log4j2;
 
+import javax.annotation.Nullable;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -27,6 +28,33 @@ public class JarPluginResourcePack extends AbstractResourcePack {
     protected byte[] sha256;
     protected String encryptionKey = "";
 
+    public static boolean hasResourcePack(File jarPluginFile) {
+        try {
+            return findManifestInJar(new ZipFile(jarPluginFile)) != null;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    @Nullable
+    protected static ZipEntry findManifestInJar(ZipFile jar) {
+        ZipEntry manifest = jar.getEntry(RESOURCE_PACK_PATH + "manifest.json");
+        if (manifest == null) {
+            manifest = jar.stream()
+                    .filter(e -> e.getName().toLowerCase().endsWith("manifest.json") && !e.isDirectory())
+                    .filter(e -> {
+                        File fe = new File(e.getName());
+                        if (!fe.getName().equalsIgnoreCase("manifest.json")) {
+                            return false;
+                        }
+                        return fe.getParent() == null || fe.getParentFile().getParent() == null;
+                    })
+                    .findFirst()
+                    .orElse(null);
+        }
+        return manifest;
+    }
+
     public JarPluginResourcePack(File jarPluginFile) {
         if (!jarPluginFile.exists()) {
             throw new IllegalArgumentException(Server.getInstance().getLanguage()
@@ -40,21 +68,10 @@ public class JarPluginResourcePack extends AbstractResourcePack {
             ZipFile jar = new ZipFile(jarPluginFile);
             var byteArrayOutputStream = new ByteArrayOutputStream();
             var zipOutputStream = new ZipOutputStream(byteArrayOutputStream);
-            ZipEntry manifest = jar.getEntry(RESOURCE_PACK_PATH + "manifest.json");
-            if (manifest == null) {
-                manifest = jar.stream()
-                        .filter(e -> e.getName().toLowerCase().endsWith("manifest.json") && !e.isDirectory())
-                        .filter(e -> {
-                            File fe = new File(e.getName());
-                            if (!fe.getName().equalsIgnoreCase("manifest.json")) {
-                                return false;
-                            }
-                            return fe.getParent() == null || fe.getParentFile().getParent() == null;
-                        })
-                        .findFirst()
-                        .orElseThrow(() -> new IllegalArgumentException(
-                                Server.getInstance().getLanguage().tr("nukkit.resources.zip.no-manifest")));
-            }
+            ZipEntry manifest = findManifestInJar(jar);
+            if (manifest == null)
+                throw new IllegalArgumentException(
+                        Server.getInstance().getLanguage().tr("nukkit.resources.zip.no-manifest"));
 
             this.manifest = JsonParser
                     .parseReader(new InputStreamReader(jar.getInputStream(manifest), StandardCharsets.UTF_8))
