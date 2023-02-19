@@ -3587,7 +3587,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                 ResourcePackDataInfoPacket dataInfoPacket = new ResourcePackDataInfoPacket();
                                 dataInfoPacket.packId = resourcePack.getPackId();
                                 dataInfoPacket.setPackVersion(new Version(resourcePack.getPackVersion()));
-                                dataInfoPacket.maxChunkSize = server.getResourcePackManager().getMaxChunkSize(); // 131,072 is default
+                                dataInfoPacket.maxChunkSize = server.getResourcePackManager().getMaxChunkSize();
                                 dataInfoPacket.chunkCount = (int) Math.ceil(resourcePack.getPackSize() / (double) dataInfoPacket.maxChunkSize);
                                 dataInfoPacket.compressedPackSize = resourcePack.getPackSize();
                                 dataInfoPacket.sha256 = resourcePack.getSha256();
