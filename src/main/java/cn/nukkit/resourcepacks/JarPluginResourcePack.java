@@ -56,8 +56,8 @@ public class JarPluginResourcePack extends AbstractResourcePack {
                                 Server.getInstance().getLanguage().tr("nukkit.resources.zip.no-manifest")));
             }
 
-            this.manifest = new JsonParser()
-                    .parse(new InputStreamReader(jar.getInputStream(manifest), StandardCharsets.UTF_8))
+            this.manifest = JsonParser
+                    .parseReader(new InputStreamReader(jar.getInputStream(manifest), StandardCharsets.UTF_8))
                     .getAsJsonObject();
 
             ZipEntry encryptionKeyEntry = jar.getEntry(RESOURCE_PACK_PATH + "encryption.key");

@@ -56,8 +56,8 @@ public class ZippedResourcePack extends AbstractResourcePack {
                                 Server.getInstance().getLanguage().tr("nukkit.resources.zip.no-manifest")));
             }
 
-            this.manifest = new JsonParser()
-                    .parse(new InputStreamReader(zip.getInputStream(entry), StandardCharsets.UTF_8))
+            this.manifest = JsonParser
+                    .parseReader(new InputStreamReader(zip.getInputStream(entry), StandardCharsets.UTF_8))
                     .getAsJsonObject();
             File parentFolder = this.file.getParentFile();
             if (parentFolder == null || !parentFolder.isDirectory()) {
