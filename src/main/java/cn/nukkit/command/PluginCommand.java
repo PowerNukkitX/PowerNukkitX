@@ -21,6 +21,7 @@ public class PluginCommand<T extends Plugin> extends Command implements PluginId
         super(name);
         this.owningPlugin = owner;
         this.executor = owner;
+        this.usageMessage = "";
     }
 
     @Since("1.19.60-r1")
