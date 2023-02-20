@@ -21,7 +21,13 @@ public class PluginCommand<T extends Plugin> extends Command implements PluginId
         super(name);
         this.owningPlugin = owner;
         this.executor = owner;
-        this.usageMessage = "";
+    }
+
+    @Since("1.19.60-r1")
+    public PluginCommand(String name, String description, T owner) {
+        super(name, description);
+        this.owningPlugin = owner;
+        this.executor = owner;
     }
 
     @Since("1.19.60-r1")
