@@ -25,6 +25,13 @@ public class PluginCommand<T extends Plugin> extends Command implements PluginId
     }
 
     @Since("1.19.60-r1")
+    public PluginCommand(String name, String description, T owner) {
+        super(name, description);
+        this.owningPlugin = owner;
+        this.executor = owner;
+    }
+
+    @Since("1.19.60-r1")
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         if (!this.owningPlugin.isEnabled()) {
