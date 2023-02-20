@@ -63,7 +63,7 @@ public class ByteArrayTag extends Tag {
     public String toSNBT() {
         StringBuilder builder = new StringBuilder("[B;");
         for (int i = 0; i < this.data.length - 1; i++) {
-            builder.append(i).append('b').append(',');
+            builder.append(data[i]).append('b').append(',');
         }
         builder.append(data[data.length - 1]).append("b]");
         return builder.toString();
@@ -73,7 +73,7 @@ public class ByteArrayTag extends Tag {
     public String toSNBT(int space) {
         StringBuilder builder = new StringBuilder("[B; ");
         for (int i = 0; i < this.data.length - 1; i++) {
-            builder.append(i).append("b, ");
+            builder.append(data[i]).append("b, ");
         }
         builder.append(data[data.length - 1]).append("b]");
         return builder.toString();
