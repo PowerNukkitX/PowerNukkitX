@@ -1126,285 +1126,287 @@ public class Level implements ChunkManager, Metadatable {
 
         requireProvider();
 
-        updateBlockLight(lightQueue);
-        this.checkTime();
-        if (currentTick >= nextTimeSendTick) { // Send time to client every 30 seconds to make sure it
-            this.sendTime();
-            nextTimeSendTick = currentTick + 30 * 20;
-        }
-
-        // 检查突出区块（玩家附近3x3区块）
-        if ((currentTick & 127) == 0) { // 每127刻检查一次是比较合理的
-            highLightChunks.clear();
-            for (var player : this.players.values()) {
-                if (player.isOnline()) {
-                    int chunkX = player.getChunkX();
-                    int chunkZ = player.getChunkZ();
-                    for (int dx = -1; dx <= 1; dx++) {
-                        for (int dz = -1; dz <= 1; dz++) {
-                            highLightChunks.add(Level.chunkHash(chunkX + dx, chunkZ + dz));
-                        }
-                    }
-                }
-            }
-        }
-
-        // Tick Weather
-        if (this.getDimension() != DIMENSION_NETHER && this.getDimension() != DIMENSION_THE_END && gameRules.getBoolean(GameRule.DO_WEATHER_CYCLE)) {
-            this.rainTime--;
-            if (this.rainTime <= 0) {
-                if (!this.setRaining(!this.raining)) {
-                    if (this.raining) {
-                        setRainTime(ThreadLocalRandom.current().nextInt(12000) + 12000);
-                    } else {
-                        setRainTime(ThreadLocalRandom.current().nextInt(168000) + 12000);
-                    }
-                }
+        try {
+            updateBlockLight(lightQueue);
+            this.checkTime();
+            if (currentTick >= nextTimeSendTick) { // Send time to client every 30 seconds to make sure it
+                this.sendTime();
+                nextTimeSendTick = currentTick + 30 * 20;
             }
 
-            this.thunderTime--;
-            if (this.thunderTime <= 0) {
-                if (!this.setThundering(!this.thundering)) {
-                    if (this.thundering) {
-                        setThunderTime(ThreadLocalRandom.current().nextInt(12000) + 3600);
-                    } else {
-                        setThunderTime(ThreadLocalRandom.current().nextInt(168000) + 12000);
-                    }
-                }
-            }
-
-            if (this.isThundering()) {
-                Map<Long, ? extends FullChunk> chunks = getChunks();
-                if (chunks instanceof Long2ObjectOpenHashMap) {
-                    Long2ObjectOpenHashMap<? extends FullChunk> fastChunks = (Long2ObjectOpenHashMap) chunks;
-                    ObjectIterator<? extends Long2ObjectMap.Entry<? extends FullChunk>> iter = fastChunks.long2ObjectEntrySet().fastIterator();
-                    while (iter.hasNext()) {
-                        Long2ObjectMap.Entry<? extends FullChunk> entry = iter.next();
-                        performThunder(entry.getLongKey(), entry.getValue());
-                    }
-                } else {
-                    for (Map.Entry<Long, ? extends FullChunk> entry : getChunks().entrySet()) {
-                        performThunder(entry.getKey(), entry.getValue());
-                    }
-                }
-            }
-        }
-
-        this.skyLightSubtracted = this.calculateSkylightSubtracted(1);
-
-        this.levelCurrentTick++;
-
-        this.unloadChunks();
-        this.timings.doTickPending.startTiming();
-
-        int polled = 0;
-
-        this.updateQueue.tick(this.getCurrentTick());
-        this.timings.doTickPending.stopTiming();
-
-        while (!this.normalUpdateQueue.isEmpty()) {
-            QueuedUpdate queuedUpdate = this.normalUpdateQueue.poll();
-            Block block = getBlock(queuedUpdate.block, queuedUpdate.block.layer);
-            BlockUpdateEvent event = new BlockUpdateEvent(block);
-            this.server.getPluginManager().callEvent(event);
-
-            if (!event.isCancelled()) {
-                block.onUpdate(BLOCK_UPDATE_NORMAL);
-                if (queuedUpdate.neighbor != null) {
-                    block.onNeighborChange(queuedUpdate.neighbor.getOpposite());
-                }
-            }
-        }
-
-        TimingsHistory.entityTicks += this.updateEntities.size();
-        this.timings.entityTick.startTiming();
-
-        if (!this.updateEntities.isEmpty()) {
-            CompletableFuture.runAsync(() -> updateEntities.keySet()
-                    .longParallelStream().mapToObj(id -> {
-                        var entity = this.updateEntities.get(id);
-                        if (entity instanceof EntityAsyncPrepare entityAsyncPrepare) {
-                            return entityAsyncPrepare;
-                        } else {
-                            return null;
-                        }
-                    }).forEach(entityAsyncPrepare -> {
-                        if (entityAsyncPrepare != null)
-                            entityAsyncPrepare.asyncPrepare(currentTick);
-                    }), Server.getInstance().computeThreadPool).join();
-            for (long id : new ArrayList<>(this.updateEntities.keySet())) {
-                Entity entity = this.updateEntities.get(id);
-                if (entity == null) {
-                    this.updateEntities.remove(id);
-                    continue;
-                }
-                if (entity.closed || !entity.onUpdate(currentTick)) {
-                    this.updateEntities.remove(id);
-                }
-            }
-        }
-        this.timings.entityTick.stopTiming();
-
-        TimingsHistory.tileEntityTicks += this.updateBlockEntities.size();
-        this.timings.blockEntityTick.startTiming();
-        this.updateBlockEntities.removeIf(blockEntity -> !blockEntity.isValid() || !blockEntity.onUpdate());
-        this.timings.blockEntityTick.stopTiming();
-
-        this.timings.tickChunks.startTiming();
-        this.tickChunks();
-        this.timings.tickChunks.stopTiming();
-
-        synchronized (changedBlocks) {
-            if (!this.changedBlocks.isEmpty()) {
-                if (!this.players.isEmpty()) {
-                    var iter = changedBlocks.long2ObjectEntrySet().fastIterator();
-                    while (iter.hasNext()) {
-                        var entry = iter.next();
-                        long index = entry.getLongKey();
-                        var blocks = entry.getValue().get();
-                        int chunkX = Level.getHashX(index);
-                        int chunkZ = Level.getHashZ(index);
-                        if (blocks == null || blocks.size() > MAX_BLOCK_CACHE) {
-                            FullChunk chunk = this.getChunk(chunkX, chunkZ);
-                            chunk.reObfuscateChunk();
-                            for (Player p : this.getChunkPlayers(chunkX, chunkZ).values()) {
-                                p.onChunkChanged(chunk);
+            // 检查突出区块（玩家附近3x3区块）
+            if ((currentTick & 127) == 0) { // 每127刻检查一次是比较合理的
+                highLightChunks.clear();
+                for (var player : this.players.values()) {
+                    if (player.isOnline()) {
+                        int chunkX = player.getChunkX();
+                        int chunkZ = player.getChunkZ();
+                        for (int dx = -1; dx <= 1; dx++) {
+                            for (int dz = -1; dz <= 1; dz++) {
+                                highLightChunks.add(Level.chunkHash(chunkX + dx, chunkZ + dz));
                             }
+                        }
+                    }
+                }
+            }
+
+            // Tick Weather
+            if (this.getDimension() != DIMENSION_NETHER && this.getDimension() != DIMENSION_THE_END && gameRules.getBoolean(GameRule.DO_WEATHER_CYCLE)) {
+                this.rainTime--;
+                if (this.rainTime <= 0) {
+                    if (!this.setRaining(!this.raining)) {
+                        if (this.raining) {
+                            setRainTime(ThreadLocalRandom.current().nextInt(12000) + 12000);
                         } else {
-                            Collection<Player> toSend = this.getChunkPlayers(chunkX, chunkZ).values();
-                            Player[] playerArray = toSend.toArray(Player.EMPTY_ARRAY);
-                            var size = blocks.size();
-                            if (antiXrayEnabled) {
-                                var vectorSet = new IntOpenHashSet(size * 6);
-                                var vRidList = new ArrayList<Vector3WithRuntimeId>(size * 7);
-                                Vector3WithRuntimeId tmpV3Rid;
-                                for (int blockHash : blocks.keySet()) {
-                                    Vector3 hash = getBlockXYZ(index, blockHash, this);
-                                    var x = hash.getFloorX();
-                                    var y = hash.getFloorY();
-                                    var z = hash.getFloorZ();
-                                    if (!vectorSet.contains(blockHash)) {
-                                        vectorSet.add(blockHash);
-                                        try {
-                                            tmpV3Rid = new Vector3WithRuntimeId(x, y, z, getBlockRuntimeId(x, y, z, 0), getBlockRuntimeId(x, y, z, 1));
-                                            vRidList.add(tmpV3Rid);
-                                            if (!transparentBlockRuntimeIds.contains(tmpV3Rid.getRuntimeIdLayer0())) {
-                                                continue;
-                                            }
-                                        } catch (Exception ignore) {
+                            setRainTime(ThreadLocalRandom.current().nextInt(168000) + 12000);
+                        }
+                    }
+                }
 
-                                        }
-                                    }
-                                    x++;
-                                    blockHash = localBlockHash(x, y, z, 0, this);
-                                    if (!vectorSet.contains(blockHash)) {
-                                        vectorSet.add(blockHash);
-                                        try {
-                                            vRidList.add(new Vector3WithRuntimeId(x, y, z, getBlockRuntimeId(x, y, z, 0), getBlockRuntimeId(x, y, z, 1)));
-                                        } catch (Exception ignore) {
+                this.thunderTime--;
+                if (this.thunderTime <= 0) {
+                    if (!this.setThundering(!this.thundering)) {
+                        if (this.thundering) {
+                            setThunderTime(ThreadLocalRandom.current().nextInt(12000) + 3600);
+                        } else {
+                            setThunderTime(ThreadLocalRandom.current().nextInt(168000) + 12000);
+                        }
+                    }
+                }
 
-                                        }
-                                    }
-                                    x -= 2;
-                                    blockHash = localBlockHash(x, y, z, 0, this);
-                                    if (!vectorSet.contains(blockHash)) {
-                                        vectorSet.add(blockHash);
-                                        try {
-                                            vRidList.add(new Vector3WithRuntimeId(x, y, z, getBlockRuntimeId(x, y, z, 0), getBlockRuntimeId(x, y, z, 1)));
-                                        } catch (Exception ignore) {
+                if (this.isThundering()) {
+                    Map<Long, ? extends FullChunk> chunks = getChunks();
+                    if (chunks instanceof Long2ObjectOpenHashMap) {
+                        Long2ObjectOpenHashMap<? extends FullChunk> fastChunks = (Long2ObjectOpenHashMap) chunks;
+                        ObjectIterator<? extends Long2ObjectMap.Entry<? extends FullChunk>> iter = fastChunks.long2ObjectEntrySet().fastIterator();
+                        while (iter.hasNext()) {
+                            Long2ObjectMap.Entry<? extends FullChunk> entry = iter.next();
+                            performThunder(entry.getLongKey(), entry.getValue());
+                        }
+                    } else {
+                        for (Map.Entry<Long, ? extends FullChunk> entry : getChunks().entrySet()) {
+                            performThunder(entry.getKey(), entry.getValue());
+                        }
+                    }
+                }
+            }
 
-                                        }
-                                    }
-                                    x++;
-                                    y++;
-                                    blockHash = localBlockHash(x, y, z, 0, this);
-                                    if (!vectorSet.contains(blockHash)) {
-                                        vectorSet.add(blockHash);
-                                        try {
-                                            vRidList.add(new Vector3WithRuntimeId(x, y, z, getBlockRuntimeId(x, y, z, 0), getBlockRuntimeId(x, y, z, 1)));
-                                        } catch (Exception ignore) {
+            this.skyLightSubtracted = this.calculateSkylightSubtracted(1);
 
-                                        }
-                                    }
-                                    y -= 2;
-                                    blockHash = localBlockHash(x, y, z, 0, this);
-                                    if (!vectorSet.contains(blockHash)) {
-                                        vectorSet.add(blockHash);
-                                        try {
-                                            vRidList.add(new Vector3WithRuntimeId(x, y, z, getBlockRuntimeId(x, y, z, 0), getBlockRuntimeId(x, y, z, 1)));
-                                        } catch (Exception ignore) {
+            this.levelCurrentTick++;
 
-                                        }
-                                    }
-                                    y++;
-                                    z++;
-                                    blockHash = localBlockHash(x, y, z, 0, this);
-                                    if (!vectorSet.contains(blockHash)) {
-                                        vectorSet.add(blockHash);
-                                        try {
-                                            vRidList.add(new Vector3WithRuntimeId(x, y, z, getBlockRuntimeId(x, y, z, 0), getBlockRuntimeId(x, y, z, 1)));
-                                        } catch (Exception ignore) {
+            this.unloadChunks();
+            this.timings.doTickPending.startTiming();
 
-                                        }
-                                    }
-                                    z -= 2;
-                                    blockHash = localBlockHash(x, y, z, 0, this);
-                                    if (!vectorSet.contains(blockHash)) {
-                                        vectorSet.add(blockHash);
-                                        try {
-                                            vRidList.add(new Vector3WithRuntimeId(x, y, z, getBlockRuntimeId(x, y, z, 0), getBlockRuntimeId(x, y, z, 1)));
-                                        } catch (Exception ignore) {
+            int polled = 0;
 
-                                        }
-                                    }
-                                }
-                                this.sendBlocks(playerArray, vRidList.toArray(Vector3[]::new), UpdateBlockPacket.FLAG_ALL);
+            this.updateQueue.tick(this.getCurrentTick());
+            this.timings.doTickPending.stopTiming();
+
+            while (!this.normalUpdateQueue.isEmpty()) {
+                QueuedUpdate queuedUpdate = this.normalUpdateQueue.poll();
+                Block block = getBlock(queuedUpdate.block, queuedUpdate.block.layer);
+                BlockUpdateEvent event = new BlockUpdateEvent(block);
+                this.server.getPluginManager().callEvent(event);
+
+                if (!event.isCancelled()) {
+                    block.onUpdate(BLOCK_UPDATE_NORMAL);
+                    if (queuedUpdate.neighbor != null) {
+                        block.onNeighborChange(queuedUpdate.neighbor.getOpposite());
+                    }
+                }
+            }
+
+            TimingsHistory.entityTicks += this.updateEntities.size();
+            this.timings.entityTick.startTiming();
+
+            if (!this.updateEntities.isEmpty()) {
+                CompletableFuture.runAsync(() -> updateEntities.keySet()
+                        .longParallelStream().mapToObj(id -> {
+                            var entity = this.updateEntities.get(id);
+                            if (entity instanceof EntityAsyncPrepare entityAsyncPrepare) {
+                                return entityAsyncPrepare;
                             } else {
-                                var blocksArray = new Vector3[size];
-                                int i = 0;
-                                for (int blockHash : blocks.keySet()) {
-                                    Vector3 hash = getBlockXYZ(index, blockHash, this);
-                                    blocksArray[i++] = hash;
+                                return null;
+                            }
+                        }).forEach(entityAsyncPrepare -> {
+                            if (entityAsyncPrepare != null)
+                                entityAsyncPrepare.asyncPrepare(currentTick);
+                        }), Server.getInstance().computeThreadPool).join();
+                for (long id : new ArrayList<>(this.updateEntities.keySet())) {
+                    Entity entity = this.updateEntities.get(id);
+                    if (entity == null) {
+                        this.updateEntities.remove(id);
+                        continue;
+                    }
+                    if (entity.closed || !entity.onUpdate(currentTick)) {
+                        this.updateEntities.remove(id);
+                    }
+                }
+            }
+            this.timings.entityTick.stopTiming();
+
+            TimingsHistory.tileEntityTicks += this.updateBlockEntities.size();
+            this.timings.blockEntityTick.startTiming();
+            this.updateBlockEntities.removeIf(blockEntity -> !blockEntity.isValid() || !blockEntity.onUpdate());
+            this.timings.blockEntityTick.stopTiming();
+
+            this.timings.tickChunks.startTiming();
+            this.tickChunks();
+            this.timings.tickChunks.stopTiming();
+
+            synchronized (changedBlocks) {
+                if (!this.changedBlocks.isEmpty()) {
+                    if (!this.players.isEmpty()) {
+                        var iter = changedBlocks.long2ObjectEntrySet().fastIterator();
+                        while (iter.hasNext()) {
+                            var entry = iter.next();
+                            long index = entry.getLongKey();
+                            var blocks = entry.getValue().get();
+                            int chunkX = Level.getHashX(index);
+                            int chunkZ = Level.getHashZ(index);
+                            if (blocks == null || blocks.size() > MAX_BLOCK_CACHE) {
+                                FullChunk chunk = this.getChunk(chunkX, chunkZ);
+                                chunk.reObfuscateChunk();
+                                for (Player p : this.getChunkPlayers(chunkX, chunkZ).values()) {
+                                    p.onChunkChanged(chunk);
                                 }
-                                this.sendBlocks(playerArray, blocksArray, UpdateBlockPacket.FLAG_ALL);
+                            } else {
+                                Collection<Player> toSend = this.getChunkPlayers(chunkX, chunkZ).values();
+                                Player[] playerArray = toSend.toArray(Player.EMPTY_ARRAY);
+                                var size = blocks.size();
+                                if (antiXrayEnabled) {
+                                    var vectorSet = new IntOpenHashSet(size * 6);
+                                    var vRidList = new ArrayList<Vector3WithRuntimeId>(size * 7);
+                                    Vector3WithRuntimeId tmpV3Rid;
+                                    for (int blockHash : blocks.keySet()) {
+                                        Vector3 hash = getBlockXYZ(index, blockHash, this);
+                                        var x = hash.getFloorX();
+                                        var y = hash.getFloorY();
+                                        var z = hash.getFloorZ();
+                                        if (!vectorSet.contains(blockHash)) {
+                                            vectorSet.add(blockHash);
+                                            try {
+                                                tmpV3Rid = new Vector3WithRuntimeId(x, y, z, getBlockRuntimeId(x, y, z, 0), getBlockRuntimeId(x, y, z, 1));
+                                                vRidList.add(tmpV3Rid);
+                                                if (!transparentBlockRuntimeIds.contains(tmpV3Rid.getRuntimeIdLayer0())) {
+                                                    continue;
+                                                }
+                                            } catch (Exception ignore) {
+
+                                            }
+                                        }
+                                        x++;
+                                        blockHash = localBlockHash(x, y, z, 0, this);
+                                        if (!vectorSet.contains(blockHash)) {
+                                            vectorSet.add(blockHash);
+                                            try {
+                                                vRidList.add(new Vector3WithRuntimeId(x, y, z, getBlockRuntimeId(x, y, z, 0), getBlockRuntimeId(x, y, z, 1)));
+                                            } catch (Exception ignore) {
+
+                                            }
+                                        }
+                                        x -= 2;
+                                        blockHash = localBlockHash(x, y, z, 0, this);
+                                        if (!vectorSet.contains(blockHash)) {
+                                            vectorSet.add(blockHash);
+                                            try {
+                                                vRidList.add(new Vector3WithRuntimeId(x, y, z, getBlockRuntimeId(x, y, z, 0), getBlockRuntimeId(x, y, z, 1)));
+                                            } catch (Exception ignore) {
+
+                                            }
+                                        }
+                                        x++;
+                                        y++;
+                                        blockHash = localBlockHash(x, y, z, 0, this);
+                                        if (!vectorSet.contains(blockHash)) {
+                                            vectorSet.add(blockHash);
+                                            try {
+                                                vRidList.add(new Vector3WithRuntimeId(x, y, z, getBlockRuntimeId(x, y, z, 0), getBlockRuntimeId(x, y, z, 1)));
+                                            } catch (Exception ignore) {
+
+                                            }
+                                        }
+                                        y -= 2;
+                                        blockHash = localBlockHash(x, y, z, 0, this);
+                                        if (!vectorSet.contains(blockHash)) {
+                                            vectorSet.add(blockHash);
+                                            try {
+                                                vRidList.add(new Vector3WithRuntimeId(x, y, z, getBlockRuntimeId(x, y, z, 0), getBlockRuntimeId(x, y, z, 1)));
+                                            } catch (Exception ignore) {
+
+                                            }
+                                        }
+                                        y++;
+                                        z++;
+                                        blockHash = localBlockHash(x, y, z, 0, this);
+                                        if (!vectorSet.contains(blockHash)) {
+                                            vectorSet.add(blockHash);
+                                            try {
+                                                vRidList.add(new Vector3WithRuntimeId(x, y, z, getBlockRuntimeId(x, y, z, 0), getBlockRuntimeId(x, y, z, 1)));
+                                            } catch (Exception ignore) {
+
+                                            }
+                                        }
+                                        z -= 2;
+                                        blockHash = localBlockHash(x, y, z, 0, this);
+                                        if (!vectorSet.contains(blockHash)) {
+                                            vectorSet.add(blockHash);
+                                            try {
+                                                vRidList.add(new Vector3WithRuntimeId(x, y, z, getBlockRuntimeId(x, y, z, 0), getBlockRuntimeId(x, y, z, 1)));
+                                            } catch (Exception ignore) {
+
+                                            }
+                                        }
+                                    }
+                                    this.sendBlocks(playerArray, vRidList.toArray(Vector3[]::new), UpdateBlockPacket.FLAG_ALL);
+                                } else {
+                                    var blocksArray = new Vector3[size];
+                                    int i = 0;
+                                    for (int blockHash : blocks.keySet()) {
+                                        Vector3 hash = getBlockXYZ(index, blockHash, this);
+                                        blocksArray[i++] = hash;
+                                    }
+                                    this.sendBlocks(playerArray, blocksArray, UpdateBlockPacket.FLAG_ALL);
+                                }
                             }
                         }
                     }
+
+                    this.changedBlocks.clear();
                 }
-
-                this.changedBlocks.clear();
             }
-        }
 
-        this.processChunkRequest();
+            this.processChunkRequest();
 
-        if (this.sleepTicks > 0 && --this.sleepTicks <= 0) {
-            this.checkSleep();
-        }
+            if (this.sleepTicks > 0 && --this.sleepTicks <= 0) {
+                this.checkSleep();
+            }
 
-        synchronized (chunkPackets) {
-            for (long index : this.chunkPackets.keySet()) {
-                int chunkX = Level.getHashX(index);
-                int chunkZ = Level.getHashZ(index);
-                Player[] chunkPlayers = this.getChunkPlayers(chunkX, chunkZ).values().toArray(Player.EMPTY_ARRAY);
-                if (chunkPlayers.length > 0) {
-                    for (DataPacket pk : this.chunkPackets.get(index)) {
-                        Server.broadcastPacket(chunkPlayers, pk);
+            synchronized (chunkPackets) {
+                for (long index : this.chunkPackets.keySet()) {
+                    int chunkX = Level.getHashX(index);
+                    int chunkZ = Level.getHashZ(index);
+                    Player[] chunkPlayers = this.getChunkPlayers(chunkX, chunkZ).values().toArray(Player.EMPTY_ARRAY);
+                    if (chunkPlayers.length > 0) {
+                        for (DataPacket pk : this.chunkPackets.get(index)) {
+                            Server.broadcastPacket(chunkPlayers, pk);
+                        }
                     }
                 }
+                this.chunkPackets.clear();
             }
-            this.chunkPackets.clear();
-        }
 
-        if (gameRules.isStale()) {
-            GameRulesChangedPacket packet = new GameRulesChangedPacket();
-            packet.gameRules = gameRules;
-            Server.broadcastPacket(players.values().toArray(Player.EMPTY_ARRAY), packet);
-            gameRules.refresh();
+            if (gameRules.isStale()) {
+                GameRulesChangedPacket packet = new GameRulesChangedPacket();
+                packet.gameRules = gameRules;
+                Server.broadcastPacket(players.values().toArray(Player.EMPTY_ARRAY), packet);
+                gameRules.refresh();
+            }
+        } finally {
+            // 清除所有tick缓存的方块
+            releaseTickCachedBlocks();
         }
-
-        // 清除所有tick缓存的方块
-        releaseTickCachedBlocks();
 
         this.timings.doTick.stopTiming();
     }
