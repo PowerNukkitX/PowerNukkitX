@@ -156,7 +156,7 @@ public class EntityVillager extends EntityCreature implements InventoryHolder, E
     @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
-        return "Villager";
+        return "VillagerV2";
     }
 
     @PowerNukkitXOnly
