@@ -154,7 +154,7 @@ public class PluginI18n {
             return result;
         } else {
             var matcher = split.matcher(str);
-            return matcher.replaceAll(m -> this.get(lang, m.group().substring(1)));
+            return matcher.replaceAll(m -> this.getOrOriginal(lang, m.group().substring(1)));
         }
     }
 
