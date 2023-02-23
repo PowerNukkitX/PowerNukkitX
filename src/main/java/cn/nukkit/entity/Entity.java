@@ -2632,6 +2632,7 @@ public abstract class Entity extends Location implements Metadatable {
         return true;
     }
 
+    @NotNull
     public Position getPosition() {
         return new Position(this.x, this.y, this.z, this.level);
     }

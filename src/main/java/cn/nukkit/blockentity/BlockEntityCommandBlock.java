@@ -563,6 +563,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
     @Since("1.6.0.0-PNX")
     @PowerNukkitOnly
     @Override
+    @NotNull
     public Position getPosition() {
         return this;
     }
