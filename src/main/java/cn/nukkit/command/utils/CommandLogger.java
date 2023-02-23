@@ -123,9 +123,7 @@ public record CommandLogger(Command command,
      * @return the command logger
      */
     public CommandLogger addMessage(String key, String... params) {
-        if (this.plugin == InternalPlugin.INSTANCE) {
-            this.outputContainer.getMessages().add(new CommandOutputMessage(Server.getInstance().getLanguage().tr(key, params), CommandOutputContainer.EMPTY_STRING));
-        } else if (this.plugin instanceof PluginBase pluginBase) {
+        if (this.plugin instanceof PluginBase pluginBase) {
             var i18n = PluginI18nManager.getI18n(pluginBase);
             if (i18n != null) {
                 String text;
@@ -135,10 +133,10 @@ public record CommandLogger(Command command,
                     text = i18n.tr(Server.getInstance().getLanguageCode(), key, params);
                 }
                 this.outputContainer.getMessages().add(new CommandOutputMessage(text, CommandOutputContainer.EMPTY_STRING));
+                return this;
             }
-        } else {
-            this.outputContainer.getMessages().add(new CommandOutputMessage(key, params));
         }
+        this.outputContainer.getMessages().add(new CommandOutputMessage(Server.getInstance().getLanguage().tr(key, params), CommandOutputContainer.EMPTY_STRING));
         return this;
     }
 
