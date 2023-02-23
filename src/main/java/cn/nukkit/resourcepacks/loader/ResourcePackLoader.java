@@ -10,7 +10,7 @@ import java.util.List;
  * 描述一个资源包加载器
  */
 @PowerNukkitXOnly
-@Since("1.19.61-r1")
+@Since("1.19.62-r1")
 public interface ResourcePackLoader {
     /**
      * 加载资源包并返回结果

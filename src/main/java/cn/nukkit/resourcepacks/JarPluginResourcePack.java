@@ -22,7 +22,7 @@ import java.util.zip.ZipOutputStream;
  * 此类描述了放在jar插件文件内assets/resource_pack目录的资源包相关文件
  */
 @PowerNukkitXOnly
-@Since("1.19.61-r1")
+@Since("1.19.62-r1")
 @Log4j2
 public class JarPluginResourcePack extends AbstractResourcePack {
     public static final String RESOURCE_PACK_PATH = "assets/resource_pack/";

@@ -21,7 +21,7 @@ import java.util.zip.ZipFile;
 public class ZippedResourcePack extends AbstractResourcePack {
     protected File file;
     @PowerNukkitXOnly
-    @Since("1.19.61-r1")
+    @Since("1.19.62-r1")
     protected ByteBuffer byteBuffer;
     protected byte[] sha256;
     protected String encryptionKey = "";

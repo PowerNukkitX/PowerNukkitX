@@ -14,7 +14,7 @@ import java.util.List;
 
 @Log4j2
 @PowerNukkitXOnly
-@Since("1.19.61-r1")
+@Since("1.19.62-r1")
 public class JarPluginResourcePackLoader implements ResourcePackLoader {
 
     protected final File jarPath;

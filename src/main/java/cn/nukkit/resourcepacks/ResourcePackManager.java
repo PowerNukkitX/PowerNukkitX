@@ -22,14 +22,14 @@ public class ResourcePackManager {
     private final Set<ResourcePackLoader> loaders;
 
     @PowerNukkitXOnly
-    @Since("1.19.61-r1")
+    @Since("1.19.62-r1")
     public ResourcePackManager(Set<ResourcePackLoader> loaders) {
         this.loaders = loaders;
         reloadPacks();
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.61-r1")
+    @Since("1.19.62-r1")
     public ResourcePackManager(ResourcePackLoader... loaders) {
         this(Sets.newHashSet(loaders));
     }
@@ -63,13 +63,13 @@ public class ResourcePackManager {
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.61-r1")
+    @Since("1.19.62-r1")
     public void registerPackLoader(ResourcePackLoader loader) {
         this.loaders.add(loader);
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.61-r1")
+    @Since("1.19.62-r1")
     public void reloadPacks() {
         this.resourcePacksById.clear();
         this.resourcePacks.clear();
