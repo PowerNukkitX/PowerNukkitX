@@ -7,7 +7,10 @@ import com.google.gson.JsonParser;
 import lombok.extern.log4j.Log4j2;
 
 import javax.annotation.Nullable;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -19,7 +22,7 @@ import java.util.zip.ZipOutputStream;
  * 此类描述了放在jar插件文件内assets/resource_pack目录的资源包相关文件
  */
 @PowerNukkitXOnly
-@Since("1.19.60-r2")
+@Since("1.19.61-r1")
 @Log4j2
 public class JarPluginResourcePack extends AbstractResourcePack {
     public static final String RESOURCE_PACK_PATH = "assets/resource_pack/";
