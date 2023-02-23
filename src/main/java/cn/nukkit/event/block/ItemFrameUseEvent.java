@@ -19,7 +19,7 @@ import javax.annotation.Nullable;
  * The event that the item display box is used will be called when an item is placed, rotated, or dropped
  */
 @PowerNukkitXOnly
-@Since("1.19.60-r2")
+@Since("1.19.61-r1")
 public class ItemFrameUseEvent extends BlockEvent implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
     protected final Player player;
