@@ -21,9 +21,4 @@ public class ItemCampfire extends Item {
         super(CAMPFIRE, meta, count, "Campfire");
         this.block = new BlockCampfire();
     }
-
-    @Override
-    public int getMaxStackSize() {
-        return 1;
-    }
 }
