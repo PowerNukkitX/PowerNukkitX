@@ -3436,14 +3436,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     if (!ProtocolInfo.SUPPORTED_PROTOCOLS.contains(protocolVersion)) {
                         if (protocolVersion < ProtocolInfo.CURRENT_PROTOCOL) {
                             message = "disconnectionScreen.outdatedClient";
-
-                            this.sendPlayStatus(PlayStatusPacket.LOGIN_FAILED_CLIENT, true);
                         } else {
                             message = "disconnectionScreen.outdatedServer";
-
-                            this.sendPlayStatus(PlayStatusPacket.LOGIN_FAILED_SERVER, true);
                         }
-                        this.close("", message, false);
+                        this.close("", message, true);
                         break;
                     }
                     NetworkSettingsPacket settingsPacket = new NetworkSettingsPacket();
@@ -3470,6 +3466,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     this.username = TextFormat.clean(loginPacket.username);
                     this.displayName = this.username;
                     this.iusername = this.username.toLowerCase();
+
+                    // TODO: Remove in the next update
+                    if (loginPacket.incompatibleVersion) {
+                        this.close("", "disconnectionScreen.outdatedClient");
+                        return;
+                    }
+
                     this.setDataProperty(new StringEntityData(DATA_NAMETAG, this.username), false);
 
                     this.loginChainData = ClientChainData.read(loginPacket);

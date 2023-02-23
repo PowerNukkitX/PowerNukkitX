@@ -123,7 +123,8 @@ public final class PluginI18nManager {
                     inputStream.close();
                 }
             }
-            return PLUGINS_MULTI_LANGUAGE.put(plugin.getFile().getName(), pluginMultiLanguage);
+            PLUGINS_MULTI_LANGUAGE.put(plugin.getFile().getName(), pluginMultiLanguage);
+            return pluginMultiLanguage;
         } catch (IOException e) {
             throw new RuntimeException("No language exists in the plugin resources folder");
         }
@@ -151,7 +152,8 @@ public final class PluginI18nManager {
                     throw new RuntimeException(e);
                 }
             }
-            return PLUGINS_MULTI_LANGUAGE.put(plugin.getFile().getName(), pluginMultiLanguage);
+            PLUGINS_MULTI_LANGUAGE.put(plugin.getFile().getName(), pluginMultiLanguage);
+            return pluginMultiLanguage;
         } else {
             throw new RuntimeException("The path does not represent a folder or not exists!");
         }

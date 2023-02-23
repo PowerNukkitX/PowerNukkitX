@@ -84,6 +84,7 @@ public class Skin {
                 (capeId == null || capeId.length() < 100) &&
                 (skinColor == null || skinColor.length() < 100) &&
                 (armSize == null || armSize.length() < 100) &&
+                (fullSkinId == null || fullSkinId.length() < 200) &&
                 (geometryDataEngineVersion == null || geometryDataEngineVersion.length() < 100);
     }
 

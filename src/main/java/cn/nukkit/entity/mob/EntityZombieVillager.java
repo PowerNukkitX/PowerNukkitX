@@ -44,7 +44,7 @@ public class EntityZombieVillager extends EntityMob implements EntityWalkable, E
     @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
-        return "Zombie Villager";
+        return "Zombie VillagerV2";
     }
 
     @PowerNukkitOnly
