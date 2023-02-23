@@ -586,7 +586,7 @@
     <item namespaced-id="minecraft:music_disc_11" numeric-id="510" name="Music Disc 11" stack-size="1"/>
     <item namespaced-id="minecraft:music_disc_wait" numeric-id="511" name="Music Disc Wait" stack-size="1"/>
     <item namespaced-id="minecraft:shield" numeric-id="513" name="Shield" stack-size="1" durability="337" tool="true"/>
-    <item namespaced-id="minecraft:campfire" numeric-id="720" name="Campfire" stack-size="1"/>
+    <item namespaced-id="minecraft:campfire" numeric-id="720" name="Campfire"/>
     <item namespaced-id="minecraft:suspicious_stew" numeric-id="734" name="Suspicious Stew" stack-size="1"/>
     <item namespaced-id="minecraft:honeycomb" numeric-id="736" name="Honeycomb"/>
     <item namespaced-id="minecraft:honey_bottle" numeric-id="737" name="Honey Bottle" stack-size="16"/>
