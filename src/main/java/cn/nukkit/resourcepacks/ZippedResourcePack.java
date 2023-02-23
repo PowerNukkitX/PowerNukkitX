@@ -7,7 +7,9 @@ import cn.nukkit.api.Since;
 import com.google.gson.JsonParser;
 import lombok.extern.log4j.Log4j2;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -19,7 +21,7 @@ import java.util.zip.ZipFile;
 public class ZippedResourcePack extends AbstractResourcePack {
     protected File file;
     @PowerNukkitXOnly
-    @Since("1.19.60-r2")
+    @Since("1.19.62-r1")
     protected ByteBuffer byteBuffer;
     protected byte[] sha256;
     protected String encryptionKey = "";

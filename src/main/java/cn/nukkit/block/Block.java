@@ -1227,7 +1227,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     private static int nextBlockId = 1000;
 
     @PowerNukkitXOnly
-    @Since("1.19.60-r2")
+    @Since("1.19.62-r1")
     private final static SortedMap<String, CustomBlock> SORTED_CUSTOM_BLOCK = new TreeMap<>(MinecraftNamespaceComparator::compareFNV);
 
     /**

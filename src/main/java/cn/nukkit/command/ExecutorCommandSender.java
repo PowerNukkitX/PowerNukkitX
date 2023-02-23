@@ -14,7 +14,6 @@ import cn.nukkit.permission.Permission;
 import cn.nukkit.permission.PermissionAttachment;
 import cn.nukkit.permission.PermissionAttachmentInfo;
 import cn.nukkit.plugin.Plugin;
-
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -86,6 +85,7 @@ public class ExecutorCommandSender implements CommandSender {
         return isPlayer() ? (Player) this.entity : null;
     }
 
+    @NotNull
     @Override
     public Position getPosition() {
         return (executeLocation == null ? entity : executeLocation).clone();
