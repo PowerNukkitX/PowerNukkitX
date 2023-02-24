@@ -1729,15 +1729,18 @@ public abstract class Entity extends Location implements Metadatable {
 
         //计算血量
         float newHealth = getHealth() - source.getFinalDamage();
-        if (newHealth < 1 && this instanceof Player) {
+
+        //only player
+        if (newHealth < 1 && this instanceof Player player) {
             if (source.getCause() != DamageCause.VOID && source.getCause() != DamageCause.SUICIDE) {
-                Player p = (Player) this;
                 boolean totem = false;
-                if (p.getOffhandInventory().getItem(0).getId() == ItemID.TOTEM) {
-                    p.getOffhandInventory().clear(0);
+                if (player.getOffhandInventory().getItem(0).getId() == ItemID.TOTEM) {
+                    player.getOffhandInventory().clear(0, false);
+                    player.getOffhandInventory().sendContents(player);
                     totem = true;
-                } else if (p.getInventory().getItemInHand().getId() == ItemID.TOTEM) {
-                    p.getInventory().clear(p.getInventory().getHeldItemIndex());
+                } else if (player.getInventory().getItemInHand().getId() == ItemID.TOTEM) {
+                    player.getInventory().clear(player.getInventory().getHeldItemIndex(), false);
+                    player.getInventory().sendContents(player);
                     totem = true;
                 }
                 //复活图腾实现
@@ -1756,7 +1759,7 @@ public abstract class Entity extends Location implements Metadatable {
                     EntityEventPacket pk = new EntityEventPacket();
                     pk.eid = this.getId();
                     pk.event = EntityEventPacket.CONSUME_TOTEM;
-                    p.dataPacket(pk);
+                    player.dataPacket(pk);
 
                     source.setCancelled(true);
                     return false;
