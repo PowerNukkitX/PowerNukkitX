@@ -2,6 +2,8 @@ package cn.nukkit.entity.ai.memory;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityIntelligent;
 
 import java.util.Map;
 
@@ -45,6 +47,14 @@ public interface IMemoryStorage {
     void clear(MemoryType<?> type);
 
     /**
+     * 获取记忆存储所属的实体
+     *
+     * @return 实体
+     */
+    @Since("1.19.62-r2")
+    Entity getEntity();
+
+    /**
      * 检查指定记忆类型数据是否为空(null)
      *
      * @param type 记忆类型
@@ -74,5 +84,15 @@ public interface IMemoryStorage {
     default <D> boolean compareDataTo(MemoryType<D> type, Object to) {
         D value;
         return (value = get(type)) != null ? value.equals(to) : to == null;
+    }
+
+    /**
+     * 将此记忆存储器的数据编码进所属实体NBT(若MemoryType附加有编解码器)
+     */
+    default void encode() {
+        var entity = getEntity();
+        for (var memoryType : getAll().entrySet()) {
+            memoryType.getKey().forceEncode(entity, memoryType.getValue());
+        }
     }
 }

@@ -127,4 +127,8 @@ public interface IBehaviorGroup {
     default void debugTick(EntityIntelligent entity) {
     }
 
+    @Since("1.19.62-r2")
+    default void save(EntityIntelligent entity) {
+        getMemoryStorage().encode();
+    }
 }

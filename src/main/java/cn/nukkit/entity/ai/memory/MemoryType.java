@@ -20,9 +20,9 @@ import java.util.function.Supplier;
  */
 @PowerNukkitXOnly
 @Since("1.19.50-r1")
-@Getter
 public final class MemoryType<Data> {
 
+    @Getter
     private final Identifier identifier;
     private final Supplier<Data> defaultData;
     @Nullable
@@ -70,13 +70,27 @@ public final class MemoryType<Data> {
         return this;
     }
 
+    @Since("1.19.62-r2")
     public void encode(Entity entity, Data data) {
         if (codec != null) {
-            var tag = entity.namedTag;
-            codec.encode(data, tag);
+            codec.encode(data, entity.namedTag);
         }
     }
 
+    /**
+     * 强制编码一个记忆<p/>
+     * 会将给定的data值强转到Data类型
+     * @param entity 目标实体
+     * @param data 数据
+     */
+    @Since("1.19.62-r2")
+    public void forceEncode(Entity entity, Object data) {
+        if (codec != null) {
+            codec.encode((Data) data, entity.namedTag);
+        }
+    }
+
+    @Since("1.19.62-r2")
     @Nullable
     public Data decode(Entity entity) {
         if (codec != null) {
@@ -116,6 +130,7 @@ public final class MemoryType<Data> {
             this.encoder = encoder;
         }
 
+        @Nullable
         public Data decode(CompoundTag tag) {
             return decoder.apply(tag);
         }

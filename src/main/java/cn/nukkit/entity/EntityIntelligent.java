@@ -91,6 +91,12 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
     }
 
     @Override
+    public void saveNBT() {
+        super.saveNBT();
+        getBehaviorGroup().save(this);
+    }
+
+    @Override
     public boolean attack(EntityDamageEvent source) {
         var result = super.attack(source);
         var storage = getMemoryStorage();
