@@ -7,6 +7,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.ai.memory.codec.BooleanMemoryCodec;
 import cn.nukkit.entity.ai.memory.codec.MemoryCodec;
+import cn.nukkit.entity.ai.memory.codec.StringMemoryCodec;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.math.Vector3;
 
@@ -59,4 +60,16 @@ public interface CoreMemoryTypes {
             .withCodec(new BooleanMemoryCodec("Angry")
                     .onInit((data, entity) -> entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_ANGRY, data))
             );
+    MemoryType<Boolean> IS_SITTING = new MemoryType<>("minecraft:is_sitting", false)
+            .withCodec(new BooleanMemoryCodec("Sitting")
+                    .onInit((data, entity) -> entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_SITTING, data))
+            );
+    MemoryType<String> OWNER_NAME = new MemoryType<String>("minecraft:owner_name")
+            .withCodec(new StringMemoryCodec("OwnerName")
+                    .onInit((data, entity) -> {
+                        entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_TAMED, true);
+                    })
+            );
+    //用于缓存玩家对象
+    MemoryType<Player> OWNER = new MemoryType<>("minecraft:owner");
 }
