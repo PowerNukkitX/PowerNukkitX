@@ -9,7 +9,7 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageModifier;
-import cn.nukkit.inventory.InventoryHolder;
+import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.PlayerEnderChestInventory;
 import cn.nukkit.inventory.PlayerInventory;
 import cn.nukkit.inventory.PlayerOffhandInventory;
@@ -19,18 +19,15 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.NukkitMath;
-import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.Utils;
-
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-public abstract class EntityHumanType extends EntityCreature implements InventoryHolder {
+public abstract class EntityHumanType extends EntityCreature implements IHuman {
 
     protected PlayerInventory inventory;
     protected PlayerEnderChestInventory enderChestInventory;
@@ -45,106 +42,19 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
         return inventory;
     }
 
-    public PlayerEnderChestInventory getEnderChestInventory() {
-        return enderChestInventory;
-    }
-
     public PlayerOffhandInventory getOffhandInventory() {
         return offhandInventory;
     }
 
-    @Override
-    protected void initEntity() {
-        this.inventory = new PlayerInventory(this);
-        if (namedTag.containsNumber("SelectedInventorySlot")) {
-            this.inventory.setHeldItemSlot(NukkitMath.clamp(this.namedTag.getInt("SelectedInventorySlot"), 0, 8));
-        }
-        this.offhandInventory = new PlayerOffhandInventory(this);
-
-        if (this.namedTag.contains("Inventory") && this.namedTag.get("Inventory") instanceof ListTag) {
-            ListTag<CompoundTag> inventoryList = this.namedTag.getList("Inventory", CompoundTag.class);
-            for (CompoundTag item : inventoryList.getAll()) {
-                int slot = item.getByte("Slot");
-                if (slot >= 0 && slot < 9) { //hotbar
-                    //Old hotbar saving stuff, remove it (useless now)
-                    inventoryList.remove(item);
-                } else if (slot >= 100 && slot < 104) {
-                    this.inventory.setItem(this.inventory.getSize() + slot - 100, NBTIO.getItemHelper(item));
-                } else if (slot == -106) {
-                    this.offhandInventory.setItem(0, NBTIO.getItemHelper(item));
-                } else {
-                    this.inventory.setItem(slot - 9, NBTIO.getItemHelper(item));
-                }
-            }
-        }
-
-        this.enderChestInventory = new PlayerEnderChestInventory(this);
-
-        if (this.namedTag.contains("EnderItems") && this.namedTag.get("EnderItems") instanceof ListTag) {
-            ListTag<CompoundTag> inventoryList = this.namedTag.getList("EnderItems", CompoundTag.class);
-            for (CompoundTag item : inventoryList.getAll()) {
-                this.enderChestInventory.setItem(item.getByte("Slot"), NBTIO.getItemHelper(item));
-            }
-        }
-
-        super.initEntity();
+    public PlayerEnderChestInventory getEnderChestInventory() {
+        return enderChestInventory;
     }
 
     @Override
-    public void saveNBT() {
-        super.saveNBT();
-
-        ListTag<CompoundTag> inventoryTag = null;
-        if (this.inventory != null) {
-            inventoryTag = new ListTag<>("Inventory");
-            this.namedTag.putList(inventoryTag);
-
-            for (int slot = 0; slot < 9; ++slot) {
-                inventoryTag.add(new CompoundTag()
-                        .putByte("Count", 0)
-                        .putShort("Damage", 0)
-                        .putByte("Slot", slot)
-                        .putByte("TrueSlot", -1)
-                        .putShort("id", 0)
-                );
-            }
-
-            int slotCount = Player.SURVIVAL_SLOTS + 9;
-            for (int slot = 9; slot < slotCount; ++slot) {
-                Item item = this.inventory.getItem(slot - 9);
-                inventoryTag.add(NBTIO.putItemHelper(item, slot));
-            }
-
-            for (int slot = 100; slot < 104; ++slot) {
-                Item item = this.inventory.getItem(this.inventory.getSize() + slot - 100);
-                if (item != null && item.getId() != Item.AIR) {
-                    inventoryTag.add(NBTIO.putItemHelper(item, slot));
-                }
-            }
-
-            this.namedTag.putInt("SelectedInventorySlot", this.inventory.getHeldItemIndex());
-        }
-
-        if (this.offhandInventory != null) {
-            Item item = this.offhandInventory.getItem(0);
-            if (item.getId() != Item.AIR) {
-                if (inventoryTag == null) {
-                    inventoryTag = new ListTag<>("Inventory");
-                    this.namedTag.putList(inventoryTag);
-                }
-                inventoryTag.add(NBTIO.putItemHelper(item, -106));
-            }
-        }
-
-        this.namedTag.putList(new ListTag<CompoundTag>("EnderItems"));
-        if (this.enderChestInventory != null) {
-            for (int slot = 0; slot < 27; ++slot) {
-                Item item = this.enderChestInventory.getItem(slot);
-                if (item != null && item.getId() != Item.AIR) {
-                    this.namedTag.getList("EnderItems", CompoundTag.class).add(NBTIO.putItemHelper(item, slot));
-                }
-            }
-        }
+    public void setInventories(Inventory[] inventory) {
+        this.inventory = (PlayerInventory) inventory[0];
+        this.offhandInventory = (PlayerOffhandInventory) inventory[1];
+        this.enderChestInventory = (PlayerEnderChestInventory) inventory[2];
     }
 
     @Override

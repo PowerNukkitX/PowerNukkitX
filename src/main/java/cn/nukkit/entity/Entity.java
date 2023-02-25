@@ -131,10 +131,15 @@ public abstract class Entity extends Location implements Metadatable {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final int DATA_USING_ITEM = dynamic(25); //byte
+
+    public static final int DATA_PLAYER_FLAG_SLEEP = 1;
+    public static final int DATA_PLAYER_FLAG_DEAD = 2;
     public static final int DATA_PLAYER_FLAGS = dynamic(26); //byte
     @Since("1.2.0.0-PN")
     public static final int DATA_PLAYER_INDEX = dynamic(27);
     public static final int DATA_PLAYER_BED_POSITION = dynamic(28); //block coords
+    public static final int DATA_PLAYER_BUTTON_TEXT = 40;
+
     public static final int DATA_FIREBALL_POWER_X = dynamic(29); //float
     public static final int DATA_FIREBALL_POWER_Y = dynamic(30); //float
     public static final int DATA_FIREBALL_POWER_Z = dynamic(31); //float
