@@ -491,10 +491,30 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     @PowerNukkitXDifference(since = "1.19.60-r1", info = "Auto-break custom blocks if client doesn't send the break data-pack.")
-    private void onBlockBreakContinue(Vector3 pos, BlockFace face) {
+    private void onBlockBreakContinue() {
         if (this.isBreakingBlock()) {
-            Block block = this.level.getBlock(pos, false);
-            this.level.addParticle(new PunchBlockParticle(pos, block, face));
+            double miningTimeRequired;
+            if (this.breakingBlock instanceof CustomBlock customBlock) {
+                miningTimeRequired = customBlock.getBreakTime(this.inventory.getItemInHand(), this);
+            } else miningTimeRequired = this.breakingBlock.calculateBreakTime(this.inventory.getItemInHand(), this);
+
+            if (miningTimeRequired > 0) {
+                int breakTick = (int) Math.ceil(miningTimeRequired * 20);
+                var target = this.breakingBlock.asBlockVector3();
+                var targetFace = this.breakingBlockFace;
+                LevelEventPacket pk = new LevelEventPacket();
+                pk.evid = LevelEventPacket.EVENT_BLOCK_UPDATE_BREAK;
+                pk.x = (float) this.breakingBlock.x;
+                pk.y = (float) this.breakingBlock.y;
+                pk.z = (float) this.breakingBlock.z;
+                pk.data = 65535 / breakTick;
+                this.getLevel().addChunkPacket(this.breakingBlock.getFloorX() >> 4, this.breakingBlock.getFloorZ() >> 4, pk);
+                //todo 目前对于自定义方块，跳跃挖掘时客户端的显示和服务端权威方块破坏时间仍然有差异，需要继续优化下方时间计算算法
+                if (System.currentTimeMillis() - lastBreak > miningTimeRequired * 1000 + 10 - ((this.breakingBlock instanceof CustomBlock && miningTimeRequired >= 0.1) ? 60 : 0)) {
+                    this.onBlockBreakAbort(target.asVector3(), targetFace);
+                    this.onBlockBreakComplete(target, targetFace);
+                } else this.level.addParticle(new PunchBlockParticle(target, this.breakingBlock, targetFace));
+            }
         }
     }
 
@@ -3262,29 +3282,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 this.timeSinceRest++;
             }
 
-            if (this.isSurvival() && this.isBreakingBlock()) {
-                double miningTimeRequired;
-                if (this.breakingBlock instanceof CustomBlock customBlock) {
-                    miningTimeRequired = customBlock.getBreakTime(this.inventory.getItemInHand(), this);
-                } else miningTimeRequired = this.breakingBlock.calculateBreakTime(this.inventory.getItemInHand(), this);
-                if (miningTimeRequired > 0) {
-                    int breakTick = (int) Math.ceil(miningTimeRequired * 20);
-                    var target = breakingBlock.asBlockVector3();
-                    var targetFace = breakingBlockFace;
-                    LevelEventPacket pk = new LevelEventPacket();
-                    pk.evid = LevelEventPacket.EVENT_BLOCK_UPDATE_BREAK;
-                    pk.x = (float) this.breakingBlock.x;
-                    pk.y = (float) this.breakingBlock.y;
-                    pk.z = (float) this.breakingBlock.z;
-                    pk.data = 65535 / breakTick;
-                    this.getLevel().addChunkPacket(this.breakingBlock.getFloorX() >> 4, this.breakingBlock.getFloorZ() >> 4, pk);
-                    //todo 目前对于自定义方块，跳跃挖掘时客户端的显示和服务端权威方块破坏时间仍然有差异，需要继续优化下方时间计算算法
-                    if (System.currentTimeMillis() - lastBreak > miningTimeRequired * 1000 + 10 - ((this.breakingBlock instanceof CustomBlock && miningTimeRequired >= 0.1) ? 60 : 0)) {
-                        this.onBlockBreakAbort(target.asVector3(), targetFace);
-                        this.onBlockBreakComplete(target, targetFace);
-                    }
-                }
-            }
+            onBlockBreakContinue();
         }
 
         if (currentTick % 10 == 0) {
@@ -3787,7 +3785,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                 case STOP_DESTROY_BLOCK:
                                     this.onBlockBreakAbort(blockPos.asVector3(), blockFace);
                                     break;
-                                case CONTINUE_DESTROY_BLOCK:
+                                case CONTINUE_DESTROY_BLOCK://破坏完一个方块后接着破坏下一个方块
                                     break;
                                 case PREDICT_DESTROY_BLOCK:
                                     if (this.isBreakingBlock()) {
@@ -4082,7 +4080,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             }
                             break packetswitch;
                         case PlayerActionPacket.ACTION_CONTINUE_BREAK:
-                            this.onBlockBreakContinue(pos, face);
                             break;
                         case PlayerActionPacket.ACTION_START_SWIMMING:
                             PlayerToggleSwimEvent ptse = new PlayerToggleSwimEvent(this, true);
