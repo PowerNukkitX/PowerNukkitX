@@ -3,7 +3,6 @@ package cn.nukkit.entity;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
-import cn.nukkit.entity.compv2.EntityComponent;
 
 /**
  * 可坐下实体接口<p>

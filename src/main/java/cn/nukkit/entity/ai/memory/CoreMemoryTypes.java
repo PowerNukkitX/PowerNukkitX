@@ -6,7 +6,6 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.ai.memory.codec.BooleanMemoryCodec;
-import cn.nukkit.entity.ai.memory.codec.MemoryCodec;
 import cn.nukkit.entity.ai.memory.codec.StringMemoryCodec;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.math.Vector3;

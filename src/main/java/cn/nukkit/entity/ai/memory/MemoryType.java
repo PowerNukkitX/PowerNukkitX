@@ -4,18 +4,12 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.ai.memory.codec.IMemoryCodec;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Identifier;
-import lombok.Builder;
 import lombok.Getter;
 
 import javax.annotation.Nullable;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -37,11 +31,6 @@ public final class MemoryType<Data> {
     @Getter
     @Nullable
     private IMemoryCodec<Data> codec;
-
-    @Since("1.19.62-r2")
-    public static Set<MemoryType<?>> getPersistentMemories() {
-        return PERSISTENT_MEMORIES;
-    }
 
     public MemoryType(Identifier identifier) {
         this(identifier, () -> null);
@@ -72,6 +61,11 @@ public final class MemoryType<Data> {
         this.defaultData = defaultData;
     }
 
+    @Since("1.19.62-r2")
+    public static Set<MemoryType<?>> getPersistentMemories() {
+        return PERSISTENT_MEMORIES;
+    }
+
     public Data getDefaultData() {
         return defaultData.get();
     }
@@ -93,8 +87,9 @@ public final class MemoryType<Data> {
     /**
      * 强制编码一个记忆<p/>
      * 会将给定的data值强转到Data类型
+     *
      * @param entity 目标实体
-     * @param data 数据
+     * @param data   数据
      */
     @Since("1.19.62-r2")
     public void forceEncode(Entity entity, Object data) {

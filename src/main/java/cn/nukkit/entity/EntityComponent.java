@@ -1,8 +1,7 @@
-package cn.nukkit.entity.compv2;
+package cn.nukkit.entity;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.ai.memory.IMemoryStorage;
 
 /**
@@ -13,6 +12,7 @@ import cn.nukkit.entity.ai.memory.IMemoryStorage;
 @Since("1.19.62-r2")
 public interface EntityComponent {
     IMemoryStorage getMemoryStorage();
+
     default Entity asEntity() {
         return getMemoryStorage().getEntity();
     }

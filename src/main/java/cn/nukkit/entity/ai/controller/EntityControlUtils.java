@@ -32,12 +32,12 @@ public interface EntityControlUtils {
         return getMemoryStorage().get(CoreMemoryTypes.MOVE_DIRECTION_START);
     }
 
-    default boolean hasMoveDirection() {
-        return getMoveDirectionStart() != null && getMoveDirectionEnd() != null;
-    }
-
     default void setMoveDirectionStart(Vector3 moveDirectionStart) {
         getMemoryStorage().put(CoreMemoryTypes.MOVE_DIRECTION_START, moveDirectionStart);
+    }
+
+    default boolean hasMoveDirection() {
+        return getMoveDirectionStart() != null && getMoveDirectionEnd() != null;
     }
 
     default Vector3 getMoveDirectionEnd() {

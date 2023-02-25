@@ -26,7 +26,6 @@ import cn.nukkit.network.protocol.AddPlayerPacket;
 import cn.nukkit.network.protocol.RemoveEntityPacket;
 import cn.nukkit.network.protocol.SetEntityLinkPacket;
 import cn.nukkit.utils.*;
-
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.charset.StandardCharsets;

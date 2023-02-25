@@ -11,9 +11,9 @@ import java.util.Random;
 
 public class EntityElytraFirework extends EntityFirework {
     private static final Random RANDOM = new Random();
+    private final int lifetime;
     private Player followingPlayer;
     private int fireworkAge = 0;
-    private final int lifetime;
 
     public EntityElytraFirework(FullChunk chunk, CompoundTag nbt, @Nullable Player player) {
         super(chunk, nbt);

@@ -7,10 +7,6 @@ import cn.nukkit.api.*;
 import cn.nukkit.block.*;
 import cn.nukkit.blockentity.BlockEntityPistonArm;
 import cn.nukkit.blockstate.BlockState;
-import cn.nukkit.entity.component.EntityComponent;
-import cn.nukkit.entity.component.EntityComponentGroup;
-import cn.nukkit.entity.component.EntityComponentRegistery;
-import cn.nukkit.entity.component.SimpleEntityComponentGroup;
 import cn.nukkit.entity.custom.CustomEntity;
 import cn.nukkit.entity.custom.CustomEntityDefinition;
 import cn.nukkit.entity.data.*;
@@ -54,12 +50,10 @@ import co.aikar.timings.TimingsHistory;
 import com.google.common.collect.Iterables;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
-import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
@@ -561,10 +555,6 @@ public abstract class Entity extends Location implements Metadatable {
     protected Server server;
     protected Timing timing;
     protected boolean isPlayer = this instanceof Player;
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
-    @Getter
-    protected EntityComponentGroup componentGroup;
     private int maxHealth = 20;
     private volatile boolean initialized;
 
@@ -865,19 +855,6 @@ public abstract class Entity extends Location implements Metadatable {
         return shortNames.get(entityProvider.getSimpleName());
     }
 
-
-    /**
-     * 获取该实体的标识符
-     * <p>
-     * Get the identifier of the entity
-     *
-     * @return the identifier
-     */
-    @Nullable
-    public Identifier getIdentifier() {
-        return Entity.getIdentifier(this.getNetworkId());
-    }
-
     /**
      * 获取指定网络id实体的标识符
      * <p>
@@ -959,7 +936,6 @@ public abstract class Entity extends Location implements Metadatable {
         Server.broadcastPacket(players, pk);
     }
 
-
     /**
      * @see #playAnimationOnEntities(AnimateEntityPacket.Animation, Collection<Entity>, Collection<Player>)
      */
@@ -972,6 +948,18 @@ public abstract class Entity extends Location implements Metadatable {
             if (entity.isPlayer) viewers.add((Player) entity);
         });
         playAnimationOnEntities(animation, entities, viewers);
+    }
+
+    /**
+     * 获取该实体的标识符
+     * <p>
+     * Get the identifier of the entity
+     *
+     * @return the identifier
+     */
+    @Nullable
+    public Identifier getIdentifier() {
+        return Entity.getIdentifier(this.getNetworkId());
     }
 
     /**
@@ -1079,13 +1067,6 @@ public abstract class Entity extends Location implements Metadatable {
         this.dataProperties.putFloat(DATA_BOUNDING_BOX_HEIGHT, this.getHeight());
         this.dataProperties.putFloat(DATA_BOUNDING_BOX_WIDTH, this.getWidth());
         this.dataProperties.putInt(DATA_HEALTH, (int) this.getHealth());
-
-        try {
-            this.componentGroup = requireEntityComponentGroup();
-        } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException("An error occurred while creating the component group", e);
-        }
-        this.componentGroup.onInitEntity();
 
         this.scheduleUpdate();
     }
@@ -1530,8 +1511,6 @@ public abstract class Entity extends Location implements Metadatable {
         } else {
             this.namedTag.remove("ActiveEffects");
         }
-
-        this.getComponentGroup().onSaveNBT();
     }
 
     /**
@@ -3733,32 +3712,6 @@ public abstract class Entity extends Location implements Metadatable {
         pk.eid = this.getId();
         pk.encode();
         Server.broadcastPacket(players, pk);
-    }
-
-    /**
-     * 通过反射获取类实现的接口并查询{@link cn.nukkit.entity.component.EntityComponentRegistery}创建对应组件
-     */
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
-    protected EntityComponentGroup requireEntityComponentGroup() throws InvocationTargetException, InstantiationException, IllegalAccessException {
-        var components = new HashSet<EntityComponent>();
-
-        var interfaces = this.getClass().getInterfaces();
-        for (var interfaze : interfaces) {
-            var component = EntityComponentRegistery.getInterfaceBoundEntityComponent(interfaze);
-            if (component != null) {
-                var constructor = EntityComponent.CONSTRUCTOR_CACHE.computeIfAbsent(component, k -> {
-                    try {
-                        return component.getConstructor(Entity.class);
-                    } catch (NoSuchMethodException e) {
-                        throw new RuntimeException("The required entity component constructor was not found", e);
-                    }
-                });
-                components.add(constructor.newInstance(this));
-            }
-        }
-
-        return new SimpleEntityComponentGroup(components);
     }
 
     private record OldStringClass(String key, Class<? extends Entity> value) {

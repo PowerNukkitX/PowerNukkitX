@@ -3,8 +3,6 @@ package cn.nukkit.entity;
 import cn.nukkit.Player;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
-
-import cn.nukkit.entity.compv2.EntityComponent;
 import cn.nukkit.entity.data.LongEntityData;
 import org.jetbrains.annotations.NotNull;
 
