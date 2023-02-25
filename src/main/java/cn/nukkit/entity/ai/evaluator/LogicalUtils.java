@@ -30,4 +30,6 @@ public interface LogicalUtils {
     default IBehaviorEvaluator all(@NotNull IBehaviorEvaluator... evaluators) {
         return new AllMatchEvaluator(evaluators);
     }
+
+
 }
