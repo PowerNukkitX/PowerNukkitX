@@ -166,7 +166,8 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityTa
                         new EntityAttackedByOwnerSensor(5, false)
                 ),
                 Set.of(new WalkController(), new LookController(true, true), new FluctuateController()),
-                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)
+                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
+                this
         );
     }
 

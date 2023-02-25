@@ -3,6 +3,7 @@ package cn.nukkit.entity.ai.memory;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.ai.memory.codec.IMemoryCodec;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Identifier;
 import lombok.Builder;
@@ -26,7 +27,7 @@ public final class MemoryType<Data> {
     private final Identifier identifier;
     private final Supplier<Data> defaultData;
     @Nullable
-    private MemoryCodec codec;
+    private IMemoryCodec<Data> codec;
 
     public MemoryType(Identifier identifier) {
         this(identifier, () -> null);
@@ -62,11 +63,8 @@ public final class MemoryType<Data> {
     }
 
     @Since("1.19.62-r2")
-    public MemoryType<Data> withCodec(
-            Function<CompoundTag, Data> decoder,
-            BiConsumer<Data, CompoundTag> encoder
-    ) {
-        this.codec = new MemoryCodec(decoder, encoder);
+    public MemoryType<Data> withCodec(IMemoryCodec<Data> codec) {
+        this.codec = codec;
         return this;
     }
 
@@ -112,31 +110,5 @@ public final class MemoryType<Data> {
             return identifier.equals(anotherType.identifier);
         }
         return false;
-    }
-
-    /**
-     * 表示一个记忆的编解码器
-     */
-    @Since("1.19.62-r2")
-    public class MemoryCodec {
-        private final Function<CompoundTag, Data> decoder;
-        private final BiConsumer<Data, CompoundTag> encoder;
-
-        public MemoryCodec(
-                Function<CompoundTag, Data> decoder,
-                BiConsumer<Data, CompoundTag> encoder
-        ) {
-            this.decoder = decoder;
-            this.encoder = encoder;
-        }
-
-        @Nullable
-        public Data decode(CompoundTag tag) {
-            return decoder.apply(tag);
-        }
-
-        public void encode(Data data, CompoundTag tag) {
-            encoder.accept(data, tag);
-        }
     }
 }
