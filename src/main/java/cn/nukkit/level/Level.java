@@ -2918,8 +2918,6 @@ public class Level implements ChunkManager, Metadatable {
                     return null;
                 }
 
-                player.lastBreak = System.currentTimeMillis();
-
                 drops = ev.getDrops();
                 dropExp = ev.getDropExp();
             } else {

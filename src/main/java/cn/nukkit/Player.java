@@ -3278,7 +3278,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     pk.z = (float) this.breakingBlock.z;
                     pk.data = 65535 / breakTick;
                     this.getLevel().addChunkPacket(this.breakingBlock.getFloorX() >> 4, this.breakingBlock.getFloorZ() >> 4, pk);
-                    //目前对于自定义方块，跳跃挖掘时客户端的显示和服务端权威方块破坏时间仍然有差异，需要继续优化下方时间计算算法
+                    //todo 目前对于自定义方块，跳跃挖掘时客户端的显示和服务端权威方块破坏时间仍然有差异，需要继续优化下方时间计算算法
                     if (System.currentTimeMillis() - lastBreak > miningTimeRequired * 1000 + 10 - ((this.breakingBlock instanceof CustomBlock && miningTimeRequired >= 0.1) ? 60 : 0)) {
                         this.onBlockBreakAbort(target.asVector3(), targetFace);
                         this.onBlockBreakComplete(target, targetFace);
