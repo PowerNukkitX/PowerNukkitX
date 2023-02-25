@@ -1,14 +1,15 @@
 package cn.nukkit.block.customblock;
 
+import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockFallableMeta;
 import cn.nukkit.block.BlockMeta;
 import cn.nukkit.item.Item;
-import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nullable;
 import java.util.Locale;
 
 /**
@@ -131,5 +132,28 @@ public interface CustomBlock {
      */
     default boolean reverseSending() {
         return true;
+    }
+
+    /**
+     * 获取自定义方块的挖掘时间，它是服务端侧和客户端侧挖掘时间的最小值。
+     *
+     * @param item   the item
+     * @param player the player
+     * @return the break time
+     */
+    default double getBreakTime(@NotNull Item item, @Nullable Player player) {
+        var block = this.toCustomBlock();
+        double breakTime = block.calculateBreakTime(item, player);
+        var comp = this.getDefinition().nbt().getCompound("components");
+        if (comp.containsCompound("minecraft:destructible_by_mining")) {
+            var clientBreakTime = comp.getCompound("minecraft:destructible_by_mining").getFloat("value");
+            if (player != null) {
+                if (player.getServer().getTick() - player.getLastInAirTick() < 6) {
+                    clientBreakTime *= 6;
+                }
+            }
+            breakTime = Math.min(breakTime, clientBreakTime);
+        }
+        return breakTime;
     }
 }
