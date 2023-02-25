@@ -13,11 +13,9 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.Sound;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.MathHelper;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AnimatePacket;
 import cn.nukkit.utils.BlockColor;
 import org.jetbrains.annotations.NotNull;
@@ -320,8 +318,7 @@ public class BlockBamboo extends BlockTransparentMeta implements BlockFlowerPot.
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
-        boolean itemIsBoneMeal = item.isFertilizer(); //Bonemeal
-        if (itemIsBoneMeal || item.getBlock() != null && item.getBlockId() == BlockID.BAMBOO) {
+        if (item.isFertilizer()) {
             int top = (int) y;
             int count = 1;
 
@@ -344,7 +341,8 @@ public class BlockBamboo extends BlockTransparentMeta implements BlockFlowerPot.
                 }
             }
 
-            if (itemIsBoneMeal && count >= 15) {
+            //15格以上需要嫁接（放置竹子）
+            if (count >= 15) {
                 return false;
             }
 
@@ -359,11 +357,7 @@ public class BlockBamboo extends BlockTransparentMeta implements BlockFlowerPot.
                 if (player != null && player.isSurvival()) {
                     item.count--;
                 }
-                if (itemIsBoneMeal) {
-                    level.addParticle(new BoneMealParticle(this));
-                } else {
-                    level.addSound(block, Sound.BLOCK_BAMBOO_PLACE, 0.8F, 1.0F);
-                }
+                level.addParticle(new BoneMealParticle(this));
             }
 
             return true;
