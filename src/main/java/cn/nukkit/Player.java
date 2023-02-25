@@ -1914,6 +1914,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      *
      * @return int
      */
+    @PowerNukkitXOnly
+    @Since("1.19.63-r1")
     public int getLastInAirTick() {
         return this.lastInAirTick;
     }
