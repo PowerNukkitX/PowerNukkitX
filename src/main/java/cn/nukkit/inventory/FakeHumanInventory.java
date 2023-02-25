@@ -64,15 +64,16 @@ public class FakeHumanInventory extends BaseInventory {
     }
 
     /**
-     * 设置{@link EntityIntelligentHuman}的手持物品的索引位置
+     * 设置{@link EntityIntelligentHuman}的手持物品的格子位置
      *
-     * @param index 索引位置
+     * @param slot 索引位置
      */
-    public void setHeldItemIndex(int index) {
-        if (index >= 0 && index < this.getHotbarSize()) {
-            this.itemInHandIndex = index;
-            this.sendHeldItem(this.getHolder().getViewers().values());
+    public void setHeldItemSlot(int slot) {
+        if (!isHotbarSlot(slot)) {
+            return;
         }
+        this.itemInHandIndex = slot;
+        this.sendHeldItem(this.getViewers());
     }
 
     /**
