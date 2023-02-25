@@ -20,6 +20,8 @@ public class MemoryStorage implements IMemoryStorage {
     public static final Object EMPTY_VALUE = new Object();
 
     protected Map<MemoryType<?>, Object> memoryMap = new ConcurrentHashMap<>();
+    @Getter
+    protected Entity entity;
 
     public MemoryStorage(Entity entity) {
         this.entity = entity;
