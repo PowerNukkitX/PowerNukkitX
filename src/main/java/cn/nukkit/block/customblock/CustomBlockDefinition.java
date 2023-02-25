@@ -75,7 +75,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
                     .putCompound("minecraft:light_emission", new CompoundTag()
                             .putByte("emission", (byte) customBlock.getLightLevel()))
                     .putCompound("minecraft:destructible_by_mining", new CompoundTag()
-                            .putFloat("value", 99999));//default server-side mining time calculate
+                            .putFloat("value", 99999f));//default server-side mining time calculate
             //设置材质
             components.putCompound("minecraft:material_instances", new CompoundTag()
                     .putCompound("mappings", new CompoundTag())
