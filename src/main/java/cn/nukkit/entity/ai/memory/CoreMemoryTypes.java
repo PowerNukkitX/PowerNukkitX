@@ -5,6 +5,8 @@ import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.ai.memory.codec.BooleanMemoryCodec;
+import cn.nukkit.entity.ai.memory.codec.MemoryCodec;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.math.Vector3;
 
@@ -53,4 +55,8 @@ public interface CoreMemoryTypes {
     MemoryType<Entity> ENTITY_SPOUSE = new MemoryType<>("minecraft:entity_spouse");
     MemoryType<Map<Entity, Integer>> WARDEN_ANGER_VALUE = new MemoryType<>("minecraft:warden_anger_value", new HashMap<>());
     MemoryType<Entity> NEAREST_SKELETON = new MemoryType<>("minecraft:nearest_skeleton");
+    MemoryType<Boolean> IS_ANGRY = new MemoryType<>("minecraft:is_angry", false)
+            .withCodec(new BooleanMemoryCodec("Angry")
+                    .onInit((data, entity) -> entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_ANGRY, data))
+            );
 }

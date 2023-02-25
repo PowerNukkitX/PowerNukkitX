@@ -2,6 +2,7 @@ package cn.nukkit.entity.ai.memory.codec;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 import javax.annotation.Nullable;
@@ -17,6 +18,8 @@ public interface IMemoryCodec<Data> {
     Function<CompoundTag, Data> getDecoder();
 
     BiConsumer<Data, CompoundTag> getEncoder();
+
+    void init(Data data, Entity entity);
 
     @Nullable
     default Data decode(CompoundTag tag) {

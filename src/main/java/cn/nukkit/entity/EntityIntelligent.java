@@ -11,6 +11,7 @@ import cn.nukkit.entity.ai.controller.EntityControlUtils;
 import cn.nukkit.entity.ai.evaluator.LogicalUtils;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.memory.IMemoryStorage;
+import cn.nukkit.entity.ai.memory.MemoryType;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.form.window.FormWindowSimple;
 import cn.nukkit.item.Item;
@@ -19,6 +20,8 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import lombok.Getter;
+
+import java.util.Objects;
 
 /**
  * {@code EntityIntelligent}抽象了一个具有行为组{@link IBehaviorGroup}（也就是具有AI）的实体
@@ -50,6 +53,15 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
     @Override
     protected void initEntity() {
         super.initEntity();
+        MemoryType.getPersistentMemories().forEach(memory -> {
+            var mem = (MemoryType<Object>) memory;
+            var codec = mem.getCodec();
+            var data = Objects.requireNonNull(codec).getDecoder().apply(this.namedTag);
+            if (data != null) {
+                getMemoryStorage().put(mem, data);
+                codec.init(data, this);
+            }
+        });
     }
 
     /**
