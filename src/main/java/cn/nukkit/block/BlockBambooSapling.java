@@ -8,7 +8,6 @@ import cn.nukkit.event.block.BlockGrowEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.Sound;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.MathHelper;
@@ -110,8 +109,7 @@ public class BlockBambooSapling extends BlockFlowable {
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
-        boolean isBoneMeal = item.isFertilizer(); //Bonemeal
-        if (isBoneMeal || item.getBlock() != null && item.getBlockId() == BlockID.BAMBOO) {
+        if (item.isFertilizer()) {
 
             boolean success = false;
             Block block = this.up();
@@ -124,11 +122,7 @@ public class BlockBambooSapling extends BlockFlowable {
                     item.count--;
                 }
 
-                if (isBoneMeal) {
-                    level.addParticle(new BoneMealParticle(this));
-                } else {
-                    level.addSound(block, Sound.BLOCK_BAMBOO_PLACE, 0.8F, 1.0F);
-                }
+                level.addParticle(new BoneMealParticle(this));
             }
 
             return true;
