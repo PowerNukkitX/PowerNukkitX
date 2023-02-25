@@ -31,6 +31,7 @@ public interface EntityOwnable extends EntityComponent {
         if (owner != null && owner.isOnline()) return owner;
         else {
             var ownerName = getOwnerName();
+            if (ownerName == null) return null;
             owner = asEntity().getServer().getPlayerExact(ownerName);
             if (owner != null)
                 asEntity().setDataProperty(new LongEntityData(Entity.DATA_OWNER_EID, owner.getId()));
