@@ -2,9 +2,17 @@ package cn.nukkit.entity.ai.memory;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.entity.Entity;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Identifier;
+import lombok.Builder;
 import lombok.Getter;
 
+import javax.annotation.Nullable;
+import java.util.Objects;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -17,6 +25,8 @@ public final class MemoryType<Data> {
 
     private final Identifier identifier;
     private final Supplier<Data> defaultData;
+    @Nullable
+    private MemoryCodec codec;
 
     public MemoryType(Identifier identifier) {
         this(identifier, () -> null);
@@ -51,6 +61,31 @@ public final class MemoryType<Data> {
         return defaultData.get();
     }
 
+    @Since("1.19.62-r2")
+    public MemoryType<Data> withCodec(
+            Function<CompoundTag, Data> decoder,
+            BiConsumer<Data, CompoundTag> encoder
+    ) {
+        this.codec = new MemoryCodec(decoder, encoder);
+        return this;
+    }
+
+    public void encode(Entity entity, Data data) {
+        if (codec != null) {
+            var tag = entity.namedTag;
+            codec.encode(data, tag);
+        }
+    }
+
+    @Nullable
+    public Data decode(Entity entity) {
+        if (codec != null) {
+            var tag = entity.namedTag;
+            return codec.decode(tag);
+        }
+        return null;
+    }
+
     @Override
     public int hashCode() {
         return identifier.hashCode();
@@ -63,5 +98,30 @@ public final class MemoryType<Data> {
             return identifier.equals(anotherType.identifier);
         }
         return false;
+    }
+
+    /**
+     * 表示一个记忆的编解码器
+     */
+    @Since("1.19.62-r2")
+    public class MemoryCodec {
+        private final Function<CompoundTag, Data> decoder;
+        private final BiConsumer<Data, CompoundTag> encoder;
+
+        public MemoryCodec(
+                Function<CompoundTag, Data> decoder,
+                BiConsumer<Data, CompoundTag> encoder
+        ) {
+            this.decoder = decoder;
+            this.encoder = encoder;
+        }
+
+        public Data decode(CompoundTag tag) {
+            return decoder.apply(tag);
+        }
+
+        public void encode(Data data, CompoundTag tag) {
+            encoder.accept(data, tag);
+        }
     }
 }
