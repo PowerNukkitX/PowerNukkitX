@@ -129,6 +129,8 @@ public interface IBehaviorGroup {
 
     @Since("1.19.62-r2")
     default void save(EntityIntelligent entity) {
-        getMemoryStorage().encode();
+        //EmptyBehaviorGroup will return null
+        if (getMemoryStorage() != null)
+            getMemoryStorage().encode();
     }
 }

@@ -46,22 +46,17 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
         this.behaviorGroup = requireBehaviorGroup();
         var storage = getMemoryStorage();
         if (storage != null) {
-            getMemoryStorage().put(CoreMemoryTypes.ENTITY_SPAWN_TIME, Server.getInstance().getTick());
+            storage.put(CoreMemoryTypes.ENTITY_SPAWN_TIME, Server.getInstance().getTick());
+            MemoryType.getPersistentMemories().forEach(memory -> {
+                var mem = (MemoryType<Object>) memory;
+                var codec = mem.getCodec();
+                var data = Objects.requireNonNull(codec).getDecoder().apply(this.namedTag);
+                if (data != null) {
+                    storage.put(mem, data);
+                    codec.init(data, this);
+                }
+            });
         }
-    }
-
-    @Override
-    protected void initEntity() {
-        super.initEntity();
-        MemoryType.getPersistentMemories().forEach(memory -> {
-            var mem = (MemoryType<Object>) memory;
-            var codec = mem.getCodec();
-            var data = Objects.requireNonNull(codec).getDecoder().apply(this.namedTag);
-            if (data != null) {
-                getMemoryStorage().put(mem, data);
-                codec.init(data, this);
-            }
-        });
     }
 
     /**

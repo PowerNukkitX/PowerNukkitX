@@ -1172,6 +1172,7 @@ public abstract class Entity extends Location implements Metadatable {
             this.chunk.addEntity(this);
             this.level.addEntity(this);
 
+            //TODO: 此方法放在这里调用不合适
             this.initEntity();
 
             this.lastUpdate = this.server.getTick();
