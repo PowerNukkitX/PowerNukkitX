@@ -206,7 +206,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public long creationTime = 0;
     @Since("1.19.63-r1")
     @PowerNukkitXOnly
-    long breakingBlockTime = 0;
+    protected long breakingBlockTime = 0;
+
+    @Since("1.19.63-r1")
+    @PowerNukkitXOnly
     protected double blockBreakProgress = 0;
     public Block breakingBlock = null;
     @Since("1.19.60-r1")
