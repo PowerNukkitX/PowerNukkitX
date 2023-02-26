@@ -682,14 +682,16 @@ public class Server {
         var langName = this.getConfig("settings.language", BaseLang.FALLBACK_LANGUAGE);
         this.baseLang = new BaseLang(langName);
         this.baseLangCode = mapInternalLang(langName);
+
+        var isShaded = StartArgUtils.isShaded();
         // 检测启动参数
-        if (!StartArgUtils.isValidStart()) {
+        if (!StartArgUtils.isValidStart() || (JarStart.isUsingJavaJar() && !isShaded)) {
             log.fatal(getLanguage().tr("nukkit.start.invalid"));
             return;
         }
 
         // 检测非法使用shaded包启动
-        if (!this.properties.getBoolean("allow-shaded", false) && StartArgUtils.isShaded()) {
+        if (!this.properties.getBoolean("allow-shaded", false) && isShaded) {
             log.fatal(getLanguage().tr("nukkit.start.shaded1"));
             log.fatal(getLanguage().tr("nukkit.start.shaded2"));
             log.fatal(getLanguage().tr("nukkit.start.shaded3"));

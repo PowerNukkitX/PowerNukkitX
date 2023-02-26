@@ -204,9 +204,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public Vector3 speed = null;
     public int craftingType = CRAFTING_SMALL;
     public long creationTime = 0;
-    @Since("1.19.60-r1")
+    @Since("1.19.63-r1")
     @PowerNukkitXOnly
-    long startBreakingBlockTime = 0;
+    protected long breakingBlockTime = 0;
+
+    @Since("1.19.63-r1")
+    @PowerNukkitXOnly
+    protected double blockBreakProgress = 0;
     public Block breakingBlock = null;
     @Since("1.19.60-r1")
     @PowerNukkitXOnly
@@ -330,6 +334,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected boolean shouldLogin = false;
     protected double lastRightClickTime = 0.0;
     protected Vector3 lastRightClickPos = null;
+    protected int lastInAirTick = 0;
     private static final float ROTATION_UPDATE_THRESHOLD = 1;
     private static final float MOVEMENT_DISTANCE_THRESHOLD = 0.1f;
     private final Queue<Location> clientMovements = PlatformDependent.newMpscQueue(4);
@@ -495,15 +500,35 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @PowerNukkitXDifference(since = "1.19.60-r1", info = "Auto-break custom blocks if client doesn't send the break data-pack.")
     private void onBlockBreakContinue(Vector3 pos, BlockFace face) {
         if (this.isBreakingBlock()) {
+            var time = System.currentTimeMillis();
             Block block = this.level.getBlock(pos, false);
-            var miningTimeRequired = block.calculateBreakTime(this.inventory.getItemInHand(), this);
-            //创造模式破坏让客户端决定，防止与自定义物品的can_destroy_in_creative冲突
-            if (this.isSurvival() && System.currentTimeMillis() - startBreakingBlockTime > miningTimeRequired * 1000 + 10 -
-                    ((block instanceof CustomBlock && miningTimeRequired >= 0.1) ? 60 : 0)) {
-                this.onBlockBreakAbort(pos, face);
-                this.onBlockBreakComplete(pos.asBlockVector3(), face);
-            } else {
-                this.level.addParticle(new PunchBlockParticle(pos, block, face));
+
+            double miningTimeRequired;
+            if (this.breakingBlock instanceof CustomBlock customBlock) {
+                miningTimeRequired = customBlock.getBreakTime(this.inventory.getItemInHand(), this);
+            } else miningTimeRequired = this.breakingBlock.calculateBreakTime(this.inventory.getItemInHand(), this);
+
+            if (miningTimeRequired > 0) {
+                int breakTick = (int) Math.ceil(miningTimeRequired * 20);
+                LevelEventPacket pk = new LevelEventPacket();
+                pk.evid = LevelEventPacket.EVENT_BLOCK_UPDATE_BREAK;
+                pk.x = (float) this.breakingBlock.x;
+                pk.y = (float) this.breakingBlock.y;
+                pk.z = (float) this.breakingBlock.z;
+                pk.data = 65535 / breakTick;
+                this.getLevel().addChunkPacket(this.breakingBlock.getFloorX() >> 4, this.breakingBlock.getFloorZ() >> 4, pk);
+
+                //miningTimeRequired * 1000-101这个算法最匹配原版计算速度，我们并不想任何方块破坏处理都由服务端执行，只处理自定义方块以绕过原版固定挖掘时间的限制
+                if (this.breakingBlock instanceof CustomBlock) {
+                    var timeDiff = time - breakingBlockTime;
+                    blockBreakProgress += timeDiff / (miningTimeRequired * 1000 - 101);
+                    if (blockBreakProgress > 0.99) {
+                        this.onBlockBreakAbort(pos, face);
+                        this.onBlockBreakComplete(pos.asBlockVector3(), face);
+                    } else
+                        this.level.addParticle(new PunchBlockParticle(pos, block, face));
+                    breakingBlockTime = time;
+                }
             }
         }
     }
@@ -568,16 +593,20 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return;
         }
 
-        if (!this.isCreative()) {
-            double breakTime = Math.ceil(target.getBreakTime(this.inventory.getItemInHand(), this) * 20);
-            this.startBreakingBlockTime = currentBreak;
+        if (this.isSurvival()) {
+            this.breakingBlockTime = currentBreak;
+            double miningTimeRequired;
+            if (target instanceof CustomBlock customBlock) {
+                miningTimeRequired = customBlock.getBreakTime(this.inventory.getItemInHand(), this);
+            } else miningTimeRequired = target.calculateBreakTime(this.inventory.getItemInHand(), this);
+            int breakTime = (int) Math.ceil(miningTimeRequired * 20);
             if (breakTime > 0) {
                 LevelEventPacket pk = new LevelEventPacket();
                 pk.evid = LevelEventPacket.EVENT_BLOCK_START_BREAK;
                 pk.x = (float) pos.x;
                 pk.y = (float) pos.y;
                 pk.z = (float) pos.z;
-                pk.data = (int) (65535 / breakTime);
+                pk.data = 65535 / breakTime;
                 this.getLevel().addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, pk);
                 // 优化反矿透时玩家的挖掘体验
                 if (this.getLevel().isAntiXrayEnabled() && this.getLevel().isPreDeObfuscate()) {
@@ -594,7 +623,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                 vecList.add(tmpVec);
                             }
                         } catch (Exception ignore) {
-
                         }
                     }
                     this.getLevel().sendBlocks(new Player[]{this}, vecList.toArray(Vector3[]::new), UpdateBlockPacket.FLAG_ALL);
@@ -618,6 +646,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             pk.data = 0;
             this.getLevel().addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, pk);
         }
+        this.blockBreakProgress = 0;
         this.breakingBlock = null;
         this.breakingBlockFace = null;
     }
@@ -1916,6 +1945,19 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     /**
+     * 返回{@link Player#lastInAirTick}的值,代表玩家上次在空中的server tick
+     * <p>
+     * Returns the value of {@link Player#lastInAirTick},represent the last server tick the player was in the air
+     *
+     * @return int
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.63-r1")
+    public int getLastInAirTick() {
+        return this.lastInAirTick;
+    }
+
+    /**
      * 设置{@link Player#lastChorusFruitTeleport}值为{@link Server#getTick() getTick()}
      * <p>
      * Set {@link Player#lastChorusFruitTeleport} value to {@link Server#getTick() getTick()}
@@ -2054,13 +2096,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.inAirTicks = 0;
     }
 
-    @Deprecated
     public void setAllowFlight(boolean value) {
         this.getAdventureSettings().set(Type.ALLOW_FLIGHT, value);
         this.getAdventureSettings().update();
     }
 
-    @Deprecated
     public boolean getAllowFlight() {
         return this.getAdventureSettings().get(Type.ALLOW_FLIGHT);
     }
@@ -2097,13 +2137,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.getAdventureSettings().update();
     }
 
-    @Deprecated
     public void setAutoJump(boolean value) {
         this.getAdventureSettings().set(Type.AUTO_JUMP, value);
         this.getAdventureSettings().update();
     }
 
-    @Deprecated
     public boolean hasAutoJump() {
         return this.getAdventureSettings().get(Type.AUTO_JUMP);
     }
@@ -2983,7 +3021,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return true;
     }
 
-    @Deprecated
     public void sendSettings() {
         this.getAdventureSettings().update();
     }
@@ -3218,6 +3255,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     this.inAirTicks = 0;
                     this.highestPosition = this.y;
                 } else {
+                    this.lastInAirTick = server.getTick();
                     //检测玩家是否异常飞行
                     if (this.checkMovement && !this.isGliding() && !server.getAllowFlight() && !this.getAdventureSettings().get(Type.ALLOW_FLIGHT) && this.inAirTicks > 20 && !this.isSleeping() && !this.isImmobile() && !this.isSwimming() && this.riding == null && !this.hasEffect(Effect.LEVITATION) && !this.hasEffect(Effect.SLOW_FALLING)) {
                         double expectedVelocity = (-this.getGravity()) / ((double) this.getDrag()) - ((-this.getGravity()) / ((double) this.getDrag())) * Math.exp(-((double) this.getDrag()) * ((double) (this.inAirTicks - this.startAirTicks)));
@@ -3228,7 +3266,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         boolean ignore = blockId == Block.LADDER || blockId == Block.VINE || blockId == Block.COBWEB
                                 || blockId == Block.SCAFFOLDING;// || (blockId == Block.SWEET_BERRY_BUSH && block.getDamage() > 0);
 
-                        if (!this.hasEffect(Effect.JUMP) && diff > 0.6 && expectedVelocity < this.speed.y && !ignore) {
+                        if (!this.hasEffect(Effect.JUMP_BOOST) && diff > 0.6 && expectedVelocity < this.speed.y && !ignore) {
                             if (this.inAirTicks < 150) {
                                 this.setMotion(new Vector3(0, expectedVelocity, 0));
                             } else if (this.kick(PlayerKickEvent.Reason.FLYING_DISABLED, "Flying is not enabled on this server")) {
@@ -3261,8 +3299,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 this.timeSinceRest++;
             }
 
-            if (this.isSurvival() && this.server.getServerAuthoritativeMovement() != 0 && this.isBreakingBlock()) {
-                this.onBlockBreakContinue(breakingBlock, breakingBlockFace);
+            if (this.server.getServerAuthoritativeMovement() > 0) {//仅服务端权威使用，因为客户端权威continue break是正常的
+                onBlockBreakContinue(breakingBlock, breakingBlockFace);
             }
         }
 
@@ -3760,7 +3798,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                 case STOP_DESTROY_BLOCK:
                                     this.onBlockBreakAbort(blockPos.asVector3(), blockFace);
                                     break;
-                                case CONTINUE_DESTROY_BLOCK:
+                                case CONTINUE_DESTROY_BLOCK://破坏完一个方块后接着破坏下一个方块
                                     break;
                                 case PREDICT_DESTROY_BLOCK:
                                     if (this.isBreakingBlock()) {

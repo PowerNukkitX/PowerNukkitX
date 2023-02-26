@@ -17,14 +17,21 @@ import java.util.concurrent.ThreadLocalRandom;
  * 在评估时，会评估所有包含的子行为<br>
  * 筛选出返回成功的行为后，会选取最高优先级的那一组<br>
  * 如果到这一步依然存在多个行为，则会根据行为的{@link IBehavior#getWeight()}方法的返回值随机选取其中一个作为执行行为
+ * <p>
+ * A group consisting of multiple behaviors {@link IBehavior} (note the distinction with behavior groups {@link IBehaviorGroup})<br>
+ * Before calling the method {@link #execute(EntityIntelligent)}, the evaluation function of this object must be called to confirm which behavior is activated<br>
+ * During evaluation, all contained child behaviors are evaluated<br>
+ * After filtering out the behaviors that return success, the group with the highest priority is selected<br>
+ * If there are still multiple behaviors at this point, one of them is randomly selected for execution based on the return value of the {@link IBehavior#getWeight()} method of the behavior
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 @Getter
 public class WeightedMultiBehavior extends AbstractBehavior {
     /**
-     * 此组的优先级 <br/>
-     * 在BehaviorGroup中，获取优先级将会返回此值指代整个组的优先级
+     * 此组的优先级。在BehaviorGroup中，获取优先级将会返回此值指代整个组的优先级
+     * <p>
+     * The priority of this group. In Behavior Group, getting the priority will return this value to refer to the priority of the entire group
      */
     protected final int priority;
     protected Set<IBehavior> behaviors;

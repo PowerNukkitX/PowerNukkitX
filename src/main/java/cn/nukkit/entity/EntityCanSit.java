@@ -2,23 +2,20 @@ package cn.nukkit.entity;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.entity.component.impl.EntitySittingComponent;
+import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 
 /**
  * 可坐下实体接口<p>
  */
 @PowerNukkitXOnly
 @Since("1.19.50-r3")
-public interface EntityCanSit {
+public interface EntityCanSit extends EntityComponent {
     default boolean isSitting() {
-        return getSettingComponent().isSitting();
+        return getMemoryStorage().get(CoreMemoryTypes.IS_SITTING);
     }
 
     default void setSitting(boolean sitting) {
-        getSettingComponent().setSitting(sitting);
-    }
-
-    default EntitySittingComponent getSettingComponent() {
-        return ((Entity) this).getComponentGroup().getComponent(EntitySittingComponent.class);
+        getMemoryStorage().put(CoreMemoryTypes.IS_SITTING, sitting);
+        asEntity().setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_SITTING, sitting);
     }
 }

@@ -312,6 +312,10 @@ public class Skin {
         return fullSkinId;
     }
 
+    public void setFullSkinId(String fullSkinId) {
+        this.fullSkinId = fullSkinId;
+    }
+
     @Since("1.4.0.0-PN")
     public String getPlayFabId() {
         if (this.persona && (this.playFabId == null || this.playFabId.isEmpty())) {
@@ -329,15 +333,11 @@ public class Skin {
         this.playFabId = playFabId;
     }
 
-    public void setOverridingPlayerAppearance(boolean override) {
-        this.overridingPlayerAppearance = override;
-    }
-
     public boolean isOverridingPlayerAppearance() {
         return this.overridingPlayerAppearance;
     }
 
-    public void setFullSkinId(String fullSkinId) {
-        this.fullSkinId = fullSkinId;
+    public void setOverridingPlayerAppearance(boolean override) {
+        this.overridingPlayerAppearance = override;
     }
 }

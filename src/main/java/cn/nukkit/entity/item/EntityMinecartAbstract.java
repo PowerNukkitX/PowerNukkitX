@@ -401,6 +401,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
 
     /**
      * 检查邻近的漏斗并通知它输出物品
+     *
      * @param pushArea 漏斗输出范围
      * @return 是否有漏斗被通知
      */
@@ -417,6 +418,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
 
     /**
      * 检查邻近的漏斗并通知它获取物品
+     *
      * @param pickupArea 漏斗拉取范围
      * @return 是否有漏斗被通知
      */

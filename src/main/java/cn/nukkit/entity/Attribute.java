@@ -53,14 +53,13 @@ public class Attribute implements Cloneable {
     public static final int LUCK = 11;
 
     protected static Map<Integer, Attribute> attributes = new HashMap<>();
-
+    private final int id;
     protected float minValue;
     protected float maxValue;
     protected float defaultValue;
     protected float currentValue;
     protected String name;
     protected boolean shouldSend;
-    private final int id;
 
     private Attribute(int id, String name, float minValue, float maxValue, float defaultValue, boolean shouldSend) {
         this.id = id;

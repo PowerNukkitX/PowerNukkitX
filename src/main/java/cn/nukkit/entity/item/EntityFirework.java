@@ -34,9 +34,8 @@ import java.util.concurrent.ThreadLocalRandom;
 public class EntityFirework extends Entity {
 
     public static final int NETWORK_ID = 72;
-
-    private int fireworkAge;
     private final int lifetime;
+    private int fireworkAge;
     private Item firework;
     private boolean hadCollision;
 

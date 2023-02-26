@@ -7,7 +7,6 @@ import cn.nukkit.entity.EntityFlyable;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-
 import org.jetbrains.annotations.NotNull;
 
 /**

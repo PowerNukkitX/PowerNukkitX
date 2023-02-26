@@ -11,10 +11,14 @@ import cn.nukkit.api.Since;
 @Since("1.6.0.0-PNX")
 public interface EntityTamable extends EntityOwnable {
     default boolean hasOwner() {
-        return getTameComponent().hasOwner();
+        return hasOwner(true);
     }
 
     default boolean hasOwner(boolean checkOnline) {
-        return getTameComponent().hasOwner(checkOnline);
+        if (checkOnline) {
+            return getOwner() != null;
+        } else {
+            return getOwnerName() != null;
+        }
     }
 }

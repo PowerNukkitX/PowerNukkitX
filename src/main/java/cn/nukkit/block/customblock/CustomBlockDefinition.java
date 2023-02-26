@@ -10,7 +10,6 @@ import cn.nukkit.block.customblock.data.Permutation;
 import cn.nukkit.blockproperty.*;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.*;
-import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -76,7 +75,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
                     .putCompound("minecraft:light_emission", new CompoundTag()
                             .putByte("emission", (byte) customBlock.getLightLevel()))
                     .putCompound("minecraft:destructible_by_mining", new CompoundTag()
-                            .putFloat("value", 999f));//default server-side mining time calculate
+                            .putFloat("value", 99999f));//default server-side mining time calculate
             //设置材质
             components.putCompound("minecraft:material_instances", new CompoundTag()
                     .putCompound("mappings", new CompoundTag())
@@ -109,7 +108,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
         public Builder breakTime(double second) {
             this.nbt.getCompound("components")
                     .putCompound("minecraft:destructible_by_mining", new CompoundTag()
-                            .putFloat("value", (float) (second * 2 / 3)));
+                            .putFloat("value", (float) second));
             return this;
         }
 

@@ -9,8 +9,8 @@ import java.util.Random;
 
 public class EntityCrossbowFirework extends EntityFirework {
     private static final Random RANDOM = new Random();
-    private int fireworkAge = 0;
     private final int lifetime;
+    private int fireworkAge = 0;
 
     public EntityCrossbowFirework(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);

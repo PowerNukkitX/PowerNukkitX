@@ -2,7 +2,6 @@ package cn.nukkit.entity;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.item.Item;
 
 /**
  * 实体可剪切<p/>

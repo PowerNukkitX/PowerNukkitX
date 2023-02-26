@@ -41,7 +41,8 @@ public class EntityAllay extends EntityAnimal implements EntityFlyable {
                 ),
                 Set.of(new NearestPlayerSensor(50, 0, 20)),
                 Set.of(new SpaceMoveController(), new LookController(true, true), new LiftController()),
-                new SimpleSpaceAStarRouteFinder(new FlyingPosEvaluator(), this)
+                new SimpleSpaceAStarRouteFinder(new FlyingPosEvaluator(), this),
+                this
         );
     }
 
