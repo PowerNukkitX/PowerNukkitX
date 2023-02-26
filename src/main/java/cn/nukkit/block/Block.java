@@ -1891,7 +1891,8 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         double seconds = this.calculateBreakTimeNotInAir(item, player);
 
         if (player != null) {
-            //当玩家连续跳跃时，认为玩家一直在空中
+            //玩家距离上次在空中过去5tick之后，才认为玩家是在地上挖掘。
+            //如果单纯用onGround检测，这个方法返回的时间将会不连续。
             if (player.getServer().getTick() - player.getLastInAirTick() < 5) {
                 seconds *= 5;
             }
