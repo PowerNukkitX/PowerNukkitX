@@ -144,7 +144,8 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityTam
                                 List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), this::attackTarget)
                 ),
                 Set.of(new WalkController(), new LookController(true, true), new FluctuateController()),
-                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)
+                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
+                this
         );
     }
 

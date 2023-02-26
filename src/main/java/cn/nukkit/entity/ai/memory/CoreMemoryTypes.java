@@ -5,6 +5,8 @@ import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.ai.memory.codec.BooleanMemoryCodec;
+import cn.nukkit.entity.ai.memory.codec.StringMemoryCodec;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.math.Vector3;
 
@@ -13,6 +15,8 @@ import java.util.Map;
 
 /**
  * 核心使用到的记忆类型枚举
+ * <p>
+ * Enumeration of memory types used by the core
  */
 @PowerNukkitXOnly
 @Since("1.19.50-r1")
@@ -53,4 +57,20 @@ public interface CoreMemoryTypes {
     MemoryType<Entity> ENTITY_SPOUSE = new MemoryType<>("minecraft:entity_spouse");
     MemoryType<Map<Entity, Integer>> WARDEN_ANGER_VALUE = new MemoryType<>("minecraft:warden_anger_value", new HashMap<>());
     MemoryType<Entity> NEAREST_SKELETON = new MemoryType<>("minecraft:nearest_skeleton");
+    MemoryType<Boolean> IS_ANGRY = new MemoryType<>("minecraft:is_angry", false)
+            .withCodec(new BooleanMemoryCodec("Angry")
+                    .onInit((data, entity) -> entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_ANGRY, data))
+            );
+    MemoryType<Boolean> IS_SITTING = new MemoryType<>("minecraft:is_sitting", false)
+            .withCodec(new BooleanMemoryCodec("Sitting")
+                    .onInit((data, entity) -> entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_SITTING, data))
+            );
+    MemoryType<String> OWNER_NAME = new MemoryType<String>("minecraft:owner_name")
+            .withCodec(new StringMemoryCodec("OwnerName")
+                    .onInit((data, entity) -> {
+                        entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_TAMED, true);
+                    })
+            );
+    //用于缓存玩家对象
+    MemoryType<Player> OWNER = new MemoryType<>("minecraft:owner");
 }

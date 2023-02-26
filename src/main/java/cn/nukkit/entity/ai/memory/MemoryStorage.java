@@ -2,6 +2,8 @@ package cn.nukkit.entity.ai.memory;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.entity.Entity;
+import lombok.Getter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +20,12 @@ public class MemoryStorage implements IMemoryStorage {
     public static final Object EMPTY_VALUE = new Object();
 
     protected Map<MemoryType<?>, Object> memoryMap = new ConcurrentHashMap<>();
+    @Getter
+    protected Entity entity;
+
+    public MemoryStorage(Entity entity) {
+        this.entity = entity;
+    }
 
     @Override
     public <D> void put(MemoryType<D> type, D data) {
@@ -26,7 +34,11 @@ public class MemoryStorage implements IMemoryStorage {
 
     @Override
     public <D> D get(MemoryType<D> type) {
-        if (!memoryMap.containsKey(type)) put(type, type.getDefaultData());
+        if (!memoryMap.containsKey(type)) {
+            D data = type.decode(getEntity());
+            if (data == null) data = type.getDefaultData();
+            put(type, data);
+        }
         D value;
         return (value = (D) memoryMap.get(type)) != EMPTY_VALUE ? value : null;
     }

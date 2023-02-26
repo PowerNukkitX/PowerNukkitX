@@ -7,6 +7,7 @@ import cn.nukkit.entity.data.ByteEntityData;
 import cn.nukkit.entity.data.StringEntityData;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author BeYkeRYkt (Nukkit Project)
@@ -68,7 +69,7 @@ public abstract class EntityTameable extends EntityAnimal implements EntityOwnab
     }
 
     @Override
-    public void setOwnerName(String playerName) {
+    public void setOwnerName(@NotNull String playerName) {
         setDataProperty(new StringEntityData(DATA_OWNER_NAME, playerName));
     }
 

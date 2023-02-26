@@ -7,9 +7,11 @@ import cn.nukkit.api.Since;
 import cn.nukkit.entity.ai.EntityAI;
 import cn.nukkit.entity.ai.behaviorgroup.EmptyBehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
+import cn.nukkit.entity.ai.controller.EntityControlUtils;
 import cn.nukkit.entity.ai.evaluator.LogicalUtils;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.memory.IMemoryStorage;
+import cn.nukkit.entity.ai.memory.MemoryType;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.form.window.FormWindowSimple;
 import cn.nukkit.item.Item;
@@ -19,12 +21,14 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import lombok.Getter;
 
+import java.util.Objects;
+
 /**
  * {@code EntityIntelligent}抽象了一个具有行为组{@link IBehaviorGroup}（也就是具有AI）的实体
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public abstract class EntityIntelligent extends EntityPhysical implements LogicalUtils {
+public abstract class EntityIntelligent extends EntityPhysical implements LogicalUtils, EntityControlUtils {
 
     public static final IBehaviorGroup EMPTY_BEHAVIOR_GROUP = new EmptyBehaviorGroup();
 
@@ -42,13 +46,17 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
         this.behaviorGroup = requireBehaviorGroup();
         var storage = getMemoryStorage();
         if (storage != null) {
-            getMemoryStorage().put(CoreMemoryTypes.ENTITY_SPAWN_TIME, Server.getInstance().getTick());
+            storage.put(CoreMemoryTypes.ENTITY_SPAWN_TIME, Server.getInstance().getTick());
+            MemoryType.getPersistentMemories().forEach(memory -> {
+                var mem = (MemoryType<Object>) memory;
+                var codec = mem.getCodec();
+                var data = Objects.requireNonNull(codec).getDecoder().apply(this.namedTag);
+                if (data != null) {
+                    storage.put(mem, data);
+                    codec.init(data, this);
+                }
+            });
         }
-    }
-
-    @Override
-    protected void initEntity() {
-        super.initEntity();
     }
 
     /**
@@ -88,6 +96,12 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
             if (EntityAI.checkDebugOption(EntityAI.DebugOption.BEHAVIOR)) behaviorGroup.debugTick(this);
         }
         super.asyncPrepare(currentTick);
+    }
+
+    @Override
+    public void saveNBT() {
+        super.saveNBT();
+        getBehaviorGroup().save(this);
     }
 
     @Override
@@ -139,85 +153,8 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
         return 1.0f;
     }
 
-    public boolean hasMoveDirection() {
-        return getMoveDirectionStart() != null && getMoveDirectionEnd() != null;
-    }
-
     @Override
     public boolean enableHeadYaw() {
         return true;
     }
-
-    public Vector3 getLookTarget() {
-        return getMemoryStorage().get(CoreMemoryTypes.LOOK_TARGET);
-    }
-
-    public void setLookTarget(Vector3 lookTarget) {
-        getMemoryStorage().put(CoreMemoryTypes.LOOK_TARGET, lookTarget);
-    }
-
-    public Vector3 getMoveTarget() {
-        return getMemoryStorage().get(CoreMemoryTypes.MOVE_TARGET);
-    }
-
-    public void setMoveTarget(Vector3 moveTarget) {
-        getMemoryStorage().put(CoreMemoryTypes.MOVE_TARGET, moveTarget);
-    }
-
-    public Vector3 getMoveDirectionStart() {
-        return getMemoryStorage().get(CoreMemoryTypes.MOVE_DIRECTION_START);
-    }
-
-    public void setMoveDirectionStart(Vector3 moveDirectionStart) {
-        getMemoryStorage().put(CoreMemoryTypes.MOVE_DIRECTION_START, moveDirectionStart);
-    }
-
-    public Vector3 getMoveDirectionEnd() {
-        return getMemoryStorage().get(CoreMemoryTypes.MOVE_DIRECTION_END);
-    }
-
-    public void setMoveDirectionEnd(Vector3 moveDirectionEnd) {
-        getMemoryStorage().put(CoreMemoryTypes.MOVE_DIRECTION_END, moveDirectionEnd);
-    }
-
-    public boolean isShouldUpdateMoveDirection() {
-        return getMemoryStorage().get(CoreMemoryTypes.SHOULD_UPDATE_MOVE_DIRECTION);
-    }
-
-    public void setShouldUpdateMoveDirection(boolean shouldUpdateMoveDirection) {
-        getMemoryStorage().put(CoreMemoryTypes.SHOULD_UPDATE_MOVE_DIRECTION, shouldUpdateMoveDirection);
-    }
-
-    public boolean isEnablePitch() {
-        return getMemoryStorage().get(CoreMemoryTypes.ENABLE_PITCH);
-    }
-
-    public void setEnablePitch(boolean enablePitch) {
-        getMemoryStorage().put(CoreMemoryTypes.ENABLE_PITCH, enablePitch);
-    }
-
-    //暂时不使用
-//    @PowerNukkitXOnly
-//    @Since("1.19.50-r1")
-//    public boolean isEnableYaw() {
-//        return getMemoryStorage().get(CoreMemoryTypes.ENABLE_YAW);
-//    }
-//
-//    @PowerNukkitXOnly
-//    @Since("1.19.50-r1")
-//    public void setEnableYaw(boolean enableYaw) {
-//        getMemoryStorage().put(CoreMemoryTypes.ENABLE_YAW, enableYaw);
-//    }
-//
-//    @PowerNukkitXOnly
-//    @Since("1.19.50-r1")
-//    public boolean isEnableHeadYaw() {
-//        return getMemoryStorage().get(CoreMemoryTypes.ENABLE_HEAD_YAW);
-//    }
-//
-//    @PowerNukkitXOnly
-//    @Since("1.19.50-r1")
-//    public void setEnableHeadYaw(boolean enableHeadYaw) {
-//        getMemoryStorage().put(CoreMemoryTypes.ENABLE_HEAD_YAW, enableHeadYaw);
-//    }
 }

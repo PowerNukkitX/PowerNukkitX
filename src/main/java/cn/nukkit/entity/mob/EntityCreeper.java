@@ -87,7 +87,8 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
                     }
                 }),
                 Set.of(new WalkController(), new LookController(true, true), new FluctuateController()),
-                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)
+                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
+                this
         );
     }
 

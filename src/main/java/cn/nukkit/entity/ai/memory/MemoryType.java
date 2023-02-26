@@ -2,9 +2,14 @@ package cn.nukkit.entity.ai.memory;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.ai.memory.codec.IMemoryCodec;
 import cn.nukkit.utils.Identifier;
 import lombok.Getter;
 
+import javax.annotation.Nullable;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Supplier;
 
 /**
@@ -12,11 +17,20 @@ import java.util.function.Supplier;
  */
 @PowerNukkitXOnly
 @Since("1.19.50-r1")
-@Getter
 public final class MemoryType<Data> {
 
+    /**
+     * 可持久化的记忆类型
+     */
+    @Since("1.19.62-r2")
+    private static final Set<MemoryType<?>> PERSISTENT_MEMORIES = new HashSet<>();
+
+    @Getter
     private final Identifier identifier;
     private final Supplier<Data> defaultData;
+    @Getter
+    @Nullable
+    private IMemoryCodec<Data> codec;
 
     public MemoryType(Identifier identifier) {
         this(identifier, () -> null);
@@ -47,8 +61,51 @@ public final class MemoryType<Data> {
         this.defaultData = defaultData;
     }
 
+    @Since("1.19.62-r2")
+    public static Set<MemoryType<?>> getPersistentMemories() {
+        return PERSISTENT_MEMORIES;
+    }
+
     public Data getDefaultData() {
         return defaultData.get();
+    }
+
+    @Since("1.19.62-r2")
+    public MemoryType<Data> withCodec(IMemoryCodec<Data> codec) {
+        this.codec = codec;
+        PERSISTENT_MEMORIES.add(this);
+        return this;
+    }
+
+    @Since("1.19.62-r2")
+    public void encode(Entity entity, Data data) {
+        if (codec != null) {
+            codec.encode(data, entity.namedTag);
+        }
+    }
+
+    /**
+     * 强制编码一个记忆<p/>
+     * 会将给定的data值强转到Data类型
+     *
+     * @param entity 目标实体
+     * @param data   数据
+     */
+    @Since("1.19.62-r2")
+    public void forceEncode(Entity entity, Object data) {
+        if (codec != null) {
+            codec.encode((Data) data, entity.namedTag);
+        }
+    }
+
+    @Since("1.19.62-r2")
+    @Nullable
+    public Data decode(Entity entity) {
+        if (codec != null) {
+            var tag = entity.namedTag;
+            return codec.decode(tag);
+        }
+        return null;
     }
 
     @Override

@@ -7,6 +7,8 @@ import lombok.Setter;
 
 /**
  * AbstractBehavior包含一个{@link BehaviorState}属性以及它的Getter/Setter
+ * <p>
+ * AbstractBehavior contains a {@link BehaviorState} property and its Getter/Setter
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
