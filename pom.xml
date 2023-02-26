@@ -559,7 +559,7 @@
                         <manifestEntries>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <Main-Class>cn.nukkit.Nukkit</Main-Class>
+                            <Main-Class>cn.nukkit.JarStart</Main-Class>
                         </manifestEntries>
                     </archive>
                 </configuration>
