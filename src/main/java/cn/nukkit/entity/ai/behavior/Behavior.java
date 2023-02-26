@@ -8,8 +8,9 @@ import cn.nukkit.entity.ai.executor.IBehaviorExecutor;
 import lombok.Getter;
 
 /**
- * 单个的行为对象<br>
- * 包含一个执行器和一个评估器，行为对象委托了它们的方法
+ * 单个的行为对象，包含一个执行器和一个评估器，行为对象委托了它们的方法
+ * <p>
+ * A single behavior object, containing an executor and an evaluator, with the behavior object delegating their methods
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")

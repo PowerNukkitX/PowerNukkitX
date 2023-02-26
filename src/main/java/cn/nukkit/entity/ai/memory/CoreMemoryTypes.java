@@ -15,6 +15,8 @@ import java.util.Map;
 
 /**
  * 核心使用到的记忆类型枚举
+ * <p>
+ * Enumeration of memory types used by the core
  */
 @PowerNukkitXOnly
 @Since("1.19.50-r1")

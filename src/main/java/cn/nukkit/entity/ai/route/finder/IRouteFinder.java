@@ -10,6 +10,8 @@ import java.util.List;
 
 /**
  * 此接口抽象了一个寻路器
+ * <p>
+ * This interface abstracts a pathfinder
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")

@@ -8,6 +8,8 @@ import cn.nukkit.math.Vector3;
 
 /**
  * 一些通用的实体运动控制方法
+ * <p>
+ * Some general entity motion control methods
  */
 @PowerNukkitXOnly
 @Since("1.19.62-r2")
