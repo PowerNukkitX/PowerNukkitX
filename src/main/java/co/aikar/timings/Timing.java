@@ -28,7 +28,7 @@ import java.util.Map;
 
 public class Timing implements AutoCloseable {
     private static int idPool = 1;
-    final int id = idPool++;
+    final int id;
 
     final String name;
     private final boolean verbose;
@@ -46,6 +46,7 @@ public class Timing implements AutoCloseable {
     boolean enabled;
 
     Timing(TimingIdentifier id) {
+        this.id = idPool++;
         if (id.name.startsWith("##")) {
             this.verbose = true;
             this.name = id.name.substring(3);
@@ -59,6 +60,18 @@ public class Timing implements AutoCloseable {
 
         TimingIdentifier.getGroup(id.group).timings.add(this);
         this.checkEnabled();
+    }
+
+    /**
+     * Empty Timing
+     */
+    Timing() {
+        this.name = "Empty";
+        this.verbose = false;
+        this.record = null;
+        this.parent = null;
+        this.id = Integer.MAX_VALUE;
+        this.groupTiming = null;
     }
 
     final void checkEnabled() {
