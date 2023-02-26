@@ -62,7 +62,7 @@ public interface IMemoryStorage {
      *
      * @return 实体
      */
-    @Since("1.19.62-r2")
+    @Since("1.19.63-r1")
     Entity getEntity();
 
     /**

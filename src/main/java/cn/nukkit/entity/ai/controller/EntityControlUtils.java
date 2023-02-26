@@ -12,7 +12,7 @@ import cn.nukkit.math.Vector3;
  * Some general entity motion control methods
  */
 @PowerNukkitXOnly
-@Since("1.19.62-r2")
+@Since("1.19.63-r1")
 public interface EntityControlUtils {
     default Vector3 getLookTarget() {
         return getMemoryStorage().get(CoreMemoryTypes.LOOK_TARGET);

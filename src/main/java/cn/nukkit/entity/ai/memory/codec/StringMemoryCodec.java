@@ -4,7 +4,7 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 
 @PowerNukkitXOnly
-@Since("1.19.62-r2")
+@Since("1.19.63-r1")
 public class StringMemoryCodec extends MemoryCodec<String> {
     public StringMemoryCodec(String key) {
         super(
