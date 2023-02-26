@@ -204,6 +204,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public Vector3 speed = null;
     public int craftingType = CRAFTING_SMALL;
     public long creationTime = 0;
+    @Since("1.19.60-r1")
+    @PowerNukkitXOnly
+    long startBreakingBlockTime = 0;
     public Block breakingBlock = null;
     @Since("1.19.60-r1")
     @PowerNukkitXOnly
@@ -510,7 +513,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 pk.data = 65535 / breakTick;
                 this.getLevel().addChunkPacket(this.breakingBlock.getFloorX() >> 4, this.breakingBlock.getFloorZ() >> 4, pk);
                 //todo 目前对于自定义方块，跳跃挖掘时客户端的显示和服务端权威方块破坏时间仍然有差异，需要继续优化下方时间计算算法
-                if (System.currentTimeMillis() - lastBreak > miningTimeRequired * 1000 + 10 - ((this.breakingBlock instanceof CustomBlock && miningTimeRequired >= 0.1) ? 60 : 0)) {
+                if (System.currentTimeMillis() - startBreakingBlockTime > miningTimeRequired * 1000 + 10 - ((this.breakingBlock instanceof CustomBlock && miningTimeRequired >= 0.1) ? 60 : 0)) {
                     this.onBlockBreakAbort(pos, face);
                     this.onBlockBreakComplete(pos.asBlockVector3(), face);
                 } else
@@ -580,6 +583,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         if (this.isSurvival()) {
+            this.startBreakingBlockTime = currentBreak;
             double miningTimeRequired;
             if (target instanceof CustomBlock customBlock) {
                 miningTimeRequired = customBlock.getBreakTime(this.inventory.getItemInHand(), this);
