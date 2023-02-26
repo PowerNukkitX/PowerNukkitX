@@ -204,9 +204,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public Vector3 speed = null;
     public int craftingType = CRAFTING_SMALL;
     public long creationTime = 0;
-    @Since("1.19.60-r1")
+    @Since("1.19.63-r1")
     @PowerNukkitXOnly
-    long startBreakingBlockTime = 0;
+    long breakingBlockTime = 0;
+    protected double blockBreakProgress = 0;
     public Block breakingBlock = null;
     @Since("1.19.60-r1")
     @PowerNukkitXOnly
@@ -496,6 +497,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @PowerNukkitXDifference(since = "1.19.60-r1", info = "Auto-break custom blocks if client doesn't send the break data-pack.")
     private void onBlockBreakContinue(Vector3 pos, BlockFace face) {
         if (this.isBreakingBlock()) {
+            var time = System.currentTimeMillis();
             Block block = this.level.getBlock(pos, false);
 
             double miningTimeRequired;
@@ -512,12 +514,18 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 pk.z = (float) this.breakingBlock.z;
                 pk.data = 65535 / breakTick;
                 this.getLevel().addChunkPacket(this.breakingBlock.getFloorX() >> 4, this.breakingBlock.getFloorZ() >> 4, pk);
-                //todo 目前对于自定义方块，跳跃挖掘时客户端的显示和服务端权威方块破坏时间仍然有差异，需要继续优化下方时间计算算法
-                if (System.currentTimeMillis() - startBreakingBlockTime > miningTimeRequired * 1000 + 10 - ((this.breakingBlock instanceof CustomBlock && miningTimeRequired >= 0.1) ? 60 : 0)) {
-                    this.onBlockBreakAbort(pos, face);
-                    this.onBlockBreakComplete(pos.asBlockVector3(), face);
-                } else
-                    this.level.addParticle(new PunchBlockParticle(pos, block, face));
+
+                //miningTimeRequired * 1000-101这个算法最匹配原版计算速度，我们并不想任何方块破坏处理都由服务端执行，只处理自定义方块以绕过原版固定挖掘时间的限制
+                if (this.breakingBlock instanceof CustomBlock) {
+                    var timeDiff = time - breakingBlockTime;
+                    blockBreakProgress += timeDiff / (miningTimeRequired * 1000 - 101);
+                    if (blockBreakProgress > 0.99) {
+                        this.onBlockBreakAbort(pos, face);
+                        this.onBlockBreakComplete(pos.asBlockVector3(), face);
+                    } else
+                        this.level.addParticle(new PunchBlockParticle(pos, block, face));
+                    breakingBlockTime = time;
+                }
             }
         }
     }
@@ -583,7 +591,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         if (this.isSurvival()) {
-            this.startBreakingBlockTime = currentBreak;
+            this.breakingBlockTime = currentBreak;
             double miningTimeRequired;
             if (target instanceof CustomBlock customBlock) {
                 miningTimeRequired = customBlock.getBreakTime(this.inventory.getItemInHand(), this);
@@ -635,6 +643,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             pk.data = 0;
             this.getLevel().addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, pk);
         }
+        this.blockBreakProgress = 0;
         this.breakingBlock = null;
         this.breakingBlockFace = null;
     }
