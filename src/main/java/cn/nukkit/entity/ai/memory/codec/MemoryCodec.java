@@ -11,7 +11,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 @PowerNukkitXOnly
-@Since("1.19.62-r2")
+@Since("1.19.63-r1")
 @Getter
 public class MemoryCodec<Data> implements IMemoryCodec<Data> {
     private final Function<CompoundTag, Data> decoder;

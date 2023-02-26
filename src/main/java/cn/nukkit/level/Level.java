@@ -3187,7 +3187,7 @@ public class Level implements ChunkManager, Metadatable {
                 return null;
 
             BlockPlaceEvent event = new BlockPlaceEvent(player, hand, block, target, item);
-            if (player.getGamemode() == 2) {
+            if (player.getGamemode() == Player.ADVENTURE) {
                 Tag tag = item.getNamedTagEntry("CanPlaceOn");
                 boolean canPlace = false;
                 if (tag instanceof ListTag) {
