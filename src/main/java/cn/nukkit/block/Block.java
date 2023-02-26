@@ -1888,6 +1888,28 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public double calculateBreakTime(@NotNull Item item, @Nullable Player player) {
+        double seconds = this.calculateBreakTimeNotInAir(item, player);
+
+        if (player != null) {
+            //玩家距离上次在空中过去5tick之后，才认为玩家是在地上挖掘。
+            //如果单纯用onGround检测，这个方法返回的时间将会不连续。
+            if (player.getServer().getTick() - player.getLastInAirTick() < 5) {
+                seconds *= 5;
+            }
+        }
+        return seconds;
+    }
+
+    /**
+     * 忽略玩家在空中时，计算方块的挖掘时间
+     *
+     * @param item   挖掘该方块的物品
+     * @param player 挖掘该方块的玩家
+     * @return 方块的挖掘时间
+     */
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public double calculateBreakTimeNotInAir(@NotNull Item item, @Nullable Player player) {
         double seconds = 0;
         double blockHardness = getHardness();
         boolean canHarvest = canHarvest(item);
@@ -1942,12 +1964,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             if (player.isInsideOfWater() && !hasAquaAffinity) {
                 seconds *= hasConduitPower && blockHardness >= 0.5 ? 2.5 : 5;
             }
-
-            if (!player.isOnGround()) {
-                seconds *= 5;
-            }
         }
-
         return seconds;
     }
 
@@ -2005,7 +2022,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
                 speedMultiplier /= hasConduitPower && blockHardness >= 0.5 ? 2.5 : 5;
             }
 
-            if (!player.isOnGround()) {
+            if (player.getServer().getTick() - player.getLastInAirTick() < 5) {
                 speedMultiplier /= 5;
             }
         }
@@ -2025,93 +2042,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         }
 
         return Math.ceil(1 / damage);
-    }
-
-    @DeprecationDetails(since = "1.4.0.0-PN", reason = "Not completely accurate", replaceWith = "calculateBreakeTime()")
-    @Deprecated
-    @PowerNukkitDifference(info = "Special condition for the leaves", since = "1.4.0.0-PN")
-    public double getBreakTime(Item item, Player player) {
-        Objects.requireNonNull(item, "getBreakTime: Item can not be null");
-        Objects.requireNonNull(player, "getBreakTime: Player can not be null");
-        double blockHardness = getHardness();
-
-        if (blockHardness == 0) {
-            return 0;
-        }
-
-        int blockId = getId();
-        boolean correctTool = correctTool0(getToolType(), item, blockId);
-        boolean canHarvestWithHand = canHarvestWithHand();
-        int itemToolType = toolType0(item, blockId);
-        int itemTier = item.getTier();
-        int efficiencyLoreLevel = Optional.ofNullable(item.getEnchantment(Enchantment.ID_EFFICIENCY))
-                .map(Enchantment::getLevel).orElse(0);
-        int hasteEffectLevel = Optional.ofNullable(player.getEffect(Effect.HASTE))
-                .map(Effect::getAmplifier).orElse(0);
-        //TODO Fix the break time with CONDUIT_POWER, it's not right
-        int conduitPowerLevel = Optional.ofNullable(player.getEffect(Effect.CONDUIT_POWER))
-                .map(e -> /*(e.getAmplifier() +1) * 4*/ e.getAmplifier())
-                .orElse(0);
-        hasteEffectLevel += conduitPowerLevel;
-        boolean insideOfWaterWithoutAquaAffinity = player.isInsideOfWater() && conduitPowerLevel <= 0 &&
-                Optional.ofNullable(player.getInventory().getHelmet().getEnchantment(Enchantment.ID_WATER_WORKER))
-                        .map(Enchantment::getLevel).map(l -> l >= 1).orElse(false);
-        boolean outOfWaterButNotOnGround = (!player.isInsideOfWater()) && (!player.isOnGround());
-        return breakTime0(blockHardness, correctTool, canHarvestWithHand, blockId, itemToolType, itemTier,
-                efficiencyLoreLevel, hasteEffectLevel, insideOfWaterWithoutAquaAffinity, outOfWaterButNotOnGround);
-    }
-
-    /**
-     * @param item item used
-     * @return break time
-     * @deprecated This function is lack of Player class and is not accurate enough, use {@link #getBreakTime(Item, Player)}
-     */
-    @PowerNukkitDifference(info = "Special condition for the hoe and netherie support", since = "1.4.0.0-PN")
-    @Deprecated
-    public double getBreakTime(Item item) {
-        double base = this.getHardness() * 1.5;
-        if (this.canBeBrokenWith(item)) {
-            if (
-                    (this.getToolType() == ItemTool.TYPE_SHEARS && item.isShears()) ||
-                            (this.getToolType() == ItemTool.TYPE_SHEARS && item.isHoe())) {
-                base /= 15;
-            } else if (
-                    (this.getToolType() == ItemTool.TYPE_PICKAXE && item.isPickaxe()) ||
-                            (this.getToolType() == ItemTool.TYPE_AXE && item.isAxe()) ||
-                            (this.getToolType() == ItemTool.TYPE_SHOVEL && item.isShovel()) ||
-                            (this.getToolType() == ItemTool.TYPE_HOE && item.isHoe())
-            ) {
-                int tier = item.getTier();
-                switch (tier) {
-                    case ItemTool.TIER_WOODEN:
-                        base /= 2;
-                        break;
-                    case ItemTool.TIER_STONE:
-                        base /= 4;
-                        break;
-                    case ItemTool.TIER_IRON:
-                        base /= 6;
-                        break;
-                    case ItemTool.TIER_DIAMOND:
-                        base /= 8;
-                        break;
-                    case ItemTool.TIER_NETHERITE:
-                        base /= 9;
-                        break;
-                    case ItemTool.TIER_GOLD:
-                        base /= 12;
-                        break;
-                }
-            }
-        } else {
-            base *= 3.33;
-        }
-
-        if (item.isSword()) {
-            base *= 0.5;
-        }
-
-        return base;
     }
 
     public boolean canBeBrokenWith(Item item) {
