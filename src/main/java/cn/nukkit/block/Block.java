@@ -1892,7 +1892,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
         if (player != null) {
             //当玩家连续跳跃时，认为玩家一直在空中
-            if (player.getServer().getTick() - player.getLastInAirTick() < 6) {
+            if (player.getServer().getTick() - player.getLastInAirTick() < 5) {
                 seconds *= 5;
             }
         }
@@ -2021,7 +2021,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
                 speedMultiplier /= hasConduitPower && blockHardness >= 0.5 ? 2.5 : 5;
             }
 
-            if (player.getServer().getTick() - player.getLastInAirTick() < 6) {
+            if (player.getServer().getTick() - player.getLastInAirTick() < 5) {
                 speedMultiplier /= 5;
             }
         }
