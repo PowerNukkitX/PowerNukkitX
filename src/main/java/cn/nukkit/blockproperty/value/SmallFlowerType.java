@@ -37,70 +37,63 @@ import lombok.RequiredArgsConstructor;
 public enum SmallFlowerType {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    POPPY("Poppy", "poppy", DyeColor.RED, BlockID.RED_FLOWER),
+    POPPY("Poppy", DyeColor.RED, BlockID.RED_FLOWER),
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    ORCHID("Blue Orchid", "orchid", DyeColor.LIGHT_BLUE, BlockID.RED_FLOWER),
+    ORCHID("Blue Orchid", DyeColor.LIGHT_BLUE, BlockID.RED_FLOWER),
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    ALLIUM("Allium", "allium", DyeColor.MAGENTA, BlockID.RED_FLOWER),
+    ALLIUM("Allium", DyeColor.MAGENTA, BlockID.RED_FLOWER),
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    HOUSTONIA("Azure Bluet", "houstonia", DyeColor.LIGHT_GRAY, BlockID.RED_FLOWER),
+    HOUSTONIA("Azure Bluet", DyeColor.LIGHT_GRAY, BlockID.RED_FLOWER),
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    TULIP_RED("Red Tulip", "tulip_red", DyeColor.RED, BlockID.RED_FLOWER),
+    TULIP_RED("Red Tulip", DyeColor.RED, BlockID.RED_FLOWER),
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    TULIP_ORANGE("Orange Tulip", "tulip_orange", DyeColor.ORANGE, BlockID.RED_FLOWER),
+    TULIP_ORANGE("Orange Tulip", DyeColor.ORANGE, BlockID.RED_FLOWER),
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    TULIP_WHITE("White Tulip", "tulip_white", DyeColor.LIGHT_GRAY, BlockID.RED_FLOWER),
+    TULIP_WHITE("White Tulip", DyeColor.LIGHT_GRAY, BlockID.RED_FLOWER),
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    TULIP_PINK("Pink Tulip", "tulip_pink", DyeColor.PINK, BlockID.RED_FLOWER),
+    TULIP_PINK("Pink Tulip", DyeColor.PINK, BlockID.RED_FLOWER),
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    OXEYE("Oxeye Daisy", "oxeye", DyeColor.LIGHT_GRAY, BlockID.RED_FLOWER),
+    OXEYE("Oxeye Daisy", DyeColor.LIGHT_GRAY, BlockID.RED_FLOWER),
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    CORNFLOWER("Cornflower", "cornflower", DyeColor.BLUE, BlockID.RED_FLOWER),
+    CORNFLOWER("Cornflower", DyeColor.BLUE, BlockID.RED_FLOWER),
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    LILY_OF_THE_VALLEY("Lily of the Valley", "lily_of_the_valley", DyeColor.WHITE, BlockID.RED_FLOWER),
-
-    /**
-     * 此种类的花没有networkTypeName
-     */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    DANDELION("Dandelion", "", DyeColor.YELLOW, BlockID.DANDELION),
+    LILY_OF_THE_VALLEY("Lily of the Valley", DyeColor.WHITE, BlockID.RED_FLOWER),
 
     /**
      * 此种类的花没有networkTypeName
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    WITHER_ROSE("Wither Rose", "", DyeColor.BLACK, BlockID.WITHER_ROSE);
+    DANDELION("Dandelion", DyeColor.YELLOW, BlockID.DANDELION),
+
+    /**
+     * 此种类的花没有networkTypeName
+     */
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    WITHER_ROSE("Wither Rose", DyeColor.BLACK, BlockID.WITHER_ROSE);
 
     private final String englishName;
-    /**
-     * 网络名称，用于花盆方块实体<p/>
-     * PlantBlock Tag中states.flower_type的值
-     */
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
-    private final String networkFlowerType;
     private final DyeColor dyeColor;
     private final int blockId;
 
@@ -114,12 +107,6 @@ public enum SmallFlowerType {
     @Since("1.4.0.0-PN")
     public String getEnglishName() {
         return englishName;
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
-    public String getNetworkFlowerType() {
-        return networkFlowerType;
     }
 
     @PowerNukkitOnly
