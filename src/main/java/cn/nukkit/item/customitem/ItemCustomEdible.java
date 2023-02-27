@@ -1,5 +1,6 @@
 package cn.nukkit.item.customitem;
 
+import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -7,6 +8,7 @@ import cn.nukkit.item.ItemEdible;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.StringItem;
 import cn.nukkit.item.food.Food;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,6 +36,15 @@ public abstract class ItemCustomEdible extends ItemEdible implements CustomItem 
         this.textureName = textureName;
     }
 
+    @Override
+    public boolean onClickAir(Player player, Vector3 directionVector) {
+        if (player.getFoodData().getLevel() < player.getFoodData().getMaxLevel() || player.isCreative() || canAlwaysEat()) {
+            return true;
+        }
+        player.getFoodData().sendFoodLevel();
+        return false;
+    }
+
     public String getTextureName() {
         return textureName;
     }
@@ -58,6 +69,6 @@ public abstract class ItemCustomEdible extends ItemEdible implements CustomItem 
     }
 
     public boolean canAlwaysEat() {
-        return this.isDrink();
+        return false;
     }
 }
