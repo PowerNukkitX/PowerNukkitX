@@ -517,7 +517,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 pk.z = (float) this.breakingBlock.z;
                 pk.data = 65535 / breakTick;
                 this.getLevel().addChunkPacket(this.breakingBlock.getFloorX() >> 4, this.breakingBlock.getFloorZ() >> 4, pk);
-
+                this.level.addParticle(new PunchBlockParticle(pos, block, face));
                 //miningTimeRequired * 1000-101这个算法最匹配原版计算速度，我们并不想任何方块破坏处理都由服务端执行，只处理自定义方块以绕过原版固定挖掘时间的限制
                 if (this.breakingBlock instanceof CustomBlock) {
                     var timeDiff = time - breakingBlockTime;
@@ -525,8 +525,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     if (blockBreakProgress > 0.99) {
                         this.onBlockBreakAbort(pos, face);
                         this.onBlockBreakComplete(pos.asBlockVector3(), face);
-                    } else
-                        this.level.addParticle(new PunchBlockParticle(pos, block, face));
+                    }
                     breakingBlockTime = time;
                 }
             }
