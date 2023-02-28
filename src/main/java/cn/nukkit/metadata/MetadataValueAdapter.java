@@ -1,5 +1,7 @@
 package cn.nukkit.metadata;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.utils.NumberConversions;
 
@@ -10,6 +12,8 @@ import cn.nukkit.utils.NumberConversions;
  * writing an implementation of MetadataValue is as simple as implementing
  * value() and invalidate().
  */
+@PowerNukkitXOnly
+@Since("1.19.63-r2")
 public abstract class MetadataValueAdapter extends MetadataValue {
 
     protected MetadataValueAdapter(Plugin owningPlugin) {

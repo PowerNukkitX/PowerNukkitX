@@ -1,8 +1,13 @@
 package cn.nukkit.utils;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
+
 /**
  * Utils for casting number types to other number types
  */
+@PowerNukkitXOnly
+@Since("1.19.63-r2")
 public final class NumberConversions {
     private NumberConversions() {
     }
