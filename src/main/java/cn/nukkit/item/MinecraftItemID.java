@@ -1139,7 +1139,28 @@ public enum MinecraftItemID {
     @PowerNukkitXOnly @Since("1.19.60-r1") MUD_BRICK_WALL,
     @PowerNukkitXOnly @Since("1.19.60-r1") MANGROVE_STANDING_SIGN,
     @PowerNukkitXOnly @Since("1.19.60-r1") MANGROVE_WALL_SIGN,
-    ;
+    @PowerNukkitXOnly @Since("1.19.63-r2") MANGROVE_LEAVES,
+    @PowerNukkitXOnly @Since("1.19.63-r2") SEA_LANTERN,
+    @PowerNukkitXOnly @Since("1.19.63-r2") RECOVERY_COMPASS,
+    @PowerNukkitXOnly @Since("1.19.63-r2") GLOBE_BANNER_PATTERN,
+    @PowerNukkitXOnly @Since("1.19.63-r2") GOAT_HORN,
+    @PowerNukkitXOnly @Since("1.19.63-r2") CANDLE,
+    @PowerNukkitXOnly @Since("1.19.63-r2") WHITE_CANDLE,
+    @PowerNukkitXOnly @Since("1.19.63-r2") ORANGE_CANDLE,
+    @PowerNukkitXOnly @Since("1.19.63-r2") MAGENTA_CANDLE,
+    @PowerNukkitXOnly @Since("1.19.63-r2") LIGHT_BLUE_CANDLE,
+    @PowerNukkitXOnly @Since("1.19.63-r2") YELLOW_CANDLE,
+    @PowerNukkitXOnly @Since("1.19.63-r2") LIME_CANDLE,
+    @PowerNukkitXOnly @Since("1.19.63-r2") PINK_CANDLE,
+    @PowerNukkitXOnly @Since("1.19.63-r2") GRAY_CANDLE,
+    @PowerNukkitXOnly @Since("1.19.63-r2") LIGHT_GRAY_CANDLE,
+    @PowerNukkitXOnly @Since("1.19.63-r2") CYAN_CANDLE,
+    @PowerNukkitXOnly @Since("1.19.63-r2") PURPLE_CANDLE,
+    @PowerNukkitXOnly @Since("1.19.63-r2") BLUE_CANDLE,
+    @PowerNukkitXOnly @Since("1.19.63-r2") BROWN_CANDLE,
+    @PowerNukkitXOnly @Since("1.19.63-r2") GREEN_CANDLE,
+    @PowerNukkitXOnly @Since("1.19.63-r2") RED_CANDLE,
+    @PowerNukkitXOnly @Since("1.19.63-r2") BLACK_CANDLE;
 
     private static final Map<String, MinecraftItemID> namespacedIdMap = Arrays.stream(values())
             .flatMap(id ->
