@@ -2,8 +2,6 @@ package cn.nukkit.entity.ai.executor;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityCanAttack;
 import cn.nukkit.entity.EntityIntelligent;
@@ -14,53 +12,14 @@ import cn.nukkit.inventory.EntityInventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.MinecraftItemID;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.potion.Effect;
 
 import java.util.EnumMap;
 import java.util.Map;
 
-/**
- * 通用近战攻击执行器.
- * <p>
- * Universal melee attack actuator.
- */
-@PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
-public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
+public class HuskAttackExecutor extends MeleeAttackExecutor {
 
-    protected MemoryType<? extends Entity> memory;
-    protected float speed;
-    protected int maxSenseRangeSquared;
-    protected boolean clearDataWhenLose;
-    protected int coolDown;
-
-    protected int attackTick;
-    /**
-     * 使其拥有药水效果攻击目标
-     * <p>
-     * Make it have a potion effect attack target
-     */
-    @Since("1.19.62-r2")
-    protected Effect effect;
-
-    protected Vector3 oldTarget;
-
-    /**
-     * 用来指定特定的攻击目标.
-     * <p>
-     * Used to specify a specific attack target.
-     */
-    @Since("1.19.30-r1")
-    protected Entity target;
-    /**
-     * 用来指定特定的视线目标
-     * <p>
-     * Used to specify a specific look target.
-     */
-    @Since("1.19.30-r1")
-    protected Vector3 lookTarget;
 
     /**
      * 近战攻击执行器
@@ -72,18 +31,12 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
      * @param coolDown          攻击冷却时间(单位tick)
      * @param effect            药水效果
      */
-    public MeleeAttackExecutor(MemoryType<? extends Entity> memory, float speed, int maxSenseRange, boolean clearDataWhenLose, int coolDown, Effect effect) {
-        this.memory = memory;
-        this.speed = speed;
-        this.maxSenseRangeSquared = maxSenseRange * maxSenseRange;
-        this.clearDataWhenLose = clearDataWhenLose;
-        this.coolDown = coolDown;
-        this.effect = effect;
+    public HuskAttackExecutor(MemoryType<? extends Entity> memory, float speed, int maxSenseRange, boolean clearDataWhenLose, int coolDown, Effect effect) {
+        super(memory, speed, maxSenseRange, clearDataWhenLose, coolDown, effect);
     }
 
     @Override
     public boolean execute(EntityIntelligent entity) {
-        attackTick++;
         if (!entity.isEnablePitch()) entity.setEnablePitch(true);
 
         if (this.target == null) {
@@ -91,14 +44,18 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
             if (entity.getBehaviorGroup().getMemoryStorage().isEmpty(memory)) return false;
             target = entity.getBehaviorGroup().getMemoryStorage().get(memory);
         }
-
         //如果已经死了就退出
         if (!target.isAlive()) return false;
 
-        //如果是玩家检测模式 检查距离 检查是否在同一维度
-        if ((target instanceof Player player && (!player.isSurvival() || !player.isOnline())) || entity.distanceSquared(target) > maxSenseRangeSquared
-                || !(entity.level.getId() == target.level.getId())) return false;
-
+        //给予玩家药水效果
+        if (entity.distanceSquared(target) <= 1) {
+            if (entity.attack(EntityDamageEvent.DamageCause.ENTITY_ATTACK.ordinal()) || attackTick > coolDown) {
+                if (target instanceof Player player && (!player.isSurvival() || !player.isOnline() || !player.isSpectator())) {
+                    target.addEffect(effect.setDuration(140));
+                }
+                return false;
+            }
+        }
         if (entity.getMovementSpeed() != speed) entity.setMovementSpeed(speed);
 
         if (this.lookTarget == null) {
@@ -144,14 +101,11 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
             EntityDamageByEntityEvent ev = new EntityDamageByEntityEvent(entity, target, EntityDamageEvent.DamageCause.ENTITY_ATTACK, damage, knockBack, item.applyEnchantments() ? enchantments : null);
 
             ev.setBreakShield(item.canBreakShield());
-
             target.attack(ev);
             playAttackAnimation(entity);
             attackTick = 0;
             return target.getHealth() != 0;
         }
-
-        //清空以待下次使用
         this.lookTarget = null;
         this.target = null;
         return true;
@@ -191,4 +145,5 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
         pk.event = EntityEventPacket.ARM_SWING;
         Server.broadcastPacket(entity.getViewers().values(), pk);
     }
+
 }

@@ -136,7 +136,7 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityTa
                         //坐下锁定
                         new Behavior(entity -> false, entity -> this.isSitting(), 7),
                         //攻击仇恨目标 todo 召集同伴
-                        new Behavior(new WolfAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.7f, 33, true, 15),
+                        new Behavior(new WolfAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.7f, 33, true, 15, null),
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET)
                                 , 6, 1),
                         new Behavior(new EntityBreedingExecutor<>(EntityWolf.class, 16, 100, 0.35f), entity -> entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE), 5, 1),
