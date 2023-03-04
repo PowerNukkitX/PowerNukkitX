@@ -546,6 +546,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.getServer().getPluginManager().callEvent(playerInteractEvent);
         if (playerInteractEvent.isCancelled()) {
             this.inventory.sendHeldItem(this);
+            this.getLevel().sendBlocks(new Player[]{this}, new Block[]{target}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 0);
+            if (target.getLevelBlockAtLayer(1) instanceof BlockLiquid) {
+                this.getLevel().sendBlocks(new Player[]{this}, new Block[]{target.getLevelBlockAtLayer(1)}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 1);
+            }
             return;
         }
         //todo 需要检查这里的更改是否有必要
