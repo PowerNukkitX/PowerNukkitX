@@ -3130,7 +3130,6 @@ public class Level implements ChunkManager, Metadatable {
         }
 
         //cause bug (eg: frog_spawn) (and I don't know what this is for)
-        //@todo 2022/6/11 daoge_cmd 特判处理青蛙卵
         if (!(hand instanceof BlockFrogSpawn) && target.canBeReplaced()) {
             block = target;
             hand.position(block);
@@ -3161,8 +3160,8 @@ public class Level implements ChunkManager, Metadatable {
                 //if (diff.lengthSquared() > 0.00001) {
                 AxisAlignedBB bb = player.getBoundingBox().getOffsetBoundingBox(diff.x, diff.y, diff.z);
 
-                //这是一个对于x z更宽松的碰撞检测,用于解决临界条件下方块无法放置的问题
-                if (bb.getMaxY() > hand.getMinY() && bb.getMinY() < hand.getMaxY()) {
+                //这是一个对于x y z更宽松的碰撞检测,用于解决临界条件下方块无法放置的问题
+                if (bb.getMaxY() - hand.getMinY() > 0.005 && bb.getMinY() - hand.getMaxY() < -0.005) {
                     if (bb.getMaxX() - hand.getMinX() > 0.005 && bb.getMinX() - hand.getMaxX() < -0.005) {
                         if (bb.getMaxZ() - hand.getMinZ() > 0.005 && bb.getMinZ() - hand.getMaxZ() < -0.005) {
                             ++realCount;
