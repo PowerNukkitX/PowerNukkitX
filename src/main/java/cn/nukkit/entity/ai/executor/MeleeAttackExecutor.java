@@ -16,6 +16,7 @@ import cn.nukkit.item.MinecraftItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.EntityEventPacket;
+import cn.nukkit.potion.Effect;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -52,6 +53,13 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
      */
     @Since("1.19.30-r1")
     protected Vector3 lookTarget;
+    /**
+     * 给予目标药水效果
+     * <p>
+     * Give target potion effect
+     */
+    @Since("1.19.63-r2")
+    protected Effect effect;
 
     /**
      * 近战攻击执行器
@@ -61,13 +69,15 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
      * @param maxSenseRange     最大获取攻击目标范围
      * @param clearDataWhenLose 失去目标时清空记忆
      * @param coolDown          攻击冷却时间(单位tick)
+     * @param effect            给予药水效果以及时间
      */
-    public MeleeAttackExecutor(MemoryType<? extends Entity> memory, float speed, int maxSenseRange, boolean clearDataWhenLose, int coolDown) {
+    public MeleeAttackExecutor(MemoryType<? extends Entity> memory, float speed, int maxSenseRange, boolean clearDataWhenLose, int coolDown, Effect effect) {
         this.memory = memory;
         this.speed = speed;
         this.maxSenseRangeSquared = maxSenseRange * maxSenseRange;
         this.clearDataWhenLose = clearDataWhenLose;
         this.coolDown = coolDown;
+        this.effect = effect;
     }
 
     @Override
@@ -136,6 +146,10 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
             ev.setBreakShield(item.canBreakShield());
 
             target.attack(ev);
+            //如果这个生物没有药水效果则退出
+            if (!(this.effect == null)) {
+                effect.add(target);
+            }
             playAttackAnimation(entity);
             attackTick = 0;
             return target.getHealth() != 0;

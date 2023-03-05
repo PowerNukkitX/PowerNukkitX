@@ -11,7 +11,7 @@ import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
-import cn.nukkit.entity.ai.executor.HuskAttackExecutor;
+import cn.nukkit.entity.ai.executor.MeleeAttackExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
@@ -21,6 +21,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.Utils;
 
 import java.util.Random;
@@ -48,11 +49,11 @@ public class EntityHusk extends EntityZombie {
                 this.tickSpread,
                 Set.of(),
                 Set.of(
-                        new Behavior(new HuskAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 40, true, 10), all(
+                        new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 40, true, 10, Effect.getEffect(Effect.HUNGER).setDuration(140)), all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET),
                                 entity -> !entity.getMemoryStorage().notEmpty(CoreMemoryTypes.ATTACK_TARGET) || !(entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET) instanceof Player player) || player.isSurvival()
                         ), 3, 1),
-                        new Behavior(new HuskAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 40, false, 10), all(
+                        new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 40, false, 10, Effect.getEffect(Effect.HUNGER).setDuration(140)), all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
                                 entity -> {
                                     if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_PLAYER))
