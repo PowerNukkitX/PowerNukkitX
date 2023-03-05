@@ -3,6 +3,7 @@ package cn.nukkit.entity.mob;
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
@@ -15,8 +16,10 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
+import cn.nukkit.entity.data.IntEntityData;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
 import java.util.Set;
 
@@ -68,6 +71,11 @@ public class EntityHusk extends EntityZombie {
     protected void initEntity() {
         this.setMaxHealth(20);
         super.initEntity();
+        this.setDataProperty(new IntEntityData(Entity.DATA_AMBIENT_SOUND_INTERVAL, Entity.DATA_AMBIENT_SOUND_INTERVAL_RANGE));
+        this.setDataProperty(new IntEntityData(Entity.DATA_AMBIENT_SOUND_EVENT_NAME, LevelSoundEventPacket.SOUND_AMBIENT));
+        if (this.isBaby()) {
+            this.setDataProperty(new IntEntityData(Entity.DATA_AMBIENT_SOUND_EVENT_NAME, LevelSoundEventPacket.SOUND_AMBIENT_BABY));
+        }
     }
 
     @Override
