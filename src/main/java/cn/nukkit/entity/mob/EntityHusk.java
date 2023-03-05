@@ -73,21 +73,28 @@ public class EntityHusk extends EntityZombie {
     @Override
     protected void initEntity() {
         this.setMaxHealth(20);
-        super.initEntity();
         this.setDataProperty(new IntEntityData(Entity.DATA_AMBIENT_SOUND_INTERVAL, Entity.DATA_AMBIENT_SOUND_INTERVAL_RANGE));
         this.setDataProperty(new IntEntityData(Entity.DATA_AMBIENT_SOUND_EVENT_NAME, LevelSoundEventPacket.SOUND_AMBIENT));
         if (this.isBaby()) {
             this.setDataProperty(new IntEntityData(Entity.DATA_AMBIENT_SOUND_EVENT_NAME, LevelSoundEventPacket.SOUND_AMBIENT_BABY));
         }
+        this.diffHandDamage = new float[]{2.5f, 3f, 4.5f};
+        super.initEntity();
     }
 
     @Override
     public float getWidth() {
+        if (this.isBaby()) {
+            return 0.3f;
+        }
         return 0.6f;
     }
 
     @Override
     public float getHeight() {
+        if (this.isBaby()) {
+            return 0.95f;
+        }
         return 1.9f;
     }
 
