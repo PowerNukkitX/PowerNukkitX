@@ -117,7 +117,7 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityTam
                             return player.isSleeping();
                         }, 7),
                         //攻击仇恨目标 优先级6
-                        new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.35f, 15, true, 10, null), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET), 6),
+                        new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.35f, 15, true, 10), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET), 6),
                         //猫咪繁殖 优先级5
                         new Behavior(new EntityBreedingExecutor<>(EntityCat.class, 8, 100, 0.35f), entity -> entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE), 5),
                         //猫咪向主人移动 优先级4

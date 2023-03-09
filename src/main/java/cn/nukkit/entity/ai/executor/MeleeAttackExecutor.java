@@ -61,6 +61,10 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
     @Since("1.19.63-r2")
     protected Effect effect;
 
+    public MeleeAttackExecutor(MemoryType<? extends Entity> memory, float speed, int maxSenseRange, boolean clearDataWhenLose, int coolDown) {
+        this(memory, speed, maxSenseRange, clearDataWhenLose, coolDown, null);
+    }
+
     /**
      * 近战攻击执行器
      *
@@ -69,8 +73,8 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
      * @param maxSenseRange     最大获取攻击目标范围
      * @param clearDataWhenLose 失去目标时清空记忆
      * @param coolDown          攻击冷却时间(单位tick)
-     * @param effect            给予药水效果以及时间
      */
+
     public MeleeAttackExecutor(MemoryType<? extends Entity> memory, float speed, int maxSenseRange, boolean clearDataWhenLose, int coolDown, Effect effect) {
         this.memory = memory;
         this.speed = speed;
@@ -79,6 +83,7 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
         this.coolDown = coolDown;
         this.effect = effect;
     }
+
 
     @Override
     public boolean execute(EntityIntelligent entity) {
@@ -146,9 +151,9 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
             ev.setBreakShield(item.canBreakShield());
 
             target.attack(ev);
-            //如果这个生物没有药水效果则退出
-            if (!(this.effect == null)) {
-                effect.add(target);
+            //如果生物有药水效果就给药水效果
+            if (this.effect != null) {
+                target.addEffect(effect);
             }
             playAttackAnimation(entity);
             attackTick = 0;

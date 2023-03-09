@@ -7,7 +7,6 @@ import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.memory.MemoryType;
 import cn.nukkit.entity.passive.EntityWolf;
-import cn.nukkit.potion.Effect;
 
 /**
  * 狼执行攻击，会带有狼的动画，以及攻击过程中狼还会看向携带食物的玩家.
@@ -18,7 +17,6 @@ import cn.nukkit.potion.Effect;
 @Since("1.19.30-r1")
 public class WolfAttackExecutor extends MeleeAttackExecutor {
 
-
     /**
      * 近战攻击执行器
      *
@@ -27,10 +25,10 @@ public class WolfAttackExecutor extends MeleeAttackExecutor {
      * @param maxSenseRange     最大获取攻击目标范围
      * @param clearDataWhenLose 失去目标时清空记忆
      * @param coolDown          攻击冷却时间(单位tick)
-     * @param effect            给予药水效果以及时间
      */
-    public WolfAttackExecutor(MemoryType<? extends Entity> memory, float speed, int maxSenseRange, boolean clearDataWhenLose, int coolDown, Effect effect) {
-        super(memory, speed, maxSenseRange, clearDataWhenLose, coolDown, effect);
+
+    public WolfAttackExecutor(MemoryType<? extends Entity> memory, float speed, int maxSenseRange, boolean clearDataWhenLose, int coolDown) {
+        super(memory, speed, maxSenseRange, clearDataWhenLose, coolDown);
     }
 
     @Override

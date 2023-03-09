@@ -24,8 +24,8 @@ import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.Utils;
 
-import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author PikyCZ
@@ -42,7 +42,6 @@ public class EntityHusk extends EntityZombie {
     public int getNetworkId() {
         return NETWORK_ID;
     }
-
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
         return new BehaviorGroup(
@@ -121,7 +120,7 @@ public class EntityHusk extends EntityZombie {
     //使用dorps判断概率,在0.83%概率下会给土豆或者马铃薯以及铁锭任意一个物品
     @Override
     public Item[] getDrops() {
-        Random r = new Random();
+        ThreadLocalRandom r = ThreadLocalRandom.current();
         float drops = r.nextInt(100);
         if (drops < 0.83) {
             if (Utils.rand(0, 2) == 0) {
