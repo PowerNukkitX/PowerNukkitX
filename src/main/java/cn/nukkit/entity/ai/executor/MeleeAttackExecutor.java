@@ -148,9 +148,11 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
 
             EntityDamageByEntityEvent ev = new EntityDamageByEntityEvent(entity, target, EntityDamageEvent.DamageCause.ENTITY_ATTACK, damage, knockBack, item.applyEnchantments() ? enchantments : null);
 
-            ev.setBreakShield(item.canBreakShield());
+            if (!ev.isCancelled()) {
+                ev.setBreakShield(item.canBreakShield());
+                target.attack(ev);
+            }
 
-            target.attack(ev);
             //如果生物有药水效果就给药水效果
             if (this.effect != null) {
                 target.addEffect(effect);
