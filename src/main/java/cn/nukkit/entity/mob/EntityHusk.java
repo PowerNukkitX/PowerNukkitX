@@ -120,7 +120,7 @@ public class EntityHusk extends EntityZombie {
     //使用dorps判断概率,在0.83%概率下会给土豆或者马铃薯以及铁锭任意一个物品
     @Override
     public Item[] getDrops() {
-        float drops = ThreadLocalRandom.current().nextInt(100);
+        float drops = ThreadLocalRandom.current().nextFloat(100);
         if (drops < 0.83) {
             if (Utils.rand(0, 2) == 0) {
                 return new Item[]{Item.get(Item.IRON_INGOT, 0, 1), Item.get(Item.ROTTEN_FLESH, 0, Utils.rand(0, 2))};
