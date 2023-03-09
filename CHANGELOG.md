@@ -11,18 +11,74 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 3. <a href="#CataLogs-Version-history">🔖 Version history / 历史版本 </a>
 
 ## [Dev-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - Future
-This work in progress version supports Minecraft:BE `1.19.60 (Protocol Version 567)`.
+This work in progress version supports Minecraft:BE `1.19.63 (Protocol Version 568)`.
+
+## Added
+
+- [#1071] Synchronize the metadata api of partial bukkit.
+
+## Changed
+
+- [#1068] Remove unused flower color network IDs.
+- [#1070] Boats can't be placed underwater.
+- [#1073] Complete some missing Mincraft IDs.
+
+## Fixes
+
+- [#1069] Fix `timings` not loading and fix `onBlockBreakContinue`.
+- [#1075] Fix resetting blocks when playerInteractEvent is cancelled.
+
+## [1.19.63-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.63-r1) - 2023-3-2
+This work in progress version supports Minecraft:BE `1.19.63 (Protocol Version 568)`.
+
+## Added
+
+- [#1062] Reuse code using IHuman.
+- [#1064] Implement digging display for digging while jumping.
+- [#1065] Implemented 1.19.63 compatibility.
+- [#1066] Synchronize with the original version the effect of clicking on bamboo squares and bamboo shoot squares with bamboo items.
+ 
+## Changed
+
+- [#1059] Campfire stacking should be 64.
+- [#1063] Rewrote entity components.
+
+## Fixes
+
+- [#1052] Fix totem related bug (fix in [#1060]).
+- [#1061] Fix PNX built-in world generator cactus height.
+
+## [1.19.62-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.62-r1) - 2023-2-24
+This work in progress version supports Minecraft:BE `1.19.62 (Protocol Version 567)`.
+
+## Added
+
+- [#1042] Add `silentExecuteCommand`.
+- [#1053] Add a new constructor method to `PluginCommand`.
 
 ## Chaneged
 
 - [#1031] Optimize registration of custom squares.
 - [#1039] Fix Observer NC delay.
+- [#1041] Remove duplicate event calls and use ItemFrameUseEvent consistently.
+- [#1042] Optimize `commandOutput`.
+- [#1047] Synchronize some changes upstream of NKX.
+- [#1049] Refactor resource package manager.
 
 ## Fixes
 
 - [#1028] Fix `Player#positionChanged` error bug.
 - [#1029] Fix a lot of command related issues.
 - [#1035] Fix some redstone bugs.
+- [#1043] Fix Nukkit old world conversion issue.
+- [#1048] Fix some compatibility issues caused by Skin-related changes.
+- [#1055] Fix extreme case memory leak in tickCachedBlock.
+- [#1056] Fix skin compatibility issue between 1.19.60 and 1.19.62.
+
+## Documentation
+
+- [#1045] Add `Javadoc`.
+- [#1058] Update `1.19.62 - Javadoc`.
 
 ## [1.19.60-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - 2023-2-9
 This work in progress version supports Minecraft:BE `1.19.60 (Protocol Version 567)`.
@@ -1541,6 +1597,8 @@ Fixes several anvil issues.
   <summary>1.19.60-PNX</summary>
 
    1. [#1.19.60-r1] PNX-1.19.60-r1 (Protocol Version 567)
+   2. [#1.19.62-r1] PNX-1.19.62-r1 (Protocol Version 567)
+   3. [#1.19.63-r1] PNX-1.19.63-r1 (Protocol Version 568)
 
 </details>
 
@@ -2190,6 +2248,32 @@ Need to switch languages?
 [#1031]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1031
 [#1035]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1035
 [#1039]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1039
+[#1041]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1041
+[#1042]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1042
+[#1043]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1043
+[#1045]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1045
+[#1047]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1047
+[#1048]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1048
+[#1049]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1049
+[#1052]: https://github.com/PowerNukkitX/PowerNukkitX/issues/1052
+[#1053]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1053
+[#1055]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1055
+[#1056]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1056
+[#1058]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1058
+[#1059]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1059
+[#1060]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1060
+[#1061]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1061
+[#1062]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1062
+[#1063]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1063
+[#1064]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1064
+[#1065]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1065
+[#1066]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1066
+[#1068]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1068
+[#1069]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1069
+[#1070]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1070
+[#1071]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1071
+[#1073]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1073
+[#1075]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1075
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->
@@ -2254,6 +2338,10 @@ Need to switch languages?
 
 <!--1.19.60-r1-PNX Protocol Version 567-->
 [#1.19.60-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.60-r1
+<!--1.19.62-r1-PNX Protocol Version 567-->
+[#1.19.62-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.62-r1
+<!--1.19.63-r1-PNX Protocol Version 568-->
+[#1.19.63-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.63-r1
 <!--1.19.xx-PNX Version summary End-->
 
 <!--PowerNukkitX Urls-->
