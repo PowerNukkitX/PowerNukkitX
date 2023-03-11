@@ -148,6 +148,10 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
 
             EntityDamageByEntityEvent ev = new EntityDamageByEntityEvent(entity, target, EntityDamageEvent.DamageCause.ENTITY_ATTACK, damage, knockBack, item.applyEnchantments() ? enchantments : null);
 
+            ev.setBreakShield(item.canBreakShield());
+
+            target.attack(ev);
+
             if (!ev.isCancelled()) {
                 ev.setBreakShield(item.canBreakShield());
                 target.attack(ev);

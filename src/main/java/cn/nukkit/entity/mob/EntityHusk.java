@@ -69,33 +69,26 @@ public class EntityHusk extends EntityZombie {
                 this
         );
     }
-
     @Override
     protected void initEntity() {
-        this.setMaxHealth(20);
         this.setDataProperty(new IntEntityData(Entity.DATA_AMBIENT_SOUND_INTERVAL, Entity.DATA_AMBIENT_SOUND_INTERVAL_RANGE));
         this.setDataProperty(new IntEntityData(Entity.DATA_AMBIENT_SOUND_EVENT_NAME, LevelSoundEventPacket.SOUND_AMBIENT));
         if (this.isBaby()) {
             this.setDataProperty(new IntEntityData(Entity.DATA_AMBIENT_SOUND_EVENT_NAME, LevelSoundEventPacket.SOUND_AMBIENT_BABY));
         }
+        this.setMaxHealth(20);
         this.diffHandDamage = new float[]{2.5f, 3f, 4.5f};
         super.initEntity();
     }
 
     @Override
     public float getWidth() {
-        if (this.isBaby()) {
-            return 0.3f;
-        }
-        return 0.6f;
+        return this.isBaby() ? 0.3f : 0.6f;
     }
 
     @Override
     public float getHeight() {
-        if (this.isBaby()) {
-            return 0.95f;
-        }
-        return 1.9f;
+        return this.isBaby() ? 0.95f : 1.9f;
     }
 
     @PowerNukkitOnly
@@ -122,11 +115,12 @@ public class EntityHusk extends EntityZombie {
     public Item[] getDrops() {
         float drops = ThreadLocalRandom.current().nextFloat(100);
         if (drops < 0.83) {
-            if (Utils.rand(0, 2) == 0) {
+            int i = Utils.rand(0, 2);
+            if (i == 0) {
                 return new Item[]{Item.get(Item.IRON_INGOT, 0, 1), Item.get(Item.ROTTEN_FLESH, 0, Utils.rand(0, 2))};
-            } else if (Utils.rand(0, 2) == 1) {
+            } else if (i == 1) {
                 return new Item[]{Item.get(Item.CARROT, 0, 1), Item.get(Item.ROTTEN_FLESH, 0, Utils.rand(0, 2))};
-            } else if (Utils.rand(0, 2) == 2) {
+            } else if (i == 2) {
                 return new Item[]{Item.get(Item.POTATO, 0, 1), Item.get(Item.ROTTEN_FLESH, 0, Utils.rand(0, 2))};
             }
         }
