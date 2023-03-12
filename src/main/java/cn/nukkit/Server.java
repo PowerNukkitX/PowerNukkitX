@@ -3286,26 +3286,6 @@ public class Server {
         return this.getConfig("player.skin-change-cooldown", 30);
     }
 
-    /**
-     * Checks the current thread against the expected primary thread for the
-     * server.
-     * <p>
-     * <b>Note:</b> this method should not be used to indicate the current
-     * synchronized state of the runtime. A current thread matching the main
-     * thread indicates that it is synchronized, but a mismatch does not
-     * preclude the same assumption.
-     *
-     * @return true if the current thread matches the expected primary thread,
-     * false otherwise
-     */
-    public final boolean isPrimaryThread() {
-        return (Thread.currentThread() == currentThread);
-    }
-
-    public Thread getPrimaryThread() {
-        return currentThread;
-    }
-
     private void registerEntities() {
         Entity.registerEntity("Lightning", EntityLightning.class);
         Entity.registerEntity("Arrow", EntityArrow.class);
@@ -3553,6 +3533,28 @@ public class Server {
         return serverAuthoritativeMovementMode;
     }
 
+    // region threading - 并发基础设施
+
+    /**
+     * Checks the current thread against the expected primary thread for the
+     * server.
+     * <p>
+     * <b>Note:</b> this method should not be used to indicate the current
+     * synchronized state of the runtime. A current thread matching the main
+     * thread indicates that it is synchronized, but a mismatch does not
+     * preclude the same assumption.
+     *
+     * @return true if the current thread matches the expected primary thread,
+     * false otherwise
+     */
+    public final boolean isPrimaryThread() {
+        return (Thread.currentThread() == currentThread);
+    }
+
+    public Thread getPrimaryThread() {
+        return currentThread;
+    }
+
     //todo NukkitConsole 会阻塞关不掉
     private class ConsoleThread extends Thread implements InterruptibleThread {
         public ConsoleThread() {
@@ -3598,4 +3600,7 @@ public class Server {
             return AccessController.doPrivileged((PrivilegedAction<ForkJoinWorkerThread>) () -> new ComputeThread(pool, threadCount), ACC);
         }
     }
+
+    // endregion
+
 }
