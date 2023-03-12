@@ -3048,132 +3048,11 @@ public class Server {
         return true;
     }
 
-    public BaseLang getLanguage() {
-        return baseLang;
-    }
-
-    public LangCode getLanguageCode() {
-        return baseLangCode;
-    }
-
-    private LangCode mapInternalLang(String langName) {
-        return switch (langName) {
-            case "bra" -> LangCode.valueOf("pt_BR");
-            case "chs" -> LangCode.valueOf("zh_CN");
-            case "cht" -> LangCode.valueOf("zh_TW");
-            case "cze" -> LangCode.valueOf("cs_CZ");
-            case "deu" -> LangCode.valueOf("de_DE");
-            case "fin" -> LangCode.valueOf("fi_FI");
-            case "eng" -> LangCode.valueOf("en_US");
-            case "fra" -> LangCode.valueOf("en_US");
-            case "idn" -> LangCode.valueOf("id_ID");
-            case "jpn" -> LangCode.valueOf("ja_JP");
-            case "kor" -> LangCode.valueOf("ko_KR");
-            case "ltu" -> LangCode.valueOf("en_US");
-            case "pol" -> LangCode.valueOf("pl_PL");
-            case "rus" -> LangCode.valueOf("ru_RU");
-            case "spa" -> LangCode.valueOf("es_ES");
-            case "tur" -> LangCode.valueOf("tr_TR");
-            case "ukr" -> LangCode.valueOf("uk_UA");
-            case "vie" -> LangCode.valueOf("en_US");
-            default -> throw new IllegalArgumentException();
-        };
-    }
-
-    public boolean isLanguageForced() {
-        return forceLanguage;
-    }
-
-    @PowerNukkitOnly
-    public boolean isRedstoneEnabled() {
-        return redstoneEnabled;
-    }
-
-    @PowerNukkitOnly
-    public void setRedstoneEnabled(boolean redstoneEnabled) {
-        this.redstoneEnabled = redstoneEnabled;
-    }
 
     public Network getNetwork() {
         return network;
     }
 
-    //Revising later...
-    public Config getConfig() {
-        return this.config;
-    }
-
-    public <T> T getConfig(String variable) {
-        return this.getConfig(variable, null);
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T> T getConfig(String variable, T defaultValue) {
-        Object value = this.config.get(variable);
-        return value == null ? defaultValue : (T) value;
-    }
-
-    public Config getProperties() {
-        return this.properties;
-    }
-
-    public Object getProperty(String variable) {
-        return this.getProperty(variable, null);
-    }
-
-    public Object getProperty(String variable, Object defaultValue) {
-        return this.properties.exists(variable) ? this.properties.get(variable) : defaultValue;
-    }
-
-    public void setPropertyString(String variable, String value) {
-        this.properties.set(variable, value);
-        this.properties.save();
-    }
-
-    public String getPropertyString(String variable) {
-        return this.getPropertyString(variable, null);
-    }
-
-    public String getPropertyString(String variable, String defaultValue) {
-        return this.properties.exists(variable) ? this.properties.get(variable).toString() : defaultValue;
-    }
-
-    public int getPropertyInt(String variable) {
-        return this.getPropertyInt(variable, null);
-    }
-
-    public int getPropertyInt(String variable, Integer defaultValue) {
-        return this.properties.exists(variable) ? (!this.properties.get(variable).equals("") ? Integer.parseInt(String.valueOf(this.properties.get(variable))) : defaultValue) : defaultValue;
-    }
-
-    public void setPropertyInt(String variable, int value) {
-        this.properties.set(variable, value);
-        this.properties.save();
-    }
-
-    public boolean getPropertyBoolean(String variable) {
-        return this.getPropertyBoolean(variable, null);
-    }
-
-    public boolean getPropertyBoolean(String variable, Object defaultValue) {
-        Object value = this.properties.exists(variable) ? this.properties.get(variable) : defaultValue;
-        if (value instanceof Boolean) {
-            return (Boolean) value;
-        }
-        switch (String.valueOf(value)) {
-            case "on":
-            case "true":
-            case "1":
-            case "yes":
-                return true;
-        }
-        return false;
-    }
-
-    public void setPropertyBoolean(String variable, boolean value) {
-        this.properties.set(variable, value ? "1" : "0");
-        this.properties.save();
-    }
 
     public PluginIdentifiableCommand getPluginCommand(String name) {
         Command command = this.commandMap.getCommand(name);
@@ -3272,14 +3151,6 @@ public class Server {
 
     }
 
-    public boolean shouldSavePlayerData() {
-        return this.getConfig("player.save-player-data", true);
-    }
-
-    public int getPlayerSkinChangeCooldown() {
-        return this.getConfig("player.skin-change-cooldown", 30);
-    }
-
     // TODO: update PNX Junit5 test framework to remove dependency on this method
     private void registerEntities() {
         Entity.init();
@@ -3290,27 +3161,12 @@ public class Server {
         BlockEntity.init();
     }
 
-    public boolean isNetherAllowed() {
-        return this.allowNether;
-    }
-
     public PlayerDataSerializer getPlayerDataSerializer() {
         return playerDataSerializer;
     }
 
     public void setPlayerDataSerializer(PlayerDataSerializer playerDataSerializer) {
         this.playerDataSerializer = Preconditions.checkNotNull(playerDataSerializer, "playerDataSerializer");
-    }
-
-    @Since("1.3.0.0-PN")
-    public boolean isIgnoredPacket(Class<? extends DataPacket> clazz) {
-        return this.ignoredPackets.contains(clazz.getSimpleName());
-    }
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public boolean isSafeSpawn() {
-        return safeSpawn;
     }
 
     public static Server getInstance() {
@@ -3324,6 +3180,162 @@ public class Server {
         return positionTrackingService;
     }
 
+
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public long getLaunchTime() {
+        return launchTime;
+    }
+
+
+    // region config - 配置相关
+
+    public BaseLang getLanguage() {
+        return baseLang;
+    }
+
+    public LangCode getLanguageCode() {
+        return baseLangCode;
+    }
+
+    private LangCode mapInternalLang(String langName) {
+        return switch (langName) {
+            case "bra" -> LangCode.valueOf("pt_BR");
+            case "chs" -> LangCode.valueOf("zh_CN");
+            case "cht" -> LangCode.valueOf("zh_TW");
+            case "cze" -> LangCode.valueOf("cs_CZ");
+            case "deu" -> LangCode.valueOf("de_DE");
+            case "fin" -> LangCode.valueOf("fi_FI");
+            case "eng" -> LangCode.valueOf("en_US");
+            case "fra" -> LangCode.valueOf("en_US");
+            case "idn" -> LangCode.valueOf("id_ID");
+            case "jpn" -> LangCode.valueOf("ja_JP");
+            case "kor" -> LangCode.valueOf("ko_KR");
+            case "ltu" -> LangCode.valueOf("en_US");
+            case "pol" -> LangCode.valueOf("pl_PL");
+            case "rus" -> LangCode.valueOf("ru_RU");
+            case "spa" -> LangCode.valueOf("es_ES");
+            case "tur" -> LangCode.valueOf("tr_TR");
+            case "ukr" -> LangCode.valueOf("uk_UA");
+            case "vie" -> LangCode.valueOf("en_US");
+            default -> throw new IllegalArgumentException();
+        };
+    }
+
+    public boolean isLanguageForced() {
+        return forceLanguage;
+    }
+
+    @PowerNukkitOnly
+    public boolean isRedstoneEnabled() {
+        return redstoneEnabled;
+    }
+
+    @PowerNukkitOnly
+    public void setRedstoneEnabled(boolean redstoneEnabled) {
+        this.redstoneEnabled = redstoneEnabled;
+    }
+
+    public boolean shouldSavePlayerData() {
+        return this.getConfig("player.save-player-data", true);
+    }
+
+    public int getPlayerSkinChangeCooldown() {
+        return this.getConfig("player.skin-change-cooldown", 30);
+    }
+
+    //Revising later...
+    public Config getConfig() {
+        return this.config;
+    }
+
+    public <T> T getConfig(String variable) {
+        return this.getConfig(variable, null);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T getConfig(String variable, T defaultValue) {
+        Object value = this.config.get(variable);
+        return value == null ? defaultValue : (T) value;
+    }
+
+    public Config getProperties() {
+        return this.properties;
+    }
+
+    public Object getProperty(String variable) {
+        return this.getProperty(variable, null);
+    }
+
+    public Object getProperty(String variable, Object defaultValue) {
+        return this.properties.exists(variable) ? this.properties.get(variable) : defaultValue;
+    }
+
+    public void setPropertyString(String variable, String value) {
+        this.properties.set(variable, value);
+        this.properties.save();
+    }
+
+    public String getPropertyString(String variable) {
+        return this.getPropertyString(variable, null);
+    }
+
+    public String getPropertyString(String variable, String defaultValue) {
+        return this.properties.exists(variable) ? this.properties.get(variable).toString() : defaultValue;
+    }
+
+    public int getPropertyInt(String variable) {
+        return this.getPropertyInt(variable, null);
+    }
+
+    public int getPropertyInt(String variable, Integer defaultValue) {
+        return this.properties.exists(variable) ? (!this.properties.get(variable).equals("") ? Integer.parseInt(String.valueOf(this.properties.get(variable))) : defaultValue) : defaultValue;
+    }
+
+    public void setPropertyInt(String variable, int value) {
+        this.properties.set(variable, value);
+        this.properties.save();
+    }
+
+    public boolean getPropertyBoolean(String variable) {
+        return this.getPropertyBoolean(variable, null);
+    }
+
+    public boolean getPropertyBoolean(String variable, Object defaultValue) {
+        Object value = this.properties.exists(variable) ? this.properties.get(variable) : defaultValue;
+        if (value instanceof Boolean) {
+            return (Boolean) value;
+        }
+        switch (String.valueOf(value)) {
+            case "on":
+            case "true":
+            case "1":
+            case "yes":
+                return true;
+        }
+        return false;
+    }
+
+    public void setPropertyBoolean(String variable, boolean value) {
+        this.properties.set(variable, value ? "1" : "0");
+        this.properties.save();
+    }
+
+    public boolean isNetherAllowed() {
+        return this.allowNether;
+    }
+
+    @Since("1.3.0.0-PN")
+    public boolean isIgnoredPacket(Class<? extends DataPacket> clazz) {
+        return this.ignoredPackets.contains(clazz.getSimpleName());
+    }
+
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public boolean isSafeSpawn() {
+        return safeSpawn;
+    }
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean isForceSkinTrusted() {
@@ -3334,12 +3346,6 @@ public class Server {
     @Since("1.4.0.0-PN")
     public boolean isCheckMovement() {
         return checkMovement;
-    }
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public long getLaunchTime() {
-        return launchTime;
     }
 
     @PowerNukkitOnly
@@ -3377,6 +3383,8 @@ public class Server {
     public int getServerAuthoritativeMovement() {
         return serverAuthoritativeMovementMode;
     }
+
+    // endregion
 
     // region threading - 并发基础设施
 
