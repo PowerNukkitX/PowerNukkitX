@@ -13,13 +13,7 @@ import cn.nukkit.console.NukkitConsole;
 import cn.nukkit.dispenser.DispenseBehaviorRegister;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.data.Skin;
-import cn.nukkit.entity.item.*;
-import cn.nukkit.entity.mob.*;
-import cn.nukkit.entity.passive.*;
-import cn.nukkit.entity.projectile.*;
-import cn.nukkit.entity.weather.EntityLightning;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.event.level.LevelInitEvent;
 import cn.nukkit.event.level.LevelLoadEvent;
@@ -3286,163 +3280,14 @@ public class Server {
         return this.getConfig("player.skin-change-cooldown", 30);
     }
 
+    // TODO: update PNX Junit5 test framework to remove dependency on this method
     private void registerEntities() {
-        Entity.registerEntity("Lightning", EntityLightning.class);
-        Entity.registerEntity("Arrow", EntityArrow.class);
-        Entity.registerEntity("EnderPearl", EntityEnderPearl.class);
-        Entity.registerEntity("FallingSand", EntityFallingBlock.class);
-        Entity.registerEntity("Firework", EntityFirework.class);
-        Entity.registerEntity("Item", EntityItem.class);
-        Entity.registerEntity("Painting", EntityPainting.class);
-        Entity.registerEntity("PrimedTnt", EntityPrimedTNT.class);
-        Entity.registerEntity("Snowball", EntitySnowball.class);
-        //Monsters
-        Entity.registerEntity("Blaze", EntityBlaze.class);
-        Entity.registerEntity("CaveSpider", EntityCaveSpider.class);
-        Entity.registerEntity("Creeper", EntityCreeper.class);
-        Entity.registerEntity("Drowned", EntityDrowned.class);
-        Entity.registerEntity("ElderGuardian", EntityElderGuardian.class);
-        Entity.registerEntity("EnderDragon", EntityEnderDragon.class);
-        Entity.registerEntity("Enderman", EntityEnderman.class);
-        Entity.registerEntity("Endermite", EntityEndermite.class);
-        Entity.registerEntity("Evoker", EntityEvoker.class);
-        Entity.registerEntity("Ghast", EntityGhast.class);
-        Entity.registerEntity("GlowSquid", EntityGlowSquid.class);
-        Entity.registerEntity("Guardian", EntityGuardian.class);
-        Entity.registerEntity("Hoglin", EntityHoglin.class);
-        Entity.registerEntity("Husk", EntityHusk.class);
-        Entity.registerEntity("MagmaCube", EntityMagmaCube.class);
-        Entity.registerEntity("Phantom", EntityPhantom.class);
-        Entity.registerEntity("Piglin", EntityPiglin.class);
-        Entity.registerEntity("PiglinBrute", EntityPiglinBrute.class);
-        Entity.registerEntity("Pillager", EntityPillager.class);
-        Entity.registerEntity("Ravager", EntityRavager.class);
-        Entity.registerEntity("Shulker", EntityShulker.class);
-        Entity.registerEntity("Silverfish", EntitySilverfish.class);
-        Entity.registerEntity("Skeleton", EntitySkeleton.class);
-        Entity.registerEntity("Slime", EntitySlime.class);
-        Entity.registerEntity("IronGolem", EntityIronGolem.class);
-        Entity.registerEntity("SnowGolem", EntitySnowGolem.class);
-        Entity.registerEntity("Spider", EntitySpider.class);
-        Entity.registerEntity("Stray", EntityStray.class);
-        Entity.registerEntity("Vex", EntityVex.class);
-        Entity.registerEntity("Vindicator", EntityVindicator.class);
-        Entity.registerEntity("Warden", EntityWarden.class);
-        Entity.registerEntity("Witch", EntityWitch.class);
-        Entity.registerEntity("Wither", EntityWither.class);
-        Entity.registerEntity("WitherSkeleton", EntityWitherSkeleton.class);
-        Entity.registerEntity("Zombie", EntityZombie.class);
-        Entity.registerEntity("Zoglin", EntityZoglin.class);
-        Entity.registerEntity("ZombiePigman", EntityZombiePigman.class);
-        Entity.registerEntity("ZombieVillager", EntityZombieVillager.class);
-        Entity.registerEntity("ZombieVillagerV1", EntityZombieVillagerV1.class);
-        //Passive
-        Entity.registerEntity("Allay", EntityAllay.class);
-        Entity.registerEntity("Axolotl", EntityAxolotl.class);
-        Entity.registerEntity("Bat", EntityBat.class);
-        Entity.registerEntity("Bee", EntityBee.class);
-        Entity.registerEntity("Cat", EntityCat.class);
-        Entity.registerEntity("Chicken", EntityChicken.class);
-        Entity.registerEntity("Cod", EntityCod.class);
-        Entity.registerEntity("Cow", EntityCow.class);
-        Entity.registerEntity("Dolphin", EntityDolphin.class);
-        Entity.registerEntity("Donkey", EntityDonkey.class);
-        Entity.registerEntity("Fox", EntityFox.class);
-        Entity.registerEntity("Frog", EntityFrog.class);
-        Entity.registerEntity("Goat", EntityGoat.class);
-        Entity.registerEntity("Horse", EntityHorse.class);
-        Entity.registerEntity("Llama", EntityLlama.class);
-        Entity.registerEntity("Mooshroom", EntityMooshroom.class);
-        Entity.registerEntity("Mule", EntityMule.class);
-        Entity.registerEntity("Ocelot", EntityOcelot.class);
-        Entity.registerEntity("Panda", EntityPanda.class);
-        Entity.registerEntity("Parrot", EntityParrot.class);
-        Entity.registerEntity("Pig", EntityPig.class);
-        Entity.registerEntity("PolarBear", EntityPolarBear.class);
-        Entity.registerEntity("Pufferfish", EntityPufferfish.class);
-        Entity.registerEntity("Rabbit", EntityRabbit.class);
-        Entity.registerEntity("Salmon", EntitySalmon.class);
-        Entity.registerEntity("Sheep", EntitySheep.class);
-        Entity.registerEntity("SkeletonHorse", EntitySkeletonHorse.class);
-        Entity.registerEntity("Squid", EntitySquid.class);
-        Entity.registerEntity("Strider", EntityStrider.class);
-        Entity.registerEntity("Tadpole", EntityTadpole.class);
-        Entity.registerEntity("TropicalFish", EntityTropicalFish.class);
-        Entity.registerEntity("Turtle", EntityTurtle.class);
-        Entity.registerEntity("Villager", EntityVillager.class);
-        Entity.registerEntity("VillagerV1", EntityVillagerV1.class);
-        Entity.registerEntity("WanderingTrader", EntityWanderingTrader.class);
-        Entity.registerEntity("Wolf", EntityWolf.class);
-        Entity.registerEntity("ZombieHorse", EntityZombieHorse.class);
-        Entity.registerEntity("NPC", EntityNPCEntity.class);
-        //Projectile
-        Entity.registerEntity("Small FireBall", EntitySmallFireBall.class);
-        Entity.registerEntity("AreaEffectCloud", EntityAreaEffectCloud.class);
-        Entity.registerEntity("Egg", EntityEgg.class);
-        Entity.registerEntity("LingeringPotion", EntityPotionLingering.class);
-        Entity.registerEntity("ThrownExpBottle", EntityExpBottle.class);
-        Entity.registerEntity("ThrownPotion", EntityPotion.class);
-        Entity.registerEntity("ThrownTrident", EntityThrownTrident.class);
-        Entity.registerEntity("XpOrb", EntityXPOrb.class);
-        Entity.registerEntity("ArmorStand", EntityArmorStand.class);
-
-        Entity.registerEntity("Human", EntityHuman.class, true);
-        //Vehicle
-        Entity.registerEntity("Boat", EntityBoat.class);
-        Entity.registerEntity("ChestBoat", EntityChestBoat.class);
-        Entity.registerEntity("MinecartChest", EntityMinecartChest.class);
-        Entity.registerEntity("MinecartHopper", EntityMinecartHopper.class);
-        Entity.registerEntity("MinecartRideable", EntityMinecartEmpty.class);
-        Entity.registerEntity("MinecartTnt", EntityMinecartTNT.class);
-
-        Entity.registerEntity("EndCrystal", EntityEndCrystal.class);
-        Entity.registerEntity("FishingHook", EntityFishingHook.class);
+        Entity.init();
     }
 
+    // TODO: update PNX Junit5 test framework to remove dependency on this method
     private void registerBlockEntities() {
-        BlockEntity.registerBlockEntity(BlockEntity.FURNACE, BlockEntityFurnace.class);
-        BlockEntity.registerBlockEntity(BlockEntity.CHEST, BlockEntityChest.class);
-        BlockEntity.registerBlockEntity(BlockEntity.SIGN, BlockEntitySign.class);
-        BlockEntity.registerBlockEntity(BlockEntity.ENCHANT_TABLE, BlockEntityEnchantTable.class);
-        BlockEntity.registerBlockEntity(BlockEntity.SKULL, BlockEntitySkull.class);
-        BlockEntity.registerBlockEntity(BlockEntity.FLOWER_POT, BlockEntityFlowerPot.class);
-        BlockEntity.registerBlockEntity(BlockEntity.BREWING_STAND, BlockEntityBrewingStand.class);
-        BlockEntity.registerBlockEntity(BlockEntity.ITEM_FRAME, BlockEntityItemFrame.class);
-        BlockEntity.registerBlockEntity(BlockEntity.CAULDRON, BlockEntityCauldron.class);
-        BlockEntity.registerBlockEntity(BlockEntity.ENDER_CHEST, BlockEntityEnderChest.class);
-        BlockEntity.registerBlockEntity(BlockEntity.BEACON, BlockEntityBeacon.class);
-        BlockEntity.registerBlockEntity(BlockEntity.PISTON_ARM, BlockEntityPistonArm.class);
-        BlockEntity.registerBlockEntity(BlockEntity.COMPARATOR, BlockEntityComparator.class);
-        BlockEntity.registerBlockEntity(BlockEntity.HOPPER, BlockEntityHopper.class);
-        BlockEntity.registerBlockEntity(BlockEntity.BED, BlockEntityBed.class);
-        BlockEntity.registerBlockEntity(BlockEntity.JUKEBOX, BlockEntityJukebox.class);
-        BlockEntity.registerBlockEntity(BlockEntity.SHULKER_BOX, BlockEntityShulkerBox.class);
-        BlockEntity.registerBlockEntity(BlockEntity.BANNER, BlockEntityBanner.class);
-        BlockEntity.registerBlockEntity(BlockEntity.MUSIC, BlockEntityMusic.class);
-        BlockEntity.registerBlockEntity(BlockEntity.LECTERN, BlockEntityLectern.class);
-        BlockEntity.registerBlockEntity(BlockEntity.BLAST_FURNACE, BlockEntityBlastFurnace.class);
-        BlockEntity.registerBlockEntity(BlockEntity.SMOKER, BlockEntitySmoker.class);
-        BlockEntity.registerBlockEntity(BlockEntity.BEEHIVE, BlockEntityBeehive.class);
-        BlockEntity.registerBlockEntity(BlockEntity.CONDUIT, BlockEntityConduit.class);
-        BlockEntity.registerBlockEntity(BlockEntity.BARREL, BlockEntityBarrel.class);
-        BlockEntity.registerBlockEntity(BlockEntity.CAMPFIRE, BlockEntityCampfire.class);
-        BlockEntity.registerBlockEntity(BlockEntity.BELL, BlockEntityBell.class);
-        BlockEntity.registerBlockEntity(BlockEntity.DAYLIGHT_DETECTOR, BlockEntityDaylightDetector.class);
-        BlockEntity.registerBlockEntity(BlockEntity.DISPENSER, BlockEntityDispenser.class);
-        BlockEntity.registerBlockEntity(BlockEntity.DROPPER, BlockEntityDropper.class);
-        BlockEntity.registerBlockEntity(BlockEntity.MOVING_BLOCK, BlockEntityMovingBlock.class);
-        BlockEntity.registerBlockEntity(BlockEntity.NETHER_REACTOR, BlockEntityNetherReactor.class);
-        BlockEntity.registerBlockEntity(BlockEntity.LODESTONE, BlockEntityLodestone.class);
-        BlockEntity.registerBlockEntity(BlockEntity.TARGET, BlockEntityTarget.class);
-        BlockEntity.registerBlockEntity(BlockEntity.END_PORTAL, BlockEntityEndPortal.class);
-        BlockEntity.registerBlockEntity(BlockEntity.END_GATEWAY, BlockEntityEndGateway.class);
-        //powernukkitx only
-        BlockEntity.registerBlockEntity(BlockEntity.COMMAND_BLOCK, BlockEntityCommandBlock.class);
-        BlockEntity.registerBlockEntity(BlockEntity.SCULK_SENSOR, BlockEntitySculkSensor.class);
-        BlockEntity.registerBlockEntity(BlockEntity.SCULK_CATALYST, BlockEntitySculkCatalyst.class);
-        BlockEntity.registerBlockEntity(BlockEntity.SCULK_SHRIEKER, BlockEntitySculkShrieker.class);
-        BlockEntity.registerBlockEntity(BlockEntity.STRUCTURE_BLOCK, BlockEntityStructBlock.class);
-        BlockEntity.registerBlockEntity(BlockEntity.GLOW_ITEM_FRAME, BlockEntityGlowItemFrame.class);
+        BlockEntity.init();
     }
 
     public boolean isNetherAllowed() {

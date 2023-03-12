@@ -10,14 +10,15 @@ import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.entity.custom.CustomEntity;
 import cn.nukkit.entity.custom.CustomEntityDefinition;
 import cn.nukkit.entity.data.*;
-import cn.nukkit.entity.item.EntityArmorStand;
-import cn.nukkit.entity.item.EntityItem;
-import cn.nukkit.entity.mob.EntityEnderDragon;
-import cn.nukkit.entity.projectile.EntityProjectile;
+import cn.nukkit.entity.item.*;
+import cn.nukkit.entity.mob.*;
+import cn.nukkit.entity.passive.*;
+import cn.nukkit.entity.projectile.*;
 import cn.nukkit.entity.provider.ClassEntityProvider;
 import cn.nukkit.entity.provider.CustomEntityProvider;
 import cn.nukkit.entity.provider.EntityProvider;
 import cn.nukkit.entity.provider.EntityProviderWithClass;
+import cn.nukkit.entity.weather.EntityLightning;
 import cn.nukkit.event.Event;
 import cn.nukkit.event.block.FarmLandDecayEvent;
 import cn.nukkit.event.entity.*;
@@ -595,9 +596,9 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     /**
-     * 创建一个实体从实体名,名称从{@link Server#registerEntities registerEntities}源代码查询
+     * 创建一个实体从实体名,名称从{@link Entity#init registerEntities}源代码查询
      * <p>
-     * Create an entity from entity name, name from {@link Server#registerEntities registerEntities} source code query
+     * Create an entity from entity name, name from {@link Entity#init registerEntities} source code query
      *
      * @param name the name
      * @param pos  the pos
@@ -953,6 +954,120 @@ public abstract class Entity extends Location implements Metadatable {
             if (entity.isPlayer) viewers.add((Player) entity);
         });
         playAnimationOnEntities(animation, entities, viewers);
+    }
+
+    @PowerNukkitXInternal
+    public static void init() {
+        registerEntity("Lightning", EntityLightning.class);
+        registerEntity("Arrow", EntityArrow.class);
+        registerEntity("EnderPearl", EntityEnderPearl.class);
+        registerEntity("FallingSand", EntityFallingBlock.class);
+        registerEntity("Firework", EntityFirework.class);
+        registerEntity("Item", EntityItem.class);
+        registerEntity("Painting", EntityPainting.class);
+        registerEntity("PrimedTnt", EntityPrimedTNT.class);
+        registerEntity("Snowball", EntitySnowball.class);
+        //Monsters
+        registerEntity("Blaze", EntityBlaze.class);
+        registerEntity("CaveSpider", EntityCaveSpider.class);
+        registerEntity("Creeper", EntityCreeper.class);
+        registerEntity("Drowned", EntityDrowned.class);
+        registerEntity("ElderGuardian", EntityElderGuardian.class);
+        registerEntity("EnderDragon", EntityEnderDragon.class);
+        registerEntity("Enderman", EntityEnderman.class);
+        registerEntity("Endermite", EntityEndermite.class);
+        registerEntity("Evoker", EntityEvoker.class);
+        registerEntity("Ghast", EntityGhast.class);
+        registerEntity("GlowSquid", EntityGlowSquid.class);
+        registerEntity("Guardian", EntityGuardian.class);
+        registerEntity("Hoglin", EntityHoglin.class);
+        registerEntity("Husk", EntityHusk.class);
+        registerEntity("MagmaCube", EntityMagmaCube.class);
+        registerEntity("Phantom", EntityPhantom.class);
+        registerEntity("Piglin", EntityPiglin.class);
+        registerEntity("PiglinBrute", EntityPiglinBrute.class);
+        registerEntity("Pillager", EntityPillager.class);
+        registerEntity("Ravager", EntityRavager.class);
+        registerEntity("Shulker", EntityShulker.class);
+        registerEntity("Silverfish", EntitySilverfish.class);
+        registerEntity("Skeleton", EntitySkeleton.class);
+        registerEntity("Slime", EntitySlime.class);
+        registerEntity("IronGolem", EntityIronGolem.class);
+        registerEntity("SnowGolem", EntitySnowGolem.class);
+        registerEntity("Spider", EntitySpider.class);
+        registerEntity("Stray", EntityStray.class);
+        registerEntity("Vex", EntityVex.class);
+        registerEntity("Vindicator", EntityVindicator.class);
+        registerEntity("Warden", EntityWarden.class);
+        registerEntity("Witch", EntityWitch.class);
+        registerEntity("Wither", EntityWither.class);
+        registerEntity("WitherSkeleton", EntityWitherSkeleton.class);
+        registerEntity("Zombie", EntityZombie.class);
+        registerEntity("Zoglin", EntityZoglin.class);
+        registerEntity("ZombiePigman", EntityZombiePigman.class);
+        registerEntity("ZombieVillager", EntityZombieVillager.class);
+        registerEntity("ZombieVillagerV1", EntityZombieVillagerV1.class);
+        //Passive
+        registerEntity("Allay", EntityAllay.class);
+        registerEntity("Axolotl", EntityAxolotl.class);
+        registerEntity("Bat", EntityBat.class);
+        registerEntity("Bee", EntityBee.class);
+        registerEntity("Cat", EntityCat.class);
+        registerEntity("Chicken", EntityChicken.class);
+        registerEntity("Cod", EntityCod.class);
+        registerEntity("Cow", EntityCow.class);
+        registerEntity("Dolphin", EntityDolphin.class);
+        registerEntity("Donkey", EntityDonkey.class);
+        registerEntity("Fox", EntityFox.class);
+        registerEntity("Frog", EntityFrog.class);
+        registerEntity("Goat", EntityGoat.class);
+        registerEntity("Horse", EntityHorse.class);
+        registerEntity("Llama", EntityLlama.class);
+        registerEntity("Mooshroom", EntityMooshroom.class);
+        registerEntity("Mule", EntityMule.class);
+        registerEntity("Ocelot", EntityOcelot.class);
+        registerEntity("Panda", EntityPanda.class);
+        registerEntity("Parrot", EntityParrot.class);
+        registerEntity("Pig", EntityPig.class);
+        registerEntity("PolarBear", EntityPolarBear.class);
+        registerEntity("Pufferfish", EntityPufferfish.class);
+        registerEntity("Rabbit", EntityRabbit.class);
+        registerEntity("Salmon", EntitySalmon.class);
+        registerEntity("Sheep", EntitySheep.class);
+        registerEntity("SkeletonHorse", EntitySkeletonHorse.class);
+        registerEntity("Squid", EntitySquid.class);
+        registerEntity("Strider", EntityStrider.class);
+        registerEntity("Tadpole", EntityTadpole.class);
+        registerEntity("TropicalFish", EntityTropicalFish.class);
+        registerEntity("Turtle", EntityTurtle.class);
+        registerEntity("Villager", EntityVillager.class);
+        registerEntity("VillagerV1", EntityVillagerV1.class);
+        registerEntity("WanderingTrader", EntityWanderingTrader.class);
+        registerEntity("Wolf", EntityWolf.class);
+        registerEntity("ZombieHorse", EntityZombieHorse.class);
+        registerEntity("NPC", EntityNPCEntity.class);
+        //Projectile
+        registerEntity("Small FireBall", EntitySmallFireBall.class);
+        registerEntity("AreaEffectCloud", EntityAreaEffectCloud.class);
+        registerEntity("Egg", EntityEgg.class);
+        registerEntity("LingeringPotion", EntityPotionLingering.class);
+        registerEntity("ThrownExpBottle", EntityExpBottle.class);
+        registerEntity("ThrownPotion", EntityPotion.class);
+        registerEntity("ThrownTrident", EntityThrownTrident.class);
+        registerEntity("XpOrb", EntityXPOrb.class);
+        registerEntity("ArmorStand", EntityArmorStand.class);
+
+        registerEntity("Human", EntityHuman.class, true);
+        //Vehicle
+        registerEntity("Boat", EntityBoat.class);
+        registerEntity("ChestBoat", EntityChestBoat.class);
+        registerEntity("MinecartChest", EntityMinecartChest.class);
+        registerEntity("MinecartHopper", EntityMinecartHopper.class);
+        registerEntity("MinecartRideable", EntityMinecartEmpty.class);
+        registerEntity("MinecartTnt", EntityMinecartTNT.class);
+
+        registerEntity("EndCrystal", EntityEndCrystal.class);
+        registerEntity("FishingHook", EntityFishingHook.class);
     }
 
     /**
