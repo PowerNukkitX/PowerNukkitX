@@ -305,7 +305,7 @@ public class Server {
         }
     };
 
-    private Level[] levelArray;
+    private Level[] levelArray = Level.EMPTY_ARRAY;
 
     private final ServiceManager serviceManager = new NKServiceManager();
 
@@ -358,7 +358,7 @@ public class Server {
         }
         instance = this;
         config = new Config();
-        levelArray = Level.EMPTY_ARRAY;
+        Timings.init();
         launchTime = System.currentTimeMillis();
         BatchPacket batchPacket = new BatchPacket();
         batchPacket.payload = EmptyArrays.EMPTY_BYTES;
@@ -448,7 +448,7 @@ public class Server {
 
         log.info("Loading {} ...", TextFormat.GREEN + "nukkit.yml" + TextFormat.WHITE);
         this.config = new Config(nukkitYamlPath, Config.YAML);
-        levelArray = Level.EMPTY_ARRAY;
+        Timings.init();
 
         Nukkit.DEBUG = NukkitMath.clamp(this.getConfig("debug.level", 1), 1, 3);
 

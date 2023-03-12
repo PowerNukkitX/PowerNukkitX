@@ -123,11 +123,6 @@ public class Level implements ChunkManager, Metadatable {
     public static int COMPRESSION_LEVEL = 8;
     private static int levelIdCounter = 1;
     private static int chunkLoaderCounter = 1;
-
-    static {
-        Timings.init();
-    }
-
     static {
         randomTickBlocks.add(BlockID.GRASS);
         randomTickBlocks.add(BlockID.FARMLAND);
