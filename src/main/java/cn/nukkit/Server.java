@@ -445,7 +445,6 @@ public class Server {
             initializeNukkitYaml(nukkitYamlPath, languagesCommaList, language);
         }
 
-        this.console.setExecutingCommands(true);
 
         log.info("Loading {} ...", TextFormat.GREEN + "nukkit.yml" + TextFormat.WHITE);
         this.config = new Config(nukkitYamlPath, Config.YAML);
@@ -631,6 +630,7 @@ public class Server {
         log.info(this.getLanguage().tr("nukkit.server.info", this.getName(), TextFormat.YELLOW + this.getNukkitVersion() + " (" + this.getGitCommit() + ")" + TextFormat.WHITE, TextFormat.AQUA + this.getCodename() + TextFormat.WHITE, this.getApiVersion()));
         log.info(this.getLanguage().tr("nukkit.server.license", this.getName()));
 
+        this.console.setExecutingCommands(true);
         this.consoleSender = new ConsoleCommandSender();
 
         // Initialize metrics
