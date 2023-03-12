@@ -437,7 +437,8 @@ public class Server {
 
         //todo: VersionString 现在不必要
 
-        if (!new File(this.dataPath + "nukkit.yml").exists()) {
+        String nukkitYamlPath = this.dataPath + "nukkit.yml";
+        if (!new File(nukkitYamlPath).exists()) {
             log.info(TextFormat.GREEN + "Welcome! Please choose a language first!");
             String languagesCommaList;
             try {
@@ -496,7 +497,7 @@ public class Server {
 
             if (nukkitYmlLangIS == null) {
                 try {
-                    Utils.writeFile(this.dataPath + "nukkit.yml", Server.class.getResourceAsStream("/default-nukkit.yml"));
+                    Utils.writeFile(nukkitYamlPath, Server.class.getResourceAsStream("/default-nukkit.yml"));
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -587,7 +588,7 @@ public class Server {
                         }
                     }
 
-                    Utils.writeFile(this.dataPath + "nukkit.yml", result.toString());
+                    Utils.writeFile(nukkitYamlPath, result.toString());
                 } catch (IOException e) {
                     throw new AssertionError("Failed to create nukkit.yml", e);
                 }
@@ -598,7 +599,7 @@ public class Server {
         this.console.setExecutingCommands(true);
 
         log.info("Loading {} ...", TextFormat.GREEN + "nukkit.yml" + TextFormat.WHITE);
-        this.config = new Config(this.dataPath + "nukkit.yml", Config.YAML);
+        this.config = new Config(nukkitYamlPath, Config.YAML);
         levelArray = Level.EMPTY_ARRAY;
 
         Nukkit.DEBUG = NukkitMath.clamp(this.getConfig("debug.level", 1), 1, 3);
