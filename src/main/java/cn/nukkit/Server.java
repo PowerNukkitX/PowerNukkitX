@@ -544,16 +544,7 @@ public class Server {
         log.info(this.getLanguage().tr("language.selected", new String[]{getLanguage().getName(), getLanguage().getLang()}));
         log.info(getLanguage().tr("nukkit.server.start", TextFormat.AQUA + this.getVersion() + TextFormat.RESET));
 
-        Object poolSize = this.getConfig("settings.async-workers", (Object) "auto");
-        if (!(poolSize instanceof Integer)) {
-            try {
-                poolSize = Integer.valueOf((String) poolSize);
-            } catch (Exception e) {
-                poolSize = Math.max(Runtime.getRuntime().availableProcessors(), 4);
-            }
-        }
-
-        ServerScheduler.WORKERS = (int) poolSize;
+        ServerScheduler.WORKERS = getSchedulerPoolSize();
 
         this.networkZlibProvider = this.getConfig("network.zlib-provider", 2);
         Zlib.setProvider(this.networkZlibProvider);
@@ -803,6 +794,7 @@ public class Server {
         System.runFinalization();
         this.start();
     }
+
 
     private static void initializeNukkitYaml(String nukkitYamlPath, String languagesCommaList, String language) {
         String fallback = BaseLang.FALLBACK_LANGUAGE;
@@ -3396,6 +3388,19 @@ public class Server {
     @Since("1.19.40-r3")
     public int getServerAuthoritativeMovement() {
         return serverAuthoritativeMovementMode;
+    }
+
+    private int getSchedulerPoolSize() {
+        Object poolSize = this.getConfig("settings.async-workers", (Object) "auto");
+        if (!(poolSize instanceof Integer)) {
+            try {
+                poolSize = Integer.valueOf((String) poolSize);
+            } catch (Exception e) {
+                poolSize = Math.max(Runtime.getRuntime().availableProcessors(), 4);
+            }
+        }
+
+        return (int) poolSize;
     }
 
     // endregion
