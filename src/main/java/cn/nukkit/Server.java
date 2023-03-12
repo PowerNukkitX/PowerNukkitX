@@ -440,160 +440,9 @@ public class Server {
         String nukkitYamlPath = this.dataPath + "nukkit.yml";
         if (!new File(nukkitYamlPath).exists()) {
             log.info(TextFormat.GREEN + "Welcome! Please choose a language first!");
-            String languagesCommaList;
-            try {
-                InputStream languageList = this.getClass().getModule().getResourceAsStream("language/language.list");
-                if (languageList == null) {
-                    throw new IllegalStateException("language/language.list is missing. If you are running a development version, make sure you have run 'git submodule update --init'.");
-                }
-                String[] lines = Utils.readFile(languageList).split("\n");
-                for (String line : lines) {
-                    log.info(line);
-                }
-                languagesCommaList = Stream.of(lines)
-                        .filter(line -> !line.isEmpty())
-                        .map(line -> line.substring(0, 3))
-                        .collect(Collectors.joining(", "));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-            String fallback = BaseLang.FALLBACK_LANGUAGE;
-            String language = null;
-            try {
-                while (language == null) {
-                    String lang;
-                    if (predefinedLanguage != null) {
-                        log.info("Trying to load language from predefined language: {}", predefinedLanguage);
-                        lang = predefinedLanguage;
-                    } else {
-                        lang = this.console.readLine();
-                    }
-
-                    InputStream conf = null;
-                    conf = this.getClass().getModule().getResourceAsStream("language/" + lang + "/lang.ini");
-                    if (conf != null) {
-                        language = lang;
-                    } else if (predefinedLanguage != null) {
-                        log.warn("No language found for predefined language: {}, please choose a valid language", predefinedLanguage);
-                        predefinedLanguage = null;
-                    }
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-            Properties nukkitYmlLang = new Properties();
-            InputStream nukkitYmlLangIS;
-
-            try {
-                nukkitYmlLangIS = this.getClass().getModule().getResourceAsStream("language/" + language + "/nukkit.yml.properties");
-                if (nukkitYmlLangIS == null) {
-                    nukkitYmlLangIS = this.getClass().getModule().getResourceAsStream("language/" + fallback + "/nukkit.yml.properties");
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-            if (nukkitYmlLangIS == null) {
-                try {
-                    Utils.writeFile(nukkitYamlPath, Server.class.getResourceAsStream("/default-nukkit.yml"));
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            } else {
-                try {
-                    nukkitYmlLang.load(new InputStreamReader(nukkitYmlLangIS, StandardCharsets.UTF_8));
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                } finally {
-                    try {
-                        nukkitYmlLangIS.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                StringBuilder result = new StringBuilder();
-
-                if (nukkitYmlLang.containsKey("nukkit.yml.header") && !nukkitYmlLang.getProperty("nukkit.yml.header").trim().isEmpty()) {
-                    for (String header : nukkitYmlLang.getProperty("nukkit.yml.header").trim().split("\n")) {
-                        result.append("# ").append(header).append(System.lineSeparator());
-                    }
-                    result.append(System.lineSeparator());
-                }
-
-                StringBuilder keyBuilder = new StringBuilder();
-                try (BufferedReader in = new BufferedReader(new InputStreamReader(Server.class.getResourceAsStream("/default-nukkit.yml"), StandardCharsets.UTF_8))) {
-                    String line;
-                    LinkedList<String[]> path = new LinkedList<>();
-                    Pattern pattern = Pattern.compile("^( *)([a-z-]+):");
-                    int lastIdent = 0;
-                    String[] last = null;
-                    while ((line = in.readLine()) != null) {
-                        Matcher matcher = pattern.matcher(line);
-                        if (!matcher.find()) {
-                            result.append(line).append(System.lineSeparator());
-                            continue;
-                        }
-
-                        String current = matcher.group(2);
-                        String ident = matcher.group(1);
-                        int newIdent = ident.length();
-
-                        if (newIdent < lastIdent) {
-                            int reduced = lastIdent - newIdent;
-                            int i = 0;
-                            while (i < reduced) {
-                                path.pollLast();
-                                i++;
-                            }
-                            lastIdent = lastIdent - reduced;
-                        }
-                        if (newIdent > lastIdent) {
-                            path.add(last);
-                            lastIdent = newIdent;
-                        }
-                        last = new String[]{current, ident};
-
-                        keyBuilder.setLength(0);
-                        keyBuilder.append("nukkit.yml");
-                        for (String[] part : path) {
-                            keyBuilder.append('.').append(part[0]);
-                        }
-                        keyBuilder.append('.').append(current);
-                        String key = keyBuilder.toString();
-                        if (!nukkitYmlLang.containsKey(key) || nukkitYmlLang.getProperty(key).trim().isEmpty()) {
-                            result.append(line).append(System.lineSeparator());
-                            continue;
-                        }
-
-                        String[] comments = nukkitYmlLang.getProperty(key).trim().split("\n");
-                        if (key.equals("nukkit.yml.aliases") || key.equals("nukkit.yml.worlds")) {
-                            result.append(line).append(System.lineSeparator());
-                            for (String comment : comments) {
-                                result.append(ident).append(" # ").append(comment).append(System.lineSeparator());
-                            }
-                        } else if (key.equals("nukkit.yml.settings.language")) {
-                            for (String comment : comments) {
-                                comment = comment.replace("%1", languagesCommaList);
-                                result.append(ident).append("# ").append(comment).append(System.lineSeparator());
-                            }
-                            result.append(ident).append("language: ").append(language).append(System.lineSeparator());
-                        } else {
-                            for (String comment : comments) {
-                                result.append(ident).append("# ").append(comment).append(System.lineSeparator());
-                            }
-                            result.append(line).append(System.lineSeparator());
-                        }
-                    }
-
-                    Utils.writeFile(nukkitYamlPath, result.toString());
-                } catch (IOException e) {
-                    throw new AssertionError("Failed to create nukkit.yml", e);
-                }
-            }
-
+            String languagesCommaList = loadLanguagesCommaList();
+            String language = readLanguageFromConsole(predefinedLanguage, this.console);
+            initializeNukkitYaml(nukkitYamlPath, languagesCommaList, language);
         }
 
         this.console.setExecutingCommands(true);
@@ -953,6 +802,170 @@ public class Server {
 
         System.runFinalization();
         this.start();
+    }
+
+    private static void initializeNukkitYaml(String nukkitYamlPath, String languagesCommaList, String language) {
+        String fallback = BaseLang.FALLBACK_LANGUAGE;
+        Properties nukkitYmlLang = new Properties();
+        InputStream nukkitYmlLangIS;
+
+        try {
+            nukkitYmlLangIS = Server.class.getModule().getResourceAsStream("language/" + language + "/nukkit.yml.properties");
+            if (nukkitYmlLangIS == null) {
+                nukkitYmlLangIS = Server.class.getModule().getResourceAsStream("language/" + fallback + "/nukkit.yml.properties");
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        if (nukkitYmlLangIS == null) {
+            try {
+                Utils.writeFile(nukkitYamlPath, Server.class.getResourceAsStream("/default-nukkit.yml"));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            try {
+                nukkitYmlLang.load(new InputStreamReader(nukkitYmlLangIS, StandardCharsets.UTF_8));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } finally {
+                try {
+                    nukkitYmlLangIS.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            StringBuilder result = new StringBuilder();
+
+            if (nukkitYmlLang.containsKey("nukkit.yml.header") && !nukkitYmlLang.getProperty("nukkit.yml.header").trim().isEmpty()) {
+                for (String header : nukkitYmlLang.getProperty("nukkit.yml.header").trim().split("\n")) {
+                    result.append("# ").append(header).append(System.lineSeparator());
+                }
+                result.append(System.lineSeparator());
+            }
+
+            StringBuilder keyBuilder = new StringBuilder();
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(Server.class.getResourceAsStream("/default-nukkit.yml"), StandardCharsets.UTF_8))) {
+                String line;
+                LinkedList<String[]> path = new LinkedList<>();
+                Pattern pattern = Pattern.compile("^( *)([a-z-]+):");
+                int lastIdent = 0;
+                String[] last = null;
+                while ((line = in.readLine()) != null) {
+                    Matcher matcher = pattern.matcher(line);
+                    if (!matcher.find()) {
+                        result.append(line).append(System.lineSeparator());
+                        continue;
+                    }
+
+                    String current = matcher.group(2);
+                    String ident = matcher.group(1);
+                    int newIdent = ident.length();
+
+                    if (newIdent < lastIdent) {
+                        int reduced = lastIdent - newIdent;
+                        int i = 0;
+                        while (i < reduced) {
+                            path.pollLast();
+                            i++;
+                        }
+                        lastIdent = lastIdent - reduced;
+                    }
+                    if (newIdent > lastIdent) {
+                        path.add(last);
+                        lastIdent = newIdent;
+                    }
+                    last = new String[]{current, ident};
+
+                    keyBuilder.setLength(0);
+                    keyBuilder.append("nukkit.yml");
+                    for (String[] part : path) {
+                        keyBuilder.append('.').append(part[0]);
+                    }
+                    keyBuilder.append('.').append(current);
+                    String key = keyBuilder.toString();
+                    if (!nukkitYmlLang.containsKey(key) || nukkitYmlLang.getProperty(key).trim().isEmpty()) {
+                        result.append(line).append(System.lineSeparator());
+                        continue;
+                    }
+
+                    String[] comments = nukkitYmlLang.getProperty(key).trim().split("\n");
+                    if (key.equals("nukkit.yml.aliases") || key.equals("nukkit.yml.worlds")) {
+                        result.append(line).append(System.lineSeparator());
+                        for (String comment : comments) {
+                            result.append(ident).append(" # ").append(comment).append(System.lineSeparator());
+                        }
+                    } else if (key.equals("nukkit.yml.settings.language")) {
+                        for (String comment : comments) {
+                            comment = comment.replace("%1", languagesCommaList);
+                            result.append(ident).append("# ").append(comment).append(System.lineSeparator());
+                        }
+                        result.append(ident).append("language: ").append(language).append(System.lineSeparator());
+                    } else {
+                        for (String comment : comments) {
+                            result.append(ident).append("# ").append(comment).append(System.lineSeparator());
+                        }
+                        result.append(line).append(System.lineSeparator());
+                    }
+                }
+
+                Utils.writeFile(nukkitYamlPath, result.toString());
+            } catch (IOException e) {
+                throw new AssertionError("Failed to create nukkit.yml", e);
+            }
+        }
+    }
+
+    @NotNull
+    private static String readLanguageFromConsole(String predefinedLanguage, NukkitConsole console1) {
+        String language = null;
+        try {
+            while (language == null) {
+                String lang;
+                if (predefinedLanguage != null) {
+                    log.info("Trying to load language from predefined language: {}", predefinedLanguage);
+                    lang = predefinedLanguage;
+                } else {
+                    lang = console1.readLine();
+                }
+
+                InputStream conf = null;
+                conf = Server.class.getModule().getResourceAsStream("language/" + lang + "/lang.ini");
+                if (conf != null) {
+                    language = lang;
+                } else if (predefinedLanguage != null) {
+                    log.warn("No language found for predefined language: {}, please choose a valid language", predefinedLanguage);
+                    predefinedLanguage = null;
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return language;
+    }
+
+    @NotNull
+    private static String loadLanguagesCommaList() {
+        String languagesCommaList;
+        try {
+            InputStream languageList = Server.class.getModule().getResourceAsStream("language/language.list");
+            if (languageList == null) {
+                throw new IllegalStateException("language/language.list is missing. If you are running a development version, make sure you have run 'git submodule update --init'.");
+            }
+            String[] lines = Utils.readFile(languageList).split("\n");
+            for (String line : lines) {
+                log.info(line);
+            }
+            languagesCommaList = Stream.of(lines)
+                    .filter(line -> !line.isEmpty())
+                    .map(line -> line.substring(0, 3))
+                    .collect(Collectors.joining(", "));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return languagesCommaList;
     }
 
 
