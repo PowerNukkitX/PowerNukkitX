@@ -153,14 +153,12 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
             target.attack(ev);
 
             if (!ev.isCancelled()) {
-                ev.setBreakShield(item.canBreakShield());
-                target.attack(ev);
+                //如果生物有药水效果就给药水效果
+                if (this.effect != null) {
+                    target.addEffect(effect);
+                }
             }
 
-            //如果生物有药水效果就给药水效果
-            if (this.effect != null) {
-                target.addEffect(effect);
-            }
             playAttackAnimation(entity);
             attackTick = 0;
             return target.getHealth() != 0;

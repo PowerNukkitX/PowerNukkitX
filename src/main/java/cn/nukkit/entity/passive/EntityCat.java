@@ -175,6 +175,8 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityTam
 
     @Override
     public void initEntity() {
+        this.setMaxHealth(10);
+        super.initEntity();
         this.setDataProperty(new IntEntityData(Entity.DATA_AMBIENT_SOUND_EVENT_NAME, LevelSoundEventPacket.SOUND_AMBIENT));
         if (this.isBaby()) {
             this.setDataProperty(new IntEntityData(Entity.DATA_AMBIENT_SOUND_EVENT_NAME, LevelSoundEventPacket.SOUND_AMBIENT_BABY));
@@ -195,8 +197,6 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityTam
             this.variant = getRandomVariant();
         }
         this.setDataProperty(new IntEntityData(DATA_VARIANT, this.variant));
-        this.setMaxHealth(10);
-        super.initEntity();
     }
 
     private int getRandomVariant() {
