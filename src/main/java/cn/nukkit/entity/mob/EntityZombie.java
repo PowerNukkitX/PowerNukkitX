@@ -20,12 +20,15 @@ import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.potion.Effect;
+import cn.nukkit.utils.Utils;
 
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author Dr. Nick Doran
@@ -135,5 +138,19 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
             getMemoryStorage().put(CoreMemoryTypes.ATTACK_TARGET, entityDamageByEntityEvent.getDamager());
         }
         return result;
+    }
+
+    @Override
+    public Item[] getDrops() {
+        //使用dorps判断概率,在0.83%概率下会给土豆或者马铃薯以及铁锭任意一个物品
+        float drops = ThreadLocalRandom.current().nextFloat(100);
+        if (drops < 0.83) {
+            return switch (Utils.rand(0, 2)) {
+                case 0 -> new Item[]{Item.get(Item.IRON_INGOT, 0, 1), Item.get(Item.ROTTEN_FLESH, 0, Utils.rand(0, 2))};
+                case 1 -> new Item[]{Item.get(Item.CARROT, 0, 1), Item.get(Item.ROTTEN_FLESH, 0, Utils.rand(0, 2))};
+                default -> new Item[]{Item.get(Item.POTATO, 0, 1), Item.get(Item.ROTTEN_FLESH, 0, Utils.rand(0, 2))};
+            };
+        }
+        return new Item[]{Item.get(Item.ROTTEN_FLESH, 0, Utils.rand(0, 2))};
     }
 }
