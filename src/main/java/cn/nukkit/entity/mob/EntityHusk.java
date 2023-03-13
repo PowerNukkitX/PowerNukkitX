@@ -115,14 +115,11 @@ public class EntityHusk extends EntityZombie {
     public Item[] getDrops() {
         float drops = ThreadLocalRandom.current().nextFloat(100);
         if (drops < 0.83) {
-            int i = Utils.rand(0, 2);
-            if (i == 0) {
-                return new Item[]{Item.get(Item.IRON_INGOT, 0, 1), Item.get(Item.ROTTEN_FLESH, 0, Utils.rand(0, 2))};
-            } else if (i == 1) {
-                return new Item[]{Item.get(Item.CARROT, 0, 1), Item.get(Item.ROTTEN_FLESH, 0, Utils.rand(0, 2))};
-            } else if (i == 2) {
-                return new Item[]{Item.get(Item.POTATO, 0, 1), Item.get(Item.ROTTEN_FLESH, 0, Utils.rand(0, 2))};
-            }
+            return switch (Utils.rand(0, 2)) {
+                case 0 -> new Item[]{Item.get(Item.IRON_INGOT, 0, 1), Item.get(Item.ROTTEN_FLESH, 0, 1)};
+                case 1 -> new Item[]{Item.get(Item.CARROT, 0, 1), Item.get(Item.ROTTEN_FLESH, 0, 1)};
+                default -> new Item[]{Item.get(Item.POTATO, 0, 1), Item.get(Item.ROTTEN_FLESH, 0, 1)};
+            };
         }
         return new Item[]{Item.get(Item.ROTTEN_FLESH, 0, Utils.rand(0, 2))};
     }
