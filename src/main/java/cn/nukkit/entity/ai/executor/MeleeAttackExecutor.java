@@ -157,10 +157,11 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
                 if (this.effect != null) {
                     target.addEffect(effect);
                 }
+
+                playAttackAnimation(entity);
+                attackTick = 0;
             }
 
-            playAttackAnimation(entity);
-            attackTick = 0;
             return target.getHealth() != 0;
         }
 
