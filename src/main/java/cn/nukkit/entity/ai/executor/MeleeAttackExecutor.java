@@ -73,8 +73,8 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
      * @param maxSenseRange     最大获取攻击目标范围
      * @param clearDataWhenLose 失去目标时清空记忆
      * @param coolDown          攻击冷却时间(单位tick)
+     * @param effect            给予目标药水效果
      */
-
     public MeleeAttackExecutor(MemoryType<? extends Entity> memory, float speed, int maxSenseRange, boolean clearDataWhenLose, int coolDown, Effect effect) {
         this.memory = memory;
         this.speed = speed;
