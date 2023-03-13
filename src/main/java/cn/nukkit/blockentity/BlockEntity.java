@@ -129,6 +129,53 @@ public abstract class BlockEntity extends Position {
         this.getLevel().addBlockEntity(this);
     }
 
+    @PowerNukkitXInternal
+    public static void init() {
+        registerBlockEntity(FURNACE, BlockEntityFurnace.class);
+        registerBlockEntity(CHEST, BlockEntityChest.class);
+        registerBlockEntity(SIGN, BlockEntitySign.class);
+        registerBlockEntity(ENCHANT_TABLE, BlockEntityEnchantTable.class);
+        registerBlockEntity(SKULL, BlockEntitySkull.class);
+        registerBlockEntity(FLOWER_POT, BlockEntityFlowerPot.class);
+        registerBlockEntity(BREWING_STAND, BlockEntityBrewingStand.class);
+        registerBlockEntity(ITEM_FRAME, BlockEntityItemFrame.class);
+        registerBlockEntity(CAULDRON, BlockEntityCauldron.class);
+        registerBlockEntity(ENDER_CHEST, BlockEntityEnderChest.class);
+        registerBlockEntity(BEACON, BlockEntityBeacon.class);
+        registerBlockEntity(PISTON_ARM, BlockEntityPistonArm.class);
+        registerBlockEntity(COMPARATOR, BlockEntityComparator.class);
+        registerBlockEntity(HOPPER, BlockEntityHopper.class);
+        registerBlockEntity(BED, BlockEntityBed.class);
+        registerBlockEntity(JUKEBOX, BlockEntityJukebox.class);
+        registerBlockEntity(SHULKER_BOX, BlockEntityShulkerBox.class);
+        registerBlockEntity(BANNER, BlockEntityBanner.class);
+        registerBlockEntity(MUSIC, BlockEntityMusic.class);
+        registerBlockEntity(LECTERN, BlockEntityLectern.class);
+        registerBlockEntity(BLAST_FURNACE, BlockEntityBlastFurnace.class);
+        registerBlockEntity(SMOKER, BlockEntitySmoker.class);
+        registerBlockEntity(BEEHIVE, BlockEntityBeehive.class);
+        registerBlockEntity(CONDUIT, BlockEntityConduit.class);
+        registerBlockEntity(BARREL, BlockEntityBarrel.class);
+        registerBlockEntity(CAMPFIRE, BlockEntityCampfire.class);
+        registerBlockEntity(BELL, BlockEntityBell.class);
+        registerBlockEntity(DAYLIGHT_DETECTOR, BlockEntityDaylightDetector.class);
+        registerBlockEntity(DISPENSER, BlockEntityDispenser.class);
+        registerBlockEntity(DROPPER, BlockEntityDropper.class);
+        registerBlockEntity(MOVING_BLOCK, BlockEntityMovingBlock.class);
+        registerBlockEntity(NETHER_REACTOR, BlockEntityNetherReactor.class);
+        registerBlockEntity(LODESTONE, BlockEntityLodestone.class);
+        registerBlockEntity(TARGET, BlockEntityTarget.class);
+        registerBlockEntity(END_PORTAL, BlockEntityEndPortal.class);
+        registerBlockEntity(END_GATEWAY, BlockEntityEndGateway.class);
+        //powernukkitx only
+        registerBlockEntity(COMMAND_BLOCK, BlockEntityCommandBlock.class);
+        registerBlockEntity(SCULK_SENSOR, BlockEntitySculkSensor.class);
+        registerBlockEntity(SCULK_CATALYST, BlockEntitySculkCatalyst.class);
+        registerBlockEntity(SCULK_SHRIEKER, BlockEntitySculkShrieker.class);
+        registerBlockEntity(STRUCTURE_BLOCK, BlockEntityStructBlock.class);
+        registerBlockEntity(GLOW_ITEM_FRAME, BlockEntityGlowItemFrame.class);
+    }
+
     protected void initBlockEntity() {
         loadNBT();
     }
