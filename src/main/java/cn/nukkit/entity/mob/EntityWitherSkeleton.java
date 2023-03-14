@@ -113,7 +113,6 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
         if (this.getItemInHand() != Item.get(Item.STONE_SWORD)) {
             this.setItemInHand(Item.get(Item.STONE_SWORD));
         }
-        this.setDataProperty(new IntEntityData(Entity.DATA_FLAG_WALKER, LevelSoundEventPacket.SOUND_STEP));
         this.setDataProperty(new IntEntityData(Entity.DATA_AMBIENT_SOUND_EVENT_NAME, LevelSoundEventPacket.SOUND_AMBIENT));
     }
 
