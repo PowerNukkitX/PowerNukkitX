@@ -171,7 +171,7 @@ public class CraftingManager {
                 CraftingDataType type = CraftingDataType.byId(Utils.toInt(recipe.get("type")));
                 String craftingBlock = (String) recipe.get("block");
                 switch (type) {
-                    case SHAPELESS, SHULKER_BOX -> {
+                    case SHAPELESS, SHULKER_BOX, SMITHING_TRANSFORM -> {
                         if (type == CraftingDataType.SHULKER_BOX) {
                             craftingBlock = "shulker_box";
                         }

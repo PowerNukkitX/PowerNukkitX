@@ -3,39 +3,237 @@
   "recipes": [
     {
       "type": 8,
-      "block": "smithing_table"
+      "block": "smithing_table",
+      "id": "minecraft:netherite_axe",
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "id": "minecraft:diamond_axe",
+          "auxValue": 32767
+        },
+        {
+          "type": "default",
+          "count": 1,
+          "id": "minecraft:netherite_ingot",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:netherite_axe",
+          "count": 1
+        }
+      ],
+      "priority": 0
     },
     {
       "type": 8,
-      "block": "smithing_table"
+      "block": "smithing_table",
+      "id": "minecraft:netherite_boots",
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "id": "minecraft:diamond_boots",
+          "auxValue": 32767
+        },
+        {
+          "type": "default",
+          "count": 1,
+          "id": "minecraft:netherite_ingot",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:netherite_boots",
+          "count": 1
+        }
+      ],
+      "priority": 0
     },
     {
       "type": 8,
-      "block": "smithing_table"
+      "block": "smithing_table",
+      "id": "minecraft:netherite_chestplate",
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "id": "minecraft:diamond_chestplate",
+          "auxValue": 32767
+        },
+        {
+          "type": "default",
+          "count": 1,
+          "id": "minecraft:netherite_ingot",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:netherite_chestplate",
+          "count": 1
+        }
+      ],
+      "priority": 0
     },
     {
       "type": 8,
-      "block": "smithing_table"
+      "block": "smithing_table",
+      "id": "minecraft:netherite_helmet",
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "id": "minecraft:diamond_helmet",
+          "auxValue": 32767
+        },
+        {
+          "type": "default",
+          "count": 1,
+          "id": "minecraft:netherite_ingot",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:netherite_helmet",
+          "count": 1
+        }
+      ],
+      "priority": 0
     },
     {
       "type": 8,
-      "block": "smithing_table"
+      "block": "smithing_table",
+      "id": "minecraft:netherite_hoe",
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "id": "minecraft:diamond_hoe",
+          "auxValue": 32767
+        },
+        {
+          "type": "default",
+          "count": 1,
+          "id": "minecraft:netherite_ingot",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:netherite_hoe",
+          "count": 1
+        }
+      ],
+      "priority": 0
     },
     {
       "type": 8,
-      "block": "smithing_table"
+      "block": "smithing_table",
+      "id": "minecraft:netherite_leggings",
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "id": "minecraft:diamond_leggings",
+          "auxValue": 32767
+        },
+        {
+          "type": "default",
+          "count": 1,
+          "id": "minecraft:netherite_ingot",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:netherite_leggings",
+          "count": 1
+        }
+      ],
+      "priority": 0
     },
     {
       "type": 8,
-      "block": "smithing_table"
+      "block": "smithing_table",
+      "id": "minecraft:netherite_pickaxe",
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "id": "minecraft:diamond_pickaxe",
+          "auxValue": 32767
+        },
+        {
+          "type": "default",
+          "count": 1,
+          "id": "minecraft:netherite_ingot",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:netherite_pickaxe",
+          "count": 1
+        }
+      ],
+      "priority": 0
     },
     {
       "type": 8,
-      "block": "smithing_table"
+      "block": "smithing_table",
+      "id": "minecraft:netherite_shovel",
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "id": "minecraft:diamond_shovel",
+          "auxValue": 32767
+        },
+        {
+          "type": "default",
+          "count": 1,
+          "id": "minecraft:netherite_ingot",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:netherite_shovel",
+          "count": 1
+        }
+      ],
+      "priority": 0
     },
     {
       "type": 8,
-      "block": "smithing_table"
+      "block": "smithing_table",
+      "id": "minecraft:netherite_sword",
+      "input": [
+        {
+          "type": "default",
+          "count": 1,
+          "id": "minecraft:diamond_sword",
+          "auxValue": 32767
+        },
+        {
+          "type": "default",
+          "count": 1,
+          "id": "minecraft:netherite_ingot",
+          "auxValue": 32767
+        }
+      ],
+      "output": [
+        {
+          "id": "minecraft:netherite_sword",
+          "count": 1
+        }
+      ],
+      "priority": 0
     },
     {
       "id": "minecraft:stripped_mangrove_wood",
