@@ -121,7 +121,6 @@ public class CraftingDataPacket extends DataPacket {
                 case SHAPELESS:
                 case CARTOGRAPHY:
                 case SHULKER_BOX:
-                case SMITHING:
                     ShapelessRecipe shapeless = (ShapelessRecipe) recipe;
                     this.putString(shapeless.getRecipeId());
                     List<ItemDescriptor> ingredients = shapeless.getNewIngredients();
@@ -135,9 +134,17 @@ public class CraftingDataPacket extends DataPacket {
                     switch (recipe.getType()) {
                         case CARTOGRAPHY -> this.putString(CRAFTING_TAG_CARTOGRAPHY_TABLE);
                         case SHAPELESS, SHULKER_BOX -> this.putString(CRAFTING_TAG_CRAFTING_TABLE);
-                        case SMITHING -> this.putString(CRAFTING_TAG_SMITHING_TABLE);
                     }
                     this.putVarInt(shapeless.getPriority());
+                    this.putUnsignedVarInt(recipeNetworkId++);
+                    break;
+                case SMITHING_TRANSFORM:
+                    SmithingRecipe smithing = (SmithingRecipe) recipe;
+                    this.putString(smithing.getRecipeId());
+                    this.putRecipeIngredient(new DefaultDescriptor(smithing.getEquipment()));
+                    this.putRecipeIngredient(new DefaultDescriptor(smithing.getIngredient()));
+                    this.putSlot(smithing.getResult(), true);
+                    this.putString(CRAFTING_TAG_SMITHING_TABLE);
                     this.putUnsignedVarInt(recipeNetworkId++);
                     break;
                 case SHAPED:

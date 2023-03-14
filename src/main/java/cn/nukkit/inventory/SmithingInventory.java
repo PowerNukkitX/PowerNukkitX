@@ -21,6 +21,7 @@ package cn.nukkit.inventory;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Position;
@@ -46,6 +47,10 @@ public class SmithingInventory extends FakeBlockUIComponent {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final int SMITHING_INGREDIENT_UI_SLOT = 52;
+
+    @Since("1.19.63-r2")
+    @PowerNukkitXOnly
+    private Item currentResult = AIR_ITEM;
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -74,7 +79,7 @@ public class SmithingInventory extends FakeBlockUIComponent {
         Item result;
         SmithingRecipe recipe = matchRecipe();
         if (recipe == null) {
-            result =  Item.get(0);
+            result =  AIR_ITEM;
         } else {
             result = recipe.getFinalResult(getEquipment());
         }
@@ -82,7 +87,9 @@ public class SmithingInventory extends FakeBlockUIComponent {
     }
     
     private void setResult(Item result) {
-        //playerUI.setItem(50, result);
+//        We don't need to send the result to the player, because the client will do it for us
+//        playerUI.setItem(50, result);
+        this.currentResult = result;
     }
 
     @PowerNukkitOnly
@@ -91,7 +98,7 @@ public class SmithingInventory extends FakeBlockUIComponent {
     public Item getResult() {
         SmithingRecipe recipe = matchRecipe();
         if (recipe == null) {
-            return Item.get(0);
+            return AIR_ITEM;
         }
         return recipe.getFinalResult(getEquipment());
     }
@@ -136,5 +143,11 @@ public class SmithingInventory extends FakeBlockUIComponent {
         this.clear(EQUIPMENT);
         this.clear(INGREDIENT);
         playerUI.clear(50);
+    }
+
+    @Since("1.19.63-r2")
+    @PowerNukkitXOnly
+    public @NotNull Item getCurrentResult() {
+        return currentResult;
     }
 }

@@ -112,7 +112,7 @@ public class SmithingRecipe extends ShapelessRecipe {
 
     @Override
     public RecipeType getType() {
-        return RecipeType.SMITHING;
+        return RecipeType.SMITHING_TRANSFORM;
     }
 
     @PowerNukkitOnly
