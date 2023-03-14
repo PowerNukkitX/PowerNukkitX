@@ -144,17 +144,20 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
     public boolean isPreventingSleep(Player player) {
         return true;
     }
-
+//掉落剑的概率为8.5% 掉落头的概率为2.5%
     @Override
     public Item[] getDrops() {
         float r = ThreadLocalRandom.current().nextFloat(100);
-        if (r < 8.5f) {
-            return new Item[]{Item.get(Item.STONE_SWORD, Utils.rand(0, 131), 1), Item.get(Item.BONE, 0, Utils.rand(0, 2))};
-        }
+        float i = ThreadLocalRandom.current().nextFloat(100);
         if (Utils.rand(0, 2) == 0) {
+            if (r < 8.5f) {
+                if (i < 2.5f) {
+                    return new Item[]{Item.get(Item.SKULL, 1, 1), Item.get(Item.STONE_SWORD, Utils.rand(0, 131), 1), Item.get(Item.COAL, 0, 1), Item.get(Item.BONE, 0, Utils.rand(0, 2))};
+                }
+                return new Item[]{Item.get(Item.STONE_SWORD, Utils.rand(0, 131), 1), Item.get(Item.COAL, 0, 1), Item.get(Item.BONE, 0, Utils.rand(0, 2))};
+            }
             return new Item[]{Item.get(Item.COAL, 0, 1), Item.get(Item.BONE, 0, Utils.rand(0, 2))};
         }
-
         return new Item[]{Item.get(Item.BONE, 0, Utils.rand(0, 2))};
     }
 }
