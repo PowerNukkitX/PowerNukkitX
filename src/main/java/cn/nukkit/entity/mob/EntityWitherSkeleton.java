@@ -31,6 +31,7 @@ import cn.nukkit.utils.Utils;
 
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author PikyCZ
@@ -41,9 +42,6 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
 
     public EntityWitherSkeleton(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
-        if (this.getItemInHand() != Item.get(Item.STONE_SWORD)) {
-            this.setItemInHand(Item.get(Item.STONE_SWORD));
-        }
     }
 
     @Override
@@ -108,9 +106,13 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
 
     @Override
     protected void initEntity() {
-        this.setDataProperty(new IntEntityData(Entity.DATA_AMBIENT_SOUND_EVENT_NAME, LevelSoundEventPacket.SOUND_AMBIENT));
         this.setMaxHealth(20);
         super.initEntity();
+        if (this.getItemInHand() != Item.get(Item.STONE_SWORD)) {
+            this.setItemInHand(Item.get(Item.STONE_SWORD));
+        }
+        this.setDataProperty(new IntEntityData(Entity.DATA_FLAG_WALKER, LevelSoundEventPacket.SOUND_STEP));
+        this.setDataProperty(new IntEntityData(Entity.DATA_AMBIENT_SOUND_EVENT_NAME, LevelSoundEventPacket.SOUND_AMBIENT));
     }
 
     @Override
@@ -144,9 +146,14 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
 
     @Override
     public Item[] getDrops() {
+        float r = ThreadLocalRandom.current().nextFloat(100);
+        if (r < 8.5f) {
+            return new Item[]{Item.get(Item.STONE_SWORD, Utils.rand(0, 131), 1), Item.get(Item.BONE, 0, Utils.rand(0, 2))};
+        }
         if (Utils.rand(0, 2) == 0) {
             return new Item[]{Item.get(Item.COAL, 0, 1), Item.get(Item.BONE, 0, Utils.rand(0, 2))};
         }
+
         return new Item[]{Item.get(Item.BONE, 0, Utils.rand(0, 2))};
     }
 }
