@@ -3,10 +3,7 @@ package cn.powernukkitx.tools;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -15,7 +12,8 @@ import java.nio.file.StandardOpenOption;
 
 public final class NBTDumper {
     public static void main(String[] args) {
-        try (InputStream stream = new FileInputStream("src/main/resources/canonical_block_states.nbt")) {
+        var file = new File("src/main/resources/entity_identifiers.dat");
+        try (InputStream stream = new FileInputStream(file)) {
             //noinspection ConstantConditions
             if (stream == null) {
                 throw new AssertionError("Unable to locate block state nbt");
@@ -24,7 +22,7 @@ public final class NBTDumper {
             try (BufferedInputStream bis = new BufferedInputStream(stream)) {
                 while (bis.available() > 0) {
                     CompoundTag tag = NBTIO.read(bis, ByteOrder.BIG_ENDIAN, true);
-                    Files.writeString(Path.of("target/canonical_block_states.snbt"), tag + "\n\n", StandardCharsets.UTF_8,
+                    Files.writeString(Path.of("target/" + file.getName() + ".txt"), tag + "\n\n", StandardCharsets.UTF_8,
                             StandardOpenOption.CREATE, StandardOpenOption.APPEND);
                 }
             }
