@@ -1,9 +1,9 @@
-package cn.nukkit.network.protocol;
+package cn.nukkit.network.protocol.v568;
 
-import cn.nukkit.api.Since;
 import cn.nukkit.math.Vector2;
-import cn.nukkit.math.Vector2f;
 import cn.nukkit.math.Vector3f;
+import cn.nukkit.network.protocol.DataPacket;
+import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.types.*;
 import lombok.Getter;
 import lombok.ToString;
@@ -15,7 +15,7 @@ import java.util.Set;
 
 @ToString
 @Getter
-public class PlayerAuthInputPacket extends DataPacket {
+public class PlayerAuthInputPacket_v568 extends DataPacket {
     public static final byte NETWORK_ID = ProtocolInfo.PLAYER_AUTH_INPUT_PACKET;
 
     private float yaw;
@@ -32,8 +32,6 @@ public class PlayerAuthInputPacket extends DataPacket {
     private Vector3f delta;
     // private ItemStackRequest itemStackRequest;
     private Map<PlayerActionType, PlayerBlockActionData> blockActionData = new EnumMap<>(PlayerActionType.class);
-    @Since("1.19.70-r1")
-    private Vector2f analogMoveVector;
 
     @Override
     public byte pid() {
@@ -88,12 +86,15 @@ public class PlayerAuthInputPacket extends DataPacket {
                 }
             }
         }
-        // since 1.19.70-r1, v575
-        this.analogMoveVector = this.getVector2f();
     }
 
     @Override
     public void encode() {
         // Noop
+    }
+
+    @Override
+    public int getProtocolUsed() {
+        return 568;
     }
 }
