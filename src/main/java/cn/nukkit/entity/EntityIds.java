@@ -19,6 +19,7 @@ public final class EntityIds {
     public static ImmutableMap<String, Integer> IDENTIFIER_2_IDS = ImmutableMap.<String, Integer>builder()
             .put("minecraft:chest_boat", EntityChestBoat.NETWORK_ID)//218
             .put("minecraft:trader_llama", 157)
+            .put("minecraft:camel", EntityCamel.NETWORK_ID)
             .put("minecraft:allay", EntityAllay.NETWORK_ID)//134
             .put("minecraft:tadpole", EntityTadpole.NETWORK_ID)//133
             .put("minecraft:frog", EntityFrog.NETWORK_ID)

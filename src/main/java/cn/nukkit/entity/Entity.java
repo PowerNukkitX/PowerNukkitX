@@ -1046,6 +1046,7 @@ public abstract class Entity extends Location implements Metadatable {
         registerEntity("Wolf", EntityWolf.class);
         registerEntity("ZombieHorse", EntityZombieHorse.class);
         registerEntity("NPC", EntityNPCEntity.class);
+        registerEntity("Camel", EntityCamel.class);
         //Projectile
         registerEntity("Small FireBall", EntitySmallFireBall.class);
         registerEntity("AreaEffectCloud", EntityAreaEffectCloud.class);
