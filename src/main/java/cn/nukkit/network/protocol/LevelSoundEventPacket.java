@@ -5,6 +5,8 @@ import cn.nukkit.api.Since;
 import cn.nukkit.math.Vector3f;
 import lombok.ToString;
 
+import static cn.nukkit.utils.Utils.dynamic;
+
 @ToString
 public class LevelSoundEventPacket extends DataPacket {
     public static final byte NETWORK_ID = ProtocolInfo.LEVEL_SOUND_EVENT_PACKET;
@@ -508,7 +510,7 @@ public class LevelSoundEventPacket extends DataPacket {
     public static final int SOUND_BRUSH_COMPLETED = 463;
     public static final int SOUND_SHATTER_DECORATED_POT = 464;
     public static final int SOUND_BREAK_DECORATED_POD = 465;
-    public static final int SOUND_UNDEFINED = 466;
+    public static final int SOUND_UNDEFINED = dynamic(466);
 
     public int sound;
     public float x;
