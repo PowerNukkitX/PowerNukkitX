@@ -36,4 +36,12 @@ public class EntityCamel extends EntityAnimal {
         }
         return 2.375f;
     }
+
+    @Override
+    public float getFootHeight() {
+        if (!isBaby()) {
+            return 1.5f;
+        }
+        return super.getFootHeight();
+    }
 }
