@@ -5,7 +5,11 @@ import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockUnknown;
+import cn.nukkit.blockproperty.UnknownRuntimeIdException;
+import cn.nukkit.blockproperty.exception.BlockPropertyNotFoundException;
 import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.PNAlphaItemID;
@@ -16,6 +20,7 @@ import cn.nukkit.nbt.stream.PGZIPOutputStream;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.ThreadCache;
+import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
@@ -23,6 +28,7 @@ import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Collection;
+import java.util.NoSuchElementException;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPInputStream;
@@ -34,6 +40,7 @@ import java.util.zip.GZIPInputStream;
 @PowerNukkitDifference(since = "1.4.0.0-PN", info = "It's the caller responsibility to close the provided streams")
 @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed output streams not being finished correctly")
 @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Added defensive close invocations to byte array streams")
+@Log4j2
 public class NBTIO {
 
     public static CompoundTag putItemHelper(Item item) {
@@ -134,12 +141,37 @@ public class NBTIO {
 
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
-    public static Block getBlockHelper(@NotNull CompoundTag block) {
+    public @NotNull
+    static Block getBlockHelper(@NotNull CompoundTag block) {
         if (!block.containsString("name")) return Block.get(0);
         StringBuilder state = new StringBuilder(block.getString("name"));
         CompoundTag states = block.getCompound("states");
         states.getTags().forEach((k, v) -> state.append(';').append(k).append('=').append(v.parseValue()));
-        return BlockState.of(state.toString()).getBlock();
+        var blockStateId = state.toString();
+        try {
+            var blockState = BlockState.of(blockStateId);
+            return blockState.getBlock();
+        } catch (BlockPropertyNotFoundException | UnknownRuntimeIdException e) {
+            int runtimeId = BlockStateRegistry.getKnownRuntimeIdByBlockStateId(blockStateId);
+            if (runtimeId == -1) {
+                log.debug("Unsupported block found in creativeitems.json: {}", blockStateId);
+                return BlockState.AIR.getBlock();
+            }
+            int blockId = BlockStateRegistry.getBlockIdByRuntimeId(runtimeId);
+            BlockState defaultBlockState = BlockState.of(blockId);
+            if (defaultBlockState.getProperties().equals(BlockUnknown.PROPERTIES)) {
+                log.debug("Unsupported block found in creativeitems.json: {}", blockStateId);
+                return BlockState.AIR.getBlock();
+            }
+            log.error("Failed to load the creative item with {}", blockStateId, e);
+            return BlockState.AIR.getBlock();
+        } catch (NoSuchElementException e) {
+            log.debug("No Such Element in creativeitems.json: {}", blockStateId, e);
+        } catch (Exception e) {
+            log.error("Failed to load the creative item {}", blockStateId, e);
+            return BlockState.AIR.getBlock();
+        }
+        return BlockState.AIR.getBlock();
     }
 
 

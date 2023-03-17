@@ -8,8 +8,6 @@ import cn.nukkit.math.MathHelper;
 import java.util.Arrays;
 
 public enum DyeColor {
-
-
     BLACK(0, 15, 16, "Black", "Ink Sac", BlockColor.BLACK_BLOCK_COLOR, new BlockColor(0x1D1D21), new BlockColor(0x00, 0x00, 0x00)),
     RED(1, 14, 1, "Red", "Red Dye", BlockColor.RED_BLOCK_COLOR, new BlockColor(0xB02E26), new BlockColor(0xb0, 0x2e, 0x26)),
     GREEN(2, 13, 2, "Green", "Green Dye", BlockColor.GREEN_BLOCK_COLOR, new BlockColor(0x5E7C16), new BlockColor(0x5e, 0x7c, 0x16)),

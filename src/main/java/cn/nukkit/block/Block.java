@@ -65,8 +65,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     public static final Block[] EMPTY_ARRAY = new Block[0];
 
     //<editor-fold desc="static fields" defaultstate="collapsed">
-    @SuppressWarnings("DeprecatedIsStillUsed")
-    @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "It is being replaced by an other solution that don't require a fixed size")
     @PowerNukkitOnly
     public static final int MAX_BLOCK_ID = dynamic(800);
