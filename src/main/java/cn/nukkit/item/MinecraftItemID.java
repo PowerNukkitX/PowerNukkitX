@@ -18,7 +18,6 @@
 
 package cn.nukkit.item;
 
-import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -64,7 +63,6 @@ public enum MinecraftItemID {
     @PowerNukkitOnly @Since("1.4.0.0-PN") POLISHED_BLACKSTONE_BRICK_DOUBLE_SLAB(false, true),
     @PowerNukkitOnly @Since("1.4.0.0-PN") POLISHED_BLACKSTONE_BRICK_SLAB,
     @PowerNukkitOnly @Since("1.4.0.0-PN") BLACKSTONE_DOUBLE_SLAB(true, true),
-    @PowerNukkitOnly @Deprecated @DeprecationDetails(since = "1.6.0.0-PNX", reason = "because mojang rename BLACKSTONE_SLAB to STONE_BLOCK_SLAB") @Since("1.4.0.0-PN") BLACKSTONE_SLAB,
     @PowerNukkitOnly @Since("1.6.0.0-PNX") STONE_BLOCK_SLAB,
     @PowerNukkitOnly @Since("1.4.0.0-PN") GILDED_BLACKSTONE,
     @PowerNukkitOnly @Since("1.4.0.0-PN") CRACKED_POLISHED_BLACKSTONE_BRICKS,
@@ -379,7 +377,7 @@ public enum MinecraftItemID {
     @PowerNukkitOnly @Since("1.4.0.0-PN") DEADBUSH,
     @PowerNukkitOnly @Since("1.4.0.0-PN") PISTON,
     //@PowerNukkitOnly @Since("1.4.0.0-PN") PISTONARMCOLLISION("minecraft:pistonArmCollision", "minecraft:piston"),
-    @PowerNukkitOnly @Since("1.4.0.0-PN") WOOL,
+    @PowerNukkitOnly @Since("1.4.0.0-PN") WHITE_WOOL,
     @PowerNukkitOnly @Since("1.4.0.0-PN") ELEMENT_0(false, false, true),
     @PowerNukkitOnly @Since("1.4.0.0-PN") YELLOW_FLOWER,
     @PowerNukkitOnly @Since("1.4.0.0-PN") RED_FLOWER,
@@ -1159,7 +1157,52 @@ public enum MinecraftItemID {
     @PowerNukkitXOnly @Since("1.19.63-r2") BROWN_CANDLE,
     @PowerNukkitXOnly @Since("1.19.63-r2") GREEN_CANDLE,
     @PowerNukkitXOnly @Since("1.19.63-r2") RED_CANDLE,
-    @PowerNukkitXOnly @Since("1.19.63-r2") BLACK_CANDLE;
+    @PowerNukkitXOnly @Since("1.19.63-r2") BLACK_CANDLE,
+    @Since("1.19.70-r1")
+    @PowerNukkitXOnly
+    LIGHT_GRAY_WOOL,
+    @Since("1.19.70-r1")
+    @PowerNukkitXOnly
+    GRAY_WOOL,
+    @Since("1.19.70-r1")
+    @PowerNukkitXOnly
+    BLACK_WOOL,
+    @Since("1.19.70-r1")
+    @PowerNukkitXOnly
+    BROWN_WOOL,
+    @Since("1.19.70-r1")
+    @PowerNukkitXOnly
+    RED_WOOL,
+    @Since("1.19.70-r1")
+    @PowerNukkitXOnly
+    ORANGE_WOOL,
+    @Since("1.19.70-r1")
+    @PowerNukkitXOnly
+    YELLOW_WOOL,
+    @Since("1.19.70-r1")
+    @PowerNukkitXOnly
+    LIME_WOOL,
+    @Since("1.19.70-r1")
+    @PowerNukkitXOnly
+    GREEN_WOOL,
+    @Since("1.19.70-r1")
+    @PowerNukkitXOnly
+    CYAN_WOOL,
+    @Since("1.19.70-r1")
+    @PowerNukkitXOnly
+    LIGHT_BLUE_WOOL,
+    @Since("1.19.70-r1")
+    @PowerNukkitXOnly
+    BLUE_WOOL,
+    @Since("1.19.70-r1")
+    @PowerNukkitXOnly
+    PURPLE_WOOL,
+    @Since("1.19.70-r1")
+    @PowerNukkitXOnly
+    MAGENTA_WOOL,
+    @Since("1.19.70-r1")
+    @PowerNukkitXOnly
+    PINK_WOOL;
 
     private static final Map<String, MinecraftItemID> namespacedIdMap = Arrays.stream(values())
             .flatMap(id ->
