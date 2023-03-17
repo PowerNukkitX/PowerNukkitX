@@ -1087,7 +1087,7 @@ public enum MinecraftItemID {
     @PowerNukkitOnly RAW_GOLD,
     @PowerNukkitOnly RAW_COPPER,
     @PowerNukkitOnly GLOW_FRAME(false),
-    //todo 20220709 完成山羊角
+    //todo 20220709 完成山羊角后取消实现
     // @PowerNukkitOnly @Since("FUTURE") GOAT_HORN,
     @PowerNukkitOnly @Since("FUTURE") AMETHYST_SHARD,
     @PowerNukkitOnly @Since("FUTURE") SPYGLASS,
@@ -1143,7 +1143,6 @@ public enum MinecraftItemID {
     @PowerNukkitXOnly @Since("1.19.63-r2") SEA_LANTERN,
     @PowerNukkitXOnly @Since("1.19.63-r2") RECOVERY_COMPASS,
     @PowerNukkitXOnly @Since("1.19.63-r2") GLOBE_BANNER_PATTERN,
-    @PowerNukkitXOnly @Since("1.19.63-r2") GOAT_HORN,
     @PowerNukkitXOnly @Since("1.19.63-r2") CANDLE,
     @PowerNukkitXOnly @Since("1.19.63-r2") WHITE_CANDLE,
     @PowerNukkitXOnly @Since("1.19.63-r2") ORANGE_CANDLE,

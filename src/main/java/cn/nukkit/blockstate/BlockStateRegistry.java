@@ -12,6 +12,7 @@ import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.blockproperty.*;
 import cn.nukkit.blockproperty.exception.BlockPropertyNotFoundException;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
+import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.LinkedCompoundTag;
@@ -34,6 +35,10 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.*;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -152,18 +157,20 @@ public class BlockStateRegistry {
                 registerStateId(state, runtimeId);
             }
         }
-
         //update block_ids.csv
-        /*for (var block : warned) {
-            var id = 255-RuntimeItems.getRuntimeMapping().getNetworkIdByNamespaceId(block).getAsInt();
+        TreeMap<Integer, String> ids = new TreeMap<>(Integer::compare);
+        for (var block : warned) {
+            ids.put(255 - RuntimeItems.getRuntimeMapping().getNetworkIdByNamespaceId(block).getAsInt(), block);
+        }
+        for (var entry : ids.entrySet()) {
             try {
-                var path = Path.of("test.txt");
+                var path = Path.of("block_ids.txt");
                 if (!path.toFile().exists()) path.toFile().createNewFile();
-                Files.writeString(path, id + "," + block + "\n", StandardCharsets.UTF_8, StandardOpenOption.APPEND);
+                Files.writeString(path, entry.getKey() + "," + entry.getValue() + "\n", StandardCharsets.UTF_8, StandardOpenOption.APPEND);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }*/
+        }
 
         if (infoUpdateRuntimeId == null) {
             throw new IllegalStateException("Could not find the minecraft:info_update runtime id!");

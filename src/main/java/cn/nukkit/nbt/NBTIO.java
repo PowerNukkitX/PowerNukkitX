@@ -63,14 +63,7 @@ public class NBTIO {
         }
 
         if (item.hasCompoundTag()) {
-            if (id == ItemID.STRING_IDENTIFIED_ITEM) {
-                CompoundTag realCompound = item.getNamedTag().clone().remove("Name");//todo 未来移除
-                if (!realCompound.isEmpty()) {
-                    tag.putCompound("tag", realCompound);
-                }
-            } else {
-                tag.putCompound("tag", item.getNamedTag());
-            }
+            tag.putCompound("tag", item.getNamedTag());
         }
 
         return tag;
@@ -107,15 +100,6 @@ public class NBTIO {
             }
             item.setCount(amount);
         }
-
-        Tag tagTag = tag.get("tag");
-        if (tagTag instanceof CompoundTag compoundTag) {//todo 临时修复物品NBT，未来移除
-            if (compoundTag.containsString("Name")) {
-                compoundTag.remove("Name");
-            }
-            item.setNamedTag(compoundTag);
-        }
-
         return item;
     }
 

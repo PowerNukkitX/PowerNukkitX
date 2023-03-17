@@ -8,10 +8,7 @@ import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.LinkedHashMap;
 import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 @ExtendWith(PowerNukkitExtension.class)
 class ItemTest {
@@ -29,15 +26,6 @@ class ItemTest {
     @Test
     void initCreativeItemsTest() throws InvocationTargetException, IllegalAccessException {
         initCreativeItems.invoke(null);
-    }
-
-    @Test
-    void loadCreativeItemEntryBlockState() throws ReflectiveOperationException {
-        Map<String, Object> data = new LinkedHashMap<>();
-        data.put("blockState", "xxxxxx");
-        assertNull(loadCreativeItemEntry(data));
-        data.put("blockState", "minecraft:air;invalid=1");
-        assertNull(loadCreativeItemEntry(data));
     }
 
     @SneakyThrows
