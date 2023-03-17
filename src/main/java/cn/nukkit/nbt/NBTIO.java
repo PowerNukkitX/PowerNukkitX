@@ -101,8 +101,9 @@ public class NBTIO {
             item.setCount(amount);
         }
 
-        if (item.hasCompoundTag()) {
-            tag.putCompound("tag", item.getNamedTag());
+        Tag tagTag = tag.get("tag");
+        if (tagTag instanceof CompoundTag compoundTag) {
+            item.setNamedTag(compoundTag);
         }
         return item;
     }
