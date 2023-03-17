@@ -2885,50 +2885,6 @@ public class Server {
 
         level.initLevel();
 
-        //todo 临时转换羊毛方块状态，下个版本移除
-        var updateWoolFile = new File("updateWool");
-        if (!updateWoolFile.exists()) {
-            if (level.getProvider() instanceof Anvil anvil) {
-                File file = new File(Path.of(path).resolve("region").toUri());
-                if (file.exists()) {
-                    var regions = file.listFiles();
-                    if (regions != null) {
-                        var bid = Server.getInstance().addBusying(System.currentTimeMillis());
-                        final Method loadRegion;
-                        try {
-                            loadRegion = Anvil.class.getDeclaredMethod("loadRegion", int.class, int.class);
-                            loadRegion.setAccessible(true);
-                        } catch (NoSuchMethodException e) {
-                            throw new RuntimeException(e);
-                        }
-                        var allTask = new ArrayList<CompletableFuture<?>>();
-                        for (var region : regions) {
-                            allTask.add(CompletableFuture.runAsync(() -> {
-                                var regionPos = region.getName().split("\\.");
-                                var regionX = Integer.parseInt(regionPos[1]);
-                                var regionZ = Integer.parseInt(regionPos[2]);
-                                BaseRegionLoader loader;
-                                try {
-                                    loader = (BaseRegionLoader) loadRegion.invoke(anvil, regionX, regionZ);
-                                } catch (IllegalAccessException | InvocationTargetException e) {
-                                    throw new RuntimeException(e);
-                                }
-                                OldNukkitLevelConvert.convertWoolState(anvil, loader);
-                            }, this.computeThreadPool));
-                        }
-                        CompletableFuture.allOf(allTask.toArray(new CompletableFuture<?>[]{})).join();
-                        Server.getInstance().removeBusying(bid);
-                        loadRegion.setAccessible(false);
-                    }
-                }
-            }
-            try {
-                updateWoolFile.createNewFile();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
         //convert old Nukkit World
         if (level.getProvider() instanceof Anvil anvil && anvil.isOldAnvil() && level.isOverWorld()) {
             log.info(Server.getInstance().getLanguage().tr("nukkit.anvil.converter.update"));
