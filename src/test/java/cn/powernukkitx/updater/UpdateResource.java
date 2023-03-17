@@ -68,7 +68,7 @@ public class UpdateResource {
     }
 
     private void copyProxyPassResources(String pathProxyPassData) {
-        copy(pathProxyPassData, "runtime_item_states.json", "src/test/resources/org/powernukkit/updater/dumps/proxypass/runtime_item_states.json");
+        copy(pathProxyPassData, "runtime_item_states.json", "src/main/resources/runtime_item_states.json");
     }
 
     @SneakyThrows
@@ -106,7 +106,5 @@ public class UpdateResource {
             }
         }
         Files.writeString(Path.of("./src/main/resources/item_2_tags.json"), gson.toJson(test), StandardCharsets.UTF_8);
-
-
     }
 }
