@@ -65,9 +65,9 @@ The update tools are classes that are located at the test folder of this project
 they have some pre-requisites explained in the comments right on top of the files,
 make sure they are fulfilled before running or things can go wrong...
 
-- Adjust the path in `org.powernukkit.updater.AllResourcesDownloader.main(String[])` to point to
+- Adjust the path in `cn.powernukkitx.updater.UpdateResource.main(String[])` to point to
   the data folder in your ProxyPass run folder, some data will be loaded from there
-- Run `org.powernukkit.updater.AllResourcesDownloader.main(String[])`
+- Run `cn.powernukkitx.updater.UpdateResource.main(String[])`
 - Run `mvn clean package` (Don't skip!)
 - Run `org.powernukkit.updater.RuntimeItemIdUpdater.main(String[])`
 - Run `mvn clean package` (Don't skip!)

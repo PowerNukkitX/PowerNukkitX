@@ -90,7 +90,13 @@ public interface BlockID {
     int DEAD_BUSH = 32;
     int PISTON = 33;
     int PISTON_ARM_COLLISION = 34;
+    @Deprecated
+    @DeprecationDetails(by = "PowerNukkitX", since = "1.19.70-r1",
+            replaceWith = "WHITE_WOOL", reason = "Wrong Minecraft block name")
     int WOOL = 35;
+    @Since("1.19.70-r1")
+    @PowerNukkitXOnly
+    int WHITE_WOOL = WOOL;
     int DANDELION = 37;
     int RED_FLOWER = 38;
     @Deprecated
@@ -1055,549 +1061,595 @@ public interface BlockID {
     int QUARTZ_BRICKS = 559;
     // 560 Special block: minecraft:unknown
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int POWDER_SNOW = 561;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int SCULK_SENSOR = 562;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int POINTED_DRIPSTONE = 563;
     // 564 (unused)
     // 565 (unused)
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int COPPER_ORE = 566;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int LIGHTNING_ROD = 567;
     // 568 (unused)
     // 569 (unused)
     // 570 (unused)
     // 571 (unused)
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int DRIPSTONE_BLOCK = 572;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int DIRT_WITH_ROOTS = 573;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int HANGING_ROOTS = 574;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int MOSS_BLOCK = 575;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int SPORE_BLOSSOM = 576;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int CAVE_VINES = 577;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int BIG_DRIPLEAF = 578;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int AZALEA_LEAVES = 579;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int AZALEA_LEAVES_FLOWERED = 580;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int CALCITE = 581;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int AMETHYST_BLOCK = 582;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int BUDDING_AMETHYST = 583;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int AMETHYST_CLUSTER = 584;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int LARGE_AMETHYST_BUD = 585;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int MEDIUM_AMETHYST_BUD = 586;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int SMALL_AMETHYST_BUD = 587;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int TUFF = 588;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int TINTED_GLASS = 589;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int MOSS_CARPET = 590;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int SMALL_DRIPLEAF_BLOCK = 591;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int AZALEA = 592;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int FLOWERING_AZALEA = 593;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int GLOW_FRAME = 594;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int COPPER_BLOCK = 595;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int EXPOSED_COPPER = 596;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int WEATHERED_COPPER = 597;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int OXIDIZED_COPPER = 598;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int WAXED_COPPER = 599;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int WAXED_EXPOSED_COPPER = 600;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int WAXED_WEATHERED_COPPER = 601;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int CUT_COPPER = 602;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int EXPOSED_CUT_COPPER = 603;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int WEATHERED_CUT_COPPER = 604;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int OXIDIZED_CUT_COPPER = 605;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int WAXED_CUT_COPPER = 606;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int WAXED_EXPOSED_CUT_COPPER = 607;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int WAXED_WEATHERED_CUT_COPPER = 608;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int CUT_COPPER_STAIRS = 609;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int EXPOSED_CUT_COPPER_STAIRS = 610;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int WEATHERED_CUT_COPPER_STAIRS = 611;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int OXIDIZED_CUT_COPPER_STAIRS = 612;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int WAXED_CUT_COPPER_STAIRS = 613;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int WAXED_EXPOSED_CUT_COPPER_STAIRS = 614;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int WAXED_WEATHERED_CUT_COPPER_STAIRS = 615;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int CUT_COPPER_SLAB = 616;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int EXPOSED_CUT_COPPER_SLAB = 617;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int WEATHERED_CUT_COPPER_SLAB = 618;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int OXIDIZED_CUT_COPPER_SLAB = 619;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int WAXED_CUT_COPPER_SLAB = 620;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int WAXED_EXPOSED_CUT_COPPER_SLAB = 621;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int WAXED_WEATHERED_CUT_COPPER_SLAB = 622;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int DOUBLE_CUT_COPPER_SLAB = 623;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int EXPOSED_DOUBLE_CUT_COPPER_SLAB = 624;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int WEATHERED_DOUBLE_CUT_COPPER_SLAB = 625;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int OXIDIZED_DOUBLE_CUT_COPPER_SLAB = 626;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int WAXED_DOUBLE_CUT_COPPER_SLAB = 627;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int WAXED_EXPOSED_DOUBLE_CUT_COPPER_SLAB = 628;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int WAXED_WEATHERED_DOUBLE_CUT_COPPER_SLAB = 629;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int CAVE_VINES_BODY_WITH_BERRIES = 630;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int CAVE_VINES_HEAD_WITH_BERRIES = 631;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int SMOOTH_BASALT = 632;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int DEEPSLATE = 633;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int COBBLED_DEEPSLATE = 634;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int COBBLED_DEEPSLATE_SLAB = 635;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int COBBLED_DEEPSLATE_STAIRS = 636;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int COBBLED_DEEPSLATE_WALL = 637;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int POLISHED_DEEPSLATE = 638;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int POLISHED_DEEPSLATE_SLAB = 639;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int POLISHED_DEEPSLATE_STAIRS = 640;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int POLISHED_DEEPSLATE_WALL = 641;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int DEEPSLATE_TILES = 642;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int DEEPSLATE_TILE_SLAB = 643;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int DEEPSLATE_TILE_STAIRS = 644;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int DEEPSLATE_TILE_WALL = 645;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int DEEPSLATE_BRICKS = 646;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int DEEPSLATE_BRICK_SLAB = 647;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int DEEPSLATE_BRICK_STAIRS = 648;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int DEEPSLATE_BRICK_WALL = 649;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int CHISELED_DEEPSLATE = 650;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int COBBLED_DEEPSLATE_DOUBLE_SLAB = 651;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int POLISHED_DEEPSLATE_DOUBLE_SLAB = 652;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int DEEPSLATE_TILE_DOUBLE_SLAB = 653;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int DEEPSLATE_BRICK_DOUBLE_SLAB = 654;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int DEEPSLATE_LAPIS_ORE = 655;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int DEEPSLATE_IRON_ORE = 656;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int DEEPSLATE_GOLD_ORE = 657;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int DEEPSLATE_REDSTONE_ORE = 658;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int LIT_DEEPSLATE_REDSTONE_ORE = 659;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int DEEPSLATE_DIAMOND_ORE = 660;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int DEEPSLATE_COAL_ORE = 661;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int DEEPSLATE_EMERALD_ORE = 662;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int DEEPSLATE_COPPER_ORE = 663;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int CRACKED_DEEPSLATE_TILES = 664;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int CRACKED_DEEPSLATE_BRICKS = 665;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int GLOW_LICHEN = 666;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int CANDLE = 667;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int WHITE_CANDLE = 668;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int ORANGE_CANDLE = 669;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int MAGENTA_CANDLE = 670;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int LIGHT_BLUE_CANDLE = 671;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int YELLOW_CANDLE = 672;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int LIME_CANDLE = 673;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int PINK_CANDLE = 674;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int GRAY_CANDLE = 675;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int LIGHT_GRAY_CANDLE = 676;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int CYAN_CANDLE = 677;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int PURPLE_CANDLE = 678;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int BLUE_CANDLE = 679;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int BROWN_CANDLE = 680;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int GREEN_CANDLE = 681;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int RED_CANDLE = 682;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int BLACK_CANDLE = 683;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int CANDLE_CAKE = 684;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int WHITE_CANDLE_CAKE = 685;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int ORANGE_CANDLE_CAKE = 686;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int MAGENTA_CANDLE_CAKE = 687;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int LIGHT_BLUE_CANDLE_CAKE = 688;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int YELLOW_CANDLE_CAKE = 689;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int LIME_CANDLE_CAKE = 690;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int PINK_CANDLE_CAKE = 691;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int GRAY_CANDLE_CAKE = 692;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int LIGHT_GRAY_CANDLE_CAKE = 693;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int CYAN_CANDLE_CAKE = 694;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int PURPLE_CANDLE_CAKE = 695;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int BLUE_CANDLE_CAKE = 696;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int BROWN_CANDLE_CAKE = 697;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int GREEN_CANDLE_CAKE = 698;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int RED_CANDLE_CAKE = 699;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int BLACK_CANDLE_CAKE = 700;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int WAXED_OXIDIZED_COPPER = 701;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int WAXED_OXIDIZED_CUT_COPPER = 702;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int WAXED_OXIDIZED_CUT_COPPER_STAIRS = 703;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int WAXED_OXIDIZED_CUT_COPPER_SLAB = 704;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int WAXED_OXIDIZED_DOUBLE_CUT_COPPER_SLAB = 705;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int RAW_IRON_BLOCK = 706;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int RAW_COPPER_BLOCK = 707;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int RAW_GOLD_BLOCK = 708;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int INFESTED_DEEPSLATE = 709;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int SCULK = 713;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int SCULK_VEIN = 714;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int SCULK_CATALYST = 715;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int SCULK_SHRIEKER = 716;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int REINFORCED_DEEPSLATE = 721;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int FROG_SPAWN = 723;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int PEARLESCENT_FROGLIGHT = 724;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int VERDANT_FROGLIGHT = 725;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int OCHRE_FROGLIGHT = 726;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int MANGROVE_LEAVES = 727;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int MUD = 728;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int MANGROVE_PROPAGULE = 729;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int MUD_BRICKS = 730;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int MANGROVE_PROPAGULE_HANGING = 731;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int PACKED_MUD = 732;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int MUD_BRICK_SLAB = 733;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int MUD_BRICK_DOUBLE_SLAB = 734;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int MUD_BRICK_STAIRS = 735;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int MUD_BRICK_WALL = 736;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int MANGROVE_ROOTS = 737;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int MUDDY_MANGROVE_ROOTS = 738;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int MANGROVE_LOG = 739;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int STRIPPED_MANGROVE_LOG = 740;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int MANGROVE_PLANKS = 741;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int MANGROVE_BUTTON = 742;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int MANGROVE_STAIRS = 743;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int MANGROVE_SLAB = 744;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int MANGROVE_PRESSURE_PLATE = 745;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int MANGROVE_FENCE = 746;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int MANGROVE_FENCE_GATE = 747;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int MANGROVE_DOOR = 748;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int MANGROVE_STANDING_SIGN = 749;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int MANGROVE_WALL_SIGN = 750;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int MANGROVE_TRAPDOOR = 751;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int MANGROVE_WOOD = 752;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int STRIPPED_MANGROVE_WOOD = 753;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     int DOUBLE_MANGROVE_SLAB = 754;
+
+    @Since("1.19.70-r1")
+    @PowerNukkitXOnly
+    int LIGHT_GRAY_WOOL = 807;
+    @Since("1.19.70-r1")
+    @PowerNukkitXOnly
+    int GRAY_WOOL = 808;
+    @Since("1.19.70-r1")
+    @PowerNukkitXOnly
+    int BLACK_WOOL = 809;
+    @Since("1.19.70-r1")
+    @PowerNukkitXOnly
+    int BROWN_WOOL = 810;
+    @Since("1.19.70-r1")
+    @PowerNukkitXOnly
+    int RED_WOOL = 811;
+    @Since("1.19.70-r1")
+    @PowerNukkitXOnly
+    int ORANGE_WOOL = 812;
+    @Since("1.19.70-r1")
+    @PowerNukkitXOnly
+    int YELLOW_WOOL = 813;
+    @Since("1.19.70-r1")
+    @PowerNukkitXOnly
+    int LIME_WOOL = 814;
+    @Since("1.19.70-r1")
+    @PowerNukkitXOnly
+    int GREEN_WOOL = 815;
+    @Since("1.19.70-r1")
+    @PowerNukkitXOnly
+    int CYAN_WOOL = 816;
+    @Since("1.19.70-r1")
+    @PowerNukkitXOnly
+    int LIGHT_BLUE_WOOL = 817;
+    @Since("1.19.70-r1")
+    @PowerNukkitXOnly
+    int BLUE_WOOL = 818;
+    @Since("1.19.70-r1")
+    @PowerNukkitXOnly
+    int PURPLE_WOOL = 819;
+    @Since("1.19.70-r1")
+    @PowerNukkitXOnly
+    int MAGENTA_WOOL = 820;
+    @Since("1.19.70-r1")
+    @PowerNukkitXOnly
+    int PINK_WOOL = 821;
 }

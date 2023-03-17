@@ -14,7 +14,7 @@ public class BiomeDefinitionListPacket extends DataPacket {
     private static final byte[] TAG;
 
     static {
-        try (InputStream inputStream = Nukkit.class.getModule().getResourceAsStream("biome_definitions.dat")) {
+        try (InputStream inputStream = Nukkit.class.getModule().getResourceAsStream("biome_definitions_full.nbt")) {
             if (inputStream == null) {
                 throw new AssertionError("Could not find biome_definitions.dat");
             }

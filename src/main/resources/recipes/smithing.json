@@ -1,0 +1,128 @@
+[
+  {
+    "addition": {
+      "meta": 32767,
+      "name": "minecraft:netherite_ingot"
+    },
+    "block": "smithing_table",
+    "input": {
+      "meta": 32767,
+      "name": "minecraft:diamond_axe"
+    },
+    "output": {
+      "name": "minecraft:netherite_axe"
+    }
+  },
+  {
+    "addition": {
+      "meta": 32767,
+      "name": "minecraft:netherite_ingot"
+    },
+    "block": "smithing_table",
+    "input": {
+      "meta": 32767,
+      "name": "minecraft:diamond_boots"
+    },
+    "output": {
+      "name": "minecraft:netherite_boots"
+    }
+  },
+  {
+    "addition": {
+      "meta": 32767,
+      "name": "minecraft:netherite_ingot"
+    },
+    "block": "smithing_table",
+    "input": {
+      "meta": 32767,
+      "name": "minecraft:diamond_chestplate"
+    },
+    "output": {
+      "name": "minecraft:netherite_chestplate"
+    }
+  },
+  {
+    "addition": {
+      "meta": 32767,
+      "name": "minecraft:netherite_ingot"
+    },
+    "block": "smithing_table",
+    "input": {
+      "meta": 32767,
+      "name": "minecraft:diamond_helmet"
+    },
+    "output": {
+      "name": "minecraft:netherite_helmet"
+    }
+  },
+  {
+    "addition": {
+      "meta": 32767,
+      "name": "minecraft:netherite_ingot"
+    },
+    "block": "smithing_table",
+    "input": {
+      "meta": 32767,
+      "name": "minecraft:diamond_hoe"
+    },
+    "output": {
+      "name": "minecraft:netherite_hoe"
+    }
+  },
+  {
+    "addition": {
+      "meta": 32767,
+      "name": "minecraft:netherite_ingot"
+    },
+    "block": "smithing_table",
+    "input": {
+      "meta": 32767,
+      "name": "minecraft:diamond_leggings"
+    },
+    "output": {
+      "name": "minecraft:netherite_leggings"
+    }
+  },
+  {
+    "addition": {
+      "meta": 32767,
+      "name": "minecraft:netherite_ingot"
+    },
+    "block": "smithing_table",
+    "input": {
+      "meta": 32767,
+      "name": "minecraft:diamond_pickaxe"
+    },
+    "output": {
+      "name": "minecraft:netherite_pickaxe"
+    }
+  },
+  {
+    "addition": {
+      "meta": 32767,
+      "name": "minecraft:netherite_ingot"
+    },
+    "block": "smithing_table",
+    "input": {
+      "meta": 32767,
+      "name": "minecraft:diamond_shovel"
+    },
+    "output": {
+      "name": "minecraft:netherite_shovel"
+    }
+  },
+  {
+    "addition": {
+      "meta": 32767,
+      "name": "minecraft:netherite_ingot"
+    },
+    "block": "smithing_table",
+    "input": {
+      "meta": 32767,
+      "name": "minecraft:diamond_sword"
+    },
+    "output": {
+      "name": "minecraft:netherite_sword"
+    }
+  }
+]

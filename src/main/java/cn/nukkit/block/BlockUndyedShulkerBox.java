@@ -22,14 +22,12 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.BlockColor;
-
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.Map;
 
 /**
- *
  * @author Reece Mackie
  */
 @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder only in PowerNukkit")
@@ -95,12 +93,14 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
     public Item toItem() {
         ItemBlock item = new ItemBlock(this, this.getDamage(), 1);
 
+        if (this.getLevel() == null) return item;
+
         BlockEntityShulkerBox tile = getBlockEntity();
 
         if (tile == null) {
             return item;
         }
-        
+
         ShulkerBoxInventory inv = tile.getRealInventory();
 
         if (!inv.isEmpty()) {
@@ -206,7 +206,7 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
 
     @Override
     @PowerNukkitOnly
-    public  boolean sticksToPiston() {
+    public boolean sticksToPiston() {
         return false;
     }
 

@@ -9,7 +9,6 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
-
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -101,7 +100,7 @@ public class BlockIceFrosted extends BlockTransparentMeta {
 
     @Override
     public Item toItem() {
-        return Item.get(AIR);
+        return Item.AIR_ITEM;
     }
 
     @Override

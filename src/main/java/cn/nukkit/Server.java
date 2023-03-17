@@ -5,7 +5,7 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
-import cn.nukkit.blockentity.*;
+import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.command.*;
 import cn.nukkit.command.function.FunctionManager;
