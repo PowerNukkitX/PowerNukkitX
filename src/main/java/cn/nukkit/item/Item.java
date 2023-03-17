@@ -923,8 +923,8 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Improve namespaced name handling and allows to get custom blocks by name")
-    public @NotNull
-    static Item fromString(String str) {
+    @NotNull
+    public static Item fromString(String str) {
         String normalized = str.trim().replace(' ', '_').toLowerCase();
         Matcher matcher = ITEM_STRING_PATTERN.matcher(normalized);
         if (!matcher.matches()) {
@@ -1002,6 +1002,10 @@ public class Item implements Cloneable, BlockID, ItemID {
                     } else {
                         item.setDamage(damage);
                     }
+                }
+                var blockId = BlockStateRegistry.getBlockId(minecraftItemId.getNamespacedId());
+                if (blockId != null) {
+                    item.block = Block.get(blockId);
                 }
                 return item;
             } else if (namespaceGroup != null && !namespaceGroup.equals("minecraft:")) {

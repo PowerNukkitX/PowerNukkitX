@@ -100,6 +100,10 @@ public class NBTIO {
             }
             item.setCount(amount);
         }
+
+        if (item.hasCompoundTag()) {
+            tag.putCompound("tag", item.getNamedTag());
+        }
         return item;
     }
 
