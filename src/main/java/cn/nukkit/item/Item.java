@@ -56,6 +56,10 @@ import java.util.stream.Stream;
  */
 @Log4j2
 public class Item implements Cloneable, BlockID, ItemID {
+    @PowerNukkitXOnly
+    @Since("1.19.70-r1")
+    public static final Item AIR_ITEM = new Item(0);
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final Item[] EMPTY_ARRAY = new Item[0];
@@ -580,21 +584,21 @@ public class Item implements Cloneable, BlockID, ItemID {
                 int runtimeId = BlockStateRegistry.getKnownRuntimeIdByBlockStateId(blockStateId);
                 if (runtimeId == -1) {
                     log.debug("Unsupported block found in creativeitems.json: {}", blockStateId);
-                    return Item.get(AIR);
+                    return Item.AIR_ITEM;
                 }
                 int blockId = BlockStateRegistry.getBlockIdByRuntimeId(runtimeId);
                 BlockState defaultBlockState = BlockState.of(blockId);
                 if (defaultBlockState.getProperties().equals(BlockUnknown.PROPERTIES)) {
                     log.debug("Unsupported block found in creativeitems.json: {}", blockStateId);
-                    return Item.get(AIR);
+                    return Item.AIR_ITEM;
                 }
                 log.error("Failed to load the creative item with {}", blockStateId, e);
-                return Item.get(AIR);
+                return Item.AIR_ITEM;
             } catch (NoSuchElementException e) {
                 log.debug("No Such Element in creativeitems.json: {}", blockStateId, e);
             } catch (Exception e) {
                 log.error("Failed to load the creative item {}", blockStateId, e);
-                return Item.get(AIR);
+                return Item.AIR_ITEM;
             }
         }
         Item item = null;
@@ -837,10 +841,10 @@ public class Item implements Cloneable, BlockID, ItemID {
 
     @PowerNukkitOnly
     public static Item getBlock(int id, Integer meta, int count, byte[] tags) {
-        if (id > 255) {
-            id = 255 - id;
-        }
-        return get(id, meta, count, tags);
+        var result = Block.get(id, meta).toItem();
+        result.setCount(count);
+        result.setCompoundTag(tags);
+        return result;
     }
 
     public static Item get(int id) {
@@ -928,7 +932,7 @@ public class Item implements Cloneable, BlockID, ItemID {
         String normalized = str.trim().replace(' ', '_').toLowerCase();
         Matcher matcher = ITEM_STRING_PATTERN.matcher(normalized);
         if (!matcher.matches()) {
-            return get(AIR);
+            return Item.AIR_ITEM;
         }
 
         String name = matcher.group(2);
@@ -953,7 +957,7 @@ public class Item implements Cloneable, BlockID, ItemID {
                 namespacedId = "minecraft:" + name;
             }
             if (namespacedId.equals("minecraft:air")) {
-                return get(AIR);
+                return Item.AIR_ITEM;
             }
             if (CUSTOM_ITEMS.containsKey(namespacedId)) {
                 var item = RuntimeItems.getRuntimeMapping().getItemByNamespaceId(namespacedId, 1);
@@ -992,7 +996,7 @@ public class Item implements Cloneable, BlockID, ItemID {
             if (minecraftItemId != null) {
                 //todo edu item
                 if (minecraftItemId.isEducationEdition()) {
-                    return get(AIR);
+                    return Item.AIR_ITEM;
                 }
                 Item item = minecraftItemId.get(1);
                 if (meta.isPresent()) {
@@ -1009,7 +1013,7 @@ public class Item implements Cloneable, BlockID, ItemID {
                 }
                 return item;
             } else if (namespaceGroup != null && !namespaceGroup.equals("minecraft:")) {
-                return get(AIR);
+                return Item.AIR_ITEM;
             }
         } else if (numericIdGroup != null) {
             int id = Integer.parseInt(numericIdGroup);
@@ -1017,24 +1021,20 @@ public class Item implements Cloneable, BlockID, ItemID {
         }
 
         if (name == null) {
-            return get(AIR);
+            return Item.AIR_ITEM;
         }
 
         int id = 0;
-
         try {
             id = ItemID.class.getField(name.toUpperCase()).getInt(null);
         } catch (Exception ignore1) {
             try {
                 id = BlockID.class.getField(name.toUpperCase()).getInt(null);
-                if (id > 255) {
-                    id = 255 - id;
-                }
+                return getBlock(id, meta.orElse(0));
             } catch (Exception ignore2) {
 
             }
         }
-
         return get(id, meta.orElse(0));
     }
 

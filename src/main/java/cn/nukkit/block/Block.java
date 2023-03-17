@@ -2549,9 +2549,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         }
     }
 
-    @PowerNukkitDifference(
-            info = "Prevents players from getting invalid items by limiting the return to the maximum damage defined in getMaxItemDamage()",
-            since = "1.4.0.0-PN")
     public Item toItem() {
         return asItemBlock(1);
     }

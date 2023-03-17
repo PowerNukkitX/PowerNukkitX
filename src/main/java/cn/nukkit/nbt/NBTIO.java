@@ -12,7 +12,6 @@ import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
-import cn.nukkit.item.PNAlphaItemID;
 import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
 import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.stream.NBTOutputStream;
@@ -81,7 +80,7 @@ public class NBTIO {
         Item item;
         if (tag.containsShort("id")) {
             int id = (short) tag.getShort("id");
-            item = fixAlphaItem(id, damage, amount);
+            item = fixWoolItem(id, damage, amount);
             if (item == null) {
                 try {
                     item = Item.get(id, damage, amount);
@@ -130,8 +129,8 @@ public class NBTIO {
 
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
-    public @NotNull
-    static Block getBlockHelper(@NotNull CompoundTag block) {
+    @NotNull
+    public static Block getBlockHelper(@NotNull CompoundTag block) {
         if (!block.containsString("name")) return Block.get(0);
         StringBuilder state = new StringBuilder(block.getString("name"));
         CompoundTag states = block.getCompound("states");
@@ -164,17 +163,33 @@ public class NBTIO {
     }
 
 
-    @SuppressWarnings("deprecation")
-    private static Item fixAlphaItem(int id, int damage, int count) {
-        PNAlphaItemID badAlphaId = PNAlphaItemID.getBadAlphaId(id);
-        if (badAlphaId == null) {
-            return null;
+    //todo 修复背包中的羊毛物品，下一个版本移除
+    private static Item fixWoolItem(int id, int damage, int count) {
+        if (id == 35) {
+            var item = switch (damage) {
+                case 1 -> Item.getBlock(812);
+                case 2 -> Item.getBlock(820);
+                case 3 -> Item.getBlock(817);
+                case 4 -> Item.getBlock(813);
+                case 5 -> Item.getBlock(814);
+                case 6 -> Item.getBlock(821);
+                case 7 -> Item.getBlock(808);
+                case 8 -> Item.getBlock(807);
+                case 9 -> Item.getBlock(816);
+                case 10 -> Item.getBlock(819);
+                case 11 -> Item.getBlock(818);
+                case 12 -> Item.getBlock(810);
+                case 13 -> Item.getBlock(815);
+                case 14 -> Item.getBlock(811);
+                case 15 -> Item.getBlock(809);
+                default -> Item.getBlock(35);
+            };
+            if (item == null) return null;
+            item.setDamage(0);
+            item.setCount(count);
+            return item;
         }
-        Item recovered = badAlphaId.getMinecraftItemId().get(count);
-        if (damage != 0) {
-            recovered.setDamage(damage);
-        }
-        return recovered;
+        return null;
     }
 
     public static CompoundTag read(File file) throws IOException {
