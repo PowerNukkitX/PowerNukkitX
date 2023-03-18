@@ -114,6 +114,7 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
         if (this.getItemInHand() != Item.get(Item.STONE_SWORD)) {
             this.setItemInHand(Item.get(Item.STONE_SWORD));
         }
+        // 设置凋零骷髅空闲状态播放空闲声音
         this.setDataProperty(new IntEntityData(Entity.DATA_AMBIENT_SOUND_EVENT_NAME, LevelSoundEventPacket.SOUND_AMBIENT));
     }
 
