@@ -32,7 +32,6 @@ import cn.nukkit.utils.Utils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author PikyCZ
@@ -150,18 +149,16 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
     @Override
     public Item[] getDrops() {
         List<Item> drops = new ArrayList<>();
-        float r = ThreadLocalRandom.current().nextFloat(100);
-        float i = ThreadLocalRandom.current().nextFloat(100);
         drops.add(Item.get(Item.BONE, 0, Utils.rand(0, 2)));
         if (Utils.rand(0, 2) == 0) {
             drops.add(Item.get(Item.COAL, 0, 1));
         }
         //掉落石剑的概率为8.5%
-        if (r < 8.5f) {
+        if (Utils.rand(0, 200) <= 17) {
             drops.add(Item.get(Item.STONE_SWORD, Utils.rand(0, 131), 1));
         }
         //掉落头的概率为2.5%
-        if (i < 2.5f) {
+        if (Utils.rand(0, 40) == 1) {
             drops.add(Item.get(Item.SKULL, 1, 1));
         }
         return drops.toArray(Item.EMPTY_ARRAY);
