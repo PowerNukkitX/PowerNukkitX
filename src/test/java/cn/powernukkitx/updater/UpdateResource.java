@@ -41,20 +41,20 @@ public class UpdateResource {
     private void downloadResources() {
         download("https://github.com/pmmp/BedrockData/raw/master/canonical_block_states.nbt",
                 "src/main/resources/canonical_block_states.nbt");
-        download("https://github.com/pmmp/BedrockData/raw/master/recipes/potion_type.json",
-                "src/main/resources/recipes/potion_type.json");
-        download("https://github.com/pmmp/BedrockData/raw/master/recipes/shaped_crafting.json",
-                "src/main/resources/recipes/shaped_crafting.json");
-        download("https://github.com/pmmp/BedrockData/raw/master/recipes/shapeless_crafting.json",
-                "src/main/resources/recipes/shapeless_crafting.json");
-        download("https://github.com/pmmp/BedrockData/raw/master/recipes/smithing.json",
-                "src/main/resources/recipes/smithing.json");
-        download("https://github.com/pmmp/BedrockData/raw/master/recipes/shapeless_shulker_box.json",
-                "src/main/resources/recipes/shapeless_shulker_box.json");
-        download("https://github.com/pmmp/BedrockData/raw/master/recipes/smelting.json",
-                "src/main/resources/recipes/smelting.json");
-        download("https://github.com/pmmp/BedrockData/raw/master/recipes/special_hardcoded.json",
-                "src/main/resources/recipes/special_hardcoded.json");
+        download("https://github.com/pmmp/BedrockData/raw/master/vanilla_recipes/potion_type.json",
+                "src/main/resources/vanilla_recipes/potion_type.json");
+        download("https://github.com/pmmp/BedrockData/raw/master/vanilla_recipes/shaped_crafting.json",
+                "src/main/resources/vanilla_recipes/shaped_crafting.json");
+        download("https://github.com/pmmp/BedrockData/raw/master/vanilla_recipes/shapeless_crafting.json",
+                "src/main/resources/vanilla_recipes/shapeless_crafting.json");
+        download("https://github.com/pmmp/BedrockData/raw/master/vanilla_recipes/smithing.json",
+                "src/main/resources/vanilla_recipes/smithing.json");
+        download("https://github.com/pmmp/BedrockData/raw/master/vanilla_recipes/shapeless_shulker_box.json",
+                "src/main/resources/vanilla_recipes/shapeless_shulker_box.json");
+        download("https://github.com/pmmp/BedrockData/raw/master/vanilla_recipes/smelting.json",
+                "src/main/resources/vanilla_recipes/smelting.json");
+        download("https://github.com/pmmp/BedrockData/raw/master/vanilla_recipes/special_hardcoded.json",
+                "src/main/resources/vanilla_recipes/special_hardcoded.json");
         download("https://github.com/pmmp/BedrockData/raw/master/biome_definitions_full.nbt",
                 "src/main/resources/biome_definitions_full.nbt");
         download("https://github.com/pmmp/BedrockData/raw/master/entity_identifiers.nbt",

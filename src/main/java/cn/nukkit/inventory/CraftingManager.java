@@ -154,7 +154,7 @@ public class CraftingManager {
         }
 
         //load potion
-        try (var r = Server.class.getModule().getResourceAsStream("recipes/potion_type.json")) {
+        try (var r = Server.class.getModule().getResourceAsStream("vanilla_recipes/potion_type.json")) {
             if (r == null) {
                 throw new AssertionError("Unable to find potion_type.json");
             }
@@ -178,7 +178,7 @@ public class CraftingManager {
         }
 
         //load shaped recipe
-        try (var r = Server.class.getModule().getResourceAsStream("recipes/shaped_crafting.json")) {
+        try (var r = Server.class.getModule().getResourceAsStream("vanilla_recipes/shaped_crafting.json")) {
             if (r == null) {
                 throw new AssertionError("Unable to find shaped_crafting.json");
             }
@@ -198,12 +198,12 @@ public class CraftingManager {
 
         //load shapeless recipe
         {
-            var shapelessCrafting = Server.class.getModule().getResourceAsStream("recipes/shapeless_crafting.json");
+            var shapelessCrafting = Server.class.getModule().getResourceAsStream("vanilla_recipes/shapeless_crafting.json");
             if (shapelessCrafting == null) {
                 throw new AssertionError("Unable to find shapeless_crafting.json");
             }
 
-            var smithing = Server.class.getModule().getResourceAsStream("recipes/smithing.json");
+            var smithing = Server.class.getModule().getResourceAsStream("vanilla_recipes/smithing.json");
             if (smithing == null) {
                 throw new AssertionError("Unable to find smithing.json");
             }
@@ -223,7 +223,7 @@ public class CraftingManager {
                 this.registerRecipe(reg);
             }
 
-            var shapelessShulkerBox = Server.class.getModule().getResourceAsStream("recipes/shapeless_shulker_box.json");
+            var shapelessShulkerBox = Server.class.getModule().getResourceAsStream("vanilla_recipes/shapeless_shulker_box.json");
             if (shapelessShulkerBox == null) {
                 throw new AssertionError("Unable to find shapeless_shulker_box.json");
             }
@@ -240,7 +240,7 @@ public class CraftingManager {
         }
 
         //load furnace recipe
-        try (var r = Server.class.getModule().getResourceAsStream("recipes/smelting.json")) {
+        try (var r = Server.class.getModule().getResourceAsStream("vanilla_recipes/smelting.json")) {
             if (r == null) {
                 throw new AssertionError("Unable to find smelting.json");
             }
@@ -283,7 +283,7 @@ public class CraftingManager {
         }
 
         //load multi recipe
-        try (var r = Server.class.getModule().getResourceAsStream("recipes/special_hardcoded.json")) {
+        try (var r = Server.class.getModule().getResourceAsStream("vanilla_recipes/special_hardcoded.json")) {
             if (r == null) {
                 throw new AssertionError("Unable to find special_hardcoded.json");
             }
