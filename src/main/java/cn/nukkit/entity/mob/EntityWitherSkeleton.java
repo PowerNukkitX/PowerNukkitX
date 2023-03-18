@@ -110,6 +110,7 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
         this.setMaxHealth(20);
         this.diffHandDamage = new float[]{5f, 8f, 12f};
         super.initEntity();
+        // 判断凋零骷髅是否手持石剑如果没有就给它石剑
         if (this.getItemInHand() != Item.get(Item.STONE_SWORD)) {
             this.setItemInHand(Item.get(Item.STONE_SWORD));
         }
