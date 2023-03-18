@@ -5,10 +5,13 @@ import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockUnknown;
+import cn.nukkit.blockproperty.UnknownRuntimeIdException;
+import cn.nukkit.blockproperty.exception.BlockPropertyNotFoundException;
 import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
-import cn.nukkit.item.PNAlphaItemID;
 import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
 import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.stream.NBTOutputStream;
@@ -16,6 +19,7 @@ import cn.nukkit.nbt.stream.PGZIPOutputStream;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.ThreadCache;
+import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
@@ -23,6 +27,7 @@ import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Collection;
+import java.util.NoSuchElementException;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPInputStream;
@@ -34,6 +39,7 @@ import java.util.zip.GZIPInputStream;
 @PowerNukkitDifference(since = "1.4.0.0-PN", info = "It's the caller responsibility to close the provided streams")
 @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed output streams not being finished correctly")
 @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Added defensive close invocations to byte array streams")
+@Log4j2
 public class NBTIO {
 
     public static CompoundTag putItemHelper(Item item) {
@@ -56,14 +62,7 @@ public class NBTIO {
         }
 
         if (item.hasCompoundTag()) {
-            if (id == ItemID.STRING_IDENTIFIED_ITEM) {
-                CompoundTag realCompound = item.getNamedTag().clone().remove("Name");//todo 未来移除
-                if (!realCompound.isEmpty()) {
-                    tag.putCompound("tag", realCompound);
-                }
-            } else {
-                tag.putCompound("tag", item.getNamedTag());
-            }
+            tag.putCompound("tag", item.getNamedTag());
         }
 
         return tag;
@@ -81,7 +80,7 @@ public class NBTIO {
         Item item;
         if (tag.containsShort("id")) {
             int id = (short) tag.getShort("id");
-            item = fixAlphaItem(id, damage, amount);
+            item = fixWoolItem(id, damage, amount);
             if (item == null) {
                 try {
                     item = Item.get(id, damage, amount);
@@ -102,13 +101,9 @@ public class NBTIO {
         }
 
         Tag tagTag = tag.get("tag");
-        if (tagTag instanceof CompoundTag compoundTag) {//todo 临时修复物品NBT，未来移除
-            if (compoundTag.containsString("Name")) {
-                compoundTag.remove("Name");
-            }
+        if (tagTag instanceof CompoundTag compoundTag) {
             item.setNamedTag(compoundTag);
         }
-
         return item;
     }
 
@@ -134,26 +129,67 @@ public class NBTIO {
 
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
+    @NotNull
     public static Block getBlockHelper(@NotNull CompoundTag block) {
         if (!block.containsString("name")) return Block.get(0);
         StringBuilder state = new StringBuilder(block.getString("name"));
         CompoundTag states = block.getCompound("states");
         states.getTags().forEach((k, v) -> state.append(';').append(k).append('=').append(v.parseValue()));
-        return BlockState.of(state.toString()).getBlock();
+        var blockStateId = state.toString();
+        try {
+            var blockState = BlockState.of(blockStateId);
+            return blockState.getBlock();
+        } catch (BlockPropertyNotFoundException | UnknownRuntimeIdException e) {
+            int runtimeId = BlockStateRegistry.getKnownRuntimeIdByBlockStateId(blockStateId);
+            if (runtimeId == -1) {
+                log.debug("Unsupported block found in creativeitems.json: {}", blockStateId);
+                return BlockState.AIR.getBlock();
+            }
+            int blockId = BlockStateRegistry.getBlockIdByRuntimeId(runtimeId);
+            BlockState defaultBlockState = BlockState.of(blockId);
+            if (defaultBlockState.getProperties().equals(BlockUnknown.PROPERTIES)) {
+                log.debug("Unsupported block found in creativeitems.json: {}", blockStateId);
+                return BlockState.AIR.getBlock();
+            }
+            log.error("Failed to load the creative item with {}", blockStateId, e);
+            return BlockState.AIR.getBlock();
+        } catch (NoSuchElementException e) {
+            log.debug("No Such Element in creativeitems.json: {}", blockStateId, e);
+        } catch (Exception e) {
+            log.error("Failed to load the creative item {}", blockStateId, e);
+            return BlockState.AIR.getBlock();
+        }
+        return BlockState.AIR.getBlock();
     }
 
 
-    @SuppressWarnings("deprecation")
-    private static Item fixAlphaItem(int id, int damage, int count) {
-        PNAlphaItemID badAlphaId = PNAlphaItemID.getBadAlphaId(id);
-        if (badAlphaId == null) {
-            return null;
+    //todo 修复背包中的羊毛物品，下一个版本移除
+    private static Item fixWoolItem(int id, int damage, int count) {
+        if (id == 35) {
+            var item = switch (damage) {
+                case 1 -> Item.getBlock(812);
+                case 2 -> Item.getBlock(820);
+                case 3 -> Item.getBlock(817);
+                case 4 -> Item.getBlock(813);
+                case 5 -> Item.getBlock(814);
+                case 6 -> Item.getBlock(821);
+                case 7 -> Item.getBlock(808);
+                case 8 -> Item.getBlock(807);
+                case 9 -> Item.getBlock(816);
+                case 10 -> Item.getBlock(819);
+                case 11 -> Item.getBlock(818);
+                case 12 -> Item.getBlock(810);
+                case 13 -> Item.getBlock(815);
+                case 14 -> Item.getBlock(811);
+                case 15 -> Item.getBlock(809);
+                default -> Item.getBlock(35);
+            };
+            if (item == null) return null;
+            item.setDamage(0);
+            item.setCount(count);
+            return item;
         }
-        Item recovered = badAlphaId.getMinecraftItemId().get(count);
-        if (damage != 0) {
-            recovered.setDamage(damage);
-        }
-        return recovered;
+        return null;
     }
 
     public static CompoundTag read(File file) throws IOException {

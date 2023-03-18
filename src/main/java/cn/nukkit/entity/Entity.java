@@ -459,8 +459,15 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_FLAG_HAS_DASH_COOLDOWN = dynamic(108);
     @Since("1.19.50-r1")
     public static final int DATA_FLAG_PUSH_TOWARDS_CLOSEST_SPACE = dynamic(109);
-    @Since("1.19.60-r1")
-    public static final int DATA_FLAG_LARGE = dynamic(110);
+    @Since("1.19.70-r1")
+    public static final int DATA_FLAG_SCENTING = dynamic(110);
+    @Since("1.19.70-r1")
+    public static final int DATA_FLAG_RISING = dynamic(111);
+    @Since("1.19.70-r1")
+    public static final int DATA_FLAG_FEELING_HAPPY = dynamic(112);
+    @Since("1.19.70-r1")
+    public static final int DATA_FLAG_SEARCHING = dynamic(113);
+
     private static final Set<CustomEntityDefinition> entityDefinitions = new HashSet<>();
     private static final Map<String, EntityProvider<? extends Entity>> knownEntities = new HashMap<>();
     private static final Map<String, String> shortNames = new HashMap<>();
@@ -1046,6 +1053,7 @@ public abstract class Entity extends Location implements Metadatable {
         registerEntity("Wolf", EntityWolf.class);
         registerEntity("ZombieHorse", EntityZombieHorse.class);
         registerEntity("NPC", EntityNPCEntity.class);
+        registerEntity("Camel", EntityCamel.class);
         //Projectile
         registerEntity("Small FireBall", EntitySmallFireBall.class);
         registerEntity("AreaEffectCloud", EntityAreaEffectCloud.class);

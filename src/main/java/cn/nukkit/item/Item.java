@@ -26,6 +26,7 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.*;
 import cn.nukkit.utils.*;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
 import io.netty.util.internal.EmptyArrays;
 import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
@@ -36,6 +37,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -54,6 +56,10 @@ import java.util.stream.Stream;
  */
 @Log4j2
 public class Item implements Cloneable, BlockID, ItemID {
+    @PowerNukkitXOnly
+    @Since("1.19.70-r1")
+    public static final Item AIR_ITEM = new Item(0);
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final Item[] EMPTY_ARRAY = new Item[0];
@@ -531,16 +537,16 @@ public class Item implements Cloneable, BlockID, ItemID {
     private static void initCreativeItems() {
         clearCreativeItems();
 
-        Config config = new Config(Config.JSON);
-        try (InputStream resourceAsStream = Server.class.getModule().getResourceAsStream("creative_items.json")) {
-            config.load(resourceAsStream);
+        Gson gson = new GsonBuilder().create();
+        List<Map<String, Object>> list;
+        try (InputStream resourceAsStream = Server.class.getModule().getResourceAsStream("creativeitems.json")) {
+            list = gson.fromJson(new InputStreamReader(resourceAsStream), List.class);
         }
-        List<Map> list = config.getMapList("items");
 
-        for (Map map : list) {
+        for (Map<String, Object> map : list) {
             try {
                 Item item = loadCreativeItemEntry(map);
-                if (item != null) {
+                if (!item.isNull()) {
                     addCreativeItem(item);
                 }
             } catch (Exception e) {
@@ -550,16 +556,23 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     private static Item loadCreativeItemEntry(Map<String, Object> data) {
-        String nbt = (String) data.get("nbt_b64");
+        String name = data.get("name").toString();
+        String nbt = (String) data.get("nbt");
         byte[] nbtBytes = nbt != null ? Base64.getDecoder().decode(nbt) : EmptyArrays.EMPTY_BYTES;
-
-        if (data.containsKey("blockState")) {
-            String blockStateId = data.get("blockState").toString();
+        if (data.containsKey("block_states")) {
+            StringBuilder strState = new StringBuilder(name);
+            String block_states = (String) data.get("block_states");
+            CompoundTag states;
             try {
-                // TODO Remove this when the support is added to these blocks
-                String[] stateParts = blockStateId.split(";", 2);
-                Integer blockId = BlockStateRegistry.getBlockId(stateParts[0]);
-                if (blockId != null && blockId > BlockID.DOUBLE_MANGROVE_SLAB) {
+                states = NBTIO.read(Base64.getDecoder().decode(block_states), ByteOrder.LITTLE_ENDIAN);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            states.getTags().forEach((k, v) -> strState.append(';').append(k).append('=').append(v.parseValue()));
+            String blockStateId = strState.toString();
+            try {
+                Integer blockId = BlockStateRegistry.getBlockId(name);
+                if (blockId != null && blockId > Block.MAX_BLOCK_ID) {
                     return Item.getBlock(BlockID.AIR);
                 }
 
@@ -570,50 +583,32 @@ public class Item implements Cloneable, BlockID, ItemID {
             } catch (BlockPropertyNotFoundException | UnknownRuntimeIdException e) {
                 int runtimeId = BlockStateRegistry.getKnownRuntimeIdByBlockStateId(blockStateId);
                 if (runtimeId == -1) {
-                    log.warn("Unsupported block found in creativeitems.json: {}", blockStateId);
-                    return null;
+                    log.debug("Unsupported block found in creativeitems.json: {}", blockStateId);
+                    return Item.AIR_ITEM;
                 }
                 int blockId = BlockStateRegistry.getBlockIdByRuntimeId(runtimeId);
                 BlockState defaultBlockState = BlockState.of(blockId);
                 if (defaultBlockState.getProperties().equals(BlockUnknown.PROPERTIES)) {
-                    log.warn("Unsupported block found in creativeitems.json: {}", blockStateId);
-                    return null;
+                    log.debug("Unsupported block found in creativeitems.json: {}", blockStateId);
+                    return Item.AIR_ITEM;
                 }
                 log.error("Failed to load the creative item with {}", blockStateId, e);
-                return null;
+                return Item.AIR_ITEM;
+            } catch (NoSuchElementException e) {
+                log.debug("No Such Element in creativeitems.json: {}", blockStateId, e);
             } catch (Exception e) {
                 log.error("Failed to load the creative item {}", blockStateId, e);
-                return null;
+                return Item.AIR_ITEM;
             }
         }
-
-        String id = data.get("id").toString();
         Item item = null;
-        if (data.containsKey("damage")) {
-            int meta = Utils.toInt(data.get("damage"));
-            item = fromString(id + ":" + meta);
-        } else if (data.containsKey("blockRuntimeId")) {
-            int blockRuntimeId = -1;
-            try {
-                blockRuntimeId = ((Number) data.get("blockRuntimeId")).intValue();
-                BlockState blockState = BlockStateRegistry.getBlockStateByRuntimeId(blockRuntimeId);
-                if (blockState != null) {
-                    item = blockState.asItemBlock();
-                } else {
-                    log.warn("Block state not found for the creative item {} with runtimeId {}", id, blockRuntimeId);
-                }
-            } catch (BlockPropertyNotFoundException e) {
-                log.warn("The block {} (runtime id:{}) is not supported yet!", id, blockRuntimeId);
-            } catch (Throwable e) {
-                log.error("Error loading the creative item {} with runtimeId {}", id, blockRuntimeId, e);
-                return null;
-            }
+        if (data.containsKey("meta")) {
+            int meta = Utils.toInt(data.get("meta"));
+            item = fromString(name + ":" + meta);
         }
-
         if (item == null) {
-            item = fromString(id);
+            item = fromString(name);
         }
-
         item.setCompoundTag(nbtBytes);
         return item;
     }
@@ -846,10 +841,10 @@ public class Item implements Cloneable, BlockID, ItemID {
 
     @PowerNukkitOnly
     public static Item getBlock(int id, Integer meta, int count, byte[] tags) {
-        if (id > 255) {
-            id = 255 - id;
-        }
-        return get(id, meta, count, tags);
+        var result = Block.get(id, meta).toItem();
+        result.setCount(count);
+        result.setCompoundTag(tags);
+        return result;
     }
 
     public static Item get(int id) {
@@ -932,11 +927,12 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Improve namespaced name handling and allows to get custom blocks by name")
+    @NotNull
     public static Item fromString(String str) {
         String normalized = str.trim().replace(' ', '_').toLowerCase();
         Matcher matcher = ITEM_STRING_PATTERN.matcher(normalized);
         if (!matcher.matches()) {
-            return get(AIR);
+            return Item.AIR_ITEM;
         }
 
         String name = matcher.group(2);
@@ -961,7 +957,7 @@ public class Item implements Cloneable, BlockID, ItemID {
                 namespacedId = "minecraft:" + name;
             }
             if (namespacedId.equals("minecraft:air")) {
-                return get(AIR);
+                return Item.AIR_ITEM;
             }
             if (CUSTOM_ITEMS.containsKey(namespacedId)) {
                 var item = RuntimeItems.getRuntimeMapping().getItemByNamespaceId(namespacedId, 1);
@@ -998,6 +994,10 @@ public class Item implements Cloneable, BlockID, ItemID {
 
             MinecraftItemID minecraftItemId = MinecraftItemID.getByNamespaceId(namespacedId);
             if (minecraftItemId != null) {
+                //todo edu item
+                if (minecraftItemId.isEducationEdition()) {
+                    return Item.AIR_ITEM;
+                }
                 Item item = minecraftItemId.get(1);
                 if (meta.isPresent()) {
                     int damage = meta.getAsInt();
@@ -1007,9 +1007,13 @@ public class Item implements Cloneable, BlockID, ItemID {
                         item.setDamage(damage);
                     }
                 }
+                var blockId = BlockStateRegistry.getBlockId(minecraftItemId.getNamespacedId());
+                if (blockId != null) {
+                    item.block = Block.get(blockId);
+                }
                 return item;
             } else if (namespaceGroup != null && !namespaceGroup.equals("minecraft:")) {
-                return get(AIR);
+                return Item.AIR_ITEM;
             }
         } else if (numericIdGroup != null) {
             int id = Integer.parseInt(numericIdGroup);
@@ -1017,24 +1021,20 @@ public class Item implements Cloneable, BlockID, ItemID {
         }
 
         if (name == null) {
-            return get(AIR);
+            return Item.AIR_ITEM;
         }
 
         int id = 0;
-
         try {
             id = ItemID.class.getField(name.toUpperCase()).getInt(null);
         } catch (Exception ignore1) {
             try {
                 id = BlockID.class.getField(name.toUpperCase()).getInt(null);
-                if (id > 255) {
-                    id = 255 - id;
-                }
+                return getBlock(id, meta.orElse(0));
             } catch (Exception ignore2) {
 
             }
         }
-
         return get(id, meta.orElse(0));
     }
 

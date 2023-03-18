@@ -2,7 +2,6 @@ package cn.nukkit.entity.passive;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -76,6 +75,6 @@ public class EntitySalmon extends EntityFish {
 
     //巨型体系
     public boolean isLarge() {
-        return this.getDataFlag(DATA_FLAGS, Entity.DATA_FLAG_LARGE);
+        return this.namedTag.getBoolean("isLarge");
     }
 }

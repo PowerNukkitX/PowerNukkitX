@@ -3434,12 +3434,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return (dot1 - dot) >= -maxDiff;
     }
 
+    @PowerNukkitXDifference(since = "1.19.70-r1", info = "Use new packet id system.")
     public void handleDataPacket(DataPacket packet) {
         if (!connected) {
             return;
         }
 
-        if (!verified && packet.pid() != ProtocolInfo.LOGIN_PACKET && packet.pid() != ProtocolInfo.BATCH_PACKET && packet.pid() != ProtocolInfo.REQUEST_NETWORK_SETTINGS_PACKET) {
+        if (!verified && packet.packetId() != ProtocolInfo.toNewProtocolID(ProtocolInfo.LOGIN_PACKET)
+                && packet.packetId() != ProtocolInfo.toNewProtocolID(ProtocolInfo.BATCH_PACKET)
+                && packet.packetId() != ProtocolInfo.toNewProtocolID(ProtocolInfo.REQUEST_NETWORK_SETTINGS_PACKET)) {
             log.warn("Ignoring {} from {} due to player not verified yet", packet.getClass().getSimpleName(), getAddress());
             if (unverifiedPackets++ > 100) {
                 this.close("", "Too many failed login attempts");
@@ -3454,7 +3457,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 return;
             }
 
-            if (packet.pid() == ProtocolInfo.BATCH_PACKET) {
+            if (packet.packetId() == ProtocolInfo.toNewProtocolID(ProtocolInfo.BATCH_PACKET)) {
                 List<DataPacket> dataPackets = unpackBatchedPackets((BatchPacket) packet);
                 dataPackets.forEach(this::handleDataPacket);
                 return;
@@ -3464,6 +3467,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 log.trace("Inbound {}: {}", this.getName(), packet);
             }
 
+            // TODO: 2023/3/15 重构数据包处理使得兼容新的int id
             packetswitch:
             switch (packet.pid()) {
                 case ProtocolInfo.REQUEST_NETWORK_SETTINGS_PACKET:
@@ -5570,6 +5574,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             }
         }
     }
+
+    // <editor-fold desc="DataPacket processing">
+    private void handleRequestNetworkSettingsPacket(RequestNetworkSettingsPacket packet) {
+
+    }
+    // </editor-fold>
+
 
     /**
      * 以该玩家的身份发送一条聊天信息。如果消息以/（正斜杠）开头，它将被视为一个命令。

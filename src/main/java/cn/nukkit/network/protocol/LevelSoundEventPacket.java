@@ -5,6 +5,8 @@ import cn.nukkit.api.Since;
 import cn.nukkit.math.Vector3f;
 import lombok.ToString;
 
+import static cn.nukkit.utils.Utils.dynamic;
+
 @ToString
 public class LevelSoundEventPacket extends DataPacket {
     public static final byte NETWORK_ID = ProtocolInfo.LEVEL_SOUND_EVENT_PACKET;
@@ -487,24 +489,28 @@ public class LevelSoundEventPacket extends DataPacket {
     public static final int SOUND_CONVERT_TO_FROG = 440;
     public static final int SOUND_RECORD_PLAYING = 441;
     public static final int SOUND_ENCHANTING_TABLE_USE = 442;
-    public static final int BUNDLE_DROP_CONTENTS = 445;
-    public static final int BUNDLE_INSERT = 446;
-    public static final int BUNDLE_REMOVE_ONE = 447;
-    public static final int PRESSURE_PLATE_CLICK_OFF = 448;
-    public static final int PRESSURE_PLATE_CLICK_ON = 449;
-    public static final int BUTTON_CLICK_OFF = 450;
-    public static final int BUTTON_CLICK_ON = 451;
-    public static final int DOOR_OPEN = 452;
-    public static final int DOOR_CLOSE = 453;
-    public static final int TRAPDOOR_OPEN = 454;
-    public static final int TRAPDOOR_CLOSE = 455;
-    public static final int FENCE_GATE_OPEN = 456;
-    public static final int FENCE_GATE_CLOSE = 457;
-    public static final int INSERT = 458;
-    public static final int PICKUP = 459;
-    public static final int INSERT_ENCHANTED = 460;
-    public static final int PICKUP_ENCHANTED = 461;
-    public static final int SOUND_UNDEFINED = 462;
+    public static final int SOUND_BUNDLE_DROP_CONTENTS = 445;
+    public static final int SOUND_BUNDLE_INSERT = 446;
+    public static final int SOUND_BUNDLE_REMOVE_ONE = 447;
+    public static final int SOUND_PRESSURE_PLATE_CLICK_OFF = 448;
+    public static final int SOUND_PRESSURE_PLATE_CLICK_ON = 449;
+    public static final int SOUND_BUTTON_CLICK_OFF = 450;
+    public static final int SOUND_BUTTON_CLICK_ON = 451;
+    public static final int SOUND_DOOR_OPEN = 452;
+    public static final int SOUND_DOOR_CLOSE = 453;
+    public static final int SOUND_TRAPDOOR_OPEN = 454;
+    public static final int SOUND_TRAPDOOR_CLOSE = 455;
+    public static final int SOUND_FENCE_GATE_OPEN = 456;
+    public static final int SOUND_FENCE_GATE_CLOSE = 457;
+    public static final int SOUND_INSERT = 458;
+    public static final int SOUND_PICKUP = 459;
+    public static final int SOUND_INSERT_ENCHANTED = 460;
+    public static final int SOUND_PICKUP_ENCHANTED = 461;
+    public static final int SOUND_BRUSH = 462;
+    public static final int SOUND_BRUSH_COMPLETED = 463;
+    public static final int SOUND_SHATTER_DECORATED_POT = 464;
+    public static final int SOUND_BREAK_DECORATED_POD = 465;
+    public static final int SOUND_UNDEFINED = dynamic(466);
 
     public int sound;
     public float x;

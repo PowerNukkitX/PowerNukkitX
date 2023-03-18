@@ -1,11 +1,16 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.Server;
+import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.network.Network;
 import cn.nukkit.utils.Binary;
 import cn.nukkit.utils.BinaryStream;
 import com.nukkitx.network.raknet.RakNetReliability;
+
+import javax.annotation.Nonnegative;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -19,7 +24,26 @@ public abstract class DataPacket extends BinaryStream implements Cloneable {
 
     public RakNetReliability reliability = RakNetReliability.RELIABLE_ORDERED;
 
+    @Deprecated(since = "1.19.70")
+    @DeprecationDetails(since = "1.19.70-r1", reason = "pid could be more than 255, so it should be an int",
+            replaceWith = "packetId()")
     public abstract byte pid();
+
+    /**
+     * @return The id of the packet
+     */
+    @Since("1.19.70-r1")
+    @PowerNukkitXOnly
+    public @Nonnegative int packetId() {
+        return ProtocolInfo.toNewProtocolID(this.pid());
+    }
+
+    /**
+     * @return The protocol version of the packet. If it is lower than CURRENT_PROTOCOL, pnx will try to translate it.
+     */
+    public int getProtocolUsed() {
+        return ProtocolInfo.CURRENT_PROTOCOL;
+    }
 
     public abstract void decode();
 
@@ -35,7 +59,7 @@ public abstract class DataPacket extends BinaryStream implements Cloneable {
     @Override
     public DataPacket reset() {
         super.reset();
-        this.putUnsignedVarInt(this.pid() & 0xff);
+        this.putUnsignedVarInt(this.packetId());
         return this;
     }
 

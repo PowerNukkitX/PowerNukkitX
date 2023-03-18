@@ -27,6 +27,7 @@ public class AddEntityPacket extends DataPacket {
 
             .put(157, "minecraft:trader_llama")
 
+            .put(EntityCamel.NETWORK_ID, "minecraft:camel")//138
             .put(EntityAllay.NETWORK_ID, "minecraft:allay")//134
             .put(EntityTadpole.NETWORK_ID, "minecraft:tadpole")//133
             .put(EntityFrog.NETWORK_ID, "minecraft:frog")

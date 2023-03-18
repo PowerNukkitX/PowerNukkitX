@@ -18,9 +18,9 @@ public class AvailableEntityIdentifiersPacket extends DataPacket {
     private static final byte[] TAG;
 
     static {
-        try (InputStream inputStream = Nukkit.class.getModule().getResourceAsStream("entity_identifiers.dat")) {
+        try (InputStream inputStream = Nukkit.class.getModule().getResourceAsStream("entity_identifiers.nbt")) {
             if (inputStream == null) {
-                throw new AssertionError("Could not find entity_identifiers.dat");
+                throw new AssertionError("Could not find entity_identifiers.nbt");
             }
 
             BufferedInputStream bis = new BufferedInputStream(inputStream);

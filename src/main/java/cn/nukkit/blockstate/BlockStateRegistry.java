@@ -152,14 +152,16 @@ public class BlockStateRegistry {
                 registerStateId(state, runtimeId);
             }
         }
-
         //update block_ids.csv
-        /*for (var block : warned) {
-            var id = 255-RuntimeItems.getRuntimeMapping().getNetworkIdByNamespaceId(block).getAsInt();
+        /*TreeMap<Integer, String> ids = new TreeMap<>(Integer::compare);
+        for (var block : warned) {
+            ids.put(255 - RuntimeItems.getRuntimeMapping().getNetworkIdByNamespaceId(block).getAsInt(), block);
+        }
+        for (var entry : ids.entrySet()) {
             try {
-                var path = Path.of("test.txt");
+                var path = Path.of("block_ids.txt");
                 if (!path.toFile().exists()) path.toFile().createNewFile();
-                Files.writeString(path, id + "," + block + "\n", StandardCharsets.UTF_8, StandardOpenOption.APPEND);
+                Files.writeString(path, entry.getKey() + "," + entry.getValue() + "\n", StandardCharsets.UTF_8, StandardOpenOption.APPEND);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

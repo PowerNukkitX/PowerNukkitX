@@ -65,11 +65,9 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     public static final Block[] EMPTY_ARRAY = new Block[0];
 
     //<editor-fold desc="static fields" defaultstate="collapsed">
-    @SuppressWarnings("DeprecatedIsStillUsed")
-    @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "It is being replaced by an other solution that don't require a fixed size")
     @PowerNukkitOnly
-    public static final int MAX_BLOCK_ID = dynamic(800);
+    public static final int MAX_BLOCK_ID = dynamic(850);
 
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "It's not a constant value, it may be changed on major updates and" +
@@ -220,7 +218,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             list[DEAD_BUSH] = BlockDeadBush.class; //32
             list[PISTON] = BlockPiston.class; //33
             list[PISTON_ARM_COLLISION] = BlockPistonHead.class; //34
-            list[WOOL] = BlockWool.class; //35
+            list[WHITE_WOOL] = BlockWool.class; //35
             list[DANDELION] = BlockDandelion.class; //37
             list[RED_FLOWER] = BlockFlower.class; //38
             list[BROWN_MUSHROOM] = BlockMushroomBrown.class; //39
@@ -825,6 +823,22 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             list[MANGROVE_WOOD] = BlockWoodMangrove.class;//752
             list[STRIPPED_MANGROVE_WOOD] = BlockWoodStrippedMangrove.class;//753
             list[DOUBLE_MANGROVE_SLAB] = BlockDoubleSlabMangrove.class;//754
+
+            list[LIGHT_GRAY_WOOL] = BlockLightGrayWool.class;//807
+            list[GRAY_WOOL] = BlockGrayWool.class;//808
+            list[BLACK_WOOL] = BlockBlackWool.class;//809
+            list[BROWN_WOOL] = BlockBrownWool.class;//810
+            list[RED_WOOL] = BlockRedWool.class;//811
+            list[ORANGE_WOOL] = BlockOrangeWool.class;//812
+            list[YELLOW_WOOL] = BlockYellowWool.class;//813
+            list[LIME_WOOL] = BlockLimeWool.class;//814
+            list[GREEN_WOOL] = BlockGreenWool.class;//815
+            list[CYAN_WOOL] = BlockCyanWool.class;//816
+            list[LIGHT_BLUE_WOOL] = BlockLightBlueWool.class;//817
+            list[BLUE_WOOL] = BlockBlueWool.class;//818
+            list[PURPLE_WOOL] = BlockPurpleWool.class;//819
+            list[MAGENTA_WOOL] = BlockMagentaWool.class;//820
+            list[PINK_WOOL] = BlockPinkWool.class;//821
             initializing = true;
 
             for (int id = 0; id < MAX_BLOCK_ID; id++) {
@@ -2535,9 +2549,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         }
     }
 
-    @PowerNukkitDifference(
-            info = "Prevents players from getting invalid items by limiting the return to the maximum damage defined in getMaxItemDamage()",
-            since = "1.4.0.0-PN")
     public Item toItem() {
         return asItemBlock(1);
     }

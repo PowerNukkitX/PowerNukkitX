@@ -11,12 +11,15 @@ import cn.powernukkitx.libdeflate.LibdeflateCompressor;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import oshi.SystemInfo;
 import oshi.hardware.NetworkIF;
 
+import javax.annotation.Nonnegative;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -56,7 +59,7 @@ public class Network {
     public static final byte CHANNEL_TEXT = 7; //Chat and other text stuff
     public static final byte CHANNEL_END = 31;
 
-    private Class<? extends DataPacket>[] packetPool = new Class[256];
+    private Int2ObjectOpenHashMap<Class<? extends DataPacket>> packetPool = new Int2ObjectOpenHashMap<>(256);
 
     private final Server server;
 
@@ -279,7 +282,19 @@ public class Network {
     }
 
     public void registerPacket(byte id, Class<? extends DataPacket> clazz) {
-        this.packetPool[id & 0xff] = clazz;
+        this.packetPool.put(id & 0xff, clazz);
+    }
+
+    /**
+     * Register a packet to the pool. Using from 1.19.70.
+     *
+     * @param id    The packet id, non-negative int
+     * @param clazz The packet class
+     */
+    @Since("1.19.70-r1")
+    @PowerNukkitXOnly
+    public void registerPacketNew(@Nonnegative int id, @NotNull Class<? extends DataPacket> clazz) {
+        this.packetPool.put(id, clazz);
     }
 
     public Server getServer() {
@@ -374,7 +389,7 @@ public class Network {
             } catch (Exception e) {
                 if (log.isWarnEnabled()) {
                     log.warn("Error whilst processing the packet {}:{} for {} (full data: {})",
-                            p.pid(), p.getClass().getSimpleName(),
+                            p.packetId(), p.getClass().getSimpleName(),
                             player.getName(), p.toString(),
                             e
                     );
@@ -394,7 +409,7 @@ public class Network {
 
     @Since("1.4.0.0-PN")
     public DataPacket getPacket(int id) {
-        Class<? extends DataPacket> clazz = this.packetPool[id];
+        Class<? extends DataPacket> clazz = this.packetPool.get(id);
         if (clazz != null) {
             try {
                 return clazz.newInstance();
@@ -430,7 +445,7 @@ public class Network {
     }
 
     private void registerPackets() {
-        this.packetPool = new Class[256];
+        this.packetPool.clear();
 
         this.registerPacket(ProtocolInfo.ADD_ENTITY_PACKET, AddEntityPacket.class);
         this.registerPacket(ProtocolInfo.ADD_ITEM_ENTITY_PACKET, AddItemEntityPacket.class);
@@ -587,5 +602,11 @@ public class Network {
         this.registerPacket(ProtocolInfo.PLAYER_FOG_PACKET, PlayerFogPacket.class);
         this.registerPacket(ProtocolInfo.SET_DEFAULT_GAME_TYPE_PACKET, SetDefaultGameTypePacket.class);
         this.registerPacket(ProtocolInfo.STRUCTURE_BLOCK_UPDATE_PACKET, StructureBlockUpdatePacket.class);
+        // new packet id system
+        this.registerPacketNew(ProtocolInfo.toNewProtocolID(ProtocolInfo.CAMERA_PRESETS_PACKET), CameraPresetsPacket.class);
+        this.registerPacketNew(ProtocolInfo.toNewProtocolID(ProtocolInfo.UNLOCKED_RECIPES_PACKET), UnlockedRecipesPacket.class);
+        this.registerPacketNew(ProtocolInfo.CAMERA_INSTRUCTION_PACKET, CameraInstructionPacket.class);
+
+        this.packetPool.trim();
     }
 }

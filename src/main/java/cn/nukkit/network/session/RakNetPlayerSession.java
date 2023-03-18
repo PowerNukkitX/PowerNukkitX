@@ -156,7 +156,7 @@ public class RakNetPlayerSession implements NetworkPlayerSession, RakNetSessionL
         List<DataPacket> toBatch = new ObjectArrayList<>();
         DataPacket packet;
         while ((packet = this.outbound.poll()) != null) {
-            if (packet.pid() == ProtocolInfo.BATCH_PACKET) {
+            if (packet.packetId() == ProtocolInfo.toNewProtocolID(ProtocolInfo.BATCH_PACKET)) {
                 if (!toBatch.isEmpty()) {
                     this.sendPackets(toBatch);
                     toBatch.clear();
