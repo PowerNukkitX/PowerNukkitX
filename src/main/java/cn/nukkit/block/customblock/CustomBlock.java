@@ -141,7 +141,7 @@ public interface CustomBlock {
      * @param player the player
      * @return the break time
      */
-    default double getBreakTime(@NotNull Item item, @Nullable Player player) {
+    default double breakTime(@NotNull Item item, @Nullable Player player) {
         var block = this.toCustomBlock();
         double breakTime = block.calculateBreakTime(item, player);
         var comp = this.getDefinition().nbt().getCompound("components");
