@@ -505,7 +505,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
             double miningTimeRequired;
             if (this.breakingBlock instanceof CustomBlock customBlock) {
-                miningTimeRequired = customBlock.getBreakTime(this.inventory.getItemInHand(), this);
+                miningTimeRequired = customBlock.breakTime(this.inventory.getItemInHand(), this);
             } else miningTimeRequired = this.breakingBlock.calculateBreakTime(this.inventory.getItemInHand(), this);
 
             if (miningTimeRequired > 0) {
@@ -600,7 +600,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.breakingBlockTime = currentBreak;
             double miningTimeRequired;
             if (target instanceof CustomBlock customBlock) {
-                miningTimeRequired = customBlock.getBreakTime(this.inventory.getItemInHand(), this);
+                miningTimeRequired = customBlock.breakTime(this.inventory.getItemInHand(), this);
             } else miningTimeRequired = target.calculateBreakTime(this.inventory.getItemInHand(), this);
             int breakTime = (int) Math.ceil(miningTimeRequired * 20);
             if (breakTime > 0) {

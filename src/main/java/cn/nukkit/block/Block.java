@@ -1883,6 +1883,15 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return 1.0 / speed;
     }
 
+    public double getBreakTime(Item item, Player player) {
+        return this.calculateBreakTime(item, player);
+    }
+
+    public double getBreakTime(Item item) {
+        return this.calculateBreakTime(item);
+    }
+
+
     /**
      * @link calculateBreakTime(@ Nonnull Item item, @ Nullable Player player)
      */
