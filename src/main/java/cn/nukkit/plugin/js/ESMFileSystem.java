@@ -6,6 +6,7 @@ import cn.nukkit.plugin.CommonJSPlugin;
 import cn.nukkit.plugin.JavaPluginLoader;
 import cn.nukkit.utils.SeekableInMemoryByteChannel;
 import org.graalvm.polyglot.io.FileSystem;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.net.URI;
@@ -50,17 +51,18 @@ public final class ESMFileSystem implements FileSystem {
             }
         } else if (path.startsWith(":")) {
             resolvedPath = Path.of("inner-module", path.substring(1));
-        } else if ((!path.endsWith(".js") && !path.startsWith("./") && !path.startsWith("../") && getDots(path) > 1)) {
+        } else if ((!path.endsWith(".js") && !path.startsWith("./") && !path.startsWith("../") && path.contains("."))) {
             if (mainClassLoader == null)
                 mainClassLoader = Thread.currentThread().getContextClassLoader();
+            var fullImportPath = Path.of("java-class", path);
             try {
                 if (javaClassCache.containsKey(path)) {
-                    return Path.of("java-class", path);
+                    return fullImportPath;
                 }
                 var clazz = mainClassLoader.loadClass(path);
                 if (clazz != null) {
                     javaClassCache.put(path, clazz);
-                    resolvedPath = Path.of("java-class", path);
+                    resolvedPath = fullImportPath;
                 } else {
                     outer:
                     for (var pl : Server.getInstance().getPluginManager().getFileAssociations().values()) {
@@ -69,7 +71,7 @@ public final class ESMFileSystem implements FileSystem {
                                 clazz = loader.loadClass(path);
                                 if (clazz != null) {
                                     javaClassCache.put(path, clazz);
-                                    resolvedPath = Path.of("java-class", path);
+                                    resolvedPath = fullImportPath;
                                     break outer;
                                 }
                             }
@@ -85,7 +87,7 @@ public final class ESMFileSystem implements FileSystem {
                                 var clazz = loader.loadClass(path);
                                 if (clazz != null) {
                                     javaClassCache.put(path, clazz);
-                                    resolvedPath = Path.of("java-class", path);
+                                    resolvedPath = fullImportPath;
                                     break outer2;
                                 }
                             } catch (ClassNotFoundException ignore2) {
@@ -108,7 +110,7 @@ public final class ESMFileSystem implements FileSystem {
         return resolvedPath;
     }
 
-    private static int getDots(String originStr) {
+    public static int getDots(@NotNull String originStr) {
         var res = 0;
         var i = originStr.indexOf('.');
         while (i != -1) {
