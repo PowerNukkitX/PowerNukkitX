@@ -18,7 +18,6 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import lombok.Data;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -37,12 +36,16 @@ public class RuntimeItemMapping {
     private final Int2ObjectMap<RuntimeEntry> legacy2Runtime = new Int2ObjectOpenHashMap<>();//legacyFullID to Runtime
     private final Map<String, LegacyEntry> identifier2Legacy = new HashMap<>();
     @PowerNukkitXOnly
+    @Since("1.19.70-r2")
     private final List<RuntimeEntry> itemPaletteEntries = new ArrayList<>();
     @PowerNukkitXOnly
+    @Since("1.19.70-r2")
     private final Int2ObjectMap<String> runtimeId2Name = new Int2ObjectOpenHashMap<>();
     @PowerNukkitXOnly
+    @Since("1.19.70-r2")
     private final Object2IntMap<String> name2RuntimeId = new Object2IntOpenHashMap<>();
     @PowerNukkitXOnly
+    @Since("1.19.70-r2")
     private final Map<String, Supplier<Item>> namespacedIdItem = new HashMap<>();
     private byte[] itemPalette;
 
@@ -67,11 +70,11 @@ public class RuntimeItemMapping {
                 int legacyId;
                 if (mappings.containsKey(identifier)) {
                     MappingEntry mapping = mappings.get(identifier);
-                    legacyId = RuntimeItems.getLegacyIdFromLegacyString(mapping.getLegacyName());
+                    legacyId = RuntimeItems.getLegacyIdFromLegacyString(mapping.legacyName());
                     if (legacyId == -1) {
                         throw new IllegalStateException("Unable to match  " + mapping + " with legacyId");
                     }
-                    damage = mapping.getDamage();
+                    damage = mapping.damage();
                     hasDamage = true;
                 } else {
                     legacyId = RuntimeItems.getLegacyIdFromLegacyString(identifier);
@@ -103,9 +106,9 @@ public class RuntimeItemMapping {
         BinaryStream paletteBuffer = new BinaryStream();
         paletteBuffer.putUnsignedVarInt(this.itemPaletteEntries.size());
         for (RuntimeEntry entry : this.itemPaletteEntries) {
-            paletteBuffer.putString(entry.getIdentifier());
-            paletteBuffer.putLShort(entry.getRuntimeId());
-            paletteBuffer.putBoolean(entry.isComponent); // Component item
+            paletteBuffer.putString(entry.identifier());
+            paletteBuffer.putLShort(entry.runtimeId());
+            paletteBuffer.putBoolean(entry.isComponent()); // Component item
         }
         this.itemPalette = paletteBuffer.getBuffer();
     }
@@ -160,7 +163,7 @@ public class RuntimeItemMapping {
     public void deleteCustomItem(CustomItem customItem) {
         this.runtimeId2Name.remove(customItem.getId());
         this.name2RuntimeId.removeInt(customItem.getNamespaceId());
-        this.itemPaletteEntries.removeIf(next -> next.getIdentifier().equals(customItem.getNamespaceId()));
+        this.itemPaletteEntries.removeIf(next -> next.identifier().equals(customItem.getNamespaceId()));
         this.generatePalette();
     }
 
@@ -206,7 +209,7 @@ public class RuntimeItemMapping {
         while (iter.hasNext()) {
             RuntimeEntry next = iter.next();
             for (var block : blocks) {
-                if (block.getNamespaceId().equals(next.getIdentifier())) {
+                if (block.getNamespaceId().equals(next.identifier())) {
                     iter.remove();
                     break;
                 }
@@ -340,7 +343,8 @@ public class RuntimeItemMapping {
 
 
     @SneakyThrows
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
+    @Since("1.19.70-r2")
     public void registerNamespacedIdItem(@NotNull Class<? extends StringItem> item) {
         Constructor<? extends StringItem> declaredConstructor = item.getDeclaredConstructor();
         var Item = declaredConstructor.newInstance();
@@ -386,12 +390,7 @@ public class RuntimeItemMapping {
         };
     }
 
-    @Data
-    public static class LegacyEntry {
-        private final int legacyId;
-        private final boolean hasDamage;
-        private final int damage;
-
+    public record LegacyEntry(int legacyId, boolean hasDamage, int damage) {
         public int getDamage() {
             return this.hasDamage ? this.damage : 0;
         }
@@ -401,11 +400,6 @@ public class RuntimeItemMapping {
         }
     }
 
-    @Data
-    public static class RuntimeEntry {
-        private final String identifier;
-        private final int runtimeId;
-        private final boolean hasDamage;
-        private final boolean isComponent;
+    public record RuntimeEntry(String identifier, int runtimeId, boolean hasDamage, boolean isComponent) {
     }
 }

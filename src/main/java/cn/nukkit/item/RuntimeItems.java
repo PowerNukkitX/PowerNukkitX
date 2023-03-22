@@ -5,7 +5,6 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import lombok.Data;
 import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
 
@@ -104,9 +103,6 @@ public class RuntimeItems {
         return legacyString2LegacyInt.getOrDefault(identifier, -1);
     }
 
-    @Data
-    public static class MappingEntry {
-        private final String legacyName;
-        private final int damage;
+    public record MappingEntry(String legacyName, int damage) {
     }
 }
