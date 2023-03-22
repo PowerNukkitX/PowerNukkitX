@@ -18,8 +18,8 @@ class CraftingEventPacketTest {
         var packet = new CraftingEventPacket();
         packet.type = 1;
         packet.id = UUID.randomUUID();
-        packet.input = new Item[]{new Item(1000), new Item(1001)};
-        packet.output = new Item[]{new Item(1002), new Item(1003)};
+        packet.input = new Item[]{new Item(500), new Item(501)};
+        packet.output = new Item[]{new Item(502), new Item(503)};
 
         packet.encode();
         var packet2 = new CraftingEventPacket();
