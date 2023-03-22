@@ -37,13 +37,13 @@ public class RuntimeItemMapping {
     private final Int2ObjectMap<RuntimeEntry> legacy2Runtime = new Int2ObjectOpenHashMap<>();//legacyFullID to Runtime
     private final Map<String, LegacyEntry> identifier2Legacy = new HashMap<>();
     @PowerNukkitXOnly
+    private final List<RuntimeEntry> itemPaletteEntries = new ArrayList<>();
+    @PowerNukkitXOnly
     private final Int2ObjectMap<String> runtimeId2Name = new Int2ObjectOpenHashMap<>();
     @PowerNukkitXOnly
     private final Object2IntMap<String> name2RuntimeId = new Object2IntOpenHashMap<>();
     @PowerNukkitXOnly
     private final Map<String, Supplier<Item>> namespacedIdItem = new HashMap<>();
-    @PowerNukkitXOnly
-    private final List<PaletteEntry> itemPaletteEntries = new ArrayList<>();
     private byte[] itemPalette;
 
     public RuntimeItemMapping(Map<String, MappingEntry> mappings) {
@@ -87,7 +87,7 @@ public class RuntimeItemMapping {
                 this.runtime2Legacy.put(runtimeId, legacyEntry);
                 this.identifier2Legacy.put(identifier, legacyEntry);
                 this.legacy2Runtime.put(fullId, runtimeEntry);
-                this.itemPaletteEntries.add(new PaletteEntry(identifier, legacyId, false));
+                this.itemPaletteEntries.add(runtimeEntry);
             }
 
             this.generatePalette();
@@ -102,10 +102,10 @@ public class RuntimeItemMapping {
         }
         BinaryStream paletteBuffer = new BinaryStream();
         paletteBuffer.putUnsignedVarInt(this.itemPaletteEntries.size());
-        for (PaletteEntry entry : this.itemPaletteEntries) {
+        for (RuntimeEntry entry : this.itemPaletteEntries) {
             paletteBuffer.putString(entry.getIdentifier());
-            paletteBuffer.putLShort(entry.getLegacyId());
-            paletteBuffer.putBoolean(entry.isComponent()); // Component item
+            paletteBuffer.putLShort(entry.getRuntimeId());
+            paletteBuffer.putBoolean(entry.isComponent); // Component item
         }
         this.itemPalette = paletteBuffer.getBuffer();
     }
@@ -142,9 +142,10 @@ public class RuntimeItemMapping {
     @Since("1.6.0.0-PNX")
     public void registerCustomItem(CustomItem customItem, Supplier<Item> constructor) {
         var runtimeId = CustomItemDefinition.getRuntimeId(customItem.getNamespaceId());
-        PaletteEntry entry = new PaletteEntry(
+        RuntimeEntry entry = new RuntimeEntry(
                 customItem.getNamespaceId(),
                 runtimeId,
+                false,
                 true
         );
         this.itemPaletteEntries.add(entry);
@@ -168,9 +169,10 @@ public class RuntimeItemMapping {
     public void registerCustomBlock(List<CustomBlock> blocks) {
         for (var block : blocks) {
             int id = 255 - block.getId();//方块物品id等于 255-方块id(即-750开始递减)
-            PaletteEntry entry = new PaletteEntry(
-                    block.getNamespaceId(),
+            RuntimeEntry entry = new RuntimeEntry(
+                    block.getNamespaceId(),//方块命名空间也是方块物品命名空间
                     id,
+                    false,
                     true
             );
             this.itemPaletteEntries.add(entry);
@@ -190,7 +192,7 @@ public class RuntimeItemMapping {
         }
         var iter = this.itemPaletteEntries.iterator();
         while (iter.hasNext()) {
-            PaletteEntry next = iter.next();
+            RuntimeEntry next = iter.next();
             for (var block : blocks) {
                 if (block.getNamespaceId().equals(next.getIdentifier())) {
                     iter.remove();
@@ -395,13 +397,6 @@ public class RuntimeItemMapping {
         private final String identifier;
         private final int runtimeId;
         private final boolean hasDamage;
-        private final boolean isComponent;
-    }
-
-    @Data
-    public static class PaletteEntry {
-        private final String identifier;
-        private final int legacyId;
         private final boolean isComponent;
     }
 }
