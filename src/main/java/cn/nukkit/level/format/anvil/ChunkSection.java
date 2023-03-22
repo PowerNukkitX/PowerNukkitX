@@ -8,7 +8,9 @@ import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
+import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.ChunkSection3DBiome;
 import cn.nukkit.level.format.LevelProvider;
@@ -290,26 +292,12 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
                     }
                     int composedData = composeData(data.get(index), dataExtra.get(index));
                     BlockState state = loadState(index, blockId, composedData, hugeDataList, hugeDataSize);
+
                     //TODO 更新旧羊毛状态到新羊毛状态 下个版本移除
-                    if (state.getBlockId() == 35 && state.getFullId() != 560) {
-                        switch (state.getFullId()) {
-                            case 561 -> storage.setBlockState(bx, by, bz, Block.get(812).getCurrentState());
-                            case 562 -> storage.setBlockState(bx, by, bz, Block.get(820).getCurrentState());
-                            case 563 -> storage.setBlockState(bx, by, bz, Block.get(817).getCurrentState());
-                            case 564 -> storage.setBlockState(bx, by, bz, Block.get(813).getCurrentState());
-                            case 565 -> storage.setBlockState(bx, by, bz, Block.get(814).getCurrentState());
-                            case 566 -> storage.setBlockState(bx, by, bz, Block.get(821).getCurrentState());
-                            case 567 -> storage.setBlockState(bx, by, bz, Block.get(808).getCurrentState());
-                            case 568 -> storage.setBlockState(bx, by, bz, Block.get(807).getCurrentState());
-                            case 569 -> storage.setBlockState(bx, by, bz, Block.get(816).getCurrentState());
-                            case 570 -> storage.setBlockState(bx, by, bz, Block.get(819).getCurrentState());
-                            case 571 -> storage.setBlockState(bx, by, bz, Block.get(818).getCurrentState());
-                            case 572 -> storage.setBlockState(bx, by, bz, Block.get(810).getCurrentState());
-                            case 573 -> storage.setBlockState(bx, by, bz, Block.get(815).getCurrentState());
-                            case 574 -> storage.setBlockState(bx, by, bz, Block.get(811).getCurrentState());
-                            case 575 -> storage.setBlockState(bx, by, bz, Block.get(809).getCurrentState());
-                            default -> throw new IllegalArgumentException();
-                        }
+                    String blockMapping = BlockStateRegistry.getBlockMapping(RuntimeItems.getFullId(state.getBlockId(), state.getDataStorage().intValue()));
+                    if (blockMapping != null) {
+                        int id = RuntimeItems.getRuntimeMapping().getNetworkIdByNamespaceId(blockMapping).orElse(0);
+                        storage.setBlockState(bx, by, bz, Block.get(id).getCurrentState());
                     } else {
                         storage.setBlockState(bx, by, bz, state);
                     }

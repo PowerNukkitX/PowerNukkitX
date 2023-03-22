@@ -7,10 +7,7 @@ import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.inventory.recipe.*;
-import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemDurable;
-import cn.nukkit.item.ItemID;
-import cn.nukkit.item.RuntimeItems;
+import cn.nukkit.item.*;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.GameRules;
 import cn.nukkit.math.BlockFace;
@@ -399,44 +396,44 @@ public class BinaryStream {
 
     @PowerNukkitXDifference(info = "Remove the name from the tag, this function will be removed in the future")
     public Item getSlot() {
-        int networkId = getVarInt();
-        if (networkId == 0) {
-            return Item.get(0, 0, 0);
+        int runtimeId = this.getVarInt();
+        if (runtimeId == 0) {
+            return Item.get(Item.AIR, 0, 0);
         }
 
-        int count = getLShort();
-        int damage = (int) getUnsignedVarInt();
+        int count = this.getLShort();
+        int damage = (int) this.getUnsignedVarInt();
 
         Integer id = null;
         String stringId = null;
         try {
-            int fullId = RuntimeItems.getRuntimeMapping().getLegacyFullId(networkId);
-            id = RuntimeItems.getId(fullId);
+            RuntimeItemMapping mapping = RuntimeItems.getRuntimeMapping();
+            RuntimeItemMapping.LegacyEntry legacyEntry = mapping.fromRuntime(runtimeId);
 
-            boolean hasData = RuntimeItems.hasData(fullId);
-            if (hasData) {
-                damage = RuntimeItems.getData(fullId);
+            id = legacyEntry.getLegacyId();
+            if (legacyEntry.isHasDamage()) {
+                damage = legacyEntry.getDamage();
             }
         } catch (IllegalArgumentException unknownMapping) {
-            stringId = RuntimeItems.getRuntimeMapping().getNamespacedIdByNetworkId(networkId);
+            stringId = RuntimeItems.getRuntimeMapping().getNamespacedIdByNetworkId(runtimeId);
             if (stringId == null) {
                 throw unknownMapping;
             }
         }
 
-        if (getBoolean()) { // hasNetId
-            getVarInt(); // netId
+        if (this.getBoolean()) { // hasNetId
+            this.getVarInt(); // netId
         }
 
-        int blockRuntimeId = getVarInt();
-        if (id != null && id <= 255 && id != FALLBACK_ID) {
+        int blockRuntimeId = this.getVarInt();
+        if (id != null && id <= 255 && id != FALLBACK_ID) { // ItemBlock
             BlockState blockStateByRuntimeId = BlockStateRegistry.getBlockStateByRuntimeId(blockRuntimeId);
             if (blockStateByRuntimeId != null) {
                 damage = blockStateByRuntimeId.asItemBlock().getDamage();
             }
         }
 
-        byte[] bytes = getByteArray();
+        byte[] bytes = this.getByteArray();
         ByteBuf buf = AbstractByteBufAllocator.DEFAULT.ioBuffer(bytes.length);
         buf.writeBytes(bytes);
 
@@ -523,10 +520,6 @@ public class BinaryStream {
                 namedTag.put("CanPlaceOn", listTag);
             }
 
-            if (namedTag.containsString("Name")) {//todo 临时修复物品NBT，未来移除
-                namedTag.remove("Name");
-            }
-
             item.setNamedTag(namedTag);
         }
 
@@ -602,49 +595,37 @@ public class BinaryStream {
     @PowerNukkitXDifference(info = "Remove the name from the tag, this function will be removed in the future")
     @Since("1.4.0.0-PN")
     public void putSlot(Item item, boolean instanceItem) {
-        if (item == null || item.getId() == 0) {
-            putByte((byte) 0);
+        if (item == null || item.getId() == Item.AIR) {
+            this.putByte((byte) 0);
             return;
         }
 
-        int networkFullId;
-        try {
-            networkFullId = RuntimeItems.getRuntimeMapping().getNetworkFullId(item);
-        } catch (IllegalArgumentException e) {
-            log.trace(e);
-            item = createFakeUnknownItem(item);
-            networkFullId = RuntimeItems.getRuntimeMapping().getNetworkFullId(item);
-        }
-        int networkId = RuntimeItems.getNetworkId(networkFullId);
+        int id = item.getId();
+        int meta = item.getDamage();
+        boolean isBlock = item instanceof ItemBlock;
+        boolean isDurable = item instanceof ItemDurable;
 
-        putVarInt(networkId);
-        putLShort(item.getCount());
+        RuntimeItemMapping mapping = RuntimeItems.getRuntimeMapping();
+        RuntimeItemMapping.RuntimeEntry runtimeEntry = mapping.toRuntime(id, meta);
+        int runtimeId = runtimeEntry.getRuntimeId();
+        int damage = isBlock || isDurable || runtimeEntry.isHasDamage() ? 0 : meta;
 
-        int legacyData = 0;
-        if (item.getId() > 256) { // Not a block
-            if (item instanceof ItemDurable || !RuntimeItems.hasData(networkFullId)) {
-                legacyData = item.getDamage();
-            }
-        }
-        putUnsignedVarInt(legacyData);
+        this.putVarInt(runtimeId);
+        this.putLShort(item.getCount());
+        this.putUnsignedVarInt(damage);
 
         if (!instanceItem) {
             putBoolean(true); // hasNetId
             putVarInt(0); // netId
         }
 
-        Block block = item.getBlockUnsafe();
+        Block block = isBlock ? item.getBlockUnsafe() : null;
         int blockRuntimeId = block == null ? 0 : block.getRuntimeId();
-        putVarInt(blockRuntimeId);
-
-        int data = 0;
-        if (item instanceof ItemDurable || item.getId() < 256) {
-            data = item.getDamage();
-        }
+        this.putVarInt(blockRuntimeId);
 
         ByteBuf userDataBuf = ByteBufAllocator.DEFAULT.ioBuffer();
         try (LittleEndianByteBufOutputStream stream = new LittleEndianByteBufOutputStream(userDataBuf)) {
-            if ((item instanceof ItemDurable && data != 0) || block != null && block.getDamage() > 0) {
+            if (!instanceItem && isDurable && !runtimeEntry.isHasDamage()) {
                 byte[] nbt = item.getCompoundTag();
                 CompoundTag tag;
                 if (nbt == null || nbt.length == 0) {
@@ -652,22 +633,17 @@ public class BinaryStream {
                 } else {
                     tag = NBTIO.read(nbt, ByteOrder.LITTLE_ENDIAN);
                 }
-
-                if (tag.containsString("Name")) tag.remove("Name");//todo 未来移除
-
                 if (tag.contains("Damage")) {
                     tag.put("__DamageConflict__", tag.removeAndGet("Damage"));
                 }
-                tag.putInt("Damage", data);
+                tag.putInt("Damage", meta);
                 stream.writeShort(-1);
                 stream.writeByte(1); // Hardcoded in current version
                 stream.write(NBTIO.write(tag, ByteOrder.LITTLE_ENDIAN));
             } else if (item.hasCompoundTag()) {
                 stream.writeShort(-1);
                 stream.writeByte(1); // Hardcoded in current version
-                var tag = item.getNamedTag();
-                if (tag.containsString("Name")) tag.remove("Name");//todo 未来移除
-                stream.write(NBTIO.write(tag, ByteOrder.LITTLE_ENDIAN));
+                stream.write(item.getCompoundTag());
             } else {
                 userDataBuf.writeShortLE(0);
             }
@@ -684,7 +660,7 @@ public class BinaryStream {
                 stream.writeUTF(string);
             }
 
-            if (item.getId() == ItemID.SHIELD) {
+            if (id == ItemID.SHIELD) {
                 stream.writeLong(0);
             }
 
@@ -699,18 +675,19 @@ public class BinaryStream {
     }
 
     public Item getRecipeIngredient() {
-        int networkId = this.getVarInt();
-        if (networkId == 0) {
-            return Item.get(0, 0, 0);
+        int runtimeId = this.getVarInt();
+        if (runtimeId == 0) {
+            return Item.get(Item.AIR, 0, 0);
         }
 
-        int legacyFullId = RuntimeItems.getRuntimeMapping().getLegacyFullId(networkId);
-        int id = RuntimeItems.getId(legacyFullId);
-        boolean hasData = RuntimeItems.hasData(legacyFullId);
+        RuntimeItemMapping mapping = RuntimeItems.getRuntimeMapping();
+        RuntimeItemMapping.LegacyEntry legacyEntry = mapping.fromRuntime(runtimeId);
 
+        int id = legacyEntry.getLegacyId();
         int damage = this.getVarInt();
-        if (hasData) {
-            damage = RuntimeItems.getData(legacyFullId);
+
+        if (legacyEntry.isHasDamage()) {
+            damage = legacyEntry.getDamage();
         } else if (damage == 0x7fff) {
             damage = -1;
         }
@@ -721,24 +698,30 @@ public class BinaryStream {
 
     @Deprecated
     @DeprecationDetails(since = "1.19.50-r2", reason = "Support more types of recipe input", replaceWith = "putRecipeIngredient(ItemDescriptor itemDescriptor)")
-    public void putRecipeIngredient(Item ingredient) {
-        if (ingredient == null || ingredient.getId() == 0) {
+    public void putRecipeIngredient(Item item) {
+        if (item == null || item.getId() == Item.AIR) {
             this.putBoolean(false); // isValid? - false
             this.putVarInt(0); // item == null ? 0 : item.getCount()
             return;
         }
+
         this.putBoolean(true); // isValid? - true
 
-        int networkFullId = RuntimeItems.getRuntimeMapping().getNetworkFullId(ingredient);
-        int networkId = RuntimeItems.getNetworkId(networkFullId);
-        int damage = ingredient.hasMeta() ? ingredient.getDamage() : 0x7fff;
-        if (RuntimeItems.hasData(networkFullId)) {
-            damage = 0;
-        }
+        RuntimeItemMapping mapping = RuntimeItems.getRuntimeMapping();
+        int runtimeId, damage;
 
-        this.putLShort(networkId);
+        if (!item.hasMeta()) {
+            RuntimeItemMapping.RuntimeEntry runtimeEntry = mapping.toRuntime(item.getId(), 0);
+            runtimeId = runtimeEntry.getRuntimeId();
+            damage = 0x7fff;
+        } else {
+            RuntimeItemMapping.RuntimeEntry runtimeEntry = mapping.toRuntime(item.getId(), item.getDamage());
+            runtimeId = runtimeEntry.getRuntimeId();
+            damage = runtimeEntry.isHasDamage() ? 0 : item.getDamage();
+        }
+        this.putLShort(runtimeId);
         this.putLShort(damage);
-        this.putVarInt(ingredient.getCount());
+        this.putVarInt(item.getCount());
     }
 
     @PowerNukkitXOnly
@@ -754,13 +737,20 @@ public class BinaryStream {
                     this.putVarInt(0); // item == null ? 0 : item.getCount()
                     return;
                 }
-                int networkFullId = RuntimeItems.getRuntimeMapping().getNetworkFullId(ingredient);
-                int networkId = RuntimeItems.getNetworkId(networkFullId);
-                int damage = ingredient.hasMeta() ? ingredient.getDamage() : 0x7fff;
-                if (RuntimeItems.hasData(networkFullId)) {
-                    damage = 0;
+
+                RuntimeItemMapping mapping = RuntimeItems.getRuntimeMapping();
+                int runtimeId, damage;
+                if (!ingredient.hasMeta()) {
+                    RuntimeItemMapping.RuntimeEntry runtimeEntry = mapping.toRuntime(ingredient.getId(), 0);
+                    runtimeId = runtimeEntry.getRuntimeId();
+                    damage = 0x7fff;
+                } else {
+                    RuntimeItemMapping.RuntimeEntry runtimeEntry = mapping.toRuntime(ingredient.getId(), ingredient.getDamage());
+                    runtimeId = runtimeEntry.getRuntimeId();
+                    damage = runtimeEntry.isHasDamage() ? 0 : ingredient.getDamage();
                 }
-                this.putLShort(networkId);
+
+                this.putLShort(runtimeId);
                 this.putLShort(damage);
             }
             case MOLANG -> {

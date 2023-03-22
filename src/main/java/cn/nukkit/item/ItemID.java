@@ -93,7 +93,7 @@ public interface ItemID {
     int SADDLE = 329;
     int IRON_DOOR = 330;
     int REDSTONE = 331;
-    int REDSTONE_DUST = 331;
+    int REDSTONE_DUST = REDSTONE;
     int SNOWBALL = 332;
     int BOAT = 333;
     int LEATHER = 334;

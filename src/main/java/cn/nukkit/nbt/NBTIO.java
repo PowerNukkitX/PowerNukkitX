@@ -163,33 +163,8 @@ public class NBTIO {
     }
 
 
-    //todo 修复背包中的羊毛物品，下一个版本移除
     private static Item fixWoolItem(int id, int damage, int count) {
-        if (id == 35) {
-            var item = switch (damage) {
-                case 1 -> Item.getBlock(812);
-                case 2 -> Item.getBlock(820);
-                case 3 -> Item.getBlock(817);
-                case 4 -> Item.getBlock(813);
-                case 5 -> Item.getBlock(814);
-                case 6 -> Item.getBlock(821);
-                case 7 -> Item.getBlock(808);
-                case 8 -> Item.getBlock(807);
-                case 9 -> Item.getBlock(816);
-                case 10 -> Item.getBlock(819);
-                case 11 -> Item.getBlock(818);
-                case 12 -> Item.getBlock(810);
-                case 13 -> Item.getBlock(815);
-                case 14 -> Item.getBlock(811);
-                case 15 -> Item.getBlock(809);
-                default -> Item.getBlock(35);
-            };
-            if (item == null) return null;
-            item.setDamage(0);
-            item.setCount(count);
-            return item;
-        }
-        return null;
+        return Item.get(id, damage, count);
     }
 
     public static CompoundTag read(File file) throws IOException {

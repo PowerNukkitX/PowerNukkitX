@@ -498,8 +498,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * 重构项目物品列表
      * <p>
      * rebuild ItemList
-     *
-     * @return
      */
 
     @PowerNukkitOnly
@@ -516,8 +514,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * 获取项目物品列表也可以获取重构物品列表
      * <p>
      * Get the list of item items and also get the list of reconstructed items
-     *
-     * @return
      */
 
     @PowerNukkitOnly
@@ -880,6 +876,12 @@ public class Item implements Cloneable, BlockID, ItemID {
             Item item;
 
             if (id < 256) {
+                String blockMapping = BlockStateRegistry.getBlockMapping(RuntimeItems.getFullId(id, meta));
+                if (blockMapping != null) {
+                    id = RuntimeItems.getRuntimeMapping().getNetworkIdByNamespaceId(blockMapping).orElse(0);
+                    meta = 0;
+                }
+
                 int blockId = id < 0 ? 255 - id : id;
                 if (meta == 0) {
                     item = new ItemBlock(Block.get(blockId), 0, count);
@@ -959,6 +961,7 @@ public class Item implements Cloneable, BlockID, ItemID {
             if (namespacedId.equals("minecraft:air")) {
                 return Item.AIR_ITEM;
             }
+            //custom item
             if (CUSTOM_ITEMS.containsKey(namespacedId)) {
                 var item = RuntimeItems.getRuntimeMapping().getItemByNamespaceId(namespacedId, 1);
                 Item customItem;
@@ -979,6 +982,7 @@ public class Item implements Cloneable, BlockID, ItemID {
                     }
                 }
                 return customItem;
+                //custom block
             } else if (Block.CUSTOM_BLOCK_ID_MAP.containsKey(namespacedId)) {
                 ItemBlock customItemBlock = (ItemBlock) RuntimeItems.getRuntimeMapping().getItemByNamespaceId(namespacedId, 1);
                 if (meta.isPresent()) {
@@ -992,6 +996,7 @@ public class Item implements Cloneable, BlockID, ItemID {
                 return customItemBlock;
             }
 
+            //common item
             MinecraftItemID minecraftItemId = MinecraftItemID.getByNamespaceId(namespacedId);
             if (minecraftItemId != null) {
                 //todo edu item
@@ -1006,10 +1011,6 @@ public class Item implements Cloneable, BlockID, ItemID {
                     } else {
                         item.setDamage(damage);
                     }
-                }
-                var blockId = BlockStateRegistry.getBlockId(minecraftItemId.getNamespacedId());
-                if (blockId != null) {
-                    item.block = Block.get(blockId);
                 }
                 return item;
             } else if (namespaceGroup != null && !namespaceGroup.equals("minecraft:")) {
@@ -1734,9 +1735,9 @@ public class Item implements Cloneable, BlockID, ItemID {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public final int getNetworkFullId() throws UnknownNetworkIdException {
+    public final int getNetworkId() throws UnknownNetworkIdException {
         try {
-            return RuntimeItems.getRuntimeMapping().getNetworkFullId(this);
+            return RuntimeItems.getRuntimeMapping().getNetworkId(this);
         } catch (IllegalArgumentException e) {
             throw new UnknownNetworkIdException(this, e);
         }
@@ -1746,7 +1747,7 @@ public class Item implements Cloneable, BlockID, ItemID {
     @Since("1.4.0.0-PN")
     public String getNamespaceId() {
         RuntimeItemMapping runtimeMapping = RuntimeItems.getRuntimeMapping();
-        return runtimeMapping.getNamespacedIdByNetworkId(RuntimeItems.getNetworkId(runtimeMapping.getNetworkFullId(this)));
+        return runtimeMapping.getNamespacedIdByNetworkId(this.getNetworkId());
     }
 
     @PowerNukkitOnly
@@ -2296,11 +2297,6 @@ public class Item implements Cloneable, BlockID, ItemID {
         } catch (CloneNotSupportedException e) {
             return null;
         }
-    }
-
-    @Since("1.4.0.0-PN")
-    public final int getNetworkId() throws UnknownNetworkIdException {
-        return RuntimeItems.getNetworkId(getNetworkFullId());
     }
 
     /**
