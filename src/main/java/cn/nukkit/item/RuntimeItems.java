@@ -23,7 +23,7 @@ public class RuntimeItems {
     private static RuntimeItemMapping itemPalette;
     private static boolean initialized;
 
-    public static void init() {
+    static {
         if (initialized) {
             throw new IllegalStateException("RuntimeItems were already generated!");
         }
@@ -61,6 +61,9 @@ public class RuntimeItems {
         }
 
         itemPalette = new RuntimeItemMapping(mappingEntries);
+    }
+
+    public static void init() {
     }
 
     public static RuntimeItemMapping getMapping() {

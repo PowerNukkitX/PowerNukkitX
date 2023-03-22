@@ -155,6 +155,10 @@ public class RuntimeItemMapping {
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public void deleteCustomItem(CustomItem customItem) {
+        this.runtimeId2Name.remove(customItem.getId());
+        this.name2RuntimeId.removeInt(customItem.getNamespaceId());
+        this.itemPaletteEntries.removeIf(next -> next.getIdentifier().equals(customItem.getNamespaceId()));
+        this.generatePalette();
     }
 
     @PowerNukkitXOnly
@@ -178,6 +182,21 @@ public class RuntimeItemMapping {
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public void deleteCustomBlock(List<CustomBlock> blocks) {
+        for (var block : blocks) {
+            this.runtimeId2Name.remove(block.getId());
+            this.name2RuntimeId.removeInt(block.getNamespaceId());
+        }
+        var iter = this.itemPaletteEntries.iterator();
+        while (iter.hasNext()) {
+            RuntimeEntry next = iter.next();
+            for (var block : blocks) {
+                if (block.getNamespaceId().equals(next.getIdentifier())) {
+                    iter.remove();
+                    break;
+                }
+            }
+        }
+        this.generatePalette();
     }
 
     /**
