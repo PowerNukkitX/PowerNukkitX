@@ -102,7 +102,7 @@ public class RuntimeItemMapping {
         for (RuntimeEntry entry : this.itemPaletteEntries) {
             paletteBuffer.putString(entry.getIdentifier());
             paletteBuffer.putLShort(entry.getRuntimeId());
-            paletteBuffer.putBoolean(false); // Component item
+            paletteBuffer.putBoolean(entry.isComponent); // Component item
         }
         this.itemPalette = paletteBuffer.getBuffer();
     }
@@ -211,17 +211,9 @@ public class RuntimeItemMapping {
     public int getNetworkId(Item item) {
         if (item instanceof StringItem) {
             if (item instanceof CustomItem customItem) {
-                return customItem.getId();
+                return CustomItemDefinition.getRuntimeId(customItem.getNamespaceId());
             }
-            LegacyEntry legacyEntry = identifier2Legacy.get(item.getNamespaceId());
-            if (legacyEntry == null) {
-                throw new IllegalArgumentException("Unknown item mapping " + item);
-            }
-            RuntimeEntry runtimeEntry = legacy2Runtime.get(legacyEntry.fullID());
-            if (runtimeEntry == null) {
-                throw new IllegalArgumentException("Unknown item mapping " + item);
-            }
-            return runtimeEntry.runtimeId;
+            return name2RuntimeId.getInt(item.getNamespaceId());
         }
 
         int fullId = RuntimeItems.getFullId(item.getId(), item.getDamage());
