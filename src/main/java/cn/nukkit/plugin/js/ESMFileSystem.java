@@ -37,6 +37,7 @@ public final class ESMFileSystem implements FileSystem {
         return parsePath(uri.toString());
     }
 
+    @SuppressWarnings("DuplicateExpressions")
     @Override
     public Path parsePath(String path) {
         Path resolvedPath = null;
@@ -54,15 +55,14 @@ public final class ESMFileSystem implements FileSystem {
         } else if ((!path.endsWith(".js") && !path.startsWith("./") && !path.startsWith("../") && path.contains("."))) {
             if (mainClassLoader == null)
                 mainClassLoader = Thread.currentThread().getContextClassLoader();
-            var fullImportPath = Path.of("java-class", path);
             try {
                 if (javaClassCache.containsKey(path)) {
-                    return fullImportPath;
+                    return Path.of("java-class", path);
                 }
                 var clazz = mainClassLoader.loadClass(path);
                 if (clazz != null) {
                     javaClassCache.put(path, clazz);
-                    resolvedPath = fullImportPath;
+                    resolvedPath = Path.of("java-class", path);
                 } else {
                     outer:
                     for (var pl : Server.getInstance().getPluginManager().getFileAssociations().values()) {
@@ -71,7 +71,7 @@ public final class ESMFileSystem implements FileSystem {
                                 clazz = loader.loadClass(path);
                                 if (clazz != null) {
                                     javaClassCache.put(path, clazz);
-                                    resolvedPath = fullImportPath;
+                                    resolvedPath = Path.of("java-class", path);
                                     break outer;
                                 }
                             }
@@ -87,7 +87,7 @@ public final class ESMFileSystem implements FileSystem {
                                 var clazz = loader.loadClass(path);
                                 if (clazz != null) {
                                     javaClassCache.put(path, clazz);
-                                    resolvedPath = fullImportPath;
+                                    resolvedPath = Path.of("java-class", path);
                                     break outer2;
                                 }
                             } catch (ClassNotFoundException ignore2) {
