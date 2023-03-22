@@ -35,7 +35,6 @@ public class ZippedResourcePackLoader implements ResourcePackLoader {
         var baseLang = Server.getInstance().getLanguage();
         List<ResourcePack> loadedResourcePacks = new ArrayList<>();
         for (File pack : path.listFiles()) {
-            log.info(baseLang.tr("nukkit.resources.zip.loading", pack.getName()));
             try {
                 ResourcePack resourcePack = null;
                 String fileExt = Files.getFileExtension(pack.getName());
