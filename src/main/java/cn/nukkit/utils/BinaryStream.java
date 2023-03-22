@@ -616,7 +616,7 @@ public class BinaryStream {
 
         int legacyData = 0;
         if (item.getId() > 256) { // Not a block
-            if (item instanceof ItemDurable || !RuntimeItems.getRuntimeMapping().toRuntime(item.getId(), item.getDamage()).isHasDamage()) {
+            if (item instanceof ItemDurable || !RuntimeItems.getRuntimeMapping().toRuntime(item.getId(), item.getDamage()).hasDamage()) {
                 legacyData = item.getDamage();
             }
         }
@@ -720,7 +720,7 @@ public class BinaryStream {
 
         int networkId = RuntimeItems.getRuntimeMapping().getNetworkId(ingredient);
         int damage = ingredient.hasMeta() ? ingredient.getDamage() : 0x7fff;
-        if (RuntimeItems.getRuntimeMapping().toRuntime(ingredient.getId(), ingredient.getDamage()).isHasDamage()) {
+        if (RuntimeItems.getRuntimeMapping().toRuntime(ingredient.getId(), ingredient.getDamage()).hasDamage()) {
             damage = 0;
         }
 
@@ -744,7 +744,7 @@ public class BinaryStream {
                 }
                 int networkId = RuntimeItems.getRuntimeMapping().getNetworkId(ingredient);
                 int damage = ingredient.hasMeta() ? ingredient.getDamage() : 0x7fff;
-                if (RuntimeItems.getRuntimeMapping().toRuntime(ingredient.getId(), ingredient.getDamage()).isHasDamage()) {
+                if (RuntimeItems.getRuntimeMapping().toRuntime(ingredient.getId(), ingredient.getDamage()).hasDamage()) {
                     damage = 0;
                 }
                 this.putLShort(networkId);

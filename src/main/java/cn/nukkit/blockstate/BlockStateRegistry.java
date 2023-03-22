@@ -71,7 +71,7 @@ public class BlockStateRegistry {
     private List<String> knownStateIds;
 
     @PowerNukkitXOnly
-    private final Int2ObjectMap<String> mappingEntries = new Int2ObjectOpenHashMap<>();
+    private final Int2ObjectOpenHashMap<String> mappingEntries = new Int2ObjectOpenHashMap<>();
 
     //<editor-fold desc="static initialization" defaultstate="collapsed">
     static {
@@ -91,6 +91,7 @@ public class BlockStateRegistry {
                     mappingEntries.put(RuntimeItems.getFullId(id, damage), identifier);
                 }
             }
+            mappingEntries.trim();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
