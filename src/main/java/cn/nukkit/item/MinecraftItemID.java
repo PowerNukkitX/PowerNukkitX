@@ -377,6 +377,7 @@ public enum MinecraftItemID {
     @PowerNukkitOnly @Since("1.4.0.0-PN") DEADBUSH,
     @PowerNukkitOnly @Since("1.4.0.0-PN") PISTON,
     //@PowerNukkitOnly @Since("1.4.0.0-PN") PISTONARMCOLLISION("minecraft:pistonArmCollision", "minecraft:piston"),
+    @PowerNukkitOnly @Since("1.4.0.0-PN") WOOL,
     @PowerNukkitOnly @Since("1.4.0.0-PN") WHITE_WOOL,
     @PowerNukkitOnly @Since("1.4.0.0-PN") ELEMENT_0(false, false, true),
     @PowerNukkitOnly @Since("1.4.0.0-PN") YELLOW_FLOWER,

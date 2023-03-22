@@ -1,8 +1,6 @@
 package cn.nukkit.block;
 
-import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.item.StringBlockItem;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.DyeColor;
 
@@ -53,10 +51,5 @@ public class BlockWool extends BlockSolid {
 
     public DyeColor getDyeColor() {
         return DyeColor.WHITE;
-    }
-
-    @Override
-    public Item toItem() {
-        return new StringBlockItem(this);
     }
 }

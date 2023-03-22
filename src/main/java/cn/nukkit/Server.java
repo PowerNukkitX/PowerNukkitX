@@ -791,7 +791,7 @@ public class Server {
 
         Block.init();
         Enchantment.init();
-        RuntimeItems.getRuntimeMapping();
+        RuntimeItems.init();
         Potion.init();
         Item.init();
         EnumBiome.values(); //load class, this also registers biomes

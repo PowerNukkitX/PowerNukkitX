@@ -1,219 +1,218 @@
 package cn.nukkit.item;
 
-import cn.nukkit.api.API;
+import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.customblock.CustomBlock;
+import cn.nukkit.item.RuntimeItems.MappingEntry;
 import cn.nukkit.item.customitem.CustomItem;
 import cn.nukkit.item.customitem.CustomItemDefinition;
 import cn.nukkit.utils.BinaryStream;
 import com.google.common.base.Preconditions;
-import it.unimi.dsi.fastutil.ints.Int2IntMap;
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
-import static com.google.common.base.Verify.verify;
-
-/**
- * Responsible for mapping item full ids, item network ids and item namespaced ids between each other.
- * <ul>
- * <li>A <b>full id</b> is a combination of <b>item id</b> and <b>item damage</b>.
- * The way they are combined may change in future, so you should not combine them by yourself and neither store them
- * permanently. It's mainly used to preserve backward compatibility with plugins that don't support <em>namespaced ids</em>.
- * <li>A <b>network id</b> is an id that is used to communicated with the client, it may change between executions of the
- * same server version depending on how the plugins are setup.
- * <li>A <b>namespaced id</b> is the new way Mojang saves the ids, a string like <code>minecraft:stone</code>. It may change
- * in Minecraft updates but tends to be permanent, unless Mojang decides to change them for some random reasons...
- */
 @Log4j2
-@Since("1.4.0.0-PN")
 public class RuntimeItemMapping {
-
+    private final Int2ObjectMap<LegacyEntry> runtime2Legacy = new Int2ObjectOpenHashMap<>();
+    private final Int2ObjectMap<RuntimeEntry> legacy2Runtime = new Int2ObjectOpenHashMap<>();//legacyFullID to Runtime
+    private final Map<String, LegacyEntry> identifier2Legacy = new HashMap<>();
     @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
-    private final Collection<RuntimeItems.Entry> entries;
-
-    private final Int2IntMap legacyNetworkMap;
-    private final Int2IntMap networkLegacyMap;
-    private byte[] itemDataPalette;
-
-    private final Map<String, OptionalInt> namespaceNetworkMap;
-    private final Int2ObjectMap<String> networkNamespaceMap;
-
-    private final Map<String, Supplier<Item>> namespacedIdItem = new LinkedHashMap<>();
-
+    @Since("1.19.70-r2")
+    private final List<RuntimeEntry> itemPaletteEntries = new ArrayList<>();
     @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
-    private final HashMap<String, RuntimeItems.Entry> customItemEntries = new HashMap<>();
-
+    @Since("1.19.70-r2")
+    private final Int2ObjectMap<String> runtimeId2Name = new Int2ObjectOpenHashMap<>();
     @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
-    private final HashMap<String, RuntimeItems.Entry> customBlockEntries = new HashMap<>();
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @Deprecated
-    public RuntimeItemMapping(byte[] itemDataPalette, Int2IntMap legacyNetworkMap, Int2IntMap networkLegacyMap) {
-        this.entries = null;
-        this.itemDataPalette = itemDataPalette;
-        this.legacyNetworkMap = legacyNetworkMap;
-        this.networkLegacyMap = networkLegacyMap;
-        this.legacyNetworkMap.defaultReturnValue(-1);
-        this.networkLegacyMap.defaultReturnValue(-1);
-        this.namespaceNetworkMap = new LinkedHashMap<>();
-        this.networkNamespaceMap = new Int2ObjectOpenHashMap<>();
-    }
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    @API(definition = API.Definition.INTERNAL, usage = API.Usage.BLEEDING)
-    @Deprecated
-    public RuntimeItemMapping(
-            byte[] itemDataPalette, Int2IntMap legacyNetworkMap, Int2IntMap networkLegacyMap,
-            Map<String, Integer> namespaceNetworkMap, Int2ObjectMap<String> networkNamespaceMap) {
-        this.entries = null;
-        this.itemDataPalette = itemDataPalette;
-        this.legacyNetworkMap = legacyNetworkMap;
-        this.networkLegacyMap = networkLegacyMap;
-        this.legacyNetworkMap.defaultReturnValue(-1);
-        this.networkLegacyMap.defaultReturnValue(-1);
-        this.networkNamespaceMap = networkNamespaceMap;
-        this.namespaceNetworkMap = namespaceNetworkMap.entrySet().stream()
-                .map(e -> new AbstractMap.SimpleEntry<>(e.getKey(), OptionalInt.of(e.getValue())))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-    }
-
+    @Since("1.19.70-r2")
+    private final Object2IntMap<String> name2RuntimeId = new Object2IntOpenHashMap<>();
     @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
-    public RuntimeItemMapping(Collection<RuntimeItems.Entry> entries) {
-        this.entries = entries;
+    @Since("1.19.70-r2")
+    private final Map<String, Supplier<Item>> namespacedIdItem = new HashMap<>();
+    private byte[] itemPalette;
 
-        this.legacyNetworkMap = new Int2IntOpenHashMap();
-        this.networkLegacyMap = new Int2IntOpenHashMap();
-        LinkedHashMap<String, OptionalInt> namespaceNetworkMap = new LinkedHashMap<>();
-        this.networkNamespaceMap = new Int2ObjectOpenHashMap<>();
-
-        for (RuntimeItems.Entry entry : entries) {
-            namespaceNetworkMap.put(entry.name, OptionalInt.of(entry.id));
-            networkNamespaceMap.put(entry.id, entry.name);
-            if (entry.oldId != null) {
-                boolean hasData = entry.oldData != null;
-                int fullId = RuntimeItems.getFullId(entry.oldId, hasData ? entry.oldData : 0);
-                if (entry.deprecated != Boolean.TRUE) {
-                    verify(legacyNetworkMap.put(fullId, (entry.id << 1) | (hasData ? 1 : 0)) == 0,
-                            "Conflict while registering an item runtime id!"
-                    );
-                }
-                verify(networkLegacyMap.put(entry.id, fullId | (hasData ? 1 : 0)) == 0,
-                        "Conflict while registering an item runtime id!"
-                );
+    public RuntimeItemMapping(Map<String, MappingEntry> mappings) {
+        try (InputStream stream = Server.class.getClassLoader().getResourceAsStream("runtime_item_states.json")) {
+            if (stream == null) {
+                throw new AssertionError("Unable to load runtime_item_states.json");
             }
+            JsonArray runtimeItems = JsonParser.parseReader(new InputStreamReader(stream)).getAsJsonArray();
+
+            for (JsonElement element : runtimeItems) {
+                if (!element.isJsonObject()) {
+                    throw new IllegalStateException("Invalid entry");
+                }
+                JsonObject entry = element.getAsJsonObject();
+                String identifier = entry.get("name").getAsString();
+                int runtimeId = entry.get("id").getAsInt();
+                this.runtimeId2Name.put(runtimeId, identifier);
+                this.name2RuntimeId.put(identifier, runtimeId);
+                boolean hasDamage = false;
+                int damage = 0;
+                int legacyId;
+                if (mappings.containsKey(identifier)) {
+                    MappingEntry mapping = mappings.get(identifier);
+                    legacyId = RuntimeItems.getLegacyIdFromLegacyString(mapping.legacyName());
+                    if (legacyId == -1) {
+                        throw new IllegalStateException("Unable to match  " + mapping + " with legacyId");
+                    }
+                    damage = mapping.damage();
+                    hasDamage = true;
+                } else {
+                    legacyId = RuntimeItems.getLegacyIdFromLegacyString(identifier);
+                    if (legacyId == -1) {
+                        log.trace("Unable to find legacyId for " + identifier);
+                        continue;
+                    }
+                }
+
+                int fullId = RuntimeItems.getFullId(legacyId, damage);
+                LegacyEntry legacyEntry = new LegacyEntry(legacyId, hasDamage, damage);
+                RuntimeEntry runtimeEntry = new RuntimeEntry(identifier, runtimeId, hasDamage, false);
+                this.runtime2Legacy.put(runtimeId, legacyEntry);
+                this.identifier2Legacy.put(identifier, legacyEntry);
+                this.legacy2Runtime.put(fullId, runtimeEntry);
+                this.itemPaletteEntries.add(runtimeEntry);
+            }
+
+            this.generatePalette();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-
-        this.namespaceNetworkMap = namespaceNetworkMap.entrySet().stream()
-                .map(e -> new AbstractMap.SimpleEntry<>(e.getKey(), e.getValue()))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
-        this.legacyNetworkMap.defaultReturnValue(-1);
-        this.networkLegacyMap.defaultReturnValue(-1);
-
-        this.generatePalette();
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
-    private synchronized void generatePalette() {
-        if (this.entries == null) {
+    private void generatePalette() {
+        if (this.itemPaletteEntries.isEmpty()) {
             return;
         }
         BinaryStream paletteBuffer = new BinaryStream();
-        paletteBuffer.putUnsignedVarInt(this.entries.size());
-        for (RuntimeItems.Entry entry : this.entries) {
-            paletteBuffer.putString(entry.name.replace("minecraft:", ""));
-            paletteBuffer.putLShort(entry.id);
-            paletteBuffer.putBoolean(entry.isComponentItem); // Component item
+        paletteBuffer.putUnsignedVarInt(this.itemPaletteEntries.size());
+        for (RuntimeEntry entry : this.itemPaletteEntries) {
+            paletteBuffer.putString(entry.identifier());
+            paletteBuffer.putLShort(entry.runtimeId());
+            paletteBuffer.putBoolean(entry.isComponent()); // Component item
         }
-        this.itemDataPalette = paletteBuffer.getBuffer();
+        this.itemPalette = paletteBuffer.getBuffer();
+    }
+
+    public LegacyEntry fromRuntime(int runtimeId) {
+        LegacyEntry legacyEntry = this.runtime2Legacy.get(runtimeId);
+        if (legacyEntry == null) {
+            throw new IllegalArgumentException("Unknown runtime2Legacy mapping: " + runtimeId);
+        }
+        return legacyEntry;
+    }
+
+    public RuntimeEntry toRuntime(int id, int meta) {
+        RuntimeEntry runtimeEntry = this.legacy2Runtime.get(RuntimeItems.getFullId(id, meta));
+        if (runtimeEntry == null) {
+            runtimeEntry = this.legacy2Runtime.get(RuntimeItems.getFullId(id, 0));
+        }
+
+        if (runtimeEntry == null) {
+            throw new IllegalArgumentException("Unknown legacy2Runtime mapping: id=" + id + " meta=" + meta);
+        }
+        return runtimeEntry;
+    }
+
+    public LegacyEntry fromIdentifier(String identifier) {
+        return this.identifier2Legacy.get(identifier);
+    }
+
+    public byte[] getItemPalette() {
+        return this.itemPalette;
     }
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public synchronized void registerCustomItem(CustomItem customItem, Supplier<Item> constructor) {
+    public void registerCustomItem(CustomItem customItem, Supplier<Item> constructor) {
         var runtimeId = CustomItemDefinition.getRuntimeId(customItem.getNamespaceId());
-        RuntimeItems.Entry entry = new RuntimeItems.Entry(
+        RuntimeEntry entry = new RuntimeEntry(
                 customItem.getNamespaceId(),
                 runtimeId,
-                null,
-                null,
                 false,
                 true
         );
-        this.customItemEntries.put(customItem.getNamespaceId(), entry);
-        this.entries.add(entry);
+        this.itemPaletteEntries.add(entry);
+        this.runtimeId2Name.put(runtimeId, customItem.getNamespaceId());
+        this.name2RuntimeId.put(customItem.getNamespaceId(), runtimeId);
         this.registerNamespacedIdItem(customItem.getNamespaceId(), constructor);
-        this.namespaceNetworkMap.put(customItem.getNamespaceId(), OptionalInt.of(runtimeId));
-        this.networkNamespaceMap.put(runtimeId, customItem.getNamespaceId());
         this.generatePalette();
     }
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public synchronized void deleteCustomItem(CustomItem customItem) {
-        RuntimeItems.Entry entry = this.customItemEntries.remove(customItem.getNamespaceId());
-        if (entry != null) {
-            this.entries.remove(entry);
-            this.namespaceNetworkMap.remove(customItem.getNamespaceId());
-            this.networkNamespaceMap.remove(CustomItemDefinition.getRuntimeId(customItem.getNamespaceId()));
-            this.generatePalette();
-        }
+    public void deleteCustomItem(CustomItem customItem) {
+        this.runtimeId2Name.remove(customItem.getId());
+        this.name2RuntimeId.removeInt(customItem.getNamespaceId());
+        this.itemPaletteEntries.removeIf(next -> next.identifier().equals(customItem.getNamespaceId()));
+        this.generatePalette();
     }
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public synchronized void registerCustomBlock(List<CustomBlock> blocks) {
+    public void registerCustomBlock(List<CustomBlock> blocks) {
         for (var block : blocks) {
             int id = 255 - block.getId();//方块物品id等于 255-方块id(即-750开始递减)
-            RuntimeItems.Entry entry = new RuntimeItems.Entry(
+            RuntimeEntry entry = new RuntimeEntry(
                     block.getNamespaceId(),//方块命名空间也是方块物品命名空间
                     id,
-                    id,
-                    null,
-                    null,
-                    false
+                    false,
+                    true
             );
-            this.customBlockEntries.put(block.getNamespaceId(), entry);
-            this.entries.add(entry);
+            LegacyEntry legacyEntry = new LegacyEntry(id, false, 0);
+            this.itemPaletteEntries.add(entry);
             this.namespacedIdItem.put(block.getNamespaceId(), block::toItem);
-            this.namespaceNetworkMap.put(block.getNamespaceId(), OptionalInt.of(id));
-            this.networkNamespaceMap.put(id, block.getNamespaceId());
-            int fullId = RuntimeItems.getFullId(id, 0);
-            legacyNetworkMap.put(fullId, id << 1);//todo 实现多状态方块需要在这里加入数据值判断
-            networkLegacyMap.put(id, fullId);
+
+            this.identifier2Legacy.put(block.getNamespaceId(), legacyEntry);
+            this.legacy2Runtime.put(RuntimeItems.getFullId(id, 0), entry);
+            this.runtime2Legacy.put(id, legacyEntry);
+
+            this.runtimeId2Name.put(id, block.getNamespaceId());
+            this.name2RuntimeId.put(block.getNamespaceId(), id);
         }
         this.generatePalette();
     }
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public synchronized void deleteCustomBlock(List<CustomBlock> blocks) {
+    public void deleteCustomBlock(List<CustomBlock> blocks) {
         for (var block : blocks) {
-            RuntimeItems.Entry entry = this.customBlockEntries.remove(block.getNamespaceId());
-            if (entry != null) {
-                this.entries.remove(entry);
-                this.namespaceNetworkMap.remove(block.getNamespaceId());
-                this.networkNamespaceMap.remove(255 - block.getId());
+            this.runtimeId2Name.remove(block.getId());
+            this.name2RuntimeId.removeInt(block.getNamespaceId());
+
+            this.namespacedIdItem.remove(block.getNamespaceId());
+            this.identifier2Legacy.remove(block.getNamespaceId());
+            this.legacy2Runtime.remove(RuntimeItems.getFullId(255 - block.getId(), 0));
+
+            this.runtime2Legacy.remove(255 - block.getId());
+        }
+        var iter = this.itemPaletteEntries.iterator();
+        while (iter.hasNext()) {
+            RuntimeEntry next = iter.next();
+            for (var block : blocks) {
+                if (block.getNamespaceId().equals(next.identifier())) {
+                    iter.remove();
+                    break;
+                }
             }
         }
         this.generatePalette();
@@ -228,24 +227,23 @@ public class RuntimeItemMapping {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public int getNetworkFullId(Item item) {
+    public int getNetworkId(Item item) {
         if (item instanceof StringItem) {
-            return namespaceNetworkMap.getOrDefault(item.getNamespaceId(), OptionalInt.empty()).orElseThrow(() -> new IllegalArgumentException("Unknown item mapping " + item)) << 1;
+            return name2RuntimeId.getInt(item.getNamespaceId());
         }
 
-        int fullId = RuntimeItems.getFullId(item.getId(), item.hasMeta() ? item.getDamage() : -1);
-        int networkFullId = this.legacyNetworkMap.get(fullId);
-        if (networkFullId == -1 && !item.hasMeta() && item.getDamage() != 0) { // Fuzzy crafting recipe of a remapped item, like charcoal
-            networkFullId = this.legacyNetworkMap.get(RuntimeItems.getFullId(item.getId(), item.getDamage()));
+        int fullId = RuntimeItems.getFullId(item.getId(), item.getDamage());
+        if (!item.hasMeta() && item.getDamage() != 0) { // Fuzzy crafting recipe of a remapped item, like charcoal
+            fullId = RuntimeItems.getFullId(item.getId(), item.getDamage());
         }
-        if (networkFullId == -1) {
-            networkFullId = this.legacyNetworkMap.get(RuntimeItems.getFullId(item.getId(), 0));
+        RuntimeEntry runtimeEntry = legacy2Runtime.get(fullId);
+        if (runtimeEntry == null) {
+            runtimeEntry = legacy2Runtime.get(RuntimeItems.getFullId(item.getId(), 0));
         }
-        if (networkFullId == -1) {
+        if (runtimeEntry == null) {
             throw new IllegalArgumentException("Unknown item mapping " + item);
         }
-
-        return networkFullId;
+        return runtimeEntry.runtimeId;
     }
 
     /**
@@ -258,17 +256,17 @@ public class RuntimeItemMapping {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public int getLegacyFullId(int networkId) {
-        int fullId = networkLegacyMap.get(networkId);
-        if (fullId == -1) {
-            throw new IllegalArgumentException("Unknown network mapping: " + networkId);
+        LegacyEntry legacyEntry = runtime2Legacy.get(networkId);
+        if (legacyEntry == null) {
+            throw new IllegalArgumentException("Unknown network mapping " + networkId);
         }
-        return fullId;
+        return legacyEntry.fullID();
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public byte[] getItemDataPalette() {
-        return this.itemDataPalette;
+        return this.itemPalette;
     }
 
     /**
@@ -281,7 +279,7 @@ public class RuntimeItemMapping {
     @Since("1.4.0.0-PN")
     @Nullable
     public String getNamespacedIdByNetworkId(int networkId) {
-        return networkNamespaceMap.get(networkId);
+        return runtimeId2Name.get(networkId);
     }
 
     /**
@@ -294,7 +292,9 @@ public class RuntimeItemMapping {
     @Since("1.4.0.0-PN")
     @NotNull
     public OptionalInt getNetworkIdByNamespaceId(@NotNull String namespaceId) {
-        return namespaceNetworkMap.getOrDefault(namespaceId, OptionalInt.empty());
+        int id = name2RuntimeId.getOrDefault(namespaceId, -1);
+        if (id == -1) return OptionalInt.empty();
+        return OptionalInt.of(id);
     }
 
     /**
@@ -333,22 +333,22 @@ public class RuntimeItemMapping {
             return item;
         }
 
+        int id = RuntimeItems.getId(legacyFullId);
+        int data = 0;
         if (RuntimeItems.hasData(legacyFullId)) {
-            return Item.get(RuntimeItems.getId(legacyFullId), RuntimeItems.getData(legacyFullId), amount);
-        } else {
-            Item item = Item.get(RuntimeItems.getId(legacyFullId));
-            item.setCount(amount);
-            return item;
+            data = RuntimeItems.getData(legacyFullId);
         }
+        return Item.get(id, data, amount);
     }
 
 
     @SneakyThrows
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
+    @Since("1.19.70-r2")
     public void registerNamespacedIdItem(@NotNull Class<? extends StringItem> item) {
         Constructor<? extends StringItem> declaredConstructor = item.getDeclaredConstructor();
         var Item = declaredConstructor.newInstance();
-        registerNamespacedIdItem(Item.getNamespaceId(), stritemSupplier(declaredConstructor));
+        registerNamespacedIdItem(Item.getNamespaceId(), stringItemSupplier(declaredConstructor));
     }
 
     @PowerNukkitOnly
@@ -380,7 +380,7 @@ public class RuntimeItemMapping {
     @Since("1.19.60-r1")
     @PowerNukkitXOnly
     @NotNull
-    private static Supplier<Item> stritemSupplier(@NotNull Constructor<? extends StringItem> constructor) {
+    private static Supplier<Item> stringItemSupplier(@NotNull Constructor<? extends StringItem> constructor) {
         return () -> {
             try {
                 return (Item) constructor.newInstance();
@@ -388,5 +388,18 @@ public class RuntimeItemMapping {
                 throw new UnsupportedOperationException(e);
             }
         };
+    }
+
+    public record LegacyEntry(int legacyId, boolean hasDamage, int damage) {
+        public int getDamage() {
+            return this.hasDamage ? this.damage : 0;
+        }
+
+        public int fullID() {
+            return RuntimeItems.getFullId(legacyId, damage);
+        }
+    }
+
+    public record RuntimeEntry(String identifier, int runtimeId, boolean hasDamage, boolean isComponent) {
     }
 }

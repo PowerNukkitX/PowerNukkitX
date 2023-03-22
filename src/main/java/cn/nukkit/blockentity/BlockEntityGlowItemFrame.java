@@ -4,7 +4,6 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
-import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -34,11 +33,8 @@ public class BlockEntityGlowItemFrame extends BlockEntityItemFrame {
 
         if (!item.isNull()) {
             CompoundTag itemTag = NBTIO.putItemHelper(item);
-            int networkFullId = item.getNetworkFullId();
-            int networkDamage = (networkFullId & 0x1) == 0x1 ? 0 : item.getDamage();
-            String namespacedId = RuntimeItems.getRuntimeMapping().getNamespacedIdByNetworkId(
-                    RuntimeItems.getNetworkId(networkFullId)
-            );
+            int networkDamage = item.getDamage();
+            String namespacedId = item.getNamespaceId();
             if (namespacedId != null) {
                 itemTag.remove("id");
                 itemTag.putShort("Damage", networkDamage);
