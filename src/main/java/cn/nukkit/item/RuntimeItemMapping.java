@@ -175,8 +175,14 @@ public class RuntimeItemMapping {
                     false,
                     true
             );
+            LegacyEntry legacyEntry = new LegacyEntry(id, false, 0);
             this.itemPaletteEntries.add(entry);
             this.namespacedIdItem.put(block.getNamespaceId(), block::toItem);
+
+            this.identifier2Legacy.put(block.getNamespaceId(), legacyEntry);
+            this.legacy2Runtime.put(RuntimeItems.getFullId(id, 0), entry);
+            this.runtime2Legacy.put(id, legacyEntry);
+
             this.runtimeId2Name.put(id, block.getNamespaceId());
             this.name2RuntimeId.put(block.getNamespaceId(), id);
         }
@@ -189,6 +195,12 @@ public class RuntimeItemMapping {
         for (var block : blocks) {
             this.runtimeId2Name.remove(block.getId());
             this.name2RuntimeId.removeInt(block.getNamespaceId());
+
+            this.namespacedIdItem.remove(block.getNamespaceId());
+            this.identifier2Legacy.remove(block.getNamespaceId());
+            this.legacy2Runtime.remove(RuntimeItems.getFullId(255 - block.getId(), 0));
+
+            this.runtime2Legacy.remove(255 - block.getId());
         }
         var iter = this.itemPaletteEntries.iterator();
         while (iter.hasNext()) {
@@ -214,9 +226,6 @@ public class RuntimeItemMapping {
     @Since("1.4.0.0-PN")
     public int getNetworkId(Item item) {
         if (item instanceof StringItem) {
-            if (item instanceof CustomItem customItem) {
-                return CustomItemDefinition.getRuntimeId(customItem.getNamespaceId());
-            }
             return name2RuntimeId.getInt(item.getNamespaceId());
         }
 
