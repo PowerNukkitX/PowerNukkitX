@@ -22,6 +22,12 @@
 - [#1103] 向后兼容物品ID更改。
 - [#1100] 补上误删的`getBreakTime`方法。
 
+## BUG修复
+
+- [#1102] 修复副手相关的BUG（在[#1105]中修复）。
+- [#1106] 修复发光物品展示框无法放置,优化一些逻辑。
+- [#1108] 修复喷溅药水无法制造的问题。
+
 ## [1.19.70-r1-PNX](https://github.com/PowerNukkitX/releases/tag/1.19.70-r1) - 2023-3-19
 该版本目前支持了Minecraft:BE `1.19.70 (协议版本575)`.
 
@@ -2305,7 +2311,11 @@ Need to switch languages?
 [#1088]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1088
 [#1092]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1092
 [#1100]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1100
+[#1102]: https://github.com/PowerNukkitX/PowerNukkitX/issues/1102
 [#1103]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1103
+[#1105]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1105
+[#1106]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1106
+[#1108]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1108
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->

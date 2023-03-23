@@ -15,12 +15,18 @@ This work in progress version supports Minecraft:BE `1.19.70 (Protocol Version 5
 
 ## Added
 
-- [#1092] Added AI for Fading Skeletons.
+- [#1092] Added AI for Wither Skeleton.
 
 ## Changed
 
 - [#1103] Backwards compatible item ID change.
 - [#1100] Fixed mistakenly deleted `getBreakTime` method.
+
+## Fixes
+
+- [#1102] Fix the second hand related bug (fix in[#1105]).
+- [#1106] Repair the light-emitting item display box can not be placed, optimize some logic.
+- [#1108] Fix not being able to craft splash potions.
 
 ## [1.19.70-r1-PNX](https://github.com/PowerNukkitX/releases/tag/1.19.70-r1) - 2023-3-19
 This work in progress version supports Minecraft:BE `1.19.70 (Protocol Version 575)`.
@@ -28,7 +34,7 @@ This work in progress version supports Minecraft:BE `1.19.70 (Protocol Version 5
 ## Added
 
 - [#1071] Synchronize the metadata api of partial bukkit.
-- [#1076] Add bio huskai.
+- [#1076] Add AI for husk(s).
 
 ## Changed
 
@@ -42,7 +48,7 @@ This work in progress version supports Minecraft:BE `1.19.70 (Protocol Version 5
 
 - [#1069] Fix `timings` not loading and fix `onBlockBreakContinue`.
 - [#1075] Fix resetting blocks when playerInteractEvent is cancelled.
-- [#1088] Fix forge synthesis.
+- [#1088] Fix forge crafting.
 
 ## [1.19.63-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.63-r1) - 2023-3-2
 This work in progress version supports Minecraft:BE `1.19.63 (Protocol Version 568)`.
@@ -2303,7 +2309,11 @@ Need to switch languages?
 [#1088]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1088
 [#1092]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1092
 [#1100]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1100
+[#1102]: https://github.com/PowerNukkitX/PowerNukkitX/issues/1102
 [#1103]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1103
+[#1105]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1105
+[#1106]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1106
+[#1108]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1108
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->
