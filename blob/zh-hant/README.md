@@ -146,7 +146,7 @@ dependencies {
     <dependency>
         <groupId>cn.powernukkitx</groupId>
         <artifactId>powernukkitx</artifactId>
-        <version>1.19.63-r1</version>
+        <version>1.19.70-r1</version>
     </dependency>
 </dependencies>
 ```
