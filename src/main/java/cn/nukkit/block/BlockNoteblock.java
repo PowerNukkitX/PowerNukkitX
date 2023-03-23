@@ -19,7 +19,6 @@ import cn.nukkit.network.protocol.BlockEventPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.RedstoneComponent;
-
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -91,10 +90,11 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
     @PowerNukkitOnly
     @Override
     public int onTouch(@Nullable Player player, Action action) {
-        if (action == Action.LEFT_CLICK_BLOCK && (player == null || (!player.isCreative() && !player.isSpectator()))) {
+        if (player != null && action == Action.LEFT_CLICK_BLOCK && player.isSurvival()) {
             this.emitSound(player);
+            return 1;
         }
-        return super.onTouch(player, action);
+        return 0;
     }
 
     public int getStrength() {

@@ -79,9 +79,7 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
         this.namedTag.putCompound("Item", NBTIO.putItemHelper(item));
         if (setChanged) {
             this.setDirty();
-        }
-
-        this.level.updateComparatorOutputLevel(this);
+        } else this.level.updateComparatorOutputLevel(this);
     }
 
     public float getItemDropChance() {
@@ -114,11 +112,6 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
             CompoundTag itemTag = NBTIO.putItemHelper(item);
             int networkDamage = item.getDamage();
             String namespacedId = item.getNamespaceId();
-            if (namespacedId != null) {
-                itemTag.remove("id");
-                itemTag.putShort("Damage", networkDamage);
-                itemTag.putString("Name", namespacedId);
-            }
             if (namespacedId != null) {
                 itemTag.remove("id");
                 itemTag.putShort("Damage", networkDamage);
