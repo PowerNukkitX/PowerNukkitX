@@ -1,0 +1,12 @@
+[
+  {
+    "inputId": "minecraft:potion",
+    "reagentId": "minecraft:gunpowder",
+    "outputId": "minecraft:splash_potion"
+  },
+  {
+    "inputId": "minecraft:splash_potion",
+    "reagentId": "minecraft:dragon_breath",
+    "outputId": "minecraft:lingering_potion"
+  }
+]
