@@ -73,7 +73,7 @@ public class CommonJSPlugin implements Plugin, Listener {
         }
         var cbd = Context.newBuilder("js")
                 .hostClassLoader(classLoader = new JSClassLoader(this, Thread.currentThread().getContextClassLoader()))
-                .fileSystem(fileSystem = new ESMFileSystem(pluginDir, this))
+                .fileSystem(fileSystem = new ESMFileSystem(pluginDir, this, classLoader))
                 .allowAllAccess(true)
                 .allowHostAccess(HostAccess.newBuilder(HostAccess.ALL).targetTypeMapping(Double.class, Float.class, null, Double::floatValue).build())
                 .allowHostClassLoading(true)

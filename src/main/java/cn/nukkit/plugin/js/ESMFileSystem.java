@@ -9,6 +9,7 @@ import org.graalvm.polyglot.io.FileSystem;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
@@ -23,13 +24,19 @@ import static cn.nukkit.plugin.js.JSClassLoader.javaClassCache;
 public final class ESMFileSystem implements FileSystem {
     final File baseDir;
     private final CommonJSPlugin plugin;
-    private ClassLoader mainClassLoader;
+    private final JSClassLoader mainClassLoader;
 
     private final static Map<String, byte[]> innerModuleCache = new WeakHashMap<>(1, 1f);
 
-    public ESMFileSystem(File baseDir, CommonJSPlugin plugin) {
+    public ESMFileSystem(@NotNull File baseDir, @NotNull CommonJSPlugin plugin, JSClassLoader classLoader) {
         this.baseDir = baseDir;
         this.plugin = plugin;
+        this.mainClassLoader = classLoader;
+        try {
+            mainClassLoader.addURL(baseDir.toURI().toURL());
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -53,8 +60,6 @@ public final class ESMFileSystem implements FileSystem {
         } else if (path.startsWith(":")) {
             resolvedPath = Path.of("inner-module", path.substring(1));
         } else if ((!path.endsWith(".js") && !path.startsWith("./") && !path.startsWith("../") && path.contains("."))) {
-            if (mainClassLoader == null)
-                mainClassLoader = Thread.currentThread().getContextClassLoader();
             try {
                 if (javaClassCache.containsKey(path)) {
                     return Path.of("java-class", path);
@@ -94,6 +99,21 @@ public final class ESMFileSystem implements FileSystem {
 
                             }
                         }
+                    }
+                }
+            }
+            if (resolvedPath == null && getDots(path) > 1) {
+                // see if the path is a java class file
+                var classPath = path.replace('.', '/') + ".class";
+                var classFile = new File(baseDir, classPath);
+                if (classFile.exists()) {
+                    try {
+                        var clazz = mainClassLoader.loadClass(path);
+                        if (clazz != null) {
+                            javaClassCache.put(path, clazz);
+                            resolvedPath = Path.of("java-class", path);
+                        }
+                    } catch (ClassNotFoundException ignore) {
                     }
                 }
             }
