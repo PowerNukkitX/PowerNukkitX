@@ -90,7 +90,7 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
     @PowerNukkitOnly
     @Override
     public int onTouch(@Nullable Player player, Action action) {
-        if (player != null && (action == Action.LEFT_CLICK_BLOCK || action == Action.RIGHT_CLICK_BLOCK) && player.isSurvival()) {
+        if (player != null && action == Action.LEFT_CLICK_BLOCK && player.isSurvival()) {
             this.emitSound(player);
             return 1;
         }
