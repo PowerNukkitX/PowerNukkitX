@@ -23,12 +23,14 @@ public class PlayerOffhandInventory extends BaseInventory {
     @Override
     public void onSlotChange(int index, Item before, boolean send) {
         EntityHuman holder = this.getHolder();
-        if (holder instanceof Player && !((Player) holder).spawned) {
-            return;
+        if (holder instanceof Player player) {
+            if (!player.spawned) return;
+            if (send) {
+                this.sendContents(this.getViewers());
+                this.sendContents(holder.getViewers().values());
+                this.sendContents(player);
+            }
         }
-
-        this.sendContents(this.getViewers());
-        this.sendContents(holder.getViewers().values());
     }
 
     @Override

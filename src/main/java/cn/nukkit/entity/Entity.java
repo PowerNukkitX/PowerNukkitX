@@ -28,7 +28,7 @@ import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.event.player.PlayerTeleportEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemID;
+import cn.nukkit.item.ItemTotem;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.*;
 import cn.nukkit.level.format.FullChunk;
@@ -1842,13 +1842,11 @@ public abstract class Entity extends Location implements Metadatable {
         if (newHealth < 1 && this instanceof Player player) {
             if (source.getCause() != DamageCause.VOID && source.getCause() != DamageCause.SUICIDE) {
                 boolean totem = false;
-                if (player.getOffhandInventory().getItem(0).getId() == ItemID.TOTEM) {
-                    player.getOffhandInventory().clear(0, false);
-                    player.getOffhandInventory().sendContents(player);
+                if (player.getOffhandInventory().getItem(0) instanceof ItemTotem) {
+                    player.getOffhandInventory().clear(0, true);
                     totem = true;
-                } else if (player.getInventory().getItemInHand().getId() == ItemID.TOTEM) {
-                    player.getInventory().clear(player.getInventory().getHeldItemIndex(), false);
-                    player.getInventory().sendContents(player);
+                } else if (player.getInventory().getItemInHand() instanceof ItemTotem) {
+                    player.getInventory().clear(player.getInventory().getHeldItemIndex(), true);
                     totem = true;
                 }
                 //复活图腾实现
