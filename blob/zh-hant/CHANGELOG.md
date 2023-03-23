@@ -11,22 +11,44 @@
 3. <a href="#CataLogs-Version-history">🔖 Version history / 歷史版本 </a>
 
 ## [Dev-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - Future
-該版本目前支持了Minecraft:BE `1.19.63 (協議版本568)`.
+該版本目前支持了Minecraft:BE `1.19.70 (協議版本575)`.
+
+## 新增內容
+
+- [#1092] 新增凋零骷髏的AI。
+
+## 修改記錄
+
+- [#1103] 向後兼容物品ID更改。
+- [#1100] 補上誤刪的`getBreakTime`方法。
+
+## BUG修復
+
+- [#1102] 修復副手相關的BUG（在[#1105]中修復）。
+- [#1106] 修復發光物品展示框無法放置,優化一些邏輯。
+- [#1108] 修復噴濺藥水無法製造的問題。
+
+## [1.19.70-r1-PNX](https://github.com/PowerNukkitX/releases/tag/1.19.70-r1) - 2023-3-19
+該版本目前支持了Minecraft:BE `1.19.70 (協議版本575)`.
 
 ## 新增內容
 
 - [#1071] 同步部分bukkit的metadata api。
+- [#1076] 添加生物屍殼。
 
 ## 修改記錄
 
 - [#1068] 移除未使用的花朵顏色網絡ID。
 - [#1070] 船不能放置在水下。
 - [#1073] 補全一些遺漏的MincraftID。
+- [#1084] 重構`Server Threading`（調整Server並發基礎設施部分）。
+- [#1085] 遷移常量註冊邏輯。
 
 ## BUG修復
 
 - [#1069] 修復`timings`無法加載並修復`onBlockBreakContinue`。
 - [#1075] 修復當玩家playerInteractEvent被取消時重置方塊。
+- [#1088] 修復鍛造合成。
 
 ## [1.19.63-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.63-r1) - 2023-3-2
 該版本目前支持了Minecraft:BE `1.19.63 (協議版本568)`.
@@ -1602,6 +1624,13 @@ Fixes several anvil issues.
 
 </details>
 
+<details>
+  <summary>1.19.70-PNX</summary>
+
+   1. [#1.19.70-r1] PNX-1.19.70-r1 (協議版本575)
+
+</details>
+
 ## <a id="CataLogs-Swlang"></a>🌐 多語言文檔
 
 ---
@@ -2274,6 +2303,17 @@ Need to switch languages?
 [#1071]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1071
 [#1073]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1073
 [#1075]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1075
+[#1076]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1076
+[#1084]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1084
+[#1085]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1085
+[#1088]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1088
+[#1092]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1092
+[#1100]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1100
+[#1102]: https://github.com/PowerNukkitX/PowerNukkitX/issues/1102
+[#1103]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1103
+[#1105]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1105
+[#1106]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1106
+[#1108]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1108
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->
@@ -2342,6 +2382,9 @@ Need to switch languages?
 [#1.19.62-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.62-r1
 <!--1.19.63-r1-PNX Protocol Version 568-->
 [#1.19.63-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.63-r1
+
+<!--1.19.70-r1-PNX Protocol Version 575-->
+[#1.19.70-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.70-r1
 <!--1.19.xx-PNX Version summary End-->
 
 <!--PowerNukkitX Urls-->
