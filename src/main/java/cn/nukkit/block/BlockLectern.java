@@ -19,7 +19,6 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
-
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -152,10 +151,11 @@ public class BlockLectern extends BlockTransparentMeta implements RedstoneCompon
     @PowerNukkitOnly
     @Override
     public int onTouch(@Nullable Player player, Action action) {
-        if (action == Action.LEFT_CLICK_BLOCK && (player == null || (!player.isCreative() && !player.isSpectator()))) {
+        if (player != null && action == Action.LEFT_CLICK_BLOCK && player.isSurvival()) {
             dropBook(player);
+            return 1;
         }
-        return super.onTouch(player, action);
+        return 0;
     }
 
     @Override

@@ -70,18 +70,11 @@ public class BlockDragonEgg extends BlockFallable {
     @PowerNukkitOnly
     @Override
     public int onTouch(@Nullable Player player, Action action) {
-        switch (action) {
-            case RIGHT_CLICK_BLOCK:
-                break;
-            case LEFT_CLICK_BLOCK:
-                if (player != null && player.isCreative()) {
-                    return 0;
-                }
-                break;
-            default:
-                return 0;
+        if (player != null && !player.isCreative() && (action == Action.RIGHT_CLICK_BLOCK || action == Action.LEFT_CLICK_BLOCK)) {
+            this.teleport();
+            return 1;
         }
-        return super.onTouch(player, action);
+        return 0;
     }
 
     public void teleport() {
@@ -119,7 +112,7 @@ public class BlockDragonEgg extends BlockFallable {
 
     @Override
     @PowerNukkitOnly
-    public  boolean sticksToPiston() {
+    public boolean sticksToPiston() {
         return false;
     }
 }

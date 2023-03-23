@@ -207,11 +207,20 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @Since("1.19.63-r1")
     @PowerNukkitXOnly
     protected long breakingBlockTime = 0;
-
     @Since("1.19.63-r1")
     @PowerNukkitXOnly
     protected double blockBreakProgress = 0;
+    /**
+     * 正在挖掘的方块
+     * <p>
+     * block being dig
+     */
     public Block breakingBlock = null;
+    /**
+     * 正在挖掘的方向
+     * <p>
+     * direction of dig
+     */
     @Since("1.19.60-r1")
     @PowerNukkitXOnly
     public BlockFace breakingBlockFace = null;
@@ -552,26 +561,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             }
             return;
         }
-        //todo 需要检查这里的更改是否有必要
-        switch (target.getId()) {
-            case Block.NOTEBLOCK:
-                ((BlockNoteblock) target).emitSound();
-                return;
-            case Block.DRAGON_EGG:
-                if (!this.isCreative()) {
-                    ((BlockDragonEgg) target).teleport();
-                    return;
-                }
-                break;
-            case Block.ITEM_FRAME_BLOCK:
-                BlockEntity itemFrame = this.level.getBlockEntity(pos);
-                if (itemFrame instanceof BlockEntityItemFrame && ((BlockEntityItemFrame) itemFrame).dropItem(this)) {
-                    return;
-                }
-                break;
-        }
 
-        target.onTouch(this, playerInteractEvent.getAction());
+        if (target.onTouch(this, playerInteractEvent.getAction()) != 0) return;
+
         Block block = target.getSide(face);
         if (block.getId() == Block.FIRE || block.getId() == BlockID.SOUL_FIRE) {
             this.level.setBlock(block, Block.get(BlockID.AIR), true);
