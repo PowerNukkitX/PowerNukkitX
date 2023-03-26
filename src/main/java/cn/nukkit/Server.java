@@ -1061,95 +1061,6 @@ public class Server {
         return recipients.size();
     }
 
-    /**
-     * @see #broadcastPacket(Player[], DataPacket)
-     */
-    public static void broadcastPacket(Collection<Player> players, DataPacket packet) {
-        packet.tryEncode();
-
-        for (Player player : players) {
-            player.dataPacket(packet);
-        }
-    }
-
-    /**
-     * 广播一个数据包给指定的玩家们.<p>Broadcast a packet to the specified players.
-     *
-     * @param players 接受数据包的所有玩家<br>All players receiving the data package
-     * @param packet  数据包
-     */
-    public static void broadcastPacket(Player[] players, DataPacket packet) {
-        packet.tryEncode();
-
-        for (Player player : players) {
-            player.dataPacket(packet);
-        }
-    }
-
-    @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit",
-            reason = "Packet management was refactored, batching is done automatically near the RakNet layer")
-    @Deprecated
-    public void batchPackets(Player[] players, DataPacket[] packets) {
-        this.batchPackets(players, packets, false);
-    }
-
-    @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit",
-            reason = "Packet management was refactored, batching is done automatically near the RakNet layer")
-    @Deprecated
-    public void batchPackets(Player[] players, DataPacket[] packets, boolean forceSync) {
-        if (players == null || packets == null || players.length == 0 || packets.length == 0) {
-            return;
-        }
-
-        BatchPacketsEvent ev = new BatchPacketsEvent(players, packets, forceSync);
-        getPluginManager().callEvent(ev);
-        if (ev.isCancelled()) {
-            return;
-        }
-
-        Timings.playerNetworkSendTimer.startTiming();
-        byte[][] payload = new byte[packets.length * 2][];
-        for (int i = 0; i < packets.length; i++) {
-            DataPacket p = packets[i];
-            int idx = i * 2;
-            p.tryEncode();
-            byte[] buf = p.getBuffer();
-            payload[idx] = Binary.writeUnsignedVarInt(buf.length);
-            payload[idx + 1] = buf;
-            packets[i] = null;
-        }
-
-        List<InetSocketAddress> targets = new ArrayList<>();
-        for (Player p : players) {
-            if (p.isConnected()) {
-                targets.add(p.getRawSocketAddress());
-            }
-        }
-
-        if (!forceSync && this.networkCompressionAsync) {
-            this.getScheduler().scheduleAsyncTask(new CompressBatchedTask(payload, targets, this.networkCompressionLevel));
-        } else {
-            try {
-                byte[] data = Binary.appendBytes(payload);
-                this.broadcastPacketsCallback(Network.deflateRaw(data, this.networkCompressionLevel), targets);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-        Timings.playerNetworkSendTimer.stopTiming();
-    }
-
-    public void broadcastPacketsCallback(byte[] data, List<InetSocketAddress> targets) {
-        BatchPacket pk = new BatchPacket();
-        pk.payload = data;
-
-        for (InetSocketAddress i : targets) {
-            if (this.players.containsKey(i)) {
-                this.players.get(i).dataPacket(pk);
-            }
-        }
-    }
-
 
     @Deprecated
     @DeprecationDetails(since = "1.19.60-r1", reason = "use Server#executeCommand")
@@ -1243,6 +1154,106 @@ public class Server {
         return consoleSender;
     }
 
+    /**
+     * 发送配方列表数据包给一个玩家.<p>
+     * Send a recipe list packet to a player.
+     *
+     * @param player 玩家
+     */
+    public void sendRecipeList(Player player) {
+        player.dataPacket(CraftingManager.getCraftingPacket());
+    }
+
+    // region networking - 网络相关
+
+    /**
+     * @see #broadcastPacket(Player[], DataPacket)
+     */
+    public static void broadcastPacket(Collection<Player> players, DataPacket packet) {
+        packet.tryEncode();
+
+        for (Player player : players) {
+            player.dataPacket(packet);
+        }
+    }
+
+    /**
+     * 广播一个数据包给指定的玩家们.<p>Broadcast a packet to the specified players.
+     *
+     * @param players 接受数据包的所有玩家<br>All players receiving the data package
+     * @param packet  数据包
+     */
+    public static void broadcastPacket(Player[] players, DataPacket packet) {
+        packet.tryEncode();
+
+        for (Player player : players) {
+            player.dataPacket(packet);
+        }
+    }
+
+    @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit",
+            reason = "Packet management was refactored, batching is done automatically near the RakNet layer")
+    @Deprecated
+    public void batchPackets(Player[] players, DataPacket[] packets) {
+        this.batchPackets(players, packets, false);
+    }
+
+    @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit",
+            reason = "Packet management was refactored, batching is done automatically near the RakNet layer")
+    @Deprecated
+    public void batchPackets(Player[] players, DataPacket[] packets, boolean forceSync) {
+        if (players == null || packets == null || players.length == 0 || packets.length == 0) {
+            return;
+        }
+
+        BatchPacketsEvent ev = new BatchPacketsEvent(players, packets, forceSync);
+        getPluginManager().callEvent(ev);
+        if (ev.isCancelled()) {
+            return;
+        }
+
+        Timings.playerNetworkSendTimer.startTiming();
+        byte[][] payload = new byte[packets.length * 2][];
+        for (int i = 0; i < packets.length; i++) {
+            DataPacket p = packets[i];
+            int idx = i * 2;
+            p.tryEncode();
+            byte[] buf = p.getBuffer();
+            payload[idx] = Binary.writeUnsignedVarInt(buf.length);
+            payload[idx + 1] = buf;
+            packets[i] = null;
+        }
+
+        List<InetSocketAddress> targets = new ArrayList<>();
+        for (Player p : players) {
+            if (p.isConnected()) {
+                targets.add(p.getRawSocketAddress());
+            }
+        }
+
+        if (!forceSync && this.networkCompressionAsync) {
+            this.getScheduler().scheduleAsyncTask(new CompressBatchedTask(payload, targets, this.networkCompressionLevel));
+        } else {
+            try {
+                byte[] data = Binary.appendBytes(payload);
+                this.broadcastPacketsCallback(Network.deflateRaw(data, this.networkCompressionLevel), targets);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        Timings.playerNetworkSendTimer.stopTiming();
+    }
+
+    public void broadcastPacketsCallback(byte[] data, List<InetSocketAddress> targets) {
+        BatchPacket pk = new BatchPacket();
+        pk.payload = data;
+
+        for (InetSocketAddress i : targets) {
+            if (this.players.containsKey(i)) {
+                this.players.get(i).dataPacket(pk);
+            }
+        }
+    }
     public void handlePacket(InetSocketAddress address, ByteBuf payload) {
         try {
             if (!payload.isReadable(3)) {
@@ -1264,19 +1275,15 @@ public class Server {
         }
     }
 
-    /**
-     * 发送配方列表数据包给一个玩家.<p>
-     * Send a recipe list packet to a player.
-     *
-     * @param player 玩家
-     */
-    public void sendRecipeList(Player player) {
-        player.dataPacket(CraftingManager.getCraftingPacket());
-    }
-
     public QueryRegenerateEvent getQueryInformation() {
         return this.queryRegenerateEvent;
     }
+
+    public Network getNetwork() {
+        return network;
+    }
+
+    // endregion
 
     // region plugins - 插件相关
 
@@ -2798,10 +2805,6 @@ public class Server {
     }
 
     // endregion
-
-    public Network getNetwork() {
-        return network;
-    }
 
     public PluginIdentifiableCommand getPluginCommand(String name) {
         Command command = this.commandMap.getCommand(name);
