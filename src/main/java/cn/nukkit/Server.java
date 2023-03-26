@@ -1279,6 +1279,44 @@ public class Server {
         return consoleSender;
     }
 
+    public void handlePacket(InetSocketAddress address, ByteBuf payload) {
+        try {
+            if (!payload.isReadable(3)) {
+                return;
+            }
+            byte[] prefix = new byte[2];
+            payload.readBytes(prefix);
+
+            if (!Arrays.equals(prefix, new byte[]{(byte) 0xfe, (byte) 0xfd})) {
+                return;
+            }
+            if (this.queryHandler != null) {
+                this.queryHandler.handle(address, payload);
+            }
+        } catch (Exception e) {
+            log.error("Error whilst handling packet", e);
+
+            this.network.blockAddress(address.getAddress(), -1);
+        }
+    }
+
+    /**
+     * 发送配方列表数据包给一个玩家.<p>
+     * Send a recipe list packet to a player.
+     *
+     * @param player 玩家
+     */
+    public void sendRecipeList(Player player) {
+        player.dataPacket(CraftingManager.getCraftingPacket());
+    }
+
+    public QueryRegenerateEvent getQueryInformation() {
+        return this.queryRegenerateEvent;
+    }
+
+
+    // region lifecycle & ticking - 生命周期与游戏刻
+
     /**
      * 重载服务器
      * <p>
@@ -1451,27 +1489,6 @@ public class Server {
         this.forceShutdown();
     }
 
-    public void handlePacket(InetSocketAddress address, ByteBuf payload) {
-        try {
-            if (!payload.isReadable(3)) {
-                return;
-            }
-            byte[] prefix = new byte[2];
-            payload.readBytes(prefix);
-
-            if (!Arrays.equals(prefix, new byte[]{(byte) 0xfe, (byte) 0xfd})) {
-                return;
-            }
-            if (this.queryHandler != null) {
-                this.queryHandler.handle(address, payload);
-            }
-        } catch (Exception e) {
-            log.error("Error whilst handling packet", e);
-
-            this.network.blockAddress(address.getAddress(), -1);
-        }
-    }
-
     private int lastLevelGC;
 
     public void tickProcessor() {
@@ -1520,17 +1537,6 @@ public class Server {
         } catch (Throwable e) {
             log.fatal("Exception happened while ticking server\n{}", Utils.getAllThreadDumps(), e);
         }
-    }
-
-
-    /**
-     * 发送配方列表数据包给一个玩家.<p>
-     * Send a recipe list packet to a player.
-     *
-     * @param player 玩家
-     */
-    public void sendRecipeList(Player player) {
-        player.dataPacket(CraftingManager.getCraftingPacket());
     }
 
     private void checkTickUpdates(int currentTick, long tickTime) {
@@ -1719,6 +1725,39 @@ public class Server {
         return nextTick;
     }
 
+    /**
+     * @return 返回服务器经历过的tick数<br>Returns the number of ticks recorded by the server
+     */
+    public int getTick() {
+        return tickCounter;
+    }
+
+    public float getTicksPerSecond() {
+        return ((float) Math.round(this.maxTick * 100)) / 100;
+    }
+
+    public float getTicksPerSecondAverage() {
+        float sum = 0;
+        int count = this.tickAverage.length;
+        for (float aTickAverage : this.tickAverage) {
+            sum += aTickAverage;
+        }
+        return (float) NukkitMath.round(sum / count, 2);
+    }
+
+    public float getTickUsage() {
+        return (float) NukkitMath.round(this.maxUse * 100, 2);
+    }
+
+    public float getTickUsageAverage() {
+        float sum = 0;
+        int count = this.useAverage.length;
+        for (float aUseAverage : this.useAverage) {
+            sum += aUseAverage;
+        }
+        return ((float) Math.round(sum / count * 100)) / 100;
+    }
+
     // TODO: Fix title tick
     public void titleTick() {
         if (!Nukkit.ANSI || !Nukkit.TITLE) {
@@ -1744,13 +1783,44 @@ public class Server {
         System.out.print(title);
     }
 
-    public QueryRegenerateEvent getQueryInformation() {
-        return this.queryRegenerateEvent;
-    }
-
     public boolean isRunning() {
         return isRunning.get();
     }
+
+    /**
+     * 将服务器设置为繁忙状态，这可以阻止相关代码认为服务器处于无响应状态。
+     * 请牢记，必须在设置之后清除。
+     *
+     * @param busyTime 单位为毫秒
+     * @return id
+     */
+    public int addBusying(long busyTime) {
+        this.busyingTime.add(busyTime);
+        return this.busyingTime.size() - 1;
+    }
+
+    public void removeBusying(int index) {
+        this.busyingTime.removeLong(index);
+    }
+
+    public long getBusyingTime() {
+        if (this.busyingTime.isEmpty()) {
+            return -1;
+        }
+        return this.busyingTime.getLong(this.busyingTime.size() - 1);
+    }
+
+    public TickingAreaManager getTickingAreaManager() {
+        return tickingAreaManager;
+    }
+
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public long getLaunchTime() {
+        return launchTime;
+    }
+
+    // endregion
 
     // region Players - 玩家相关
 
@@ -2352,29 +2422,6 @@ public class Server {
     }
 
     /**
-     * 将服务器设置为繁忙状态，这可以阻止相关代码认为服务器处于无响应状态。
-     * 请牢记，必须在设置之后清除。
-     *
-     * @param busyTime 单位为毫秒
-     * @return id
-     */
-    public int addBusying(long busyTime) {
-        this.busyingTime.add(busyTime);
-        return this.busyingTime.size() - 1;
-    }
-
-    public void removeBusying(int index) {
-        this.busyingTime.removeLong(index);
-    }
-
-    public long getBusyingTime() {
-        if (this.busyingTime.isEmpty()) {
-            return -1;
-        }
-        return this.busyingTime.getLong(this.busyingTime.size() - 1);
-    }
-
-    /**
      * @return 服务器UUID<br>server UUID
      */
     public UUID getServerUniqueId() {
@@ -2418,45 +2465,8 @@ public class Server {
         return functionManager;
     }
 
-    public TickingAreaManager getTickingAreaManager() {
-        return tickingAreaManager;
-    }
-
     public FreezableArrayManager getFreezableArrayManager() {
         return freezableArrayManager;
-    }
-
-    /**
-     * @return 返回服务器经历过的tick数<br>Returns the number of ticks recorded by the server
-     */
-    public int getTick() {
-        return tickCounter;
-    }
-
-    public float getTicksPerSecond() {
-        return ((float) Math.round(this.maxTick * 100)) / 100;
-    }
-
-    public float getTicksPerSecondAverage() {
-        float sum = 0;
-        int count = this.tickAverage.length;
-        for (float aTickAverage : this.tickAverage) {
-            sum += aTickAverage;
-        }
-        return (float) NukkitMath.round(sum / count, 2);
-    }
-
-    public float getTickUsage() {
-        return (float) NukkitMath.round(this.maxUse * 100, 2);
-    }
-
-    public float getTickUsageAverage() {
-        float sum = 0;
-        int count = this.useAverage.length;
-        for (float aUseAverage : this.useAverage) {
-            sum += aUseAverage;
-        }
-        return ((float) Math.round(sum / count * 100)) / 100;
     }
 
     public SimpleCommandMap getCommandMap() {
@@ -2908,11 +2918,6 @@ public class Server {
         return positionTrackingService;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public long getLaunchTime() {
-        return launchTime;
-    }
 
     // region configs - 配置相关
 
