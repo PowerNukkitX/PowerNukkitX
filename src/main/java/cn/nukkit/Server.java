@@ -1319,6 +1319,16 @@ public class Server {
         return this.queryRegenerateEvent;
     }
 
+    /**
+     * 发送配方列表数据包给一个玩家.<p>
+     * Send a recipe list packet to a player.
+     *
+     * @param player 玩家
+     */
+    public void sendRecipeList(Player player) {
+        player.dataPacket(CraftingManager.getCraftingPacket());
+    }
+
     // endregion
 
     // region plugins - 插件相关
@@ -1862,6 +1872,10 @@ public class Server {
             return -1;
         }
         return this.busyingTime.getLong(this.busyingTime.size() - 1);
+    }
+
+    public TickingAreaManager getTickingAreaManager() {
+        return tickingAreaManager;
     }
 
     // endregion
@@ -2417,16 +2431,6 @@ public class Server {
 
     // endregion
 
-    /**
-     * 发送配方列表数据包给一个玩家.<p>
-     * Send a recipe list packet to a player.
-     *
-     * @param player 玩家
-     */
-    public void sendRecipeList(Player player) {
-        player.dataPacket(CraftingManager.getCraftingPacket());
-    }
-
     // region constants - 基础常量
 
     /**
@@ -2506,10 +2510,6 @@ public class Server {
 
     public ResourcePackManager getResourcePackManager() {
         return resourcePackManager;
-    }
-
-    public TickingAreaManager getTickingAreaManager() {
-        return tickingAreaManager;
     }
 
     public FreezableArrayManager getFreezableArrayManager() {
