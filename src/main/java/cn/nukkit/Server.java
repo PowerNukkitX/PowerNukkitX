@@ -1171,6 +1171,10 @@ public class Server {
 
     // region networking - 网络相关
 
+    public Network getNetwork() {
+        return network;
+    }
+
     /**
      * @see #broadcastPacket(Player[], DataPacket)
      */
@@ -1258,6 +1262,31 @@ public class Server {
                 this.players.get(i).dataPacket(pk);
             }
         }
+    }
+
+    public void handlePacket(InetSocketAddress address, ByteBuf payload) {
+        try {
+            if (!payload.isReadable(3)) {
+                return;
+            }
+            byte[] prefix = new byte[2];
+            payload.readBytes(prefix);
+
+            if (!Arrays.equals(prefix, new byte[]{(byte) 0xfe, (byte) 0xfd})) {
+                return;
+            }
+            if (this.queryHandler != null) {
+                this.queryHandler.handle(address, payload);
+            }
+        } catch (Exception e) {
+            log.error("Error whilst handling packet", e);
+
+            this.network.blockAddress(address.getAddress(), -1);
+        }
+    }
+
+    public QueryRegenerateEvent getQueryInformation() {
+        return this.queryRegenerateEvent;
     }
 
     // endregion
@@ -1765,27 +1794,6 @@ public class Server {
     }
 
     // endregion
-
-    public void handlePacket(InetSocketAddress address, ByteBuf payload) {
-        try {
-            if (!payload.isReadable(3)) {
-                return;
-            }
-            byte[] prefix = new byte[2];
-            payload.readBytes(prefix);
-
-            if (!Arrays.equals(prefix, new byte[]{(byte) 0xfe, (byte) 0xfd})) {
-                return;
-            }
-            if (this.queryHandler != null) {
-                this.queryHandler.handle(address, payload);
-            }
-        } catch (Exception e) {
-            log.error("Error whilst handling packet", e);
-
-            this.network.blockAddress(address.getAddress(), -1);
-        }
-    }
 
     // region players - 玩家相关
 
@@ -2347,11 +2355,6 @@ public class Server {
     public void sendRecipeList(Player player) {
         player.dataPacket(CraftingManager.getCraftingPacket());
     }
-
-    public QueryRegenerateEvent getQueryInformation() {
-        return this.queryRegenerateEvent;
-    }
-
 
     /**
      * @return 服务器名称<br>The name of server
@@ -3130,10 +3133,6 @@ public class Server {
     @PowerNukkitOnly
     public void setRedstoneEnabled(boolean redstoneEnabled) {
         this.redstoneEnabled = redstoneEnabled;
-    }
-
-    public Network getNetwork() {
-        return network;
     }
 
     //Revising later...
