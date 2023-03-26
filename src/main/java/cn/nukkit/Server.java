@@ -954,6 +954,14 @@ public class Server {
         this.start();
     }
 
+    // region server singleton - Server 单例
+
+    public static Server getInstance() {
+        return instance;
+    }
+
+    // endregion
+
     // region chat & commands - 聊天与命令
 
     /**
@@ -2913,10 +2921,6 @@ public class Server {
     // TODO: update PNX Junit5 test framework to remove dependency on this method
     private void registerBlockEntities() {
         BlockEntity.init();
-    }
-
-    public static Server getInstance() {
-        return instance;
     }
 
     @PowerNukkitOnly
