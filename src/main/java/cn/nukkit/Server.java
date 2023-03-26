@@ -1189,6 +1189,14 @@ public class Server {
 
     }
 
+    public IScoreboardManager getScoreboardManager() {
+        return scoreboardManager;
+    }
+
+    public FunctionManager getFunctionManager() {
+        return functionManager;
+    }
+
     // endregion
 
     // region networking - 网络相关
@@ -1349,6 +1357,14 @@ public class Server {
      */
     public void disablePlugins() {
         this.pluginManager.disablePlugins();
+    }
+
+    public PluginManager getPluginManager() {
+        return this.pluginManager;
+    }
+
+    public ServiceManager getServiceManager() {
+        return serviceManager;
     }
 
     // endregion
@@ -2487,20 +2503,9 @@ public class Server {
         return levelMetadata;
     }
 
-    public PluginManager getPluginManager() {
-        return this.pluginManager;
-    }
 
     public ResourcePackManager getResourcePackManager() {
         return resourcePackManager;
-    }
-
-    public IScoreboardManager getScoreboardManager() {
-        return scoreboardManager;
-    }
-
-    public FunctionManager getFunctionManager() {
-        return functionManager;
     }
 
     public TickingAreaManager getTickingAreaManager() {
@@ -2509,10 +2514,6 @@ public class Server {
 
     public FreezableArrayManager getFreezableArrayManager() {
         return freezableArrayManager;
-    }
-
-    public ServerScheduler getScheduler() {
-        return scheduler;
     }
 
     // region crafting & recipe - 合成与配方
@@ -2898,10 +2899,6 @@ public class Server {
     }
 
     // endregion
-
-    public ServiceManager getServiceManager() {
-        return serviceManager;
-    }
 
     // TODO: update PNX Junit5 test framework to remove dependency on this method
     private void registerEntities() {
@@ -3429,6 +3426,10 @@ public class Server {
 
     public Thread getPrimaryThread() {
         return currentThread;
+    }
+
+    public ServerScheduler getScheduler() {
+        return scheduler;
     }
 
     //todo NukkitConsole 会阻塞关不掉
