@@ -1302,6 +1302,7 @@ public class Server {
 
     // endregion
 
+    // region lifecycles and ticking - 生命周期与游戏刻
 
     /**
      * 重载服务器
@@ -1474,6 +1475,8 @@ public class Server {
         this.tickProcessor();
         this.forceShutdown();
     }
+
+    // endregion
 
     public void handlePacket(InetSocketAddress address, ByteBuf payload) {
         try {
