@@ -1167,6 +1167,28 @@ public class Server {
         }
     }
 
+    public Map<String, List<String>> getCommandAliases() {
+        Object section = this.getConfig("aliases");
+        Map<String, List<String>> result = new LinkedHashMap<>();
+        if (section instanceof Map) {
+            for (Map.Entry entry : (Set<Map.Entry>) ((Map) section).entrySet()) {
+                List<String> commands = new ArrayList<>();
+                String key = (String) entry.getKey();
+                Object value = entry.getValue();
+                if (value instanceof List) {
+                    commands.addAll((List<String>) value);
+                } else {
+                    commands.add((String) value);
+                }
+
+                result.put(key, commands);
+            }
+        }
+
+        return result;
+
+    }
+
     // endregion
 
     // region networking - 网络相关
@@ -2873,28 +2895,6 @@ public class Server {
 
     public ServiceManager getServiceManager() {
         return serviceManager;
-    }
-
-    public Map<String, List<String>> getCommandAliases() {
-        Object section = this.getConfig("aliases");
-        Map<String, List<String>> result = new LinkedHashMap<>();
-        if (section instanceof Map) {
-            for (Map.Entry entry : (Set<Map.Entry>) ((Map) section).entrySet()) {
-                List<String> commands = new ArrayList<>();
-                String key = (String) entry.getKey();
-                Object value = entry.getValue();
-                if (value instanceof List) {
-                    commands.addAll((List<String>) value);
-                } else {
-                    commands.add((String) value);
-                }
-
-                result.put(key, commands);
-            }
-        }
-
-        return result;
-
     }
 
     // TODO: update PNX Junit5 test framework to remove dependency on this method
