@@ -3361,6 +3361,8 @@ public class Server {
         return launchTime;
     }
 
+    // region configs - 配置相关
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean isTheEndAllowed() {
@@ -3396,6 +3398,8 @@ public class Server {
     public int getServerAuthoritativeMovement() {
         return serverAuthoritativeMovementMode;
     }
+
+    // endregion
 
     // region threading - 并发基础设施
 
