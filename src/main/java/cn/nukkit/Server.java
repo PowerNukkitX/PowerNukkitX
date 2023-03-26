@@ -2519,6 +2519,23 @@ public class Server {
         return freezableArrayManager;
     }
 
+    // TODO: update PNX Junit5 test framework to remove dependency on this method
+    private void registerEntities() {
+        Entity.init();
+    }
+
+    // TODO: update PNX Junit5 test framework to remove dependency on this method
+    private void registerBlockEntities() {
+        BlockEntity.init();
+    }
+
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    @NotNull
+    public PositionTrackingService getPositionTrackingService() {
+        return positionTrackingService;
+    }
+
     // region crafting & recipe - 合成与配方
 
     /**
@@ -2912,24 +2929,6 @@ public class Server {
     }
 
     // endregion
-
-    // TODO: update PNX Junit5 test framework to remove dependency on this method
-    private void registerEntities() {
-        Entity.init();
-    }
-
-    // TODO: update PNX Junit5 test framework to remove dependency on this method
-    private void registerBlockEntities() {
-        BlockEntity.init();
-    }
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    @NotNull
-    public PositionTrackingService getPositionTrackingService() {
-        return positionTrackingService;
-    }
-
 
     // region configs - 配置相关
 
