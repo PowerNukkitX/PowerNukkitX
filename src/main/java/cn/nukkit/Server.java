@@ -2491,10 +2491,6 @@ public class Server {
         return this.pluginManager;
     }
 
-    public CraftingManager getCraftingManager() {
-        return craftingManager;
-    }
-
     public ResourcePackManager getResourcePackManager() {
         return resourcePackManager;
     }
@@ -2519,6 +2515,12 @@ public class Server {
         return scheduler;
     }
 
+    // region crafting & recipe - 合成与配方
+
+    public CraftingManager getCraftingManager() {
+        return craftingManager;
+    }
+
     /**
      * 注册配方到配方管理器
      * <p>
@@ -2530,7 +2532,7 @@ public class Server {
         this.craftingManager.registerRecipe(recipe);
     }
 
-
+    // endregion
 
     // region levels - 世界相关
 
