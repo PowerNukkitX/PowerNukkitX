@@ -954,428 +954,6 @@ public class Server {
         this.start();
     }
 
-    // region server singleton - Server 单例
-
-    public static Server getInstance() {
-        return instance;
-    }
-
-    // endregion
-
-    // region chat & commands - 聊天与命令
-
-    /**
-     * 广播一条消息给所有玩家<p>Broadcast a message to all players
-     *
-     * @param message 消息
-     * @return int 玩家数量<br>Number of players
-     */
-    public int broadcastMessage(String message) {
-        return this.broadcast(message, BROADCAST_CHANNEL_USERS);
-    }
-
-
-    /**
-     * @see #broadcastMessage(String)
-     */
-    public int broadcastMessage(TextContainer message) {
-        return this.broadcast(message, BROADCAST_CHANNEL_USERS);
-    }
-
-    /**
-     * 广播一条消息给指定的{@link CommandSender recipients}<p>Broadcast a message to the specified {@link CommandSender recipients}
-     *
-     * @param message 消息
-     * @return int {@link CommandSender recipients}数量<br>Number of {@link CommandSender recipients}
-     */
-    public int broadcastMessage(String message, CommandSender[] recipients) {
-        for (CommandSender recipient : recipients) {
-            recipient.sendMessage(message);
-        }
-
-        return recipients.length;
-    }
-
-
-    /**
-     * @see #broadcastMessage(String, CommandSender[])
-     */
-    public int broadcastMessage(String message, Collection<? extends CommandSender> recipients) {
-        for (CommandSender recipient : recipients) {
-            recipient.sendMessage(message);
-        }
-
-        return recipients.size();
-    }
-
-    /**
-     * @see #broadcastMessage(String, CommandSender[])
-     */
-    public int broadcastMessage(TextContainer message, Collection<? extends CommandSender> recipients) {
-        for (CommandSender recipient : recipients) {
-            recipient.sendMessage(message);
-        }
-
-        return recipients.size();
-    }
-
-
-    /**
-     * 从指定的许可名获取发送者们，广播一条消息给他们.可以指定多个许可名，以<b> ; </b>分割.<br>
-     * 一个permission在{@link PluginManager#permSubs}对应一个{@link CommandSender 发送者}Set.<p>
-     * Get the sender to broadcast a message from the specified permission name, multiple permissions can be specified, split by <b> ; </b><br>
-     * The permission corresponds to a {@link CommandSender Sender} set in {@link PluginManager#permSubs}.
-     *
-     * @param message     消息内容<br>Message content
-     * @param permissions 许可名，需要先通过{@link PluginManager#subscribeToPermission subscribeToPermission}注册<br>Permissions name, need to register first through {@link PluginManager#subscribeToPermission subscribeToPermission}
-     * @return int 接受到消息的{@link CommandSender 发送者}数量<br>Number of {@link CommandSender senders} who received the message
-     */
-    public int broadcast(String message, String permissions) {
-        Set<CommandSender> recipients = new HashSet<>();
-
-        for (String permission : permissions.split(";")) {
-            for (Permissible permissible : this.pluginManager.getPermissionSubscriptions(permission)) {
-                if (permissible instanceof CommandSender && permissible.hasPermission(permission)) {
-                    recipients.add((CommandSender) permissible);
-                }
-            }
-        }
-
-        for (CommandSender recipient : recipients) {
-            recipient.sendMessage(message);
-        }
-
-        return recipients.size();
-    }
-
-
-    /**
-     * @see #broadcast(String, String)
-     */
-    public int broadcast(TextContainer message, String permissions) {
-        Set<CommandSender> recipients = new HashSet<>();
-
-        for (String permission : permissions.split(";")) {
-            for (Permissible permissible : this.pluginManager.getPermissionSubscriptions(permission)) {
-                if (permissible instanceof CommandSender && permissible.hasPermission(permission)) {
-                    recipients.add((CommandSender) permissible);
-                }
-            }
-        }
-
-        for (CommandSender recipient : recipients) {
-            recipient.sendMessage(message);
-        }
-
-        return recipients.size();
-    }
-
-
-    @Deprecated
-    @DeprecationDetails(since = "1.19.60-r1", reason = "use Server#executeCommand")
-    public boolean dispatchCommand(CommandSender sender, String commandLine) throws ServerException {
-        return this.executeCommand(sender, commandLine) > 0;
-    }
-
-    /**
-     * 以sender身份执行一行命令
-     * <p>
-     * Execute one line of command as sender
-     *
-     * @param sender      命令执行者
-     * @param commandLine 一行命令
-     * @return 返回0代表执行失败, 返回大于等于1代表执行成功<br>Returns 0 for failed execution, greater than or equal to 1 for successful execution
-     * @throws ServerException 服务器异常
-     */
-    public int executeCommand(CommandSender sender, String commandLine) throws ServerException {
-        // First we need to check if this command is on the main thread or not, if not, warn the user
-        if (!this.isPrimaryThread()) {
-            log.warn("Command Dispatched Async: {}\nPlease notify author of plugin causing this execution to fix this bug!", commandLine,
-                    new ConcurrentModificationException("Command Dispatched Async: " + commandLine));
-
-            this.scheduler.scheduleTask(null, () -> executeCommand(sender, commandLine));
-            return 1;
-        }
-        if (sender == null) {
-            throw new ServerException("CommandSender is not valid");
-        }
-        //pre
-        var cmd = commandLine.stripLeading();
-        cmd = cmd.charAt(0) == '/' ? cmd.substring(1) : cmd;
-
-        return this.commandMap.executeCommand(sender, cmd);
-    }
-
-    /**
-     * 以该控制台身份静音执行这些命令，无视权限
-     * <p>
-     * Execute these commands silently as the console, ignoring permissions.
-     *
-     * @param commands the commands
-     * @throws ServerException 服务器异常
-     */
-    public void silentExecuteCommand(String... commands) {
-        this.silentExecuteCommand(null, commands);
-    }
-
-    /**
-     * 以该玩家身份静音执行这些命令无视权限
-     * <p>
-     * Execute these commands silently as this player, ignoring permissions.
-     *
-     * @param sender   命令执行者<br>command sender
-     * @param commands the commands
-     * @throws ServerException 服务器异常
-     */
-    public void silentExecuteCommand(@Nullable Player sender, String... commands) {
-        final var revert = new ArrayList<Level>();
-        final var server = Server.getInstance();
-        for (var level : server.getLevels().values()) {
-            if (level.getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK)) {
-                level.getGameRules().setGameRule(GameRule.SEND_COMMAND_FEEDBACK, false);
-                revert.add(level);
-            }
-        }
-        if (sender == null) {
-            for (var cmd : commands) {
-                server.executeCommand(server.getConsoleSender(), cmd);
-            }
-        } else {
-            for (var cmd : commands) {
-                server.executeCommand(server.getConsoleSender(), "execute as " + "\"" + sender.getName() + "\" run " + cmd);
-            }
-        }
-
-        for (var level : revert) {
-            level.getGameRules().setGameRule(GameRule.SEND_COMMAND_FEEDBACK, true);
-        }
-    }
-
-    /**
-     * 得到控制台发送者
-     * <p>
-     * Get the console sender
-     *
-     * @return {@link ConsoleCommandSender}
-     */
-    //todo: use ticker to check console
-    public ConsoleCommandSender getConsoleSender() {
-        return consoleSender;
-    }
-
-    public SimpleCommandMap getCommandMap() {
-        return commandMap;
-    }
-
-    public PluginIdentifiableCommand getPluginCommand(String name) {
-        Command command = this.commandMap.getCommand(name);
-        if (command instanceof PluginIdentifiableCommand) {
-            return (PluginIdentifiableCommand) command;
-        } else {
-            return null;
-        }
-    }
-
-    public Map<String, List<String>> getCommandAliases() {
-        Object section = this.getConfig("aliases");
-        Map<String, List<String>> result = new LinkedHashMap<>();
-        if (section instanceof Map) {
-            for (Map.Entry entry : (Set<Map.Entry>) ((Map) section).entrySet()) {
-                List<String> commands = new ArrayList<>();
-                String key = (String) entry.getKey();
-                Object value = entry.getValue();
-                if (value instanceof List) {
-                    commands.addAll((List<String>) value);
-                } else {
-                    commands.add((String) value);
-                }
-
-                result.put(key, commands);
-            }
-        }
-
-        return result;
-
-    }
-
-    public IScoreboardManager getScoreboardManager() {
-        return scoreboardManager;
-    }
-
-    public FunctionManager getFunctionManager() {
-        return functionManager;
-    }
-
-    // endregion
-
-    // region networking - 网络相关
-
-    /**
-     * @see #broadcastPacket(Player[], DataPacket)
-     */
-    public static void broadcastPacket(Collection<Player> players, DataPacket packet) {
-        packet.tryEncode();
-
-        for (Player player : players) {
-            player.dataPacket(packet);
-        }
-    }
-
-    /**
-     * 广播一个数据包给指定的玩家们.<p>Broadcast a packet to the specified players.
-     *
-     * @param players 接受数据包的所有玩家<br>All players receiving the data package
-     * @param packet  数据包
-     */
-    public static void broadcastPacket(Player[] players, DataPacket packet) {
-        packet.tryEncode();
-
-        for (Player player : players) {
-            player.dataPacket(packet);
-        }
-    }
-
-    @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit",
-            reason = "Packet management was refactored, batching is done automatically near the RakNet layer")
-    @Deprecated
-    public void batchPackets(Player[] players, DataPacket[] packets) {
-        this.batchPackets(players, packets, false);
-    }
-
-    @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit",
-            reason = "Packet management was refactored, batching is done automatically near the RakNet layer")
-    @Deprecated
-    public void batchPackets(Player[] players, DataPacket[] packets, boolean forceSync) {
-        if (players == null || packets == null || players.length == 0 || packets.length == 0) {
-            return;
-        }
-
-        BatchPacketsEvent ev = new BatchPacketsEvent(players, packets, forceSync);
-        getPluginManager().callEvent(ev);
-        if (ev.isCancelled()) {
-            return;
-        }
-
-        Timings.playerNetworkSendTimer.startTiming();
-        byte[][] payload = new byte[packets.length * 2][];
-        for (int i = 0; i < packets.length; i++) {
-            DataPacket p = packets[i];
-            int idx = i * 2;
-            p.tryEncode();
-            byte[] buf = p.getBuffer();
-            payload[idx] = Binary.writeUnsignedVarInt(buf.length);
-            payload[idx + 1] = buf;
-            packets[i] = null;
-        }
-
-        List<InetSocketAddress> targets = new ArrayList<>();
-        for (Player p : players) {
-            if (p.isConnected()) {
-                targets.add(p.getRawSocketAddress());
-            }
-        }
-
-        if (!forceSync && this.networkCompressionAsync) {
-            this.getScheduler().scheduleAsyncTask(new CompressBatchedTask(payload, targets, this.networkCompressionLevel));
-        } else {
-            try {
-                byte[] data = Binary.appendBytes(payload);
-                this.broadcastPacketsCallback(Network.deflateRaw(data, this.networkCompressionLevel), targets);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-        Timings.playerNetworkSendTimer.stopTiming();
-    }
-
-    public void broadcastPacketsCallback(byte[] data, List<InetSocketAddress> targets) {
-        BatchPacket pk = new BatchPacket();
-        pk.payload = data;
-
-        for (InetSocketAddress i : targets) {
-            if (this.players.containsKey(i)) {
-                this.players.get(i).dataPacket(pk);
-            }
-        }
-    }
-    public void handlePacket(InetSocketAddress address, ByteBuf payload) {
-        try {
-            if (!payload.isReadable(3)) {
-                return;
-            }
-            byte[] prefix = new byte[2];
-            payload.readBytes(prefix);
-
-            if (!Arrays.equals(prefix, new byte[]{(byte) 0xfe, (byte) 0xfd})) {
-                return;
-            }
-            if (this.queryHandler != null) {
-                this.queryHandler.handle(address, payload);
-            }
-        } catch (Exception e) {
-            log.error("Error whilst handling packet", e);
-
-            this.network.blockAddress(address.getAddress(), -1);
-        }
-    }
-
-    public QueryRegenerateEvent getQueryInformation() {
-        return this.queryRegenerateEvent;
-    }
-
-    public Network getNetwork() {
-        return network;
-    }
-
-    // endregion
-
-    // region plugins - 插件相关
-
-    /**
-     * 以指定插件加载顺序启用插件<p>
-     * Enable plugins in the specified plugin loading order
-     *
-     * @param type 插件加载顺序<br>Plugin loading order
-     */
-    public void enablePlugins(PluginLoadOrder type) {
-        for (Plugin plugin : new ArrayList<>(this.pluginManager.getPlugins().values())) {
-            if (!plugin.isEnabled() && type == plugin.getDescription().getOrder()) {
-                this.enablePlugin(plugin);
-            }
-        }
-
-        if (type == PluginLoadOrder.POSTWORLD) {
-            this.commandMap.registerServerAliases();
-            DefaultPermissions.registerCorePermissions();
-        }
-    }
-
-    /**
-     * 启用一个指定插件<p>
-     * Enable a specified plugin
-     *
-     * @param plugin 插件实例<br>Plugin instance
-     */
-    public void enablePlugin(Plugin plugin) {
-        this.pluginManager.enablePlugin(plugin);
-    }
-
-    /**
-     * 禁用全部插件<p>Disable all plugins
-     */
-    public void disablePlugins() {
-        this.pluginManager.disablePlugins();
-    }
-    public PluginManager getPluginManager() {
-        return this.pluginManager;
-    }
-
-    public ServiceManager getServiceManager() {
-        return serviceManager;
-    }
-
-    // endregion
-
     // region lifecycle & ticking - 生命周期与游戏刻
 
     /**
@@ -1879,6 +1457,428 @@ public class Server {
     @Since("1.4.0.0-PN")
     public long getLaunchTime() {
         return launchTime;
+    }
+
+    // endregion
+
+    // region server singleton - Server 单例
+
+    public static Server getInstance() {
+        return instance;
+    }
+
+    // endregion
+
+    // region chat & commands - 聊天与命令
+
+    /**
+     * 广播一条消息给所有玩家<p>Broadcast a message to all players
+     *
+     * @param message 消息
+     * @return int 玩家数量<br>Number of players
+     */
+    public int broadcastMessage(String message) {
+        return this.broadcast(message, BROADCAST_CHANNEL_USERS);
+    }
+
+
+    /**
+     * @see #broadcastMessage(String)
+     */
+    public int broadcastMessage(TextContainer message) {
+        return this.broadcast(message, BROADCAST_CHANNEL_USERS);
+    }
+
+    /**
+     * 广播一条消息给指定的{@link CommandSender recipients}<p>Broadcast a message to the specified {@link CommandSender recipients}
+     *
+     * @param message 消息
+     * @return int {@link CommandSender recipients}数量<br>Number of {@link CommandSender recipients}
+     */
+    public int broadcastMessage(String message, CommandSender[] recipients) {
+        for (CommandSender recipient : recipients) {
+            recipient.sendMessage(message);
+        }
+
+        return recipients.length;
+    }
+
+
+    /**
+     * @see #broadcastMessage(String, CommandSender[])
+     */
+    public int broadcastMessage(String message, Collection<? extends CommandSender> recipients) {
+        for (CommandSender recipient : recipients) {
+            recipient.sendMessage(message);
+        }
+
+        return recipients.size();
+    }
+
+    /**
+     * @see #broadcastMessage(String, CommandSender[])
+     */
+    public int broadcastMessage(TextContainer message, Collection<? extends CommandSender> recipients) {
+        for (CommandSender recipient : recipients) {
+            recipient.sendMessage(message);
+        }
+
+        return recipients.size();
+    }
+
+
+    /**
+     * 从指定的许可名获取发送者们，广播一条消息给他们.可以指定多个许可名，以<b> ; </b>分割.<br>
+     * 一个permission在{@link PluginManager#permSubs}对应一个{@link CommandSender 发送者}Set.<p>
+     * Get the sender to broadcast a message from the specified permission name, multiple permissions can be specified, split by <b> ; </b><br>
+     * The permission corresponds to a {@link CommandSender Sender} set in {@link PluginManager#permSubs}.
+     *
+     * @param message     消息内容<br>Message content
+     * @param permissions 许可名，需要先通过{@link PluginManager#subscribeToPermission subscribeToPermission}注册<br>Permissions name, need to register first through {@link PluginManager#subscribeToPermission subscribeToPermission}
+     * @return int 接受到消息的{@link CommandSender 发送者}数量<br>Number of {@link CommandSender senders} who received the message
+     */
+    public int broadcast(String message, String permissions) {
+        Set<CommandSender> recipients = new HashSet<>();
+
+        for (String permission : permissions.split(";")) {
+            for (Permissible permissible : this.pluginManager.getPermissionSubscriptions(permission)) {
+                if (permissible instanceof CommandSender && permissible.hasPermission(permission)) {
+                    recipients.add((CommandSender) permissible);
+                }
+            }
+        }
+
+        for (CommandSender recipient : recipients) {
+            recipient.sendMessage(message);
+        }
+
+        return recipients.size();
+    }
+
+
+    /**
+     * @see #broadcast(String, String)
+     */
+    public int broadcast(TextContainer message, String permissions) {
+        Set<CommandSender> recipients = new HashSet<>();
+
+        for (String permission : permissions.split(";")) {
+            for (Permissible permissible : this.pluginManager.getPermissionSubscriptions(permission)) {
+                if (permissible instanceof CommandSender && permissible.hasPermission(permission)) {
+                    recipients.add((CommandSender) permissible);
+                }
+            }
+        }
+
+        for (CommandSender recipient : recipients) {
+            recipient.sendMessage(message);
+        }
+
+        return recipients.size();
+    }
+
+
+    @Deprecated
+    @DeprecationDetails(since = "1.19.60-r1", reason = "use Server#executeCommand")
+    public boolean dispatchCommand(CommandSender sender, String commandLine) throws ServerException {
+        return this.executeCommand(sender, commandLine) > 0;
+    }
+
+    /**
+     * 以sender身份执行一行命令
+     * <p>
+     * Execute one line of command as sender
+     *
+     * @param sender      命令执行者
+     * @param commandLine 一行命令
+     * @return 返回0代表执行失败, 返回大于等于1代表执行成功<br>Returns 0 for failed execution, greater than or equal to 1 for successful execution
+     * @throws ServerException 服务器异常
+     */
+    public int executeCommand(CommandSender sender, String commandLine) throws ServerException {
+        // First we need to check if this command is on the main thread or not, if not, warn the user
+        if (!this.isPrimaryThread()) {
+            log.warn("Command Dispatched Async: {}\nPlease notify author of plugin causing this execution to fix this bug!", commandLine,
+                    new ConcurrentModificationException("Command Dispatched Async: " + commandLine));
+
+            this.scheduler.scheduleTask(null, () -> executeCommand(sender, commandLine));
+            return 1;
+        }
+        if (sender == null) {
+            throw new ServerException("CommandSender is not valid");
+        }
+        //pre
+        var cmd = commandLine.stripLeading();
+        cmd = cmd.charAt(0) == '/' ? cmd.substring(1) : cmd;
+
+        return this.commandMap.executeCommand(sender, cmd);
+    }
+
+    /**
+     * 以该控制台身份静音执行这些命令，无视权限
+     * <p>
+     * Execute these commands silently as the console, ignoring permissions.
+     *
+     * @param commands the commands
+     * @throws ServerException 服务器异常
+     */
+    public void silentExecuteCommand(String... commands) {
+        this.silentExecuteCommand(null, commands);
+    }
+
+    /**
+     * 以该玩家身份静音执行这些命令无视权限
+     * <p>
+     * Execute these commands silently as this player, ignoring permissions.
+     *
+     * @param sender   命令执行者<br>command sender
+     * @param commands the commands
+     * @throws ServerException 服务器异常
+     */
+    public void silentExecuteCommand(@Nullable Player sender, String... commands) {
+        final var revert = new ArrayList<Level>();
+        final var server = Server.getInstance();
+        for (var level : server.getLevels().values()) {
+            if (level.getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK)) {
+                level.getGameRules().setGameRule(GameRule.SEND_COMMAND_FEEDBACK, false);
+                revert.add(level);
+            }
+        }
+        if (sender == null) {
+            for (var cmd : commands) {
+                server.executeCommand(server.getConsoleSender(), cmd);
+            }
+        } else {
+            for (var cmd : commands) {
+                server.executeCommand(server.getConsoleSender(), "execute as " + "\"" + sender.getName() + "\" run " + cmd);
+            }
+        }
+
+        for (var level : revert) {
+            level.getGameRules().setGameRule(GameRule.SEND_COMMAND_FEEDBACK, true);
+        }
+    }
+
+    /**
+     * 得到控制台发送者
+     * <p>
+     * Get the console sender
+     *
+     * @return {@link ConsoleCommandSender}
+     */
+    //todo: use ticker to check console
+    public ConsoleCommandSender getConsoleSender() {
+        return consoleSender;
+    }
+
+    public SimpleCommandMap getCommandMap() {
+        return commandMap;
+    }
+
+    public PluginIdentifiableCommand getPluginCommand(String name) {
+        Command command = this.commandMap.getCommand(name);
+        if (command instanceof PluginIdentifiableCommand) {
+            return (PluginIdentifiableCommand) command;
+        } else {
+            return null;
+        }
+    }
+
+    public Map<String, List<String>> getCommandAliases() {
+        Object section = this.getConfig("aliases");
+        Map<String, List<String>> result = new LinkedHashMap<>();
+        if (section instanceof Map) {
+            for (Map.Entry entry : (Set<Map.Entry>) ((Map) section).entrySet()) {
+                List<String> commands = new ArrayList<>();
+                String key = (String) entry.getKey();
+                Object value = entry.getValue();
+                if (value instanceof List) {
+                    commands.addAll((List<String>) value);
+                } else {
+                    commands.add((String) value);
+                }
+
+                result.put(key, commands);
+            }
+        }
+
+        return result;
+
+    }
+
+    public IScoreboardManager getScoreboardManager() {
+        return scoreboardManager;
+    }
+
+    public FunctionManager getFunctionManager() {
+        return functionManager;
+    }
+
+    // endregion
+
+    // region networking - 网络相关
+
+    /**
+     * @see #broadcastPacket(Player[], DataPacket)
+     */
+    public static void broadcastPacket(Collection<Player> players, DataPacket packet) {
+        packet.tryEncode();
+
+        for (Player player : players) {
+            player.dataPacket(packet);
+        }
+    }
+
+    /**
+     * 广播一个数据包给指定的玩家们.<p>Broadcast a packet to the specified players.
+     *
+     * @param players 接受数据包的所有玩家<br>All players receiving the data package
+     * @param packet  数据包
+     */
+    public static void broadcastPacket(Player[] players, DataPacket packet) {
+        packet.tryEncode();
+
+        for (Player player : players) {
+            player.dataPacket(packet);
+        }
+    }
+
+    @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit",
+            reason = "Packet management was refactored, batching is done automatically near the RakNet layer")
+    @Deprecated
+    public void batchPackets(Player[] players, DataPacket[] packets) {
+        this.batchPackets(players, packets, false);
+    }
+
+    @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit",
+            reason = "Packet management was refactored, batching is done automatically near the RakNet layer")
+    @Deprecated
+    public void batchPackets(Player[] players, DataPacket[] packets, boolean forceSync) {
+        if (players == null || packets == null || players.length == 0 || packets.length == 0) {
+            return;
+        }
+
+        BatchPacketsEvent ev = new BatchPacketsEvent(players, packets, forceSync);
+        getPluginManager().callEvent(ev);
+        if (ev.isCancelled()) {
+            return;
+        }
+
+        Timings.playerNetworkSendTimer.startTiming();
+        byte[][] payload = new byte[packets.length * 2][];
+        for (int i = 0; i < packets.length; i++) {
+            DataPacket p = packets[i];
+            int idx = i * 2;
+            p.tryEncode();
+            byte[] buf = p.getBuffer();
+            payload[idx] = Binary.writeUnsignedVarInt(buf.length);
+            payload[idx + 1] = buf;
+            packets[i] = null;
+        }
+
+        List<InetSocketAddress> targets = new ArrayList<>();
+        for (Player p : players) {
+            if (p.isConnected()) {
+                targets.add(p.getRawSocketAddress());
+            }
+        }
+
+        if (!forceSync && this.networkCompressionAsync) {
+            this.getScheduler().scheduleAsyncTask(new CompressBatchedTask(payload, targets, this.networkCompressionLevel));
+        } else {
+            try {
+                byte[] data = Binary.appendBytes(payload);
+                this.broadcastPacketsCallback(Network.deflateRaw(data, this.networkCompressionLevel), targets);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        Timings.playerNetworkSendTimer.stopTiming();
+    }
+
+    public void broadcastPacketsCallback(byte[] data, List<InetSocketAddress> targets) {
+        BatchPacket pk = new BatchPacket();
+        pk.payload = data;
+
+        for (InetSocketAddress i : targets) {
+            if (this.players.containsKey(i)) {
+                this.players.get(i).dataPacket(pk);
+            }
+        }
+    }
+    public void handlePacket(InetSocketAddress address, ByteBuf payload) {
+        try {
+            if (!payload.isReadable(3)) {
+                return;
+            }
+            byte[] prefix = new byte[2];
+            payload.readBytes(prefix);
+
+            if (!Arrays.equals(prefix, new byte[]{(byte) 0xfe, (byte) 0xfd})) {
+                return;
+            }
+            if (this.queryHandler != null) {
+                this.queryHandler.handle(address, payload);
+            }
+        } catch (Exception e) {
+            log.error("Error whilst handling packet", e);
+
+            this.network.blockAddress(address.getAddress(), -1);
+        }
+    }
+
+    public QueryRegenerateEvent getQueryInformation() {
+        return this.queryRegenerateEvent;
+    }
+
+    public Network getNetwork() {
+        return network;
+    }
+
+    // endregion
+
+    // region plugins - 插件相关
+
+    /**
+     * 以指定插件加载顺序启用插件<p>
+     * Enable plugins in the specified plugin loading order
+     *
+     * @param type 插件加载顺序<br>Plugin loading order
+     */
+    public void enablePlugins(PluginLoadOrder type) {
+        for (Plugin plugin : new ArrayList<>(this.pluginManager.getPlugins().values())) {
+            if (!plugin.isEnabled() && type == plugin.getDescription().getOrder()) {
+                this.enablePlugin(plugin);
+            }
+        }
+
+        if (type == PluginLoadOrder.POSTWORLD) {
+            this.commandMap.registerServerAliases();
+            DefaultPermissions.registerCorePermissions();
+        }
+    }
+
+    /**
+     * 启用一个指定插件<p>
+     * Enable a specified plugin
+     *
+     * @param plugin 插件实例<br>Plugin instance
+     */
+    public void enablePlugin(Plugin plugin) {
+        this.pluginManager.enablePlugin(plugin);
+    }
+
+    /**
+     * 禁用全部插件<p>Disable all plugins
+     */
+    public void disablePlugins() {
+        this.pluginManager.disablePlugins();
+    }
+    public PluginManager getPluginManager() {
+        return this.pluginManager;
+    }
+
+    public ServiceManager getServiceManager() {
+        return serviceManager;
     }
 
     // endregion
