@@ -2805,6 +2805,8 @@ public class Server {
 
     // endregion
 
+    // region ban & op & whitelist - Ban，Op与白名单等
+
     public BanList getNameBans() {
         return this.banByName;
     }
@@ -2866,6 +2868,8 @@ public class Server {
     public void reloadWhitelist() {
         this.whitelist.reload();
     }
+
+    // endregion
 
     public ServiceManager getServiceManager() {
         return serviceManager;
