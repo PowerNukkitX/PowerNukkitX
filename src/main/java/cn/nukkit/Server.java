@@ -1931,14 +1931,6 @@ public class Server {
         return pluginPath;
     }
 
-    public int getMaxPlayers() {
-        return maxPlayers;
-    }
-
-    public void setMaxPlayers(int maxPlayers) {
-        this.maxPlayers = maxPlayers;
-    }
-
     /**
      * 将服务器设置为繁忙状态，这可以阻止相关代码认为服务器处于无响应状态。
      * 请牢记，必须在设置之后清除。
@@ -1963,287 +1955,11 @@ public class Server {
     }
 
     /**
-     * @return 服务器端口<br>server port
-     */
-    public int getPort() {
-        return this.getPropertyInt("server-port", 19132);
-    }
-
-    /**
-     * @return 可视距离<br>server view distance
-     */
-    public int getViewDistance() {
-        return this.getPropertyInt("view-distance", 10);
-    }
-
-    /**
-     * @return 服务器网络地址<br>server ip
-     */
-    public String getIp() {
-        return this.getPropertyString("server-ip", "0.0.0.0");
-    }
-
-    /**
      * @return 服务器UUID<br>server UUID
      */
     public UUID getServerUniqueId() {
         return this.serverID;
     }
-
-    /**
-     * @return 服务器是否会自动保存<br>Does the server automatically save
-     */
-    public boolean getAutoSave() {
-        return this.autoSave;
-    }
-
-    /**
-     * 设置服务器自动保存
-     * <p>
-     * Set server autosave
-     *
-     * @param autoSave 是否自动保存<br>Whether to save automatically
-     */
-    public void setAutoSave(boolean autoSave) {
-        this.autoSave = autoSave;
-        for (Level level : this.levelArray) {
-            level.setAutoSave(this.autoSave);
-        }
-    }
-
-    public String getLevelType() {
-        return this.getPropertyString("level-type", "DEFAULT");
-    }
-
-    /**
-     * @return 服务器是否生成结构<br>Whether the server generate the structure.
-     */
-    public boolean getGenerateStructures() {
-        return this.getPropertyBoolean("generate-structures", true);
-    }
-
-    /**
-     * 得到服务器的gamemode
-     * <p>
-     * Get the gamemode of the server
-     *
-     * @return gamemode id
-     */
-    public int getGamemode() {
-        try {
-            return this.getPropertyInt("gamemode", 0) & 0b11;
-        } catch (NumberFormatException exception) {
-            return getGamemodeFromString(this.getPropertyString("gamemode")) & 0b11;
-        }
-    }
-
-    public boolean getForceGamemode() {
-        return this.getPropertyBoolean("force-gamemode", false);
-    }
-
-
-    /**
-     * 默认{@code direct=false}
-     *
-     * @see #getGamemodeString(int, boolean)
-     */
-    public static String getGamemodeString(int mode) {
-        return getGamemodeString(mode, false);
-    }
-
-    /**
-     * 从gamemode id获取游戏模式字符串.
-     * <p>
-     * Get game mode string from gamemode id.
-     *
-     * @param mode   gamemode id
-     * @param direct 如果为true就直接返回字符串,为false返回代表游戏模式的硬编码字符串.<br>If true, the string is returned directly, and if false, the hard-coded string representing the game mode is returned.
-     * @return 游戏模式字符串<br>Game Mode String
-     */
-    public static String getGamemodeString(int mode, boolean direct) {
-        switch (mode) {
-            case Player.SURVIVAL:
-                return direct ? "Survival" : "%gameMode.survival";
-            case Player.CREATIVE:
-                return direct ? "Creative" : "%gameMode.creative";
-            case Player.ADVENTURE:
-                return direct ? "Adventure" : "%gameMode.adventure";
-            case Player.SPECTATOR:
-                return direct ? "Spectator" : "%gameMode.spectator";
-        }
-        return "UNKNOWN";
-    }
-
-    /**
-     * 从字符串获取gamemode
-     * <p>
-     * Get gamemode from string
-     *
-     * @param str 代表游戏模式的字符串，例如0,survival...<br>A string representing the game mode, e.g. 0,survival...
-     * @return 游戏模式id<br>gamemode id
-     */
-    public static int getGamemodeFromString(String str) {
-        switch (str.trim().toLowerCase()) {
-            case "0":
-            case "survival":
-            case "s":
-                return Player.SURVIVAL;
-
-            case "1":
-            case "creative":
-            case "c":
-                return Player.CREATIVE;
-
-            case "2":
-            case "adventure":
-            case "a":
-                return Player.ADVENTURE;
-
-            case "3":
-            case "spectator":
-            case "spc":
-            case "view":
-            case "v":
-                return Player.SPECTATOR;
-        }
-        return -1;
-    }
-
-    /**
-     * 从字符串获取游戏难度
-     * <p>
-     * Get game difficulty from string
-     *
-     * @param str 代表游戏难度的字符串，例如0,peaceful...<br>A string representing the game difficulty, e.g. 0,peaceful...
-     * @return 游戏难度id<br>game difficulty id
-     */
-    public static int getDifficultyFromString(String str) {
-        switch (str.trim().toLowerCase()) {
-            case "0":
-            case "peaceful":
-            case "p":
-                return 0;
-
-            case "1":
-            case "easy":
-            case "e":
-                return 1;
-
-            case "2":
-            case "normal":
-            case "n":
-                return 2;
-
-            case "3":
-            case "hard":
-            case "h":
-                return 3;
-        }
-        return -1;
-    }
-
-    /**
-     * 获得服务器游戏难度
-     * <p>
-     * Get server game difficulty
-     *
-     * @return 游戏难度id<br>game difficulty id
-     */
-    public int getDifficulty() {
-        if (this.difficulty == Integer.MAX_VALUE) {
-            this.difficulty = getDifficultyFromString(this.getPropertyString("difficulty", "1"));
-        }
-        return this.difficulty;
-    }
-
-    /**
-     * 设置服务器游戏难度
-     * <p>
-     * set server game difficulty
-     *
-     * @param difficulty 游戏难度id<br>game difficulty id
-     */
-    public void setDifficulty(int difficulty) {
-        int value = difficulty;
-        if (value < 0) value = 0;
-        if (value > 3) value = 3;
-        this.difficulty = value;
-        this.setPropertyInt("difficulty", value);
-    }
-
-    /**
-     * @return 是否开启白名单<br>Whether to start server whitelist
-     */
-    public boolean hasWhitelist() {
-        return this.getPropertyBoolean("white-list", false);
-    }
-
-    /**
-     * @return 得到服务器出生点保护半径<br>Get server birth point protection radius
-     */
-    public int getSpawnRadius() {
-        return this.getPropertyInt("spawn-protection", 16);
-    }
-
-    /**
-     * @return 服务器是否允许飞行<br>Whether the server allows flying
-     */
-    public boolean getAllowFlight() {
-        if (getAllowFlight == null) {
-            getAllowFlight = this.getPropertyBoolean("allow-flight", false);
-        }
-        return getAllowFlight;
-    }
-
-    /**
-     * @return 服务器是否为硬核模式<br>Whether the server is in hardcore mode
-     */
-    public boolean isHardcore() {
-        return this.getPropertyBoolean("hardcore", false);
-    }
-
-    /**
-     * @return 获取默认gamemode<br>Get default gamemode
-     */
-    public int getDefaultGamemode() {
-        if (this.defaultGamemode == Integer.MAX_VALUE) {
-            this.defaultGamemode = this.getGamemode();
-        }
-        return this.defaultGamemode;
-    }
-
-    /**
-     * @return 得到服务器标题<br>Get server motd
-     */
-    public String getMotd() {
-        return this.getPropertyString("motd", "PowerNukkitX Server");
-    }
-
-    /**
-     * @return 得到服务器子标题<br>Get the server subheading
-     */
-    public String getSubMotd() {
-        String subMotd = this.getPropertyString("sub-motd", "https://powernukkitx.cn");
-        if (subMotd.isEmpty()) {
-            subMotd = "https://powernukkitx.cn"; // The client doesn't allow empty sub-motd in 1.16.210
-        }
-        return subMotd;
-    }
-
-    /**
-     * @return 是否强制使用服务器资源包<br>Whether to force the use of server resourcepack
-     */
-    public boolean getForceResources() {
-        return this.getPropertyBoolean("force-resources", false);
-    }
-
-    /**
-     * @return 是否强制使用服务器资源包的同时允许加载客户端资源包<br>Whether to force the use of server resourcepack while allowing the loading of client resourcepack
-     */
-    public boolean getForceResourcesAllowOwnPacks() {
-        return this.getPropertyBoolean("force-resources-allow-client-packs", false);
-    }
-
 
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", reason = "Use your own logger, sharing loggers makes bug analyses harder.",
@@ -3044,131 +2760,8 @@ public class Server {
         return true;
     }
 
-    public BaseLang getLanguage() {
-        return baseLang;
-    }
-
-    public LangCode getLanguageCode() {
-        return baseLangCode;
-    }
-
-    private LangCode mapInternalLang(String langName) {
-        return switch (langName) {
-            case "bra" -> LangCode.valueOf("pt_BR");
-            case "chs" -> LangCode.valueOf("zh_CN");
-            case "cht" -> LangCode.valueOf("zh_TW");
-            case "cze" -> LangCode.valueOf("cs_CZ");
-            case "deu" -> LangCode.valueOf("de_DE");
-            case "fin" -> LangCode.valueOf("fi_FI");
-            case "eng" -> LangCode.valueOf("en_US");
-            case "fra" -> LangCode.valueOf("en_US");
-            case "idn" -> LangCode.valueOf("id_ID");
-            case "jpn" -> LangCode.valueOf("ja_JP");
-            case "kor" -> LangCode.valueOf("ko_KR");
-            case "ltu" -> LangCode.valueOf("en_US");
-            case "pol" -> LangCode.valueOf("pl_PL");
-            case "rus" -> LangCode.valueOf("ru_RU");
-            case "spa" -> LangCode.valueOf("es_ES");
-            case "tur" -> LangCode.valueOf("tr_TR");
-            case "ukr" -> LangCode.valueOf("uk_UA");
-            case "vie" -> LangCode.valueOf("en_US");
-            default -> throw new IllegalArgumentException();
-        };
-    }
-
-    public boolean isLanguageForced() {
-        return forceLanguage;
-    }
-
-    @PowerNukkitOnly
-    public boolean isRedstoneEnabled() {
-        return redstoneEnabled;
-    }
-
-    @PowerNukkitOnly
-    public void setRedstoneEnabled(boolean redstoneEnabled) {
-        this.redstoneEnabled = redstoneEnabled;
-    }
-
     public Network getNetwork() {
         return network;
-    }
-
-    //Revising later...
-    public Config getConfig() {
-        return this.config;
-    }
-
-    public <T> T getConfig(String variable) {
-        return this.getConfig(variable, null);
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T> T getConfig(String variable, T defaultValue) {
-        Object value = this.config.get(variable);
-        return value == null ? defaultValue : (T) value;
-    }
-
-    public Config getProperties() {
-        return this.properties;
-    }
-
-    public Object getProperty(String variable) {
-        return this.getProperty(variable, null);
-    }
-
-    public Object getProperty(String variable, Object defaultValue) {
-        return this.properties.exists(variable) ? this.properties.get(variable) : defaultValue;
-    }
-
-    public void setPropertyString(String variable, String value) {
-        this.properties.set(variable, value);
-        this.properties.save();
-    }
-
-    public String getPropertyString(String variable) {
-        return this.getPropertyString(variable, null);
-    }
-
-    public String getPropertyString(String variable, String defaultValue) {
-        return this.properties.exists(variable) ? this.properties.get(variable).toString() : defaultValue;
-    }
-
-    public int getPropertyInt(String variable) {
-        return this.getPropertyInt(variable, null);
-    }
-
-    public int getPropertyInt(String variable, Integer defaultValue) {
-        return this.properties.exists(variable) ? (!this.properties.get(variable).equals("") ? Integer.parseInt(String.valueOf(this.properties.get(variable))) : defaultValue) : defaultValue;
-    }
-
-    public void setPropertyInt(String variable, int value) {
-        this.properties.set(variable, value);
-        this.properties.save();
-    }
-
-    public boolean getPropertyBoolean(String variable) {
-        return this.getPropertyBoolean(variable, null);
-    }
-
-    public boolean getPropertyBoolean(String variable, Object defaultValue) {
-        Object value = this.properties.exists(variable) ? this.properties.get(variable) : defaultValue;
-        if (value instanceof Boolean) {
-            return (Boolean) value;
-        }
-        switch (String.valueOf(value)) {
-            case "on":
-            case "true":
-            case "1":
-            case "yes":
-                return true;
-        }
-        return false;
-    }
-
-    public void setPropertyBoolean(String variable, boolean value) {
-        this.properties.set(variable, value ? "1" : "0");
-        this.properties.save();
     }
 
     public PluginIdentifiableCommand getPluginCommand(String name) {
@@ -3268,14 +2861,6 @@ public class Server {
 
     }
 
-    public boolean shouldSavePlayerData() {
-        return this.getConfig("player.save-player-data", true);
-    }
-
-    public int getPlayerSkinChangeCooldown() {
-        return this.getConfig("player.skin-change-cooldown", 30);
-    }
-
     // TODO: update PNX Junit5 test framework to remove dependency on this method
     private void registerEntities() {
         Entity.init();
@@ -3286,27 +2871,12 @@ public class Server {
         BlockEntity.init();
     }
 
-    public boolean isNetherAllowed() {
-        return this.allowNether;
-    }
-
     public PlayerDataSerializer getPlayerDataSerializer() {
         return playerDataSerializer;
     }
 
     public void setPlayerDataSerializer(PlayerDataSerializer playerDataSerializer) {
         this.playerDataSerializer = Preconditions.checkNotNull(playerDataSerializer, "playerDataSerializer");
-    }
-
-    @Since("1.3.0.0-PN")
-    public boolean isIgnoredPacket(Class<? extends DataPacket> clazz) {
-        return this.ignoredPackets.contains(clazz.getSimpleName());
-    }
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public boolean isSafeSpawn() {
-        return safeSpawn;
     }
 
     public static Server getInstance() {
@@ -3322,6 +2892,441 @@ public class Server {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
+    public long getLaunchTime() {
+        return launchTime;
+    }
+
+    // region configs - 配置相关
+
+    public int getMaxPlayers() {
+        return maxPlayers;
+    }
+
+    public void setMaxPlayers(int maxPlayers) {
+        this.maxPlayers = maxPlayers;
+    }
+
+    /**
+     * @return 服务器端口<br>server port
+     */
+    public int getPort() {
+        return this.getPropertyInt("server-port", 19132);
+    }
+
+    /**
+     * @return 可视距离<br>server view distance
+     */
+    public int getViewDistance() {
+        return this.getPropertyInt("view-distance", 10);
+    }
+
+    /**
+     * @return 服务器网络地址<br>server ip
+     */
+    public String getIp() {
+        return this.getPropertyString("server-ip", "0.0.0.0");
+    }
+
+    /**
+     * @return 服务器是否会自动保存<br>Does the server automatically save
+     */
+    public boolean getAutoSave() {
+        return this.autoSave;
+    }
+
+    /**
+     * 设置服务器自动保存
+     * <p>
+     * Set server autosave
+     *
+     * @param autoSave 是否自动保存<br>Whether to save automatically
+     */
+    public void setAutoSave(boolean autoSave) {
+        this.autoSave = autoSave;
+        for (Level level : this.levelArray) {
+            level.setAutoSave(this.autoSave);
+        }
+    }
+
+    public String getLevelType() {
+        return this.getPropertyString("level-type", "DEFAULT");
+    }
+
+    /**
+     * @return 服务器是否生成结构<br>Whether the server generate the structure.
+     */
+    public boolean getGenerateStructures() {
+        return this.getPropertyBoolean("generate-structures", true);
+    }
+
+    /**
+     * 得到服务器的gamemode
+     * <p>
+     * Get the gamemode of the server
+     *
+     * @return gamemode id
+     */
+    public int getGamemode() {
+        try {
+            return this.getPropertyInt("gamemode", 0) & 0b11;
+        } catch (NumberFormatException exception) {
+            return getGamemodeFromString(this.getPropertyString("gamemode")) & 0b11;
+        }
+    }
+
+    public boolean getForceGamemode() {
+        return this.getPropertyBoolean("force-gamemode", false);
+    }
+
+
+    /**
+     * 默认{@code direct=false}
+     *
+     * @see #getGamemodeString(int, boolean)
+     */
+    public static String getGamemodeString(int mode) {
+        return getGamemodeString(mode, false);
+    }
+
+    /**
+     * 从gamemode id获取游戏模式字符串.
+     * <p>
+     * Get game mode string from gamemode id.
+     *
+     * @param mode   gamemode id
+     * @param direct 如果为true就直接返回字符串,为false返回代表游戏模式的硬编码字符串.<br>If true, the string is returned directly, and if false, the hard-coded string representing the game mode is returned.
+     * @return 游戏模式字符串<br>Game Mode String
+     */
+    public static String getGamemodeString(int mode, boolean direct) {
+        switch (mode) {
+            case Player.SURVIVAL:
+                return direct ? "Survival" : "%gameMode.survival";
+            case Player.CREATIVE:
+                return direct ? "Creative" : "%gameMode.creative";
+            case Player.ADVENTURE:
+                return direct ? "Adventure" : "%gameMode.adventure";
+            case Player.SPECTATOR:
+                return direct ? "Spectator" : "%gameMode.spectator";
+        }
+        return "UNKNOWN";
+    }
+
+    /**
+     * 从字符串获取gamemode
+     * <p>
+     * Get gamemode from string
+     *
+     * @param str 代表游戏模式的字符串，例如0,survival...<br>A string representing the game mode, e.g. 0,survival...
+     * @return 游戏模式id<br>gamemode id
+     */
+    public static int getGamemodeFromString(String str) {
+        switch (str.trim().toLowerCase()) {
+            case "0":
+            case "survival":
+            case "s":
+                return Player.SURVIVAL;
+
+            case "1":
+            case "creative":
+            case "c":
+                return Player.CREATIVE;
+
+            case "2":
+            case "adventure":
+            case "a":
+                return Player.ADVENTURE;
+
+            case "3":
+            case "spectator":
+            case "spc":
+            case "view":
+            case "v":
+                return Player.SPECTATOR;
+        }
+        return -1;
+    }
+
+    /**
+     * 从字符串获取游戏难度
+     * <p>
+     * Get game difficulty from string
+     *
+     * @param str 代表游戏难度的字符串，例如0,peaceful...<br>A string representing the game difficulty, e.g. 0,peaceful...
+     * @return 游戏难度id<br>game difficulty id
+     */
+    public static int getDifficultyFromString(String str) {
+        switch (str.trim().toLowerCase()) {
+            case "0":
+            case "peaceful":
+            case "p":
+                return 0;
+
+            case "1":
+            case "easy":
+            case "e":
+                return 1;
+
+            case "2":
+            case "normal":
+            case "n":
+                return 2;
+
+            case "3":
+            case "hard":
+            case "h":
+                return 3;
+        }
+        return -1;
+    }
+
+    /**
+     * 获得服务器游戏难度
+     * <p>
+     * Get server game difficulty
+     *
+     * @return 游戏难度id<br>game difficulty id
+     */
+    public int getDifficulty() {
+        if (this.difficulty == Integer.MAX_VALUE) {
+            this.difficulty = getDifficultyFromString(this.getPropertyString("difficulty", "1"));
+        }
+        return this.difficulty;
+    }
+
+    /**
+     * 设置服务器游戏难度
+     * <p>
+     * set server game difficulty
+     *
+     * @param difficulty 游戏难度id<br>game difficulty id
+     */
+    public void setDifficulty(int difficulty) {
+        int value = difficulty;
+        if (value < 0) value = 0;
+        if (value > 3) value = 3;
+        this.difficulty = value;
+        this.setPropertyInt("difficulty", value);
+    }
+
+    /**
+     * @return 是否开启白名单<br>Whether to start server whitelist
+     */
+    public boolean hasWhitelist() {
+        return this.getPropertyBoolean("white-list", false);
+    }
+
+    /**
+     * @return 得到服务器出生点保护半径<br>Get server birth point protection radius
+     */
+    public int getSpawnRadius() {
+        return this.getPropertyInt("spawn-protection", 16);
+    }
+
+    /**
+     * @return 服务器是否允许飞行<br>Whether the server allows flying
+     */
+    public boolean getAllowFlight() {
+        if (getAllowFlight == null) {
+            getAllowFlight = this.getPropertyBoolean("allow-flight", false);
+        }
+        return getAllowFlight;
+    }
+
+    /**
+     * @return 服务器是否为硬核模式<br>Whether the server is in hardcore mode
+     */
+    public boolean isHardcore() {
+        return this.getPropertyBoolean("hardcore", false);
+    }
+
+    /**
+     * @return 获取默认gamemode<br>Get default gamemode
+     */
+    public int getDefaultGamemode() {
+        if (this.defaultGamemode == Integer.MAX_VALUE) {
+            this.defaultGamemode = this.getGamemode();
+        }
+        return this.defaultGamemode;
+    }
+
+    /**
+     * @return 得到服务器标题<br>Get server motd
+     */
+    public String getMotd() {
+        return this.getPropertyString("motd", "PowerNukkitX Server");
+    }
+
+    /**
+     * @return 得到服务器子标题<br>Get the server subheading
+     */
+    public String getSubMotd() {
+        String subMotd = this.getPropertyString("sub-motd", "https://powernukkitx.cn");
+        if (subMotd.isEmpty()) {
+            subMotd = "https://powernukkitx.cn"; // The client doesn't allow empty sub-motd in 1.16.210
+        }
+        return subMotd;
+    }
+
+    /**
+     * @return 是否强制使用服务器资源包<br>Whether to force the use of server resourcepack
+     */
+    public boolean getForceResources() {
+        return this.getPropertyBoolean("force-resources", false);
+    }
+
+    /**
+     * @return 是否强制使用服务器资源包的同时允许加载客户端资源包<br>Whether to force the use of server resourcepack while allowing the loading of client resourcepack
+     */
+    public boolean getForceResourcesAllowOwnPacks() {
+        return this.getPropertyBoolean("force-resources-allow-client-packs", false);
+    }
+
+    public BaseLang getLanguage() {
+        return baseLang;
+    }
+
+    public LangCode getLanguageCode() {
+        return baseLangCode;
+    }
+
+    private LangCode mapInternalLang(String langName) {
+        return switch (langName) {
+            case "bra" -> LangCode.valueOf("pt_BR");
+            case "chs" -> LangCode.valueOf("zh_CN");
+            case "cht" -> LangCode.valueOf("zh_TW");
+            case "cze" -> LangCode.valueOf("cs_CZ");
+            case "deu" -> LangCode.valueOf("de_DE");
+            case "fin" -> LangCode.valueOf("fi_FI");
+            case "eng" -> LangCode.valueOf("en_US");
+            case "fra" -> LangCode.valueOf("en_US");
+            case "idn" -> LangCode.valueOf("id_ID");
+            case "jpn" -> LangCode.valueOf("ja_JP");
+            case "kor" -> LangCode.valueOf("ko_KR");
+            case "ltu" -> LangCode.valueOf("en_US");
+            case "pol" -> LangCode.valueOf("pl_PL");
+            case "rus" -> LangCode.valueOf("ru_RU");
+            case "spa" -> LangCode.valueOf("es_ES");
+            case "tur" -> LangCode.valueOf("tr_TR");
+            case "ukr" -> LangCode.valueOf("uk_UA");
+            case "vie" -> LangCode.valueOf("en_US");
+            default -> throw new IllegalArgumentException();
+        };
+    }
+
+    public boolean isLanguageForced() {
+        return forceLanguage;
+    }
+    @PowerNukkitOnly
+    public boolean isRedstoneEnabled() {
+        return redstoneEnabled;
+    }
+
+    @PowerNukkitOnly
+    public void setRedstoneEnabled(boolean redstoneEnabled) {
+        this.redstoneEnabled = redstoneEnabled;
+    }
+
+    //Revising later...
+    public Config getConfig() {
+        return this.config;
+    }
+
+    public <T> T getConfig(String variable) {
+        return this.getConfig(variable, null);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T getConfig(String variable, T defaultValue) {
+        Object value = this.config.get(variable);
+        return value == null ? defaultValue : (T) value;
+    }
+
+    public Config getProperties() {
+        return this.properties;
+    }
+
+    public Object getProperty(String variable) {
+        return this.getProperty(variable, null);
+    }
+
+    public Object getProperty(String variable, Object defaultValue) {
+        return this.properties.exists(variable) ? this.properties.get(variable) : defaultValue;
+    }
+
+    public void setPropertyString(String variable, String value) {
+        this.properties.set(variable, value);
+        this.properties.save();
+    }
+
+    public String getPropertyString(String variable) {
+        return this.getPropertyString(variable, null);
+    }
+
+    public String getPropertyString(String variable, String defaultValue) {
+        return this.properties.exists(variable) ? this.properties.get(variable).toString() : defaultValue;
+    }
+
+    public int getPropertyInt(String variable) {
+        return this.getPropertyInt(variable, null);
+    }
+
+    public int getPropertyInt(String variable, Integer defaultValue) {
+        return this.properties.exists(variable) ? (!this.properties.get(variable).equals("") ? Integer.parseInt(String.valueOf(this.properties.get(variable))) : defaultValue) : defaultValue;
+    }
+
+    public void setPropertyInt(String variable, int value) {
+        this.properties.set(variable, value);
+        this.properties.save();
+    }
+
+    public boolean getPropertyBoolean(String variable) {
+        return this.getPropertyBoolean(variable, null);
+    }
+
+    public boolean getPropertyBoolean(String variable, Object defaultValue) {
+        Object value = this.properties.exists(variable) ? this.properties.get(variable) : defaultValue;
+        if (value instanceof Boolean) {
+            return (Boolean) value;
+        }
+        switch (String.valueOf(value)) {
+            case "on":
+            case "true":
+            case "1":
+            case "yes":
+                return true;
+        }
+        return false;
+    }
+
+    public void setPropertyBoolean(String variable, boolean value) {
+        this.properties.set(variable, value ? "1" : "0");
+        this.properties.save();
+    }
+    public boolean shouldSavePlayerData() {
+        return this.getConfig("player.save-player-data", true);
+    }
+
+    public int getPlayerSkinChangeCooldown() {
+        return this.getConfig("player.skin-change-cooldown", 30);
+    }
+
+    public boolean isNetherAllowed() {
+        return this.allowNether;
+    }
+
+    @Since("1.3.0.0-PN")
+    public boolean isIgnoredPacket(Class<? extends DataPacket> clazz) {
+        return this.ignoredPackets.contains(clazz.getSimpleName());
+    }
+
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public boolean isSafeSpawn() {
+        return safeSpawn;
+    }
+
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
     public boolean isForceSkinTrusted() {
         return forceSkinTrusted;
     }
@@ -3330,12 +3335,6 @@ public class Server {
     @Since("1.4.0.0-PN")
     public boolean isCheckMovement() {
         return checkMovement;
-    }
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public long getLaunchTime() {
-        return launchTime;
     }
 
     @PowerNukkitOnly
@@ -3373,6 +3372,8 @@ public class Server {
     public int getServerAuthoritativeMovement() {
         return serverAuthoritativeMovementMode;
     }
+
+    // endregion
 
     // region threading - 并发基础设施
 
