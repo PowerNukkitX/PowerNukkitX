@@ -954,6 +954,17 @@ public class Server {
         this.start();
     }
 
+    /**
+     * 发送配方列表数据包给一个玩家.<p>
+     * Send a recipe list packet to a player.
+     *
+     * @param player 玩家
+     */
+    public void sendRecipeList(Player player) {
+        player.dataPacket(CraftingManager.getCraftingPacket());
+    }
+
+    // region chat & commands - 聊天与命令
 
     /**
      * 广播一条消息给所有玩家<p>Broadcast a message to all players
@@ -1154,15 +1165,50 @@ public class Server {
         return consoleSender;
     }
 
-    /**
-     * 发送配方列表数据包给一个玩家.<p>
-     * Send a recipe list packet to a player.
-     *
-     * @param player 玩家
-     */
-    public void sendRecipeList(Player player) {
-        player.dataPacket(CraftingManager.getCraftingPacket());
+    public SimpleCommandMap getCommandMap() {
+        return commandMap;
     }
+
+    public PluginIdentifiableCommand getPluginCommand(String name) {
+        Command command = this.commandMap.getCommand(name);
+        if (command instanceof PluginIdentifiableCommand) {
+            return (PluginIdentifiableCommand) command;
+        } else {
+            return null;
+        }
+    }
+
+    public Map<String, List<String>> getCommandAliases() {
+        Object section = this.getConfig("aliases");
+        Map<String, List<String>> result = new LinkedHashMap<>();
+        if (section instanceof Map) {
+            for (Map.Entry entry : (Set<Map.Entry>) ((Map) section).entrySet()) {
+                List<String> commands = new ArrayList<>();
+                String key = (String) entry.getKey();
+                Object value = entry.getValue();
+                if (value instanceof List) {
+                    commands.addAll((List<String>) value);
+                } else {
+                    commands.add((String) value);
+                }
+
+                result.put(key, commands);
+            }
+        }
+
+        return result;
+
+    }
+
+    public IScoreboardManager getScoreboardManager() {
+        return scoreboardManager;
+    }
+
+    public FunctionManager getFunctionManager() {
+        return functionManager;
+    }
+
+    // endregion
 
     // region networking - 网络相关
 
@@ -2471,22 +2517,9 @@ public class Server {
         return resourcePackManager;
     }
 
-    public IScoreboardManager getScoreboardManager() {
-        return scoreboardManager;
-    }
-
-    public FunctionManager getFunctionManager() {
-        return functionManager;
-    }
-
     public FreezableArrayManager getFreezableArrayManager() {
         return freezableArrayManager;
     }
-
-    public SimpleCommandMap getCommandMap() {
-        return commandMap;
-    }
-
 
     // region crafting & recipe - 合成与配方
 
@@ -2806,15 +2839,6 @@ public class Server {
 
     // endregion
 
-    public PluginIdentifiableCommand getPluginCommand(String name) {
-        Command command = this.commandMap.getCommand(name);
-        if (command instanceof PluginIdentifiableCommand) {
-            return (PluginIdentifiableCommand) command;
-        } else {
-            return null;
-        }
-    }
-
     // region Ban, OP and whitelist - Ban，OP与白名单
 
     public BanList getNameBans() {
@@ -2880,29 +2904,6 @@ public class Server {
     }
 
     // endregion
-
-
-    public Map<String, List<String>> getCommandAliases() {
-        Object section = this.getConfig("aliases");
-        Map<String, List<String>> result = new LinkedHashMap<>();
-        if (section instanceof Map) {
-            for (Map.Entry entry : (Set<Map.Entry>) ((Map) section).entrySet()) {
-                List<String> commands = new ArrayList<>();
-                String key = (String) entry.getKey();
-                Object value = entry.getValue();
-                if (value instanceof List) {
-                    commands.addAll((List<String>) value);
-                } else {
-                    commands.add((String) value);
-                }
-
-                result.put(key, commands);
-            }
-        }
-
-        return result;
-
-    }
 
     // TODO: update PNX Junit5 test framework to remove dependency on this method
     private void registerEntities() {
