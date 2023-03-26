@@ -1763,6 +1763,39 @@ public class Server {
         return nextTick;
     }
 
+    /**
+     * @return 返回服务器经历过的tick数<br>Returns the number of ticks recorded by the server
+     */
+    public int getTick() {
+        return tickCounter;
+    }
+
+    public float getTicksPerSecond() {
+        return ((float) Math.round(this.maxTick * 100)) / 100;
+    }
+
+    public float getTicksPerSecondAverage() {
+        float sum = 0;
+        int count = this.tickAverage.length;
+        for (float aTickAverage : this.tickAverage) {
+            sum += aTickAverage;
+        }
+        return (float) NukkitMath.round(sum / count, 2);
+    }
+
+    public float getTickUsage() {
+        return (float) NukkitMath.round(this.maxUse * 100, 2);
+    }
+
+    public float getTickUsageAverage() {
+        float sum = 0;
+        int count = this.useAverage.length;
+        for (float aUseAverage : this.useAverage) {
+            sum += aUseAverage;
+        }
+        return ((float) Math.round(sum / count * 100)) / 100;
+    }
+
     // TODO: Fix title tick
     public void titleTick() {
         if (!Nukkit.ANSI || !Nukkit.TITLE) {
@@ -2480,39 +2513,6 @@ public class Server {
 
     public ServerScheduler getScheduler() {
         return scheduler;
-    }
-
-    /**
-     * @return 返回服务器经历过的tick数<br>Returns the number of ticks recorded by the server
-     */
-    public int getTick() {
-        return tickCounter;
-    }
-
-    public float getTicksPerSecond() {
-        return ((float) Math.round(this.maxTick * 100)) / 100;
-    }
-
-    public float getTicksPerSecondAverage() {
-        float sum = 0;
-        int count = this.tickAverage.length;
-        for (float aTickAverage : this.tickAverage) {
-            sum += aTickAverage;
-        }
-        return (float) NukkitMath.round(sum / count, 2);
-    }
-
-    public float getTickUsage() {
-        return (float) NukkitMath.round(this.maxUse * 100, 2);
-    }
-
-    public float getTickUsageAverage() {
-        float sum = 0;
-        int count = this.useAverage.length;
-        for (float aUseAverage : this.useAverage) {
-            sum += aUseAverage;
-        }
-        return ((float) Math.round(sum / count * 100)) / 100;
     }
 
     /**
