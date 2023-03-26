@@ -1150,42 +1150,6 @@ public class Server {
         }
     }
 
-    /**
-     * 以指定插件加载顺序启用插件<p>
-     * Enable plugins in the specified plugin loading order
-     *
-     * @param type 插件加载顺序<br>Plugin loading order
-     */
-    public void enablePlugins(PluginLoadOrder type) {
-        for (Plugin plugin : new ArrayList<>(this.pluginManager.getPlugins().values())) {
-            if (!plugin.isEnabled() && type == plugin.getDescription().getOrder()) {
-                this.enablePlugin(plugin);
-            }
-        }
-
-        if (type == PluginLoadOrder.POSTWORLD) {
-            this.commandMap.registerServerAliases();
-            DefaultPermissions.registerCorePermissions();
-        }
-    }
-
-    /**
-     * 启用一个指定插件<p>
-     * Enable a specified plugin
-     *
-     * @param plugin 插件实例<br>Plugin instance
-     */
-    public void enablePlugin(Plugin plugin) {
-        this.pluginManager.enablePlugin(plugin);
-    }
-
-    /**
-     * 禁用全部插件<p>Disable all plugins
-     */
-    public void disablePlugins() {
-        this.pluginManager.disablePlugins();
-    }
-
 
     @Deprecated
     @DeprecationDetails(since = "1.19.60-r1", reason = "use Server#executeCommand")
@@ -1314,6 +1278,52 @@ public class Server {
         return this.queryRegenerateEvent;
     }
 
+    // region plugins - 插件相关
+
+    /**
+     * 以指定插件加载顺序启用插件<p>
+     * Enable plugins in the specified plugin loading order
+     *
+     * @param type 插件加载顺序<br>Plugin loading order
+     */
+    public void enablePlugins(PluginLoadOrder type) {
+        for (Plugin plugin : new ArrayList<>(this.pluginManager.getPlugins().values())) {
+            if (!plugin.isEnabled() && type == plugin.getDescription().getOrder()) {
+                this.enablePlugin(plugin);
+            }
+        }
+
+        if (type == PluginLoadOrder.POSTWORLD) {
+            this.commandMap.registerServerAliases();
+            DefaultPermissions.registerCorePermissions();
+        }
+    }
+
+    /**
+     * 启用一个指定插件<p>
+     * Enable a specified plugin
+     *
+     * @param plugin 插件实例<br>Plugin instance
+     */
+    public void enablePlugin(Plugin plugin) {
+        this.pluginManager.enablePlugin(plugin);
+    }
+
+    /**
+     * 禁用全部插件<p>Disable all plugins
+     */
+    public void disablePlugins() {
+        this.pluginManager.disablePlugins();
+    }
+    public PluginManager getPluginManager() {
+        return this.pluginManager;
+    }
+
+    public ServiceManager getServiceManager() {
+        return serviceManager;
+    }
+
+    // endregion
 
     // region lifecycle & ticking - 生命周期与游戏刻
 
@@ -2449,9 +2459,6 @@ public class Server {
         return levelMetadata;
     }
 
-    public PluginManager getPluginManager() {
-        return this.pluginManager;
-    }
 
     public ResourcePackManager getResourcePackManager() {
         return resourcePackManager;
@@ -2871,9 +2878,6 @@ public class Server {
 
     // endregion
 
-    public ServiceManager getServiceManager() {
-        return serviceManager;
-    }
 
     public Map<String, List<String>> getCommandAliases() {
         Object section = this.getConfig("aliases");
