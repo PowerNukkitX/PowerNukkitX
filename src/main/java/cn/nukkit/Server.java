@@ -1886,6 +1886,12 @@ public class Server {
         return tickingAreaManager;
     }
 
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public long getLaunchTime() {
+        return launchTime;
+    }
+
     // endregion
 
     // region players - 玩家相关
@@ -2922,12 +2928,6 @@ public class Server {
     @NotNull
     public PositionTrackingService getPositionTrackingService() {
         return positionTrackingService;
-    }
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public long getLaunchTime() {
-        return launchTime;
     }
 
     // region configs - 配置相关
