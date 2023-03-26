@@ -954,6 +954,14 @@ public class Server {
         this.start();
     }
 
+    // region server singleton - Server 单例
+
+    public static Server getInstance() {
+        return instance;
+    }
+
+    // endregion
+
     // region chat and commands - 聊天与命令
 
     /**
@@ -2909,11 +2917,6 @@ public class Server {
     private void registerBlockEntities() {
         BlockEntity.init();
     }
-
-    public static Server getInstance() {
-        return instance;
-    }
-
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @NotNull
