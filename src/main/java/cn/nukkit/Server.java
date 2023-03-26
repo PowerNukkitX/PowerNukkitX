@@ -954,6 +954,7 @@ public class Server {
         this.start();
     }
 
+    // region chat and commands - 聊天与命令
 
     /**
      * 广播一条消息给所有玩家<p>Broadcast a message to all players
@@ -1150,6 +1151,10 @@ public class Server {
         }
     }
 
+    // endregion
+
+    // region plugins - 插件相关
+
     /**
      * 以指定插件加载顺序启用插件<p>
      * Enable plugins in the specified plugin loading order
@@ -1186,6 +1191,7 @@ public class Server {
         this.pluginManager.disablePlugins();
     }
 
+    // endregion
 
     @Deprecated
     @DeprecationDetails(since = "1.19.60-r1", reason = "use Server#executeCommand")
@@ -1522,6 +1528,8 @@ public class Server {
         }
     }
 
+    // region players - 玩家相关
+
     public void onPlayerCompleteLoginSequence(Player player) {
         this.sendFullPlayerListData(player);
     }
@@ -1656,6 +1664,8 @@ public class Server {
 
         player.dataPacket(pk);
     }
+
+    // endregion
 
     /**
      * 发送配方列表数据包给一个玩家.<p>
@@ -2752,6 +2762,7 @@ public class Server {
         }
     }
 
+    // region levels - 世界相关
 
     /**
      * @return 获得所有游戏世界<br>Get all the game world
@@ -3047,6 +3058,8 @@ public class Server {
 
         return true;
     }
+
+    // endregion
 
     public BaseLang getLanguage() {
         return baseLang;
