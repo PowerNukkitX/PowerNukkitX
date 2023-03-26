@@ -1986,10 +1986,6 @@ public class Server {
         return this.pluginManager;
     }
 
-    public CraftingManager getCraftingManager() {
-        return craftingManager;
-    }
-
     public ResourcePackManager getResourcePackManager() {
         return resourcePackManager;
     }
@@ -2056,18 +2052,6 @@ public class Server {
      */
     public Map<UUID, Player> getOnlinePlayers() {
         return ImmutableMap.copyOf(playerList);
-    }
-
-
-    /**
-     * 注册配方到配方管理器
-     * <p>
-     * Register Recipe to Recipe Manager
-     *
-     * @param recipe 配方
-     */
-    public void addRecipe(Recipe recipe) {
-        this.craftingManager.registerRecipe(recipe);
     }
 
 
@@ -2463,6 +2447,25 @@ public class Server {
             }
         }
     }
+
+    // region crafting & recipe - 合成与配方
+
+    /**
+     * 注册配方到配方管理器
+     * <p>
+     * Register Recipe to Recipe Manager
+     *
+     * @param recipe 配方
+     */
+    public void addRecipe(Recipe recipe) {
+        this.craftingManager.registerRecipe(recipe);
+    }
+
+    public CraftingManager getCraftingManager() {
+        return craftingManager;
+    }
+
+    // endregion
 
     // region Levels - 游戏世界相关
 
