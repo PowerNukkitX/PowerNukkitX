@@ -2411,6 +2411,8 @@ public class Server {
         player.dataPacket(CraftingManager.getCraftingPacket());
     }
 
+    // region constants - 基础常量
+
     /**
      * @return 服务器名称<br>The name of server
      */
@@ -2442,6 +2444,8 @@ public class Server {
     public String getApiVersion() {
         return Nukkit.API_VERSION;
     }
+
+    // endregion
 
     public String getFilePath() {
         return filePath;
