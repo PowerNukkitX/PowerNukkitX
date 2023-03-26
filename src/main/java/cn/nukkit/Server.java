@@ -2294,10 +2294,6 @@ public class Server {
         return freezableArrayManager;
     }
 
-    public ServerScheduler getScheduler() {
-        return scheduler;
-    }
-
     /**
      * @return 返回服务器经历过的tick数<br>Returns the number of ticks recorded by the server
      */
@@ -3398,6 +3394,10 @@ public class Server {
 
     public Thread getPrimaryThread() {
         return currentThread;
+    }
+
+    public ServerScheduler getScheduler() {
+        return scheduler;
     }
 
     //todo NukkitConsole 会阻塞关不掉
