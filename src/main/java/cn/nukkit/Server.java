@@ -1476,29 +1476,6 @@ public class Server {
         this.forceShutdown();
     }
 
-    // endregion
-
-    public void handlePacket(InetSocketAddress address, ByteBuf payload) {
-        try {
-            if (!payload.isReadable(3)) {
-                return;
-            }
-            byte[] prefix = new byte[2];
-            payload.readBytes(prefix);
-
-            if (!Arrays.equals(prefix, new byte[]{(byte) 0xfe, (byte) 0xfd})) {
-                return;
-            }
-            if (this.queryHandler != null) {
-                this.queryHandler.handle(address, payload);
-            }
-        } catch (Exception e) {
-            log.error("Error whilst handling packet", e);
-
-            this.network.blockAddress(address.getAddress(), -1);
-        }
-    }
-
     private int lastLevelGC;
 
     public void tickProcessor() {
@@ -1546,6 +1523,267 @@ public class Server {
             }
         } catch (Throwable e) {
             log.fatal("Exception happened while ticking server\n{}", Utils.getAllThreadDumps(), e);
+        }
+    }
+
+    private void checkTickUpdates(int currentTick, long tickTime) {
+        if (this.alwaysTickPlayers) {
+            for (Player p : new ArrayList<>(this.players.values())) {
+                p.onUpdate(currentTick);
+            }
+        }
+
+        //Do level ticks
+        for (Level level : this.levelArray) {
+            if (level.getTickRate() > this.baseTickRate && --level.tickRateCounter > 0) {
+                continue;
+            }
+
+            try {
+                long levelTime = System.currentTimeMillis();
+                level.doTick(currentTick);
+                int tickMs = (int) (System.currentTimeMillis() - levelTime);
+                level.tickRateTime = tickMs;
+                if ((currentTick & 511) == 0) { // % 511
+                    level.tickRateOptDelay = level.recalcTickOptDelay();
+                }
+
+                if (this.autoTickRate) {
+                    if (tickMs < 50 && level.getTickRate() > this.baseTickRate) {
+                        int r;
+                        level.setTickRate(r = level.getTickRate() - 1);
+                        if (r > this.baseTickRate) {
+                            level.tickRateCounter = level.getTickRate();
+                        }
+                        log.debug("Raising level \"{}\" tick rate to {} ticks", level.getName(), level.getTickRate());
+                    } else if (tickMs >= 50) {
+                        if (level.getTickRate() == this.baseTickRate) {
+                            level.setTickRate(Math.max(this.baseTickRate + 1, Math.min(this.autoTickRateLimit, tickMs / 50)));
+                            log.debug("Level \"{}\" took {}ms, setting tick rate to {} ticks", level.getName(), NukkitMath.round(tickMs, 2), level.getTickRate());
+                        } else if ((tickMs / level.getTickRate()) >= 50 && level.getTickRate() < this.autoTickRateLimit) {
+                            level.setTickRate(level.getTickRate() + 1);
+                            log.debug("Level \"{}\" took {}ms, setting tick rate to {} ticks", level.getName(), NukkitMath.round(tickMs, 2), level.getTickRate());
+                        }
+                        level.tickRateCounter = level.getTickRate();
+                    }
+                }
+            } catch (Exception e) {
+                log.error(this.getLanguage().tr("nukkit.level.tickError",
+                        level.getFolderName(), Utils.getExceptionMessage(e)), e);
+            }
+        }
+    }
+
+    public void doAutoSave() {
+        if (this.getAutoSave()) {
+            Timings.levelSaveTimer.startTiming();
+            for (Player player : new ArrayList<>(this.players.values())) {
+                if (player.isOnline()) {
+                    player.save(true);
+                } else if (!player.isConnected()) {
+                    this.removePlayer(player);
+                }
+            }
+
+            for (Level level : this.levelArray) {
+                level.save();
+            }
+            Timings.levelSaveTimer.stopTiming();
+            this.getScoreboardManager().save();
+        }
+    }
+
+    private boolean tick() {
+        long tickTime = System.currentTimeMillis();
+
+        // TODO
+        long time = tickTime - this.nextTick;
+        if (time < -25) {
+            try {
+                Thread.sleep(Math.max(5, -time - 25));
+            } catch (InterruptedException e) {
+                log.debug("The thread {} got interrupted", Thread.currentThread().getName(), e);
+            }
+        }
+
+        long tickTimeNano = System.nanoTime();
+        if ((tickTime - this.nextTick) < -25) {
+            return false;
+        }
+
+        Timings.fullServerTickTimer.startTiming();
+
+        ++this.tickCounter;
+
+        Timings.connectionTimer.startTiming();
+        this.network.processInterfaces();
+
+        if (this.rcon != null) {
+            this.rcon.check();
+        }
+        Timings.connectionTimer.stopTiming();
+
+        Timings.schedulerTimer.startTiming();
+        this.scheduler.mainThreadHeartbeat(this.tickCounter);
+        Timings.schedulerTimer.stopTiming();
+
+        this.checkTickUpdates(this.tickCounter, tickTime);
+
+        for (Player player : new ArrayList<>(this.players.values())) {
+            player.checkNetwork();
+        }
+
+        if ((this.tickCounter & 0b1111) == 0) {
+            this.titleTick();
+            this.network.resetStatistics();
+            this.maxTick = 20;
+            this.maxUse = 0;
+
+            if ((this.tickCounter & 0b111111111) == 0) {
+                try {
+                    this.getPluginManager().callEvent(this.queryRegenerateEvent = new QueryRegenerateEvent(this, 5));
+                    if (this.queryHandler != null) {
+                        this.queryHandler.regenerateInfo();
+                    }
+                } catch (Exception e) {
+                    log.error(e);
+                }
+            }
+
+            this.getNetwork().updateName();
+        }
+
+        if (this.autoSave && ++this.autoSaveTicker >= this.autoSaveTicks) {
+            this.autoSaveTicker = 0;
+            this.doAutoSave();
+        }
+
+        if (this.sendUsageTicker > 0 && --this.sendUsageTicker == 0) {
+            this.sendUsageTicker = 6000;
+            //todo sendUsage
+        }
+
+        if (this.tickCounter % 100 == 0) {
+            CompletableFuture.allOf(Arrays.stream(this.levelArray).parallel()
+                    .flatMap(l -> l.asyncChunkGarbageCollection().stream())
+                    .toArray(CompletableFuture[]::new));
+        }
+
+        // 处理可冻结数组
+        int freezableArrayCompressTime = (int) (50 - (System.currentTimeMillis() - tickTime));
+        if (freezableArrayCompressTime > 4) {
+            freezableArrayManager.setMaxCompressionTime(freezableArrayCompressTime).tick();
+        }
+
+
+        Timings.fullServerTickTimer.stopTiming();
+        //long now = System.currentTimeMillis();
+        long nowNano = System.nanoTime();
+        //float tick = Math.min(20, 1000 / Math.max(1, now - tickTime));
+        //float use = Math.min(1, (now - tickTime) / 50);
+
+        float tick = (float) Math.min(20, 1000000000 / Math.max(1000000, ((double) nowNano - tickTimeNano)));
+        float use = (float) Math.min(1, ((double) (nowNano - tickTimeNano)) / 50000000);
+
+        if (this.maxTick > tick) {
+            this.maxTick = tick;
+        }
+
+        if (this.maxUse < use) {
+            this.maxUse = use;
+        }
+
+        System.arraycopy(this.tickAverage, 1, this.tickAverage, 0, this.tickAverage.length - 1);
+        this.tickAverage[this.tickAverage.length - 1] = tick;
+
+        System.arraycopy(this.useAverage, 1, this.useAverage, 0, this.useAverage.length - 1);
+        this.useAverage[this.useAverage.length - 1] = use;
+
+        if ((this.nextTick - tickTime) < -1000) {
+            this.nextTick = tickTime;
+        } else {
+            this.nextTick += 50;
+        }
+
+        return true;
+    }
+
+    public long getNextTick() {
+        return nextTick;
+    }
+
+    // TODO: Fix title tick
+    public void titleTick() {
+        if (!Nukkit.ANSI || !Nukkit.TITLE) {
+            return;
+        }
+
+        Runtime runtime = Runtime.getRuntime();
+        double used = NukkitMath.round((double) (runtime.totalMemory() - runtime.freeMemory()) / 1024 / 1024, 2);
+        double max = NukkitMath.round(((double) runtime.maxMemory()) / 1024 / 1024, 2);
+        String usage = Math.round(used / max * 100) + "%";
+        String title = (char) 0x1b + "]0;" + this.getName() + " "
+                + this.getNukkitVersion()
+                + " | " + this.getGitCommit()
+                + " | Online " + this.players.size() + "/" + this.getMaxPlayers()
+                + " | Memory " + usage;
+        if (!Nukkit.shortTitle) {
+            title += " | U " + NukkitMath.round((this.network.getUpload() / 1024 * 1000), 2)
+                    + " D " + NukkitMath.round((this.network.getDownload() / 1024 * 1000), 2) + " kB/s";
+        }
+        title += " | TPS " + this.getTicksPerSecond()
+                + " | Load " + this.getTickUsage() + "%" + (char) 0x07;
+
+        System.out.print(title);
+    }
+
+    public boolean isRunning() {
+        return isRunning.get();
+    }
+
+    /**
+     * 将服务器设置为繁忙状态，这可以阻止相关代码认为服务器处于无响应状态。
+     * 请牢记，必须在设置之后清除。
+     *
+     * @param busyTime 单位为毫秒
+     * @return id
+     */
+    public int addBusying(long busyTime) {
+        this.busyingTime.add(busyTime);
+        return this.busyingTime.size() - 1;
+    }
+
+    public void removeBusying(int index) {
+        this.busyingTime.removeLong(index);
+    }
+
+    public long getBusyingTime() {
+        if (this.busyingTime.isEmpty()) {
+            return -1;
+        }
+        return this.busyingTime.getLong(this.busyingTime.size() - 1);
+    }
+
+    // endregion
+
+    public void handlePacket(InetSocketAddress address, ByteBuf payload) {
+        try {
+            if (!payload.isReadable(3)) {
+                return;
+            }
+            byte[] prefix = new byte[2];
+            payload.readBytes(prefix);
+
+            if (!Arrays.equals(prefix, new byte[]{(byte) 0xfe, (byte) 0xfd})) {
+                return;
+            }
+            if (this.queryHandler != null) {
+                this.queryHandler.handle(address, payload);
+            }
+        } catch (Exception e) {
+            log.error("Error whilst handling packet", e);
+
+            this.network.blockAddress(address.getAddress(), -1);
         }
     }
 
@@ -2110,217 +2348,6 @@ public class Server {
         player.dataPacket(CraftingManager.getCraftingPacket());
     }
 
-    private void checkTickUpdates(int currentTick, long tickTime) {
-        if (this.alwaysTickPlayers) {
-            for (Player p : new ArrayList<>(this.players.values())) {
-                p.onUpdate(currentTick);
-            }
-        }
-
-        //Do level ticks
-        for (Level level : this.levelArray) {
-            if (level.getTickRate() > this.baseTickRate && --level.tickRateCounter > 0) {
-                continue;
-            }
-
-            try {
-                long levelTime = System.currentTimeMillis();
-                level.doTick(currentTick);
-                int tickMs = (int) (System.currentTimeMillis() - levelTime);
-                level.tickRateTime = tickMs;
-                if ((currentTick & 511) == 0) { // % 511
-                    level.tickRateOptDelay = level.recalcTickOptDelay();
-                }
-
-                if (this.autoTickRate) {
-                    if (tickMs < 50 && level.getTickRate() > this.baseTickRate) {
-                        int r;
-                        level.setTickRate(r = level.getTickRate() - 1);
-                        if (r > this.baseTickRate) {
-                            level.tickRateCounter = level.getTickRate();
-                        }
-                        log.debug("Raising level \"{}\" tick rate to {} ticks", level.getName(), level.getTickRate());
-                    } else if (tickMs >= 50) {
-                        if (level.getTickRate() == this.baseTickRate) {
-                            level.setTickRate(Math.max(this.baseTickRate + 1, Math.min(this.autoTickRateLimit, tickMs / 50)));
-                            log.debug("Level \"{}\" took {}ms, setting tick rate to {} ticks", level.getName(), NukkitMath.round(tickMs, 2), level.getTickRate());
-                        } else if ((tickMs / level.getTickRate()) >= 50 && level.getTickRate() < this.autoTickRateLimit) {
-                            level.setTickRate(level.getTickRate() + 1);
-                            log.debug("Level \"{}\" took {}ms, setting tick rate to {} ticks", level.getName(), NukkitMath.round(tickMs, 2), level.getTickRate());
-                        }
-                        level.tickRateCounter = level.getTickRate();
-                    }
-                }
-            } catch (Exception e) {
-                log.error(this.getLanguage().tr("nukkit.level.tickError",
-                        level.getFolderName(), Utils.getExceptionMessage(e)), e);
-            }
-        }
-    }
-
-    public void doAutoSave() {
-        if (this.getAutoSave()) {
-            Timings.levelSaveTimer.startTiming();
-            for (Player player : new ArrayList<>(this.players.values())) {
-                if (player.isOnline()) {
-                    player.save(true);
-                } else if (!player.isConnected()) {
-                    this.removePlayer(player);
-                }
-            }
-
-            for (Level level : this.levelArray) {
-                level.save();
-            }
-            Timings.levelSaveTimer.stopTiming();
-            this.getScoreboardManager().save();
-        }
-    }
-
-    private boolean tick() {
-        long tickTime = System.currentTimeMillis();
-
-        // TODO
-        long time = tickTime - this.nextTick;
-        if (time < -25) {
-            try {
-                Thread.sleep(Math.max(5, -time - 25));
-            } catch (InterruptedException e) {
-                log.debug("The thread {} got interrupted", Thread.currentThread().getName(), e);
-            }
-        }
-
-        long tickTimeNano = System.nanoTime();
-        if ((tickTime - this.nextTick) < -25) {
-            return false;
-        }
-
-        Timings.fullServerTickTimer.startTiming();
-
-        ++this.tickCounter;
-
-        Timings.connectionTimer.startTiming();
-        this.network.processInterfaces();
-
-        if (this.rcon != null) {
-            this.rcon.check();
-        }
-        Timings.connectionTimer.stopTiming();
-
-        Timings.schedulerTimer.startTiming();
-        this.scheduler.mainThreadHeartbeat(this.tickCounter);
-        Timings.schedulerTimer.stopTiming();
-
-        this.checkTickUpdates(this.tickCounter, tickTime);
-
-        for (Player player : new ArrayList<>(this.players.values())) {
-            player.checkNetwork();
-        }
-
-        if ((this.tickCounter & 0b1111) == 0) {
-            this.titleTick();
-            this.network.resetStatistics();
-            this.maxTick = 20;
-            this.maxUse = 0;
-
-            if ((this.tickCounter & 0b111111111) == 0) {
-                try {
-                    this.getPluginManager().callEvent(this.queryRegenerateEvent = new QueryRegenerateEvent(this, 5));
-                    if (this.queryHandler != null) {
-                        this.queryHandler.regenerateInfo();
-                    }
-                } catch (Exception e) {
-                    log.error(e);
-                }
-            }
-
-            this.getNetwork().updateName();
-        }
-
-        if (this.autoSave && ++this.autoSaveTicker >= this.autoSaveTicks) {
-            this.autoSaveTicker = 0;
-            this.doAutoSave();
-        }
-
-        if (this.sendUsageTicker > 0 && --this.sendUsageTicker == 0) {
-            this.sendUsageTicker = 6000;
-            //todo sendUsage
-        }
-
-        if (this.tickCounter % 100 == 0) {
-            CompletableFuture.allOf(Arrays.stream(this.levelArray).parallel()
-                    .flatMap(l -> l.asyncChunkGarbageCollection().stream())
-                    .toArray(CompletableFuture[]::new));
-        }
-
-        // 处理可冻结数组
-        int freezableArrayCompressTime = (int) (50 - (System.currentTimeMillis() - tickTime));
-        if (freezableArrayCompressTime > 4) {
-            freezableArrayManager.setMaxCompressionTime(freezableArrayCompressTime).tick();
-        }
-
-
-        Timings.fullServerTickTimer.stopTiming();
-        //long now = System.currentTimeMillis();
-        long nowNano = System.nanoTime();
-        //float tick = Math.min(20, 1000 / Math.max(1, now - tickTime));
-        //float use = Math.min(1, (now - tickTime) / 50);
-
-        float tick = (float) Math.min(20, 1000000000 / Math.max(1000000, ((double) nowNano - tickTimeNano)));
-        float use = (float) Math.min(1, ((double) (nowNano - tickTimeNano)) / 50000000);
-
-        if (this.maxTick > tick) {
-            this.maxTick = tick;
-        }
-
-        if (this.maxUse < use) {
-            this.maxUse = use;
-        }
-
-        System.arraycopy(this.tickAverage, 1, this.tickAverage, 0, this.tickAverage.length - 1);
-        this.tickAverage[this.tickAverage.length - 1] = tick;
-
-        System.arraycopy(this.useAverage, 1, this.useAverage, 0, this.useAverage.length - 1);
-        this.useAverage[this.useAverage.length - 1] = use;
-
-        if ((this.nextTick - tickTime) < -1000) {
-            this.nextTick = tickTime;
-        } else {
-            this.nextTick += 50;
-        }
-
-        return true;
-    }
-
-    public long getNextTick() {
-        return nextTick;
-    }
-
-    // TODO: Fix title tick
-    public void titleTick() {
-        if (!Nukkit.ANSI || !Nukkit.TITLE) {
-            return;
-        }
-
-        Runtime runtime = Runtime.getRuntime();
-        double used = NukkitMath.round((double) (runtime.totalMemory() - runtime.freeMemory()) / 1024 / 1024, 2);
-        double max = NukkitMath.round(((double) runtime.maxMemory()) / 1024 / 1024, 2);
-        String usage = Math.round(used / max * 100) + "%";
-        String title = (char) 0x1b + "]0;" + this.getName() + " "
-                + this.getNukkitVersion()
-                + " | " + this.getGitCommit()
-                + " | Online " + this.players.size() + "/" + this.getMaxPlayers()
-                + " | Memory " + usage;
-        if (!Nukkit.shortTitle) {
-            title += " | U " + NukkitMath.round((this.network.getUpload() / 1024 * 1000), 2)
-                    + " D " + NukkitMath.round((this.network.getDownload() / 1024 * 1000), 2) + " kB/s";
-        }
-        title += " | TPS " + this.getTicksPerSecond()
-                + " | Load " + this.getTickUsage() + "%" + (char) 0x07;
-
-        System.out.print(title);
-    }
-
     public QueryRegenerateEvent getQueryInformation() {
         return this.queryRegenerateEvent;
     }
@@ -2331,10 +2358,6 @@ public class Server {
      */
     public String getName() {
         return "Nukkit";
-    }
-
-    public boolean isRunning() {
-        return isRunning.get();
     }
 
     public String getNukkitVersion() {
@@ -2380,29 +2403,6 @@ public class Server {
 
     public void setMaxPlayers(int maxPlayers) {
         this.maxPlayers = maxPlayers;
-    }
-
-    /**
-     * 将服务器设置为繁忙状态，这可以阻止相关代码认为服务器处于无响应状态。
-     * 请牢记，必须在设置之后清除。
-     *
-     * @param busyTime 单位为毫秒
-     * @return id
-     */
-    public int addBusying(long busyTime) {
-        this.busyingTime.add(busyTime);
-        return this.busyingTime.size() - 1;
-    }
-
-    public void removeBusying(int index) {
-        this.busyingTime.removeLong(index);
-    }
-
-    public long getBusyingTime() {
-        if (this.busyingTime.isEmpty()) {
-            return -1;
-        }
-        return this.busyingTime.getLong(this.busyingTime.size() - 1);
     }
 
     /**
