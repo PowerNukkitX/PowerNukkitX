@@ -1522,140 +1522,6 @@ public class Server {
         }
     }
 
-    public void onPlayerCompleteLoginSequence(Player player) {
-        this.sendFullPlayerListData(player);
-    }
-
-    public void onPlayerLogin(Player player) {
-        if (this.sendUsageTicker > 0) {
-            this.uniquePlayers.add(player.getUniqueId());
-        }
-    }
-
-    public void addPlayer(InetSocketAddress socketAddress, Player player) {
-        this.players.put(socketAddress, player);
-    }
-
-    public void addOnlinePlayer(Player player) {
-        this.playerList.put(player.getUniqueId(), player);
-        this.updatePlayerListData(player.getUniqueId(), player.getId(), player.getDisplayName(), player.getSkin(), player.getLoginChainData().getXUID());
-    }
-
-    public void removeOnlinePlayer(Player player) {
-        if (this.playerList.containsKey(player.getUniqueId())) {
-            this.playerList.remove(player.getUniqueId());
-
-            PlayerListPacket pk = new PlayerListPacket();
-            pk.type = PlayerListPacket.TYPE_REMOVE;
-            pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(player.getUniqueId())};
-
-            Server.broadcastPacket(this.playerList.values(), pk);
-        }
-    }
-
-    /**
-     * @see #updatePlayerListData(UUID, long, String, Skin, String, Player[])
-     */
-    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin) {
-        this.updatePlayerListData(uuid, entityId, name, skin, "", this.playerList.values());
-    }
-
-    /**
-     * @see #updatePlayerListData(UUID, long, String, Skin, String, Player[])
-     */
-    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId) {
-        this.updatePlayerListData(uuid, entityId, name, skin, xboxUserId, this.playerList.values());
-    }
-
-    /**
-     * @see #updatePlayerListData(UUID, long, String, Skin, String, Player[])
-     */
-    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, Player[] players) {
-        this.updatePlayerListData(uuid, entityId, name, skin, "", players);
-    }
-
-
-    /**
-     * 更新指定玩家们(players)的{@link PlayerListPacket}数据包(即玩家列表数据)
-     * <p>
-     * Update {@link PlayerListPacket} data packets (i.e. player list data) for specified players
-     *
-     * @param uuid       uuid
-     * @param entityId   实体id
-     * @param name       名字
-     * @param skin       皮肤
-     * @param xboxUserId xbox用户id
-     * @param players    指定接受数据包的玩家
-     */
-    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Player[] players) {
-        PlayerListPacket pk = new PlayerListPacket();
-        pk.type = PlayerListPacket.TYPE_ADD;
-        pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(uuid, entityId, name, skin, xboxUserId)};
-        Server.broadcastPacket(players, pk);
-    }
-
-    /**
-     * @see #updatePlayerListData(UUID, long, String, Skin, String, Player[])
-     */
-    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Collection<Player> players) {
-        this.updatePlayerListData(uuid, entityId, name, skin, xboxUserId, players.toArray(Player.EMPTY_ARRAY));
-    }
-
-    public void removePlayerListData(UUID uuid) {
-        this.removePlayerListData(uuid, this.playerList.values());
-    }
-
-    /**
-     * 移除玩家数组中所有玩家的玩家列表数据.<p>
-     * Remove player list data for all players in the array.
-     *
-     * @param players 玩家数组
-     */
-    public void removePlayerListData(UUID uuid, Player[] players) {
-        PlayerListPacket pk = new PlayerListPacket();
-        pk.type = PlayerListPacket.TYPE_REMOVE;
-        pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(uuid)};
-        Server.broadcastPacket(players, pk);
-    }
-
-    /**
-     * 移除这个玩家的玩家列表数据.<p>
-     * Remove this player's player list data.
-     *
-     * @param player 玩家
-     */
-    @Since("1.4.0.0-PN")
-    public void removePlayerListData(UUID uuid, Player player) {
-        PlayerListPacket pk = new PlayerListPacket();
-        pk.type = PlayerListPacket.TYPE_REMOVE;
-        pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(uuid)};
-        player.dataPacket(pk);
-    }
-
-    public void removePlayerListData(UUID uuid, Collection<Player> players) {
-        this.removePlayerListData(uuid, players.toArray(Player.EMPTY_ARRAY));
-    }
-
-    /**
-     * 发送玩家列表数据包给一个玩家.<p>
-     * Send a player list packet to a player.
-     *
-     * @param player 玩家
-     */
-    public void sendFullPlayerListData(Player player) {
-        PlayerListPacket pk = new PlayerListPacket();
-        pk.type = PlayerListPacket.TYPE_ADD;
-        pk.entries = this.playerList.values().stream()
-                .map(p -> new PlayerListPacket.Entry(
-                        p.getUniqueId(),
-                        p.getId(),
-                        p.getDisplayName(),
-                        p.getSkin(),
-                        p.getLoginChainData().getXUID()))
-                .toArray(PlayerListPacket.Entry[]::new);
-
-        player.dataPacket(pk);
-    }
 
     /**
      * 发送配方列表数据包给一个玩家.<p>
@@ -1886,177 +1752,142 @@ public class Server {
         return isRunning.get();
     }
 
-    // region constants - 常量
+    // region Players - 玩家相关
 
-    /**
-     * @return 服务器名称<br>The name of server
-     */
-    public String getName() {
-        return "Nukkit";
+    public void onPlayerCompleteLoginSequence(Player player) {
+        this.sendFullPlayerListData(player);
     }
 
-    public String getNukkitVersion() {
-        return Nukkit.VERSION;
-    }
-
-    public String getBStatsNukkitVersion() {
-        return Nukkit.VERSION;
-    }
-
-    @PowerNukkitOnly
-    public String getGitCommit() {
-        return Nukkit.GIT_COMMIT;
-    }
-
-    public String getCodename() {
-        return Nukkit.CODENAME;
-    }
-
-    public String getVersion() {
-        return ProtocolInfo.MINECRAFT_VERSION;
-    }
-
-    public String getApiVersion() {
-        return Nukkit.API_VERSION;
-    }
-
-    // endregion
-
-    public String getFilePath() {
-        return filePath;
-    }
-
-    public String getDataPath() {
-        return dataPath;
-    }
-
-    public String getPluginPath() {
-        return pluginPath;
-    }
-
-    /**
-     * 将服务器设置为繁忙状态，这可以阻止相关代码认为服务器处于无响应状态。
-     * 请牢记，必须在设置之后清除。
-     *
-     * @param busyTime 单位为毫秒
-     * @return id
-     */
-    public int addBusying(long busyTime) {
-        this.busyingTime.add(busyTime);
-        return this.busyingTime.size() - 1;
-    }
-
-    public void removeBusying(int index) {
-        this.busyingTime.removeLong(index);
-    }
-
-    public long getBusyingTime() {
-        if (this.busyingTime.isEmpty()) {
-            return -1;
+    public void onPlayerLogin(Player player) {
+        if (this.sendUsageTicker > 0) {
+            this.uniquePlayers.add(player.getUniqueId());
         }
-        return this.busyingTime.getLong(this.busyingTime.size() - 1);
     }
 
-    /**
-     * @return 服务器UUID<br>server UUID
-     */
-    public UUID getServerUniqueId() {
-        return this.serverID;
+    public void addPlayer(InetSocketAddress socketAddress, Player player) {
+        this.players.put(socketAddress, player);
     }
 
-    @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", reason = "Use your own logger, sharing loggers makes bug analyses harder.",
-            replaceWith = "@Log4j2 annotation in the class and use the `log` static field that is generated by lombok, " +
-                    "also make sure to log the exception as the last argument, don't concatenate it or use it as parameter replacement. " +
-                    "Just put it as last argument and SLF4J will understand that the log message was caused by that exception/throwable.")
-    public MainLogger getLogger() {
-        return MainLogger.getLogger();
+    public void addOnlinePlayer(Player player) {
+        this.playerList.put(player.getUniqueId(), player);
+        this.updatePlayerListData(player.getUniqueId(), player.getId(), player.getDisplayName(), player.getSkin(), player.getLoginChainData().getXUID());
     }
 
-    public EntityMetadataStore getEntityMetadata() {
-        return entityMetadata;
-    }
+    public void removeOnlinePlayer(Player player) {
+        if (this.playerList.containsKey(player.getUniqueId())) {
+            this.playerList.remove(player.getUniqueId());
 
-    public PlayerMetadataStore getPlayerMetadata() {
-        return playerMetadata;
-    }
+            PlayerListPacket pk = new PlayerListPacket();
+            pk.type = PlayerListPacket.TYPE_REMOVE;
+            pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(player.getUniqueId())};
 
-    public LevelMetadataStore getLevelMetadata() {
-        return levelMetadata;
-    }
-
-    public PluginManager getPluginManager() {
-        return this.pluginManager;
-    }
-
-    public ResourcePackManager getResourcePackManager() {
-        return resourcePackManager;
-    }
-
-    public IScoreboardManager getScoreboardManager() {
-        return scoreboardManager;
-    }
-
-    public FunctionManager getFunctionManager() {
-        return functionManager;
-    }
-
-    public TickingAreaManager getTickingAreaManager() {
-        return tickingAreaManager;
-    }
-
-    public FreezableArrayManager getFreezableArrayManager() {
-        return freezableArrayManager;
-    }
-
-    /**
-     * @return 返回服务器经历过的tick数<br>Returns the number of ticks recorded by the server
-     */
-    public int getTick() {
-        return tickCounter;
-    }
-
-    public float getTicksPerSecond() {
-        return ((float) Math.round(this.maxTick * 100)) / 100;
-    }
-
-    public float getTicksPerSecondAverage() {
-        float sum = 0;
-        int count = this.tickAverage.length;
-        for (float aTickAverage : this.tickAverage) {
-            sum += aTickAverage;
+            Server.broadcastPacket(this.playerList.values(), pk);
         }
-        return (float) NukkitMath.round(sum / count, 2);
-    }
-
-    public float getTickUsage() {
-        return (float) NukkitMath.round(this.maxUse * 100, 2);
-    }
-
-    public float getTickUsageAverage() {
-        float sum = 0;
-        int count = this.useAverage.length;
-        for (float aUseAverage : this.useAverage) {
-            sum += aUseAverage;
-        }
-        return ((float) Math.round(sum / count * 100)) / 100;
-    }
-
-    public SimpleCommandMap getCommandMap() {
-        return commandMap;
     }
 
     /**
-     * 获得所有在线的玩家Map.
+     * @see #updatePlayerListData(UUID, long, String, Skin, String, Player[])
+     */
+    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin) {
+        this.updatePlayerListData(uuid, entityId, name, skin, "", this.playerList.values());
+    }
+
+    /**
+     * @see #updatePlayerListData(UUID, long, String, Skin, String, Player[])
+     */
+    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId) {
+        this.updatePlayerListData(uuid, entityId, name, skin, xboxUserId, this.playerList.values());
+    }
+
+    /**
+     * @see #updatePlayerListData(UUID, long, String, Skin, String, Player[])
+     */
+    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, Player[] players) {
+        this.updatePlayerListData(uuid, entityId, name, skin, "", players);
+    }
+
+
+    /**
+     * 更新指定玩家们(players)的{@link PlayerListPacket}数据包(即玩家列表数据)
      * <p>
-     * Get all online players Map.
+     * Update {@link PlayerListPacket} data packets (i.e. player list data) for specified players
      *
-     * @return 所有的在线玩家Map
+     * @param uuid       uuid
+     * @param entityId   实体id
+     * @param name       名字
+     * @param skin       皮肤
+     * @param xboxUserId xbox用户id
+     * @param players    指定接受数据包的玩家
      */
-    public Map<UUID, Player> getOnlinePlayers() {
-        return ImmutableMap.copyOf(playerList);
+    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Player[] players) {
+        PlayerListPacket pk = new PlayerListPacket();
+        pk.type = PlayerListPacket.TYPE_ADD;
+        pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(uuid, entityId, name, skin, xboxUserId)};
+        Server.broadcastPacket(players, pk);
     }
 
+    /**
+     * @see #updatePlayerListData(UUID, long, String, Skin, String, Player[])
+     */
+    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Collection<Player> players) {
+        this.updatePlayerListData(uuid, entityId, name, skin, xboxUserId, players.toArray(Player.EMPTY_ARRAY));
+    }
+
+    public void removePlayerListData(UUID uuid) {
+        this.removePlayerListData(uuid, this.playerList.values());
+    }
+
+    /**
+     * 移除玩家数组中所有玩家的玩家列表数据.<p>
+     * Remove player list data for all players in the array.
+     *
+     * @param players 玩家数组
+     */
+    public void removePlayerListData(UUID uuid, Player[] players) {
+        PlayerListPacket pk = new PlayerListPacket();
+        pk.type = PlayerListPacket.TYPE_REMOVE;
+        pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(uuid)};
+        Server.broadcastPacket(players, pk);
+    }
+
+    /**
+     * 移除这个玩家的玩家列表数据.<p>
+     * Remove this player's player list data.
+     *
+     * @param player 玩家
+     */
+    @Since("1.4.0.0-PN")
+    public void removePlayerListData(UUID uuid, Player player) {
+        PlayerListPacket pk = new PlayerListPacket();
+        pk.type = PlayerListPacket.TYPE_REMOVE;
+        pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(uuid)};
+        player.dataPacket(pk);
+    }
+
+    public void removePlayerListData(UUID uuid, Collection<Player> players) {
+        this.removePlayerListData(uuid, players.toArray(Player.EMPTY_ARRAY));
+    }
+
+    /**
+     * 发送玩家列表数据包给一个玩家.<p>
+     * Send a player list packet to a player.
+     *
+     * @param player 玩家
+     */
+    public void sendFullPlayerListData(Player player) {
+        PlayerListPacket pk = new PlayerListPacket();
+        pk.type = PlayerListPacket.TYPE_ADD;
+        pk.entries = this.playerList.values().stream()
+                .map(p -> new PlayerListPacket.Entry(
+                        p.getUniqueId(),
+                        p.getId(),
+                        p.getDisplayName(),
+                        p.getSkin(),
+                        p.getLoginChainData().getXUID()))
+                .toArray(PlayerListPacket.Entry[]::new);
+
+        player.dataPacket(pk);
+    }
 
     /**
      * 从指定的UUID得到玩家实例.
@@ -2450,6 +2281,188 @@ public class Server {
             }
         }
     }
+
+    public PlayerDataSerializer getPlayerDataSerializer() {
+        return playerDataSerializer;
+    }
+
+    public void setPlayerDataSerializer(PlayerDataSerializer playerDataSerializer) {
+        this.playerDataSerializer = Preconditions.checkNotNull(playerDataSerializer, "playerDataSerializer");
+    }
+
+    /**
+     * 获得所有在线的玩家Map.
+     * <p>
+     * Get all online players Map.
+     *
+     * @return 所有的在线玩家Map
+     */
+    public Map<UUID, Player> getOnlinePlayers() {
+        return ImmutableMap.copyOf(playerList);
+    }
+
+    // endregion
+
+    // region constants - 常量
+
+    /**
+     * @return 服务器名称<br>The name of server
+     */
+    public String getName() {
+        return "Nukkit";
+    }
+
+    public String getNukkitVersion() {
+        return Nukkit.VERSION;
+    }
+
+    public String getBStatsNukkitVersion() {
+        return Nukkit.VERSION;
+    }
+
+    @PowerNukkitOnly
+    public String getGitCommit() {
+        return Nukkit.GIT_COMMIT;
+    }
+
+    public String getCodename() {
+        return Nukkit.CODENAME;
+    }
+
+    public String getVersion() {
+        return ProtocolInfo.MINECRAFT_VERSION;
+    }
+
+    public String getApiVersion() {
+        return Nukkit.API_VERSION;
+    }
+
+    // endregion
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public String getDataPath() {
+        return dataPath;
+    }
+
+    public String getPluginPath() {
+        return pluginPath;
+    }
+
+    /**
+     * 将服务器设置为繁忙状态，这可以阻止相关代码认为服务器处于无响应状态。
+     * 请牢记，必须在设置之后清除。
+     *
+     * @param busyTime 单位为毫秒
+     * @return id
+     */
+    public int addBusying(long busyTime) {
+        this.busyingTime.add(busyTime);
+        return this.busyingTime.size() - 1;
+    }
+
+    public void removeBusying(int index) {
+        this.busyingTime.removeLong(index);
+    }
+
+    public long getBusyingTime() {
+        if (this.busyingTime.isEmpty()) {
+            return -1;
+        }
+        return this.busyingTime.getLong(this.busyingTime.size() - 1);
+    }
+
+    /**
+     * @return 服务器UUID<br>server UUID
+     */
+    public UUID getServerUniqueId() {
+        return this.serverID;
+    }
+
+    @Deprecated
+    @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", reason = "Use your own logger, sharing loggers makes bug analyses harder.",
+            replaceWith = "@Log4j2 annotation in the class and use the `log` static field that is generated by lombok, " +
+                    "also make sure to log the exception as the last argument, don't concatenate it or use it as parameter replacement. " +
+                    "Just put it as last argument and SLF4J will understand that the log message was caused by that exception/throwable.")
+    public MainLogger getLogger() {
+        return MainLogger.getLogger();
+    }
+
+    public EntityMetadataStore getEntityMetadata() {
+        return entityMetadata;
+    }
+
+    public PlayerMetadataStore getPlayerMetadata() {
+        return playerMetadata;
+    }
+
+    public LevelMetadataStore getLevelMetadata() {
+        return levelMetadata;
+    }
+
+    public PluginManager getPluginManager() {
+        return this.pluginManager;
+    }
+
+    public ResourcePackManager getResourcePackManager() {
+        return resourcePackManager;
+    }
+
+    public IScoreboardManager getScoreboardManager() {
+        return scoreboardManager;
+    }
+
+    public FunctionManager getFunctionManager() {
+        return functionManager;
+    }
+
+    public TickingAreaManager getTickingAreaManager() {
+        return tickingAreaManager;
+    }
+
+    public FreezableArrayManager getFreezableArrayManager() {
+        return freezableArrayManager;
+    }
+
+    /**
+     * @return 返回服务器经历过的tick数<br>Returns the number of ticks recorded by the server
+     */
+    public int getTick() {
+        return tickCounter;
+    }
+
+    public float getTicksPerSecond() {
+        return ((float) Math.round(this.maxTick * 100)) / 100;
+    }
+
+    public float getTicksPerSecondAverage() {
+        float sum = 0;
+        int count = this.tickAverage.length;
+        for (float aTickAverage : this.tickAverage) {
+            sum += aTickAverage;
+        }
+        return (float) NukkitMath.round(sum / count, 2);
+    }
+
+    public float getTickUsage() {
+        return (float) NukkitMath.round(this.maxUse * 100, 2);
+    }
+
+    public float getTickUsageAverage() {
+        float sum = 0;
+        int count = this.useAverage.length;
+        for (float aUseAverage : this.useAverage) {
+            sum += aUseAverage;
+        }
+        return ((float) Math.round(sum / count * 100)) / 100;
+    }
+
+    public SimpleCommandMap getCommandMap() {
+        return commandMap;
+    }
+
 
     // region crafting & recipe - 合成与配方
 
@@ -2882,14 +2895,6 @@ public class Server {
     // TODO: update PNX Junit5 test framework to remove dependency on this method
     private void registerBlockEntities() {
         BlockEntity.init();
-    }
-
-    public PlayerDataSerializer getPlayerDataSerializer() {
-        return playerDataSerializer;
-    }
-
-    public void setPlayerDataSerializer(PlayerDataSerializer playerDataSerializer) {
-        this.playerDataSerializer = Preconditions.checkNotNull(playerDataSerializer, "playerDataSerializer");
     }
 
     public static Server getInstance() {
