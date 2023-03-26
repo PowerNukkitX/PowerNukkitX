@@ -954,16 +954,6 @@ public class Server {
         this.start();
     }
 
-    /**
-     * 发送配方列表数据包给一个玩家.<p>
-     * Send a recipe list packet to a player.
-     *
-     * @param player 玩家
-     */
-    public void sendRecipeList(Player player) {
-        player.dataPacket(CraftingManager.getCraftingPacket());
-    }
-
     // region chat & commands - 聊天与命令
 
     /**
@@ -2522,6 +2512,16 @@ public class Server {
     }
 
     // region crafting & recipe - 合成与配方
+
+    /**
+     * 发送配方列表数据包给一个玩家.<p>
+     * Send a recipe list packet to a player.
+     *
+     * @param player 玩家
+     */
+    public void sendRecipeList(Player player) {
+        player.dataPacket(CraftingManager.getCraftingPacket());
+    }
 
     /**
      * 注册配方到配方管理器
