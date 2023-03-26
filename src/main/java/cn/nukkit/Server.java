@@ -1882,16 +1882,17 @@ public class Server {
         return this.queryRegenerateEvent;
     }
 
+    public boolean isRunning() {
+        return isRunning.get();
+    }
+
+    // region constants - 常量
 
     /**
      * @return 服务器名称<br>The name of server
      */
     public String getName() {
         return "Nukkit";
-    }
-
-    public boolean isRunning() {
-        return isRunning.get();
     }
 
     public String getNukkitVersion() {
@@ -1918,6 +1919,8 @@ public class Server {
     public String getApiVersion() {
         return Nukkit.API_VERSION;
     }
+
+    // endregion
 
     public String getFilePath() {
         return filePath;
