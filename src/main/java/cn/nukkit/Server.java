@@ -1062,6 +1062,111 @@ public class Server {
         return recipients.size();
     }
 
+    @Deprecated
+    @DeprecationDetails(since = "1.19.60-r1", reason = "use Server#executeCommand")
+    public boolean dispatchCommand(CommandSender sender, String commandLine) throws ServerException {
+        return this.executeCommand(sender, commandLine) > 0;
+    }
+
+    /**
+     * 以sender身份执行一行命令
+     * <p>
+     * Execute one line of command as sender
+     *
+     * @param sender      命令执行者
+     * @param commandLine 一行命令
+     * @return 返回0代表执行失败, 返回大于等于1代表执行成功<br>Returns 0 for failed execution, greater than or equal to 1 for successful execution
+     * @throws ServerException 服务器异常
+     */
+    public int executeCommand(CommandSender sender, String commandLine) throws ServerException {
+        // First we need to check if this command is on the main thread or not, if not, warn the user
+        if (!this.isPrimaryThread()) {
+            log.warn("Command Dispatched Async: {}\nPlease notify author of plugin causing this execution to fix this bug!", commandLine,
+                    new ConcurrentModificationException("Command Dispatched Async: " + commandLine));
+
+            this.scheduler.scheduleTask(null, () -> executeCommand(sender, commandLine));
+            return 1;
+        }
+        if (sender == null) {
+            throw new ServerException("CommandSender is not valid");
+        }
+        //pre
+        var cmd = commandLine.stripLeading();
+        cmd = cmd.charAt(0) == '/' ? cmd.substring(1) : cmd;
+
+        return this.commandMap.executeCommand(sender, cmd);
+    }
+
+    /**
+     * 以该控制台身份静音执行这些命令，无视权限
+     * <p>
+     * Execute these commands silently as the console, ignoring permissions.
+     *
+     * @param commands the commands
+     * @throws ServerException 服务器异常
+     */
+    public void silentExecuteCommand(String... commands) {
+        this.silentExecuteCommand(null, commands);
+    }
+
+    /**
+     * 以该玩家身份静音执行这些命令无视权限
+     * <p>
+     * Execute these commands silently as this player, ignoring permissions.
+     *
+     * @param sender   命令执行者<br>command sender
+     * @param commands the commands
+     * @throws ServerException 服务器异常
+     */
+    public void silentExecuteCommand(@Nullable Player sender, String... commands) {
+        final var revert = new ArrayList<Level>();
+        final var server = Server.getInstance();
+        for (var level : server.getLevels().values()) {
+            if (level.getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK)) {
+                level.getGameRules().setGameRule(GameRule.SEND_COMMAND_FEEDBACK, false);
+                revert.add(level);
+            }
+        }
+        if (sender == null) {
+            for (var cmd : commands) {
+                server.executeCommand(server.getConsoleSender(), cmd);
+            }
+        } else {
+            for (var cmd : commands) {
+                server.executeCommand(server.getConsoleSender(), "execute as " + "\"" + sender.getName() + "\" run " + cmd);
+            }
+        }
+
+        for (var level : revert) {
+            level.getGameRules().setGameRule(GameRule.SEND_COMMAND_FEEDBACK, true);
+        }
+    }
+
+    /**
+     * 得到控制台发送者
+     * <p>
+     * Get the console sender
+     *
+     * @return {@link ConsoleCommandSender}
+     */
+    //todo: use ticker to check console
+    public ConsoleCommandSender getConsoleSender() {
+        return consoleSender;
+    }
+
+    public SimpleCommandMap getCommandMap() {
+        return commandMap;
+    }
+
+    public PluginIdentifiableCommand getPluginCommand(String name) {
+        Command command = this.commandMap.getCommand(name);
+        if (command instanceof PluginIdentifiableCommand) {
+            return (PluginIdentifiableCommand) command;
+        } else {
+            return null;
+        }
+    }
+
     // endregion
 
     // region networking - 网络相关
@@ -1197,97 +1302,6 @@ public class Server {
 
     // endregion
 
-    @Deprecated
-    @DeprecationDetails(since = "1.19.60-r1", reason = "use Server#executeCommand")
-    public boolean dispatchCommand(CommandSender sender, String commandLine) throws ServerException {
-        return this.executeCommand(sender, commandLine) > 0;
-    }
-
-    /**
-     * 以sender身份执行一行命令
-     * <p>
-     * Execute one line of command as sender
-     *
-     * @param sender      命令执行者
-     * @param commandLine 一行命令
-     * @return 返回0代表执行失败, 返回大于等于1代表执行成功<br>Returns 0 for failed execution, greater than or equal to 1 for successful execution
-     * @throws ServerException 服务器异常
-     */
-    public int executeCommand(CommandSender sender, String commandLine) throws ServerException {
-        // First we need to check if this command is on the main thread or not, if not, warn the user
-        if (!this.isPrimaryThread()) {
-            log.warn("Command Dispatched Async: {}\nPlease notify author of plugin causing this execution to fix this bug!", commandLine,
-                    new ConcurrentModificationException("Command Dispatched Async: " + commandLine));
-
-            this.scheduler.scheduleTask(null, () -> executeCommand(sender, commandLine));
-            return 1;
-        }
-        if (sender == null) {
-            throw new ServerException("CommandSender is not valid");
-        }
-        //pre
-        var cmd = commandLine.stripLeading();
-        cmd = cmd.charAt(0) == '/' ? cmd.substring(1) : cmd;
-
-        return this.commandMap.executeCommand(sender, cmd);
-    }
-
-    /**
-     * 以该控制台身份静音执行这些命令，无视权限
-     * <p>
-     * Execute these commands silently as the console, ignoring permissions.
-     *
-     * @param commands the commands
-     * @throws ServerException 服务器异常
-     */
-    public void silentExecuteCommand(String... commands) {
-        this.silentExecuteCommand(null, commands);
-    }
-
-    /**
-     * 以该玩家身份静音执行这些命令无视权限
-     * <p>
-     * Execute these commands silently as this player, ignoring permissions.
-     *
-     * @param sender   命令执行者<br>command sender
-     * @param commands the commands
-     * @throws ServerException 服务器异常
-     */
-    public void silentExecuteCommand(@Nullable Player sender, String... commands) {
-        final var revert = new ArrayList<Level>();
-        final var server = Server.getInstance();
-        for (var level : server.getLevels().values()) {
-            if (level.getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK)) {
-                level.getGameRules().setGameRule(GameRule.SEND_COMMAND_FEEDBACK, false);
-                revert.add(level);
-            }
-        }
-        if (sender == null) {
-            for (var cmd : commands) {
-                server.executeCommand(server.getConsoleSender(), cmd);
-            }
-        } else {
-            for (var cmd : commands) {
-                server.executeCommand(server.getConsoleSender(), "execute as " + "\"" + sender.getName() + "\" run " + cmd);
-            }
-        }
-
-        for (var level : revert) {
-            level.getGameRules().setGameRule(GameRule.SEND_COMMAND_FEEDBACK, true);
-        }
-    }
-
-    /**
-     * 得到控制台发送者
-     * <p>
-     * Get the console sender
-     *
-     * @return {@link ConsoleCommandSender}
-     */
-    //todo: use ticker to check console
-    public ConsoleCommandSender getConsoleSender() {
-        return consoleSender;
-    }
 
     /**
      * 重载服务器
@@ -2757,10 +2771,6 @@ public class Server {
         return ((float) Math.round(sum / count * 100)) / 100;
     }
 
-    public SimpleCommandMap getCommandMap() {
-        return commandMap;
-    }
-
     /**
      * 注册配方到配方管理器
      * <p>
@@ -3199,16 +3209,6 @@ public class Server {
         this.properties.set(variable, value ? "1" : "0");
         this.properties.save();
     }
-
-    public PluginIdentifiableCommand getPluginCommand(String name) {
-        Command command = this.commandMap.getCommand(name);
-        if (command instanceof PluginIdentifiableCommand) {
-            return (PluginIdentifiableCommand) command;
-        } else {
-            return null;
-        }
-    }
-
     public BanList getNameBans() {
         return this.banByName;
     }
