@@ -3156,13 +3156,15 @@ public class Level implements ChunkManager, Metadatable {
             if (player != null) {
                 AxisAlignedBB bb;
                 Vector3 diff = player.getNextPosition().subtract(player.getPosition());
+                bb = player.getBoundingBox().getOffsetBoundingBox(diff.x, diff.y, diff.z);
                 if (player.getServer().getTick() - player.getLastInAirTick() < 5) {
-                    bb = player.getBoundingBox().getOffsetBoundingBox(diff.x, diff.y >= 0 ? 0.51 : diff.y, diff.z);
+                    if (hand.getBoundingBox().intersectsWith(bb.shrink(0, 0.225, 0))) {
+                        ++realCount;
+                    }
                 } else {
-                    bb = player.getBoundingBox().getOffsetBoundingBox(diff.x, diff.y > 0 ? 0.51 : diff.y, diff.z);
-                }
-                if (hand.getBoundingBox().intersectsWith(bb)) {
-                    ++realCount;
+                    if (hand.getBoundingBox().intersectsWith(bb.shrink(0.01, 0.01, 0.01))) {
+                        ++realCount;
+                    }
                 }
             }
             if (realCount > 0) {
