@@ -3641,21 +3641,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             stackPacket.resourcePackStack = this.server.getResourcePackManager().getResourceStack();
 
                             if (this.getServer().isEnableExperimentMode() && !this.getServer().getConfig("settings.waterdogpe", false)) {
-//                                stackPacket.experiments.add(
-//                                        new ResourcePackStackPacket.ExperimentData("spectator_mode", true)
-//                                );
                                 stackPacket.experiments.add(
                                         new ResourcePackStackPacket.ExperimentData("data_driven_items", true)
                                 );
-//                                stackPacket.experiments.add(
-//                                        new ResourcePackStackPacket.ExperimentData("data_driven_biomes", true)
-//                                );
                                 stackPacket.experiments.add(
                                         new ResourcePackStackPacket.ExperimentData("upcoming_creator_features", true)
                                 );
-//                                stackPacket.experiments.add(
-//                                        new ResourcePackStackPacket.ExperimentData("gametest", true)
-//                                );
                                 stackPacket.experiments.add(
                                         new ResourcePackStackPacket.ExperimentData("experimental_molang_features", true)
                                 );
@@ -3912,19 +3903,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     }
                     offerMovementTask(Location.fromObject(clientPosition, this.level, yaw, pitch, headYaw));
                     break;
-                /* PowerNukkit disabled to use our own boat implementation
-                case ProtocolInfo.MOVE_ENTITY_ABSOLUTE_PACKET:
-                    MoveEntityAbsolutePacket moveEntityAbsolutePacket = (MoveEntityAbsolutePacket) packet;
-                    if (this.riding == null || this.riding.getId() != moveEntityAbsolutePacket.eid || !this.riding.isControlling(this)) {
-                        break;
-                    }
-                    if (this.riding instanceof EntityBoat) {
-                        if (this.temporalVector.setComponents(moveEntityAbsolutePacket.x, moveEntityAbsolutePacket.y, moveEntityAbsolutePacket.z).distanceSquared(this.riding) < 1000) {
-                            ((EntityBoat) this.riding).onInput(moveEntityAbsolutePacket.x, moveEntityAbsolutePacket.y, moveEntityAbsolutePacket.z, moveEntityAbsolutePacket.headYaw);
-                        }
-                    }
-                    break;
-                 */
                 case ProtocolInfo.MOVE_ENTITY_ABSOLUTE_PACKET: {
                     if (!this.isAlive() || !this.spawned || this.getRiding() == null) {
                         break;
