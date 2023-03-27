@@ -3214,12 +3214,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 this.positionChanged = true;
                 this.handleMovement(this.clientMovements.poll());
             }
-            this.positionChanged = false;
-            if (this.speed == null) {
-                this.speed = new Vector3(0, 0, 0);
-            } else {
-                this.speed.setComponents(0, 0, 0);
-            }
 
             if (!this.isSpectator()) {
                 this.checkNearEntities();
@@ -3303,6 +3297,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
             if (this.server.getServerAuthoritativeMovement() > 0) {//仅服务端权威使用，因为客户端权威continue break是正常的
                 onBlockBreakContinue(breakingBlock, breakingBlockFace);
+            }
+
+            this.positionChanged = false;
+            if (this.speed == null) {
+                this.speed = new Vector3(0, 0, 0);
+            } else {
+                this.speed.setComponents(0, 0, 0);
             }
         }
 
