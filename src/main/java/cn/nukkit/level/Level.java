@@ -3155,14 +3155,10 @@ public class Level implements ChunkManager, Metadatable {
             }
             if (player != null) {
                 Vector3 diff = player.getNextPosition().subtract(player.getPosition());
-                AxisAlignedBB bb = player.getBoundingBox().getOffsetBoundingBox(diff.x, diff.y, diff.z);
+                AxisAlignedBB bb = player.getBoundingBox().getOffsetBoundingBox(diff.x, diff.y >= 0 ? 0.51 : diff.y, diff.z);
                 //这是一个对于x y z更宽松的碰撞检测,用于解决临界条件下方块无法放置的问题
-                if (bb.getMaxY() - hand.getMinY() > 0.04 && bb.getMinY() - hand.getMaxY() < -0.04) {
-                    if (bb.getMaxX() - hand.getMinX() > 0.04 && bb.getMinX() - hand.getMaxX() < -0.04) {
-                        if (bb.getMaxZ() - hand.getMinZ() > 0.04 && bb.getMinZ() - hand.getMaxZ() < -0.04) {
-                            ++realCount;
-                        }
-                    }
+                if (hand.getBoundingBox().intersectsWith(bb.shrink(0.05, 0, 0.05))) {
+                    ++realCount;
                 }
             }
             if (realCount > 0) {

@@ -2489,6 +2489,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return this.socketAddress;
     }
 
+    /**
+     * 获得下一个tick客户端玩家将要移动的位置
+     * <p>
+     * Get the position where the next tick client player will move
+     *
+     * @return the next position
+     */
     public Position getNextPosition() {
         return this.newPosition != null ? new Position(this.newPosition.x, this.newPosition.y, this.newPosition.z, this.level) : this.getPosition();
     }
