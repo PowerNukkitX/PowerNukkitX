@@ -3161,7 +3161,6 @@ public class Level implements ChunkManager, Metadatable {
                 } else {
                     bb = player.getBoundingBox().getOffsetBoundingBox(diff.x, diff.y > 0 ? 0.51 : diff.y, diff.z);
                 }
-                //这是一个对于x y z更宽松的碰撞检测,用于解决临界条件下方块无法放置的问题
                 if (hand.getBoundingBox().intersectsWith(bb)) {
                     ++realCount;
                 }
