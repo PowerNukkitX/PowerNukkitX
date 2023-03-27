@@ -1078,31 +1078,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     protected void handleMovement(Location clientPos) {
-        double distance = clientPos.distanceSquared(this);
-        boolean updatePosition = (float) Math.sqrt(distance) > MOVEMENT_DISTANCE_THRESHOLD;//sqrt distance
-        boolean updateRotation = (float) Math.abs(this.getPitch() - clientPos.pitch) > ROTATION_UPDATE_THRESHOLD
-                || (float) Math.abs(this.getYaw() - clientPos.yaw) > ROTATION_UPDATE_THRESHOLD
-                || (float) Math.abs(this.getHeadYaw() - clientPos.headYaw) > ROTATION_UPDATE_THRESHOLD;
-        boolean isHandle = this.isAlive() && this.spawned && !this.isSleeping() && (updatePosition || updateRotation);
-        if (isHandle) {
-            this.positionChanged = true;
-            this.newPosition = clientPos;
-        } else {
-            this.positionChanged = false;
-            this.newPosition = null;
-            if (this.speed == null) {
-                this.speed = new Vector3(0, 0, 0);
-            } else {
-                this.speed.setComponents(0, 0, 0);
-            }
-            return;
-        }
-
         if (this.firstMove) this.firstMove = false;
-
         boolean invalidMotion = false;
         var revertPos = this.getLocation().clone();
-
+        double distance = clientPos.distanceSquared(this);
         //before check
         if (distance > 128) {
             invalidMotion = true;
@@ -1120,7 +1099,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         if (invalidMotion) {
-            this.positionChanged = false;
             this.revertClientMotion(revertPos);
             this.resetClientMovement();
             return;
@@ -1148,7 +1126,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 }
             }
             if (invalidMotion) {
-                this.positionChanged = false;
                 this.setPositionAndRotation(revertPos.asVector3f().asVector3(), revertPos.getYaw(), revertPos.getPitch(), revertPos.getHeadYaw());
                 this.revertClientMotion(revertPos);
                 this.resetClientMovement();
@@ -1216,16 +1193,31 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         //if plugin cancel move
         if (invalidMotion) {
-            this.positionChanged = false;
             this.setPositionAndRotation(revertPos.asVector3f().asVector3(), revertPos.getYaw(), revertPos.getPitch(), revertPos.getHeadYaw());
             this.revertClientMotion(revertPos);
+            this.resetClientMovement();
         } else {
             if (distance != 0 && this.nextChunkOrderRun > 20) {
                 this.nextChunkOrderRun = 20;
             }
         }
-        this.resetClientMovement();
     }
+
+    protected void offerMovementTask(Location newPosition) {
+        var distance = newPosition.distanceSquared(this);
+        var updatePosition = (float) Math.sqrt(distance) > MOVEMENT_DISTANCE_THRESHOLD;//sqrt distance
+        var updateRotation = (float) Math.abs(this.getPitch() - newPosition.pitch) > ROTATION_UPDATE_THRESHOLD
+                || (float) Math.abs(this.getYaw() - newPosition.yaw) > ROTATION_UPDATE_THRESHOLD
+                || (float) Math.abs(this.getHeadYaw() - newPosition.headYaw) > ROTATION_UPDATE_THRESHOLD;
+        var isHandle = this.isAlive() && this.spawned && !this.isSleeping() && (updatePosition || updateRotation);
+        if (isHandle) {
+            this.newPosition = newPosition;
+            this.clientMovements.offer(newPosition);
+        } else {
+            this.newPosition = null;
+        }
+    }
+
 
     //NK原始处理移动的方法
     @Deprecated
@@ -1303,6 +1295,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     protected void resetClientMovement() {
         this.newPosition = null;
+        this.positionChanged = false;
     }
 
     protected void revertClientMotion(Location originalPos) {
@@ -3211,7 +3204,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             }
 
             while (!this.clientMovements.isEmpty()) {
+                this.positionChanged = true;
                 this.handleMovement(this.clientMovements.poll());
+            }
+            this.positionChanged = false;
+            if (this.speed == null) {
+                this.speed = new Vector3(0, 0, 0);
+            } else {
+                this.speed.setComponents(0, 0, 0);
             }
 
             if (!this.isSpectator()) {
@@ -3768,7 +3768,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     if (movePlayerPacket.headYaw < 0) {
                         movePlayerPacket.headYaw += 360;
                     }
-                    this.clientMovements.offer(Location.fromObject(newPos, this.level, movePlayerPacket.yaw, movePlayerPacket.pitch, movePlayerPacket.headYaw));
+                    offerMovementTask(Location.fromObject(newPos, this.level, movePlayerPacket.yaw, movePlayerPacket.pitch, movePlayerPacket.headYaw));
                     break;
                 case ProtocolInfo.PLAYER_AUTH_INPUT_PACKET:
                     if (!locallyInitialized) break;
@@ -3903,7 +3903,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     if (yaw < 0) {
                         yaw += 360;
                     }
-                    this.clientMovements.offer(Location.fromObject(clientPosition, this.level, yaw, pitch, headYaw));
+                    offerMovementTask(Location.fromObject(clientPosition, this.level, yaw, pitch, headYaw));
                     break;
                 /* PowerNukkit disabled to use our own boat implementation
                 case ProtocolInfo.MOVE_ENTITY_ABSOLUTE_PACKET:

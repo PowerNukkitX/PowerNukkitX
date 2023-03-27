@@ -11,9 +11,11 @@ import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityAsyncPrepare;
+import cn.nukkit.entity.item.EntityFirework;
 import cn.nukkit.entity.item.EntityItem;
+import cn.nukkit.entity.item.EntityPainting;
 import cn.nukkit.entity.item.EntityXPOrb;
-import cn.nukkit.entity.projectile.EntityArrow;
+import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.weather.EntityLightning;
 import cn.nukkit.event.block.BlockBreakEvent;
 import cn.nukkit.event.block.BlockPlaceEvent;
@@ -3142,39 +3144,27 @@ public class Level implements ChunkManager, Metadatable {
         }
 
         if (!hand.canPassThrough() && hand.getBoundingBox() != null) {
-            Entity[] entities = this.getCollidingEntities(hand.getBoundingBox());
             int realCount = 0;
+            Entity[] entities = this.getCollidingEntities(hand.getBoundingBox());
             for (Entity e : entities) {
-                if (e instanceof EntityArrow
-                        || e instanceof EntityItem
-                        || (e instanceof Player && ((Player) e).isSpectator())
-                        || player == e
-                ) {
+                if (e instanceof EntityProjectile || e instanceof EntityItem || e instanceof EntityXPOrb || e instanceof EntityFirework || e instanceof EntityPainting
+                        || e == player || (e instanceof Player && ((Player) e).isSpectator())) {
                     continue;
                 }
                 ++realCount;
             }
-
             if (player != null) {
                 Vector3 diff = player.getNextPosition().subtract(player.getPosition());
-                //if (diff.lengthSquared() > 0.00001) {
                 AxisAlignedBB bb = player.getBoundingBox().getOffsetBoundingBox(diff.x, diff.y, diff.z);
-
                 //这是一个对于x y z更宽松的碰撞检测,用于解决临界条件下方块无法放置的问题
-                if (bb.getMaxY() - hand.getMinY() > 0.005 && bb.getMinY() - hand.getMaxY() < -0.005) {
-                    if (bb.getMaxX() - hand.getMinX() > 0.005 && bb.getMinX() - hand.getMaxX() < -0.005) {
-                        if (bb.getMaxZ() - hand.getMinZ() > 0.005 && bb.getMinZ() - hand.getMaxZ() < -0.005) {
+                if (bb.getMaxY() - hand.getMinY() > 0.04 && bb.getMinY() - hand.getMaxY() < -0.04) {
+                    if (bb.getMaxX() - hand.getMinX() > 0.04 && bb.getMinX() - hand.getMaxX() < -0.04) {
+                        if (bb.getMaxZ() - hand.getMinZ() > 0.04 && bb.getMinZ() - hand.getMaxZ() < -0.04) {
                             ++realCount;
                         }
                     }
                 }
-
-                /*if (hand.getBoundingBox().intersectsWith(bb)) {
-                    ++realCount;
-                }*/
-                //}
             }
-
             if (realCount > 0) {
                 return null; // Entity in block
             }
