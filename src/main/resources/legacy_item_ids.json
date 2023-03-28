@@ -496,6 +496,7 @@
   "minecraft:prismarine_bricks_stairs": -4,
   "minecraft:dark_prismarine_stairs": -3,
   "minecraft:prismarine_stairs": -2,
+  "minecraft:air": 0,
   "minecraft:stone": 1,
   "minecraft:grass": 2,
   "minecraft:dirt": 3,
