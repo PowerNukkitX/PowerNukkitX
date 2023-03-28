@@ -3147,8 +3147,8 @@ public class Level implements ChunkManager, Metadatable {
             int realCount = 0;
             Entity[] entities = this.getCollidingEntities(hand.getBoundingBox());
             for (Entity e : entities) {
-                if (e instanceof EntityProjectile || e instanceof EntityItem || e instanceof EntityXPOrb || e instanceof EntityFirework || e instanceof EntityPainting
-                        || e == player || (e instanceof Player && ((Player) e).isSpectator())) {
+                if (e instanceof EntityProjectile || e instanceof EntityItem || e instanceof EntityXPOrb || e instanceof EntityFirework ||
+                        e instanceof EntityPainting || e == player || (e instanceof Player p && p.isSpectator())) {
                     continue;
                 }
                 ++realCount;

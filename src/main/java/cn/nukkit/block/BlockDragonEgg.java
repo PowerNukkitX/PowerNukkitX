@@ -71,7 +71,7 @@ public class BlockDragonEgg extends BlockFallable {
     @Override
     public int onTouch(@Nullable Player player, Action action) {
         if (player != null && !player.isCreative() && (action == Action.RIGHT_CLICK_BLOCK || action == Action.LEFT_CLICK_BLOCK)) {
-            this.teleport();
+            onUpdate(Level.BLOCK_UPDATE_TOUCH);
             return 1;
         }
         return 0;
