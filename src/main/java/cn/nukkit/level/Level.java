@@ -3154,29 +3154,11 @@ public class Level implements ChunkManager, Metadatable {
                 ++realCount;
             }
             if (player != null) {
-                AxisAlignedBB bb;
-                Vector3 diff = player.getNextPosition().subtract(player.getPosition());
-                bb = player.getBoundingBox().getOffsetBoundingBox(diff.x, Math.abs(diff.y), diff.z);
-                AxisAlignedBB shrink;
-                if (diff.y == 0) {
-                    shrink = bb.shrink(0, 0.05, 0);
-                    if (shrink.intersectsWith(hand.getBoundingBox())) {
-                        ++realCount;
-                    }
-                } else {
-                    shrink = bb.shrink(0, 0.225, 0);
-                    if (shrink.intersectsWith(hand.getBoundingBox())) {
-                        ++realCount;
-                    }
+                var diff = player.getNextPosition().subtract(player.getPosition());
+                var aabb = player.getBoundingBox().getOffsetBoundingBox(diff.x, diff.y <= 0 ? 0 : diff.y, diff.z);
+                if (aabb.offset(0, 0.01, 0).intersectsWith(hand.getBoundingBox())) {
+                    ++realCount;
                 }
-                //debug
-                /*for (double i = shrink.getMinX(); i <= shrink.getMaxX(); i += 0.3) {
-                    for (double j = shrink.getMinY(); j <= shrink.getMaxY(); j += 0.3) {
-                        for (double k = shrink.getMinZ(); k <= shrink.getMaxZ(); k += 0.3) {
-                            addParticleEffect(new Vector3(i, j, k), ParticleEffect.WATER_DRIP, -1, this.getDimension(), player);
-                        }
-                    }
-                }*/
             }
             if (realCount > 0) {
                 return null; // Entity in block

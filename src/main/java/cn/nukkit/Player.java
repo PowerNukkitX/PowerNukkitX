@@ -1213,8 +1213,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (isHandle) {
             this.newPosition = newPosition;
             this.clientMovements.offer(newPosition);
-        } else {
-            this.newPosition = null;
         }
     }
 
@@ -3299,6 +3297,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 onBlockBreakContinue(breakingBlock, breakingBlockFace);
             }
 
+            //reset move status
+            this.newPosition = null;
             this.positionChanged = false;
             if (this.speed == null) {
                 this.speed = new Vector3(0, 0, 0);
@@ -3774,6 +3774,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     PlayerAuthInputPacket authPacket = (PlayerAuthInputPacket) packet;
                     if (!authPacket.getBlockActionData().isEmpty()) {
                         for (PlayerBlockActionData action : authPacket.getBlockActionData().values()) {
+                            //hack 自从1.19.70开始，创造模式剑客户端不会发送PREDICT_DESTROY_BLOCK，但仍然发送START_DESTROY_BLOCK，过滤掉
+                            if (getInventory().getItemInHand().isSword() && this.isCreative() && action.getAction() == PlayerActionType.START_DESTROY_BLOCK) {
+                                continue;
+                            }
+
+
                             BlockVector3 blockPos = action.getPosition();
                             BlockFace blockFace = BlockFace.fromIndex(action.getFacing());
                             if (this.lastBlockAction != null && this.lastBlockAction.getAction() == PlayerActionType.PREDICT_DESTROY_BLOCK &&
