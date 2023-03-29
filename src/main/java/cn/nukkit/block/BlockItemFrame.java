@@ -158,6 +158,7 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
     @PowerNukkitOnly
     @Override
     public int onTouch(@Nullable Player player, Action action) {
+        onUpdate(Level.BLOCK_UPDATE_TOUCH);
         if (player != null && action == Action.LEFT_CLICK_BLOCK) {
             getOrCreateBlockEntity().dropItem(player);
             return 1;

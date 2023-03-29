@@ -1415,6 +1415,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public int onTouch(@Nullable Player player, PlayerInteractEvent.Action action) {
+        onUpdate(Level.BLOCK_UPDATE_TOUCH);
         return 0;
     }
 

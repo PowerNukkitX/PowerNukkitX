@@ -1078,31 +1078,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     protected void handleMovement(Location clientPos) {
-        double distance = clientPos.distanceSquared(this);
-        boolean updatePosition = (float) Math.sqrt(distance) > MOVEMENT_DISTANCE_THRESHOLD;//sqrt distance
-        boolean updateRotation = (float) Math.abs(this.getPitch() - clientPos.pitch) > ROTATION_UPDATE_THRESHOLD
-                || (float) Math.abs(this.getYaw() - clientPos.yaw) > ROTATION_UPDATE_THRESHOLD
-                || (float) Math.abs(this.getHeadYaw() - clientPos.headYaw) > ROTATION_UPDATE_THRESHOLD;
-        boolean isHandle = this.isAlive() && this.spawned && !this.isSleeping() && (updatePosition || updateRotation);
-        if (isHandle) {
-            this.positionChanged = true;
-            this.newPosition = clientPos;
-        } else {
-            this.positionChanged = false;
-            this.newPosition = null;
-            if (this.speed == null) {
-                this.speed = new Vector3(0, 0, 0);
-            } else {
-                this.speed.setComponents(0, 0, 0);
-            }
-            return;
-        }
-
         if (this.firstMove) this.firstMove = false;
-
         boolean invalidMotion = false;
         var revertPos = this.getLocation().clone();
-
+        double distance = clientPos.distanceSquared(this);
         //before check
         if (distance > 128) {
             invalidMotion = true;
@@ -1120,7 +1099,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         if (invalidMotion) {
-            this.positionChanged = false;
             this.revertClientMotion(revertPos);
             this.resetClientMovement();
             return;
@@ -1148,7 +1126,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 }
             }
             if (invalidMotion) {
-                this.positionChanged = false;
                 this.setPositionAndRotation(revertPos.asVector3f().asVector3(), revertPos.getYaw(), revertPos.getPitch(), revertPos.getHeadYaw());
                 this.revertClientMotion(revertPos);
                 this.resetClientMovement();
@@ -1216,16 +1193,29 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         //if plugin cancel move
         if (invalidMotion) {
-            this.positionChanged = false;
             this.setPositionAndRotation(revertPos.asVector3f().asVector3(), revertPos.getYaw(), revertPos.getPitch(), revertPos.getHeadYaw());
             this.revertClientMotion(revertPos);
+            this.resetClientMovement();
         } else {
             if (distance != 0 && this.nextChunkOrderRun > 20) {
                 this.nextChunkOrderRun = 20;
             }
         }
-        this.resetClientMovement();
     }
+
+    protected void offerMovementTask(Location newPosition) {
+        var distance = newPosition.distanceSquared(this);
+        var updatePosition = (float) Math.sqrt(distance) > MOVEMENT_DISTANCE_THRESHOLD;//sqrt distance
+        var updateRotation = (float) Math.abs(this.getPitch() - newPosition.pitch) > ROTATION_UPDATE_THRESHOLD
+                || (float) Math.abs(this.getYaw() - newPosition.yaw) > ROTATION_UPDATE_THRESHOLD
+                || (float) Math.abs(this.getHeadYaw() - newPosition.headYaw) > ROTATION_UPDATE_THRESHOLD;
+        var isHandle = this.isAlive() && this.spawned && !this.isSleeping() && (updatePosition || updateRotation);
+        if (isHandle) {
+            this.newPosition = newPosition;
+            this.clientMovements.offer(newPosition);
+        }
+    }
+
 
     //NK原始处理移动的方法
     @Deprecated
@@ -1303,6 +1293,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     protected void resetClientMovement() {
         this.newPosition = null;
+        this.positionChanged = false;
     }
 
     protected void revertClientMotion(Location originalPos) {
@@ -2496,6 +2487,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return this.socketAddress;
     }
 
+    /**
+     * 获得下一个tick客户端玩家将要移动的位置
+     * <p>
+     * Get the position where the next tick client player will move
+     *
+     * @return the next position
+     */
     public Position getNextPosition() {
         return this.newPosition != null ? new Position(this.newPosition.x, this.newPosition.y, this.newPosition.z, this.level) : this.getPosition();
     }
@@ -3211,6 +3209,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             }
 
             while (!this.clientMovements.isEmpty()) {
+                this.positionChanged = true;
                 this.handleMovement(this.clientMovements.poll());
             }
 
@@ -3296,6 +3295,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
             if (this.server.getServerAuthoritativeMovement() > 0) {//仅服务端权威使用，因为客户端权威continue break是正常的
                 onBlockBreakContinue(breakingBlock, breakingBlockFace);
+            }
+
+            //reset move status
+            this.newPosition = null;
+            this.positionChanged = false;
+            if (this.speed == null) {
+                this.speed = new Vector3(0, 0, 0);
+            } else {
+                this.speed.setComponents(0, 0, 0);
             }
         }
 
@@ -3634,21 +3642,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             stackPacket.resourcePackStack = this.server.getResourcePackManager().getResourceStack();
 
                             if (this.getServer().isEnableExperimentMode() && !this.getServer().getConfig("settings.waterdogpe", false)) {
-//                                stackPacket.experiments.add(
-//                                        new ResourcePackStackPacket.ExperimentData("spectator_mode", true)
-//                                );
                                 stackPacket.experiments.add(
                                         new ResourcePackStackPacket.ExperimentData("data_driven_items", true)
                                 );
-//                                stackPacket.experiments.add(
-//                                        new ResourcePackStackPacket.ExperimentData("data_driven_biomes", true)
-//                                );
                                 stackPacket.experiments.add(
                                         new ResourcePackStackPacket.ExperimentData("upcoming_creator_features", true)
                                 );
-//                                stackPacket.experiments.add(
-//                                        new ResourcePackStackPacket.ExperimentData("gametest", true)
-//                                );
                                 stackPacket.experiments.add(
                                         new ResourcePackStackPacket.ExperimentData("experimental_molang_features", true)
                                 );
@@ -3768,13 +3767,19 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     if (movePlayerPacket.headYaw < 0) {
                         movePlayerPacket.headYaw += 360;
                     }
-                    this.clientMovements.offer(Location.fromObject(newPos, this.level, movePlayerPacket.yaw, movePlayerPacket.pitch, movePlayerPacket.headYaw));
+                    offerMovementTask(Location.fromObject(newPos, this.level, movePlayerPacket.yaw, movePlayerPacket.pitch, movePlayerPacket.headYaw));
                     break;
                 case ProtocolInfo.PLAYER_AUTH_INPUT_PACKET:
                     if (!locallyInitialized) break;
                     PlayerAuthInputPacket authPacket = (PlayerAuthInputPacket) packet;
                     if (!authPacket.getBlockActionData().isEmpty()) {
                         for (PlayerBlockActionData action : authPacket.getBlockActionData().values()) {
+                            //hack 自从1.19.70开始，创造模式剑客户端不会发送PREDICT_DESTROY_BLOCK，但仍然发送START_DESTROY_BLOCK，过滤掉
+                            if (getInventory().getItemInHand().isSword() && this.isCreative() && action.getAction() == PlayerActionType.START_DESTROY_BLOCK) {
+                                continue;
+                            }
+
+
                             BlockVector3 blockPos = action.getPosition();
                             BlockFace blockFace = BlockFace.fromIndex(action.getFacing());
                             if (this.lastBlockAction != null && this.lastBlockAction.getAction() == PlayerActionType.PREDICT_DESTROY_BLOCK &&
@@ -3903,21 +3908,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     if (yaw < 0) {
                         yaw += 360;
                     }
-                    this.clientMovements.offer(Location.fromObject(clientPosition, this.level, yaw, pitch, headYaw));
+                    offerMovementTask(Location.fromObject(clientPosition, this.level, yaw, pitch, headYaw));
                     break;
-                /* PowerNukkit disabled to use our own boat implementation
-                case ProtocolInfo.MOVE_ENTITY_ABSOLUTE_PACKET:
-                    MoveEntityAbsolutePacket moveEntityAbsolutePacket = (MoveEntityAbsolutePacket) packet;
-                    if (this.riding == null || this.riding.getId() != moveEntityAbsolutePacket.eid || !this.riding.isControlling(this)) {
-                        break;
-                    }
-                    if (this.riding instanceof EntityBoat) {
-                        if (this.temporalVector.setComponents(moveEntityAbsolutePacket.x, moveEntityAbsolutePacket.y, moveEntityAbsolutePacket.z).distanceSquared(this.riding) < 1000) {
-                            ((EntityBoat) this.riding).onInput(moveEntityAbsolutePacket.x, moveEntityAbsolutePacket.y, moveEntityAbsolutePacket.z, moveEntityAbsolutePacket.headYaw);
-                        }
-                    }
-                    break;
-                 */
                 case ProtocolInfo.MOVE_ENTITY_ABSOLUTE_PACKET: {
                     if (!this.isAlive() || !this.spawned || this.getRiding() == null) {
                         break;
