@@ -85,7 +85,7 @@ public class TestLegacyItemIds {
         }
         for (Class<?> c : Item.list) {
             if (c != null) {
-                if (c.getSimpleName().contains("Block")) {
+                if (c.getSimpleName().startsWith("Block")) {
                     continue;
                 }
                 Constructor<? extends Item> declaredConstructor = (Constructor<? extends Item>) c.getDeclaredConstructor(null);
