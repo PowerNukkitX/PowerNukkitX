@@ -81,7 +81,7 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
     private static final BlockState CARROTS = new BlockState(Block.CARROT_BLOCK);
     private static final BlockState POTATOES = new BlockState(Block.POTATO_BLOCK);
     private static final BlockState BEETROOTS = new BlockState(Block.BEETROOT_BLOCK);
-    private static final BlockState BLACK_WOOL = new BlockState(Block.WOOL, DyeColor.BLACK.getWoolData());
+    private static final BlockState BLACK_WOOL = new BlockState(Block.BLACK_WOOL);
     private static final BlockState BROWN_CARPET = new BlockState(Block.CARPET, DyeColor.BROWN.getWoolData()); //BE
 
     public static List<PieceWeight> getStructureVillageWeightedPieceList(NukkitRandom random, int size) {
