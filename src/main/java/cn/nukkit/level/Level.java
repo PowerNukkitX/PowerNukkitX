@@ -4436,8 +4436,8 @@ public class Level implements ChunkManager, Metadatable {
                 int Z = chunk.getZ();
                 this.unloadChunkRequest(X, Z, true);
             }
-            this.unloadChunks(force);
         }
+        this.unloadChunks(force);
 
         this.requireProvider().doGarbageCollection();
         this.timings.doChunkGC.stopTiming();
