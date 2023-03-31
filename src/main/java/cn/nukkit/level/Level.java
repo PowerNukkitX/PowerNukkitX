@@ -4443,6 +4443,14 @@ public class Level implements ChunkManager, Metadatable {
         this.timings.doChunkGC.stopTiming();
     }
 
+    /**
+     * 在一些空闲的时间片对Level进行内存垃圾收集
+     * <p>
+     * Run memory garbage collection on Level in some free time slices
+     *
+     * @param allocatedTime free time slices
+     */
+    @PowerNukkitXInternal
     public void doGarbageCollection(long allocatedTime) {
         long start = System.currentTimeMillis();
         if (unloadChunks(start, allocatedTime, false)) {
