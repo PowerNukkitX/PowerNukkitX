@@ -448,7 +448,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.socketAddress = socketAddress;
         this.clientID = clientID;
         this.loaderId = Level.generateChunkLoaderId(this);
-        this.chunksPerTick = this.server.getConfig("chunk-sending.per-tick", 4);
+        this.chunksPerTick = this.server.getConfig("chunk-sending.per-tick", 8);
         this.spawnThreshold = this.server.getConfig("chunk-sending.spawn-threshold", 56);
         this.spawnPosition = null;
         this.gamemode = this.server.getGamemode();

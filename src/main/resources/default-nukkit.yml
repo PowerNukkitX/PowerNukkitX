@@ -43,7 +43,7 @@ chunk-saving:
  maximum-size-per-chunk: 1048576
 
 chunk-sending:
- per-tick: 4
+ per-tick: 8
  max-chunks: 192
  spawn-threshold: 56
  cache-chunks: false
