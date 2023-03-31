@@ -502,13 +502,13 @@ public class Level implements ChunkManager, Metadatable {
 
     @PowerNukkitXOnly
     @Since("1.19.21-r1")
-    public static synchronized void addAntiXrayTransparentBlock(@NotNull Block block) {
+    public static void addAntiXrayTransparentBlock(@NotNull Block block) {
         transparentBlockRuntimeIds.add(block.getRuntimeId());
     }
 
     @PowerNukkitXOnly
     @Since("1.19.21-r1")
-    public synchronized static IntSet getRawTransparentBlockRuntimeIds() {
+    public static IntSet getRawTransparentBlockRuntimeIds() {
         return transparentBlockRuntimeIds;
     }
 
@@ -548,7 +548,7 @@ public class Level implements ChunkManager, Metadatable {
 
     @PowerNukkitXOnly
     @Since("1.19.21-r1")
-    public synchronized int getFakeOreDenominator() {
+    public int getFakeOreDenominator() {
         return fakeOreDenominator;
     }
 
@@ -585,7 +585,7 @@ public class Level implements ChunkManager, Metadatable {
     @PowerNukkitXInternal
     @PowerNukkitXOnly
     @Since("1.19.21-r1")
-    public synchronized Int2IntMap getRawRealOreToReplacedRuntimeIdMap() {
+    public Int2IntMap getRawRealOreToReplacedRuntimeIdMap() {
         return this.realOreToReplacedRuntimeIds;
     }
 
@@ -618,7 +618,7 @@ public class Level implements ChunkManager, Metadatable {
     @PowerNukkitXInternal
     @PowerNukkitXOnly
     @Since("1.19.21-r1")
-    public synchronized Int2ObjectMap<IntList> getRawFakeOreToPutRuntimeIdMap() {
+    public Int2ObjectMap<IntList> getRawFakeOreToPutRuntimeIdMap() {
         return this.fakeOreToPutRuntimeIds;
     }
 
