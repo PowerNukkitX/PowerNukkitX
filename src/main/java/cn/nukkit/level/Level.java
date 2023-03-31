@@ -1200,8 +1200,6 @@ public class Level implements ChunkManager, Metadatable {
             this.unloadChunks();
             this.timings.doTickPending.startTiming();
 
-            int polled = 0;
-
             this.updateQueue.tick(this.getCurrentTick());
             this.timings.doTickPending.stopTiming();
 
@@ -3876,11 +3874,11 @@ public class Level implements ChunkManager, Metadatable {
                 allChunkRequestTask.add(CompletableFuture.runAsync(task, server.computeThreadPool));
             }
         }
+        this.timings.syncChunkSendPrepareTimer.stopTiming();
         if (!allChunkRequestTask.isEmpty()) {
-            CompletableFuture.allOf(allChunkRequestTask.toArray(new CompletableFuture<?>[]{})).join();
+            CompletableFuture.allOf(allChunkRequestTask.toArray(CompletableFuture<?>[]::new)).join();
             allChunkRequestTask.clear();
         }
-        this.timings.syncChunkSendPrepareTimer.stopTiming();
         this.timings.syncChunkSendTimer.stopTiming();
     }
 
