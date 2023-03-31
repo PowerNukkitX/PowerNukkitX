@@ -282,9 +282,9 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
             tmpSubChunkStreams[i] = new BinaryStream(new byte[8192]).reset(); // 8KB
         }
         if (level != null && level.isAntiXrayEnabled()) {
-            IntStream.range(0, subChunkCount).forEach(i -> sections[i].writeObfuscatedTo(tmpSubChunkStreams[i], level));
+            IntStream.range(0, subChunkCount).parallel().forEach(i -> sections[i].writeObfuscatedTo(tmpSubChunkStreams[i], level));
         } else {
-            IntStream.range(0, subChunkCount).forEach(i -> sections[i].writeTo(tmpSubChunkStreams[i]));
+            IntStream.range(0, subChunkCount).parallel().forEach(i -> sections[i].writeTo(tmpSubChunkStreams[i]));
         }
         for (int i = 0; i < subChunkCount; i++) {
             stream.put(tmpSubChunkStreams[i].getBuffer());
