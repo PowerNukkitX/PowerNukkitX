@@ -508,7 +508,7 @@ public class Level implements ChunkManager, Metadatable {
 
     @PowerNukkitXOnly
     @Since("1.19.21-r1")
-    public static IntSet getRawTransparentBlockRuntimeIds() {
+    public synchronized static IntSet getRawTransparentBlockRuntimeIds() {
         return transparentBlockRuntimeIds;
     }
 
@@ -548,7 +548,7 @@ public class Level implements ChunkManager, Metadatable {
 
     @PowerNukkitXOnly
     @Since("1.19.21-r1")
-    public int getFakeOreDenominator() {
+    public synchronized int getFakeOreDenominator() {
         return fakeOreDenominator;
     }
 
@@ -585,7 +585,7 @@ public class Level implements ChunkManager, Metadatable {
     @PowerNukkitXInternal
     @PowerNukkitXOnly
     @Since("1.19.21-r1")
-    public Int2IntMap getRawRealOreToReplacedRuntimeIdMap() {
+    public synchronized Int2IntMap getRawRealOreToReplacedRuntimeIdMap() {
         return this.realOreToReplacedRuntimeIds;
     }
 
@@ -618,7 +618,7 @@ public class Level implements ChunkManager, Metadatable {
     @PowerNukkitXInternal
     @PowerNukkitXOnly
     @Since("1.19.21-r1")
-    public Int2ObjectMap<IntList> getRawFakeOreToPutRuntimeIdMap() {
+    public synchronized Int2ObjectMap<IntList> getRawFakeOreToPutRuntimeIdMap() {
         return this.fakeOreToPutRuntimeIds;
     }
 
@@ -3853,7 +3853,9 @@ public class Level implements ChunkManager, Metadatable {
         this.chunkSendQueue.remove(index);
     }
 
-    private final ArrayList<CompletableFuture<?>> allChunkRequestTask = new ArrayList<>();
+    @PowerNukkitXOnly
+    @Since("1.19.70-r2")
+    private final ArrayList<CompletableFuture<?>> allChunkRequestTask = new ArrayList<>(32);
 
     private void processChunkRequest() {
         this.timings.syncChunkSendTimer.startTiming();
