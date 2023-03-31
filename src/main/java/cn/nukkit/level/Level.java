@@ -3853,7 +3853,9 @@ public class Level implements ChunkManager, Metadatable {
 
     @PowerNukkitXOnly
     @Since("1.19.70-r2")
-    private final ArrayList<CompletableFuture<?>> allChunkRequestTask = new ArrayList<>(32);
+    private final ArrayList<CompletableFuture<?>> allChunkRequestTask = new ArrayList<>(
+            Server.getInstance().getConfig("chunk-sending.per-tick", 8) * Server.getInstance().getMaxPlayers()
+    );
 
     private void processChunkRequest() {
         this.timings.syncChunkSendTimer.startTiming();
