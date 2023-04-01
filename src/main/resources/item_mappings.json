@@ -54,8 +54,7 @@
     "16": "minecraft:black_dye",
     "17": "minecraft:brown_dye",
     "18": "minecraft:blue_dye",
-    "19": "minecraft:white_dye",
-    "20": "minecraft:glow_ink_sac"
+    "19": "minecraft:white_dye"
   },
   "minecraft:spawn_egg": {
     "0": "",
