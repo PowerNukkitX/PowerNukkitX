@@ -1510,6 +1510,7 @@ public class Server {
                         }
 
                         if (allocated > 0) {
+                            //noinspection BusyWait
                             Thread.sleep(allocated, 900000);
                         }
                     }
