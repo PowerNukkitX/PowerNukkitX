@@ -3,7 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySign;
@@ -14,11 +13,10 @@ import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.event.block.SignColorChangeEvent;
 import cn.nukkit.event.block.SignGlowEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemGlowInkSac;
 import cn.nukkit.item.ItemSign;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.item.StringItem;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.Position;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.CompassRoseDirection;
@@ -29,7 +27,6 @@ import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Faceable;
 import lombok.extern.log4j.Log4j2;
-
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -45,7 +42,7 @@ import static cn.nukkit.math.CompassRoseDirection.*;
 public class BlockSignPost extends BlockTransparentMeta implements Faceable, BlockEntityHolder<BlockEntitySign> {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final BlockProperty<CompassRoseDirection> GROUND_SIGN_DIRECTION = new ArrayBlockProperty<>("ground_sign_direction", false, new CompassRoseDirection[] {
+    public static final BlockProperty<CompassRoseDirection> GROUND_SIGN_DIRECTION = new ArrayBlockProperty<>("ground_sign_direction", false, new CompassRoseDirection[]{
             SOUTH, SOUTH_SOUTH_WEST, SOUTH_WEST, WEST_SOUTH_WEST,
             WEST, WEST_NORTH_WEST, NORTH_WEST, NORTH_NORTH_WEST,
             NORTH, NORTH_NORTH_EAST, NORTH_EAST, EAST_NORTH_EAST,
@@ -158,7 +155,7 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable, Blo
 
         if (face == BlockFace.UP) {
             CompassRoseDirection direction = GROUND_SIGN_DIRECTION.getValueForMeta(
-                    (int) Math.floor((((player != null? player.yaw : 0) + 180) * 16 / 360) + 0.5) & 0x0f
+                    (int) Math.floor((((player != null ? player.yaw : 0) + 180) * 16 / 360) + 0.5) & 0x0f
             );
 
             BlockState post = BlockState.of(getPostId()).withProperty(GROUND_SIGN_DIRECTION, direction);
@@ -254,43 +251,12 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable, Blo
     }
 
     @Override
-    public boolean onActivate(Item item, Player player) {
-        boolean glow = false;
-        if (item.getId() == Item.DYE || (item instanceof StringItem && (glow = "minecraft:glow_ink_sac".equals(item.getNamespaceId())))) {
-            BlockEntity blockEntity = this.level.getBlockEntity(this);
-            if (!(blockEntity instanceof BlockEntitySign sign)) {
-                return false;
-            }
-
-            if (item instanceof StringItem || (item.getId() == Item.DYE && item.getDamage() == DyeColor.BLACK.getDyeData())) {
-                if (sign.isGlowing() == glow) {
-                    if (player != null) {
-                        sign.spawnTo(player);
-                    }
-                    return false;
-                }
-
-                SignGlowEvent event = new SignGlowEvent(this, player, glow);
-                this.level.getServer().getPluginManager().callEvent(event);
-                if (event.isCancelled()) {
-                    if (player != null) {
-                        sign.spawnTo(player);
-                    }
-                    return false;
-                }
-
-                sign.setGlowing(glow);
-                sign.spawnToAll();
-
-                this.level.addLevelEvent(this, LevelEventPacket.EVENT_SOUND_INK_SACE_USED);
-
-                if (player != null && (player.getGamemode() & 0x01) == 0) {
-                    item.count--;
-                }
-
-                return true;
-            }
-
+    public boolean onActivate(@NotNull Item item, Player player) {
+        BlockEntity blockEntity = this.level.getBlockEntity(this);
+        if (!(blockEntity instanceof BlockEntitySign sign)) {
+            return false;
+        }
+        if (item.getId() == Item.DYE) {
             BlockColor color = DyeColor.getByDyeData(item.getDamage()).getSignColor();
             if (color.equals(sign.getColor())) {
                 if (player != null) {
@@ -312,6 +278,33 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable, Blo
             sign.spawnToAll();
 
             this.level.addLevelEvent(this, LevelEventPacket.EVENT_SOUND_DYE_USED);
+
+            if (player != null && (player.getGamemode() & 0x01) == 0) {
+                item.count--;
+            }
+
+            return true;
+        } else if (item instanceof ItemGlowInkSac) {
+            if (sign.isGlowing()) {
+                if (player != null) {
+                    sign.spawnTo(player);
+                }
+                return false;
+            }
+
+            SignGlowEvent event = new SignGlowEvent(this, player, true);
+            this.level.getServer().getPluginManager().callEvent(event);
+            if (event.isCancelled()) {
+                if (player != null) {
+                    sign.spawnTo(player);
+                }
+                return false;
+            }
+
+            sign.setGlowing(true);
+            sign.spawnToAll();
+
+            this.level.addLevelEvent(this, LevelEventPacket.EVENT_SOUND_INK_SACE_USED);
 
             if (player != null && (player.getGamemode() & 0x01) == 0) {
                 item.count--;
