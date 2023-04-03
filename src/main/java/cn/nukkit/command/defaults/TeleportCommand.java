@@ -215,10 +215,10 @@ public class TeleportCommand extends VanillaCommand {
                     return 0;
                 }
                 Position pos = list.getResult(1);
-                Position lookAtPosition = list.getResult(2);
+                Position lookAtPosition = list.getResult(3);
                 boolean checkForBlocks = false;
-                if (list.hasResult(3)) {
-                    checkForBlocks = list.getResult(3);
+                if (list.hasResult(4)) {
+                    checkForBlocks = list.getResult(4);
                 }
                 StringBuilder sb = new StringBuilder();
                 for (Entity victim : victims) {
