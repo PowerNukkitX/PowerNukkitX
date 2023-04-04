@@ -1,12 +1,11 @@
 package cn.nukkit.command.tree.node;
 
+import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * 将全部剩余的参数以空格为分隔符合并，解析为{@link String}值
@@ -16,8 +15,6 @@ import java.util.Set;
 @PowerNukkitXOnly
 @Since("1.19.60-r1")
 public class CommandNode extends ParamNode<String> {
-    private final static Set<String> COMMAND_NAMES = new HashSet<>();
-
     private final List<String> TMP = new ArrayList<>();
 
     private boolean first = true;
@@ -27,7 +24,7 @@ public class CommandNode extends ParamNode<String> {
         if (arg.contains(" ")) {
             arg = "\"" + arg + "\"";
         }
-        if (first && !COMMAND_NAMES.contains(arg)) {
+        if (first && !Server.getInstance().getCommandMap().getCommands().containsKey(arg)) {
             this.error("commands.generic.unknown", arg);
             return;
         }
@@ -45,9 +42,5 @@ public class CommandNode extends ParamNode<String> {
     public void reset() {
         super.reset();
         TMP.clear();
-    }
-
-    public static void setCommandNames(Set<String> names) {
-        if (COMMAND_NAMES.isEmpty()) COMMAND_NAMES.addAll(names);
     }
 }
