@@ -10,6 +10,8 @@ import static java.lang.StrictMath.*;
 
 /**
  * 向量计算工具，同时整合了yaw和pitch与坐标空间的转换功能
+ * <p>
+ * A vector calculation tool that integrates the conversion functions of yaw and pitch and coordinate space at the same time
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -17,6 +19,8 @@ import static java.lang.StrictMath.*;
 public final class BVector3 {
     /**
      * 向量的单位向量
+     * <p>
+     * the unit vector of a vector
      */
     private Vector3 vector3;//标准化的方向向量,模长为1
     private double yaw;//-90 270
@@ -27,8 +31,11 @@ public final class BVector3 {
     private double length;
 
     /**
-     * 通过传入的Location的yaw与pitch初始化BVector3<p/>
+     * 通过传入的Location的yaw与pitch初始化BVector3<br>
      * 此方法返回的BVector3的模长为1
+     * <p>
+     * Initialize BVector3 by passing in the yaw and pitch of Location<br>
+     * The module length of BVector3 returned by this method is 1
      *
      * @param location the location
      * @return the b vector 3
@@ -38,8 +45,11 @@ public final class BVector3 {
     }
 
     /**
-     * 通过传入的Location的yaw与pitch初始化BVector3<p/>
+     * 通过传入的Location的yaw与pitch初始化BVector3<br>
      * 此方法返回的BVector3的模长为传入的length值
+     * <p>
+     * Initialize BVector3 by passing in the yaw and pitch of the Location<br>
+     * The module length of the BVector3 returned by this method is the length value passed in
      *
      * @param location the location
      * @return the b vector 3
@@ -49,8 +59,11 @@ public final class BVector3 {
     }
 
     /**
-     * 通过传入的yaw与pitch初始化BVector3<p/>
+     * 通过传入的yaw与pitch初始化BVector3<br>
      * 此方法返回的BVector3的模长为1
+     * <p>
+     * Initialize BVector3 by passing in yaw and pitch<br>
+     * The module length of BVector3 returned by this method is 1
      *
      * @param yaw   the yaw (-90 270)
      * @param pitch the pitch
@@ -62,6 +75,8 @@ public final class BVector3 {
 
     /**
      * 通过传入的向量坐标初始化BVector3
+     * <p>
+     * Initialize B Vector 3 with the vector coordinates passed in
      *
      * @param pos 向量坐标
      * @return the b vector 3
@@ -72,6 +87,8 @@ public final class BVector3 {
 
     /**
      * 通过传入的向量坐标初始化BVector3
+     * <p>
+     * Initialize B Vector 3 with the vector coordinates passed in
      *
      * @param x the x
      * @param y the y
@@ -84,6 +101,8 @@ public final class BVector3 {
 
     /**
      * 通过传入的yaw、pitch和向量的模初始化BVector3
+     * <p>
+     * Initialize B Vector 3 by the modulus of the incoming yaw, pitch and vector
      *
      * @param yaw    the yaw
      * @param pitch  the pitch
@@ -98,6 +117,8 @@ public final class BVector3 {
 
     /**
      * 通过传入的向量坐标初始化BVector3
+     * <p>
+     * Initialize B Vector 3 with the vector coordinates passed in
      *
      * @param vector3 向量坐标
      */
@@ -136,6 +157,8 @@ public final class BVector3 {
 
     /**
      * 旋转Yaw
+     * <p>
+     * Rotate Yaw
      *
      * @param yaw the yaw
      * @return the b vector 3
@@ -150,6 +173,8 @@ public final class BVector3 {
 
     /**
      * 旋转Pitch
+     * <p>
+     * Rotate Pitch
      *
      * @param pitch the pitch
      * @return the b vector 3
@@ -164,6 +189,8 @@ public final class BVector3 {
 
     /**
      * 旋转yaw和Pitch
+     * <p>
+     * Rotate yaw and pitch
      *
      * @param yaw   the yaw
      * @param pitch the pitch
@@ -204,8 +231,10 @@ public final class BVector3 {
     }
 
     /**
-     * 添加指定模长的方向向量到Vector3(0, 0, 0)<p/>
+     * 添加指定模长的方向向量到Vector3(0, 0, 0)<br>
      * 其实就是返回此向量的坐标
+     * <p>
+     * Adding the direction vector of the specified modulus length to Vector3(0, 0, 0)<br> actually returns the coordinates of this vector
      *
      * @return the vector 3
      */
@@ -293,23 +322,37 @@ public final class BVector3 {
 
     /**
      * 通过方向向量计算出yaw
+     * <p>
+     * Calculate yaw from the direction vector
      *
      * @param vector 方向向量
      * @return yaw
      */
     public static double getYawFromVector(Vector3 vector) {
-        double yaw = toDegrees(asin(-vector.x / sqrt(vector.x * vector.x + vector.z * vector.z)));
+        double length = vector.x * vector.x + vector.z * vector.z;
+        // 避免NAN
+        if (length == 0) {
+            return 0;
+        }
+        double yaw = toDegrees(asin(-vector.x / sqrt(length)));
         return -vector.z > 0.0D ? 180.0D - yaw : StrictMath.abs(yaw) < 1E-10 ? 0 : yaw;
     }
 
     /**
      * 通过方向向量计算出pitch
+     * <p>
+     * Calculate the pitch by the direction vector
      *
      * @param vector 方向向量
      * @return pitch
      */
     public static double getPitchFromVector(Vector3 vector) {
-        var pitch = toDegrees(asin(-vector.y / sqrt(vector.x * vector.x + vector.z * vector.z + vector.y * vector.y)));
+        double length = vector.x * vector.x + vector.z * vector.z + vector.y * vector.y;
+        // 避免NAN
+        if (length == 0) {
+            return 0;
+        }
+        var pitch = toDegrees(asin(-vector.y / sqrt(length)));
         return StrictMath.abs(pitch) < 1E-10 ? 0 : pitch;
     }
 }
