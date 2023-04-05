@@ -13,22 +13,36 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 ## [Dev-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - Future
 This work in progress version supports Minecraft:BE `1.19.70 (Protocol Version 575)`.
 
+## Fixes
+- [#1121] Fix `/execute in dimension` command not working (fixed in [#1122]).
+
+## [1.19.70-r2-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.70-r2) - 2023-4-2
+This work in progress version supports Minecraft:BE `1.19.70 (Protocol Version 575)`.
+
 ## Added
 
 - [#1092] Added AI for Wither Skeleton.
+- [#1118] Concurrent processing of chunks requests.
 
 ## Changed
 
 - [#1103] Backwards compatible item ID change.
 - [#1100] Fixed mistakenly deleted `getBreakTime` method.
+- [#1113] Optimize the code.
+- [#1119] Move `Level.unloadChunks` into `asyncChunkGarbageCollection`.
 
 ## Fixes
 
-- [#1102] Fix the second hand related bug (fix in[#1105]).
+- [#1101] Fix the problem that too short java class path cannot be imported into JS.
+- [#1102] Fix the second hand related bug (fixed in[#1105]).
 - [#1106] Repair the light-emitting item display box can not be placed, optimize some logic.
 - [#1108] Fix not being able to craft splash potions.
+- [#1110] Fix bug in default matching behavior of mod recipes.
+- [#1113] Fix bug.
+- [#1116] Fix `legacy_item_ids.json`.
+- [#1120] Fix glow ink sac can't be use.
 
-## [1.19.70-r1-PNX](https://github.com/PowerNukkitX/releases/tag/1.19.70-r1) - 2023-3-19
+## [1.19.70-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.70-r1) - 2023-3-19
 This work in progress version supports Minecraft:BE `1.19.70 (Protocol Version 575)`.
 
 ## Added
@@ -67,7 +81,7 @@ This work in progress version supports Minecraft:BE `1.19.63 (Protocol Version 5
 
 ## Fixes
 
-- [#1052] Fix totem related bug (fix in [#1060]).
+- [#1052] Fix totem related bug (fixed in [#1060]).
 - [#1061] Fix PNX built-in world generator cactus height.
 
 ## [1.19.62-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.62-r1) - 2023-2-24
@@ -154,7 +168,7 @@ This work in progress version supports Minecraft:BE `1.19.60 (Protocol Version 5
 - [#889] Fix 1.19.50 bug where small maps don't show up.
 - [#890] Fix NPE issue with `AdventureSettings`.
 - [#900] Fix the bug that Item and Tag can't be found in both directions.
-- [#903] Fix `ItemCreativeCategory` enumeration ordinal error (fix in [#1000]).
+- [#903] Fix `ItemCreativeCategory` enumeration ordinal error (fixed in [#1000]).
 - [#909] Fix the abnormal behavior of `InventorySlice#isFull`.
 - [#911] Fix EntityCanAttack ArrayIndexOutOfBoundsException.
 - [#916] Try to fix crafting grid sync.
@@ -166,20 +180,20 @@ This work in progress version supports Minecraft:BE `1.19.60 (Protocol Version 5
 - [#932] Fix a compatibility issue between `Player.setGamemode()` and WaterDog.
 - [#934] Fix the problem that `useBreakOn` method is called twice.
 - [#950]/[#1024] Fix some bugs.
-- [#956] Fix sprint not working when player falls through powder snow (fix in [#957]).
+- [#956] Fix sprint not working when player falls through powder snow (fixed in [#957]).
 - [#960] Fix preprocessing of command prefix | Funtion reads blank lines.
 - [#961] Fix `Item#equals` not comparing custom items.
-- [#966] Fix collision box calculation not ignoring spectator mode players (fix in [#970]).
-- [#971] Fix player turning head also triggers sonic (fix in [#973]).
+- [#966] Fix collision box calculation not ignoring spectator mode players (fixed in [#970]).
+- [#971] Fix player turning head also triggers sonic (fixed in [#973]).
 - [#972] Fix /clear command.
-- [#975] Fix structure vacancy causing choke damage (fix in [#977]).
+- [#975] Fix structure vacancy causing choke damage (fixed in [#977]).
 - [#976] Fix a bug that causes players to get stuck in a wall when swimming through a frame of water.
 - [#978] Fix for flower pots.
 - [#985] Fix the bug that /unban can't operate offline players.
 - [#996] Fix a bug related to redstone.
 - [#1006] Fix `execute`,`commandblockoptput`,`sendcommandfeedback`.
 - [#1007] Fix a `IllegalStateException`.
-- [#1014]/[#1015] Fix bug related to trip hooks (fix in [#1018]).
+- [#1014]/[#1015] Fix bug related to trip hooks (fixed in [#1018]).
 - [#1016] Fix dropper.
 - [#1020] Fix player class not handling `motion`.
 
@@ -566,8 +580,8 @@ This work in progress version supports Minecraft:BE `1.19.20 (Protocol Version 5
 
 ### Fixes
 
-- [#525] Fix Azalea leaves aren't disappearing (fix in [#528]).
-- [#526] Fix Items cannot be recolored (fix in [#527]).
+- [#525] Fix Azalea leaves aren't disappearing (fixed in [#528]).
+- [#526] Fix Items cannot be recolored (fixed in [#527]).
 
 
 ## [1.19.20-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.20-r1) - 2022-8-10 - (Pre Release)
@@ -2309,11 +2323,20 @@ Need to switch languages?
 [#1088]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1088
 [#1092]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1092
 [#1100]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1100
+[#1101]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1101
 [#1102]: https://github.com/PowerNukkitX/PowerNukkitX/issues/1102
 [#1103]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1103
 [#1105]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1105
 [#1106]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1106
 [#1108]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1108
+[#1110]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1110
+[#1113]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1113
+[#1116]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1116
+[#1118]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1118
+[#1119]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1119
+[#1120]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1120
+[#1121]: https://github.com/PowerNukkitX/PowerNukkitX/issues/1121
+[#1122]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1122
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->
@@ -2385,6 +2408,7 @@ Need to switch languages?
 
 <!--1.19.70-r1-PNX Protocol Version 575-->
 [#1.19.70-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.70-r1
+[#1.19.70-r2]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.70-r2
 <!--1.19.xx-PNX Version summary End-->
 
 <!--PowerNukkitX Urls-->
