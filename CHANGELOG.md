@@ -34,7 +34,7 @@ This work in progress version supports Minecraft:BE `1.19.70 (Protocol Version 5
 ## Fixes
 
 - [#1101] Fix the problem that too short java class path cannot be imported into JS.
-- [#1102] Fix the second hand related bug (fixed in[#1105]).
+- [#1102] Fix the secondary hand related bug (fixed in[#1105]).
 - [#1106] Repair the light-emitting item display box can not be placed, optimize some logic.
 - [#1108] Fix not being able to craft splash potions.
 - [#1110] Fix bug in default matching behavior of mod recipes.
