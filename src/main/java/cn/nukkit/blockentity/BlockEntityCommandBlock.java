@@ -235,6 +235,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
         return blockId == BlockID.COMMAND_BLOCK || blockId == BlockID.CHAIN_COMMAND_BLOCK || blockId == BlockID.REPEATING_COMMAND_BLOCK;
     }
 
+    @NotNull
     @Override
     public String getName() {
         return this.hasName() ? this.namedTag.getString(TAG_CUSTOM_NAME) : "!";

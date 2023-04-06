@@ -6,6 +6,7 @@ import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.level.Level;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
+import org.jetbrains.annotations.NotNull;
 
 public interface ICommandBlock extends CommandSender, InventoryHolder {
 
@@ -34,6 +35,7 @@ public interface ICommandBlock extends CommandSender, InventoryHolder {
     String TAG_TICK_DELAY = "TickDelay";
     String TAG_EXECUTE_ON_FIRST_TICK = "ExecuteOnFirstTick";
 
+    @NotNull
     String getName();
 
     boolean hasName();

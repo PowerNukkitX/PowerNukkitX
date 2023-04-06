@@ -57,6 +57,7 @@ public class PlaySoundCommand extends VanillaCommand {
             log.addNumTooSmall(5, 0).output();
             return 0;
         }
+
         if (targets == null || targets.isEmpty()) {
             if (sender.isPlayer()) {
                 targets = Lists.newArrayList(sender.asPlayer());
@@ -65,7 +66,12 @@ public class PlaySoundCommand extends VanillaCommand {
                 return 0;
             }
         }
+        if (position == null) {
+            position = targets.get(0).getPosition();
+        }
+
         double maxDistance = volume > 1 ? volume * 16 : 16;
+
         List<String> successes = Lists.newArrayList();
         for (Player player : targets) {
             String name = player.getName();

@@ -1,6 +1,7 @@
 package cn.nukkit.command;
 
 import cn.nukkit.lang.TextContainer;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Represents an RCON command sender.
@@ -25,6 +26,7 @@ public class RemoteConsoleCommandSender extends ConsoleCommandSender {
         return messages.toString();
     }
 
+    @NotNull
     @Override
     public String getName() {
         return "Rcon";

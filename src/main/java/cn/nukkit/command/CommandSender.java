@@ -10,10 +10,7 @@ import cn.nukkit.lang.TextContainer;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.permission.Permissible;
-
 import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 
 /**
  * 能发送命令的对象.<br>
@@ -118,7 +115,6 @@ public interface CommandSender extends Permissible {
      */
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    @Nullable
     default Entity asEntity() {
         return null;
     }
@@ -132,7 +128,6 @@ public interface CommandSender extends Permissible {
      */
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    @Nullable
     default Player asPlayer() {
         return null;
     }
