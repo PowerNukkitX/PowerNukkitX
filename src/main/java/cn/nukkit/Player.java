@@ -6294,6 +6294,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return "Player";
     }
 
+    @NotNull
     @Override
     public String getName() {
         return this.username;
