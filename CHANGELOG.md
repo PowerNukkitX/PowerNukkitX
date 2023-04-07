@@ -1642,6 +1642,7 @@ Fixes several anvil issues.
   <summary>1.19.70-PNX</summary>
 
    1. [#1.19.70-r1] PNX-1.19.70-r1 (Protocol Version 575)
+   2. [#1.19.70-r2] PNX-1.19.70-r2 (Protocol Version 575)
 
 </details>
 
