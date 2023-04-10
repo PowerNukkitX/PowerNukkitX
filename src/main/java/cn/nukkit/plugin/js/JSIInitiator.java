@@ -64,13 +64,13 @@ public final class JSIInitiator {
             if (len == 0) {
                 throw new IllegalArgumentException("Failed to execute 'setInterval': 1 argument required, but only 0 present.");
             }
-            var args = new Object[len - 1];
+            var args = new Object[Math.max(0, len - 2)];
             if (args.length != 0) {
-                System.arraycopy(arguments, 1, args, 0, len - 1);
+                System.arraycopy(arguments, 2, args, 0, len - 2);
             }
             var id = globalTimerId.getAndIncrement();
             var task = new JSTimerTask(id, context, arguments[0], args);
-            var interval = 0L;
+            var interval = 1L;
             if (len != 1) {
                 var tmp = arguments[1];
                 if (tmp.isNumber()) {
@@ -89,13 +89,13 @@ public final class JSIInitiator {
             if (len == 0) {
                 throw new IllegalArgumentException("Failed to execute 'setTimeout': 1 argument required, but only 0 present.");
             }
-            var args = new Object[len - 1];
+            var args = new Object[Math.max(0, len - 2)];
             if (args.length != 0) {
-                System.arraycopy(arguments, 1, args, 0, len - 1);
+                System.arraycopy(arguments, 2 , args, 0, len - 2);
             }
             var id = globalTimerId.getAndIncrement();
             var task = new JSTimerTask(id, context, arguments[0], args);
-            var timeout = 0L;
+            var timeout = 1L;
             if (len != 1) {
                 var tmp = arguments[1];
                 if (tmp.isNumber()) {
