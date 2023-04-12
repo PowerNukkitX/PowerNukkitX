@@ -3546,6 +3546,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         valid = false;
                     }
 
+                    if(loginPacket.username.startsWith(" ") || loginPacket.username.startsWith(".")) {
+                        valid = false;
+                    }
+
                     for (int i = 0; i < len && valid; i++) {
                         char c = loginPacket.username.charAt(i);
                         if ((c >= 'a' && c <= 'z') ||
