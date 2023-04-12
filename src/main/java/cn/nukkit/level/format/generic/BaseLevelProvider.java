@@ -287,8 +287,13 @@ public abstract class BaseLevelProvider implements LevelProvider {
     public GameRules getGamerules() {
         GameRules rules = GameRules.getDefault();
 
-        if (this.levelData.contains("GameRules"))
-            rules.readNBT(this.levelData.getCompound("GameRules"));
+        try {
+            if (this.levelData.contains("GameRules"))
+                rules.readNBT(this.levelData.getCompound("GameRules"));
+        } catch (Throwable ignore) {
+            log.warn("Failed to load game rules for level: " + getName() + ", fall back to the default");
+            rules = GameRules.getDefault();
+        }
 
         return rules;
     }
