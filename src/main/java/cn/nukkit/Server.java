@@ -347,6 +347,10 @@ public class Server {
     @Since("1.19.50-r1")
     private FreezableArrayManager freezableArrayManager;
 
+    @PowerNukkitXOnly
+    @Since("1.19.70-r3")
+    public Pattern playerNameRegex = Pattern.compile("^(?![_ ])([a-zA-Z0-9_]{3,16}(?: [a-zA-Z0-9_]{3,17})*)(?<![_ ])$");
+
     /**
      * 最小初始化测试
      * Minimal initializer for testing

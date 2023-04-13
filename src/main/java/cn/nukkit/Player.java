@@ -126,6 +126,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 import static cn.nukkit.utils.Utils.dynamic;
@@ -3541,9 +3542,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     this.rawUUID = Binary.writeUUID(this.uuid);
 
                     boolean valid = true;
-                    int len = loginPacket.username.length();
 
-                    if (!loginPacket.username.matches("^(?![_ ])([a-zA-Z0-9_]{3,16}(?: [a-zA-Z0-9_]{3,17})*)(?<![_ ])$")) {
+                    Matcher usernameMatcher = this.server.playerNameRegex.matcher(loginPacket.username);
+                    if (!usernameMatcher.matches()) {
                        valid = false;
                     }
 
