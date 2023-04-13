@@ -127,6 +127,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static cn.nukkit.utils.Utils.dynamic;
@@ -422,6 +423,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected Entity lastBeAttackEntity = null;
 
     private boolean foodEnabled = true;
+
+    @PowerNukkitXOnly
+    @Since("1.19.70-r3")
+    public Pattern playerNameRegex = Pattern.compile("^(?![_ ])([a-zA-Z0-9_]{3,16}(?: [a-zA-Z0-9_]{3,17})*)(?<![_ ])$");
 
     /**
      * 单元测试用的构造函数
@@ -3543,7 +3548,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                     boolean valid = true;
 
-                    Matcher usernameMatcher = this.server.playerNameRegex.matcher(loginPacket.username);
+                    Matcher usernameMatcher = this.playerNameRegex.matcher(loginPacket.username);
                     if (!usernameMatcher.matches()) {
                        valid = false;
                     }
