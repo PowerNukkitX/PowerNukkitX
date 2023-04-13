@@ -3542,26 +3542,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                     boolean valid = true;
                     int len = loginPacket.username.length();
-                    if (len > 16 || len < 3) {
-                        valid = false;
-                    }
 
-                    if(loginPacket.username.startsWith(" ") || loginPacket.username.startsWith(".")) {
-                        valid = false;
-                    }
-
-                    for (int i = 0; i < len && valid; i++) {
-                        char c = loginPacket.username.charAt(i);
-                        if ((c >= 'a' && c <= 'z') ||
-                                (c >= 'A' && c <= 'Z') ||
-                                (c >= '0' && c <= '9') ||
-                                c == '_' || c == ' '
-                        ) {
-                            continue;
-                        }
-
-                        valid = false;
-                        break;
+                    if (!loginPacket.username.matches("^(?![_ ])([a-zA-Z0-9_]{3,16}(?: [a-zA-Z0-9_]{3,17})*)(?<![_ ])$")) {
+                       valid = false;
                     }
 
                     if (!valid || Objects.equals(this.iusername, "rcon") || Objects.equals(this.iusername, "console")) {
