@@ -424,9 +424,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     private boolean foodEnabled = true;
 
+    /**
+     * Regular expression for validating player name. Allows only: Number nicknames, letter nicknames, number and letters nicknames, nicknames with underscores, nicknames with space in the middle
+     */
     @PowerNukkitXOnly
     @Since("1.19.70-r3")
-    private static final Pattern playerNameRegex = Pattern.compile("^(?! )([a-zA-Z0-9_ ]{2,16}[a-zA-Z0-9_])(?<! )$");
+    private static final Pattern playerNamePattern = Pattern.compile("^(?! )([a-zA-Z0-9_ ]{2,15}[a-zA-Z0-9_])(?<! )$");
 
 
     /**
@@ -3549,7 +3552,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                     boolean valid = true;
 
-                    Matcher usernameMatcher = this.playerNameRegex.matcher(loginPacket.username);
+                    Matcher usernameMatcher = playerNamePattern.matcher(loginPacket.username);
                     if (!usernameMatcher.matches()) {
                        valid = false;
                     }
