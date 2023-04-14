@@ -426,7 +426,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @PowerNukkitXOnly
     @Since("1.19.70-r3")
-    public Pattern playerNameRegex = Pattern.compile("^(?! )([a-zA-Z0-9_ ]{2,16}[a-zA-Z0-9_])(?<! )$");
+    private static final Pattern playerNameRegex = Pattern.compile("^(?! )([a-zA-Z0-9_ ]{2,16}[a-zA-Z0-9_])(?<! )$");
 
 
     /**
