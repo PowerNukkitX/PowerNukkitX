@@ -7,8 +7,8 @@ import cn.nukkit.api.Since;
 import cn.nukkit.command.exceptions.SelectorSyntaxException;
 import cn.nukkit.command.selector.EntitySelectorAPI;
 import cn.nukkit.entity.Entity;
+import com.google.common.collect.Lists;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -23,10 +23,10 @@ public class EntitiesNode extends TargetNode<Entity> {
     //todo 支持uuid 或者 xuid
     @Override
     public void fill(String arg) {
+        List<Entity> entities;
         if (arg.isBlank()) {
             this.error();
         } else if (EntitySelectorAPI.getAPI().checkValid(arg)) {
-            List<Entity> entities;
             try {
                 entities = EntitySelectorAPI.getAPI().matchEntities(this.parent.parent.getSender(), arg);
             } catch (SelectorSyntaxException exception) {
@@ -35,7 +35,12 @@ public class EntitiesNode extends TargetNode<Entity> {
             }
             this.value = entities;
         } else {
-            this.value = Collections.singletonList(Server.getInstance().getPlayer(arg));
+            entities = Lists.newArrayList();
+            Player player = Server.getInstance().getPlayer(arg);
+            if (player != null) {
+                entities.add(player);
+            }
+            this.value = entities;
         }
     }
 }
