@@ -606,6 +606,9 @@ public class Network {
         this.registerPacketNew(ProtocolInfo.toNewProtocolID(ProtocolInfo.CAMERA_PRESETS_PACKET), CameraPresetsPacket.class);
         this.registerPacketNew(ProtocolInfo.toNewProtocolID(ProtocolInfo.UNLOCKED_RECIPES_PACKET), UnlockedRecipesPacket.class);
         this.registerPacketNew(ProtocolInfo.CAMERA_INSTRUCTION_PACKET, CameraInstructionPacket.class);
+        this.registerPacketNew(ProtocolInfo.COMPRESSED_BIOME_DEFINITIONS_LIST, CompressedBiomeDefinitionListPacket.class);
+        this.registerPacketNew(ProtocolInfo.TRIM_DATA, TrimDataPacket.class);
+        this.registerPacketNew(ProtocolInfo.OPEN_SIGN, OpenSignPacket.class);
 
         this.packetPool.trim();
     }

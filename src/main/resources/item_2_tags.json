@@ -2,6 +2,7 @@
   "minecraft:diamond_hoe": [
     "minecraft:is_tool",
     "minecraft:is_hoe",
+    "minecraft:transformable_items",
     "minecraft:diamond_tier",
     "minecraft:digger"
   ],
@@ -37,6 +38,7 @@
   "minecraft:diamond_sword": [
     "minecraft:is_tool",
     "minecraft:is_sword",
+    "minecraft:transformable_items",
     "minecraft:diamond_tier"
   ],
   "minecraft:golden_hoe": [
@@ -58,6 +60,7 @@
   ],
   "minecraft:diamond_axe": [
     "minecraft:is_tool",
+    "minecraft:transformable_items",
     "minecraft:diamond_tier",
     "minecraft:digger",
     "minecraft:is_axe"
@@ -141,6 +144,7 @@
   "minecraft:diamond_pickaxe": [
     "minecraft:is_tool",
     "minecraft:is_pickaxe",
+    "minecraft:transformable_items",
     "minecraft:diamond_tier",
     "minecraft:digger"
   ],
@@ -152,6 +156,7 @@
   ],
   "minecraft:diamond_shovel": [
     "minecraft:is_tool",
+    "minecraft:transformable_items",
     "minecraft:diamond_tier",
     "minecraft:is_shovel",
     "minecraft:digger"
@@ -201,6 +206,134 @@
     "minecraft:crimson_stems",
     "minecraft:logs"
   ],
+  "minecraft:iron_chestplate": [
+    "minecraft:trimmable_armors",
+    "minecraft:is_armor",
+    "minecraft:iron_tier"
+  ],
+  "minecraft:leather_chestplate": [
+    "minecraft:trimmable_armors",
+    "minecraft:leather_tier",
+    "minecraft:is_armor"
+  ],
+  "minecraft:iron_leggings": [
+    "minecraft:trimmable_armors",
+    "minecraft:is_armor",
+    "minecraft:iron_tier"
+  ],
+  "minecraft:leather_leggings": [
+    "minecraft:trimmable_armors",
+    "minecraft:leather_tier",
+    "minecraft:is_armor"
+  ],
+  "minecraft:chainmail_helmet": [
+    "minecraft:trimmable_armors",
+    "minecraft:is_armor",
+    "minecraft:chainmail_tier"
+  ],
+  "minecraft:netherite_helmet": [
+    "minecraft:trimmable_armors",
+    "minecraft:is_armor",
+    "minecraft:netherite_tier"
+  ],
+  "minecraft:golden_boots": [
+    "minecraft:trimmable_armors",
+    "minecraft:golden_tier",
+    "minecraft:is_armor"
+  ],
+  "minecraft:netherite_chestplate": [
+    "minecraft:trimmable_armors",
+    "minecraft:is_armor",
+    "minecraft:netherite_tier"
+  ],
+  "minecraft:iron_helmet": [
+    "minecraft:trimmable_armors",
+    "minecraft:is_armor",
+    "minecraft:iron_tier"
+  ],
+  "minecraft:chainmail_leggings": [
+    "minecraft:trimmable_armors",
+    "minecraft:is_armor",
+    "minecraft:chainmail_tier"
+  ],
+  "minecraft:turtle_helmet": [
+    "minecraft:trimmable_armors",
+    "minecraft:is_armor"
+  ],
+  "minecraft:diamond_helmet": [
+    "minecraft:trimmable_armors",
+    "minecraft:transformable_items",
+    "minecraft:diamond_tier",
+    "minecraft:is_armor"
+  ],
+  "minecraft:diamond_boots": [
+    "minecraft:trimmable_armors",
+    "minecraft:transformable_items",
+    "minecraft:diamond_tier",
+    "minecraft:is_armor"
+  ],
+  "minecraft:golden_leggings": [
+    "minecraft:trimmable_armors",
+    "minecraft:golden_tier",
+    "minecraft:is_armor"
+  ],
+  "minecraft:leather_boots": [
+    "minecraft:trimmable_armors",
+    "minecraft:leather_tier",
+    "minecraft:is_armor"
+  ],
+  "minecraft:diamond_chestplate": [
+    "minecraft:trimmable_armors",
+    "minecraft:transformable_items",
+    "minecraft:diamond_tier",
+    "minecraft:is_armor"
+  ],
+  "minecraft:netherite_boots": [
+    "minecraft:trimmable_armors",
+    "minecraft:is_armor",
+    "minecraft:netherite_tier"
+  ],
+  "minecraft:iron_boots": [
+    "minecraft:trimmable_armors",
+    "minecraft:is_armor",
+    "minecraft:iron_tier"
+  ],
+  "minecraft:leather_helmet": [
+    "minecraft:trimmable_armors",
+    "minecraft:leather_tier",
+    "minecraft:is_armor"
+  ],
+  "minecraft:netherite_leggings": [
+    "minecraft:trimmable_armors",
+    "minecraft:is_armor",
+    "minecraft:netherite_tier"
+  ],
+  "minecraft:diamond_leggings": [
+    "minecraft:trimmable_armors",
+    "minecraft:transformable_items",
+    "minecraft:diamond_tier",
+    "minecraft:is_armor"
+  ],
+  "minecraft:golden_chestplate": [
+    "minecraft:trimmable_armors",
+    "minecraft:golden_tier",
+    "minecraft:is_armor"
+  ],
+  "minecraft:golden_helmet": [
+    "minecraft:trimmable_armors",
+    "minecraft:golden_tier",
+    "minecraft:is_armor"
+  ],
+  "minecraft:chainmail_chestplate": [
+    "minecraft:trimmable_armors",
+    "minecraft:is_armor",
+    "minecraft:chainmail_tier"
+  ],
+  "minecraft:chainmail_boots": [
+    "minecraft:trimmable_armors",
+    "minecraft:is_armor",
+    "minecraft:chainmail_tier"
+  ],
   "minecraft:writable_book": [
     "minecraft:bookshelf_books",
     "minecraft:lectern_books"
@@ -219,6 +352,9 @@
     "minecraft:planks"
   ],
   "minecraft:crimson_planks": [
+    "minecraft:planks"
+  ],
+  "minecraft:cherry_planks": [
     "minecraft:planks"
   ],
   "minecraft:mangrove_planks": [
@@ -249,6 +385,10 @@
     "minecraft:boat",
     "minecraft:boats"
   ],
+  "minecraft:cherry_chest_boat": [
+    "minecraft:boat",
+    "minecraft:boats"
+  ],
   "minecraft:mangrove_boat": [
     "minecraft:boat",
     "minecraft:boats"
@@ -270,6 +410,10 @@
     "minecraft:boats"
   ],
   "minecraft:jungle_chest_boat": [
+    "minecraft:boat",
+    "minecraft:boats"
+  ],
+  "minecraft:cherry_boat": [
     "minecraft:boat",
     "minecraft:boats"
   ],
@@ -315,6 +459,9 @@
   "minecraft:bamboo_door": [
     "minecraft:door"
   ],
+  "minecraft:cherry_door": [
+    "minecraft:door"
+  ],
   "minecraft:spruce_door": [
     "minecraft:door"
   ],
@@ -346,6 +493,9 @@
     "minecraft:wooden_slabs"
   ],
   "minecraft:wooden_slab": [
+    "minecraft:wooden_slabs"
+  ],
+  "minecraft:cherry_slab": [
     "minecraft:wooden_slabs"
   ],
   "minecraft:crimson_slab": [
@@ -456,6 +606,9 @@
     "minecraft:spawn_egg"
   ],
   "minecraft:bee_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:sniffer_spawn_egg": [
     "minecraft:spawn_egg"
   ],
   "minecraft:warden_spawn_egg": [
@@ -637,7 +790,27 @@
     "minecraft:mangrove_logs",
     "minecraft:logs"
   ],
+  "minecraft:oak_log": [
+    "minecraft:logs_that_burn",
+    "minecraft:logs"
+  ],
   "minecraft:stripped_dark_oak_log": [
+    "minecraft:logs_that_burn",
+    "minecraft:logs"
+  ],
+  "minecraft:stripped_cherry_wood": [
+    "minecraft:logs_that_burn",
+    "minecraft:logs"
+  ],
+  "minecraft:jungle_log": [
+    "minecraft:logs_that_burn",
+    "minecraft:logs"
+  ],
+  "minecraft:birch_log": [
+    "minecraft:logs_that_burn",
+    "minecraft:logs"
+  ],
+  "minecraft:cherry_wood": [
     "minecraft:logs_that_burn",
     "minecraft:logs"
   ],
@@ -649,11 +822,27 @@
     "minecraft:logs_that_burn",
     "minecraft:logs"
   ],
+  "minecraft:acacia_log": [
+    "minecraft:logs_that_burn",
+    "minecraft:logs"
+  ],
   "minecraft:stripped_acacia_log": [
     "minecraft:logs_that_burn",
     "minecraft:logs"
   ],
+  "minecraft:cherry_log": [
+    "minecraft:logs_that_burn",
+    "minecraft:logs"
+  ],
   "minecraft:stripped_spruce_log": [
+    "minecraft:logs_that_burn",
+    "minecraft:logs"
+  ],
+  "minecraft:dark_oak_log": [
+    "minecraft:logs_that_burn",
+    "minecraft:logs"
+  ],
+  "minecraft:spruce_log": [
     "minecraft:logs_that_burn",
     "minecraft:logs"
   ],
@@ -672,15 +861,11 @@
     "minecraft:mangrove_logs",
     "minecraft:logs"
   ],
-  "minecraft:log2": [
-    "minecraft:logs_that_burn",
-    "minecraft:logs"
-  ],
-  "minecraft:log": [
-    "minecraft:logs_that_burn",
-    "minecraft:logs"
-  ],
   "minecraft:stripped_oak_log": [
+    "minecraft:logs_that_burn",
+    "minecraft:logs"
+  ],
+  "minecraft:stripped_cherry_log": [
     "minecraft:logs_that_burn",
     "minecraft:logs"
   ],
@@ -715,21 +900,53 @@
   "minecraft:sand": [
     "minecraft:sand"
   ],
-  "minecraft:diamond_leggings": [
-    "minecraft:diamond_tier",
-    "minecraft:is_armor"
+  "minecraft:eye_armor_trim_smithing_template": [
+    "minecraft:trim_templates"
   ],
-  "minecraft:diamond_chestplate": [
-    "minecraft:diamond_tier",
-    "minecraft:is_armor"
+  "minecraft:wayfinder_armor_trim_smithing_template": [
+    "minecraft:trim_templates"
   ],
-  "minecraft:diamond_helmet": [
-    "minecraft:diamond_tier",
-    "minecraft:is_armor"
+  "minecraft:rib_armor_trim_smithing_template": [
+    "minecraft:trim_templates"
   ],
-  "minecraft:diamond_boots": [
-    "minecraft:diamond_tier",
-    "minecraft:is_armor"
+  "minecraft:shaper_armor_trim_smithing_template": [
+    "minecraft:trim_templates"
+  ],
+  "minecraft:tide_armor_trim_smithing_template": [
+    "minecraft:trim_templates"
+  ],
+  "minecraft:sentry_armor_trim_smithing_template": [
+    "minecraft:trim_templates"
+  ],
+  "minecraft:snout_armor_trim_smithing_template": [
+    "minecraft:trim_templates"
+  ],
+  "minecraft:vex_armor_trim_smithing_template": [
+    "minecraft:trim_templates"
+  ],
+  "minecraft:coast_armor_trim_smithing_template": [
+    "minecraft:trim_templates"
+  ],
+  "minecraft:ward_armor_trim_smithing_template": [
+    "minecraft:trim_templates"
+  ],
+  "minecraft:dune_armor_trim_smithing_template": [
+    "minecraft:trim_templates"
+  ],
+  "minecraft:wild_armor_trim_smithing_template": [
+    "minecraft:trim_templates"
+  ],
+  "minecraft:raiser_armor_trim_smithing_template": [
+    "minecraft:trim_templates"
+  ],
+  "minecraft:spire_armor_trim_smithing_template": [
+    "minecraft:trim_templates"
+  ],
+  "minecraft:silence_armor_trim_smithing_template": [
+    "minecraft:trim_templates"
+  ],
+  "minecraft:host_armor_trim_smithing_template": [
+    "minecraft:trim_templates"
   ],
   "minecraft:potato": [
     "minecraft:is_food"
@@ -779,22 +996,6 @@
   "minecraft:cookie": [
     "minecraft:is_food"
   ],
-  "minecraft:golden_leggings": [
-    "minecraft:golden_tier",
-    "minecraft:is_armor"
-  ],
-  "minecraft:golden_chestplate": [
-    "minecraft:golden_tier",
-    "minecraft:is_armor"
-  ],
-  "minecraft:golden_helmet": [
-    "minecraft:golden_tier",
-    "minecraft:is_armor"
-  ],
-  "minecraft:golden_boots": [
-    "minecraft:golden_tier",
-    "minecraft:is_armor"
-  ],
   "minecraft:cod": [
     "minecraft:is_fish"
   ],
@@ -807,19 +1008,67 @@
   "minecraft:tropical_fish": [
     "minecraft:is_fish"
   ],
-  "minecraft:skull_pottery_shard": [
+  "minecraft:mourner_pottery_shard": [
     "minecraft:decorated_pot_shards"
   ],
   "minecraft:arms_up_pottery_shard": [
     "minecraft:decorated_pot_shards"
   ],
+  "minecraft:burn_pottery_shard": [
+    "minecraft:decorated_pot_shards"
+  ],
+  "minecraft:friend_pottery_shard": [
+    "minecraft:decorated_pot_shards"
+  ],
+  "minecraft:brewer_pottery_shard": [
+    "minecraft:decorated_pot_shards"
+  ],
+  "minecraft:danger_pottery_shard": [
+    "minecraft:decorated_pot_shards"
+  ],
+  "minecraft:heart_pottery_shard": [
+    "minecraft:decorated_pot_shards"
+  ],
+  "minecraft:plenty_pottery_shard": [
+    "minecraft:decorated_pot_shards"
+  ],
+  "minecraft:brick": [
+    "minecraft:decorated_pot_shards"
+  ],
+  "minecraft:blade_pottery_shard": [
+    "minecraft:decorated_pot_shards"
+  ],
+  "minecraft:shelter_pottery_shard": [
+    "minecraft:decorated_pot_shards"
+  ],
+  "minecraft:explorer_pottery_shard": [
+    "minecraft:decorated_pot_shards"
+  ],
+  "minecraft:angler_pottery_shard": [
+    "minecraft:decorated_pot_shards"
+  ],
+  "minecraft:skull_pottery_shard": [
+    "minecraft:decorated_pot_shards"
+  ],
+  "minecraft:howl_pottery_shard": [
+    "minecraft:decorated_pot_shards"
+  ],
+  "minecraft:miner_pottery_shard": [
+    "minecraft:decorated_pot_shards"
+  ],
+  "minecraft:heartbreak_pottery_shard": [
+    "minecraft:decorated_pot_shards"
+  ],
   "minecraft:prize_pottery_shard": [
+    "minecraft:decorated_pot_shards"
+  ],
+  "minecraft:sheaf_pottery_shard": [
     "minecraft:decorated_pot_shards"
   ],
   "minecraft:archer_pottery_shard": [
     "minecraft:decorated_pot_shards"
   ],
-  "minecraft:brick": [
+  "minecraft:snort_pottery_shard": [
     "minecraft:decorated_pot_shards"
   ],
   "minecraft:soul_sand": [
@@ -827,6 +1076,37 @@
   ],
   "minecraft:soul_soil": [
     "minecraft:soul_fire_base_blocks"
+  ],
+  "minecraft:gold_ingot": [
+    "minecraft:trim_materials"
+  ],
+  "minecraft:iron_ingot": [
+    "minecraft:trim_materials"
+  ],
+  "minecraft:emerald": [
+    "minecraft:trim_materials"
+  ],
+  "minecraft:netherite_ingot": [
+    "minecraft:trim_materials",
+    "minecraft:transform_materials"
+  ],
+  "minecraft:quartz": [
+    "minecraft:trim_materials"
+  ],
+  "minecraft:redstone": [
+    "minecraft:trim_materials"
+  ],
+  "minecraft:amethyst_shard": [
+    "minecraft:trim_materials"
+  ],
+  "minecraft:diamond": [
+    "minecraft:trim_materials"
+  ],
+  "minecraft:lapis_lazuli": [
+    "minecraft:trim_materials"
+  ],
+  "minecraft:copper_ingot": [
+    "minecraft:trim_materials"
   ],
   "minecraft:cyan_wool": [
     "minecraft:vibration_damper",
@@ -895,75 +1175,11 @@
     "minecraft:vibration_damper",
     "minecraft:wool"
   ],
-  "minecraft:leather_chestplate": [
-    "minecraft:leather_tier",
-    "minecraft:is_armor"
-  ],
-  "minecraft:leather_helmet": [
-    "minecraft:leather_tier",
-    "minecraft:is_armor"
-  ],
-  "minecraft:leather_boots": [
-    "minecraft:leather_tier",
-    "minecraft:is_armor"
-  ],
-  "minecraft:leather_leggings": [
-    "minecraft:leather_tier",
-    "minecraft:is_armor"
-  ],
-  "minecraft:iron_chestplate": [
-    "minecraft:is_armor",
-    "minecraft:iron_tier"
-  ],
-  "minecraft:iron_leggings": [
-    "minecraft:is_armor",
-    "minecraft:iron_tier"
-  ],
-  "minecraft:chainmail_helmet": [
-    "minecraft:is_armor",
-    "minecraft:chainmail_tier"
-  ],
-  "minecraft:netherite_helmet": [
-    "minecraft:is_armor",
-    "minecraft:netherite_tier"
-  ],
-  "minecraft:netherite_chestplate": [
-    "minecraft:is_armor",
-    "minecraft:netherite_tier"
-  ],
-  "minecraft:iron_helmet": [
-    "minecraft:is_armor",
-    "minecraft:iron_tier"
-  ],
-  "minecraft:chainmail_leggings": [
-    "minecraft:is_armor",
-    "minecraft:chainmail_tier"
-  ],
-  "minecraft:turtle_helmet": [
-    "minecraft:is_armor"
+  "minecraft:netherite_upgrade_smithing_template": [
+    "minecraft:transform_templates"
   ],
   "minecraft:elytra": [
     "minecraft:is_armor"
-  ],
-  "minecraft:netherite_boots": [
-    "minecraft:is_armor",
-    "minecraft:netherite_tier"
-  ],
-  "minecraft:iron_boots": [
-    "minecraft:is_armor",
-    "minecraft:iron_tier"
-  ],
-  "minecraft:netherite_leggings": [
-    "minecraft:is_armor",
-    "minecraft:netherite_tier"
-  ],
-  "minecraft:chainmail_chestplate": [
-    "minecraft:is_armor",
-    "minecraft:chainmail_tier"
-  ],
-  "minecraft:chainmail_boots": [
-    "minecraft:is_armor",
-    "minecraft:chainmail_tier"
   ],
   "minecraft:warped_hyphae": [
     "minecraft:logs",
@@ -1047,6 +1263,9 @@
   "minecraft:bamboo_hanging_sign": [
     "minecraft:sign"
   ],
+  "minecraft:cherry_hanging_sign": [
+    "minecraft:sign"
+  ],
   "minecraft:birch_sign": [
     "minecraft:sign"
   ],
@@ -1054,6 +1273,9 @@
     "minecraft:sign"
   ],
   "minecraft:warped_hanging_sign": [
+    "minecraft:sign"
+  ],
+  "minecraft:cherry_sign": [
     "minecraft:sign"
   ],
   "minecraft:dark_oak_sign": [

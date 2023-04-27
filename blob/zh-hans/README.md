@@ -24,7 +24,7 @@
 
 PowerNukkitX的优势：
 
-1. 支持1.19.70协议。
+1. 支持1.19.80协议。
 2. 原生支持384限高（目前仅限主世界，其余则为256格限高）。
 3. 原生支持地狱世界，无需另外安装插件补丁等。
 4. 支持3D生物群系（完善中）。<!--自定义维度接口 TODO-->
@@ -135,7 +135,7 @@ repositories {
 }
 
 dependencies {
-    compile group: 'cn.powernukkitx', name: 'powernukkitx', version: '1.19.70-r2'
+    compile group: 'cn.powernukkitx', name: 'powernukkitx', version: '1.19.80-r1'
 }
 ```
 
@@ -145,7 +145,7 @@ dependencies {
     <dependency>
         <groupId>cn.powernukkitx</groupId>
         <artifactId>powernukkitx</artifactId>
-        <version>1.19.70-r2</version>
+        <version>1.19.80-r1</version>
     </dependency>
 </dependencies>
 ```

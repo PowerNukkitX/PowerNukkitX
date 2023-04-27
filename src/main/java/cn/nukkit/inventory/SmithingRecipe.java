@@ -19,6 +19,7 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import lombok.ToString;
@@ -38,10 +39,14 @@ import static cn.nukkit.inventory.Recipe.matchItemList;
 @Since("1.4.0.0-PN")
 @ToString
 public class SmithingRecipe extends ShapelessRecipe {
-    private final Item equipment;
-    private final Item ingredient;
+    //被锻造的物品
+    private final Item base;
+    //锻造模板
+    private final Item template;
+    //锻造所用的材料
+    private final Item addition;
+    //输出结果
     private final Item result;
-
     private final List<Item> ingredientsAggregate;
 
     //todo 不知道锻造台是否支持item_tag以及其他类型的配方输入,当前的配方文件中不存在,等待未来检查
@@ -49,13 +54,14 @@ public class SmithingRecipe extends ShapelessRecipe {
     @Since("1.4.0.0-PN")
     public SmithingRecipe(String recipeId, int priority, Collection<Item> ingredients, Item result) {
         super(recipeId, priority, result, ingredients);
-        this.equipment = (Item) ingredients.toArray()[0];
-        this.ingredient = (Item) ingredients.toArray()[1];
+        this.base = (Item) ingredients.toArray()[0];
+        this.addition = (Item) ingredients.toArray()[1];
+        this.template = (Item) ingredients.toArray()[2];
         this.result = result;
 
         ArrayList<Item> aggregation = new ArrayList<>(2);
 
-        for (Item item : new Item[]{equipment, ingredient}) {
+        for (Item item : new Item[]{base, addition}) {
             if (item.getCount() < 1) {
                 throw new IllegalArgumentException("Recipe Ingredient amount was not 1 (value: " + item.getCount() + ")");
             }
@@ -81,7 +87,7 @@ public class SmithingRecipe extends ShapelessRecipe {
     public Item getResult() {
         return result;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public Item getFinalResult(Item equip) {
@@ -100,7 +106,7 @@ public class SmithingRecipe extends ShapelessRecipe {
         if (damage <= 0) {
             return finalResult;
         }
-        
+
         finalResult.setDamage(Math.min(maxDurability, damage));
         return finalResult;
     }
@@ -115,16 +121,22 @@ public class SmithingRecipe extends ShapelessRecipe {
         return RecipeType.SMITHING_TRANSFORM;
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.80-r1")
+    public Item getTemplate() {
+        return template;
+    }
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public Item getEquipment() {
-        return equipment;
+        return base;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public Item getIngredient() {
-        return ingredient;
+        return addition;
     }
 
     @PowerNukkitOnly
@@ -149,7 +161,7 @@ public class SmithingRecipe extends ShapelessRecipe {
             haveInputs.add(item.clone());
         }
         List<Item> needInputs = new ArrayList<>();
-        if(multiplier != 1){
+        if (multiplier != 1) {
             for (Item item : ingredientsAggregate) {
                 if (item.isNull())
                     continue;

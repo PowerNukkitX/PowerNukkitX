@@ -1,6 +1,7 @@
 package cn.nukkit.item;
 
 import cn.nukkit.Server;
+import cn.nukkit.api.DoNotModify;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -47,6 +48,9 @@ public class RuntimeItemMapping {
     @PowerNukkitXOnly
     @Since("1.19.70-r2")
     private final Map<String, Supplier<Item>> namespacedIdItem = new HashMap<>();
+
+    @PowerNukkitXOnly
+    private static final Int2ObjectOpenHashMap<String> mappingEntries = new Int2ObjectOpenHashMap<>();
     private byte[] itemPalette;
 
     public RuntimeItemMapping(Map<String, MappingEntry> mappings) {
@@ -97,6 +101,34 @@ public class RuntimeItemMapping {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+
+        try (InputStream stream = Server.class.getClassLoader().getResourceAsStream("block_mappings.json")) {
+            if (stream == null) {
+                throw new AssertionError("Unable to load item_mappings.json");
+            }
+            JsonObject itemMapping = JsonParser.parseReader(new InputStreamReader(stream)).getAsJsonObject();
+            for (String legacyID : itemMapping.keySet()) {
+                JsonObject convertData = itemMapping.getAsJsonObject(legacyID);
+                int id = Integer.parseInt(legacyID);
+                for (String damageStr : convertData.keySet()) {
+                    String identifier = convertData.get(damageStr).getAsString();
+                    int damage = Integer.parseInt(damageStr);
+                    mappingEntries.put(RuntimeItems.getFullId(id, damage), identifier);
+                }
+            }
+            mappingEntries.trim();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        mappingEntries.forEach((id, damage) -> {
+            String identifier = damage.split(";")[0];
+            int runtime = this.name2RuntimeId.getOrDefault(identifier, -1);
+            if (runtime != -1) {
+                this.legacy2Runtime.put(id.intValue(), new RuntimeEntry(identifier, runtime, true, false));
+            }
+        });
     }
 
     private void generatePalette() {
@@ -237,6 +269,12 @@ public class RuntimeItemMapping {
             fullId = RuntimeItems.getFullId(item.getId(), item.getDamage());
         }
         RuntimeEntry runtimeEntry = legacy2Runtime.get(fullId);
+        /*if (runtimeEntry == null) {
+            String id = BlockStateRegistry.getBlockMapping(fullId);
+            if (id != null) {
+                return getNetworkIdByNamespaceId(id.split(";")[0]).orElse(0);
+            }
+        }*/
         if (runtimeEntry == null) {
             runtimeEntry = legacy2Runtime.get(RuntimeItems.getFullId(item.getId(), 0));
         }
@@ -364,6 +402,12 @@ public class RuntimeItemMapping {
         Preconditions.checkNotNull(namespacedId, "namespacedId is null");
         Preconditions.checkNotNull(constructor, "constructor is null");
         this.namespacedIdItem.put(namespacedId.toLowerCase(Locale.ENGLISH), constructor);
+    }
+
+    @DoNotModify
+    @PowerNukkitXOnly
+    public static Int2ObjectOpenHashMap<String> getBlockMapping() {
+        return mappingEntries;
     }
 
     @NotNull

@@ -2,8 +2,10 @@
 
 minecraft:acacia_button
 minecraft:acacia_door
+minecraft:acacia_fence
 minecraft:acacia_fence_gate
 minecraft:acacia_hanging_sign
+minecraft:acacia_log
 minecraft:acacia_pressure_plate
 minecraft:acacia_stairs
 minecraft:acacia_standing_sign
@@ -53,8 +55,10 @@ minecraft:bell
 minecraft:big_dripleaf
 minecraft:birch_button
 minecraft:birch_door
+minecraft:birch_fence
 minecraft:birch_fence_gate
 minecraft:birch_hanging_sign
+minecraft:birch_log
 minecraft:birch_pressure_plate
 minecraft:birch_stairs
 minecraft:birch_standing_sign
@@ -92,6 +96,7 @@ minecraft:budding_amethyst
 minecraft:cactus
 minecraft:cake
 minecraft:calcite
+minecraft:calibrated_sculk_sensor
 minecraft:camera
 minecraft:campfire
 minecraft:candle
@@ -108,6 +113,23 @@ minecraft:chain
 minecraft:chain_command_block
 minecraft:chemical_heat
 minecraft:chemistry_table
+minecraft:cherry_button
+minecraft:cherry_door
+minecraft:cherry_double_slab
+minecraft:cherry_fence
+minecraft:cherry_fence_gate
+minecraft:cherry_hanging_sign
+minecraft:cherry_leaves
+minecraft:cherry_log
+minecraft:cherry_planks
+minecraft:cherry_pressure_plate
+minecraft:cherry_sapling
+minecraft:cherry_slab
+minecraft:cherry_stairs
+minecraft:cherry_standing_sign
+minecraft:cherry_trapdoor
+minecraft:cherry_wall_sign
+minecraft:cherry_wood
 minecraft:chest
 minecraft:chiseled_bookshelf
 minecraft:chiseled_deepslate
@@ -176,8 +198,10 @@ minecraft:cyan_glazed_terracotta
 minecraft:cyan_wool
 minecraft:dark_oak_button
 minecraft:dark_oak_door
+minecraft:dark_oak_fence
 minecraft:dark_oak_fence_gate
 minecraft:dark_oak_hanging_sign
+minecraft:dark_oak_log
 minecraft:dark_oak_pressure_plate
 minecraft:dark_oak_stairs
 minecraft:dark_oak_trapdoor
@@ -362,7 +386,6 @@ minecraft:exposed_cut_copper_slab
 minecraft:exposed_cut_copper_stairs
 minecraft:exposed_double_cut_copper_slab
 minecraft:farmland
-minecraft:fence
 minecraft:fence_gate
 minecraft:fire
 minecraft:fletching_table
@@ -422,8 +445,10 @@ minecraft:jigsaw
 minecraft:jukebox
 minecraft:jungle_button
 minecraft:jungle_door
+minecraft:jungle_fence
 minecraft:jungle_fence_gate
 minecraft:jungle_hanging_sign
+minecraft:jungle_log
 minecraft:jungle_pressure_plate
 minecraft:jungle_stairs
 minecraft:jungle_standing_sign
@@ -463,8 +488,6 @@ minecraft:lit_redstone_lamp
 minecraft:lit_redstone_ore
 minecraft:lit_smoker
 minecraft:lodestone
-minecraft:log
-minecraft:log2
 minecraft:loom
 minecraft:magenta_candle
 minecraft:magenta_candle_cake
@@ -520,7 +543,9 @@ minecraft:netherrack
 minecraft:netherreactor
 minecraft:normal_stone_stairs
 minecraft:noteblock
+minecraft:oak_fence
 minecraft:oak_hanging_sign
+minecraft:oak_log
 minecraft:oak_stairs
 minecraft:observer
 minecraft:obsidian
@@ -540,6 +565,7 @@ minecraft:pearlescent_froglight
 minecraft:pink_candle
 minecraft:pink_candle_cake
 minecraft:pink_glazed_terracotta
+minecraft:pink_petals
 minecraft:pink_wool
 minecraft:piston
 minecraft:piston_arm_collision
@@ -651,8 +677,10 @@ minecraft:sponge
 minecraft:spore_blossom
 minecraft:spruce_button
 minecraft:spruce_door
+minecraft:spruce_fence
 minecraft:spruce_fence_gate
 minecraft:spruce_hanging_sign
+minecraft:spruce_log
 minecraft:spruce_pressure_plate
 minecraft:spruce_stairs
 minecraft:spruce_standing_sign
@@ -680,6 +708,8 @@ minecraft:stonecutter_block
 minecraft:stripped_acacia_log
 minecraft:stripped_bamboo_block
 minecraft:stripped_birch_log
+minecraft:stripped_cherry_log
+minecraft:stripped_cherry_wood
 minecraft:stripped_crimson_hyphae
 minecraft:stripped_crimson_stem
 minecraft:stripped_dark_oak_log
@@ -692,6 +722,7 @@ minecraft:stripped_warped_hyphae
 minecraft:stripped_warped_stem
 minecraft:structure_block
 minecraft:structure_void
+minecraft:suspicious_gravel
 minecraft:suspicious_sand
 minecraft:sweet_berry_bush
 minecraft:tallgrass

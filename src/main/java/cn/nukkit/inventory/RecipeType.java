@@ -15,6 +15,10 @@ public enum RecipeType {
     SHAPELESS_CHEMISTRY(6),
     SHAPED_CHEMISTRY(7),
     SMITHING_TRANSFORM(8),
+    /**
+     * @since v582
+     */
+    SMITHING_TRIM(9),
     @PowerNukkitOnly BLAST_FURNACE(2),
     @PowerNukkitOnly BLAST_FURNACE_DATA(3),
     @PowerNukkitOnly SMOKER(2),
@@ -27,10 +31,11 @@ public enum RecipeType {
     @PowerNukkitOnly @Since("1.4.0.0-PN") @Deprecated(since = "1.19.63-r2")
     @DeprecationDetails(since = "1.19.63-r2", reason = "Use SMITHING_TRANSFORM instead", replaceWith = "SMITHING_TRANSFORM")
     SMITHING(8),
-    @PowerNukkitXOnly @Since("1.19.50-r3") MOD_PROCESS(0) // For mods
-    ;
+    // For mods
+    @PowerNukkitXOnly @Since("1.19.50-r3") MOD_PROCESS(0);
 
-    @PowerNukkitOnly public final int networkType;
+    @PowerNukkitOnly
+    public final int networkType;
 
     RecipeType(int networkType) {
         this.networkType = networkType;

@@ -1,7 +1,7 @@
 package cn.powernukkitx.updater;
 
 import cn.nukkit.inventory.ItemTag;
-import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import lombok.SneakyThrows;
 
 import java.io.*;
@@ -12,10 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class UpdateResource {
     /**
@@ -28,32 +25,31 @@ public class UpdateResource {
      * - Adjust the path bellow if necessary for your machine<br>
      */
     public static void main(String[] args) {
-        new UpdateResource().execute("../Bedrock-ProxyPass/run/data");
+        new UpdateResource().execute();
         System.out.println("OK");
     }
 
-    private void execute(@SuppressWarnings("SameParameterValue") String pathProxyPassData) {
+    private void execute() {
         downloadResources();
-        copyProxyPassResources(pathProxyPassData);
         update();
     }
 
     private void downloadResources() {
         download("https://github.com/pmmp/BedrockData/raw/master/canonical_block_states.nbt",
                 "src/main/resources/canonical_block_states.nbt");
-        download("https://github.com/pmmp/BedrockData/raw/master/vanilla_recipes/potion_type.json",
+        download("https://github.com/pmmp/BedrockData/raw/master/recipes/potion_type.json",
                 "src/main/resources/vanilla_recipes/potion_type.json");
-        download("https://github.com/pmmp/BedrockData/raw/master/vanilla_recipes/shaped_crafting.json",
+        download("https://github.com/pmmp/BedrockData/raw/master/recipes/shaped_crafting.json",
                 "src/main/resources/vanilla_recipes/shaped_crafting.json");
-        download("https://github.com/pmmp/BedrockData/raw/master/vanilla_recipes/shapeless_crafting.json",
+        download("https://github.com/pmmp/BedrockData/raw/master/recipes/shapeless_crafting.json",
                 "src/main/resources/vanilla_recipes/shapeless_crafting.json");
-        download("https://github.com/pmmp/BedrockData/raw/master/vanilla_recipes/smithing.json",
+        download("https://github.com/pmmp/BedrockData/raw/master/recipes/smithing.json",
                 "src/main/resources/vanilla_recipes/smithing.json");
-        download("https://github.com/pmmp/BedrockData/raw/master/vanilla_recipes/shapeless_shulker_box.json",
+        download("https://github.com/pmmp/BedrockData/raw/master/recipes/shapeless_shulker_box.json",
                 "src/main/resources/vanilla_recipes/shapeless_shulker_box.json");
-        download("https://github.com/pmmp/BedrockData/raw/master/vanilla_recipes/smelting.json",
+        download("https://github.com/pmmp/BedrockData/raw/master/recipes/smelting.json",
                 "src/main/resources/vanilla_recipes/smelting.json");
-        download("https://github.com/pmmp/BedrockData/raw/master/vanilla_recipes/special_hardcoded.json",
+        download("https://github.com/pmmp/BedrockData/raw/master/recipes/special_hardcoded.json",
                 "src/main/resources/vanilla_recipes/special_hardcoded.json");
         download("https://github.com/pmmp/BedrockData/raw/master/biome_definitions_full.nbt",
                 "src/main/resources/biome_definitions_full.nbt");
@@ -97,7 +93,7 @@ public class UpdateResource {
     @SneakyThrows
     private void update() {
         //update item_2_tags.json
-        var gson = new Gson();
+        var gson1 = new GsonBuilder().setPrettyPrinting().create();
         Map<String, Set<String>> test = new LinkedHashMap<>();
         for (var entry : ItemTag.getTag2Items().entrySet()) {
             for (var v : entry.getValue()) {
@@ -105,6 +101,22 @@ public class UpdateResource {
                 test.get(v).add(entry.getKey());
             }
         }
-        Files.writeString(Path.of("./src/main/resources/item_2_tags.json"), gson.toJson(test), StandardCharsets.UTF_8);
+        Files.writeString(Path.of("./src/main/resources/item_2_tags.json"), gson1.toJson(test), StandardCharsets.UTF_8);
+
+        //convert required_item_list.json to runtime_item_states.json
+
+        var gson2 = new GsonBuilder().setPrettyPrinting().create();
+        var runtime_item_states = new ArrayList<RuntimeEntry>();
+        Map<String, ?> map = gson2.fromJson(new FileReader("./src/test/resources/org/powernukkit/updater/dumps/pmmp/required_item_list.json"), Map.class);
+
+        map.forEach((k, v) -> {
+            String runtime_id = ((Map) v).get("runtime_id").toString();
+            int id = Double.valueOf(runtime_id).intValue();
+            runtime_item_states.add(new RuntimeEntry(k, id));
+        });
+        Files.writeString(Path.of("./src/main/resources/runtime_item_states.json"), gson2.toJson(runtime_item_states), StandardCharsets.UTF_8);
+    }
+
+    private record RuntimeEntry(String name, int id) {
     }
 }

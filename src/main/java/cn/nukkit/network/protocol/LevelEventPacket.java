@@ -12,6 +12,7 @@ import lombok.ToString;
 public class LevelEventPacket extends DataPacket {
     public static final byte NETWORK_ID = ProtocolInfo.LEVEL_EVENT_PACKET;
 
+    public static final int EVENT_UNDEFINED = 0;
     public static final int EVENT_SOUND_CLICK = 1000;
     public static final int EVENT_SOUND_CLICK_FAIL = 1001;
     public static final int EVENT_SOUND_SHOOT = 1002;
@@ -51,10 +52,23 @@ public class LevelEventPacket extends DataPacket {
     public static final int EVENT_SOUND_ARMOR_STAND_HIT = 1061;
     public static final int EVENT_SOUND_ARMOR_STAND_FALL = 1062;
     public static final int EVENT_SOUND_ARMOR_STAND_PLACE = 1063;
-    @PowerNukkitOnly @Since("1.5.0.0-PN") public static final int EVENT_SOUND_POINTED_DRIPSTONE_LAND = 1064;
-    @PowerNukkitOnly @Since("1.5.0.0-PN") public static final int EVENT_SOUND_DYE_USED = 1065;
-    @PowerNukkitOnly @Since("1.5.0.0-PN") public static final int EVENT_SOUND_INK_SACE_USED = 1066;
+    @PowerNukkitOnly
+    @Since("1.5.0.0-PN")
+    public static final int EVENT_SOUND_POINTED_DRIPSTONE_LAND = 1064;
+    @PowerNukkitOnly
+    @Since("1.5.0.0-PN")
+    public static final int EVENT_SOUND_DYE_USED = 1065;
+    @PowerNukkitOnly
+    @Since("1.5.0.0-PN")
+    public static final int EVENT_SOUND_INK_SACE_USED = 1066;
+    public static final int EVENT_SOUND_AMETHYST_RESONATE = 1067;
 
+    public static final int EVENT_PARTICLE_SHOOT = 2000;
+    public static final int EVENT_PARTICLE_DESTROY = 2001;
+    public static final int EVENT_PARTICLE_SPLASH = 2002;
+    public static final int EVENT_PARTICLE_EYE_DESPAWN = 2003;
+    public static final int EVENT_PARTICLE_SPAWN = 2004;
+    public static final int EVENT_PARTICLE_BONEMEAL = 2005;
     public static final int EVENT_GUARDIAN_CURSE = 2006;
     public static final int EVENT_PARTICLE_DEATH_SMOKE = 2007;
     public static final int EVENT_PARTICLE_BLOCK_FORCE_FIELD = 2008;
@@ -104,13 +118,21 @@ public class LevelEventPacket extends DataPacket {
     public static final int EVENT_PARTICLE_SCULK_CHARGE_POP = 2038;
     public static final int EVENT_PARTICLE_SONIC_EXPLOSION = 2039;
 
+    public static final int EVENT_START_RAIN = 3001;
+    public static final int EVENT_START_THUNDER = 3002;
+    public static final int EVENT_STOP_RAIN = 3003;
+    public static final int EVENT_STOP_THUNDER = 3004;
+    public static final int EVENT_GLOBAL_PAUSE = 3005;
+    public static final int EVENT_SIM_TIME_STEP = 3006;
+    public static final int EVENT_SIM_TIME_SCALE = 3007;
+
     public static final int EVENT_SOUND_BUTTON_CLICK = 3500;
     public static final int EVENT_SOUND_EXPLODE = 3501;
     public static final int EVENT_CAULDRON_DYE_ARMOR = 3502;
     public static final int EVENT_CAULDRON_CLEAN_ARMOR = 3503;
     public static final int EVENT_CAULDRON_FILL_POTION = 3504;
     public static final int EVENT_CAULDRON_TAKE_POTION = 3505;
-    public static final int EVENT_SOUND_SPLASH = 3506;
+    public static final int EVENT_SOUND_CAULDRON_FILL_WATER = 3506;
     public static final int EVENT_CAULDRON_TAKE_WATER = 3507;
     public static final int EVENT_CAULDRON_ADD_DYE = 3508;
     public static final int EVENT_CAULDRON_CLEAN_BANNER = 3509;
@@ -121,32 +143,16 @@ public class LevelEventPacket extends DataPacket {
     public static final int EVENT_CAULDRON_FILL_POWDER_SNOW = 3514;
     public static final int EVENT_CAULDRON_TAKE_POWDER_SNOW = 3515;
 
-    public static final int EVENT_PARTICLE_SHOOT = 2000;
-    public static final int EVENT_PARTICLE_DESTROY = 2001;
-    public static final int EVENT_PARTICLE_SPLASH = 2002;
-    public static final int EVENT_PARTICLE_EYE_DESPAWN = 2003;
-    public static final int EVENT_PARTICLE_SPAWN = 2004;
-    public static final int EVENT_PARTICLE_BONEMEAL = 2005;
-
-    public static final int EVENT_START_RAIN = 3001;
-    public static final int EVENT_START_THUNDER = 3002;
-    public static final int EVENT_STOP_RAIN = 3003;
-    public static final int EVENT_STOP_THUNDER = 3004;
-    public static final int EVENT_GLOBAL_PAUSE = 3005;
-    public static final int EVENT_SIM_TIME_STEP = 3006;
-    public static final int EVENT_SIM_TIME_SCALE = 3007;
-
-    public static final int EVENT_SOUND_CAULDRON = 3501;
-    public static final int EVENT_SOUND_CAULDRON_DYE_ARMOR = 3502;
-    public static final int EVENT_SOUND_CAULDRON_FILL_POTION = 3504;
-    public static final int EVENT_SOUND_CAULDRON_FILL_WATER = 3506;
-
-    @Since("1.5.0.0-PN") @PowerNukkitOnly public static final int EVENT_SOUND_CAULDRON_FILL_POWDER_SNOW = 3514;
-    @Since("1.5.0.0-PN") @PowerNukkitOnly public static final int EVENT_SOUND_CAULDRON_TAKE_POWDER_SNOW = 3515;
-
     public static final int EVENT_BLOCK_START_BREAK = 3600;
     public static final int EVENT_BLOCK_STOP_BREAK = 3601;
     public static final int EVENT_BLOCK_UPDATE_BREAK = 3602;
+    public static final int EVENT_PARTICLE_BREAK_BLOCK_DOWN = 3603;
+    public static final int EVENT_PARTICLE_BREAK_BLOCK_UP = 3604;
+    public static final int EVENT_PARTICLE_BREAK_BLOCK_NORTH = 3605;
+    public static final int EVENT_PARTICLE_BREAK_BLOCK_SOUTH = 3606;
+    public static final int EVENT_PARTICLE_BREAK_BLOCK_WEST = 3607;
+    public static final int EVENT_PARTICLE_BREAK_BLOCK_EAST = 3608;
+    public static final int EVENT_ALL_PLAYERS_SLEEPING = 3609;
 
     public static final int EVENT_SET_DATA = 4000;
 

@@ -90,13 +90,7 @@ public interface BlockID {
     int DEAD_BUSH = 32;
     int PISTON = 33;
     int PISTON_ARM_COLLISION = 34;
-    @Deprecated
-    @DeprecationDetails(by = "PowerNukkitX", since = "1.19.70-r1",
-            replaceWith = "WHITE_WOOL", reason = "Wrong Minecraft block name")
     int WOOL = 35;
-    @Since("1.19.70-r1")
-    @PowerNukkitXOnly
-    int WHITE_WOOL = WOOL;
     int DANDELION = 37;
     int RED_FLOWER = 38;
     @Deprecated
@@ -1606,50 +1600,4 @@ public interface BlockID {
     @Since("1.6.0.0-PNX")
     @PowerNukkitXOnly
     int DOUBLE_MANGROVE_SLAB = 754;
-
-    @Since("1.19.70-r1")
-    @PowerNukkitXOnly
-    int LIGHT_GRAY_WOOL = 807;
-    @Since("1.19.70-r1")
-    @PowerNukkitXOnly
-    int GRAY_WOOL = 808;
-    @Since("1.19.70-r1")
-    @PowerNukkitXOnly
-    int BLACK_WOOL = 809;
-    @Since("1.19.70-r1")
-    @PowerNukkitXOnly
-    int BROWN_WOOL = 810;
-    @Since("1.19.70-r1")
-    @PowerNukkitXOnly
-    int RED_WOOL = 811;
-    @Since("1.19.70-r1")
-    @PowerNukkitXOnly
-    int ORANGE_WOOL = 812;
-    @Since("1.19.70-r1")
-    @PowerNukkitXOnly
-    int YELLOW_WOOL = 813;
-    @Since("1.19.70-r1")
-    @PowerNukkitXOnly
-    int LIME_WOOL = 814;
-    @Since("1.19.70-r1")
-    @PowerNukkitXOnly
-    int GREEN_WOOL = 815;
-    @Since("1.19.70-r1")
-    @PowerNukkitXOnly
-    int CYAN_WOOL = 816;
-    @Since("1.19.70-r1")
-    @PowerNukkitXOnly
-    int LIGHT_BLUE_WOOL = 817;
-    @Since("1.19.70-r1")
-    @PowerNukkitXOnly
-    int BLUE_WOOL = 818;
-    @Since("1.19.70-r1")
-    @PowerNukkitXOnly
-    int PURPLE_WOOL = 819;
-    @Since("1.19.70-r1")
-    @PowerNukkitXOnly
-    int MAGENTA_WOOL = 820;
-    @Since("1.19.70-r1")
-    @PowerNukkitXOnly
-    int PINK_WOOL = 821;
 }
