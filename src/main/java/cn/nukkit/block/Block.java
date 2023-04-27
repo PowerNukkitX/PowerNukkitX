@@ -1462,10 +1462,22 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return 1;
     }
 
+    /**
+     * 这个值越大，这个方块本身越容易起火
+     * <p>
+     * The higher this value, the more likely the block itself is to catch fire
+     *
+     * @return the burn chance
+     */
     public int getBurnChance() {
         return 0;
     }
 
+    /**
+     * 这个值越大，越有可能被旁边的火焰引燃
+     * <p>
+     * The higher this value, the more likely it is to be ignited by the fire next to it
+     */
     public int getBurnAbility() {
         return 0;
     }

@@ -56,6 +56,11 @@ public class BlockIcePacked extends BlockIce {
         return false;
     }
 
+    @Override
+    public int getBurnChance() {
+        return 0;
+    }
+
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     @Override
