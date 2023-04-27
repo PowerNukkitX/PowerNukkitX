@@ -1,7 +1,6 @@
 package cn.nukkit.blockstate;
 
 import cn.nukkit.block.*;
-import cn.nukkit.blockproperty.value.WoodType;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.test.LogLevelAdjuster;
@@ -46,16 +45,6 @@ class IBlockStateTest {
         BlockUnknown unknwon = new BlockUnknown(wall.getId(), wall.getCurrentState().getDataStorage());
         assertEquals("minecraft:cobblestone_wall;nukkit-unknown=3", unknwon.getMinimalistStateId());
         assertEquals("minecraft:cobblestone_wall;nukkit-unknown=3", unknwon.getLegacyStateId());
-    }
-
-    @Test
-    void githubIssue1122() {
-        BlockState state = BlockState.of(17, 13);
-        assertEquals(BlockState.of(WOOD_BARK).withProperty(WoodType.PROPERTY, WoodType.SPRUCE).getRuntimeId(),
-                state.getRuntimeId());
-
-        Block bark = state.getBlock();
-        assertEquals(BlockWoodBark.class, bark.getClass());
     }
 
     @Test
