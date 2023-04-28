@@ -299,15 +299,19 @@ public class BlockEntitySign extends BlockEntitySpawnable {
             this.namedTag.getCompound(TAG_FRONT_TEXT).putString(TAG_TEXT_BLOB, String.join("\n", frontText));
             this.namedTag.remove(TAG_TEXT_BLOB);
         } else {
+            int count = 0;
             for (int i = 1; i <= 4; i++) {
                 String key = TAG_TEXT_BLOB + i;
                 if (namedTag.contains(key)) {
                     String line = namedTag.getString(key);
                     this.frontText[i - 1] = line;
                     this.namedTag.remove(key);
+                    count++;
                 }
             }
-            this.namedTag.getCompound(TAG_FRONT_TEXT).putString(TAG_TEXT_BLOB, String.join("\n", frontText));
+            if (count == 4) {
+                this.namedTag.getCompound(TAG_FRONT_TEXT).putString(TAG_TEXT_BLOB, String.join("\n", frontText));
+            }
         }
         if (this.namedTag.contains(TAG_GLOWING_TEXT)) {
             this.setGlowing(true, this.namedTag.getBoolean(TAG_GLOWING_TEXT));
