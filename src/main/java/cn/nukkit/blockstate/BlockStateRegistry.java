@@ -588,8 +588,10 @@ public class BlockStateRegistry {
                     //注册stateIdRegistration和runtimeIdRegistration
                     registerStateId(nbt, runtimeId);
                 } else if (block == -1) {
-                    if (warned.add(name)) {
-                        log.warn("Unknown block id for the block named {}", name);
+                    if (RuntimeItems.getRuntimeMapping().fromIdentifier(name) == null) {
+                        if (warned.add(name)) {
+                            log.warn("Unknown block id for the block named {}", name);
+                        }
                     }
                     registerStateId(nbt, runtimeId);
                 }
