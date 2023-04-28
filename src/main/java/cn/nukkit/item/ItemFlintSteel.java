@@ -18,7 +18,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author MagicDroidX (Nukkit Project)
  */
 public class ItemFlintSteel extends ItemTool {
-    
+
     public ItemFlintSteel() {
         this(0, 1);
     }
@@ -43,7 +43,7 @@ public class ItemFlintSteel extends ItemTool {
             return false;
         }
 
-        if (block.getId() == AIR && (target.isSolid() || target.getBurnChance() > 0)) {
+        if (block.getId() == AIR && target.getBurnChance() != -1 && (target.isSolid() || target.getBurnChance() > 0)) {
             if (target.getId() == OBSIDIAN) {
                 if (level.getDimension() != Level.DIMENSION_THE_END) {
                     if (level.createPortal(target)) {
@@ -77,7 +77,7 @@ public class ItemFlintSteel extends ItemTool {
         damageItem(player, block);
         return false;
     }
-    
+
     private void damageItem(Player player, Block block) {
         if (!player.isCreative() && useOn(block)) {
             if (this.getDamage() >= this.getMaxDurability()) {

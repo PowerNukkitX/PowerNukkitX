@@ -90,6 +90,11 @@ public class BlockIce extends BlockTransparent {
         return true;
     }
 
+    @Override
+    public int getBurnChance() {
+        return -1;
+    }
+
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     @Override
