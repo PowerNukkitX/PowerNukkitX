@@ -42,26 +42,6 @@ public class BlockEntitySign extends BlockEntitySpawnable {
         super.loadNBT();
         frontText = new String[4];
         backText = new String[4];
-
-        if (namedTag.contains(TAG_TEXT_BLOB)) {
-            String[] lines = namedTag.getString(TAG_TEXT_BLOB).split("\n", 4);
-            for (int i = 0; i < frontText.length; i++) {
-                if (i < lines.length)
-                    frontText[i] = lines[i];
-                else
-                    frontText[i] = "";
-            }
-        } else {
-            for (int i = 1; i <= 4; i++) {
-                String key = TAG_TEXT_BLOB + i;
-                if (namedTag.contains(key)) {
-                    String line = namedTag.getString(key);
-                    this.frontText[i - 1] = line;
-                    this.namedTag.remove(key);
-                }
-            }
-        }
-
         if (namedTag.containsCompound(TAG_FRONT_TEXT)) {
             getLines(true);
         } else {
@@ -308,9 +288,36 @@ public class BlockEntitySign extends BlockEntitySpawnable {
 
     //在1.19.80以后,sign变成了双面显示，NBT结构也有所改变，这个方法将1.19.70以前的NBT更新至最新NBT结构
     private void updateLegacyCompoundTag() {
-        this.namedTag.remove(TAG_TEXT_BLOB);
-        this.namedTag.remove(TAG_GLOWING_TEXT);
-        this.namedTag.remove(TAG_TEXT_COLOR);
+        if (this.namedTag.contains(TAG_TEXT_BLOB)) {
+            String[] lines = namedTag.getString(TAG_TEXT_BLOB).split("\n", 4);
+            for (int i = 0; i < frontText.length; i++) {
+                if (i < lines.length)
+                    frontText[i] = lines[i];
+                else
+                    frontText[i] = "";
+            }
+            this.namedTag.getCompound(TAG_FRONT_TEXT).putString(TAG_TEXT_BLOB, String.join("\n", frontText));
+            this.namedTag.remove(TAG_TEXT_BLOB);
+        } else {
+            for (int i = 1; i <= 4; i++) {
+                String key = TAG_TEXT_BLOB + i;
+                if (namedTag.contains(key)) {
+                    String line = namedTag.getString(key);
+                    this.frontText[i - 1] = line;
+                    this.namedTag.remove(key);
+                }
+            }
+            this.namedTag.getCompound(TAG_FRONT_TEXT).putString(TAG_TEXT_BLOB, String.join("\n", frontText));
+        }
+        if (this.namedTag.contains(TAG_GLOWING_TEXT)) {
+            this.setGlowing(true, this.namedTag.getBoolean(TAG_GLOWING_TEXT));
+            this.namedTag.remove(TAG_GLOWING_TEXT);
+        }
+        if (this.namedTag.contains(TAG_TEXT_COLOR)) {
+            this.setColor(true, new BlockColor(this.namedTag.getInt(TAG_TEXT_COLOR), true));
+            this.namedTag.remove(TAG_TEXT_COLOR);
+        }
+
         this.namedTag.remove("Creator");
     }
 
