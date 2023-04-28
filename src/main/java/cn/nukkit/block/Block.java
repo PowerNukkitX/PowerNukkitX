@@ -1464,6 +1464,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     /**
      * 这个值越大，这个方块本身越容易起火
+     * 返回-1,这个方块不能被点燃
      * <p>
      * The higher this value, the more likely the block itself is to catch fire
      *
