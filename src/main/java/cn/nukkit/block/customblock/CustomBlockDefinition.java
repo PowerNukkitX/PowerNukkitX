@@ -1,5 +1,6 @@
 package cn.nukkit.block.customblock;
 
+import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
@@ -180,6 +181,8 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
          * <p>
          * Partially render the content of the custom block with conditional rendering.
          */
+        @Deprecated(forRemoval = true)
+        @DeprecationDetails(since = "1.19.80-r1", reason = "microsoft remove this")
         public Builder partVisibility(BoneCondition... boneConditions) {
             var components = this.nbt.getCompound("components");
             var boneConditionsNBT = new CompoundTag("boneConditions");
