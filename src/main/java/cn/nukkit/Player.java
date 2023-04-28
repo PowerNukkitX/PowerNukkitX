@@ -3554,7 +3554,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                     Matcher usernameMatcher = playerNamePattern.matcher(loginPacket.username);
                     if (!usernameMatcher.matches()) {
-                       valid = false;
+                        valid = false;
                     }
 
                     if (!valid || Objects.equals(this.iusername, "rcon") || Objects.equals(this.iusername, "console")) {
@@ -8227,4 +8227,22 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         this.dataPacket(pk);
     }
+
+    /**
+     * Opens the player's sign editor GUI for the sign at the given position.
+     * TODO: add support for editing the rear side of the sign (not currently supported due to technical limitations)
+     */
+    public void openSignEditor(Vector3 position, boolean frontSide) {
+        BlockEntity blockEntity = this.getLevel().getBlockEntity(position);
+        if (blockEntity instanceof BlockEntitySign blockEntitySign) {
+            blockEntitySign.setEditorEntityRuntimeId(this.getId());
+            OpenSignPacket openSignPacket = new OpenSignPacket();
+            openSignPacket.setPosition(position.asBlockVector3());
+            openSignPacket.setFrontSide(frontSide);
+            this.dataPacket(openSignPacket);
+        } else {
+            throw new IllegalArgumentException("Block at this position is not a sign");
+        }
+    }
+
 }

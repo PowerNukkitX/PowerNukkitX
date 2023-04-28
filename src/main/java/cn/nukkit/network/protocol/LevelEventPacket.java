@@ -132,7 +132,7 @@ public class LevelEventPacket extends DataPacket {
     public static final int EVENT_CAULDRON_CLEAN_ARMOR = 3503;
     public static final int EVENT_CAULDRON_FILL_POTION = 3504;
     public static final int EVENT_CAULDRON_TAKE_POTION = 3505;
-    public static final int EVENT_SOUND_CAULDRON_FILL_WATER = 3506;
+    public static final int EVENT_SOUND_SPLASH = 3506;
     public static final int EVENT_CAULDRON_TAKE_WATER = 3507;
     public static final int EVENT_CAULDRON_ADD_DYE = 3508;
     public static final int EVENT_CAULDRON_CLEAN_BANNER = 3509;
