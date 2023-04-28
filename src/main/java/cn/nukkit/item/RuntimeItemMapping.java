@@ -145,6 +145,12 @@ public class RuntimeItemMapping {
         this.itemPalette = paletteBuffer.getBuffer();
     }
 
+    /**
+     * From runtimeId to get legacy item entry.
+     *
+     * @param runtimeId the runtime id
+     * @return the legacy entry
+     */
     public LegacyEntry fromRuntime(int runtimeId) {
         LegacyEntry legacyEntry = this.runtime2Legacy.get(runtimeId);
         if (legacyEntry == null) {
@@ -153,6 +159,13 @@ public class RuntimeItemMapping {
         return legacyEntry;
     }
 
+    /**
+     * from legacy item id and meta value to get runtimeId
+     *
+     * @param id   the id
+     * @param meta the meta
+     * @return the runtime entry
+     */
     public RuntimeEntry toRuntime(int id, int meta) {
         RuntimeEntry runtimeEntry = this.legacy2Runtime.get(RuntimeItems.getFullId(id, meta));
         if (runtimeEntry == null) {
@@ -165,10 +178,21 @@ public class RuntimeItemMapping {
         return runtimeEntry;
     }
 
+    /**
+     * From identifier to get legacy entry.According to item_mappings.json
+     *
+     * @param identifier the identifier
+     * @return the legacy entry
+     */
     public LegacyEntry fromIdentifier(String identifier) {
         return this.identifier2Legacy.get(identifier);
     }
 
+    /**
+     * Get item palette byte [ ].
+     *
+     * @return the byte [ ]
+     */
     public byte[] getItemPalette() {
         return this.itemPalette;
     }
