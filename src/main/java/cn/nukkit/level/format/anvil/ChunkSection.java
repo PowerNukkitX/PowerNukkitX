@@ -8,9 +8,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.blockstate.BlockState;
-import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
-import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.ChunkSection3DBiome;
 import cn.nukkit.level.format.LevelProvider;
@@ -292,14 +290,24 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
                     }
                     int composedData = composeData(data.get(index), dataExtra.get(index));
                     BlockState state = loadState(index, blockId, composedData, hugeDataList, hugeDataSize);
-
-                    //TODO 更新旧羊毛状态到新羊毛状态 下个版本移除
-                    String blockMapping = BlockStateRegistry.getBlockMapping(RuntimeItems.getFullId(state.getBlockId(), state.getDataStorage().intValue()));
-                    if (blockMapping != null) {
-                        int id = RuntimeItems.getRuntimeMapping().getNetworkIdByNamespaceId(blockMapping).orElse(0);
-                        storage.setBlockState(bx, by, bz, Block.get(id).getCurrentState());
-                    } else {
-                        storage.setBlockState(bx, by, bz, state);
+                    //TODO 回退之前的方块更新方案，现在有更好的解决方式，下个版本移除这段代码
+                    switch (state.getBlockId()) {
+                        case 807 -> storage.setBlockState(bx, by, bz, Block.get(35, 8).getCurrentState());
+                        case 808 -> storage.setBlockState(bx, by, bz, Block.get(35, 7).getCurrentState());
+                        case 809 -> storage.setBlockState(bx, by, bz, Block.get(35, 15).getCurrentState());
+                        case 810 -> storage.setBlockState(bx, by, bz, Block.get(35, 12).getCurrentState());
+                        case 811 -> storage.setBlockState(bx, by, bz, Block.get(35, 14).getCurrentState());
+                        case 812 -> storage.setBlockState(bx, by, bz, Block.get(35, 1).getCurrentState());
+                        case 813 -> storage.setBlockState(bx, by, bz, Block.get(35, 4).getCurrentState());
+                        case 814 -> storage.setBlockState(bx, by, bz, Block.get(35, 5).getCurrentState());
+                        case 815 -> storage.setBlockState(bx, by, bz, Block.get(35, 13).getCurrentState());
+                        case 816 -> storage.setBlockState(bx, by, bz, Block.get(35, 9).getCurrentState());
+                        case 817 -> storage.setBlockState(bx, by, bz, Block.get(35, 3).getCurrentState());
+                        case 818 -> storage.setBlockState(bx, by, bz, Block.get(35, 11).getCurrentState());
+                        case 819 -> storage.setBlockState(bx, by, bz, Block.get(35, 10).getCurrentState());
+                        case 820 -> storage.setBlockState(bx, by, bz, Block.get(35, 2).getCurrentState());
+                        case 821 -> storage.setBlockState(bx, by, bz, Block.get(35, 6).getCurrentState());
+                        default -> storage.setBlockState(bx, by, bz, state);
                     }
                 }
             }

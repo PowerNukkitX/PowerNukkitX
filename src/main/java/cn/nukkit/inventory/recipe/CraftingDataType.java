@@ -12,7 +12,11 @@ public enum CraftingDataType {
     /**
      * @since v567
      */
-    SMITHING_TRANSFORM;
+    SMITHING_TRANSFORM,
+    /**
+     * @since v582
+     */
+    SMITHING_TRIM;
 
     private static final CraftingDataType[] VALUES = values();
 

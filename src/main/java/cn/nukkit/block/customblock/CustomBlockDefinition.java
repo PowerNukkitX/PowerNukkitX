@@ -3,13 +3,11 @@ package cn.nukkit.block.customblock;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.customblock.data.BlockCreativeCategory;
-import cn.nukkit.block.customblock.data.BoneCondition;
-import cn.nukkit.block.customblock.data.Materials;
-import cn.nukkit.block.customblock.data.Permutation;
+import cn.nukkit.block.customblock.data.*;
 import cn.nukkit.blockproperty.*;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.*;
+import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -129,23 +127,18 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
         }
 
         /**
-         * 以度为单位设置块围绕立方体中心的旋转,旋转顺序为 xyz.角度必须是90的倍数。
-         * <p>
-         * Set the rotation of the block around the center of the block in degrees, the rotation order is xyz. The angle must be a multiple of 90.
+         * supports rotation, scaling, and translation. The component can be added to the whole block and/or to individual block permutations. Transformed geometries still have the same restrictions that non-transformed geometries have such as a maximum size of 30/16 units.
          */
-        public Builder rotation(@NotNull Vector3f rotation) {
-            this.nbt.putCompound("minecraft:rotation", new CompoundTag()
-                    .putFloat("x", rotation.x)
-                    .putFloat("y", rotation.y)
-                    .putFloat("z", rotation.z));
+        public Builder transformation(@NotNull Transformation transformation) {
+            this.nbt.putCompound(transformation.toCompoundTag());
             return this;
         }
 
         /**
-         * 控制自定义方块的几何模型,如果不设置默认为单位立方体
+         * @see #geometry(Geometry)
+         * 默认不设置骨骼显示
          * <p>
-         * Control the geometric model of the custom block, if not set the default is the unit cube.<br>
-         * Geometry identifier from geo file in 'RP/models/blocks' folder
+         * defalut not set boneVisibilities
          */
         public Builder geometry(String geometry) {
             if (geometry.isBlank()) {
@@ -162,6 +155,21 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
         }
 
         /**
+         * 控制自定义方块的几何模型,如果不设置默认为单位立方体
+         * <p>
+         * Control the geometric model of the custom block, if not set the default is the unit cube.<br>
+         * Geometry identifier from geo file in 'RP/models/blocks' folder
+         */
+        public Builder geometry(@NotNull Geometry geometry) {
+            var components = this.nbt.getCompound("components");
+            //默认单位立方体方块，如果定义几何模型需要移除
+            if (components.contains("minecraft:unit_cube")) components.remove("minecraft:unit_cube");
+            //设置方块对应的几何模型
+            components.putCompound(geometry.toCompoundTag());
+            return this;
+        }
+
+        /**
          * 控制自定义方块的变化特征，例如条件渲染，部分渲染等
          * <p>
          * Control custom block permutation features such as conditional rendering, partial rendering, etc.
@@ -172,21 +180,6 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
                 per.add(permutation.toCompoundTag());
             }
             this.nbt.putList(per);
-            return this;
-        }
-
-        /**
-         * 条件渲染自定义方块的部分模型内容。
-         * <p>
-         * Partially render the content of the custom block with conditional rendering.
-         */
-        public Builder partVisibility(BoneCondition... boneConditions) {
-            var components = this.nbt.getCompound("components");
-            var boneConditionsNBT = new CompoundTag("boneConditions");
-            for (var boneCondition : boneConditions) {
-                boneConditionsNBT.putCompound(boneCondition.toCompoundTag());
-            }
-            components.putCompound("minecraft:part_visibility", new CompoundTag().putCompound(boneConditionsNBT));
             return this;
         }
 
@@ -236,14 +229,16 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
             return this;
         }
 
-       /*public Builder blockTags(String creativeGroup) {
-            if (creativeGroup.isBlank()) {
-                System.out.println("creativeGroup has an invalid value!");
-                return this;
+        public Builder blockTags(String... tag) {
+            Preconditions.checkNotNull(tag);
+            Preconditions.checkArgument(tag.length > 0);
+            ListTag<StringTag> stringTagListTag = new ListTag<>();
+            for (String s : tag) {
+                stringTagListTag.add(new StringTag("", s));
             }
-            this.nbt.getCompound("components").getCompound("menu_category").putString("group", creativeGroup.toLowerCase(Locale.ENGLISH));
+            this.nbt.putList("blockTags", stringTagListTag);
             return this;
-        }*/
+        }
 
         /**
          * PNX无法准确提供三个以上属性方块的属性解析,如果出现地图异常,请制作一个该方块相同属性的行为包,利用proxypass和bds抓包获取准确的属性解析。

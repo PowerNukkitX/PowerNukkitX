@@ -1203,7 +1203,43 @@ public enum MinecraftItemID {
     MAGENTA_WOOL,
     @Since("1.19.70-r1")
     @PowerNukkitXOnly
-    PINK_WOOL;
+    PINK_WOOL,
+    @Since("1.19.80-r1")
+    @PowerNukkitXOnly
+    OAK_FENCE,
+    @Since("1.19.80-r1")
+    @PowerNukkitXOnly
+    SPRUCE_FENCE,
+    @Since("1.19.80-r1")
+    @PowerNukkitXOnly
+    BIRCH_FENCE,
+    @Since("1.19.80-r1")
+    @PowerNukkitXOnly
+    JUNGLE_FENCE,
+    @Since("1.19.80-r1")
+    @PowerNukkitXOnly
+    ACACIA_FENCE,
+    @Since("1.19.80-r1")
+    @PowerNukkitXOnly
+    DARK_OAK_FENCE,
+    @Since("1.19.80-r1")
+    @PowerNukkitXOnly
+    OAK_LOG,
+    @Since("1.19.80-r1")
+    @PowerNukkitXOnly
+    SPRUCE_LOG,
+    @Since("1.19.80-r1")
+    @PowerNukkitXOnly
+    BIRCH_LOG,
+    @Since("1.19.80-r1")
+    @PowerNukkitXOnly
+    JUNGLE_LOG,
+    @Since("1.19.80-r1")
+    @PowerNukkitXOnly
+    ACACIA_LOG,
+    @Since("1.19.80-r1")
+    @PowerNukkitXOnly
+    DARK_OAK_LOG;
 
     private static final Map<String, MinecraftItemID> namespacedIdMap = Arrays.stream(values())
             .flatMap(id ->

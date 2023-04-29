@@ -1,4 +1,40 @@
 {
+  "minecraft:wool": {
+    "0": "minecraft:white_wool",
+    "1": "minecraft:orange_wool",
+    "2": "minecraft:magenta_wool",
+    "3": "minecraft:light_blue_wool",
+    "4": "minecraft:yellow_wool",
+    "5": "minecraft:lime_wool",
+    "6": "minecraft:pink_wool",
+    "7": "minecraft:gray_wool",
+    "8": "minecraft:light_gray_wool",
+    "9": "minecraft:cyan_wool",
+    "10": "minecraft:purple_wool",
+    "11": "minecraft:blue_wool",
+    "12": "minecraft:brown_wool",
+    "13": "minecraft:green_wool",
+    "14": "minecraft:red_wool",
+    "15": "minecraft:black_wool"
+  },
+  "minecraft:fence": {
+    "0": "minecraft:oak_fence",
+    "1": "minecraft:spruce_fence",
+    "2": "minecraft:birch_fence",
+    "3": "minecraft:jungle_fence",
+    "4": "minecraft:acacia_fence",
+    "5": "minecraft:dark_oak_fence"
+  },
+  "minecraft:log": {
+    "0": "minecraft:oak_log",
+    "1": "minecraft:spruce_log",
+    "2": "minecraft:birch_log",
+    "3": "minecraft:jungle_log"
+  },
+  "minecraft:log2": {
+    "0": "minecraft:acacia_log",
+    "1": "minecraft:dark_oak_log"
+  },
   "minecraft:banner_pattern": {
     "0": "minecraft:creeper_banner_pattern",
     "1": "minecraft:skull_banner_pattern",

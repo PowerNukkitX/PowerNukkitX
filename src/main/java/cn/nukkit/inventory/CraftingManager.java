@@ -331,7 +331,7 @@ public class CraftingManager {
     @Since("1.19.50-r2")
     @SuppressWarnings("unchecked")
     private Recipe parseShapelessRecipe(Map<String, Object> recipeObject, String craftingBlock) {
-        String id = recipeObject.containsKey("id") ? recipeObject.get("id").toString() : null;
+        StringBuilder id = new StringBuilder(craftingBlock);
         if (craftingBlock.equals("smithing_table")) {
             List<Item> items = new ArrayList<>();
             Map<String, Object> addition = (Map<String, Object>) recipeObject.get("addition");
@@ -340,12 +340,17 @@ public class CraftingManager {
             Item inputItem = parseRecipeItem(input);
             Map<String, Object> output = (Map<String, Object>) recipeObject.get("output");
             Item outputItem = parseRecipeItem(output);
-            if (additionItem.isNull() || inputItem.isNull() || outputItem.isNull()) {
+
+            Map<String, Object> template = (Map<String, Object>) recipeObject.get("template");
+            Item templateItem = parseRecipeItem(template);
+            if (additionItem.isNull() || inputItem.isNull() || outputItem.isNull() /*|| templateItem.isNull()*/) {
                 return null;
             }
             items.add(inputItem);
             items.add(additionItem);
-            return new SmithingRecipe(null, 0, items, outputItem);
+            items.add(templateItem);
+            id.append("-").append(inputItem.getName()).append("-").append(outputItem.getName());
+            return new SmithingRecipe(id.toString(), 0, items, outputItem);
         }
 
         List<ItemDescriptor> itemDescriptors = new ArrayList<>();
@@ -369,20 +374,23 @@ public class CraftingManager {
                 var itemTag = ingredient.get("tag").toString();
                 int count = ingredient.containsKey("count") ? ((Number) ingredient.get("count")).intValue() : 1;
                 itemDescriptors.add(new ItemTagDescriptor(itemTag, count));
+                id.append('-').append("tag:").append(itemTag);
             } else {
                 Item recipeItem = parseRecipeItem(ingredient);
                 if (recipeItem.isNull()) {
                     return null;
                 }
                 itemDescriptors.add(new DefaultDescriptor(recipeItem));
+                id.append('-').append(recipeItem.getName());
             }
         }
-
+        id.append('-').append(result.getName());
         return switch (craftingBlock) {
-            case "crafting_table" -> new ShapelessRecipe(id, priority, result, itemDescriptors);
-            case "shulker_box" -> new ShulkerBoxRecipe(id, priority, result, itemDescriptors);
-            case "stonecutter" -> new StonecutterRecipe(id, priority, result, itemDescriptors.get(0).toItem());
-            case "cartography_table" -> new CartographyRecipe(id, priority, result, itemDescriptors);
+            case "crafting_table" -> new ShapelessRecipe(id.toString(), priority, result, itemDescriptors);
+            case "shulker_box" -> new ShulkerBoxRecipe(id.toString(), priority, result, itemDescriptors);
+            case "stonecutter" ->
+                    new StonecutterRecipe(id.toString(), priority, result, itemDescriptors.get(0).toItem());
+            case "cartography_table" -> new CartographyRecipe(id.toString(), priority, result, itemDescriptors);
             default -> null;
         };
     }
@@ -391,7 +399,7 @@ public class CraftingManager {
     @Since("1.19.50-r2")
     @SuppressWarnings("unchecked")
     private Recipe parseShapeRecipe(Map<String, Object> recipeObject) {
-        String id = recipeObject.containsKey("id") ? recipeObject.get("id").toString() : null;
+        StringBuilder id = new StringBuilder("ShapeRecipe");
         List<Map<String, Object>> outputs = (List<Map<String, Object>>) recipeObject.get("output");
 
         Map<String, Object> first = outputs.remove(0);
@@ -422,15 +430,18 @@ public class CraftingManager {
                 var tag = ingredient.get("tag").toString();
                 int count = ingredient.containsKey("count") ? ((Number) ingredient.get("count")).intValue() : 1;
                 ingredients.put(ingredientChar, new ItemTagDescriptor(tag, count));
+                id.append('-').append("tag:").append(tag);
             } else {
                 Item recipeItem = parseRecipeItem(ingredient);
                 if (recipeItem.isNull()) {
                     return null;
                 }
                 ingredients.put(ingredientChar, new DefaultDescriptor(recipeItem));
+                id.append('-').append(recipeItem.getName());
             }
         }
-        return new ShapedRecipe(id, priority, primaryResult, shape, ingredients, extraResults);
+        id.append('-').append(primaryResult.getName());
+        return new ShapedRecipe(id.toString(), priority, primaryResult, shape, ingredients, extraResults);
     }
 
     @PowerNukkitXDifference(info = "Recipe formats exported from proxypass before 1.19.40 are no longer supported", since = "1.19.50-r1")

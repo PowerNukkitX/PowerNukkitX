@@ -876,12 +876,6 @@ public class Item implements Cloneable, BlockID, ItemID {
             Item item;
 
             if (id < 256) {
-                String blockMapping = BlockStateRegistry.getBlockMapping(RuntimeItems.getFullId(id, meta));
-                if (blockMapping != null) {
-                    id = RuntimeItems.getRuntimeMapping().getNetworkIdByNamespaceId(blockMapping).orElse(0);
-                    meta = 0;
-                }
-
                 int blockId = id < 0 ? 255 - id : id;
                 if (meta == 0) {
                     item = new ItemBlock(Block.get(blockId), 0, count);

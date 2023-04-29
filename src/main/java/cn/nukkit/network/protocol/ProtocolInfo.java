@@ -18,11 +18,11 @@ public interface ProtocolInfo {
     /**
      * Actual Minecraft: PE protocol version
      */
-    int CURRENT_PROTOCOL = dynamic(575);
+    int CURRENT_PROTOCOL = dynamic(582);
 
     List<Integer> SUPPORTED_PROTOCOLS = Ints.asList(CURRENT_PROTOCOL);
 
-    String MINECRAFT_VERSION_NETWORK = dynamic("1.19.70");
+    String MINECRAFT_VERSION_NETWORK = dynamic("1.19.80");
 
     String MINECRAFT_VERSION = 'v' + MINECRAFT_VERSION_NETWORK;
 
@@ -339,6 +339,15 @@ public interface ProtocolInfo {
     @Since("1.19.70-r1")
     @PowerNukkitXOnly
     int CAMERA_INSTRUCTION_PACKET = 300;
+    @Since("1.19.80-r1")
+    @PowerNukkitXOnly
+    int COMPRESSED_BIOME_DEFINITIONS_LIST = 301;
+    @Since("1.19.80-r1")
+    @PowerNukkitXOnly
+    int TRIM_DATA = 302;
+    @Since("1.19.80-r1")
+    @PowerNukkitXOnly
+    int OPEN_SIGN = 303;
     byte BATCH_PACKET = (byte) 0xff;
 
     static int toNewProtocolID(byte oldProtocolID) {

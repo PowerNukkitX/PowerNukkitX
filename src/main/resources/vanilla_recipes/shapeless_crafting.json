@@ -8458,6 +8458,25 @@
       },
       {
         "meta": 32767,
+        "name": "minecraft:cherry_boat"
+      }
+    ],
+    "output": [
+      {
+        "name": "minecraft:cherry_chest_boat"
+      }
+    ],
+    "priority": 0
+  },
+  {
+    "block": "crafting_table",
+    "input": [
+      {
+        "meta": 32767,
+        "name": "minecraft:chest"
+      },
+      {
+        "meta": 32767,
         "name": "minecraft:minecart"
       }
     ],
@@ -13390,6 +13409,21 @@
     "input": [
       {
         "meta": 32767,
+        "name": "minecraft:pink_petals"
+      }
+    ],
+    "output": [
+      {
+        "name": "minecraft:pink_dye"
+      }
+    ],
+    "priority": 0
+  },
+  {
+    "block": "crafting_table",
+    "input": [
+      {
+        "meta": 32767,
         "name": "minecraft:pumpkin"
       },
       {
@@ -13967,6 +14001,21 @@
     "output": [
       {
         "name": "minecraft:fermented_spider_eye"
+      }
+    ],
+    "priority": 0
+  },
+  {
+    "block": "crafting_table",
+    "input": [
+      {
+        "meta": 32767,
+        "name": "minecraft:torchflower"
+      }
+    ],
+    "output": [
+      {
+        "name": "minecraft:orange_dye"
       }
     ],
     "priority": 0

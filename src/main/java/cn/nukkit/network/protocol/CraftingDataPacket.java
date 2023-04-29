@@ -106,7 +106,7 @@ public class CraftingDataPacket extends DataPacket {
         for (Recipe recipe : entries) {
             this.putVarInt(recipe.getType().networkType);
             switch (recipe.getType()) {
-                case STONECUTTER:
+                case STONECUTTER -> {
                     StonecutterRecipe stonecutter = (StonecutterRecipe) recipe;
                     this.putString(stonecutter.getRecipeId());
                     this.putUnsignedVarInt(1);
@@ -117,10 +117,8 @@ public class CraftingDataPacket extends DataPacket {
                     this.putString(CRAFTING_TAG_STONECUTTER);
                     this.putVarInt(stonecutter.getPriority());
                     this.putUnsignedVarInt(recipeNetworkId++);
-                    break;
-                case SHAPELESS:
-                case CARTOGRAPHY:
-                case SHULKER_BOX:
+                }
+                case SHAPELESS, CARTOGRAPHY, SHULKER_BOX -> {
                     ShapelessRecipe shapeless = (ShapelessRecipe) recipe;
                     this.putString(shapeless.getRecipeId());
                     List<ItemDescriptor> ingredients = shapeless.getNewIngredients();
@@ -137,22 +135,23 @@ public class CraftingDataPacket extends DataPacket {
                     }
                     this.putVarInt(shapeless.getPriority());
                     this.putUnsignedVarInt(recipeNetworkId++);
-                    break;
-                case SMITHING_TRANSFORM:
+                }
+                case SMITHING_TRANSFORM -> {
                     SmithingRecipe smithing = (SmithingRecipe) recipe;
                     this.putString(smithing.getRecipeId());
+                    //todo 1.19.80还没有模板，下个版本再加入
+                    this.putRecipeIngredient(new DefaultDescriptor(Item.AIR_ITEM));
                     this.putRecipeIngredient(new DefaultDescriptor(smithing.getEquipment()));
                     this.putRecipeIngredient(new DefaultDescriptor(smithing.getIngredient()));
                     this.putSlot(smithing.getResult(), true);
                     this.putString(CRAFTING_TAG_SMITHING_TABLE);
                     this.putUnsignedVarInt(recipeNetworkId++);
-                    break;
-                case SHAPED:
+                }
+                case SHAPED -> {
                     ShapedRecipe shaped = (ShapedRecipe) recipe;
                     this.putString(shaped.getRecipeId());
                     this.putVarInt(shaped.getWidth());
                     this.putVarInt(shaped.getHeight());
-
                     for (int z = 0; z < shaped.getHeight(); ++z) {
                         for (int x = 0; x < shaped.getWidth(); ++x) {
                             this.putRecipeIngredient(shaped.getNewIngredient(x, z));
@@ -169,15 +168,8 @@ public class CraftingDataPacket extends DataPacket {
                     this.putString(CRAFTING_TAG_CRAFTING_TABLE);
                     this.putVarInt(shaped.getPriority());
                     this.putUnsignedVarInt(recipeNetworkId++);
-                    break;
-                case FURNACE:
-                case FURNACE_DATA:
-                case SMOKER:
-                case SMOKER_DATA:
-                case BLAST_FURNACE:
-                case BLAST_FURNACE_DATA:
-                case CAMPFIRE:
-                case CAMPFIRE_DATA:
+                }
+                case FURNACE, FURNACE_DATA, SMOKER, SMOKER_DATA, BLAST_FURNACE, BLAST_FURNACE_DATA, CAMPFIRE, CAMPFIRE_DATA -> {
                     SmeltingRecipe smelting = (SmeltingRecipe) recipe;
                     Item input = smelting.getInput();
                     this.putVarInt(input.getId());
@@ -186,28 +178,19 @@ public class CraftingDataPacket extends DataPacket {
                     }
                     this.putSlot(smelting.getResult(), true);
                     switch (recipe.getType()) {
-                        case FURNACE:
-                        case FURNACE_DATA:
-                            this.putString(CRAFTING_TAG_FURNACE);
-                            break;
-                        case SMOKER:
-                        case SMOKER_DATA:
-                            this.putString(CRAFTING_TAG_SMOKER);
-                            break;
-                        case BLAST_FURNACE:
-                        case BLAST_FURNACE_DATA:
-                            this.putString(CRAFTING_TAG_BLAST_FURNACE);
-                            break;
-                        case CAMPFIRE:
-                        case CAMPFIRE_DATA:
-                            this.putString(CRAFTING_TAG_CAMPFIRE);
-                            break;
+                        case FURNACE, FURNACE_DATA -> this.putString(CRAFTING_TAG_FURNACE);
+                        case SMOKER, SMOKER_DATA -> this.putString(CRAFTING_TAG_SMOKER);
+                        case BLAST_FURNACE, BLAST_FURNACE_DATA -> this.putString(CRAFTING_TAG_BLAST_FURNACE);
+                        case CAMPFIRE, CAMPFIRE_DATA -> this.putString(CRAFTING_TAG_CAMPFIRE);
                     }
-                    break;
-                case MULTI:
+                }
+                case MULTI -> {
                     this.putUUID(((MultiRecipe) recipe).getId());
                     this.putUnsignedVarInt(recipeNetworkId++);
-                    break;
+                }
+                case SMITHING_TRIM -> {
+                    //todo
+                }
             }
         }
 

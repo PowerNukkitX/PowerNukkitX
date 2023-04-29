@@ -147,11 +147,7 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable, Blo
         Block layer0 = level.getBlock(this, 0);
         Block layer1 = level.getBlock(this, 1);
 
-        CompoundTag nbt = new CompoundTag()
-                .putString("Text1", "")
-                .putString("Text2", "")
-                .putString("Text3", "")
-                .putString("Text4", "");
+        CompoundTag nbt = new CompoundTag();
 
         if (face == BlockFace.UP) {
             CompassRoseDirection direction = GROUND_SIGN_DIRECTION.getValueForMeta(
@@ -164,11 +160,6 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable, Blo
             BlockState wall = BlockState.of(getWallId()).withProperty(FACING_DIRECTION, face);
             getLevel().setBlock(block, wall.getBlock(block), true);
         }
-
-        if (player != null) {
-            nbt.putString("Creator", player.getUniqueId().toString());
-        }
-
         if (item.hasCustomBlockData()) {
             for (Tag aTag : item.getCustomBlockData().getAllTags()) {
                 nbt.put(aTag.getName(), aTag);
@@ -177,6 +168,9 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable, Blo
 
         try {
             createBlockEntity(nbt);
+            if (player != null) {
+                player.openSignEditor(this, true);
+            }
             return true;
         } catch (Exception e) {
             log.warn("Failed to create block entity {} at {}", getBlockEntityType(), getLocation(), e);
