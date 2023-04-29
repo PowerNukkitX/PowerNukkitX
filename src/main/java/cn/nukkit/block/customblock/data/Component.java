@@ -36,21 +36,15 @@ public class Component implements NBTData {
     @Nullable
     Integer friction;
     @Nullable
-    String geometry;
+    Geometry geometry;
     @Nullable
     Materials materialInstances;
-    @Nullable
-    List<BoneCondition> partVisibility;
     @Nullable
     Vector3f rotation;
     @Nullable
     Boolean unitCube;
 
     public CompoundTag toCompoundTag() {
-        if (this.geometry != null) {
-            this.result.putCompound("minecraft:geometry", new CompoundTag()
-                    .putString("value", geometry.toLowerCase(Locale.ENGLISH)));
-        }
         if (unitCube != null) {
             this.result.putCompound("minecraft:unit_cube", new CompoundTag());
         }
@@ -87,21 +81,13 @@ public class Component implements NBTData {
             this.result.putCompound("minecraft:friction", new CompoundTag()
                     .putByte("value", friction.byteValue()));
         }
-        if (geometry != null) {
-            this.result.putCompound("minecraft:geometry", new CompoundTag()
-                    .putString("value", geometry.toLowerCase(Locale.ENGLISH)));
+        if (this.geometry != null) {
+            this.result.putCompound(geometry.toCompoundTag());
         }
         if (materialInstances != null) {
             this.result.putCompound("minecraft:material_instances", new CompoundTag()
                     .putCompound("mappings", new CompoundTag())
                     .putCompound("materials", materialInstances.toCompoundTag()));
-        }
-        if (partVisibility != null) {
-            var boneConditionsNBT = new CompoundTag("boneConditions");
-            for (var boneCondition : partVisibility) {
-                boneConditionsNBT.putCompound(boneCondition.toCompoundTag());
-            }
-            this.result.putCompound("minecraft:part_visibility", new CompoundTag().putCompound(boneConditionsNBT));
         }
         if (rotation != null) {
             this.result.putCompound("minecraft:rotation", new CompoundTag()

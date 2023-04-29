@@ -1,16 +1,15 @@
 package cn.nukkit.block.customblock;
 
-import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.customblock.data.BlockCreativeCategory;
-import cn.nukkit.block.customblock.data.BoneCondition;
 import cn.nukkit.block.customblock.data.Materials;
 import cn.nukkit.block.customblock.data.Permutation;
 import cn.nukkit.blockproperty.*;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.*;
+import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -177,23 +176,6 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
         }
 
         /**
-         * 条件渲染自定义方块的部分模型内容。
-         * <p>
-         * Partially render the content of the custom block with conditional rendering.
-         */
-        @Deprecated(forRemoval = true)
-        @DeprecationDetails(since = "1.19.80-r1", reason = "microsoft remove this")
-        public Builder partVisibility(BoneCondition... boneConditions) {
-            var components = this.nbt.getCompound("components");
-            var boneConditionsNBT = new CompoundTag("boneConditions");
-            for (var boneCondition : boneConditions) {
-                boneConditionsNBT.putCompound(boneCondition.toCompoundTag());
-            }
-            components.putCompound("minecraft:part_visibility", new CompoundTag().putCompound(boneConditionsNBT));
-            return this;
-        }
-
-        /**
          * 设置此方块的客户端碰撞箱。
          * <p>
          * Set the client collision box for this block.
@@ -239,14 +221,16 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
             return this;
         }
 
-       /*public Builder blockTags(String creativeGroup) {
-            if (creativeGroup.isBlank()) {
-                System.out.println("creativeGroup has an invalid value!");
-                return this;
+        public Builder blockTags(String... tag) {
+            Preconditions.checkNotNull(tag);
+            Preconditions.checkArgument(tag.length > 0);
+            ListTag<StringTag> stringTagListTag = new ListTag<>();
+            for (String s : tag) {
+                stringTagListTag.add(new StringTag("", s));
             }
-            this.nbt.getCompound("components").getCompound("menu_category").putString("group", creativeGroup.toLowerCase(Locale.ENGLISH));
+            this.nbt.putList("blockTags", stringTagListTag);
             return this;
-        }*/
+        }
 
         /**
          * PNX无法准确提供三个以上属性方块的属性解析,如果出现地图异常,请制作一个该方块相同属性的行为包,利用proxypass和bds抓包获取准确的属性解析。
