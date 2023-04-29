@@ -3,10 +3,7 @@ package cn.nukkit.block.customblock;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.customblock.data.BlockCreativeCategory;
-import cn.nukkit.block.customblock.data.Materials;
-import cn.nukkit.block.customblock.data.Permutation;
-import cn.nukkit.block.customblock.data.Transformation;
+import cn.nukkit.block.customblock.data.*;
 import cn.nukkit.blockproperty.*;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.*;
@@ -154,6 +151,21 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
             //设置方块对应的几何模型
             components.putCompound("minecraft:geometry", new CompoundTag()
                     .putString("value", geometry.toLowerCase(Locale.ENGLISH)));
+            return this;
+        }
+
+        /**
+         * 控制自定义方块的几何模型,如果不设置默认为单位立方体
+         * <p>
+         * Control the geometric model of the custom block, if not set the default is the unit cube.<br>
+         * Geometry identifier from geo file in 'RP/models/blocks' folder
+         */
+        public Builder geometry(@NotNull Geometry geometry) {
+            var components = this.nbt.getCompound("components");
+            //默认单位立方体方块，如果定义几何模型需要移除
+            if (components.contains("minecraft:unit_cube")) components.remove("minecraft:unit_cube");
+            //设置方块对应的几何模型
+            components.putCompound(geometry.toCompoundTag());
             return this;
         }
 
