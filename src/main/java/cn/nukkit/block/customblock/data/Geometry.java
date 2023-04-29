@@ -11,7 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 @PowerNukkitXOnly
-@Since("1.19.80")
+@Since("1.19.80-r1")
 public class Geometry implements NBTData {
     private final String geometryName;
     private final Map<String, Boolean> boneVisibilities = new LinkedHashMap<>();
