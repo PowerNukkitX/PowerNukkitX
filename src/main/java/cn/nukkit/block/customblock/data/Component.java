@@ -2,14 +2,11 @@ package cn.nukkit.block.customblock.data;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.CompoundTag;
 import lombok.Builder;
 import lombok.Getter;
 
 import javax.annotation.Nullable;
-import java.util.List;
-import java.util.Locale;
 
 @Since("1.19.60-r1")
 @PowerNukkitXOnly
@@ -40,7 +37,7 @@ public class Component implements NBTData {
     @Nullable
     Materials materialInstances;
     @Nullable
-    Vector3f rotation;
+    Transformation transformation;
     @Nullable
     Boolean unitCube;
 
@@ -83,17 +80,15 @@ public class Component implements NBTData {
         }
         if (this.geometry != null) {
             this.result.putCompound(geometry.toCompoundTag());
+            this.result.remove("minecraft:unit_cube");
         }
         if (materialInstances != null) {
             this.result.putCompound("minecraft:material_instances", new CompoundTag()
                     .putCompound("mappings", new CompoundTag())
                     .putCompound("materials", materialInstances.toCompoundTag()));
         }
-        if (rotation != null) {
-            this.result.putCompound("minecraft:rotation", new CompoundTag()
-                    .putFloat("x", rotation.x)
-                    .putFloat("y", rotation.y)
-                    .putFloat("z", rotation.z));
+        if (transformation != null) {
+            this.result.putCompound(transformation.toCompoundTag());
         }
         return this.result;
     }

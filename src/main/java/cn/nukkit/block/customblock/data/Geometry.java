@@ -18,7 +18,7 @@ public class Geometry implements NBTData {
 
     public Geometry(@NotNull String name) {
         Preconditions.checkNotNull(name);
-        Preconditions.checkArgument(name.isBlank());
+        Preconditions.checkArgument(!name.isBlank());
         this.geometryName = name;
     }
 
@@ -29,7 +29,7 @@ public class Geometry implements NBTData {
      */
     public Geometry boneVisibility(@NotNull String boneName, boolean isVisibility) {
         Preconditions.checkNotNull(boneName);
-        Preconditions.checkArgument(boneName.isBlank());
+        Preconditions.checkArgument(!boneName.isBlank());
         this.boneVisibilities.put(boneName, isVisibility);
         return this;
     }
