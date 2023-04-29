@@ -135,10 +135,10 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
         }
 
         /**
-         * 控制自定义方块的几何模型,如果不设置默认为单位立方体
+         * @see #geometry(Geometry)
+         * 默认不设置骨骼显示
          * <p>
-         * Control the geometric model of the custom block, if not set the default is the unit cube.<br>
-         * Geometry identifier from geo file in 'RP/models/blocks' folder
+         * defalut not set boneVisibilities
          */
         public Builder geometry(String geometry) {
             if (geometry.isBlank()) {
