@@ -15,6 +15,7 @@ import java.util.Set;
 
 @ToString
 @Getter
+@Deprecated(since = "1.19.70-r1")
 public class PlayerAuthInputPacket_v568 extends DataPacket {
     public static final byte NETWORK_ID = ProtocolInfo.PLAYER_AUTH_INPUT_PACKET;
 
