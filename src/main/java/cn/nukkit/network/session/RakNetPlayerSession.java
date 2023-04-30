@@ -62,7 +62,7 @@ public class RakNetPlayerSession implements NetworkPlayerSession, RakNetSessionL
     private Cipher encryptionCipher;
     private Cipher decryptionCipher;
 
-    private final AtomicLong sentEncryptedPacketCount = new AtomicLong();
+    private final AtomicLong sendEncryptedPacketCount = new AtomicLong();
 
     public RakNetPlayerSession(RakNetInterface server, RakNetServerSession session) {
         this.server = server;
@@ -341,7 +341,7 @@ public class RakNetPlayerSession implements NetworkPlayerSession, RakNetSessionL
         Sha256 hash = HASH_LOCAL.get();
         ByteBuf counterBuf = ByteBufAllocator.DEFAULT.directBuffer(8);
         try {
-            counterBuf.writeLongLE(this.sentEncryptedPacketCount.getAndIncrement());
+            counterBuf.writeLongLE(this.sendEncryptedPacketCount.getAndIncrement());
             ByteBuffer keyBuffer = ByteBuffer.wrap(this.agreedKey.getEncoded());
 
             hash.update(counterBuf.internalNioBuffer(0, 8));

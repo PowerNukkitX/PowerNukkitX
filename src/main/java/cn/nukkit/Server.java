@@ -348,7 +348,7 @@ public class Server {
     private FreezableArrayManager freezableArrayManager;
 
     @PowerNukkitXOnly
-    @Since("1.19.80-r1")
+    @Since("1.19.80-r2")
     public boolean enabledNetworkEncryption;
 
 
