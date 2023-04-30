@@ -83,9 +83,10 @@ public class BlockEntitySign extends BlockEntitySpawnable {
         this.namedTag.getCompound(TAG_FRONT_TEXT)
                 .putString(TAG_TEXT_BLOB, String.join("\n", frontText))
                 .putByte(TAG_PERSIST_FORMATTING, 1);
-        this.namedTag.getCompound(TAG_BACK_TEXT)
+        //todo 由于1.19.80还没有更新sign新ui，所以暂时不启用反面文本
+        /*this.namedTag.getCompound(TAG_BACK_TEXT)
                 .putString(TAG_TEXT_BLOB, String.join("\n", backText))
-                .putByte(TAG_PERSIST_FORMATTING, 1);
+                .putByte(TAG_PERSIST_FORMATTING, 1);*/
         this.namedTag.putBoolean(TAG_LEGACY_BUG_RESOLVE, true)
                 .putByte(TAG_WAXED, 0)
                 .putLong(TAG_LOCKED_FOR_EDITING_BY, getEditorEntityRuntimeId());
@@ -250,12 +251,13 @@ public class BlockEntitySign extends BlockEntitySpawnable {
                         .putBoolean(TAG_GLOWING_TEXT, this.isGlowing())
                         .putBoolean(TAG_PERSIST_FORMATTING, true)
                 )
-                .putCompound(new CompoundTag(TAG_BACK_TEXT)
+                //todo 由于1.19.80还没有更新sign新ui，所以暂时不启用反面文本
+                /*.putCompound(new CompoundTag(TAG_BACK_TEXT)
                         .putString(TAG_TEXT_BLOB, this.namedTag.getCompound(TAG_BACK_TEXT).getString(TAG_TEXT_BLOB))
                         .putInt(TAG_TEXT_COLOR, this.getColor(false).getARGB())
                         .putBoolean(TAG_GLOWING_TEXT, this.isGlowing(false))
                         .putBoolean(TAG_PERSIST_FORMATTING, true)
-                )
+                )*/
                 .putBoolean(TAG_LEGACY_BUG_RESOLVE, true)
                 .putInt("x", (int) this.x)
                 .putInt("y", (int) this.y)
@@ -321,6 +323,10 @@ public class BlockEntitySign extends BlockEntitySpawnable {
             this.namedTag.remove(TAG_TEXT_COLOR);
         }
 
+        //todo 由于1.19.80还没有更新sign新ui，所以暂时不启用反面文本
+        if (this.namedTag.contains(TAG_BACK_TEXT)) {
+            this.namedTag.remove(TAG_BACK_TEXT);
+        }
         this.namedTag.remove("Creator");
     }
 
@@ -328,9 +334,7 @@ public class BlockEntitySign extends BlockEntitySpawnable {
     private static void sanitizeText(String[] lines) {
         for (int i = 0; i < lines.length; i++) {
             // Don't allow excessive text per line.
-            if (lines[i].equals("null")) {
-                lines[i] = "";
-            } else if (lines[i] != null) {
+            if (lines[i] != null) {
                 lines[i] = lines[i].substring(0, Math.min(255, lines[i].length()));
             }
         }
