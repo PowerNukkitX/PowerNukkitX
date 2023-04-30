@@ -28,7 +28,6 @@ import cn.nukkit.event.entity.EntityDamageEvent.DamageModifier;
 import cn.nukkit.event.entity.EntityPortalEnterEvent.PortalType;
 import cn.nukkit.event.inventory.*;
 import cn.nukkit.event.player.*;
-import cn.nukkit.event.player.PlayerAsyncPreLoginEvent.LoginResult;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import cn.nukkit.event.server.DataPacketReceiveEvent;
@@ -126,9 +125,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static cn.nukkit.utils.Utils.dynamic;
@@ -351,7 +347,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     private static final float MOVEMENT_DISTANCE_THRESHOLD = 0.1f;
     private final Queue<Location> clientMovements = PlatformDependent.newMpscQueue(4);
     private final AtomicReference<Locale> locale = new AtomicReference<>(null);
-    private boolean verified = false;
     private int unverifiedPackets;
     private String clientSecret;
     private int timeSinceRest;
@@ -378,21 +373,18 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * This is used to temporarily store the player's open EnderChest instance object, when the player opens the EnderChest the value is specified as that EnderChest, when the player closes the EnderChest reset back to null.
      */
     private BlockEnderChest viewingEnderChest = null;
-
-    private LoginChainData loginChainData;
     private static final int NO_SHIELD_DELAY = 10;
     private PlayerBlockActionData lastBlockAction;
     private TaskHandler delayedPosTrackingUpdate;
     private int noShieldTicks;
-
-    private AsyncTask preLoginEventTask = null;
-
+    protected AsyncTask preLoginEventTask = null;
+    protected boolean verified = false;
+    protected LoginChainData loginChainData;
     /**
      * 玩家升级时播放音乐的时间
      * <p>
      * Time to play sound when player upgrades
      */
-
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     protected int lastPlayerdLevelUpSoundTime = 0;
@@ -429,12 +421,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @PowerNukkitXOnly
     private final @NotNull PlayerHandle playerHandle = new PlayerHandle(this);
 
-    /**
-     * Regular expression for validating player name. Allows only: Number nicknames, letter nicknames, number and letters nicknames, nicknames with underscores, nicknames with space in the middle
-     */
-    @PowerNukkitXOnly
-    @Since("1.19.70-r3")
-    private static final Pattern playerNamePattern = Pattern.compile("^(?! )([a-zA-Z0-9_ ]{2,15}[a-zA-Z0-9_])(?<! )$");
 
 
     /**
@@ -3497,109 +3483,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             packetswitch:
             switch (packet.pid()) {
                 case ProtocolInfo.LOGIN_PACKET:
-                    if (this.loggedIn) {
-                        break;
-                    }
 
-                    LoginPacket loginPacket = (LoginPacket) packet;
-
-                    if (loginPacket.issueUnixTime != -1 && Server.getInstance().checkLoginTime && System.currentTimeMillis() - loginPacket.issueUnixTime > 20000) {
-                        var message = "disconnectionScreen.noReason";
-                        this.sendPlayStatus(PlayStatusPacket.LOGIN_FAILED_SERVER, true);
-                        this.close("", message, false);
-                        break;
-                    }
-
-                    this.username = TextFormat.clean(loginPacket.username);
-                    this.displayName = this.username;
-                    this.iusername = this.username.toLowerCase();
-
-                    this.setDataProperty(new StringEntityData(DATA_NAMETAG, this.username), false);
-
-                    this.loginChainData = ClientChainData.read(loginPacket);
-
-                    if (!loginChainData.isXboxAuthed() && server.getPropertyBoolean("xbox-auth")) {
-                        this.close("", "disconnectionScreen.notAuthenticated");
-                        break;
-                    }
-
-                    if (this.server.getOnlinePlayers().size() >= this.server.getMaxPlayers() && this.kick(PlayerKickEvent.Reason.SERVER_FULL, "disconnectionScreen.serverFull", false)) {
-                        break;
-                    }
-
-                    if (this.server.isWaterdogCapable() && loginChainData.getWaterdogIP() != null) {
-                        this.socketAddress = new InetSocketAddress(this.loginChainData.getWaterdogIP(), this.getRawPort());
-                    }
-
-                    this.randomClientId = loginPacket.clientId;
-
-                    this.uuid = loginPacket.clientUUID;
-                    this.rawUUID = Binary.writeUUID(this.uuid);
-
-                    boolean valid = true;
-
-                    Matcher usernameMatcher = playerNamePattern.matcher(loginPacket.username);
-                    if (!usernameMatcher.matches()) {
-                        valid = false;
-                    }
-
-                    if (!valid || Objects.equals(this.iusername, "rcon") || Objects.equals(this.iusername, "console")) {
-                        this.close("", "disconnectionScreen.invalidName");
-
-                        break;
-                    }
-
-                    if (!loginPacket.skin.isValid()) {
-                        this.close("", "disconnectionScreen.invalidSkin");
-                        break;
-                    } else {
-                        Skin skin = loginPacket.skin;
-                        if (this.server.isForceSkinTrusted()) {
-                            skin.setTrusted(true);
-                        }
-                        this.setSkin(skin);
-                    }
-
-                    PlayerPreLoginEvent playerPreLoginEvent;
-                    this.server.getPluginManager().callEvent(playerPreLoginEvent = new PlayerPreLoginEvent(this, "Plugin reason"));
-                    if (playerPreLoginEvent.isCancelled()) {
-                        this.close("", playerPreLoginEvent.getKickMessage());
-
-                        break;
-                    }
-
-                    Player playerInstance = this;
-                    this.verified = true;
-
-                    this.preLoginEventTask = new AsyncTask() {
-                        private PlayerAsyncPreLoginEvent event;
-
-                        @Override
-                        public void onRun() {
-                            this.event = new PlayerAsyncPreLoginEvent(username, uuid, loginChainData, playerInstance.getSkin(), playerInstance.getAddress(), playerInstance.getPort());
-                            server.getPluginManager().callEvent(this.event);
-                        }
-
-                        @Override
-                        public void onCompletion(Server server) {
-                            if (playerInstance.closed) {
-                                return;
-                            }
-
-                            if (this.event.getLoginResult() == LoginResult.KICK) {
-                                playerInstance.close(this.event.getKickMessage(), this.event.getKickMessage());
-                            } else if (playerInstance.shouldLogin) {
-                                playerInstance.setSkin(this.event.getSkin());
-                                playerInstance.completeLoginSequence();
-                                for (Consumer<Server> action : this.event.getScheduledActions()) {
-                                    action.accept(server);
-                                }
-                            }
-                        }
-                    };
-
-                    this.server.getScheduler().scheduleAsyncTask(null, this.preLoginEventTask);
-                    this.processLogin();
                     break;
                 case ProtocolInfo.RESOURCE_PACK_CLIENT_RESPONSE_PACKET:
                     ResourcePackClientResponsePacket responsePacket = (ResourcePackClientResponsePacket) packet;

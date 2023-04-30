@@ -89,6 +89,10 @@ public class EntityHuman extends EntityHumanType {
         this.uuid = uuid;
     }
 
+    public void setRawUniqueId(byte[] rawUUID) {
+        this.rawUUID = rawUUID;
+    }
+
     public byte[] getRawUniqueId() {
         return rawUUID;
     }
