@@ -6,7 +6,7 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockUnknown;
-import cn.nukkit.blockproperty.UnknownRuntimeIdException;
+import cn.nukkit.blockproperty.*;
 import cn.nukkit.blockproperty.exception.BlockPropertyNotFoundException;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.blockstate.BlockStateRegistry;
@@ -112,19 +112,29 @@ public class NBTIO {
     public static CompoundTag putBlockHelper(Block block) {
         var states = new CompoundTag();
         for (var str : block.getProperties().getNames()) {
-            Class<?> type = block.getCurrentState().getProperty(str).getValueClass();
-            if (type == Boolean.class) {
+            BlockProperty<?> property = block.getCurrentState().getProperty(str);
+            if (property instanceof BooleanBlockProperty) {
                 states.putBoolean(str, block.getCurrentState().getBooleanValue(str));
-            } else if (type == Integer.class) {
+            } else if (property instanceof IntBlockProperty) {
                 states.putInt(str, block.getCurrentState().getIntValue(str));
-            } else {
-                states.putString(str, block.getCurrentState().getPersistenceValue(str));
+            } else if (property instanceof UnsignedIntBlockProperty) {
+                states.putInt(str, block.getCurrentState().getIntValue(str));
+            } else if (property instanceof ArrayBlockProperty<?> arrayBlockProperty) {
+                if (arrayBlockProperty.isOrdinal()) {
+                    if (property.getBitSize() > 1) {
+                        states.putInt(str, Integer.parseInt(block.getCurrentState().getPersistenceValue(str)));
+                    } else {
+                        states.putBoolean(str, !block.getCurrentState().getPersistenceValue(str).equals("0"));
+                    }
+                } else {
+                    states.putString(str, block.getCurrentState().getPersistenceValue(str));
+                }
             }
         }
         return new CompoundTag("Block")
                 .putString("name", block.getPersistenceName())
                 .putCompound("states", states)
-                .putInt("version", 17959425);
+                .putInt("version", BlockStateRegistry.blockPaletteVersion.get());
     }
 
     @PowerNukkitXOnly

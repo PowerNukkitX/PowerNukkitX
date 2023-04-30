@@ -272,19 +272,26 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
                         }
                         nbtList.add(new CompoundTag().putString("name", intBlockProperty.getName()).putList(enumList));
                     } else if (each.getProperty() instanceof UnsignedIntBlockProperty unsignedIntBlockProperty) {
-                        var enumList = new ListTag<LongTag>("enum");
+                        var enumList = new ListTag<IntTag>("enum");
                         for (long i = unsignedIntBlockProperty.getMinValue(); i <= unsignedIntBlockProperty.getMaxValue(); i++) {
-                            enumList.add(new LongTag("", i));
+                            enumList.add(new IntTag("", (int) i));
                         }
                         nbtList.add(new CompoundTag().putString("name", unsignedIntBlockProperty.getName()).putList(enumList));
                     } else if (each.getProperty() instanceof ArrayBlockProperty<?> arrayBlockProperty) {
                         if (arrayBlockProperty.isOrdinal()) {
-                            var enumList = new ListTag<IntTag>("enum");
-                            var universe = arrayBlockProperty.getUniverse();
-                            for (int i = 0, universeLength = universe.length; i < universeLength; i++) {
-                                enumList.add(new IntTag("", i));
+                            if (arrayBlockProperty.getBitSize() > 1) {
+                                var enumList = new ListTag<IntTag>("enum");
+                                var universe = arrayBlockProperty.getUniverse();
+                                for (int i = 0, universeLength = universe.length; i < universeLength; i++) {
+                                    enumList.add(new IntTag("", i));
+                                }
+                                nbtList.add(new CompoundTag().putString("name", arrayBlockProperty.getName()).putList(enumList));
+                            } else {
+                                nbtList.add(new CompoundTag().putString("name", arrayBlockProperty.getName())
+                                        .putList(new ListTag<>("enum")
+                                                .add(new IntTag("", 0))
+                                                .add(new IntTag("", 1))));
                             }
-                            nbtList.add(new CompoundTag().putString("name", arrayBlockProperty.getName()).putList(enumList));
                         } else {
                             var enumList = new ListTag<StringTag>("enum");
                             for (var e : arrayBlockProperty.getUniverse()) {

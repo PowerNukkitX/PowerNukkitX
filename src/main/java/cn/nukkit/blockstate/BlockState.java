@@ -192,20 +192,18 @@ public final class BlockState implements Serializable, IBlockState {
         String[] stateParts = persistedStateId.split(";");
         String namespacedId = stateParts[0];
         int id;
-        try {
-            id = Optional.ofNullable(BlockStateRegistry.getBlockId(namespacedId))
-                    .map(OptionalInt::of)
-                    .orElse(OptionalInt.empty())
-                    .orElseThrow(() -> new NoSuchElementException("Block " + namespacedId + " not found."));
-        } catch (NoSuchElementException e) {
+        Optional<Integer> optionalId = Optional.ofNullable(BlockStateRegistry.getBlockId(namespacedId));
+        if (optionalId.isEmpty()) {
             Integer fullId = RuntimeItemMapping.getBlockMapping().inverse().get(persistedStateId);
             if (fullId != null) {
                 int blockId = RuntimeItems.getId(fullId);
                 int damage = RuntimeItems.getData(fullId);
                 return of(blockId, damage);
             } else {
-                throw e;
+                throw new NoSuchElementException("Block " + namespacedId + " not found.");
             }
+        } else {
+            id = optionalId.get();
         }
 
         // Fast path
