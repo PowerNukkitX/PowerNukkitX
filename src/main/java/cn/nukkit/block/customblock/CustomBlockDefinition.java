@@ -174,6 +174,21 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
          * <p>
          * Control custom block permutation features such as conditional rendering, partial rendering, etc.
          */
+        public Builder permutation(Permutation permutation) {
+            if (!this.nbt.contains("permutations")) {
+                this.nbt.putList(new ListTag<CompoundTag>("permutations"));
+            }
+            ListTag<CompoundTag> permutations = this.nbt.getList("permutations", CompoundTag.class);
+            permutations.add(permutation.toCompoundTag());
+            this.nbt.putList(permutations);
+            return this;
+        }
+
+        /**
+         * 控制自定义方块的变化特征，例如条件渲染，部分渲染等
+         * <p>
+         * Control custom block permutation features such as conditional rendering, partial rendering, etc.
+         */
         public Builder permutations(Permutation... permutations) {
             var per = new ListTag<CompoundTag>("permutations");
             for (var permutation : permutations) {
