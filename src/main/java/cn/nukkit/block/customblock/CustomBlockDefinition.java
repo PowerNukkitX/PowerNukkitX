@@ -160,6 +160,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
          * Control the geometric model of the custom block, if not set the default is the unit cube.<br>
          * Geometry identifier from geo file in 'RP/models/blocks' folder
          */
+        @Since("1.19.80-r1")
         public Builder geometry(@NotNull Geometry geometry) {
             var components = this.nbt.getCompound("components");
             //默认单位立方体方块，如果定义几何模型需要移除
@@ -174,6 +175,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
          * <p>
          * Control custom block permutation features such as conditional rendering, partial rendering, etc.
          */
+        @Since("1.19.80-r2")
         public Builder permutation(Permutation permutation) {
             if (!this.nbt.contains("permutations")) {
                 this.nbt.putList(new ListTag<CompoundTag>("permutations"));
