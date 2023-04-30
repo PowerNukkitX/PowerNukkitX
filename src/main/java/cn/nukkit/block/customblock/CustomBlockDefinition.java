@@ -160,12 +160,29 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
          * Control the geometric model of the custom block, if not set the default is the unit cube.<br>
          * Geometry identifier from geo file in 'RP/models/blocks' folder
          */
+        @Since("1.19.80-r1")
         public Builder geometry(@NotNull Geometry geometry) {
             var components = this.nbt.getCompound("components");
             //默认单位立方体方块，如果定义几何模型需要移除
             if (components.contains("minecraft:unit_cube")) components.remove("minecraft:unit_cube");
             //设置方块对应的几何模型
             components.putCompound(geometry.toCompoundTag());
+            return this;
+        }
+
+        /**
+         * 控制自定义方块的变化特征，例如条件渲染，部分渲染等
+         * <p>
+         * Control custom block permutation features such as conditional rendering, partial rendering, etc.
+         */
+        @Since("1.19.80-r2")
+        public Builder permutation(Permutation permutation) {
+            if (!this.nbt.contains("permutations")) {
+                this.nbt.putList(new ListTag<CompoundTag>("permutations"));
+            }
+            ListTag<CompoundTag> permutations = this.nbt.getList("permutations", CompoundTag.class);
+            permutations.add(permutation.toCompoundTag());
+            this.nbt.putList(permutations);
             return this;
         }
 
@@ -229,6 +246,19 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
             return this;
         }
 
+        /**
+         * 以度为单位设置块围绕立方体中心的旋转,旋转顺序为 xyz.角度必须是90的倍数。
+         * <p>
+         * Set the rotation of the block around the center of the block in degrees, the rotation order is xyz. The angle must be a multiple of 90.
+         */
+        public Builder rotation(@NotNull Vector3f rotation) {
+            this.nbt.putCompound("minecraft:rotation", new CompoundTag()
+                    .putFloat("x", rotation.x)
+                    .putFloat("y", rotation.y)
+                    .putFloat("z", rotation.z));
+            return this;
+        }
+
         public Builder blockTags(String... tag) {
             Preconditions.checkNotNull(tag);
             Preconditions.checkArgument(tag.length > 0);
@@ -272,19 +302,26 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
                         }
                         nbtList.add(new CompoundTag().putString("name", intBlockProperty.getName()).putList(enumList));
                     } else if (each.getProperty() instanceof UnsignedIntBlockProperty unsignedIntBlockProperty) {
-                        var enumList = new ListTag<LongTag>("enum");
+                        var enumList = new ListTag<IntTag>("enum");
                         for (long i = unsignedIntBlockProperty.getMinValue(); i <= unsignedIntBlockProperty.getMaxValue(); i++) {
-                            enumList.add(new LongTag("", i));
+                            enumList.add(new IntTag("", (int) i));
                         }
                         nbtList.add(new CompoundTag().putString("name", unsignedIntBlockProperty.getName()).putList(enumList));
                     } else if (each.getProperty() instanceof ArrayBlockProperty<?> arrayBlockProperty) {
                         if (arrayBlockProperty.isOrdinal()) {
-                            var enumList = new ListTag<IntTag>("enum");
-                            var universe = arrayBlockProperty.getUniverse();
-                            for (int i = 0, universeLength = universe.length; i < universeLength; i++) {
-                                enumList.add(new IntTag("", i));
+                            if (arrayBlockProperty.getBitSize() > 1) {
+                                var enumList = new ListTag<IntTag>("enum");
+                                var universe = arrayBlockProperty.getUniverse();
+                                for (int i = 0, universeLength = universe.length; i < universeLength; i++) {
+                                    enumList.add(new IntTag("", i));
+                                }
+                                nbtList.add(new CompoundTag().putString("name", arrayBlockProperty.getName()).putList(enumList));
+                            } else {
+                                nbtList.add(new CompoundTag().putString("name", arrayBlockProperty.getName())
+                                        .putList(new ListTag<>("enum")
+                                                .add(new IntTag("", 0))
+                                                .add(new IntTag("", 1))));
                             }
-                            nbtList.add(new CompoundTag().putString("name", arrayBlockProperty.getName()).putList(enumList));
                         } else {
                             var enumList = new ListTag<StringTag>("enum");
                             for (var e : arrayBlockProperty.getUniverse()) {

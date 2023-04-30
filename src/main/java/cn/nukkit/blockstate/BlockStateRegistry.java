@@ -41,6 +41,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -63,6 +64,7 @@ public class BlockStateRegistry {
     private final Map<String, Integer> persistenceNameToBlockId = new LinkedHashMap<>();
     private byte[] blockPaletteBytes;
     private List<String> knownStateIds;
+    public static final AtomicInteger blockPaletteVersion = new AtomicInteger(0);
 
     //<editor-fold desc="static initialization" defaultstate="collapsed">
     static {
@@ -166,6 +168,8 @@ public class BlockStateRegistry {
                 throw new RuntimeException(e);
             }
         }*/
+
+        blockPaletteVersion.set(tags.get(0).getInt("version"));
 
         if (infoUpdateRuntimeId == null) {
             throw new IllegalStateException("Could not find the minecraft:info_update runtime id!");
@@ -461,7 +465,7 @@ public class BlockStateRegistry {
         stateIdRegistration.clear();
         runtimeIdRegistration.clear();
         //按照每组方块(因为每个方块可能有多种状态,将他们归为一个List)的namespace(形如minecraft:xxx)升序排序(遍历时Hash值小的在前面)
-        SortedMap<String, List<CompoundTag>> namespace2Nbt = new TreeMap<>(getBlockIdComparator());
+        SortedMap<String, List<CompoundTag>> namespace2Nbt = new TreeMap<>(MinecraftNamespaceComparator::compareFNV);
         //处理原版方块
         try (InputStream stream = Server.class.getModule().getResourceAsStream("canonical_block_states.nbt")) {
             if (stream == null) {
@@ -483,7 +487,6 @@ public class BlockStateRegistry {
             return new OK<>(false, e);
         }
 
-        var version = -1;
         //处理自定义方块
         for (var blockCustom : blockCustoms) {
             var namespace = blockCustom.getNamespaceId();
@@ -493,7 +496,7 @@ public class BlockStateRegistry {
             CompoundTag nbt = new CompoundTag()
                     .putInt("blockId", blockCustom.getId())
                     .putString("name", namespace)
-                    .putInt("version", version == -1 ? version = namespace2Nbt.values().stream().findFirst().get().get(0).getInt("version") : version)
+                    .putInt("version", blockPaletteVersion.get())
                     .putCompound("states", new CompoundTag("states"));
             var nbtList = new ArrayList<CompoundTag>();
 
@@ -514,7 +517,7 @@ public class BlockStateRegistry {
                             }
                         } else if (eachProperty instanceof UnsignedIntBlockProperty unsignedIntBlockProperty) {
                             for (long i = unsignedIntBlockProperty.getMinValue(); i <= unsignedIntBlockProperty.getMaxValue(); i++) {
-                                newStateNbtList.add(new LinkedCompoundTag("states").putLong(eachProperty.getName(), i));
+                                newStateNbtList.add(new LinkedCompoundTag("states").putInt(eachProperty.getName(), (int) i));
                             }
                         } else if (eachProperty instanceof ArrayBlockProperty<?> arrayBlockProperty) {
                             if (arrayBlockProperty.isOrdinal()) {
@@ -539,7 +542,7 @@ public class BlockStateRegistry {
                                 }
                             } else if (eachProperty instanceof UnsignedIntBlockProperty unsignedIntBlockProperty) {
                                 for (long i = unsignedIntBlockProperty.getMinValue(); i <= unsignedIntBlockProperty.getMaxValue(); i++) {
-                                    newStateNbtList.add(stateNbt.copy().putLong(eachProperty.getName(), i));
+                                    newStateNbtList.add(stateNbt.copy().putInt(eachProperty.getName(), (int) i));
                                 }
                             } else if (eachProperty instanceof ArrayBlockProperty<?> arrayBlockProperty) {
                                 if (arrayBlockProperty.isOrdinal()) {
@@ -769,10 +772,6 @@ public class BlockStateRegistry {
     @Since("1.19.50-r1")
     public static void close() {
         asyncStateRemover.shutdownNow();
-    }
-
-    private Comparator<String> getBlockIdComparator() {
-        return MinecraftNamespaceComparator::compareFNV;
     }
 
     @AllArgsConstructor
