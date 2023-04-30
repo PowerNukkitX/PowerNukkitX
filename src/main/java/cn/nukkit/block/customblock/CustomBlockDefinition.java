@@ -229,6 +229,19 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
             return this;
         }
 
+        /**
+         * 以度为单位设置块围绕立方体中心的旋转,旋转顺序为 xyz.角度必须是90的倍数。
+         * <p>
+         * Set the rotation of the block around the center of the block in degrees, the rotation order is xyz. The angle must be a multiple of 90.
+         */
+        public Builder rotation(@NotNull Vector3f rotation) {
+            this.nbt.putCompound("minecraft:rotation", new CompoundTag()
+                    .putFloat("x", rotation.x)
+                    .putFloat("y", rotation.y)
+                    .putFloat("z", rotation.z));
+            return this;
+        }
+
         public Builder blockTags(String... tag) {
             Preconditions.checkNotNull(tag);
             Preconditions.checkArgument(tag.length > 0);
