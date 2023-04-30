@@ -424,6 +424,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     private boolean foodEnabled = true;
 
+    @Since("1.19.80-r1")
+    @PowerNukkitXOnly
+    private final @NotNull PlayerHandle playerHandle = new PlayerHandle(this);
+
     /**
      * Regular expression for validating player name. Allows only: Number nicknames, letter nicknames, number and letters nicknames, nicknames with underscores, nicknames with space in the middle
      */
