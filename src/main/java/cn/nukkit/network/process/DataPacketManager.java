@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 public final class DataPacketManager {
     private static final Int2ObjectOpenHashMap<DataPacketProcessor> CURRENT_PROTOCOL_PROCESSORS = new Int2ObjectOpenHashMap<>(300);
 
-    public static void registerProcessor(@NotNull DataPacketProcessor @NotNull ... processors) {
+    public static void registerProcessor(@NotNull DataPacketProcessor... processors) {
         for (var processor : processors) {
             if (processor.getProtocol() != ProtocolInfo.CURRENT_PROTOCOL) {
                 throw new IllegalArgumentException("Processor protocol " + processor.getProtocol() + " does not match current protocol " + ProtocolInfo.CURRENT_PROTOCOL
