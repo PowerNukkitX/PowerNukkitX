@@ -59,13 +59,13 @@ public class Network {
     public static final byte CHANNEL_TEXT = 7; //Chat and other text stuff
     public static final byte CHANNEL_END = 31;
 
-    private Int2ObjectOpenHashMap<Class<? extends DataPacket>> packetPool = new Int2ObjectOpenHashMap<>(256);
+    private final Int2ObjectOpenHashMap<Class<? extends DataPacket>> packetPool = new Int2ObjectOpenHashMap<>(256);
 
     private final Server server;
 
     private final Set<SourceInterface> interfaces = new HashSet<>();
 
-    private final Set<AdvancedSourceInterface> advancedInterfaces = new HashSet<>();
+    private final Set<AdvancedSourceInterface> advancedInterfaces = new HashSet<>(2);
 
     private final LinkedList<NetWorkStatisticData> netWorkStatisticDataList = new LinkedList<>();
 
@@ -407,6 +407,7 @@ public class Network {
         return getPacket((int) id);
     }
 
+    // TODO: 2023/4/30 将低性能的newInstance替换为其他方式以提高数据包创建性能
     @Since("1.4.0.0-PN")
     public DataPacket getPacket(int id) {
         Class<? extends DataPacket> clazz = this.packetPool.get(id);
