@@ -45,11 +45,13 @@ public class BlockEntitySign extends BlockEntitySpawnable {
         if (namedTag.containsCompound(TAG_FRONT_TEXT)) {
             getLines(true);
         } else {
+            this.frontText[0] = "";
             this.namedTag.putCompound(new CompoundTag(TAG_FRONT_TEXT).putString(TAG_TEXT_BLOB, String.join("\n", new String[]{""})));
         }
         if (namedTag.containsCompound(TAG_BACK_TEXT)) {
             getLines(false);
         } else {
+            this.backText[0] = "";
             this.namedTag.putCompound(new CompoundTag(TAG_BACK_TEXT).putString(TAG_TEXT_BLOB, String.join("\n", new String[]{""})));
         }
 
@@ -78,16 +80,13 @@ public class BlockEntitySign extends BlockEntitySpawnable {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag
-                .putCompound(new CompoundTag(TAG_FRONT_TEXT)
-                        .putString(TAG_TEXT_BLOB, String.join("\n", frontText))
-                        .putByte(TAG_PERSIST_FORMATTING, 1)
-                )
-                .putCompound(new CompoundTag(TAG_BACK_TEXT)
-                        .putString(TAG_TEXT_BLOB, String.join("\n", backText))
-                        .putByte(TAG_PERSIST_FORMATTING, 1)
-                )
-                .putBoolean(TAG_LEGACY_BUG_RESOLVE, true)
+        this.namedTag.getCompound(TAG_FRONT_TEXT)
+                .putString(TAG_TEXT_BLOB, String.join("\n", frontText))
+                .putByte(TAG_PERSIST_FORMATTING, 1);
+        this.namedTag.getCompound(TAG_BACK_TEXT)
+                .putString(TAG_TEXT_BLOB, String.join("\n", backText))
+                .putByte(TAG_PERSIST_FORMATTING, 1);
+        this.namedTag.putBoolean(TAG_LEGACY_BUG_RESOLVE, true)
                 .putByte(TAG_WAXED, 0)
                 .putLong(TAG_LOCKED_FOR_EDITING_BY, getEditorEntityRuntimeId());
     }
@@ -329,7 +328,9 @@ public class BlockEntitySign extends BlockEntitySpawnable {
     private static void sanitizeText(String[] lines) {
         for (int i = 0; i < lines.length; i++) {
             // Don't allow excessive text per line.
-            if (lines[i] != null) {
+            if (lines[i].equals("null")) {
+                lines[i] = "";
+            } else if (lines[i] != null) {
                 lines[i] = lines[i].substring(0, Math.min(255, lines[i].length()));
             }
         }
