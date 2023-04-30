@@ -62,6 +62,7 @@ import cn.nukkit.nbt.tag.*;
 import cn.nukkit.network.CompressionProvider;
 import cn.nukkit.network.Network;
 import cn.nukkit.network.SourceInterface;
+import cn.nukkit.network.encryption.PrepareEncryptionTask;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.*;
 import cn.nukkit.network.session.NetworkPlayerSession;
@@ -3613,7 +3614,33 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     };
 
                     this.server.getScheduler().scheduleAsyncTask(null, this.preLoginEventTask);
-                    this.processLogin();
+
+                    if (this.server.encryptionEnabled && loginChainData.isXboxAuthed()) {
+                        this.server.getScheduler().scheduleAsyncTask(new PrepareEncryptionTask(this) {
+                            @Override
+                            public void onCompletion(Server server) {
+                                if (!playerInstance.isConnected()) {
+                                    return;
+                                }
+                                if (this.getHandshakeJwt() == null || this.getEncryptionKey() == null || this.getEncryptionCipher() == null || this.getDecryptionCipher() == null) {
+                                    playerInstance.close("", "Network Encryption error");
+                                    return;
+                                }
+                                ServerToClientHandshakePacket pk = new ServerToClientHandshakePacket();
+                                pk.setJwt(this.getHandshakeJwt());
+                                playerInstance.forceDataPacket(pk, () -> {
+                                    playerInstance.getNetworkSession().setEncryption(this.getEncryptionKey(), this.getEncryptionCipher(), this.getDecryptionCipher());
+                                });
+                            }
+                        });
+                    } else {
+                        this.processLogin();
+                    }
+                    break;
+                case ProtocolInfo.CLIENT_TO_SERVER_HANDSHAKE_PACKET:
+                    if (this.server.encryptionEnabled && loginChainData.isXboxAuthed()) {
+                        this.processLogin();
+                    }
                     break;
                 case ProtocolInfo.RESOURCE_PACK_CLIENT_RESPONSE_PACKET:
                     ResourcePackClientResponsePacket responsePacket = (ResourcePackClientResponsePacket) packet;

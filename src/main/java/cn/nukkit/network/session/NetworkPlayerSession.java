@@ -6,6 +6,9 @@ import cn.nukkit.api.Since;
 import cn.nukkit.network.CompressionProvider;
 import cn.nukkit.network.protocol.DataPacket;
 
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+
 @Since("1.19.30-r1")
 @PowerNukkitXOnly
 public interface NetworkPlayerSession {
@@ -22,4 +25,8 @@ public interface NetworkPlayerSession {
     void setCompression(CompressionProvider compression);
 
     CompressionProvider getCompression();
+
+    default void setEncryption(SecretKey agreedKey, Cipher encryptionCipher, Cipher decryptionCipher) {
+
+    }
 }

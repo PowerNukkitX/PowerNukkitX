@@ -347,6 +347,10 @@ public class Server {
     @Since("1.19.50-r1")
     private FreezableArrayManager freezableArrayManager;
 
+    @PowerNukkitXOnly
+    @Since("1.19.80-r1")
+    public boolean encryptionEnabled;
+
 
     /**
      * 最小初始化测试
@@ -656,6 +660,7 @@ public class Server {
                 put("disable-auto-bug-report", false);
                 put("allow-shaded", false);
                 put("server-authoritative-movement", "server-auth");// Allowed values: "client-auth", "server-auth", "server-auth-with-rewind"
+                put("encryption", true);
             }
         });
         // Allow Nether? (determines if we create a nether world if one doesn't exist on startup)
@@ -728,6 +733,7 @@ public class Server {
             case "server-auth-with-rewind" -> 2;
             default -> throw new IllegalArgumentException();
         };
+        this.encryptionEnabled = this.properties.getBoolean("encryption", true);
 
         this.maximumSizePerChunk = this.getConfig("chunk-saving.maximum-size-per-chunk", 1048576);
         //unlimited if value == -1
