@@ -62,6 +62,7 @@ import cn.nukkit.nbt.tag.*;
 import cn.nukkit.network.CompressionProvider;
 import cn.nukkit.network.Network;
 import cn.nukkit.network.SourceInterface;
+import cn.nukkit.network.process.DataPacketManager;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.*;
 import cn.nukkit.network.session.NetworkPlayerSession;
@@ -3487,33 +3488,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 log.trace("Inbound {}: {}", this.getName(), packet);
             }
 
+            if (DataPacketManager.canProcess(packet.getProtocolUsed(), packet.packetId())) {
+                DataPacketManager.processPacket(this.playerHandle, packet);
+                return;
+            }
+
             // TODO: 2023/3/15 重构数据包处理使得兼容新的int id
             packetswitch:
             switch (packet.pid()) {
-                case ProtocolInfo.REQUEST_NETWORK_SETTINGS_PACKET:
-                    if (this.loggedIn) {
-                        break;
-                    }
-
-                    int protocolVersion = ((RequestNetworkSettingsPacket) packet).protocolVersion;
-
-                    String message;
-                    if (!ProtocolInfo.SUPPORTED_PROTOCOLS.contains(protocolVersion)) {
-                        if (protocolVersion < ProtocolInfo.CURRENT_PROTOCOL) {
-                            message = "disconnectionScreen.outdatedClient";
-                        } else {
-                            message = "disconnectionScreen.outdatedServer";
-                        }
-                        this.close("", message, true);
-                        break;
-                    }
-                    NetworkSettingsPacket settingsPacket = new NetworkSettingsPacket();
-                    settingsPacket.compressionAlgorithm = PacketCompressionAlgorithm.ZLIB;
-                    settingsPacket.compressionThreshold = 1; // compress everything
-                    this.forceDataPacket(settingsPacket, () -> {
-                        this.networkSession.setCompression(CompressionProvider.ZLIB);
-                    });
-                    break;
                 case ProtocolInfo.LOGIN_PACKET:
                     if (this.loggedIn) {
                         break;
@@ -3522,7 +3504,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     LoginPacket loginPacket = (LoginPacket) packet;
 
                     if (loginPacket.issueUnixTime != -1 && Server.getInstance().checkLoginTime && System.currentTimeMillis() - loginPacket.issueUnixTime > 20000) {
-                        message = "disconnectionScreen.noReason";
+                        var message = "disconnectionScreen.noReason";
                         this.sendPlayStatus(PlayStatusPacket.LOGIN_FAILED_SERVER, true);
                         this.close("", message, false);
                         break;

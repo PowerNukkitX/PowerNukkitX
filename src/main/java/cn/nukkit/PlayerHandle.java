@@ -2,6 +2,7 @@ package cn.nukkit;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.network.session.NetworkPlayerSession;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -15,5 +16,9 @@ public final class PlayerHandle {
 
     public PlayerHandle(@NotNull Player player) {
         this.player = player;
+    }
+
+    public NetworkPlayerSession getNetworkSession() {
+        return player.networkSession;
     }
 }

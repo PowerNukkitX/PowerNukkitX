@@ -18,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
 @PowerNukkitXOnly
 public abstract class DataPacketProcessor {
 
-    public abstract void handle(@NotNull PlayerHandle playerHandle, @NotNull DataPacket packet);
+    public abstract void handle(@NotNull PlayerHandle playerHandle, @NotNull DataPacket pk);
 
     public abstract int getPacketId();
 

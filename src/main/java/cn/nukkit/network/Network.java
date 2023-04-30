@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.*;
 import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
+import cn.nukkit.network.process.DataPacketManager;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.utils.*;
 import cn.powernukkitx.libdeflate.CompressionType;
@@ -77,8 +78,10 @@ public class Network {
     @Since("1.19.20-r3")
     private final List<NetworkIF> hardWareNetworkInterfaces;
 
+    @PowerNukkitXDifference(since = "1.19.80-r2", info = "DataPacketManager.registerDefaultProcessors()")
     public Network(Server server) {
         this.registerPackets();
+        DataPacketManager.registerDefaultProcessors();
         this.server = server;
         List<NetworkIF> tmpIfs = null;
         try {
