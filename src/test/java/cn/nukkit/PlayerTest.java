@@ -18,6 +18,7 @@ import cn.nukkit.level.Position;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.Network;
 import cn.nukkit.network.SourceInterface;
+import cn.nukkit.network.process.DataPacketManager;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.NetworkInventoryAction;
 import cn.nukkit.plugin.PluginManager;
@@ -367,6 +368,7 @@ class PlayerTest {
 
     @BeforeEach
     void setUp() {
+        DataPacketManager.registerDefaultProcessors();
         /// Setup Level ///
         doReturn(new Position(100,64,200, level)).when(level).getSafeSpawn();
         

@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.*;
 import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
+import cn.nukkit.network.process.DataPacketManager;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.utils.*;
 import cn.powernukkitx.libdeflate.CompressionType;
@@ -59,13 +60,13 @@ public class Network {
     public static final byte CHANNEL_TEXT = 7; //Chat and other text stuff
     public static final byte CHANNEL_END = 31;
 
-    private Int2ObjectOpenHashMap<Class<? extends DataPacket>> packetPool = new Int2ObjectOpenHashMap<>(256);
+    private final Int2ObjectOpenHashMap<Class<? extends DataPacket>> packetPool = new Int2ObjectOpenHashMap<>(256);
 
     private final Server server;
 
     private final Set<SourceInterface> interfaces = new HashSet<>();
 
-    private final Set<AdvancedSourceInterface> advancedInterfaces = new HashSet<>();
+    private final Set<AdvancedSourceInterface> advancedInterfaces = new HashSet<>(2);
 
     private final LinkedList<NetWorkStatisticData> netWorkStatisticDataList = new LinkedList<>();
 
@@ -77,8 +78,10 @@ public class Network {
     @Since("1.19.20-r3")
     private final List<NetworkIF> hardWareNetworkInterfaces;
 
+    @PowerNukkitXDifference(since = "1.19.80-r2", info = "DataPacketManager.registerDefaultProcessors()")
     public Network(Server server) {
         this.registerPackets();
+        DataPacketManager.registerDefaultProcessors();
         this.server = server;
         List<NetworkIF> tmpIfs = null;
         try {
@@ -407,6 +410,7 @@ public class Network {
         return getPacket((int) id);
     }
 
+    // TODO: 2023/4/30 将低性能的newInstance替换为其他方式以提高数据包创建性能
     @Since("1.4.0.0-PN")
     public DataPacket getPacket(int id) {
         Class<? extends DataPacket> clazz = this.packetPool.get(id);

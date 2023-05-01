@@ -1,0 +1,62 @@
+package cn.nukkit.network.process;
+
+import cn.nukkit.PlayerHandle;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
+import cn.nukkit.network.process.processor.ClientToServerHandshakeProcessor;
+import cn.nukkit.network.process.processor.LoginProcessor;
+import cn.nukkit.network.process.processor.RequestNetworkSettingsProcessor;
+import cn.nukkit.network.protocol.DataPacket;
+import cn.nukkit.network.protocol.ProtocolInfo;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import org.jetbrains.annotations.NotNull;
+
+/**
+ * DataPacketManager is a static class to manage DataPacketProcessors and process DataPackets.
+ */
+@SuppressWarnings("rawtypes")
+@Since("1.19.80-r2")
+@PowerNukkitXOnly
+public final class DataPacketManager {
+    private static final Int2ObjectOpenHashMap<DataPacketProcessor> CURRENT_PROTOCOL_PROCESSORS = new Int2ObjectOpenHashMap<>(300);
+
+    public static void registerProcessor(@NotNull DataPacketProcessor... processors) {
+        for (var processor : processors) {
+            if (processor.getProtocol() != ProtocolInfo.CURRENT_PROTOCOL) {
+                throw new IllegalArgumentException("Processor protocol " + processor.getProtocol() + " does not match current protocol " + ProtocolInfo.CURRENT_PROTOCOL
+                        + ". Multi-version support is not implemented yet.");
+            }
+            CURRENT_PROTOCOL_PROCESSORS.put(processor.getPacketId(), processor);
+        }
+        CURRENT_PROTOCOL_PROCESSORS.trim();
+    }
+
+    public static boolean canProcess(int protocol, int packetId) {
+        if (protocol != ProtocolInfo.CURRENT_PROTOCOL) {
+            return false;
+        }
+        return CURRENT_PROTOCOL_PROCESSORS.containsKey(packetId);
+    }
+
+    public static void processPacket(@NotNull PlayerHandle playerHandle, @NotNull DataPacket packet) {
+        if (packet.getProtocolUsed() != ProtocolInfo.CURRENT_PROTOCOL) {
+            throw new IllegalArgumentException("Packet protocol " + packet.getProtocolUsed() + " does not match current protocol " + ProtocolInfo.CURRENT_PROTOCOL
+                    + ". Multi-version support is not implemented yet.");
+        }
+        var processor = CURRENT_PROTOCOL_PROCESSORS.get(packet.packetId());
+        if (processor != null) {
+            //noinspection unchecked
+            processor.handle(playerHandle, packet);
+        } else {
+            throw new UnsupportedOperationException("No processor found for packet " + packet.getClass().getName() + " with id " + packet.packetId() + ".");
+        }
+    }
+
+    public static void registerDefaultProcessors() {
+        registerProcessor(
+                new RequestNetworkSettingsProcessor(),
+                new LoginProcessor(),
+                new ClientToServerHandshakeProcessor()
+        );
+    }
+}
