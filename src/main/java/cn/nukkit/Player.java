@@ -3482,9 +3482,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             // TODO: 2023/3/15 重构数据包处理使得兼容新的int id
             packetswitch:
             switch (packet.pid()) {
-                case ProtocolInfo.LOGIN_PACKET:
-
-                    break;
                 case ProtocolInfo.RESOURCE_PACK_CLIENT_RESPONSE_PACKET:
                     ResourcePackClientResponsePacket responsePacket = (ResourcePackClientResponsePacket) packet;
                     switch (responsePacket.responseStatus) {
