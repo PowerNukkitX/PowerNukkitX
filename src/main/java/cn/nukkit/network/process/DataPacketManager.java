@@ -3,6 +3,7 @@ package cn.nukkit.network.process;
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.network.process.processor.ClientToServerHandshakeProcessor;
 import cn.nukkit.network.process.processor.LoginProcessor;
 import cn.nukkit.network.process.processor.RequestNetworkSettingsProcessor;
 import cn.nukkit.network.protocol.DataPacket;
@@ -54,7 +55,8 @@ public final class DataPacketManager {
     public static void registerDefaultProcessors() {
         registerProcessor(
                 new RequestNetworkSettingsProcessor(),
-                new LoginProcessor()
+                new LoginProcessor(),
+                new ClientToServerHandshakeProcessor()
         );
     }
 }
