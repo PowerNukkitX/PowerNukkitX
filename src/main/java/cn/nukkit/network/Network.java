@@ -451,6 +451,8 @@ public class Network {
     private void registerPackets() {
         this.packetPool.clear();
 
+        this.registerPacket(ProtocolInfo.SERVER_TO_CLIENT_HANDSHAKE_PACKET, ServerToClientHandshakePacket.class);
+        this.registerPacket(ProtocolInfo.CLIENT_TO_SERVER_HANDSHAKE_PACKET, ClientToServerHandshakePacket.class);
         this.registerPacket(ProtocolInfo.ADD_ENTITY_PACKET, AddEntityPacket.class);
         this.registerPacket(ProtocolInfo.ADD_ITEM_ENTITY_PACKET, AddItemEntityPacket.class);
         this.registerPacket(ProtocolInfo.ADD_PAINTING_PACKET, AddPaintingPacket.class);
