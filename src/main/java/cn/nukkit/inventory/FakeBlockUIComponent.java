@@ -8,6 +8,9 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.ContainerClosePacket;
 import cn.nukkit.network.protocol.ContainerOpenPacket;
 
+/**
+ * 一个抽象的方块实体UI，提供了一些inventory方法的默认实现
+ */
 public class FakeBlockUIComponent extends PlayerUIComponent {
     private final InventoryType type;
 
@@ -22,12 +25,12 @@ public class FakeBlockUIComponent extends PlayerUIComponent {
     public FakeBlockMenu getHolder() {
         return (FakeBlockMenu) this.holder;
     }
-    
+
     @Override
     public InventoryType getType() {
         return type;
     }
-    
+
     @Override
     public boolean open(Player who) {
         InventoryOpenEvent ev = new InventoryOpenEvent(this, who);
