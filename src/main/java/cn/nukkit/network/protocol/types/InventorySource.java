@@ -11,9 +11,9 @@ import org.jetbrains.annotations.NotNull;
 @Value
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class InventorySource {
-    private static final InventorySource CREATIVE_SOURCE = new InventorySource(Type.CREATIVE, ContainerId.NONE, Flag.NONE);
-    private static final InventorySource GLOBAL_SOURCE = new InventorySource(Type.GLOBAL, ContainerId.NONE, Flag.NONE);
-    private static final InventorySource INVALID_SOURCE = new InventorySource(Type.INVALID, ContainerId.NONE, Flag.NONE);
+    private static final InventorySource CREATIVE_SOURCE = new InventorySource(Type.CREATIVE, ContainerIds.NONE, Flag.NONE);
+    private static final InventorySource GLOBAL_SOURCE = new InventorySource(Type.GLOBAL, ContainerIds.NONE, Flag.NONE);
+    private static final InventorySource INVALID_SOURCE = new InventorySource(Type.INVALID, ContainerIds.NONE, Flag.NONE);
     private final Type type;
     private final int containerId;
     private final Flag flag;
@@ -43,7 +43,7 @@ public final class InventorySource {
     }
 
     public static InventorySource fromWorldInteraction(@NotNull Flag flag) {
-        return new InventorySource(Type.WORLD_INTERACTION, ContainerId.NONE, flag);
+        return new InventorySource(Type.WORLD_INTERACTION, ContainerIds.NONE, flag);
     }
 
     public enum Type {
