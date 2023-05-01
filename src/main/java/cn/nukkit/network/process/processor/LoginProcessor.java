@@ -10,10 +10,13 @@ import cn.nukkit.entity.data.StringEntityData;
 import cn.nukkit.event.player.PlayerAsyncPreLoginEvent;
 import cn.nukkit.event.player.PlayerKickEvent;
 import cn.nukkit.event.player.PlayerPreLoginEvent;
+import cn.nukkit.network.encryption.PrepareEncryptionTask;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.LoginPacket;
 import cn.nukkit.network.protocol.PlayStatusPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
+import cn.nukkit.network.protocol.ServerToClientHandshakePacket;
+import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.utils.Binary;
 import cn.nukkit.utils.ClientChainData;
@@ -138,12 +141,32 @@ public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
             }
         });
 
-        server.getScheduler().scheduleAsyncTask(null, playerHandle.getPreLoginEventTask());
-        playerHandle.processLogin();
+        server.getScheduler().scheduleAsyncTask(InternalPlugin.INSTANCE, playerHandle.getPreLoginEventTask());
+        if (server.enabledNetworkEncryption && playerHandle.getLoginChainData().isXboxAuthed()) {
+            server.getScheduler().scheduleAsyncTask(InternalPlugin.INSTANCE, new PrepareEncryptionTask(playerHandle.player) {
+                @Override
+                public void onCompletion(Server server) {
+                    if (!playerHandle.player.isConnected()) {
+                        return;
+                    }
+                    if (this.getHandshakeJwt() == null || this.getEncryptionKey() == null || this.getEncryptionCipher() == null || this.getDecryptionCipher() == null) {
+                        playerHandle.player.close("", "Network Encryption error");
+                        return;
+                    }
+                    ServerToClientHandshakePacket pk = new ServerToClientHandshakePacket();
+                    pk.setJwt(this.getHandshakeJwt());
+                    playerHandle.player.forceDataPacket(pk, () -> {
+                        playerHandle.getNetworkSession().setEncryption(this.getEncryptionKey(), this.getEncryptionCipher(), this.getDecryptionCipher());
+                    });
+                }
+            });
+        } else {
+            playerHandle.processLogin();
+        }
     }
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.LOGIN_PACKET;
+        return ProtocolInfo.toNewProtocolID(ProtocolInfo.LOGIN_PACKET);
     }
 }
