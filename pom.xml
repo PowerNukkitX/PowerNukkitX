@@ -163,6 +163,16 @@
             <url>https://jitpack.io</url>
         </repository>
         <repository>
+            <id>opencollab-repo-release</id>
+            <url>https://repo.opencollab.dev/maven-releases/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
             <id>opencollab-repo-snapshot</id>
             <url>https://repo.opencollab.dev/maven-snapshots/</url>
             <releases>
@@ -204,6 +214,12 @@
             <groupId>cn.powernukkitx.PowerNukkitX-Network</groupId>
             <artifactId>raknet</artifactId>
             <version>1.6.28-PNX.5</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.nukkitx</groupId>
+            <artifactId>natives</artifactId>
+            <version>1.0.3</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

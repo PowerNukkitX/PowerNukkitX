@@ -2,6 +2,7 @@ package cn.nukkit.block.customblock.data;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.CompoundTag;
 import lombok.Builder;
 import lombok.Getter;
@@ -40,6 +41,8 @@ public class Component implements NBTData {
     Transformation transformation;
     @Nullable
     Boolean unitCube;
+    @Nullable
+    Vector3f rotation;
 
     public CompoundTag toCompoundTag() {
         if (unitCube != null) {
@@ -89,6 +92,12 @@ public class Component implements NBTData {
         }
         if (transformation != null) {
             this.result.putCompound(transformation.toCompoundTag());
+        }
+        if (rotation != null) {
+            this.result.putCompound("minecraft:rotation", new CompoundTag()
+                    .putFloat("x", rotation.x)
+                    .putFloat("y", rotation.y)
+                    .putFloat("z", rotation.z));
         }
         return this.result;
     }

@@ -3,6 +3,8 @@ package cn.nukkit.network.process;
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.network.process.processor.ClientToServerHandshakeProcessor;
+import cn.nukkit.network.process.processor.LoginProcessor;
 import cn.nukkit.network.process.processor.RequestNetworkSettingsProcessor;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
@@ -12,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * DataPacketManager is a static class to manage DataPacketProcessors and process DataPackets.
  */
+@SuppressWarnings("rawtypes")
 @Since("1.19.80-r2")
 @PowerNukkitXOnly
 public final class DataPacketManager {
@@ -42,6 +45,7 @@ public final class DataPacketManager {
         }
         var processor = CURRENT_PROTOCOL_PROCESSORS.get(packet.packetId());
         if (processor != null) {
+            //noinspection unchecked
             processor.handle(playerHandle, packet);
         } else {
             throw new UnsupportedOperationException("No processor found for packet " + packet.getClass().getName() + " with id " + packet.packetId() + ".");
@@ -50,7 +54,9 @@ public final class DataPacketManager {
 
     public static void registerDefaultProcessors() {
         registerProcessor(
-                new RequestNetworkSettingsProcessor()
+                new RequestNetworkSettingsProcessor(),
+                new LoginProcessor(),
+                new ClientToServerHandshakeProcessor()
         );
     }
 }

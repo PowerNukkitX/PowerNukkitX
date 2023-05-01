@@ -11,6 +11,8 @@ import cn.nukkit.item.customitem.CustomItem;
 import cn.nukkit.item.customitem.CustomItemDefinition;
 import cn.nukkit.utils.BinaryStream;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -48,9 +50,9 @@ public class RuntimeItemMapping {
     @PowerNukkitXOnly
     @Since("1.19.70-r2")
     private final Map<String, Supplier<Item>> namespacedIdItem = new HashMap<>();
-
     @PowerNukkitXOnly
-    private static final Int2ObjectOpenHashMap<String> mappingEntries = new Int2ObjectOpenHashMap<>();
+    @Since("1.19.80-r1")
+    private static final BiMap<Integer, String> blockMappings = HashBiMap.create();
     private byte[] itemPalette;
 
     public RuntimeItemMapping(Map<String, MappingEntry> mappings) {
@@ -114,15 +116,14 @@ public class RuntimeItemMapping {
                 for (String damageStr : convertData.keySet()) {
                     String identifier = convertData.get(damageStr).getAsString();
                     int damage = Integer.parseInt(damageStr);
-                    mappingEntries.put(RuntimeItems.getFullId(id, damage), identifier);
+                    blockMappings.put(RuntimeItems.getFullId(id, damage), identifier);
                 }
             }
-            mappingEntries.trim();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        mappingEntries.forEach((id, damage) -> {
+        blockMappings.forEach((id, damage) -> {
             String identifier = damage.split(";")[0];
             int runtime = this.name2RuntimeId.getOrDefault(identifier, -1);
             if (runtime != -1) {
@@ -293,12 +294,6 @@ public class RuntimeItemMapping {
             fullId = RuntimeItems.getFullId(item.getId(), item.getDamage());
         }
         RuntimeEntry runtimeEntry = legacy2Runtime.get(fullId);
-        /*if (runtimeEntry == null) {
-            String id = BlockStateRegistry.getBlockMapping(fullId);
-            if (id != null) {
-                return getNetworkIdByNamespaceId(id.split(";")[0]).orElse(0);
-            }
-        }*/
         if (runtimeEntry == null) {
             runtimeEntry = legacy2Runtime.get(RuntimeItems.getFullId(item.getId(), 0));
         }
@@ -429,9 +424,10 @@ public class RuntimeItemMapping {
     }
 
     @DoNotModify
+    @Since("1.19.80-r1")
     @PowerNukkitXOnly
-    public static Int2ObjectOpenHashMap<String> getBlockMapping() {
-        return mappingEntries;
+    public static BiMap<Integer, String> getBlockMapping() {
+        return blockMappings;
     }
 
     @NotNull

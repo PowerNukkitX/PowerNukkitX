@@ -16,9 +16,8 @@ import org.jetbrains.annotations.NotNull;
  */
 @Since("1.19.80-r2")
 @PowerNukkitXOnly
-public abstract class DataPacketProcessor {
-
-    public abstract void handle(@NotNull PlayerHandle playerHandle, @NotNull DataPacket pk);
+public abstract class DataPacketProcessor<T extends DataPacket> {
+    public abstract void handle(@NotNull PlayerHandle playerHandle, @NotNull T pk);
 
     public abstract int getPacketId();
 
