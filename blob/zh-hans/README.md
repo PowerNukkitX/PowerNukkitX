@@ -174,6 +174,7 @@ dependencies {
 - __[🌐 PowerNukkitX官网](https://powernukkitx.cn/)__
 - __[👩🏽‍💻 PowerNukkitX文档库](https://doc.powernukkitx.cn/)__
 - __[💬 PowerNukkitX Discord](https://discord.gg/BcPhZCVJHJ)__
+- __[💾 下载正式版PowerNukkitX](https://github.com/PowerNukkitX/PowerNukkitX/releases)__
 - __[💾 下载测试版PowerNukkitX](https://ci.lt-name.com/job/PowerNukkitX/)__
 - __[🔌 Cloudburst Nukkit 插件中心](https://cloudburstmc.org/resources/categories/nukkit-plugins.1/)__
 - __[🔌 PowerNukkit 插件中心](https://discuss.powernukkit.org/c/plugins/powernukkit-plugins/14/)__
