@@ -16,7 +16,6 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
-
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -291,16 +290,17 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
          * 形如以下形式：<p/>
          * {@code
          * "PlantBlock": {
-         *     "name": "minecraft:red_flower",
-         *     "states": {
-         *       "flower_type": "poppy"
-         *     },
-         *     "version": 17959425i
-         *     "itemId": xxx,
-         *     "itemMeta": xxx
-         *   }
+         * "name": "minecraft:red_flower",
+         * "states": {
+         * "flower_type": "poppy"
+         * },
+         * "version": 17959425i
+         * "itemId": xxx,
+         * "itemMeta": xxx
+         * }
          * }<p/>
          * 请注意，必须在这个tag中包含键"itemId"与"itemMeta"。服务端将通过读取这两个参数快速重建Item对象，而不是通过stateId重建。这太慢了
+         *
          * @return 方块在花盆NBT中的标签
          */
         default CompoundTag getPlantBlockTag() {
@@ -316,6 +316,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
 
         /**
          * 对于高草丛来说，只有状态为"fern"的方块才能放入花盆中
+         *
          * @return 是否是可作为花盆方块的状态
          */
         default boolean isPotBlockState() {

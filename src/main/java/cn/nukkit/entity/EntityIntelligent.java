@@ -145,12 +145,23 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
     }
 
     /**
-     * 返回实体最大的跳跃高度，返回值会用在移动处理上
+     * 返回实体在跳跃时要增加的motion y
      *
-     * @return 实体最大跳跃高度
+     * @param jumpY 跳跃的高度
+     * @return 实体要增加的motion y
      */
-    public float getJumpingHeight() {
-        return 1.0f;
+    public double getJumpingMotion(double jumpY) {
+        if (this.isInsideOfWater()) {
+            return 0.7;
+        } else {
+            if (jumpY > 0 && jumpY < 0.2) {
+                return 0.15;
+            } else if (jumpY < 0.51) {
+                return 0.35;
+            } else {
+                return 0.6;
+            }
+        }
     }
 
     @Override

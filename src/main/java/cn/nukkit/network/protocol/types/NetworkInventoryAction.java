@@ -166,9 +166,12 @@ public class NetworkInventoryAction {
             type = InventorySource.Type.byId(this.sourceType);
             id = windowId;
         }
+
         switch (type) {
             case CONTAINER -> {
                 if (id == ContainerIds.ARMOR) {
+                    //TODO: HACK!
+                    this.inventorySlot += 36;
                     id = ContainerIds.INVENTORY;
                 } else if (id == ContainerIds.UI) {
                     switch (this.inventorySlot) {
