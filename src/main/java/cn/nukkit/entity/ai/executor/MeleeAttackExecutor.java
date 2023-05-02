@@ -12,7 +12,6 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.inventory.EntityInventoryHolder;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.MinecraftItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.EntityEventPacket;
@@ -120,7 +119,7 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
         oldTarget = floor;
 
         if (entity.distanceSquared(target) <= 3.5 && attackTick > coolDown) {
-            Item item = entity instanceof EntityInventoryHolder holder ? holder.getItemInHand() : Item.fromString(MinecraftItemID.AIR.getNamespacedId());
+            Item item = entity instanceof EntityInventoryHolder holder ? holder.getItemInHand() : Item.AIR_ITEM;
 
             float defaultDamage = 0;
             if (entity instanceof EntityCanAttack entityCanAttack) {

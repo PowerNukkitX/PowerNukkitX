@@ -3,6 +3,8 @@ package cn.nukkit.entity.ai.controller;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockCarpet;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.EntityPhysical;
@@ -21,6 +23,12 @@ public class WalkController implements IController {
     protected static final int JUMP_COOL_DOWN = 10;
 
     protected int currentJumpCoolDown = 0;
+
+    private boolean canJump(Block block) {
+        if (block.isSolid()) return true;
+        else if (block instanceof BlockCarpet) return true;
+        else return block.getId() == BlockID.FLOWER_POT_BLOCK || block.getId() == BlockID.CAKE_BLOCK;
+    }
 
     @Override
     public boolean control(EntityIntelligent entity) {
@@ -45,19 +53,14 @@ public class WalkController implements IController {
             var dx = relativeVector.x * k;
             var dz = relativeVector.z * k;
             var dy = 0.0d;
-            if (direction.y > entity.y && collidesBlocks(entity, dx, 0, dz) && currentJumpCoolDown > JUMP_COOL_DOWN) {
-                if (entity.isOnGround() || entity.isTouchingWater()) {
-                    //note: 从对BDS的抓包信息来看，台阶的碰撞箱在服务端和半砖一样，高度都为0.5
-                    Block[] collisionBlocks = entity.level.getTickCachedCollisionBlocks(entity.getOffsetBoundingBox().getOffsetBoundingBox(dx, dy, dz), false, false, b -> !b.canPassThrough());
-                    double maxY = Arrays.stream(collisionBlocks).map(b -> b.getCollisionBoundingBox().getMaxY()).max(Double::compareTo).orElse(entity.getY());
-                    if (entity.hasWaterAt(0) && maxY - entity.y <= 1) {//防止实体在水中浮起的时候尝试跳跃一格高的方块
-                        dy += 0.6;//水中上岸稍微跳高一点
-                        currentJumpCoolDown = 0;
-                    } else if (maxY - entity.getY() - 0.5 > 0.01) {//0.5格以下可以直接走上去
-                        dy += 0.5;
-                        currentJumpCoolDown = 0;
-                    }
-                }
+            if (relativeVector.y > 0 && collidesBlocks(entity, dx, 0, dz) && currentJumpCoolDown > JUMP_COOL_DOWN) {
+                //note: 从对BDS的抓包信息来看，台阶的碰撞箱在服务端和半砖一样，高度都为0.5
+                Block[] collisionBlocks = entity.level.getTickCachedCollisionBlocks(entity.getOffsetBoundingBox().getOffsetBoundingBox(dx, dy, dz), false, false, this::canJump);
+                //计算出需要向上移动的高度
+                double maxY = Arrays.stream(collisionBlocks).map(b -> b.getCollisionBoundingBox().getMaxY()).max(Double::compareTo).orElse(0.0d);
+                double diffY = maxY - entity.getY();
+                dy += entity.getJumpingMotion(diffY);
+                currentJumpCoolDown = 0;
             }
             entity.addTmpMoveMotion(new Vector3(dx, dy, dz));
             entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_MOVING, true);
@@ -79,6 +82,6 @@ public class WalkController implements IController {
 
     protected boolean collidesBlocks(EntityIntelligent entity, double dx, double dy, double dz) {
         return entity.level.getTickCachedCollisionBlocks(entity.getOffsetBoundingBox().getOffsetBoundingBox(dx, dy, dz), true,
-                false, Block::isSolid).length > 0;
+                false, this::canJump).length > 0;
     }
 }

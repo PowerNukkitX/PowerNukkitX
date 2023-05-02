@@ -167,6 +167,20 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
 
         List<InventoryAction> actions = new ArrayList<>();
         for (NetworkInventoryAction networkInventoryAction : pk.actions) {
+            if (playerHandle.getCraftingTransaction() != null) {
+                if (player.craftingType == Player.CRAFTING_STONECUTTER && networkInventoryAction.getInventorySource().getType() == InventorySource.Type.NON_IMPLEMENTED_TODO) {
+                    networkInventoryAction.setInventorySource(InventorySource.fromNonImplementedTodo(NetworkInventoryAction.SOURCE_TYPE_CRAFTING_RESULT));
+                } else if (player.craftingType == Player.CRAFTING_CARTOGRAPHY && pk.actions.length == 2 && pk.actions[1].getInventorySource().getContainerId() == ContainerIds.UI
+                        && networkInventoryAction.inventorySlot == 0) {
+                    int slot = pk.actions[1].inventorySlot;
+                    if (slot == 50) {
+                        networkInventoryAction.setInventorySource(InventorySource.fromContainerWindowId(NetworkInventoryAction.SOURCE_TYPE_CRAFTING_RESULT));
+                    } else {
+                        networkInventoryAction.inventorySlot = slot - 12;
+                    }
+                }
+            }
+
             InventoryAction a = networkInventoryAction.createInventoryAction(player);
             if (a == null) {
                 log.debug("Unmatched inventory action from {}: {}", player.getName(), networkInventoryAction);
