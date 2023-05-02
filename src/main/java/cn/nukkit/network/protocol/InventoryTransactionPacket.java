@@ -5,15 +5,18 @@ import cn.nukkit.inventory.transaction.data.ReleaseItemData;
 import cn.nukkit.inventory.transaction.data.TransactionData;
 import cn.nukkit.inventory.transaction.data.UseItemData;
 import cn.nukkit.inventory.transaction.data.UseItemOnEntityData;
+import cn.nukkit.network.protocol.types.LegacySetItemSlotData;
 import cn.nukkit.network.protocol.types.NetworkInventoryAction;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.ToString;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
+import java.util.List;
 
-@ToString
+@ToString()
 public class InventoryTransactionPacket extends DataPacket {
-
+    //InventoryTransactionType 0-5
     public static final int TYPE_NORMAL = 0;
     public static final int TYPE_MISMATCH = 1;
     public static final int TYPE_USE_ITEM = 2;
@@ -40,15 +43,18 @@ public class InventoryTransactionPacket extends DataPacket {
     public int transactionType;
     public NetworkInventoryAction[] actions;
     public TransactionData transactionData;
+    public final List<LegacySetItemSlotData> legacySlots = new ObjectArrayList<>();
 
-    @Since("1.3.0.0-PN") public int legacyRequestId;
+    @Since("1.3.0.0-PN")
+    public int legacyRequestId;
 
     /**
      * NOTE: THESE FIELDS DO NOT EXIST IN THE PROTOCOL, it's merely used for convenience for us to easily
      * determine whether we're doing a crafting or enchanting transaction.
      */
     public boolean isCraftingPart = false;
-    @Since("1.3.1.0-PN") public boolean isEnchantingPart = false;
+    @Since("1.3.1.0-PN")
+    public boolean isEnchantingPart = false;
     @Since("1.4.0.0-PN")
     public boolean isRepairItemPart = false;
     @Since("1.19.21-r1")
@@ -63,8 +69,17 @@ public class InventoryTransactionPacket extends DataPacket {
     public void encode() {
         this.reset();
         this.putVarInt(this.legacyRequestId);
-        //TODO legacySlot array
         this.putUnsignedVarInt(this.transactionType);
+
+        //slots array
+        if (legacyRequestId != 0) {
+            this.putUnsignedVarInt(this.legacySlots.size());
+            for (var slot : legacySlots) {
+                this.putByte((byte) slot.getContainerId());
+                this.putByteArray(slot.getSlots());
+            }
+        }
+
         this.putUnsignedVarInt(this.actions.length);
         for (NetworkInventoryAction action : this.actions) {
             action.write(this);
@@ -112,16 +127,15 @@ public class InventoryTransactionPacket extends DataPacket {
     @Override
     public void decode() {
         this.legacyRequestId = this.getVarInt();
-        if (legacyRequestId < -1 && (legacyRequestId & 1) == 0) {
+        if (legacyRequestId != 0) {
             int length = (int) this.getUnsignedVarInt();
             for (int i = 0; i < length; i++) {
-                this.getByte();
-                int bufLen = (int) this.getUnsignedVarInt();
-                this.get(bufLen);
+                byte containerId = (byte) this.getByte();
+                byte[] slots = this.getByteArray();
+                this.legacySlots.add(new LegacySetItemSlotData(containerId, slots));
             }
-
         }
-
+        //InventoryTransactionType
         this.transactionType = (int) this.getUnsignedVarInt();
 
         int length = (int) this.getUnsignedVarInt();

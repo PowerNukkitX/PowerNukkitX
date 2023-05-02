@@ -4,6 +4,7 @@ import cn.nukkit.PlayerHandle;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.network.process.processor.ClientToServerHandshakeProcessor;
+import cn.nukkit.network.process.processor.InventoryTransactionProcessor;
 import cn.nukkit.network.process.processor.LoginProcessor;
 import cn.nukkit.network.process.processor.RequestNetworkSettingsProcessor;
 import cn.nukkit.network.protocol.DataPacket;
@@ -56,7 +57,8 @@ public final class DataPacketManager {
         registerProcessor(
                 new RequestNetworkSettingsProcessor(),
                 new LoginProcessor(),
-                new ClientToServerHandshakeProcessor()
+                new ClientToServerHandshakeProcessor(),
+                new InventoryTransactionProcessor()
         );
     }
 }

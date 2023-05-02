@@ -1,6 +1,7 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 
 /**
@@ -28,7 +29,7 @@ public enum InventoryType {
     @PowerNukkitOnly CURSOR(1, "Cursor", -1),
     SHULKER_BOX(27, "Shulker Box", 0),
     BEACON(1, "Beacon", 13),
-    // 14 STRUCTURE_EDITOR
+    @PowerNukkitXOnly STRUCTURE_EDITOR(0, "StructureBlock", 14),
     // 18 ARMOR
     //COMPOUND_CREATOR typeId:20
     //ELEMENT_CONSTRUCTOR typeId:21

@@ -20,6 +20,7 @@ import cn.nukkit.network.Network;
 import cn.nukkit.network.SourceInterface;
 import cn.nukkit.network.process.DataPacketManager;
 import cn.nukkit.network.protocol.*;
+import cn.nukkit.network.protocol.types.InventorySource;
 import cn.nukkit.network.protocol.types.NetworkInventoryAction;
 import cn.nukkit.plugin.PluginManager;
 import org.junit.jupiter.api.BeforeEach;
@@ -322,8 +323,7 @@ class PlayerTest {
         player.getInventory().addItem(stick);
         List<NetworkInventoryAction> actions = new ArrayList<>();
         NetworkInventoryAction remove = new NetworkInventoryAction();
-        remove.sourceType = NetworkInventoryAction.SOURCE_CONTAINER;
-        remove.windowId = 0;
+        remove.setInventorySource(InventorySource.fromContainerWindowId(0));
         remove.stackNetworkId = 1;
         remove.inventorySlot = 0;
         remove.oldItem = stick;
@@ -334,15 +334,12 @@ class PlayerTest {
             if (slot > 1) {
                 actions.add(remove);
             }
-            
             NetworkInventoryAction add = new NetworkInventoryAction();
-            add.sourceType = NetworkInventoryAction.SOURCE_CONTAINER;
-            add.windowId = 0;
+            remove.setInventorySource(InventorySource.fromContainerWindowId(0));
             add.stackNetworkId = 1;
             add.inventorySlot = slot;
             add.oldItem = air;
             add.newItem = stick;
-            
             actions.add(add);
         }
 

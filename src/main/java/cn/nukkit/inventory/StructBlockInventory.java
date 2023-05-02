@@ -171,7 +171,7 @@ public class StructBlockInventory implements Inventory {
 
     @Override
     public InventoryType getType() {
-        return null;
+        return InventoryType.STRUCTURE_EDITOR;
     }
 
     @Override
@@ -184,7 +184,7 @@ public class StructBlockInventory implements Inventory {
         if (who.isOp() && who.isCreative()) {
             ContainerOpenPacket pk = new ContainerOpenPacket();
             pk.windowId = who.getWindowId(this);
-            pk.type = 14;
+            pk.type = getType().getNetworkType();
             InventoryHolder holder = this.getHolder();
             if (holder instanceof Vector3) {
                 pk.x = ((Vector3) holder).getFloorX();
