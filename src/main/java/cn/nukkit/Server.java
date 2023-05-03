@@ -960,330 +960,7 @@ public class Server {
         this.start();
     }
 
-
-    /**
-     * 广播一条消息给所有玩家<p>Broadcast a message to all players
-     *
-     * @param message 消息
-     * @return int 玩家数量<br>Number of players
-     */
-    public int broadcastMessage(String message) {
-        return this.broadcast(message, BROADCAST_CHANNEL_USERS);
-    }
-
-
-    /**
-     * @see #broadcastMessage(String)
-     */
-    public int broadcastMessage(TextContainer message) {
-        return this.broadcast(message, BROADCAST_CHANNEL_USERS);
-    }
-
-    /**
-     * 广播一条消息给指定的{@link CommandSender recipients}<p>Broadcast a message to the specified {@link CommandSender recipients}
-     *
-     * @param message 消息
-     * @return int {@link CommandSender recipients}数量<br>Number of {@link CommandSender recipients}
-     */
-    public int broadcastMessage(String message, CommandSender[] recipients) {
-        for (CommandSender recipient : recipients) {
-            recipient.sendMessage(message);
-        }
-
-        return recipients.length;
-    }
-
-
-    /**
-     * @see #broadcastMessage(String, CommandSender[])
-     */
-    public int broadcastMessage(String message, Collection<? extends CommandSender> recipients) {
-        for (CommandSender recipient : recipients) {
-            recipient.sendMessage(message);
-        }
-
-        return recipients.size();
-    }
-
-    /**
-     * @see #broadcastMessage(String, CommandSender[])
-     */
-    public int broadcastMessage(TextContainer message, Collection<? extends CommandSender> recipients) {
-        for (CommandSender recipient : recipients) {
-            recipient.sendMessage(message);
-        }
-
-        return recipients.size();
-    }
-
-
-    /**
-     * 从指定的许可名获取发送者们，广播一条消息给他们.可以指定多个许可名，以<b> ; </b>分割.<br>
-     * 一个permission在{@link PluginManager#permSubs}对应一个{@link CommandSender 发送者}Set.<p>
-     * Get the sender to broadcast a message from the specified permission name, multiple permissions can be specified, split by <b> ; </b><br>
-     * The permission corresponds to a {@link CommandSender Sender} set in {@link PluginManager#permSubs}.
-     *
-     * @param message     消息内容<br>Message content
-     * @param permissions 许可名，需要先通过{@link PluginManager#subscribeToPermission subscribeToPermission}注册<br>Permissions name, need to register first through {@link PluginManager#subscribeToPermission subscribeToPermission}
-     * @return int 接受到消息的{@link CommandSender 发送者}数量<br>Number of {@link CommandSender senders} who received the message
-     */
-    public int broadcast(String message, String permissions) {
-        Set<CommandSender> recipients = new HashSet<>();
-
-        for (String permission : permissions.split(";")) {
-            for (Permissible permissible : this.pluginManager.getPermissionSubscriptions(permission)) {
-                if (permissible instanceof CommandSender && permissible.hasPermission(permission)) {
-                    recipients.add((CommandSender) permissible);
-                }
-            }
-        }
-
-        for (CommandSender recipient : recipients) {
-            recipient.sendMessage(message);
-        }
-
-        return recipients.size();
-    }
-
-
-    /**
-     * @see #broadcast(String, String)
-     */
-    public int broadcast(TextContainer message, String permissions) {
-        Set<CommandSender> recipients = new HashSet<>();
-
-        for (String permission : permissions.split(";")) {
-            for (Permissible permissible : this.pluginManager.getPermissionSubscriptions(permission)) {
-                if (permissible instanceof CommandSender && permissible.hasPermission(permission)) {
-                    recipients.add((CommandSender) permissible);
-                }
-            }
-        }
-
-        for (CommandSender recipient : recipients) {
-            recipient.sendMessage(message);
-        }
-
-        return recipients.size();
-    }
-
-    /**
-     * @see #broadcastPacket(Player[], DataPacket)
-     */
-    public static void broadcastPacket(Collection<Player> players, DataPacket packet) {
-        packet.tryEncode();
-
-        for (Player player : players) {
-            player.dataPacket(packet);
-        }
-    }
-
-    /**
-     * 广播一个数据包给指定的玩家们.<p>Broadcast a packet to the specified players.
-     *
-     * @param players 接受数据包的所有玩家<br>All players receiving the data package
-     * @param packet  数据包
-     */
-    public static void broadcastPacket(Player[] players, DataPacket packet) {
-        packet.tryEncode();
-
-        for (Player player : players) {
-            player.dataPacket(packet);
-        }
-    }
-
-    @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit",
-            reason = "Packet management was refactored, batching is done automatically near the RakNet layer")
-    @Deprecated
-    public void batchPackets(Player[] players, DataPacket[] packets) {
-        this.batchPackets(players, packets, false);
-    }
-
-    @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit",
-            reason = "Packet management was refactored, batching is done automatically near the RakNet layer")
-    @Deprecated
-    public void batchPackets(Player[] players, DataPacket[] packets, boolean forceSync) {
-        if (players == null || packets == null || players.length == 0 || packets.length == 0) {
-            return;
-        }
-
-        BatchPacketsEvent ev = new BatchPacketsEvent(players, packets, forceSync);
-        getPluginManager().callEvent(ev);
-        if (ev.isCancelled()) {
-            return;
-        }
-
-        Timings.playerNetworkSendTimer.startTiming();
-        byte[][] payload = new byte[packets.length * 2][];
-        for (int i = 0; i < packets.length; i++) {
-            DataPacket p = packets[i];
-            int idx = i * 2;
-            p.tryEncode();
-            byte[] buf = p.getBuffer();
-            payload[idx] = Binary.writeUnsignedVarInt(buf.length);
-            payload[idx + 1] = buf;
-            packets[i] = null;
-        }
-
-        List<InetSocketAddress> targets = new ArrayList<>();
-        for (Player p : players) {
-            if (p.isConnected()) {
-                targets.add(p.getRawSocketAddress());
-            }
-        }
-
-        if (!forceSync && this.networkCompressionAsync) {
-            this.getScheduler().scheduleAsyncTask(new CompressBatchedTask(payload, targets, this.networkCompressionLevel));
-        } else {
-            try {
-                byte[] data = Binary.appendBytes(payload);
-                this.broadcastPacketsCallback(Network.deflateRaw(data, this.networkCompressionLevel), targets);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-        Timings.playerNetworkSendTimer.stopTiming();
-    }
-
-    public void broadcastPacketsCallback(byte[] data, List<InetSocketAddress> targets) {
-        BatchPacket pk = new BatchPacket();
-        pk.payload = data;
-
-        for (InetSocketAddress i : targets) {
-            if (this.players.containsKey(i)) {
-                this.players.get(i).dataPacket(pk);
-            }
-        }
-    }
-
-    /**
-     * 以指定插件加载顺序启用插件<p>
-     * Enable plugins in the specified plugin loading order
-     *
-     * @param type 插件加载顺序<br>Plugin loading order
-     */
-    public void enablePlugins(PluginLoadOrder type) {
-        for (Plugin plugin : new ArrayList<>(this.pluginManager.getPlugins().values())) {
-            if (!plugin.isEnabled() && type == plugin.getDescription().getOrder()) {
-                this.enablePlugin(plugin);
-            }
-        }
-
-        if (type == PluginLoadOrder.POSTWORLD) {
-            this.commandMap.registerServerAliases();
-            DefaultPermissions.registerCorePermissions();
-        }
-    }
-
-    /**
-     * 启用一个指定插件<p>
-     * Enable a specified plugin
-     *
-     * @param plugin 插件实例<br>Plugin instance
-     */
-    public void enablePlugin(Plugin plugin) {
-        this.pluginManager.enablePlugin(plugin);
-    }
-
-    /**
-     * 禁用全部插件<p>Disable all plugins
-     */
-    public void disablePlugins() {
-        this.pluginManager.disablePlugins();
-    }
-
-
-    @Deprecated
-    @DeprecationDetails(since = "1.19.60-r1", reason = "use Server#executeCommand")
-    public boolean dispatchCommand(CommandSender sender, String commandLine) throws ServerException {
-        return this.executeCommand(sender, commandLine) > 0;
-    }
-
-    /**
-     * 以sender身份执行一行命令
-     * <p>
-     * Execute one line of command as sender
-     *
-     * @param sender      命令执行者
-     * @param commandLine 一行命令
-     * @return 返回0代表执行失败, 返回大于等于1代表执行成功<br>Returns 0 for failed execution, greater than or equal to 1 for successful execution
-     * @throws ServerException 服务器异常
-     */
-    public int executeCommand(CommandSender sender, String commandLine) throws ServerException {
-        // First we need to check if this command is on the main thread or not, if not, warn the user
-        if (!this.isPrimaryThread()) {
-            log.warn("Command Dispatched Async: {}\nPlease notify author of plugin causing this execution to fix this bug!", commandLine,
-                    new ConcurrentModificationException("Command Dispatched Async: " + commandLine));
-
-            this.scheduler.scheduleTask(null, () -> executeCommand(sender, commandLine));
-            return 1;
-        }
-        if (sender == null) {
-            throw new ServerException("CommandSender is not valid");
-        }
-        //pre
-        var cmd = commandLine.stripLeading();
-        cmd = cmd.charAt(0) == '/' ? cmd.substring(1) : cmd;
-
-        return this.commandMap.executeCommand(sender, cmd);
-    }
-
-    /**
-     * 以该控制台身份静音执行这些命令，无视权限
-     * <p>
-     * Execute these commands silently as the console, ignoring permissions.
-     *
-     * @param commands the commands
-     * @throws ServerException 服务器异常
-     */
-    public void silentExecuteCommand(String... commands) {
-        this.silentExecuteCommand(null, commands);
-    }
-
-    /**
-     * 以该玩家身份静音执行这些命令无视权限
-     * <p>
-     * Execute these commands silently as this player, ignoring permissions.
-     *
-     * @param sender   命令执行者<br>command sender
-     * @param commands the commands
-     * @throws ServerException 服务器异常
-     */
-    public void silentExecuteCommand(@Nullable Player sender, String... commands) {
-        final var revert = new ArrayList<Level>();
-        final var server = Server.getInstance();
-        for (var level : server.getLevels().values()) {
-            if (level.getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK)) {
-                level.getGameRules().setGameRule(GameRule.SEND_COMMAND_FEEDBACK, false);
-                revert.add(level);
-            }
-        }
-        if (sender == null) {
-            for (var cmd : commands) {
-                server.executeCommand(server.getConsoleSender(), cmd);
-            }
-        } else {
-            for (var cmd : commands) {
-                server.executeCommand(server.getConsoleSender(), "execute as " + "\"" + sender.getName() + "\" run " + cmd);
-            }
-        }
-
-        for (var level : revert) {
-            level.getGameRules().setGameRule(GameRule.SEND_COMMAND_FEEDBACK, true);
-        }
-    }
-
-    /**
-     * 得到控制台发送者
-     * <p>
-     * Get the console sender
-     *
-     * @return {@link ConsoleCommandSender}
-     */
-    //todo: use ticker to check console
-    public ConsoleCommandSender getConsoleSender() {
-        return consoleSender;
-    }
+    // region lifecycle & ticking - 生命周期与游戏刻
 
     /**
      * 重载服务器
@@ -1457,27 +1134,6 @@ public class Server {
         this.forceShutdown();
     }
 
-    public void handlePacket(InetSocketAddress address, ByteBuf payload) {
-        try {
-            if (!payload.isReadable(3)) {
-                return;
-            }
-            byte[] prefix = new byte[2];
-            payload.readBytes(prefix);
-
-            if (!Arrays.equals(prefix, new byte[]{(byte) 0xfe, (byte) 0xfd})) {
-                return;
-            }
-            if (this.queryHandler != null) {
-                this.queryHandler.handle(address, payload);
-            }
-        } catch (Exception e) {
-            log.error("Error whilst handling packet", e);
-
-            this.network.blockAddress(address.getAddress(), -1);
-        }
-    }
-
     private int lastLevelGC;
 
     public void tickProcessor() {
@@ -1527,151 +1183,6 @@ public class Server {
         } catch (Throwable e) {
             log.fatal("Exception happened while ticking server\n{}", Utils.getAllThreadDumps(), e);
         }
-    }
-
-    public void onPlayerCompleteLoginSequence(Player player) {
-        this.sendFullPlayerListData(player);
-    }
-
-    public void onPlayerLogin(Player player) {
-        if (this.sendUsageTicker > 0) {
-            this.uniquePlayers.add(player.getUniqueId());
-        }
-    }
-
-    public void addPlayer(InetSocketAddress socketAddress, Player player) {
-        this.players.put(socketAddress, player);
-    }
-
-    public void addOnlinePlayer(Player player) {
-        this.playerList.put(player.getUniqueId(), player);
-        this.updatePlayerListData(player.getUniqueId(), player.getId(), player.getDisplayName(), player.getSkin(), player.getLoginChainData().getXUID());
-    }
-
-    public void removeOnlinePlayer(Player player) {
-        if (this.playerList.containsKey(player.getUniqueId())) {
-            this.playerList.remove(player.getUniqueId());
-
-            PlayerListPacket pk = new PlayerListPacket();
-            pk.type = PlayerListPacket.TYPE_REMOVE;
-            pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(player.getUniqueId())};
-
-            Server.broadcastPacket(this.playerList.values(), pk);
-        }
-    }
-
-    /**
-     * @see #updatePlayerListData(UUID, long, String, Skin, String, Player[])
-     */
-    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin) {
-        this.updatePlayerListData(uuid, entityId, name, skin, "", this.playerList.values());
-    }
-
-    /**
-     * @see #updatePlayerListData(UUID, long, String, Skin, String, Player[])
-     */
-    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId) {
-        this.updatePlayerListData(uuid, entityId, name, skin, xboxUserId, this.playerList.values());
-    }
-
-    /**
-     * @see #updatePlayerListData(UUID, long, String, Skin, String, Player[])
-     */
-    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, Player[] players) {
-        this.updatePlayerListData(uuid, entityId, name, skin, "", players);
-    }
-
-
-    /**
-     * 更新指定玩家们(players)的{@link PlayerListPacket}数据包(即玩家列表数据)
-     * <p>
-     * Update {@link PlayerListPacket} data packets (i.e. player list data) for specified players
-     *
-     * @param uuid       uuid
-     * @param entityId   实体id
-     * @param name       名字
-     * @param skin       皮肤
-     * @param xboxUserId xbox用户id
-     * @param players    指定接受数据包的玩家
-     */
-    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Player[] players) {
-        PlayerListPacket pk = new PlayerListPacket();
-        pk.type = PlayerListPacket.TYPE_ADD;
-        pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(uuid, entityId, name, skin, xboxUserId)};
-        Server.broadcastPacket(players, pk);
-    }
-
-    /**
-     * @see #updatePlayerListData(UUID, long, String, Skin, String, Player[])
-     */
-    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Collection<Player> players) {
-        this.updatePlayerListData(uuid, entityId, name, skin, xboxUserId, players.toArray(Player.EMPTY_ARRAY));
-    }
-
-    public void removePlayerListData(UUID uuid) {
-        this.removePlayerListData(uuid, this.playerList.values());
-    }
-
-    /**
-     * 移除玩家数组中所有玩家的玩家列表数据.<p>
-     * Remove player list data for all players in the array.
-     *
-     * @param players 玩家数组
-     */
-    public void removePlayerListData(UUID uuid, Player[] players) {
-        PlayerListPacket pk = new PlayerListPacket();
-        pk.type = PlayerListPacket.TYPE_REMOVE;
-        pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(uuid)};
-        Server.broadcastPacket(players, pk);
-    }
-
-    /**
-     * 移除这个玩家的玩家列表数据.<p>
-     * Remove this player's player list data.
-     *
-     * @param player 玩家
-     */
-    @Since("1.4.0.0-PN")
-    public void removePlayerListData(UUID uuid, Player player) {
-        PlayerListPacket pk = new PlayerListPacket();
-        pk.type = PlayerListPacket.TYPE_REMOVE;
-        pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(uuid)};
-        player.dataPacket(pk);
-    }
-
-    public void removePlayerListData(UUID uuid, Collection<Player> players) {
-        this.removePlayerListData(uuid, players.toArray(Player.EMPTY_ARRAY));
-    }
-
-    /**
-     * 发送玩家列表数据包给一个玩家.<p>
-     * Send a player list packet to a player.
-     *
-     * @param player 玩家
-     */
-    public void sendFullPlayerListData(Player player) {
-        PlayerListPacket pk = new PlayerListPacket();
-        pk.type = PlayerListPacket.TYPE_ADD;
-        pk.entries = this.playerList.values().stream()
-                .map(p -> new PlayerListPacket.Entry(
-                        p.getUniqueId(),
-                        p.getId(),
-                        p.getDisplayName(),
-                        p.getSkin(),
-                        p.getLoginChainData().getXUID()))
-                .toArray(PlayerListPacket.Entry[]::new);
-
-        player.dataPacket(pk);
-    }
-
-    /**
-     * 发送配方列表数据包给一个玩家.<p>
-     * Send a recipe list packet to a player.
-     *
-     * @param player 玩家
-     */
-    public void sendRecipeList(Player player) {
-        player.dataPacket(CraftingManager.getCraftingPacket());
     }
 
     private void checkTickUpdates(int currentTick, long tickTime) {
@@ -1860,451 +1371,6 @@ public class Server {
         return nextTick;
     }
 
-    // TODO: Fix title tick
-    public void titleTick() {
-        if (!Nukkit.ANSI || !Nukkit.TITLE) {
-            return;
-        }
-
-        Runtime runtime = Runtime.getRuntime();
-        double used = NukkitMath.round((double) (runtime.totalMemory() - runtime.freeMemory()) / 1024 / 1024, 2);
-        double max = NukkitMath.round(((double) runtime.maxMemory()) / 1024 / 1024, 2);
-        String usage = Math.round(used / max * 100) + "%";
-        String title = (char) 0x1b + "]0;" + this.getName() + " "
-                + this.getNukkitVersion()
-                + " | " + this.getGitCommit()
-                + " | Online " + this.players.size() + "/" + this.getMaxPlayers()
-                + " | Memory " + usage;
-        if (!Nukkit.shortTitle) {
-            title += " | U " + NukkitMath.round((this.network.getUpload() / 1024 * 1000), 2)
-                    + " D " + NukkitMath.round((this.network.getDownload() / 1024 * 1000), 2) + " kB/s";
-        }
-        title += " | TPS " + this.getTicksPerSecond()
-                + " | Load " + this.getTickUsage() + "%" + (char) 0x07;
-
-        System.out.print(title);
-    }
-
-    public QueryRegenerateEvent getQueryInformation() {
-        return this.queryRegenerateEvent;
-    }
-
-
-    /**
-     * @return 服务器名称<br>The name of server
-     */
-    public String getName() {
-        return "Nukkit";
-    }
-
-    public boolean isRunning() {
-        return isRunning.get();
-    }
-
-    public String getNukkitVersion() {
-        return Nukkit.VERSION;
-    }
-
-    public String getBStatsNukkitVersion() {
-        return Nukkit.VERSION;
-    }
-
-    @PowerNukkitOnly
-    public String getGitCommit() {
-        return Nukkit.GIT_COMMIT;
-    }
-
-    public String getCodename() {
-        return Nukkit.CODENAME;
-    }
-
-    public String getVersion() {
-        return ProtocolInfo.MINECRAFT_VERSION;
-    }
-
-    public String getApiVersion() {
-        return Nukkit.API_VERSION;
-    }
-
-    public String getFilePath() {
-        return filePath;
-    }
-
-    public String getDataPath() {
-        return dataPath;
-    }
-
-    public String getPluginPath() {
-        return pluginPath;
-    }
-
-    public int getMaxPlayers() {
-        return maxPlayers;
-    }
-
-    public void setMaxPlayers(int maxPlayers) {
-        this.maxPlayers = maxPlayers;
-    }
-
-    /**
-     * 将服务器设置为繁忙状态，这可以阻止相关代码认为服务器处于无响应状态。
-     * 请牢记，必须在设置之后清除。
-     *
-     * @param busyTime 单位为毫秒
-     * @return id
-     */
-    public int addBusying(long busyTime) {
-        this.busyingTime.add(busyTime);
-        return this.busyingTime.size() - 1;
-    }
-
-    public void removeBusying(int index) {
-        this.busyingTime.removeLong(index);
-    }
-
-    public long getBusyingTime() {
-        if (this.busyingTime.isEmpty()) {
-            return -1;
-        }
-        return this.busyingTime.getLong(this.busyingTime.size() - 1);
-    }
-
-    /**
-     * @return 服务器端口<br>server port
-     */
-    public int getPort() {
-        return this.getPropertyInt("server-port", 19132);
-    }
-
-    /**
-     * @return 可视距离<br>server view distance
-     */
-    public int getViewDistance() {
-        return this.getPropertyInt("view-distance", 10);
-    }
-
-    /**
-     * @return 服务器网络地址<br>server ip
-     */
-    public String getIp() {
-        return this.getPropertyString("server-ip", "0.0.0.0");
-    }
-
-    /**
-     * @return 服务器UUID<br>server UUID
-     */
-    public UUID getServerUniqueId() {
-        return this.serverID;
-    }
-
-    /**
-     * @return 服务器是否会自动保存<br>Does the server automatically save
-     */
-    public boolean getAutoSave() {
-        return this.autoSave;
-    }
-
-    /**
-     * 设置服务器自动保存
-     * <p>
-     * Set server autosave
-     *
-     * @param autoSave 是否自动保存<br>Whether to save automatically
-     */
-    public void setAutoSave(boolean autoSave) {
-        this.autoSave = autoSave;
-        for (Level level : this.levelArray) {
-            level.setAutoSave(this.autoSave);
-        }
-    }
-
-    public String getLevelType() {
-        return this.getPropertyString("level-type", "DEFAULT");
-    }
-
-    /**
-     * @return 服务器是否生成结构<br>Whether the server generate the structure.
-     */
-    public boolean getGenerateStructures() {
-        return this.getPropertyBoolean("generate-structures", true);
-    }
-
-    /**
-     * 得到服务器的gamemode
-     * <p>
-     * Get the gamemode of the server
-     *
-     * @return gamemode id
-     */
-    public int getGamemode() {
-        try {
-            return this.getPropertyInt("gamemode", 0) & 0b11;
-        } catch (NumberFormatException exception) {
-            return getGamemodeFromString(this.getPropertyString("gamemode")) & 0b11;
-        }
-    }
-
-    public boolean getForceGamemode() {
-        return this.getPropertyBoolean("force-gamemode", false);
-    }
-
-
-    /**
-     * 默认{@code direct=false}
-     *
-     * @see #getGamemodeString(int, boolean)
-     */
-    public static String getGamemodeString(int mode) {
-        return getGamemodeString(mode, false);
-    }
-
-    /**
-     * 从gamemode id获取游戏模式字符串.
-     * <p>
-     * Get game mode string from gamemode id.
-     *
-     * @param mode   gamemode id
-     * @param direct 如果为true就直接返回字符串,为false返回代表游戏模式的硬编码字符串.<br>If true, the string is returned directly, and if false, the hard-coded string representing the game mode is returned.
-     * @return 游戏模式字符串<br>Game Mode String
-     */
-    public static String getGamemodeString(int mode, boolean direct) {
-        switch (mode) {
-            case Player.SURVIVAL:
-                return direct ? "Survival" : "%gameMode.survival";
-            case Player.CREATIVE:
-                return direct ? "Creative" : "%gameMode.creative";
-            case Player.ADVENTURE:
-                return direct ? "Adventure" : "%gameMode.adventure";
-            case Player.SPECTATOR:
-                return direct ? "Spectator" : "%gameMode.spectator";
-        }
-        return "UNKNOWN";
-    }
-
-    /**
-     * 从字符串获取gamemode
-     * <p>
-     * Get gamemode from string
-     *
-     * @param str 代表游戏模式的字符串，例如0,survival...<br>A string representing the game mode, e.g. 0,survival...
-     * @return 游戏模式id<br>gamemode id
-     */
-    public static int getGamemodeFromString(String str) {
-        switch (str.trim().toLowerCase()) {
-            case "0":
-            case "survival":
-            case "s":
-                return Player.SURVIVAL;
-
-            case "1":
-            case "creative":
-            case "c":
-                return Player.CREATIVE;
-
-            case "2":
-            case "adventure":
-            case "a":
-                return Player.ADVENTURE;
-
-            case "3":
-            case "spectator":
-            case "spc":
-            case "view":
-            case "v":
-                return Player.SPECTATOR;
-        }
-        return -1;
-    }
-
-    /**
-     * 从字符串获取游戏难度
-     * <p>
-     * Get game difficulty from string
-     *
-     * @param str 代表游戏难度的字符串，例如0,peaceful...<br>A string representing the game difficulty, e.g. 0,peaceful...
-     * @return 游戏难度id<br>game difficulty id
-     */
-    public static int getDifficultyFromString(String str) {
-        switch (str.trim().toLowerCase()) {
-            case "0":
-            case "peaceful":
-            case "p":
-                return 0;
-
-            case "1":
-            case "easy":
-            case "e":
-                return 1;
-
-            case "2":
-            case "normal":
-            case "n":
-                return 2;
-
-            case "3":
-            case "hard":
-            case "h":
-                return 3;
-        }
-        return -1;
-    }
-
-    /**
-     * 获得服务器游戏难度
-     * <p>
-     * Get server game difficulty
-     *
-     * @return 游戏难度id<br>game difficulty id
-     */
-    public int getDifficulty() {
-        if (this.difficulty == Integer.MAX_VALUE) {
-            this.difficulty = getDifficultyFromString(this.getPropertyString("difficulty", "1"));
-        }
-        return this.difficulty;
-    }
-
-    /**
-     * 设置服务器游戏难度
-     * <p>
-     * set server game difficulty
-     *
-     * @param difficulty 游戏难度id<br>game difficulty id
-     */
-    public void setDifficulty(int difficulty) {
-        int value = difficulty;
-        if (value < 0) value = 0;
-        if (value > 3) value = 3;
-        this.difficulty = value;
-        this.setPropertyInt("difficulty", value);
-    }
-
-    /**
-     * @return 是否开启白名单<br>Whether to start server whitelist
-     */
-    public boolean hasWhitelist() {
-        return this.getPropertyBoolean("white-list", false);
-    }
-
-    /**
-     * @return 得到服务器出生点保护半径<br>Get server birth point protection radius
-     */
-    public int getSpawnRadius() {
-        return this.getPropertyInt("spawn-protection", 16);
-    }
-
-    /**
-     * @return 服务器是否允许飞行<br>Whether the server allows flying
-     */
-    public boolean getAllowFlight() {
-        if (getAllowFlight == null) {
-            getAllowFlight = this.getPropertyBoolean("allow-flight", false);
-        }
-        return getAllowFlight;
-    }
-
-    /**
-     * @return 服务器是否为硬核模式<br>Whether the server is in hardcore mode
-     */
-    public boolean isHardcore() {
-        return this.getPropertyBoolean("hardcore", false);
-    }
-
-    /**
-     * @return 获取默认gamemode<br>Get default gamemode
-     */
-    public int getDefaultGamemode() {
-        if (this.defaultGamemode == Integer.MAX_VALUE) {
-            this.defaultGamemode = this.getGamemode();
-        }
-        return this.defaultGamemode;
-    }
-
-    /**
-     * @return 得到服务器标题<br>Get server motd
-     */
-    public String getMotd() {
-        return this.getPropertyString("motd", "PowerNukkitX Server");
-    }
-
-    /**
-     * @return 得到服务器子标题<br>Get the server subheading
-     */
-    public String getSubMotd() {
-        String subMotd = this.getPropertyString("sub-motd", "https://powernukkitx.cn");
-        if (subMotd.isEmpty()) {
-            subMotd = "https://powernukkitx.cn"; // The client doesn't allow empty sub-motd in 1.16.210
-        }
-        return subMotd;
-    }
-
-    /**
-     * @return 是否强制使用服务器资源包<br>Whether to force the use of server resourcepack
-     */
-    public boolean getForceResources() {
-        return this.getPropertyBoolean("force-resources", false);
-    }
-
-    /**
-     * @return 是否强制使用服务器资源包的同时允许加载客户端资源包<br>Whether to force the use of server resourcepack while allowing the loading of client resourcepack
-     */
-    public boolean getForceResourcesAllowOwnPacks() {
-        return this.getPropertyBoolean("force-resources-allow-client-packs", false);
-    }
-
-
-    @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", reason = "Use your own logger, sharing loggers makes bug analyses harder.",
-            replaceWith = "@Log4j2 annotation in the class and use the `log` static field that is generated by lombok, " +
-                    "also make sure to log the exception as the last argument, don't concatenate it or use it as parameter replacement. " +
-                    "Just put it as last argument and SLF4J will understand that the log message was caused by that exception/throwable.")
-    public MainLogger getLogger() {
-        return MainLogger.getLogger();
-    }
-
-    public EntityMetadataStore getEntityMetadata() {
-        return entityMetadata;
-    }
-
-    public PlayerMetadataStore getPlayerMetadata() {
-        return playerMetadata;
-    }
-
-    public LevelMetadataStore getLevelMetadata() {
-        return levelMetadata;
-    }
-
-    public PluginManager getPluginManager() {
-        return this.pluginManager;
-    }
-
-    public CraftingManager getCraftingManager() {
-        return craftingManager;
-    }
-
-    public ResourcePackManager getResourcePackManager() {
-        return resourcePackManager;
-    }
-
-    public IScoreboardManager getScoreboardManager() {
-        return scoreboardManager;
-    }
-
-    public FunctionManager getFunctionManager() {
-        return functionManager;
-    }
-
-    public TickingAreaManager getTickingAreaManager() {
-        return tickingAreaManager;
-    }
-
-    public FreezableArrayManager getFreezableArrayManager() {
-        return freezableArrayManager;
-    }
-
-    public ServerScheduler getScheduler() {
-        return scheduler;
-    }
-
     /**
      * @return 返回服务器经历过的tick数<br>Returns the number of ticks recorded by the server
      */
@@ -2338,33 +1404,628 @@ public class Server {
         return ((float) Math.round(sum / count * 100)) / 100;
     }
 
+    // TODO: Fix title tick
+    public void titleTick() {
+        if (!Nukkit.ANSI || !Nukkit.TITLE) {
+            return;
+        }
+
+        Runtime runtime = Runtime.getRuntime();
+        double used = NukkitMath.round((double) (runtime.totalMemory() - runtime.freeMemory()) / 1024 / 1024, 2);
+        double max = NukkitMath.round(((double) runtime.maxMemory()) / 1024 / 1024, 2);
+        String usage = Math.round(used / max * 100) + "%";
+        String title = (char) 0x1b + "]0;" + this.getName() + " "
+                + this.getNukkitVersion()
+                + " | " + this.getGitCommit()
+                + " | Online " + this.players.size() + "/" + this.getMaxPlayers()
+                + " | Memory " + usage;
+        if (!Nukkit.shortTitle) {
+            title += " | U " + NukkitMath.round((this.network.getUpload() / 1024 * 1000), 2)
+                    + " D " + NukkitMath.round((this.network.getDownload() / 1024 * 1000), 2) + " kB/s";
+        }
+        title += " | TPS " + this.getTicksPerSecond()
+                + " | Load " + this.getTickUsage() + "%" + (char) 0x07;
+
+        System.out.print(title);
+    }
+
+    public boolean isRunning() {
+        return isRunning.get();
+    }
+
+    /**
+     * 将服务器设置为繁忙状态，这可以阻止相关代码认为服务器处于无响应状态。
+     * 请牢记，必须在设置之后清除。
+     *
+     * @param busyTime 单位为毫秒
+     * @return id
+     */
+    public int addBusying(long busyTime) {
+        this.busyingTime.add(busyTime);
+        return this.busyingTime.size() - 1;
+    }
+
+    public void removeBusying(int index) {
+        this.busyingTime.removeLong(index);
+    }
+
+    public long getBusyingTime() {
+        if (this.busyingTime.isEmpty()) {
+            return -1;
+        }
+        return this.busyingTime.getLong(this.busyingTime.size() - 1);
+    }
+
+    public TickingAreaManager getTickingAreaManager() {
+        return tickingAreaManager;
+    }
+
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public long getLaunchTime() {
+        return launchTime;
+    }
+
+    // endregion
+
+    // region server singleton - Server 单例
+
+    public static Server getInstance() {
+        return instance;
+    }
+
+    // endregion
+
+    // region chat & commands - 聊天与命令
+
+    /**
+     * 广播一条消息给所有玩家<p>Broadcast a message to all players
+     *
+     * @param message 消息
+     * @return int 玩家数量<br>Number of players
+     */
+    public int broadcastMessage(String message) {
+        return this.broadcast(message, BROADCAST_CHANNEL_USERS);
+    }
+
+
+    /**
+     * @see #broadcastMessage(String)
+     */
+    public int broadcastMessage(TextContainer message) {
+        return this.broadcast(message, BROADCAST_CHANNEL_USERS);
+    }
+
+    /**
+     * 广播一条消息给指定的{@link CommandSender recipients}<p>Broadcast a message to the specified {@link CommandSender recipients}
+     *
+     * @param message 消息
+     * @return int {@link CommandSender recipients}数量<br>Number of {@link CommandSender recipients}
+     */
+    public int broadcastMessage(String message, CommandSender[] recipients) {
+        for (CommandSender recipient : recipients) {
+            recipient.sendMessage(message);
+        }
+
+        return recipients.length;
+    }
+
+
+    /**
+     * @see #broadcastMessage(String, CommandSender[])
+     */
+    public int broadcastMessage(String message, Collection<? extends CommandSender> recipients) {
+        for (CommandSender recipient : recipients) {
+            recipient.sendMessage(message);
+        }
+
+        return recipients.size();
+    }
+
+    /**
+     * @see #broadcastMessage(String, CommandSender[])
+     */
+    public int broadcastMessage(TextContainer message, Collection<? extends CommandSender> recipients) {
+        for (CommandSender recipient : recipients) {
+            recipient.sendMessage(message);
+        }
+
+        return recipients.size();
+    }
+
+
+    /**
+     * 从指定的许可名获取发送者们，广播一条消息给他们.可以指定多个许可名，以<b> ; </b>分割.<br>
+     * 一个permission在{@link PluginManager#permSubs}对应一个{@link CommandSender 发送者}Set.<p>
+     * Get the sender to broadcast a message from the specified permission name, multiple permissions can be specified, split by <b> ; </b><br>
+     * The permission corresponds to a {@link CommandSender Sender} set in {@link PluginManager#permSubs}.
+     *
+     * @param message     消息内容<br>Message content
+     * @param permissions 许可名，需要先通过{@link PluginManager#subscribeToPermission subscribeToPermission}注册<br>Permissions name, need to register first through {@link PluginManager#subscribeToPermission subscribeToPermission}
+     * @return int 接受到消息的{@link CommandSender 发送者}数量<br>Number of {@link CommandSender senders} who received the message
+     */
+    public int broadcast(String message, String permissions) {
+        Set<CommandSender> recipients = new HashSet<>();
+
+        for (String permission : permissions.split(";")) {
+            for (Permissible permissible : this.pluginManager.getPermissionSubscriptions(permission)) {
+                if (permissible instanceof CommandSender && permissible.hasPermission(permission)) {
+                    recipients.add((CommandSender) permissible);
+                }
+            }
+        }
+
+        for (CommandSender recipient : recipients) {
+            recipient.sendMessage(message);
+        }
+
+        return recipients.size();
+    }
+
+
+    /**
+     * @see #broadcast(String, String)
+     */
+    public int broadcast(TextContainer message, String permissions) {
+        Set<CommandSender> recipients = new HashSet<>();
+
+        for (String permission : permissions.split(";")) {
+            for (Permissible permissible : this.pluginManager.getPermissionSubscriptions(permission)) {
+                if (permissible instanceof CommandSender && permissible.hasPermission(permission)) {
+                    recipients.add((CommandSender) permissible);
+                }
+            }
+        }
+
+        for (CommandSender recipient : recipients) {
+            recipient.sendMessage(message);
+        }
+
+        return recipients.size();
+    }
+
+
+    @Deprecated
+    @DeprecationDetails(since = "1.19.60-r1", reason = "use Server#executeCommand")
+    public boolean dispatchCommand(CommandSender sender, String commandLine) throws ServerException {
+        return this.executeCommand(sender, commandLine) > 0;
+    }
+
+    /**
+     * 以sender身份执行一行命令
+     * <p>
+     * Execute one line of command as sender
+     *
+     * @param sender      命令执行者
+     * @param commandLine 一行命令
+     * @return 返回0代表执行失败, 返回大于等于1代表执行成功<br>Returns 0 for failed execution, greater than or equal to 1 for successful execution
+     * @throws ServerException 服务器异常
+     */
+    public int executeCommand(CommandSender sender, String commandLine) throws ServerException {
+        // First we need to check if this command is on the main thread or not, if not, warn the user
+        if (!this.isPrimaryThread()) {
+            log.warn("Command Dispatched Async: {}\nPlease notify author of plugin causing this execution to fix this bug!", commandLine,
+                    new ConcurrentModificationException("Command Dispatched Async: " + commandLine));
+
+            this.scheduler.scheduleTask(null, () -> executeCommand(sender, commandLine));
+            return 1;
+        }
+        if (sender == null) {
+            throw new ServerException("CommandSender is not valid");
+        }
+        //pre
+        var cmd = commandLine.stripLeading();
+        cmd = cmd.charAt(0) == '/' ? cmd.substring(1) : cmd;
+
+        return this.commandMap.executeCommand(sender, cmd);
+    }
+
+    /**
+     * 以该控制台身份静音执行这些命令，无视权限
+     * <p>
+     * Execute these commands silently as the console, ignoring permissions.
+     *
+     * @param commands the commands
+     * @throws ServerException 服务器异常
+     */
+    public void silentExecuteCommand(String... commands) {
+        this.silentExecuteCommand(null, commands);
+    }
+
+    /**
+     * 以该玩家身份静音执行这些命令无视权限
+     * <p>
+     * Execute these commands silently as this player, ignoring permissions.
+     *
+     * @param sender   命令执行者<br>command sender
+     * @param commands the commands
+     * @throws ServerException 服务器异常
+     */
+    public void silentExecuteCommand(@Nullable Player sender, String... commands) {
+        final var revert = new ArrayList<Level>();
+        final var server = Server.getInstance();
+        for (var level : server.getLevels().values()) {
+            if (level.getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK)) {
+                level.getGameRules().setGameRule(GameRule.SEND_COMMAND_FEEDBACK, false);
+                revert.add(level);
+            }
+        }
+        if (sender == null) {
+            for (var cmd : commands) {
+                server.executeCommand(server.getConsoleSender(), cmd);
+            }
+        } else {
+            for (var cmd : commands) {
+                server.executeCommand(server.getConsoleSender(), "execute as " + "\"" + sender.getName() + "\" run " + cmd);
+            }
+        }
+
+        for (var level : revert) {
+            level.getGameRules().setGameRule(GameRule.SEND_COMMAND_FEEDBACK, true);
+        }
+    }
+
+    /**
+     * 得到控制台发送者
+     * <p>
+     * Get the console sender
+     *
+     * @return {@link ConsoleCommandSender}
+     */
+    //todo: use ticker to check console
+    public ConsoleCommandSender getConsoleSender() {
+        return consoleSender;
+    }
+
     public SimpleCommandMap getCommandMap() {
         return commandMap;
     }
 
+    public PluginIdentifiableCommand getPluginCommand(String name) {
+        Command command = this.commandMap.getCommand(name);
+        if (command instanceof PluginIdentifiableCommand) {
+            return (PluginIdentifiableCommand) command;
+        } else {
+            return null;
+        }
+    }
+
+    public Map<String, List<String>> getCommandAliases() {
+        Object section = this.getConfig("aliases");
+        Map<String, List<String>> result = new LinkedHashMap<>();
+        if (section instanceof Map) {
+            for (Map.Entry entry : (Set<Map.Entry>) ((Map) section).entrySet()) {
+                List<String> commands = new ArrayList<>();
+                String key = (String) entry.getKey();
+                Object value = entry.getValue();
+                if (value instanceof List) {
+                    commands.addAll((List<String>) value);
+                } else {
+                    commands.add((String) value);
+                }
+
+                result.put(key, commands);
+            }
+        }
+
+        return result;
+
+    }
+
+    public IScoreboardManager getScoreboardManager() {
+        return scoreboardManager;
+    }
+
+    public FunctionManager getFunctionManager() {
+        return functionManager;
+    }
+
+    // endregion
+
+    // region networking - 网络相关
+
     /**
-     * 获得所有在线的玩家Map.
-     * <p>
-     * Get all online players Map.
-     *
-     * @return 所有的在线玩家Map
+     * @see #broadcastPacket(Player[], DataPacket)
      */
-    public Map<UUID, Player> getOnlinePlayers() {
-        return ImmutableMap.copyOf(playerList);
+    public static void broadcastPacket(Collection<Player> players, DataPacket packet) {
+        packet.tryEncode();
+
+        for (Player player : players) {
+            player.dataPacket(packet);
+        }
+    }
+
+    /**
+     * 广播一个数据包给指定的玩家们.<p>Broadcast a packet to the specified players.
+     *
+     * @param players 接受数据包的所有玩家<br>All players receiving the data package
+     * @param packet  数据包
+     */
+    public static void broadcastPacket(Player[] players, DataPacket packet) {
+        packet.tryEncode();
+
+        for (Player player : players) {
+            player.dataPacket(packet);
+        }
+    }
+
+    @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit",
+            reason = "Packet management was refactored, batching is done automatically near the RakNet layer")
+    @Deprecated
+    public void batchPackets(Player[] players, DataPacket[] packets) {
+        this.batchPackets(players, packets, false);
+    }
+
+    @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit",
+            reason = "Packet management was refactored, batching is done automatically near the RakNet layer")
+    @Deprecated
+    public void batchPackets(Player[] players, DataPacket[] packets, boolean forceSync) {
+        if (players == null || packets == null || players.length == 0 || packets.length == 0) {
+            return;
+        }
+
+        BatchPacketsEvent ev = new BatchPacketsEvent(players, packets, forceSync);
+        getPluginManager().callEvent(ev);
+        if (ev.isCancelled()) {
+            return;
+        }
+
+        Timings.playerNetworkSendTimer.startTiming();
+        byte[][] payload = new byte[packets.length * 2][];
+        for (int i = 0; i < packets.length; i++) {
+            DataPacket p = packets[i];
+            int idx = i * 2;
+            p.tryEncode();
+            byte[] buf = p.getBuffer();
+            payload[idx] = Binary.writeUnsignedVarInt(buf.length);
+            payload[idx + 1] = buf;
+            packets[i] = null;
+        }
+
+        List<InetSocketAddress> targets = new ArrayList<>();
+        for (Player p : players) {
+            if (p.isConnected()) {
+                targets.add(p.getRawSocketAddress());
+            }
+        }
+
+        if (!forceSync && this.networkCompressionAsync) {
+            this.getScheduler().scheduleAsyncTask(new CompressBatchedTask(payload, targets, this.networkCompressionLevel));
+        } else {
+            try {
+                byte[] data = Binary.appendBytes(payload);
+                this.broadcastPacketsCallback(Network.deflateRaw(data, this.networkCompressionLevel), targets);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        Timings.playerNetworkSendTimer.stopTiming();
+    }
+
+    public void broadcastPacketsCallback(byte[] data, List<InetSocketAddress> targets) {
+        BatchPacket pk = new BatchPacket();
+        pk.payload = data;
+
+        for (InetSocketAddress i : targets) {
+            if (this.players.containsKey(i)) {
+                this.players.get(i).dataPacket(pk);
+            }
+        }
+    }
+    public void handlePacket(InetSocketAddress address, ByteBuf payload) {
+        try {
+            if (!payload.isReadable(3)) {
+                return;
+            }
+            byte[] prefix = new byte[2];
+            payload.readBytes(prefix);
+
+            if (!Arrays.equals(prefix, new byte[]{(byte) 0xfe, (byte) 0xfd})) {
+                return;
+            }
+            if (this.queryHandler != null) {
+                this.queryHandler.handle(address, payload);
+            }
+        } catch (Exception e) {
+            log.error("Error whilst handling packet", e);
+
+            this.network.blockAddress(address.getAddress(), -1);
+        }
+    }
+
+    public QueryRegenerateEvent getQueryInformation() {
+        return this.queryRegenerateEvent;
+    }
+
+    public Network getNetwork() {
+        return network;
+    }
+
+    // endregion
+
+    // region plugins - 插件相关
+
+    /**
+     * 以指定插件加载顺序启用插件<p>
+     * Enable plugins in the specified plugin loading order
+     *
+     * @param type 插件加载顺序<br>Plugin loading order
+     */
+    public void enablePlugins(PluginLoadOrder type) {
+        for (Plugin plugin : new ArrayList<>(this.pluginManager.getPlugins().values())) {
+            if (!plugin.isEnabled() && type == plugin.getDescription().getOrder()) {
+                this.enablePlugin(plugin);
+            }
+        }
+
+        if (type == PluginLoadOrder.POSTWORLD) {
+            this.commandMap.registerServerAliases();
+            DefaultPermissions.registerCorePermissions();
+        }
+    }
+
+    /**
+     * 启用一个指定插件<p>
+     * Enable a specified plugin
+     *
+     * @param plugin 插件实例<br>Plugin instance
+     */
+    public void enablePlugin(Plugin plugin) {
+        this.pluginManager.enablePlugin(plugin);
+    }
+
+    /**
+     * 禁用全部插件<p>Disable all plugins
+     */
+    public void disablePlugins() {
+        this.pluginManager.disablePlugins();
+    }
+    public PluginManager getPluginManager() {
+        return this.pluginManager;
+    }
+
+    public ServiceManager getServiceManager() {
+        return serviceManager;
+    }
+
+    // endregion
+
+    // region Players - 玩家相关
+
+    public void onPlayerCompleteLoginSequence(Player player) {
+        this.sendFullPlayerListData(player);
+    }
+
+    public void onPlayerLogin(Player player) {
+        if (this.sendUsageTicker > 0) {
+            this.uniquePlayers.add(player.getUniqueId());
+        }
+    }
+
+    public void addPlayer(InetSocketAddress socketAddress, Player player) {
+        this.players.put(socketAddress, player);
+    }
+
+    public void addOnlinePlayer(Player player) {
+        this.playerList.put(player.getUniqueId(), player);
+        this.updatePlayerListData(player.getUniqueId(), player.getId(), player.getDisplayName(), player.getSkin(), player.getLoginChainData().getXUID());
+    }
+
+    public void removeOnlinePlayer(Player player) {
+        if (this.playerList.containsKey(player.getUniqueId())) {
+            this.playerList.remove(player.getUniqueId());
+
+            PlayerListPacket pk = new PlayerListPacket();
+            pk.type = PlayerListPacket.TYPE_REMOVE;
+            pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(player.getUniqueId())};
+
+            Server.broadcastPacket(this.playerList.values(), pk);
+        }
+    }
+
+    /**
+     * @see #updatePlayerListData(UUID, long, String, Skin, String, Player[])
+     */
+    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin) {
+        this.updatePlayerListData(uuid, entityId, name, skin, "", this.playerList.values());
+    }
+
+    /**
+     * @see #updatePlayerListData(UUID, long, String, Skin, String, Player[])
+     */
+    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId) {
+        this.updatePlayerListData(uuid, entityId, name, skin, xboxUserId, this.playerList.values());
+    }
+
+    /**
+     * @see #updatePlayerListData(UUID, long, String, Skin, String, Player[])
+     */
+    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, Player[] players) {
+        this.updatePlayerListData(uuid, entityId, name, skin, "", players);
     }
 
 
     /**
-     * 注册配方到配方管理器
+     * 更新指定玩家们(players)的{@link PlayerListPacket}数据包(即玩家列表数据)
      * <p>
-     * Register Recipe to Recipe Manager
+     * Update {@link PlayerListPacket} data packets (i.e. player list data) for specified players
      *
-     * @param recipe 配方
+     * @param uuid       uuid
+     * @param entityId   实体id
+     * @param name       名字
+     * @param skin       皮肤
+     * @param xboxUserId xbox用户id
+     * @param players    指定接受数据包的玩家
      */
-    public void addRecipe(Recipe recipe) {
-        this.craftingManager.registerRecipe(recipe);
+    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Player[] players) {
+        PlayerListPacket pk = new PlayerListPacket();
+        pk.type = PlayerListPacket.TYPE_ADD;
+        pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(uuid, entityId, name, skin, xboxUserId)};
+        Server.broadcastPacket(players, pk);
     }
 
+    /**
+     * @see #updatePlayerListData(UUID, long, String, Skin, String, Player[])
+     */
+    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Collection<Player> players) {
+        this.updatePlayerListData(uuid, entityId, name, skin, xboxUserId, players.toArray(Player.EMPTY_ARRAY));
+    }
+
+    public void removePlayerListData(UUID uuid) {
+        this.removePlayerListData(uuid, this.playerList.values());
+    }
+
+    /**
+     * 移除玩家数组中所有玩家的玩家列表数据.<p>
+     * Remove player list data for all players in the array.
+     *
+     * @param players 玩家数组
+     */
+    public void removePlayerListData(UUID uuid, Player[] players) {
+        PlayerListPacket pk = new PlayerListPacket();
+        pk.type = PlayerListPacket.TYPE_REMOVE;
+        pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(uuid)};
+        Server.broadcastPacket(players, pk);
+    }
+
+    /**
+     * 移除这个玩家的玩家列表数据.<p>
+     * Remove this player's player list data.
+     *
+     * @param player 玩家
+     */
+    @Since("1.4.0.0-PN")
+    public void removePlayerListData(UUID uuid, Player player) {
+        PlayerListPacket pk = new PlayerListPacket();
+        pk.type = PlayerListPacket.TYPE_REMOVE;
+        pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(uuid)};
+        player.dataPacket(pk);
+    }
+
+    public void removePlayerListData(UUID uuid, Collection<Player> players) {
+        this.removePlayerListData(uuid, players.toArray(Player.EMPTY_ARRAY));
+    }
+
+    /**
+     * 发送玩家列表数据包给一个玩家.<p>
+     * Send a player list packet to a player.
+     *
+     * @param player 玩家
+     */
+    public void sendFullPlayerListData(Player player) {
+        PlayerListPacket pk = new PlayerListPacket();
+        pk.type = PlayerListPacket.TYPE_ADD;
+        pk.entries = this.playerList.values().stream()
+                .map(p -> new PlayerListPacket.Entry(
+                        p.getUniqueId(),
+                        p.getId(),
+                        p.getDisplayName(),
+                        p.getSkin(),
+                        p.getLoginChainData().getXUID()))
+                .toArray(PlayerListPacket.Entry[]::new);
+
+        player.dataPacket(pk);
+    }
 
     /**
      * 从指定的UUID得到玩家实例.
@@ -2759,6 +2420,159 @@ public class Server {
         }
     }
 
+    public PlayerDataSerializer getPlayerDataSerializer() {
+        return playerDataSerializer;
+    }
+
+    public void setPlayerDataSerializer(PlayerDataSerializer playerDataSerializer) {
+        this.playerDataSerializer = Preconditions.checkNotNull(playerDataSerializer, "playerDataSerializer");
+    }
+
+    /**
+     * 获得所有在线的玩家Map.
+     * <p>
+     * Get all online players Map.
+     *
+     * @return 所有的在线玩家Map
+     */
+    public Map<UUID, Player> getOnlinePlayers() {
+        return ImmutableMap.copyOf(playerList);
+    }
+
+    // endregion
+
+    // region constants - 常量
+
+    /**
+     * @return 服务器名称<br>The name of server
+     */
+    public String getName() {
+        return "Nukkit";
+    }
+
+    public String getNukkitVersion() {
+        return Nukkit.VERSION;
+    }
+
+    public String getBStatsNukkitVersion() {
+        return Nukkit.VERSION;
+    }
+
+    @PowerNukkitOnly
+    public String getGitCommit() {
+        return Nukkit.GIT_COMMIT;
+    }
+
+    public String getCodename() {
+        return Nukkit.CODENAME;
+    }
+
+    public String getVersion() {
+        return ProtocolInfo.MINECRAFT_VERSION;
+    }
+
+    public String getApiVersion() {
+        return Nukkit.API_VERSION;
+    }
+
+    // endregion
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public String getDataPath() {
+        return dataPath;
+    }
+
+    public String getPluginPath() {
+        return pluginPath;
+    }
+
+    /**
+     * @return 服务器UUID<br>server UUID
+     */
+    public UUID getServerUniqueId() {
+        return this.serverID;
+    }
+
+    @Deprecated
+    @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", reason = "Use your own logger, sharing loggers makes bug analyses harder.",
+            replaceWith = "@Log4j2 annotation in the class and use the `log` static field that is generated by lombok, " +
+                    "also make sure to log the exception as the last argument, don't concatenate it or use it as parameter replacement. " +
+                    "Just put it as last argument and SLF4J will understand that the log message was caused by that exception/throwable.")
+    public MainLogger getLogger() {
+        return MainLogger.getLogger();
+    }
+
+    public EntityMetadataStore getEntityMetadata() {
+        return entityMetadata;
+    }
+
+    public PlayerMetadataStore getPlayerMetadata() {
+        return playerMetadata;
+    }
+
+    public LevelMetadataStore getLevelMetadata() {
+        return levelMetadata;
+    }
+
+
+    public ResourcePackManager getResourcePackManager() {
+        return resourcePackManager;
+    }
+
+    public FreezableArrayManager getFreezableArrayManager() {
+        return freezableArrayManager;
+    }
+
+    // TODO: update PNX Junit5 test framework to remove dependency on this method
+    private void registerEntities() {
+        Entity.init();
+    }
+
+    // TODO: update PNX Junit5 test framework to remove dependency on this method
+    private void registerBlockEntities() {
+        BlockEntity.init();
+    }
+
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    @NotNull
+    public PositionTrackingService getPositionTrackingService() {
+        return positionTrackingService;
+    }
+
+    // region crafting & recipe - 合成与配方
+
+    /**
+     * 发送配方列表数据包给一个玩家.<p>
+     * Send a recipe list packet to a player.
+     *
+     * @param player 玩家
+     */
+    public void sendRecipeList(Player player) {
+        player.dataPacket(CraftingManager.getCraftingPacket());
+    }
+
+    /**
+     * 注册配方到配方管理器
+     * <p>
+     * Register Recipe to Recipe Manager
+     *
+     * @param recipe 配方
+     */
+    public void addRecipe(Recipe recipe) {
+        this.craftingManager.registerRecipe(recipe);
+    }
+
+    public CraftingManager getCraftingManager() {
+        return craftingManager;
+    }
+
+    // endregion
+
+    // region Levels - 游戏世界相关
 
     /**
      * @return 获得所有游戏世界<br>Get all the game world
@@ -3055,6 +2869,359 @@ public class Server {
         return true;
     }
 
+    // endregion
+
+    // region Ban, OP and whitelist - Ban，OP与白名单
+
+    public BanList getNameBans() {
+        return this.banByName;
+    }
+
+    public BanList getIPBans() {
+        return this.banByIP;
+    }
+
+    public void addOp(String name) {
+        this.operators.set(name.toLowerCase(), true);
+        Player player = this.getPlayerExact(name);
+        if (player != null) {
+            player.recalculatePermissions();
+            player.getAdventureSettings().onOpChange(true);
+            player.getAdventureSettings().update();
+            player.sendCommandData();
+        }
+        this.operators.save(true);
+    }
+
+    public void removeOp(String name) {
+        this.operators.remove(name.toLowerCase());
+        Player player = this.getPlayerExact(name);
+        if (player != null) {
+            player.recalculatePermissions();
+            player.getAdventureSettings().onOpChange(false);
+            player.getAdventureSettings().update();
+            player.sendCommandData();
+        }
+        this.operators.save();
+    }
+
+    public void addWhitelist(String name) {
+        this.whitelist.set(name.toLowerCase(), true);
+        this.whitelist.save(true);
+    }
+
+    public void removeWhitelist(String name) {
+        this.whitelist.remove(name.toLowerCase());
+        this.whitelist.save(true);
+    }
+
+    public boolean isWhitelisted(String name) {
+        return !this.hasWhitelist() || this.operators.exists(name, true) || this.whitelist.exists(name, true);
+    }
+
+    public boolean isOp(String name) {
+        return name != null && this.operators.exists(name, true);
+    }
+
+    public Config getWhitelist() {
+        return whitelist;
+    }
+
+    public Config getOps() {
+        return operators;
+    }
+
+    public void reloadWhitelist() {
+        this.whitelist.reload();
+    }
+
+    // endregion
+
+    // region configs - 配置相关
+
+    public int getMaxPlayers() {
+        return maxPlayers;
+    }
+
+    public void setMaxPlayers(int maxPlayers) {
+        this.maxPlayers = maxPlayers;
+    }
+
+    /**
+     * @return 服务器端口<br>server port
+     */
+    public int getPort() {
+        return this.getPropertyInt("server-port", 19132);
+    }
+
+    /**
+     * @return 可视距离<br>server view distance
+     */
+    public int getViewDistance() {
+        return this.getPropertyInt("view-distance", 10);
+    }
+
+    /**
+     * @return 服务器网络地址<br>server ip
+     */
+    public String getIp() {
+        return this.getPropertyString("server-ip", "0.0.0.0");
+    }
+
+    /**
+     * @return 服务器是否会自动保存<br>Does the server automatically save
+     */
+    public boolean getAutoSave() {
+        return this.autoSave;
+    }
+
+    /**
+     * 设置服务器自动保存
+     * <p>
+     * Set server autosave
+     *
+     * @param autoSave 是否自动保存<br>Whether to save automatically
+     */
+    public void setAutoSave(boolean autoSave) {
+        this.autoSave = autoSave;
+        for (Level level : this.levelArray) {
+            level.setAutoSave(this.autoSave);
+        }
+    }
+
+    public String getLevelType() {
+        return this.getPropertyString("level-type", "DEFAULT");
+    }
+
+    /**
+     * @return 服务器是否生成结构<br>Whether the server generate the structure.
+     */
+    public boolean getGenerateStructures() {
+        return this.getPropertyBoolean("generate-structures", true);
+    }
+
+    /**
+     * 得到服务器的gamemode
+     * <p>
+     * Get the gamemode of the server
+     *
+     * @return gamemode id
+     */
+    public int getGamemode() {
+        try {
+            return this.getPropertyInt("gamemode", 0) & 0b11;
+        } catch (NumberFormatException exception) {
+            return getGamemodeFromString(this.getPropertyString("gamemode")) & 0b11;
+        }
+    }
+
+    public boolean getForceGamemode() {
+        return this.getPropertyBoolean("force-gamemode", false);
+    }
+
+
+    /**
+     * 默认{@code direct=false}
+     *
+     * @see #getGamemodeString(int, boolean)
+     */
+    public static String getGamemodeString(int mode) {
+        return getGamemodeString(mode, false);
+    }
+
+    /**
+     * 从gamemode id获取游戏模式字符串.
+     * <p>
+     * Get game mode string from gamemode id.
+     *
+     * @param mode   gamemode id
+     * @param direct 如果为true就直接返回字符串,为false返回代表游戏模式的硬编码字符串.<br>If true, the string is returned directly, and if false, the hard-coded string representing the game mode is returned.
+     * @return 游戏模式字符串<br>Game Mode String
+     */
+    public static String getGamemodeString(int mode, boolean direct) {
+        switch (mode) {
+            case Player.SURVIVAL:
+                return direct ? "Survival" : "%gameMode.survival";
+            case Player.CREATIVE:
+                return direct ? "Creative" : "%gameMode.creative";
+            case Player.ADVENTURE:
+                return direct ? "Adventure" : "%gameMode.adventure";
+            case Player.SPECTATOR:
+                return direct ? "Spectator" : "%gameMode.spectator";
+        }
+        return "UNKNOWN";
+    }
+
+    /**
+     * 从字符串获取gamemode
+     * <p>
+     * Get gamemode from string
+     *
+     * @param str 代表游戏模式的字符串，例如0,survival...<br>A string representing the game mode, e.g. 0,survival...
+     * @return 游戏模式id<br>gamemode id
+     */
+    public static int getGamemodeFromString(String str) {
+        switch (str.trim().toLowerCase()) {
+            case "0":
+            case "survival":
+            case "s":
+                return Player.SURVIVAL;
+
+            case "1":
+            case "creative":
+            case "c":
+                return Player.CREATIVE;
+
+            case "2":
+            case "adventure":
+            case "a":
+                return Player.ADVENTURE;
+
+            case "3":
+            case "spectator":
+            case "spc":
+            case "view":
+            case "v":
+                return Player.SPECTATOR;
+        }
+        return -1;
+    }
+
+    /**
+     * 从字符串获取游戏难度
+     * <p>
+     * Get game difficulty from string
+     *
+     * @param str 代表游戏难度的字符串，例如0,peaceful...<br>A string representing the game difficulty, e.g. 0,peaceful...
+     * @return 游戏难度id<br>game difficulty id
+     */
+    public static int getDifficultyFromString(String str) {
+        switch (str.trim().toLowerCase()) {
+            case "0":
+            case "peaceful":
+            case "p":
+                return 0;
+
+            case "1":
+            case "easy":
+            case "e":
+                return 1;
+
+            case "2":
+            case "normal":
+            case "n":
+                return 2;
+
+            case "3":
+            case "hard":
+            case "h":
+                return 3;
+        }
+        return -1;
+    }
+
+    /**
+     * 获得服务器游戏难度
+     * <p>
+     * Get server game difficulty
+     *
+     * @return 游戏难度id<br>game difficulty id
+     */
+    public int getDifficulty() {
+        if (this.difficulty == Integer.MAX_VALUE) {
+            this.difficulty = getDifficultyFromString(this.getPropertyString("difficulty", "1"));
+        }
+        return this.difficulty;
+    }
+
+    /**
+     * 设置服务器游戏难度
+     * <p>
+     * set server game difficulty
+     *
+     * @param difficulty 游戏难度id<br>game difficulty id
+     */
+    public void setDifficulty(int difficulty) {
+        int value = difficulty;
+        if (value < 0) value = 0;
+        if (value > 3) value = 3;
+        this.difficulty = value;
+        this.setPropertyInt("difficulty", value);
+    }
+
+    /**
+     * @return 是否开启白名单<br>Whether to start server whitelist
+     */
+    public boolean hasWhitelist() {
+        return this.getPropertyBoolean("white-list", false);
+    }
+
+    /**
+     * @return 得到服务器出生点保护半径<br>Get server birth point protection radius
+     */
+    public int getSpawnRadius() {
+        return this.getPropertyInt("spawn-protection", 16);
+    }
+
+    /**
+     * @return 服务器是否允许飞行<br>Whether the server allows flying
+     */
+    public boolean getAllowFlight() {
+        if (getAllowFlight == null) {
+            getAllowFlight = this.getPropertyBoolean("allow-flight", false);
+        }
+        return getAllowFlight;
+    }
+
+    /**
+     * @return 服务器是否为硬核模式<br>Whether the server is in hardcore mode
+     */
+    public boolean isHardcore() {
+        return this.getPropertyBoolean("hardcore", false);
+    }
+
+    /**
+     * @return 获取默认gamemode<br>Get default gamemode
+     */
+    public int getDefaultGamemode() {
+        if (this.defaultGamemode == Integer.MAX_VALUE) {
+            this.defaultGamemode = this.getGamemode();
+        }
+        return this.defaultGamemode;
+    }
+
+    /**
+     * @return 得到服务器标题<br>Get server motd
+     */
+    public String getMotd() {
+        return this.getPropertyString("motd", "PowerNukkitX Server");
+    }
+
+    /**
+     * @return 得到服务器子标题<br>Get the server subheading
+     */
+    public String getSubMotd() {
+        String subMotd = this.getPropertyString("sub-motd", "https://powernukkitx.cn");
+        if (subMotd.isEmpty()) {
+            subMotd = "https://powernukkitx.cn"; // The client doesn't allow empty sub-motd in 1.16.210
+        }
+        return subMotd;
+    }
+
+    /**
+     * @return 是否强制使用服务器资源包<br>Whether to force the use of server resourcepack
+     */
+    public boolean getForceResources() {
+        return this.getPropertyBoolean("force-resources", false);
+    }
+
+    /**
+     * @return 是否强制使用服务器资源包的同时允许加载客户端资源包<br>Whether to force the use of server resourcepack while allowing the loading of client resourcepack
+     */
+    public boolean getForceResourcesAllowOwnPacks() {
+        return this.getPropertyBoolean("force-resources-allow-client-packs", false);
+    }
+
     public BaseLang getLanguage() {
         return baseLang;
     }
@@ -3090,7 +3257,6 @@ public class Server {
     public boolean isLanguageForced() {
         return forceLanguage;
     }
-
     @PowerNukkitOnly
     public boolean isRedstoneEnabled() {
         return redstoneEnabled;
@@ -3099,10 +3265,6 @@ public class Server {
     @PowerNukkitOnly
     public void setRedstoneEnabled(boolean redstoneEnabled) {
         this.redstoneEnabled = redstoneEnabled;
-    }
-
-    public Network getNetwork() {
-        return network;
     }
 
     //Revising later...
@@ -3181,104 +3343,6 @@ public class Server {
         this.properties.set(variable, value ? "1" : "0");
         this.properties.save();
     }
-
-    public PluginIdentifiableCommand getPluginCommand(String name) {
-        Command command = this.commandMap.getCommand(name);
-        if (command instanceof PluginIdentifiableCommand) {
-            return (PluginIdentifiableCommand) command;
-        } else {
-            return null;
-        }
-    }
-
-    public BanList getNameBans() {
-        return this.banByName;
-    }
-
-    public BanList getIPBans() {
-        return this.banByIP;
-    }
-
-    public void addOp(String name) {
-        this.operators.set(name.toLowerCase(), true);
-        Player player = this.getPlayerExact(name);
-        if (player != null) {
-            player.recalculatePermissions();
-            player.getAdventureSettings().onOpChange(true);
-            player.getAdventureSettings().update();
-            player.sendCommandData();
-        }
-        this.operators.save(true);
-    }
-
-    public void removeOp(String name) {
-        this.operators.remove(name.toLowerCase());
-        Player player = this.getPlayerExact(name);
-        if (player != null) {
-            player.recalculatePermissions();
-            player.getAdventureSettings().onOpChange(false);
-            player.getAdventureSettings().update();
-            player.sendCommandData();
-        }
-        this.operators.save();
-    }
-
-    public void addWhitelist(String name) {
-        this.whitelist.set(name.toLowerCase(), true);
-        this.whitelist.save(true);
-    }
-
-    public void removeWhitelist(String name) {
-        this.whitelist.remove(name.toLowerCase());
-        this.whitelist.save(true);
-    }
-
-    public boolean isWhitelisted(String name) {
-        return !this.hasWhitelist() || this.operators.exists(name, true) || this.whitelist.exists(name, true);
-    }
-
-    public boolean isOp(String name) {
-        return name != null && this.operators.exists(name, true);
-    }
-
-    public Config getWhitelist() {
-        return whitelist;
-    }
-
-    public Config getOps() {
-        return operators;
-    }
-
-    public void reloadWhitelist() {
-        this.whitelist.reload();
-    }
-
-    public ServiceManager getServiceManager() {
-        return serviceManager;
-    }
-
-    public Map<String, List<String>> getCommandAliases() {
-        Object section = this.getConfig("aliases");
-        Map<String, List<String>> result = new LinkedHashMap<>();
-        if (section instanceof Map) {
-            for (Map.Entry entry : (Set<Map.Entry>) ((Map) section).entrySet()) {
-                List<String> commands = new ArrayList<>();
-                String key = (String) entry.getKey();
-                Object value = entry.getValue();
-                if (value instanceof List) {
-                    commands.addAll((List<String>) value);
-                } else {
-                    commands.add((String) value);
-                }
-
-                result.put(key, commands);
-            }
-        }
-
-        return result;
-
-    }
-
     public boolean shouldSavePlayerData() {
         return this.getConfig("player.save-player-data", true);
     }
@@ -3287,26 +3351,8 @@ public class Server {
         return this.getConfig("player.skin-change-cooldown", 30);
     }
 
-    // TODO: update PNX Junit5 test framework to remove dependency on this method
-    private void registerEntities() {
-        Entity.init();
-    }
-
-    // TODO: update PNX Junit5 test framework to remove dependency on this method
-    private void registerBlockEntities() {
-        BlockEntity.init();
-    }
-
     public boolean isNetherAllowed() {
         return this.allowNether;
-    }
-
-    public PlayerDataSerializer getPlayerDataSerializer() {
-        return playerDataSerializer;
-    }
-
-    public void setPlayerDataSerializer(PlayerDataSerializer playerDataSerializer) {
-        this.playerDataSerializer = Preconditions.checkNotNull(playerDataSerializer, "playerDataSerializer");
     }
 
     @Since("1.3.0.0-PN")
@@ -3320,17 +3366,6 @@ public class Server {
         return safeSpawn;
     }
 
-    public static Server getInstance() {
-        return instance;
-    }
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    @NotNull
-    public PositionTrackingService getPositionTrackingService() {
-        return positionTrackingService;
-    }
-
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean isForceSkinTrusted() {
@@ -3341,12 +3376,6 @@ public class Server {
     @Since("1.4.0.0-PN")
     public boolean isCheckMovement() {
         return checkMovement;
-    }
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public long getLaunchTime() {
-        return launchTime;
     }
 
     @PowerNukkitOnly
@@ -3385,6 +3414,8 @@ public class Server {
         return serverAuthoritativeMovementMode;
     }
 
+    // endregion
+
     // region threading - 并发基础设施
 
     /**
@@ -3405,6 +3436,10 @@ public class Server {
 
     public Thread getPrimaryThread() {
         return currentThread;
+    }
+
+    public ServerScheduler getScheduler() {
+        return scheduler;
     }
 
     //todo NukkitConsole 会阻塞关不掉
