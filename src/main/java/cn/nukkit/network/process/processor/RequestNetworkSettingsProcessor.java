@@ -18,6 +18,10 @@ public class RequestNetworkSettingsProcessor extends DataPacketProcessor<Request
         }
         var protocolVersion = pk.protocolVersion;
         String message;
+        var settingsPacket = new NetworkSettingsPacket();
+        settingsPacket.compressionAlgorithm = PacketCompressionAlgorithm.ZLIB;
+        settingsPacket.compressionThreshold = 1; // compress everything
+        player.forceDataPacket(settingsPacket, () -> playerHandle.getNetworkSession().setCompression(CompressionProvider.ZLIB));
         if (!ProtocolInfo.SUPPORTED_PROTOCOLS.contains(protocolVersion)) {
             if (protocolVersion < ProtocolInfo.CURRENT_PROTOCOL) {
                 message = "disconnectionScreen.outdatedClient";
@@ -27,10 +31,6 @@ public class RequestNetworkSettingsProcessor extends DataPacketProcessor<Request
             player.close("", message, true);
             return;
         }
-        var settingsPacket = new NetworkSettingsPacket();
-        settingsPacket.compressionAlgorithm = PacketCompressionAlgorithm.ZLIB;
-        settingsPacket.compressionThreshold = 1; // compress everything
-        player.forceDataPacket(settingsPacket, () -> playerHandle.getNetworkSession().setCompression(CompressionProvider.ZLIB));
     }
 
     @Override
