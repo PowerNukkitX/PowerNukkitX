@@ -11,10 +11,49 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 3. <a href="#CataLogs-Version-history">🔖 Version history / 历史版本 </a>
 
 ## [Dev-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - Future
-This work in progress version supports Minecraft:BE `1.19.70 (Protocol Version 575)`.
+This work in progress version supports Minecraft:BE `1.19.80 (Protocol Version 582)`.
+
+## Development...
+
+## [1.19.80-r2-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.80-r2) - 2023-5-2
+This work in progress version supports Minecraft:BE `1.19.80 (Protocol Version 582)`.
+
+## Added
+
+- [#1150] Network Encryption.
+- [#1152] Add `inventory packet` processor.
+
+## Changed
+
+- [#1147] Network layer reconstruction and optimization.
 
 ## Fixes
+
+- [#1146] Fix log can't craft plank.
+- [#1149] Fix the problem that sign can't save the color and bolding.
+- [#1153] Fix cant jump carpet and use armor.
+
+## [1.19.80-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.80-r1) - 2023-4-30
+This work in progress version supports Minecraft:BE `1.19.80 (Protocol Version 582)`.
+
+## Added
+
+- [#1131] Add the feature that loading a map `Gamerule` resets to the default `Gamerule` when it fails.
+- [#1144] Adapt Minecraft:BE `1.19.80  (Protocol Version 582)`.
+
+## Changed
+
+- [#1141] Start listening for console input commands again after the server has finished loading.
+
+## Fixes
+- [#486] Fix the problem that if there are 3 or more spaces in a nickname, then it will be allowed to a server with an empty nickname (fixed in [#1138]).
 - [#1121] Fix `/execute in dimension` command not working (fixed in [#1122]).
+- [#1124] Fix execute command can't run cmd of other plugins.
+- [#1125] Fix the error when executing vanilla command (fixed in [#1128]).
+- [#1132] Fix `setTimeout` and `setInterval` passing problem in js.
+- [#1136] Fix the problem that peace mode can't PVP.
+- [#1139] Fix `KillCommand removeIf` throw `UnsupportedOperationException`.
+- [#1145] Fix the bug that ice can be burned.
 
 ## [1.19.70-r2-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.70-r2) - 2023-4-2
 This work in progress version supports Minecraft:BE `1.19.70 (Protocol Version 575)`.
@@ -34,7 +73,7 @@ This work in progress version supports Minecraft:BE `1.19.70 (Protocol Version 5
 ## Fixes
 
 - [#1101] Fix the problem that too short java class path cannot be imported into JS.
-- [#1102] Fix the secondary hand related bug (fixed in[#1105]).
+- [#1102] Fix the secondary hand related bug (fixed in [#1105]).
 - [#1106] Repair the light-emitting item display box can not be placed, optimize some logic.
 - [#1108] Fix not being able to craft splash potions.
 - [#1110] Fix bug in default matching behavior of mod recipes.
@@ -1646,6 +1685,14 @@ Fixes several anvil issues.
 
 </details>
 
+<details>
+  <summary>1.19.80-PNX</summary>
+
+   1. [#1.19.80-r1] PNX-1.19.80-r1 (Protocol Version 582)
+   2. [#1.19.80-r2] PNX-1.19.80-r2 (Protocol Version 582)
+
+</details>
+
 ## <a id="CataLogs-Swlang"></a>🌐 多语言文档
 
 ---
@@ -1990,6 +2037,7 @@ Need to switch languages?
 [#480]: https://github.com/PowerNukkitX/PowerNukkitX/pull/480
 [#481]: https://github.com/PowerNukkitX/PowerNukkitX/pull/481
 [#483]: https://github.com/PowerNukkitX/PowerNukkitX/pull/483
+[#486]: https://github.com/PowerNukkitX/PowerNukkitX/issues/486
 [#487]: https://github.com/PowerNukkitX/PowerNukkitX/pull/487
 [#488]: https://github.com/PowerNukkitX/PowerNukkitX/pull/488
 [#489]: https://github.com/PowerNukkitX/PowerNukkitX/pull/489
@@ -2338,6 +2386,23 @@ Need to switch languages?
 [#1120]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1120
 [#1121]: https://github.com/PowerNukkitX/PowerNukkitX/issues/1121
 [#1122]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1122
+[#1124]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1124
+[#1125]: https://github.com/PowerNukkitX/PowerNukkitX/issues/1125
+[#1128]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1128
+[#1131]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1131
+[#1132]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1132
+[#1136]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1136
+[#1138]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1138
+[#1139]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1139
+[#1141]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1141
+[#1144]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1144
+[#1145]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1145
+[#1146]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1146
+[#1147]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1147
+[#1149]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1149
+[#1150]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1150
+[#1152]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1152
+[#1153]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1153
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->
@@ -2410,6 +2475,10 @@ Need to switch languages?
 <!--1.19.70-r1-PNX Protocol Version 575-->
 [#1.19.70-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.70-r1
 [#1.19.70-r2]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.70-r2
+
+<!--1.19.80-r1-PNX Protocol Version 582-->
+[#1.19.80-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.80-r1
+[#1.19.80-r2]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.80-r2
 <!--1.19.xx-PNX Version summary End-->
 
 <!--PowerNukkitX Urls-->

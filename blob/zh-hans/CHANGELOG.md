@@ -11,11 +11,50 @@
 3. <a href="#CataLogs-Version-history">🔖 Version history / 历史版本 </a>
 
 ## [Dev-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - Future
-该版本目前支持了Minecraft:BE `1.19.70 (协议版本575)`.
+该版本目前支持了Minecraft:BE `1.19.80 (协议版本582)`.
+
+## 开发中...
+
+## [1.19.80-r2-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.80-r2) - 2023-5-2
+该版本目前支持了Minecraft:BE `1.19.80 (协议版本582)`.
+
+## 新增内容
+
+- [#1150] 网络加密。
+- [#1152] 添加`inventory packet`数据包处理器。
+
+## 修改记录
+
+- [#1147] 网络层重构与优化。
 
 ## BUG修复
 
+- [#1146] 修复木头无法合成木板的问题。
+- [#1149] 修复sign不能保存颜色和加粗的问题。
+- [#1153] 修复不能跳地毯和使用护甲的问题。
+
+## [1.19.80-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.80-r1) - 2023-4-30
+该版本目前支持了Minecraft:BE `1.19.80 (协议版本582)`.
+
+## 新增内容
+
+- [#1131] 添加加载地图`Gamerule`失败后会重置为默认`Gamerule`的功能。
+- [#1144] 适配Minecraft:BE `1.19.80  (协议版本582)`。
+
+## 修改记录
+
+- [#1141] 服务器加载完成后再开始监听控制台输入命令。
+
+## BUG修复
+
+- [#486] 修复如果昵称中有3个或更多的空格，那么它会被允许到具有空昵称的服务器的问题（在[#1138]中修复）。
 - [#1121] 修复`/execute in dimension`命令无效的问题（在[#1122]中修复）。
+- [#1124] 修复执行命令无法运行其他插件的cmd。
+- [#1125] 修复香草命令执行时报错（在[#1128]中修复）。
+- [#1132] 修复js中`setTimeout`和`setInterval`传参问题。
+- [#1136] 修复和平模式无法PVP的问题。
+- [#1139] 修复`KillCommand removeIf`抛出`UnsupportedOperationException`的问题。
+- [#1145] 修复冰可以被燃烧的漏洞。
 
 ## [1.19.70-r2-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.70-r2) - 2023-4-2
 该版本目前支持了Minecraft:BE `1.19.70 (协议版本575)`.
@@ -1649,6 +1688,14 @@ Fixes several anvil issues.
 
 </details>
 
+<details>
+  <summary>1.19.80-PNX</summary>
+
+   1. [#1.19.80-r1] PNX-1.19.80-r1 (协议版本582)
+   2. [#1.19.80-r2] PNX-1.19.80-r2 (协议版本582)
+
+</details>
+
 ## <a id="CataLogs-Swlang"></a>🌐 多语言文档
 
 ---
@@ -1993,6 +2040,7 @@ Need to switch languages?
 [#480]: https://github.com/PowerNukkitX/PowerNukkitX/pull/480
 [#481]: https://github.com/PowerNukkitX/PowerNukkitX/pull/481
 [#483]: https://github.com/PowerNukkitX/PowerNukkitX/pull/483
+[#486]: https://github.com/PowerNukkitX/PowerNukkitX/issues/486
 [#487]: https://github.com/PowerNukkitX/PowerNukkitX/pull/487
 [#488]: https://github.com/PowerNukkitX/PowerNukkitX/pull/488
 [#489]: https://github.com/PowerNukkitX/PowerNukkitX/pull/489
@@ -2341,6 +2389,23 @@ Need to switch languages?
 [#1120]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1120
 [#1121]: https://github.com/PowerNukkitX/PowerNukkitX/issues/1121
 [#1122]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1122
+[#1124]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1124
+[#1125]: https://github.com/PowerNukkitX/PowerNukkitX/issues/1125
+[#1128]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1128
+[#1131]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1131
+[#1132]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1132
+[#1136]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1136
+[#1138]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1138
+[#1139]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1139
+[#1141]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1141
+[#1144]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1144
+[#1145]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1145
+[#1146]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1146
+[#1147]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1147
+[#1149]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1149
+[#1150]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1150
+[#1152]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1152
+[#1153]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1153
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->
@@ -2413,6 +2478,10 @@ Need to switch languages?
 <!--1.19.70-r1-PNX Protocol Version 575-->
 [#1.19.70-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.70-r1
 [#1.19.70-r2]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.70-r2
+
+<!--1.19.80-r1-PNX Protocol Version 582-->
+[#1.19.80-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.80-r1
+[#1.19.80-r2]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.80-r2
 <!--1.19.xx-PNX Version summary End-->
 
 <!--PowerNukkitX Urls-->
