@@ -68,7 +68,6 @@ import cn.nukkit.plugin.Plugin;
 import cn.nukkit.positiontracking.PositionTracking;
 import cn.nukkit.positiontracking.PositionTrackingService;
 import cn.nukkit.potion.Effect;
-import cn.nukkit.resourcepacks.ResourcePack;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.scheduler.Task;
 import cn.nukkit.scheduler.TaskHandler;
@@ -101,14 +100,12 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
-import org.powernukkit.version.Version;
 
 import javax.annotation.Nullable;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -198,12 +195,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public Vector3 speed = null;
     public int craftingType = CRAFTING_SMALL;
     public long creationTime = 0;
-    @Since("1.19.63-r1")
-    @PowerNukkitXOnly
-    protected long breakingBlockTime = 0;
-    @Since("1.19.63-r1")
-    @PowerNukkitXOnly
-    protected double blockBreakProgress = 0;
     /**
      * 正在挖掘的方块
      * <p>
@@ -221,6 +212,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public int pickedXPOrb = 0;
     public EntityFishingHook fishing = null;
     public long lastSkinChange;
+    @Since("1.19.63-r1")
+    @PowerNukkitXOnly
+    protected long breakingBlockTime = 0;
+    @Since("1.19.63-r1")
+    @PowerNukkitXOnly
+    protected double blockBreakProgress = 0;
     protected final SourceInterface interfaz;
     @Since("1.19.30-r1")
     @PowerNukkitXOnly
@@ -1814,6 +1811,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.addWindow(this.craftingGrid, ContainerIds.NONE, true);
 
         //TODO: more windows
+    }
+
+    @Override
+    protected float getBaseOffset() {
+        return super.getBaseOffset();
     }
 
     @PowerNukkitOnly
@@ -3473,163 +3475,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             // TODO: 2023/3/15 重构数据包处理使得兼容新的int id
             packetswitch:
             switch (packet.pid()) {
-                case ProtocolInfo.RESOURCE_PACK_CLIENT_RESPONSE_PACKET:
-                    ResourcePackClientResponsePacket responsePacket = (ResourcePackClientResponsePacket) packet;
-                    switch (responsePacket.responseStatus) {
-                        case ResourcePackClientResponsePacket.STATUS_REFUSED:
-                            this.close("", "disconnectionScreen.noReason");
-                            break;
-                        case ResourcePackClientResponsePacket.STATUS_SEND_PACKS:
-                            for (ResourcePackClientResponsePacket.Entry entry : responsePacket.packEntries) {
-                                ResourcePack resourcePack = this.server.getResourcePackManager().getPackById(entry.uuid);
-                                if (resourcePack == null) {
-                                    this.close("", "disconnectionScreen.resourcePack");
-                                    break;
-                                }
-
-                                ResourcePackDataInfoPacket dataInfoPacket = new ResourcePackDataInfoPacket();
-                                dataInfoPacket.packId = resourcePack.getPackId();
-                                dataInfoPacket.setPackVersion(new Version(resourcePack.getPackVersion()));
-                                dataInfoPacket.maxChunkSize = server.getResourcePackManager().getMaxChunkSize();
-                                dataInfoPacket.chunkCount = (int) Math.ceil(resourcePack.getPackSize() / (double) dataInfoPacket.maxChunkSize);
-                                dataInfoPacket.compressedPackSize = resourcePack.getPackSize();
-                                dataInfoPacket.sha256 = resourcePack.getSha256();
-                                this.dataResourcePacket(dataInfoPacket);
-                            }
-                            break;
-                        case ResourcePackClientResponsePacket.STATUS_HAVE_ALL_PACKS:
-                            ResourcePackStackPacket stackPacket = new ResourcePackStackPacket();
-                            stackPacket.mustAccept = this.server.getForceResources() && !this.server.getForceResourcesAllowOwnPacks();
-                            stackPacket.resourcePackStack = this.server.getResourcePackManager().getResourceStack();
-
-                            if (this.getServer().isEnableExperimentMode() && !this.getServer().getConfig("settings.waterdogpe", false)) {
-                                stackPacket.experiments.add(
-                                        new ResourcePackStackPacket.ExperimentData("data_driven_items", true)
-                                );
-                                stackPacket.experiments.add(
-                                        new ResourcePackStackPacket.ExperimentData("upcoming_creator_features", true)
-                                );
-                                stackPacket.experiments.add(
-                                        new ResourcePackStackPacket.ExperimentData("experimental_molang_features", true)
-                                );
-                            }
-
-                            this.dataResourcePacket(stackPacket);
-                            break;
-                        case ResourcePackClientResponsePacket.STATUS_COMPLETED:
-                            this.shouldLogin = true;
-
-                            if (this.preLoginEventTask.isFinished()) {
-                                this.preLoginEventTask.onCompletion(server);
-                            }
-                            break;
-                    }
-                    break;
-                case ProtocolInfo.RESOURCE_PACK_CHUNK_REQUEST_PACKET: {
-                    ResourcePackChunkRequestPacket requestPacket = (ResourcePackChunkRequestPacket) packet;
-                    ResourcePack resourcePack = this.server.getResourcePackManager().getPackById(requestPacket.getPackId()); // TODO: Pack version check
-                    if (resourcePack == null) {
-                        this.close("", "disconnectionScreen.resourcePack");
-                        break;
-                    }
-
-                    int maxChunkSize = server.getResourcePackManager().getMaxChunkSize();
-                    ResourcePackChunkDataPacket dataPacket = new ResourcePackChunkDataPacket();
-                    dataPacket.setPackId(resourcePack.getPackId());
-                    dataPacket.setPackVersion(new Version(resourcePack.getPackVersion()));
-                    dataPacket.chunkIndex = requestPacket.chunkIndex;
-                    dataPacket.data = resourcePack.getPackChunk(maxChunkSize * requestPacket.chunkIndex, maxChunkSize);
-                    dataPacket.progress = maxChunkSize * (long) requestPacket.chunkIndex;
-                    this.dataResourcePacket(dataPacket);
-                    break;
-                }
-                case ProtocolInfo.SET_LOCAL_PLAYER_AS_INITIALIZED_PACKET:
-                    if (this.locallyInitialized) {
-                        break;
-                    }
-                    this.locallyInitialized = true;
-                    this.onPlayerLocallyInitialized();
-                    PlayerLocallyInitializedEvent locallyInitializedEvent = new PlayerLocallyInitializedEvent(this);
-                    this.server.getPluginManager().callEvent(locallyInitializedEvent);
-                    break;
-                case ProtocolInfo.PLAYER_SKIN_PACKET:
-                    PlayerSkinPacket skinPacket = (PlayerSkinPacket) packet;
-                    Skin skin = skinPacket.skin;
-
-                    if (!skin.isValid()) {
-                        this.getServer().getLogger().warning(username + ": PlayerSkinPacket with invalid skin");
-                        break;
-                    }
-
-                    if (this.server.isForceSkinTrusted()) {
-                        skin.setTrusted(true);
-                    }
-
-                    PlayerChangeSkinEvent playerChangeSkinEvent = new PlayerChangeSkinEvent(this, skin);
-                    var tooQuick = TimeUnit.SECONDS.toMillis(this.server.getPlayerSkinChangeCooldown()) > System.currentTimeMillis() - this.lastSkinChange;
-                    if (tooQuick) {
-                        playerChangeSkinEvent.setCancelled(true);
-                        Server.getInstance().getLogger().warning("Player " + username + " change skin too quick!");
-                    }
-                    this.server.getPluginManager().callEvent(playerChangeSkinEvent);
-                    if (!playerChangeSkinEvent.isCancelled()) {
-                        this.lastSkinChange = System.currentTimeMillis();
-                        this.setSkin(skin);
-                    }
-
-                    break;
-                case ProtocolInfo.PACKET_VIOLATION_WARNING_PACKET:
-                    Optional<String> packetName = Arrays.stream(ProtocolInfo.class.getDeclaredFields())
-                            .filter(field -> field.getType() == Byte.TYPE)
-                            .filter(field -> {
-                                try {
-                                    return field.getByte(null) == ((PacketViolationWarningPacket) packet).packetId;
-                                } catch (IllegalAccessException e) {
-                                    return false;
-                                }
-                            }).map(Field::getName).findFirst();
-                    log.warn("Violation warning from {}{}", this.getName(), packetName.map(name -> " for packet " + name).orElse("") + ": " + packet);
-                    break;
-                case ProtocolInfo.EMOTE_PACKET:
-                    if (!this.spawned) {
-                        return;
-                    }
-                    EmotePacket emotePacket = (EmotePacket) packet;
-                    if (emotePacket.runtimeId != this.id) {
-                        log.warn("{} sent EmotePacket with invalid entity id: {} != {}", this.username, emotePacket.runtimeId, this.id);
-                        return;
-                    }
-                    for (Player viewer : this.getViewers().values()) {
-                        viewer.dataPacket(emotePacket);
-                    }
-                    return;
-                case ProtocolInfo.PLAYER_INPUT_PACKET:
-                    if (!this.isAlive() || !this.spawned) {
-                        break;
-                    }
-                    PlayerInputPacket ipk = (PlayerInputPacket) packet;
-                    if (riding instanceof EntityMinecartAbstract) {
-                        ((EntityMinecartAbstract) riding).setCurrentSpeed(ipk.motionY);
-                    }
-                    break;
-                case ProtocolInfo.MOVE_PLAYER_PACKET:
-                    if (!locallyInitialized || Server.getInstance().getServerAuthoritativeMovement() > 0) {
-                        break;
-                    }
-                    MovePlayerPacket movePlayerPacket = (MovePlayerPacket) packet;
-                    Vector3 newPos = new Vector3(movePlayerPacket.x, movePlayerPacket.y - getBaseOffset(), movePlayerPacket.z);
-
-                    movePlayerPacket.yaw %= 360;
-                    movePlayerPacket.headYaw %= 360;
-                    movePlayerPacket.pitch %= 360;
-                    if (movePlayerPacket.yaw < 0) {
-                        movePlayerPacket.yaw += 360;
-                    }
-                    if (movePlayerPacket.headYaw < 0) {
-                        movePlayerPacket.headYaw += 360;
-                    }
-                    offerMovementTask(Location.fromObject(newPos, this.level, movePlayerPacket.yaw, movePlayerPacket.pitch, movePlayerPacket.headYaw));
-                    break;
                 case ProtocolInfo.PLAYER_AUTH_INPUT_PACKET:
                     if (!locallyInitialized) break;
                     PlayerAuthInputPacket authPacket = (PlayerAuthInputPacket) packet;
