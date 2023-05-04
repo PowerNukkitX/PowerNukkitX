@@ -3,8 +3,9 @@ package cn.nukkit.blockproperty.value;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.Nullable;
 
-import static io.sentry.util.StringUtils.capitalize;
+import java.util.Locale;
 
 /**
  * @author joserobjr
@@ -45,6 +46,10 @@ public enum DoublePlantType {
     DoublePlantType() {
         englishName = capitalize(name());
         replaceable = false;
+    }
+
+    public static @Nullable String capitalize(@Nullable String str) {
+        return str != null && !str.isEmpty() ? str.substring(0, 1).toUpperCase(Locale.ROOT) + str.substring(1).toLowerCase(Locale.ROOT) : str;
     }
 
     @PowerNukkitOnly

@@ -19,12 +19,14 @@ import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Properties;
 
 import static cn.nukkit.utils.Utils.dynamic;
 
@@ -71,24 +73,6 @@ public class Nukkit {
     public static List<String> JS_DEBUG_LIST = new LinkedList<>();
 
     public static void main(String[] args) {
-        AtomicBoolean disableSentry = new AtomicBoolean(false);
-        disableSentry.set(Boolean.parseBoolean(System.getProperty("disableSentry", "false")));
-
-        Path propertiesPath = Paths.get(DATA_PATH, "server.properties");
-        if (!disableSentry.get() && Files.isRegularFile(propertiesPath)) {
-            Properties properties = new Properties();
-            try (FileReader reader = new FileReader(propertiesPath.toFile())) {
-                properties.load(reader);
-                String value = properties.getProperty("disable-auto-bug-report", "false");
-                if (value.equalsIgnoreCase("on") || value.equals("1")) {
-                    value = "true";
-                }
-                disableSentry.set(Boolean.parseBoolean(value.toLowerCase(Locale.ENGLISH)));
-            } catch (IOException e) {
-                log.error("Failed to load server.properties to check disable-auto-bug-report.", e);
-            }
-        }
-
         // Force IPv4 since Nukkit is not compatible with IPv6
         System.setProperty("java.net.preferIPv4Stack", "true");
         System.setProperty("log4j.skipJansi", "false");
