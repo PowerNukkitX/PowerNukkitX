@@ -1,9 +1,6 @@
 package cn.nukkit;
 
-import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
+import cn.nukkit.api.*;
 import cn.nukkit.block.Block;
 import cn.nukkit.dialog.window.FormWindowDialog;
 import cn.nukkit.entity.Entity;
@@ -14,9 +11,12 @@ import cn.nukkit.inventory.PlayerUIInventory;
 import cn.nukkit.inventory.transaction.*;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
+import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.SourceInterface;
 import cn.nukkit.network.protocol.PlayerFogPacket;
+import cn.nukkit.network.protocol.types.PlayerBlockActionData;
 import cn.nukkit.network.session.NetworkPlayerSession;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.utils.DummyBossBar;
@@ -561,5 +561,33 @@ public final class PlayerHandle {
 
     public float getBaseOffset() {
         return player.getBaseOffset();
+    }
+
+    public PlayerBlockActionData getLastBlockAction() {
+        return player.lastBlockAction;
+    }
+
+    public void setLastBlockAction(PlayerBlockActionData actionData) {
+        player.lastBlockAction = actionData;
+    }
+
+    @PowerNukkitXDifference(since = "1.19.60-r1", info = "Auto-break custom blocks if client doesn't send the break data-pack.")
+    public void onBlockBreakContinue(Vector3 pos, BlockFace face) {
+        player.onBlockBreakContinue(pos, face);
+    }
+
+    @PowerNukkitXDifference(since = "1.19.80-r3", info = "change to protected")
+    public void onBlockBreakStart(Vector3 pos, BlockFace face) {
+        player.onBlockBreakStart(pos, face);
+    }
+
+    @PowerNukkitXDifference(since = "1.19.80-r3", info = "change to protected")
+    public void onBlockBreakAbort(Vector3 pos, BlockFace face) {
+        player.onBlockBreakAbort(pos, face);
+    }
+
+    @PowerNukkitXDifference(since = "1.19.80-r3", info = "change to protected")
+    public void onBlockBreakComplete(BlockVector3 blockPos, BlockFace face) {
+        player.onBlockBreakComplete(blockPos, face);
     }
 }

@@ -1,0 +1,166 @@
+package cn.nukkit.network.process.processor;
+
+import cn.nukkit.Player;
+import cn.nukkit.PlayerHandle;
+import cn.nukkit.entity.item.EntityMinecartAbstract;
+import cn.nukkit.event.player.*;
+import cn.nukkit.level.Location;
+import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.BlockVector3;
+import cn.nukkit.math.Vector3;
+import cn.nukkit.network.process.DataPacketProcessor;
+import cn.nukkit.network.protocol.PlayerAuthInputPacket;
+import cn.nukkit.network.protocol.ProtocolInfo;
+import cn.nukkit.network.protocol.types.AuthInputAction;
+import cn.nukkit.network.protocol.types.PlayerActionType;
+import cn.nukkit.network.protocol.types.PlayerBlockActionData;
+import org.jetbrains.annotations.NotNull;
+
+public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInputPacket> {
+    @Override
+    public void handle(@NotNull PlayerHandle playerHandle, @NotNull PlayerAuthInputPacket pk) {
+        Player player = playerHandle.player;
+        if (!player.locallyInitialized) return;
+        if (!pk.getBlockActionData().isEmpty()) {
+            for (PlayerBlockActionData action : pk.getBlockActionData().values()) {
+                //hack 自从1.19.70开始，创造模式剑客户端不会发送PREDICT_DESTROY_BLOCK，但仍然发送START_DESTROY_BLOCK，过滤掉
+                if (player.getInventory().getItemInHand().isSword() && player.isCreative() && action.getAction() == PlayerActionType.START_DESTROY_BLOCK) {
+                    continue;
+                }
+
+
+                BlockVector3 blockPos = action.getPosition();
+                BlockFace blockFace = BlockFace.fromIndex(action.getFacing());
+                if (playerHandle.getLastBlockAction() != null && playerHandle.getLastBlockAction().getAction() == PlayerActionType.PREDICT_DESTROY_BLOCK &&
+                        action.getAction() == PlayerActionType.CONTINUE_DESTROY_BLOCK) {
+                    playerHandle.onBlockBreakStart(blockPos.asVector3(), blockFace);
+                }
+
+                BlockVector3 lastBreakPos = playerHandle.getLastBlockAction() == null ? null : playerHandle.getLastBlockAction().getPosition();
+                if (lastBreakPos != null && (lastBreakPos.getX() != blockPos.getX() ||
+                        lastBreakPos.getY() != blockPos.getY() || lastBreakPos.getZ() != blockPos.getZ())) {
+                    playerHandle.onBlockBreakAbort(lastBreakPos.asVector3(), BlockFace.DOWN);
+                    playerHandle.onBlockBreakStart(blockPos.asVector3(), blockFace);
+                }
+
+                switch (action.getAction()) {
+                    case START_DESTROY_BLOCK:
+                        playerHandle.onBlockBreakStart(blockPos.asVector3(), blockFace);
+                        break;
+                    case ABORT_DESTROY_BLOCK:
+                    case STOP_DESTROY_BLOCK:
+                        playerHandle.onBlockBreakAbort(blockPos.asVector3(), blockFace);
+                        break;
+                    case CONTINUE_DESTROY_BLOCK://破坏完一个方块后接着破坏下一个方块
+                        break;
+                    case PREDICT_DESTROY_BLOCK:
+                        if (player.isBreakingBlock()) {
+                            playerHandle.onBlockBreakAbort(blockPos.asVector3(), blockFace);
+                            playerHandle.onBlockBreakComplete(blockPos, blockFace);
+                        } else {
+                            playerHandle.onBlockBreakAbort(blockPos.asVector3(), blockFace);
+                        }
+                        break;
+                }
+                playerHandle.setLastBlockAction(action);
+            }
+        }
+        // Proper player.isPassenger() check may be needed
+        if (playerHandle.player.riding instanceof EntityMinecartAbstract entityMinecartAbstract) {
+            entityMinecartAbstract.setCurrentSpeed(pk.getMotion().getY());
+        }
+
+        if (pk.getInputData().contains(AuthInputAction.START_SPRINTING)) {
+            PlayerToggleSprintEvent event = new PlayerToggleSprintEvent(player, true);
+            player.getServer().getPluginManager().callEvent(event);
+            if (event.isCancelled()) {
+                player.sendData(player);
+            } else {
+                player.setSprinting(true);
+            }
+        }
+        if (pk.getInputData().contains(AuthInputAction.STOP_SPRINTING)) {
+            PlayerToggleSprintEvent event = new PlayerToggleSprintEvent(player, false);
+            player.getServer().getPluginManager().callEvent(event);
+            if (event.isCancelled()) {
+                player.sendData(player);
+            } else {
+                player.setSprinting(false);
+            }
+        }
+        if (pk.getInputData().contains(AuthInputAction.START_SNEAKING)) {
+            PlayerToggleSneakEvent event = new PlayerToggleSneakEvent(player, true);
+            player.getServer().getPluginManager().callEvent(event);
+            if (event.isCancelled()) {
+                player.sendData(player);
+            } else {
+                player.setSneaking(true);
+            }
+        }
+        if (pk.getInputData().contains(AuthInputAction.STOP_SNEAKING)) {
+            PlayerToggleSneakEvent event = new PlayerToggleSneakEvent(player, false);
+            player.getServer().getPluginManager().callEvent(event);
+            if (event.isCancelled()) {
+                player.sendData(player);
+            } else {
+                player.setSneaking(false);
+            }
+        }
+        if (pk.getInputData().contains(AuthInputAction.START_JUMPING)) {
+            PlayerJumpEvent playerJumpEvent = new PlayerJumpEvent(player);
+            player.getServer().getPluginManager().callEvent(playerJumpEvent);
+        }
+        if (pk.getInputData().contains(AuthInputAction.START_SWIMMING)) {
+            var playerSwimmingEvent = new PlayerToggleSwimEvent(player, true);
+            player.getServer().getPluginManager().callEvent(playerSwimmingEvent);
+            if (playerSwimmingEvent.isCancelled()) {
+                player.sendData(player);
+            } else {
+                player.setSwimming(true);
+            }
+        }
+        if (pk.getInputData().contains(AuthInputAction.STOP_SWIMMING)) {
+            var playerSwimmingEvent = new PlayerToggleSwimEvent(player, false);
+            player.getServer().getPluginManager().callEvent(playerSwimmingEvent);
+            if (playerSwimmingEvent.isCancelled()) {
+                player.sendData(player);
+            } else {
+                player.setSwimming(false);
+            }
+        }
+        if (pk.getInputData().contains(AuthInputAction.START_GLIDING)) {
+            var playerToggleGlideEvent = new PlayerToggleGlideEvent(player, true);
+            player.getServer().getPluginManager().callEvent(playerToggleGlideEvent);
+            if (playerToggleGlideEvent.isCancelled()) {
+                player.sendData(player);
+            } else {
+                player.setGliding(true);
+            }
+        }
+        if (pk.getInputData().contains(AuthInputAction.STOP_GLIDING)) {
+            var playerToggleGlideEvent = new PlayerToggleGlideEvent(player, false);
+            player.getServer().getPluginManager().callEvent(playerToggleGlideEvent);
+            if (playerToggleGlideEvent.isCancelled()) {
+                player.sendData(player);
+            } else {
+                player.setGliding(false);
+            }
+        }
+        Vector3 clientPosition = pk.getPosition().asVector3().subtract(0, playerHandle.getBaseOffset(), 0);
+        float yaw = pk.getYaw() % 360;
+        float pitch = pk.getPitch() % 360;
+        float headYaw = pk.getHeadYaw() % 360;
+        if (headYaw < 0) {
+            headYaw += 360;
+        }
+        if (yaw < 0) {
+            yaw += 360;
+        }
+        playerHandle.offerMovementTask(Location.fromObject(clientPosition, player.level, yaw, pitch, headYaw));
+    }
+
+    @Override
+    public int getPacketId() {
+        return ProtocolInfo.toNewProtocolID(ProtocolInfo.PLAYER_AUTH_INPUT_PACKET);
+    }
+}

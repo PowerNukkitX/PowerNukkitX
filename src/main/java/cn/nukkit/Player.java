@@ -366,9 +366,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      */
     private BlockEnderChest viewingEnderChest = null;
     private static final int NO_SHIELD_DELAY = 10;
-    private PlayerBlockActionData lastBlockAction;
     private TaskHandler delayedPosTrackingUpdate;
     private int noShieldTicks;
+    @PowerNukkitXDifference(info = "change to protected")
+    protected PlayerBlockActionData lastBlockAction;
     protected AsyncTask preLoginEventTask = null;
     protected boolean verified = false;
     protected LoginChainData loginChainData;
@@ -496,7 +497,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     @PowerNukkitXDifference(since = "1.19.60-r1", info = "Auto-break custom blocks if client doesn't send the break data-pack.")
-    private void onBlockBreakContinue(Vector3 pos, BlockFace face) {
+    @PowerNukkitXDifference(since = "1.19.80-r3", info = "change to protected")
+    protected void onBlockBreakContinue(Vector3 pos, BlockFace face) {
         if (this.isBreakingBlock()) {
             var time = System.currentTimeMillis();
             Block block = this.level.getBlock(pos, false);
@@ -530,7 +532,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
-    private void onBlockBreakStart(Vector3 pos, BlockFace face) {
+    @PowerNukkitXDifference(since = "1.19.80-r3", info = "change to protected")
+    protected void onBlockBreakStart(Vector3 pos, BlockFace face) {
         BlockVector3 blockPos = pos.asBlockVector3();
         long currentBreak = System.currentTimeMillis();
         // HACK: Client spams multiple left clicks so we need to skip them.
@@ -620,7 +623,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.lastBreakPosition = blockPos;
     }
 
-    private void onBlockBreakAbort(Vector3 pos, BlockFace face) {
+    @PowerNukkitXDifference(since = "1.19.80-r3", info = "change to protected")
+    protected void onBlockBreakAbort(Vector3 pos, BlockFace face) {
         if (pos.distanceSquared(this) < 100) {// same as with ACTION_START_BREAK
             LevelEventPacket pk = new LevelEventPacket();
             pk.evid = LevelEventPacket.EVENT_BLOCK_STOP_BREAK;
@@ -635,7 +639,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.breakingBlockFace = null;
     }
 
-    private void onBlockBreakComplete(BlockVector3 blockPos, BlockFace face) {
+    @PowerNukkitXDifference(since = "1.19.80-r3", info = "change to protected")
+    protected void onBlockBreakComplete(BlockVector3 blockPos, BlockFace face) {
         if (!this.spawned || !this.isAlive()) {
             return;
         }
@@ -3475,147 +3480,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             // TODO: 2023/3/15 重构数据包处理使得兼容新的int id
             packetswitch:
             switch (packet.pid()) {
-                case ProtocolInfo.PLAYER_AUTH_INPUT_PACKET:
-                    if (!locallyInitialized) break;
-                    PlayerAuthInputPacket authPacket = (PlayerAuthInputPacket) packet;
-                    if (!authPacket.getBlockActionData().isEmpty()) {
-                        for (PlayerBlockActionData action : authPacket.getBlockActionData().values()) {
-                            //hack 自从1.19.70开始，创造模式剑客户端不会发送PREDICT_DESTROY_BLOCK，但仍然发送START_DESTROY_BLOCK，过滤掉
-                            if (getInventory().getItemInHand().isSword() && this.isCreative() && action.getAction() == PlayerActionType.START_DESTROY_BLOCK) {
-                                continue;
-                            }
-
-
-                            BlockVector3 blockPos = action.getPosition();
-                            BlockFace blockFace = BlockFace.fromIndex(action.getFacing());
-                            if (this.lastBlockAction != null && this.lastBlockAction.getAction() == PlayerActionType.PREDICT_DESTROY_BLOCK &&
-                                    action.getAction() == PlayerActionType.CONTINUE_DESTROY_BLOCK) {
-                                this.onBlockBreakStart(blockPos.asVector3(), blockFace);
-                            }
-
-                            BlockVector3 lastBreakPos = this.lastBlockAction == null ? null : this.lastBlockAction.getPosition();
-                            if (lastBreakPos != null && (lastBreakPos.getX() != blockPos.getX() ||
-                                    lastBreakPos.getY() != blockPos.getY() || lastBreakPos.getZ() != blockPos.getZ())) {
-                                this.onBlockBreakAbort(lastBreakPos.asVector3(), BlockFace.DOWN);
-                                this.onBlockBreakStart(blockPos.asVector3(), blockFace);
-                            }
-
-                            switch (action.getAction()) {
-                                case START_DESTROY_BLOCK:
-                                    this.onBlockBreakStart(blockPos.asVector3(), blockFace);
-                                    break;
-                                case ABORT_DESTROY_BLOCK:
-                                case STOP_DESTROY_BLOCK:
-                                    this.onBlockBreakAbort(blockPos.asVector3(), blockFace);
-                                    break;
-                                case CONTINUE_DESTROY_BLOCK://破坏完一个方块后接着破坏下一个方块
-                                    break;
-                                case PREDICT_DESTROY_BLOCK:
-                                    if (this.isBreakingBlock()) {
-                                        this.onBlockBreakAbort(blockPos.asVector3(), blockFace);
-                                        this.onBlockBreakComplete(blockPos, blockFace);
-                                    } else {
-                                        this.onBlockBreakAbort(blockPos.asVector3(), blockFace);
-                                    }
-                                    break;
-                            }
-                            this.lastBlockAction = action;
-                        }
-                    }
-                    // Proper player.isPassenger() check may be needed
-                    if (this.riding instanceof EntityMinecartAbstract) {
-                        ((EntityMinecartAbstract) riding).setCurrentSpeed(authPacket.getMotion().getY());
-                        break;
-                    }
-
-                    if (authPacket.getInputData().contains(AuthInputAction.START_SPRINTING)) {
-                        PlayerToggleSprintEvent event = new PlayerToggleSprintEvent(this, true);
-                        this.server.getPluginManager().callEvent(event);
-                        if (event.isCancelled()) {
-                            this.sendData(this);
-                        } else {
-                            this.setSprinting(true);
-                        }
-                    }
-                    if (authPacket.getInputData().contains(AuthInputAction.STOP_SPRINTING)) {
-                        PlayerToggleSprintEvent event = new PlayerToggleSprintEvent(this, false);
-                        this.server.getPluginManager().callEvent(event);
-                        if (event.isCancelled()) {
-                            this.sendData(this);
-                        } else {
-                            this.setSprinting(false);
-                        }
-                    }
-                    if (authPacket.getInputData().contains(AuthInputAction.START_SNEAKING)) {
-                        PlayerToggleSneakEvent event = new PlayerToggleSneakEvent(this, true);
-                        this.server.getPluginManager().callEvent(event);
-                        if (event.isCancelled()) {
-                            this.sendData(this);
-                        } else {
-                            this.setSneaking(true);
-                        }
-                    }
-                    if (authPacket.getInputData().contains(AuthInputAction.STOP_SNEAKING)) {
-                        PlayerToggleSneakEvent event = new PlayerToggleSneakEvent(this, false);
-                        this.server.getPluginManager().callEvent(event);
-                        if (event.isCancelled()) {
-                            this.sendData(this);
-                        } else {
-                            this.setSneaking(false);
-                        }
-                    }
-                    if (authPacket.getInputData().contains(AuthInputAction.START_JUMPING)) {
-                        PlayerJumpEvent playerJumpEvent = new PlayerJumpEvent(this);
-                        this.server.getPluginManager().callEvent(playerJumpEvent);
-                    }
-                    if (authPacket.getInputData().contains(AuthInputAction.START_SWIMMING)) {
-                        var playerSwimmingEvent = new PlayerToggleSwimEvent(this, true);
-                        this.server.getPluginManager().callEvent(playerSwimmingEvent);
-                        if (playerSwimmingEvent.isCancelled()) {
-                            this.sendData(this);
-                        } else {
-                            this.setSwimming(true);
-                        }
-                    }
-                    if (authPacket.getInputData().contains(AuthInputAction.STOP_SWIMMING)) {
-                        var playerSwimmingEvent = new PlayerToggleSwimEvent(this, false);
-                        this.server.getPluginManager().callEvent(playerSwimmingEvent);
-                        if (playerSwimmingEvent.isCancelled()) {
-                            this.sendData(this);
-                        } else {
-                            this.setSwimming(false);
-                        }
-                    }
-                    if (authPacket.getInputData().contains(AuthInputAction.START_GLIDING)) {
-                        var playerToggleGlideEvent = new PlayerToggleGlideEvent(this, true);
-                        this.server.getPluginManager().callEvent(playerToggleGlideEvent);
-                        if (playerToggleGlideEvent.isCancelled()) {
-                            this.sendData(this);
-                        } else {
-                            this.setGliding(true);
-                        }
-                    }
-                    if (authPacket.getInputData().contains(AuthInputAction.STOP_GLIDING)) {
-                        var playerToggleGlideEvent = new PlayerToggleGlideEvent(this, false);
-                        this.server.getPluginManager().callEvent(playerToggleGlideEvent);
-                        if (playerToggleGlideEvent.isCancelled()) {
-                            this.sendData(this);
-                        } else {
-                            this.setGliding(false);
-                        }
-                    }
-                    Vector3 clientPosition = authPacket.getPosition().asVector3().subtract(0, getBaseOffset(), 0);
-                    float yaw = authPacket.getYaw() % 360;
-                    float pitch = authPacket.getPitch() % 360;
-                    float headYaw = authPacket.getHeadYaw() % 360;
-                    if (headYaw < 0) {
-                        headYaw += 360;
-                    }
-                    if (yaw < 0) {
-                        yaw += 360;
-                    }
-                    offerMovementTask(Location.fromObject(clientPosition, this.level, yaw, pitch, headYaw));
-                    break;
                 case ProtocolInfo.MOVE_ENTITY_ABSOLUTE_PACKET: {
                     if (!this.isAlive() || !this.spawned || this.getRiding() == null) {
                         break;

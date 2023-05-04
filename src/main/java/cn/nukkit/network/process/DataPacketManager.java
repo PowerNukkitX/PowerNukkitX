@@ -63,7 +63,8 @@ public final class DataPacketManager {
                 new PacketViolationWarningProcessor(),
                 new EmoteProcessor(),
                 new PlayerInputProcessor(),
-                new MovePlayerProcessor()
+                new MovePlayerProcessor(),
+                new PlayerAuthInputProcessor()
         );
     }
 }
