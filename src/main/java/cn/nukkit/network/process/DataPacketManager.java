@@ -3,10 +3,7 @@ package cn.nukkit.network.process;
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.network.process.processor.ClientToServerHandshakeProcessor;
-import cn.nukkit.network.process.processor.InventoryTransactionProcessor;
-import cn.nukkit.network.process.processor.LoginProcessor;
-import cn.nukkit.network.process.processor.RequestNetworkSettingsProcessor;
+import cn.nukkit.network.process.processor.*;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -58,7 +55,16 @@ public final class DataPacketManager {
                 new RequestNetworkSettingsProcessor(),
                 new LoginProcessor(),
                 new ClientToServerHandshakeProcessor(),
-                new InventoryTransactionProcessor()
+                new InventoryTransactionProcessor(),
+                new ResourcePackClientResponseProcessor(),
+                new ResourcePackChunkRequestProcessor(),
+                new SetLocalPlayerAsInitializedProcessor(),
+                new PlayerSkinProcessor(),
+                new PacketViolationWarningProcessor(),
+                new EmoteProcessor(),
+                new PlayerInputProcessor(),
+                new MovePlayerProcessor(),
+                new PlayerAuthInputProcessor()
         );
     }
 }

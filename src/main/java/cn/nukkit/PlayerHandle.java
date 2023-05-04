@@ -1,17 +1,22 @@
 package cn.nukkit;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
+import cn.nukkit.api.*;
+import cn.nukkit.block.Block;
 import cn.nukkit.dialog.window.FormWindowDialog;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.PlayerUIInventory;
 import cn.nukkit.inventory.transaction.*;
+import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
+import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.SourceInterface;
 import cn.nukkit.network.protocol.PlayerFogPacket;
+import cn.nukkit.network.protocol.types.PlayerBlockActionData;
 import cn.nukkit.network.session.NetworkPlayerSession;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.utils.DummyBossBar;
@@ -51,6 +56,24 @@ public final class PlayerHandle {
 
     public void sendPlayStatus(int status, boolean immediate) {
         player.sendPlayStatus(status, immediate);
+    }
+
+    public void forceSendEmptyChunks() {
+        player.forceSendEmptyChunks();
+    }
+
+    @Since("1.4.0.0-PN")
+    public void removeWindow(Inventory inventory, boolean isResponse) {
+        player.removeWindow(inventory, isResponse);
+    }
+
+    public void addDefaultWindows() {
+        player.addDefaultWindows();
+    }
+
+    @PowerNukkitOnly
+    public void onBlock(Entity entity, EntityDamageEvent e, boolean animate) {
+        player.onBlock(entity, e, animate);
     }
 
 
@@ -458,7 +481,113 @@ public final class PlayerHandle {
         player.completeLoginSequence();
     }
 
+    @Since("1.19.50-r3")
+    @PowerNukkitXOnly
+    public void onPlayerLocallyInitialized() {
+        player.onPlayerLocallyInitialized();
+    }
+
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    public boolean isValidRespawnBlock(Block block) {
+        return player.isValidRespawnBlock(block);
+    }
+
+    public void respawn() {
+        player.respawn();
+    }
+
+    public void checkChunks() {
+        player.checkChunks();
+    }
+
     public void processLogin() {
         player.processLogin();
+    }
+
+    public void sendNextChunk() {
+        player.sendNextChunk();
+    }
+
+    public void initEntity() {
+        player.initEntity();
+    }
+
+    public void doFirstSpawn() {
+        player.doFirstSpawn();
+    }
+
+    public boolean orderChunks() {
+        return player.orderChunks();
+    }
+
+    public void checkGroundState(double movX, double movY, double movZ, double dx, double dy, double dz) {
+        player.checkGroundState(movX, movY, movZ, dx, dy, dz);
+    }
+
+    public void checkBlockCollision() {
+        player.checkBlockCollision();
+    }
+
+    public void checkNearEntities() {
+        player.checkNearEntities();
+    }
+
+    public void handleMovement(Location clientPos) {
+        player.handleMovement(clientPos);
+    }
+
+    public void offerMovementTask(Location newPosition) {
+        player.offerMovementTask(newPosition);
+    }
+
+    @DeprecationDetails(since = "1.19.60-r1", reason = "use handleMovement")
+    @Deprecated
+    public void processMovement(int tickDiff) {
+        player.processMovement(tickDiff);
+    }
+
+    public void handleLogicInMove(boolean invalidMotion, double distance) {
+        player.handleLogicInMove(invalidMotion, distance);
+    }
+
+    public void resetClientMovement() {
+        player.resetClientMovement();
+    }
+
+    public void revertClientMotion(Location originalPos) {
+        player.revertClientMotion(originalPos);
+    }
+
+    public float getBaseOffset() {
+        return player.getBaseOffset();
+    }
+
+    public PlayerBlockActionData getLastBlockAction() {
+        return player.lastBlockAction;
+    }
+
+    public void setLastBlockAction(PlayerBlockActionData actionData) {
+        player.lastBlockAction = actionData;
+    }
+
+    @PowerNukkitXDifference(since = "1.19.60-r1", info = "Auto-break custom blocks if client doesn't send the break data-pack.")
+    public void onBlockBreakContinue(Vector3 pos, BlockFace face) {
+        player.onBlockBreakContinue(pos, face);
+    }
+
+    @PowerNukkitXDifference(since = "1.19.80-r3", info = "change to protected")
+    public void onBlockBreakStart(Vector3 pos, BlockFace face) {
+        player.onBlockBreakStart(pos, face);
+    }
+
+    @PowerNukkitXDifference(since = "1.19.80-r3", info = "change to protected")
+    public void onBlockBreakAbort(Vector3 pos, BlockFace face) {
+        player.onBlockBreakAbort(pos, face);
+    }
+
+    @PowerNukkitXDifference(since = "1.19.80-r3", info = "change to protected")
+    public void onBlockBreakComplete(BlockVector3 blockPos, BlockFace face) {
+        player.onBlockBreakComplete(blockPos, face);
     }
 }
