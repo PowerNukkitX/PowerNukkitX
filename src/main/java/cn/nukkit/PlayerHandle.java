@@ -133,6 +133,10 @@ public final class PlayerHandle {
         player.windowCnt = windowCnt;
     }
 
+    public int getClosingWindowId() {
+        return player.closingWindowId;
+    }
+
     public void setClosingWindowId(int closingWindowId) {
         player.closingWindowId = closingWindowId;
     }
@@ -589,5 +593,21 @@ public final class PlayerHandle {
     @PowerNukkitXDifference(since = "1.19.80-r3", info = "change to protected")
     public void onBlockBreakComplete(BlockVector3 blockPos, BlockFace face) {
         player.onBlockBreakComplete(blockPos, face);
+    }
+
+    public boolean getInventoryOpen() {
+        return player.inventoryOpen;
+    }
+
+    public boolean getShowingCredits() {
+        return player.showingCredits;
+    }
+
+    public void setInventoryOpen(boolean inventoryOpen) {
+        player.inventoryOpen = inventoryOpen;
+    }
+
+    public static int getNoShieldDelay() {
+        return Player.NO_SHIELD_DELAY;
     }
 }
