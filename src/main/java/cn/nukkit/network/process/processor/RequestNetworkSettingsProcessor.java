@@ -29,7 +29,6 @@ public class RequestNetworkSettingsProcessor extends DataPacketProcessor<Request
                 message = "disconnectionScreen.outdatedServer";
             }
             player.close("", message, true);
-            return;
         }
     }
 
