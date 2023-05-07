@@ -310,7 +310,7 @@ public abstract class BlockLiquid extends BlockTransparentMeta {
                         adjacentDecay = decay + multiplier;
                     }
                     if (adjacentDecay < 8) {
-                            boolean[] flags = this.getOptimalFlowDirections();
+                        boolean[] flags = this.getOptimalFlowDirections();
                         if (flags[0]) {
                             this.flowIntoBlock(this.level.getBlock((int) this.x - 1, (int) this.y, (int) this.z), adjacentDecay);
                         }

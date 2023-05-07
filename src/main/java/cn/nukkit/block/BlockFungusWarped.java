@@ -33,7 +33,15 @@ public class BlockFungusWarped extends BlockFungus {
     @PowerNukkitOnly
     @Override
     protected boolean canGrowOn(Block support) {
-        return support.getId() == WARPED_NYLIUM;
+        if (support.getId() == WARPED_NYLIUM) {
+            for (int i = 1; i <= this.feature.getTreeHeight(); i++) {
+                if (this.up(i).getId() != 0) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     @PowerNukkitOnly
