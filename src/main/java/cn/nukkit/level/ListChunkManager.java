@@ -145,6 +145,24 @@ public class ListChunkManager implements ChunkManager {
         return this.parent.getSeed();
     }
 
+    @Since("1.19.80-r3")
+    @Override
+    public boolean isOverWorld() {
+        return parent.isOverWorld();
+    }
+
+    @Since("1.19.80-r3")
+    @Override
+    public boolean isNether() {
+        return parent.isNether();
+    }
+
+    @Since("1.19.80-r3")
+    @Override
+    public boolean isTheEnd() {
+        return parent.isTheEnd();
+    }
+
     @Since("1.4.0.0-PN")
     public List<Block> getBlocks() {
         return this.blocks;

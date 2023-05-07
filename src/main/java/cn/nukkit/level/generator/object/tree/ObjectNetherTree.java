@@ -25,9 +25,21 @@ public abstract class ObjectNetherTree extends ObjectTree {
         return treeHeight;
     }
 
+    private boolean checkY(ChunkManager level, int y) {
+        // 防止长出顶部
+        if (level.isNether()) {
+            return y > 126;
+        } else if (level.isOverWorld()) {
+            return y > 318;
+        } else if (level.isTheEnd()) {
+            return y > 254;
+        }
+        return false;
+    }
+
     @Override
     public void placeObject(ChunkManager level, int x, int y, int z, NukkitRandom random) {
-        if (y > 126) { // 防止长出下界顶部基岩层
+        if (checkY(level, y)) { // 防止长出下界顶部基岩层
             return;
         }
 
@@ -36,7 +48,7 @@ public abstract class ObjectNetherTree extends ObjectTree {
         double blankArea = -3;
         int mid = (int) (1 - blankArea / 2);
         for (int yy = y - 3 + treeHeight; yy <= y + this.treeHeight - 1; ++yy) {
-            if (yy > 126) { // 防止长出下界顶部基岩层
+            if (checkY(level, yy)) { // 防止长出下界顶部基岩层
                 continue;
             }
 
@@ -70,7 +82,7 @@ public abstract class ObjectNetherTree extends ObjectTree {
         }
 
         for (int yy = y - 4 + treeHeight; yy <= y + this.treeHeight - 3; ++yy) {
-            if (yy > 126) { // 防止长出下界顶部基岩层
+            if (checkY(level, yy)) { // 防止长出下界顶部基岩层
                 continue;
             }
 
@@ -113,7 +125,7 @@ public abstract class ObjectNetherTree extends ObjectTree {
     protected void placeTrunk(ChunkManager level, int x, int y, int z, NukkitRandom random, int trunkHeight) {
         level.setBlockAt(x, y, z, getTrunkBlock());
         for (int yy = 0; yy < trunkHeight; ++yy) {
-            if (y + yy > 126) { // 防止长出下界顶部基岩层
+            if (checkY(level, y + yy)) { // 防止长出下界顶部基岩层
                 continue;
             }
             int blockId = level.getBlockIdAt(x, y + yy, z);

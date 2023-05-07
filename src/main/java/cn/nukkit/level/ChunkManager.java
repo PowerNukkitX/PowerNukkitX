@@ -2,11 +2,11 @@ package cn.nukkit.level;
 
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.math.ChunkVector2;
-
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -102,4 +102,16 @@ public interface ChunkManager {
     void setChunk(int chunkX, int chunkZ, BaseFullChunk chunk);
 
     long getSeed();
+
+    @PowerNukkitXOnly
+    @Since("1.19.80-r3")
+    boolean isOverWorld();
+
+    @PowerNukkitXOnly
+    @Since("1.19.80-r3")
+    boolean isNether();
+
+    @PowerNukkitXOnly
+    @Since("1.19.80-r3")
+    boolean isTheEnd();
 }

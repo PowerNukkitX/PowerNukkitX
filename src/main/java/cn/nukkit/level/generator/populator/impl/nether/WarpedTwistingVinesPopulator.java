@@ -39,7 +39,7 @@ public class WarpedTwistingVinesPopulator extends Populator {
             int higherBlockID = this.level.getBlockIdAt(x, y + 1, z);
             if (b == 0 && (
                     higherBlockID == NETHERRACK || higherBlockID == WARPED_NYLIUM || higherBlockID == WARPED_WART_BLOCK ||
-                            higherBlockID == STILL_LAVA || higherBlockID == LAVA ||
+                            higherBlockID == STILL_LAVA || higherBlockID == FLOWING_LAVA ||
                             higherBlockID == WARPED_FUNGUS || higherBlockID == WARPED_ROOTS ||
                             higherBlockID == QUARTZ_ORE || higherBlockID == NETHER_GOLD_ORE || higherBlockID == ANCIENT_DERBRIS)) {
                 break;

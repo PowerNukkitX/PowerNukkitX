@@ -9,11 +9,9 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
-
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.util.concurrent.ThreadLocalRandom;
 
 @Since("1.4.0.0-PN")
 @PowerNukkitOnly
@@ -68,7 +66,7 @@ public abstract class BlockFungus extends BlockFlowable implements BlockFlowerPo
             return true;
         }
         
-        if (!canGrowOn(down) || ThreadLocalRandom.current().nextFloat() >= 0.4) {
+        if (!canGrowOn(down)) {
             return true;
         }
 
