@@ -1086,7 +1086,7 @@ public enum MinecraftItemID {
     @PowerNukkitOnly RAW_GOLD,
     @PowerNukkitOnly RAW_COPPER,
     @PowerNukkitOnly GLOW_FRAME(false),
-    @PowerNukkitOnly GOAT_HORN,
+    @PowerNukkitXOnly @Since("1.19.80-r3") GOAT_HORN,
     @PowerNukkitOnly AMETHYST_SHARD,
     @PowerNukkitOnly SPYGLASS,
     @PowerNukkitOnly GLOW_BERRIES,
