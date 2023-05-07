@@ -19,7 +19,6 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import it.unimi.dsi.fastutil.longs.Long2ByteMap;
 import it.unimi.dsi.fastutil.longs.Long2ByteOpenHashMap;
-
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
@@ -311,7 +310,7 @@ public abstract class BlockLiquid extends BlockTransparentMeta {
                         adjacentDecay = decay + multiplier;
                     }
                     if (adjacentDecay < 8) {
-                        boolean[] flags = this.getOptimalFlowDirections();
+                            boolean[] flags = this.getOptimalFlowDirections();
                         if (flags[0]) {
                             this.flowIntoBlock(this.level.getBlock((int) this.x - 1, (int) this.y, (int) this.z), adjacentDecay);
                         }

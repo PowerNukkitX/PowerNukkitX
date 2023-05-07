@@ -548,6 +548,24 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
         }
     }
 
+    @Since("1.6.0.0-PNX")
+    @Override
+    public boolean isOverWorld() {
+        return FullChunk.super.isOverWorld();
+    }
+
+    @Since("1.6.0.0-PNX")
+    @Override
+    public boolean isNether() {
+        return FullChunk.super.isNether();
+    }
+
+    @Since("1.6.0.0-PNX")
+    @Override
+    public boolean isTheEnd() {
+        return FullChunk.super.isTheEnd();
+    }
+
     @Override
     public byte[] toFastBinary() {
         return this.toBinary();

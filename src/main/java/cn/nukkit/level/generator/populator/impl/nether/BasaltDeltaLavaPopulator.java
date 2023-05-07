@@ -24,7 +24,7 @@ public class BasaltDeltaLavaPopulator extends Populator {
             ArrayList<Integer> ys = this.getHighestWorkableBlocks(x, z);
             for (int y : ys) {
                 if (y <= 1) continue;
-                this.level.setBlockAt(x, y, z, BlockID.STILL_LAVA);
+                this.level.setBlockAt(x, y, z, BlockID.FLOWING_LAVA);
             }
         }
     }

@@ -38,7 +38,7 @@ public class CrimsonWeepingVinesPopulator extends Populator {
             int higherBlockID = this.level.getBlockIdAt(x, y + 1, z);
             if (higherBlockID == 0 && (
                     b == NETHERRACK || b == CRIMSON_NYLIUM || b == BLOCK_NETHER_WART_BLOCK ||
-                            b == STILL_LAVA || b == LAVA ||
+                            b == STILL_LAVA || b == FLOWING_LAVA ||
                             b == CRIMSON_FUNGUS || b == CRIMSON_ROOTS ||
                             b == QUARTZ_ORE || b == NETHER_GOLD_ORE || b == ANCIENT_DERBRIS)) {
                 break;
