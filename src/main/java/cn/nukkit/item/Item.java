@@ -481,15 +481,19 @@ public class Item implements Cloneable, BlockID, ItemID {
                     log.warn("Failed to cache the namespaced id resolution of the item {}", aClass, e);
                 }
             }
-
-            runtimeMapping.registerNamespacedIdItem(ItemRawIron.class);
-            runtimeMapping.registerNamespacedIdItem(ItemRawGold.class);
-            runtimeMapping.registerNamespacedIdItem(ItemRawCopper.class);
-            runtimeMapping.registerNamespacedIdItem(ItemGlowInkSac.class);
-            runtimeMapping.registerNamespacedIdItem(ItemIngotCopper.class);
+            registerInternalStringItem(runtimeMapping);
         }
 
         initCreativeItems();
+    }
+
+    private static void registerInternalStringItem(RuntimeItemMapping runtimeMapping) {
+        runtimeMapping.registerNamespacedIdItem(ItemRawIron.class);
+        runtimeMapping.registerNamespacedIdItem(ItemRawGold.class);
+        runtimeMapping.registerNamespacedIdItem(ItemRawCopper.class);
+        runtimeMapping.registerNamespacedIdItem(ItemGlowInkSac.class);
+        runtimeMapping.registerNamespacedIdItem(ItemIngotCopper.class);
+        runtimeMapping.registerNamespacedIdItem(ItemGoatHorn.class);
     }
 
     private static List<String> itemList;
@@ -721,8 +725,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * 用于获取发送给客户端的自定义物品数据
      * <p>
      * Used to get the custom item data sent to the client
-     *
-     * @return
      */
 
     @PowerNukkitXOnly
@@ -1597,10 +1599,9 @@ public class Item implements Cloneable, BlockID, ItemID {
      * <p>
      * Set the Lore information of the item
      *
-     * @param lines
-     * @return
+     * @param lines the lines
+     * @return the lore
      */
-
     public Item setLore(String... lines) {
         CompoundTag tag;
         if (!this.hasCompoundTag()) {
@@ -1784,8 +1785,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * 定义物品堆叠的最大数量
      * <p>
      * Define the maximum number of items to be stacked
-     *
-     * @return
      */
 
     public int getMaxStackSize() {
@@ -1820,8 +1819,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * 定义物品是否为工具
      * <p>
      * Define if this item is a tool
-     *
-     * @return
      */
 
     public boolean isTool() {
@@ -1832,8 +1829,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * 定义物品最大耐久值
      * <p>
      * Define the maximum durability value of the item
-     *
-     * @return
      */
 
     public int getMaxDurability() {
@@ -1844,8 +1839,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * 定义物品的挖掘等级
      * <p>
      * Define the item Tier level
-     *
-     * @return
      */
 
     public int getTier() {
@@ -1856,8 +1849,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * 定义物品是否为镐子
      * <p>
      * Define if the item is a Pickaxe
-     *
-     * @return
      */
 
     public boolean isPickaxe() {
@@ -1868,8 +1859,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * 定义物品是否为斧子
      * <p>
      * Define if the item is a Axe
-     *
-     * @return
      */
 
     public boolean isAxe() {
@@ -1880,8 +1869,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * 定义物品是否为剑
      * <p>
      * Define if the item is a Sword
-     *
-     * @return
      */
     public boolean isSword() {
         return false;
@@ -1891,8 +1878,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * 定义物品是否为铲子
      * <p>
      * Define if the item is a Shovel
-     *
-     * @return
      */
 
     public boolean isShovel() {
@@ -1903,8 +1888,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * 定义物品是否为锄头
      * <p>
      * Define if the item is a Hoe
-     *
-     * @return
      */
 
     public boolean isHoe() {
@@ -1915,8 +1898,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * 定义物品是否为剪刀
      * <p>
      * Define if the item is a Shears
-     *
-     * @return
      */
     public boolean isShears() {
         return false;
@@ -1926,8 +1907,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * 定义物品是否为盔甲
      * <p>
      * Define if the item is a Armor
-     *
-     * @return
      */
     public boolean isArmor() {
         return false;
@@ -1937,8 +1916,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * 定义物品是否为头盔
      * <p>
      * Define if the item is a Helmet
-     *
-     * @return
      */
     public boolean isHelmet() {
         return false;
@@ -1948,8 +1925,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * 定义物品是否为胸甲
      * <p>
      * Define if the item is a Chestplate
-     *
-     * @return
      */
     public boolean isChestplate() {
         return false;
@@ -1959,8 +1934,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * 定义物品是否为护腿
      * <p>
      * Define if the item is a Leggings
-     *
-     * @return
      */
     public boolean isLeggings() {
         return false;
@@ -1970,8 +1943,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * 定义物品是否为靴子
      * <p>
      * Define if the item is a Boots
-     *
-     * @return
      */
     public boolean isBoots() {
         return false;
@@ -1981,8 +1952,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * 定义物品的附魔
      * <p>
      * Define the enchantment of an item
-     *
-     * @return
      */
     public int getEnchantAbility() {
         return 0;
@@ -1992,8 +1961,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * 定义物品的攻击伤害
      * <p>
      * Define the attackdamage of an item
-     *
-     * @return
      */
 
     public int getAttackDamage() {
@@ -2004,8 +1971,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * 定义物品的护甲值
      * <p>
      * Define the Armour value of an item
-     *
-     * @return
      */
 
     public int getArmorPoints() {
@@ -2016,8 +1981,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * 定义物品的盔甲韧性
      * <p>
      * Define the Armour Toughness of an item
-     *
-     * @return
      */
 
     public int getToughness() {
@@ -2028,8 +1991,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * 定义物品是否不可损坏
      * <p>
      * Define if the item is Unbreakable
-     *
-     * @return
      */
 
     public boolean isUnbreakable() {
@@ -2037,7 +1998,7 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     /**
-     * 这个物品如下界合金套一样能在岩浆上飘浮
+     * 物品是否抵抗熔岩和火，并且可以像在水上一样漂浮在熔岩上。
      * <p>
      * If the item is resistant to lava and fire and can float on lava like if it was on water.
      *
@@ -2053,8 +2014,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * 定义物品是否可以打破盾牌
      * <p>
      * Define if the item can break the shield
-     *
-     * @return
      */
 
     @PowerNukkitXOnly
@@ -2063,25 +2022,25 @@ public class Item implements Cloneable, BlockID, ItemID {
         return false;
     }
 
+    /**
+     * 在{@link #onClickAir}执行成功后才会调用
+     *
+     * @param player    the player
+     * @param ticksUsed the ticks used
+     * @return the boolean
+     */
     public boolean onUse(Player player, int ticksUsed) {
         return false;
     }
 
     /**
-     * 玩家长时间点击物品后执行代码
+     * 当玩家在长时间右键物品后释放物品时，该函数被调用。
      * <p>
      * Allows the item to execute code when the player releases the item after long clicking it.
-     * <p>
      *
-     * @param player    The player who released the click button
-     *                  <p>
-     *                  松开按钮的玩家
-     * @param ticksUsed How many ticks the item was held.
-     *                  <p>
-     *                  这个物品被使用多少ticks时间
-     * @return If an inventory contents update should be sent to the player
-     * <p>
-     * 如果要向玩家发送库存内容的更新信息
+     * @param player    The player who released the click button<br>松开按钮的玩家
+     * @param ticksUsed How many ticks the item was held.<br>这个物品被使用多少ticks时间
+     * @return If an inventory contents update should be sent to the player<br>是否要向玩家发送库存内容的更新信息
      */
     public boolean onRelease(Player player, int ticksUsed) {
         return false;
@@ -2107,15 +2066,14 @@ public class Item implements Cloneable, BlockID, ItemID {
      *
      * @param level  玩家所在地图 <br> Player location level
      * @param player 玩家实例对象 <br> Player instance object
-     * @param block
+     * @param block  the block
      * @param target 交互的目标方块 <br>Interacting target block
      * @param face   交互的方向 <br>Direction of Interaction
-     * @param fx
-     * @param fy
-     * @param fz
-     * @return
+     * @param fx     the fx
+     * @param fy     the fy
+     * @param fz     the fz
+     * @return boolean
      */
-
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         return false;
     }
@@ -2151,14 +2109,13 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     /**
-     * 玩家在空气中投掷如三叉戟一样
-     * 返回物品是否改变,例如数量变化或耐久度
+     * 当玩家对着空中使用物品时调用，例如投掷物品。返回物品是否已更改，例如数量减少或耐久度更改。
      * <p>
      * Called when a player uses the item on air, for example throwing a projectile.
      * Returns whether the item was changed, for example count decrease or durability change.
      *
      * @param player          player
-     * @param directionVector direction
+     * @param directionVector 点击的方向向量<br>The direction vector of the click
      * @return item changed
      */
     public boolean onClickAir(Player player, Vector3 directionVector) {
@@ -2338,8 +2295,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * 控制此方块（在冒险模式下）可以破坏的方块类型。此效果不会改变原本的破坏速度和破坏后掉落物。
      * <p>
      * Controls what block types can destroy
-     *
-     * @param block
      */
 
     @PowerNukkitXOnly

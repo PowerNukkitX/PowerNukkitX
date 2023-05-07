@@ -33,6 +33,10 @@ import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.function.Supplier;
 
+/**
+ * 这个类用于将旧版本物品以id:damage形式转换到新版本物品无damage值(0)的形式，以及提供{@link cn.nukkit.network.protocol.StartGamePacket StartGamePacket}中item Palette的作用<p>
+ * 例如在1.19.70中，不同颜色的羊毛由wool:color damage变成了minecraft:white_wool，minecraft:orange_wool这类字面量形式。
+ */
 @Log4j2
 public class RuntimeItemMapping {
     private final Int2ObjectMap<LegacyEntry> runtime2Legacy = new Int2ObjectOpenHashMap<>();
@@ -464,6 +468,11 @@ public class RuntimeItemMapping {
         }
     }
 
+    /**
+     * The type Runtime entry.
+     *
+     * @param hasDamage 如果为false代表这个runtime物品没有对应的legacy item映射
+     */
     public record RuntimeEntry(String identifier, int runtimeId, boolean hasDamage, boolean isComponent) {
     }
 }
