@@ -2026,7 +2026,7 @@ public class Item implements Cloneable, BlockID, ItemID {
      * 在{@link #onClickAir}执行成功后才会调用
      *
      * @param player    the player
-     * @param ticksUsed the ticks used
+     * @param ticksUsed 物品被使用了多久(右键持续时间)<br>How long the item has been used (right-click duration)
      * @return the boolean
      */
     public boolean onUse(Player player, int ticksUsed) {
