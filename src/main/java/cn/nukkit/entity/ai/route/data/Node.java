@@ -52,4 +52,17 @@ public final class Node implements Comparable<Node> {
     public String toString() {
         return vector3.toString() + "| G:" + this.G + " H:" + this.H + " F" + this.getF() + (this.parent != null ? "\tparent:" + this.parent.getVector3() : "");
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Node node = (Node) o;
+        return G == node.G && H == node.H && F == node.F && Objects.equals(vector3, node.vector3) && Objects.equals(parent, node.parent);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(vector3, parent, G, H, F);
+    }
 }

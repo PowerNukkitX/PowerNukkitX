@@ -11,9 +11,9 @@ import cn.nukkit.entity.ai.route.data.Node;
 import cn.nukkit.entity.ai.route.finder.SimpleRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.IPosEvaluator;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.particle.BlockForceFieldParticle;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.VectorMath;
-import cn.nukkit.network.protocol.SpawnParticleEffectPacket;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
@@ -62,6 +62,8 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
     protected int currentSearchDepth = 100;
 
     protected int maxSearchDepth = 100;
+
+    protected long lastRouteParticleSpawn;
 
     public SimpleFlatAStarRouteFinder(IPosEvaluator blockEvaluator, EntityIntelligent entity) {
         super(blockEvaluator);
@@ -156,9 +158,10 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
         this.addNode(findingPath);
 
         if (EntityAI.checkDebugOption(EntityAI.DebugOption.ROUTE)) {
-            findingPath.forEach(node -> {
-                sendParticle("minecraft:balloon_gas_particle", node.getVector3(), Server.getInstance().getOnlinePlayers().values().toArray(Player.EMPTY_ARRAY));
-            });
+            if (System.currentTimeMillis() - lastRouteParticleSpawn > EntityAI.getRouteParticleSpawnInterval()) {
+                findingPath.forEach(node -> this.entity.level.addParticle(new BlockForceFieldParticle(node.getVector3()), Server.getInstance().getOnlinePlayers().values().toArray(Player.EMPTY_ARRAY)));
+                lastRouteParticleSpawn = System.currentTimeMillis();
+            }
         }
 
         this.reachable = currentReachable;
@@ -166,14 +169,6 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
         this.searching = false;
 
         return true;
-    }
-
-    protected void sendParticle(String identifier, Vector3 pos, Player[] showPlayers) {
-        SpawnParticleEffectPacket packet = new SpawnParticleEffectPacket();
-        packet.identifier = identifier;
-        packet.dimensionId = this.entity.level.getDimension();
-        packet.position = pos.asVector3f();
-        Server.broadcastPacket(showPlayers, packet);
     }
 
     /**
@@ -474,7 +469,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
             Node temp = array.get(array.size() - 1);
             List<Node> tempL = new ArrayList<>();
             tempL.add(temp);
-            while (temp.getParent() != null) {
+            while (temp.getParent() != null && !temp.getParent().getVector3().equals(start)) {
                 tempL.add((temp = temp.getParent()));
             }
             Collections.reverse(tempL);
@@ -497,7 +492,6 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
             while (!end.getParent().getVector3().equals(start)) {
                 nodes.add(end = end.getParent());
             }
-            nodes.add(end.getParent());
         } else {
             nodes.add(end);
         }

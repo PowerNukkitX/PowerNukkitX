@@ -12,6 +12,7 @@ import java.util.Set;
 @PowerNukkitXOnly
 @Since("1.19.50-r1")
 public final class EntityAI {
+    private static long routeParticleSpawnInterval = 500;//ms
 
     private static final Set<DebugOption> debugOptions = EnumSet.noneOf(DebugOption.class);
 
@@ -24,6 +25,24 @@ public final class EntityAI {
 
     public static boolean checkDebugOption(DebugOption option) {
         return debugOptions.contains(option);
+    }
+
+    /**
+     * Sets route particle spawn interval.(Unit millisecond)
+     *
+     * @param routeParticleSpawnInterval the route particle spawn interval
+     */
+    public static void setRouteParticleSpawnInterval(long routeParticleSpawnInterval) {
+        EntityAI.routeParticleSpawnInterval = routeParticleSpawnInterval;
+    }
+
+    /**
+     * Gets route particle spawn interval.
+     *
+     * @return the route particle spawn interval
+     */
+    public static long getRouteParticleSpawnInterval() {
+        return routeParticleSpawnInterval;
     }
 
     public enum DebugOption {
