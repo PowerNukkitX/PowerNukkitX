@@ -6,6 +6,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.item.ItemBookEnchanted;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.customitem.data.ItemCreativeCategory;
+import cn.nukkit.item.enchantment.Enchantment;
 
 @PowerNukkitXOnly
 @Since("1.19.60-r1")
@@ -46,6 +47,10 @@ public abstract class ItemCustomBookEnchanted extends ItemBookEnchanted implemen
                         .putInt("use_duration", 0)
                         .putBoolean("animates_in_toolbar", false)
                 );
+    }
+
+    public Enchantment getEnchantment() {
+        return Enchantment.getEnchantment(this.getNamespaceId());
     }
 
     @Override
