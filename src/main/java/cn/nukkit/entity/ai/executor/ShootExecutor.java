@@ -45,7 +45,7 @@ public class ShootExecutor implements EntityControl, IBehaviorExecutor {
     private int tick2;//control the pullBowTick
 
     /**
-     * 近战攻击执行器
+     * 射击执行器
      *
      * @param item              the item
      * @param memory            用于读取攻击目标的记忆<br>Used to read the memory of the attack target
