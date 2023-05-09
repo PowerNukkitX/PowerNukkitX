@@ -21,10 +21,8 @@ import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Level;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.Utils;
 
 import java.util.Set;
@@ -114,13 +112,11 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
     @PowerNukkitXOnly
     @Override
     public boolean onUpdate(int currentTick) {
-        if (this.getLevel().getDimension() == Level.DIMENSION_OVERWORLD)
-            if (this.getLevel().getTime() > 0 && this.getLevel().getTime() <= 12000)
-                if (!this.hasEffect(Effect.FIRE_RESISTANCE))
-                    if (!this.isInsideOfWater())
-                        if (!this.isUnderBlock())
-                            if (!this.isOnFire())
-                                this.setOnFire(1);
+        //husk not burn
+        if (this instanceof EntityHusk) {
+            return super.onUpdate(currentTick);
+        }
+        burn(this);
         return super.onUpdate(currentTick);
     }
 
