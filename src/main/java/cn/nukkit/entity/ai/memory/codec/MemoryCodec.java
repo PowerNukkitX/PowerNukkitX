@@ -27,13 +27,16 @@ public class MemoryCodec<Data> implements IMemoryCodec<Data> {
         this.encoder = encoder;
     }
 
+    /**
+     * BiConsumer<Data, EntityIntelligent> Data can be Null
+     */
     public MemoryCodec<Data> onInit(BiConsumer<Data, EntityIntelligent> onInit) {
         this.onInit = onInit;
         return this;
     }
 
     @Override
-    public void init(Data data, EntityIntelligent entity) {
+    public void init(@Nullable Data data, EntityIntelligent entity) {
         if (onInit != null) {
             onInit.accept(data, entity);
         }

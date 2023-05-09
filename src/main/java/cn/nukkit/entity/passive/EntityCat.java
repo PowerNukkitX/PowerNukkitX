@@ -83,7 +83,7 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityTam
                         new Behavior(
                                 new InLoveExecutor(400),
                                 all(
-                                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_FED_TIME, 0, 400),
+                                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_FEED_TIME, 0, 400),
                                         new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE),
                                         (entity) -> this.hasOwner()
                                 ),
@@ -249,7 +249,7 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityTam
                 if (healable != 0) {
                     this.setHealth(Math.max(this.getMaxHealth(), this.getHealth() + healable));
                 }
-                getMemoryStorage().put(CoreMemoryTypes.LAST_BE_FED_TIME, Server.getInstance().getTick());
+                getMemoryStorage().put(CoreMemoryTypes.LAST_BE_FEED_TIME, Server.getInstance().getTick());
                 getMemoryStorage().put(CoreMemoryTypes.LAST_FEED_PLAYER, player);
                 return true;
             }

@@ -35,10 +35,10 @@ import java.util.Map;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class EntityLiving extends Entity implements EntityDamageable {
-
+    public final static float DEFAULT_SPEED = 0.1f;
     protected int attackTime = 0;
     protected boolean invisible = false;
-    protected float movementSpeed = 0.1f;
+    protected float movementSpeed = DEFAULT_SPEED;
     protected int turtleTicks = 0;
     private boolean attackTimeByShieldKb;
     private int attackTimeBefore;

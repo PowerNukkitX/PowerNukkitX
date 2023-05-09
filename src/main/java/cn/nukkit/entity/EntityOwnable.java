@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.data.LongEntityData;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
@@ -19,7 +18,7 @@ public interface EntityOwnable extends EntityComponent {
         return getMemoryStorage().get(CoreMemoryTypes.OWNER_NAME);
     }
 
-    default void setOwnerName(@NotNull String playerName) {
+    default void setOwnerName(String playerName) {
         getMemoryStorage().put(CoreMemoryTypes.OWNER_NAME, playerName);
     }
 
@@ -31,8 +30,9 @@ public interface EntityOwnable extends EntityComponent {
             var ownerName = getOwnerName();
             if (ownerName == null) return null;
             owner = asEntity().getServer().getPlayerExact(ownerName);
-            if (owner != null)
+            if (owner != null) {
                 asEntity().setDataProperty(new LongEntityData(Entity.DATA_OWNER_EID, owner.getId()));
+            }
         }
         return owner;
     }

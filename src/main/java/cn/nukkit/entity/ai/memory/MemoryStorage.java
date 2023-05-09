@@ -2,7 +2,7 @@ package cn.nukkit.entity.ai.memory;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityIntelligent;
 import lombok.Getter;
 
 import java.util.HashMap;
@@ -21,15 +21,20 @@ public class MemoryStorage implements IMemoryStorage {
 
     protected Map<MemoryType<?>, Object> memoryMap = new ConcurrentHashMap<>();
     @Getter
-    protected Entity entity;
+    protected EntityIntelligent entity;
 
-    public MemoryStorage(Entity entity) {
+    public MemoryStorage(EntityIntelligent entity) {
         this.entity = entity;
     }
 
     @Override
     public <D> void put(MemoryType<D> type, D data) {
-        memoryMap.put(type, data != null ? data : EMPTY_VALUE);
+        if (type.getCodec() != null) {
+            type.getCodec().init(data, entity);
+            memoryMap.put(type, data != null ? data : EMPTY_VALUE);
+        } else {
+            memoryMap.put(type, data != null ? data : EMPTY_VALUE);
+        }
     }
 
     @Override

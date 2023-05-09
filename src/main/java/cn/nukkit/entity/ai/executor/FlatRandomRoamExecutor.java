@@ -32,6 +32,17 @@ public class FlatRandomRoamExecutor implements EntityControl, IBehaviorExecutor 
         this(speed, maxRoamRange, frequency, calNextTargetImmediately, runningTime, false, 10);
     }
 
+    /**
+     * Instantiates a new Flat random roam executor.
+     *
+     * @param speed                    移动速度<br>Movement speed
+     * @param maxRoamRange             随机行走目标点的范围<br>The range of the target point that is randomly walked
+     * @param frequency                更新目标点的频率<br>How often the target point is updated
+     * @param calNextTargetImmediately 是否立即选择下一个目标点,不管执行频率<br>Whether to select the next target point immediately, regardless of the frequency of execution
+     * @param runningTime              执行最大的用时,-1代表不限制<br>Maximum time to execute,-1 means no limit
+     * @param avoidWater               是否避开水行走<br>Whether to walk away from water
+     * @param maxRetryTime             选取目标点的最大尝试次数<br>Pick the maximum number of attempts at the target point
+     */
     public FlatRandomRoamExecutor(float speed, int maxRoamRange, int frequency, boolean calNextTargetImmediately, int runningTime, boolean avoidWater, int maxRetryTime) {
         this.speed = speed;
         this.maxRoamRange = maxRoamRange;
