@@ -1295,6 +1295,33 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     /**
+     * @param id 要查询的附魔标识符
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.80-r3")
+    public int getCustomEnchantmentLevel(@NotNull Identifier id) {
+        return getCustomEnchantmentLevel(id.toString());
+    }
+
+    /**
+     * @param id 要查询的附魔标识符
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.80-r3")
+    public boolean hasCustomEnchantment(@NotNull Identifier id) {
+        return hasCustomEnchantment(id.toString());
+    }
+
+    /**
+     * @param id 要查询的附魔标识符
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.80-r3")
+    public Enchantment getCustomEnchantment(@NotNull Identifier id) {
+        return getCustomEnchantment(id.toString());
+    }
+
+    /**
      * 从给定的附魔id查找该物品是否存在对应的附魔效果，如果查找不到返回null
      * <p>
      * Get the id of the enchantment
@@ -1401,7 +1428,7 @@ public class Item implements Cloneable, BlockID, ItemID {
         StringJoiner joiner = new StringJoiner("\n", "" + TextFormat.RESET + TextFormat.AQUA + this.name + "\n", "");
         for (var ench : custom_ench.getAll()) {
             var enchantment = Enchantment.getEnchantment(ench.getString("id"));
-            joiner.add(TextFormat.GRAY + enchantment.getName() + " " + Enchantment.getLevelString(enchantment.getLevel()));
+            joiner.add(enchantment.getLore());
         }
         return joiner.toString();
     }
