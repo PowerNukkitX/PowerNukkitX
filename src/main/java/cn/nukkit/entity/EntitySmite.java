@@ -1,5 +1,6 @@
 package cn.nukkit.entity;
 
+import cn.nukkit.inventory.EntityInventoryHolder;
 import cn.nukkit.level.Level;
 import cn.nukkit.potion.Effect;
 
@@ -12,12 +13,11 @@ import cn.nukkit.potion.Effect;
  */
 public interface EntitySmite {
     default void burn(Entity entity) {
-        if (entity.getLevel().getDimension() == Level.DIMENSION_OVERWORLD)
-            if (entity.getLevel().isDaytime())
-                if (!entity.hasEffect(Effect.FIRE_RESISTANCE))
-                    if (!entity.isInsideOfWater())
-                        if (!entity.isUnderBlock())
-                            if (!entity.isOnFire())
-                                entity.setOnFire(1);
+        if (entity.getLevel().getDimension() == Level.DIMENSION_OVERWORLD && entity.getLevel().isDaytime()
+                && (!entity.hasEffect(Effect.FIRE_RESISTANCE) || (entity instanceof EntityInventoryHolder entityInventoryHolder && entityInventoryHolder.getHelmet().isNull()))
+                && !entity.isInsideOfWater() && !entity.isUnderBlock() && !entity.isOnFire()) {
+            entity.setOnFire(1);
+        }
+
     }
 }
