@@ -18,8 +18,6 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
-import cn.nukkit.event.entity.EntityDamageByEntityEvent;
-import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Level;
@@ -99,16 +97,6 @@ public class EntitySkeleton extends EntityMob implements EntityWalkable, EntityS
                             if (!this.isOnFire())
                                 this.setOnFire(1);
         return super.onUpdate(currentTick);
-    }
-
-    @Override
-    public boolean attack(EntityDamageEvent source) {
-        var result = super.attack(source);
-        if (source instanceof EntityDamageByEntityEvent entityDamageByEntityEvent) {
-            //更新仇恨目标
-            getMemoryStorage().put(CoreMemoryTypes.ATTACK_TARGET, entityDamageByEntityEvent.getDamager());
-        }
-        return result;
     }
 
     @Since("1.19.80-r3")

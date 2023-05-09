@@ -88,38 +88,45 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
     @Override
     public boolean execute(EntityIntelligent entity) {
         attackTick++;
-        if (!entity.isEnablePitch()) entity.setEnablePitch(true);
+        if (entity.getBehaviorGroup().getMemoryStorage().isEmpty(memory)) return false;
+        Entity newTarget = entity.getBehaviorGroup().getMemoryStorage().get(memory);
 
+        //first is null
         if (this.target == null) {
-            //获取目标
-            if (entity.getBehaviorGroup().getMemoryStorage().isEmpty(memory)) return false;
-            target = entity.getBehaviorGroup().getMemoryStorage().get(memory);
+            this.target = newTarget;
+        }
+        if (this.lookTarget == null) {
+            this.lookTarget = target.clone();
         }
 
         //some check
         if (!target.isAlive()) return false;
-        if (target instanceof Player player) {
+        else if (target instanceof Player player) {
             if (player.isCreative() || player.isSpectator() || !player.isOnline() || !entity.level.getName().equals(player.level.getName())) {
                 return false;
             }
         }
 
-        if (entity.getMovementSpeed() != speed) entity.setMovementSpeed(speed);
-
-        if (this.lookTarget == null) {
-            this.lookTarget = target.clone();
+        //update target and look target
+        if (!this.target.getPosition().equals(newTarget.getPosition())) {
+            target = newTarget;
         }
-        //更新寻路target
+        if (!this.lookTarget.equals(newTarget.getLocation())) {
+            lookTarget = newTarget.getLocation();
+        }
+
+        //set some motion control
+        if (!entity.isEnablePitch()) entity.setEnablePitch(true);
+        if (entity.getMovementSpeed() != speed) entity.setMovementSpeed(speed);
+        //set target and look target
         setRouteTarget(entity, this.target.clone());
-        //更新视线target
         setLookTarget(entity, this.lookTarget.clone());
 
         var floor = target.floor();
-
         if (oldTarget == null || !oldTarget.equals(floor)) entity.getBehaviorGroup().setForceUpdateRoute(true);
-
         oldTarget = floor;
 
+        //attack logic
         if (entity.distanceSquared(target) <= 2.5 && attackTick > coolDown) {
             Item item = entity instanceof EntityInventoryHolder holder ? holder.getItemInHand() : Item.AIR_ITEM;
 
@@ -164,10 +171,6 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
 
             return target.getHealth() != 0;
         }
-
-        //清空以待下次使用
-        this.lookTarget = null;
-        this.target = null;
         return true;
     }
 

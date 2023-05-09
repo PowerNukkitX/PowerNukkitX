@@ -74,17 +74,17 @@ public class ShootExecutor implements EntityControl, IBehaviorExecutor {
         if (entity.getBehaviorGroup().getMemoryStorage().isEmpty(memory)) return false;
         Entity newTarget = entity.getBehaviorGroup().getMemoryStorage().get(memory);
         if (this.target == null) target = newTarget;
-        else if (!this.target.getPosition().equals(newTarget.getPosition())) {
-            //更新目标
-            target = newTarget;
-        }
-
         //some check
         if (!target.isAlive()) return false;
-        if (target instanceof Player player) {
+        else if (target instanceof Player player) {
             if (player.isCreative() || player.isSpectator() || !player.isOnline() || !entity.level.getName().equals(player.level.getName())) {
                 return false;
             }
+        }
+
+        if (!this.target.getPosition().equals(newTarget.getPosition())) {
+            //更新目标
+            target = newTarget;
         }
 
         if (entity.getMovementSpeed() != speed) entity.setMovementSpeed(speed);
