@@ -18,6 +18,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -101,6 +102,33 @@ public class NukkitMetrics {
         return metrics;
     }
 
+    private static String pnxCliVersion = null;
+
+    private static String getPNXCLIVersion() {
+        if (pnxCliVersion != null) {
+            return pnxCliVersion;
+        }
+        var version = System.getProperty("pnx.cli.version");
+        if (version != null && !version.isBlank()) {
+            return pnxCliVersion = version;
+        }
+        var cliPath = System.getProperty("pnx.cli.path");
+        if (cliPath == null || cliPath.isBlank()) {
+            return pnxCliVersion = "No PNX-CLI";
+        }
+        try {
+            var process = new ProcessBuilder(cliPath, "-V").start();
+            process.waitFor(10, TimeUnit.MICROSECONDS);
+            var content = new String(process.getInputStream().readAllBytes()).replace("\n", "");
+            if (content.isBlank() || !content.contains(".")) {
+                return pnxCliVersion = "Unknown";
+            }
+            return pnxCliVersion = content;
+        } catch (IOException | InterruptedException ignored) {
+            return pnxCliVersion = "Unknown";
+        }
+    }
+
     @NotNull
     private static NukkitMetrics createMetrics(@NotNull final Server server) {
         NukkitMetrics nukkitMetrics = new NukkitMetrics(server, false);
@@ -126,6 +154,8 @@ public class NukkitMetrics {
                 .collect(groupingBy(LoginChainData::getGameVersion, countingInt()))));
 
         metrics.addCustomChart(new Metrics.DrilldownPie("java_version_pie", new JavaVersionRetriever()));
+
+        metrics.addCustomChart(new Metrics.SimplePie("pnx_cli_version", NukkitMetrics::getPNXCLIVersion));
         return nukkitMetrics;
     }
 
@@ -183,7 +213,7 @@ public class NukkitMetrics {
                     "# This has nearly no effect on the server performance!",
                     "# Check out https://bStats.org/ to learn more :)",
                     "enabled: true",
-                    "serverUuid: \"" + UUID.randomUUID().toString() + "\"",
+                    "serverUuid: \"" + UUID.randomUUID() + "\"",
                     "logFailedRequests: false");
         }
 
