@@ -58,4 +58,10 @@ public class EntityZombiePigman extends EntityMob implements EntityWalkable, Ent
     public boolean isPreventingSleep(Player player) {
         return this.getDataPropertyBoolean(DATA_FLAG_ANGRY);
     }
+
+    @Override
+    public boolean onUpdate(int currentTick) {
+        burn(this);
+        return super.onUpdate(currentTick);
+    }
 }

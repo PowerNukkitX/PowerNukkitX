@@ -58,4 +58,10 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntitySmite, En
     public String getOriginalName() {
         return "Skeleton Horse";
     }
+
+    @Override
+    public boolean onUpdate(int currentTick) {
+        burn(this);
+        return super.onUpdate(currentTick);
+    }
 }
