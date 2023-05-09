@@ -130,6 +130,7 @@ public class ShootExecutor implements EntityControl, IBehaviorExecutor {
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
         }
         entity.setEnablePitch(false);
+        stopBowAnimation(entity);
         this.target = null;
     }
 
@@ -143,6 +144,7 @@ public class ShootExecutor implements EntityControl, IBehaviorExecutor {
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
         }
         entity.setEnablePitch(false);
+        stopBowAnimation(entity);
         this.target = null;
     }
 
