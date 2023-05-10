@@ -7,6 +7,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityCanAttack;
 import cn.nukkit.entity.EntityIntelligent;
+import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.ai.memory.MemoryType;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -58,67 +59,75 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
      * Give target potion effect
      */
     @Since("1.19.63-r2")
-    protected Effect effect;
+    protected Effect[] effects;
 
     public MeleeAttackExecutor(MemoryType<? extends Entity> memory, float speed, int maxSenseRange, boolean clearDataWhenLose, int coolDown) {
-        this(memory, speed, maxSenseRange, clearDataWhenLose, coolDown, null);
+        this(memory, speed, maxSenseRange, clearDataWhenLose, coolDown, new Effect[]{});
     }
 
     /**
      * 近战攻击执行器
      *
-     * @param memory            记忆
-     * @param speed             移动向攻击目标的速度
-     * @param maxSenseRange     最大获取攻击目标范围
-     * @param clearDataWhenLose 失去目标时清空记忆
-     * @param coolDown          攻击冷却时间(单位tick)
-     * @param effect            给予目标药水效果
+     * @param memory            用于读取攻击目标的记忆<br>Used to read the memory of the attack target
+     * @param speed             移动向攻击目标的速度<br>The speed of movement towards the attacking target
+     * @param maxSenseRange     最大获取攻击目标范围<br>The maximum range of attack targets
+     * @param clearDataWhenLose 失去目标时清空记忆<br>Clear your memory when you lose your target
+     * @param coolDown          攻击冷却时间(单位tick)<br>Attack cooldown (in tick)
+     * @param effects           给予目标药水效果<br>Give the target potion effect
      */
-    public MeleeAttackExecutor(MemoryType<? extends Entity> memory, float speed, int maxSenseRange, boolean clearDataWhenLose, int coolDown, Effect effect) {
+    public MeleeAttackExecutor(MemoryType<? extends Entity> memory, float speed, int maxSenseRange, boolean clearDataWhenLose, int coolDown, Effect... effects) {
         this.memory = memory;
         this.speed = speed;
         this.maxSenseRangeSquared = maxSenseRange * maxSenseRange;
         this.clearDataWhenLose = clearDataWhenLose;
         this.coolDown = coolDown;
-        this.effect = effect;
+        this.effects = effects;
     }
 
 
     @Override
     public boolean execute(EntityIntelligent entity) {
         attackTick++;
-        if (!entity.isEnablePitch()) entity.setEnablePitch(true);
+        if (entity.getBehaviorGroup().getMemoryStorage().isEmpty(memory)) return false;
+        Entity newTarget = entity.getBehaviorGroup().getMemoryStorage().get(memory);
 
+        //first is null
         if (this.target == null) {
-            //获取目标
-            if (entity.getBehaviorGroup().getMemoryStorage().isEmpty(memory)) return false;
-            target = entity.getBehaviorGroup().getMemoryStorage().get(memory);
+            this.target = newTarget;
         }
-
-        //如果已经死了就退出
-        if (!target.isAlive()) return false;
-
-        //如果是玩家检测模式 检查距离 检查是否在同一维度
-        if ((target instanceof Player player && (!player.isSurvival() || !player.isOnline())) || entity.distanceSquared(target) > maxSenseRangeSquared
-                || !(entity.level.getId() == target.level.getId())) return false;
-
-        if (entity.getMovementSpeed() != speed) entity.setMovementSpeed(speed);
-
         if (this.lookTarget == null) {
             this.lookTarget = target.clone();
         }
-        //更新寻路target
+
+        //some check
+        if (!target.isAlive()) return false;
+        else if (target instanceof Player player) {
+            if (player.isCreative() || player.isSpectator() || !player.isOnline() || !entity.level.getName().equals(player.level.getName())) {
+                return false;
+            }
+        }
+
+        //update target and look target
+        if (!this.target.getPosition().equals(newTarget.getPosition())) {
+            target = newTarget;
+        }
+        if (!this.lookTarget.equals(newTarget.getLocation())) {
+            lookTarget = newTarget.getLocation();
+        }
+
+        //set some motion control
+        if (!entity.isEnablePitch()) entity.setEnablePitch(true);
+        if (entity.getMovementSpeed() != speed) entity.setMovementSpeed(speed);
+        //set target and look target
         setRouteTarget(entity, this.target.clone());
-        //更新视线target
         setLookTarget(entity, this.lookTarget.clone());
 
         var floor = target.floor();
-
         if (oldTarget == null || !oldTarget.equals(floor)) entity.getBehaviorGroup().setForceUpdateRoute(true);
-
         oldTarget = floor;
 
-        if (entity.distanceSquared(target) <= 3.5 && attackTick > coolDown) {
+        //attack logic
+        if (entity.distanceSquared(target) <= 2.5 && attackTick > coolDown) {
             Item item = entity instanceof EntityInventoryHolder holder ? holder.getItemInHand() : Item.AIR_ITEM;
 
             float defaultDamage = 0;
@@ -152,9 +161,8 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
             target.attack(ev);
 
             if (!ev.isCancelled()) {
-                //如果生物有药水效果就给药水效果
-                if (this.effect != null) {
-                    target.addEffect(effect);
+                for (var e : effects) {
+                    target.addEffect(e);
                 }
 
                 playAttackAnimation(entity);
@@ -163,10 +171,6 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
 
             return target.getHealth() != 0;
         }
-
-        //清空以待下次使用
-        this.lookTarget = null;
-        this.target = null;
         return true;
     }
 
@@ -175,7 +179,7 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
         removeRouteTarget(entity);
         removeLookTarget(entity);
         //重置速度
-        entity.setMovementSpeed(0.1f);
+        entity.setMovementSpeed(EntityLiving.DEFAULT_SPEED);
         if (clearDataWhenLose) {
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
         }
@@ -189,7 +193,7 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
         removeRouteTarget(entity);
         removeLookTarget(entity);
         //重置速度
-        entity.setMovementSpeed(0.1f);
+        entity.setMovementSpeed(EntityLiving.DEFAULT_SPEED);
         if (clearDataWhenLose) {
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
         }

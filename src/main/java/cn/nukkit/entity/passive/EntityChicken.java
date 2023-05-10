@@ -56,7 +56,7 @@ public class EntityChicken extends EntityAnimal implements EntityWalkable {
                         new Behavior(
                                 new InLoveExecutor(400),
                                 all(
-                                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_FED_TIME, 0, 400),
+                                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_FEED_TIME, 0, 400),
                                         new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE)
                                 ),
                                 1, 1

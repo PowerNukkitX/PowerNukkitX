@@ -18,7 +18,6 @@ import java.util.function.Supplier;
 @PowerNukkitXOnly
 @Since("1.19.50-r1")
 public final class MemoryType<Data> {
-
     /**
      * 可持久化的记忆类型
      */

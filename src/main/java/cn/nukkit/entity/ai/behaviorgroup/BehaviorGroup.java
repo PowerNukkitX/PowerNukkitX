@@ -3,7 +3,6 @@ package cn.nukkit.entity.ai.behaviorgroup;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.behavior.BehaviorState;
 import cn.nukkit.entity.ai.behavior.IBehavior;
@@ -88,7 +87,7 @@ public class BehaviorGroup implements IBehaviorGroup {
     /**
      * 此行为组所属实体
      */
-    protected final Entity entity;
+    protected final EntityIntelligent entity;
     /**
      * 寻路任务
      */
@@ -110,7 +109,7 @@ public class BehaviorGroup implements IBehaviorGroup {
                          Set<ISensor> sensors,
                          Set<IController> controllers,
                          SimpleRouteFinder routeFinder,
-                         Entity entity) {
+                         EntityIntelligent entity) {
         //此参数用于错开各个实体路径更新的时间，避免在1gt内提交过多路径更新任务
         this.currentRouteUpdateTick = startRouteUpdateTick;
         this.coreBehaviors = coreBehaviors;

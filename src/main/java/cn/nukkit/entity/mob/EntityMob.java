@@ -7,6 +7,7 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityCanAttack;
 import cn.nukkit.entity.EntityIntelligent;
+import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.inventory.EntityArmorInventory;
@@ -118,6 +119,11 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
     public boolean attack(EntityDamageEvent source) {
         if (this.isClosed() || !this.isAlive()) {
             return false;
+        }
+
+        if (source instanceof EntityDamageByEntityEvent entityDamageByEntityEvent && !(entityDamageByEntityEvent.getDamager() instanceof EntityCreeper)) {
+            //更新仇恨目标
+            getMemoryStorage().put(CoreMemoryTypes.ATTACK_TARGET, entityDamageByEntityEvent.getDamager());
         }
 
         if (source.getCause() != EntityDamageEvent.DamageCause.VOID && source.getCause() != EntityDamageEvent.DamageCause.CUSTOM && source.getCause() != EntityDamageEvent.DamageCause.MAGIC && source.getCause() != EntityDamageEvent.DamageCause.HUNGER) {
