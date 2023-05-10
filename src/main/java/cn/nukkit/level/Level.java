@@ -4221,10 +4221,20 @@ public class Level implements ChunkManager, Metadatable {
                     && (blockUpper.getId() == BlockID.AIR || block.canPassThrough());
     }
 
+    /**
+     * 获取这个地图经历的时间(一直会累加)
+     * <p>
+     * Get the elapsed time for this level
+     */
     public int getTime() {
         return (int) time;
     }
 
+    /**
+     * 设置这个地图经历的时间
+     * <p>
+     * Set the elapsed time for this level
+     */
     public void setTime(int time) {
         this.time = time;
         this.sendTime();

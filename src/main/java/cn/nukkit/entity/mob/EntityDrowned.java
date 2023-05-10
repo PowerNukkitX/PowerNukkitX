@@ -65,4 +65,10 @@ public class EntityDrowned extends EntityMob implements EntitySwimmable, EntityW
     public boolean isPreventingSleep(Player player) {
         return true;
     }
+
+    @Override
+    public boolean onUpdate(int currentTick) {
+        burn(this);
+        return super.onUpdate(currentTick);
+    }
 }

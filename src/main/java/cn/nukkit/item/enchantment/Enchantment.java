@@ -26,6 +26,7 @@ import cn.nukkit.item.enchantment.trident.EnchantmentTridentRiptide;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.utils.Identifier;
 import cn.nukkit.utils.OK;
+import cn.nukkit.utils.TextFormat;
 import io.netty.util.internal.EmptyArrays;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import lombok.extern.log4j.Log4j2;
@@ -310,7 +311,7 @@ public abstract class Enchantment implements Cloneable {
 
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
-    public static String getLevelString(int level) {
+    private static String getLevelString(int level) {
         return switch (level) {
             case 1 -> "I";
             case 2 -> "II";
@@ -481,6 +482,12 @@ public abstract class Enchantment implements Cloneable {
         } else return customEnchantments.get(new Identifier(Identifier.DEFAULT_NAMESPACE, name));
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.80-r3")
+    public static Enchantment getEnchantment(@NotNull Identifier name) {
+        return customEnchantments.get(name);
+    }
+
     /**
      * Gets an array of all registered enchantments, the objects in the array are linked to the registry,
      * it's not safe to change them. Changing them can cause the same issue as documented in {@link #get(int)}
@@ -595,6 +602,19 @@ public abstract class Enchantment implements Cloneable {
     @Nullable
     public Identifier getIdentifier() {
         return identifier;
+    }
+
+    /**
+     * 获取该附魔在物品描述中的Lore,被自定义附魔用于添加描述,代表物品附魔描述中的一行
+     * <p>
+     * Get the enchantment in the item description Lore, which is used by the custom enchantment to add a description, representing a line in the item's enchantment description
+     *
+     * @return the lore
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.80-r3")
+    public String getLore() {
+        return TextFormat.GRAY + this.getName() + " " + Enchantment.getLevelString(this.getLevel());
     }
 
     /**

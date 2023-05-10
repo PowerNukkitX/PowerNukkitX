@@ -2,7 +2,6 @@ package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntitySmite;
@@ -23,7 +22,6 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.potion.Effect;
 
 import java.util.Set;
 
@@ -86,16 +84,9 @@ public class EntitySkeleton extends EntityMob implements EntityWalkable, EntityS
         return true;
     }
 
-    @PowerNukkitXOnly
     @Override
     public boolean onUpdate(int currentTick) {
-        if (this.getLevel().getDimension() == Level.DIMENSION_OVERWORLD)
-            if (this.getLevel().getTime() > 0 && this.getLevel().getTime() <= 12000)
-                if (!this.hasEffect(Effect.FIRE_RESISTANCE))
-                    if (!this.isInsideOfWater())
-                        if (!this.isUnderBlock())
-                            if (!this.isOnFire())
-                                this.setOnFire(1);
+        burn(this);
         return super.onUpdate(currentTick);
     }
 
