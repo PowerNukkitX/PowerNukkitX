@@ -17,7 +17,7 @@ public interface EntityOwnable extends EntityComponent {
         return getMemoryStorage().get(CoreMemoryTypes.OWNER_NAME);
     }
 
-    default void setOwnerName(String playerName) {
+    default void setOwnerName(@Nullable String playerName) {
         getMemoryStorage().put(CoreMemoryTypes.OWNER_NAME, playerName);
     }
 

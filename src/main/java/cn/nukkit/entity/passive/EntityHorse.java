@@ -1,6 +1,7 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.*;
@@ -10,29 +11,27 @@ import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.FluctuateController;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
+import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
 import cn.nukkit.entity.ai.evaluator.ProbabilityEvaluator;
-import cn.nukkit.entity.ai.executor.AnimalGrowExecutor;
-import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
-import cn.nukkit.entity.ai.executor.InLoveExecutor;
-import cn.nukkit.entity.ai.executor.LookAtTargetExecutor;
+import cn.nukkit.entity.ai.executor.*;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.data.ByteEntityData;
+import cn.nukkit.entity.data.IntEntityData;
 import cn.nukkit.inventory.HorseInventory;
-import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.network.protocol.SetEntityLinkPacket;
 
+import javax.annotation.Nullable;
 import java.util.Set;
 
 /**
@@ -81,9 +80,9 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         if (!hasMarkVariant()) {
             this.setMarkVariant(randomMarkVariant());
         }
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_SADDLED, false);
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_CAN_POWER_JUMP, false);
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_CHESTED, false);
+//        this.setDataFlag(DATA_FLAGS, DATA_FLAG_SADDLED, false);
+//        this.setDataFlag(DATA_FLAGS, DATA_FLAG_CAN_POWER_JUMP, false);
+//        this.setDataFlag(DATA_FLAGS, DATA_FLAG_CHESTED, false);
     }
 
     @Override
@@ -135,7 +134,10 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
                         )
                 ),
                 Set.of(
-                        new Behavior(new FlatRandomRoamExecutor(0.4f, 12, 40, true, 100, true, 10), new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100), 4, 1),
+                        new Behavior(new HorseFlatRandomRoamExecutor(0.4f, 12, 40, true, 100, true, 10, 35), all(
+                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.RIDER_NAME),
+                                e -> !this.hasOwner(false)
+                        ), 4, 1),
                         new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100), new ProbabilityEvaluator(4, 10), 1, 1, 100),
                         new Behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
                 ),
@@ -147,27 +149,34 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     }
 
     @Override
+    public void setOwnerName(String playerName) {
+        EntityOwnable.super.setOwnerName(playerName);
+        if (playerName == null) {
+            this.setDataProperty(new ByteEntityData(Entity.DATA_CONTAINER_TYPE, 0));
+            this.setDataProperty(new IntEntityData(Entity.DATA_CONTAINER_BASE_SIZE, 0));
+        } else {
+            //添加两个metadata这个才能交互物品栏
+            this.setDataProperty(new ByteEntityData(Entity.DATA_CONTAINER_TYPE, 12));
+            this.setDataProperty(new IntEntityData(Entity.DATA_CONTAINER_BASE_SIZE, 2));
+        }
+    }
+
+    @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
-        EntityEventPacket packet = new EntityEventPacket();
-        packet.eid = this.getId();
-        packet.event = EntityEventPacket.TAME_SUCCESS;
-        player.dataPacket(packet);
-        setOwnerName(player.getName());
         mountEntity(player);
-        //EntityEventPacket
         return true;
     }
 
     @Override
     public boolean mountEntity(Entity entity) {
+        this.getMemoryStorage().put(CoreMemoryTypes.RIDER_NAME, entity.getName());
         super.mountEntity(entity, SetEntityLinkPacket.TYPE_RIDE);
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_WASD_CONTROLLED);
-        this.setDataProperty(new ByteEntityData(Entity.DATA_CONTROLLING_RIDER_SEAT_NUMBER, 0));
         return true;
     }
 
     @Override
     public boolean dismountEntity(Entity entity) {
+        this.getMemoryStorage().clear(CoreMemoryTypes.RIDER_NAME);
         return super.dismountEntity(entity);
     }
 
@@ -177,7 +186,15 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     }
 
     @Override
-    public Inventory getInventory() {
+    public HorseInventory getInventory() {
         return horseInventory;
+    }
+
+    @Nullable
+    public Entity getRider() {
+        String name = getMemoryStorage().get(CoreMemoryTypes.RIDER_NAME);
+        if (name != null) {
+            return Server.getInstance().getPlayerExact(name);
+        } else return null;//todo other entity
     }
 }

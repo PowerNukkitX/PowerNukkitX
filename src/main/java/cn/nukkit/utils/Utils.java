@@ -355,6 +355,13 @@ public class Utils {
         return -1;
     }
 
+    /**
+     * Rand int.
+     *
+     * @param min the min
+     * @param max the max
+     * @return the int
+     */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static int rand(int min, int max) {

@@ -210,6 +210,19 @@ public interface CoreMemoryTypes {
                     })
             );
     /**
+     * 代表骑着某个实体的实体
+     */
+    MemoryType<String> RIDER_NAME = new MemoryType<String>("minecraft:rider_name")
+            .withCodec(new StringMemoryCodec("RiderName")
+                    .onInit((data, entity) -> {
+                        if (data == null) {
+                            entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_WASD_CONTROLLED, false);
+                        } else {
+                            entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_WASD_CONTROLLED);
+                        }
+                    })
+            );
+    /**
      * 代表实体的变种,和{@link Entity#DATA_VARIANT}绑定
      */
     MemoryType<Integer> VARIANT = new MemoryType<Integer>("minecraft:variant")
