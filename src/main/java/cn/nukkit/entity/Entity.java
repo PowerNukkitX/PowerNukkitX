@@ -484,6 +484,11 @@ public abstract class Entity extends Location implements Metadatable {
             .putString(DATA_NAMETAG, "")
             .putLong(DATA_LEAD_HOLDER_EID, -1)
             .putFloat(DATA_SCALE, 1f);
+    /**
+     * 这个实体骑在谁身上
+     * <p>
+     * Who is this entity riding on
+     */
     public Entity riding = null;
     public FullChunk chunk;
     public List<Block> blocksAround = new ArrayList<>();
@@ -1159,7 +1164,11 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     /**
+     * 实体初始化顺序，先初始化Entity类字段->Entity构造函数->进入init方法->调用initEntity方法->子类字段初始化->子类构造函数
+     * <p>
      * 用于初始化实体的NBT和实体字段的方法
+     * <p>
+     * Entity initialization order, first initialize the Entity class field->Entity constructor->Enter the init method->Call the init Entity method-> subclass field initialization-> subclass constructor
      * <p>
      * The method used to initialize the NBT and entity fields of the entity
      */
@@ -2449,7 +2458,7 @@ public abstract class Entity extends Location implements Metadatable {
         pk.vehicleUniqueId = getId();         // To the?
         pk.riderUniqueId = rider.getId(); // From who?
         pk.type = type;
-
+        pk.riderInitiated = type > 0;
         Server.broadcastPacket(this.hasSpawned.values(), pk);
     }
 

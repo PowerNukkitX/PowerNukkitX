@@ -6,7 +6,10 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.ai.memory.codec.BooleanMemoryCodec;
+import cn.nukkit.entity.ai.memory.codec.NumberMemoryCodec;
 import cn.nukkit.entity.ai.memory.codec.StringMemoryCodec;
+import cn.nukkit.entity.data.ByteEntityData;
+import cn.nukkit.entity.data.IntEntityData;
 import cn.nukkit.entity.data.LongEntityData;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.math.Vector3;
@@ -25,26 +28,38 @@ public interface CoreMemoryTypes {
     // region 运动控制器相关
     /**
      * 实体视线目标记忆
+     * <p>
+     * Entity gaze target memory
      */
     MemoryType<Vector3> LOOK_TARGET = new MemoryType<>("minecraft:look_target");
     /**
      * 实体移动目标记忆
+     * <p>
+     * Entity moving target memory
      */
     MemoryType<Vector3> MOVE_TARGET = new MemoryType<>("minecraft:move_target");
     /**
      * 实体移动起点记忆
+     * <p>
+     * Entity movement starting point memory
      */
     MemoryType<Vector3> MOVE_DIRECTION_START = new MemoryType<>("minecraft:move_direction_start");
     /**
-     * 实体移动起点终点
+     * 实体移动终点记忆
+     * <p>
+     * Entity movement endpoint memory
      */
     MemoryType<Vector3> MOVE_DIRECTION_END = new MemoryType<>("minecraft:move_direction_end");
     /**
      * 实体是否需要更新路径的记忆
+     * <p>
+     * Whether the entity needs to update the memory of the path
      */
     MemoryType<Boolean> SHOULD_UPDATE_MOVE_DIRECTION = new MemoryType<>("minecraft:should_update_move_direction", false);
     /**
      * 实体是否开启pitch
+     * <p>
+     * Whether pitch is enabled for the entity
      */
     MemoryType<Boolean> ENABLE_PITCH = new MemoryType<>("minecraft:enable_pitch", true);
 
@@ -175,7 +190,7 @@ public interface CoreMemoryTypes {
                     })
             );
     /**
-     * 代表实体主人 和{@link Entity#DATA_FLAG_TAMED}绑定
+     * 代表实体主人 和{@link Entity#DATA_FLAG_TAMED} {@link Entity#DATA_OWNER_EID}绑定
      * <p>
      * 目前仅在wolf中使用
      */
@@ -186,11 +201,46 @@ public interface CoreMemoryTypes {
                             entity.setDataProperty(new LongEntityData(Entity.DATA_OWNER_EID, 0L));
                             entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_TAMED, false);
                         } else {
+                            entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_TAMED, true);
                             var owner = entity.getServer().getPlayerExact(data);
-                            if (owner != null) {
+                            if (owner != null && owner.isOnline()) {
                                 entity.setDataProperty(new LongEntityData(Entity.DATA_OWNER_EID, owner.getId()));
-                                entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_TAMED, true);
                             }
+                        }
+                    })
+            );
+    /**
+     * 代表实体的变种,和{@link Entity#DATA_VARIANT}绑定
+     */
+    MemoryType<Integer> VARIANT = new MemoryType<Integer>("minecraft:variant")
+            .withCodec(new NumberMemoryCodec<Integer>("Variant")
+                    .onInit((data, entity) -> {
+                        if (data != null) {
+                            entity.setDataProperty(new IntEntityData(Entity.DATA_VARIANT, data));
+                        }
+                    })
+            );
+    /**
+     * 代表实体的变种,和{@link Entity#DATA_VARIANT}绑定
+     */
+    MemoryType<Integer> MARK_VARIANT = new MemoryType<Integer>("minecraft:mark_variant")
+            .withCodec(new NumberMemoryCodec<Integer>("MarkVariant")
+                    .onInit((data, entity) -> {
+                        if (data != null) {
+                            entity.setDataProperty(new IntEntityData(Entity.DATA_MARK_VARIANT, data));
+                        }
+                    })
+            );
+    /**
+     * 代表实体的颜色，和{@link Entity#DATA_COLOUR}绑定
+     * <p>
+     * 例如狼的项圈
+     */
+    MemoryType<Byte> COLOUR = new MemoryType<Byte>("minecraft:colour")
+            .withCodec(new NumberMemoryCodec<Byte>("Color")
+                    .onInit((data, entity) -> {
+                        if (data != null) {
+                            entity.setDataProperty(new ByteEntityData(Entity.DATA_COLOUR, data));
                         }
                     })
             );

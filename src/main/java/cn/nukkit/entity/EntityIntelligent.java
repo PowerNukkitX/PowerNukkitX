@@ -29,7 +29,6 @@ import java.util.Objects;
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public abstract class EntityIntelligent extends EntityPhysical implements LogicalUtils, EntityControlUtils {
-
     public static final IBehaviorGroup EMPTY_BEHAVIOR_GROUP = new EmptyBehaviorGroup();
 
     @Since("1.19.60-r1")
@@ -43,7 +42,6 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
 
     public EntityIntelligent(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
-        this.behaviorGroup = requireBehaviorGroup();
         var storage = getMemoryStorage();
         if (storage != null) {
             storage.put(CoreMemoryTypes.ENTITY_SPAWN_TIME, Server.getInstance().getTick());
@@ -53,10 +51,15 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
                 var data = Objects.requireNonNull(codec).getDecoder().apply(this.namedTag);
                 if (data != null) {
                     storage.put(mem, data);
-                    codec.init(data, this);
                 }
             });
         }
+    }
+
+    @Override
+    protected void initEntity() {
+        super.initEntity();
+        this.behaviorGroup = requireBehaviorGroup();
     }
 
     /**

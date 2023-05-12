@@ -1,17 +1,16 @@
 package cn.nukkit.entity;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.DeprecationDetails;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
-import cn.nukkit.entity.data.LongEntityData;
 
 import javax.annotation.Nullable;
 
 /**
+ * 实现这个接口的实体可以被驯服
+ *
  * @author BeYkeRYkt (Nukkit Project)
  */
-@Deprecated
-@DeprecationDetails(since = "1.19.30-r1", reason = "统一接口定义", replaceWith = "replace to EntityTamable")
 public interface EntityOwnable extends EntityComponent {
     @Nullable
     default String getOwnerName() {
@@ -30,10 +29,21 @@ public interface EntityOwnable extends EntityComponent {
             var ownerName = getOwnerName();
             if (ownerName == null) return null;
             owner = asEntity().getServer().getPlayerExact(ownerName);
-            if (owner != null) {
-                asEntity().setDataProperty(new LongEntityData(Entity.DATA_OWNER_EID, owner.getId()));
-            }
         }
         return owner;
+    }
+
+    @PowerNukkitXOnly
+    default boolean hasOwner() {
+        return hasOwner(true);
+    }
+
+    @PowerNukkitXOnly
+    default boolean hasOwner(boolean checkOnline) {
+        if (checkOnline) {
+            return getOwner() != null;
+        } else {
+            return getOwnerName() != null;
+        }
     }
 }

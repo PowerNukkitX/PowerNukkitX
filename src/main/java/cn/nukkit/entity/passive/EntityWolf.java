@@ -24,7 +24,7 @@ import cn.nukkit.entity.ai.sensor.EntityAttackedByOwnerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
 import cn.nukkit.entity.ai.sensor.WolfNearestFeedingPlayerSensor;
-import cn.nukkit.entity.data.ByteEntityData;
+import cn.nukkit.entity.data.LongEntityData;
 import cn.nukkit.entity.mob.EntitySkeleton;
 import cn.nukkit.entity.mob.EntityStray;
 import cn.nukkit.entity.mob.EntityWitherSkeleton;
@@ -49,14 +49,9 @@ import java.util.Set;
  * @author Cool_Loong (PowerNukkitX Project)
  * todo 野生狼不会被刷新
  */
-public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityTamable, EntityCanAttack, EntityCanSit, EntityAngryable, EntityHealable {
+public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOwnable, EntityCanAttack, EntityCanSit, EntityAngryable, EntityHealable, EntityColor {
     public static final int NETWORK_ID = 14;
     protected float[] diffHandDamage = new float[]{3, 4, 6};
-    //实体子类字段最好不要显式初始化，因为实体创建流程是先初始化父类Entity然后进入Entity#init方法,
-    //随后调用子类initEntity初始化实体,之后从根父类Entity逐级返回初始化字段,最后进入子类初始化字段
-    //字段初始化语句，应当放进initEntity中执行
-    //如果不明白顺序，可能会出现在initEntity中初始化后被字段初始化覆盖的情况
-    private DyeColor collarColor;//项圈颜色
 
     public EntityWolf(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -198,23 +193,22 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityTa
     public void initEntity() {
         this.setMaxHealth(8);
         super.initEntity();
-
-        if (this.namedTag.contains("CollarColor")) {
-            var collarColor = DyeColor.getByDyeData(this.namedTag.getByte("CollarColor"));
-            if (collarColor == null) {
-                this.collarColor = DyeColor.RED;
-                this.setDataProperty(new ByteEntityData(DATA_COLOUR, DyeColor.RED.getWoolData()));
-            } else {
-                this.collarColor = collarColor;
-                this.setDataProperty(new ByteEntityData(DATA_COLOUR, collarColor.getWoolData()));
-            }
-        } else this.collarColor = DyeColor.RED;
+        //update CollarColor to Color
+        if (namedTag.contains("CollarColor")) {
+            this.setColor(DyeColor.getByWoolData(namedTag.getByte("CollarColor")));
+        }
     }
 
     @Override
-    public void saveNBT() {
-        super.saveNBT();
-        this.namedTag.putByte("CollarColor", this.collarColor.getDyeData());
+    public boolean onUpdate(int currentTick) {
+        //同步owner eid
+        if (hasOwner()) {
+            Player owner = getOwner();
+            if (owner != null && getDataPropertyLong(Entity.DATA_OWNER_EID) != owner.getId()) {
+                this.setDataProperty(new LongEntityData(Entity.DATA_OWNER_EID, owner.getId()));
+            }
+        }
+        return super.onUpdate(currentTick);
     }
 
     @Override
@@ -237,7 +231,7 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityTa
                     this.setMaxHealth(20);
                     this.setHealth(20);
                     this.setOwnerName(player.getName());
-                    this.setCollarColor(DyeColor.RED);
+                    this.setColor(DyeColor.RED);
                     this.saveNBT();
 
                     this.getLevel().dropExpOrb(this, Utils.rand(1, 7));
@@ -253,7 +247,7 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityTa
         } else if (item.getId() == Item.DYE) {
             if (this.hasOwner() && player.equals(this.getOwner())) {
                 player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
-                this.setCollarColor(((ItemDye) item).getDyeColor());
+                this.setColor(((ItemDye) item).getDyeColor());
                 return true;
             }
         } else if (this.isBreedingItem(item)) {
@@ -274,14 +268,6 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityTa
         }
 
         return false;
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.30-r1")
-    public void setCollarColor(DyeColor color) {
-        this.collarColor = color;
-        this.setDataProperty(new ByteEntityData(DATA_COLOUR, color.getWoolData()));
-        this.namedTag.putByte("CollarColor", color.getDyeData());
     }
 
     @PowerNukkitXOnly
