@@ -124,7 +124,7 @@ public class BlockSnowLayer extends BlockFallableMeta {
 
     @Override
     public double getHardness() {
-        return 0.1;
+        return 0.2;
     }
 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "0.1 instead of 0.5")
