@@ -123,12 +123,12 @@ public abstract class Entity extends Location implements Metadatable {
     @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit",
             reason = "Apparently this the ID 24 was reused to represent CLIENT_EVENT but Cloudburst Nukkit is still mapping it as age")
     public static final int DATA_ENTITY_AGE = dynamic(DATA_CLIENT_EVENT); //short
+    public static final int DATA_PLAYER_FLAG_SLEEP = 1;
+    public static final int DATA_PLAYER_FLAG_DEAD = 2;
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final int DATA_USING_ITEM = dynamic(25); //byte
 
-    public static final int DATA_PLAYER_FLAG_SLEEP = 1;
-    public static final int DATA_PLAYER_FLAG_DEAD = 2;
     public static final int DATA_PLAYER_FLAGS = dynamic(26); //byte
     @Since("1.2.0.0-PN")
     public static final int DATA_PLAYER_INDEX = dynamic(27);
@@ -337,6 +337,7 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_FLAG_CHESTED = dynamic(36);
     public static final int DATA_FLAG_STACKABLE = dynamic(37);
     public static final int DATA_FLAG_SHOWBASE = dynamic(38);
+    //STANDING
     public static final int DATA_FLAG_REARING = dynamic(39);
     public static final int DATA_FLAG_VIBRATING = dynamic(40);
     public static final int DATA_FLAG_IDLING = dynamic(41);

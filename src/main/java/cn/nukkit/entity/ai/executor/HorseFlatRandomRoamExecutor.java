@@ -3,6 +3,7 @@ package cn.nukkit.entity.ai.executor;
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityIntelligent;
+import cn.nukkit.entity.ai.controller.EntityControlUtils;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.passive.EntityHorse;
 import cn.nukkit.math.Vector3;
@@ -11,8 +12,13 @@ import cn.nukkit.utils.Utils;
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
 public class HorseFlatRandomRoamExecutor extends FlatRandomRoamExecutor {
     protected final int tameProbability;
+    ScheduledFuture<?> task;
 
     public HorseFlatRandomRoamExecutor(float speed, int maxRoamRange, int frequency) {
         this(speed, maxRoamRange, frequency, false, 100);
@@ -86,9 +92,32 @@ public class HorseFlatRandomRoamExecutor extends FlatRandomRoamExecutor {
                 Player player = (Player) horse.getRider();
                 assert player != null;
                 player.dataPacket(packet);
+                horse.playTameFailAnimation();
                 horse.dismountEntity(horse.getRider());
+                task = EntityControlUtils.timer.schedule(horse::stopTameFailAnimation, 600, TimeUnit.MILLISECONDS);
+                try {
+                    task.get();
+                } catch (InterruptedException | ExecutionException e) {
+                    throw new RuntimeException(e);
+                }
             }
             return false;
+        }
+    }
+
+    @Override
+    public void onStop(EntityIntelligent entity) {
+        super.onStop(entity);
+        if (task != null) {
+            task.cancel(true);
+        }
+    }
+
+    @Override
+    public void onStart(EntityIntelligent entity) {
+        super.onStart(entity);
+        if (task != null) {
+            task.cancel(true);
         }
     }
 }

@@ -1,6 +1,7 @@
 package cn.nukkit;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.entity.ai.controller.EntityControlUtils;
 import cn.nukkit.nbt.stream.PGZIPOutputStream;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.plugin.js.JSIInitiator;
@@ -171,6 +172,7 @@ public class Nukkit {
         JSIInitiator.jsTimer.cancel();
         // 强制关闭PGZIPOutputStream中的线程池
         PGZIPOutputStream.getSharedThreadPool().shutdownNow();
+        EntityControlUtils.timer.shutdownNow();
         for (Thread thread : java.lang.Thread.getAllStackTraces().keySet()) {
             if (!(thread instanceof InterruptibleThread)) {
                 continue;

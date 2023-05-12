@@ -5,6 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.EntityLiving;
+import cn.nukkit.entity.ai.controller.EntityControlUtils;
 import cn.nukkit.entity.ai.memory.MemoryType;
 import cn.nukkit.entity.data.LongEntityData;
 import cn.nukkit.entity.projectile.EntityArrow;
@@ -22,6 +23,9 @@ import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 public class ShootExecutor implements EntityControl, IBehaviorExecutor {
@@ -42,7 +46,7 @@ public class ShootExecutor implements EntityControl, IBehaviorExecutor {
      */
     protected Supplier<Item> item;
     private int tick1;//control the coolDownTick
-    private int tick2;//control the pullBowTick
+    ScheduledFuture<?> task;
 
     /**
      * 射击执行器
@@ -67,9 +71,7 @@ public class ShootExecutor implements EntityControl, IBehaviorExecutor {
 
     @Override
     public boolean execute(EntityIntelligent entity) {
-        if (tick2 == 0) {
-            tick1++;
-        }
+        tick1++;
         if (!entity.isEnablePitch()) entity.setEnablePitch(true);
         if (entity.getBehaviorGroup().getMemoryStorage().isEmpty(memory)) return false;
         Entity newTarget = entity.getBehaviorGroup().getMemoryStorage().get(memory);
@@ -99,22 +101,23 @@ public class ShootExecutor implements EntityControl, IBehaviorExecutor {
         //更新视线target
         setLookTarget(entity, clone);
 
-        if (tick2 == 0 && tick1 > coolDownTick) {
+        if (tick1 > coolDownTick) {
             if (entity.distanceSquared(target) <= maxShootDistanceSquared) {
                 this.tick1 = 0;
-                this.tick2++;
                 playBowAnimation(entity);
-            }
-        } else if (tick2 != 0) {
-            tick2++;
-            if (tick2 > pullBowTick) {
-                Item tool = item.get();
-                if (tool instanceof ItemBow bow) {
-                    bowShoot(bow, entity);
-                    stopBowAnimation(entity);
-                    tick2 = 0;
-                    return target.getHealth() != 0;
+                task = EntityControlUtils.timer.schedule(() -> {
+                    Item tool = item.get();
+                    if (tool instanceof ItemBow bow) {
+                        bowShoot(bow, entity);
+                        this.stopBowAnimation(entity);
+                    }
+                }, pullBowTick / 20, TimeUnit.SECONDS);
+                try {
+                    task.get();
+                } catch (InterruptedException | ExecutionException e) {
+                    throw new RuntimeException(e);
                 }
+                return target.getHealth() != 0;
             }
         }
         return true;
@@ -132,6 +135,9 @@ public class ShootExecutor implements EntityControl, IBehaviorExecutor {
         entity.setEnablePitch(false);
         stopBowAnimation(entity);
         this.target = null;
+        if (task != null) {
+            task.cancel(true);
+        }
     }
 
     @Override
@@ -146,6 +152,9 @@ public class ShootExecutor implements EntityControl, IBehaviorExecutor {
         entity.setEnablePitch(false);
         stopBowAnimation(entity);
         this.target = null;
+        if (task != null) {
+            task.cancel(true);
+        }
     }
 
     protected void bowShoot(ItemBow bow, EntityLiving entity) {

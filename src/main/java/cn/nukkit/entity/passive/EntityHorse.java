@@ -29,6 +29,7 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.network.protocol.SetEntityLinkPacket;
 
 import javax.annotation.Nullable;
@@ -37,7 +38,7 @@ import java.util.Set;
 /**
  * @author PikyCZ
  */
-public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityVariant, EntityMarkVariant, EntityRideable, EntityOwnable, InventoryHolder {
+public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityVariant, EntityMarkVariant, EntityRideable, EntityOwnable, InventoryHolder, EntityAgeable {
 
     public static final int NETWORK_ID = 23;
     private static final int[] VARIANTS = {0, 1, 2, 3, 4, 5, 6};
@@ -196,5 +197,14 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         if (name != null) {
             return Server.getInstance().getPlayerExact(name);
         } else return null;//todo other entity
+    }
+
+    public void playTameFailAnimation() {
+        this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_MAD, -1, "minecraft:horse", this.isBaby(), false);
+        this.setDataFlag(EntityHorse.DATA_FLAGS, EntityHorse.DATA_FLAG_REARING);
+    }
+
+    public void stopTameFailAnimation() {
+        this.setDataFlag(EntityHorse.DATA_FLAGS, EntityHorse.DATA_FLAG_REARING, false);
     }
 }

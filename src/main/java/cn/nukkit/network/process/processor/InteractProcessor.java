@@ -66,10 +66,12 @@ public class InteractProcessor extends DataPacketProcessor<InteractPacket> {
                         player.addWindow(chestBoat.getInventory());
                         return;
                     } else if (targetEntity instanceof EntityHorse horse) {
-                        player.addWindow(horse.getInventory());
-                        return;
+                        if (horse.hasOwner(false) && horse.getOwnerName().equals(player.getName())) {
+                            player.addWindow(horse.getInventory());
+                            return;
+                        }
                     }
-                    if (!(targetEntity instanceof EntityBoat || targetEntity instanceof EntityMinecartEmpty)) {
+                    if (!(targetEntity instanceof EntityBoat || targetEntity instanceof EntityMinecartEmpty || targetEntity instanceof EntityHorse)) {
                         return;
                     }
                 } else if (targetEntity.getId() != player.getId()) {

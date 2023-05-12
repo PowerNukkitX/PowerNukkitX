@@ -6,6 +6,9 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.memory.IMemoryStorage;
 import cn.nukkit.math.Vector3;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+
 /**
  * 一些通用的实体运动控制方法
  * <p>
@@ -14,6 +17,11 @@ import cn.nukkit.math.Vector3;
 @PowerNukkitXOnly
 @Since("1.19.63-r1")
 public interface EntityControlUtils {
+    /**
+     * 用于控制实体行为中的定时任务，例如定时结束动画。
+     */
+    ScheduledExecutorService timer = Executors.newSingleThreadScheduledExecutor((r) -> new Thread(r, "EntityControlUtils#timer"));
+
     default Vector3 getLookTarget() {
         return getMemoryStorage().get(CoreMemoryTypes.LOOK_TARGET);
     }
