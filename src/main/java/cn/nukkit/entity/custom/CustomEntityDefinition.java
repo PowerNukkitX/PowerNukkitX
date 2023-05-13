@@ -41,11 +41,11 @@ public record CustomEntityDefinition(CompoundTag nbt) {
         }
 
         /**
-         * BID也就是Runtime Identifiers,在原版实体中，用Network Type Id来代表实体类型，在自定义实体中，我们用BID也就是Runtime Identifiers来标识实体类型。
+         * BID也就是行为包中的Runtime Identifiers,在原版实体中，用Network Type Id来代表实体类型，在自定义实体中，我们用BID也就是Runtime Identifiers来标识实体类型。
          * <p>
-         * 它用于模仿原版实体的硬编码元素
+         * 它用于模仿一些原版实体的硬编码元素
          * <p>
-         * BID is Runtime Identifiers, in the original entity, Network Type Id is used to represent the entity type, and in the custom entity, we use BID or Runtime Identifiers to identify the entity type. <p>
+         * BID is the Runtime Identifiers in the behavior pack, in the original entity, the Network Type ID is used to represent the entity type, and in the custom entity, we use the BID is the Runtime Identifiers to identify the entity type.<p>
          * It is used to mimic hard-coded elements of the vanilla entity
          *
          * @param bid the bid
