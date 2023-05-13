@@ -1957,7 +1957,7 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public boolean canCollideWith(Entity entity) {
-        return !this.justCreated && this != entity;
+        return !this.justCreated && this != entity && !this.noClip;
     }
 
     protected boolean checkObstruction(double x, double y, double z) {
