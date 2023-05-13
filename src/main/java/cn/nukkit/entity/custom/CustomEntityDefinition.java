@@ -20,6 +20,10 @@ public record CustomEntityDefinition(CompoundTag nbt) {
         return this.nbt.getInt("rid");
     }
 
+    public String getBid() {
+        return this.nbt.getString("bid");
+    }
+
     public String getStringId() {
         return this.nbt.getString("id");
     }
