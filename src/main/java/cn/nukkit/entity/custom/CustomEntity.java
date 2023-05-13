@@ -7,4 +7,8 @@ import cn.nukkit.api.Since;
 @Since("1.6.0.0-PNX")
 public interface CustomEntity {
     CustomEntityDefinition getDefinition();
+
+    default int getNetworkId() {
+        return 0;
+    }
 }

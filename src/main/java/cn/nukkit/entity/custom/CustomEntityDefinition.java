@@ -31,13 +31,30 @@ public record CustomEntityDefinition(CompoundTag nbt) {
         private Builder() {
         }
 
-        public Builder spawnEgg(boolean spawnEgg) {
-            this.nbt.putBoolean("hasspawnegg", spawnEgg);
+        public Builder identifier(String identifier) {
+            this.nbt.putString("id", identifier);
             return this;
         }
 
-        public Builder identifier(String identifier) {
-            this.nbt.putString("id", identifier);
+        /**
+         * BID也就是Runtime Identifiers,在原版实体中，用Network Type Id来代表实体类型，在自定义实体中，我们用BID也就是Runtime Identifiers来标识实体类型。
+         * <p>
+         * 它用于模仿原版实体的硬编码元素
+         * <p>
+         * BID is Runtime Identifiers, in the original entity, Network Type Id is used to represent the entity type, and in the custom entity, we use BID or Runtime Identifiers to identify the entity type. <p>
+         * It is used to mimic hard-coded elements of the vanilla entity
+         *
+         * @param bid the bid
+         * @return the builder
+         * @see <a href="https://wiki.bedrock.dev/entities/runtime-identifier.html">runtime-identifier</a>
+         */
+        public Builder bid(String bid) {
+            this.nbt.putString("bid", bid);
+            return this;
+        }
+
+        public Builder spawnEgg(boolean spawnEgg) {
+            this.nbt.putBoolean("hasspawnegg", spawnEgg);
             return this;
         }
 
@@ -48,7 +65,9 @@ public record CustomEntityDefinition(CompoundTag nbt) {
 
         public CustomEntityDefinition build() {
             // Vanilla registry information
-            this.nbt.putString("bid", "");
+            if (!this.nbt.contains("bid")) {
+                this.nbt.putString("bid", "");
+            }
             this.nbt.putInt("rid", RUNTIME_ID.getAndIncrement());
             this.nbt.putBoolean("experimental", false);
 
