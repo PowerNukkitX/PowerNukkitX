@@ -135,9 +135,9 @@ public abstract class Command implements GenericParameter {
             var i18n = PluginI18nManager.getI18n(pluginBase);
             if (i18n != null) {
                 customData.description = i18n.tr(player.getLanguageCode(), this.getDescription());
+            } else {
+                customData.description = player.getServer().getLanguage().tr(this.getDescription(), CommandOutputContainer.EMPTY_STRING, "commands.", false);
             }
-        } else {
-            customData.description = player.getServer().getLanguage().tr(this.getDescription(), CommandOutputContainer.EMPTY_STRING, "commands.", false);
         }
 
         this.commandParameters.forEach((key, par) -> {
