@@ -161,10 +161,6 @@ public final class PluginI18nManager {
 
     @Nullable
     public static PluginI18n getI18n(PluginBase plugin) {
-        File file = plugin.getFile();
-        if (file != null) {
-            return PLUGINS_MULTI_LANGUAGE.get(file.getName());
-        }
-        return null;
+        return PLUGINS_MULTI_LANGUAGE.get(plugin.getFile().getName());
     }
 }
