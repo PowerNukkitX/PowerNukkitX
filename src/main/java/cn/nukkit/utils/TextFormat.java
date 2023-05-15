@@ -1,5 +1,8 @@
 package cn.nukkit.utils;
 
+import cn.nukkit.api.DeprecationDetails;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import com.google.common.collect.Maps;
 
 import java.util.HashMap;
@@ -79,6 +82,66 @@ public enum TextFormat {
      */
     MINECOIN_GOLD('g', 0x16),
     /**
+     * Represents material quartz.
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.80-r3")
+    MATERIAL_QUARTZ('h', 0x17),
+    /**
+     * Represents material iron.
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.80-r3")
+    MATERIAL_IRON('i', 0x18),
+    /**
+     * Represents material netherite.
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.80-r3")
+    MATERIAL_NETHERITE('j', 0x19),
+    /**
+     * Represents material redstone.
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.80-r3")
+    MATERIAL_REDSTONE('m', 0x20),
+    /**
+     * Represents material copper.
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.80-r3")
+    MATERIAL_COPPER('n', 0x21),
+    /**
+     * Represents material gold.
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.80-r3")
+    MATERIAL_GOLD('p', 0x22),
+    /**
+     * Represents material emerald.
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.80-r3")
+    MATERIAL_EMERALD('q', 0x23),
+    /**
+     * Represents material diamond.
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.80-r3")
+    MATERIAL_DIAMOND('s', 0x24),
+    /**
+     * Represents material lapis.
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.80-r3")
+    MATERIAL_LAPIS('t', 0x25),
+    /**
+     * Represents material amethyst.
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.80-r3")
+    MATERIAL_AMETHYST('u', 0x26),
+    /**
      * Makes the text obfuscated.
      */
     OBFUSCATED('k', 0x10, true),
@@ -89,10 +152,18 @@ public enum TextFormat {
     /**
      * Makes a line appear through the text.
      */
+    @Deprecated
+    @DeprecationDetails(since = "1.19.80-r3",
+            reason = "Code STRIKETHROUGH has been replaced by MATERIAL_REDSTONE in Minecraft version 1.19.81",
+            replaceWith = "TextFormat.MATERIAL_REDSTONE")
     STRIKETHROUGH('m', 0x12, true),
     /**
      * Makes the text appear underlined.
      */
+    @Deprecated
+    @DeprecationDetails(since = "1.19.80-r3",
+            reason = "Code UNDERLINE has been replaced by MATERIAL_COPPER in Minecraft version 1.19.81",
+            replaceWith = "TextFormat.MATERIAL_COPPER")
     UNDERLINE('n', 0x13, true),
     /**
      * Makes the text italic.
@@ -198,7 +269,7 @@ public enum TextFormat {
     public static String colorize(char altFormatChar, String textToTranslate) {
         char[] b = textToTranslate.toCharArray();
         for (int i = 0; i < b.length - 1; i++) {
-            if (b[i] == altFormatChar && "0123456789AaBbCcDdEeFfGgKkLlMmNnOoRr".indexOf(b[i + 1]) > -1) {
+            if (b[i] == altFormatChar && "0123456789AaBbCcDdEeFfGgHhIiJjMmNnPpQqSsTtUuKkLlOoRr".indexOf(b[i + 1]) > -1) {
                 b[i] = TextFormat.ESCAPE;
                 b[i + 1] = Character.toLowerCase(b[i + 1]);
             }
