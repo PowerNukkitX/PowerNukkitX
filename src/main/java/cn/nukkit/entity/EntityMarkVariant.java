@@ -3,6 +3,9 @@ package cn.nukkit.entity;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.utils.Utils;
 
+/**
+ * 实现这个接口的实体拥有次要变种属性
+ */
 public interface EntityMarkVariant extends EntityComponent {
     default int getMarkVariant() {
         return getMemoryStorage().get(CoreMemoryTypes.MARK_VARIANT);

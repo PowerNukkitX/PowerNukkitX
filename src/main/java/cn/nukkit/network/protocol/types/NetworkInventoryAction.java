@@ -98,24 +98,19 @@ public class NetworkInventoryAction {
         //read InventorySource
         InventorySource.Type type = InventorySource.Type.byId((int) packet.getUnsignedVarInt());
         switch (type) {
-            case UNTRACKED_INTERACTION_UI -> {
-                inventorySource = InventorySource.fromUntrackedInteractionUI(packet.getVarInt());
-            }
+            case UNTRACKED_INTERACTION_UI ->
+                    inventorySource = InventorySource.fromUntrackedInteractionUI(packet.getVarInt());
             case CONTAINER -> {
                 this.windowId = packet.getVarInt();
                 inventorySource = InventorySource.fromContainerWindowId(this.windowId);
             }
-            case GLOBAL -> {
-                inventorySource = InventorySource.fromGlobalInventory();
-            }
+            case GLOBAL -> inventorySource = InventorySource.fromGlobalInventory();
             case WORLD_INTERACTION -> {
                 this.unknown = packet.getUnsignedVarInt();
                 InventorySource.Flag flag = InventorySource.Flag.values()[(int) this.unknown];
                 inventorySource = InventorySource.fromWorldInteraction(flag);
             }
-            case CREATIVE -> {
-                inventorySource = InventorySource.fromCreativeInventory();
-            }
+            case CREATIVE -> inventorySource = InventorySource.fromCreativeInventory();
             case NON_IMPLEMENTED_TODO -> {
                 this.windowId = packet.getVarInt();
                 switch (this.windowId) {
@@ -130,9 +125,7 @@ public class NetworkInventoryAction {
                 }
                 inventorySource = InventorySource.fromNonImplementedTodo(this.windowId);
             }
-            default -> {
-                inventorySource = InventorySource.fromInvalid();
-            }
+            default -> inventorySource = InventorySource.fromInvalid();
         }
         this.inventorySlot = (int) packet.getUnsignedVarInt();
         this.oldItem = packet.getSlot();
@@ -163,6 +156,7 @@ public class NetworkInventoryAction {
             type = this.getInventorySource().getType();
             id = this.getInventorySource().getContainerId();
         } else {
+            //保持兼容性
             type = InventorySource.Type.byId(this.sourceType);
             id = windowId;
         }

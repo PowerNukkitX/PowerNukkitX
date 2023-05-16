@@ -234,7 +234,7 @@ public interface CoreMemoryTypes {
                     })
             );
     /**
-     * 代表实体的变种,和{@link Entity#DATA_VARIANT}绑定
+     * 代表实体的次要变种,和{@link Entity#DATA_MARK_VARIANT}绑定
      */
     MemoryType<Integer> MARK_VARIANT = new MemoryType<Integer>("minecraft:mark_variant")
             .withCodec(new NumberMemoryCodec<Integer>("MarkVariant")

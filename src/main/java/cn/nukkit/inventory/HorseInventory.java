@@ -1,13 +1,17 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.passive.EntityHorse;
 import cn.nukkit.item.Item;
+import cn.nukkit.level.Sound;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.ContainerClosePacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import cn.nukkit.network.protocol.MobArmorEquipmentPacket;
 import cn.nukkit.network.protocol.UpdateEquipmentPacket;
 
 import java.io.IOException;
@@ -16,6 +20,10 @@ import java.util.List;
 public class HorseInventory extends BaseInventory {
     private static final CompoundTag slot0;
     private static final CompoundTag slot1;
+
+    public HorseInventory(EntityHorse holder) {
+        super(holder, InventoryType.HORSE);
+    }
 
     static {
         ListTag<CompoundTag> saddle = new ListTag<CompoundTag>().add(new CompoundTag().putCompound(new CompoundTag("slotItem").putShort("Aux", Short.MAX_VALUE).putString("Name", "minecraft:saddle")));
@@ -47,7 +55,20 @@ public class HorseInventory extends BaseInventory {
     public void onSlotChange(int index, Item before, boolean send) {
         super.onSlotChange(index, before, send);
         if (index == 0) {
-            this.getHolder().getLevel().addLevelSoundEvent(this.getHolder(), LevelSoundEventPacket.SOUND_SADDLE);
+            if (before.isNull()) {
+                this.getHolder().setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_SADDLED);
+                this.getHolder().setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_WASD_CONTROLLED);
+            } else {
+                this.getHolder().setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_SADDLED, false);
+                this.getHolder().setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_WASD_CONTROLLED, false);
+            }
+            this.getHolder().getLevel().addLevelSoundEvent(this.getHolder(), LevelSoundEventPacket.SOUND_SADDLE, -1, this.getHolder().getIdentifier().getNamespace(), false, false);
+        } else if (index == 1) {
+            MobArmorEquipmentPacket mobArmorEquipmentPacket = new MobArmorEquipmentPacket();
+            mobArmorEquipmentPacket.eid = this.getHolder().getId();
+            mobArmorEquipmentPacket.slots = new Item[]{Item.AIR_ITEM.clone(), this.getHorseArmor(), Item.AIR_ITEM.clone(), Item.AIR_ITEM.clone()};
+            Server.broadcastPacket(this.getViewers(), mobArmorEquipmentPacket);
+            this.getHolder().getLevel().addSound(this.getHolder(), Sound.MOB_HORSE_ARMOR);
         }
     }
 
@@ -60,14 +81,11 @@ public class HorseInventory extends BaseInventory {
         who.dataPacket(pk);
     }
 
-    public HorseInventory(EntityHorse holder) {
-        super(holder, InventoryType.HORSE);
-    }
-
     @Override
     public void onOpen(Player who) {
         super.onOpen(who);
         who.dataPacket(createUpdateEquipmentPacket(who));
+        sendContents(this.getViewers());
     }
 
     @Override

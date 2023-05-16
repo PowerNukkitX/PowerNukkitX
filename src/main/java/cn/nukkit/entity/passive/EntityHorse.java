@@ -28,7 +28,9 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
+import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.network.protocol.SetEntityLinkPacket;
 
@@ -74,21 +76,50 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     public void initEntity() {
         this.setMaxHealth(15);
         super.initEntity();
+
         this.horseInventory = new HorseInventory(this);
+        ListTag<CompoundTag> inventoryTag;
+        if (this.namedTag.containsList("Inventory")) {
+            inventoryTag = this.namedTag.getList("Inventory", CompoundTag.class);
+        } else {
+            inventoryTag = new ListTag<>();
+            this.namedTag.putList(inventoryTag);
+        }
+        if (inventoryTag.size() > 0 && inventoryTag.get(0) != null) {
+            this.getInventory().setItem(0, NBTIO.getItemHelper(inventoryTag.get(0)));
+        } else if (inventoryTag.size() > 1 && inventoryTag.get(1) != null) {
+            this.getInventory().setItem(1, NBTIO.getItemHelper(inventoryTag.get(1)));
+        }
+
         if (!hasVariant()) {
             this.setVariant(randomVariant());
         }
         if (!hasMarkVariant()) {
             this.setMarkVariant(randomMarkVariant());
         }
-//        this.setDataFlag(DATA_FLAGS, DATA_FLAG_SADDLED, false);
-//        this.setDataFlag(DATA_FLAGS, DATA_FLAG_CAN_POWER_JUMP, false);
-//        this.setDataFlag(DATA_FLAGS, DATA_FLAG_CHESTED, false);
+    }
+
+    @Override
+    public void saveNBT() {
+        super.saveNBT();
+        ListTag<CompoundTag> inventoryTag = this.namedTag.getList("Inventory", CompoundTag.class);
+        if (this.getInventory() != null) {
+            Item item0 = this.getInventory().getItem(0);
+            Item item1 = this.getInventory().getItem(1);
+            if (item0.getId() != Item.AIR) {
+                inventoryTag.remove(0);
+                inventoryTag.add(NBTIO.putItemHelper(item0, 0));
+            } else if (item1.getId() != Item.AIR) {
+                inventoryTag.remove(1);
+                inventoryTag.add(NBTIO.putItemHelper(item0, 1));
+            }
+        }
+        this.namedTag.putList(inventoryTag);
     }
 
     @Override
     public Item[] getDrops() {
-        return new Item[]{Item.get(Item.LEATHER)};
+        return new Item[]{Item.get(Item.LEATHER), getHorseArmor(), getSaddle()};
     }
 
 
@@ -149,10 +180,11 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         );
     }
 
+    @Nullable
     @Override
-    public void setOwnerName(String playerName) {
-        EntityOwnable.super.setOwnerName(playerName);
-        if (playerName == null) {
+    public String getOwnerName() {
+        String ownerName = EntityOwnable.super.getOwnerName();
+        if (ownerName == null) {
             this.setDataProperty(new ByteEntityData(Entity.DATA_CONTAINER_TYPE, 0));
             this.setDataProperty(new IntEntityData(Entity.DATA_CONTAINER_BASE_SIZE, 0));
         } else {
@@ -160,6 +192,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
             this.setDataProperty(new ByteEntityData(Entity.DATA_CONTAINER_TYPE, 12));
             this.setDataProperty(new IntEntityData(Entity.DATA_CONTAINER_BASE_SIZE, 2));
         }
+        return ownerName;
     }
 
     @Override
@@ -197,6 +230,22 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         if (name != null) {
             return Server.getInstance().getPlayerExact(name);
         } else return null;//todo other entity
+    }
+
+    public void setSaddle(Item item) {
+        this.getInventory().setSaddle(item);
+    }
+
+    public void setHorseArmor(Item item) {
+        this.getInventory().setHorseArmor(item);
+    }
+
+    public Item getSaddle() {
+        return this.getInventory().getSaddle();
+    }
+
+    public Item getHorseArmor() {
+        return this.getInventory().getHorseArmor();
     }
 
     public void playTameFailAnimation() {
