@@ -31,12 +31,30 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      *
      * @param map
      */
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public ConfigSection(LinkedHashMap<String, Object> map) {
         this();
         if (map == null || map.isEmpty()) return;
         for (Map.Entry<String, Object> entry : map.entrySet()) {
-            if (entry.getValue() instanceof LinkedHashMap) {
-                super.put(entry.getKey(), new ConfigSection((LinkedHashMap) entry.getValue()));
+            if (entry.getValue() instanceof LinkedHashMap linkedHashMap) {
+                super.put(entry.getKey(), new ConfigSection(linkedHashMap));
+            } else if (entry.getValue() instanceof List list) {
+                super.put(entry.getKey(), parseList(list));
+            } else {
+                super.put(entry.getKey(), entry.getValue());
+            }
+        }
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public ConfigSection(Map<String, Object> map) {
+        this();
+        if (map == null || map.isEmpty()) return;
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            if (entry.getValue() instanceof LinkedHashMap linkedHashMap) {
+                super.put(entry.getKey(), new ConfigSection(linkedHashMap));
+            } else if (entry.getValue() instanceof Map map1) {
+                super.put(entry.getKey(), new ConfigSection(map1));
             } else if (entry.getValue() instanceof List) {
                 super.put(entry.getKey(), parseList((List) entry.getValue()));
             } else {
@@ -92,14 +110,25 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @param defaultValue
      * @return
      */
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public <T> T get(String key, T defaultValue) {
         if (key == null || key.isEmpty()) return defaultValue;
-        if (super.containsKey(key)) return (T) super.get(key);
+        if (super.containsKey(key)) {
+            var value = super.get(key);
+            if (defaultValue != null && !defaultValue.getClass().isInstance(value)) {
+                if (value instanceof Map map && defaultValue instanceof ConfigSection) {
+                    return (T) new ConfigSection(map);
+                }
+            }
+            return (T) value;
+        }
         String[] keys = key.split("\\.", 2);
         if (!super.containsKey(keys[0])) return defaultValue;
         Object value = super.get(keys[0]);
-        if (value instanceof ConfigSection) {
-            ConfigSection section = (ConfigSection) value;
+        if (value instanceof ConfigSection section) {
+            return section.get(keys[1], defaultValue);
+        } else if (value instanceof Map map) {
+            ConfigSection section = new ConfigSection(map);
             return section.get(keys[1], defaultValue);
         }
         return defaultValue;
