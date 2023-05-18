@@ -151,6 +151,12 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
             inventoryTag.add(NBTIO.putItemHelper(item1, 1));
         }
         this.namedTag.putList("Inventory", inventoryTag);
+
+        ListTag<CompoundTag> compoundTagListTag = new ListTag<>();
+        for (var attribute : this.attributeMap.values()) {
+            compoundTagListTag.add(Attribute.toNBT(attribute));
+        }
+        this.namedTag.putList("Attributes", compoundTagListTag);
     }
 
     @Override
