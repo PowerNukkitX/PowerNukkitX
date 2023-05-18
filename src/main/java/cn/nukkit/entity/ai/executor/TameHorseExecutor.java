@@ -94,7 +94,9 @@ public class TameHorseExecutor extends FlatRandomRoamExecutor {
                 packet.eid = horse.getId();
                 packet.event = EntityEventPacket.TAME_SUCCESS;
                 Player player = (Player) horse.getRider();
-                assert player != null;
+                if (player == null) {
+                    return false;
+                }
                 player.dataPacket(packet);
             } else {
                 var horse = (EntityHorse) entity;
@@ -102,7 +104,9 @@ public class TameHorseExecutor extends FlatRandomRoamExecutor {
                 packet.eid = horse.getId();
                 packet.event = EntityEventPacket.TAME_FAIL;
                 Player player = (Player) horse.getRider();
-                assert player != null;
+                if (player == null) {
+                    return false;
+                }
                 player.dataPacket(packet);
                 horse.playTameFailAnimation();
                 horse.dismountEntity(horse.getRider());

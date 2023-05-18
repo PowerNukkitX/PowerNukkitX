@@ -44,10 +44,7 @@ import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.AddEntityPacket;
-import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.LevelSoundEventPacket;
-import cn.nukkit.network.protocol.SetEntityLinkPacket;
+import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.EntityLink;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.Utils;
@@ -154,6 +151,30 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
             inventoryTag.add(NBTIO.putItemHelper(item1, 1));
         }
         this.namedTag.putList("Inventory", inventoryTag);
+    }
+
+    @Override
+    public void setHealth(float health) {
+        super.setHealth(health);
+        if (this.isAlive()) {
+            Attribute attr = Attribute.getAttribute(Attribute.MAX_HEALTH).setMaxValue(this.getMaxHealth()).setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
+            UpdateAttributesPacket pk = new UpdateAttributesPacket();
+            pk.entries = new Attribute[]{attr};
+            pk.entityId = this.id;
+            Server.broadcastPacket(this.getViewers().values().toArray(Player.EMPTY_ARRAY), pk);
+        }
+    }
+
+    @Override
+    public void setMaxHealth(int maxHealth) {
+        super.setMaxHealth(maxHealth);
+        Attribute attr = Attribute.getAttribute(Attribute.MAX_HEALTH).setMaxValue(maxHealth).setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
+        if (this.isAlive()) {
+            UpdateAttributesPacket pk = new UpdateAttributesPacket();
+            pk.entries = new Attribute[]{attr};
+            pk.entityId = this.id;
+            Server.broadcastPacket(this.getViewers().values().toArray(Player.EMPTY_ARRAY), pk);
+        }
     }
 
     @Override
