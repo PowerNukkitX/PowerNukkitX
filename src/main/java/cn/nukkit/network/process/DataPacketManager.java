@@ -99,7 +99,8 @@ public final class DataPacketManager {
                 new PositionTrackingDBClientRequestProcessor(),
                 new ShowCreditsProcessor(),
                 new TickSyncProcessor(),
-                new RequestPermissionsProcessor()
+                new RequestPermissionsProcessor(),
+                new RiderJumpProcessor()
         );
     }
 }

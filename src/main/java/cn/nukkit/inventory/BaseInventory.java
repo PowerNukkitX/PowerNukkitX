@@ -19,6 +19,7 @@ import cn.nukkit.network.protocol.InventoryContentPacket;
 import cn.nukkit.network.protocol.InventorySlotPacket;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -107,9 +108,10 @@ public abstract class BaseInventory implements Inventory {
         return title;
     }
 
+    @NotNull
     @Override
     public Item getItem(int index) {
-        return this.slots.containsKey(index) ? this.slots.get(index).clone() : AIR_ITEM;
+        return this.slots.containsKey(index) ? this.slots.get(index).clone() : AIR_ITEM.clone();
     }
 
     @PowerNukkitXOnly

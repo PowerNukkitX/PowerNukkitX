@@ -92,7 +92,7 @@ public interface CoreMemoryTypes {
      */
     MemoryType<Boolean> IS_ATTACK_TARGET_CHANGED = new MemoryType<>("minecraft:is_attack_target_changed", false);
     /**
-     * 实体生成的服务器tick
+     * 实体从生成的服务器tick
      */
     MemoryType<Integer> ENTITY_SPAWN_TIME = new MemoryType<>("minecraft:entity_spawn_time", () -> Server.getInstance().getTick());
     /**

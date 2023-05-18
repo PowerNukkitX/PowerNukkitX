@@ -2637,7 +2637,8 @@ public abstract class Entity extends Location implements Metadatable {
         }
     }
 
-    private boolean onPhysicalInteraction(Block block, boolean cancelled) {
+    @PowerNukkitXDifference(info = "change to protected")
+    protected boolean onPhysicalInteraction(Block block, boolean cancelled) {
         Event ev;
 
         if (this instanceof Player) {

@@ -6,6 +6,8 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
+import cn.nukkit.network.protocol.InventorySlotPacket;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Map;
@@ -49,6 +51,7 @@ public interface Inventory {
      * @param index the index
      * @return the item
      */
+    @NotNull
     Item getItem(int index);
 
     /**
@@ -91,8 +94,8 @@ public interface Inventory {
      * Now it is only called by {@link cn.nukkit.inventory.transaction.action.SlotChangeAction} and {@link cn.nukkit.inventory.transaction.EnchantTransaction}
      *
      * @param player player that will receive the changes
-     * @param index index of the item
-     * @param item item to set
+     * @param index  index of the item
+     * @param item   item to set
      * @return true if the item was set
      */
     @Since("1.19.50-r3")
@@ -165,6 +168,15 @@ public interface Inventory {
 
     void onClose(Player who);
 
+    /**
+     * 当执行{@link #setItem(int, Item)}时该方法会被调用，此时物品已经put进slots
+     * <p>
+     * This method is called when {@link #setItem(int, Item)} is executed, and the item has been put into slots
+     *
+     * @param index  物品变动的格子索引<br>The grid index of the item's changes
+     * @param before 变动前的物品<br>Items before the change
+     * @param send   是否发送{@link InventorySlotPacket}到客户端<br>Whether to send {@link InventorySlotPacket} to the client
+     */
     void onSlotChange(int index, Item before, boolean send);
 
     @PowerNukkitOnly

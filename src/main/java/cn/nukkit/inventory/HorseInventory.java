@@ -55,20 +55,24 @@ public class HorseInventory extends BaseInventory {
     public void onSlotChange(int index, Item before, boolean send) {
         super.onSlotChange(index, before, send);
         if (index == 0) {
-            if (before.isNull()) {
-                this.getHolder().setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_SADDLED);
-                this.getHolder().setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_WASD_CONTROLLED);
-            } else {
+            if (this.getSaddle().isNull()) {
                 this.getHolder().setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_SADDLED, false);
                 this.getHolder().setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_WASD_CONTROLLED, false);
+                this.getHolder().setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_CAN_POWER_JUMP, false);
+            } else {
+                this.getHolder().getLevel().addLevelSoundEvent(this.getHolder(), LevelSoundEventPacket.SOUND_SADDLE, -1, this.getHolder().getIdentifier().getNamespace(), false, false);
+                this.getHolder().setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_SADDLED);
+                this.getHolder().setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_WASD_CONTROLLED);
+                this.getHolder().setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_CAN_POWER_JUMP);
             }
-            this.getHolder().getLevel().addLevelSoundEvent(this.getHolder(), LevelSoundEventPacket.SOUND_SADDLE, -1, this.getHolder().getIdentifier().getNamespace(), false, false);
         } else if (index == 1) {
+            if (!this.getHorseArmor().isNull()) {
+                this.getHolder().getLevel().addSound(this.getHolder(), Sound.MOB_HORSE_ARMOR);
+            }
             MobArmorEquipmentPacket mobArmorEquipmentPacket = new MobArmorEquipmentPacket();
             mobArmorEquipmentPacket.eid = this.getHolder().getId();
             mobArmorEquipmentPacket.slots = new Item[]{Item.AIR_ITEM.clone(), this.getHorseArmor(), Item.AIR_ITEM.clone(), Item.AIR_ITEM.clone()};
             Server.broadcastPacket(this.getViewers(), mobArmorEquipmentPacket);
-            this.getHolder().getLevel().addSound(this.getHolder(), Sound.MOB_HORSE_ARMOR);
         }
     }
 

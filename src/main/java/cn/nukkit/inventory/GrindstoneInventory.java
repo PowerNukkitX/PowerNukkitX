@@ -11,6 +11,7 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
@@ -219,6 +220,7 @@ public class GrindstoneInventory extends FakeBlockUIComponent {
         setResultExperience(resultExperience);
     }
 
+    @NotNull
     @Override
     public Item getItem(int index) {
         if (index < 0 || index > 3) {

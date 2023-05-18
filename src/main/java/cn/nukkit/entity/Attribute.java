@@ -3,6 +3,7 @@ package cn.nukkit.entity;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.ServerException;
 
 import java.util.Collection;
@@ -51,6 +52,7 @@ public class Attribute implements Cloneable {
     public static final int EXPERIENCE_LEVEL = 9;
     public static final int EXPERIENCE = 10;
     public static final int LUCK = 11;
+    public static final int HORSE_JUMP_STRENGTH = 12;
 
     protected static Map<Integer, Attribute> attributes = new HashMap<>();
     private final int id;
@@ -84,6 +86,7 @@ public class Attribute implements Cloneable {
         addAttribute(EXPERIENCE_LEVEL, "minecraft:player.level", 0.00f, 24791.00f, 0.00f);
         addAttribute(EXPERIENCE, "minecraft:player.experience", 0.00f, 1.00f, 0.00f);
         addAttribute(LUCK, "minecraft:luck", -1024, 1024, 0);
+        addAttribute(HORSE_JUMP_STRENGTH, "minecraft:horse.jump_strength", 0, 0.7101778f, 0.7101778f);
     }
 
     public static Attribute addAttribute(int id, String name, float minValue, float maxValue, float defaultValue) {
@@ -94,8 +97,76 @@ public class Attribute implements Cloneable {
         if (minValue > maxValue || defaultValue > maxValue || defaultValue < minValue) {
             throw new IllegalArgumentException("Invalid ranges: min value: " + minValue + ", max value: " + maxValue + ", defaultValue: " + defaultValue);
         }
-
         return attributes.put(id, new Attribute(id, name, minValue, maxValue, defaultValue, shouldSend));
+    }
+
+    /**
+     * 将这个Attribute转换成NBT
+     * <p>
+     * Convert this attribute to NBT
+     * <p>
+     * like
+     * <pre>
+     * {
+     *     "Base": 0f,
+     *     "Current": 0f,
+     *     "DefaultMax": 1024f,
+     *     "DefaultMin": -1024f,
+     *     "Max": 1024f,
+     *     "Min": -1024f,
+     *     "Name": "minecraft:luck"
+     * }
+     * </pre>
+     *
+     * @param attribute the attribute
+     * @return the compound tag
+     */
+    public static CompoundTag toNBT(Attribute attribute) {
+        return new CompoundTag().putString("Name", attribute.getName())
+                .putFloat("Base", attribute.getDefaultValue())
+                .putFloat("Current", attribute.getValue())
+                .putFloat("DefaultMax", attribute.getMaxValue())
+                .putFloat("DefaultMin", attribute.getMinValue())
+                .putFloat("Max", attribute.getMaxValue())
+                .putFloat("Min", attribute.getMinValue());
+    }
+
+    /**
+     * 从NBT获取Attribute
+     * <p>
+     * Get the Attribute from NBT
+     * <p>
+     * like
+     * <pre>
+     * {
+     *     "Base": 0f,
+     *     "Current": 0f,
+     *     "DefaultMax": 1024f,
+     *     "DefaultMin": -1024f,
+     *     "Max": 1024f,
+     *     "Min": -1024f,
+     *     "Name": "minecraft:luck"
+     * }
+     * </pre>
+     *
+     * @param NBT the nbt
+     * @return the attribute
+     */
+    public static Attribute fromNBT(CompoundTag NBT) {
+        if (NBT.containsString("Name")
+                && NBT.containsFloat("Base")
+                && NBT.containsFloat("Current")
+                && NBT.containsFloat("DefaultMax")
+                && NBT.containsFloat("DefaultMin")
+                && NBT.containsFloat("Max")
+                && NBT.containsFloat("Min")) {
+            return Attribute.getAttributeByName(NBT.getString("Name"))
+                    .setMinValue(NBT.getFloat("Min"))
+                    .setMaxValue(NBT.getFloat("Max"))
+                    .setValue(NBT.getFloat("Current"))
+                    .setDefaultValue(NBT.getFloat("Base"));
+        }
+        throw new IllegalArgumentException("NBT format error");
     }
 
     /**

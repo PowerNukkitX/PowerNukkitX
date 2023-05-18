@@ -11,15 +11,20 @@ import cn.nukkit.utils.Utils;
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 
-public class HorseFlatRandomRoamExecutor extends FlatRandomRoamExecutor {
+/**
+ * 代表玩家驯服马时，马的行为
+ * <p>
+ * Represents the behavior of a horse when the player tames it
+ */
+public class TameHorseExecutor extends FlatRandomRoamExecutor {
     protected final int tameProbability;
     private int tick1;//control the stopTameFailAnimation
 
-    public HorseFlatRandomRoamExecutor(float speed, int maxRoamRange, int frequency) {
+    public TameHorseExecutor(float speed, int maxRoamRange, int frequency) {
         this(speed, maxRoamRange, frequency, false, 100);
     }
 
-    public HorseFlatRandomRoamExecutor(float speed, int maxRoamRange, int frequency, boolean calNextTargetImmediately, int runningTime) {
+    public TameHorseExecutor(float speed, int maxRoamRange, int frequency, boolean calNextTargetImmediately, int runningTime) {
         this(speed, maxRoamRange, frequency, calNextTargetImmediately, runningTime, false, 10, 35);
     }
 
@@ -35,7 +40,7 @@ public class HorseFlatRandomRoamExecutor extends FlatRandomRoamExecutor {
      * @param maxRetryTime             选取目标点的最大尝试次数<br>Pick the maximum number of attempts at the target point
      * @param tameProbability          马被驯服的概率(取值范围1-100)<br>Probability of a horse being tamed (value range 1-100)
      */
-    public HorseFlatRandomRoamExecutor(float speed, int maxRoamRange, int frequency, boolean calNextTargetImmediately, int runningTime, boolean avoidWater, int maxRetryTime, int tameProbability) {
+    public TameHorseExecutor(float speed, int maxRoamRange, int frequency, boolean calNextTargetImmediately, int runningTime, boolean avoidWater, int maxRetryTime, int tameProbability) {
         super(speed, maxRoamRange, frequency, calNextTargetImmediately, runningTime, avoidWater, maxRetryTime);
         Preconditions.checkArgument(tameProbability > 0 && tameProbability <= 100);
         this.tameProbability = tameProbability;

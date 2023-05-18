@@ -4,7 +4,11 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockDirt;
+import cn.nukkit.block.BlockTurtleEgg;
 import cn.nukkit.entity.*;
+import cn.nukkit.entity.ai.EntityAI;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
@@ -14,28 +18,49 @@ import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
 import cn.nukkit.entity.ai.evaluator.ProbabilityEvaluator;
-import cn.nukkit.entity.ai.executor.*;
+import cn.nukkit.entity.ai.executor.AnimalGrowExecutor;
+import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
+import cn.nukkit.entity.ai.executor.LookAtTargetExecutor;
+import cn.nukkit.entity.ai.executor.TameHorseExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
+import cn.nukkit.entity.custom.CustomEntity;
 import cn.nukkit.entity.data.ByteEntityData;
 import cn.nukkit.entity.data.IntEntityData;
+import cn.nukkit.event.block.FarmLandDecayEvent;
+import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.event.entity.EntityFallEvent;
 import cn.nukkit.inventory.HorseInventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
+import cn.nukkit.level.GameRule;
+import cn.nukkit.level.Location;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.network.protocol.AddEntityPacket;
+import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.network.protocol.SetEntityLinkPacket;
+import cn.nukkit.network.protocol.types.EntityLink;
+import cn.nukkit.plugin.InternalPlugin;
+import cn.nukkit.potion.Effect;
+import cn.nukkit.utils.Utils;
 
 import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static cn.nukkit.network.protocol.SetEntityLinkPacket.TYPE_PASSENGER;
 
 /**
  * @author PikyCZ
@@ -45,7 +70,9 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     public static final int NETWORK_ID = 23;
     private static final int[] VARIANTS = {0, 1, 2, 3, 4, 5, 6};
     private static final int[] MARK_VARIANTS = {0, 1, 2, 3, 4};
+    private Map<String, Attribute> attributeMap;
     private HorseInventory horseInventory;
+    private final AtomicBoolean jumping = new AtomicBoolean(false);
 
     public EntityHorse(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -74,22 +101,40 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
 
     @Override
     public void initEntity() {
-        this.setMaxHealth(15);
+        attributeMap = new HashMap<>();
+        if (this.namedTag.containsList("Attributes")) {
+            for (var nbt : this.namedTag.getList("Attributes", CompoundTag.class).getAll()) {
+                attributeMap.put(nbt.getString("Name"), Attribute.fromNBT(nbt));
+            }
+        } else {
+            for (var attribute : randomizeAttributes()) {
+                attributeMap.put(attribute.getName(), attribute);
+            }
+        }
+        this.setMaxHealth((int) Math.ceil(attributeMap.get("minecraft:health").getValue()));
         super.initEntity();
 
         this.horseInventory = new HorseInventory(this);
         ListTag<CompoundTag> inventoryTag;
         if (this.namedTag.containsList("Inventory")) {
             inventoryTag = this.namedTag.getList("Inventory", CompoundTag.class);
-        } else {
-            inventoryTag = new ListTag<>();
-            this.namedTag.putList(inventoryTag);
-        }
-        if (inventoryTag.size() > 0 && inventoryTag.get(0) != null) {
-            this.getInventory().setItem(0, NBTIO.getItemHelper(inventoryTag.get(0)));
-        } else if (inventoryTag.size() > 1 && inventoryTag.get(1) != null) {
+            Item item0 = NBTIO.getItemHelper(inventoryTag.get(0));
+            if (item0.isNull()) {
+                this.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_SADDLED, false);
+                this.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_WASD_CONTROLLED, false);
+                this.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_CAN_POWER_JUMP, false);
+            } else {
+                this.getInventory().setItem(0, item0);
+            }
             this.getInventory().setItem(1, NBTIO.getItemHelper(inventoryTag.get(1)));
+        } else {
+            this.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_SADDLED, false);
+            this.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_WASD_CONTROLLED, false);
+            this.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_CAN_POWER_JUMP, false);
         }
+        this.setDataFlag(DATA_FLAGS, DATA_FLAG_GRAVITY, true);
+        this.setDataFlag(DATA_FLAGS, DATA_FLAG_CAN_CLIMB, true);
+        this.setDataFlag(DATA_FLAGS, DATA_FLAG_HAS_COLLISION, true);
 
         if (!hasVariant()) {
             this.setVariant(randomVariant());
@@ -102,26 +147,20 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     @Override
     public void saveNBT() {
         super.saveNBT();
-        ListTag<CompoundTag> inventoryTag = this.namedTag.getList("Inventory", CompoundTag.class);
+        ListTag<CompoundTag> inventoryTag = new ListTag<>();
         if (this.getInventory() != null) {
             Item item0 = this.getInventory().getItem(0);
             Item item1 = this.getInventory().getItem(1);
-            if (item0.getId() != Item.AIR) {
-                inventoryTag.remove(0);
-                inventoryTag.add(NBTIO.putItemHelper(item0, 0));
-            } else if (item1.getId() != Item.AIR) {
-                inventoryTag.remove(1);
-                inventoryTag.add(NBTIO.putItemHelper(item0, 1));
-            }
+            inventoryTag.add(NBTIO.putItemHelper(item0, 0));
+            inventoryTag.add(NBTIO.putItemHelper(item1, 1));
         }
-        this.namedTag.putList(inventoryTag);
+        this.namedTag.putList("Inventory", inventoryTag);
     }
 
     @Override
     public Item[] getDrops() {
         return new Item[]{Item.get(Item.LEATHER), getHorseArmor(), getSaddle()};
     }
-
 
     @PowerNukkitOnly
     @Since("1.5.1.0-PN")
@@ -140,21 +179,16 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         return MARK_VARIANTS;
     }
 
+    public AtomicBoolean getJumping() {
+        return jumping;
+    }
+
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
         return new BehaviorGroup(
                 this.tickSpread,
                 Set.of(
-                        //用于刷新InLove状态的核心行为
-                        new Behavior(
-                                new InLoveExecutor(400),
-                                all(
-                                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_FEED_TIME, 0, 400),
-                                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE)
-                                ),
-                                1, 1
-                        ),
-                        //生长
+                        //todo breed
                         new Behavior(
                                 new AnimalGrowExecutor(),
                                 //todo：Growth rate
@@ -166,7 +200,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
                         )
                 ),
                 Set.of(
-                        new Behavior(new HorseFlatRandomRoamExecutor(0.4f, 12, 40, true, 100, true, 10, 35), all(
+                        new Behavior(new TameHorseExecutor(0.4f, 12, 40, true, 100, true, 10, 35), all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.RIDER_NAME),
                                 e -> !this.hasOwner(false)
                         ), 4, 1),
@@ -178,6 +212,112 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
                 new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
                 this
         );
+    }
+
+    @Override
+    public void asyncPrepare(int currentTick) {
+        if (this.getRider() == null || this.getOwner() == null || this.getSaddle().isNull()) {
+            isActive = level.isHighLightChunk(getChunkX(), getChunkZ());
+            if (!this.isImmobile()) {
+                var behaviorGroup = getBehaviorGroup();
+                if (behaviorGroup == null) return;
+                behaviorGroup.collectSensorData(this);
+                behaviorGroup.evaluateCoreBehaviors(this);
+                behaviorGroup.evaluateBehaviors(this);
+                behaviorGroup.tickRunningCoreBehaviors(this);
+                behaviorGroup.tickRunningBehaviors(this);
+                behaviorGroup.updateRoute(this);
+                behaviorGroup.applyController(this);
+                if (EntityAI.checkDebugOption(EntityAI.DebugOption.BEHAVIOR)) behaviorGroup.debugTick(this);
+            }
+            this.needsRecalcMovement = this.level.tickRateOptDelay == 1 || ((currentTick + tickSpread) & (this.level.tickRateOptDelay - 1)) == 0;
+            this.calculateOffsetBoundingBox();
+            if (!this.isImmobile()) {
+                handleGravity();
+                if (needsRecalcMovement) {
+                    handleCollideMovement(currentTick);
+                }
+                addTmpMoveMotionXZ(previousCollideMotion);
+                handleFloatingMovement();
+                handleGroundFrictionMovement();
+                handlePassableBlockFrictionMovement();
+            }
+        }
+    }
+
+    @Override
+    public void fall(float fallDistance) {
+        if (this.hasEffect(Effect.SLOW_FALLING)) {
+            return;
+        }
+
+        Location floorLocation = this.floor();
+        Block down = this.level.getBlock(floorLocation.down());
+
+        EntityFallEvent event = new EntityFallEvent(this, down, fallDistance);
+        this.server.getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            return;
+        }
+        fallDistance = event.getFallDistance();
+
+        if ((!this.isPlayer || level.getGameRules().getBoolean(GameRule.FALL_DAMAGE)) && down.useDefaultFallDamage()) {
+            int jumpBoost = this.hasEffect(Effect.JUMP_BOOST) ? (getEffect(Effect.JUMP_BOOST).getAmplifier() + 1) : 0;
+            float damage = fallDistance - 3 - jumpBoost - getClientMaxJumpHeight();
+
+            if (damage > 0) {
+                this.attack(new EntityDamageEvent(this, EntityDamageEvent.DamageCause.FALL, damage));
+            }
+        }
+
+        down.onEntityFallOn(this, fallDistance);
+
+        if (fallDistance > 0.75) {//todo: moving these into their own classes (method "onEntityFallOn()")
+            if (down.getId() == Block.FARMLAND) {
+                if (onPhysicalInteraction(down, false)) {
+                    return;
+                }
+                var farmEvent = new FarmLandDecayEvent(this, down);
+                this.server.getPluginManager().callEvent(farmEvent);
+                if (farmEvent.isCancelled()) return;
+                this.level.setBlock(down, new BlockDirt(), false, true);
+                return;
+            }
+
+            Block floor = this.level.getTickCachedBlock(floorLocation);
+            if (floor instanceof BlockTurtleEgg) {
+                if (onPhysicalInteraction(floor, ThreadLocalRandom.current().nextInt(10) >= 3)) {
+                    return;
+                }
+                this.level.useBreakOn(this, null, null, true);
+            }
+        }
+    }
+
+    @Override
+    public boolean onUpdate(int currentTick) {
+        boolean b = super.onUpdate(currentTick);
+        if (this.jumping.get() && this.isOnGround()) {
+            Server.getInstance().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
+                this.setDataFlag(EntityHorse.DATA_FLAGS, Entity.DATA_FLAG_REARING, false);
+                this.jumping.set(false);
+            }, 2);
+        }
+        return b;
+    }
+
+    @Override
+    public boolean canCollideWith(Entity entity) {
+        return super.canCollideWith(entity) && entity != this.getRider();
+    }
+
+    public void onPlayerInput(Location clientLoc) {
+        if (this.getRider() == null || this.getOwner() == null || this.getSaddle().isNull()) return;
+        this.setMoveTarget(null);
+        this.setLookTarget(null);
+        this.move(clientLoc.x - this.x, clientLoc.y - this.y, clientLoc.z - this.z);
+        this.yaw = clientLoc.yaw;
+        this.headYaw = clientLoc.headYaw;
     }
 
     @Nullable
@@ -232,28 +372,105 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         } else return null;//todo other entity
     }
 
+    public float getClientMaxJumpHeight() {
+        return attributeMap.get("minecraft:horse.jump_strength").getValue();
+    }
+
+    /**
+     * @see HorseInventory#setSaddle(Item)
+     */
     public void setSaddle(Item item) {
         this.getInventory().setSaddle(item);
     }
 
+    /**
+     * @see HorseInventory#setHorseArmor(Item)
+     */
     public void setHorseArmor(Item item) {
         this.getInventory().setHorseArmor(item);
     }
 
+    /**
+     * @see HorseInventory#getSaddle()
+     */
     public Item getSaddle() {
         return this.getInventory().getSaddle();
     }
 
+    /**
+     * @see HorseInventory#getHorseArmor()
+     */
     public Item getHorseArmor() {
         return this.getInventory().getHorseArmor();
     }
 
+    /**
+     * 播放驯服失败的动画
+     * <p>
+     * Play an animation of a failed tamer
+     */
     public void playTameFailAnimation() {
         this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_MAD, -1, "minecraft:horse", this.isBaby(), false);
         this.setDataFlag(EntityHorse.DATA_FLAGS, EntityHorse.DATA_FLAG_REARING);
     }
 
+    /**
+     * 停止播放驯服失败的动画
+     * <p>
+     * Stop playing the animation that failed to tame
+     */
     public void stopTameFailAnimation() {
         this.setDataFlag(EntityHorse.DATA_FLAGS, EntityHorse.DATA_FLAG_REARING, false);
+    }
+
+    protected float generateRandomMaxHealth() {
+        return 15.0F + (float) Utils.rand(0, 8) + (float) Utils.rand(0, 9);
+    }
+
+    protected float generateRandomJumpStrength() {
+        return (float) (0.4F + Utils.random.nextDouble() * 0.2D + Utils.random.nextDouble() * 0.2D + Utils.random.nextDouble() * 0.2D);
+    }
+
+    protected float generateRandomSpeed() {
+        return (float) ((0.45F + Utils.random.nextDouble() * 0.3D + Utils.random.nextDouble() * 0.3D + Utils.random.nextDouble() * 0.3D) * 0.25D);
+    }
+
+    protected Attribute[] randomizeAttributes() {
+        Attribute[] attributes = new Attribute[3];
+        attributes[0] = Attribute.getAttribute(Attribute.MOVEMENT_SPEED).setValue(generateRandomSpeed());
+        attributes[1] = Attribute.getAttribute(Attribute.MAX_HEALTH).setValue(generateRandomMaxHealth());
+        attributes[2] = Attribute.getAttribute(Attribute.HORSE_JUMP_STRENGTH).setValue(generateRandomJumpStrength());
+        ListTag<CompoundTag> compoundTagListTag = new ListTag<>();
+        compoundTagListTag.add(Attribute.toNBT(attributes[0])).add(Attribute.toNBT(attributes[1])).add(Attribute.toNBT(attributes[2]));
+        this.namedTag.putList("Attributes", compoundTagListTag);
+        return attributes;
+    }
+
+    @Override
+    protected DataPacket createAddEntityPacket() {
+        AddEntityPacket addEntity = new AddEntityPacket();
+        addEntity.type = this.getNetworkId();
+        addEntity.entityUniqueId = this.getId();
+        if (this instanceof CustomEntity customEntity) {
+            addEntity.id = customEntity.getDefinition().getStringId();
+        }
+        addEntity.entityRuntimeId = this.getId();
+        addEntity.yaw = (float) this.yaw;
+        addEntity.headYaw = (float) this.yaw;
+        addEntity.pitch = (float) this.pitch;
+        addEntity.x = (float) this.x;
+        addEntity.y = (float) this.y + this.getBaseOffset();
+        addEntity.z = (float) this.z;
+        addEntity.speedX = (float) this.motionX;
+        addEntity.speedY = (float) this.motionY;
+        addEntity.speedZ = (float) this.motionZ;
+        addEntity.metadata = this.dataProperties;
+        addEntity.attributes = this.attributeMap.values().toArray(Attribute.EMPTY_ARRAY);
+        addEntity.links = new EntityLink[this.passengers.size()];
+        for (int i = 0; i < addEntity.links.length; i++) {
+            addEntity.links[i] = new EntityLink(this.getId(), this.passengers.get(i).getId(), i == 0 ? EntityLink.TYPE_RIDER : TYPE_PASSENGER, false, false);
+        }
+
+        return addEntity;
     }
 }
