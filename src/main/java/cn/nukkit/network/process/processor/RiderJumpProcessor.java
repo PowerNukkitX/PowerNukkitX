@@ -16,6 +16,10 @@ public class RiderJumpProcessor extends DataPacketProcessor<RiderJumpPacket> {
             double motion = maxMotionY * (Math.max(1, pk.unknown) / 100.0);
             horse.getJumping().set(true);
             horse.move(0, motion, 0);
+            //避免onGround不更新
+            horse.motionX = 0;
+            horse.motionY = 0;
+            horse.motionZ = 0;
             horse.setDataFlag(EntityHorse.DATA_FLAGS, Entity.DATA_FLAG_REARING);
         }
     }

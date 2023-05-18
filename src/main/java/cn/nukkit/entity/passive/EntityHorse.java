@@ -312,6 +312,10 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
 
     public void onPlayerInput(Location clientLoc) {
         if (this.getRider() == null || this.getOwner() == null || this.getSaddle().isNull()) return;
+        //每次输入乘骑玩家位置之前都要确保motion为0,避免onGround不更新
+        this.motionX = 0;
+        this.motionY = 0;
+        this.motionZ = 0;
         this.setMoveTarget(null);
         this.setLookTarget(null);
         this.move(clientLoc.x - this.x, clientLoc.y - this.y, clientLoc.z - this.z);
