@@ -49,7 +49,6 @@ import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.network.protocol.SetEntityLinkPacket;
 import cn.nukkit.network.protocol.types.EntityLink;
-import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.Utils;
 
@@ -297,11 +296,11 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     @Override
     public boolean onUpdate(int currentTick) {
         boolean b = super.onUpdate(currentTick);
-        if (this.jumping.get() && this.isOnGround()) {
-            Server.getInstance().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
+        if (currentTick % 2 == 0) {
+            if (this.jumping.get() && this.isOnGround()) {
                 this.setDataFlag(EntityHorse.DATA_FLAGS, Entity.DATA_FLAG_REARING, false);
                 this.jumping.set(false);
-            }, 2);
+            }
         }
         return b;
     }
