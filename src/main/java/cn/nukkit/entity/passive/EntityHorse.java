@@ -107,7 +107,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
                 attributeMap.put(attribute.getName(), attribute);
             }
         }
-        this.setMaxHealth((int) Math.ceil(attributeMap.get("minecraft:health").getValue()));
+        this.setMaxHealth((int) Math.ceil(attributeMap.get("minecraft:health").getMaxValue()));
         super.initEntity();
 
         this.horseInventory = new HorseInventory(this);
@@ -163,7 +163,10 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     public void setHealth(float health) {
         super.setHealth(health);
         if (this.isAlive()) {
-            Attribute attr = this.attributeMap.get("minecraft:health").setMaxValue(this.getMaxHealth()).setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
+            Attribute attr = this.attributeMap.get("minecraft:health")
+                    .setDefaultValue(this.getMaxHealth())
+                    .setMaxValue(this.getMaxHealth())
+                    .setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
             UpdateAttributesPacket pk = new UpdateAttributesPacket();
             pk.entries = new Attribute[]{attr};
             pk.entityId = this.id;
@@ -174,7 +177,10 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     @Override
     public void setMaxHealth(int maxHealth) {
         super.setMaxHealth(maxHealth);
-        Attribute attr = this.attributeMap.get("minecraft:health").setMaxValue(maxHealth).setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
+        Attribute attr = this.attributeMap.get("minecraft:health")
+                .setMaxValue(maxHealth)
+                .setDefaultValue(maxHealth)
+                .setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
         if (this.isAlive()) {
             UpdateAttributesPacket pk = new UpdateAttributesPacket();
             pk.entries = new Attribute[]{attr};
@@ -453,6 +459,20 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         this.setDataFlag(EntityHorse.DATA_FLAGS, EntityHorse.DATA_FLAG_REARING, false);
     }
 
+    @Override
+    public void spawnTo(Player player) {
+        super.spawnTo(player);
+        //确保第一次生成时血量更新，单纯在AddEntityPacket中发送属性似乎还不够，还需要UpdateAttributesPacket
+        Attribute attr = this.attributeMap.get("minecraft:health")
+                .setDefaultValue(this.getMaxHealth())
+                .setMaxValue(this.getMaxHealth())
+                .setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
+        UpdateAttributesPacket pk = new UpdateAttributesPacket();
+        pk.entries = new Attribute[]{attr};
+        pk.entityId = this.id;
+        player.dataPacket(pk);
+    }
+
     protected float generateRandomMaxHealth() {
         return 15.0F + (float) Utils.rand(0, 8) + (float) Utils.rand(0, 9);
     }
@@ -468,7 +488,8 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     protected Attribute[] randomizeAttributes() {
         Attribute[] attributes = new Attribute[3];
         attributes[0] = Attribute.getAttribute(Attribute.MOVEMENT_SPEED).setValue(generateRandomSpeed());
-        attributes[1] = Attribute.getAttribute(Attribute.MAX_HEALTH).setValue(generateRandomMaxHealth());
+        float maxHealth = generateRandomMaxHealth();
+        attributes[1] = Attribute.getAttribute(Attribute.MAX_HEALTH).setMinValue(0).setMaxValue(maxHealth).setDefaultValue(maxHealth).setValue(maxHealth);
         attributes[2] = Attribute.getAttribute(Attribute.HORSE_JUMP_STRENGTH).setValue(generateRandomJumpStrength());
         ListTag<CompoundTag> compoundTagListTag = new ListTag<>();
         compoundTagListTag.add(Attribute.toNBT(attributes[0])).add(Attribute.toNBT(attributes[1])).add(Attribute.toNBT(attributes[2]));

@@ -1694,6 +1694,13 @@ public abstract class Entity extends Location implements Metadatable {
         return shortNames.getOrDefault(this.getClass().getSimpleName(), "");
     }
 
+    /**
+     * 将这个实体在客户端生成，让该玩家可以看到它
+     * <p>
+     * Spawn this entity on the client side so that the player can see it
+     *
+     * @param player the player
+     */
     public void spawnTo(Player player) {
 
         if (!this.hasSpawned.containsKey(player.getLoaderId()) && this.chunk != null && player.usedChunks.containsKey(Level.chunkHash(this.chunk.getX(), this.chunk.getZ()))) {
