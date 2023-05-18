@@ -157,7 +157,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     public void setHealth(float health) {
         super.setHealth(health);
         if (this.isAlive()) {
-            Attribute attr = Attribute.getAttribute(Attribute.MAX_HEALTH).setMaxValue(this.getMaxHealth()).setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
+            Attribute attr = this.attributeMap.get("minecraft:health").setMaxValue(this.getMaxHealth()).setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
             UpdateAttributesPacket pk = new UpdateAttributesPacket();
             pk.entries = new Attribute[]{attr};
             pk.entityId = this.id;
@@ -168,7 +168,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     @Override
     public void setMaxHealth(int maxHealth) {
         super.setMaxHealth(maxHealth);
-        Attribute attr = Attribute.getAttribute(Attribute.MAX_HEALTH).setMaxValue(maxHealth).setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
+        Attribute attr = this.attributeMap.get("minecraft:health").setMaxValue(maxHealth).setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
         if (this.isAlive()) {
             UpdateAttributesPacket pk = new UpdateAttributesPacket();
             pk.entries = new Attribute[]{attr};
