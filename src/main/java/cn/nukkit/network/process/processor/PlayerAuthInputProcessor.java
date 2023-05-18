@@ -159,8 +159,15 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
             entityMinecartAbstract.setCurrentSpeed(pk.getMotion().getY());
         } else if (playerHandle.player.riding instanceof EntityHorse entityHorse) {
             //为了保证玩家和马位置同步，骑马时不使用移动队列处理
-            entityHorse.onPlayerInput(clientLoc);
-            playerHandle.handleMovement(clientLoc);
+            var distance = clientLoc.distanceSquared(player);
+            var updatePosition = (float) Math.sqrt(distance) > 0.1f;
+            var updateRotation = (float) Math.abs(player.getPitch() - clientLoc.pitch) > 1
+                    || (float) Math.abs(player.getYaw() - clientLoc.yaw) > 1
+                    || (float) Math.abs(player.getHeadYaw() - clientLoc.headYaw) > 1;
+            if (updatePosition || updateRotation) {
+                entityHorse.onPlayerInput(clientLoc);
+                playerHandle.handleMovement(clientLoc);
+            }
             return;
         }
         playerHandle.offerMovementTask(clientLoc);
