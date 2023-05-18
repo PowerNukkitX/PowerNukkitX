@@ -2,6 +2,8 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.passive.EntityHorse;
 import cn.nukkit.item.Item;
@@ -17,6 +19,8 @@ import cn.nukkit.network.protocol.UpdateEquipmentPacket;
 import java.io.IOException;
 import java.util.List;
 
+@PowerNukkitXOnly
+@Since("1.19.80-r3")
 public class HorseInventory extends BaseInventory {
     private static final CompoundTag slot0;
     private static final CompoundTag slot1;

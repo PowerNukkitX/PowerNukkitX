@@ -1,6 +1,8 @@
 package cn.nukkit.entity.ai.executor;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
@@ -16,6 +18,8 @@ import org.jetbrains.annotations.NotNull;
  * <p>
  * Represents the behavior of a horse when the player tames it
  */
+@PowerNukkitXOnly
+@Since("1.19.80-r3")
 public class TameHorseExecutor extends FlatRandomRoamExecutor {
     protected final int tameProbability;
     private int tick1;//control the stopTameFailAnimation

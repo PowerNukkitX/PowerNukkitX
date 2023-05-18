@@ -1,11 +1,15 @@
 package cn.nukkit.entity;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.utils.Utils;
 
 /**
  * 实现这个接口的实体拥有次要变种属性
  */
+@PowerNukkitXOnly
+@Since("1.19.80-r3")
 public interface EntityMarkVariant extends EntityComponent {
     default int getMarkVariant() {
         return getMemoryStorage().get(CoreMemoryTypes.MARK_VARIANT);
