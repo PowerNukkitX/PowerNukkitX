@@ -4081,8 +4081,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.hasSpawned.clear();
             this.spawnPosition = null;
 
-            if (this.riding instanceof EntityRideable) {
-                this.riding.passengers.remove(this);
+            if (this.riding instanceof EntityRideable entityRideable) {
+                entityRideable.dismountEntity(this);
             }
 
             this.riding = null;
