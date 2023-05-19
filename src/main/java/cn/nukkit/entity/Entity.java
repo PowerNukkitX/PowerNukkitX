@@ -1158,6 +1158,11 @@ public abstract class Entity extends Location implements Metadatable {
         return 1;
     }
 
+    /**
+     * 用于初始化实体的NBT和实体字段的方法
+     * <p>
+     * The method used to initialize the NBT and entity fields of the entity
+     */
     protected void initEntity() {
         if (!(this instanceof Player)) {
             if (this.namedTag.contains("uuid")) {
@@ -1281,7 +1286,6 @@ public abstract class Entity extends Location implements Metadatable {
             this.chunk.addEntity(this);
             this.level.addEntity(this);
 
-            //TODO: 此方法放在这里调用不合适
             this.initEntity();
 
             this.lastUpdate = this.server.getTick();
@@ -1953,7 +1957,7 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public boolean canCollideWith(Entity entity) {
-        return !this.justCreated && this != entity;
+        return !this.justCreated && this != entity && !this.noClip;
     }
 
     protected boolean checkObstruction(double x, double y, double z) {

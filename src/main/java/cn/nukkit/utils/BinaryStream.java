@@ -7,10 +7,7 @@ import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.inventory.recipe.*;
-import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemDurable;
-import cn.nukkit.item.ItemID;
-import cn.nukkit.item.RuntimeItems;
+import cn.nukkit.item.*;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.GameRules;
 import cn.nukkit.math.BlockFace;
@@ -424,11 +421,12 @@ public class BinaryStream {
             }
         }
 
+        //instance item
         if (getBoolean()) { // hasNetId
             getVarInt(); // netId
         }
 
-        int blockRuntimeId = getVarInt();
+        int blockRuntimeId = getVarInt();//blockDefinition
         if (id != null && id <= 255 && id != FALLBACK_ID) {
             BlockState blockStateByRuntimeId = BlockStateRegistry.getBlockStateByRuntimeId(blockRuntimeId);
             if (blockStateByRuntimeId != null) {
@@ -611,23 +609,27 @@ public class BinaryStream {
             item = createFakeUnknownItem(item);
             networkId = RuntimeItems.getRuntimeMapping().getNetworkId(item);
         }
-        putVarInt(networkId);
-        putLShort(item.getCount());
+        putVarInt(networkId);//write runtimeId
+        putLShort(item.getCount());//write item count
 
         int legacyData = 0;
         if (item.getId() > 256) { // Not a block
+            //不是item_mappings.json中的物品才会写入damage值，因为item_mappings.json的作用是将旧的物品id:damage转换到最新的无damage值的物品
             if (item instanceof ItemDurable || !RuntimeItems.getRuntimeMapping().toRuntime(item.getId(), item.getDamage()).hasDamage()) {
                 legacyData = item.getDamage();
             }
+        } else if (item instanceof StringItem) {
+            legacyData = item.getDamage();
         }
-        putUnsignedVarInt(legacyData);
+
+        putUnsignedVarInt(legacyData);//write damage value
 
         if (!instanceItem) {
             putBoolean(true); // hasNetId
             putVarInt(0); // netId
         }
 
-        Block block = item.getBlockUnsafe();
+        Block block = item.getBlockUnsafe();//write blockDefinition
         int blockRuntimeId = block == null ? 0 : block.getRuntimeId();
         putVarInt(blockRuntimeId);
 
@@ -661,20 +663,20 @@ public class BinaryStream {
                 userDataBuf.writeShortLE(0);
             }
 
-            List<String> canPlaceOn = extractStringList(item, "CanPlaceOn");
+            List<String> canPlaceOn = extractStringList(item, "CanPlaceOn");//write canPlace
             stream.writeInt(canPlaceOn.size());
             for (String string : canPlaceOn) {
                 stream.writeUTF(string);
             }
 
-            List<String> canDestroy = extractStringList(item, "CanDestroy");
+            List<String> canDestroy = extractStringList(item, "CanDestroy");//write canBreak
             stream.writeInt(canDestroy.size());
             for (String string : canDestroy) {
                 stream.writeUTF(string);
             }
 
             if (item.getId() == ItemID.SHIELD) {
-                stream.writeLong(0);
+                stream.writeLong(0);//BlockingTicks
             }
 
             byte[] bytes = new byte[userDataBuf.readableBytes()];

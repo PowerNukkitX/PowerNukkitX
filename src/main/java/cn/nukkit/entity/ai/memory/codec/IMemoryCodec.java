@@ -41,7 +41,7 @@ public interface IMemoryCodec<Data> {
      * @param data   the data
      * @param entity the entity
      */
-    void init(Data data, EntityIntelligent entity);
+    void init(@Nullable Data data, EntityIntelligent entity);
 
     @Nullable
     default Data decode(CompoundTag tag) {

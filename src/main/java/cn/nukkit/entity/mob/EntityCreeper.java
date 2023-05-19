@@ -24,7 +24,6 @@ import cn.nukkit.entity.data.ByteEntityData;
 import cn.nukkit.entity.weather.EntityLightningStrike;
 import cn.nukkit.event.entity.CreeperPowerEvent;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
-import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.FullChunk;
@@ -171,16 +170,6 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;
-    }
-
-    @Override
-    public boolean attack(EntityDamageEvent source) {
-        var result = super.attack(source);
-        if (source instanceof EntityDamageByEntityEvent entityDamageByEntityEvent && !(entityDamageByEntityEvent.getDamager() instanceof EntityCreeper)) {
-            //更新仇恨目标
-            getMemoryStorage().put(CoreMemoryTypes.ATTACK_TARGET, entityDamageByEntityEvent.getDamager());
-        }
-        return result;
     }
 
     @Override

@@ -151,7 +151,7 @@ public class Nether extends Generator {
                     if (getNoise(baseX | x, y, baseZ | z) > 0) {
                         chunk.setBlockId(x, y, z, biome.getMiddleBlock());
                     } else if (y <= this.lavaHeight) {
-                        chunk.setBlockId(x, y, z, Block.STILL_LAVA);
+                        chunk.setBlockId(x, y, z, Block.FLOWING_LAVA);
                         chunk.setBlockLight(x, y + 1, z, 15);
                     }
                 }

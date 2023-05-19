@@ -18,7 +18,6 @@ import cn.nukkit.level.Position;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.Network;
 import cn.nukkit.network.SourceInterface;
-import cn.nukkit.network.process.DataPacketManager;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.InventorySource;
 import cn.nukkit.network.protocol.types.NetworkInventoryAction;
@@ -30,10 +29,12 @@ import org.mockito.Mock;
 import org.mockito.internal.verification.Times;
 import org.powernukkit.tests.api.MockEntity;
 import org.powernukkit.tests.api.MockLevel;
+import org.powernukkit.tests.api.ReflectionUtil;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
 import org.powernukkit.tests.mocks.DelegatePlayer;
 
 import java.awt.image.BufferedImage;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -47,10 +48,10 @@ class PlayerTest {
     private final Long clientId = 32L;
     private final String clientIp = "1.2.3.4";
     private final int clientPort = 3232;
-    
+
     @MockLevel
     Level level;
-    
+
     @Mock
     SourceInterface sourceInterface;
 
@@ -221,11 +222,13 @@ class PlayerTest {
     }
 
     @Test
-    void tooManyFailedLoginAttempts() {
+    void tooManyFailedLoginAttempts() throws NoSuchFieldException {
         PluginManager pluginManager = mock(PluginManager.class);
         when(player.getServer().getPluginManager()).thenReturn(pluginManager);
         DelegatePlayer player = new DelegatePlayer(sourceInterface, clientId, clientIp, clientPort);
-
+        Field username = Player.class.getDeclaredField("username");
+        username.setAccessible(true);
+        ReflectionUtil.setField(player, username, "TestPlayer2");
         FilterTextPacket packet = new FilterTextPacket();
         packet.text = "asd";
         packet.fromServer = false;
@@ -253,7 +256,7 @@ class PlayerTest {
     void armorDamage() {
         player.attack(new EntityDamageEvent(player, EntityDamageEvent.DamageCause.FALL, 1));
         PlayerInventory inventory = player.getInventory();
-        
+
         ////// Block in armor content ////////
         inventory.setArmorContents(new Item[]{
                 Item.getBlock(BlockID.WOOL),
@@ -319,7 +322,7 @@ class PlayerTest {
     void dupeCommand() {
         Item stick = Item.get(ItemID.STICK);
         Item air = Item.getBlock(BlockID.AIR, 0, 0);
-        
+
         player.getInventory().addItem(stick);
         List<NetworkInventoryAction> actions = new ArrayList<>();
         NetworkInventoryAction remove = new NetworkInventoryAction();
@@ -345,13 +348,13 @@ class PlayerTest {
 
         InventoryTransactionPacket packet = new InventoryTransactionPacket();
         packet.actions = actions.toArray(NetworkInventoryAction.EMPTY_ARRAY);
-        
+
         player.handleDataPacket(packet);
 
         int count = countItems(stick);
         assertEquals(1, count);
     }
-    
+
     private int countItems(Item item) {
         int count = 0;
         for (int i = 0; i < player.getInventory().getSize(); i++) {
@@ -365,19 +368,18 @@ class PlayerTest {
 
     @BeforeEach
     void setUp() {
-        DataPacketManager.registerDefaultProcessors();
         /// Setup Level ///
         doReturn(new Position(100,64,200, level)).when(level).getSafeSpawn();
-        
+
         /// Setup Server ///
         doReturn(level).when(Server.getInstance()).getDefaultLevel();
-        
+
         /// Setup skin ///
         skin = new Skin();
         skin.setSkinId("test");
         skin.setSkinData(new BufferedImage(64, 32, BufferedImage.TYPE_INT_BGR));
         assertTrue(skin.isValid());
-        
+
         /// Make player login ///
         player = new DelegatePlayer(sourceInterface, clientId, clientIp, clientPort);
         LoginPacket loginPacket = new LoginPacket();
@@ -391,9 +393,9 @@ class PlayerTest {
         loginPacket.putLInt(0);
         player.handleDataPacket(loginPacket);
         player.completeLoginSequence();
-        
+
         assertTrue(player.isOnline(), "Failed to make the fake player login");
-        
+
         player.doFirstSpawn();
     }
 }

@@ -64,4 +64,10 @@ public class EntityPhantom extends EntityMob implements EntityFlyable, EntitySmi
     public boolean isPreventingSleep(Player player) {
         return true;
     }
+
+    @Override
+    public boolean onUpdate(int currentTick) {
+        burn(this);
+        return super.onUpdate(currentTick);
+    }
 }

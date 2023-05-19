@@ -69,7 +69,7 @@ public final class DataPacketManager {
                 new RequestAbilityProcessor(),
                 new MobEquipmentProcessor(),
                 new PlayerActionProcessor(),
-                new ModalFormRequestProcessor(),
+                new ModalFormResponseProcessor(),
                 new NPCRequestProcessor(),
                 new InteractProcessor(),
                 new BlockPickRequestProcessor(),

@@ -76,7 +76,7 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityTa
                         new Behavior(
                                 new InLoveExecutor(400),
                                 all(
-                                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_FED_TIME, 0, 400),
+                                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_FEED_TIME, 0, 400),
                                         new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE),
                                         //只有拥有主人的狼才能交配
                                         //Only wolves with a master can mate
@@ -136,7 +136,7 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityTa
                         //坐下锁定
                         new Behavior(entity -> false, entity -> this.isSitting(), 7),
                         //攻击仇恨目标 todo 召集同伴
-                        new Behavior(new WolfAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.7f, 33, true, 15),
+                        new Behavior(new WolfAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.7f, 33, true, 20),
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET)
                                 , 6, 1),
                         new Behavior(new EntityBreedingExecutor<>(EntityWolf.class, 16, 100, 0.35f), entity -> entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE), 5, 1),
@@ -266,7 +266,7 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityTa
             }
 
             getMemoryStorage().put(CoreMemoryTypes.LAST_FEED_PLAYER, player);
-            getMemoryStorage().put(CoreMemoryTypes.LAST_BE_FED_TIME, Server.getInstance().getTick());
+            getMemoryStorage().put(CoreMemoryTypes.LAST_BE_FEED_TIME, Server.getInstance().getTick());
             return true;
         } else if (this.hasOwner() && player.getName().equals(getOwnerName()) && !this.isTouchingWater()) {
             this.setSitting(!this.isSitting());

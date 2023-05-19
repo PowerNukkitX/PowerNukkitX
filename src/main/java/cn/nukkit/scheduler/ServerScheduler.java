@@ -38,6 +38,14 @@ public class ServerScheduler {
         this.asyncPool = new AsyncPool(Server.getInstance(), WORKERS);
     }
 
+    /**
+     * 设置一个只执行一次的任务 delay=0 period=0 asynchronous=false
+     * <p>
+     * Set a task to be executed only once,delay=0 period=0 asynchronous=false
+     *
+     * @param task the task
+     * @return the task handler
+     */
     public TaskHandler scheduleTask(Task task) {
         return addTask(task, 0, 0, false);
     }
@@ -50,6 +58,15 @@ public class ServerScheduler {
         return addTask(null, task, 0, 0, false);
     }
 
+    /**
+     * 设置一个只执行一次的任务 delay=0 period=0 asynchronous=false
+     * <p>
+     * Set a task to be executed only once,delay=0 period=0 asynchronous=false
+     *
+     * @param plugin the plugin
+     * @param task   the task
+     * @return the task handler
+     */
     public TaskHandler scheduleTask(Plugin plugin, Runnable task) {
         return addTask(plugin, task, 0, 0, false);
     }
@@ -62,6 +79,16 @@ public class ServerScheduler {
         return addTask(null, task, 0, 0, asynchronous);
     }
 
+    /**
+     * 设置一个只执行一次的任务 delay=0 period=0
+     * <p>
+     * Set a task to be executed only once,delay=0 period=0
+     *
+     * @param plugin       the plugin
+     * @param task         the task
+     * @param asynchronous 是否异步执行<br>Whether it executes asynchronously
+     * @return the task handler
+     */
     public TaskHandler scheduleTask(Plugin plugin, Runnable task, boolean asynchronous) {
         return addTask(plugin, task, 0, 0, asynchronous);
     }
@@ -109,6 +136,16 @@ public class ServerScheduler {
         return this.addTask(task, delay, 0, false);
     }
 
+    /**
+     * 设置一个只执行一次的延迟任务
+     * <p>
+     * Set up a deferred task that executes only once
+     *
+     * @param task         任务,可用lambda表达式创建<br>Tasks, which can be created using lambda expressions
+     * @param delay        延迟时间,单位tick(20tick = 1s)<br>Delay time, in tick (20tick = 1s)
+     * @param asynchronous 是否异步执行，如果是，会启用一个新线程执行任务<br>Whether it executes asynchronously, and if so, enables a new thread to execute the task
+     * @return the task handler
+     */
     public TaskHandler scheduleDelayedTask(Task task, int delay, boolean asynchronous) {
         return this.addTask(task, delay, 0, asynchronous);
     }
@@ -121,6 +158,15 @@ public class ServerScheduler {
         return addTask(null, task, delay, 0, false);
     }
 
+    /**
+     * 设置一个只执行一次的非异步(在主线程执行)延迟任务
+     * <p>
+     * Set up a non-asynchronous (execute on the main thread) deferred task that executes only once
+     *
+     * @param plugin the plugin
+     * @param task   任务,可用lambda表达式创建<br>Tasks, which can be created using lambda expressions
+     * @return the task handler
+     */
     public TaskHandler scheduleDelayedTask(Plugin plugin, Runnable task, int delay) {
         return addTask(plugin, task, delay, 0, false);
     }
@@ -197,6 +243,18 @@ public class ServerScheduler {
         return addTask(null, task, delay, period, asynchronous);
     }
 
+    /**
+     * 设置一个延迟周期任务
+     * <p>
+     * Set a deferral period task
+     *
+     * @param plugin       the plugin
+     * @param task         the task
+     * @param delay        延迟开始的时间，单位tick<br>The time to delay the start in tick
+     * @param period       周期执行的时间，单位tick<br>The time of the cycle execution, in tick
+     * @param asynchronous 是否异步执行<br>Whether it executes asynchronously
+     * @return the task handler
+     */
     public TaskHandler scheduleDelayedRepeatingTask(Plugin plugin, Runnable task, int delay, int period, boolean asynchronous) {
         return addTask(plugin, task, delay, period, asynchronous);
     }
@@ -247,7 +305,7 @@ public class ServerScheduler {
     }
 
     private TaskHandler addTask(Task task, int delay, int period, boolean asynchronous) {
-        return addTask(task instanceof PluginTask ? ((PluginTask) task).getOwner() : null, task, delay, period, asynchronous);
+        return addTask(task instanceof PluginTask ? ((PluginTask<?>) task).getOwner() : null, task, delay, period, asynchronous);
     }
 
     private TaskHandler addTask(Plugin plugin, Runnable task, int delay, int period, boolean asynchronous) {

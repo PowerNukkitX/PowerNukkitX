@@ -8,13 +8,13 @@ import cn.nukkit.form.handler.FormResponseHandler;
 import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.form.window.FormWindowCustom;
 import cn.nukkit.network.process.DataPacketProcessor;
-import cn.nukkit.network.protocol.ModalFormRequestPacket;
+import cn.nukkit.network.protocol.ModalFormResponsePacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import org.jetbrains.annotations.NotNull;
 
-public class ModalFormRequestProcessor extends DataPacketProcessor<ModalFormRequestPacket> {
+public class ModalFormResponseProcessor extends DataPacketProcessor<ModalFormResponsePacket> {
     @Override
-    public void handle(@NotNull PlayerHandle playerHandle, @NotNull ModalFormRequestPacket pk) {
+    public void handle(@NotNull PlayerHandle playerHandle, @NotNull ModalFormResponsePacket pk) {
         Player player = playerHandle.player;
         if (!player.spawned || !player.isAlive()) {
             return;
@@ -49,6 +49,6 @@ public class ModalFormRequestProcessor extends DataPacketProcessor<ModalFormRequ
 
     @Override
     public int getPacketId() {
-        return ProtocolInfo.toNewProtocolID(ProtocolInfo.MODAL_FORM_REQUEST_PACKET);
+        return ProtocolInfo.toNewProtocolID(ProtocolInfo.MODAL_FORM_RESPONSE_PACKET);
     }
 }

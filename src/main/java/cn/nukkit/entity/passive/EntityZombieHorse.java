@@ -57,4 +57,10 @@ public class EntityZombieHorse extends EntityAnimal implements EntityWalkable, E
     public String getOriginalName() {
         return "Zombie Horse";
     }
+
+    @Override
+    public boolean onUpdate(int currentTick) {
+        burn(this);
+        return super.onUpdate(currentTick);
+    }
 }

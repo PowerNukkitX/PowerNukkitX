@@ -106,5 +106,4 @@ public class EntityHusk extends EntityZombie {
     public boolean isPreventingSleep(Player player) {
         return true;
     }
-
 }

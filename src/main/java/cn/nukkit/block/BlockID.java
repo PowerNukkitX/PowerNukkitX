@@ -44,7 +44,7 @@ public interface BlockID {
             reason = "Wrong Minecraft block name")
     int WATER = FLOWING_WATER;
     int STILL_WATER = 9;
-    @Since("FUTURE")
+
     @PowerNukkitOnly
     int FLOWING_LAVA = 10;
     @Deprecated

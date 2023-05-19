@@ -35,10 +35,10 @@ import java.util.Map;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class EntityLiving extends Entity implements EntityDamageable {
-
+    public final static float DEFAULT_SPEED = 0.1f;
     protected int attackTime = 0;
     protected boolean invisible = false;
-    protected float movementSpeed = 0.1f;
+    protected float movementSpeed = DEFAULT_SPEED;
     protected int turtleTicks = 0;
     private boolean attackTimeByShieldKb;
     private int attackTimeBefore;
@@ -302,7 +302,8 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 //        }
 
         // Used to check collisions with magma / cactus blocks
-        var block = this.level.getTickCachedBlock((int) Math.floor(x), (int) y - 1, (int) Math.floor(z));
+        // Math.round处理在某些条件下 出现x.999999的坐标条件,这里选择四舍五入
+        var block = this.level.getTickCachedBlock(getFloorX(), (int) (Math.round(this.y) - 1), getFloorZ());
         if (block instanceof BlockMagma || block instanceof BlockCactus) block.onEntityCollide(this);
 
         Timings.livingEntityBaseTickTimer.stopTiming();

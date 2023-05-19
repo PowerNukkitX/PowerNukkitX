@@ -23,7 +23,7 @@ public class BlockSnow extends BlockSolid {
 
     @Override
     public double getHardness() {
-        return 0.2;
+        return 0.6;
     }
 
     @Override

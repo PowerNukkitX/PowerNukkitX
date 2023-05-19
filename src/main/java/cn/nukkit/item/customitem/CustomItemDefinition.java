@@ -270,6 +270,8 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
                 while (RuntimeItems.getRuntimeMapping().getNamespacedIdByNetworkId(nextRuntimeId.incrementAndGet()) != null)
                     ;
                 INTERNAL_ALLOCATION_ID_MAP.put(result.identifier(), nextRuntimeId.get());
+                result.nbt.putString("name", result.identifier());
+                result.nbt.putInt("id", nextRuntimeId.get());
             }
             return result;
         }
@@ -279,8 +281,8 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
          * <p>
          * Add an item that can repair the item
          *
-         * @param repairItems the repair items
-         * @param molang      the molang
+         * @param repairItemNames the repair item names
+         * @param molang          the molang
          * @return the simple builder
          */
         @Since("1.19.40-r1")
@@ -498,6 +500,21 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
         }
 
         /**
+         * 物品的攻击力必须大于0才能生效<p>
+         * 标记这个物品是否为武器，如果是，会在物品描述中提示{@code "+X 攻击伤害"}的信息
+         * <p>
+         * The item's attack damage must be greater than 0<p>
+         * define the item is a weapon or not, and if so, it will prompt {@code "+X attack damage"} in the item description
+         */
+        @Since("1.19.80-r3")
+        public ToolBuilder isWeapon() {
+            if (this.item.getAttackDamage() > 0 && !this.nbt.getCompound("components").containsCompound("minecraft:weapon")) {
+                this.nbt.getCompound("components").putCompound(new CompoundTag("minecraft:weapon"));
+            }
+            return this;
+        }
+
+        /**
          * 给工具添加可挖掘的一类方块，用blockTag描述，挖掘它们的速度为{@link #speed(int)}的速度，如果没定义则为工具TIER对应的速度
          * <p>
          * Add a class of block to the tool that can be mined, described by blockTag, and the speed to mine them is the speed of {@link #speed(int)}, or the speed corresponding to the tool TIER if it is not defined
@@ -542,27 +559,32 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
                 this.nbt.getCompound("components").getCompound("item_properties")
                         .putString("enchantable_slot", "pickaxe");
                 this.tag("minecraft:is_pickaxe");
+                this.isWeapon();
             } else if (item.isAxe()) {
                 this.blockTags.addAll(List.of("'wood'", "'pumpkin'", "'plant'"));
                 type = ItemTag.IS_AXE;
                 this.nbt.getCompound("components").getCompound("item_properties")
                         .putString("enchantable_slot", "axe");
                 this.tag("minecraft:is_axe");
+                this.isWeapon();
             } else if (item.isShovel()) {
                 this.blockTags.addAll(List.of("'sand'", "'dirt'", "'gravel'", "'grass'", "'snow'"));
                 type = ItemTag.IS_SHOVEL;
                 this.nbt.getCompound("components").getCompound("item_properties")
                         .putString("enchantable_slot", "shovel");
                 this.tag("minecraft:is_shovel");
+                this.isWeapon();
             } else if (item.isHoe()) {
                 this.nbt.getCompound("components").getCompound("item_properties")
                         .putString("enchantable_slot", "hoe");
                 type = ItemTag.IS_HOE;
                 this.tag("minecraft:is_hoe");
+                this.isWeapon();
             } else if (item.isSword()) {
                 this.nbt.getCompound("components").getCompound("item_properties")
                         .putString("enchantable_slot", "sword");
                 type = ItemTag.IS_SWORD;
+                this.isWeapon();
             } else {
                 if (this.nbt.getCompound("components").contains("item_tags")) {
                     var list = this.nbt.getCompound("components").getList("item_tags", StringTag.class).getAll();
