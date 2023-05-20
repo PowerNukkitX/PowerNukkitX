@@ -11,8 +11,8 @@ import java.util.List;
 @PowerNukkitXOnly
 @Getter
 public class UnlockedRecipesPacket extends DataPacket {
-    private boolean unlockedNotification;
-    private final List<String> unlockedRecipes = new ObjectArrayList<>();
+    public boolean unlockedNotification;
+    public final List<String> unlockedRecipes = new ObjectArrayList<>();
 
     @Override
     public byte pid() {

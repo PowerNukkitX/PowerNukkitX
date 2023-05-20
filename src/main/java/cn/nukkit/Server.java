@@ -1812,6 +1812,7 @@ public class Server {
             }
         }
     }
+
     public void handlePacket(InetSocketAddress address, ByteBuf payload) {
         try {
             if (!payload.isReadable(3)) {
@@ -1880,6 +1881,7 @@ public class Server {
     public void disablePlugins() {
         this.pluginManager.disablePlugins();
     }
+
     public PluginManager getPluginManager() {
         return this.pluginManager;
     }
@@ -3257,6 +3259,7 @@ public class Server {
     public boolean isLanguageForced() {
         return forceLanguage;
     }
+
     @PowerNukkitOnly
     public boolean isRedstoneEnabled() {
         return redstoneEnabled;
@@ -3343,6 +3346,7 @@ public class Server {
         this.properties.set(variable, value ? "1" : "0");
         this.properties.save();
     }
+
     public boolean shouldSavePlayerData() {
         return this.getConfig("player.save-player-data", true);
     }
