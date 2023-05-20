@@ -2,6 +2,7 @@ package cn.nukkit.network.process.processor;
 
 import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
+import cn.nukkit.Server;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityItemFrame;
 import cn.nukkit.event.player.PlayerMapInfoRequestEvent;
@@ -10,6 +11,9 @@ import cn.nukkit.item.ItemMap;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.MapInfoRequestPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
+import cn.nukkit.plugin.InternalPlugin;
+import cn.nukkit.plugin.PowerNukkitPlugin;
+import cn.nukkit.scheduler.AsyncTask;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -56,24 +60,29 @@ public class MapInfoRequestProcessor extends DataPacketProcessor<MapInfoRequestP
                 if (map.trySendImage(player)) {
                     return;
                 }
-                try {
-                    BufferedImage image = new BufferedImage(128, 128, BufferedImage.TYPE_INT_RGB);
-                    Graphics2D graphics = image.createGraphics();
+                Server.getInstance().getScheduler().scheduleAsyncTask(InternalPlugin.INSTANCE, new AsyncTask() {
+                    @Override
+                    public void onRun() {
+                        try {
+                            BufferedImage image = new BufferedImage(128, 128, BufferedImage.TYPE_INT_RGB);
+                            Graphics2D graphics = image.createGraphics();
 
-                    int worldX = (player.getFloorX() / 128) << 7;
-                    int worldZ = (player.getFloorZ() / 128) << 7;
-                    for (int x = 0; x < 128; x++) {
-                        for (int y = 0; y < 128; y++) {
-                            graphics.setColor(new Color(player.getLevel().getMapColorAt(worldX + x, worldZ + y).getRGB()));
-                            graphics.fillRect(x, y, x + 1, y + 1);
+                            int worldX = (player.getFloorX() / 128) << 7;
+                            int worldZ = (player.getFloorZ() / 128) << 7;
+                            for (int x = 0; x < 128; x++) {
+                                for (int z = 0; z < 128; z++) {
+                                    graphics.setColor(player.getLevel().getMapColorAt(worldX + x, worldZ + z));
+                                    graphics.fillRect(x, z, x + 1, z + 1);
+                                }
+                            }
+
+                            map.setImage(image);
+                            map.sendImage(player);
+                        } catch (Exception ex) {
+                            player.getServer().getLogger().warning("There was an error while generating map image", ex);
                         }
                     }
-
-                    map.setImage(image);
-                    map.sendImage(player);
-                } catch (Exception ex) {
-                    player.getServer().getLogger().debug("There was an error while generating map image", ex);
-                }
+                });
             }
         }
     }
