@@ -76,8 +76,9 @@ import javax.annotation.Nullable;
 import java.awt.*;
 import java.io.File;
 import java.lang.ref.SoftReference;
-import java.util.*;
 import java.util.List;
+import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.*;
 import java.util.stream.Collectors;
@@ -3793,30 +3794,22 @@ public class Level implements ChunkManager, Metadatable {
         var nzy = getMapColoredBlockAt(x, z - 1);
         if (nzy == null) return color;
         if (nzy.getFloorY() > block.getFloorY()) {
-            var deltaY = nzy.getFloorY() - block.getFloorY();
-            if (deltaY >= 5)
-                color = darker(color, 0.6);
-            else if (deltaY == 4)
-                color = darker(color, 0.65);
-            else if (deltaY == 3)
-                color = darker(color, 0.7);
-            else if (deltaY == 2)
-                color = darker(color, 0.75);
-            else if (deltaY == 1)
-                color = darker(color, 0.8);
+            color = switch (nzy.getFloorY() - block.getFloorY()) {
+                case 1 -> darker(color, 0.8);
+                case 2 -> darker(color, 0.75);
+                case 3 -> darker(color, 0.7);
+                case 4 -> darker(color, 0.65);
+                default -> darker(color, 0.6);
+            };
         }
         else if (nzy.getFloorY() < block.getFloorY()) {
-            var deltaY = block.getFloorY() - nzy.getFloorY();
-            if (deltaY >= 5)
-                color = brighter(color, 0.6);
-            else if (deltaY == 4)
-                color = brighter(color, 0.65);
-            else if (deltaY == 3)
-                color = brighter(color, 0.7);
-            else if (deltaY == 2)
-                color = brighter(color, 0.75);
-            else if (deltaY == 1)
-                color = brighter(color, 0.8);
+            color = switch (block.getFloorY() - nzy.getFloorY()) {
+                case 1 -> brighter(color, 0.8);
+                case 2 -> brighter(color, 0.75);
+                case 3 -> brighter(color, 0.7);
+                case 4 -> brighter(color, 0.65);
+                default -> brighter(color, 0.6);
+            };
         }
 
         var deltaY = block.y - 128;
