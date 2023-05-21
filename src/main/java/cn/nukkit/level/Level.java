@@ -3778,9 +3778,12 @@ public class Level implements ChunkManager, Metadatable {
         return this.getChunk(x >> 4, z >> 4, true).getHighestBlockAt(x & 0x0f, z & 0x0f);
     }
 
+    protected static final Color VOID_BLOCK_COLOR = new Color(BlockColor.VOID_BLOCK_COLOR.getRGB());
+    protected static final Color WATER_BLOCK_COLOR = new Color(BlockColor.WATER_BLOCK_COLOR.getRGB());
+
     @PowerNukkitXDifference(info = "使用新的颜色算法", since = "1.19.80-r3")
     public Color getMapColorAt(int x, int z) {
-        var color = new Color(BlockColor.VOID_BLOCK_COLOR.getRGB());
+        var color = VOID_BLOCK_COLOR;
 
         var block = getMapColoredBlockAt(x, z);
         if (block == null) return color;
@@ -3789,30 +3792,30 @@ public class Level implements ChunkManager, Metadatable {
         //在z轴存在高度差的地方，颜色变深或变浅
         var nzy = getMapColoredBlockAt(x, z - 1);
         if (nzy == null) return color;
-        if (nzy.getY() > block.getY()) {
-            var deltaY = nzy.getY() - block.getY();
+        if (nzy.getFloorY() > block.getFloorY()) {
+            var deltaY = nzy.getFloorY() - block.getFloorY();
             if (deltaY >= 5)
                 color = darker(color, 0.6);
-            else if (deltaY >= 4)
+            else if (deltaY == 4)
                 color = darker(color, 0.65);
-            else if (deltaY >= 3)
+            else if (deltaY == 3)
                 color = darker(color, 0.7);
-            else if (deltaY >= 2)
+            else if (deltaY == 2)
                 color = darker(color, 0.75);
-            else if (deltaY >= 1)
+            else if (deltaY == 1)
                 color = darker(color, 0.8);
         }
-        else if (nzy.getY() < block.getY()) {
-            var deltaY = block.getY() - nzy.getY();
+        else if (nzy.getFloorY() < block.getFloorY()) {
+            var deltaY = block.getFloorY() - nzy.getFloorY();
             if (deltaY >= 5)
                 color = brighter(color, 0.6);
-            else if (deltaY >= 4)
+            else if (deltaY == 4)
                 color = brighter(color, 0.65);
-            else if (deltaY >= 3)
+            else if (deltaY == 3)
                 color = brighter(color, 0.7);
-            else if (deltaY >= 2)
+            else if (deltaY == 2)
                 color = brighter(color, 0.75);
-            else if (deltaY >= 1)
+            else if (deltaY == 1)
                 color = brighter(color, 0.8);
         }
 
@@ -3832,11 +3835,11 @@ public class Level implements ChunkManager, Metadatable {
             var g1 = color.getGreen();
             var b1 = color.getBlue();
             var depth = 62 - block.y;
-            if (depth > 96) return new Color(BlockColor.WATER_BLOCK_COLOR.getRGB());
-            b1 = BlockColor.WATER_BLOCK_COLOR.getBlue();
+            if (depth > 96) return WATER_BLOCK_COLOR;
+            b1 = WATER_BLOCK_COLOR.getBlue();
             var radio = depth / 96.0;
-            r1 += (BlockColor.WATER_BLOCK_COLOR.getRed() - r1) * radio;
-            g1 += (BlockColor.WATER_BLOCK_COLOR.getGreen() - g1) * radio;
+            r1 += (WATER_BLOCK_COLOR.getRed() - r1) * radio;
+            g1 += (WATER_BLOCK_COLOR.getGreen() - g1) * radio;
             color = new Color(r1, g1, b1);
         }
 

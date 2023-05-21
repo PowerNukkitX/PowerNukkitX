@@ -14,20 +14,25 @@ import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.PowerNukkitPlugin;
 import cn.nukkit.scheduler.AsyncTask;
+import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+@Log4j2
 public class MapInfoRequestProcessor extends DataPacketProcessor<MapInfoRequestPacket> {
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull MapInfoRequestPacket pk) {
         Player player = playerHandle.player;
         Item mapItem = null;
+        int index = 0;
 
-        for (Item item1 : player.getOffhandInventory().getContents().values()) {
+        for (var entry : player.getOffhandInventory().getContents().entrySet()) {
+            var item1 = entry.getValue();
             if (item1 instanceof ItemMap && ((ItemMap) item1).getMapId() == pk.mapId) {
                 mapItem = item1;
+                index = entry.getKey();
             }
         }
 
@@ -60,27 +65,15 @@ public class MapInfoRequestProcessor extends DataPacketProcessor<MapInfoRequestP
                 if (map.trySendImage(player)) {
                     return;
                 }
+
+                int finalIndex = index;
+                //TODO: 并行计算
                 Server.getInstance().getScheduler().scheduleAsyncTask(InternalPlugin.INSTANCE, new AsyncTask() {
                     @Override
                     public void onRun() {
-                        try {
-                            BufferedImage image = new BufferedImage(128, 128, BufferedImage.TYPE_INT_RGB);
-                            Graphics2D graphics = image.createGraphics();
-
-                            int worldX = (player.getFloorX() / 128) << 7;
-                            int worldZ = (player.getFloorZ() / 128) << 7;
-                            for (int x = 0; x < 128; x++) {
-                                for (int z = 0; z < 128; z++) {
-                                    graphics.setColor(player.getLevel().getMapColorAt(worldX + x, worldZ + z));
-                                    graphics.fillRect(x, z, x + 1, z + 1);
-                                }
-                            }
-
-                            map.setImage(image);
-                            map.sendImage(player);
-                        } catch (Exception ex) {
-                            player.getServer().getLogger().warning("There was an error while generating map image", ex);
-                        }
+                        map.renderMap(player.getLevel(), (player.getFloorX() / 128) << 7, (player.getFloorZ() / 128) << 7, 10);
+                        player.getInventory().setItem(finalIndex, map);
+                        map.sendImage(player);
                     }
                 });
             }

@@ -2,9 +2,13 @@ package cn.nukkit.item;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
+import cn.nukkit.level.Level;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.ClientboundMapItemDataPacket;
 import cn.nukkit.plugin.InternalPlugin;
+import cn.nukkit.scheduler.AsyncTask;
 import lombok.extern.log4j.Log4j2;
 
 import javax.imageio.ImageIO;
@@ -124,6 +128,33 @@ public class ItemMap extends Item {
         if (image == null) return false;
         this.sendImage(p);
         return true;
+    }
+    @PowerNukkitXOnly
+    @Since("1.19.80-r3")
+    public void renderMap(Level level, int centerX, int centerZ) {
+        renderMap(level, centerX, centerZ, 1);
+    }
+
+
+    @PowerNukkitXOnly
+    @Since("1.19.80-r3")
+    public void renderMap(Level level, int centerX, int centerZ, int zoom) {
+        if (zoom < 1)
+            throw new IllegalArgumentException("Zoom must be greater than 0");
+        int[] pixels = new int[128 * 128];
+        try {
+            for (int x = 0; x < 128 * zoom; x += zoom) {
+                for (int z = 0; z < 128 * zoom; z += zoom) {
+                    pixels[(x * 128 + z) / zoom] = level.getMapColorAt(centerX + x, centerZ + z).getRGB();
+                }
+            }
+            BufferedImage image = new BufferedImage(128, 128, BufferedImage.TYPE_INT_RGB);
+            image.setRGB(0, 0, 128, 128, pixels, 0, 128);
+
+            setImage(image);
+        } catch (Exception ex) {
+            log.warn("There was an error while generating map image", ex);
+        }
     }
 
     @Override
