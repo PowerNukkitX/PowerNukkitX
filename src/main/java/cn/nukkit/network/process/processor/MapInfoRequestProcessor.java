@@ -28,7 +28,7 @@ public class MapInfoRequestProcessor extends DataPacketProcessor<MapInfoRequestP
         Item mapItem = null;
         int index = 0;
 
-        for (var entry : player.getOffhandInventory().getContents().entrySet()) {
+        for (var entry : player.getInventory().getContents().entrySet()) {
             var item1 = entry.getValue();
             if (item1 instanceof ItemMap && ((ItemMap) item1).getMapId() == pk.mapId) {
                 mapItem = item1;
