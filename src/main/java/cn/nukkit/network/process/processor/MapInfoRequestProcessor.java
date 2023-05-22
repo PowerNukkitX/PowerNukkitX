@@ -33,15 +33,17 @@ public class MapInfoRequestProcessor extends DataPacketProcessor<MapInfoRequestP
             var item1 = entry.getValue();
             if (item1 instanceof ItemMap && ((ItemMap) item1).getMapId() == pk.mapId) {
                 mapItem = item1;
-                index = entry.getKey();
+                index = entry.getKey();                    
+                offhand= true;
             }
         }
 
         if (mapItem == null) {
-            for (Item item1 : player.getInventory().getContents().values()) {
+            for (var entry : player.getInventory().getContents().entrySet()) {
+                var item1 = entry.getValue();
                 if (item1 instanceof ItemMap && ((ItemMap) item1).getMapId() == pk.mapId) {
                     mapItem = item1;
-                    offhand= true;
+                    index = entry.getKey();
                 }
             }
         }
