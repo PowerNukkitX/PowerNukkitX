@@ -27,8 +27,9 @@ public class MapInfoRequestProcessor extends DataPacketProcessor<MapInfoRequestP
         Player player = playerHandle.player;
         Item mapItem = null;
         int index = 0;
+        var offhand = false;
 
-        for (var entry : player.getInventory().getContents().entrySet()) {
+        for (var entry : player.getOffhandInventory().getContents().entrySet()) {
             var item1 = entry.getValue();
             if (item1 instanceof ItemMap && ((ItemMap) item1).getMapId() == pk.mapId) {
                 mapItem = item1;
@@ -40,6 +41,7 @@ public class MapInfoRequestProcessor extends DataPacketProcessor<MapInfoRequestP
             for (Item item1 : player.getInventory().getContents().values()) {
                 if (item1 instanceof ItemMap && ((ItemMap) item1).getMapId() == pk.mapId) {
                     mapItem = item1;
+                    offhand= true;
                 }
             }
         }
@@ -67,12 +69,16 @@ public class MapInfoRequestProcessor extends DataPacketProcessor<MapInfoRequestP
                 }
 
                 int finalIndex = index;
+                boolean finalOffhand = offhand;
                 //TODO: 并行计算
                 Server.getInstance().getScheduler().scheduleAsyncTask(InternalPlugin.INSTANCE, new AsyncTask() {
                     @Override
                     public void onRun() {
                         map.renderMap(player.getLevel(), (player.getFloorX() / 128) << 7, (player.getFloorZ() / 128) << 7, 10);
-                        player.getInventory().setItem(finalIndex, map);
+                        if (finalOffhand)
+                            player.getOffhandInventory().setItem(finalIndex, map);
+                        else
+                            player.getInventory().setItem(finalIndex, map);
                         map.sendImage(player);
                     }
                 });
