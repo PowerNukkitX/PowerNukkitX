@@ -2950,4 +2950,9 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         }
         return false;
     }
+
+    @Override
+    public int hashCode() {
+        return  ((int) x ^ ((int) z << 12)) ^ ((int) (y + 64) << 23);
+    }
 }
