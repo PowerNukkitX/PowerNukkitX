@@ -12,9 +12,7 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.CraftingDataPacket;
 import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.utils.BinaryStream;
-import cn.nukkit.utils.Config;
-import cn.nukkit.utils.Utils;
+import cn.nukkit.utils.*;
 import com.google.gson.GsonBuilder;
 import io.netty.util.collection.CharObjectHashMap;
 import io.netty.util.internal.EmptyArrays;
@@ -33,21 +31,29 @@ import java.util.*;
 import java.util.zip.Deflater;
 
 /**
+ * 用于管理合成配方
+ * <p>
+ * Used to manage crafting recipes
+ *
  * @author MagicDroidX (Nukkit Project)
  */
 @Log4j2
 public class CraftingManager {
-
     public static final Comparator<Item> recipeComparator = (i1, i2) -> {
         if (i1.getId() > i2.getId()) {
             return 1;
         } else if (i1.getId() < i2.getId()) {
             return -1;
-        } else if (i1.getDamage() > i2.getDamage()) {
-            return 1;
-        } else if (i1.getDamage() < i2.getDamage()) {
-            return -1;
-        } else return Integer.compare(i1.getCount(), i2.getCount());
+        } else {
+            int i = MinecraftNamespaceComparator.compareFNV(i1.getNamespaceId(), i2.getNamespaceId());
+            if (i == 0) {
+                if (i1.getDamage() > i2.getDamage()) {
+                    return 1;
+                } else if (i1.getDamage() < i2.getDamage()) {
+                    return -1;
+                } else return Integer.compare(i1.getCount(), i2.getCount());
+            } else return i;
+        }
     };
 
     //<editor-fold desc="deprecated fields" defaultstate="collapsed">
@@ -119,7 +125,6 @@ public class CraftingManager {
     @PowerNukkitXOnly
     private final Object2DoubleOpenHashMap<Recipe> recipeXpMap = new Object2DoubleOpenHashMap<>();
     private final Deque<Recipe> recipeList = new ArrayDeque<>();
-
     /**
      * 一个包含全部种类配方的双端队列集合
      */
@@ -331,7 +336,7 @@ public class CraftingManager {
     @Since("1.19.50-r2")
     @SuppressWarnings("unchecked")
     private Recipe parseShapelessRecipe(Map<String, Object> recipeObject, String craftingBlock) {
-        StringBuilder id = new StringBuilder(craftingBlock);
+        StringBuilder id = new StringBuilder("minecraft:" + craftingBlock);
         if (craftingBlock.equals("smithing_table")) {
             List<Item> items = new ArrayList<>();
             Map<String, Object> addition = (Map<String, Object>) recipeObject.get("addition");
@@ -349,7 +354,9 @@ public class CraftingManager {
             items.add(inputItem);
             items.add(additionItem);
             items.add(templateItem);
-            id.append("-").append(inputItem.getName()).append("-").append(outputItem.getName());
+            id.append("_")
+                    .append(StringUtils.fastSplit(":", inputItem.getNamespaceId()).get(1)).append("_")
+                    .append(StringUtils.fastSplit(":", outputItem.getNamespaceId()).get(1));
             return new SmithingRecipe(id.toString(), 0, items, outputItem);
         }
 
@@ -374,17 +381,21 @@ public class CraftingManager {
                 var itemTag = ingredient.get("tag").toString();
                 int count = ingredient.containsKey("count") ? ((Number) ingredient.get("count")).intValue() : 1;
                 itemDescriptors.add(new ItemTagDescriptor(itemTag, count));
-                id.append('-').append("tag:").append(itemTag);
+                id.append('_').append("tag(").append(itemTag).append(')');
             } else {
                 Item recipeItem = parseRecipeItem(ingredient);
                 if (recipeItem.isNull()) {
                     return null;
                 }
                 itemDescriptors.add(new DefaultDescriptor(recipeItem));
-                id.append('-').append(recipeItem.getName());
+                if (recipeItem.getName() != null && !recipeItem.getName().isBlank()) {
+                    id.append('_').append(StringUtils.fastSplit(":", recipeItem.getNamespaceId()).get(1));
+                }
             }
         }
-        id.append('-').append(result.getName());
+        if (result.getName() != null && !result.getName().isBlank()) {
+            id.append('_').append(StringUtils.fastSplit(":", result.getNamespaceId()).get(1));
+        }
         return switch (craftingBlock) {
             case "crafting_table" -> new ShapelessRecipe(id.toString(), priority, result, itemDescriptors);
             case "shulker_box" -> new ShulkerBoxRecipe(id.toString(), priority, result, itemDescriptors);
@@ -399,7 +410,7 @@ public class CraftingManager {
     @Since("1.19.50-r2")
     @SuppressWarnings("unchecked")
     private Recipe parseShapeRecipe(Map<String, Object> recipeObject) {
-        StringBuilder id = new StringBuilder("ShapeRecipe");
+        StringBuilder id = new StringBuilder("minecraft:ShapeRecipe");
         List<Map<String, Object>> outputs = (List<Map<String, Object>>) recipeObject.get("output");
 
         Map<String, Object> first = outputs.remove(0);
@@ -430,17 +441,21 @@ public class CraftingManager {
                 var tag = ingredient.get("tag").toString();
                 int count = ingredient.containsKey("count") ? ((Number) ingredient.get("count")).intValue() : 1;
                 ingredients.put(ingredientChar, new ItemTagDescriptor(tag, count));
-                id.append('-').append("tag:").append(tag);
+                id.append('_').append("tag(").append(tag).append(')');
             } else {
                 Item recipeItem = parseRecipeItem(ingredient);
                 if (recipeItem.isNull()) {
                     return null;
                 }
                 ingredients.put(ingredientChar, new DefaultDescriptor(recipeItem));
-                id.append('-').append(recipeItem.getName());
+                if (recipeItem.getName() != null && !recipeItem.getName().isBlank()) {
+                    id.append('_').append(StringUtils.fastSplit(":", recipeItem.getNamespaceId()).get(1));
+                }
             }
         }
-        id.append('-').append(primaryResult.getName());
+        if (primaryResult.getName() != null && !primaryResult.getName().isBlank()) {
+            id.append('_').append(StringUtils.fastSplit(":", primaryResult.getNamespaceId()).get(1));
+        }
         return new ShapedRecipe(id.toString(), priority, primaryResult, shape, ingredients, extraResults);
     }
 
@@ -631,7 +646,7 @@ public class CraftingManager {
     }
 
     @PowerNukkitOnly
-    protected Int2ObjectMap<Map<UUID, ShapelessRecipe>> getShapelessRecipeMap() {
+    public Int2ObjectMap<Map<UUID, ShapelessRecipe>> getShapelessRecipeMap() {
         return shapelessRecipeMap;
     }
 
@@ -779,7 +794,17 @@ public class CraftingManager {
 
     @PowerNukkitOnly
     public void registerCartographyRecipe(CartographyRecipe recipe) {
-        this.registerShapelessRecipe(recipe);
+        this.addRecipe(recipe);
+        List<Item> list1 = recipe.getIngredientsAggregate();
+        List<ItemDescriptor> list2 = recipe.getNewIngredients();
+
+        UUID hash = getItemWithItemDescriptorsHash(list1, list2);
+
+        int resultHash = getItemHash(recipe.getResult());
+        Map<UUID, ShapelessRecipe> map1 = getShapelessRecipeMap().computeIfAbsent(resultHash, k -> new HashMap<>());
+        Map<UUID, CartographyRecipe> map2 = getCartographyRecipeMap().computeIfAbsent(resultHash, k -> new HashMap<>());
+        map1.put(hash, recipe);
+        map2.put(hash, recipe);
     }
 
     public void registerShapedRecipe(ShapedRecipe recipe) {
