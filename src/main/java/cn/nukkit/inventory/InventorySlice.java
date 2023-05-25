@@ -69,6 +69,7 @@ public class InventorySlice implements Inventory {
         return rawInv.getTitle();
     }
 
+    @NotNull
     @Override
     public Item getItem(int index) {
         // check whether the index is in the range

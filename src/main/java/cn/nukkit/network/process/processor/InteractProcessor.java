@@ -5,7 +5,10 @@ import cn.nukkit.PlayerHandle;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityRideable;
 import cn.nukkit.entity.custom.CustomEntity;
-import cn.nukkit.entity.item.*;
+import cn.nukkit.entity.item.EntityChestBoat;
+import cn.nukkit.entity.item.EntityItem;
+import cn.nukkit.entity.item.EntityXPOrb;
+import cn.nukkit.entity.passive.EntityHorse;
 import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.event.player.PlayerKickEvent;
 import cn.nukkit.event.player.PlayerMouseOverEntityEvent;
@@ -64,9 +67,11 @@ public class InteractProcessor extends DataPacketProcessor<InteractPacket> {
                     if (targetEntity instanceof EntityChestBoat chestBoat) {
                         player.addWindow(chestBoat.getInventory());
                         return;
-                    }
-                    if (!(targetEntity instanceof EntityBoat || targetEntity instanceof EntityMinecartEmpty)) {
-                        return;
+                    } else if (targetEntity instanceof EntityHorse horse) {
+                        if (horse.hasOwner(false) && horse.getOwnerName().equals(player.getName())) {
+                            player.addWindow(horse.getInventory());
+                            return;
+                        }
                     }
                 } else if (targetEntity.getId() != player.getId()) {
                     return;

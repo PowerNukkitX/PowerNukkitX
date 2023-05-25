@@ -23,8 +23,8 @@ import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
-import cn.nukkit.entity.data.ByteEntityData;
 import cn.nukkit.entity.data.IntEntityData;
+import cn.nukkit.entity.data.LongEntityData;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDye;
 import cn.nukkit.item.ItemID;
@@ -41,13 +41,11 @@ import cn.nukkit.utils.Utils;
 import java.util.List;
 import java.util.Set;
 
-public class EntityCat extends EntityAnimal implements EntityWalkable, EntityTamable, EntityCanSit, EntityCanAttack, EntityHealable {
+public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwnable, EntityCanSit, EntityCanAttack, EntityHealable, EntityVariant, EntityColor {
     public static final int NETWORK_ID = 75;
     //猫咪有11种颜色变种
     private static final int[] VARIANTS = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     protected float[] diffHandDamage = new float[]{4, 4, 4};
-    private DyeColor collarColor = DyeColor.RED;//驯服后项圈为红色
-    private int variant;
 
     public EntityCat(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -174,6 +172,18 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityTam
     }
 
     @Override
+    public boolean onUpdate(int currentTick) {
+        //同步owner eid
+        if (hasOwner()) {
+            Player owner = getOwner();
+            if (owner != null && getDataPropertyLong(Entity.DATA_OWNER_EID) != owner.getId()) {
+                this.setDataProperty(new LongEntityData(Entity.DATA_OWNER_EID, owner.getId()));
+            }
+        }
+        return super.onUpdate(currentTick);
+    }
+
+    @Override
     public void initEntity() {
         this.setMaxHealth(10);
         super.initEntity();
@@ -181,33 +191,19 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityTam
         if (this.isBaby()) {
             this.setDataProperty(new IntEntityData(Entity.DATA_AMBIENT_SOUND_EVENT_NAME, LevelSoundEventPacket.SOUND_AMBIENT_BABY));
         }
-        if (this.namedTag.contains("CollarColor")) {
-            var collarColor = DyeColor.getByDyeData(this.namedTag.getByte("CollarColor"));
-            if (collarColor == null) {
-                this.collarColor = DyeColor.RED;
-                this.setDataProperty(new ByteEntityData(DATA_COLOUR, DyeColor.RED.getDyeData()));
-            } else {
-                this.collarColor = collarColor;
-                this.setDataProperty(new ByteEntityData(DATA_COLOUR, collarColor.getWoolData()));
-            }
-        } else this.collarColor = DyeColor.RED;
-        if (this.namedTag.contains("Variant")) {
-            this.variant = this.namedTag.getInt("Variant");
-        } else {
-            this.variant = getRandomVariant();
+        if (!hasVariant()) {
+            this.setVariant(randomVariant());
         }
-        this.setDataProperty(new IntEntityData(DATA_VARIANT, this.variant));
+        //update CollarColor to Color
+        if (namedTag.contains("CollarColor")) {
+            this.setColor(DyeColor.getByWoolData(namedTag.getByte("CollarColor")));
+        }
     }
 
-    private int getRandomVariant() {
-        return VARIANTS[Utils.rand(0, VARIANTS.length - 1)];
-    }
-
+    //猫咪有11种颜色变种
     @Override
-    public void saveNBT() {
-        super.saveNBT();
-        this.namedTag.putByte("CollarColor", this.collarColor.getDyeData());
-        this.namedTag.putInt("Variant", this.variant);
+    public int[] getAllVariant() {
+        return VARIANTS;
     }
 
     @Override
@@ -229,7 +225,7 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityTam
                     this.setMaxHealth(10);
                     this.setHealth(10);
                     this.setOwnerName(player.getName());
-                    this.setCollarColor(DyeColor.RED);
+                    this.setColor(DyeColor.RED);
                     this.saveNBT();
 
                     this.getLevel().dropExpOrb(this, Utils.rand(1, 7));
@@ -256,7 +252,7 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityTam
         } else if (item.getId() == Item.DYE) {
             if (this.hasOwner() && player.equals(this.getOwner())) {
                 player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
-                this.setCollarColor(((ItemDye) item).getDyeColor());
+                this.setColor(((ItemDye) item).getDyeColor());
                 return true;
             }
         } else if (this.hasOwner() && player.getName().equals(getOwnerName()) && !this.isTouchingWater()) {
@@ -315,14 +311,6 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityTam
             case ItemID.RAW_FISH, ItemID.RAW_SALMON -> 2;
             default -> 0;
         };
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.30-r1")
-    public void setCollarColor(DyeColor color) {
-        this.collarColor = color;
-        this.setDataProperty(new ByteEntityData(DATA_COLOUR, color.getWoolData()));
-        this.namedTag.putByte("CollarColor", color.getDyeData());
     }
 
     @Override

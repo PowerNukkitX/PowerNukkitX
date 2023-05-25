@@ -355,6 +355,15 @@ public class Utils {
         return -1;
     }
 
+    /**
+     * 返回介于最小值(包含)和最大值(包含)之间的伪随机数
+     * <p>
+     * Return a random number between the minimum (inclusive) and maximum (inclusive).
+     *
+     * @param min the min
+     * @param max the max
+     * @return the int
+     */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static int rand(int min, int max) {
