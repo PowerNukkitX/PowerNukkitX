@@ -81,7 +81,7 @@ public class ItemMap extends Item {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ImageIO.write(this.image, "png", baos);
 
-            this.getNamedTag().putByteArray("Colors", baos.toByteArray());
+            this.setNamedTag(this.getNamedTag().putByteArray("Colors", baos.toByteArray()));
         } catch (IOException e) {
             log.error("Error while adding an image to an ItemMap", e);
         }
@@ -128,23 +128,23 @@ public class ItemMap extends Item {
         this.sendImage(p);
         return true;
     }
+
     @PowerNukkitXOnly
     @Since("1.19.80-r3")
-    public void renderMap(Level level, int centerX, int centerZ) {
-        renderMap(level, centerX, centerZ, 1);
+    public void renderMap(Level level, int startX, int startZ) {
+        renderMap(level, startX, startZ, 1);
     }
 
-
     @PowerNukkitXOnly
     @Since("1.19.80-r3")
-    public void renderMap(Level level, int centerX, int centerZ, int zoom) {
+    public void renderMap(Level level, int startX, int startZ, int zoom) {
         if (zoom < 1)
             throw new IllegalArgumentException("Zoom must be greater than 0");
         int[] pixels = new int[128 * 128];
         try {
             for (int z = 0; z < 128 * zoom; z += zoom) {
                 for (int x = 0; x < 128 * zoom; x += zoom) {
-                    pixels[(z * 128 + x) / zoom] = level.getMapColorAt(centerX + x, centerZ + z).getRGB();
+                    pixels[(z * 128 + x) / zoom] = level.getMapColorAt(startX + x, startZ + z).getRGB();
                 }
             }
             BufferedImage image = new BufferedImage(128, 128, BufferedImage.TYPE_INT_RGB);
