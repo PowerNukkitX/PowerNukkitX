@@ -142,9 +142,9 @@ public class ItemMap extends Item {
             throw new IllegalArgumentException("Zoom must be greater than 0");
         int[] pixels = new int[128 * 128];
         try {
-            for (int x = 0; x < 128 * zoom; x += zoom) {
-                for (int z = 0; z < 128 * zoom; z += zoom) {
-                    pixels[(x * 128 + z) / zoom] = level.getMapColorAt(centerX + x, centerZ + z).getRGB();
+            for (int z = 0; z < 128 * zoom; z += zoom) {
+                for (int x = 0; x < 128 * zoom; x += zoom) {
+                    pixels[(z * 128 + x) / zoom] = level.getMapColorAt(centerX + x, centerZ + z).getRGB();
                 }
             }
             BufferedImage image = new BufferedImage(128, 128, BufferedImage.TYPE_INT_RGB);
