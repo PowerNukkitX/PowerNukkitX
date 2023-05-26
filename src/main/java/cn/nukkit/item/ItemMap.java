@@ -8,7 +8,6 @@ import cn.nukkit.level.Level;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.ClientboundMapItemDataPacket;
 import cn.nukkit.plugin.InternalPlugin;
-import cn.nukkit.scheduler.AsyncTask;
 import lombok.extern.log4j.Log4j2;
 
 import javax.imageio.ImageIO;

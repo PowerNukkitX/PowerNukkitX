@@ -3821,18 +3821,24 @@ public class Level implements ChunkManager, Metadatable {
 
         var up = block.getSide(BlockFace.UP);
         var up1 = block.getSideAtLayer(1, BlockFace.UP);
-        if (block.y < 62 && (up instanceof BlockWater || up1 instanceof BlockWater)) {
-            //在水下
-            //海平面为62格。离海平面越远颜色越接近海洋颜色
+        if (up instanceof BlockWater || up1 instanceof BlockWater) {
             var r1 = color.getRed();
             var g1 = color.getGreen();
             var b1 = color.getBlue();
-            var depth = 62 - block.y;
-            if (depth > 96) return WATER_BLOCK_COLOR;
-            b1 = WATER_BLOCK_COLOR.getBlue();
-            var radio = depth / 96.0;
-            r1 += (WATER_BLOCK_COLOR.getRed() - r1) * radio;
-            g1 += (WATER_BLOCK_COLOR.getGreen() - g1) * radio;
+            //在水下
+            if (block.y < 62) {
+                //在海平面下
+                //海平面为62格。离海平面越远颜色越接近海洋颜色
+                var depth = 62 - block.y;
+                if (depth > 96) return WATER_BLOCK_COLOR;
+                b1 = WATER_BLOCK_COLOR.getBlue();
+                var radio = depth / 96.0;
+                r1 += (WATER_BLOCK_COLOR.getRed() - r1) * radio;
+                g1 += (WATER_BLOCK_COLOR.getGreen() - g1) * radio;
+            } else {
+                //湖泊 or 河流
+                b1 = WATER_BLOCK_COLOR.getBlue();
+            }
             color = new Color(r1, g1, b1);
         }
 

@@ -7,6 +7,7 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityItemFrame;
 import cn.nukkit.event.player.PlayerMapInfoRequestEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemMap;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.MapInfoRequestPacket;
@@ -31,17 +32,17 @@ public class MapInfoRequestProcessor extends DataPacketProcessor<MapInfoRequestP
 
         for (var entry : player.getOffhandInventory().getContents().entrySet()) {
             var item1 = entry.getValue();
-            if (item1 instanceof ItemMap && ((ItemMap) item1).getMapId() == pk.mapId) {
+            if (checkMapItemValid(item1, pk)) {
                 mapItem = item1;
                 index = entry.getKey();                    
-                offhand= true;
+                offhand = true;
             }
         }
 
         if (mapItem == null) {
             for (var entry : player.getInventory().getContents().entrySet()) {
                 var item1 = entry.getValue();
-                if (item1 instanceof ItemMap && ((ItemMap) item1).getMapId() == pk.mapId) {
+                if (checkMapItemValid(item1, pk)) {
                     mapItem = item1;
                     index = entry.getKey();
                 }
@@ -50,12 +51,9 @@ public class MapInfoRequestProcessor extends DataPacketProcessor<MapInfoRequestP
 
         if (mapItem == null) {
             for (BlockEntity be : player.level.getBlockEntities().values()) {
-                if (be instanceof BlockEntityItemFrame itemFrame1) {
-
-                    if (itemFrame1.getItem() instanceof ItemMap && ((ItemMap) itemFrame1.getItem()).getMapId() == pk.mapId) {
-                        ((ItemMap) itemFrame1.getItem()).sendImage(player);
-                        break;
-                    }
+                if (be instanceof BlockEntityItemFrame itemFrame && checkMapItemValid(itemFrame.getItem(), pk)) {
+                    ((ItemMap) itemFrame.getItem()).sendImage(player);
+                    break;
                 }
             }
         }
@@ -70,17 +68,20 @@ public class MapInfoRequestProcessor extends DataPacketProcessor<MapInfoRequestP
                     return;
                 }
 
-                int finalIndex = index;
-                boolean finalOffhand = offhand;
+                final int finalIndex = index;
+                final boolean finalOffhand = offhand;
                 //TODO: 并行计算
                 Server.getInstance().getScheduler().scheduleAsyncTask(InternalPlugin.INSTANCE, new AsyncTask() {
                     @Override
                     public void onRun() {
-                        map.renderMap(player.getLevel(), (player.getFloorX() / 128) << 7, (player.getFloorZ() / 128) << 7, 10);
-                        if (finalOffhand)
-                            player.getOffhandInventory().setItem(finalIndex, map);
-                        else
-                            player.getInventory().setItem(finalIndex, map);
+                        map.renderMap(player.getLevel(), (player.getFloorX() / 128) << 7, (player.getFloorZ() / 128) << 7, 1);
+                        if (finalOffhand) {
+                            if (checkMapItemValid(player.getOffhandInventory().getUnclonedItem(finalIndex), pk))
+                                player.getOffhandInventory().setItem(finalIndex, map);
+                        } else {
+                            if (checkMapItemValid(player.getInventory().getUnclonedItem(finalIndex), pk))
+                                player.getInventory().setItem(finalIndex, map);
+                        }
                         map.sendImage(player);
                     }
                 });
@@ -91,5 +92,9 @@ public class MapInfoRequestProcessor extends DataPacketProcessor<MapInfoRequestP
     @Override
     public int getPacketId() {
         return ProtocolInfo.toNewProtocolID(ProtocolInfo.MAP_INFO_REQUEST_PACKET);
+    }
+
+    protected boolean checkMapItemValid(Item item, MapInfoRequestPacket pk) {
+        return item instanceof ItemMap itemMap && itemMap.getMapId() == pk.mapId;
     }
 }
