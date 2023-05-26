@@ -3799,6 +3799,8 @@ public class Level implements ChunkManager, Metadatable {
                 case 2 -> darker(color, 0.75);
                 case 3 -> darker(color, 0.7);
                 case 4 -> darker(color, 0.65);
+                case 5 -> darker(color, 0.6);
+                case 6 -> darker(color, 0.55);
                 default -> darker(color, 0.6);
             };
         }
@@ -3808,7 +3810,9 @@ public class Level implements ChunkManager, Metadatable {
                 case 2 -> brighter(color, 0.75);
                 case 3 -> brighter(color, 0.7);
                 case 4 -> brighter(color, 0.65);
-                default -> brighter(color, 0.6);
+                case 5 -> brighter(color, 0.6);
+                case 6 -> brighter(color, 0.55);
+                default -> brighter(color, 0.5);
             };
         }
 
@@ -3832,12 +3836,15 @@ public class Level implements ChunkManager, Metadatable {
                 var depth = 62 - block.y;
                 if (depth > 96) return WATER_BLOCK_COLOR;
                 b1 = WATER_BLOCK_COLOR.getBlue();
-                var radio = depth / 96.0;
+                var radio = (depth / 96.0);
+                if (radio < 0.3) radio = 0.3;
                 r1 += (WATER_BLOCK_COLOR.getRed() - r1) * radio;
                 g1 += (WATER_BLOCK_COLOR.getGreen() - g1) * radio;
             } else {
                 //湖泊 or 河流
                 b1 = WATER_BLOCK_COLOR.getBlue();
+                r1 += (WATER_BLOCK_COLOR.getRed() - r1) * 0.3;
+                g1 += (WATER_BLOCK_COLOR.getGreen() - g1) * 0.3;
             }
             color = new Color(r1, g1, b1);
         }
