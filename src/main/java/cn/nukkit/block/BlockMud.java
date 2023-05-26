@@ -41,6 +41,6 @@ public class BlockMud extends BlockSolid {
 
     @Override
     public BlockColor getColor() {
-        return BlockColor.BLACK_BLOCK_COLOR;
+        return BlockColor.CYAN_TERRACOTA_BLOCK_COLOR;
     }
 }
