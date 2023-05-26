@@ -3801,7 +3801,7 @@ public class Level implements ChunkManager, Metadatable {
                 case 4 -> darker(color, 0.65);
                 case 5 -> darker(color, 0.6);
                 case 6 -> darker(color, 0.55);
-                default -> darker(color, 0.6);
+                default -> darker(color, 0.5);
             };
         }
         else if (nzy.getFloorY() < block.getFloorY()) {
