@@ -5,7 +5,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.EntityTamable;
+import cn.nukkit.entity.EntityOwnable;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
@@ -13,9 +13,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * 实体移动到主人身边.(只对实现了接口 {@link EntityTamable} 的实体有效)
+ * 实体移动到主人身边.(只对实现了接口 {@link cn.nukkit.entity.EntityOwnable EntityOwnable} 的实体有效)
  * <p>
- * The entity moves to the master's side.(Only valid for entities that implement the interface {@link EntityTamable})
+ * The entity moves to the master's side.(Only valid for entities that implement the interface {@link cn.nukkit.entity.EntityOwnable EntityOwnable})
  */
 @PowerNukkitXOnly
 @Since("1.19.30-r1")
@@ -37,8 +37,8 @@ public class EntityMoveToOwnerExecutor implements EntityControl, IBehaviorExecut
     public boolean execute(@NotNull EntityIntelligent entity) {
         if (!entity.isEnablePitch()) entity.setEnablePitch(true);
 
-        if (entity instanceof EntityTamable entityTamable) {
-            var player = entity.getServer().getPlayer(entityTamable.getOwnerName());
+        if (entity instanceof EntityOwnable entityOwnable) {
+            var player = entity.getServer().getPlayer(entityOwnable.getOwnerName());
             if (player == null) return false;
 
             //获取目的地位置（这个clone很重要）

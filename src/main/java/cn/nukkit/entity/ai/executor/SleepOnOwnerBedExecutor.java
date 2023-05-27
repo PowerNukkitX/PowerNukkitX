@@ -5,11 +5,11 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.EntityTamable;
+import cn.nukkit.entity.EntityOwnable;
 
 /**
  * 使有主人的生物在主人睡觉时睡到主人床上<br/>
- * 只能在实现了接口 {@link EntityTamable} 的实体上使用<br/>
+ * 只能在实现了接口 {@link EntityOwnable} 的实体上使用<br/>
  * 需要保证实体的getOwner()方法返回非空
  */
 @PowerNukkitXOnly
@@ -17,7 +17,7 @@ import cn.nukkit.entity.EntityTamable;
 public class SleepOnOwnerBedExecutor implements IBehaviorExecutor {
     @Override
     public boolean execute(EntityIntelligent entity) {
-        Player owner = ((EntityTamable) entity).getOwner();
+        Player owner = ((EntityOwnable) entity).getOwner();
         if (entity.distanceSquared(owner) <= 4) {
             setSleeping(entity, true);
         }
@@ -26,7 +26,7 @@ public class SleepOnOwnerBedExecutor implements IBehaviorExecutor {
 
     @Override
     public void onStart(EntityIntelligent entity) {
-        Player owner = ((EntityTamable) entity).getOwner();
+        Player owner = ((EntityOwnable) entity).getOwner();
         entity.setMoveTarget(owner);
         entity.setLookTarget(owner);
     }

@@ -1,0 +1,126 @@
+package cn.nukkit.inventory;
+
+import cn.nukkit.Player;
+import cn.nukkit.Server;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
+import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.passive.EntityHorse;
+import cn.nukkit.item.Item;
+import cn.nukkit.level.Sound;
+import cn.nukkit.nbt.NBTIO;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.network.protocol.ContainerClosePacket;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import cn.nukkit.network.protocol.MobArmorEquipmentPacket;
+import cn.nukkit.network.protocol.UpdateEquipmentPacket;
+
+import java.io.IOException;
+import java.util.List;
+
+@PowerNukkitXOnly
+@Since("1.19.80-r3")
+public class HorseInventory extends BaseInventory {
+    private static final CompoundTag slot0;
+    private static final CompoundTag slot1;
+
+    public HorseInventory(EntityHorse holder) {
+        super(holder, InventoryType.HORSE);
+    }
+
+    static {
+        ListTag<CompoundTag> saddle = new ListTag<CompoundTag>().add(new CompoundTag().putCompound(new CompoundTag("slotItem").putShort("Aux", Short.MAX_VALUE).putString("Name", "minecraft:saddle")));
+        ListTag<CompoundTag> horseArmor = new ListTag<>();
+        for (var h : List.of("minecraft:leather_horse_armor", "minecraft:iron_horse_armor", "minecraft:golden_horse_armor", "minecraft:diamond_horse_armor")) {
+            horseArmor.add(new CompoundTag().putCompound(new CompoundTag("slotItem").putShort("Aux", Short.MAX_VALUE).putString("Name", h)));
+        }
+        slot0 = new CompoundTag().putList("acceptedItems", saddle).putInt("slotNumber", 0);
+        slot1 = new CompoundTag().putList("acceptedItems", horseArmor).putInt("slotNumber", 1);
+    }
+
+    public void setSaddle(Item item) {
+        this.setItem(0, item);
+    }
+
+    public void setHorseArmor(Item item) {
+        this.setItem(1, item);
+    }
+
+    public Item getSaddle() {
+        return this.getItem(0);
+    }
+
+    public Item getHorseArmor() {
+        return this.getItem(1);
+    }
+
+    @Override
+    public void onSlotChange(int index, Item before, boolean send) {
+        super.onSlotChange(index, before, send);
+        if (index == 0) {
+            if (this.getSaddle().isNull()) {
+                this.getHolder().setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_SADDLED, false);
+                this.getHolder().setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_WASD_CONTROLLED, false);
+                this.getHolder().setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_CAN_POWER_JUMP, false);
+            } else {
+                this.getHolder().getLevel().addLevelSoundEvent(this.getHolder(), LevelSoundEventPacket.SOUND_SADDLE, -1, this.getHolder().getIdentifier().getNamespace(), false, false);
+                this.getHolder().setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_SADDLED);
+                this.getHolder().setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_WASD_CONTROLLED);
+                this.getHolder().setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_CAN_POWER_JUMP);
+            }
+        } else if (index == 1) {
+            if (!this.getHorseArmor().isNull()) {
+                this.getHolder().getLevel().addSound(this.getHolder(), Sound.MOB_HORSE_ARMOR);
+            }
+            MobArmorEquipmentPacket mobArmorEquipmentPacket = new MobArmorEquipmentPacket();
+            mobArmorEquipmentPacket.eid = this.getHolder().getId();
+            mobArmorEquipmentPacket.slots = new Item[]{Item.AIR_ITEM.clone(), this.getHorseArmor(), Item.AIR_ITEM.clone(), Item.AIR_ITEM.clone()};
+            Server.broadcastPacket(this.getViewers(), mobArmorEquipmentPacket);
+        }
+    }
+
+    @Override
+    public void onClose(Player who) {
+        super.onClose(who);
+        ContainerClosePacket pk = new ContainerClosePacket();
+        pk.windowId = who.getWindowId(this);
+        pk.wasServerInitiated = who.getClosingWindowId() != pk.windowId;
+        who.dataPacket(pk);
+    }
+
+    @Override
+    public void onOpen(Player who) {
+        super.onOpen(who);
+        who.dataPacket(createUpdateEquipmentPacket(who));
+        sendContents(this.getViewers());
+    }
+
+    @Override
+    public EntityHorse getHolder() {
+        return (EntityHorse) holder;
+    }
+
+    protected UpdateEquipmentPacket createUpdateEquipmentPacket(Player who) {
+        var slots = new ListTag<CompoundTag>();
+        Item saddle = getSaddle();
+        Item horseArmor = getHorseArmor();
+        if (!saddle.isNull()) {
+            slots.add(slot0.clone().putCompound(new CompoundTag("item").putString("Name", saddle.getNamespaceId()).putShort("Aux", Short.MAX_VALUE)));
+        } else slots.add(slot0.clone());
+        if (!horseArmor.isNull()) {
+            slots.add(slot1.clone().putCompound(new CompoundTag("item").putString("Name", horseArmor.getNamespaceId()).putShort("Aux", Short.MAX_VALUE)));
+        } else slots.add(slot1.clone());
+        var nbt = new CompoundTag().putList("slots", slots);
+        UpdateEquipmentPacket updateEquipmentPacket = new UpdateEquipmentPacket();
+        updateEquipmentPacket.windowId = who.getWindowId(this);
+        updateEquipmentPacket.windowType = this.getType().getNetworkType();
+        updateEquipmentPacket.eid = getHolder().getId();
+        try {
+            updateEquipmentPacket.namedtag = NBTIO.writeNetwork(nbt);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return updateEquipmentPacket;
+    }
+}

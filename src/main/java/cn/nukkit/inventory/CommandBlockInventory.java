@@ -8,6 +8,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.ContainerOpenPacket;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -51,6 +52,7 @@ public class CommandBlockInventory implements Inventory {
         return this.getName();
     }
 
+    @NotNull
     @Override
     public Item getItem(int index) {
         return Item.get(Item.AIR);

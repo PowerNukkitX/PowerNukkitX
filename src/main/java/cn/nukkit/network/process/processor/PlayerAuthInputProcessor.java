@@ -3,6 +3,7 @@ package cn.nukkit.network.process.processor;
 import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.entity.item.EntityMinecartAbstract;
+import cn.nukkit.entity.passive.EntityHorse;
 import cn.nukkit.event.player.*;
 import cn.nukkit.level.Location;
 import cn.nukkit.math.BlockFace;
@@ -64,10 +65,6 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
                 }
                 playerHandle.setLastBlockAction(action);
             }
-        }
-        // Proper player.isPassenger() check may be needed
-        if (playerHandle.player.riding instanceof EntityMinecartAbstract entityMinecartAbstract) {
-            entityMinecartAbstract.setCurrentSpeed(pk.getMotion().getY());
         }
 
         if (pk.getInputData().contains(AuthInputAction.START_SPRINTING)) {
@@ -156,7 +153,24 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
         if (yaw < 0) {
             yaw += 360;
         }
-        playerHandle.offerMovementTask(Location.fromObject(clientPosition, player.level, yaw, pitch, headYaw));
+        Location clientLoc = Location.fromObject(clientPosition, player.level, yaw, pitch, headYaw);
+        // Proper player.isPassenger() check may be needed
+        if (playerHandle.player.riding instanceof EntityMinecartAbstract entityMinecartAbstract) {
+            entityMinecartAbstract.setCurrentSpeed(pk.getMotion().getY());
+        } else if (playerHandle.player.riding instanceof EntityHorse entityHorse) {
+            //为了保证玩家和马位置同步，骑马时不使用移动队列处理
+            var distance = clientLoc.distanceSquared(player);
+            var updatePosition = (float) Math.sqrt(distance) > 0.1f;
+            var updateRotation = (float) Math.abs(player.getPitch() - clientLoc.pitch) > 1
+                    || (float) Math.abs(player.getYaw() - clientLoc.yaw) > 1
+                    || (float) Math.abs(player.getHeadYaw() - clientLoc.headYaw) > 1;
+            if (updatePosition || updateRotation) {
+                entityHorse.onPlayerInput(clientLoc);
+                playerHandle.handleMovement(clientLoc);
+            }
+            return;
+        }
+        playerHandle.offerMovementTask(clientLoc);
     }
 
     @Override

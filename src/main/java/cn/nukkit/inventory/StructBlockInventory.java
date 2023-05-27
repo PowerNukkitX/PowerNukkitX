@@ -9,6 +9,7 @@ import cn.nukkit.event.inventory.InventoryOpenEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.ContainerOpenPacket;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -49,6 +50,7 @@ public class StructBlockInventory implements Inventory {
         return this.getName();
     }
 
+    @NotNull
     @Override
     public Item getItem(int index) {
         return Item.get(Item.AIR);

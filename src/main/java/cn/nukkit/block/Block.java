@@ -2994,6 +2994,11 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return MinecraftNamespaceComparator.fnv1a_32(NBTIO.write(tag, ByteOrder.LITTLE_ENDIAN));
     }
 
+    @Override
+    public int hashCode() {
+        return  ((int) x ^ ((int) z << 12)) ^ ((int) (y + 64) << 23);
+    }
+
 
     @PowerNukkitXOnly
     @Since("1.19.80-r3")

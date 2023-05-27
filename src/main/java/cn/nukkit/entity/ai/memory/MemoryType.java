@@ -13,7 +13,9 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 /**
- * 表示一个特定的Memory类型
+ * 实体记忆是一个存储实体数据的类，同时如果实现了{@link IMemoryCodec}，实体记忆还可以被持久化存储以及链接实体元数据
+ * <p>
+ * Entity memory is a class that stores entity data, and if {@link IMemoryCodec} is implemented, entity memory can also be persistently stored and linked entity metadata
  */
 @PowerNukkitXOnly
 @Since("1.19.50-r1")

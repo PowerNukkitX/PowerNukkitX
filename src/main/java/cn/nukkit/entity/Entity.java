@@ -123,12 +123,12 @@ public abstract class Entity extends Location implements Metadatable {
     @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit",
             reason = "Apparently this the ID 24 was reused to represent CLIENT_EVENT but Cloudburst Nukkit is still mapping it as age")
     public static final int DATA_ENTITY_AGE = dynamic(DATA_CLIENT_EVENT); //short
+    public static final int DATA_PLAYER_FLAG_SLEEP = 1;
+    public static final int DATA_PLAYER_FLAG_DEAD = 2;
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final int DATA_USING_ITEM = dynamic(25); //byte
 
-    public static final int DATA_PLAYER_FLAG_SLEEP = 1;
-    public static final int DATA_PLAYER_FLAG_DEAD = 2;
     public static final int DATA_PLAYER_FLAGS = dynamic(26); //byte
     @Since("1.2.0.0-PN")
     public static final int DATA_PLAYER_INDEX = dynamic(27);
@@ -337,6 +337,7 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_FLAG_CHESTED = dynamic(36);
     public static final int DATA_FLAG_STACKABLE = dynamic(37);
     public static final int DATA_FLAG_SHOWBASE = dynamic(38);
+    //STANDING
     public static final int DATA_FLAG_REARING = dynamic(39);
     public static final int DATA_FLAG_VIBRATING = dynamic(40);
     public static final int DATA_FLAG_IDLING = dynamic(41);
@@ -484,6 +485,11 @@ public abstract class Entity extends Location implements Metadatable {
             .putString(DATA_NAMETAG, "")
             .putLong(DATA_LEAD_HOLDER_EID, -1)
             .putFloat(DATA_SCALE, 1f);
+    /**
+     * 这个实体骑在谁身上
+     * <p>
+     * Who is this entity riding on
+     */
     public Entity riding = null;
     public FullChunk chunk;
     public List<Block> blocksAround = new ArrayList<>();
@@ -1159,7 +1165,11 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     /**
+     * 实体初始化顺序，先初始化Entity类字段->Entity构造函数->进入init方法->调用initEntity方法->子类字段初始化->子类构造函数
+     * <p>
      * 用于初始化实体的NBT和实体字段的方法
+     * <p>
+     * Entity initialization order, first initialize the Entity class field->Entity constructor->Enter the init method->Call the init Entity method-> subclass field initialization-> subclass constructor
      * <p>
      * The method used to initialize the NBT and entity fields of the entity
      */
@@ -1684,6 +1694,13 @@ public abstract class Entity extends Location implements Metadatable {
         return shortNames.getOrDefault(this.getClass().getSimpleName(), "");
     }
 
+    /**
+     * 将这个实体在客户端生成，让该玩家可以看到它
+     * <p>
+     * Spawn this entity on the client side so that the player can see it
+     *
+     * @param player the player
+     */
     public void spawnTo(Player player) {
 
         if (!this.hasSpawned.containsKey(player.getLoaderId()) && this.chunk != null && player.usedChunks.containsKey(Level.chunkHash(this.chunk.getX(), this.chunk.getZ()))) {
@@ -2449,7 +2466,7 @@ public abstract class Entity extends Location implements Metadatable {
         pk.vehicleUniqueId = getId();         // To the?
         pk.riderUniqueId = rider.getId(); // From who?
         pk.type = type;
-
+        pk.riderInitiated = type > 0;
         Server.broadcastPacket(this.hasSpawned.values(), pk);
     }
 
@@ -2627,7 +2644,8 @@ public abstract class Entity extends Location implements Metadatable {
         }
     }
 
-    private boolean onPhysicalInteraction(Block block, boolean cancelled) {
+    @PowerNukkitXDifference(info = "change to protected")
+    protected boolean onPhysicalInteraction(Block block, boolean cancelled) {
         Event ev;
 
         if (this instanceof Player) {
