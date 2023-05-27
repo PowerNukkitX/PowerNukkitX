@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.blockstate.BlockState;
-import cn.nukkit.blockstate.BlockStateRegistry;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.SneakyThrows;
@@ -17,7 +16,6 @@ import java.io.InputStreamReader;
 import java.util.List;
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
@@ -72,8 +70,6 @@ public class BlockAttributesTest {
     void testBlockHash() {
         for (var block : BLOCKS.values()) {
             var ref = BLOCK_ATTRIBUTES_REFERENCE.get(block.computeUnsignedBlockStateHash());
-            if (ref == null)
-                System.out.println();
             assertNotNull(ref);
         }
     }
