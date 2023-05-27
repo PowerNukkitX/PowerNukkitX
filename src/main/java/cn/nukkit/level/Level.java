@@ -3794,21 +3794,9 @@ public class Level implements ChunkManager, Metadatable {
         var nzy = getMapColoredBlockAt(x, z - 1);
         if (nzy == null) return color;
         if (nzy.getFloorY() > block.getFloorY()) {
-            color = switch (nzy.getFloorY() - block.getFloorY()) {
-                case 1 -> darker(color, 0.8);
-                case 2 -> darker(color, 0.75);
-                case 3 -> darker(color, 0.7);
-                case 4 -> darker(color, 0.65);
-                default -> darker(color, 0.6);
-            };
+            color = darker(color, 0.85 - Math.min(5, nzy.getFloorY() - block.getFloorY()) * 0.05);
         } else if (nzy.getFloorY() < block.getFloorY()) {
-            color = switch (block.getFloorY() - nzy.getFloorY()) {
-                case 1 -> brighter(color, 0.8);
-                case 2 -> brighter(color, 0.75);
-                case 3 -> brighter(color, 0.7);
-                case 4 -> brighter(color, 0.65);
-                default -> brighter(color, 0.6);
-            };
+            color = brighter(color, 0.85 - Math.min(5, nzy.getFloorY() - block.getFloorY()) * 0.05);
         }
 
         var deltaY = block.y - 128;
