@@ -27,7 +27,7 @@ public class BlockColor {
     public static final BlockColor CLAY_BLOCK_COLOR = new BlockColor(0xa4, 0xa8, 0xb8);
     public static final BlockColor DIRT_BLOCK_COLOR = new BlockColor(0x97, 0x6d, 0x4d);
     public static final BlockColor STONE_BLOCK_COLOR = new BlockColor(0x70, 0x70, 0x70);
-    public static final BlockColor WATER_BLOCK_COLOR = new BlockColor(0x40, 0x40, 0xff);
+    public static final BlockColor WATER_BLOCK_COLOR = new BlockColor(64, 64, 160);
     @PowerNukkitXOnly
     @Since("1.19.80-r3")
     public static final BlockColor FLOWING_WATER_BLOCK_COLOR = new BlockColor(30, 90, 245, 0);

@@ -35,7 +35,7 @@ public class BlockAttributeFileCutter {
             var r = colorObj.get("r").getAsInt();
             var g = colorObj.get("g").getAsInt();
             var b = colorObj.get("b").getAsInt();
-            var a = colorObj.get("a").getAsInt();
+            var a = obj.get("translucency").getAsFloat() >= 1 ? 0 : 255;
             ext.put(hash, new Color(r, g, b, a));
         }
         Gson gson = new GsonBuilder().setPrettyPrinting().create();

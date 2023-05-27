@@ -3779,24 +3779,26 @@ public class Level implements ChunkManager, Metadatable {
         return this.getChunk(x >> 4, z >> 4, true).getHighestBlockAt(x & 0x0f, z & 0x0f);
     }
 
-    protected static final Color VOID_BLOCK_COLOR = new Color(BlockColor.VOID_BLOCK_COLOR.getRGB());
-    protected static final Color WATER_BLOCK_COLOR = new Color(BlockColor.WATER_BLOCK_COLOR.getRGB());
+    protected static final BlockColor VOID_BLOCK_COLOR = BlockColor.VOID_BLOCK_COLOR;
+    protected static final BlockColor WATER_BLOCK_COLOR = BlockColor.WATER_BLOCK_COLOR;
 
     @PowerNukkitXDifference(info = "使用新的颜色算法", since = "1.19.80-r3")
-    public Color getMapColorAt(int x, int z) {
-        var color = VOID_BLOCK_COLOR;
+    public BlockColor getMapColorAt(int x, int z) {
+        var color = VOID_BLOCK_COLOR.toAwtColor();
 
         var block = getMapColoredBlockAt(x, z);
-        if (block == null) return color;
-        color = new Color(block.getColor().getRGB());
+        if (block == null)
+            return VOID_BLOCK_COLOR;
 
         //在z轴存在高度差的地方，颜色变深或变浅
         var nzy = getMapColoredBlockAt(x, z - 1);
-        if (nzy == null) return color;
+        if (nzy == null)
+            return block.getColor();
+        color = block.getColor().toAwtColor();
         if (nzy.getFloorY() > block.getFloorY()) {
-            color = darker(color, 0.85 - Math.min(5, nzy.getFloorY() - block.getFloorY()) * 0.05);
+            color = darker(color, 0.875 - Math.min(5, nzy.getFloorY() - block.getFloorY()) * 0.05);
         } else if (nzy.getFloorY() < block.getFloorY()) {
-            color = brighter(color, 0.85 - Math.min(5, block.getFloorY() - nzy.getFloorY()) * 0.05);
+            color = brighter(color, 0.875 - Math.min(5, block.getFloorY() - nzy.getFloorY()) * 0.05);
         }
 
         var deltaY = block.y - 128;
@@ -3820,19 +3822,19 @@ public class Level implements ChunkManager, Metadatable {
                 if (depth > 96) return WATER_BLOCK_COLOR;
                 b1 = WATER_BLOCK_COLOR.getBlue();
                 var radio = (depth / 96.0);
-                if (radio < 0.3) radio = 0.3;
+                if (radio < 0.5) radio = 0.5;
                 r1 += (WATER_BLOCK_COLOR.getRed() - r1) * radio;
                 g1 += (WATER_BLOCK_COLOR.getGreen() - g1) * radio;
             } else {
                 //湖泊 or 河流
                 b1 = WATER_BLOCK_COLOR.getBlue();
-                r1 += (WATER_BLOCK_COLOR.getRed() - r1) * 0.3;
-                g1 += (WATER_BLOCK_COLOR.getGreen() - g1) * 0.3;
+                r1 += (WATER_BLOCK_COLOR.getRed() - r1) * 0.5;
+                g1 += (WATER_BLOCK_COLOR.getGreen() - g1) * 0.5;
             }
             color = new Color(r1, g1, b1);
         }
 
-        return color;
+        return new BlockColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
     }
 
     protected Color brighter(Color source, double factor) {
@@ -3863,11 +3865,16 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     protected Block getMapColoredBlockAt(int x, int z) {
-        int y = getHighestBlockAt(x, z);
+        var chunk = getChunk(x >> 4, z >> 4);
+        if (chunk == null) return null;
+        var chunkX = x & 0xF;
+        var chunkZ = z & 0xF;
+        //TODO: 地形生成器不会更新heightMap，按理说这边的cache应该是true。需要等待heightMap的384适配以及地形生成器的heightMap修复
+        int y = chunk.getHighestBlockAt(chunkX, chunkZ, false);
         while (y > getMinHeight()) {
-            Block block = getBlock(new Vector3(x, y, z));
+            Block block = getBlock(x, y, z);
             if (block.getColor() == null) return null;
-            if (block.getColor().getAlpha() == 0x00 || block instanceof BlockWater) {
+            if (block.getColor().getAlpha() < 255 || block instanceof BlockWater) {
                 y--;
             } else {
                 return block;

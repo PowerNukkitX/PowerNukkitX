@@ -144,7 +144,7 @@ public class ItemMap extends Item {
         try {
             for (int z = 0; z < 128 * zoom; z += zoom) {
                 for (int x = 0; x < 128 * zoom; x += zoom) {
-                    pixels[(z * 128 + x) / zoom] = level.getMapColorAt(startX + x, startZ + z).getRGB();
+                    pixels[(z * 128 + x) / zoom] = level.getMapColorAt(startX + x, startZ + z).getARGB();
                 }
             }
             BufferedImage image = new BufferedImage(128, 128, BufferedImage.TYPE_INT_ARGB);
