@@ -146,13 +146,13 @@ public class NBTIO {
             }
         } else {
             for (var state : states) {
-                List<String> values = StringUtils.fastSplit("=", state);
-                String propertyTypeString = PropertyTypes.getPropertyTypeString(values.get(0));
+                String[] split = state.split("=");
+                String propertyTypeString = PropertyTypes.getPropertyTypeString(split[0]);
                 if (propertyTypeString != null) {
                     switch (propertyTypeString) {
-                        case "BOOLEAN" -> nbt.putBoolean(values.get(0), Integer.parseInt(values.get(1)) == 1);
-                        case "ENUM" -> nbt.putString(values.get(0), values.get(1));
-                        case "INTEGER" -> nbt.putInt(values.get(0), Integer.parseInt(values.get(1)));
+                        case "BOOLEAN" -> nbt.putBoolean(split[0], Integer.parseInt(split[1]) == 1);
+                        case "ENUM" -> nbt.putString(split[0], split[1]);
+                        case "INTEGER" -> nbt.putInt(split[0], Integer.parseInt(split[1]));
                     }
                 }
             }

@@ -11,7 +11,6 @@ import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamOption;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
-import cn.nukkit.command.selector.args.impl.Scores;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.entity.Entity;
@@ -22,14 +21,13 @@ import cn.nukkit.math.*;
 import cn.nukkit.scoreboard.scorer.EntityScorer;
 import cn.nukkit.scoreboard.scorer.IScorer;
 import cn.nukkit.scoreboard.scorer.PlayerScorer;
-import com.google.common.base.Splitter;
+import cn.nukkit.utils.StringUtils;
 
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static cn.nukkit.utils.StringUtils.fastSplit;
 import static cn.nukkit.utils.Utils.getLevelBlocks;
 
 @PowerNukkitXOnly
@@ -605,7 +603,7 @@ public class ExecuteCommand extends VanillaCommand {
                     //条件为一个区间
                     int min = Integer.MIN_VALUE;
                     int max = Integer.MAX_VALUE;
-                    var splittedScoreScope = fastSplit(SCORE_SCOPE_SEPARATOR, range);
+                    var splittedScoreScope = StringUtils.fastSplit(SCORE_SCOPE_SEPARATOR, range);
                     String min_str = splittedScoreScope.get(0);
                     if (!min_str.isEmpty()) {
                         min = Integer.parseInt(min_str);

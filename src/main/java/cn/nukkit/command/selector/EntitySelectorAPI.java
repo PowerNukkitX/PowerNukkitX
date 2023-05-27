@@ -9,6 +9,7 @@ import cn.nukkit.command.exceptions.SelectorSyntaxException;
 import cn.nukkit.command.selector.args.ISelectorArgument;
 import cn.nukkit.command.selector.args.impl.*;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.utils.StringUtils;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.collect.Lists;
@@ -24,7 +25,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static cn.nukkit.command.selector.SelectorType.*;
-import static cn.nukkit.utils.StringUtils.fastSplit;
 
 /**
  * 目标选择器API<p/>
@@ -217,7 +217,7 @@ public class EntitySelectorAPI {
 
         if (inputArguments != null) {
             for (String arg : separateArguments(inputArguments)) {
-                var split = fastSplit(ARGUMENT_JOINER, arg, 2);
+                var split = StringUtils.fastSplit(ARGUMENT_JOINER, arg, 2);
                 String argName = split.get(0);
 
                 if (!registry.containsKey(argName)) {
