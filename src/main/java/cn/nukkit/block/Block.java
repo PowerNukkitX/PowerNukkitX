@@ -27,6 +27,7 @@ import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.metadata.MetadataValue;
 import cn.nukkit.metadata.Metadatable;
+import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.potion.Effect;
@@ -35,6 +36,7 @@ import com.google.common.base.Preconditions;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 
@@ -45,12 +47,14 @@ import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
+import java.nio.ByteOrder;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import static cn.nukkit.utils.Utils.dynamic;
+import static cn.nukkit.utils.Utils.fnv1a_32;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -2944,10 +2948,30 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             if (this instanceof BlockEntityHolder<?> holder1 && otherBlock instanceof BlockEntityHolder<?> holder2) {
                 BlockEntity be1 = holder1.getOrCreateBlockEntity();
                 BlockEntity be2 = holder2.getOrCreateBlockEntity();
-                if ((be1 == null) != (be2 == null)) return false;
                 return this.getId() == otherBlock.getId() && this.getDamage() == otherBlock.getDamage() && be1.getCleanedNBT().equals(be2.getCleanedNBT());
             }
         }
         return false;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.80-r3")
+    @SneakyThrows
+    public int computeBlockStateHash() {
+        if (getPersistenceName().equals("minecraft:unknown")) {
+            return -2; // This is special case
+        }
+        var tag = new CompoundTag()
+                .putString("name", getPersistenceName())
+                .putCompound("states", NBTIO.serializeStates(this, new TreeMap<>()));
+        return fnv1a_32(NBTIO.write(tag, ByteOrder.LITTLE_ENDIAN));
+    }
+
+
+    @PowerNukkitXOnly
+    @Since("1.19.80-r3")
+    @SneakyThrows
+    public long computeUnsignedBlockStateHash() {
+        return Integer.toUnsignedLong(computeBlockStateHash());
     }
 }

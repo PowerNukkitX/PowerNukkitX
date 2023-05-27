@@ -4,6 +4,8 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 
+import java.awt.*;
+
 /**
  * @author Snake1999
  * @since 2016/1/10
@@ -184,6 +186,12 @@ public class BlockColor {
 
     public int getARGB() {
         return this.alpha << 24 | this.red << 16 | this.green << 8 | this.blue;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.80-r3")
+    public Color toAwtColor() {
+        return new Color(this.red, this.green, this.blue, this.alpha);
     }
 
     @Deprecated

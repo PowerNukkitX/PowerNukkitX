@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
+import cn.nukkit.blockproperty.BooleanBlockProperty;
 import cn.nukkit.blockproperty.IntBlockProperty;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
@@ -25,7 +26,7 @@ public class BlockCandle extends BlockFlowable {
 
     @PowerNukkitOnly
     @Since("FUTURE")
-    private static final IntBlockProperty LIT = new IntBlockProperty("lit", false, 1, 0, 1);
+    private static final BooleanBlockProperty LIT = new BooleanBlockProperty("lit", false);
 
     @PowerNukkitOnly
     @Since("FUTURE")
@@ -80,13 +81,13 @@ public class BlockCandle extends BlockFlowable {
             return false;
         }
 
-        if (getPropertyValue(LIT) == 1 && item.getId() != ItemID.FLINT_AND_STEEL) {
-            setPropertyValue(LIT, 0);
+        if (getPropertyValue(LIT) && item.getId() != ItemID.FLINT_AND_STEEL) {
+            setPropertyValue(LIT, false);
             getLevel().addSound(this, Sound.RANDOM_FIZZ);
             getLevel().setBlock(this, this, true, true);
             return true;
-        } else if (getPropertyValue(LIT) == 0 && item.getId() == ItemID.FLINT_AND_STEEL) {
-            setPropertyValue(LIT, 1);
+        } else if (!getPropertyValue(LIT) && item.getId() == ItemID.FLINT_AND_STEEL) {
+            setPropertyValue(LIT, true);
             getLevel().addSound(this, Sound.FIRE_IGNITE);
             getLevel().setBlock(this, this, true, true);
             return true;
@@ -119,7 +120,7 @@ public class BlockCandle extends BlockFlowable {
 
     @Override
     public int getLightLevel() {
-        return getPropertyValue(LIT) * getPropertyValue(CANDLES) * 3;
+        return getPropertyValue(LIT) ? getPropertyValue(CANDLES) * 3 : 0;
     }
 
     @Override

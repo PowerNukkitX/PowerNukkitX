@@ -27,6 +27,8 @@ import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
@@ -110,7 +112,22 @@ public class NBTIO {
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
     public static CompoundTag putBlockHelper(Block block) {
-        var states = new CompoundTag();
+        return new CompoundTag("Block")
+                .putString("name", block.getPersistenceName())
+                .putCompound("states", serializeStates(block))
+                .putInt("version", BlockStateRegistry.blockPaletteVersion.get());
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.80-r3")
+    public static CompoundTag serializeStates(Block block) {
+        return serializeStates(block, new HashMap<>());
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.80-r3")
+    public static CompoundTag serializeStates(Block block, Map<String, Tag> mapImplementation) {
+        var states = new CompoundTag("", mapImplementation);
         for (var str : block.getProperties().getNames()) {
             BlockProperty<?> property = block.getCurrentState().getProperty(str);
             if (property instanceof BooleanBlockProperty) {
@@ -131,10 +148,7 @@ public class NBTIO {
                 }
             }
         }
-        return new CompoundTag("Block")
-                .putString("name", block.getPersistenceName())
-                .putCompound("states", states)
-                .putInt("version", BlockStateRegistry.blockPaletteVersion.get());
+        return states;
     }
 
     @PowerNukkitXOnly

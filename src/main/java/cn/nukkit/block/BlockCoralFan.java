@@ -5,6 +5,7 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.ArrayBlockProperty;
 import cn.nukkit.blockproperty.BlockProperties;
+import cn.nukkit.blockproperty.IntBlockProperty;
 import cn.nukkit.event.block.BlockFadeEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
@@ -22,9 +23,7 @@ import static cn.nukkit.block.BlockCoral.COLOR;
 public class BlockCoralFan extends BlockFlowable implements Faceable {
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
-    public static final ArrayBlockProperty<BlockFace.Axis> FAN_DIRECTION = new ArrayBlockProperty<>("coral_fan_direction", false,
-            new BlockFace.Axis[]{BlockFace.Axis.X, BlockFace.Axis.Z}
-    ).ordinal(true);
+    public static final IntBlockProperty FAN_DIRECTION = new IntBlockProperty("coral_fan_direction", false, 1, 0, 1);
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
