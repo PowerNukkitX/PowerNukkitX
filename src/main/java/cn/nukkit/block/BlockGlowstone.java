@@ -4,7 +4,6 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemGlowstoneDust;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.math.MathHelper;
-import cn.nukkit.utils.BlockColor;
 
 import java.util.Random;
 
@@ -54,11 +53,6 @@ public class BlockGlowstone extends BlockTransparent {
         return new Item[]{
                 new ItemGlowstoneDust(0, MathHelper.clamp(count, 1, 4))
         };
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.SAND_BLOCK_COLOR;
     }
 
     @Override

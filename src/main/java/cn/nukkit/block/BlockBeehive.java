@@ -16,7 +16,6 @@ import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
@@ -96,11 +95,6 @@ public class BlockBeehive extends BlockSolidMeta implements Faceable, BlockEntit
     @Override
     public double getResistance() {
         return 3;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.WOOD_BLOCK_COLOR;
     }
 
     @Override

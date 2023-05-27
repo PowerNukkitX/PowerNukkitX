@@ -5,7 +5,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.utils.BlockColor;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -85,8 +84,4 @@ public class BlockSlabBlackstonePolished extends BlockSlab {
         return 6.0;
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.BLACK_BLOCK_COLOR;
-    }
 }

@@ -5,7 +5,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.value.StoneSlab3Type;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.utils.BlockColor;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -75,11 +74,6 @@ public class BlockSlabStone3 extends BlockSlab {
         return slab.getId() == getId() && getSlabType().equals(slab.getPropertyValue(StoneSlab3Type.PROPERTY));
     }
 
-
-    @Override
-    public BlockColor getColor() {
-        return getSlabType().getColor();
-    }
 
     @Override
     @PowerNukkitOnly

@@ -10,7 +10,6 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 
 import org.jetbrains.annotations.NotNull;
@@ -114,11 +113,6 @@ public class BlockNetherPortal extends BlockFlowable implements Faceable {
     @Override
     public boolean hasEntityCollision() {
         return true;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.AIR_BLOCK_COLOR;
     }
 
     @Override

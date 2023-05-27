@@ -35,4 +35,5 @@ public class BlockJungleSignPost extends BlockSignPost {
     public Item toItem() {
         return new ItemJungleSign();
     }
+
 }

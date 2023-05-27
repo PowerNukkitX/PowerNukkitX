@@ -73,8 +73,11 @@ import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.awt.*;
 import java.io.File;
 import java.lang.ref.SoftReference;
+import java.util.List;
+import java.util.Queue;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.*;
@@ -3776,18 +3779,108 @@ public class Level implements ChunkManager, Metadatable {
         return this.getChunk(x >> 4, z >> 4, true).getHighestBlockAt(x & 0x0f, z & 0x0f);
     }
 
+    protected static final BlockColor VOID_BLOCK_COLOR = BlockColor.VOID_BLOCK_COLOR;
+    protected static final BlockColor WATER_BLOCK_COLOR = BlockColor.WATER_BLOCK_COLOR;
+
+    @PowerNukkitXDifference(info = "使用新的颜色算法", since = "1.19.80-r3")
     public BlockColor getMapColorAt(int x, int z) {
-        int y = getHighestBlockAt(x, z);
-        while (y > 1) {
-            Block block = getBlock(new Vector3(x, y, z));
-            BlockColor blockColor = block.getColor();
-            if (blockColor.getAlpha() == 0x00) {
+        var color = VOID_BLOCK_COLOR.toAwtColor();
+
+        var block = getMapColoredBlockAt(x, z);
+        if (block == null)
+            return VOID_BLOCK_COLOR;
+
+        //在z轴存在高度差的地方，颜色变深或变浅
+        var nzy = getMapColoredBlockAt(x, z - 1);
+        if (nzy == null)
+            return block.getColor();
+        color = block.getColor().toAwtColor();
+        if (nzy.getFloorY() > block.getFloorY()) {
+            color = darker(color, 0.875 - Math.min(5, nzy.getFloorY() - block.getFloorY()) * 0.05);
+        } else if (nzy.getFloorY() < block.getFloorY()) {
+            color = brighter(color, 0.875 - Math.min(5, block.getFloorY() - nzy.getFloorY()) * 0.05);
+        }
+
+        var deltaY = block.y - 128;
+        if (deltaY > 0) {
+            color = brighter(color, 1 - deltaY / (192 * 3));
+        } else if (deltaY < 0) {
+            color = darker(color, 1 - (-deltaY) / (192 * 3));
+        }
+
+        var up = block.getSide(BlockFace.UP);
+        var up1 = block.getSideAtLayer(1, BlockFace.UP);
+        if (up instanceof BlockWater || up1 instanceof BlockWater) {
+            var r1 = color.getRed();
+            var g1 = color.getGreen();
+            var b1 = color.getBlue();
+            //在水下
+            if (block.y < 62) {
+                //在海平面下
+                //海平面为62格。离海平面越远颜色越接近海洋颜色
+                var depth = 62 - block.y;
+                if (depth > 96) return WATER_BLOCK_COLOR;
+                b1 = WATER_BLOCK_COLOR.getBlue();
+                var radio = (depth / 96.0);
+                if (radio < 0.5) radio = 0.5;
+                r1 += (WATER_BLOCK_COLOR.getRed() - r1) * radio;
+                g1 += (WATER_BLOCK_COLOR.getGreen() - g1) * radio;
+            } else {
+                //湖泊 or 河流
+                b1 = WATER_BLOCK_COLOR.getBlue();
+                r1 += (WATER_BLOCK_COLOR.getRed() - r1) * 0.5;
+                g1 += (WATER_BLOCK_COLOR.getGreen() - g1) * 0.5;
+            }
+            color = new Color(r1, g1, b1);
+        }
+
+        return new BlockColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+    }
+
+    protected Color brighter(Color source, double factor) {
+        int r = source.getRed();
+        int g = source.getGreen();
+        int b = source.getBlue();
+        int alpha = source.getAlpha();
+
+        int i = (int)(1.0/(1.0-factor));
+        if ( r == 0 && g == 0 && b == 0) {
+            return new Color(i, i, i, alpha);
+        }
+        if ( r > 0 && r < i ) r = i;
+        if ( g > 0 && g < i ) g = i;
+        if ( b > 0 && b < i ) b = i;
+
+        return new Color(Math.min((int)(r/factor), 255),
+                Math.min((int)(g/factor), 255),
+                Math.min((int)(b/factor), 255),
+                alpha);
+    }
+
+    protected Color darker(Color source, double factor) {
+        return new Color(Math.max((int)(source.getRed()*factor), 0),
+                Math.max((int)(source.getGreen()*factor), 0),
+                Math.max((int)(source.getBlue()*factor), 0),
+                source.getAlpha());
+    }
+
+    protected Block getMapColoredBlockAt(int x, int z) {
+        var chunk = getChunk(x >> 4, z >> 4);
+        if (chunk == null) return null;
+        var chunkX = x & 0xF;
+        var chunkZ = z & 0xF;
+        //TODO: 地形生成器不会更新heightMap，按理说这边的cache应该是true。需要等待heightMap的384适配以及地形生成器的heightMap修复
+        int y = chunk.getHighestBlockAt(chunkX, chunkZ, false);
+        while (y > getMinHeight()) {
+            Block block = getBlock(x, y, z);
+            if (block.getColor() == null) return null;
+            if (block.getColor().getAlpha() < 255 || block instanceof BlockWater) {
                 y--;
             } else {
-                return blockColor;
+                return block;
             }
         }
-        return BlockColor.VOID_BLOCK_COLOR;
+        return null;
     }
 
     public boolean isChunkLoaded(int x, int z) {

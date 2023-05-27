@@ -8,7 +8,6 @@ import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
@@ -105,8 +104,4 @@ public class BlockBone extends BlockSolidMeta implements Faceable {
         return true;
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.SAND_BLOCK_COLOR;
-    }
 }

@@ -3,7 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.utils.BlockColor;
 
 /**
  * @author GoodLucky777
@@ -58,9 +57,5 @@ public class BlockStairsDeepslatePolished extends BlockStairs {
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
-    
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.DEEPSLATE_GRAY;
-    }
+
 }

@@ -14,11 +14,10 @@ import cn.nukkit.level.Location;
 import cn.nukkit.scoreboard.scorer.EntityScorer;
 import cn.nukkit.scoreboard.scorer.IScorer;
 import cn.nukkit.scoreboard.scorer.PlayerScorer;
+import cn.nukkit.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.function.Predicate;
-
-import static cn.nukkit.utils.StringUtils.fastSplit;
 
 @PowerNukkitXOnly
 @Since("1.19.60-r1")
@@ -32,9 +31,9 @@ public class Scores extends CachedSimpleSelectorArgument {
     protected Predicate<Entity> cache(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) throws SelectorSyntaxException {
         ParseUtils.singleArgument(arguments, getKeyName());
         final var conditions = new ArrayList<ScoreCondition>();
-        for (String entry : fastSplit(SCORE_SEPARATOR, arguments[0].substring(1, arguments[0].length() - 1))) {
+        for (String entry : StringUtils.fastSplit(SCORE_SEPARATOR, arguments[0].substring(1, arguments[0].length() - 1))) {
             if (entry.isEmpty()) throw new SelectorSyntaxException("Empty score entry is not allowed in selector!");
-            var splittedEntry = fastSplit(SCORE_JOINER, entry, 2);
+            var splittedEntry = StringUtils.fastSplit(SCORE_JOINER, entry, 2);
             String objectiveName = splittedEntry.get(0);
             String condition = splittedEntry.get(1);
             boolean reversed = ParseUtils.checkReversed(condition);
@@ -43,7 +42,7 @@ public class Scores extends CachedSimpleSelectorArgument {
                 //条件为一个区间
                 int min = Integer.MIN_VALUE;
                 int max = Integer.MAX_VALUE;
-                var splittedScoreScope = fastSplit(SCORE_SCOPE_SEPARATOR, condition);
+                var splittedScoreScope = StringUtils.fastSplit(SCORE_SCOPE_SEPARATOR, condition);
                 String min_str = splittedScoreScope.get(0);
                 if (!min_str.isEmpty()) {
                     min = Integer.parseInt(min_str);

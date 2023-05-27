@@ -5,7 +5,6 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.MinecraftItemID;
-import cn.nukkit.utils.BlockColor;
 
 import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
@@ -49,8 +48,4 @@ public class BlockOreCoal extends BlockOre {
         return ThreadLocalRandom.current().nextInt(3);
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.BLACK_BLOCK_COLOR;
-    }
 }

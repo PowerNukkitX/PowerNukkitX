@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.utils.BlockColor;
 
 public class BlockStairsPurpur extends BlockStairs {
 
@@ -45,8 +44,4 @@ public class BlockStairsPurpur extends BlockStairs {
         return "Purpur Stairs";
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.MAGENTA_BLOCK_COLOR;
-    }
 }

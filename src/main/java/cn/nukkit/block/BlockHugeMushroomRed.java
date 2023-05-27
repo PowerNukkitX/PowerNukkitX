@@ -7,7 +7,6 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.NukkitRandom;
-import cn.nukkit.utils.BlockColor;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -78,8 +77,4 @@ public class BlockHugeMushroomRed extends BlockSolidMeta {
         return true;
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.RED_BLOCK_COLOR;
-    }
 }

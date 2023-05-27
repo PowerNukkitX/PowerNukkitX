@@ -4,7 +4,6 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.utils.BlockColor;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -72,9 +71,5 @@ public class BlockDoubleSlabTileDeepslate extends BlockDoubleSlabBase {
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
-    
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.DEEPSLATE_GRAY;
-    }
+
 }

@@ -31,7 +31,6 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.potion.Effect;
-import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -296,11 +295,6 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
     @Override
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
         return new SimpleAxisAlignedBB(x, y, z, x + 1, y + 1, z + 1);
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.SPRUCE_BLOCK_COLOR;
     }
 
     @PowerNukkitOnly

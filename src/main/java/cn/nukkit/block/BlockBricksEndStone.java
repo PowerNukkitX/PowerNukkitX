@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.utils.BlockColor;
 
 public class BlockBricksEndStone extends BlockSolid {
 
@@ -40,8 +39,4 @@ public class BlockBricksEndStone extends BlockSolid {
         return 4;
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.SAND_BLOCK_COLOR;
-    }
 }

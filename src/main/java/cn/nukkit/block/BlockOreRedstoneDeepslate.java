@@ -3,7 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockstate.BlockState;
-import cn.nukkit.utils.BlockColor;
 
 /**
  * @author joserobjr
@@ -48,8 +47,4 @@ public class BlockOreRedstoneDeepslate extends BlockOreRedstone {
         return BlockState.of(DEEPSLATE_REDSTONE_ORE);
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.DEEPSLATE_GRAY;
-    }
 }

@@ -3,7 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.utils.BlockColor;
 
 /**
  * @author good777LUCKY
@@ -70,9 +69,5 @@ public class BlockObsidianCrying extends BlockSolid {
     public boolean canHarvestWithHand() {
         return false;
     }
-    
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.BLACK_BLOCK_COLOR;
-    }
+
 }

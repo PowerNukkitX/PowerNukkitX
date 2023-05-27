@@ -15,7 +15,6 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.BlockColor;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -106,11 +105,6 @@ public class BlockEndPortal extends BlockFlowable implements BlockEntityHolder<B
     @Override
     public AxisAlignedBB getCollisionBoundingBox() {
         return this;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.BLACK_BLOCK_COLOR;
     }
 
     @Override

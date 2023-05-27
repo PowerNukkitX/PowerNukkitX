@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.utils.BlockColor;
 
 /**
  * @author xtypr
@@ -46,11 +45,6 @@ public class BlockStairsBrick extends BlockStairs {
     @Override
     public String getName() {
         return "Brick Stairs";
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.RED_BLOCK_COLOR;
     }
 
     @Override

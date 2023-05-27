@@ -5,14 +5,13 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.IntBlockProperty;
+import cn.nukkit.blockproperty.BooleanBlockProperty;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemCake;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.BlockColor;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -22,7 +21,7 @@ import javax.annotation.Nullable;
 public class BlockCandleCake extends BlockTransparentMeta {
     @PowerNukkitOnly
     @Since("FUTURE")
-    private static final IntBlockProperty LIT = new IntBlockProperty("lit", false, 1, 0, 1);
+    private static final BooleanBlockProperty LIT = new BooleanBlockProperty("lit", false);
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
@@ -147,13 +146,13 @@ public class BlockCandleCake extends BlockTransparentMeta {
     @SuppressWarnings("DuplicatedCode")
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
-        if (getPropertyValue(LIT) == 1 && item.getId() != ItemID.FLINT_AND_STEEL) {
-            setPropertyValue(LIT, 0);
+        if (getPropertyValue(LIT) && item.getId() != ItemID.FLINT_AND_STEEL) {
+            setPropertyValue(LIT, false);
             getLevel().addSound(this, Sound.RANDOM_FIZZ);
             getLevel().setBlock(this, this, true, true);
             return true;
-        } else if (getPropertyValue(LIT) == 0 && item.getId() == ItemID.FLINT_AND_STEEL) {
-            setPropertyValue(LIT, 1);
+        } else if (!getPropertyValue(LIT) && item.getId() == ItemID.FLINT_AND_STEEL) {
+            setPropertyValue(LIT, true);
             getLevel().addSound(this, Sound.FIRE_IGNITE);
             getLevel().setBlock(this, this, true, true);
             return true;
@@ -164,11 +163,6 @@ public class BlockCandleCake extends BlockTransparentMeta {
             return this.getLevel().getBlock(this).onActivate(Item.get(0), player);
         }
         return false;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.AIR_BLOCK_COLOR;
     }
 
     @Override

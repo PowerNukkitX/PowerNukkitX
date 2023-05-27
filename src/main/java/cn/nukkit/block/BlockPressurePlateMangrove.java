@@ -5,7 +5,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.AxisAlignedBB;
-import cn.nukkit.utils.BlockColor;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -43,11 +42,6 @@ public class BlockPressurePlateMangrove extends BlockPressurePlateWood {
     @Override
     public double getResistance() {
         return 0.5D;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.BROWNISH_RED;
     }
 
     @Override

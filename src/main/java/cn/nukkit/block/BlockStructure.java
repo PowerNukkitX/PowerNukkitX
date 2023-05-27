@@ -11,9 +11,6 @@ import cn.nukkit.blockproperty.BlockProperty;
 import cn.nukkit.blockproperty.value.StructureBlockType;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.BlockColor;
-import org.jetbrains.annotations.NotNull;
-
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -128,11 +125,6 @@ public class BlockStructure extends BlockSolidMeta implements BlockEntityHolder<
     @PowerNukkitOnly
     public boolean canBePulled() {
         return false;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.LIGHT_GRAY_BLOCK_COLOR;
     }
 
 

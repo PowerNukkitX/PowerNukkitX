@@ -3,7 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.BlockColor;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -25,8 +24,4 @@ public abstract class BlockSolid extends Block {
         return true;
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.STONE_BLOCK_COLOR;
-    }
 }

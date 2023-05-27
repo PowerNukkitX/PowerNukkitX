@@ -10,7 +10,6 @@ import cn.nukkit.inventory.BeaconInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.BlockColor;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -117,11 +116,6 @@ public class BlockBeacon extends BlockTransparent implements BlockEntityHolder<B
     @Override
     public boolean canBePushed() {
         return false;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.DIAMOND_BLOCK_COLOR;
     }
 
     @Override

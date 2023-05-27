@@ -7,7 +7,6 @@ import cn.nukkit.event.block.BlockFromToEvent;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.level.Level;
 import cn.nukkit.network.protocol.LevelEventPacket;
-import cn.nukkit.utils.BlockColor;
 
 import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
@@ -40,11 +39,6 @@ public class BlockDragonEgg extends BlockFallable {
     @Override
     public int getLightLevel() {
         return 1;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.OBSIDIAN_BLOCK_COLOR;
     }
 
     @Override

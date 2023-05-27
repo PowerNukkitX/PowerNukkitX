@@ -4,7 +4,6 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.CommonBlockProperties;
-import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.DyeColor;
 
 import org.jetbrains.annotations.NotNull;
@@ -45,11 +44,6 @@ public class BlockGlassPaneStained extends BlockGlassPane {
     @Override
     public String getName() {
         return getDyeColor().getName() + " stained glass pane";
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return getDyeColor().getColor();
     }
 
     public DyeColor getDyeColor() {

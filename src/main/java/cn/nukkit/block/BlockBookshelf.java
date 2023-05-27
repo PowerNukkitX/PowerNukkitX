@@ -7,7 +7,6 @@ import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.utils.BlockColor;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -71,11 +70,6 @@ public class BlockBookshelf extends BlockSolidMeta {
         return new Item[]{
                 Item.get(ItemID.BOOK, 0, 3)
         };
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.WOOD_BLOCK_COLOR;
     }
 
     @Override

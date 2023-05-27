@@ -3,7 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockstate.BlockState;
-import cn.nukkit.utils.BlockColor;
 
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
@@ -37,8 +36,4 @@ public class BlockStemWarped extends BlockStem {
         return getCurrentState().withBlockId(STRIPPED_WARPED_STEM);
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.WARPED_STEM_BLOCK_COLOR;
-    }
 }

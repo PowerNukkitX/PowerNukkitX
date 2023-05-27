@@ -5,7 +5,6 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.BlockColor;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 
@@ -91,11 +90,6 @@ public class BlockNetherrack extends BlockSolid {
     @Override
     public boolean canBeActivated() {
         return true;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.NETHERRACK_BLOCK_COLOR;
     }
 
     @Override

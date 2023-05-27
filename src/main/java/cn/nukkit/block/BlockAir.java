@@ -5,7 +5,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.BlockColor;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -81,8 +80,4 @@ public class BlockAir extends BlockTransparent {
         return false;
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.AIR_BLOCK_COLOR;
-    }
 }

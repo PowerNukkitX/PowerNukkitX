@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.utils.BlockColor;
 
 /**
  * @author Angelic47 (Nukkit Project)
@@ -42,11 +41,6 @@ public class BlockGold extends BlockSolid {
     @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_IRON;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.GOLD_BLOCK_COLOR;
     }
 
     @Override

@@ -12,7 +12,6 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
-import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 
 import org.jetbrains.annotations.NotNull;
@@ -89,11 +88,6 @@ public class BlockGrindstone extends BlockTransparentMeta implements Faceable {
     @Override
     public int getWaterloggingLevel() {
         return 1;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.IRON_BLOCK_COLOR;
     }
 
     @Override

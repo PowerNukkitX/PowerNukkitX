@@ -6,7 +6,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.utils.BlockColor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -66,8 +65,4 @@ public class BlockSculk extends BlockSolid {
         }
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.SCULK_BLOCK_COLOR;
-    }
 }

@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.utils.BlockColor;
 
 @PowerNukkitOnly
 public class BlockStairsPrismarineBrick extends BlockStairs {
@@ -45,11 +44,6 @@ public class BlockStairsPrismarineBrick extends BlockStairs {
     @Override
     public String getName() {
         return "Prismarine Brick Stairs";
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.DIAMOND_BLOCK_COLOR;
     }
 
     @Override

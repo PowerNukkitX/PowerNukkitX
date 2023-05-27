@@ -203,11 +203,6 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable, Blo
         return ItemTool.TYPE_AXE;
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.AIR_BLOCK_COLOR;
-    }
-
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public CompassRoseDirection getSignDirection() {

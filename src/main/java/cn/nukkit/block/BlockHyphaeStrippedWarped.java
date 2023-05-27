@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.utils.BlockColor;
 
 @Since("1.4.0.0-PN")
 @PowerNukkitOnly
@@ -35,8 +34,4 @@ public class BlockHyphaeStrippedWarped extends BlockStemStripped {
         return 0.4;
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.WARPED_HYPHAE_BLOCK_COLOR;
-    }
 }

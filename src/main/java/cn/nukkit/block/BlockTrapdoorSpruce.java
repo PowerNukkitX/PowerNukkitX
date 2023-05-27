@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.utils.BlockColor;
 
 @PowerNukkitOnly
 public class BlockTrapdoorSpruce extends BlockTrapdoor {
@@ -25,8 +24,4 @@ public class BlockTrapdoorSpruce extends BlockTrapdoor {
         return "Spruce Trapdoor";
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.SPRUCE_BLOCK_COLOR;
-    }
 }

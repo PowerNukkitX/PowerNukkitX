@@ -18,7 +18,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
-import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Faceable;
 import lombok.extern.log4j.Log4j2;
@@ -217,11 +216,6 @@ public class BlockBanner extends BlockTransparentMeta implements Faceable, Block
     @PowerNukkitOnly
     public boolean breaksWhenMoved() {
         return true;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return this.getDyeColor().getColor();
     }
 
     public DyeColor getDyeColor() {

@@ -5,7 +5,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.value.WoodType;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.utils.BlockColor;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -88,8 +87,4 @@ public class BlockPlanks extends BlockSolidMeta {
         return ItemTool.TYPE_AXE;
     }
 
-    @Override
-    public BlockColor getColor() {
-        return getWoodType().getColor();
-    }
 }

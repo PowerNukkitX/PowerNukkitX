@@ -4,7 +4,6 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.BlockColor;
 
 public abstract class BlockSolidMeta extends BlockMeta {
     protected BlockSolidMeta(int meta) {
@@ -27,8 +26,4 @@ public abstract class BlockSolidMeta extends BlockMeta {
         return true;
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.STONE_BLOCK_COLOR;
-    }
 }

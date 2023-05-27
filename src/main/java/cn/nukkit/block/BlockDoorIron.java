@@ -5,7 +5,6 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDoorIron;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.utils.BlockColor;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -60,11 +59,6 @@ public class BlockDoorIron extends BlockDoor {
     @Override
     public Item toItem() {
         return new ItemDoorIron();
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.IRON_BLOCK_COLOR;
     }
 
     @Override

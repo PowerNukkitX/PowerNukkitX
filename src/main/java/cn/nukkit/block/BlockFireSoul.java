@@ -3,7 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.level.Level;
-import cn.nukkit.utils.BlockColor;
 
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
@@ -42,8 +41,4 @@ public class BlockFireSoul extends BlockFire {
         return 0;
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.WATER_BLOCK_COLOR;
-    }
 }

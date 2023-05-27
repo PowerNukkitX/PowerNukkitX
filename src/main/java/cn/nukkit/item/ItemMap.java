@@ -2,6 +2,9 @@ package cn.nukkit.item;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
+import cn.nukkit.level.Level;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.ClientboundMapItemDataPacket;
 import cn.nukkit.plugin.InternalPlugin;
@@ -78,7 +81,7 @@ public class ItemMap extends Item {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ImageIO.write(this.image, "png", baos);
 
-            this.getNamedTag().putByteArray("Colors", baos.toByteArray());
+            this.setNamedTag(this.getNamedTag().putByteArray("Colors", baos.toByteArray()));
         } catch (IOException e) {
             log.error("Error while adding an image to an ItemMap", e);
         }
@@ -124,6 +127,33 @@ public class ItemMap extends Item {
         if (image == null) return false;
         this.sendImage(p);
         return true;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.80-r3")
+    public void renderMap(Level level, int startX, int startZ) {
+        renderMap(level, startX, startZ, 1);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.80-r3")
+    public void renderMap(Level level, int startX, int startZ, int zoom) {
+        if (zoom < 1)
+            throw new IllegalArgumentException("Zoom must be greater than 0");
+        int[] pixels = new int[128 * 128];
+        try {
+            for (int z = 0; z < 128 * zoom; z += zoom) {
+                for (int x = 0; x < 128 * zoom; x += zoom) {
+                    pixels[(z * 128 + x) / zoom] = level.getMapColorAt(startX + x, startZ + z).getARGB();
+                }
+            }
+            BufferedImage image = new BufferedImage(128, 128, BufferedImage.TYPE_INT_ARGB);
+            image.setRGB(0, 0, 128, 128, pixels, 0, 128);
+
+            setImage(image);
+        } catch (Exception ex) {
+            log.warn("There was an error while generating map image", ex);
+        }
     }
 
     @Override

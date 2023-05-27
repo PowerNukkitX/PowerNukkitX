@@ -12,7 +12,6 @@ import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.network.protocol.types.ContainerIds;
-import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 
 import org.jetbrains.annotations.NotNull;
@@ -89,11 +88,6 @@ public class BlockStonecutterBlock extends BlockTransparentMeta implements Facea
             player.craftingType = Player.CRAFTING_STONECUTTER;
         }
         return true;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.STONE_BLOCK_COLOR;
     }
 
     @Override

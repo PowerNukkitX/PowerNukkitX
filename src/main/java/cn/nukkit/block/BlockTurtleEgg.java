@@ -31,7 +31,6 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.*;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
-import cn.nukkit.utils.BlockColor;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -401,8 +400,4 @@ public class BlockTurtleEgg extends BlockFlowable {
         return (BlockTurtleEgg) super.clone();
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.SAND_BLOCK_COLOR;
-    }
 }

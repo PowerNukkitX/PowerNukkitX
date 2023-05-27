@@ -6,6 +6,7 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockUnknown;
+import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.blockproperty.*;
 import cn.nukkit.blockproperty.exception.BlockPropertyNotFoundException;
 import cn.nukkit.blockstate.BlockState;
@@ -28,6 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Collection;
 import java.util.NoSuchElementException;
+import java.util.TreeMap;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPInputStream;
@@ -110,31 +112,51 @@ public class NBTIO {
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
     public static CompoundTag putBlockHelper(Block block) {
-        var states = new CompoundTag();
-        for (var str : block.getProperties().getNames()) {
-            BlockProperty<?> property = block.getCurrentState().getProperty(str);
-            if (property instanceof BooleanBlockProperty) {
-                states.putBoolean(str, block.getCurrentState().getBooleanValue(str));
-            } else if (property instanceof IntBlockProperty) {
-                states.putInt(str, block.getCurrentState().getIntValue(str));
-            } else if (property instanceof UnsignedIntBlockProperty) {
-                states.putInt(str, block.getCurrentState().getIntValue(str));
-            } else if (property instanceof ArrayBlockProperty<?> arrayBlockProperty) {
-                if (arrayBlockProperty.isOrdinal()) {
-                    if (property.getBitSize() > 1) {
-                        states.putInt(str, Integer.parseInt(block.getCurrentState().getPersistenceValue(str)));
+        return putBlockHelper(block, "Block");
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.80-r3")
+    public static CompoundTag putBlockHelper(Block block, String nbtName) {
+        String[] states = BlockStateRegistry.getKnownBlockStateIdByRuntimeId(block.getRuntimeId()).split(";");
+        CompoundTag result = new CompoundTag(nbtName).putString("name", states[0]);
+        var nbt = new CompoundTag("", new TreeMap<>());
+        if (block instanceof CustomBlock) {
+            for (var str : block.getProperties().getNames()) {
+                BlockProperty<?> property = block.getCurrentState().getProperty(str);
+                if (property instanceof BooleanBlockProperty) {
+                    nbt.putBoolean(str, block.getCurrentState().getBooleanValue(str));
+                } else if (property instanceof IntBlockProperty) {
+                    nbt.putInt(str, block.getCurrentState().getIntValue(str));
+                } else if (property instanceof UnsignedIntBlockProperty) {
+                    nbt.putInt(str, block.getCurrentState().getIntValue(str));
+                } else if (property instanceof ArrayBlockProperty<?> arrayBlockProperty) {
+                    if (arrayBlockProperty.isOrdinal()) {
+                        if (property.getBitSize() > 1) {
+                            nbt.putInt(str, Integer.parseInt(block.getCurrentState().getPersistenceValue(str)));
+                        } else {
+                            nbt.putBoolean(str, !block.getCurrentState().getPersistenceValue(str).equals("0"));
+                        }
                     } else {
-                        states.putBoolean(str, !block.getCurrentState().getPersistenceValue(str).equals("0"));
+                        nbt.putString(str, block.getCurrentState().getPersistenceValue(str));
                     }
-                } else {
-                    states.putString(str, block.getCurrentState().getPersistenceValue(str));
+                }
+            }
+        } else {
+            for (int i = 1, len = states.length; i < len; ++i) {
+                String[] split = states[i].split("=");
+                String propertyTypeString = PropertyTypes.getPropertyTypeString(split[0]);
+                if (propertyTypeString != null) {
+                    switch (propertyTypeString) {
+                        case "BOOLEAN" -> nbt.putBoolean(split[0], Integer.parseInt(split[1]) == 1);
+                        case "ENUM" -> nbt.putString(split[0], split[1]);
+                        case "INTEGER" -> nbt.putInt(split[0], Integer.parseInt(split[1]));
+                    }
                 }
             }
         }
-        return new CompoundTag("Block")
-                .putString("name", block.getPersistenceName())
-                .putCompound("states", states)
-                .putInt("version", BlockStateRegistry.blockPaletteVersion.get());
+        result.putCompound("states", nbt);
+        return result.putInt("version", BlockStateRegistry.blockPaletteVersion.get());
     }
 
     @PowerNukkitXOnly

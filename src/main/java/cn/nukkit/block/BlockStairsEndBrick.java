@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.utils.BlockColor;
 
 @PowerNukkitOnly
 public class BlockStairsEndBrick extends BlockStairs {
@@ -45,11 +44,6 @@ public class BlockStairsEndBrick extends BlockStairs {
     @Override
     public String getName() {
         return "End Stone Brick Stairs";
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.SAND_BLOCK_COLOR;
     }
 
     @Override

@@ -6,7 +6,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.value.StoneSlab2Type;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.utils.BlockColor;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -86,8 +85,4 @@ public class BlockDoubleSlabRedSandstone extends BlockDoubleSlabBase {
         return false;
     }
 
-    @Override
-    public BlockColor getColor() {
-        return getSlabType().getColor();
-    }
 }

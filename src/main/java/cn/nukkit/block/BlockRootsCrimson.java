@@ -2,8 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.utils.BlockColor;
 
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
@@ -24,8 +22,4 @@ public class BlockRootsCrimson extends BlockRoots implements BlockFlowerPot.Flow
         return "Crimson Roots";
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.NETHERRACK_BLOCK_COLOR;
-    }
 }

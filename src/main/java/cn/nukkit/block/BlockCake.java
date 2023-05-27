@@ -12,7 +12,6 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.BlockColor;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -157,11 +156,6 @@ public class BlockCake extends BlockTransparentMeta {
             return true;
         }
         return false;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.AIR_BLOCK_COLOR;
     }
 
     @Override

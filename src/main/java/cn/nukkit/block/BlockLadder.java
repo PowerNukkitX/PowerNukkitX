@@ -12,7 +12,6 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 
 import org.jetbrains.annotations.NotNull;
@@ -224,11 +223,6 @@ public class BlockLadder extends BlockTransparentMeta implements Faceable {
     @Override
     public int getToolType() {
         return ItemTool.TYPE_AXE;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.AIR_BLOCK_COLOR;
     }
 
     @Override

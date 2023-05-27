@@ -6,7 +6,6 @@ import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.IntBlockProperty;
 import cn.nukkit.blockproperty.exception.InvalidBlockPropertyMetaException;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.BlockColor;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -97,8 +96,4 @@ public class BlockVinesWeeping extends BlockVinesNether {
         return WEEPING_VINES_AGE.getMaxValue();
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.NETHERRACK_BLOCK_COLOR;
-    }
 }

@@ -3,7 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
-import cn.nukkit.utils.BlockColor;
 
 /**
  * @author Pub4Game
@@ -48,11 +47,6 @@ public class BlockBedrockInvisible extends BlockSolid {
     @Override
     public boolean isBreakable(Item item) {
         return false;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.TRANSPARENT_BLOCK_COLOR;
     }
 
     @Override

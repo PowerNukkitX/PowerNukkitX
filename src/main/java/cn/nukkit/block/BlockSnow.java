@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemSnowball;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.utils.BlockColor;
 
 public class BlockSnow extends BlockSolid {
 
@@ -45,11 +44,6 @@ public class BlockSnow extends BlockSolid {
         } else {
             return Item.EMPTY_ARRAY;
         }
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.SNOW_BLOCK_COLOR;
     }
 
 

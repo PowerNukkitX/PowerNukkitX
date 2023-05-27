@@ -35,4 +35,5 @@ public class BlockBirchSignPost extends BlockSignPost {
     public Item toItem() {
         return new ItemBirchSign();
     }
+
 }

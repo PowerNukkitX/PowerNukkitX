@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.utils.BlockColor;
 
 @PowerNukkitOnly
 public class BlockStairsDioritePolished extends BlockStairs {
@@ -39,11 +38,6 @@ public class BlockStairsDioritePolished extends BlockStairs {
     @Override
     public String getName() {
         return "Polished Diorite Stairs";
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.QUARTZ_BLOCK_COLOR;
     }
 
     @Override

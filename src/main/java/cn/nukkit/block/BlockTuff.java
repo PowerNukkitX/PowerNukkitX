@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.utils.BlockColor;
 
 /**
  * @author GoodLucky777
@@ -41,12 +40,7 @@ public class BlockTuff extends BlockSolid {
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
-    
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.GRAY_TERRACOTA_BLOCK_COLOR;
-    }
-    
+
     @Override
     public boolean canHarvestWithHand() {
         return false;

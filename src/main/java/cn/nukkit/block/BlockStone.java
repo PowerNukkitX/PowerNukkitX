@@ -9,7 +9,6 @@ import cn.nukkit.blockproperty.BlockProperty;
 import cn.nukkit.blockproperty.value.StoneType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.utils.BlockColor;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -104,11 +103,6 @@ public class BlockStone extends BlockSolidMeta {
     @Override
     public String getName() {
         return getStoneType().getEnglishName();
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return getStoneType().getColor();
     }
 
     @Override

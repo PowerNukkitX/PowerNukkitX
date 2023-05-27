@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.utils.BlockColor;
 
 @PowerNukkitOnly
 public class BlockStairsAndesite extends BlockStairs {
@@ -45,11 +44,6 @@ public class BlockStairsAndesite extends BlockStairs {
     @Override
     public String getName() {
         return "Andesite Stairs";
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.STONE_BLOCK_COLOR;
     }
 
     @Override

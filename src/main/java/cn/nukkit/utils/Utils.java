@@ -597,5 +597,4 @@ public class Utils {
         isPlantOrFluid[Block.ICE] = true; //solid water
         isPlantOrFluid[Block.PACKED_ICE] = true; //solid water
     }
-
 }

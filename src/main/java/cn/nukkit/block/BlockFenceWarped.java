@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.utils.BlockColor;
 
 /**
  * BlockFenceWarped.java was made by using BlockFence.java and BlockFenceNetherBrick.java
@@ -46,9 +45,5 @@ public class BlockFenceWarped extends BlockFenceBase {
     public int getBurnAbility() {
         return 0;
     }
-    
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.CYAN_BLOCK_COLOR;
-    }
+
 }

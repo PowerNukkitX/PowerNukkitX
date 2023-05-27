@@ -3,7 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemClay;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.utils.BlockColor;
 
 /**
  * @author Nukkit Project Team
@@ -43,11 +42,6 @@ public class BlockClay extends BlockSolid {
         return new Item[]{
                 new ItemClay(0, 4)
         };
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.CLAY_BLOCK_COLOR;
     }
 
     @Override

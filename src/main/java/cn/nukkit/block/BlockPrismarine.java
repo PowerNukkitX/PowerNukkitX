@@ -8,7 +8,6 @@ import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BlockProperty;
 import cn.nukkit.blockproperty.value.PrismarineBlockType;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.utils.BlockColor;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -96,8 +95,4 @@ public class BlockPrismarine extends BlockSolidMeta {
         return false;
     }
 
-    @Override
-    public BlockColor getColor() {
-        return getPrismarineBlockType().getColor();
-    }
 }

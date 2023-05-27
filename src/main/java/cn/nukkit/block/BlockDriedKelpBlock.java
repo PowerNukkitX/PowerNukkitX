@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.utils.BlockColor;
 
 @PowerNukkitOnly
 public class BlockDriedKelpBlock extends BlockSolid {
@@ -29,10 +28,5 @@ public class BlockDriedKelpBlock extends BlockSolid {
     public double getResistance() {
         return 2.5;
     }
-    
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.GREEN_BLOCK_COLOR;
-    }
-    
+
 }

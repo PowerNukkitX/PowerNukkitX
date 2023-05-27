@@ -10,7 +10,6 @@ import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.ParticleEffect;
 import cn.nukkit.level.Position;
-import cn.nukkit.utils.BlockColor;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -171,8 +170,4 @@ public class BlockMoss extends BlockSolid {
         return new Item[]{new ItemBlock(Block.get(BlockID.MOSS_BLOCK))};
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.GRASS_BLOCK_COLOR;
-    }
 }

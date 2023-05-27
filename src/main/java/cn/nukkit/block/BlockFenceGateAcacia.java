@@ -1,7 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.utils.BlockColor;
-
 /**
  * @author xtypr
  * @since 2015/11/23
@@ -25,8 +23,4 @@ public class BlockFenceGateAcacia extends BlockFenceGate {
         return "Acacia Fence Gate";
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.ORANGE_BLOCK_COLOR;
-    }
 }

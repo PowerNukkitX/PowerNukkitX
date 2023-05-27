@@ -10,7 +10,6 @@ import cn.nukkit.blockproperty.BooleanBlockProperty;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.RedstoneComponent;
 
 import org.jetbrains.annotations.NotNull;
@@ -105,8 +104,4 @@ public class BlockSculkSensor extends BlockSolid implements BlockEntityHolder<Bl
         return false;
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.SCULK_BLOCK_COLOR;
-    }
 }

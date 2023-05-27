@@ -10,7 +10,6 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.utils.BlockColor;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -77,11 +76,6 @@ public class BlockMycelium extends BlockSolid {
             }
         }
         return 0;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.PURPLE_BLOCK_COLOR;
     }
 
     @Override

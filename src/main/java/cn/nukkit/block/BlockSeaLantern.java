@@ -3,7 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.utils.BlockColor;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -48,11 +47,6 @@ public class BlockSeaLantern extends BlockTransparent {
         int count = Math.min(5, 2 + ThreadLocalRandom.current().nextInt(1 + fortuneLevel));
         
         return new Item[]{ Item.get(ItemID.PRISMARINE_CRYSTALS, 0, count) };
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.QUARTZ_BLOCK_COLOR;
     }
 
     @Override

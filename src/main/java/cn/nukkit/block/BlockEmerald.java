@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.utils.BlockColor;
 
 /**
  * @author xtypr
@@ -42,11 +41,6 @@ public class BlockEmerald extends BlockSolid {
     @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_IRON;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.EMERALD_BLOCK_COLOR;
     }
 
     @Override
