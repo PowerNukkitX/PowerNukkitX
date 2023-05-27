@@ -19,7 +19,6 @@ import cn.nukkit.nbt.stream.NBTOutputStream;
 import cn.nukkit.nbt.stream.PGZIPOutputStream;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
-import cn.nukkit.utils.StringUtils;
 import cn.nukkit.utils.ThreadCache;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -29,7 +28,6 @@ import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Collection;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.TreeMap;
 import java.util.zip.Deflater;
@@ -120,8 +118,8 @@ public class NBTIO {
     @PowerNukkitXOnly
     @Since("1.19.80-r3")
     public static CompoundTag putBlockHelper(Block block, String nbtName) {
-        List<String> states = StringUtils.fastSplit(";", BlockStateRegistry.getKnownBlockStateIdByRuntimeId(block.getRuntimeId()));
-        CompoundTag result = new CompoundTag(nbtName).putString("name", states.remove(0));
+        String[] states = BlockStateRegistry.getKnownBlockStateIdByRuntimeId(block.getRuntimeId()).split(";");
+        CompoundTag result = new CompoundTag(nbtName).putString("name", states[0]);
         var nbt = new CompoundTag("", new TreeMap<>());
         if (block instanceof CustomBlock) {
             for (var str : block.getProperties().getNames()) {
@@ -145,8 +143,8 @@ public class NBTIO {
                 }
             }
         } else {
-            for (var state : states) {
-                String[] split = state.split("=");
+            for (int i = 1, len = states.length; i < len; ++i) {
+                String[] split = states[i].split("=");
                 String propertyTypeString = PropertyTypes.getPropertyTypeString(split[0]);
                 if (propertyTypeString != null) {
                     switch (propertyTypeString) {
