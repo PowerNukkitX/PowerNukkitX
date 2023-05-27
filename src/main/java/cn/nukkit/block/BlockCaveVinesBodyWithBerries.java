@@ -47,4 +47,5 @@ public class BlockCaveVinesBodyWithBerries extends BlockCaveVines {
     public Item[] getDrops(Item item) {
         return new Item[]{Item.get(ItemID.GLOW_BERRIES)};
     }
+
 }

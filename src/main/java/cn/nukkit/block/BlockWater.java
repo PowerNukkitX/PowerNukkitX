@@ -7,7 +7,6 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.BlockColor;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -63,11 +62,6 @@ public class BlockWater extends BlockLiquid {
                 diagonal.onUpdate(Level.BLOCK_UPDATE_SCHEDULED);
             }
         }
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.WATER_BLOCK_COLOR;
     }
 
     @Override

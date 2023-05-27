@@ -9,7 +9,6 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.utils.BlockColor;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -93,8 +92,4 @@ public class BlockDirtWithRoots extends BlockSolid {
         return new Item[]{new ItemBlock(Block.get(BlockID.DIRT_WITH_ROOTS))};
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.STONE_BLOCK_COLOR;
-    }
 }

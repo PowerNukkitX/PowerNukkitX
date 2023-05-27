@@ -8,7 +8,6 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemString;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.utils.BlockColor;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -81,11 +80,6 @@ public class BlockCobweb extends BlockFlowable {
         } else {
             return Item.EMPTY_ARRAY;
         }
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.CLOTH_BLOCK_COLOR;
     }
 
     @Override

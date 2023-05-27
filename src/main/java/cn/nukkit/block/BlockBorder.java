@@ -99,4 +99,5 @@ public class BlockBorder extends BlockWallBase {
         aabb.setMaxY(Double.MAX_VALUE);
         return aabb;
     }
+
 }

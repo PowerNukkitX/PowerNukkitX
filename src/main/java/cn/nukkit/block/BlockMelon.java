@@ -5,7 +5,6 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemMelon;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.utils.BlockColor;
 
 import java.util.Random;
 
@@ -57,11 +56,6 @@ public class BlockMelon extends BlockSolid {
     @Override
     public int getToolType() {
         return ItemTool.TYPE_AXE;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.LIME_BLOCK_COLOR;
     }
 
     @Override

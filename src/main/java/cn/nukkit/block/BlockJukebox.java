@@ -10,7 +10,6 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemRecord;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.BlockColor;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -93,8 +92,4 @@ public class BlockJukebox extends BlockSolid implements BlockEntityHolder<BlockE
         return BlockEntityHolder.setBlockAndCreateEntity(this) != null;
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.DIRT_BLOCK_COLOR;
-    }
 }

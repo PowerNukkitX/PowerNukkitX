@@ -11,7 +11,6 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.BlockColor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -141,27 +140,7 @@ public class BlockCoral extends BlockFlowable {
             return name;
         }
     }
-    
-    @Override
-    public BlockColor getColor() {
-        if (isDead()) {
-            return BlockColor.GRAY_BLOCK_COLOR;
-        }
-        
-        BlockColor[] colors = new BlockColor[] {
-                BlockColor.BLUE_BLOCK_COLOR,
-                BlockColor.PINK_BLOCK_COLOR,
-                BlockColor.PURPLE_BLOCK_COLOR,
-                BlockColor.RED_BLOCK_COLOR,
-                BlockColor.YELLOW_BLOCK_COLOR,
-                // Invalid
-                BlockColor.BLUE_BLOCK_COLOR,
-                BlockColor.BLUE_BLOCK_COLOR,
-                BlockColor.BLUE_BLOCK_COLOR
-        };
-        return colors[getDamage() & 0x7];
-    }
-    
+
     @Override
     public boolean canSilkTouch() {
         return true;

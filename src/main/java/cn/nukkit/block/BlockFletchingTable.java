@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.utils.BlockColor;
 
 @PowerNukkitOnly
 public class BlockFletchingTable extends BlockSolid {
@@ -34,11 +33,6 @@ public class BlockFletchingTable extends BlockSolid {
     @Override
     public double getHardness() {
         return 2.5;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.WOOD_BLOCK_COLOR;
     }
 
     @Override

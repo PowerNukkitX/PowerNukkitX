@@ -9,7 +9,6 @@ import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 
 import org.jetbrains.annotations.NotNull;
@@ -104,11 +103,6 @@ public class BlockPumpkin extends BlockSolidMeta implements Faceable {
         }
         this.level.setBlock(block, this, true, true);
         return true;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.ORANGE_BLOCK_COLOR;
     }
 
     @Override

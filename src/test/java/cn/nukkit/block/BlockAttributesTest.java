@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
 
-import java.awt.*;
 import java.io.BufferedInputStream;
 import java.io.InputStreamReader;
 import java.util.List;
@@ -74,18 +73,18 @@ public class BlockAttributesTest {
         }
     }
 
-    @Test
-    void testBlockColor() {
-        boolean failed = false;
-        for (var block : BLOCKS.values()) {
-            var ref = BLOCK_ATTRIBUTES_REFERENCE.get(block.computeUnsignedBlockStateHash()).get("color").getAsJsonObject();
-            var currentColor = block.getColor().toAwtColor();
-            var refColor = new Color(ref.get("r").getAsInt(), ref.get("g").getAsInt(), ref.get("b").getAsInt(), ref.get("a").getAsInt());
-            if (!currentColor.equals(refColor)) {
-                log.warn("Incorrect block color! Block: " + block.getPersistenceName() + ", ref: " + refColor + ", current: " + currentColor);
-                failed = true;
-            }
-        }
+//    @Test
+//    void testBlockColor() {
+//        boolean failed = false;
+//        for (var block : BLOCKS.values()) {
+//            var ref = BLOCK_ATTRIBUTES_REFERENCE.get(block.computeUnsignedBlockStateHash()).get("color").getAsJsonObject();
+//            var currentColor = block.getColor().toAwtColor();
+//            var refColor = new Color(ref.get("r").getAsInt(), ref.get("g").getAsInt(), ref.get("b").getAsInt(), ref.get("a").getAsInt());
+//            if (!currentColor.equals(refColor)) {
+//                log.warn("Incorrect block color! Block: " + block.getPersistenceName() + ", ref: " + refColor + ", current: " + currentColor);
+//                failed = true;
+//            }
+//        }
 //        assertFalse(failed);
-    }
+//    }
 }

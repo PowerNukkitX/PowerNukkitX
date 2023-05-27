@@ -11,7 +11,6 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Sound;
-import cn.nukkit.utils.BlockColor;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -119,8 +118,4 @@ public class BlockDirt extends BlockSolidMeta {
         return new Item[]{new ItemBlock(Block.get(BlockID.DIRT))};
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.DIRT_BLOCK_COLOR;
-    }
 }

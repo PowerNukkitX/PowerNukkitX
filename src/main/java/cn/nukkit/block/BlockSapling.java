@@ -22,8 +22,6 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.utils.BlockColor;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -340,8 +338,4 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
         return block.getId() == this.getId() && ((BlockSapling) block).getWoodType() == type;
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.FOLIAGE_BLOCK_COLOR;
-    }
 }

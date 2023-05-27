@@ -3,7 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.utils.BlockColor;
 
 @Since("1.4.0.0-PN")
 public class BlockNetherWartBlock extends BlockSolid {
@@ -39,8 +38,4 @@ public class BlockNetherWartBlock extends BlockSolid {
         return ItemTool.TYPE_HOE;
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.RED_BLOCK_COLOR;
-    }
 }

@@ -21,7 +21,6 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
-import cn.nukkit.utils.BlockColor;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -191,11 +190,6 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
         }
 
         return ContainerInventory.calculateRedstone(be.getInventory());
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.PURPLE_BLOCK_COLOR;
     }
 
     @Override

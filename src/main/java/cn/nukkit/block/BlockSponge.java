@@ -14,7 +14,6 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.CloudParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.network.protocol.LevelEventPacket;
-import cn.nukkit.utils.BlockColor;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -81,11 +80,6 @@ public class BlockSponge extends BlockSolidMeta {
     @Override
     public String getName() {
         return NAMES[this.getDamage() & 0b1];
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.YELLOW_BLOCK_COLOR;
     }
 
     @Override

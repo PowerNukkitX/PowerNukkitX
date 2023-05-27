@@ -15,7 +15,6 @@ import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockFace.Plane;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.RedstoneComponent;
 
 import org.jetbrains.annotations.NotNull;
@@ -215,11 +214,6 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
     @Override
     public Item toItem() {
         return new ItemRedstone();
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.AIR_BLOCK_COLOR;
     }
 
     @Override

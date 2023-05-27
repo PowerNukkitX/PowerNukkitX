@@ -81,4 +81,5 @@ public class BlockMoving extends BlockTransparent implements BlockEntityHolder<B
     public boolean isSolid() {
         return false;
     }
+
 }

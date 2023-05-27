@@ -3,7 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.ArrayBlockProperty;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.IntBlockProperty;
 import cn.nukkit.event.block.BlockFadeEvent;
@@ -11,7 +10,6 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
@@ -63,19 +61,7 @@ public class BlockCoralFan extends BlockFlowable implements Faceable {
         };
         return names[getType()];
     }
-    
-    @Override
-    public BlockColor getColor() {
-        BlockColor[] colors = new BlockColor[] {
-                BlockColor.BLUE_BLOCK_COLOR,
-                BlockColor.PINK_BLOCK_COLOR,
-                BlockColor.PURPLE_BLOCK_COLOR,
-                BlockColor.RED_BLOCK_COLOR,
-                BlockColor.YELLOW_BLOCK_COLOR
-        };
-        return colors[getType()];
-    }
-    
+
     @PowerNukkitOnly
     @Override
     public int getWaterloggingLevel() {

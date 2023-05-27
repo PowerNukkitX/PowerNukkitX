@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.BlockColor;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -124,8 +123,4 @@ public class BlockGlowLichen extends BlockLichen{
         return false;
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.LICHEN_GREEN;
-    }
 }

@@ -14,7 +14,6 @@ import cn.nukkit.level.generator.object.mushroom.BigMushroom;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitRandom;
-import cn.nukkit.utils.BlockColor;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -106,11 +105,6 @@ public abstract class BlockMushroom extends BlockFlowable implements BlockFlower
     public boolean canStay() {
         Block block = this.down();
         return block.getId() == MYCELIUM || block.getId() == PODZOL || block instanceof BlockNylium || (!block.isTransparent() && this.level.getFullLight(this) < 13);
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.FOLIAGE_BLOCK_COLOR;
     }
 
     @Override

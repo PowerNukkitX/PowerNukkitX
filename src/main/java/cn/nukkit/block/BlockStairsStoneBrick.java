@@ -1,9 +1,7 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.utils.BlockColor;
 
 /**
  * @author xtypr
@@ -49,9 +47,4 @@ public class BlockStairsStoneBrick extends BlockStairs {
         return "Stone Brick Stairs";
     }
 
-    @PowerNukkitDifference(info = "Fixed the color", since = "1.3.0.0-PN")
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.STONE_BLOCK_COLOR;
-    }
 }

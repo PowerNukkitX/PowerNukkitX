@@ -3,7 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.AxisAlignedBB;
-import cn.nukkit.utils.BlockColor;
 
 /**
  * @author Nukkit Project Team
@@ -43,11 +42,6 @@ public class BlockPressurePlateWood extends BlockPressurePlateBase {
     @Override
     public double getResistance() {
         return 0.5D;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.WOOD_BLOCK_COLOR;
     }
 
     @Override

@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.level.Level;
-import cn.nukkit.utils.BlockColor;
 
 @PowerNukkitOnly
 public class BlockCoralFanDead extends BlockCoralFan {
@@ -24,11 +23,6 @@ public class BlockCoralFanDead extends BlockCoralFan {
     @Override
     public String getName() {
         return "Dead " + super.getName();
-    }
-    
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.GRAY_BLOCK_COLOR;
     }
 
     @PowerNukkitOnly

@@ -6,7 +6,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.value.StoneSlab1Type;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.utils.BlockColor;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -87,11 +86,6 @@ public class BlockDoubleSlabStone extends BlockDoubleSlabBase {
     @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return getSlabType().getColor();
     }
 
     @Override

@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
-import cn.nukkit.utils.BlockColor;
 
 /**
  * @author CreeperFace
@@ -46,8 +45,4 @@ public class BlockRedSandstone extends BlockSandstone {
         return false;
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.ORANGE_BLOCK_COLOR;
-    }
 }

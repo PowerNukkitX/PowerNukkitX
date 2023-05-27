@@ -20,4 +20,5 @@ public class BlockSmallAmethystBud extends BlockAmethystBud {
     public int getLightLevel() {
         return 1;
     }
+
 }

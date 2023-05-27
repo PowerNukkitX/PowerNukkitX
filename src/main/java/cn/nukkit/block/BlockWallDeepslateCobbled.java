@@ -3,7 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.utils.BlockColor;
 
 /**
  * @author GoodLucky777
@@ -48,9 +47,5 @@ public class BlockWallDeepslateCobbled extends BlockWallBase {
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
-    
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.DEEPSLATE_GRAY;
-    }
+
 }

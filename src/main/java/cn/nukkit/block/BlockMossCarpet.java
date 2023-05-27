@@ -6,7 +6,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.Item;
-import cn.nukkit.utils.BlockColor;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -35,11 +34,6 @@ public class BlockMossCarpet extends BlockCarpet {
     @Override
     public String getName() {
         return "Moss Carpet";
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.GRASS_BLOCK_COLOR;
     }
 
     @PowerNukkitOnly

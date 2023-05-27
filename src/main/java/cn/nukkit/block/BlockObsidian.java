@@ -4,7 +4,6 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.utils.BlockColor;
 
 /**
  * @author xtypr
@@ -69,11 +68,6 @@ public class BlockObsidian extends BlockSolid {
         if (update) {
             onBreak(Item.get(BlockID.AIR));
         }
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.OBSIDIAN_BLOCK_COLOR;
     }
 
     @Override

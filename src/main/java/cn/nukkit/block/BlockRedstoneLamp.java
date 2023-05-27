@@ -8,7 +8,6 @@ import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.RedstoneComponent;
 
 import org.jetbrains.annotations.NotNull;
@@ -94,8 +93,4 @@ public class BlockRedstoneLamp extends BlockSolid implements RedstoneComponent {
         };
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.AIR_BLOCK_COLOR;
-    }
 }

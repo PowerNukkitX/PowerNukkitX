@@ -39,4 +39,5 @@ public class BlockMangroveWallSign extends BlockWallSign {
     public Item toItem() {
         return new ItemAcaciaSign();
     }
+
 }

@@ -15,7 +15,6 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
 
@@ -337,11 +336,6 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
     @Override
     public BlockFace getBlockFace() {
         return getLeverOrientation().getFacing();
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.AIR_BLOCK_COLOR;
     }
 
     @PowerNukkitOnly

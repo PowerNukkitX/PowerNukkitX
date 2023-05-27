@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.utils.BlockColor;
 
 @SuppressWarnings("deprecation")
 public class BlockBricksRedNether extends BlockNetherBrick {
@@ -32,8 +31,4 @@ public class BlockBricksRedNether extends BlockNetherBrick {
         return ItemTool.TIER_WOODEN;
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.NETHERRACK_BLOCK_COLOR;
-    }
 }

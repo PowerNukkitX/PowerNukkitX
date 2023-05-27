@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDoorJungle;
-import cn.nukkit.utils.BlockColor;
 
 public class BlockDoorJungle extends BlockDoorWood {
 
@@ -29,8 +28,4 @@ public class BlockDoorJungle extends BlockDoorWood {
         return new ItemDoorJungle();
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.DIRT_BLOCK_COLOR;
-    }
 }

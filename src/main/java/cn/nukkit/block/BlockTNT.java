@@ -21,7 +21,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.RedstoneComponent;
 
 import org.jetbrains.annotations.NotNull;
@@ -172,8 +171,4 @@ public class BlockTNT extends BlockSolid implements RedstoneComponent {
         return false;
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.TNT_BLOCK_COLOR;
-    }
 }

@@ -21,4 +21,5 @@ public class BlockCandleLightGray extends BlockCandle {
     protected Block toCakeForm() {
         return new BlockCandleCakeLightGray();
     }
+
 }

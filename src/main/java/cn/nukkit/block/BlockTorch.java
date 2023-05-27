@@ -12,7 +12,6 @@ import cn.nukkit.blockproperty.exception.InvalidBlockPropertyValueException;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 import lombok.RequiredArgsConstructor;
 
@@ -113,11 +112,6 @@ public class BlockTorch extends BlockFlowable implements Faceable {
         this.setBlockFace(face);
         this.getLevel().setBlock(block, this, true, true);
         return true;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.AIR_BLOCK_COLOR;
     }
 
     @Override

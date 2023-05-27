@@ -14,7 +14,6 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.nbt.tag.Tag;
-import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 
 import org.jetbrains.annotations.NotNull;
@@ -190,11 +189,6 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable, B
         } else {
             return Item.EMPTY_ARRAY;
         }
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.OBSIDIAN_BLOCK_COLOR;
     }
 
     public Set<Player> getViewers() {

@@ -9,7 +9,6 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.DyeColor;
 import org.jetbrains.annotations.NotNull;
 
@@ -115,11 +114,6 @@ public class BlockCarpet extends BlockFlowable {
         }
 
         return 0;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return getDyeColor().getColor();
     }
 
     public DyeColor getDyeColor() {

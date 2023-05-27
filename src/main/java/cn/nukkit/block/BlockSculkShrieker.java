@@ -8,9 +8,6 @@ import cn.nukkit.blockentity.BlockEntitySculkShrieker;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BooleanBlockProperty;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.utils.BlockColor;
-import org.jetbrains.annotations.NotNull;
-
 import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitXOnly
@@ -77,8 +74,4 @@ public class BlockSculkShrieker extends BlockSolid implements BlockEntityHolder<
         return BlockEntity.SCULK_SHRIEKER;
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.SCULK_BLOCK_COLOR;
-    }
 }

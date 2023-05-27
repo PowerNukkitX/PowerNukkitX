@@ -5,7 +5,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.value.WoodType;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.utils.BlockColor;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -86,8 +85,4 @@ public class BlockSlabWood extends BlockSlab {
         setPropertyValue(WoodType.PROPERTY, type);
     }
 
-    @Override
-    public BlockColor getColor() {
-        return getWoodType().getColor();
-    }
 }

@@ -15,4 +15,5 @@ public class BlockMudBrickWall extends BlockWallBase{
     public int getId() {
         return MUD_BRICK_WALL;
     }
+
 }

@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.utils.BlockColor;
 
 /**
  * @author xtypr
@@ -52,10 +51,6 @@ public class BlockStairsWood extends BlockStairs {
         return 20;
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.WOOD_BLOCK_COLOR;
-    }
     @Override
     public Item[] getDrops(Item item) {
          return new Item[]{

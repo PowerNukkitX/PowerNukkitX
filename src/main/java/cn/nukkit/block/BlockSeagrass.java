@@ -12,7 +12,6 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.BlockColor;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -152,12 +151,7 @@ public class BlockSeagrass extends BlockFlowable {
     public int getWaterloggingLevel() {
         return 2;
     }
-    
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.WATER_BLOCK_COLOR;
-    }
-    
+
     @Override
     public int getToolType() {
         return ItemTool.TYPE_SHEARS;

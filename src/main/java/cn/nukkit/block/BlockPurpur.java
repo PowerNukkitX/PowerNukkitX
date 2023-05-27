@@ -8,7 +8,6 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.BlockColor;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -100,8 +99,4 @@ public class BlockPurpur extends BlockSolidMeta {
         return new ItemBlock(Block.get(BlockID.PURPUR_BLOCK), this.getDamage() & 0x03, 1);
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.MAGENTA_BLOCK_COLOR;
-    }
 }

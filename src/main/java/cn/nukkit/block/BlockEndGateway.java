@@ -10,7 +10,6 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.BlockColor;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -94,11 +93,6 @@ public class BlockEndGateway extends BlockSolid implements BlockEntityHolder<Blo
         return true;
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.BLACK_BLOCK_COLOR;
-    }
-    
     @Override
     public Item toItem() {
         return new ItemBlock(Block.get(BlockID.AIR));

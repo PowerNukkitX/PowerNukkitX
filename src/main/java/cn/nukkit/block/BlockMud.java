@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.utils.BlockColor;
 
 public class BlockMud extends BlockSolid {
     public BlockMud() {
@@ -39,8 +38,4 @@ public class BlockMud extends BlockSolid {
         return ItemTool.TIER_WOODEN;
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.CYAN_TERRACOTA_BLOCK_COLOR;
-    }
 }

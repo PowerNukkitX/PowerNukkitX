@@ -7,7 +7,6 @@ import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.MinecraftItemID;
-import cn.nukkit.utils.BlockColor;
 import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
@@ -79,11 +78,6 @@ public class BlockDeepslate extends BlockSolid {
     @Override
     public boolean canSilkTouch() {
         return true;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.DEEPSLATE_GRAY;
     }
 
     @Since("1.6.0.0-PNX")

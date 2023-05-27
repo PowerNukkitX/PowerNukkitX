@@ -8,7 +8,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.ArrayBlockProperty;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BooleanBlockProperty;
-import cn.nukkit.blockproperty.IntBlockProperty;
 import cn.nukkit.blockproperty.value.CauldronLiquid;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.entity.Entity;
@@ -457,4 +456,5 @@ public class BlockPointedDripstone extends BlockFallableMeta {
             }
         }
     }
+
 }

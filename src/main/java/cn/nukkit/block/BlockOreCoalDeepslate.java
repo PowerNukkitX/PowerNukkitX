@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.utils.BlockColor;
 
 /**
  * @author joserobjr
@@ -33,8 +32,4 @@ public class BlockOreCoalDeepslate extends BlockOreCoal {
         return "Deepslate Coal Ore";
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.DEEPSLATE_GRAY;
-    }
 }

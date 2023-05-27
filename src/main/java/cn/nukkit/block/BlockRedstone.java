@@ -9,7 +9,6 @@ import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.RedstoneComponent;
 
 import org.jetbrains.annotations.NotNull;
@@ -68,11 +67,6 @@ public class BlockRedstone extends BlockSolidMeta implements RedstoneComponent {
     @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.REDSTONE_BLOCK_COLOR;
     }
 
     @Override

@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.Item;
-import cn.nukkit.utils.BlockColor;
 
 /**
  * @author xtypr
@@ -42,11 +41,6 @@ public class BlockGlassPane extends BlockThin {
     @Override
     public Item[] getDrops(Item item) {
         return Item.EMPTY_ARRAY;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.AIR_BLOCK_COLOR;
     }
 
     @Override

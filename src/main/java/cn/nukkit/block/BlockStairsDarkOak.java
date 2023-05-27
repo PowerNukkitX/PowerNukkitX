@@ -1,7 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.utils.BlockColor;
-
 /**
  * @author xtypr
  * @since 2015/11/25
@@ -24,11 +22,6 @@ public class BlockStairsDarkOak extends BlockStairsWood {
     @Override
     public String getName() {
         return "Dark Oak Wood Stairs";
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.BROWN_BLOCK_COLOR;
     }
 
 }

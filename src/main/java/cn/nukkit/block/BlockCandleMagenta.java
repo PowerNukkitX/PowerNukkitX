@@ -19,4 +19,5 @@ public class BlockCandleMagenta extends BlockCandle {
     protected Block toCakeForm() {
         return new BlockCandleCakeMagenta();
     }
+
 }

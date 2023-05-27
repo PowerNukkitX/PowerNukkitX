@@ -4,7 +4,6 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.utils.BlockColor;
 import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
@@ -60,11 +59,6 @@ public class BlockDoubleSlabBlackstone extends BlockDoubleSlabBase {
     @Override
     public int getSingleSlabId() {
         return BLACKSTONE_SLAB;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.BLACK_BLOCK_COLOR;
     }
 
     @Override

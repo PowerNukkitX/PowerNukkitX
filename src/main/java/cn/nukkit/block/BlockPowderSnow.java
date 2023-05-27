@@ -10,9 +10,6 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.utils.BlockColor;
-import org.jetbrains.annotations.NotNull;
-
 import org.jetbrains.annotations.NotNull;
 
 @Since("1.6.0.0-PNX")
@@ -58,11 +55,6 @@ public class BlockPowderSnow extends BlockTransparentMeta {
     @Override
     public boolean canPassThrough() {
         return true;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.SNOW_BLOCK_COLOR;
     }
 
     @Since("1.6.0.0-PNX")

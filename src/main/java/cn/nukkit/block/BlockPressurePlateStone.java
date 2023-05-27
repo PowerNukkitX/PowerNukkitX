@@ -5,7 +5,6 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.AxisAlignedBB;
-import cn.nukkit.utils.BlockColor;
 
 /**
  * @author Nukkit Project Team
@@ -51,11 +50,6 @@ public class BlockPressurePlateStone extends BlockPressurePlateBase {
     @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.STONE_BLOCK_COLOR;
     }
 
     @Override

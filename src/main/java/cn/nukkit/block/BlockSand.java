@@ -7,7 +7,6 @@ import cn.nukkit.blockproperty.ArrayBlockProperty;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.value.SandType;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.utils.BlockColor;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -73,12 +72,4 @@ public class BlockSand extends BlockFallableMeta {
         return "Sand";
     }
 
-    @Override
-    public BlockColor getColor() {
-        if (this.getDamage() == 0x01) {
-            return BlockColor.ORANGE_BLOCK_COLOR;
-        }
-
-        return BlockColor.SAND_BLOCK_COLOR;
-    }
 }

@@ -5,7 +5,6 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.level.generator.object.tree.ObjectCrimsonTree;
 import cn.nukkit.math.NukkitRandom;
-import cn.nukkit.utils.BlockColor;
 
 import javax.annotation.Nullable;
 
@@ -52,8 +51,4 @@ public class BlockFungusCrimson extends BlockFungus {
         return true;
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.NETHERRACK_BLOCK_COLOR;
-    }
 }

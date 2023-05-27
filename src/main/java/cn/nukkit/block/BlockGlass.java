@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
-import cn.nukkit.utils.BlockColor;
 
 /**
  * @author Angelic47 (Nukkit Project)
@@ -41,8 +40,4 @@ public class BlockGlass extends BlockTransparent {
         return true;
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.AIR_BLOCK_COLOR;
-    }
 }

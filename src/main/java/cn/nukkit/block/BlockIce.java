@@ -8,7 +8,6 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
-import cn.nukkit.utils.BlockColor;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -78,11 +77,6 @@ public class BlockIce extends BlockTransparent {
     @Override
     public Item[] getDrops(Item item) {
         return Item.EMPTY_ARRAY;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.ICE_BLOCK_COLOR;
     }
 
     @Override

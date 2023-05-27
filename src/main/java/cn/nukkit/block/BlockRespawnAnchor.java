@@ -33,7 +33,6 @@ import cn.nukkit.level.Explosion;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
-import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.TextFormat;
 
 import org.jetbrains.annotations.NotNull;
@@ -245,8 +244,4 @@ public class BlockRespawnAnchor extends BlockMeta {
         return Item.EMPTY_ARRAY;
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.BLACK_BLOCK_COLOR;
-    }
 }

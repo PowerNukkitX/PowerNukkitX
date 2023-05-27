@@ -8,7 +8,6 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.MinecraftItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.math.NukkitRandom;
-import cn.nukkit.utils.BlockColor;
 
 import javax.annotation.Nullable;
 
@@ -87,8 +86,4 @@ public class BlockOreGoldNether extends BlockOreGold {
         return MinecraftItemID.GOLD_NUGGET;
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.NETHERRACK_BLOCK_COLOR;
-    }
 }

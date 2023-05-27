@@ -23,7 +23,6 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
 import org.jetbrains.annotations.NotNull;
@@ -506,8 +505,4 @@ public class BlockBell extends BlockTransparentMeta implements RedstoneComponent
         return ItemTool.TIER_WOODEN;
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.GOLD_BLOCK_COLOR;
-    }
 }

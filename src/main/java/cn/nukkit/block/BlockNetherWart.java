@@ -11,7 +11,6 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemNetherWart;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.BlockColor;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -76,11 +75,6 @@ public class BlockNetherWart extends BlockFlowable {
         }
 
         return 0;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.RED_BLOCK_COLOR;
     }
 
     @Override

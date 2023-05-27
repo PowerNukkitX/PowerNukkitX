@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.utils.BlockColor;
 
 @Since("1.4.0.0-PN")
 @PowerNukkitOnly
@@ -29,11 +28,6 @@ public class BlockFenceGateCrimson extends BlockFenceGate {
         return "Crimson Fence Gate";
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.NETHERRACK_BLOCK_COLOR;
-    }
-    
     @Override
     public int getBurnChance() {
         return 0;

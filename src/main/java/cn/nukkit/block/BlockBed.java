@@ -22,7 +22,6 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.potion.Effect;
-import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.TextFormat;
@@ -296,11 +295,6 @@ public class BlockBed extends BlockTransparentMeta implements Faceable, BlockEnt
     @Override
     public Item toItem() {
         return new ItemBed(this.getDyeColor().getWoolData());
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return this.getDyeColor().getColor();
     }
 
     public DyeColor getDyeColor() {

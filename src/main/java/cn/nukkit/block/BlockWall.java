@@ -68,12 +68,6 @@ public class BlockWall extends BlockWallBase {
     }
 
 
-    @PowerNukkitDifference(since = "1.3.0.0-PN", info = "Return the actual material color instead of transparent")
-    @Override
-    public BlockColor getColor() {
-        return getWallType().color;
-    }
-
     @PowerNukkitOnly
     @Since("1.3.0.0-PN")
     public WallType getWallType() {

@@ -33,9 +33,11 @@ import cn.nukkit.plugin.Plugin;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.*;
 import com.google.common.base.Preconditions;
+import com.google.gson.JsonParser;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -43,6 +45,9 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -1655,8 +1660,33 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return false;
     }
 
+    protected static final Map<Long, BlockColor> VANILLA_BLOCK_COLOR_MAP = new Long2ObjectOpenHashMap<>();
+
+    static {
+        try (var reader = new InputStreamReader(new BufferedInputStream(Objects.requireNonNull(Block.class.getClassLoader().getResourceAsStream("block_color.json"))))) {
+            var parser = JsonParser.parseReader(reader);
+            for (var entry : parser.getAsJsonObject().entrySet()) {
+                var r = entry.getValue().getAsJsonObject().get("r").getAsInt();
+                var g = entry.getValue().getAsJsonObject().get("g").getAsInt();
+                var b = entry.getValue().getAsJsonObject().get("b").getAsInt();
+                var a = entry.getValue().getAsJsonObject().get("a").getAsInt();
+                VANILLA_BLOCK_COLOR_MAP.put(Long.parseLong(entry.getKey()), new BlockColor(r, g, b, a));
+            }
+        } catch (IOException e) {
+            log.error("Failed to load block color map", e);
+        }
+    }
+
+    protected BlockColor color;
+
     public BlockColor getColor() {
-        return BlockColor.VOID_BLOCK_COLOR;
+        if (color != null) return color;
+        else color = VANILLA_BLOCK_COLOR_MAP.get(computeUnsignedBlockStateHash());
+        if (color == null) {
+            log.error("Failed to get color of block " + getName());
+            color = BlockColor.VOID_BLOCK_COLOR;
+        }
+        return color;
     }
 
     public abstract String getName();

@@ -140,4 +140,5 @@ public class BlockCandle extends BlockFlowable {
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
+
 }

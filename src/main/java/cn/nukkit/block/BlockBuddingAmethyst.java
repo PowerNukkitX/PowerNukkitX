@@ -8,7 +8,6 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitRandom;
-import cn.nukkit.utils.BlockColor;
 import org.jetbrains.annotations.NotNull;
 
 @Since("1.6.0.0-PNX")
@@ -34,11 +33,6 @@ public class BlockBuddingAmethyst extends BlockSolid {
     @Override
     public double getHardness() {
         return 1.5;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.PURPLE_BLOCK_COLOR;
     }
 
     @Since("1.6.0.0-PNX")

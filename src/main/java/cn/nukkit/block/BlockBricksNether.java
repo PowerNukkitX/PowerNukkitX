@@ -3,7 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.utils.BlockColor;
 
 /**
  * @author xtypr
@@ -43,11 +42,6 @@ public class BlockBricksNether extends BlockSolid {
     @Override
     public double getResistance() {
         return 6;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.NETHERRACK_BLOCK_COLOR;
     }
 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Will return false as expected")

@@ -1,7 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.utils.BlockColor;
-
 /**
  * @author xtypr
  * @since 2015/11/23
@@ -25,8 +23,4 @@ public class BlockFenceGateSpruce extends BlockFenceGate {
         return "Spruce Fence Gate";
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.SPRUCE_BLOCK_COLOR;
-    }
 }

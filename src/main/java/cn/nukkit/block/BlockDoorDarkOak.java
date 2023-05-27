@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDoorDarkOak;
-import cn.nukkit.utils.BlockColor;
 
 public class BlockDoorDarkOak extends BlockDoorWood {
 
@@ -29,8 +28,4 @@ public class BlockDoorDarkOak extends BlockDoorWood {
         return new ItemDoorDarkOak();
     }
 
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.BROWN_BLOCK_COLOR;
-    }
 }

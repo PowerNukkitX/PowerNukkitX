@@ -11,7 +11,6 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.potion.Effect;
-import cn.nukkit.utils.BlockColor;
 
 public class BlockMagma extends BlockSolid {
 
@@ -91,11 +90,6 @@ public class BlockMagma extends BlockSolid {
             }
         }
         return 0;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.NETHERRACK_BLOCK_COLOR;
     }
 
     @Override

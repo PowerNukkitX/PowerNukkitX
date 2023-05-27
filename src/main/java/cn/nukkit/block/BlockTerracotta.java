@@ -5,7 +5,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.TerracottaColor;
 
 import org.jetbrains.annotations.NotNull;
@@ -64,11 +63,6 @@ public class BlockTerracotta extends BlockSolidMeta {
     @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return TerracottaColor.getByTerracottaData(getDamage()).getColor();
     }
 
     public TerracottaColor getDyeColor() {

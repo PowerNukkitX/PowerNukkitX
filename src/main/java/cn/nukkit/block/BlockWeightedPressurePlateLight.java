@@ -3,7 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.NukkitMath;
-import cn.nukkit.utils.BlockColor;
 
 /**
  * @author CreeperFace
@@ -49,11 +48,6 @@ public class BlockWeightedPressurePlateLight extends BlockPressurePlateBase {
     @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.GOLD_BLOCK_COLOR;
     }
 
     @Override

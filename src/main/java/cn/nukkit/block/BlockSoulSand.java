@@ -6,7 +6,6 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.event.block.BlockFormEvent;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
-import cn.nukkit.utils.BlockColor;
 
 /**
  * @author Pub4Game
@@ -80,11 +79,6 @@ public class BlockSoulSand extends BlockSolid {
             }
         }
         return 0;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.BROWN_BLOCK_COLOR;
     }
 
 }
