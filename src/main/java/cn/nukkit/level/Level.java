@@ -3796,7 +3796,7 @@ public class Level implements ChunkManager, Metadatable {
         if (nzy.getFloorY() > block.getFloorY()) {
             color = darker(color, 0.85 - Math.min(5, nzy.getFloorY() - block.getFloorY()) * 0.05);
         } else if (nzy.getFloorY() < block.getFloorY()) {
-            color = brighter(color, 0.85 - Math.min(5, nzy.getFloorY() - block.getFloorY()) * 0.05);
+            color = brighter(color, 0.85 - Math.min(5, block.getFloorY() - nzy.getFloorY()) * 0.05);
         }
 
         var deltaY = block.y - 128;

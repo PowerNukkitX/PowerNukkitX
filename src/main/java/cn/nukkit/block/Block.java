@@ -1669,8 +1669,8 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
                 var r = entry.getValue().getAsJsonObject().get("r").getAsInt();
                 var g = entry.getValue().getAsJsonObject().get("g").getAsInt();
                 var b = entry.getValue().getAsJsonObject().get("b").getAsInt();
-                var a = entry.getValue().getAsJsonObject().get("a").getAsInt();
-                VANILLA_BLOCK_COLOR_MAP.put(Long.parseLong(entry.getKey()), new BlockColor(r, g, b, a));
+//                var a = entry.getValue().getAsJsonObject().get("a").getAsInt();
+                VANILLA_BLOCK_COLOR_MAP.put(Long.parseLong(entry.getKey()), new BlockColor(r, g, b));
             }
         } catch (IOException e) {
             log.error("Failed to load block color map", e);
