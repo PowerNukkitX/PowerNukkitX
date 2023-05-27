@@ -54,6 +54,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import static cn.nukkit.utils.Utils.dynamic;
+import static cn.nukkit.utils.Utils.fnv1a_32;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -2962,8 +2963,8 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         }
         var tag = new CompoundTag()
                 .putString("name", getPersistenceName())
-                .putCompound("states", NBTIO.serializeStates(this, new TreeMap<>()));
-        return MinecraftNamespaceComparator.fnv1a_32(NBTIO.write(tag, ByteOrder.LITTLE_ENDIAN));
+                .putCompound("states", NBTIO.serializeStates(this));
+        return fnv1a_32(NBTIO.write(tag, ByteOrder.LITTLE_ENDIAN));
     }
 
 

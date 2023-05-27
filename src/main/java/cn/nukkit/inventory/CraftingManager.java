@@ -147,8 +147,8 @@ public class CraftingManager {
 
         //load xp config
         var furnaceXpConfig = new Config(Config.JSON);
-        try {
-            furnaceXpConfig.load(Server.class.getModule().getResourceAsStream("vanilla_recipes/furnace_xp.json"));
+        try (var r = Server.class.getModule().getResourceAsStream("vanilla_recipes/furnace_xp.json")) {
+            furnaceXpConfig.load(r);
         } catch (IOException e) {
             log.warn("Failed to load furnace xp config");
         }

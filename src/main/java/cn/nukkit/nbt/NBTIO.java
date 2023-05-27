@@ -6,7 +6,8 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockUnknown;
-import cn.nukkit.blockproperty.*;
+import cn.nukkit.blockproperty.PropertyTypes;
+import cn.nukkit.blockproperty.UnknownRuntimeIdException;
 import cn.nukkit.blockproperty.exception.BlockPropertyNotFoundException;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.blockstate.BlockStateRegistry;
@@ -18,6 +19,7 @@ import cn.nukkit.nbt.stream.NBTOutputStream;
 import cn.nukkit.nbt.stream.PGZIPOutputStream;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
+import cn.nukkit.utils.StringUtils;
 import cn.nukkit.utils.ThreadCache;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -27,9 +29,9 @@ import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.TreeMap;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPInputStream;
@@ -112,43 +114,40 @@ public class NBTIO {
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
     public static CompoundTag putBlockHelper(Block block) {
-        return new CompoundTag("Block")
-                .putString("name", block.getPersistenceName())
-                .putCompound("states", serializeStates(block))
-                .putInt("version", BlockStateRegistry.blockPaletteVersion.get());
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.80-r3")
-    public static CompoundTag serializeStates(Block block) {
-        return serializeStates(block, new HashMap<>());
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.80-r3")
-    public static CompoundTag serializeStates(Block block, Map<String, Tag> mapImplementation) {
-        var states = new CompoundTag("", mapImplementation);
-        for (var str : block.getProperties().getNames()) {
-            BlockProperty<?> property = block.getCurrentState().getProperty(str);
-            if (property instanceof BooleanBlockProperty) {
-                states.putBoolean(str, block.getCurrentState().getBooleanValue(str));
-            } else if (property instanceof IntBlockProperty) {
-                states.putInt(str, block.getCurrentState().getIntValue(str));
-            } else if (property instanceof UnsignedIntBlockProperty) {
-                states.putInt(str, block.getCurrentState().getIntValue(str));
-            } else if (property instanceof ArrayBlockProperty<?> arrayBlockProperty) {
-                if (arrayBlockProperty.isOrdinal()) {
-                    if (property.getBitSize() > 1) {
-                        states.putInt(str, Integer.parseInt(block.getCurrentState().getPersistenceValue(str)));
-                    } else {
-                        states.putBoolean(str, !block.getCurrentState().getPersistenceValue(str).equals("0"));
-                    }
-                } else {
-                    states.putString(str, block.getCurrentState().getPersistenceValue(str));
+        List<String> states = StringUtils.fastSplit(";", BlockStateRegistry.getKnownBlockStateIdByRuntimeId(block.getRuntimeId()));
+        CompoundTag result = new CompoundTag("Block").putString("name", states.remove(0));
+        var nbt = new CompoundTag("", new TreeMap<>());
+        for (var state : states) {
+            List<String> values = StringUtils.fastSplit("=", state);
+            String propertyTypeString = PropertyTypes.getPropertyTypeString(values.get(0));
+            if (propertyTypeString != null) {
+                switch (propertyTypeString) {
+                    case "BOOLEAN" -> nbt.putBoolean(values.get(0), Integer.parseInt(values.get(1)) == 1);
+                    case "ENUM" -> nbt.putString(values.get(0), values.get(1));
+                    case "INTEGER" -> nbt.putInt(values.get(0), Integer.parseInt(values.get(1)));
                 }
             }
         }
-        return states;
+        result.putCompound("states", nbt);
+        return result.putInt("version", BlockStateRegistry.blockPaletteVersion.get());
+    }
+
+    public static CompoundTag serializeStates(Block block) {
+        List<String> states = StringUtils.fastSplit(";", BlockStateRegistry.getKnownBlockStateIdByRuntimeId(block.getRuntimeId()));
+        states.remove(0);
+        var nbt = new CompoundTag("", new TreeMap<>());
+        for (var state : states) {
+            List<String> values = StringUtils.fastSplit("=", state);
+            String propertyTypeString = PropertyTypes.getPropertyTypeString(values.get(0));
+            if (propertyTypeString != null) {
+                switch (propertyTypeString) {
+                    case "BOOLEAN" -> nbt.putBoolean(values.get(0), Integer.parseInt(values.get(1)) == 1);
+                    case "ENUM" -> nbt.putString(values.get(0), values.get(1));
+                    case "INTEGER" -> nbt.putInt(values.get(0), Integer.parseInt(values.get(1)));
+                }
+            }
+        }
+        return nbt;
     }
 
     @PowerNukkitXOnly

@@ -14,10 +14,11 @@ import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
 import java.awt.*;
 import java.io.BufferedInputStream;
 import java.io.InputStreamReader;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Author: daoge_cmd <br>
