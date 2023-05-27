@@ -147,7 +147,7 @@ public class ItemMap extends Item {
                     pixels[(z * 128 + x) / zoom] = level.getMapColorAt(startX + x, startZ + z).getRGB();
                 }
             }
-            BufferedImage image = new BufferedImage(128, 128, BufferedImage.TYPE_INT_RGB);
+            BufferedImage image = new BufferedImage(128, 128, BufferedImage.TYPE_INT_ARGB);
             image.setRGB(0, 0, 128, 128, pixels, 0, 128);
 
             setImage(image);
