@@ -54,15 +54,14 @@ public class BlockAttributesTest {
             }
             try {
                 //TODO: 羊毛，木头等被拆分了的方块不能正常工作
-                var id = BlockStateRegistry.getBlockId(name);
-                if (id == null || Block.get(id) instanceof BlockUnknown) {
+                var block = BlockState.of(strIdBuilder.toString()).getBlock();
+                if (block instanceof BlockUnknown) {
                     log.warn("Missing block: " + strIdBuilder);
                     continue;
                 }
-                var block = BlockState.of(strIdBuilder.toString()).getBlock();
                 BLOCKS.put(blockStateHash, block);
             } catch (Throwable e) {
-                log.error("Failed to load block " + strIdBuilder, e);
+                log.error("Failed to load block " + strIdBuilder);
                 error.add(strIdBuilder.toString());
             }
         }
@@ -72,6 +71,8 @@ public class BlockAttributesTest {
     void testBlockHash() {
         for (var block : BLOCKS.values()) {
             var ref = BLOCK_ATTRIBUTES_REFERENCE.get(block.computeUnsignedBlockStateHash());
+            if (ref == null)
+                System.out.println();
             assertNotNull(ref);
         }
     }
