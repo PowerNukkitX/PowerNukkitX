@@ -67,7 +67,7 @@ public class PlayerActionPacket extends DataPacket {
         this.putEntityRuntimeId(this.entityId);
         this.putVarInt(this.action);
         this.putBlockVector3(this.x, this.y, this.z);
-        this.putBlockVector3(this.resultPosition);
+        this.putBlockVector3(this.resultPosition != null ? this.resultPosition : new BlockVector3());
         this.putVarInt(this.face);
     }
 

@@ -407,6 +407,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @PowerNukkitXOnly
     private final @NotNull PlayerHandle playerHandle = new PlayerHandle(this);
 
+    @Since("1.19.80-r3")
+    @PowerNukkitXOnly
+    private boolean needDimensionChangeACK = false;
+
 
     /**
      * 单元测试用的构造函数
@@ -691,6 +695,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         pk.y = (float) this.y;
         pk.z = (float) this.z;
         this.dataPacket(pk);
+
+        this.needDimensionChangeACK = true;
     }
 
     private void updateBlockingFlag() {
@@ -2697,31 +2703,25 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 }
             }
         }
+
+        if (this.needDimensionChangeACK) {
+            this.needDimensionChangeACK = false;
+
+            PlayerActionPacket playerActionPacket = new PlayerActionPacket();
+            playerActionPacket.action = PlayerActionPacket.ACTION_DIMENSION_CHANGE_ACK;
+            playerActionPacket.entityId = this.getId();
+            this.dataPacket(playerActionPacket);
+        }
     }
 
     public void sendChunk(int x, int z, int subChunkCount, byte[] payload) {
-        if (!this.connected) {
-            return;
-        }
-
-        this.usedChunks.put(Level.chunkHash(x, z), true);
-        this.chunkLoadCount++;
-
         LevelChunkPacket pk = new LevelChunkPacket();
         pk.chunkX = x;
         pk.chunkZ = z;
         pk.subChunkCount = subChunkCount;
         pk.data = payload;
 
-        this.dataPacket(pk);
-
-        if (this.spawned) {
-            for (Entity entity : this.level.getChunkEntities(x, z).values()) {
-                if (this != entity && !entity.closed && entity.isAlive()) {
-                    entity.spawnTo(this);
-                }
-            }
-        }
+        this.sendChunk(x, z, pk);
     }
 
     @PowerNukkitOnly
