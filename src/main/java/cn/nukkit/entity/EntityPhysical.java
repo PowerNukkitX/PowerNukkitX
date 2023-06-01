@@ -36,8 +36,8 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
      * 提供实时最新碰撞箱位置
      */
     protected final AxisAlignedBB offsetBoundingBox;
-    protected final Vector3 previousCollideMotion = new Vector3();
-    protected final Vector3 previousCurrentMotion = new Vector3();
+    protected final Vector3 previousCollideMotion;
+    protected final Vector3 previousCurrentMotion;
     /**
      * 实体自由落体运动的时间
      */
@@ -49,6 +49,8 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         super(chunk, nbt);
         this.tickSpread = globalCycleTickSpread.getAndIncrement() & 0xf;
         this.offsetBoundingBox = new SimpleAxisAlignedBB(0, 0, 0, 0, 0, 0);
+        previousCollideMotion = new Vector3();
+        previousCurrentMotion = new Vector3();
     }
 
     @Override
@@ -235,7 +237,8 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     }
 
     protected void addPreviousLiquidMovement() {
-        addTmpMoveMotion(previousCurrentMotion);
+        if (previousCurrentMotion != null)
+            addTmpMoveMotion(previousCurrentMotion);
     }
 
     protected void handleFloatingMovement() {

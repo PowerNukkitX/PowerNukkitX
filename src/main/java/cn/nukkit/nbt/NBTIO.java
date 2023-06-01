@@ -54,7 +54,7 @@ public class NBTIO {
                 .putByte("Count", item.getCount())
                 .putShort("Damage", item.getDamage());
         int id = item.getId();
-        if (id == ItemID.STRING_IDENTIFIED_ITEM) {
+        if (id == ItemID.STRING_IDENTIFIED_ITEM || Block.ID_TO_CUSTOM_BLOCK.containsKey(id)) {
             tag.putString("Name", item.getNamespaceId());
         } else {
             tag.putShort("id", item.getId());
