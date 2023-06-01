@@ -69,7 +69,7 @@ public class BlockAttributesTest {
     void testBlockHash() {
         for (var block : BLOCKS.values()) {
             var ref = BLOCK_ATTRIBUTES_REFERENCE.get(block.computeUnsignedBlockStateHash());
-            assertNotNull(ref);
+            assertNotNull(ref, () -> "Failed to hash block: " + block);
         }
     }
 

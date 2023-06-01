@@ -12,6 +12,7 @@ import cn.nukkit.blockproperty.exception.BlockPropertyNotFoundException;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
 import cn.nukkit.nbt.stream.NBTInputStream;
@@ -54,7 +55,7 @@ public class NBTIO {
                 .putByte("Count", item.getCount())
                 .putShort("Damage", item.getDamage());
         int id = item.getId();
-        if (id == ItemID.STRING_IDENTIFIED_ITEM || Block.ID_TO_CUSTOM_BLOCK.containsKey(id)) {
+        if (id == ItemID.STRING_IDENTIFIED_ITEM || Block.ID_TO_CUSTOM_BLOCK.containsKey(255 - id)) {
             tag.putString("Name", item.getNamespaceId());
         } else {
             tag.putShort("id", item.getId());
