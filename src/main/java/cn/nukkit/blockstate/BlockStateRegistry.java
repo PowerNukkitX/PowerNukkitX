@@ -319,9 +319,6 @@ public class BlockStateRegistry {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public int getRuntimeId(BlockState state) {
-        if (state.getBlockId() > Block.MAX_BLOCK_ID && !Block.ID_TO_CUSTOM_BLOCK.containsKey(state.getBlockId())) {
-            return stateIdRegistration.get(blockIdToPersistenceName.get(state.getBlockId())).runtimeId;
-        }
         String blockMapping = RuntimeItemMapping.getBlockMapping().getOrDefault(RuntimeItems.getFullId(state.getBlockId(), state.getDataStorage().intValue()), null);
         if (blockMapping != null) {
             return stateIdRegistration.get(blockMapping).runtimeId;
