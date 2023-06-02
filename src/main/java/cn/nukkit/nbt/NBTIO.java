@@ -12,7 +12,6 @@ import cn.nukkit.blockproperty.exception.BlockPropertyNotFoundException;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
 import cn.nukkit.nbt.stream.NBTInputStream;
@@ -49,7 +48,6 @@ public class NBTIO {
         return putItemHelper(item, null);
     }
 
-    @PowerNukkitXDifference(info = "Remove the name from the tag, this function will be removed in the future")
     public static CompoundTag putItemHelper(Item item, Integer slot) {
         CompoundTag tag = new CompoundTag((String) null)
                 .putByte("Count", item.getCount())
@@ -71,7 +69,6 @@ public class NBTIO {
         return tag;
     }
 
-    @PowerNukkitXDifference(info = "Remove the name from the tag, this function will be removed in the future")
     @PowerNukkitXDifference(info = "not limit name and id because the return value of fromString not null")
     public static Item getItemHelper(CompoundTag tag) {
         if (!tag.containsByte("Count")) {
