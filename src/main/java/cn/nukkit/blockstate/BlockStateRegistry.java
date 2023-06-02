@@ -107,7 +107,7 @@ public class BlockStateRegistry {
 
         //<editor-fold desc="Loading canonical_block_states.nbt" defaultstate="collapsed">
         List<CompoundTag> tags = new ArrayList<>();
-        List<String> loadingKnownStateIds = new ArrayList<>();
+        knownStateIds = new ArrayList<>();
         try (InputStream stream = Server.class.getModule().getResourceAsStream("canonical_block_states.nbt")) {
             if (stream == null) {
                 throw new AssertionError("Unable to locate block state nbt");
@@ -120,10 +120,8 @@ public class BlockStateRegistry {
                     tag.putInt("runtimeId", runtimeId++);
                     tag.putInt("blockId", persistenceNameToBlockId.getOrDefault(tag.getString("name").toLowerCase(Locale.ENGLISH), -1));
                     tags.add(tag);
-                    loadingKnownStateIds.add(getStateId(tag));
                 }
             }
-            knownStateIds = loadingKnownStateIds;
         } catch (IOException e) {
             throw new AssertionError(e);
         }
