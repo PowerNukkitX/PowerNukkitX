@@ -107,7 +107,7 @@ public class BlockStateRegistry {
 
         //<editor-fold desc="Loading canonical_block_states.nbt" defaultstate="collapsed">
         List<CompoundTag> tags = new ArrayList<>();
-        List<String> loadingKnownStateIds = new ArrayList<>();
+        knownStateIds = new ArrayList<>();
         try (InputStream stream = Server.class.getModule().getResourceAsStream("canonical_block_states.nbt")) {
             if (stream == null) {
                 throw new AssertionError("Unable to locate block state nbt");
@@ -120,10 +120,8 @@ public class BlockStateRegistry {
                     tag.putInt("runtimeId", runtimeId++);
                     tag.putInt("blockId", persistenceNameToBlockId.getOrDefault(tag.getString("name").toLowerCase(Locale.ENGLISH), -1));
                     tags.add(tag);
-                    loadingKnownStateIds.add(getStateId(tag));
                 }
             }
-            knownStateIds = loadingKnownStateIds;
         } catch (IOException e) {
             throw new AssertionError(e);
         }
@@ -319,9 +317,6 @@ public class BlockStateRegistry {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public int getRuntimeId(BlockState state) {
-        if (state.getBlockId() > Block.MAX_BLOCK_ID && !Block.ID_TO_CUSTOM_BLOCK.containsKey(state.getBlockId())) {
-            return stateIdRegistration.get(blockIdToPersistenceName.get(state.getBlockId())).runtimeId;
-        }
         String blockMapping = RuntimeItemMapping.getBlockMapping().getOrDefault(RuntimeItems.getFullId(state.getBlockId(), state.getDataStorage().intValue()), null);
         if (blockMapping != null) {
             return stateIdRegistration.get(blockMapping).runtimeId;
@@ -464,6 +459,7 @@ public class BlockStateRegistry {
         blockStateRegistration.clear();
         stateIdRegistration.clear();
         runtimeIdRegistration.clear();
+        knownStateIds.clear();
         //按照每组方块(因为每个方块可能有多种状态,将他们归为一个List)的namespace(形如minecraft:xxx)升序排序(遍历时Hash值小的在前面)
         SortedMap<String, List<CompoundTag>> namespace2Nbt = new TreeMap<>(MinecraftNamespaceComparator::compareFNV);
         //处理原版方块
@@ -492,7 +488,6 @@ public class BlockStateRegistry {
             var namespace = blockCustom.getNamespaceId();
             blockIdToPersistenceName.put(blockCustom.getId(), namespace);
             persistenceNameToBlockId.put(namespace, blockCustom.getId());
-            if (!knownStateIds.contains(namespace)) knownStateIds.add(namespace);
             CompoundTag nbt = new CompoundTag()
                     .putInt("blockId", blockCustom.getId())
                     .putString("name", namespace)
@@ -636,7 +631,7 @@ public class BlockStateRegistry {
         if (old != null && !old.equals(registration)) {
             throw new UnsupportedOperationException("The persistence NBT registration tried to replaced a runtime id. Old:" + old + ", New:" + runtimeId + ", State:" + stateId);
         }
-
+        knownStateIds.add(stateId);
         runtimeIdRegistration.put(runtimeId, registration);
     }
 
