@@ -464,6 +464,7 @@ public class BlockStateRegistry {
         blockStateRegistration.clear();
         stateIdRegistration.clear();
         runtimeIdRegistration.clear();
+        knownStateIds.clear();
         //按照每组方块(因为每个方块可能有多种状态,将他们归为一个List)的namespace(形如minecraft:xxx)升序排序(遍历时Hash值小的在前面)
         SortedMap<String, List<CompoundTag>> namespace2Nbt = new TreeMap<>(MinecraftNamespaceComparator::compareFNV);
         //处理原版方块
@@ -492,7 +493,6 @@ public class BlockStateRegistry {
             var namespace = blockCustom.getNamespaceId();
             blockIdToPersistenceName.put(blockCustom.getId(), namespace);
             persistenceNameToBlockId.put(namespace, blockCustom.getId());
-            if (!knownStateIds.contains(namespace)) knownStateIds.add(namespace);
             CompoundTag nbt = new CompoundTag()
                     .putInt("blockId", blockCustom.getId())
                     .putString("name", namespace)
@@ -636,7 +636,7 @@ public class BlockStateRegistry {
         if (old != null && !old.equals(registration)) {
             throw new UnsupportedOperationException("The persistence NBT registration tried to replaced a runtime id. Old:" + old + ", New:" + runtimeId + ", State:" + stateId);
         }
-
+        knownStateIds.add(stateId);
         runtimeIdRegistration.put(runtimeId, registration);
     }
 
