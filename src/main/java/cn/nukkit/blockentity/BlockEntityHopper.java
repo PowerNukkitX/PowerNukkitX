@@ -87,12 +87,32 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
             this.inventory.setItem(i, this.getItem(i));
         }
 
-        this.pickupArea = new SimpleAxisAlignedBB(this.x, this.y, this.z, this.x + 1, this.y + 2, this.z + 1);
+        this.pickupArea = generatePickupArea();
 
-        Block block = getBlock();
-        if (block instanceof BlockHopper) {
-            disabled = !((BlockHopper) block).isEnabled();
+        checkDisabled();
+    }
+
+    @Since("1.20.00-r0")
+    @PowerNukkitXOnly
+    protected SimpleAxisAlignedBB generatePickupArea() {
+        return new SimpleAxisAlignedBB(this.x, this.y, this.z, this.x + 1, this.y + 2, this.z + 1);
+    }
+
+    @Since("1.20.00-r0")
+    @PowerNukkitXOnly
+    protected void checkDisabled() {
+        if (getBlock() instanceof BlockHopper blockHopper) {
+            disabled = !(blockHopper).isEnabled();
         }
+    }
+
+    /**
+     * @return How much ticks does it take for the hopper to transfer an item
+     */
+    @Since("1.20.00-r0")
+    @PowerNukkitXOnly
+    public int getCooldownTick() {
+        return 8;
     }
 
     @Override
@@ -218,7 +238,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
         Block blockSide = this.getSide(BlockFace.UP).getTickCachedLevelBlock();
         BlockEntity blockEntity = this.level.getBlockEntity(temporalVector.setComponentsAdding(this, BlockFace.UP));
 
-        
+
         boolean changed = pushItems() || pushItemsIntoMinecart();
 
         HopperSearchItemEvent event = new HopperSearchItemEvent(this, false);
@@ -232,7 +252,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
         }
 
         if (changed) {
-            this.setTransferCooldown(8);
+            this.setTransferCooldown(this.getCooldownTick());
             setDirty();
         }
 
