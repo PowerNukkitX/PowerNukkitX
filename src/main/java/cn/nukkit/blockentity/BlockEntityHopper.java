@@ -26,6 +26,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import lombok.Getter;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 
@@ -113,6 +114,12 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
     @PowerNukkitXOnly
     public int getCooldownTick() {
         return 8;
+    }
+
+    @Since("1.20.00-r0")
+    @PowerNukkitXOnly
+    protected boolean checkBlockStateValid(@NotNull BlockState levelBlockState) {
+        return levelBlockState.getBlockId() == BlockID.HOPPER_BLOCK;
     }
 
     @Override
@@ -376,7 +383,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
         }
 
         BlockState levelBlockState = getLevelBlockState();
-        if (levelBlockState.getBlockId() != BlockID.HOPPER_BLOCK) {
+        if (!checkBlockStateValid(levelBlockState)) {
             return false;
         }
 
