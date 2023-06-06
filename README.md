@@ -30,9 +30,9 @@ What's new in PowerNukkitX? Let's See：
 4. Support 3D biomes.<!--Custom dimension interface TODO-->
 5. Support for vanilla commands and command block.
 6. Built-in [Terra](https://github.com/PolyhedralDev/Terra) generator (if you have
-   questions [click here to view](https://doc.powernukkitx.cn/en-us/faq/Terra_faq.html)) .
+   questions [click here to view](https://www.powernukkitx.com/doc/en-us/faq/terra.html)) .
 7. Support for writing plugins using the JavaScript language (development documentation can be
-   found [here](https://doc.powernukkitx.cn/zh-cn/plugin-dev/js/%E6%A6%82%E8%BF%B0.html)).
+   found [here](https://www.powernukkitx.com/doc/en-us/dev/js/setup_dev_env.html)).
 8. Support custom blocks / items / entity (refinement in progress, [documentation](https://doc.powernukkitx.cn/) to be
    added).
 9. Original Entity AI framework, no need to install MobPlugin (under development, Not all creature completed).
@@ -47,7 +47,7 @@ What's new in PowerNukkitX? Let's See：
 1. Download the `PNX-CLI-Jar.zip` latest version from [release](https://github.com/PowerNukkitX/PNX-CLI/releases)
 2. Run `java -jar PNX-CLI-0.0.1-alpha.jar`
 
-you can [click here](https://doc.powernukkitx.cn/en-us/Get_Started.html) to get more information.
+you can [click here](https://www.powernukkitx.com/doc/en-us/Get_Started.html) to get more information.
 
 ### 2.Run from command:
 
