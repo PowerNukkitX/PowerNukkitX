@@ -30,9 +30,9 @@ PowerNukkitX的優勢：
 4. 支持3D生物群系（完善中）。<!--自定義維度接口 TODO-->
 5. 原生支持香草命令和命令方塊等（完善中）。
 6. 內置[Terra](https://github.com/PolyhedralDev/Terra)
-   地形生成器（如有問題[點此查看](https://doc.powernukkitx.cn/zh-cn/faq/Terra%E9%97%AE%E9%A2%98.html)）。
+   地形生成器（如有問題[點此查看](https://doc.powernukkitx.cn/zh-cn/faq/terra.html)）。
 7. 支持使用JavaSrcipt語言編寫插件
-   （初步完成，可在[此處](https://doc.powernukkitx.cn/zh-cn/plugin-dev/js/%E6%A6%82%E8%BF%B0.html)查找開發文檔）。
+   （初步完成，可在[此處](https://doc.powernukkitx.cn/zh-cn/dev/js/setup_dev_env.html)查找開發文檔）。
 8. 支持自定義方塊 / 物品 / 實體（完善中，[檔案](https://doc.powernukkitx.cn)待補充）。
 9. 內置生物AI，無需安裝MobPlugin（開發中，未完善）。
 10. Todo...
@@ -46,7 +46,7 @@ PowerNukkitX的優勢：
 1. 从[release](https://github.com/PowerNukkitX/PNX-CLI/releases)下載`PNX-CLI-Jar.zip`最新版本
 2. 運行`java -jar PNX-CLI-0.0.1-alpha.jar`
 
-您还可以在[此處](https://doc.powernukkitx.cn/zh-cn/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8.html)查阅更多信息。
+您还可以在[此處](https://doc.powernukkitx.cn/zh-cn/Get_Started.html)查阅更多信息。
 
 ### 2.从命令啟動:
 
