@@ -133,10 +133,12 @@ public class StartGamePacket extends DataPacket {
      * @since v582
      */
     public boolean exportedFromEditor;
-
     public byte chatRestrictionLevel;
-
     public boolean disablePlayerInteractions;
+    /**
+     * @since v589
+     */
+    public boolean isSoundsServerAuthoritative;
 
     @Override
     public void decode() {
@@ -263,6 +265,7 @@ public class StartGamePacket extends DataPacket {
         this.putLLong(0); // blockRegistryChecksum
         this.putUUID(new UUID(0, 0)); // worldTemplateId
         this.putBoolean(this.clientSideGenerationEnabled);
-        this.putBoolean(this.blockNetworkIdsHashed);
+        this.putBoolean(this.blockNetworkIdsHashed); // blockIdsAreHashed
+        this.putBoolean(this.isSoundsServerAuthoritative); // serverAuthSounds
     }
 }

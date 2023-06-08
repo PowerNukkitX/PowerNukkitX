@@ -623,381 +623,6 @@
     "input": {
       "A": {
         "block_states": "CgAACAUAY29sb3IFAHdoaXRlAA==",
-        "name": "minecraft:carpet"
-      },
-      "B": {
-        "name": "minecraft:black_dye"
-      }
-    },
-    "output": [
-      {
-        "block_states": "CgAACAUAY29sb3IFAGJsYWNrAA==",
-        "count": 8,
-        "name": "minecraft:carpet"
-      }
-    ],
-    "priority": 1,
-    "shape": [
-      "AAA",
-      "ABA",
-      "AAA"
-    ]
-  },
-  {
-    "block": "crafting_table",
-    "input": {
-      "A": {
-        "block_states": "CgAACAUAY29sb3IFAHdoaXRlAA==",
-        "name": "minecraft:carpet"
-      },
-      "B": {
-        "name": "minecraft:blue_dye"
-      }
-    },
-    "output": [
-      {
-        "block_states": "CgAACAUAY29sb3IEAGJsdWUA",
-        "count": 8,
-        "name": "minecraft:carpet"
-      }
-    ],
-    "priority": 0,
-    "shape": [
-      "AAA",
-      "ABA",
-      "AAA"
-    ]
-  },
-  {
-    "block": "crafting_table",
-    "input": {
-      "A": {
-        "block_states": "CgAACAUAY29sb3IFAHdoaXRlAA==",
-        "name": "minecraft:carpet"
-      },
-      "B": {
-        "name": "minecraft:brown_dye"
-      }
-    },
-    "output": [
-      {
-        "block_states": "CgAACAUAY29sb3IFAGJyb3duAA==",
-        "count": 8,
-        "name": "minecraft:carpet"
-      }
-    ],
-    "priority": 0,
-    "shape": [
-      "AAA",
-      "ABA",
-      "AAA"
-    ]
-  },
-  {
-    "block": "crafting_table",
-    "input": {
-      "A": {
-        "block_states": "CgAACAUAY29sb3IFAHdoaXRlAA==",
-        "name": "minecraft:carpet"
-      },
-      "B": {
-        "name": "minecraft:cyan_dye"
-      }
-    },
-    "output": [
-      {
-        "block_states": "CgAACAUAY29sb3IEAGN5YW4A",
-        "count": 8,
-        "name": "minecraft:carpet"
-      }
-    ],
-    "priority": 0,
-    "shape": [
-      "AAA",
-      "ABA",
-      "AAA"
-    ]
-  },
-  {
-    "block": "crafting_table",
-    "input": {
-      "A": {
-        "block_states": "CgAACAUAY29sb3IFAHdoaXRlAA==",
-        "name": "minecraft:carpet"
-      },
-      "B": {
-        "name": "minecraft:gray_dye"
-      }
-    },
-    "output": [
-      {
-        "block_states": "CgAACAUAY29sb3IEAGdyYXkA",
-        "count": 8,
-        "name": "minecraft:carpet"
-      }
-    ],
-    "priority": 0,
-    "shape": [
-      "AAA",
-      "ABA",
-      "AAA"
-    ]
-  },
-  {
-    "block": "crafting_table",
-    "input": {
-      "A": {
-        "block_states": "CgAACAUAY29sb3IFAHdoaXRlAA==",
-        "name": "minecraft:carpet"
-      },
-      "B": {
-        "name": "minecraft:green_dye"
-      }
-    },
-    "output": [
-      {
-        "block_states": "CgAACAUAY29sb3IFAGdyZWVuAA==",
-        "count": 8,
-        "name": "minecraft:carpet"
-      }
-    ],
-    "priority": 0,
-    "shape": [
-      "AAA",
-      "ABA",
-      "AAA"
-    ]
-  },
-  {
-    "block": "crafting_table",
-    "input": {
-      "A": {
-        "block_states": "CgAACAUAY29sb3IFAHdoaXRlAA==",
-        "name": "minecraft:carpet"
-      },
-      "B": {
-        "name": "minecraft:light_blue_dye"
-      }
-    },
-    "output": [
-      {
-        "block_states": "CgAACAUAY29sb3IKAGxpZ2h0X2JsdWUA",
-        "count": 8,
-        "name": "minecraft:carpet"
-      }
-    ],
-    "priority": 0,
-    "shape": [
-      "AAA",
-      "ABA",
-      "AAA"
-    ]
-  },
-  {
-    "block": "crafting_table",
-    "input": {
-      "A": {
-        "block_states": "CgAACAUAY29sb3IFAHdoaXRlAA==",
-        "name": "minecraft:carpet"
-      },
-      "B": {
-        "name": "minecraft:light_gray_dye"
-      }
-    },
-    "output": [
-      {
-        "block_states": "CgAACAUAY29sb3IGAHNpbHZlcgA=",
-        "count": 8,
-        "name": "minecraft:carpet"
-      }
-    ],
-    "priority": 0,
-    "shape": [
-      "AAA",
-      "ABA",
-      "AAA"
-    ]
-  },
-  {
-    "block": "crafting_table",
-    "input": {
-      "A": {
-        "block_states": "CgAACAUAY29sb3IFAHdoaXRlAA==",
-        "name": "minecraft:carpet"
-      },
-      "B": {
-        "name": "minecraft:lime_dye"
-      }
-    },
-    "output": [
-      {
-        "block_states": "CgAACAUAY29sb3IEAGxpbWUA",
-        "count": 8,
-        "name": "minecraft:carpet"
-      }
-    ],
-    "priority": 0,
-    "shape": [
-      "AAA",
-      "ABA",
-      "AAA"
-    ]
-  },
-  {
-    "block": "crafting_table",
-    "input": {
-      "A": {
-        "block_states": "CgAACAUAY29sb3IFAHdoaXRlAA==",
-        "name": "minecraft:carpet"
-      },
-      "B": {
-        "name": "minecraft:magenta_dye"
-      }
-    },
-    "output": [
-      {
-        "block_states": "CgAACAUAY29sb3IHAG1hZ2VudGEA",
-        "count": 8,
-        "name": "minecraft:carpet"
-      }
-    ],
-    "priority": 0,
-    "shape": [
-      "AAA",
-      "ABA",
-      "AAA"
-    ]
-  },
-  {
-    "block": "crafting_table",
-    "input": {
-      "A": {
-        "block_states": "CgAACAUAY29sb3IFAHdoaXRlAA==",
-        "name": "minecraft:carpet"
-      },
-      "B": {
-        "name": "minecraft:orange_dye"
-      }
-    },
-    "output": [
-      {
-        "block_states": "CgAACAUAY29sb3IGAG9yYW5nZQA=",
-        "count": 8,
-        "name": "minecraft:carpet"
-      }
-    ],
-    "priority": 0,
-    "shape": [
-      "AAA",
-      "ABA",
-      "AAA"
-    ]
-  },
-  {
-    "block": "crafting_table",
-    "input": {
-      "A": {
-        "block_states": "CgAACAUAY29sb3IFAHdoaXRlAA==",
-        "name": "minecraft:carpet"
-      },
-      "B": {
-        "name": "minecraft:pink_dye"
-      }
-    },
-    "output": [
-      {
-        "block_states": "CgAACAUAY29sb3IEAHBpbmsA",
-        "count": 8,
-        "name": "minecraft:carpet"
-      }
-    ],
-    "priority": 0,
-    "shape": [
-      "AAA",
-      "ABA",
-      "AAA"
-    ]
-  },
-  {
-    "block": "crafting_table",
-    "input": {
-      "A": {
-        "block_states": "CgAACAUAY29sb3IFAHdoaXRlAA==",
-        "name": "minecraft:carpet"
-      },
-      "B": {
-        "name": "minecraft:purple_dye"
-      }
-    },
-    "output": [
-      {
-        "block_states": "CgAACAUAY29sb3IGAHB1cnBsZQA=",
-        "count": 8,
-        "name": "minecraft:carpet"
-      }
-    ],
-    "priority": 0,
-    "shape": [
-      "AAA",
-      "ABA",
-      "AAA"
-    ]
-  },
-  {
-    "block": "crafting_table",
-    "input": {
-      "A": {
-        "block_states": "CgAACAUAY29sb3IFAHdoaXRlAA==",
-        "name": "minecraft:carpet"
-      },
-      "B": {
-        "name": "minecraft:red_dye"
-      }
-    },
-    "output": [
-      {
-        "block_states": "CgAACAUAY29sb3IDAHJlZAA=",
-        "count": 8,
-        "name": "minecraft:carpet"
-      }
-    ],
-    "priority": 0,
-    "shape": [
-      "AAA",
-      "ABA",
-      "AAA"
-    ]
-  },
-  {
-    "block": "crafting_table",
-    "input": {
-      "A": {
-        "block_states": "CgAACAUAY29sb3IFAHdoaXRlAA==",
-        "name": "minecraft:carpet"
-      },
-      "B": {
-        "name": "minecraft:yellow_dye"
-      }
-    },
-    "output": [
-      {
-        "block_states": "CgAACAUAY29sb3IGAHllbGxvdwA=",
-        "count": 8,
-        "name": "minecraft:carpet"
-      }
-    ],
-    "priority": 0,
-    "shape": [
-      "AAA",
-      "ABA",
-      "AAA"
-    ]
-  },
-  {
-    "block": "crafting_table",
-    "input": {
-      "A": {
-        "block_states": "CgAACAUAY29sb3IFAHdoaXRlAA==",
         "name": "minecraft:stained_glass"
       }
     },
@@ -4034,7 +3659,7 @@
     },
     "output": [
       {
-        "block_states": "CgAAAwkAZGlyZWN0aW9uAAAAAAELAHBvd2VyZWRfYml0AAA=",
+        "block_states": "CgAAAwkAZGlyZWN0aW9uAAAAAAMSAHNjdWxrX3NlbnNvcl9waGFzZQAAAAAA",
         "name": "minecraft:calibrated_sculk_sensor"
       }
     ],
@@ -4843,7 +4468,7 @@
     },
     "output": [
       {
-        "block_states": "CgAAAwkAZGlyZWN0aW9uAAAAAAA=",
+        "block_states": "CgAACBwAbWluZWNyYWZ0OmNhcmRpbmFsX2RpcmVjdGlvbgUAc291dGgA",
         "name": "minecraft:lit_pumpkin"
       }
     ],
@@ -19327,9 +18952,8 @@
     },
     "output": [
       {
-        "block_states": "CgAACAUAY29sb3IFAGJsYWNrAA==",
         "count": 3,
-        "name": "minecraft:carpet"
+        "name": "minecraft:black_carpet"
       }
     ],
     "priority": 0,
@@ -19415,9 +19039,8 @@
     },
     "output": [
       {
-        "block_states": "CgAACAUAY29sb3IEAGJsdWUA",
         "count": 3,
-        "name": "minecraft:carpet"
+        "name": "minecraft:blue_carpet"
       }
     ],
     "priority": 0,
@@ -19542,9 +19165,8 @@
     },
     "output": [
       {
-        "block_states": "CgAACAUAY29sb3IFAGJyb3duAA==",
         "count": 3,
-        "name": "minecraft:carpet"
+        "name": "minecraft:brown_carpet"
       }
     ],
     "priority": 0,
@@ -19750,9 +19372,8 @@
     },
     "output": [
       {
-        "block_states": "CgAACAUAY29sb3IEAGN5YW4A",
         "count": 3,
-        "name": "minecraft:carpet"
+        "name": "minecraft:cyan_carpet"
       }
     ],
     "priority": 0,
@@ -19857,9 +19478,8 @@
     },
     "output": [
       {
-        "block_states": "CgAACAUAY29sb3IEAGdyYXkA",
         "count": 3,
-        "name": "minecraft:carpet"
+        "name": "minecraft:gray_carpet"
       }
     ],
     "priority": 0,
@@ -19945,9 +19565,8 @@
     },
     "output": [
       {
-        "block_states": "CgAACAUAY29sb3IFAGdyZWVuAA==",
         "count": 3,
-        "name": "minecraft:carpet"
+        "name": "minecraft:green_carpet"
       }
     ],
     "priority": 0,
@@ -20052,9 +19671,8 @@
     },
     "output": [
       {
-        "block_states": "CgAACAUAY29sb3IKAGxpZ2h0X2JsdWUA",
         "count": 3,
-        "name": "minecraft:carpet"
+        "name": "minecraft:light_blue_carpet"
       }
     ],
     "priority": 0,
@@ -20140,9 +19758,8 @@
     },
     "output": [
       {
-        "block_states": "CgAACAUAY29sb3IGAHNpbHZlcgA=",
         "count": 3,
-        "name": "minecraft:carpet"
+        "name": "minecraft:light_gray_carpet"
       }
     ],
     "priority": 0,
@@ -20228,9 +19845,8 @@
     },
     "output": [
       {
-        "block_states": "CgAACAUAY29sb3IEAGxpbWUA",
         "count": 3,
-        "name": "minecraft:carpet"
+        "name": "minecraft:lime_carpet"
       }
     ],
     "priority": 0,
@@ -20340,9 +19956,8 @@
     },
     "output": [
       {
-        "block_states": "CgAACAUAY29sb3IHAG1hZ2VudGEA",
         "count": 3,
-        "name": "minecraft:carpet"
+        "name": "minecraft:magenta_carpet"
       }
     ],
     "priority": 0,
@@ -20523,9 +20138,8 @@
     },
     "output": [
       {
-        "block_states": "CgAACAUAY29sb3IGAG9yYW5nZQA=",
         "count": 3,
-        "name": "minecraft:carpet"
+        "name": "minecraft:orange_carpet"
       }
     ],
     "priority": 0,
@@ -20611,9 +20225,8 @@
     },
     "output": [
       {
-        "block_states": "CgAACAUAY29sb3IEAHBpbmsA",
         "count": 3,
-        "name": "minecraft:carpet"
+        "name": "minecraft:pink_carpet"
       }
     ],
     "priority": 0,
@@ -20699,9 +20312,8 @@
     },
     "output": [
       {
-        "block_states": "CgAACAUAY29sb3IGAHB1cnBsZQA=",
         "count": 3,
-        "name": "minecraft:carpet"
+        "name": "minecraft:purple_carpet"
       }
     ],
     "priority": 0,
@@ -20806,9 +20418,8 @@
     },
     "output": [
       {
-        "block_states": "CgAACAUAY29sb3IDAHJlZAA=",
         "count": 3,
-        "name": "minecraft:carpet"
+        "name": "minecraft:red_carpet"
       }
     ],
     "priority": 0,
@@ -20832,6 +20443,351 @@
     ],
     "priority": 50,
     "shape": [
+      "AAA"
+    ]
+  },
+  {
+    "block": "crafting_table",
+    "input": {
+      "A": {
+        "name": "minecraft:white_carpet"
+      },
+      "B": {
+        "name": "minecraft:black_dye"
+      }
+    },
+    "output": [
+      {
+        "count": 8,
+        "name": "minecraft:black_carpet"
+      }
+    ],
+    "priority": 1,
+    "shape": [
+      "AAA",
+      "ABA",
+      "AAA"
+    ]
+  },
+  {
+    "block": "crafting_table",
+    "input": {
+      "A": {
+        "name": "minecraft:white_carpet"
+      },
+      "B": {
+        "name": "minecraft:blue_dye"
+      }
+    },
+    "output": [
+      {
+        "count": 8,
+        "name": "minecraft:blue_carpet"
+      }
+    ],
+    "priority": 0,
+    "shape": [
+      "AAA",
+      "ABA",
+      "AAA"
+    ]
+  },
+  {
+    "block": "crafting_table",
+    "input": {
+      "A": {
+        "name": "minecraft:white_carpet"
+      },
+      "B": {
+        "name": "minecraft:brown_dye"
+      }
+    },
+    "output": [
+      {
+        "count": 8,
+        "name": "minecraft:brown_carpet"
+      }
+    ],
+    "priority": 0,
+    "shape": [
+      "AAA",
+      "ABA",
+      "AAA"
+    ]
+  },
+  {
+    "block": "crafting_table",
+    "input": {
+      "A": {
+        "name": "minecraft:white_carpet"
+      },
+      "B": {
+        "name": "minecraft:cyan_dye"
+      }
+    },
+    "output": [
+      {
+        "count": 8,
+        "name": "minecraft:cyan_carpet"
+      }
+    ],
+    "priority": 0,
+    "shape": [
+      "AAA",
+      "ABA",
+      "AAA"
+    ]
+  },
+  {
+    "block": "crafting_table",
+    "input": {
+      "A": {
+        "name": "minecraft:white_carpet"
+      },
+      "B": {
+        "name": "minecraft:gray_dye"
+      }
+    },
+    "output": [
+      {
+        "count": 8,
+        "name": "minecraft:gray_carpet"
+      }
+    ],
+    "priority": 0,
+    "shape": [
+      "AAA",
+      "ABA",
+      "AAA"
+    ]
+  },
+  {
+    "block": "crafting_table",
+    "input": {
+      "A": {
+        "name": "minecraft:white_carpet"
+      },
+      "B": {
+        "name": "minecraft:green_dye"
+      }
+    },
+    "output": [
+      {
+        "count": 8,
+        "name": "minecraft:green_carpet"
+      }
+    ],
+    "priority": 0,
+    "shape": [
+      "AAA",
+      "ABA",
+      "AAA"
+    ]
+  },
+  {
+    "block": "crafting_table",
+    "input": {
+      "A": {
+        "name": "minecraft:white_carpet"
+      },
+      "B": {
+        "name": "minecraft:light_blue_dye"
+      }
+    },
+    "output": [
+      {
+        "count": 8,
+        "name": "minecraft:light_blue_carpet"
+      }
+    ],
+    "priority": 0,
+    "shape": [
+      "AAA",
+      "ABA",
+      "AAA"
+    ]
+  },
+  {
+    "block": "crafting_table",
+    "input": {
+      "A": {
+        "name": "minecraft:white_carpet"
+      },
+      "B": {
+        "name": "minecraft:light_gray_dye"
+      }
+    },
+    "output": [
+      {
+        "count": 8,
+        "name": "minecraft:light_gray_carpet"
+      }
+    ],
+    "priority": 0,
+    "shape": [
+      "AAA",
+      "ABA",
+      "AAA"
+    ]
+  },
+  {
+    "block": "crafting_table",
+    "input": {
+      "A": {
+        "name": "minecraft:white_carpet"
+      },
+      "B": {
+        "name": "minecraft:lime_dye"
+      }
+    },
+    "output": [
+      {
+        "count": 8,
+        "name": "minecraft:lime_carpet"
+      }
+    ],
+    "priority": 0,
+    "shape": [
+      "AAA",
+      "ABA",
+      "AAA"
+    ]
+  },
+  {
+    "block": "crafting_table",
+    "input": {
+      "A": {
+        "name": "minecraft:white_carpet"
+      },
+      "B": {
+        "name": "minecraft:magenta_dye"
+      }
+    },
+    "output": [
+      {
+        "count": 8,
+        "name": "minecraft:magenta_carpet"
+      }
+    ],
+    "priority": 0,
+    "shape": [
+      "AAA",
+      "ABA",
+      "AAA"
+    ]
+  },
+  {
+    "block": "crafting_table",
+    "input": {
+      "A": {
+        "name": "minecraft:white_carpet"
+      },
+      "B": {
+        "name": "minecraft:orange_dye"
+      }
+    },
+    "output": [
+      {
+        "count": 8,
+        "name": "minecraft:orange_carpet"
+      }
+    ],
+    "priority": 0,
+    "shape": [
+      "AAA",
+      "ABA",
+      "AAA"
+    ]
+  },
+  {
+    "block": "crafting_table",
+    "input": {
+      "A": {
+        "name": "minecraft:white_carpet"
+      },
+      "B": {
+        "name": "minecraft:pink_dye"
+      }
+    },
+    "output": [
+      {
+        "count": 8,
+        "name": "minecraft:pink_carpet"
+      }
+    ],
+    "priority": 0,
+    "shape": [
+      "AAA",
+      "ABA",
+      "AAA"
+    ]
+  },
+  {
+    "block": "crafting_table",
+    "input": {
+      "A": {
+        "name": "minecraft:white_carpet"
+      },
+      "B": {
+        "name": "minecraft:purple_dye"
+      }
+    },
+    "output": [
+      {
+        "count": 8,
+        "name": "minecraft:purple_carpet"
+      }
+    ],
+    "priority": 0,
+    "shape": [
+      "AAA",
+      "ABA",
+      "AAA"
+    ]
+  },
+  {
+    "block": "crafting_table",
+    "input": {
+      "A": {
+        "name": "minecraft:white_carpet"
+      },
+      "B": {
+        "name": "minecraft:red_dye"
+      }
+    },
+    "output": [
+      {
+        "count": 8,
+        "name": "minecraft:red_carpet"
+      }
+    ],
+    "priority": 0,
+    "shape": [
+      "AAA",
+      "ABA",
+      "AAA"
+    ]
+  },
+  {
+    "block": "crafting_table",
+    "input": {
+      "A": {
+        "name": "minecraft:white_carpet"
+      },
+      "B": {
+        "name": "minecraft:yellow_dye"
+      }
+    },
+    "output": [
+      {
+        "count": 8,
+        "name": "minecraft:yellow_carpet"
+      }
+    ],
+    "priority": 0,
+    "shape": [
+      "AAA",
+      "ABA",
       "AAA"
     ]
   },
@@ -20911,9 +20867,8 @@
     },
     "output": [
       {
-        "block_states": "CgAACAUAY29sb3IFAHdoaXRlAA==",
         "count": 3,
-        "name": "minecraft:carpet"
+        "name": "minecraft:white_carpet"
       }
     ],
     "priority": 0,
@@ -20999,9 +20954,8 @@
     },
     "output": [
       {
-        "block_states": "CgAACAUAY29sb3IGAHllbGxvdwA=",
         "count": 3,
-        "name": "minecraft:carpet"
+        "name": "minecraft:yellow_carpet"
       }
     ],
     "priority": 0,

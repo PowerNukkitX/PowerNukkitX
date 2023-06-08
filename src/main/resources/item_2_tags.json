@@ -238,6 +238,7 @@
   ],
   "minecraft:golden_boots": [
     "minecraft:trimmable_armors",
+    "minecraft:transformable_items",
     "minecraft:golden_tier",
     "minecraft:is_armor"
   ],
@@ -1008,69 +1009,6 @@
   "minecraft:tropical_fish": [
     "minecraft:is_fish"
   ],
-  "minecraft:mourner_pottery_shard": [
-    "minecraft:decorated_pot_shards"
-  ],
-  "minecraft:arms_up_pottery_shard": [
-    "minecraft:decorated_pot_shards"
-  ],
-  "minecraft:burn_pottery_shard": [
-    "minecraft:decorated_pot_shards"
-  ],
-  "minecraft:friend_pottery_shard": [
-    "minecraft:decorated_pot_shards"
-  ],
-  "minecraft:brewer_pottery_shard": [
-    "minecraft:decorated_pot_shards"
-  ],
-  "minecraft:danger_pottery_shard": [
-    "minecraft:decorated_pot_shards"
-  ],
-  "minecraft:heart_pottery_shard": [
-    "minecraft:decorated_pot_shards"
-  ],
-  "minecraft:plenty_pottery_shard": [
-    "minecraft:decorated_pot_shards"
-  ],
-  "minecraft:brick": [
-    "minecraft:decorated_pot_shards"
-  ],
-  "minecraft:blade_pottery_shard": [
-    "minecraft:decorated_pot_shards"
-  ],
-  "minecraft:shelter_pottery_shard": [
-    "minecraft:decorated_pot_shards"
-  ],
-  "minecraft:explorer_pottery_shard": [
-    "minecraft:decorated_pot_shards"
-  ],
-  "minecraft:angler_pottery_shard": [
-    "minecraft:decorated_pot_shards"
-  ],
-  "minecraft:skull_pottery_shard": [
-    "minecraft:decorated_pot_shards"
-  ],
-  "minecraft:howl_pottery_shard": [
-    "minecraft:decorated_pot_shards"
-  ],
-  "minecraft:miner_pottery_shard": [
-    "minecraft:decorated_pot_shards"
-  ],
-  "minecraft:heartbreak_pottery_shard": [
-    "minecraft:decorated_pot_shards"
-  ],
-  "minecraft:prize_pottery_shard": [
-    "minecraft:decorated_pot_shards"
-  ],
-  "minecraft:sheaf_pottery_shard": [
-    "minecraft:decorated_pot_shards"
-  ],
-  "minecraft:archer_pottery_shard": [
-    "minecraft:decorated_pot_shards"
-  ],
-  "minecraft:snort_pottery_shard": [
-    "minecraft:decorated_pot_shards"
-  ],
   "minecraft:soul_sand": [
     "minecraft:soul_fire_base_blocks"
   ],
@@ -1108,6 +1046,69 @@
   "minecraft:copper_ingot": [
     "minecraft:trim_materials"
   ],
+  "minecraft:shelter_pottery_sherd": [
+    "minecraft:decorated_pot_sherds"
+  ],
+  "minecraft:arms_up_pottery_sherd": [
+    "minecraft:decorated_pot_sherds"
+  ],
+  "minecraft:burn_pottery_sherd": [
+    "minecraft:decorated_pot_sherds"
+  ],
+  "minecraft:friend_pottery_sherd": [
+    "minecraft:decorated_pot_sherds"
+  ],
+  "minecraft:archer_pottery_sherd": [
+    "minecraft:decorated_pot_sherds"
+  ],
+  "minecraft:heart_pottery_sherd": [
+    "minecraft:decorated_pot_sherds"
+  ],
+  "minecraft:plenty_pottery_sherd": [
+    "minecraft:decorated_pot_sherds"
+  ],
+  "minecraft:skull_pottery_sherd": [
+    "minecraft:decorated_pot_sherds"
+  ],
+  "minecraft:blade_pottery_sherd": [
+    "minecraft:decorated_pot_sherds"
+  ],
+  "minecraft:miner_pottery_sherd": [
+    "minecraft:decorated_pot_sherds"
+  ],
+  "minecraft:brewer_pottery_sherd": [
+    "minecraft:decorated_pot_sherds"
+  ],
+  "minecraft:brick": [
+    "minecraft:decorated_pot_sherds"
+  ],
+  "minecraft:angler_pottery_sherd": [
+    "minecraft:decorated_pot_sherds"
+  ],
+  "minecraft:snort_pottery_sherd": [
+    "minecraft:decorated_pot_sherds"
+  ],
+  "minecraft:heartbreak_pottery_sherd": [
+    "minecraft:decorated_pot_sherds"
+  ],
+  "minecraft:explorer_pottery_sherd": [
+    "minecraft:decorated_pot_sherds"
+  ],
+  "minecraft:sheaf_pottery_sherd": [
+    "minecraft:decorated_pot_sherds"
+  ],
+  "minecraft:danger_pottery_sherd": [
+    "minecraft:decorated_pot_sherds"
+  ],
+  "minecraft:mourner_pottery_sherd": [
+    "minecraft:decorated_pot_sherds"
+  ],
+  "minecraft:howl_pottery_sherd": [
+    "minecraft:decorated_pot_sherds"
+  ],
+  "minecraft:prize_pottery_sherd": [
+    "minecraft:decorated_pot_sherds"
+  ],
   "minecraft:cyan_wool": [
     "minecraft:vibration_damper",
     "minecraft:wool"
@@ -1116,42 +1117,35 @@
     "minecraft:vibration_damper",
     "minecraft:wool"
   ],
-  "minecraft:light_gray_wool": [
-    "minecraft:vibration_damper",
-    "minecraft:wool"
-  ],
   "minecraft:brown_wool": [
     "minecraft:vibration_damper",
     "minecraft:wool"
   ],
-  "minecraft:black_wool": [
-    "minecraft:vibration_damper",
-    "minecraft:wool"
-  ],
-  "minecraft:pink_wool": [
-    "minecraft:vibration_damper",
-    "minecraft:wool"
-  ],
-  "minecraft:white_wool": [
-    "minecraft:vibration_damper",
-    "minecraft:wool"
-  ],
-  "minecraft:carpet": [
+  "minecraft:black_carpet": [
     "minecraft:vibration_damper"
   ],
-  "minecraft:light_blue_wool": [
-    "minecraft:vibration_damper",
-    "minecraft:wool"
+  "minecraft:purple_carpet": [
+    "minecraft:vibration_damper"
   ],
-  "minecraft:gray_wool": [
-    "minecraft:vibration_damper",
-    "minecraft:wool"
+  "minecraft:pink_carpet": [
+    "minecraft:vibration_damper"
+  ],
+  "minecraft:white_carpet": [
+    "minecraft:vibration_damper"
+  ],
+  "minecraft:cyan_carpet": [
+    "minecraft:vibration_damper"
+  ],
+  "minecraft:orange_carpet": [
+    "minecraft:vibration_damper"
+  ],
+  "minecraft:gray_carpet": [
+    "minecraft:vibration_damper"
+  ],
+  "minecraft:red_carpet": [
+    "minecraft:vibration_damper"
   ],
   "minecraft:lime_wool": [
-    "minecraft:vibration_damper",
-    "minecraft:wool"
-  ],
-  "minecraft:magenta_wool": [
     "minecraft:vibration_damper",
     "minecraft:wool"
   ],
@@ -1163,6 +1157,9 @@
     "minecraft:vibration_damper",
     "minecraft:wool"
   ],
+  "minecraft:blue_carpet": [
+    "minecraft:vibration_damper"
+  ],
   "minecraft:orange_wool": [
     "minecraft:vibration_damper",
     "minecraft:wool"
@@ -1172,6 +1169,55 @@
     "minecraft:wool"
   ],
   "minecraft:red_wool": [
+    "minecraft:vibration_damper",
+    "minecraft:wool"
+  ],
+  "minecraft:green_carpet": [
+    "minecraft:vibration_damper"
+  ],
+  "minecraft:light_gray_wool": [
+    "minecraft:vibration_damper",
+    "minecraft:wool"
+  ],
+  "minecraft:lime_carpet": [
+    "minecraft:vibration_damper"
+  ],
+  "minecraft:yellow_carpet": [
+    "minecraft:vibration_damper"
+  ],
+  "minecraft:black_wool": [
+    "minecraft:vibration_damper",
+    "minecraft:wool"
+  ],
+  "minecraft:brown_carpet": [
+    "minecraft:vibration_damper"
+  ],
+  "minecraft:pink_wool": [
+    "minecraft:vibration_damper",
+    "minecraft:wool"
+  ],
+  "minecraft:white_wool": [
+    "minecraft:vibration_damper",
+    "minecraft:wool"
+  ],
+  "minecraft:light_gray_carpet": [
+    "minecraft:vibration_damper"
+  ],
+  "minecraft:magenta_carpet": [
+    "minecraft:vibration_damper"
+  ],
+  "minecraft:light_blue_wool": [
+    "minecraft:vibration_damper",
+    "minecraft:wool"
+  ],
+  "minecraft:light_blue_carpet": [
+    "minecraft:vibration_damper"
+  ],
+  "minecraft:gray_wool": [
+    "minecraft:vibration_damper",
+    "minecraft:wool"
+  ],
+  "minecraft:magenta_wool": [
     "minecraft:vibration_damper",
     "minecraft:wool"
   ],
@@ -1197,6 +1243,50 @@
     "minecraft:logs",
     "minecraft:warped_stems"
   ],
+  "minecraft:crimson_hanging_sign": [
+    "minecraft:hanging_sign",
+    "minecraft:sign"
+  ],
+  "minecraft:dark_oak_hanging_sign": [
+    "minecraft:hanging_sign",
+    "minecraft:sign"
+  ],
+  "minecraft:spruce_hanging_sign": [
+    "minecraft:hanging_sign",
+    "minecraft:sign"
+  ],
+  "minecraft:mangrove_hanging_sign": [
+    "minecraft:hanging_sign",
+    "minecraft:sign"
+  ],
+  "minecraft:bamboo_hanging_sign": [
+    "minecraft:hanging_sign",
+    "minecraft:sign"
+  ],
+  "minecraft:cherry_hanging_sign": [
+    "minecraft:hanging_sign",
+    "minecraft:sign"
+  ],
+  "minecraft:birch_hanging_sign": [
+    "minecraft:hanging_sign",
+    "minecraft:sign"
+  ],
+  "minecraft:oak_hanging_sign": [
+    "minecraft:hanging_sign",
+    "minecraft:sign"
+  ],
+  "minecraft:warped_hanging_sign": [
+    "minecraft:hanging_sign",
+    "minecraft:sign"
+  ],
+  "minecraft:acacia_hanging_sign": [
+    "minecraft:hanging_sign",
+    "minecraft:sign"
+  ],
+  "minecraft:jungle_hanging_sign": [
+    "minecraft:hanging_sign",
+    "minecraft:sign"
+  ],
   "minecraft:trident": [
     "minecraft:is_trident"
   ],
@@ -1218,13 +1308,7 @@
   "minecraft:minecart": [
     "minecraft:is_minecart"
   ],
-  "minecraft:crimson_hanging_sign": [
-    "minecraft:sign"
-  ],
   "minecraft:crimson_sign": [
-    "minecraft:sign"
-  ],
-  "minecraft:birch_hanging_sign": [
     "minecraft:sign"
   ],
   "minecraft:mangrove_sign": [
@@ -1236,18 +1320,6 @@
   "minecraft:jungle_sign": [
     "minecraft:sign"
   ],
-  "minecraft:oak_hanging_sign": [
-    "minecraft:sign"
-  ],
-  "minecraft:acacia_hanging_sign": [
-    "minecraft:sign"
-  ],
-  "minecraft:dark_oak_hanging_sign": [
-    "minecraft:sign"
-  ],
-  "minecraft:spruce_hanging_sign": [
-    "minecraft:sign"
-  ],
   "minecraft:acacia_sign": [
     "minecraft:sign"
   ],
@@ -1257,31 +1329,16 @@
   "minecraft:spruce_sign": [
     "minecraft:sign"
   ],
-  "minecraft:mangrove_hanging_sign": [
-    "minecraft:sign"
-  ],
-  "minecraft:bamboo_hanging_sign": [
-    "minecraft:sign"
-  ],
-  "minecraft:cherry_hanging_sign": [
-    "minecraft:sign"
-  ],
   "minecraft:birch_sign": [
     "minecraft:sign"
   ],
   "minecraft:warped_sign": [
     "minecraft:sign"
   ],
-  "minecraft:warped_hanging_sign": [
-    "minecraft:sign"
-  ],
   "minecraft:cherry_sign": [
     "minecraft:sign"
   ],
   "minecraft:dark_oak_sign": [
-    "minecraft:sign"
-  ],
-  "minecraft:jungle_hanging_sign": [
     "minecraft:sign"
   ],
   "minecraft:music_disc_blocks": [
@@ -1324,6 +1381,9 @@
     "minecraft:music_disc"
   ],
   "minecraft:music_disc_far": [
+    "minecraft:music_disc"
+  ],
+  "minecraft:music_disc_relic": [
     "minecraft:music_disc"
   ],
   "minecraft:music_disc_mall": [

@@ -8009,6 +8009,34 @@
       },
       {
         "meta": 32767,
+        "name": "minecraft:torchflower"
+      }
+    ],
+    "output": [
+      {
+        "meta": 10,
+        "name": "minecraft:suspicious_stew"
+      }
+    ],
+    "priority": 0
+  },
+  {
+    "block": "crafting_table",
+    "input": [
+      {
+        "meta": 32767,
+        "name": "minecraft:brown_mushroom"
+      },
+      {
+        "meta": 32767,
+        "name": "minecraft:red_mushroom"
+      },
+      {
+        "meta": 32767,
+        "name": "minecraft:bowl"
+      },
+      {
+        "meta": 32767,
         "name": "minecraft:wither_rose"
       }
     ],
@@ -13415,6 +13443,22 @@
     "output": [
       {
         "name": "minecraft:pink_dye"
+      }
+    ],
+    "priority": 0
+  },
+  {
+    "block": "crafting_table",
+    "input": [
+      {
+        "meta": 32767,
+        "name": "minecraft:pitcher_plant"
+      }
+    ],
+    "output": [
+      {
+        "count": 2,
+        "name": "minecraft:cyan_dye"
       }
     ],
     "priority": 0
