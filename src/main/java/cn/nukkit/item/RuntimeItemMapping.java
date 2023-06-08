@@ -126,14 +126,6 @@ public class RuntimeItemMapping {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-        blockMappings.forEach((id, damage) -> {
-            String identifier = damage.split(";")[0];
-            int runtime = this.name2RuntimeId.getOrDefault(identifier, -1);
-            if (runtime != -1) {
-                this.legacy2Runtime.put(id.intValue(), new RuntimeEntry(identifier, runtime, true, false));
-            }
-        });
     }
 
     private void generatePalette() {

@@ -149,7 +149,7 @@ public class BlockLectern extends BlockTransparentMeta implements RedstoneCompon
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     @Override
-    public int onTouch(@Nullable Player player, Action action) {
+    public int onTouch(@Nullable Player player, Action action, BlockFace face) {
         onUpdate(Level.BLOCK_UPDATE_TOUCH);
         if (player != null && action == Action.LEFT_CLICK_BLOCK && player.isSurvival()) {
             dropBook(player);

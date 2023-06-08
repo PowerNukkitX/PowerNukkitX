@@ -1402,11 +1402,12 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      *
      * @param player the player
      * @param action the action
+     * @param face
      * @return 状态值，返回值不为0代表这是一个touch操作而不是一个挖掘方块的操作<br>Status value, if the return value is not 0, it means that this is a touch operation rather than a mining block operation
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public int onTouch(@Nullable Player player, PlayerInteractEvent.Action action) {
+    public int onTouch(@Nullable Player player, PlayerInteractEvent.Action action, BlockFace face) {
         onUpdate(Level.BLOCK_UPDATE_TOUCH);
         return 0;
     }
@@ -2996,7 +2997,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     @Override
     public int hashCode() {
-        return  ((int) x ^ ((int) z << 12)) ^ ((int) (y + 64) << 23);
+        return ((int) x ^ ((int) z << 12)) ^ ((int) (y + 64) << 23);
     }
 
 

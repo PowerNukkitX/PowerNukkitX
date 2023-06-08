@@ -12,6 +12,7 @@ import cn.nukkit.blockproperty.BlockProperty;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.event.block.SignColorChangeEvent;
 import cn.nukkit.event.block.SignGlowEvent;
+import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemGlowInkSac;
 import cn.nukkit.item.ItemSign;
@@ -178,6 +179,26 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable, Blo
             level.setBlock(layer1, 0, layer1, true);
             return false;
         }
+    }
+
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    @Override
+    public int onTouch(@Nullable Player player, PlayerInteractEvent.Action action, BlockFace face) {
+        if (player != null && action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) {
+            boolean front = switch (getSignDirection()) {
+                case EAST -> face == BlockFace.EAST;
+                case SOUTH -> face == BlockFace.SOUTH;
+                case WEST -> face == BlockFace.WEST;
+                case NORTH -> face == BlockFace.NORTH;
+                case NORTH_EAST, NORTH_NORTH_EAST, EAST_NORTH_EAST -> face == BlockFace.EAST || face == BlockFace.NORTH;
+                case NORTH_WEST, NORTH_NORTH_WEST, WEST_NORTH_WEST -> face == BlockFace.WEST || face == BlockFace.NORTH;
+                case SOUTH_EAST, SOUTH_SOUTH_EAST, EAST_SOUTH_EAST -> face == BlockFace.EAST || face == BlockFace.SOUTH;
+                case SOUTH_WEST, SOUTH_SOUTH_WEST, WEST_SOUTH_WEST -> face == BlockFace.WEST || face == BlockFace.SOUTH;
+            };
+            player.openSignEditor(this, front);
+        }
+        return 0;
     }
 
     @Override
