@@ -9,7 +9,9 @@ public class EmotePacket extends DataPacket {
 
     @Since("1.3.0.0-PN")
     public long runtimeId;
+    @Since("1.20.0-r1")
     public String xuid;
+    @Since("1.20.0-r1")
     public String platformId;
     @Since("1.3.0.0-PN")
     public String emoteID;
