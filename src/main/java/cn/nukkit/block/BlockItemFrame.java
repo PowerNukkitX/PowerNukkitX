@@ -160,8 +160,7 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
     public int onTouch(@Nullable Player player, Action action) {
         onUpdate(Level.BLOCK_UPDATE_TOUCH);
         if (player != null && action == Action.LEFT_CLICK_BLOCK) {
-            getOrCreateBlockEntity().dropItem(player);
-            return 1;
+            return getOrCreateBlockEntity().dropItem(player) ? 1 : 0;
         }
         return 0;
     }
