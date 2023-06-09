@@ -99,7 +99,15 @@ public class RuntimeItemMapping {
                 RuntimeEntry runtimeEntry = new RuntimeEntry(identifier, runtimeId, hasDamage, false);
                 this.runtime2Legacy.put(runtimeId, legacyEntry);
                 this.identifier2Legacy.put(identifier, legacyEntry);
-                this.legacy2Runtime.put(fullId, runtimeEntry);
+                if (legacy2Runtime.containsKey(fullId)) {
+                    int old = RuntimeItems.getLegacyIdFromLegacyString(legacy2Runtime.get(fullId).identifier());
+                    int now = RuntimeItems.getLegacyIdFromLegacyString(runtimeEntry.identifier());
+                    if (old != -1 && now == -1) {
+                        legacy2Runtime.put(fullId, runtimeEntry);
+                    }
+                } else {
+                    this.legacy2Runtime.put(fullId, runtimeEntry);
+                }
                 this.itemPaletteEntries.add(runtimeEntry);
             }
 
