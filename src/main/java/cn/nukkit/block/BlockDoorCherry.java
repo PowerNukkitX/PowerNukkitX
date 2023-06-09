@@ -3,31 +3,32 @@ package cn.nukkit.block;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemDoorMangrove;
+import cn.nukkit.item.ItemDoorCherry;
 
 @PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
-public class BlockDoorMangrove extends BlockDoorWood{
-    public BlockDoorMangrove() {
+@Since("1.20.0-r1")
+public class BlockDoorCherry extends BlockDoorWood {
+    public BlockDoorCherry() {
         this(0);
     }
 
-    public BlockDoorMangrove(int meta) {
+    public BlockDoorCherry(int meta) {
         super(meta);
     }
 
     @Override
     public String getName() {
-        return "Mangrove Door Block";
+        return "Cherry Door Block";
     }
 
     @Override
     public int getId() {
-        return MANGROVE_DOOR;
+        return CHERRY_DOOR;
     }
 
     @Override
     public Item toItem() {
-        return new ItemDoorMangrove();
+        return new ItemDoorCherry();
     }
+
 }

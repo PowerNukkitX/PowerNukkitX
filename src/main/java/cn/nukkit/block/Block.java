@@ -181,8 +181,8 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @SuppressWarnings("unchecked")
     public static void init() {
         if (list == null) {
-            list = new Class[MAX_BLOCK_ID];
-            fullList = new Block[MAX_BLOCK_ID * (1 << DATA_BITS)];
+            list = new Class[MAX_BLOCK_ID + 1];
+            fullList = new Block[(MAX_BLOCK_ID + 1) * (1 << DATA_BITS)];
             light = new int[MAX_BLOCK_ID];
             lightFilter = new int[MAX_BLOCK_ID];
             solid = new boolean[MAX_BLOCK_ID];
@@ -831,6 +831,26 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             list[MANGROVE_WOOD] = BlockWoodMangrove.class;//752
             list[STRIPPED_MANGROVE_WOOD] = BlockWoodStrippedMangrove.class;//753
             list[DOUBLE_MANGROVE_SLAB] = BlockDoubleSlabMangrove.class;//754
+
+            list[CHERRY_BUTTON] = BlockButtonCherry.class;//785
+            list[CHERRY_DOOR] = BlockDoorCherry.class;//786
+            list[CHERRY_FENCE] = BlockFenceCherry.class;//787
+            list[CHERRY_FENCE_GATE] = BlockFenceGateCherry.class;//788
+
+            list[STRIPPED_CHERRY_LOG] = BlockLogStrippedCherry.class;//790
+            list[CHERRY_LOG] = BlockCherryLog.class;//791
+            list[CHERRY_PLANKS] = BlockPlanksCherry.class;//792
+            list[CHERRY_PRESSURE_PLATE] = BlockPressurePlateCherry.class;//793
+            list[CHERRY_SLAB] = BlockSlabCherry.class;//794
+            list[DOUBLE_CHERRY_SLAB] = BlockDoubleSlabCherry.class;//795
+            list[CHERRY_STAIRS] = BlockStairsCherry.class;//796
+            list[CHERRY_STANDING_SIGN] = BlockCherrySignPost.class;//797
+            list[CHERRY_TRAPDOOR] = BlockTrapdoorCherry.class;//798
+            list[CHERRY_WALL_SIGN] = BlockCherryWallSign.class;//799
+            list[STRIPPED_CHERRY_WOOD] = BlockWoodStrippedCherry.class;//800
+            list[CHERRY_WOOD] = BlockWoodCherry.class;//801
+            list[CHERRY_SAPLING] = BlockCherrySapling.class;//802
+            list[CHERRY_LEAVES] = BlockCherryLeaves.class;//803
             initializing = true;
 
             for (int id = 0; id < MAX_BLOCK_ID; id++) {

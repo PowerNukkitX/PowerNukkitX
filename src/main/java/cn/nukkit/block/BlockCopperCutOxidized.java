@@ -21,7 +21,7 @@ public class BlockCopperCutOxidized extends BlockCopperCut {
 
     @Override
     public String getName() {
-        return null;
+        return "Cut Oxidized Copper";
     }
 
     @Override
