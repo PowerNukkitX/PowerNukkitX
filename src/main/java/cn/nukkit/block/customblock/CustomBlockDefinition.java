@@ -130,7 +130,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
          * supports rotation, scaling, and translation. The component can be added to the whole block and/or to individual block permutations. Transformed geometries still have the same restrictions that non-transformed geometries have such as a maximum size of 30/16 units.
          */
         public Builder transformation(@NotNull Transformation transformation) {
-            this.nbt.putCompound(transformation.toCompoundTag());
+            this.nbt.getCompound("components").putCompound(transformation.toCompoundTag());
             return this;
         }
 
@@ -243,19 +243,6 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
                                     .add(new FloatTag("", size.x))
                                     .add(new FloatTag("", size.y))
                                     .add(new FloatTag("", size.z))));
-            return this;
-        }
-
-        /**
-         * 以度为单位设置块围绕立方体中心的旋转,旋转顺序为 xyz.角度必须是90的倍数。
-         * <p>
-         * Set the rotation of the block around the center of the block in degrees, the rotation order is xyz. The angle must be a multiple of 90.
-         */
-        public Builder rotation(@NotNull Vector3f rotation) {
-            this.nbt.putCompound("minecraft:rotation", new CompoundTag()
-                    .putFloat("x", rotation.x)
-                    .putFloat("y", rotation.y)
-                    .putFloat("z", rotation.z));
             return this;
         }
 

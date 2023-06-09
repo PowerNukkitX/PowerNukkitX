@@ -11,7 +11,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 @PowerNukkitXOnly
 @Since("1.19.80-r1")
 public record Transformation(Vector3 translation, Vector3 scale, Vector3 rotation) implements NBTData {
-
     @Override
     public CompoundTag toCompoundTag() {
         return new CompoundTag("minecraft:transformation")
