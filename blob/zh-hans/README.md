@@ -24,7 +24,7 @@
 
 PowerNukkitX的优势：
 
-1. 支持1.19.80协议。
+1. 支持1.20.0协议。
 2. 原生支持384限高（目前仅限主世界，其余则为256格限高）。
 3. 原生支持地狱世界，无需另外安装插件补丁等。
 4. 支持3D生物群系（完善中）。<!--自定义维度接口 TODO-->
@@ -44,7 +44,7 @@ PowerNukkitX的优势：
 ### 1.从[PNX-CLI](https://github.com/PowerNukkitX/PNX-CLI)启动:
 
 1. 从[release](https://github.com/PowerNukkitX/PNX-CLI/releases)下载`PNX-CLI-Jar.zip`最新版本
-2. 运行`java -jar PNX-CLI-0.0.1-alpha.jar`
+2. 运行`java -jar PNX-CLI-0.1.4.jar`
 
 您还可以在[此处](https://doc.powernukkitx.cn/zh-cn/Get_Started.html)查阅更多信息。
 
@@ -135,7 +135,7 @@ repositories {
 }
 
 dependencies {
-    compile group: 'cn.powernukkitx', name: 'powernukkitx', version: '1.19.80-r3'
+    compile group: 'cn.powernukkitx', name: 'powernukkitx', version: '1.20.0-r1'
 }
 ```
 
@@ -145,7 +145,7 @@ dependencies {
     <dependency>
         <groupId>cn.powernukkitx</groupId>
         <artifactId>powernukkitx</artifactId>
-        <version>1.19.80-r3</version>
+        <version>1.20.0-r1</version>
     </dependency>
 </dependencies>
 ```

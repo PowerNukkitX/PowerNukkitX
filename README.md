@@ -24,7 +24,7 @@ Join US:
 
 What's new in PowerNukkitX? Let's See：
 
-1. Support for 1.19.80 protocol.
+1. Support for 1.20.0 protocol.
 2. Support for 384 world height.
 3. Support for The Nether world, no need to install additional plugin.
 4. Support 3D biomes.<!--Custom dimension interface TODO-->
@@ -45,7 +45,7 @@ What's new in PowerNukkitX? Let's See：
 ### 1.Run from [PNX-CLI](https://github.com/PowerNukkitX/PNX-CLI):
 
 1. Download the `PNX-CLI-Jar.zip` latest version from [release](https://github.com/PowerNukkitX/PNX-CLI/releases)
-2. Run `java -jar PNX-CLI-0.0.1-alpha.jar`
+2. Run `java -jar PNX-CLI-0.1.4.jar`
 
 you can [click here](https://www.powernukkitx.com/doc/en-us/Get_Started.html) to get more information.
 
@@ -146,7 +146,7 @@ repositories {
 }
 
 dependencies {
-    compile group: 'cn.powernukkitx', name: 'powernukkitx', version: '1.19.80-r3'
+    compile group: 'cn.powernukkitx', name: 'powernukkitx', version: '1.20.0-r1'
 }
 ```
 
@@ -156,7 +156,7 @@ dependencies {
     <dependency>
         <groupId>cn.powernukkitx</groupId>
         <artifactId>powernukkitx</artifactId>
-        <version>1.19.80-r3</version>
+        <version>1.20.0-r1</version>
     </dependency>
 </dependencies>
 ```

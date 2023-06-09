@@ -11,8 +11,8 @@ import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.TextFormat;
 
-import java.util.Arrays;
 import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -81,15 +81,24 @@ public class BlockEntitySign extends BlockEntitySpawnable {
     public void saveNBT() {
         super.saveNBT();
         this.namedTag.getCompound(TAG_FRONT_TEXT)
-                .putString(TAG_TEXT_BLOB, String.join("\n", frontText))
+                .putString(TAG_TEXT_BLOB, joinNotNull("\n", frontText))
                 .putByte(TAG_PERSIST_FORMATTING, 1);
-        //todo 由于1.19.80还没有更新sign新ui，所以暂时不启用反面文本
-        /*this.namedTag.getCompound(TAG_BACK_TEXT)
-                .putString(TAG_TEXT_BLOB, String.join("\n", backText))
-                .putByte(TAG_PERSIST_FORMATTING, 1);*/
+        this.namedTag.getCompound(TAG_BACK_TEXT)
+                .putString(TAG_TEXT_BLOB, joinNotNull("\n", backText))
+                .putByte(TAG_PERSIST_FORMATTING, 1);
         this.namedTag.putBoolean(TAG_LEGACY_BUG_RESOLVE, true)
                 .putByte(TAG_WAXED, 0)
                 .putLong(TAG_LOCKED_FOR_EDITING_BY, getEditorEntityRuntimeId());
+    }
+
+    private static String joinNotNull(String delim, String... elements) {
+        StringJoiner join = new StringJoiner(delim);
+        for (var element : elements) {
+            if (element != null) {
+                join.add(element);
+            } else join.add("");
+        }
+        return join.toString();
     }
 
     @Override
@@ -117,7 +126,7 @@ public class BlockEntitySign extends BlockEntitySpawnable {
                 else
                     frontText[i] = "";
             }
-            this.namedTag.getCompound(TAG_FRONT_TEXT).putString(TAG_TEXT_BLOB, String.join("\n", lines));
+            this.namedTag.getCompound(TAG_FRONT_TEXT).putString(TAG_TEXT_BLOB, joinNotNull("\n", lines));
         } else {
             for (int i = 0; i < 4; i++) {
                 if (i < lines.length)
@@ -125,7 +134,7 @@ public class BlockEntitySign extends BlockEntitySpawnable {
                 else
                     backText[i] = "";
             }
-            this.namedTag.getCompound(TAG_BACK_TEXT).putString(TAG_TEXT_BLOB, String.join("\n", lines));
+            this.namedTag.getCompound(TAG_BACK_TEXT).putString(TAG_TEXT_BLOB, joinNotNull("\n", lines));
         }
         this.spawnToAll();
         if (this.chunk != null) {
@@ -211,9 +220,10 @@ public class BlockEntitySign extends BlockEntitySpawnable {
         if (!nbt.getString("id").equals(BlockEntity.SIGN)) {
             return false;
         }
+        if (player.isOpenSignFront() == null) return false;
         String[] lines = new String[4];
-        Arrays.fill(lines, "");
-        String[] splitLines = nbt.getCompound(TAG_FRONT_TEXT).getString(TAG_TEXT_BLOB).split("\n", 4);
+        String[] splitLines = player.isOpenSignFront() ? nbt.getCompound(TAG_FRONT_TEXT).getString(TAG_TEXT_BLOB).split("\n", 4)
+                : nbt.getCompound(TAG_BACK_TEXT).getString(TAG_TEXT_BLOB).split("\n", 4);
         System.arraycopy(splitLines, 0, lines, 0, splitLines.length);
 
         sanitizeText(lines);
@@ -232,12 +242,13 @@ public class BlockEntitySign extends BlockEntitySpawnable {
 
         this.server.getPluginManager().callEvent(signChangeEvent);
 
-        if (!signChangeEvent.isCancelled()) {
-            this.setText(signChangeEvent.getLines());
+        if (!signChangeEvent.isCancelled() && player.isOpenSignFront() != null) {
+            this.setText(player.isOpenSignFront(), signChangeEvent.getLines());
             this.setEditorEntityRuntimeId(null);
+            player.setOpenSignFront(null);
             return true;
         }
-
+        player.setOpenSignFront(null);
         return false;
     }
 
@@ -251,13 +262,12 @@ public class BlockEntitySign extends BlockEntitySpawnable {
                         .putBoolean(TAG_GLOWING_TEXT, this.isGlowing())
                         .putBoolean(TAG_PERSIST_FORMATTING, true)
                 )
-                //todo 由于1.19.80还没有更新sign新ui，所以暂时不启用反面文本
-                /*.putCompound(new CompoundTag(TAG_BACK_TEXT)
+                .putCompound(new CompoundTag(TAG_BACK_TEXT)
                         .putString(TAG_TEXT_BLOB, this.namedTag.getCompound(TAG_BACK_TEXT).getString(TAG_TEXT_BLOB))
                         .putInt(TAG_TEXT_COLOR, this.getColor(false).getARGB())
                         .putBoolean(TAG_GLOWING_TEXT, this.isGlowing(false))
                         .putBoolean(TAG_PERSIST_FORMATTING, true)
-                )*/
+                )
                 .putBoolean(TAG_LEGACY_BUG_RESOLVE, true)
                 .putInt("x", (int) this.x)
                 .putInt("y", (int) this.y)
@@ -297,7 +307,7 @@ public class BlockEntitySign extends BlockEntitySpawnable {
                 else
                     frontText[i] = "";
             }
-            this.namedTag.getCompound(TAG_FRONT_TEXT).putString(TAG_TEXT_BLOB, String.join("\n", frontText));
+            this.namedTag.getCompound(TAG_FRONT_TEXT).putString(TAG_TEXT_BLOB, joinNotNull("\n", frontText));
             this.namedTag.remove(TAG_TEXT_BLOB);
         } else {
             int count = 0;
@@ -311,7 +321,7 @@ public class BlockEntitySign extends BlockEntitySpawnable {
                 }
             }
             if (count == 4) {
-                this.namedTag.getCompound(TAG_FRONT_TEXT).putString(TAG_TEXT_BLOB, String.join("\n", frontText));
+                this.namedTag.getCompound(TAG_FRONT_TEXT).putString(TAG_TEXT_BLOB, joinNotNull("\n", frontText));
             }
         }
         if (this.namedTag.contains(TAG_GLOWING_TEXT)) {
@@ -321,11 +331,6 @@ public class BlockEntitySign extends BlockEntitySpawnable {
         if (this.namedTag.contains(TAG_TEXT_COLOR)) {
             this.setColor(true, new BlockColor(this.namedTag.getInt(TAG_TEXT_COLOR), true));
             this.namedTag.remove(TAG_TEXT_COLOR);
-        }
-
-        //todo 由于1.19.80还没有更新sign新ui，所以暂时不启用反面文本
-        if (this.namedTag.contains(TAG_BACK_TEXT)) {
-            this.namedTag.remove(TAG_BACK_TEXT);
         }
         this.namedTag.remove("Creator");
     }

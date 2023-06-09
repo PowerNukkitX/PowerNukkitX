@@ -93,13 +93,13 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
         checkDisabled();
     }
 
-    @Since("1.20.00-r0")
+    @Since("1.20.0-r1")
     @PowerNukkitXOnly
     protected SimpleAxisAlignedBB generatePickupArea() {
         return new SimpleAxisAlignedBB(this.x, this.y, this.z, this.x + 1, this.y + 2, this.z + 1);
     }
 
-    @Since("1.20.00-r0")
+    @Since("1.20.0-r1")
     @PowerNukkitXOnly
     protected void checkDisabled() {
         if (getBlock() instanceof BlockHopper blockHopper) {
@@ -110,13 +110,13 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
     /**
      * @return How much ticks does it take for the hopper to transfer an item
      */
-    @Since("1.20.00-r0")
+    @Since("1.20.0-r1")
     @PowerNukkitXOnly
     public int getCooldownTick() {
         return 8;
     }
 
-    @Since("1.20.00-r0")
+    @Since("1.20.0-r1")
     @PowerNukkitXOnly
     protected boolean checkBlockStateValid(@NotNull BlockState levelBlockState) {
         return levelBlockState.getBlockId() == BlockID.HOPPER_BLOCK;

@@ -410,6 +410,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @Since("1.19.80-r3")
     @PowerNukkitXOnly
     private boolean needDimensionChangeACK = false;
+    private Boolean openSignFront = null;
 
 
     /**
@@ -550,7 +551,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return;
         }
 
-        if (target.onTouch(this, playerInteractEvent.getAction()) != 0) return;
+        if (target.onTouch(this, playerInteractEvent.getAction(), face) != 0) return;
 
         Block block = target.getSide(face);
         if (block.getId() == Block.FIRE || block.getId() == BlockID.SOUL_FIRE) {
@@ -6129,20 +6130,36 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(pk);
     }
 
+    @PowerNukkitXOnly
+    @Since("1.20.0-r1")
+    public Boolean isOpenSignFront() {
+        return openSignFront;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.20.0-r1")
+    public void setOpenSignFront(Boolean frontSide) {
+        openSignFront = frontSide;
+    }
+
     /**
      * Opens the player's sign editor GUI for the sign at the given position.
-     * TODO: add support for editing the rear side of the sign (not currently supported due to technical limitations)
      */
+    @PowerNukkitXOnly
+    @Since("1.20.0-r1")
     public void openSignEditor(Vector3 position, boolean frontSide) {
-        BlockEntity blockEntity = this.getLevel().getBlockEntity(position);
-        if (blockEntity instanceof BlockEntitySign blockEntitySign) {
-            blockEntitySign.setEditorEntityRuntimeId(this.getId());
-            OpenSignPacket openSignPacket = new OpenSignPacket();
-            openSignPacket.setPosition(position.asBlockVector3());
-            openSignPacket.setFrontSide(frontSide);
-            this.dataPacket(openSignPacket);
-        } else {
-            throw new IllegalArgumentException("Block at this position is not a sign");
+        if (openSignFront == null) {
+            BlockEntity blockEntity = this.getLevel().getBlockEntity(position);
+            if (blockEntity instanceof BlockEntitySign blockEntitySign) {
+                blockEntitySign.setEditorEntityRuntimeId(this.getId());
+                OpenSignPacket openSignPacket = new OpenSignPacket();
+                openSignPacket.setPosition(position.asBlockVector3());
+                openSignPacket.setFrontSide(frontSide);
+                this.dataPacket(openSignPacket);
+                setOpenSignFront(frontSide);
+            } else {
+                throw new IllegalArgumentException("Block at this position is not a sign");
+            }
         }
     }
 

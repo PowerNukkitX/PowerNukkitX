@@ -11,18 +11,20 @@ import cn.nukkit.nbt.tag.CompoundTag;
 @PowerNukkitXOnly
 @Since("1.19.80-r1")
 public record Transformation(Vector3 translation, Vector3 scale, Vector3 rotation) implements NBTData {
-
     @Override
     public CompoundTag toCompoundTag() {
+        int rx = (rotation.getFloorX() % 360) / 90;
+        int ry = (rotation.getFloorY() % 360) / 90;
+        int rz = (rotation.getFloorZ() % 360) / 90;
         return new CompoundTag("minecraft:transformation")
-                .putInt("RX", rotation.getFloorX())
-                .putInt("RY", rotation.getFloorY())
-                .putInt("RZ", rotation.getFloorZ())
+                .putInt("RX", rx)
+                .putInt("RY", ry)
+                .putInt("RZ", rz)
                 .putFloat("SX", (float) scale.x)
                 .putFloat("SY", (float) scale.y)
                 .putFloat("SZ", (float) scale.z)
                 .putFloat("TX", (float) translation.x)
-                .putFloat("TY", (float) translation.x)
-                .putFloat("TZ", (float) translation.x);
+                .putFloat("TY", (float) translation.y)
+                .putFloat("TZ", (float) translation.z);
     }
 }

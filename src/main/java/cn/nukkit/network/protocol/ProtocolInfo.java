@@ -18,11 +18,11 @@ public interface ProtocolInfo {
     /**
      * Actual Minecraft: PE protocol version
      */
-    int CURRENT_PROTOCOL = dynamic(582);
+    int CURRENT_PROTOCOL = dynamic(589);
 
     List<Integer> SUPPORTED_PROTOCOLS = Ints.asList(CURRENT_PROTOCOL);
 
-    String MINECRAFT_VERSION_NETWORK = dynamic("1.19.80");
+    String MINECRAFT_VERSION_NETWORK = dynamic("1.20.0");
 
     String MINECRAFT_VERSION = 'v' + MINECRAFT_VERSION_NETWORK;
 

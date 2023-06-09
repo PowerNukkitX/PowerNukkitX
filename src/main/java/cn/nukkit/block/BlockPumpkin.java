@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.blockproperty.ArrayBlockProperty;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
@@ -10,7 +11,6 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Faceable;
-
 import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
@@ -20,12 +20,17 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
  * @since 2015/12/8
  */
 public class BlockPumpkin extends BlockSolidMeta implements Faceable {
+    public static final ArrayBlockProperty<BlockFace> CARDINAL_DIRECTION = new ArrayBlockProperty<>("minecraft:cardinal_direction", false, new BlockFace[]{
+            BlockFace.SOUTH, BlockFace.WEST,
+            BlockFace.NORTH, BlockFace.EAST,
+    });
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(
-        DIRECTION
+            CARDINAL_DIRECTION
     );
-    
+
     public BlockPumpkin() {
         this(0);
     }
@@ -50,7 +55,7 @@ public class BlockPumpkin extends BlockSolidMeta implements Faceable {
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
-    
+
     @Override
     public double getHardness() {
         return 1;
@@ -70,7 +75,7 @@ public class BlockPumpkin extends BlockSolidMeta implements Faceable {
     public Item toItem() {
         return new ItemBlock(this, 0);
     }
-    
+
     @Override
     public boolean canBeActivated() {
         return true;
@@ -113,10 +118,10 @@ public class BlockPumpkin extends BlockSolidMeta implements Faceable {
 
     @Override
     @PowerNukkitOnly
-    public  boolean sticksToPiston() {
+    public boolean sticksToPiston() {
         return false;
     }
-    
+
     @Override
     public BlockFace getBlockFace() {
         return getPropertyValue(DIRECTION);

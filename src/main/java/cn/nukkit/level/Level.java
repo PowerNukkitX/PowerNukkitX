@@ -3100,7 +3100,7 @@ public class Level implements ChunkManager, Metadatable {
 
             this.server.getPluginManager().callEvent(ev);
             if (!ev.isCancelled()) {
-                target.onTouch(player, ev.getAction());
+                target.onTouch(player, ev.getAction(), face);
                 if ((!player.isSneaking() || player.getInventory().getItemInHand().isNull()) && target.canBeActivated() && target.onActivate(item, player)) {
                     if (item.isTool() && item.getDamage() >= item.getMaxDurability()) {
                         addSound(player, Sound.RANDOM_BREAK);
@@ -3964,6 +3964,7 @@ public class Level implements ChunkManager, Metadatable {
 
     private void processChunkRequest() {
         this.timings.syncChunkSendTimer.startTiming();
+        this.timings.syncChunkSendPrepareTimer.startTiming();
         for (long index : this.chunkSendQueue.keySet()) {
             int x = getHashX(index);
             int z = getHashZ(index);
@@ -3975,7 +3976,6 @@ public class Level implements ChunkManager, Metadatable {
                     continue;
                 }
             }
-            this.timings.syncChunkSendPrepareTimer.startTiming();
             AsyncTask task = this.requireProvider().requestChunkTask(x, z);
             if (task != null) {
                 allChunkRequestTask.add(CompletableFuture.runAsync(task, server.computeThreadPool));

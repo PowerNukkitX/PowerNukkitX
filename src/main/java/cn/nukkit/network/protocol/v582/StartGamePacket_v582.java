@@ -1,4 +1,4 @@
-package cn.nukkit.network.protocol;
+package cn.nukkit.network.protocol.v582;
 
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
@@ -8,6 +8,8 @@ import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.level.GameRules;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.protocol.DataPacket;
+import cn.nukkit.network.protocol.ProtocolInfo;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
 
@@ -23,7 +25,8 @@ import java.util.UUID;
  */
 @Log4j2
 @ToString
-public class StartGamePacket extends DataPacket {
+@Deprecated(since = "1.20.0-r1")
+public class StartGamePacket_v582 extends DataPacket {
 
     public static final byte NETWORK_ID = ProtocolInfo.START_GAME_PACKET;
 
@@ -135,10 +138,6 @@ public class StartGamePacket extends DataPacket {
     public boolean exportedFromEditor;
     public byte chatRestrictionLevel;
     public boolean disablePlayerInteractions;
-    /**
-     * @since v589
-     */
-    public boolean isSoundsServerAuthoritative;
 
     @Override
     public void decode() {
@@ -266,6 +265,5 @@ public class StartGamePacket extends DataPacket {
         this.putUUID(new UUID(0, 0)); // worldTemplateId
         this.putBoolean(this.clientSideGenerationEnabled);
         this.putBoolean(this.blockNetworkIdsHashed); // blockIdsAreHashed
-        this.putBoolean(this.isSoundsServerAuthoritative); // serverAuthSounds
     }
 }

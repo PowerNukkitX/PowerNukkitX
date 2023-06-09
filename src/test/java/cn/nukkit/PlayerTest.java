@@ -127,6 +127,8 @@ class PlayerTest {
         EmotePacket packet = new EmotePacket();
         packet.runtimeId = player.getId();
         packet.emoteID = "emote";
+        packet.xuid = "xxxxxxx";
+        packet.platformId = "1";
         packet.encode();
         when(player.getServer().getPluginManager()).thenReturn(mock(PluginManager.class));
         player.spawned = false;
@@ -140,6 +142,8 @@ class PlayerTest {
         EmotePacket packet = new EmotePacket();
         packet.runtimeId = player.getId() + 1;
         packet.emoteID = "emote";
+        packet.xuid = "xxxxxxx";
+        packet.platformId = "1";
         packet.encode();
         when(player.getServer().getPluginManager()).thenReturn(mock(PluginManager.class));
         player.getViewers().put(1, player);
@@ -152,6 +156,8 @@ class PlayerTest {
         EmotePacket packet = new EmotePacket();
         packet.runtimeId = player.getId();
         packet.emoteID = "emote";
+        packet.xuid = "xxxxxxx";
+        packet.platformId = "1";
         packet.encode();
         when(player.getServer().getPluginManager()).thenReturn(mock(PluginManager.class));
         player.getViewers().put(1, player);
@@ -369,7 +375,7 @@ class PlayerTest {
     @BeforeEach
     void setUp() {
         /// Setup Level ///
-        doReturn(new Position(100,64,200, level)).when(level).getSafeSpawn();
+        doReturn(new Position(100, 64, 200, level)).when(level).getSafeSpawn();
 
         /// Setup Server ///
         doReturn(level).when(Server.getInstance()).getDefaultLevel();

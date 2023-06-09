@@ -11,7 +11,6 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.RedstoneComponent;
-
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -21,8 +20,8 @@ import org.jetbrains.annotations.NotNull;
 @Since("1.6.0.0-PNX")
 public class BlockSculkSensor extends BlockSolid implements BlockEntityHolder<BlockEntitySculkSensor>, RedstoneComponent {
 
-    public static final BooleanBlockProperty POWERED_BIT = new BooleanBlockProperty("powered_bit", false);
-    public static final BlockProperties PROPERTIES = new BlockProperties(POWERED_BIT);
+    public static final BooleanBlockProperty SCULK_SENSOR_PHASE = new BooleanBlockProperty("sculk_sensor_phase", false);
+    public static final BlockProperties PROPERTIES = new BlockProperties(SCULK_SENSOR_PHASE);
 
     @Override
     public String getName() {
@@ -88,7 +87,7 @@ public class BlockSculkSensor extends BlockSolid implements BlockEntityHolder<Bl
     public void setPowered(boolean powered) {
         if (powered) this.level.addSound(this.add(0.5,0.5,0.5), Sound.POWER_ON_SCULK_SENSOR);
         else this.level.addSound(this.add(0.5,0.5,0.5), Sound.POWER_OFF_SCULK_SENSOR);
-        this.setBooleanValue(POWERED_BIT, powered);
+        this.setBooleanValue(SCULK_SENSOR_PHASE, powered);
         this.level.setBlock(this, this, true, false);
     }
 
