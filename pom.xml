@@ -537,6 +537,12 @@
             <artifactId>lz4-java</artifactId>
             <version>1.8.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.xerial.snappy</groupId>
+            <artifactId>snappy-java</artifactId>
+            <version>1.1.10.0</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>

@@ -11,6 +11,7 @@ import cn.nukkit.network.protocol.BatchPacket;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.utils.BinaryStream;
+import cn.nukkit.utils.SnappyCompression;
 import com.nukkitx.natives.sha256.Sha256;
 import com.nukkitx.natives.util.Natives;
 import com.nukkitx.network.raknet.EncapsulatedPacket;
@@ -175,7 +176,12 @@ public class RakNetPlayerSession implements NetworkPlayerSession, RakNetSessionL
         batched.putUnsignedVarInt(buf.length);
         batched.put(buf);
         try {
-            byte[] payload = Network.deflateRaw(batched.getBuffer(), server.getNetwork().getServer().networkCompressionLevel);
+            byte[] payload;
+            if (Server.getInstance().isEnableSnappy()){
+                payload = SnappyCompression.compress(batched.getBuffer());
+            } else {
+                payload = Network.deflateRaw(batched.getBuffer(), server.getNetwork().getServer().networkCompressionLevel);
+            }
             ByteBuf byteBuf = ByteBufAllocator.DEFAULT.ioBuffer(1 + payload.length + 8);
             byteBuf.writeByte(0xfe);
             if (this.encryptionCipher != null) {
@@ -313,7 +319,12 @@ public class RakNetPlayerSession implements NetworkPlayerSession, RakNetSessionL
         batched.putUnsignedVarInt(buf.length);
         batched.put(buf);
         try {
-            byte[] payload = Network.deflateRaw(batched.getBuffer(), server.getNetwork().getServer().networkCompressionLevel);
+            byte[] payload;
+            if (Server.getInstance().isEnableSnappy()) {
+                payload = SnappyCompression.compress(batched.getBuffer());
+            } else {
+                payload = Network.deflateRaw(batched.getBuffer(), server.getNetwork().getServer().networkCompressionLevel);
+            }
             ByteBuf byteBuf = ByteBufAllocator.DEFAULT.ioBuffer(1 + payload.length + 8);
             byteBuf.writeByte(0xfe);
             if (this.encryptionCipher != null) {

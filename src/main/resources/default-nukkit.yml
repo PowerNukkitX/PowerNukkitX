@@ -14,6 +14,7 @@ network:
  compression-level: 7
  async-compression: false
  zlib-provider: 2
+ snappy: false
 
 debug:
  level: 1

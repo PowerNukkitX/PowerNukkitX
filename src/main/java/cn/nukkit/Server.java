@@ -1794,7 +1794,11 @@ public class Server {
         } else {
             try {
                 byte[] data = Binary.appendBytes(payload);
-                this.broadcastPacketsCallback(Network.deflateRaw(data, this.networkCompressionLevel), targets);
+                if (Server.getInstance().isEnableSnappy()) {
+                    this.broadcastPacketsCallback(SnappyCompression.compress(data), targets);
+                } else {
+                    this.broadcastPacketsCallback(Network.deflateRaw(data, this.networkCompressionLevel), targets);
+                }
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -3416,6 +3420,12 @@ public class Server {
     @Since("1.19.40-r3")
     public int getServerAuthoritativeMovement() {
         return serverAuthoritativeMovementMode;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
+    public boolean isEnableSnappy() {
+        return this.getConfig("network.snappy", false);
     }
 
     // endregion
