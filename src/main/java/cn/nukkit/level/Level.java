@@ -3964,6 +3964,7 @@ public class Level implements ChunkManager, Metadatable {
 
     private void processChunkRequest() {
         this.timings.syncChunkSendTimer.startTiming();
+        this.timings.syncChunkSendPrepareTimer.startTiming();
         for (long index : this.chunkSendQueue.keySet()) {
             int x = getHashX(index);
             int z = getHashZ(index);
@@ -3975,7 +3976,6 @@ public class Level implements ChunkManager, Metadatable {
                     continue;
                 }
             }
-            this.timings.syncChunkSendPrepareTimer.startTiming();
             AsyncTask task = this.requireProvider().requestChunkTask(x, z);
             if (task != null) {
                 allChunkRequestTask.add(CompletableFuture.runAsync(task, server.computeThreadPool));
