@@ -5,6 +5,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.customblock.data.*;
 import cn.nukkit.blockproperty.*;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.*;
 import com.google.common.base.Preconditions;
@@ -131,6 +132,16 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
          */
         public Builder transformation(@NotNull Transformation transformation) {
             this.nbt.getCompound("components").putCompound(transformation.toCompoundTag());
+            return this;
+        }
+
+        /**
+         * 以度为单位设置块围绕立方体中心的旋转,旋转顺序为 xyz.角度必须是90的倍数。
+         * <p>
+         * Set the rotation of the block around the center of the block in degrees, the rotation order is xyz. The angle must be a multiple of 90.
+         */
+        public Builder rotation(@NotNull Vector3f rotation) {
+            this.transformation(new Transformation(new Vector3(0, 0, 0), new Vector3(1, 1, 1), rotation.asVector3()));
             return this;
         }
 
