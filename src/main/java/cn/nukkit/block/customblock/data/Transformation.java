@@ -24,7 +24,7 @@ public record Transformation(Vector3 translation, Vector3 scale, Vector3 rotatio
                 .putFloat("SY", (float) scale.y)
                 .putFloat("SZ", (float) scale.z)
                 .putFloat("TX", (float) translation.x)
-                .putFloat("TY", (float) translation.x)
-                .putFloat("TZ", (float) translation.x);
+                .putFloat("TY", (float) translation.y)
+                .putFloat("TZ", (float) translation.z);
     }
 }
