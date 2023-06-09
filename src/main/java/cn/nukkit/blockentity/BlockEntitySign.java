@@ -75,6 +75,7 @@ public class BlockEntitySign extends BlockEntitySpawnable {
             this.setGlowing(false, false);
         }
         updateLegacyCompoundTag();
+        this.setEditorEntityRuntimeId(null);
     }
 
     @Override
