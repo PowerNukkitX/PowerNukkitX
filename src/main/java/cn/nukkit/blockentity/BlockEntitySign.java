@@ -96,7 +96,7 @@ public class BlockEntitySign extends BlockEntitySpawnable {
         for (var element : elements) {
             if (element != null) {
                 join.add(element);
-            } else join.add("");
+            }
         }
         return join.toString();
     }
