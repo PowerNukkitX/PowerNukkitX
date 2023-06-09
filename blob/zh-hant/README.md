@@ -44,7 +44,7 @@ PowerNukkitX的優勢：
 ### 1.从[PNX-CLI](https://github.com/PowerNukkitX/PNX-CLI)啟動:
 
 1. 从[release](https://github.com/PowerNukkitX/PNX-CLI/releases)下載`PNX-CLI-Jar.zip`最新版本
-2. 運行`java -jar PNX-CLI-0.0.1-alpha.jar`
+2. 運行`java -jar PNX-CLI-0.1.4.jar`
 
 您还可以在[此處](https://doc.powernukkitx.cn/zh-cn/Get_Started.html)查阅更多信息。
 
