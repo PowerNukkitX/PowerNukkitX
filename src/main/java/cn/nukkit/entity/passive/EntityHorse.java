@@ -82,9 +82,9 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     @Override
     public float getWidth() {
         if (this.isBaby()) {
-            return 0.7f;
+            return 0.5f;
         }
-        return 1.4f;
+        return 1f;
     }
 
     @Override
@@ -354,6 +354,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         this.move(clientLoc.x - this.x, (clientLoc.y - 0.5) - this.y, clientLoc.z - this.z);
         this.yaw = clientLoc.yaw;
         this.headYaw = clientLoc.headYaw;
+        broadcastMovement();
     }
 
     @Nullable
