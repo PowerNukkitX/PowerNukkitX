@@ -3874,7 +3874,7 @@ public class Level implements ChunkManager, Metadatable {
         while (y > getMinHeight()) {
             Block block = getBlock(x, y, z);
             if (block.getColor() == null) return null;
-            if (block.getColor().getAlpha() < 255 || block instanceof BlockWater) {
+            if (block.getColor().getAlpha() == 0/* || block instanceof BlockWater*/) {
                 y--;
             } else {
                 return block;
