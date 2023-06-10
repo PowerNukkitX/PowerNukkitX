@@ -184,7 +184,7 @@ public class AvailableCommandsPacket extends DataPacket {
         this.putString(commandData.description);
         int flags = 0;
         for (CommandData.Flag flag : commandData.flags) {
-            flags |= 1 << flag.bit;
+            flags |= flag.bit;
         }
         this.putLShort(flags);
         this.putByte((byte) commandData.permission);
