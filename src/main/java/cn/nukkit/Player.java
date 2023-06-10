@@ -6151,12 +6151,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (openSignFront == null) {
             BlockEntity blockEntity = this.getLevel().getBlockEntity(position);
             if (blockEntity instanceof BlockEntitySign blockEntitySign) {
-                blockEntitySign.setEditorEntityRuntimeId(this.getId());
-                OpenSignPacket openSignPacket = new OpenSignPacket();
-                openSignPacket.setPosition(position.asBlockVector3());
-                openSignPacket.setFrontSide(frontSide);
-                this.dataPacket(openSignPacket);
-                setOpenSignFront(frontSide);
+                if (blockEntitySign.getEditorEntityRuntimeId() == -1) {
+                    blockEntitySign.setEditorEntityRuntimeId(this.getId());
+                    OpenSignPacket openSignPacket = new OpenSignPacket();
+                    openSignPacket.setPosition(position.asBlockVector3());
+                    openSignPacket.setFrontSide(frontSide);
+                    this.dataPacket(openSignPacket);
+                    setOpenSignFront(frontSide);
+                }
             } else {
                 throw new IllegalArgumentException("Block at this position is not a sign");
             }
