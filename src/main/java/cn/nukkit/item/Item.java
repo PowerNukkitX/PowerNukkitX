@@ -1021,7 +1021,7 @@ public class Item implements Cloneable, BlockID, ItemID {
         }
         Item item = get(id, meta.orElse(0));
         if (item.isNull()) {
-            log.warn("Get `" + str + "` item from string error!");
+            log.debug("Get `" + str + "` item from string error!");
         }
         return item;
     }

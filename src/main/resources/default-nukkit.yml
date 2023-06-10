@@ -16,7 +16,7 @@ network:
  zlib-provider: 2
 
 debug:
- level: 2
+ level: 1
  commands: false
  ignored-packets:
   - LevelChunkPacket
