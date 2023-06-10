@@ -31,19 +31,15 @@ public class CommandData implements Cloneable {
     @PowerNukkitXOnly
     @Since("1.19.50-r1")
     public enum Flag {
-        //标记命令为测试(debug)命令
-        USAGE,
-        //命令可见性，没啥用
-        VISIBILITY,
-        //命令执行是否同步主线程，也没啥用
-        SYNC,
-        //是否可被execute执行
-        EXECUTE,
-        //命令类型？
-        TYPE,
-        //是否为作弊模式命令
-        CHEAT,
-        //idk?
-        UNKNOWN_6
+        TEST_USAGE, // 1
+        HIDDEN_FROM_COMMAND_BLOCK, // 2
+        HIDDEN_FROM_PLAYER, // 4
+        HIDDEN_FROM_AUTOMATION, // 8
+        LOCAL_SYNC, // 16
+        EXECUTE_DISALLOWED, // 32
+        MESSAGE_TYPE, // 64
+        NOT_CHEAT,// 128
+        ASYNC // 256
+        //EDITOR // 512
     }
 }
