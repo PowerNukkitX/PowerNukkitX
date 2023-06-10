@@ -24,6 +24,8 @@ import io.netty.util.internal.EmptyArrays;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static cn.nukkit.command.data.CommandData.Flag.NOT_CHEAT;
+
 /**
  * @author MagicDroidX (Nukkit Project)
  */
