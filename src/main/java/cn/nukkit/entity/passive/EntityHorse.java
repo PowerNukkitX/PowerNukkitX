@@ -82,9 +82,9 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     @Override
     public float getWidth() {
         if (this.isBaby()) {
-            return 0.5f;
+            return 0.7f;
         }
-        return 1f;
+        return 1.4f;
     }
 
     @Override
