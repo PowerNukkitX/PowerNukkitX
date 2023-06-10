@@ -7,6 +7,7 @@ import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySign;
 import cn.nukkit.blockentity.BlockEntitySpawnable;
+import cn.nukkit.camera.data.CameraPreset;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandDataVersions;
@@ -843,6 +844,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(pk);
 
         this.sendFogStack();
+        this.sendCameraPresets();
         if (this.getHealth() < 1) {
             this.setHealth(0);
         }
@@ -3163,6 +3165,18 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         pk.setFogStack(this.fogStack);
         pk.encode();
         this.dataPacket(pk);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
+    public void sendCameraPresets() {
+        var presetListTag = new ListTag<CompoundTag>("presets");
+        for (var preset : CameraPreset.getPresets().values()) {
+            presetListTag.add(preset.serialize());
+        }
+        var pk = new CameraPresetsPacket();
+        pk.setData(new CompoundTag().putList("presets", presetListTag));
+        dataPacket(pk);
     }
 
     @Override
@@ -6164,5 +6178,4 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             }
         }
     }
-
 }

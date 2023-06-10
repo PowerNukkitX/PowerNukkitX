@@ -3,6 +3,7 @@ package cn.nukkit.command.data;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.camera.data.CameraPreset;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.network.protocol.UpdateSoftEnumPacket;
 import cn.nukkit.potion.Effect;
@@ -30,6 +31,9 @@ public class CommandEnum {
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
     public static final CommandEnum SCOREBOARD_OBJECTIVES = new CommandEnum("ScoreboardObjectives", () -> Server.getInstance().getScoreboardManager().getScoreboards().keySet());
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
+    public static final CommandEnum CAMERA_PRESETS = new CommandEnum("preset", () -> CameraPreset.getPresets().keySet());
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
     public static final CommandEnum CHAINED_COMMAND_ENUM = new CommandEnum("ExecuteChainedOption_0", "run", "as", "at", "positioned", "if", "unless", "in", "align", "anchored", "rotated", "facing");
