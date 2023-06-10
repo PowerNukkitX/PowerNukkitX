@@ -167,6 +167,13 @@ public class PopulationTask extends AsyncTask {
             if (generator.shouldGenerateStructures()) {
                 generator.populateStructure(centerChunk.getX(), centerChunk.getZ());
             }
+
+            // 如果区块有修改就重新计算高度图
+            for (BaseFullChunk chunk : this.chunks) {
+                if (chunk != null && chunk.hasChanged()) {
+                    chunk.recalculateHeightMap();
+                }
+            }
         }
     }
 }

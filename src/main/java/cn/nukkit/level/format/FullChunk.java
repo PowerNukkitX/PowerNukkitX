@@ -255,7 +255,11 @@ public interface FullChunk extends Cloneable {
 
     byte[] getBiomeIdArray();
 
+    @Deprecated(since = "1.20.0-r2", forRemoval = true)
+    @DeprecationDetails(since = "1.20.0-r2", reason = "HeightMapArray is now a short[], Use getNewHeightMapArray() instead")
     byte[] getHeightMapArray();
+
+    short[] getNewHeightMapArray();
 
     Map<Integer, Integer> getBlockExtraDataArray();
 
