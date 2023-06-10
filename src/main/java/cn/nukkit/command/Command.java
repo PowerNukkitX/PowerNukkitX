@@ -60,6 +60,8 @@ public abstract class Command implements GenericParameter {
 
     protected CommandData commandData;
 
+    protected boolean serverSideOnly;
+
     public Command(String name) {
         this(name, "", null, EmptyArrays.EMPTY_STRINGS);
     }
@@ -284,6 +286,10 @@ public abstract class Command implements GenericParameter {
 
     public String getUsage() {
         return usageMessage;
+    }
+
+    public boolean isServerSideOnly() {
+        return serverSideOnly;
     }
 
     @PowerNukkitXOnly
