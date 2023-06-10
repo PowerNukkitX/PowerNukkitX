@@ -3801,12 +3801,13 @@ public class Level implements ChunkManager, Metadatable {
             color = brighter(color, 0.875 - Math.min(5, block.getFloorY() - nzy.getFloorY()) * 0.05);
         }
 
-        var deltaY = block.y - 128;
-        if (deltaY > 0) {
-            color = brighter(color, 1 - deltaY / (192 * 3));
-        } else if (deltaY < 0) {
-            color = darker(color, 1 - (-deltaY) / (192 * 3));
-        }
+        //效果不好，暂时禁用
+//        var deltaY = block.y - 128;
+//        if (deltaY > 0) {
+//            color = brighter(color, 1 - deltaY / (192 * 3));
+//        } else if (deltaY < 0) {
+//            color = darker(color, 1 - (-deltaY) / (192 * 3));
+//        }
 
         var up = block.getSide(BlockFace.UP);
         var up1 = block.getSideAtLayer(1, BlockFace.UP);
@@ -3869,12 +3870,11 @@ public class Level implements ChunkManager, Metadatable {
         if (chunk == null) return null;
         var chunkX = x & 0xF;
         var chunkZ = z & 0xF;
-        //TODO: 地形生成器不会更新heightMap，按理说这边的cache应该是true。需要等待heightMap的384适配以及地形生成器的heightMap修复
         int y = chunk.getHighestBlockAt(chunkX, chunkZ, false);
         while (y > getMinHeight()) {
             Block block = getBlock(x, y, z);
             if (block.getColor() == null) return null;
-            if (block.getColor().getAlpha() < 255 || block instanceof BlockWater) {
+            if (block.getColor().getAlpha() == 0/* || block instanceof BlockWater*/) {
                 y--;
             } else {
                 return block;

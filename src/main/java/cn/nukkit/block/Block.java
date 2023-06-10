@@ -1685,6 +1685,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         else color = VANILLA_BLOCK_COLOR_MAP.get(computeUnsignedBlockStateHash());
         if (color == null) {
             log.error("Failed to get color of block " + getName());
+            log.error("Current block state hash: " + computeUnsignedBlockStateHash());
             color = BlockColor.VOID_BLOCK_COLOR;
         }
         return color;
