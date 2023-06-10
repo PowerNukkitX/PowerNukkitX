@@ -14,6 +14,7 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.node.FloatNode;
 import cn.nukkit.command.tree.node.PlayersNode;
+import cn.nukkit.command.tree.node.RelativeFloatNode;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.level.Position;
 import cn.nukkit.network.protocol.CameraInstructionPacket;
@@ -77,8 +78,8 @@ public class CameraCommand extends VanillaCommand {
                 CommandParameter.newEnum("set", false, new String[]{"set"}),
                 CommandParameter.newEnum("preset", false, CommandEnum.CAMERA_PRESETS),
                 CommandParameter.newEnum("rot", false, new String[]{"rot"}),
-                CommandParameter.newType("xRot", false, CommandParamType.VALUE, new FloatNode()),
-                CommandParameter.newType("yRot", false, CommandParamType.VALUE, new FloatNode())
+                CommandParameter.newType("xRot", false, CommandParamType.VALUE, new RelativeFloatNode()),
+                CommandParameter.newType("yRot", false, CommandParamType.VALUE, new RelativeFloatNode())
         });
         this.commandParameters.put("set-pos", new CommandParameter[]{
                 CommandParameter.newType("players", false, CommandParamType.TARGET, new PlayersNode()),
@@ -94,8 +95,8 @@ public class CameraCommand extends VanillaCommand {
                 CommandParameter.newEnum("pos", false, new String[]{"pos"}),
                 CommandParameter.newType("position", false, CommandParamType.POSITION),
                 CommandParameter.newEnum("rot", false, new String[]{"rot"}),
-                CommandParameter.newType("xRot", false, CommandParamType.VALUE, new FloatNode()),
-                CommandParameter.newType("yRot", false, CommandParamType.VALUE, new FloatNode())
+                CommandParameter.newType("xRot", false, CommandParamType.VALUE, new RelativeFloatNode()),
+                CommandParameter.newType("yRot", false, CommandParamType.VALUE, new RelativeFloatNode())
         });
         this.commandParameters.put("set-ease-default", new CommandParameter[]{
                 CommandParameter.newType("players", false, CommandParamType.TARGET, new PlayersNode()),
@@ -114,8 +115,8 @@ public class CameraCommand extends VanillaCommand {
                 CommandParameter.newType("easeTime", false, CommandParamType.FLOAT, new FloatNode()),
                 CommandParameter.newEnum("easeType", false, EASE_TYPES),
                 CommandParameter.newEnum("rot", false, new String[]{"rot"}),
-                CommandParameter.newType("xRot", false, CommandParamType.VALUE, new FloatNode()),
-                CommandParameter.newType("yRot", false, CommandParamType.VALUE, new FloatNode())
+                CommandParameter.newType("xRot", false, CommandParamType.VALUE, new RelativeFloatNode()),
+                CommandParameter.newType("yRot", false, CommandParamType.VALUE, new RelativeFloatNode())
         });
         this.commandParameters.put("set-ease-pos", new CommandParameter[]{
                 CommandParameter.newType("players", false, CommandParamType.TARGET, new PlayersNode()),
@@ -137,8 +138,8 @@ public class CameraCommand extends VanillaCommand {
                 CommandParameter.newEnum("pos", false, new String[]{"pos"}),
                 CommandParameter.newType("position", false, CommandParamType.POSITION),
                 CommandParameter.newEnum("rot", false, new String[]{"rot"}),
-                CommandParameter.newType("xRot", false, CommandParamType.VALUE, new FloatNode()),
-                CommandParameter.newType("yRot", false, CommandParamType.VALUE, new FloatNode())
+                CommandParameter.newType("xRot", false, CommandParamType.VALUE, new RelativeFloatNode()),
+                CommandParameter.newType("yRot", false, CommandParamType.VALUE, new RelativeFloatNode())
         });
         this.enableParamTree();
     }
@@ -154,6 +155,7 @@ public class CameraCommand extends VanillaCommand {
         }
         var playerNames = players.stream().map(Player::getName).reduce((a, b) -> a + " " + b).orElse("");
         var pk = new CameraInstructionPacket();
+        var senderLocation = sender.getLocation();
         switch (result.getKey()) {
             case "clear" -> {
                 pk.setInstruction(ClearInstruction.get());
@@ -190,7 +192,7 @@ public class CameraCommand extends VanillaCommand {
                 }
                 pk.setInstruction(SetInstruction.builder()
                         .preset(preset)
-                        .rot(new Rot(list.get(4).get(), list.get(5).get()))
+                        .rot(new Rot(((RelativeFloatNode)list.get(4)).get((float) senderLocation.getPitch()), ((RelativeFloatNode)list.get(5)).get((float) senderLocation.getYaw())))
                         .build());
             }
             case "set-pos" -> {
@@ -215,7 +217,7 @@ public class CameraCommand extends VanillaCommand {
                 pk.setInstruction(SetInstruction.builder()
                         .preset(preset)
                         .pos(new Pos((float) position.getX(), (float) position.getY(), (float) position.getZ()))
-                        .rot(new Rot(list.get(6).get(), list.get(7).get()))
+                        .rot(new Rot(((RelativeFloatNode)list.get(6)).get((float) senderLocation.getPitch()), ((RelativeFloatNode)list.get(7)).get((float) senderLocation.getYaw())))
                         .build());
             }
             case "set-ease-default" -> {
@@ -242,7 +244,7 @@ public class CameraCommand extends VanillaCommand {
                 pk.setInstruction(SetInstruction.builder()
                         .preset(preset)
                         .ease(new Ease(easeTime, easeType))
-                        .rot(new Rot(list.get(7).get(), list.get(8).get()))
+                        .rot(new Rot(((RelativeFloatNode)list.get(7)).get((float) senderLocation.getPitch()), ((RelativeFloatNode)list.get(8)).get((float) senderLocation.getYaw())))
                         .build());
             }
             case "set-ease-pos" -> {
@@ -273,7 +275,7 @@ public class CameraCommand extends VanillaCommand {
                         .preset(preset)
                         .ease(new Ease(easeTime, easeType))
                         .pos(new Pos((float) position.getX(), (float) position.getY(), (float) position.getZ()))
-                        .rot(new Rot(list.get(9).get(), list.get(10).get()))
+                        .rot(new Rot(((RelativeFloatNode)list.get(9)).get((float) senderLocation.getPitch()), ((RelativeFloatNode)list.get(10)).get((float) senderLocation.getYaw())))
                         .build());
             }
             default -> {
