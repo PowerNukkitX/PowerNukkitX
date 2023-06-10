@@ -56,14 +56,20 @@ public class WalkingPosEvaluator implements IPosEvaluator {
             // |           |
             // F --- G --- H
             // 在P点一次通过的可能性最大，所以优先检测
-            if (!Utils.hasCollisionTickCachedBlocks(entity.level, bb)) {
+            byte collisionInfo = Utils.hasCollisionTickCachedBlocksWithInfo(entity.level, bb);
+            if (collisionInfo == 0) {
                 return true;
             }
             // 将实体碰撞箱分别对齐A B C D E F G H处，检测是否能通过
             var dr = radius - 0.5;
             for (int i = -1; i <= 1; i++) {
+                // collisionInfo & 0b110000：获取x轴的碰撞信息，3为在大于中心的方向膨胀，1为小于中心的方向碰撞，0为没有碰撞
+                // -2：是为了将3转换为1，1转换为-1，0转换为-2
+                // 然后进行判断，如果i的值跟上面的值相等，说明此方向已经100%会碰撞了，不需要再检测
+                if (((collisionInfo & 0b110000) >> 4) - 2 == i) continue;
                 for (int j = -1; j <= 1; j++) {
                     if (i == 0 && j == 0) continue; // P点已经被检测过了
+                    if ((collisionInfo & 0b000011) - 2 == j) continue; // 获取z轴的碰撞信息并比较
                     // 由于已经缓存了方块，检测速度还是可以接受的
                     if (!Utils.hasCollisionTickCachedBlocks(entity.level, bb.clone().offset(i * dr, 0, j * dr))) {
                         return true;
