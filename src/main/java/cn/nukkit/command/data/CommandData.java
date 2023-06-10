@@ -40,8 +40,8 @@ public class CommandData implements Cloneable {
         EXECUTE_DISALLOWED(0x20),
         MESSAGE_TYPE(0x40),
         NOT_CHEAT(0x80),
-        ASYNC(0x100);
-        //TODO: EDITOR(0x200)
+        ASYNC(0x100),
+        EDITOR(0x200);
 
         public final int bit;
 
