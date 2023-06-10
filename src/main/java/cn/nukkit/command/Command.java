@@ -74,8 +74,6 @@ public abstract class Command implements GenericParameter {
 
     public Command(String name, String description, String usageMessage, String[] aliases) {
         this.commandData = new CommandData();
-        //默认带一个NOT_CHEAT标签
-        this.commandData.flags.add(NOT_CHEAT);
         this.name = name.toLowerCase(); // Uppercase letters crash the client?!?
         this.nextLabel = name;
         this.label = name;
