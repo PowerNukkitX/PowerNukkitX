@@ -49,6 +49,30 @@ public class WalkingPosEvaluator implements IPosEvaluator {
         double radius = (entity.getWidth() * entity.getScale()) / 2;
         float height = entity.getHeight() * entity.getScale();
         AxisAlignedBB bb = new SimpleAxisAlignedBB(vector3.getX() - radius, vector3.getY(), vector3.getZ() - radius, vector3.getX() + radius, vector3.getY() + height, vector3.getZ() + radius);
-        return !Utils.hasCollisionTickCachedBlocks(entity.level, bb);
+        if (radius > 0.5) {
+            // A --- B --- C
+            // |           |
+            // D     P     E
+            // |           |
+            // F --- G --- H
+            // 在P点一次通过的可能性最大，所以优先检测
+            if (!Utils.hasCollisionTickCachedBlocks(entity.level, bb)) {
+                return true;
+            }
+            // 将实体碰撞箱分别对齐A B C D E F G H处，检测是否能通过
+            var dr = radius - 0.5;
+            for (int i = -1; i <= 1; i++) {
+                for (int j = -1; j <= 1; j++) {
+                    if (i == 0 && j == 0) continue; // P点已经被检测过了
+                    // 由于已经缓存了方块，检测速度还是可以接受的
+                    if (!Utils.hasCollisionTickCachedBlocks(entity.level, bb.clone().offset(i * dr, 0, j * dr))) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        } else {
+            return !Utils.hasCollisionTickCachedBlocks(entity.level, bb);
+        }
     }
 }
