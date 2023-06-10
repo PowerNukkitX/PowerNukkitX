@@ -494,6 +494,8 @@ public class Item implements Cloneable, BlockID, ItemID {
         runtimeMapping.registerNamespacedIdItem(ItemGlowInkSac.class);
         runtimeMapping.registerNamespacedIdItem(ItemIngotCopper.class);
         runtimeMapping.registerNamespacedIdItem(ItemGoatHorn.class);
+        runtimeMapping.registerNamespacedIdItem(ItemCherrySign.class);
+        runtimeMapping.registerNamespacedIdItem(ItemDoorCherry.class);
     }
 
     private static List<String> itemList;
@@ -783,9 +785,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * 检测这个物品是否存在于创造背包
      * <p>
      * Detect if the item exists in the Creative backpack
-     *
-     * @param item
-     * @return
      */
 
     public static boolean isCreativeItem(Item item) {
@@ -796,11 +795,6 @@ public class Item implements Cloneable, BlockID, ItemID {
         }
         return false;
     }
-
-    /**
-     * @param index
-     * @return
-     */
 
     public static Item getCreativeItem(int index) {
         return (index >= 0 && index < Item.creative.size()) ? Item.creative.get(index) : null;
@@ -863,7 +857,7 @@ public class Item implements Cloneable, BlockID, ItemID {
     public static Item get(int id, Integer meta, int count, byte[] tags) {
         try {
             Class c = null;
-            if (id <= 255 - Block.MAX_BLOCK_ID) {
+            if (id < 255 - Block.MAX_BLOCK_ID) {
                 var customBlockItem = Block.get(255 - id).toItem();
                 customBlockItem.setCount(count);
                 customBlockItem.setDamage(meta);
@@ -993,24 +987,17 @@ public class Item implements Cloneable, BlockID, ItemID {
             }
 
             //common item
-            MinecraftItemID minecraftItemId = MinecraftItemID.getByNamespaceId(namespacedId);
-            if (minecraftItemId != null) {
-                //todo edu item
-                if (minecraftItemId.isEducationEdition()) {
-                    return Item.AIR_ITEM;
+            Item item = RuntimeItems.getRuntimeMapping().getItemByNamespaceId(namespacedId, 1);
+            if (meta.isPresent()) {
+                int damage = meta.getAsInt();
+                if (damage < 0) {
+                    item = item.createFuzzyCraftingRecipe();
+                } else {
+                    item.setDamage(damage);
                 }
-                Item item = minecraftItemId.get(1);
-                if (meta.isPresent()) {
-                    int damage = meta.getAsInt();
-                    if (damage < 0) {
-                        item = item.createFuzzyCraftingRecipe();
-                    } else {
-                        item.setDamage(damage);
-                    }
-                }
+            }
+            if (!item.isNull() && !item.getName().equals(Item.UNKNOWN_STR) && !(item instanceof StringItemUnknown)) {
                 return item;
-            } else if (namespaceGroup != null && !namespaceGroup.equals("minecraft:")) {
-                return Item.AIR_ITEM;
             }
         } else if (numericIdGroup != null) {
             int id = Integer.parseInt(numericIdGroup);
@@ -1032,7 +1019,11 @@ public class Item implements Cloneable, BlockID, ItemID {
 
             }
         }
-        return get(id, meta.orElse(0));
+        Item item = get(id, meta.orElse(0));
+        if (item.isNull()) {
+            log.debug("Get `" + str + "` item from string error!");
+        }
+        return item;
     }
 
     public static Item fromJson(Map<String, Object> data) {

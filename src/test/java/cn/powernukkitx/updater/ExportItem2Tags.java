@@ -1,4 +1,4 @@
-package cn.powernukkitx.tools;
+package cn.powernukkitx.updater;
 
 import cn.nukkit.inventory.ItemTag;
 import com.google.gson.Gson;

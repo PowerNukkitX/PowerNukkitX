@@ -75,7 +75,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     //<editor-fold desc="static fields" defaultstate="collapsed">
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "It is being replaced by an other solution that don't require a fixed size")
     @PowerNukkitOnly
-    public static final int MAX_BLOCK_ID = dynamic(867);
+    public static final int MAX_BLOCK_ID = dynamic(868);
 
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "It's not a constant value, it may be changed on major updates and" +
@@ -831,6 +831,26 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             list[MANGROVE_WOOD] = BlockWoodMangrove.class;//752
             list[STRIPPED_MANGROVE_WOOD] = BlockWoodStrippedMangrove.class;//753
             list[DOUBLE_MANGROVE_SLAB] = BlockDoubleSlabMangrove.class;//754
+
+            list[CHERRY_BUTTON] = BlockButtonCherry.class;//785
+            list[CHERRY_DOOR] = BlockDoorCherry.class;//786
+            list[CHERRY_FENCE] = BlockFenceCherry.class;//787
+            list[CHERRY_FENCE_GATE] = BlockFenceGateCherry.class;//788
+
+            list[STRIPPED_CHERRY_LOG] = BlockLogStrippedCherry.class;//790
+            list[CHERRY_LOG] = BlockCherryLog.class;//791
+            list[CHERRY_PLANKS] = BlockPlanksCherry.class;//792
+            list[CHERRY_PRESSURE_PLATE] = BlockPressurePlateCherry.class;//793
+            list[CHERRY_SLAB] = BlockSlabCherry.class;//794
+            list[DOUBLE_CHERRY_SLAB] = BlockDoubleSlabCherry.class;//795
+            list[CHERRY_STAIRS] = BlockStairsCherry.class;//796
+            list[CHERRY_STANDING_SIGN] = BlockCherrySignPost.class;//797
+            list[CHERRY_TRAPDOOR] = BlockTrapdoorCherry.class;//798
+            list[CHERRY_WALL_SIGN] = BlockCherryWallSign.class;//799
+            list[STRIPPED_CHERRY_WOOD] = BlockWoodStrippedCherry.class;//800
+            list[CHERRY_WOOD] = BlockWoodCherry.class;//801
+            list[CHERRY_SAPLING] = BlockCherrySapling.class;//802
+            list[CHERRY_LEAVES] = BlockCherryLeaves.class;//803
             initializing = true;
 
             for (int id = 0; id < MAX_BLOCK_ID; id++) {

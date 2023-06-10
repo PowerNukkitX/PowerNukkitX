@@ -35,8 +35,10 @@ import java.util.stream.Stream;
  * 添加原版新物品时一定不要忘记在这里补上命名空间的枚举(例如 minecraft:quartz_bricks 这里填写QUARTZ_BRICKS)
  *
  * @author joserobjr
+ * @since 2023-06-09 v1.20.0-r1 现在已经弃用，不需要再添加物品名称
  * @since 2020-12-20
  */
+@Deprecated
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
 public enum MinecraftItemID {
@@ -1316,7 +1318,64 @@ public enum MinecraftItemID {
     DEAD_FIRE_CORAL,
     @Since("1.20.0-r1")
     @PowerNukkitXOnly
-    DEAD_HORN_CORAL;
+    DEAD_HORN_CORAL,
+    @Since("1.20.0-r1")
+    @PowerNukkitXOnly
+    CHERRY_BUTTON,
+    @Since("1.20.0-r1")
+    @PowerNukkitXOnly
+    CHERRY_DOOR,
+    @Since("1.20.0-r1")
+    @PowerNukkitXOnly
+    CHERRY_FENCE,
+    @Since("1.20.0-r1")
+    @PowerNukkitXOnly
+    CHERRY_FENCE_GATE,
+    @Since("1.20.0-r1")
+    @PowerNukkitXOnly
+    CHERRY_HANGING_SIGN,
+    @Since("1.20.0-r1")
+    @PowerNukkitXOnly
+    STRIPPED_CHERRY_LOG,
+    @Since("1.20.0-r1")
+    @PowerNukkitXOnly
+    CHERRY_LOG,
+    @Since("1.20.0-r1")
+    @PowerNukkitXOnly
+    CHERRY_PLANKS,
+    @Since("1.20.0-r1")
+    @PowerNukkitXOnly
+    CHERRY_PRESSURE_PLATE,
+    @Since("1.20.0-r1")
+    @PowerNukkitXOnly
+    CHERRY_SLAB,
+    @Since("1.20.0-r1")
+    @PowerNukkitXOnly
+    CHERRY_DOUBLE_SLAB,
+    @Since("1.20.0-r1")
+    @PowerNukkitXOnly
+    CHERRY_STAIRS,
+    @Since("1.20.0-r1")
+    @PowerNukkitXOnly
+    CHERRY_STANDING_SIGN,
+    @Since("1.20.0-r1")
+    @PowerNukkitXOnly
+    CHERRY_TRAPDOOR,
+    @Since("1.20.0-r1")
+    @PowerNukkitXOnly
+    CHERRY_WALL_SIGN,
+    @Since("1.20.0-r1")
+    @PowerNukkitXOnly
+    STRIPPED_CHERRY_WOOD,
+    @Since("1.20.0-r1")
+    @PowerNukkitXOnly
+    CHERRY_WOOD,
+    @Since("1.20.0-r1")
+    @PowerNukkitXOnly
+    CHERRY_SAPLING,
+    @Since("1.20.0-r1")
+    @PowerNukkitXOnly
+    CHERRY_LEAVES;
 
 
     private static final Map<String, MinecraftItemID> namespacedIdMap = Arrays.stream(values())
