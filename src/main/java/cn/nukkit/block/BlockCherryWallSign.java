@@ -6,7 +6,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemCherrySign;
 
 @PowerNukkitXOnly
-@Since("1.20.0-r1")
+@Since("1.20.0-r2")
 public class BlockCherryWallSign extends BlockWallSign {
     public BlockCherryWallSign() {
         this(0);

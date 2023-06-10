@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
 
-@Since("1.20.0-r1")
+@Since("1.20.0-r2")
 @PowerNukkitXOnly
 public class BlockWoodCherry extends BlockLog {
     public static final String STRIPPED_BIT = "stripped_bit";

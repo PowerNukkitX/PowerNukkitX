@@ -10,7 +10,7 @@ import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitXOnly
-@Since("1.20.0-r1")
+@Since("1.20.0-r2")
 public class BlockLogStrippedCherry extends BlockLog {
     public BlockLogStrippedCherry() {
         super(0);

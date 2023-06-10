@@ -1601,57 +1601,57 @@ public interface BlockID {
     @PowerNukkitXOnly
     int DOUBLE_MANGROVE_SLAB = 754;
     @PowerNukkitXOnly
-    @Since("1.20.0-r1")
+    @Since("1.20.0-r2")
     int CHERRY_BUTTON = 785;
     @PowerNukkitXOnly
-    @Since("1.20.0-r1")
+    @Since("1.20.0-r2")
     int CHERRY_DOOR = 786;
     @PowerNukkitXOnly
-    @Since("1.20.0-r1")
+    @Since("1.20.0-r2")
     int CHERRY_FENCE = 787;
     @PowerNukkitXOnly
-    @Since("1.20.0-r1")
+    @Since("1.20.0-r2")
     int CHERRY_FENCE_GATE = 788;
     @PowerNukkitXOnly
-    @Since("1.20.0-r1")
+    @Since("1.20.0-r2")
     int STRIPPED_CHERRY_LOG = 790;
     @PowerNukkitXOnly
-    @Since("1.20.0-r1")
+    @Since("1.20.0-r2")
     int CHERRY_LOG = 791;
     @PowerNukkitXOnly
-    @Since("1.20.0-r1")
+    @Since("1.20.0-r2")
     int CHERRY_PLANKS = 792;
     @PowerNukkitXOnly
-    @Since("1.20.0-r1")
+    @Since("1.20.0-r2")
     int CHERRY_PRESSURE_PLATE = 793;
     @PowerNukkitXOnly
-    @Since("1.20.0-r1")
+    @Since("1.20.0-r2")
     int CHERRY_SLAB = 794;
     @PowerNukkitXOnly
-    @Since("1.20.0-r1")
+    @Since("1.20.0-r2")
     int DOUBLE_CHERRY_SLAB = 795;
     @PowerNukkitXOnly
-    @Since("1.20.0-r1")
+    @Since("1.20.0-r2")
     int CHERRY_STAIRS = 796;
     @PowerNukkitXOnly
-    @Since("1.20.0-r1")
+    @Since("1.20.0-r2")
     int CHERRY_STANDING_SIGN = 797;
     @PowerNukkitXOnly
-    @Since("1.20.0-r1")
+    @Since("1.20.0-r2")
     int CHERRY_TRAPDOOR = 798;
     @PowerNukkitXOnly
-    @Since("1.20.0-r1")
+    @Since("1.20.0-r2")
     int CHERRY_WALL_SIGN = 799;
     @PowerNukkitXOnly
-    @Since("1.20.0-r1")
+    @Since("1.20.0-r2")
     int STRIPPED_CHERRY_WOOD = 800;
     @PowerNukkitXOnly
-    @Since("1.20.0-r1")
+    @Since("1.20.0-r2")
     int CHERRY_WOOD = 801;
     @PowerNukkitXOnly
-    @Since("1.20.0-r1")
+    @Since("1.20.0-r2")
     int CHERRY_SAPLING = 802;
     @PowerNukkitXOnly
-    @Since("1.20.0-r1")
+    @Since("1.20.0-r2")
     int CHERRY_LEAVES = 803;
 }
