@@ -31,15 +31,24 @@ public class CommandData implements Cloneable {
     @PowerNukkitXOnly
     @Since("1.19.50-r1")
     public enum Flag {
-        TEST_USAGE, // 1
-        HIDDEN_FROM_COMMAND_BLOCK, // 2
-        HIDDEN_FROM_PLAYER, // 4
-        HIDDEN_FROM_AUTOMATION, // 8
-        LOCAL_SYNC, // 16
-        EXECUTE_DISALLOWED, // 32
-        MESSAGE_TYPE, // 64
-        NOT_CHEAT,// 128
-        ASYNC // 256
-        //EDITOR // 512
+        NONE(0x00),
+        TEST_USAGE(0x01),
+        HIDDEN_FROM_COMMAND_BLOCK(0x02),
+        HIDDEN_FROM_PLAYER(0x04),
+        HIDDEN(0x06),
+        HIDDEN_FROM_AUTOMATION(0x08),
+        REMOVED(0xe),
+        LOCAL_SYNC(0x10),
+        EXECUTE_DISALLOWED(0x20),
+        MESSAGE_TYPE(0x40),
+        NOT_CHEAT(0x80),
+        ASYNC(0x100);
+        //TODO: EDITOR(0x200)
+
+        public final int bit;
+
+        Flag(int bit) {
+            this.bit = bit;
+        }
     }
 }
