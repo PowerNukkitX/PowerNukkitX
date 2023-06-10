@@ -287,7 +287,7 @@ public abstract class Command implements GenericParameter {
     }
 
     @PowerNukkitXOnly
-    @Since("1.20.0-r1")
+    @Since("1.20.0-r2")
     public boolean isServerSideOnly() {
         return serverSideOnly;
     }

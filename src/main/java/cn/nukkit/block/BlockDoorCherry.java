@@ -6,7 +6,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDoorCherry;
 
 @PowerNukkitXOnly
-@Since("1.20.0-r1")
+@Since("1.20.0-r2")
 public class BlockDoorCherry extends BlockDoorWood {
     public BlockDoorCherry() {
         this(0);

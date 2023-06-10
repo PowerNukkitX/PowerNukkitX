@@ -10,7 +10,7 @@ import cn.nukkit.item.ItemBlock;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
-@Since("1.20.0-r1")
+@Since("1.20.0-r2")
 @PowerNukkitXOnly
 public class BlockCherrySapling extends BlockFlowable {
 

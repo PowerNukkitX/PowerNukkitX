@@ -9,7 +9,7 @@ import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
 
-@Since("1.20.0-r1")
+@Since("1.20.0-r2")
 @PowerNukkitXOnly
 public class BlockWoodStrippedCherry extends BlockLog {
     public BlockWoodStrippedCherry() {
