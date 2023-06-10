@@ -1,6 +1,7 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockSignPost;
@@ -90,6 +91,24 @@ public class BlockEntitySign extends BlockEntitySpawnable {
         this.namedTag.putBoolean(TAG_LEGACY_BUG_RESOLVE, true)
                 .putByte(TAG_WAXED, 0)
                 .putLong(TAG_LOCKED_FOR_EDITING_BY, getEditorEntityRuntimeId());
+    }
+
+    /**
+     * @return If the sign is waxed, once a sign is waxed it cannot be modified
+     */
+    @Since("1.20.0-r2")
+    @PowerNukkitXOnly
+    public boolean isWaxed() {
+        return this.namedTag.getByte(TAG_WAXED) == 1;
+    }
+
+    /**
+     * @param waxed If the sign is waxed, once a sign is waxed it cannot be modified
+     */
+    @Since("1.20.0-r2")
+    @PowerNukkitXOnly
+    public void setWaxed(boolean waxed) {
+        this.namedTag.putByte(TAG_WAXED, waxed ? (byte) 1 : (byte) 0);
     }
 
     private static String joinNotNull(String delim, String... elements) {

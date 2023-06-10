@@ -12,11 +12,9 @@ import cn.nukkit.blockproperty.BlockProperty;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.event.block.SignColorChangeEvent;
 import cn.nukkit.event.block.SignGlowEvent;
+import cn.nukkit.event.block.SignWaxedEvent;
 import cn.nukkit.event.player.PlayerInteractEvent;
-import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemGlowInkSac;
-import cn.nukkit.item.ItemSign;
-import cn.nukkit.item.ItemTool;
+import cn.nukkit.item.*;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
@@ -24,6 +22,7 @@ import cn.nukkit.math.CompassRoseDirection;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.LevelEventPacket;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Faceable;
@@ -186,17 +185,29 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable, Blo
     @Override
     public int onTouch(@Nullable Player player, PlayerInteractEvent.Action action, BlockFace face) {
         if (player != null && action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) {
-            boolean front = switch (getSignDirection()) {
-                case EAST -> face == BlockFace.EAST;
-                case SOUTH -> face == BlockFace.SOUTH;
-                case WEST -> face == BlockFace.WEST;
-                case NORTH -> face == BlockFace.NORTH;
-                case NORTH_EAST, NORTH_NORTH_EAST, EAST_NORTH_EAST -> face == BlockFace.EAST || face == BlockFace.NORTH;
-                case NORTH_WEST, NORTH_NORTH_WEST, WEST_NORTH_WEST -> face == BlockFace.WEST || face == BlockFace.NORTH;
-                case SOUTH_EAST, SOUTH_SOUTH_EAST, EAST_SOUTH_EAST -> face == BlockFace.EAST || face == BlockFace.SOUTH;
-                case SOUTH_WEST, SOUTH_SOUTH_WEST, WEST_SOUTH_WEST -> face == BlockFace.WEST || face == BlockFace.SOUTH;
-            };
-            player.openSignEditor(this, front);
+            var blockEntity = this.getLevel().getBlockEntity(this);
+            if (blockEntity instanceof BlockEntitySign blockEntitySign) {
+                // If a sign is waxed, it cannot be modified.
+                if (blockEntitySign.isWaxed()) {
+                    level.addLevelSoundEvent(this.add(0.5, 0.5, 0.5), LevelSoundEventPacket.SOUND_WAXED_SIGN_INTERACT_FAIL);
+                    return 0;
+                }
+                boolean front = switch (getSignDirection()) {
+                    case EAST -> face == BlockFace.EAST;
+                    case SOUTH -> face == BlockFace.SOUTH;
+                    case WEST -> face == BlockFace.WEST;
+                    case NORTH -> face == BlockFace.NORTH;
+                    case NORTH_EAST, NORTH_NORTH_EAST, EAST_NORTH_EAST ->
+                            face == BlockFace.EAST || face == BlockFace.NORTH;
+                    case NORTH_WEST, NORTH_NORTH_WEST, WEST_NORTH_WEST ->
+                            face == BlockFace.WEST || face == BlockFace.NORTH;
+                    case SOUTH_EAST, SOUTH_SOUTH_EAST, EAST_SOUTH_EAST ->
+                            face == BlockFace.EAST || face == BlockFace.SOUTH;
+                    case SOUTH_WEST, SOUTH_SOUTH_WEST, WEST_SOUTH_WEST ->
+                            face == BlockFace.WEST || face == BlockFace.SOUTH;
+                };
+                player.openSignEditor(this, front);
+            }
         }
         return 0;
     }
@@ -206,7 +217,6 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable, Blo
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (down().getId() == Block.AIR) {
                 getLevel().useBreakOn(this);
-
                 return Level.BLOCK_UPDATE_NORMAL;
             }
         }
@@ -266,6 +276,13 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable, Blo
         if (!(blockEntity instanceof BlockEntitySign sign)) {
             return false;
         }
+
+        // If a sign is waxed, it cannot be modified.
+        if (sign.isWaxed()) {
+            level.addLevelSoundEvent(this.add(0.5, 0.5, 0.5), LevelSoundEventPacket.SOUND_WAXED_SIGN_INTERACT_FAIL);
+            return false;
+        }
+
         if (item.getId() == Item.DYE) {
             BlockColor color = DyeColor.getByDyeData(item.getDamage()).getSignColor();
             if (color.equals(sign.getColor())) {
@@ -315,6 +332,31 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable, Blo
             sign.spawnToAll();
 
             this.level.addLevelEvent(this, LevelEventPacket.EVENT_SOUND_INK_SACE_USED);
+
+            if (player != null && (player.getGamemode() & 0x01) == 0) {
+                item.count--;
+            }
+
+            return true;
+        } else if (item instanceof ItemHoneycomb) {
+            if (sign.isWaxed()) {
+                if (player != null) {
+                    sign.spawnTo(player);
+                }
+                return false;
+            }
+
+            SignWaxedEvent event = new SignWaxedEvent(this, player, true);
+            this.level.getServer().getPluginManager().callEvent(event);
+            if (event.isCancelled()) {
+                if (player != null) {
+                    sign.spawnTo(player);
+                }
+                return false;
+            }
+
+            sign.setWaxed(true);
+            sign.spawnToAll();
 
             if (player != null && (player.getGamemode() & 0x01) == 0) {
                 item.count--;
