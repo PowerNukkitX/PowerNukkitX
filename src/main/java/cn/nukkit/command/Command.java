@@ -24,8 +24,6 @@ import io.netty.util.internal.EmptyArrays;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static cn.nukkit.command.data.CommandData.Flag.NOT_CHEAT;
-
 /**
  * @author MagicDroidX (Nukkit Project)
  */
@@ -288,6 +286,8 @@ public abstract class Command implements GenericParameter {
         return usageMessage;
     }
 
+    @PowerNukkitXOnly
+    @Since("1.20.0-r1")
     public boolean isServerSideOnly() {
         return serverSideOnly;
     }
