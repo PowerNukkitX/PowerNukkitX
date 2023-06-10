@@ -66,7 +66,8 @@ public class SimpleCommandMap implements CommandMap {
         this.register("nukkit", new VersionCommand("version"));
         this.register("nukkit", new PluginsCommand("plugins"));
         this.register("nukkit", new SeedCommand("seed"));
-        this.register("nukkit", new HelpCommand("help"));
+        //从1.20 开始 客户端自带一个help命令
+        //this.register("nukkit", new HelpCommand("help"));
         this.register("nukkit", new StopCommand("stop"));
         this.register("nukkit", new TellCommand("tell"));
         this.register("nukkit", new DefaultGamemodeCommand("defaultgamemode"));
