@@ -12,7 +12,11 @@ import cn.nukkit.event.block.SignColorChangeEvent;
 import cn.nukkit.event.block.SignGlowEvent;
 import cn.nukkit.event.block.SignWaxedEvent;
 import cn.nukkit.event.player.PlayerInteractEvent;
-import cn.nukkit.item.*;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemGlowInkSac;
+import cn.nukkit.item.ItemHoneycomb;
+import cn.nukkit.item.ItemTool;
+import cn.nukkit.level.particle.WaxOnParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.CompassRoseDirection;
 import cn.nukkit.network.protocol.LevelEventPacket;
@@ -82,9 +86,11 @@ public abstract class BlockSignBase extends BlockTransparentMeta implements Face
                     level.addLevelSoundEvent(this.add(0.5, 0.5, 0.5), LevelSoundEventPacket.SOUND_WAXED_SIGN_INTERACT_FAIL);
                     return player.isSneaking() ? 0 : 1;
                 }
-                if (player.isSneaking() && player.getInventory().getItemInHand().getId() != 0) {
+                Item hand = player.getInventory().getItemInHand();
+                if (hand instanceof ItemHoneycomb || (player.isSneaking() && hand.getId() != 0)) {
                     return 0;
                 }
+
                 boolean front = switch (getSignDirection()) {
                     case EAST -> face == BlockFace.EAST;
                     case SOUTH -> face == BlockFace.SOUTH;
@@ -104,11 +110,6 @@ public abstract class BlockSignBase extends BlockTransparentMeta implements Face
             }
         }
         return 0;
-    }
-
-    @Override
-    public Item toItem() {
-        return new ItemSign();
     }
 
     @Override
@@ -239,6 +240,7 @@ public abstract class BlockSignBase extends BlockTransparentMeta implements Face
 
             sign.setWaxed(true);
             sign.spawnToAll();
+            this.getLevel().addParticle(new WaxOnParticle(this));
 
             if (player != null && (player.getGamemode() & 0x01) == 0) {
                 item.count--;

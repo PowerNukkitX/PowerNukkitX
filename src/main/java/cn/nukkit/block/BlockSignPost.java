@@ -10,6 +10,7 @@ import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemSign;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
@@ -99,6 +100,11 @@ public class BlockSignPost extends BlockSignBase implements BlockEntityHolder<Bl
             }
         }
         return 0;
+    }
+
+    @Override
+    public Item toItem() {
+        return new ItemSign();
     }
 
     @Override

@@ -80,6 +80,23 @@ public abstract class BlockHangingSign extends BlockSignBase implements BlockEnt
         return getBooleanValue(CommonBlockProperties.HANGING);
     }
 
+    public boolean isAttached() {
+        return getBooleanValue(CommonBlockProperties.ATTACHED);
+    }
+
+    @Override
+    public Item toItem() {
+        return asItemBlock(1);
+    }
+
+    @Override
+    public CompassRoseDirection getSignDirection() {
+        if (isHanging() && isAttached()) {
+            return getPropertyValue(CommonBlockProperties.GROUND_SIGN_DIRECTION);
+        } else {
+            return getPropertyValue(CommonBlockProperties.FACING_DIRECTION).getCompassRoseDirection();
+        }
+    }
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
