@@ -51,6 +51,9 @@ public class ResourcePackClientResponseProcessor extends DataPacketProcessor<Res
                     stackPacket.experiments.add(
                             new ResourcePackStackPacket.ExperimentData("experimental_molang_features", true)
                     );
+                    stackPacket.experiments.add(
+                            new ResourcePackStackPacket.ExperimentData("cameras", true)
+                    );
                 }
                 player.dataResourcePacket(stackPacket);
             }
