@@ -1,16 +1,26 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
+import cn.nukkit.blockproperty.BlockProperties;
+import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.ItemTool;
-
-import static cn.nukkit.block.BlockID.BAMBOO_BLOCK;
 
 @PowerNukkitXOnly
 @Since("1.20.0-r2")
-public class BlockBambooBlock extends BlockSolid {
+public class BlockBambooBlock extends BlockSolidMeta {
+    public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.PILLAR_AXIS);
+
     public BlockBambooBlock() {
+    }
+
+    public BlockBambooBlock(int meta) {
+        super(meta);
+    }
+
+    @Override
+    public BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
     public int getId() {
