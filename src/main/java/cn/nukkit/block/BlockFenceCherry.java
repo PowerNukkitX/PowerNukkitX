@@ -5,7 +5,7 @@ import cn.nukkit.api.Since;
 
 @PowerNukkitXOnly
 @Since("1.20.0-r2")
-public class BlockFenceCherry extends BlockFenceBase {
+public class BlockFenceCherry extends BlockFence {
     public BlockFenceCherry() {
         this(0);
     }
@@ -23,15 +23,4 @@ public class BlockFenceCherry extends BlockFenceBase {
     public int getId() {
         return CHERRY_FENCE;
     }
-
-    @Override
-    public int getBurnChance() {
-        return 0;
-    }
-
-    @Override
-    public int getBurnAbility() {
-        return 0;
-    }
-
 }

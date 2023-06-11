@@ -1602,6 +1602,96 @@ public interface BlockID {
     int DOUBLE_MANGROVE_SLAB = 754;
     @PowerNukkitXOnly
     @Since("1.20.0-r2")
+    int OAK_HANGING_SIGN = 755;
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
+    int SPRUCE_HANGING_SIGN = 756;
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
+    int BIRCH_HANGING_SIGN = 757;
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
+    int JUNGLE_HANGING_SIGN = 758;
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
+    int ACACIA_HANGING_SIGN = 759;
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
+    int DARK_OAK_HANGING_SIGN = 760;
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
+    int CRIMSON_HANGING_SIGN = 761;
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
+    int WARPED_HANGING_SIGN = 762;
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
+    int MANGROVE_HANGING_SIGN = 763;
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
+    int BAMBOO_MOSAIC = 764;
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
+    int BAMBOO_PLANKS = 765;
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
+    int BAMBOO_BUTTON = 766;
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
+    int BAMBOO_STAIRS = 767;
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
+    int BAMBOO_SLAB = 768;
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
+    int BAMBOO_PRESSURE_PLATE = 769;
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
+    int BAMBOO_FENCE = 770;
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
+    int BAMBOO_FENCE_GATE = 771;
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
+    int BAMBOO_DOOR = 772;
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
+    int BAMBOO_STANDING_SIGN = 773;
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
+    int BAMBOO_WALL_SIGN = 774;
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
+    int BAMBOO_TRAPDOOR = 775;
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
+    int BAMBOO_DOUBLE_SLAB = 776;
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
+    int BAMBOO_HANGING_SIGN = 777;
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
+    int BAMBOO_MOSAIC_STAIRS = 778;
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
+    int BAMBOO_MOSAIC_SLAB = 779;
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
+    int BAMBOO_MOSAIC_DOUBLE_SLAB = 780;
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
+    int CHISELED_BOOKSHELF = 781;
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
+    int BAMBOO_BLOCK = 782;
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
+    int STRIPPED_BAMBOO_BLOCK = 783;
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
+    int SUSPICIOUS_SAND = 784;
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
     int CHERRY_BUTTON = 785;
     @PowerNukkitXOnly
     @Since("1.20.0-r2")

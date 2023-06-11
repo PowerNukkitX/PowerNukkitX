@@ -4,23 +4,19 @@ import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BooleanBlockProperty;
+import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
-
 import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 public class BlockLantern extends BlockFlowable {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final BooleanBlockProperty HANGING = new BooleanBlockProperty("hanging", false);
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(HANGING);
+    public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.HANGING);
 
     @PowerNukkitOnly
     public BlockLantern() {
@@ -189,13 +185,13 @@ public class BlockLantern extends BlockFlowable {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean isHanging() {
-        return getBooleanValue(HANGING);
+        return getBooleanValue(CommonBlockProperties.HANGING);
     }
     
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void setHanging(boolean hanging) {
-        setBooleanValue(HANGING, hanging);
+        setBooleanValue(CommonBlockProperties.HANGING, hanging);
     }
     
     @PowerNukkitOnly

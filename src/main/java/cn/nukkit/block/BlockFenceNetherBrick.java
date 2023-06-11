@@ -10,7 +10,7 @@ import cn.nukkit.item.ItemTool;
  * @since 2015/12/7
  */
 @PowerNukkitDifference(info = "Extends BlockFenceBase instead of BlockFence only in PowerNukkit", since = "1.4.0.0-PN")
-public class BlockFenceNetherBrick extends BlockFenceBase {
+public class BlockFenceNetherBrick extends BlockFence {
 
     public BlockFenceNetherBrick() {
         this(0);

@@ -1,42 +1,26 @@
 package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.item.ItemTool;
-import org.jetbrains.annotations.NotNull;
+
+import static cn.nukkit.block.BlockID.BAMBOO_DOUBLE_SLAB;
 
 @PowerNukkitXOnly
 @Since("1.20.0-r2")
-public class BlockDoubleSlabCherry extends BlockDoubleSlabBase {
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public BlockDoubleSlabCherry() {
-        this(0);
+public class BlockBambooDoubleSlab extends BlockDoubleSlabBase {
+    public BlockBambooDoubleSlab() {
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    protected BlockDoubleSlabCherry(int meta) {
-        super(meta);
+    public int getId() {
+        return BAMBOO_DOUBLE_SLAB;
     }
 
     @PowerNukkitOnly
     @Override
     public String getSlabName() {
-        return "Double Cherry Slab";
-    }
-
-    @Override
-    public int getId() {
-        return DOUBLE_CHERRY_SLAB;
-    }
-
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return BlockSlab.SIMPLE_SLAB_PROPERTIES;
+        return "Bamboo";
     }
 
     @Override
@@ -66,6 +50,6 @@ public class BlockDoubleSlabCherry extends BlockDoubleSlabBase {
 
     @Override
     public int getSingleSlabId() {
-        return CHERRY_SLAB;
+        return BAMBOO_SLAB;
     }
 }

@@ -6,6 +6,7 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BooleanBlockProperty;
+import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemString;
@@ -14,7 +15,6 @@ import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
-
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -27,10 +27,6 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.POWERED;
 public class BlockTripWire extends BlockTransparentMeta {
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
-    public static final BooleanBlockProperty ATTACHED = new BooleanBlockProperty("attached_bit", false);
-
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
     public static final BooleanBlockProperty DISARMED = new BooleanBlockProperty("disarmed_bit", false);
 
     @PowerNukkitOnly
@@ -39,7 +35,7 @@ public class BlockTripWire extends BlockTransparentMeta {
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(POWERED, SUSPENDED, ATTACHED, DISARMED);
+    public static final BlockProperties PROPERTIES = new BlockProperties(POWERED, SUSPENDED, CommonBlockProperties.ATTACHED, DISARMED);
 
     public BlockTripWire(int meta) {
         super(meta);

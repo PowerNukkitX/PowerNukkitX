@@ -13,8 +13,6 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
-
 /**
  * @author xtypr
  * @since 2015/12/8
@@ -124,12 +122,12 @@ public class BlockPumpkin extends BlockSolidMeta implements Faceable {
 
     @Override
     public BlockFace getBlockFace() {
-        return getPropertyValue(DIRECTION);
+        return getPropertyValue(CARDINAL_DIRECTION);
     }
 
     @PowerNukkitOnly
     @Override
     public void setBlockFace(BlockFace face) {
-        setPropertyValue(DIRECTION, face);
+        setPropertyValue(CARDINAL_DIRECTION, face);
     }
 }

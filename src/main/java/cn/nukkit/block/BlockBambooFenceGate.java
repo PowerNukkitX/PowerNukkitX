@@ -5,23 +5,16 @@ import cn.nukkit.api.Since;
 
 @PowerNukkitXOnly
 @Since("1.20.0-r2")
-public class BlockFenceGateCherry extends BlockFenceGate {
-    public BlockFenceGateCherry() {
-        this(0);
+public class BlockBambooFenceGate extends BlockFenceGate {
+    public BlockBambooFenceGate() {
     }
 
-    public BlockFenceGateCherry(int meta) {
-        super(meta);
-    }
-
-    @Override
     public int getId() {
-        return CHERRY_FENCE_GATE;
+        return BAMBOO_FENCE_GATE;
     }
 
-    @Override
     public String getName() {
-        return "Cherry Fence Gate";
+        return "Bamboo Fence Gate";
     }
 
     @Override

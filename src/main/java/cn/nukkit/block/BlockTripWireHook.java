@@ -5,6 +5,7 @@ import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
+import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.event.block.BlockRedstoneEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
@@ -16,12 +17,10 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.RedstoneComponent;
-
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-import static cn.nukkit.block.BlockTripWire.ATTACHED;
 import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
 import static cn.nukkit.blockproperty.CommonBlockProperties.POWERED;
 
@@ -33,7 +32,7 @@ public class BlockTripWireHook extends BlockTransparentMeta implements RedstoneC
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(DIRECTION, ATTACHED, POWERED);
+    public static final BlockProperties PROPERTIES = new BlockProperties(DIRECTION, CommonBlockProperties.ATTACHED, POWERED);
 
     public BlockTripWireHook() {
         this(0);

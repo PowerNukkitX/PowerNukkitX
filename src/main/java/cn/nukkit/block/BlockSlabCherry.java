@@ -23,11 +23,6 @@ public class BlockSlabCherry extends BlockSlab {
     }
 
     @Override
-    public String getName() {
-        return (isOnTop() ? "Upper " : "") + getSlabName() + " Wood Slab";
-    }
-
-    @Override
     public int getId() {
         return CHERRY_SLAB;
     }
@@ -67,4 +62,8 @@ public class BlockSlabCherry extends BlockSlab {
         return ItemTool.TYPE_AXE;
     }
 
+    @Override
+    public int getToolTier() {
+        return ItemTool.TIER_WOODEN;
+    }
 }
