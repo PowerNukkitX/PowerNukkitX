@@ -3,24 +3,25 @@ package cn.nukkit.block;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
+import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.item.ItemTool;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitXOnly
 @Since("1.20.0-r2")
-public class BlockBambooBlock extends BlockSolidMeta {
-    public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.PILLAR_AXIS);
-
+public class BlockBambooBlock extends BlockLog {
     public BlockBambooBlock() {
+        this(0);
     }
 
     public BlockBambooBlock(int meta) {
         super(meta);
     }
 
+    @NotNull
     @Override
     public BlockProperties getProperties() {
-        return PROPERTIES;
+        return PILLAR_PROPERTIES;
     }
 
     public int getId() {
@@ -57,7 +58,7 @@ public class BlockBambooBlock extends BlockSolidMeta {
     }
 
     @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
+    protected BlockState getStrippedState() {
+        return getCurrentState().withBlockId(STRIPPED_BAMBOO_BLOCK);
     }
 }

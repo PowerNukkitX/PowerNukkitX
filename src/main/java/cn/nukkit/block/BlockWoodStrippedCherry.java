@@ -37,7 +37,7 @@ public class BlockWoodStrippedCherry extends BlockLog {
 
     @Override
     public double getResistance() {
-        return 2;
+        return 10;
     }
 
     @Override
@@ -47,7 +47,7 @@ public class BlockWoodStrippedCherry extends BlockLog {
 
     @Override
     public int getBurnAbility() {
-        return 10;
+        return 5;
     }
 
     @Since("1.4.0.0-PN")
