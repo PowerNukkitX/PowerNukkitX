@@ -184,7 +184,7 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable, Blo
     @PowerNukkitOnly
     @Override
     public int onTouch(@Nullable Player player, PlayerInteractEvent.Action action, BlockFace face) {
-        if (player != null && action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) {
+        if (player != null && player.getGamemode() <= 1 && action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) {
             var blockEntity = this.getLevel().getBlockEntity(this);
             if (blockEntity instanceof BlockEntitySign blockEntitySign) {
                 // If a sign is waxed, it cannot be modified.
