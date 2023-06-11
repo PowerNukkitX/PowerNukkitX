@@ -12,11 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
 
-/**
- * Author: Cool_Loong <br>
- * Date: 6/11/2023 <br>
- * Allay Project
- */
+
 public class SpawnCommonBlockClass {
     static Vector2 range = new Vector2(755, 784);
     static Gson gson = new GsonBuilder().setPrettyPrinting().create();

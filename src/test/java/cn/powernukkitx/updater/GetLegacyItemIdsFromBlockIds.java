@@ -10,11 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
 
-/**
- * Author: Cool_Loong <br>
- * Date: 6/9/2023 <br>
- * Allay Project
- */
+
 public class GetLegacyItemIdsFromBlockIds {
     static Gson gson = new GsonBuilder().setPrettyPrinting().create();
 

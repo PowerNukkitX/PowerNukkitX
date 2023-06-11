@@ -1,4 +1,4 @@
-package cn.powernukkitx.tools;
+package cn.powernukkitx.updater;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,7 +10,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.Objects;
 
 public class BdsLangExport {
-    static final String TARGET = "D:/Minecraft/bedrock-server-1.19.50.02/resource_packs/vanilla/texts";
+    static final String TARGET = "D:/Minecraft/bedrock-server-1.20.0.01/resource_packs/vanilla/texts";
 
     public static void main(String[] args) throws IOException, URISyntaxException {
         var langs = new File("src/main/resources/language").listFiles();

@@ -1,12 +1,11 @@
 package cn.nukkit.item;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockCherrySignPost;
 
-/**
- * Author: Cool_Loong <br>
- * Date: 6/11/2023 <br>
- * Allay Project
- */
+@PowerNukkitXOnly
+@Since("1.20.0-r2")
 public class ItemBambooSign extends StringItemBase {
     public ItemBambooSign() {
         super("minecraft:bamboo_sign", "Bamboo Sign");

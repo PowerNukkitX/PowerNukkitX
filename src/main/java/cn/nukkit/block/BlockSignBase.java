@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySign;
@@ -28,11 +29,8 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-/**
- * Author: Cool_Loong <br>
- * Date: 6/11/2023 <br>
- * Allay Project
- */
+@PowerNukkitXOnly
+@Since("1.20.0-r2")
 public abstract class BlockSignBase extends BlockTransparentMeta implements Faceable {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
