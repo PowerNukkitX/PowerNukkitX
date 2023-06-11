@@ -34,16 +34,16 @@ public class BdsLangExport {
                                 ds.getAndIncrement();
                                 return "{%" + (number - 1) + "}";
                             });
-                            StringBuilder builder = new StringBuilder();
                             var array = s.toCharArray();
-                            for (int i = 0; i < array.length; ) {
-                                if (array[i] == '%') {
+                            StringBuilder builder = new StringBuilder(String.valueOf(array[0]));
+                            for (int i = 1; i < array.length; ) {
+                                if (array[i] == '%' && array[i - 1] != '{') {
                                     char c = array[i + 1];
                                     if (c == 's' || c == 'd') {
-                                        builder.append("{%").append(ds.getAndIncrement()).append("}");
+                                        builder.append('{').append('%').append(ds.getAndIncrement()).append('}');
                                         i += 2;
                                     } else if (c == '.') {
-                                        builder.append("{%").append(ds.getAndIncrement()).append("}");
+                                        builder.append('{').append('%').append(ds.getAndIncrement()).append('}');
                                         i += 4;
                                     } else {
                                         i++;
