@@ -6,11 +6,15 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Pattern;
 
 public class BdsLangExport {
     static final String TARGET = "D:/Minecraft/bedrock-server-1.20.0.01/resource_packs/vanilla/texts";
+    static Pattern pattern = Pattern.compile("%[0-9]");
 
     public static void main(String[] args) throws IOException, URISyntaxException {
         var langs = new File("src/main/resources/language").listFiles();
@@ -18,25 +22,32 @@ public class BdsLangExport {
             if (file.getName().length() == 3 && pathMapping(file.getName(), TARGET) != null) {
                 var path = pathMapping(file.getName(), TARGET);
                 if (!path.toFile().exists()) continue;
+                Path output = file.toPath().resolve("lang.ini");
+                List<String> olds = Files.readAllLines(output);
+                List<String> news = new ArrayList<>();
                 for (var line : Files.readAllLines(path)) {
                     if (line.startsWith("commands")) {
                         line = line.replaceAll("\\$.", "").transform(s -> {
+                            AtomicInteger ds = new AtomicInteger();
+                            s = pattern.matcher(s).replaceAll(matchResult -> {
+                                int number = Integer.parseInt(String.valueOf(matchResult.group().charAt(1)));
+                                ds.getAndIncrement();
+                                return "{%" + (number - 1) + "}";
+                            });
                             StringBuilder builder = new StringBuilder();
                             var array = s.toCharArray();
-                            int ds = 0;
                             for (int i = 0; i < array.length; ) {
                                 if (array[i] == '%') {
-                                    try {
-                                        var index = Integer.parseInt(String.valueOf(array[i + 1]));
-                                        builder.append('{').append(array[i]).append(index - 1).append('}');
-                                        ds++;
-                                    } catch (NumberFormatException e) {
-                                        if (array[i + 1] == 's' || array[i + 1] == 'd') {
-                                            builder.append('{').append(array[i]).append(ds).append('}');
-                                            ds++;
-                                        } else builder.append('{').append(array[i]).append(array[i + 1]).append('}');
+                                    char c = array[i + 1];
+                                    if (c == 's' || c == 'd') {
+                                        builder.append("{%").append(ds.getAndIncrement()).append("}");
+                                        i += 2;
+                                    } else if (c == '.') {
+                                        builder.append("{%").append(ds.getAndIncrement()).append("}");
+                                        i += 4;
+                                    } else {
+                                        i++;
                                     }
-                                    i += 2;
                                 } else {
                                     builder.append(array[i]);
                                     i++;
@@ -46,13 +57,31 @@ public class BdsLangExport {
                             var last = str.indexOf('#');
                             return str.substring(0, last == -1 ? str.length() : last);
                         });
-                        var save = file.toPath().resolve("add.ini").toFile();
-                        if (!save.exists()) save.createNewFile();
-                        Files.writeString(save.toPath(), line + "\n", StandardCharsets.UTF_8, StandardOpenOption.APPEND);
+                        news.add(line);
                     }
                 }
+                int startIndex = -1;
+                int endIndex = -1;
+                for (int i = 0; i < olds.size(); i++) {
+                    if (olds.get(i).contains("#VanillaCommandsStart")) {
+                        startIndex = i;
+                    }
+                    if (olds.get(i).contains("#VanillaCommandsEnd")) {
+                        endIndex = i;
+                    }
+                }
+                if (startIndex == -1 || endIndex == -1) {
+                    System.out.println("error lang.ini: " + file.getName());
+                    return;
+                }
+                var result = new ArrayList<String>();
+                result.addAll(olds.subList(0, startIndex + 1));
+                result.addAll(news);
+                result.addAll(olds.subList(endIndex, olds.size()));
+                Files.write(output, result, StandardCharsets.UTF_8);
             }
         }
+        System.out.println("success update lang.ini");
     }
 
     public static Path pathMapping(String fileName, String targetFile) {
