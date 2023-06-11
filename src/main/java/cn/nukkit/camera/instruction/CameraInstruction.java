@@ -6,7 +6,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.nbt.tag.Tag;
 
 /**
- * Author: daoge_cmd <br>
+ * @author daoge_cmd <br>
  * Date: 2023/6/11 <br>
  * PowerNukkitX Project <br>
  */

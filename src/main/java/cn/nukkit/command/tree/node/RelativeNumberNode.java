@@ -4,7 +4,7 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 
 /**
- * Author: daoge_cmd <br>
+ * @author daoge_cmd <br>
  * Date: 2023/6/11 <br>
  * PowerNukkitX Project <br>
  */

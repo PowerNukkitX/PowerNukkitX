@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Author: daoge_cmd <br>
+ * @author daoge_cmd <br>
  * Date: 2023/6/11 <br>
  * PowerNukkitX Project <br>
  * TODO: 此命令的多语言文本似乎不能正常工作

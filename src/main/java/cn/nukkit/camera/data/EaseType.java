@@ -5,7 +5,7 @@ import cn.nukkit.api.Since;
 import lombok.Getter;
 
 /**
- * Author: daoge_cmd <br>
+ * @author daoge_cmd <br>
  * Date: 2023/6/10 <br>
  * PowerNukkitX Project <br>
  */

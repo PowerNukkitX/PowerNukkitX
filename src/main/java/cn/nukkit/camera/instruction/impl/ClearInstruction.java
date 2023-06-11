@@ -7,7 +7,7 @@ import cn.nukkit.camera.instruction.CameraInstruction;
 import cn.nukkit.nbt.tag.ByteTag;
 
 /**
- * Author: daoge_cmd <br>
+ * @author daoge_cmd <br>
  * Date: 2023/6/11 <br>
  * PowerNukkitX Project <br>
  */
