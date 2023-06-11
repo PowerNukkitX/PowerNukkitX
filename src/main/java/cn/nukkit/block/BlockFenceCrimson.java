@@ -5,7 +5,7 @@ import cn.nukkit.api.Since;
 
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
-public class BlockFenceCrimson extends BlockFence {
+public class BlockFenceCrimson extends BlockFenceBase {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly

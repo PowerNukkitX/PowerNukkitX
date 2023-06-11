@@ -12,7 +12,7 @@ import cn.nukkit.api.Since;
  */
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
-public class BlockFenceWarped extends BlockFence {
+public class BlockFenceWarped extends BlockFenceBase {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
