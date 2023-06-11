@@ -6,6 +6,7 @@ import cn.nukkit.api.*;
 import cn.nukkit.block.*;
 import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
@@ -3086,7 +3087,7 @@ public class Level implements ChunkManager, Metadatable {
         if (target.getId() == Item.AIR) {
             return null;
         }
-
+        int touchStatus = 0;
         if (player != null) {
             PlayerInteractEvent ev = new PlayerInteractEvent(player, item, target, face, target.getId() == 0 ? Action.RIGHT_CLICK_AIR : Action.RIGHT_CLICK_BLOCK);
 
@@ -3097,10 +3098,9 @@ public class Level implements ChunkManager, Metadatable {
             if (!player.isOp() && isInSpawnRadius(target)) {
                 ev.setCancelled();
             }
-
             this.server.getPluginManager().callEvent(ev);
             if (!ev.isCancelled()) {
-                target.onTouch(player, ev.getAction(), face);
+                touchStatus = target.onTouch(player, ev.getAction(), face);
                 if ((!player.isSneaking() || player.getInventory().getItemInHand().isNull()) && target.canBeActivated() && target.onActivate(item, player)) {
                     if (item.isTool() && item.getDamage() >= item.getMaxDurability()) {
                         addSound(player, Sound.RANDOM_BREAK);
@@ -3131,6 +3131,10 @@ public class Level implements ChunkManager, Metadatable {
             }
             return item;
         }
+        if (touchStatus != 0) {
+            return null;
+        }
+
         Block hand;
         if (item.canBePlaced()) {
             hand = item.getBlock();
@@ -3143,16 +3147,17 @@ public class Level implements ChunkManager, Metadatable {
             return null;
         }
 
+        //处理放置梯子,我们应该提前给hand设置方向,这样后面计算是否碰撞实体才准确
+        if (hand instanceof BlockLadder) {
+            if (target instanceof BlockLadder) {
+                hand.setPropertyValue(CommonBlockProperties.FACING_DIRECTION, face.getOpposite());
+            } else hand.setPropertyValue(CommonBlockProperties.FACING_DIRECTION, face);
+        }
+
         //cause bug (eg: frog_spawn) (and I don't know what this is for)
         if (!(hand instanceof BlockFrogSpawn) && target.canBeReplaced()) {
             block = target;
             hand.position(block);
-        }
-        //处理放置梯子,我们应该提前给hand设置方向,这样后面计算是否碰撞实体才准确
-        if (hand instanceof BlockLadder) {
-            if (target instanceof BlockLadder) {
-                hand.setDamage(face.getOpposite().getIndex());
-            } else hand.setDamage(face.getIndex());
         }
 
         if (!hand.canPassThrough() && hand.getBoundingBox() != null) {
@@ -3844,24 +3849,24 @@ public class Level implements ChunkManager, Metadatable {
         int b = source.getBlue();
         int alpha = source.getAlpha();
 
-        int i = (int)(1.0/(1.0-factor));
-        if ( r == 0 && g == 0 && b == 0) {
+        int i = (int) (1.0 / (1.0 - factor));
+        if (r == 0 && g == 0 && b == 0) {
             return new Color(i, i, i, alpha);
         }
-        if ( r > 0 && r < i ) r = i;
-        if ( g > 0 && g < i ) g = i;
-        if ( b > 0 && b < i ) b = i;
+        if (r > 0 && r < i) r = i;
+        if (g > 0 && g < i) g = i;
+        if (b > 0 && b < i) b = i;
 
-        return new Color(Math.min((int)(r/factor), 255),
-                Math.min((int)(g/factor), 255),
-                Math.min((int)(b/factor), 255),
+        return new Color(Math.min((int) (r / factor), 255),
+                Math.min((int) (g / factor), 255),
+                Math.min((int) (b / factor), 255),
                 alpha);
     }
 
     protected Color darker(Color source, double factor) {
-        return new Color(Math.max((int)(source.getRed()*factor), 0),
-                Math.max((int)(source.getGreen()*factor), 0),
-                Math.max((int)(source.getBlue()*factor), 0),
+        return new Color(Math.max((int) (source.getRed() * factor), 0),
+                Math.max((int) (source.getGreen() * factor), 0),
+                Math.max((int) (source.getBlue() * factor), 0),
                 source.getAlpha());
     }
 

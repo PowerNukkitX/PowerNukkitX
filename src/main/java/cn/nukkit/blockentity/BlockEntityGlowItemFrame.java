@@ -16,7 +16,11 @@ public class BlockEntityGlowItemFrame extends BlockEntityItemFrame {
 
     @Override
     public String getName() {
-        return "Glow Item Frame";
+        return this.hasName() ? this.namedTag.getString("CustomName") : "Glow Item Frame";
+    }
+
+    public boolean hasName() {
+        return namedTag.contains("CustomName");
     }
 
     @Override

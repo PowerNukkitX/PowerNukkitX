@@ -25,7 +25,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-import static cn.nukkit.block.BlockSignPost.GROUND_SIGN_DIRECTION;
+import static cn.nukkit.blockproperty.CommonBlockProperties.GROUND_SIGN_DIRECTION;
 
 /**
  * @author PetteriM1

@@ -34,6 +34,7 @@ public abstract class BlockEntity extends Position {
     @PowerNukkitOnly
     public static final String SMOKER = "Smoker";
     public static final String SIGN = "Sign";
+    public static final String HANGING_SIGN = "HangingSign";
     public static final String MOB_SPAWNER = "MobSpawner";
     public static final String ENCHANT_TABLE = "EnchantTable";
     public static final String SKULL = "Skull";
@@ -174,6 +175,7 @@ public abstract class BlockEntity extends Position {
         registerBlockEntity(SCULK_SHRIEKER, BlockEntitySculkShrieker.class);
         registerBlockEntity(STRUCTURE_BLOCK, BlockEntityStructBlock.class);
         registerBlockEntity(GLOW_ITEM_FRAME, BlockEntityGlowItemFrame.class);
+        registerBlockEntity(HANGING_SIGN, BlockEntityHangingSign.class);
     }
 
     protected void initBlockEntity() {

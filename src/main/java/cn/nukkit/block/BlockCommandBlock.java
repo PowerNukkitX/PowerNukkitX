@@ -109,7 +109,7 @@ public class BlockCommandBlock  extends BlockSolidMeta implements Faceable, Bloc
     }
 
     @Override
-    public boolean onActivate(Item item, Player player) {
+    public boolean onActivate(@NotNull Item item, Player player) {
         if (player != null) {
             BlockEntityCommandBlock tile = this.getOrCreateBlockEntity();
             tile.spawnTo(player);
