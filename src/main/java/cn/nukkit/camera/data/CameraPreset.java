@@ -16,9 +16,9 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * @author daoge_cmd <br>
- * Date: 2023/6/11 <br>
- * PowerNukkitX Project <br>
+ * @author daoge_cmd
+ * @date 2023/6/11
+ * PowerNukkitX Project
  */
 @PowerNukkitXOnly
 @Since("1.20.0-r2")

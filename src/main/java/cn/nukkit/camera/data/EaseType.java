@@ -5,9 +5,9 @@ import cn.nukkit.api.Since;
 import lombok.Getter;
 
 /**
- * @author daoge_cmd <br>
- * Date: 2023/6/10 <br>
- * PowerNukkitX Project <br>
+ * @author daoge_cmd
+ * @date 2023/6/10
+ * PowerNukkitX Project
  */
 @PowerNukkitXOnly
 @Since("1.20.0-r2")

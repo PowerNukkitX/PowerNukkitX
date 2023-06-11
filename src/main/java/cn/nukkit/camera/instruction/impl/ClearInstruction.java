@@ -7,9 +7,9 @@ import cn.nukkit.camera.instruction.CameraInstruction;
 import cn.nukkit.nbt.tag.ByteTag;
 
 /**
- * @author daoge_cmd <br>
- * Date: 2023/6/11 <br>
- * PowerNukkitX Project <br>
+ * @author daoge_cmd
+ * @date 2023/6/11
+ * PowerNukkitX Project
  */
 @PowerNukkitXOnly
 @Since("1.20.0-r2")
