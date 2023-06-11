@@ -9,6 +9,7 @@ import cn.nukkit.blockentity.BlockEntityHangingSign;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlockHangingSign;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
@@ -63,9 +64,11 @@ public abstract class BlockHangingSign extends BlockSignBase implements BlockEnt
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (isHanging() && up().getId() == Block.AIR) {
-                getLevel().useBreakOn(this);
-                return Level.BLOCK_UPDATE_NORMAL;
+            if (isHanging()) {
+                if (up().getId() == Block.AIR) {
+                    getLevel().useBreakOn(this);
+                    return Level.BLOCK_UPDATE_NORMAL;
+                }
             } else {
                 if (checkGroundBlock() == null) {
                     getLevel().useBreakOn(this);
@@ -86,7 +89,7 @@ public abstract class BlockHangingSign extends BlockSignBase implements BlockEnt
 
     @Override
     public Item toItem() {
-        return asItemBlock(1);
+        return new ItemBlockHangingSign(this);
     }
 
     @Override
