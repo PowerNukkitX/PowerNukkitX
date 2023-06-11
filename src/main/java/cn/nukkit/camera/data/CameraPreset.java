@@ -89,7 +89,9 @@ public final class CameraPreset {
     @Getter
     private int id;
 
-    //记得要调用registerCameraPresets()方法注册！
+    /**
+     * Remember to call the registerCameraPresets() method to register!
+     */
     @Builder
     public CameraPreset(String identifier, String inheritFrom, @Nullable Pos pos, @Nullable Rot rot) {
         this.identifier = identifier;
