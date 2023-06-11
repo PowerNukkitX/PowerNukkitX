@@ -74,7 +74,7 @@ public final class CommonBlockProperties {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final BlockProperty<BlockFace> DIRECTION = new ArrayBlockProperty<>("direction", false, new BlockFace[]{
+    public static final ArrayBlockProperty<BlockFace> DIRECTION = new ArrayBlockProperty<>("direction", false, new BlockFace[]{
             // Horizontal-index based
             BlockFace.SOUTH, BlockFace.WEST,
             BlockFace.NORTH, BlockFace.EAST,
@@ -82,7 +82,7 @@ public final class CommonBlockProperties {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final BlockProperty<BlockFace.Axis> PILLAR_AXIS = new ArrayBlockProperty<>("pillar_axis", false, new BlockFace.Axis[]{
+    public static final ArrayBlockProperty<BlockFace.Axis> PILLAR_AXIS = new ArrayBlockProperty<>("pillar_axis", false, new BlockFace.Axis[]{
             BlockFace.Axis.Y, BlockFace.Axis.X, BlockFace.Axis.Z
     });
 
