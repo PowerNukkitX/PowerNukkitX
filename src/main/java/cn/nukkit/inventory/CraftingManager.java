@@ -188,7 +188,7 @@ public class CraftingManager {
                 }
             }
         }
-        //There is no wool dyeing recipe in the bedrock-samples, maybe it is hardcode? Manually add load Wool dye recipes here
+        //There is no wool dyeing recipe in the bedrock-samples, maybe it is hardcode? Manually add the wool dye recipes here
         for (var w : CommonBlockProperties.COLOR.getUniverse()) {
             for (var f : DyeColor.values()) {
                 ItemBlock itemBlock = new BlockWool(w).asItemBlock();
