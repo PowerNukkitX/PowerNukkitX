@@ -2,16 +2,16 @@
   "format_version": "1.12",
   "minecraft:recipe_shapeless": {
     "description": {
-      "identifier": "minecraft:brown_dye_from_cocoa_beans"
+    "identifier": "minecraft:brown_dye_from_cocoa_beans"
     },
-    "tags": [
-      "crafting_table"
-    ],
+
+    
+    "tags": [ "crafting_table" ],
     "group": "brown_dye",
     "ingredients": [
       {
         "item": "minecraft:dye",
-        "data": 3
+        "data":  3
       }
     ],
     "result": {

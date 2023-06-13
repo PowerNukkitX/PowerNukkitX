@@ -2,21 +2,21 @@
   "format_version": "1.12",
   "minecraft:recipe_shaped": {
     "description": {
-      "identifier": "minecraft:sign_jungle"
+    "identifier": "minecraft:sign_jungle"
     },
-    "tags": [
-      "crafting_table"
-    ],
+
+    
+    "tags": [ "crafting_table" ],
     "group": "sign",
     "pattern": [
       "###",
-      "###",
-      " | "
+  	  "###",
+  	  " | "
     ],
     "key": {
       "#": {
         "item": "minecraft:planks",
-        "data": 3
+  	  "data": 3
       },
       "|": {
         "item": "minecraft:stick"

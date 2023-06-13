@@ -2,11 +2,9 @@
   "format_version": "1.12",
   "minecraft:recipe_shaped": {
     "description": {
-      "identifier": "minecraft:stripped_mangrove_wood"
+    "identifier": "minecraft:stripped_mangrove_wood"
     },
-    "tags": [
-      "deprecated"
-    ],
+    "tags": [ "deprecated" ],
     "group": "wood",
     "pattern": [
       "##",

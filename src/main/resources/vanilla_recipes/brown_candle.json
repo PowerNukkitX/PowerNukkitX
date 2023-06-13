@@ -2,11 +2,9 @@
   "format_version": "1.12",
   "minecraft:recipe_shapeless": {
     "description": {
-      "identifier": "minecraft:brown_candle"
+    "identifier": "minecraft:brown_candle"
     },
-    "tags": [
-      "crafting_table"
-    ],
+    "tags": [ "crafting_table" ],
     "group": "candle",
     "ingredients": [
       {
@@ -14,7 +12,7 @@
       },
       {
         "item": "minecraft:dye",
-        "data": 17
+        "data":  17
       }
     ],
     "result": {

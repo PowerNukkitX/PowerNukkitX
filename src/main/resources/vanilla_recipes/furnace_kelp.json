@@ -2,15 +2,13 @@
   "format_version": "1.12",
   "minecraft:recipe_furnace": {
     "description": {
-      "identifier": "minecraft:furnace_kelp"
+    "identifier": "minecraft:furnace_kelp"
     },
-    "tags": [
-      "furnace",
-      "smoker",
-      "campfire",
-      "soul_campfire"
-    ],
+
+
+    "tags": ["furnace", "smoker", "campfire", "soul_campfire"],
     "input": "minecraft:kelp",
     "output": "minecraft:dried_kelp"
   }
+  
 }

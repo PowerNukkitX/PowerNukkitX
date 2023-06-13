@@ -2,11 +2,9 @@
   "format_version": "1.12",
   "minecraft:recipe_furnace": {
     "description": {
-      "identifier": "minecraft:furnace_mangrove_wood"
+    "identifier": "minecraft:furnace_mangrove_wood"
     },
-    "tags": [
-      "furnace"
-    ],
+    "tags": ["furnace"],
     "input": "minecraft:mangrove_wood",
     "output": "minecraft:coal:1"
   }

@@ -2,12 +2,13 @@
   "format_version": "1.12",
   "minecraft:recipe_furnace": {
     "description": {
-      "identifier": "minecraft:furnace_cobblestone"
+    "identifier": "minecraft:furnace_cobblestone"
     },
-    "tags": [
-      "furnace"
-    ],
+
+    
+    "tags": ["furnace"],
     "input": "minecraft:cobblestone",
     "output": "minecraft:stone"
   }
+  
 }

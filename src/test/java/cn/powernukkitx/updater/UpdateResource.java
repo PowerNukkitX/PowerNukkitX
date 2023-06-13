@@ -122,20 +122,8 @@ public class UpdateResource {
     }
 
     private void updateRecipes(Path source, Path target) throws IOException {
-        //todo These are two wrong recipes, their output should not have `data`, if this bug is fixed, please remove it
-        List<String> errorRecipes = List.of("dispenser.json", "dropper.json");
         Path recipes = source.resolve("behavior_pack/recipes");
         FileUtils.copyDirectory(recipes.toFile(), target.toFile());
-        for (var fix : errorRecipes) {
-            Path p = target.resolve(fix);
-            Map<String, Object> data = gson.fromJson(new FileReader(p.toFile()), Map.class);
-            Map<String, Object> recipe = (Map<String, Object>) data.get("minecraft:recipe_shaped");
-            Map<String, Object> result = (Map<String, Object>) recipe.get("result");
-            result.remove("data");
-            recipe.put("result", result);
-            data.put("minecraft:recipe_shaped", recipe);
-            Files.writeString(p, gson.toJson(data), StandardCharsets.UTF_8);
-        }
         System.out.println("update recipe success!");
     }
 

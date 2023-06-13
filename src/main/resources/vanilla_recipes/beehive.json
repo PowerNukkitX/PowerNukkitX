@@ -4,9 +4,7 @@
     "description": {
       "identifier": "minecraft:beehive"
     },
-    "tags": [
-      "crafting_table"
-    ],
+    "tags": [ "crafting_table" ],
     "pattern": [
       "###",
       "ooo",
@@ -21,9 +19,7 @@
       }
     },
     "result": [
-      {
-        "item": "minecraft:beehive"
-      }
+      { "item": "minecraft:beehive" }
     ],
     "priority": -1
   }

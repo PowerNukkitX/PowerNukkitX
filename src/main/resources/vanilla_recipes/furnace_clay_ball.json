@@ -2,12 +2,13 @@
   "format_version": "1.12",
   "minecraft:recipe_furnace": {
     "description": {
-      "identifier": "minecraft:furnace_clay_ball"
+    "identifier": "minecraft:furnace_clay_ball"
     },
-    "tags": [
-      "furnace"
-    ],
+
+    
+    "tags": ["furnace"],
     "input": "minecraft:clay_ball",
     "output": "minecraft:brick"
   }
+  
 }

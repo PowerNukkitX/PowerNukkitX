@@ -2,11 +2,11 @@
   "format_version": "1.12",
   "minecraft:recipe_shapeless": {
     "description": {
-      "identifier": "minecraft:blaze_powder"
+    "identifier": "minecraft:blaze_powder"
     },
-    "tags": [
-      "crafting_table"
-    ],
+
+    
+    "tags": [ "crafting_table" ],
     "ingredients": [
       {
         "item": "minecraft:blaze_rod"

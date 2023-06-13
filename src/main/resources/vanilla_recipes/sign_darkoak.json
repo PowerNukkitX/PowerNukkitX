@@ -2,21 +2,21 @@
   "format_version": "1.12",
   "minecraft:recipe_shaped": {
     "description": {
-      "identifier": "minecraft:sign_darkoak"
+    "identifier": "minecraft:sign_darkoak"
     },
-    "tags": [
-      "crafting_table"
-    ],
+
+    
+    "tags": [ "crafting_table" ],
     "group": "sign",
     "pattern": [
       "###",
-      "###",
-      " | "
+  	  "###",
+  	  " | "
     ],
     "key": {
       "#": {
         "item": "minecraft:planks",
-        "data": 5
+  	  "data": 5
       },
       "|": {
         "item": "minecraft:stick"

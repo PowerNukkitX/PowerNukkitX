@@ -2,11 +2,11 @@
   "format_version": "1.12",
   "minecraft:recipe_shaped": {
     "description": {
-      "identifier": "minecraft:iron_bars"
+    "identifier": "minecraft:iron_bars"
     },
-    "tags": [
-      "crafting_table"
-    ],
+
+    
+    "tags": [ "crafting_table" ],
     "pattern": [
       "###",
       "###"

@@ -2,6 +2,8 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Server;
 import cn.nukkit.api.*;
+import cn.nukkit.blockproperty.BlockProperties;
+import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.inventory.recipe.DefaultDescriptor;
 import cn.nukkit.inventory.recipe.ItemDescriptor;
 import cn.nukkit.inventory.recipe.ItemTagDescriptor;
@@ -1008,9 +1010,21 @@ public class CraftingManager {
             String item = (String) v.get("item");
             int count = (int) v.getOrDefault("count", 1);
             int data = (int) v.getOrDefault("data", 0);
-            Item i = Item.fromString(item + ":" + data);
+            Item i = Item.fromString(item);
             if (i.isNull()) {
                 throw new AssertionError();
+            }
+            if (i.getBlock() != null) {
+                BlockState state = i.getBlock().getCurrentState();
+                BlockProperties allProperties = state.getProperties();
+                BlockProperties itemProperties = allProperties.getItemBlockProperties();
+                List<String> itemNames = itemProperties.getItemPropertyNames();
+                if (itemNames.isEmpty()) {
+                    data = 0;
+                }
+            }
+            if (data != 0) {
+                i.setDamage(data);
             }
             i.setCount(count);
             return i;

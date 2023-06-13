@@ -2,12 +2,13 @@
   "format_version": "1.12",
   "minecraft:recipe_furnace": {
     "description": {
-      "identifier": "minecraft:furnace_stained_hardened_clay8"
+    "identifier": "minecraft:furnace_stained_hardened_clay8"
     },
-    "tags": [
-      "furnace"
-    ],
+
+    
+    "tags": ["furnace"],
     "input": "minecraft:stained_hardened_clay:8",
     "output": "minecraft:silver_glazed_terracotta"
   }
+  
 }

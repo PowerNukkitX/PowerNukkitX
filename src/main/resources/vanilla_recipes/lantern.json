@@ -2,11 +2,11 @@
   "format_version": "1.12",
   "minecraft:recipe_shaped": {
     "description": {
-      "identifier": "minecraft:lantern"
+    "identifier": "minecraft:lantern"
     },
-    "tags": [
-      "crafting_table"
-    ],
+
+    
+    "tags": [ "crafting_table" ],
     "pattern": [
       "###",
       "#x#",

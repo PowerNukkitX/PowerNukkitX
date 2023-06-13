@@ -4,9 +4,9 @@
     "description": {
       "identifier": "minecraft:stonecutter_mud_brick_stairs"
     },
-    "tags": [
-      "stonecutter"
-    ],
+
+    
+    "tags": [ "stonecutter" ],
     "priority": 1,
     "ingredients": [
       {
@@ -18,4 +18,5 @@
       "count": 1
     }
   }
+  
 }

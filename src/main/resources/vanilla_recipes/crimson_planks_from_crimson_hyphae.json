@@ -4,9 +4,7 @@
     "description": {
       "identifier": "minecraft:crimson_planks_from_crimson_hyphae"
     },
-    "tags": [
-      "crafting_table"
-    ],
+    "tags": [ "crafting_table" ],
     "group": "planks",
     "pattern": [
       "#"

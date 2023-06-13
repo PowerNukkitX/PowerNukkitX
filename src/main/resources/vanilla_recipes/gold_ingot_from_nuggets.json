@@ -2,11 +2,11 @@
   "format_version": "1.12",
   "minecraft:recipe_shaped": {
     "description": {
-      "identifier": "minecraft:gold_ingot_from_nuggets"
+    "identifier": "minecraft:gold_ingot_from_nuggets"
     },
-    "tags": [
-      "crafting_table"
-    ],
+
+    
+    "tags": [ "crafting_table" ],
     "group": "gold_ingot",
     "pattern": [
       "###",

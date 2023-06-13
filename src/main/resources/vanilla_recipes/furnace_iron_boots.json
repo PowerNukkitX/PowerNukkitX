@@ -2,13 +2,13 @@
   "format_version": "1.12",
   "minecraft:recipe_furnace": {
     "description": {
-      "identifier": "minecraft:furnace_iron_boots"
+    "identifier": "minecraft:furnace_iron_boots"
     },
-    "tags": [
-      "furnace",
-      "blast_furnace"
-    ],
+
+    
+    "tags": ["furnace", "blast_furnace"],
     "input": "minecraft:iron_boots",
     "output": "minecraft:iron_nugget"
   }
+  
 }

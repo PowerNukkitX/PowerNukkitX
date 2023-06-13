@@ -2,11 +2,11 @@
   "format_version": "1.12",
   "minecraft:recipe_shapeless": {
     "description": {
-      "identifier": "minecraft:stonecutter_oxidized_copper_to_cut_copper"
+    "identifier": "minecraft:stonecutter_oxidized_copper_to_cut_copper"
     },
-    "tags": [
-      "stonecutter"
-    ],
+
+    
+    "tags": [ "stonecutter" ],
     "priority": 0,
     "ingredients": [
       {
@@ -18,4 +18,5 @@
       "count": 4
     }
   }
+  
 }

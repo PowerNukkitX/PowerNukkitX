@@ -2,11 +2,9 @@
   "format_version": "1.16",
   "minecraft:recipe_shapeless": {
     "description": {
-      "identifier": "minecraft:tnt_minecart"
+    "identifier": "minecraft:tnt_minecart"
     },
-    "tags": [
-      "crafting_table"
-    ],
+    "tags": [ "crafting_table" ],
     "ingredients": [
       {
         "item": "minecraft:tnt",

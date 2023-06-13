@@ -2,12 +2,13 @@
   "format_version": "1.12",
   "minecraft:recipe_furnace": {
     "description": {
-      "identifier": "minecraft:furnace_sponge"
+    "identifier": "minecraft:furnace_sponge"
     },
-    "tags": [
-      "furnace"
-    ],
+
+    
+    "tags": ["furnace"],
     "input": "minecraft:sponge:1",
     "output": "minecraft:sponge:0"
   }
+  
 }

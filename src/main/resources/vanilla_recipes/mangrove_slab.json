@@ -2,11 +2,9 @@
   "format_version": "1.12",
   "minecraft:recipe_shaped": {
     "description": {
-      "identifier": "minecraft:mangrove_slab"
+    "identifier": "minecraft:mangrove_slab"
     },
-    "tags": [
-      "crafting_table"
-    ],
+    "tags": [ "crafting_table" ],
     "group": "wooden_slab",
     "pattern": [
       "###"

@@ -2,12 +2,13 @@
   "format_version": "1.12",
   "minecraft:recipe_furnace": {
     "description": {
-      "identifier": "minecraft:furnace_clay"
+    "identifier": "minecraft:furnace_clay"
     },
-    "tags": [
-      "furnace"
-    ],
+
+    
+    "tags": ["furnace"],
     "input": "minecraft:clay",
     "output": "minecraft:hardened_clay"
   }
+  
 }

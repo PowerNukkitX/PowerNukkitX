@@ -2,12 +2,13 @@
   "format_version": "1.12",
   "minecraft:recipe_furnace": {
     "description": {
-      "identifier": "minecraft:furnace_cactus"
+    "identifier": "minecraft:furnace_cactus"
     },
-    "tags": [
-      "furnace"
-    ],
+
+    
+    "tags": ["furnace"],
     "input": "minecraft:cactus",
     "output": "minecraft:dye:2"
   }
+  
 }

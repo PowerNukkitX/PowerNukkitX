@@ -2,11 +2,11 @@
   "format_version": "1.12",
   "minecraft:recipe_shapeless": {
     "description": {
-      "identifier": "minecraft:stonecutter_sandstone_wall"
+    "identifier": "minecraft:stonecutter_sandstone_wall"
     },
-    "tags": [
-      "stonecutter"
-    ],
+
+    
+    "tags": [ "stonecutter" ],
     "priority": 4,
     "ingredients": [
       {
@@ -20,4 +20,5 @@
       "count": 1
     }
   }
+  
 }

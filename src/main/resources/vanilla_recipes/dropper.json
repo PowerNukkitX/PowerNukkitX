@@ -2,11 +2,11 @@
   "format_version": "1.12",
   "minecraft:recipe_shaped": {
     "description": {
-      "identifier": "minecraft:dropper"
+    "identifier": "minecraft:dropper"
     },
-    "tags": [
-      "crafting_table"
-    ],
+
+    
+    "tags": [ "crafting_table" ],
     "pattern": [
       "###",
       "# #",
@@ -21,7 +21,8 @@
       }
     },
     "result": {
-      "item": "minecraft:dropper"
+      "item": "minecraft:dropper",
+      "data": 3
     }
   }
 }

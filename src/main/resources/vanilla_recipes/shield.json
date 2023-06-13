@@ -4,9 +4,7 @@
     "description": {
       "identifier": "minecraft:shield"
     },
-    "tags": [
-      "crafting_table"
-    ],
+    "tags": [ "crafting_table" ],
     "pattern": [
       "#I#",
       "###",
@@ -24,5 +22,5 @@
       "item": "minecraft:shield"
     },
     "priority": -1
-  }
+  } 
 }

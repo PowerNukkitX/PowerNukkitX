@@ -4,8 +4,8 @@
     "description": {
       "identifier": "minecraft:warped_fence_gate"
     },
-    "tags": [
-      "crafting_table"
+    "tags": [ 
+      "crafting_table" 
     ],
     "group": "wooden_fence_gate",
     "pattern": [

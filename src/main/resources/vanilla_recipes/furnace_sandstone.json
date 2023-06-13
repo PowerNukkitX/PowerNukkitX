@@ -4,10 +4,9 @@
     "description": {
       "identifier": "minecraft:furnace_sandstone"
     },
-    "tags": [
-      "furnace"
-    ],
-    "input": "minecraft:sandstone",
-    "output": "minecraft:sandstone:3"
+
+	"tags": [ "furnace" ],
+	"input": "minecraft:sandstone",
+	"output": "minecraft:sandstone:3"
   }
 }

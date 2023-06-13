@@ -2,13 +2,13 @@
   "format_version": "1.12",
   "minecraft:recipe_furnace": {
     "description": {
-      "identifier": "minecraft:furnace_iron"
+    "identifier": "minecraft:furnace_iron"
     },
-    "tags": [
-      "furnace",
-      "blast_furnace"
-    ],
+
+    
+    "tags": ["furnace", "blast_furnace"],
     "input": "minecraft:raw_iron",
     "output": "minecraft:iron_ingot"
   }
+  
 }

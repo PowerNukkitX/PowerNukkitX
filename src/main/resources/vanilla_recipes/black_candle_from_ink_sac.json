@@ -2,11 +2,9 @@
   "format_version": "1.12",
   "minecraft:recipe_shapeless": {
     "description": {
-      "identifier": "minecraft:black_candle_from_ink_sac"
+    "identifier": "minecraft:black_candle_from_ink_sac"
     },
-    "tags": [
-      "crafting_table"
-    ],
+    "tags": [ "crafting_table" ],
     "group": "candle",
     "ingredients": [
       {
@@ -14,7 +12,7 @@
       },
       {
         "item": "minecraft:dye",
-        "data": 0
+        "data":  0
       }
     ],
     "result": {

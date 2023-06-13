@@ -2,10 +2,10 @@
   "format_version": "1.16",
   "minecraft:recipe_shaped": {
     "description": {
-      "identifier": "minecraft:warped_pressure_plate"
+    "identifier": "minecraft:warped_pressure_plate"
     },
-    "tags": [
-      "crafting_table"
+    "tags": [ 
+      "crafting_table" 
     ],
     "group": "wooden_pressure_plate",
     "pattern": [

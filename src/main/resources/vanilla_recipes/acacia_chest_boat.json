@@ -4,9 +4,7 @@
     "description": {
       "identifier": "minecraft:acacia_chest_boat"
     },
-    "tags": [
-      "crafting_table"
-    ],
+    "tags": [ "crafting_table" ],
     "ingredients": [
       {
         "item": "minecraft:chest"
@@ -21,4 +19,5 @@
       "data": 4
     }
   }
+  
 }

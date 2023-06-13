@@ -2,12 +2,13 @@
   "format_version": "1.12",
   "minecraft:recipe_furnace": {
     "description": {
-      "identifier": "minecraft:furnace_log_oak"
+    "identifier": "minecraft:furnace_log_oak"
     },
-    "tags": [
-      "furnace"
-    ],
+
+    
+    "tags": ["furnace"],
     "input": "minecraft:log:0",
     "output": "minecraft:coal:1"
   }
+  
 }
