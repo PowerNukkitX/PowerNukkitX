@@ -2,22 +2,16 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Server;
 import cn.nukkit.api.*;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.block.BlockWool;
+import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.inventory.recipe.DefaultDescriptor;
 import cn.nukkit.inventory.recipe.ItemDescriptor;
 import cn.nukkit.inventory.recipe.ItemTagDescriptor;
-import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemID;
-import cn.nukkit.item.ItemPotion;
-import cn.nukkit.item.StringItem;
+import cn.nukkit.item.*;
 import cn.nukkit.network.protocol.CraftingDataPacket;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.potion.Potion;
-import cn.nukkit.utils.BinaryStream;
-import cn.nukkit.utils.Config;
-import cn.nukkit.utils.MinecraftNamespaceComparator;
-import cn.nukkit.utils.Utils;
+import cn.nukkit.utils.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -150,7 +144,7 @@ public class CraftingManager {
     }
 
     @SneakyThrows
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     private void loadRecipes() {
         var gson = new GsonBuilder().create();
         //load xp config
@@ -191,6 +185,22 @@ public class CraftingManager {
                             vanillaRecipeParser.parseAndRegisterRecipe(Server.class.getModule().getResourceAsStream(recipe.getName()));
                         }
                     }
+                }
+            }
+        }
+        //There is no wool dyeing recipe in the bedrock-samples, maybe it is hardcode? Manually add load Wool dye recipes here
+        for (var w : CommonBlockProperties.COLOR.getUniverse()) {
+            for (var f : DyeColor.values()) {
+                ItemBlock itemBlock = new BlockWool(w).asItemBlock();
+                if (w != f) {
+                    ItemDye itemDye = new ItemDye(f);
+                    ItemBlock output = new BlockWool(f).asItemBlock();
+                    this.registerShapelessRecipe(new ShapelessRecipe("minecraft:" + w.name().toLowerCase() + "_wool_to_" + f.name().toLowerCase(), 0, output, List.of(itemBlock, itemDye)));
+                }
+                if (w != DyeColor.WHITE) {
+                    ItemDye itemDye = new ItemDye(DyeColor.BONE_MEAL);
+                    ItemBlock output = new BlockWool(DyeColor.WHITE).asItemBlock();
+                    this.registerShapelessRecipe(new ShapelessRecipe("minecraft:" + w.name().toLowerCase() + "_wool_to_bone_white", 0, output, List.of(itemBlock, itemDye)));
                 }
             }
         }
@@ -890,15 +900,20 @@ public class CraftingManager {
             if (tags.size() == 1 && tags.get(0).equals("crafting_table")) {
                 int prior = (int) recipeData.getOrDefault("priority", 0);
                 List<String> pattern = (List<String>) recipeData.get("pattern");
-                String[] shapes = pattern.stream().map(shape -> {
-                    StringBuilder builder = new StringBuilder();
-                    char[] charArray = shape.toCharArray();
-                    for (char c : charArray) {
-                        builder.append(c);
-                    }
-                    return builder.append(" ".repeat(Math.max(0, 3 - charArray.length))).toString();
-                }).toArray(String[]::new);
-
+                String[] shapes;
+                if (pattern.size() > 1) {
+                    int maxWidth = pattern.stream().map(s -> s.toCharArray().length).max(Integer::compare).get().intValue();
+                    shapes = pattern.stream().map(shape -> {
+                        StringBuilder builder = new StringBuilder();
+                        char[] charArray = shape.toCharArray();
+                        for (char c : charArray) {
+                            builder.append(c);
+                        }
+                        return builder.append(" ".repeat(Math.max(0, maxWidth - charArray.length))).toString();
+                    }).toArray(String[]::new);
+                } else {
+                    shapes = pattern.toArray(String[]::new);
+                }
                 Map<String, Map<String, Object>> key = (Map<String, Map<String, Object>>) recipeData.get("key");
                 final Map<Character, ItemDescriptor> ingredients = new LinkedHashMap<>();
                 try {
@@ -1009,22 +1024,17 @@ public class CraftingManager {
         private Item parseItem(Map<String, Object> v) throws AssertionError {
             String item = (String) v.get("item");
             int count = (int) v.getOrDefault("count", 1);
-            int data = (int) v.getOrDefault("data", 0);
+            int data = (int) v.getOrDefault("data", 32767);
             Item i = Item.fromString(item);
             if (i.isNull()) {
                 throw new AssertionError();
             }
-            if (i.getBlock() != null) {
-                BlockState state = i.getBlock().getCurrentState();
-                BlockProperties allProperties = state.getProperties();
-                BlockProperties itemProperties = allProperties.getItemBlockProperties();
-                List<String> itemNames = itemProperties.getItemPropertyNames();
-                if (itemNames.isEmpty()) {
-                    data = 0;
-                }
-            }
             if (data != 0) {
-                i.setDamage(data);
+                if (data == 32767) {
+                    i = i.createFuzzyCraftingRecipe();
+                } else {
+                    i.setDamage(data);
+                }
             }
             i.setCount(count);
             return i;

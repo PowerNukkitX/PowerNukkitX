@@ -14,41 +14,41 @@ import cn.nukkit.utils.DyeColor;
 public class ItemDye extends Item {
 
     @Deprecated
-    public static final int WHITE = DyeColor.WHITE.getDyeData();
+    public static final int WHITE = DyeColor.WHITE.getItemDyeMeta();
     @Deprecated
-    public static final int ORANGE = DyeColor.ORANGE.getDyeData();
+    public static final int ORANGE = DyeColor.ORANGE.getItemDyeMeta();
     @Deprecated
-    public static final int MAGENTA = DyeColor.MAGENTA.getDyeData();
+    public static final int MAGENTA = DyeColor.MAGENTA.getItemDyeMeta();
     @Deprecated
-    public static final int LIGHT_BLUE = DyeColor.LIGHT_BLUE.getDyeData();
+    public static final int LIGHT_BLUE = DyeColor.LIGHT_BLUE.getItemDyeMeta();
     @Deprecated
-    public static final int YELLOW = DyeColor.YELLOW.getDyeData();
+    public static final int YELLOW = DyeColor.YELLOW.getItemDyeMeta();
     @Deprecated
-    public static final int LIME = DyeColor.LIME.getDyeData();
+    public static final int LIME = DyeColor.LIME.getItemDyeMeta();
     @Deprecated
-    public static final int PINK = DyeColor.PINK.getDyeData();
+    public static final int PINK = DyeColor.PINK.getItemDyeMeta();
     @Deprecated
-    public static final int GRAY = DyeColor.GRAY.getDyeData();
+    public static final int GRAY = DyeColor.GRAY.getItemDyeMeta();
     @Deprecated
-    public static final int LIGHT_GRAY = DyeColor.LIGHT_GRAY.getDyeData();
+    public static final int LIGHT_GRAY = DyeColor.LIGHT_GRAY.getItemDyeMeta();
     @Deprecated
-    public static final int CYAN = DyeColor.CYAN.getDyeData();
+    public static final int CYAN = DyeColor.CYAN.getItemDyeMeta();
     @Deprecated
-    public static final int PURPLE = DyeColor.PURPLE.getDyeData();
+    public static final int PURPLE = DyeColor.PURPLE.getItemDyeMeta();
     @Deprecated
-    public static final int BLUE = DyeColor.BLUE.getDyeData();
+    public static final int BLUE = DyeColor.BLUE.getItemDyeMeta();
     @Deprecated
-    public static final int BROWN = DyeColor.BROWN.getDyeData();
+    public static final int BROWN = DyeColor.BROWN.getItemDyeMeta();
     @Deprecated
-    public static final int GREEN = DyeColor.GREEN.getDyeData();
+    public static final int GREEN = DyeColor.GREEN.getItemDyeMeta();
     @Deprecated
-    public static final int RED = DyeColor.RED.getDyeData();
+    public static final int RED = DyeColor.RED.getItemDyeMeta();
     @Deprecated
-    public static final int BLACK = DyeColor.BLACK.getDyeData();
+    public static final int BLACK = DyeColor.BLACK.getItemDyeMeta();
     @Deprecated
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public static final int BONE_MEAL = DyeColor.BONE_MEAL.getDyeData();
+    public static final int BONE_MEAL = DyeColor.BONE_MEAL.getItemDyeMeta();
 
     public ItemDye() {
         this(0, 1);
@@ -59,11 +59,11 @@ public class ItemDye extends Item {
     }
 
     public ItemDye(DyeColor dyeColor) {
-        this(dyeColor.getDyeData(), 1);
+        this(dyeColor.getItemDyeMeta(), 1);
     }
 
     public ItemDye(DyeColor dyeColor, int amount) {
-        this(dyeColor.getDyeData(), amount);
+        this(dyeColor.getItemDyeMeta(), amount);
     }
 
     public ItemDye(Integer meta, int amount) {

@@ -36,7 +36,7 @@ public final class CommonBlockProperties {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final BlockProperty<BlockFace> FACING_DIRECTION = new ArrayBlockProperty<>("facing_direction", false, new BlockFace[] {
+    public static final ArrayBlockProperty<BlockFace> FACING_DIRECTION = new ArrayBlockProperty<>("facing_direction", false, new BlockFace[] {
             // Index based
             BlockFace.DOWN, BlockFace.UP,
             BlockFace.NORTH, BlockFace.SOUTH,
@@ -57,7 +57,7 @@ public final class CommonBlockProperties {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final BlockProperty<BlockFace> DIRECTION = new ArrayBlockProperty<>("direction", false, new BlockFace[]{
+    public static final ArrayBlockProperty<BlockFace> DIRECTION = new ArrayBlockProperty<>("direction", false, new BlockFace[]{
             // Horizontal-index based
             BlockFace.SOUTH, BlockFace.WEST,
             BlockFace.NORTH, BlockFace.EAST,
@@ -65,7 +65,7 @@ public final class CommonBlockProperties {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final BlockProperty<BlockFace.Axis> PILLAR_AXIS = new ArrayBlockProperty<>("pillar_axis", false, new BlockFace.Axis[]{
+    public static final ArrayBlockProperty<BlockFace.Axis> PILLAR_AXIS = new ArrayBlockProperty<>("pillar_axis", false, new BlockFace.Axis[]{
             BlockFace.Axis.Y, BlockFace.Axis.X, BlockFace.Axis.Z
     });
 
@@ -75,7 +75,7 @@ public final class CommonBlockProperties {
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
-    public static final BlockProperty<DyeColor> COLOR = new ArrayBlockProperty<>("color", true, new DyeColor[] {
+    public static final ArrayBlockProperty<DyeColor> COLOR = new ArrayBlockProperty<>("color", true, new DyeColor[] {
             DyeColor.WHITE, DyeColor.ORANGE, DyeColor.MAGENTA, DyeColor.LIGHT_BLUE, DyeColor.YELLOW, DyeColor.LIME, DyeColor.PINK,
             DyeColor.GRAY, DyeColor.LIGHT_GRAY, DyeColor.CYAN, DyeColor.PURPLE, DyeColor.BLUE, DyeColor.BROWN,
             DyeColor.GREEN, DyeColor.RED, DyeColor.BLACK

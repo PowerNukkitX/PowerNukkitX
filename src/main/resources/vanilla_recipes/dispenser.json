@@ -2,11 +2,11 @@
   "format_version": "1.12",
   "minecraft:recipe_shaped": {
     "description": {
-    "identifier": "minecraft:dispenser"
+      "identifier": "minecraft:dispenser"
     },
-
-    
-    "tags": [ "crafting_table" ],
+    "tags": [
+      "crafting_table"
+    ],
     "pattern": [
       "###",
       "#X#",
@@ -24,8 +24,7 @@
       }
     },
     "result": {
-      "item": "minecraft:dispenser",
-      "data": 3
+      "item": "minecraft:dispenser"
     }
   }
 }

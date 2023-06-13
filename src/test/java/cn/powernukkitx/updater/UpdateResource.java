@@ -3,6 +3,8 @@ package cn.powernukkitx.updater;
 import cn.nukkit.inventory.ItemTag;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.ToNumberStrategy;
+import com.google.gson.stream.JsonReader;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
 
@@ -18,7 +20,9 @@ import java.util.*;
 
 @SuppressWarnings("unchecked")
 public class UpdateResource {
-    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    Gson gson = new GsonBuilder().setPrettyPrinting()
+            .setObjectToNumberStrategy(jsonReader -> Double.valueOf(jsonReader.nextString()).intValue())
+            .create();
 
     /**
      * Pre-requisites:<br>
@@ -27,7 +31,6 @@ public class UpdateResource {
      */
     public static void main(String[] args) {
         new UpdateResource().execute();
-        System.out.println("OK");
     }
 
     @SneakyThrows
@@ -122,8 +125,34 @@ public class UpdateResource {
     }
 
     private void updateRecipes(Path source, Path target) throws IOException {
+        //todo These are wrong recipes, their `result` should not have `data`, if this bug is fixed, please remove it
+        List<String> errorRecipes = List.of(
+                "dispenser.json",
+                "dropper.json",
+                "sticky_piston.json",
+                "piston_from_warped_planks.json",
+                "piston.json",
+                "piston_from_crimson_planks.json",
+                "piston_from_mangrove_planks.json"
+        );
         Path recipes = source.resolve("behavior_pack/recipes");
         FileUtils.copyDirectory(recipes.toFile(), target.toFile());
+        for (var fix : errorRecipes) {
+            Path p = target.resolve(fix);
+            Map<String, Object> data = gson.fromJson(new FileReader(p.toFile()), Map.class);
+            Map<String, Object> recipe = (Map<String, Object>) data.get("minecraft:recipe_shaped");
+            Map<String, Object> result = (Map<String, Object>) recipe.get("result");
+            result.remove("data");
+            Files.writeString(p, gson.toJson(data), StandardCharsets.UTF_8);
+        }
+        Path p = target.resolve("mangrove_boat.json");
+        Map<String, Object> data = gson.fromJson(new FileReader(p.toFile()), Map.class);
+        Map<String, Object> recipe = (Map<String, Object>) data.get("minecraft:recipe_shaped");
+        Map<String, Object> key = (Map<String, Object>) recipe.get("key");
+        Map<String, Object> o = (Map<String, Object>)key.get("#");
+        o.remove("data");
+
+        Files.writeString(p, gson.toJson(data), StandardCharsets.UTF_8);
         System.out.println("update recipe success!");
     }
 
