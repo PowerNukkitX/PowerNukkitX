@@ -124,7 +124,7 @@ public class Potion implements Cloneable {
         potionsMap.put(Identifier.tryParse("minecraft:strong_turtle_master"), new Potion(Potion.TURTLE_MASTER_II, 2));
         potionsMap.put(Identifier.tryParse("minecraft:slow_falling"), new Potion(Potion.SLOW_FALLING));
         potionsMap.put(Identifier.tryParse("minecraft:long_slow_falling"), new Potion(Potion.SLOW_FALLING_LONG));
-        potionsMap.put(Identifier.tryParse("minecraft:long_slowness"), new Potion(Potion.SLOW_FALLING_LONG));
+        potionsMap.put(Identifier.tryParse("minecraft:long_slowness"), new Potion(Potion.SLOWNESS_LONG));
         potions = potionsMap.values().toArray(new Potion[256]);
     }
 
