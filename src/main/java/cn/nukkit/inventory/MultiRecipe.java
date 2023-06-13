@@ -18,6 +18,11 @@ public class MultiRecipe implements Recipe {
     }
 
     @Override
+    public String getRecipeId() {
+        return id.toString();
+    }
+
+    @Override
     public Item getResult() {
         throw new UnsupportedOperationException();
     }
