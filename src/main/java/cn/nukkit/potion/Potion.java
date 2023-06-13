@@ -100,7 +100,7 @@ public class Potion implements Cloneable {
         potionsMap.put(Identifier.tryParse("minecraft:long_swiftness"), new Potion(Potion.SPEED_LONG));
         potionsMap.put(Identifier.tryParse("minecraft:strong_swiftness"), new Potion(Potion.SPEED_II, 2));
         potionsMap.put(Identifier.tryParse("minecraft:slowness"), new Potion(Potion.SLOWNESS));
-        potionsMap.put(Identifier.tryParse("minecraft:strong_slowness"), new Potion(Potion.SLOWNESS_IV, 4));
+        potionsMap.put(Identifier.tryParse("minecraft:long_slowness"), new Potion(Potion.SLOWNESS_LONG));
         potionsMap.put(Identifier.tryParse("minecraft:water_breathing"), new Potion(Potion.WATER_BREATHING));
         potionsMap.put(Identifier.tryParse("minecraft:long_water_breathing"), new Potion(Potion.WATER_BREATHING_LONG));
         potionsMap.put(Identifier.tryParse("minecraft:healing"), new Potion(Potion.INSTANT_HEALTH));
@@ -124,7 +124,7 @@ public class Potion implements Cloneable {
         potionsMap.put(Identifier.tryParse("minecraft:strong_turtle_master"), new Potion(Potion.TURTLE_MASTER_II, 2));
         potionsMap.put(Identifier.tryParse("minecraft:slow_falling"), new Potion(Potion.SLOW_FALLING));
         potionsMap.put(Identifier.tryParse("minecraft:long_slow_falling"), new Potion(Potion.SLOW_FALLING_LONG));
-        potionsMap.put(Identifier.tryParse("minecraft:long_slowness"), new Potion(Potion.SLOWNESS_LONG));
+        potionsMap.put(Identifier.tryParse("minecraft:strong_slowness"), new Potion(Potion.SLOWNESS_IV, 4));
         potions = potionsMap.values().toArray(new Potion[256]);
     }
 
