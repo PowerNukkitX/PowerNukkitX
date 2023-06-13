@@ -84,7 +84,7 @@ public class Potion implements Cloneable {
     public static void init() {
         potionsMap.put(Identifier.tryParse("minecraft:water"), new Potion(Potion.WATER));
         potionsMap.put(Identifier.tryParse("minecraft:mundane"), new Potion(Potion.MUNDANE));
-        potionsMap.put(Identifier.tryParse("minecraft:long_mundane"), new Potion(Potion.MUNDANE_II));
+        potionsMap.put(Identifier.tryParse("minecraft:long_mundane"), new Potion(Potion.MUNDANE_II, 2));
         potionsMap.put(Identifier.tryParse("minecraft:thick"), new Potion(Potion.THICK));
         potionsMap.put(Identifier.tryParse("minecraft:awkward"), new Potion(Potion.AWKWARD));
         potionsMap.put(Identifier.tryParse("minecraft:nightvision"), new Potion(Potion.NIGHT_VISION));

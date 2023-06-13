@@ -952,7 +952,6 @@ public class Item implements Cloneable, BlockID, ItemID {
                 return Item.AIR_ITEM;
             }
             if (CUSTOM_ITEMS.containsKey(namespacedId)) {
-                //custom item
                 result = RuntimeItems.getRuntimeMapping().getItemByNamespaceId(namespacedId, 1);
                 /*
                  * 因为getDefinition中如果需要使用Item.fromString()获取自定义物品,此时RuntimeItems中还没注册自定义物品,留一个备用构造。
@@ -961,36 +960,8 @@ public class Item implements Cloneable, BlockID, ItemID {
                 if (result.getName() != null && result.getName().equals(Item.UNKNOWN_STR)) {
                     result = CUSTOM_ITEMS.get(namespacedId).get();
                 }
-                if (meta.isPresent()) {
-                    int damage = meta.getAsInt();
-                    if (damage < 0) {
-                        result = result.createFuzzyCraftingRecipe();
-                    } else {
-                        result.setDamage(damage);
-                    }
-                }
-            } else if (Block.CUSTOM_BLOCK_ID_MAP.containsKey(namespacedId)) {
-                //custom block
-                result = RuntimeItems.getRuntimeMapping().getItemByNamespaceId(namespacedId, 1);
-                if (meta.isPresent()) {
-                    int damage = meta.getAsInt();
-                    if (damage < 0) {
-                        result = result.createFuzzyCraftingRecipe();
-                    } else {
-                        result.setDamage(damage);
-                    }
-                }
             } else {
-                //common item
                 result = RuntimeItems.getRuntimeMapping().getItemByNamespaceId(namespacedId, 1);
-                if (meta.isPresent()) {
-                    int damage = meta.getAsInt();
-                    if (damage < 0) {
-                        result = result.createFuzzyCraftingRecipe();
-                    } else {
-                        result.setDamage(damage);
-                    }
-                }
             }
 
             if (result == null) {
@@ -1011,9 +982,17 @@ public class Item implements Cloneable, BlockID, ItemID {
             result = get(id, meta.orElse(0));
         }
         if (result != null) {
-            if (result.isNull() && result.getName().equals(Item.UNKNOWN_STR) || result instanceof StringItemUnknown) {
+            if (result.isNull() || result.getName().equals(Item.UNKNOWN_STR) || result instanceof StringItemUnknown) {
                 log.debug("Get `" + str + "` item from string error!");
                 return Item.AIR_ITEM;
+            }
+            if (meta.isPresent()) {
+                int damage = meta.getAsInt();
+                if (damage < 0) {
+                    result = result.createFuzzyCraftingRecipe();
+                } else {
+                    result.setDamage(damage);
+                }
             }
             return result;
         } else {
