@@ -3,6 +3,8 @@ package cn.nukkit.inventory;
 import cn.nukkit.Server;
 import cn.nukkit.api.*;
 import cn.nukkit.block.BlockPlanks;
+import cn.nukkit.block.BlockShulkerBox;
+import cn.nukkit.block.BlockUndyedShulkerBox;
 import cn.nukkit.block.BlockWool;
 import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.blockproperty.value.WoodType;
@@ -817,11 +819,61 @@ public class CraftingManager {
                 if (w != DyeColor.WHITE) {
                     ItemDye itemDye = new ItemDye(DyeColor.BONE_MEAL);
                     ItemBlock output = new BlockWool(DyeColor.WHITE).asItemBlock();
-                    this.registerShapelessRecipe(new ShapelessRecipe("minecraft:" + w.name().toLowerCase() + "_wool_to_bone_white", 0, output, List.of(itemBlock, itemDye)));
+                    this.registerShapelessRecipe(new ShapelessRecipe("minecraft:" + w.name().toLowerCase() + "_wool_to_white_from_bone_meal", 0, output, List.of(itemBlock, itemDye)));
+                }
+                if (w != DyeColor.BROWN) {
+                    Item itemDye = Item.fromString("minecraft:cocoa_beans");
+                    ItemBlock output = new BlockWool(DyeColor.BROWN).asItemBlock();
+                    this.registerShapelessRecipe(new ShapelessRecipe("minecraft:" + w.name().toLowerCase() + "_wool_to_brown_from_cocoa_beans", 0, output, List.of(itemBlock, itemDye)));
+                }
+                if (w != DyeColor.BLACK) {
+                    Item itemDye = Item.fromString("minecraft:ink_sac");
+                    ItemBlock output = new BlockWool(DyeColor.BLACK).asItemBlock();
+                    this.registerShapelessRecipe(new ShapelessRecipe("minecraft:" + w.name().toLowerCase() + "_wool_to_black_from_ink_sac", 0, output, List.of(itemBlock, itemDye)));
+                }
+                if (w != DyeColor.BLUE) {
+                    Item itemDye = Item.fromString("minecraft:lapis_lazuli");
+                    ItemBlock output = new BlockWool(DyeColor.BLUE).asItemBlock();
+                    this.registerShapelessRecipe(new ShapelessRecipe("minecraft:" + w.name().toLowerCase() + "_wool_to_blue_from_lapis_lazuli", 0, output, List.of(itemBlock, itemDye)));
                 }
             }
         }
-        //Haven't trapdoor recipe for old wood
+        //shulker Box Dye
+        for (var w : CommonBlockProperties.COLOR.getUniverse()) {
+            ItemBlock input = new BlockUndyedShulkerBox().asItemBlock();
+            Item itemDye = new ItemDye(w);
+            ItemBlock output = new BlockShulkerBox(w.getWoolData()).asItemBlock();
+            this.registerShapelessRecipe(new ShulkerBoxRecipe("minecraft:" + "undyed_shulker_box_dye_" + w.name().toLowerCase(), 0, output, List.of(input, itemDye)));
+            for (var f : DyeColor.values()) {
+                input = new BlockShulkerBox(w.getWoolData()).asItemBlock();
+                if (w != f) {
+                    itemDye = new ItemDye(f);
+                    output = new BlockShulkerBox(f.getWoolData()).asItemBlock();
+                    this.registerShapelessRecipe(new ShulkerBoxRecipe("minecraft:" + w.name().toLowerCase() + "_shulker_box_to_" + f.name().toLowerCase(), 0, output, List.of(input, itemDye)));
+                }
+                if (w != DyeColor.WHITE) {
+                    itemDye = new ItemDye(DyeColor.BONE_MEAL);
+                    output = new BlockShulkerBox(DyeColor.WHITE.getWoolData()).asItemBlock();
+                    this.registerShapelessRecipe(new ShulkerBoxRecipe("minecraft:" + w.name().toLowerCase() + "_shulker_box_to_white_from_bone_meal", 0, output, List.of(input, itemDye)));
+                }
+                if (w != DyeColor.BROWN) {
+                    itemDye = Item.fromString("minecraft:cocoa_beans");
+                    output = new BlockShulkerBox(DyeColor.BROWN.getWoolData()).asItemBlock();
+                    this.registerShapelessRecipe(new ShulkerBoxRecipe("minecraft:" + w.name().toLowerCase() + "_shulker_box_to_brown_from_cocoa_beans", 0, output, List.of(input, itemDye)));
+                }
+                if (w != DyeColor.BLACK) {
+                    itemDye = Item.fromString("minecraft:ink_sac");
+                    output = new BlockShulkerBox(DyeColor.BLACK.getWoolData()).asItemBlock();
+                    this.registerShapelessRecipe(new ShulkerBoxRecipe("minecraft:" + w.name().toLowerCase() + "_shulker_box_to_black_from_ink_sac", 0, output, List.of(input, itemDye)));
+                }
+                if (w != DyeColor.BLUE) {
+                    itemDye = Item.fromString("minecraft:lapis_lazuli");
+                    output = new BlockShulkerBox(DyeColor.BLUE.getWoolData()).asItemBlock();
+                    this.registerShapelessRecipe(new ShulkerBoxRecipe("minecraft:" + w.name().toLowerCase() + "_shulker_box_to_blue_from_lapis_lazuli", 0, output, List.of(input, itemDye)));
+                }
+            }
+        }
+        //trapdoor recipe for old wood
         for (var w : WoodType.PROPERTY.getUniverse()) {
             ItemBlock item = new BlockPlanks(w.ordinal()).asItemBlock();
             Item result;
