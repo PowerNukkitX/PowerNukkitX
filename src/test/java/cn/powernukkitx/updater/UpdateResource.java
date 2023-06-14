@@ -3,8 +3,6 @@ package cn.powernukkitx.updater;
 import cn.nukkit.inventory.ItemTag;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.ToNumberStrategy;
-import com.google.gson.stream.JsonReader;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
 
@@ -149,10 +147,17 @@ public class UpdateResource {
         Map<String, Object> data = gson.fromJson(new FileReader(p.toFile()), Map.class);
         Map<String, Object> recipe = (Map<String, Object>) data.get("minecraft:recipe_shaped");
         Map<String, Object> key = (Map<String, Object>) recipe.get("key");
-        Map<String, Object> o = (Map<String, Object>)key.get("#");
+        Map<String, Object> o = (Map<String, Object>) key.get("#");
         o.remove("data");
-
         Files.writeString(p, gson.toJson(data), StandardCharsets.UTF_8);
+
+        Path p2 = target.resolve("paper.json");
+        Map<String, Object> data2 = gson.fromJson(new FileReader(p2.toFile()), Map.class);
+        Map<String, Object> recipe2 = (Map<String, Object>) data2.get("minecraft:recipe_shaped");
+        Map<String, Object> key2 = (Map<String, Object>) recipe2.get("key");
+        Map<String, Object> o2 = (Map<String, Object>) key2.get("#");
+        o2.put("item", "minecraft:sugar_cane");
+        Files.writeString(p2, gson.toJson(data2), StandardCharsets.UTF_8);
         System.out.println("update recipe success!");
     }
 
