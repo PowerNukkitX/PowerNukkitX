@@ -2,6 +2,7 @@ package cn.nukkit.item;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.event.player.PlayerItemConsumeEvent;
 import cn.nukkit.level.vibration.VibrationEvent;
@@ -155,10 +156,15 @@ public class ItemPotion extends Item {
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
     @Nullable
     public Potion getPotion() {
         return getPotion(getDamage());
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
+    public static ItemPotion fromPotion(Potion potion) {
+        return new ItemPotion(potion.getId());
     }
 
     static Potion getPotion(int damage) {

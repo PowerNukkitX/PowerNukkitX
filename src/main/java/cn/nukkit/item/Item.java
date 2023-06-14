@@ -856,7 +856,7 @@ public class Item implements Cloneable, BlockID, ItemID {
             since = "1.4.0.0-PN")
     public static Item get(int id, Integer meta, int count, byte[] tags) {
         try {
-            Class c = null;
+            Class<?> c;
             if (id < 255 - Block.MAX_BLOCK_ID) {
                 var customBlockItem = Block.get(255 - id).toItem();
                 customBlockItem.setCount(count);
@@ -926,7 +926,6 @@ public class Item implements Cloneable, BlockID, ItemID {
         if (!matcher.matches()) {
             return Item.AIR_ITEM;
         }
-
         String name = matcher.group(2);
         OptionalInt meta = OptionalInt.empty();
         String metaGroup;
@@ -938,8 +937,9 @@ public class Item implements Cloneable, BlockID, ItemID {
         if (metaGroup != null) {
             meta = OptionalInt.of(Short.parseShort(metaGroup));
         }
-
         String numericIdGroup = matcher.group(4);
+
+        Item result = null;
         if (name != null) {
             String namespaceGroup = matcher.group(1);
             String namespacedId;
@@ -951,79 +951,54 @@ public class Item implements Cloneable, BlockID, ItemID {
             if (namespacedId.equals("minecraft:air")) {
                 return Item.AIR_ITEM;
             }
-            //custom item
             if (CUSTOM_ITEMS.containsKey(namespacedId)) {
-                var item = RuntimeItems.getRuntimeMapping().getItemByNamespaceId(namespacedId, 1);
-                Item customItem;
+                result = RuntimeItems.getRuntimeMapping().getItemByNamespaceId(namespacedId, 1);
                 /*
                  * 因为getDefinition中如果需要使用Item.fromString()获取自定义物品,此时RuntimeItems中还没注册自定义物品,留一个备用构造。
                  * 主要用于getDefinition中addRepairItems
                  */
-                if (item.getName() != null && item.getName().equals(Item.UNKNOWN_STR)) {
-                    customItem = CUSTOM_ITEMS.get(namespacedId).get();
-                } else customItem = item;
-
-                if (meta.isPresent()) {
-                    int damage = meta.getAsInt();
-                    if (damage < 0) {
-                        customItem = customItem.createFuzzyCraftingRecipe();
-                    } else {
-                        customItem.setDamage(damage);
-                    }
+                if (result.getName() != null && result.getName().equals(Item.UNKNOWN_STR)) {
+                    result = CUSTOM_ITEMS.get(namespacedId).get();
                 }
-                return customItem;
-                //custom block
-            } else if (Block.CUSTOM_BLOCK_ID_MAP.containsKey(namespacedId)) {
-                ItemBlock customItemBlock = (ItemBlock) RuntimeItems.getRuntimeMapping().getItemByNamespaceId(namespacedId, 1);
-                if (meta.isPresent()) {
-                    int damage = meta.getAsInt();
-                    if (damage < 0) {
-                        customItemBlock = (ItemBlock) customItemBlock.createFuzzyCraftingRecipe();
-                    } else {
-                        customItemBlock.setDamage(damage);
-                    }
-                }
-                return customItemBlock;
+            } else {
+                result = RuntimeItems.getRuntimeMapping().getItemByNamespaceId(namespacedId, 1);
             }
 
-            //common item
-            Item item = RuntimeItems.getRuntimeMapping().getItemByNamespaceId(namespacedId, 1);
-            if (meta.isPresent()) {
-                int damage = meta.getAsInt();
-                if (damage < 0) {
-                    item = item.createFuzzyCraftingRecipe();
-                } else {
-                    item.setDamage(damage);
+            if (result == null) {
+                int id;
+                try {
+                    id = ItemID.class.getField(name.toUpperCase()).getInt(null);
+                    result = get(id, meta.orElse(0));
+                } catch (Exception ignore1) {
+                    try {
+                        id = BlockID.class.getField(name.toUpperCase()).getInt(null);
+                        result = getBlock(id, meta.orElse(0));
+                    } catch (Exception ignore2) {
+                    }
                 }
-            }
-            if (!item.isNull() && !item.getName().equals(Item.UNKNOWN_STR) && !(item instanceof StringItemUnknown)) {
-                return item;
             }
         } else if (numericIdGroup != null) {
             int id = Integer.parseInt(numericIdGroup);
-            return get(id, meta.orElse(0));
+            result = get(id, meta.orElse(0));
         }
-
-        if (name == null) {
+        if (result != null) {
+            if (result.isNull() || result.getName().equals(Item.UNKNOWN_STR) || result instanceof StringItemUnknown) {
+                log.debug("Get `" + str + "` item from string error!");
+                return Item.AIR_ITEM;
+            }
+            if (meta.isPresent()) {
+                int damage = meta.getAsInt();
+                if (damage < 0) {
+                    result = result.createFuzzyCraftingRecipe();
+                } else {
+                    result.setDamage(damage);
+                }
+            }
+            return result;
+        } else {
+            log.debug("Get `" + str + "` item from string error!");
             return Item.AIR_ITEM;
         }
-
-        int id = 0;
-        try {
-            id = ItemID.class.getField(name.toUpperCase()).getInt(null);
-        } catch (Exception ignore1) {
-            try {
-                id = BlockID.class.getField(name.toUpperCase()).getInt(null);
-                return getBlock(id, meta.orElse(0));
-            } catch (Exception ignore2) {
-
-            }
-        }
-        Item item = get(id, meta.orElse(0));
-        if (item.isNull()) {
-            log.debug("Get `" + str + "` item from string error!");
-        }
-        return item;
     }
 
     public static Item fromJson(Map<String, Object> data) {

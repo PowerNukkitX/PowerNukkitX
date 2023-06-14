@@ -1,8 +1,12 @@
 package cn.powernukkitx.updater;
 
 import cn.nukkit.inventory.ItemTag;
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.ToNumberStrategy;
+import com.google.gson.stream.JsonReader;
 import lombok.SneakyThrows;
+import org.apache.commons.io.FileUtils;
 
 import java.io.*;
 import java.net.URL;
@@ -14,24 +18,28 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
 
+@SuppressWarnings("unchecked")
 public class UpdateResource {
+    Gson gson = new GsonBuilder().setPrettyPrinting()
+            .setObjectToNumberStrategy(jsonReader -> Double.valueOf(jsonReader.nextString()).intValue())
+            .create();
+
     /**
      * Pre-requisites:<br>
-     * - Make sure that ProxyPass is updated and working with the last Minecraft Bedrock Edition client<br>
-     * - Make sure PocketMine has released their exports: https://github.com/pmmp/BedrockData<br>
-     * - Run ProxyPass with export-data in config.yml set to true, the proxy pass must be<br>
-     * pointing to a vanilla BDS server from https://www.minecraft.net/en-us/download/server/bedrock<br>
-     * - Connect to the ProxyPass server with the last Minecraft Bedrock Edition client at least once<br>
-     * - Adjust the path bellow if necessary for your machine<br>
+     * - Make sure PocketMine has released their exports: <a href="https://github.com/pmmp/BedrockData">BedrockData</a><br>
+     * - Make sure Mojang has released their addon samples: <a href="https://github.com/Mojang/bedrock-samples">bedrock-samples</a><br>
      */
     public static void main(String[] args) {
         new UpdateResource().execute();
-        System.out.println("OK");
     }
 
+    @SneakyThrows
     private void execute() {
-        downloadResources();
-        update();
+//        downloadResources();
+//        updateItem2Tags(Path.of("src/main/resources/item_2_tags.json"));
+//        convertRequiredItemList(Path.of("src/main/resources/runtime_item_states.json"));
+        updateRecipes(Path.of("target/bedrock-samples"), Path.of("src/main/resources/vanilla_recipes"));
+        System.exit(0);
     }
 
     private void downloadResources() {
@@ -90,10 +98,8 @@ public class UpdateResource {
         }
     }
 
-    @SneakyThrows
-    private void update() {
-        //update item_2_tags.json
-        var gson1 = new GsonBuilder().setPrettyPrinting().create();
+    //update item_2_tags.json
+    private void updateItem2Tags(Path target) throws IOException {
         Map<String, Set<String>> test = new LinkedHashMap<>();
         for (var entry : ItemTag.getTag2Items().entrySet()) {
             for (var v : entry.getValue()) {
@@ -101,20 +107,53 @@ public class UpdateResource {
                 test.get(v).add(entry.getKey());
             }
         }
-        Files.writeString(Path.of("./src/main/resources/item_2_tags.json"), gson1.toJson(test), StandardCharsets.UTF_8);
+        Files.writeString(target, gson.toJson(test), StandardCharsets.UTF_8);
+        System.out.println("update item_2_tags.json success!");
+    }
 
-        //convert required_item_list.json to runtime_item_states.json
-
-        var gson2 = new GsonBuilder().setPrettyPrinting().create();
+    //convert required_item_list.json to runtime_item_states.json
+    private void convertRequiredItemList(Path target) throws IOException {
         var runtime_item_states = new ArrayList<RuntimeEntry>();
-        Map<String, ?> map = gson2.fromJson(new FileReader("./src/test/resources/org/powernukkit/updater/dumps/pmmp/required_item_list.json"), Map.class);
-
+        Map<String, ?> map = gson.fromJson(new FileReader("./src/test/resources/org/powernukkit/updater/dumps/pmmp/required_item_list.json"), Map.class);
         map.forEach((k, v) -> {
             String runtime_id = ((Map) v).get("runtime_id").toString();
             int id = Double.valueOf(runtime_id).intValue();
             runtime_item_states.add(new RuntimeEntry(k, id));
         });
-        Files.writeString(Path.of("./src/main/resources/runtime_item_states.json"), gson2.toJson(runtime_item_states), StandardCharsets.UTF_8);
+        Files.writeString(target, gson.toJson(runtime_item_states), StandardCharsets.UTF_8);
+        System.out.println("convert required_item_list.json to runtime_item_states.json success!");
+    }
+
+    private void updateRecipes(Path source, Path target) throws IOException {
+        //todo These are wrong recipes, their `result` should not have `data`, if this bug is fixed, please remove it
+        List<String> errorRecipes = List.of(
+                "dispenser.json",
+                "dropper.json",
+                "sticky_piston.json",
+                "piston_from_warped_planks.json",
+                "piston.json",
+                "piston_from_crimson_planks.json",
+                "piston_from_mangrove_planks.json"
+        );
+        Path recipes = source.resolve("behavior_pack/recipes");
+        FileUtils.copyDirectory(recipes.toFile(), target.toFile());
+        for (var fix : errorRecipes) {
+            Path p = target.resolve(fix);
+            Map<String, Object> data = gson.fromJson(new FileReader(p.toFile()), Map.class);
+            Map<String, Object> recipe = (Map<String, Object>) data.get("minecraft:recipe_shaped");
+            Map<String, Object> result = (Map<String, Object>) recipe.get("result");
+            result.remove("data");
+            Files.writeString(p, gson.toJson(data), StandardCharsets.UTF_8);
+        }
+        Path p = target.resolve("mangrove_boat.json");
+        Map<String, Object> data = gson.fromJson(new FileReader(p.toFile()), Map.class);
+        Map<String, Object> recipe = (Map<String, Object>) data.get("minecraft:recipe_shaped");
+        Map<String, Object> key = (Map<String, Object>) recipe.get("key");
+        Map<String, Object> o = (Map<String, Object>)key.get("#");
+        o.remove("data");
+
+        Files.writeString(p, gson.toJson(data), StandardCharsets.UTF_8);
+        System.out.println("update recipe success!");
     }
 
     private record RuntimeEntry(String name, int id) {

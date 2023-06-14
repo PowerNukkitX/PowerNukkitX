@@ -10,6 +10,10 @@ public class BrewingRecipe extends MixRecipe {
         super(input, ingredient, output);
     }
 
+    public BrewingRecipe(String recipeId, Item input, Item ingredient, Item output) {
+        super(recipeId, input, ingredient, output);
+    }
+
     @Override
     public void registerToCraftingManager(CraftingManager manager) {
         manager.registerBrewingRecipe(this);

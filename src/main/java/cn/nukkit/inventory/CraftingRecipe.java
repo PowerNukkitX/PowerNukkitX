@@ -10,9 +10,6 @@ import java.util.UUID;
  * @author CreeperFace
  */
 public interface CraftingRecipe extends Recipe {
-
-    String getRecipeId();
-
     UUID getId();
 
     void setId(UUID id);

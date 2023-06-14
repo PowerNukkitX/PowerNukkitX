@@ -1,0 +1,28 @@
+{
+    "format_version": "1.12",
+    "minecraft:recipe_shaped": {
+        "description": {
+            "identifier": "minecraft:acacia_fence"
+        },
+        "tags": [
+            "crafting_table"
+        ],
+        "pattern": [
+            "W#W",
+            "W#W"
+        ],
+        "key": {
+            "#": {
+                "item": "minecraft:stick"
+            },
+            "W": {
+                "item": "minecraft:planks",
+                "data": 4
+            }
+        },
+        "result": {
+            "item": "minecraft:acacia_fence",
+            "count": 3
+        }
+    }
+}
