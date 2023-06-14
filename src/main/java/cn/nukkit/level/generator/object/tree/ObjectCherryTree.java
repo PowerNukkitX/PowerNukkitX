@@ -49,7 +49,7 @@ public class ObjectCherryTree extends TreeGenerator {
 
         if (!canPlaceObject(level, mainTrunkHeight, x, y, z)) return false;
 
-        var growOnXAxis = rand.nextBoolean();
+        var growOnXAxis = false; // rand.nextBoolean();
         final int xMultiplier = growOnXAxis ? 1 : 0;
         final int zMultiplier = growOnXAxis ? 0 : 1;
 
@@ -109,7 +109,7 @@ public class ObjectCherryTree extends TreeGenerator {
             level.setBlockIdAt(tmpX, tmpY, tmpZ, 0);
             tmpX += xMultiplier;
             tmpY += 1;
-            tmpX += zMultiplier;
+            tmpZ += zMultiplier;
             if (this.canGrowInto(level.getBlockIdAt(tmpX, tmpY, tmpZ))) {
                 level.setBlockStateAt(tmpX, tmpY, tmpZ, LOG_Y_AXIS);
             }
@@ -158,13 +158,13 @@ public class ObjectCherryTree extends TreeGenerator {
         return true;
     }
 
-    static final float LEAVES_RADIUS = 4.3f;
+    static final int LEAVES_RADIUS = 4;
 
     public void generateLeaves(ChunkManager level, NukkitRandom rand, final int x, final int y, final int z) {
         for (int dy = -2; dy <= 2; dy++) {
-            for (int dx = -NukkitMath.ceilFloat(LEAVES_RADIUS); dx <= LEAVES_RADIUS; dx++) {
-                for (int dz = -NukkitMath.ceilFloat(LEAVES_RADIUS); dz <= LEAVES_RADIUS; dz++) {
-                    var currentRadius = LEAVES_RADIUS - Math.abs(dy);
+            for (int dx = -LEAVES_RADIUS; dx <= LEAVES_RADIUS; dx++) {
+                for (int dz = -LEAVES_RADIUS; dz <= LEAVES_RADIUS; dz++) {
+                    var currentRadius = LEAVES_RADIUS - (Math.max(1, Math.abs(dy)));
                     if (dx * dx + dz * dz > currentRadius * currentRadius) continue;
                     var blockId = level.getBlockIdAt(x + dx, y + dy, z + dz);
                     if (blockId == 0 || blockId == BlockID.LEAVES || blockId == BlockID.LEAVES2 ||
