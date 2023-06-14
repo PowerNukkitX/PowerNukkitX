@@ -8,6 +8,7 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.math.*;
+import org.jetbrains.annotations.NotNull;
 
 @Since("1.20.0-r2")
 @PowerNukkitXOnly
@@ -38,20 +39,20 @@ public class ObjectCherryTree extends TreeGenerator {
 
         final var isBigTree = rand.nextBoolean();
         if (isBigTree) {
-            return generateBigTree(level, rand, x, y, z);
+            var ok = generateBigTree(level, rand, x, y, z);
+            if (ok) return true;
         }
-
-        return false;
+        return generateSmallTree(level, rand, x, y, z);
     }
 
-    protected boolean generateBigTree(ChunkManager level, NukkitRandom rand, final int x, final int y, final int z) {
+    protected boolean generateBigTree(ChunkManager level, @NotNull NukkitRandom rand, final int x, final int y, final int z) {
         final int mainTrunkHeight = (rand.nextBoolean() ? 1 : 0) + 10;
 
         if (!canPlaceObject(level, mainTrunkHeight, x, y, z)) return false;
 
         var growOnXAxis = rand.nextBoolean();
-        final int xMultiplier = growOnXAxis ? 1 : 0;
-        final int zMultiplier = growOnXAxis ? 0 : 1;
+        int xMultiplier = growOnXAxis ? 1 : 0;
+        int zMultiplier = growOnXAxis ? 0 : 1;
 
         final int leftSideTrunkLength = rand.nextRange(2, 4);
         final int leftSideTrunkHeight = rand.nextRange(3, 5);
@@ -60,6 +61,8 @@ public class ObjectCherryTree extends TreeGenerator {
         if (!canPlaceObject(level, leftSideTrunkHeight, x - leftSideTrunkLength * xMultiplier,
                 y + leftSideTrunkStartY, z - leftSideTrunkLength * zMultiplier)) {
             growOnXAxis = !growOnXAxis;
+            xMultiplier = growOnXAxis ? 1 : 0;
+            zMultiplier = growOnXAxis ? 0 : 1;
             if (!canPlaceObject(level, leftSideTrunkHeight, x - leftSideTrunkLength * xMultiplier,
                     y + leftSideTrunkStartY, z - leftSideTrunkLength * zMultiplier)) {
                 return false;
@@ -155,6 +158,75 @@ public class ObjectCherryTree extends TreeGenerator {
         // generate right-side trunk leaves
         generateLeaves(level, rand, x + rightSideTrunkLength * xMultiplier,
                 y + rightSideTrunkStartY + rightSideTrunkHeight + 1, z + rightSideTrunkLength * zMultiplier);
+        return true;
+    }
+
+    protected boolean generateSmallTree(ChunkManager level, @NotNull NukkitRandom rand, final int x, final int y, final int z) {
+        final int mainTrunkHeight = (rand.nextBoolean() ? 1 : 0) + 4;
+        final int sideTrunkHeight = rand.nextRange(3, 5);
+
+        if (!canPlaceObject(level, mainTrunkHeight + 1, x, y, z)) return false;
+
+        var growDirection = rand.nextRange(0, 3);
+        int xMultiplier = 0;
+        int zMultiplier = 0;
+        var canPlace = false;
+        for (int i = 0; i < 4; i++) {
+            growDirection = (growDirection + 1) % 4;
+            xMultiplier = switch (growDirection) {
+                case 0 -> -1;
+                case 1 -> 1;
+                default -> 0;
+            };
+            zMultiplier = switch (growDirection) {
+                case 2 -> -1;
+                case 3 -> 1;
+                default -> 0;
+            };
+            if (canPlaceObject(level, sideTrunkHeight, x + xMultiplier * sideTrunkHeight, y,
+                    z + zMultiplier * sideTrunkHeight)) {
+                canPlace = true;
+                break;
+            }
+        }
+        if (!canPlace) {
+            return false;
+        }
+
+
+        final var sideBlockState = xMultiplier == 0 ? LOG_Z_AXIS : LOG_X_AXIS;
+        // Generate main trunk
+        for (int yy = 0; yy < mainTrunkHeight; ++yy) {
+            if (this.canGrowInto(level.getBlockIdAt(x, y + yy, z)))
+                level.setBlockStateAt(x, y + yy, z, LOG_Y_AXIS);
+        }
+        // Generate side trunk
+        // (└)-┐      <- if side trunk is 4 or more blocks high, do not place the last block
+        //     └-┐    <- side trunk
+        //       └-┐
+        //         |  <- main trunk
+        //         |
+        for (int yy = 1; yy <= sideTrunkHeight; ++yy) {
+            var tmpX = x + yy * xMultiplier;
+            var tmpY = y + mainTrunkHeight + yy - 2;
+            var tmpZ = z + yy * zMultiplier;
+            if (this.canGrowInto(level.getBlockIdAt(tmpX, tmpY, tmpZ))) {
+                level.setBlockStateAt(tmpX, tmpY, tmpZ, sideBlockState);
+            }
+            // if side trunk is 4 or 5 blocks high, do not place the last block
+            if (yy == sideTrunkHeight - 1 && sideTrunkHeight > 3) {
+                continue;
+            }
+            tmpY += 1;
+            if (this.canGrowInto(level.getBlockIdAt(tmpX, tmpY, tmpZ))) {
+                level.setBlockStateAt(tmpX, tmpY, tmpZ, LOG_Y_AXIS);
+            }
+        }
+
+        // generate leaves
+        generateLeaves(level, rand, x + sideTrunkHeight * xMultiplier, y + mainTrunkHeight + sideTrunkHeight,
+                z + sideTrunkHeight * zMultiplier);
+
         return true;
     }
 
