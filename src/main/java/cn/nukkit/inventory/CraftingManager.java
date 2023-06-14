@@ -2,8 +2,10 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Server;
 import cn.nukkit.api.*;
+import cn.nukkit.block.BlockPlanks;
 import cn.nukkit.block.BlockWool;
 import cn.nukkit.blockproperty.CommonBlockProperties;
+import cn.nukkit.blockproperty.value.WoodType;
 import cn.nukkit.inventory.recipe.DefaultDescriptor;
 import cn.nukkit.inventory.recipe.ItemDescriptor;
 import cn.nukkit.inventory.recipe.ItemTagDescriptor;
@@ -188,22 +190,7 @@ public class CraftingManager {
                 }
             }
         }
-        //There is no wool dyeing recipe in the bedrock-samples, maybe it is hardcode? Manually add the wool dye recipes here
-        for (var w : CommonBlockProperties.COLOR.getUniverse()) {
-            for (var f : DyeColor.values()) {
-                ItemBlock itemBlock = new BlockWool(w).asItemBlock();
-                if (w != f) {
-                    ItemDye itemDye = new ItemDye(f);
-                    ItemBlock output = new BlockWool(f).asItemBlock();
-                    this.registerShapelessRecipe(new ShapelessRecipe("minecraft:" + w.name().toLowerCase() + "_wool_to_" + f.name().toLowerCase(), 0, output, List.of(itemBlock, itemDye)));
-                }
-                if (w != DyeColor.WHITE) {
-                    ItemDye itemDye = new ItemDye(DyeColor.BONE_MEAL);
-                    ItemBlock output = new BlockWool(DyeColor.WHITE).asItemBlock();
-                    this.registerShapelessRecipe(new ShapelessRecipe("minecraft:" + w.name().toLowerCase() + "_wool_to_bone_white", 0, output, List.of(itemBlock, itemDye)));
-                }
-            }
-        }
+        loadHardCodeRecipe();
     }
     //</editor-fold>
 
@@ -815,6 +802,37 @@ public class CraftingManager {
             }
         }
         this.recipeList.putIfAbsent(recipe.getRecipeId(), recipe);
+    }
+
+    private void loadHardCodeRecipe() {
+        //There is no wool dyeing recipe in the bedrock-samples, maybe it is hardcode? Manually add the wool dye recipes here
+        for (var w : CommonBlockProperties.COLOR.getUniverse()) {
+            for (var f : DyeColor.values()) {
+                ItemBlock itemBlock = new BlockWool(w).asItemBlock();
+                if (w != f) {
+                    ItemDye itemDye = new ItemDye(f);
+                    ItemBlock output = new BlockWool(f).asItemBlock();
+                    this.registerShapelessRecipe(new ShapelessRecipe("minecraft:" + w.name().toLowerCase() + "_wool_to_" + f.name().toLowerCase(), 0, output, List.of(itemBlock, itemDye)));
+                }
+                if (w != DyeColor.WHITE) {
+                    ItemDye itemDye = new ItemDye(DyeColor.BONE_MEAL);
+                    ItemBlock output = new BlockWool(DyeColor.WHITE).asItemBlock();
+                    this.registerShapelessRecipe(new ShapelessRecipe("minecraft:" + w.name().toLowerCase() + "_wool_to_bone_white", 0, output, List.of(itemBlock, itemDye)));
+                }
+            }
+        }
+        //Haven't trapdoor recipe for old wood
+        for (var w : WoodType.PROPERTY.getUniverse()) {
+            ItemBlock item = new BlockPlanks(w.ordinal()).asItemBlock();
+            Item result;
+            if (w == WoodType.OAK) {
+                result = Item.fromString("minecraft:trapdoor");
+            } else {
+                result = Item.fromString("minecraft:" + w.name().toLowerCase() + "_trapdoor");
+            }
+            result.setCount(2);
+            this.registerShapedRecipe(new ShapedRecipe("minecraft:" + w.name().toLowerCase() + "_plank_to_trapdoor", 0, result, new String[]{"AAA", "AAA"}, Map.of('A', item), List.of()));
+        }
     }
 
     private CraftingManager instance() {
