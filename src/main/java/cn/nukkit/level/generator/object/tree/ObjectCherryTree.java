@@ -49,7 +49,7 @@ public class ObjectCherryTree extends TreeGenerator {
 
         if (!canPlaceObject(level, mainTrunkHeight, x, y, z)) return false;
 
-        var growOnXAxis = false; // rand.nextBoolean();
+        var growOnXAxis = rand.nextBoolean();
         final int xMultiplier = growOnXAxis ? 1 : 0;
         final int zMultiplier = growOnXAxis ? 0 : 1;
 
