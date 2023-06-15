@@ -17,7 +17,12 @@ public abstract class TreeGenerator extends cn.nukkit.level.generator.object.Bas
      * For example, a tree will not grow into stone
      */
     protected boolean canGrowInto(int id) {
-        return id == Item.AIR || id == Item.LEAVES || id == Item.GRASS || id == Item.DIRT || id == Item.LOG || id == Item.LOG2 || id == Item.SAPLING || id == Item.VINE || id == Item.DIRT_WITH_ROOTS || id == Item.AZALEA_LEAVES || id == Item.AZALEA_LEAVES_FLOWERED;
+        return switch (id) {
+            case Item.AIR, Item.LEAVES, Item.GRASS, Item.DIRT, Item.LOG, Item.LOG2, Item.SAPLING, Item.VINE,
+                    Item.DIRT_WITH_ROOTS, Item.AZALEA_LEAVES, Item.AZALEA_LEAVES_FLOWERED, Item.CHERRY_LEAVES,
+                    Item.CHERRY_LOG, Item.CHERRY_SAPLING -> true;
+            default -> false;
+        };
     }
 
     public void generateSaplings(Level level, Random random, Vector3 pos) {
