@@ -38,5 +38,6 @@ public final class OldNukkitLevelConvert {
                 }
             }
         }
+        levelProvider.unloadChunks();
     }
 }
