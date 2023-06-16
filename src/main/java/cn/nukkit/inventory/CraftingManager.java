@@ -2,22 +2,23 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Server;
 import cn.nukkit.api.*;
-import cn.nukkit.block.BlockPlanks;
-import cn.nukkit.block.BlockShulkerBox;
-import cn.nukkit.block.BlockUndyedShulkerBox;
-import cn.nukkit.block.BlockWool;
-import cn.nukkit.blockproperty.CommonBlockProperties;
-import cn.nukkit.blockproperty.value.WoodType;
 import cn.nukkit.inventory.recipe.DefaultDescriptor;
 import cn.nukkit.inventory.recipe.ItemDescriptor;
 import cn.nukkit.inventory.recipe.ItemTagDescriptor;
-import cn.nukkit.item.*;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemID;
+import cn.nukkit.item.ItemPotion;
+import cn.nukkit.item.StringItem;
+import cn.nukkit.nbt.NBTIO;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.CraftingDataPacket;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.potion.Potion;
 import cn.nukkit.utils.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import io.netty.util.collection.CharObjectHashMap;
+import io.netty.util.internal.EmptyArrays;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
@@ -28,11 +29,8 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.io.*;
-import java.net.URL;
-import java.security.CodeSource;
-import java.security.ProtectionDomain;
+import java.nio.ByteOrder;
 import java.util.*;
-import java.util.jar.JarFile;
 import java.util.zip.Deflater;
 
 /**
@@ -45,6 +43,7 @@ import java.util.zip.Deflater;
 @SuppressWarnings("unchecked")
 @Log4j2
 public class CraftingManager {
+    //<editor-fold desc="deprecated fields" defaultstate="collapsed">
     public static final Comparator<Item> recipeComparator = (i1, i2) -> {
         if (i1.getId() > i2.getId()) {
             return 1;
@@ -61,10 +60,6 @@ public class CraftingManager {
             } else return i;
         }
     };
-
-    private final VanillaRecipeParser vanillaRecipeParser;
-
-    //<editor-fold desc="deprecated fields" defaultstate="collapsed">
     /**
      * 缓存着配方数据包
      */
@@ -74,6 +69,7 @@ public class CraftingManager {
     public static DataPacket packet = null;
     @PowerNukkitXDifference(info = "Now it is the count of all recipes", since = "1.19.50-r3")
     private static int RECIPE_COUNT = 0;
+    private final VanillaRecipeParser vanillaRecipeParser;
     private final Int2ObjectMap<Map<UUID, ShapedRecipe>> shapedRecipeMap = new Int2ObjectOpenHashMap<>();
     @Deprecated
     @DeprecationDetails(by = "PowerNukkit", since = "FUTURE", reason = "Direct access to fields are not future-proof.")
@@ -145,54 +141,6 @@ public class CraftingManager {
         this.loadRecipes();
         this.rebuildPacket();
         log.info("Loaded {} recipes.", this.recipes.size());
-    }
-
-    @SneakyThrows
-    @SuppressWarnings({"unchecked"})
-    private void loadRecipes() {
-        var gson = new GsonBuilder().create();
-        //load xp config
-        var furnaceXpConfig = new Config(Config.JSON);
-        try (var r = Server.class.getModule().getResourceAsStream("furnace_xp.json")) {
-            furnaceXpConfig.load(r);
-        } catch (IOException e) {
-            log.warn("Failed to load furnace xp config");
-        }
-        //load hardcoded recipe
-        try (var r = Server.class.getModule().getResourceAsStream("special_hardcoded.json")) {
-            if (r == null) {
-                throw new AssertionError("Unable to find special_hardcoded.json");
-            }
-            List<String> uuids = gson.fromJson(new InputStreamReader(r), List.class);
-            for (String uuid : uuids) {
-                this.registerRecipe(new MultiRecipe(UUID.fromString(uuid)));
-            }
-        }
-        //load all recipe
-        URL vanillaRecipes = Server.class.getClassLoader().getResource("vanilla_recipes");
-        if (vanillaRecipes != null) {
-            switch (vanillaRecipes.getProtocol()) {
-                case "file" -> {
-                    for (var f : Objects.requireNonNull(new File(vanillaRecipes.getFile()).listFiles())) {
-                        vanillaRecipeParser.parseAndRegisterRecipe(f);
-                    }
-                }
-                case "jar" -> {
-                    ProtectionDomain protectionDomain = Server.class.getProtectionDomain();
-                    CodeSource codeSource = protectionDomain.getCodeSource();
-                    var thisUri = codeSource.getLocation().toURI();
-                    try (var thisJar = new JarFile(new File(thisUri))) {
-                        var recipes = thisJar.stream()
-                                .filter(jarEntry -> jarEntry.getName().startsWith("vanilla_recipes/") && jarEntry.getName().endsWith(".json"))
-                                .toList();
-                        for (var recipe : recipes) {
-                            vanillaRecipeParser.parseAndRegisterRecipe(Server.class.getModule().getResourceAsStream(recipe.getName()));
-                        }
-                    }
-                }
-            }
-        }
-        loadHardCodeRecipe();
     }
     //</editor-fold>
 
@@ -395,57 +343,45 @@ public class CraftingManager {
     public void rebuildPacket() {
         CraftingDataPacket pk = new CraftingDataPacket();
         pk.cleanRecipes = true;
-
         for (Map<UUID, ShapedRecipe> map : getShapedRecipeMap().values()) {
             for (ShapedRecipe recipe : map.values()) {
                 pk.addShapedRecipe(recipe);
             }
         }
-
         for (Map<UUID, ShapelessRecipe> map : getShapelessRecipeMap().values()) {
             for (ShapelessRecipe recipe : map.values()) {
                 pk.addShapelessRecipe(recipe);
             }
         }
-
         for (Map<UUID, CartographyRecipe> map : getCartographyRecipeMap().values()) {
             for (CartographyRecipe recipe : map.values()) {
                 pk.addCartographyRecipe(recipe);
             }
         }
-
         for (FurnaceRecipe recipe : getFurnaceRecipesMap().values()) {
             pk.addFurnaceRecipe(recipe);
         }
-
         for (MultiRecipe recipe : getMultiRecipeMap().values()) {
             pk.addMultiRecipe(recipe);
         }
-
         for (SmokerRecipe recipe : getSmokerRecipeMap().values()) {
             pk.addSmokerRecipe(recipe);
         }
-
         for (BlastFurnaceRecipe recipe : getBlastFurnaceRecipeMap().values()) {
             pk.addBlastFurnaceRecipe(recipe);
         }
-
         for (CampfireRecipe recipe : getCampfireRecipeMap().values()) {
             pk.addCampfireRecipeRecipe(recipe);
         }
-
         for (BrewingRecipe recipe : getBrewingRecipeMap().values()) {
             pk.addBrewingRecipe(recipe);
         }
-
         for (ContainerRecipe recipe : getContainerRecipeMap().values()) {
             pk.addContainerRecipe(recipe);
         }
-
         for (StonecutterRecipe recipe : getStonecutterRecipeMap().values()) {
             pk.addStonecutterRecipe(recipe);
         }
-
         pk.tryEncode();
         //TODO: find out whats wrong with compression
         packet = pk.compress(Deflater.BEST_COMPRESSION);
@@ -806,89 +742,340 @@ public class CraftingManager {
         this.recipeList.putIfAbsent(recipe.getRecipeId(), recipe);
     }
 
-    private void loadHardCodeRecipe() {
-        //There is no wool dyeing recipe in the bedrock-samples, maybe it is hardcode? Manually add the wool dye recipes here
-        for (var w : CommonBlockProperties.COLOR.getUniverse()) {
-            for (var f : DyeColor.values()) {
-                ItemBlock itemBlock = new BlockWool(w).asItemBlock();
-                if (w != f) {
-                    ItemDye itemDye = new ItemDye(f);
-                    ItemBlock output = new BlockWool(f).asItemBlock();
-                    this.registerShapelessRecipe(new ShapelessRecipe("minecraft:" + w.name().toLowerCase() + "_wool_to_" + f.name().toLowerCase(), 0, output, List.of(itemBlock, itemDye)));
-                }
-                if (w != DyeColor.WHITE) {
-                    ItemDye itemDye = new ItemDye(DyeColor.BONE_MEAL);
-                    ItemBlock output = new BlockWool(DyeColor.WHITE).asItemBlock();
-                    this.registerShapelessRecipe(new ShapelessRecipe("minecraft:" + w.name().toLowerCase() + "_wool_to_white_from_bone_meal", 0, output, List.of(itemBlock, itemDye)));
-                }
-                if (w != DyeColor.BROWN) {
-                    Item itemDye = Item.fromString("minecraft:cocoa_beans");
-                    ItemBlock output = new BlockWool(DyeColor.BROWN).asItemBlock();
-                    this.registerShapelessRecipe(new ShapelessRecipe("minecraft:" + w.name().toLowerCase() + "_wool_to_brown_from_cocoa_beans", 0, output, List.of(itemBlock, itemDye)));
-                }
-                if (w != DyeColor.BLACK) {
-                    Item itemDye = Item.fromString("minecraft:ink_sac");
-                    ItemBlock output = new BlockWool(DyeColor.BLACK).asItemBlock();
-                    this.registerShapelessRecipe(new ShapelessRecipe("minecraft:" + w.name().toLowerCase() + "_wool_to_black_from_ink_sac", 0, output, List.of(itemBlock, itemDye)));
-                }
-                if (w != DyeColor.BLUE) {
-                    Item itemDye = Item.fromString("minecraft:lapis_lazuli");
-                    ItemBlock output = new BlockWool(DyeColor.BLUE).asItemBlock();
-                    this.registerShapelessRecipe(new ShapelessRecipe("minecraft:" + w.name().toLowerCase() + "_wool_to_blue_from_lapis_lazuli", 0, output, List.of(itemBlock, itemDye)));
-                }
-            }
-        }
-        //shulker Box Dye
-        for (var w : CommonBlockProperties.COLOR.getUniverse()) {
-            ItemBlock input = new BlockUndyedShulkerBox().asItemBlock();
-            Item itemDye = new ItemDye(w);
-            ItemBlock output = new BlockShulkerBox(w.getWoolData()).asItemBlock();
-            this.registerShapelessRecipe(new ShulkerBoxRecipe("minecraft:" + "undyed_shulker_box_dye_" + w.name().toLowerCase(), 0, output, List.of(input, itemDye)));
-            for (var f : DyeColor.values()) {
-                input = new BlockShulkerBox(w.getWoolData()).asItemBlock();
-                if (w != f) {
-                    itemDye = new ItemDye(f);
-                    output = new BlockShulkerBox(f.getWoolData()).asItemBlock();
-                    this.registerShapelessRecipe(new ShulkerBoxRecipe("minecraft:" + w.name().toLowerCase() + "_shulker_box_to_" + f.name().toLowerCase(), 0, output, List.of(input, itemDye)));
-                }
-                if (w != DyeColor.WHITE) {
-                    itemDye = new ItemDye(DyeColor.BONE_MEAL);
-                    output = new BlockShulkerBox(DyeColor.WHITE.getWoolData()).asItemBlock();
-                    this.registerShapelessRecipe(new ShulkerBoxRecipe("minecraft:" + w.name().toLowerCase() + "_shulker_box_to_white_from_bone_meal", 0, output, List.of(input, itemDye)));
-                }
-                if (w != DyeColor.BROWN) {
-                    itemDye = Item.fromString("minecraft:cocoa_beans");
-                    output = new BlockShulkerBox(DyeColor.BROWN.getWoolData()).asItemBlock();
-                    this.registerShapelessRecipe(new ShulkerBoxRecipe("minecraft:" + w.name().toLowerCase() + "_shulker_box_to_brown_from_cocoa_beans", 0, output, List.of(input, itemDye)));
-                }
-                if (w != DyeColor.BLACK) {
-                    itemDye = Item.fromString("minecraft:ink_sac");
-                    output = new BlockShulkerBox(DyeColor.BLACK.getWoolData()).asItemBlock();
-                    this.registerShapelessRecipe(new ShulkerBoxRecipe("minecraft:" + w.name().toLowerCase() + "_shulker_box_to_black_from_ink_sac", 0, output, List.of(input, itemDye)));
-                }
-                if (w != DyeColor.BLUE) {
-                    itemDye = Item.fromString("minecraft:lapis_lazuli");
-                    output = new BlockShulkerBox(DyeColor.BLUE.getWoolData()).asItemBlock();
-                    this.registerShapelessRecipe(new ShulkerBoxRecipe("minecraft:" + w.name().toLowerCase() + "_shulker_box_to_blue_from_lapis_lazuli", 0, output, List.of(input, itemDye)));
-                }
-            }
-        }
-        //trapdoor recipe for old wood
-        for (var w : WoodType.PROPERTY.getUniverse()) {
-            ItemBlock item = new BlockPlanks(w.ordinal()).asItemBlock();
-            Item result;
-            if (w == WoodType.OAK) {
-                result = Item.fromString("minecraft:trapdoor");
-            } else {
-                result = Item.fromString("minecraft:" + w.name().toLowerCase() + "_trapdoor");
-            }
-            result.setCount(2);
-            this.registerShapedRecipe(new ShapedRecipe("minecraft:" + w.name().toLowerCase() + "_plank_to_trapdoor", 0, result, new String[]{"AAA", "AAA"}, Map.of('A', item), List.of()));
-        }
-    }
-
     private CraftingManager instance() {
         return this;
+    }
+
+    @SneakyThrows
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private void loadRecipes() {
+        var gson = new GsonBuilder().create();
+        //load xp config
+        var furnaceXpConfig = new Config(Config.JSON);
+        try (var r = Server.class.getModule().getResourceAsStream("vanilla_recipes/furnace_xp.json")) {
+            furnaceXpConfig.load(r);
+        } catch (IOException e) {
+            log.warn("Failed to load furnace xp config");
+        }
+        //load potion
+        try (var r = Server.class.getModule().getResourceAsStream("vanilla_recipes/potion_type.json")) {
+            if (r == null) {
+                throw new AssertionError("Unable to find potion_type.json");
+            }
+            List<Map<String, Object>> map = gson.fromJson(new InputStreamReader(r), List.class);
+            for (Map<String, Object> recipe : map) {
+                Map<String, Object> ingredient = (Map<String, Object>) recipe.get("ingredient");
+                Map<String, Object> input = (Map<String, Object>) recipe.get("input");
+                Map<String, Object> output = (Map<String, Object>) recipe.get("output");
+                Item inputItem = parseRecipeItem(input);
+                Item ingredientItem = parseRecipeItem(ingredient);
+                Item outputItem = parseRecipeItem(output);
+                if (inputItem.isNull() || ingredientItem.isNull() || outputItem.isNull()) {
+                    continue;
+                }
+                registerBrewingRecipe(new BrewingRecipe(
+                        inputItem,
+                        ingredientItem,
+                        outputItem
+                ));
+            }
+        }
+        //load shaped recipe
+        try (var r = Server.class.getModule().getResourceAsStream("vanilla_recipes/shaped_crafting.json")) {
+            if (r == null) {
+                throw new AssertionError("Unable to find shaped_crafting.json");
+            }
+            List<Map<String, Object>> map = gson.fromJson(new InputStreamReader(r), List.class);
+            for (Map<String, Object> recipe : map) {
+                String craftingBlock = (String) recipe.get("block");
+                if (!"crafting_table".equals(craftingBlock)) {
+                    continue;
+                }
+                var reg = parseShapeRecipe(recipe);
+                if (reg == null) {
+                    continue;
+                }
+                this.registerRecipe(reg);
+            }
+        }
+        //load shapeless recipe
+        try (var shapelessCrafting = Server.class.getModule().getResourceAsStream("vanilla_recipes/shapeless_crafting.json")) {
+            if (shapelessCrafting == null) {
+                throw new AssertionError("Unable to find shapeless_crafting.json");
+            }
+
+            var smithing = Server.class.getModule().getResourceAsStream("vanilla_recipes/smithing.json");
+            if (smithing == null) {
+                throw new AssertionError("Unable to find smithing.json");
+            }
+            List<Map<String, Object>> smithingRecipes = gson.fromJson(new InputStreamReader(smithing), List.class);
+            smithing.close();
+
+            List<Map<String, Object>> shapelessRecipes = new ArrayList<>(gson.fromJson(new InputStreamReader(shapelessCrafting), List.class));
+            shapelessRecipes.addAll(smithingRecipes);
+            shapelessCrafting.close();
+
+            for (Map<String, Object> recipe : shapelessRecipes) {
+                String craftingBlock = (String) recipe.get("block");
+                var reg = parseShapelessRecipe(recipe, craftingBlock);
+                if (reg == null) {
+                    continue;
+                }
+                this.registerRecipe(reg);
+            }
+
+            var shapelessShulkerBox = Server.class.getModule().getResourceAsStream("vanilla_recipes/shapeless_shulker_box.json");
+            if (shapelessShulkerBox == null) {
+                throw new AssertionError("Unable to find shapeless_shulker_box.json");
+            }
+            List<Map<String, Object>> shulkerBoxRecipes = gson.fromJson(new InputStreamReader(shapelessShulkerBox), List.class);
+            for (Map<String, Object> recipe : shulkerBoxRecipes) {
+                String craftingBlock = "shulker_box";
+                var reg = parseShapelessRecipe(recipe, craftingBlock);
+                if (reg == null) {
+                    continue;
+                }
+                this.registerRecipe(reg);
+            }
+            shapelessShulkerBox.close();
+        }
+        //load furnace recipe
+        try (var r = Server.class.getModule().getResourceAsStream("vanilla_recipes/smelting.json")) {
+            if (r == null) {
+                throw new AssertionError("Unable to find smelting.json");
+            }
+            List<Map<String, Object>> map = gson.fromJson(new InputStreamReader(r), List.class);
+            for (Map<String, Object> recipe : map) {
+                String craftingBlock = (String) recipe.get("block");
+                if (!"furnace".equals(craftingBlock) && !"blast_furnace".equals(craftingBlock)
+                        && !"smoker".equals(craftingBlock) && !"campfire".equals(craftingBlock)) {
+                    // Ignore other recipes than furnaces, blast furnaces, smokers and campfire
+                    continue;
+                }
+                Map<String, Object> resultMap = (Map) recipe.get("output");
+                Item resultItem = parseRecipeItem(resultMap);
+                if (resultItem.isNull()) {
+                    continue;
+                }
+                Item inputItem;
+                try {
+                    Map<String, Object> inputMap = (Map) recipe.get("input");
+                    inputItem = parseRecipeItem(inputMap);
+                } catch (Exception old) {
+                    inputItem = Item.get(Utils.toInt(recipe.get("inputId")), recipe.containsKey("inputDamage") ? Utils.toInt(recipe.get("inputDamage")) : -1, 1);
+                }
+                if (inputItem.isNull()) {
+                    continue;
+                }
+                Recipe furnaceRecipe = null;
+                switch (craftingBlock) {
+                    case "furnace" -> this.registerRecipe(furnaceRecipe = new FurnaceRecipe(resultItem, inputItem));
+                    case "blast_furnace" ->
+                            this.registerRecipe(furnaceRecipe = new BlastFurnaceRecipe(resultItem, inputItem));
+                    case "smoker" -> this.registerRecipe(furnaceRecipe = new SmokerRecipe(resultItem, inputItem));
+                    case "campfire" -> this.registerRecipe(furnaceRecipe = new CampfireRecipe(resultItem, inputItem));
+                }
+                var xp = furnaceXpConfig.getDouble(inputItem.getNamespaceId() + ":" + inputItem.getDamage());
+                if (xp != 0) {
+                    this.setRecipeXp(furnaceRecipe, xp);
+                }
+            }
+        }
+        //load multi recipe
+        try (var r = Server.class.getModule().getResourceAsStream("vanilla_recipes/special_hardcoded.json")) {
+            if (r == null) {
+                throw new AssertionError("Unable to find special_hardcoded.json");
+            }
+            List<String> uuids = gson.fromJson(new InputStreamReader(r), List.class);
+            for (String uuid : uuids) {
+                this.registerRecipe(new MultiRecipe(UUID.fromString(uuid)));
+            }
+        }
+        //load container mixes
+        try (var r = Server.class.getModule().getResourceAsStream("vanilla_recipes/container_mixes.json")) {
+            if (r == null) {
+                throw new AssertionError("Unable to find container_mixes.json");
+            }
+            List<Map<String, Object>> containerMixes = gson.fromJson(new InputStreamReader(r), List.class);
+            for (Map containerMix : containerMixes) {
+                String fromItemId = containerMix.get("inputId").toString();
+                String ingredient = containerMix.get("reagentId").toString();
+                String toItemId = containerMix.get("outputId").toString();
+                registerContainerRecipe(new ContainerRecipe(Item.fromString(fromItemId), Item.fromString(ingredient), Item.fromString(toItemId)));
+            }
+        }
+
+        // Allow to rename without crafting
+        registerCartographyRecipe(new CartographyRecipe(Item.get(ItemID.EMPTY_MAP), Collections.singletonList(Item.get(ItemID.EMPTY_MAP))));
+        registerCartographyRecipe(new CartographyRecipe(Item.get(ItemID.EMPTY_MAP, 2), Collections.singletonList(Item.get(ItemID.EMPTY_MAP, 2))));
+        registerCartographyRecipe(new CartographyRecipe(Item.get(ItemID.MAP), Collections.singletonList(Item.get(ItemID.MAP))));
+        registerCartographyRecipe(new CartographyRecipe(Item.get(ItemID.MAP, 3), Collections.singletonList(Item.get(ItemID.MAP, 3))));
+        registerCartographyRecipe(new CartographyRecipe(Item.get(ItemID.MAP, 4), Collections.singletonList(Item.get(ItemID.MAP, 4))));
+        registerCartographyRecipe(new CartographyRecipe(Item.get(ItemID.MAP, 5), Collections.singletonList(Item.get(ItemID.MAP, 5))));
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.50-r2")
+    @SuppressWarnings("unchecked")
+    private Recipe parseShapelessRecipe(Map<String, Object> recipeObject, String craftingBlock) {
+        StringBuilder id = new StringBuilder("minecraft:");
+        if (craftingBlock.equals("smithing_table")) {
+            List<Item> items = new ArrayList<>();
+            Map<String, Object> addition = (Map<String, Object>) recipeObject.get("addition");
+            Item additionItem = parseRecipeItem(addition);
+            Map<String, Object> input = (Map<String, Object>) recipeObject.get("input");
+            Item inputItem = parseRecipeItem(input);
+            Map<String, Object> output = (Map<String, Object>) recipeObject.get("output");
+            Item outputItem = parseRecipeItem(output);
+            Map<String, Object> template = (Map<String, Object>) recipeObject.get("template");
+            Item templateItem = parseRecipeItem(template);
+            if (additionItem.isNull() || inputItem.isNull() || outputItem.isNull() /*|| templateItem.isNull()*/) {
+                return null;
+            }
+            items.add(inputItem);
+            items.add(additionItem);
+            items.add(templateItem);
+            id.append(StringUtils.fastSplit(":", inputItem.getNamespaceId()).get(1).toLowerCase())
+                    .append("_")
+                    .append(StringUtils.fastSplit(":", outputItem.getNamespaceId()).get(1).toLowerCase());
+            return new SmithingRecipe(id.toString(), 0, items, outputItem);
+        }
+
+        List<ItemDescriptor> itemDescriptors = new ArrayList<>();
+        List<Map<String, Object>> outputs = ((List<Map<String, Object>>) recipeObject.get("output"));
+        List<Map<String, Object>> inputs = ((List<Map<String, Object>>) recipeObject.get("input"));
+        // TODO: handle multiple result items
+        if (outputs.size() > 1) {
+            return null;
+        }
+        Map<String, Object> first = outputs.get(0);
+
+        int priority = recipeObject.containsKey("priority") ? Utils.toInt(recipeObject.get("priority")) : 0;
+
+        Item result = parseRecipeItem(first);
+        if (result.isNull()) {
+            return null;
+        }
+        for (Map<String, Object> ingredient : inputs) {
+            if (ingredient.containsKey("tag")) {
+                var itemTag = ingredient.get("tag").toString();
+                int count = ingredient.containsKey("count") ? ((Number) ingredient.get("count")).intValue() : 1;
+                itemDescriptors.add(new ItemTagDescriptor(itemTag, count));
+                id.append(StringUtils.fastSplit(":", itemTag).get(1).toLowerCase()).append('_');
+            } else {
+                Item recipeItem = parseRecipeItem(ingredient);
+                if (recipeItem.isNull()) {
+                    return null;
+                }
+                itemDescriptors.add(new DefaultDescriptor(recipeItem));
+                if (recipeItem.getName() != null && !recipeItem.getName().isBlank()) {
+                    id.append(StringUtils.fastSplit(":", recipeItem.getNamespaceId()).get(1).toLowerCase()).append(recipeItem.getDamage()).append('_');
+                }
+            }
+        }
+        id.append(StringUtils.fastSplit(":", result.getNamespaceId()).get(1).toLowerCase()).append(result.getDamage());
+        return switch (craftingBlock) {
+            case "crafting_table" -> new ShapelessRecipe(id.toString(), priority, result, itemDescriptors);
+            case "shulker_box" -> new ShulkerBoxRecipe(id.toString(), priority, result, itemDescriptors);
+            case "stonecutter" ->
+                    new StonecutterRecipe(id.toString(), priority, result, itemDescriptors.get(0).toItem());
+            case "cartography_table" -> new CartographyRecipe(id.toString(), priority, result, itemDescriptors);
+            default -> null;
+        };
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.50-r2")
+    @SuppressWarnings("unchecked")
+    private Recipe parseShapeRecipe(Map<String, Object> recipeObject) {
+        StringBuilder id = new StringBuilder("minecraft:");
+        List<Map<String, Object>> outputs = (List<Map<String, Object>>) recipeObject.get("output");
+
+        Map<String, Object> first = outputs.remove(0);
+        String[] shape = ((List<String>) recipeObject.get("shape")).toArray(EmptyArrays.EMPTY_STRINGS);
+        Map<Character, ItemDescriptor> ingredients = new CharObjectHashMap<>();
+        List<Item> extraResults = new ArrayList<>();
+
+        int priority = Utils.toInt(recipeObject.get("priority"));
+        Item primaryResult = parseRecipeItem(first);
+        if (primaryResult.isNull()) {
+            return null;
+        }
+
+        for (Map<String, Object> data : outputs) {
+            Item output = parseRecipeItem(data);
+            if (output.isNull()) {
+                return null;
+            }
+            extraResults.add(output);
+        }
+
+        Map<String, Map<String, Object>> input = (Map<String, Map<String, Object>>) recipeObject.get("input");
+        for (Map.Entry<String, Map<String, Object>> ingredientEntry : input.entrySet()) {
+            char ingredientChar = ingredientEntry.getKey().charAt(0);
+            var ingredient = ingredientEntry.getValue();
+
+            if (ingredient.containsKey("tag")) {
+                var tag = ingredient.get("tag").toString();
+                int count = ingredient.containsKey("count") ? ((Number) ingredient.get("count")).intValue() : 1;
+                ingredients.put(ingredientChar, new ItemTagDescriptor(tag, count));
+                id.append(StringUtils.fastSplit(":", tag).get(1).toLowerCase()).append('_');
+            } else {
+                Item recipeItem = parseRecipeItem(ingredient);
+                if (recipeItem.isNull()) {
+                    return null;
+                }
+                ingredients.put(ingredientChar, new DefaultDescriptor(recipeItem));
+                if (recipeItem.getName() != null && !recipeItem.getName().isBlank()) {
+                    id.append(StringUtils.fastSplit(":", recipeItem.getNamespaceId()).get(1).toLowerCase()).append(recipeItem.getDamage()).append('_');
+                }
+            }
+        }
+        id.append(StringUtils.fastSplit(":", primaryResult.getNamespaceId()).get(1).toLowerCase()).append(primaryResult.getDamage());
+        return new ShapedRecipe(id.toString(), priority, primaryResult, shape, ingredients, extraResults);
+    }
+
+    @PowerNukkitXDifference(info = "Recipe formats exported from proxypass before 1.19.40 are no longer supported", since = "1.19.50-r1")
+    private Item parseRecipeItem(Map<String, Object> data) {
+        Item item;
+
+        String name = data.get("name").toString();
+        int count = data.containsKey("count") ? ((Number) data.get("count")).intValue() : 1;
+
+        //block item
+        if (data.containsKey("block_states")) {
+            try {
+                item = NBTIO.getBlockHelper(new CompoundTag()
+                        .putString("name", name)
+                        .putCompound("states", NBTIO.read(Base64.getDecoder().decode(data.get("block_states").toString()), ByteOrder.LITTLE_ENDIAN))
+                ).toItem();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            item.setCount(count);
+            return item;
+        }
+
+        String nbt = (String) data.get("nbt");
+        byte[] nbtBytes = nbt != null ? Base64.getDecoder().decode(nbt) : EmptyArrays.EMPTY_BYTES;
+
+        Integer meta = null;
+        if (data.containsKey("meta")) {
+            meta = Utils.toInt(data.get("meta"));
+        }
+        if (meta != null) {
+            if (meta == Short.MAX_VALUE) {
+                item = Item.fromString(name).createFuzzyCraftingRecipe();
+            } else {
+                item = Item.fromString(name + ":" + meta);
+            }
+        } else {
+            item = Item.fromString(name);
+        }
+
+        item.setCount(count);
+        item.setCompoundTag(nbtBytes);
+        return item;
     }
 
     public static class Entry {
