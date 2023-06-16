@@ -4,7 +4,6 @@ import cn.nukkit.inventory.ItemTag;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import lombok.SneakyThrows;
-import org.apache.commons.io.FileUtils;
 
 import java.io.*;
 import java.net.URL;
@@ -20,12 +19,12 @@ import java.util.*;
 public class UpdateResource {
     Gson gson = new GsonBuilder().setPrettyPrinting()
             .setObjectToNumberStrategy(jsonReader -> Double.valueOf(jsonReader.nextString()).intValue())
+            .disableHtmlEscaping()
             .create();
 
     /**
      * Pre-requisites:<br>
      * - Make sure PocketMine has released their exports: <a href="https://github.com/pmmp/BedrockData">BedrockData</a><br>
-     * - Make sure Mojang has released their addon samples: <a href="https://github.com/Mojang/bedrock-samples">bedrock-samples</a><br>
      */
     public static void main(String[] args) {
         new UpdateResource().execute();
@@ -36,7 +35,7 @@ public class UpdateResource {
 //        downloadResources();
 //        updateItem2Tags(Path.of("src/main/resources/item_2_tags.json"));
 //        convertRequiredItemList(Path.of("src/main/resources/runtime_item_states.json"));
-        updateRecipes(Path.of("target/bedrock-samples"), Path.of("src/main/resources/vanilla_recipes"));
+        updateRecipes();
         System.exit(0);
     }
 
@@ -69,6 +68,32 @@ public class UpdateResource {
                 "src/test/resources/org/powernukkit/updater/dumps/pmmp/required_item_list.json");
     }
 
+    //update item_2_tags.json
+    private void updateItem2Tags(Path target) throws IOException {
+        Map<String, Set<String>> test = new LinkedHashMap<>();
+        for (var entry : ItemTag.getTag2Items().entrySet()) {
+            for (var v : entry.getValue()) {
+                test.computeIfAbsent(v, k -> new LinkedHashSet<>());
+                test.get(v).add(entry.getKey());
+            }
+        }
+        Files.writeString(target, gson.toJson(test), StandardCharsets.UTF_8);
+        System.out.println("update item_2_tags.json success!");
+    }
+
+    //convert required_item_list.json to runtime_item_states.json
+    private void convertRequiredItemList(Path target) throws IOException {
+        var runtime_item_states = new ArrayList<RuntimeEntry>();
+        Map<String, ?> map = gson.fromJson(new FileReader("./src/test/resources/org/powernukkit/updater/dumps/pmmp/required_item_list.json"), Map.class);
+        map.forEach((k, v) -> {
+            String runtime_id = ((Map) v).get("runtime_id").toString();
+            int id = Double.valueOf(runtime_id).intValue();
+            runtime_item_states.add(new RuntimeEntry(k, id));
+        });
+        Files.writeString(target, gson.toJson(runtime_item_states), StandardCharsets.UTF_8);
+        System.out.println("convert required_item_list.json to runtime_item_states.json success!");
+    }
+
     private void copyProxyPassResources(String pathProxyPassData) {
         copy(pathProxyPassData, "runtime_item_states.json", "src/main/resources/runtime_item_states.json");
     }
@@ -96,71 +121,28 @@ public class UpdateResource {
         }
     }
 
-    //update item_2_tags.json
-    private void updateItem2Tags(Path target) throws IOException {
-        Map<String, Set<String>> test = new LinkedHashMap<>();
-        for (var entry : ItemTag.getTag2Items().entrySet()) {
-            for (var v : entry.getValue()) {
-                test.computeIfAbsent(v, k -> new LinkedHashSet<>());
-                test.get(v).add(entry.getKey());
+    private void updateRecipes() throws IOException {
+        Path p = Path.of("src/main/resources/vanilla_recipes/shaped_crafting.json");
+        //todo These are wrong recipes, their `result` should not have `data`, if this bug is fixed, please remove it
+        Map<String, String> errorRecipes = Map.of(
+                "minecraft:dispenser", "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgAAAAABDQB0cmlnZ2VyZWRfYml0AAA=",
+                "minecraft:dropper", "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgAAAAABDQB0cmlnZ2VyZWRfYml0AAA=",
+                "minecraft:piston", "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgAAAAAA",
+                "minecraft:sticky_piston", "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgAAAAAA"
+        );
+        List<Map<String, Object>> data = gson.fromJson(new FileReader(p.toFile()), List.class);
+        for (var fix : data) {
+            List<Map<String, Object>> output = (List<Map<String, Object>>) fix.get("output");
+            Map<String, Object> o = output.get(0);
+            var name = o.get("name").toString();
+            if (errorRecipes.containsKey(name)) {
+                o.put("block_states", errorRecipes.get(name));
             }
         }
-        Files.writeString(target, gson.toJson(test), StandardCharsets.UTF_8);
-        System.out.println("update item_2_tags.json success!");
-    }
-
-    //convert required_item_list.json to runtime_item_states.json
-    private void convertRequiredItemList(Path target) throws IOException {
-        var runtime_item_states = new ArrayList<RuntimeEntry>();
-        Map<String, ?> map = gson.fromJson(new FileReader("./src/test/resources/org/powernukkit/updater/dumps/pmmp/required_item_list.json"), Map.class);
-        map.forEach((k, v) -> {
-            String runtime_id = ((Map) v).get("runtime_id").toString();
-            int id = Double.valueOf(runtime_id).intValue();
-            runtime_item_states.add(new RuntimeEntry(k, id));
-        });
-        Files.writeString(target, gson.toJson(runtime_item_states), StandardCharsets.UTF_8);
-        System.out.println("convert required_item_list.json to runtime_item_states.json success!");
-    }
-
-    private void updateRecipes(Path source, Path target) throws IOException {
-        //todo These are wrong recipes, their `result` should not have `data`, if this bug is fixed, please remove it
-        List<String> errorRecipes = List.of(
-                "dispenser.json",
-                "dropper.json",
-                "sticky_piston.json",
-                "piston_from_warped_planks.json",
-                "piston.json",
-                "piston_from_crimson_planks.json",
-                "piston_from_mangrove_planks.json"
-        );
-        Path recipes = source.resolve("behavior_pack/recipes");
-        FileUtils.copyDirectory(recipes.toFile(), target.toFile());
-        for (var fix : errorRecipes) {
-            Path p = target.resolve(fix);
-            Map<String, Object> data = gson.fromJson(new FileReader(p.toFile()), Map.class);
-            Map<String, Object> recipe = (Map<String, Object>) data.get("minecraft:recipe_shaped");
-            Map<String, Object> result = (Map<String, Object>) recipe.get("result");
-            result.remove("data");
-            Files.writeString(p, gson.toJson(data), StandardCharsets.UTF_8);
-        }
-        Path p = target.resolve("mangrove_boat.json");
-        Map<String, Object> data = gson.fromJson(new FileReader(p.toFile()), Map.class);
-        Map<String, Object> recipe = (Map<String, Object>) data.get("minecraft:recipe_shaped");
-        Map<String, Object> key = (Map<String, Object>) recipe.get("key");
-        Map<String, Object> o = (Map<String, Object>) key.get("#");
-        o.remove("data");
         Files.writeString(p, gson.toJson(data), StandardCharsets.UTF_8);
-
-        Path p2 = target.resolve("paper.json");
-        Map<String, Object> data2 = gson.fromJson(new FileReader(p2.toFile()), Map.class);
-        Map<String, Object> recipe2 = (Map<String, Object>) data2.get("minecraft:recipe_shaped");
-        Map<String, Object> key2 = (Map<String, Object>) recipe2.get("key");
-        Map<String, Object> o2 = (Map<String, Object>) key2.get("#");
-        o2.put("item", "minecraft:sugar_cane");
-        Files.writeString(p2, gson.toJson(data2), StandardCharsets.UTF_8);
-        System.out.println("update recipe success!");
     }
 
     private record RuntimeEntry(String name, int id) {
+
     }
 }
