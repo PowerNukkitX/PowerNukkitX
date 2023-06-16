@@ -39,7 +39,7 @@ public enum DyeColor {
 
 
     private final static DyeColor[] BY_WOOL_DATA;
-    private final static DyeColor[] BY_DYE_DATA;
+    private final static DyeColor[] BY_DYE_ITEM_DATA;
 
     DyeColor(int dyeColorMeta, int woolColorMeta, String colorName, BlockColor blockColor, BlockColor signColor) {
         this(dyeColorMeta, woolColorMeta, woolColorMeta, colorName, colorName + " Dye", blockColor, signColor, blockColor);
@@ -114,11 +114,11 @@ public enum DyeColor {
 
     static {
         BY_WOOL_DATA = values();
-        BY_DYE_DATA = new DyeColor[Arrays.stream(BY_WOOL_DATA).mapToInt(DyeColor::getItemDyeMeta).max().orElse(0) + 1];
+        BY_DYE_ITEM_DATA = new DyeColor[Arrays.stream(BY_WOOL_DATA).mapToInt(DyeColor::getItemDyeMeta).max().orElse(0) + 1];
 
         for (DyeColor dyeColor : BY_WOOL_DATA) {
-            BY_DYE_DATA[dyeColor.dyeColorMeta] = dyeColor;
-            BY_DYE_DATA[dyeColor.itemDyeMeta] = dyeColor;
+            BY_DYE_ITEM_DATA[dyeColor.dyeColorMeta] = dyeColor;
+            BY_DYE_ITEM_DATA[dyeColor.itemDyeMeta] = dyeColor;
         }
 
         for (DyeColor color : values()) {
@@ -128,7 +128,7 @@ public enum DyeColor {
 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "When overflowed, instead of wrapping, the meta will be clamped, accepts the new dye metas")
     public static DyeColor getByDyeData(int dyeColorMeta) {
-        return BY_DYE_DATA[MathHelper.clamp(dyeColorMeta, 0, BY_DYE_DATA.length - 1)];
+        return BY_DYE_ITEM_DATA[MathHelper.clamp(dyeColorMeta, 0, BY_DYE_ITEM_DATA.length - 1)];
     }
 
     public static DyeColor getByWoolData(int woolColorMeta) {

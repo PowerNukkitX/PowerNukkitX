@@ -182,7 +182,7 @@ public class StartGamePacket extends DataPacket {
         this.putBoolean(this.isTexturePacksRequired);
         this.putGameRules(this.gameRules);
         if (Server.getInstance().isEnableExperimentMode() && !Server.getInstance().getConfig("settings.waterdogpe", false)) {
-            this.putLInt(3); // Experiment count
+            this.putLInt(4); // Experiment count
             {
                 this.putString("data_driven_items");
                 this.putBoolean(true);
@@ -193,6 +193,8 @@ public class StartGamePacket extends DataPacket {
                 //this.putString("gametest");
                 //this.putBoolean(true);
                 this.putString("experimental_molang_features");
+                this.putBoolean(true);
+                this.putString("cameras");
                 this.putBoolean(true);
             }
             this.putBoolean(true); // Were experiments previously toggled

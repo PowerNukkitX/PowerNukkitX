@@ -7,6 +7,10 @@ public class ContainerRecipe extends MixRecipe {
         super(input, ingredient, output);
     }
 
+    public ContainerRecipe(String recipeId, Item input, Item ingredient, Item output) {
+        super(recipeId, input, ingredient, output);
+    }
+
     @Override
     public void registerToCraftingManager(CraftingManager manager) {
         manager.registerContainerRecipe(this);

@@ -19,7 +19,7 @@ public class RepairRecipe implements Recipe {
         this.inventoryType = inventoryType;
         this.result = result.clone();
         this.ingredients = new ArrayList<>();
-    
+
         for (Item item : ingredients) {
             if (item.getCount() < 1) {
                 throw new IllegalArgumentException("Recipe Ingredient amount was not 1 (value: " + item.getCount() + ")");
@@ -27,7 +27,12 @@ public class RepairRecipe implements Recipe {
             this.ingredients.add(item.clone());
         }
     }
-    
+
+    @Override
+    public String getRecipeId() {
+        return null;
+    }
+
     @Override
     public Item getResult() {
         return result.clone();

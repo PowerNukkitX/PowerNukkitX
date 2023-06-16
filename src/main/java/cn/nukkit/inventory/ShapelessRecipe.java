@@ -17,26 +17,19 @@ import static cn.nukkit.inventory.Recipe.matchItemList;
  * @author MagicDroidX (Nukkit Project)
  */
 public class ShapelessRecipe implements CraftingRecipe {
-
-    private String recipeId;
-
-    private final Item output;
-
-    private long least, most;
-
     @Deprecated
     @DeprecationDetails(since = "1.19.50-r2", reason = "new ingredients format", replaceWith = "newIngredients")
     private final List<Item> ingredients = null;
+    private String recipeId;
+    private final Item output;
+    private long least, most;
     private final List<Item> ingredientsAggregate;
-
     @PowerNukkitXOnly
     @Since("1.19.50-r2")
     private final List<String> needTags;
-
     @PowerNukkitXOnly
     @Since("1.19.50-r2")
     private final List<ItemDescriptor> newIngredients;
-
     private final int priority;
 
     public ShapelessRecipe(Item result, Collection<Item> ingredients) {
