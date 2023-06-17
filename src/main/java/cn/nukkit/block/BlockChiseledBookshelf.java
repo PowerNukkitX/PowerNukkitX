@@ -113,18 +113,17 @@ public class BlockChiseledBookshelf extends BlockBookshelf implements BlockEntit
             int index = getRegion(clickPos);
             BlockEntityChiseledBookshelf blockEntity = this.getBlockEntity();
             if (blockEntity != null) {
-                if (item instanceof ItemBook || item instanceof ItemBookEnchanted || item instanceof ItemBookWritable) {
+                if (blockEntity.hasBook(index)) {
+                    Item book = blockEntity.removeBook(index);
+                    player.getInventory().addItem(book);
+                }else if (item instanceof ItemBook || item instanceof ItemBookEnchanted || item instanceof ItemBookWritable) {
                     Item itemClone = item.clone();
                     if (!player.isCreative()) {
                         itemClone.setCount(itemClone.getCount() - 1);
                         player.getInventory().setItemInHand(itemClone);
                     }
                     itemClone.setCount(1);
-
                     blockEntity.setBook(itemClone, index);
-                } else if (item.isNull() && blockEntity.hasBook(index)) {
-                    Item book = blockEntity.removeBook(index);
-                    player.getInventory().addItem(book);
                 }
                 this.setPropertyValue(BOOKS_STORED, blockEntity.getBooksStoredBit());
                 this.getLevel().setBlock(this, this, true);
