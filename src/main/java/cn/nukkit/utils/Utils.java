@@ -219,8 +219,9 @@ public class Utils {
     }
 
     public static boolean isByteArrayEmpty(final byte[] array) {
-        for (byte b : array) {
-            if (b != 0) {
+        //noinspection ForLoopReplaceableByForEach
+        for (int i = 0, len = array.length; i < len; ++i) {
+            if (array[i] != 0) {
                 return false;
             }
         }
