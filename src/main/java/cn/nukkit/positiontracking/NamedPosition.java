@@ -3,7 +3,6 @@ package cn.nukkit.positiontracking;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.math.Vector3;
-
 import org.jetbrains.annotations.NotNull;
 
 /**

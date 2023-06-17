@@ -831,6 +831,36 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             list[MANGROVE_WOOD] = BlockWoodMangrove.class;//752
             list[STRIPPED_MANGROVE_WOOD] = BlockWoodStrippedMangrove.class;//753
             list[DOUBLE_MANGROVE_SLAB] = BlockDoubleSlabMangrove.class;//754
+            list[OAK_HANGING_SIGN] = BlockOakHangingSign.class;//755
+            list[SPRUCE_HANGING_SIGN] = BlockSpruceHangingSign.class;//756
+            list[BIRCH_HANGING_SIGN] = BlockBirchHangingSign.class;//757
+            list[JUNGLE_HANGING_SIGN] = BlockJungleHangingSign.class;//758
+            list[ACACIA_HANGING_SIGN] = BlockAcaciaHangingSign.class;//759
+            list[DARK_OAK_HANGING_SIGN] = BlockDarkOakHangingSign.class;//760
+            list[CRIMSON_HANGING_SIGN] = BlockCrimsonHangingSign.class;//761
+            list[WARPED_HANGING_SIGN] = BlockWarpedHangingSign.class;//762
+            list[MANGROVE_HANGING_SIGN] = BlockMangroveHangingSign.class;//763
+            list[BAMBOO_MOSAIC] = BlockBambooMosaic.class;//764
+            list[BAMBOO_PLANKS] = BlockBambooPlanks.class;//765
+            list[BAMBOO_BUTTON] = BlockBambooButton.class;//766
+            list[BAMBOO_STAIRS] = BlockBambooStairs.class;//767
+            list[BAMBOO_SLAB] = BlockBambooSlab.class;//768
+            list[BAMBOO_PRESSURE_PLATE] = BlockBambooPressurePlate.class;//769
+            list[BAMBOO_FENCE] = BlockBambooFence.class;//770
+            list[BAMBOO_FENCE_GATE] = BlockBambooFenceGate.class;//771
+            list[BAMBOO_DOOR] = BlockBambooDoor.class;//772
+            list[BAMBOO_STANDING_SIGN] = BlockBambooStandingSign.class;//773
+            list[BAMBOO_WALL_SIGN] = BlockBambooWallSign.class;//774
+            list[BAMBOO_TRAPDOOR] = BlockBambooTrapdoor.class;//775
+            list[BAMBOO_DOUBLE_SLAB] = BlockBambooDoubleSlab.class;//776
+            list[BAMBOO_HANGING_SIGN] = BlockBambooHangingSign.class;//777
+            list[BAMBOO_MOSAIC_STAIRS] = BlockBambooMosaicStairs.class;//778
+            list[BAMBOO_MOSAIC_SLAB] = BlockBambooMosaicSlab.class;//779
+            list[BAMBOO_MOSAIC_DOUBLE_SLAB] = BlockBambooMosaicDoubleSlab.class;//780
+            list[CHISELED_BOOKSHELF] = BlockChiseledBookshelf.class;//781
+            list[BAMBOO_BLOCK] = BlockBambooBlock.class;//782
+            list[STRIPPED_BAMBOO_BLOCK] = BlockStrippedBambooBlock.class;//783
+            list[SUSPICIOUS_SAND] = BlockSuspiciousSand.class;//784
 
             list[CHERRY_BUTTON] = BlockButtonCherry.class;//785
             list[CHERRY_DOOR] = BlockDoorCherry.class;//786
@@ -1423,13 +1453,18 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      * @param player the player
      * @param action the action
      * @param face
-     * @return 状态值，返回值不为0代表这是一个touch操作而不是一个挖掘方块的操作<br>Status value, if the return value is not 0, it means that this is a touch operation rather than a mining block operation
+     * @return 状态值，返回值不为0代表这是一个touch操作而不是一个挖掘方块或者放置方块的操作<br>Status value, if the return value is not 0, it means that this is a touch operation rather than a mining block or placing block operation
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public int onTouch(@Nullable Player player, PlayerInteractEvent.Action action, BlockFace face) {
         onUpdate(Level.BLOCK_UPDATE_TOUCH);
         return 0;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
+    public void onClick(@NotNull Player player, Item item, PlayerInteractEvent.Action action, BlockFace face, Vector3 clickPoint) {
     }
 
     @PowerNukkitOnly

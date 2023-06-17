@@ -7,7 +7,6 @@ import cn.nukkit.blockproperty.value.OxidizationLevel;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
-
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;

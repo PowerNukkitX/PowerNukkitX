@@ -1,14 +1,9 @@
 package cn.nukkit.resourcepacks;
 
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.UUID;
 
 @Log4j2

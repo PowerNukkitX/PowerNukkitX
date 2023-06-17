@@ -7,7 +7,10 @@ import cn.nukkit.block.BlockCherryLog;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.ChunkManager;
-import cn.nukkit.math.*;
+import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.BlockVector3;
+import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
 
 @Since("1.20.0-r2")

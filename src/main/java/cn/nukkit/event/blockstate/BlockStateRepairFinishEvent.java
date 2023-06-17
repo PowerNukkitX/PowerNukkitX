@@ -6,7 +6,6 @@ import cn.nukkit.block.Block;
 import cn.nukkit.blockstate.BlockStateRepair;
 import cn.nukkit.event.HandlerList;
 import com.google.common.base.Preconditions;
-
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;

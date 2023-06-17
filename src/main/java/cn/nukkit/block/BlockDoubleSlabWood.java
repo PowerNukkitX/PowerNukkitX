@@ -7,7 +7,6 @@ import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.value.WoodType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
-
 import org.jetbrains.annotations.NotNull;
 
 /**

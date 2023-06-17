@@ -21,11 +21,9 @@ import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.plugin.PluginManager;
 import cn.nukkit.utils.HumanStringComparator;
-
-import javax.annotation.Nonnegative;
-
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnegative;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.Serializable;

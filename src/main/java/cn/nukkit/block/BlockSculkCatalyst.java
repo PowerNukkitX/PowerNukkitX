@@ -7,7 +7,6 @@ import cn.nukkit.blockentity.BlockEntitySculkCatalyst;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BooleanBlockProperty;
 import cn.nukkit.item.ItemTool;
-
 import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitXOnly

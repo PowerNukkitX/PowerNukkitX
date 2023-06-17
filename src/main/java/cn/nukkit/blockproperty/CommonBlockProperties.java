@@ -5,7 +5,10 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.value.ChiselType;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.CompassRoseDirection;
 import cn.nukkit.utils.DyeColor;
+
+import static cn.nukkit.math.CompassRoseDirection.*;
 
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
@@ -52,6 +55,20 @@ public final class CommonBlockProperties {
             BlockFace.NORTH, BlockFace.SOUTH,
             BlockFace.WEST, BlockFace.EAST,
     });
+
+    public static final ArrayBlockProperty<CompassRoseDirection> GROUND_SIGN_DIRECTION = new ArrayBlockProperty<>("ground_sign_direction", false, new CompassRoseDirection[]{
+            SOUTH, SOUTH_SOUTH_WEST, SOUTH_WEST, WEST_SOUTH_WEST,
+            WEST, WEST_NORTH_WEST, NORTH_WEST, NORTH_NORTH_WEST,
+            NORTH, NORTH_NORTH_EAST, NORTH_EAST, EAST_NORTH_EAST,
+            EAST, EAST_SOUTH_EAST, SOUTH_EAST, SOUTH_SOUTH_EAST
+    }).ordinal(true);
+
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
+    public static final BooleanBlockProperty ATTACHED = new BooleanBlockProperty("attached_bit", false);
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
+    public static final BooleanBlockProperty HANGING = new BooleanBlockProperty("hanging", false);
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")

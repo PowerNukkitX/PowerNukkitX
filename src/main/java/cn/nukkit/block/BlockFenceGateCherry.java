@@ -24,4 +24,13 @@ public class BlockFenceGateCherry extends BlockFenceGate {
         return "Cherry Fence Gate";
     }
 
+    @Override
+    public int getBurnChance() {
+        return 5;
+    }
+
+    @Override
+    public int getBurnAbility() {
+        return 20;
+    }
 }

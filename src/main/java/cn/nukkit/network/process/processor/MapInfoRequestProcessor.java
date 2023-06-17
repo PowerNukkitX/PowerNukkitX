@@ -7,19 +7,14 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityItemFrame;
 import cn.nukkit.event.player.PlayerMapInfoRequestEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemMap;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.MapInfoRequestPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.plugin.InternalPlugin;
-import cn.nukkit.plugin.PowerNukkitPlugin;
 import cn.nukkit.scheduler.AsyncTask;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
-
-import java.awt.*;
-import java.awt.image.BufferedImage;
 
 @Log4j2
 public class MapInfoRequestProcessor extends DataPacketProcessor<MapInfoRequestPacket> {

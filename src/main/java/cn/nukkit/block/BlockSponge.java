@@ -14,7 +14,6 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.CloudParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.network.protocol.LevelEventPacket;
-
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayDeque;

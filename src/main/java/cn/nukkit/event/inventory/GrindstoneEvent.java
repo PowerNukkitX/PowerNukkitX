@@ -25,7 +25,6 @@ import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.inventory.GrindstoneInventory;
 import cn.nukkit.item.Item;
-
 import org.jetbrains.annotations.NotNull;
 
 /**

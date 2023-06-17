@@ -25,7 +25,7 @@ public class BlockCherryLog extends BlockLog {
 
     @Override
     public double getResistance() {
-        return 2;
+        return 10;
     }
 
     @Override
@@ -35,7 +35,7 @@ public class BlockCherryLog extends BlockLog {
 
     @Override
     public int getBurnAbility() {
-        return 10;
+        return 5;
     }
 
     @Override

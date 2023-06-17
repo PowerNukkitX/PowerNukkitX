@@ -1,7 +1,6 @@
 package cn.nukkit.item;
 
 import cn.nukkit.api.PowerNukkitOnly;
-
 import org.jetbrains.annotations.NotNull;
 
 /**

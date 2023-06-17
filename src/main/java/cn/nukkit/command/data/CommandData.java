@@ -4,7 +4,9 @@ import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 
-import java.util.*;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 
 @PowerNukkitXDifference(since = "1.19.50-r1", info = "Use List<Flag> instead")
 public class CommandData implements Cloneable {

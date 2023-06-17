@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
@@ -9,23 +10,16 @@ import cn.nukkit.blockentity.BlockEntitySign;
 import cn.nukkit.blockproperty.ArrayBlockProperty;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BlockProperty;
+import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.blockstate.BlockState;
-import cn.nukkit.event.block.SignColorChangeEvent;
-import cn.nukkit.event.block.SignGlowEvent;
-import cn.nukkit.event.block.SignWaxedEvent;
-import cn.nukkit.event.player.PlayerInteractEvent;
-import cn.nukkit.item.*;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemSign;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.CompassRoseDirection;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
-import cn.nukkit.network.protocol.LevelEventPacket;
-import cn.nukkit.network.protocol.LevelSoundEventPacket;
-import cn.nukkit.utils.BlockColor;
-import cn.nukkit.utils.DyeColor;
-import cn.nukkit.utils.Faceable;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 
@@ -39,7 +33,9 @@ import static cn.nukkit.math.CompassRoseDirection.*;
  */
 @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder only in PowerNukkit")
 @Log4j2
-public class BlockSignPost extends BlockTransparentMeta implements Faceable, BlockEntityHolder<BlockEntitySign> {
+public class BlockSignPost extends BlockSignBase implements BlockEntityHolder<BlockEntitySign> {
+    @Deprecated(since = "1.20.0-r2",forRemoval = true)
+    @DeprecationDetails(since = "1.20.0-r2", reason = "replace to CommonBlockProperties")
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockProperty<CompassRoseDirection> GROUND_SIGN_DIRECTION = new ArrayBlockProperty<>("ground_sign_direction", false, new CompassRoseDirection[]{
@@ -51,7 +47,7 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable, Blo
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(GROUND_SIGN_DIRECTION);
+    public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.GROUND_SIGN_DIRECTION);
 
     public BlockSignPost() {
         this(0);
@@ -91,28 +87,6 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable, Blo
     }
 
     @Override
-    public double getHardness() {
-        return 1;
-    }
-
-    @Override
-    public double getResistance() {
-        return 5;
-    }
-
-    @Override
-    public boolean isSolid() {
-        return false;
-    }
-
-    @Since("1.3.0.0-PN")
-    @PowerNukkitOnly
-    @Override
-    public boolean isSolid(BlockFace side) {
-        return false;
-    }
-
-    @Override
     public String getName() {
         return "Sign Post";
     }
@@ -123,12 +97,6 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable, Blo
     }
 
     @PowerNukkitOnly
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
-    @PowerNukkitOnly
     protected int getPostId() {
         return getId();
     }
@@ -136,6 +104,22 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable, Blo
     @PowerNukkitOnly
     public int getWallId() {
         return WALL_SIGN;
+    }
+
+    @Override
+    public int onUpdate(int type) {
+        if (type == Level.BLOCK_UPDATE_NORMAL) {
+            if (down().getId() == Block.AIR) {
+                getLevel().useBreakOn(this);
+                return Level.BLOCK_UPDATE_NORMAL;
+            }
+        }
+        return 0;
+    }
+
+    @Override
+    public Item toItem() {
+        return new ItemSign();
     }
 
     @Override
@@ -150,11 +134,11 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable, Blo
         CompoundTag nbt = new CompoundTag();
 
         if (face == BlockFace.UP) {
-            CompassRoseDirection direction = GROUND_SIGN_DIRECTION.getValueForMeta(
+            CompassRoseDirection direction = CommonBlockProperties.GROUND_SIGN_DIRECTION.getValueForMeta(
                     (int) Math.floor((((player != null ? player.yaw : 0) + 180) * 16 / 360) + 0.5) & 0x0f
             );
 
-            BlockState post = BlockState.of(getPostId()).withProperty(GROUND_SIGN_DIRECTION, direction);
+            BlockState post = BlockState.of(getPostId()).withProperty(CommonBlockProperties.GROUND_SIGN_DIRECTION, direction);
             getLevel().setBlock(block, post.getBlock(block), true);
         } else {
             BlockState wall = BlockState.of(getWallId()).withProperty(FACING_DIRECTION, face);
@@ -178,192 +162,5 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable, Blo
             level.setBlock(layer1, 0, layer1, true);
             return false;
         }
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @Override
-    public int onTouch(@Nullable Player player, PlayerInteractEvent.Action action, BlockFace face) {
-        if (player != null && player.getGamemode() <= 1 && action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) {
-            var blockEntity = this.getLevel().getBlockEntity(this);
-            if (blockEntity instanceof BlockEntitySign blockEntitySign) {
-                // If a sign is waxed, it cannot be modified.
-                if (blockEntitySign.isWaxed()) {
-                    level.addLevelSoundEvent(this.add(0.5, 0.5, 0.5), LevelSoundEventPacket.SOUND_WAXED_SIGN_INTERACT_FAIL);
-                    return 0;
-                }
-                boolean front = switch (getSignDirection()) {
-                    case EAST -> face == BlockFace.EAST;
-                    case SOUTH -> face == BlockFace.SOUTH;
-                    case WEST -> face == BlockFace.WEST;
-                    case NORTH -> face == BlockFace.NORTH;
-                    case NORTH_EAST, NORTH_NORTH_EAST, EAST_NORTH_EAST ->
-                            face == BlockFace.EAST || face == BlockFace.NORTH;
-                    case NORTH_WEST, NORTH_NORTH_WEST, WEST_NORTH_WEST ->
-                            face == BlockFace.WEST || face == BlockFace.NORTH;
-                    case SOUTH_EAST, SOUTH_SOUTH_EAST, EAST_SOUTH_EAST ->
-                            face == BlockFace.EAST || face == BlockFace.SOUTH;
-                    case SOUTH_WEST, SOUTH_SOUTH_WEST, WEST_SOUTH_WEST ->
-                            face == BlockFace.WEST || face == BlockFace.SOUTH;
-                };
-                player.openSignEditor(this, front);
-            }
-        }
-        return 0;
-    }
-
-    @Override
-    public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (down().getId() == Block.AIR) {
-                getLevel().useBreakOn(this);
-                return Level.BLOCK_UPDATE_NORMAL;
-            }
-        }
-
-        return 0;
-    }
-
-    @Override
-    public Item toItem() {
-        return new ItemSign();
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
-    }
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public CompassRoseDirection getSignDirection() {
-        return getPropertyValue(GROUND_SIGN_DIRECTION);
-    }
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public void setSignDirection(CompassRoseDirection direction) {
-        setPropertyValue(GROUND_SIGN_DIRECTION, direction);
-    }
-
-    @PowerNukkitDifference(info = "Was returning the wrong face, it now return the closest face, or the left face if even", since = "1.4.0.0-PN")
-    @Override
-    public BlockFace getBlockFace() {
-        return getSignDirection().getClosestBlockFace();
-    }
-
-    @PowerNukkitOnly
-    @Since("1.3.0.0-PN")
-    @Override
-    public void setBlockFace(BlockFace face) {
-        setSignDirection(face.getCompassRoseDirection());
-    }
-
-    @Override
-    @PowerNukkitOnly
-    public boolean breaksWhenMoved() {
-        return true;
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
-    @Override
-    public boolean onActivate(@NotNull Item item, Player player) {
-        BlockEntity blockEntity = this.level.getBlockEntity(this);
-        if (!(blockEntity instanceof BlockEntitySign sign)) {
-            return false;
-        }
-
-        // If a sign is waxed, it cannot be modified.
-        if (sign.isWaxed()) {
-            level.addLevelSoundEvent(this.add(0.5, 0.5, 0.5), LevelSoundEventPacket.SOUND_WAXED_SIGN_INTERACT_FAIL);
-            return false;
-        }
-
-        if (item.getId() == Item.DYE) {
-            BlockColor color = DyeColor.getByDyeData(item.getDamage()).getSignColor();
-            if (color.equals(sign.getColor())) {
-                if (player != null) {
-                    sign.spawnTo(player);
-                }
-                return false;
-            }
-
-            SignColorChangeEvent event = new SignColorChangeEvent(this, player, color);
-            this.level.getServer().getPluginManager().callEvent(event);
-            if (event.isCancelled()) {
-                if (player != null) {
-                    sign.spawnTo(player);
-                }
-                return false;
-            }
-
-            sign.setColor(color);
-            sign.spawnToAll();
-
-            this.level.addLevelEvent(this, LevelEventPacket.EVENT_SOUND_DYE_USED);
-
-            if (player != null && (player.getGamemode() & 0x01) == 0) {
-                item.count--;
-            }
-
-            return true;
-        } else if (item instanceof ItemGlowInkSac) {
-            if (sign.isGlowing()) {
-                if (player != null) {
-                    sign.spawnTo(player);
-                }
-                return false;
-            }
-
-            SignGlowEvent event = new SignGlowEvent(this, player, true);
-            this.level.getServer().getPluginManager().callEvent(event);
-            if (event.isCancelled()) {
-                if (player != null) {
-                    sign.spawnTo(player);
-                }
-                return false;
-            }
-
-            sign.setGlowing(true);
-            sign.spawnToAll();
-
-            this.level.addLevelEvent(this, LevelEventPacket.EVENT_SOUND_INK_SACE_USED);
-
-            if (player != null && (player.getGamemode() & 0x01) == 0) {
-                item.count--;
-            }
-
-            return true;
-        } else if (item instanceof ItemHoneycomb) {
-            if (sign.isWaxed()) {
-                if (player != null) {
-                    sign.spawnTo(player);
-                }
-                return false;
-            }
-
-            SignWaxedEvent event = new SignWaxedEvent(this, player, true);
-            this.level.getServer().getPluginManager().callEvent(event);
-            if (event.isCancelled()) {
-                if (player != null) {
-                    sign.spawnTo(player);
-                }
-                return false;
-            }
-
-            sign.setWaxed(true);
-            sign.spawnToAll();
-
-            if (player != null && (player.getGamemode() & 0x01) == 0) {
-                item.count--;
-            }
-
-            return true;
-        }
-        return false;
     }
 }

@@ -1,11 +1,13 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BooleanBlockProperty;
+import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemString;
@@ -14,7 +16,6 @@ import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
-
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -25,6 +26,8 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.POWERED;
  * @author CreeperFace
  */
 public class BlockTripWire extends BlockTransparentMeta {
+    @Deprecated(since = "1.20.0-r2",forRemoval = true)
+    @DeprecationDetails(since = "1.20.0-r2", reason = "replace to CommonBlockProperties")
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
     public static final BooleanBlockProperty ATTACHED = new BooleanBlockProperty("attached_bit", false);
@@ -39,7 +42,7 @@ public class BlockTripWire extends BlockTransparentMeta {
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(POWERED, SUSPENDED, ATTACHED, DISARMED);
+    public static final BlockProperties PROPERTIES = new BlockProperties(POWERED, SUSPENDED, CommonBlockProperties.ATTACHED, DISARMED);
 
     public BlockTripWire(int meta) {
         super(meta);

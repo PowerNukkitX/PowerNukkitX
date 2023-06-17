@@ -13,7 +13,6 @@ import cn.nukkit.item.ItemSugarcane;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
-
 import org.jetbrains.annotations.NotNull;
 
 /**

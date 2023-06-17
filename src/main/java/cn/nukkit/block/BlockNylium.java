@@ -9,7 +9,6 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.generator.object.ObjectNyliumVegetation;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.NukkitRandom;
-
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;

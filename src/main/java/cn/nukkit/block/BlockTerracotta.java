@@ -6,7 +6,6 @@ import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.TerracottaColor;
-
 import org.jetbrains.annotations.NotNull;
 
 /**

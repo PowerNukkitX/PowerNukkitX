@@ -3,7 +3,6 @@ package cn.nukkit.event.entity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.potion.Effect;
-
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;

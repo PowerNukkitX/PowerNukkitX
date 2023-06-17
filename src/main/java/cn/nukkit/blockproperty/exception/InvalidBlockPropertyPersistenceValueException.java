@@ -21,7 +21,6 @@ package cn.nukkit.blockproperty.exception;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperty;
-
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;

@@ -24,7 +24,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.inventory.AnvilInventory;
 import lombok.ToString;
-
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;

@@ -7,7 +7,6 @@ import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.lang.CommandOutputContainer;
 import cn.nukkit.network.protocol.types.CommandOutputMessage;
-import cn.nukkit.utils.OK;
 
 /**
  * 代表一个抽象的命令节点，类型T对应节点解析结果类型<br>

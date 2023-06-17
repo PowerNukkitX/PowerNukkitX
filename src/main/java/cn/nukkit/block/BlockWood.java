@@ -10,7 +10,6 @@ import cn.nukkit.blockproperty.value.WoodType;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.blockstate.IBlockState;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
-
 import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;

@@ -23,15 +23,4 @@ public class BlockFenceCherry extends BlockFenceBase {
     public int getId() {
         return CHERRY_FENCE;
     }
-
-    @Override
-    public int getBurnChance() {
-        return 0;
-    }
-
-    @Override
-    public int getBurnAbility() {
-        return 0;
-    }
-
 }

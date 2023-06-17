@@ -6,7 +6,6 @@ import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.IntBlockProperty;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.AxisAlignedBB;
-
 import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
