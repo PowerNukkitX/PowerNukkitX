@@ -57,7 +57,7 @@ public class BdsLangExport {
                             var last = str.indexOf('#');
                             return str.substring(0, last == -1 ? str.length() : last);
                         });
-                        news.add(line);
+                        news.add(line.trim());
                     }
                 }
                 int startIndex = -1;
