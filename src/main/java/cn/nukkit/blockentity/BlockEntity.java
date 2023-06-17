@@ -78,6 +78,9 @@ public abstract class BlockEntity extends Position {
     @PowerNukkitXOnly
     @Since("1.19.21-r2")
     public static final String STRUCTURE_BLOCK = "StructureBlock";
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
+    public static final String CHISELED_BOOKSHELF = "ChiseledBookshelf";
 
     public static long count = 1;
 
@@ -176,6 +179,7 @@ public abstract class BlockEntity extends Position {
         registerBlockEntity(STRUCTURE_BLOCK, BlockEntityStructBlock.class);
         registerBlockEntity(GLOW_ITEM_FRAME, BlockEntityGlowItemFrame.class);
         registerBlockEntity(HANGING_SIGN, BlockEntityHangingSign.class);
+        registerBlockEntity(CHISELED_BOOKSHELF, BlockEntityChiseledBookshelf.class);
     }
 
     protected void initBlockEntity() {
