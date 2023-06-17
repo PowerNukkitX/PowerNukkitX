@@ -1,9 +1,11 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
+import cn.nukkit.blockproperty.BooleanBlockProperty;
 import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
@@ -14,6 +16,12 @@ import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 public class BlockLantern extends BlockFlowable {
+    @Deprecated(since = "1.20.0-r2",forRemoval = true)
+    @DeprecationDetails(since = "1.20.0-r2", reason = "replace to CommonBlockProperties")
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public static final BooleanBlockProperty HANGING = new BooleanBlockProperty("hanging", false);
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.HANGING);
@@ -137,32 +145,32 @@ public class BlockLantern extends BlockFlowable {
 
     @Override
     public double getMinX() {
-        return x + (5.0/16);
+        return x + (5.0 / 16);
     }
 
     @Override
     public double getMinY() {
-        return y + (!isHanging()?0: 1./16);
+        return y + (!isHanging() ? 0 : 1. / 16);
     }
 
     @Override
     public double getMinZ() {
-        return z + (5.0/16);
+        return z + (5.0 / 16);
     }
 
     @Override
     public double getMaxX() {
-        return x + (11.0/16);
+        return x + (11.0 / 16);
     }
 
     @Override
     public double getMaxY() {
-        return y + (!isHanging()? 7.0/16 : 8.0/16);
+        return y + (!isHanging() ? 7.0 / 16 : 8.0 / 16);
     }
 
     @Override
     public double getMaxZ() {
-        return z + (11.0/16);
+        return z + (11.0 / 16);
     }
 
     @Override
@@ -181,19 +189,19 @@ public class BlockLantern extends BlockFlowable {
         return ItemTool.TIER_WOODEN;
     }
 
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean isHanging() {
         return getBooleanValue(CommonBlockProperties.HANGING);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void setHanging(boolean hanging) {
         setBooleanValue(CommonBlockProperties.HANGING, hanging);
     }
-    
+
     @PowerNukkitOnly
     @Override
     public int getWaterloggingLevel() {
