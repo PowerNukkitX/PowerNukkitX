@@ -7,7 +7,6 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemElytra;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.enchantment.EnchantmentType;
-
 import org.jetbrains.annotations.NotNull;
 
 /**

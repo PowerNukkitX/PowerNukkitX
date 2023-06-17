@@ -8,7 +8,6 @@ import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
-
 import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly

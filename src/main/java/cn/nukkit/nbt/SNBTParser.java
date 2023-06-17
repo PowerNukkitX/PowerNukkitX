@@ -8,7 +8,6 @@ import cn.nukkit.nbt.snbt.ast.*;
 import cn.nukkit.nbt.tag.*;
 import com.google.common.primitives.Bytes;
 import com.google.common.primitives.Ints;
-import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.StringReader;

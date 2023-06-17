@@ -15,7 +15,6 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
-
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;

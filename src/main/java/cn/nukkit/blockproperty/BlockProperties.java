@@ -11,7 +11,6 @@ import cn.nukkit.utils.functional.ToLongTriFunctionOneIntOneLong;
 import cn.nukkit.utils.functional.TriFunction;
 import com.google.common.base.Preconditions;
 import lombok.Value;
-
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;

@@ -3,7 +3,6 @@ package cn.nukkit.network;
 import cn.nukkit.api.Since;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
-
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;

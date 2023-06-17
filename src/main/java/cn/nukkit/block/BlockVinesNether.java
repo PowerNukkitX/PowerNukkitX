@@ -15,7 +15,6 @@ import cn.nukkit.level.Position;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.OptionalBoolean;
-
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;

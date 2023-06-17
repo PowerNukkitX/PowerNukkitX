@@ -6,7 +6,6 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;

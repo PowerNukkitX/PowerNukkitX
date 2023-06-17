@@ -20,7 +20,6 @@ import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.OptionalBoolean;
 import cn.nukkit.utils.Rail;
 import cn.nukkit.utils.Rail.Orientation;
-
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;

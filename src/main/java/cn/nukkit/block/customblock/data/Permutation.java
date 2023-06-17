@@ -5,7 +5,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
-import com.google.common.base.Preconditions;
 
 /**
  * The type Permutation builder.

@@ -8,7 +8,6 @@ import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.CompassRoseDirection;
-
 import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;

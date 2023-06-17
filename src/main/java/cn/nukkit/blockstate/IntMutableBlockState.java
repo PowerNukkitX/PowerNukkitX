@@ -10,11 +10,9 @@ import cn.nukkit.math.NukkitMath;
 import cn.nukkit.utils.Validation;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-
-import javax.annotation.Nonnegative;
-
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnegative;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.Serializable;

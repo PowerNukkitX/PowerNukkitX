@@ -1,10 +1,8 @@
 package cn.nukkit.command.tree.node;
 
 
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.command.selector.EntitySelectorAPI;
 
 
 /**

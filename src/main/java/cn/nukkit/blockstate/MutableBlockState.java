@@ -8,11 +8,9 @@ import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-
-import javax.annotation.Nonnegative;
-
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnegative;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import static cn.nukkit.api.API.Definition.INTERNAL;

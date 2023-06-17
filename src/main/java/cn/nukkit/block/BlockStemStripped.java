@@ -5,7 +5,6 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.item.Item;
-
 import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly

@@ -5,7 +5,6 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import lombok.SneakyThrows;
-
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;

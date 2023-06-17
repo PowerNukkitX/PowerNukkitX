@@ -7,7 +7,6 @@ import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.biome.Biome;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.generator.Normal;
-
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;

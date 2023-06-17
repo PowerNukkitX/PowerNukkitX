@@ -7,7 +7,6 @@ import cn.nukkit.blockproperty.ArrayBlockProperty;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.value.SandType;
 import cn.nukkit.item.ItemTool;
-
 import org.jetbrains.annotations.NotNull;
 
 /**

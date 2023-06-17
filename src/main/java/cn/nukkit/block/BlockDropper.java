@@ -8,7 +8,6 @@ import cn.nukkit.dispenser.DispenseBehavior;
 import cn.nukkit.dispenser.DropperDispenseBehavior;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
-
 import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly

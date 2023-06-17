@@ -5,7 +5,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.exception.InvalidBlockPropertyMetaException;
 import cn.nukkit.blockproperty.exception.InvalidBlockPropertyPersistenceValueException;
 import com.google.common.base.Preconditions;
-
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;

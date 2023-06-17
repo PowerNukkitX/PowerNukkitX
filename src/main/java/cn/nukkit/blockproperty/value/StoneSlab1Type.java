@@ -4,7 +4,6 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.ArrayBlockProperty;
 import cn.nukkit.utils.BlockColor;
-
 import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly

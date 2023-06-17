@@ -9,7 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Value;
 import lombok.experimental.NonFinal;
-
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;

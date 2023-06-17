@@ -14,7 +14,6 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Faceable;
 import lombok.RequiredArgsConstructor;
-
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;

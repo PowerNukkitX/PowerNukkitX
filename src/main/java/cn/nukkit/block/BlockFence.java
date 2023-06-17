@@ -9,7 +9,6 @@ import cn.nukkit.blockproperty.value.WoodType;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.SimpleAxisAlignedBB;
-
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;

@@ -7,7 +7,6 @@ import cn.nukkit.blockproperty.exception.InvalidBlockPropertyPersistenceValueExc
 import cn.nukkit.blockproperty.exception.InvalidBlockPropertyValueException;
 import cn.nukkit.math.NukkitMath;
 import com.google.common.base.Preconditions;
-
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;

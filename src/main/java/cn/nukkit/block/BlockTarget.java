@@ -17,7 +17,6 @@ import cn.nukkit.math.BlockFace.Axis;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.RedstoneComponent;
-
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;

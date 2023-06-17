@@ -2,16 +2,11 @@ package cn.nukkit.blockproperty;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.value.ChiselType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.CompassRoseDirection;
-import cn.nukkit.math.CompassRoseDirection;
 import cn.nukkit.utils.DyeColor;
-
-import static cn.nukkit.math.CompassRoseDirection.*;
-import static cn.nukkit.math.CompassRoseDirection.SOUTH_SOUTH_EAST;
 
 import static cn.nukkit.math.CompassRoseDirection.*;
 
