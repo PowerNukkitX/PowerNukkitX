@@ -1,5 +1,6 @@
 package cn.nukkit.blockentity;
 
+import cn.nukkit.api.DoNotModify;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockChiseledBookshelf;
 import cn.nukkit.item.Item;
@@ -58,6 +59,11 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
         Preconditions.checkArgument(index >= 0 && index <= 5);
         this.items[index] = item;
         setDirty();
+    }
+
+    @DoNotModify
+    public Item[] getItems() {
+        return items;
     }
 
     @Override

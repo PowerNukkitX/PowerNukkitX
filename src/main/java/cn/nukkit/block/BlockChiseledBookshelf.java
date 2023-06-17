@@ -53,8 +53,11 @@ public class BlockChiseledBookshelf extends BlockBookshelf implements BlockEntit
 
     @Override
     public Item[] getDrops(Item item) {
-        //todo implement all store book Drops
-        return new Item[]{};
+        BlockEntityChiseledBookshelf blockEntity = this.getBlockEntity();
+        if (blockEntity != null) {
+            return blockEntity.getItems();
+        }
+        return Item.EMPTY_ARRAY;
     }
 
     @Override
