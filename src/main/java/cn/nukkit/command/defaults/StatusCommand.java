@@ -127,7 +127,7 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
             String mac = nif.getMacaddr().toUpperCase();
             String oui = mac.length() > 7 ? mac.substring(0, 8) : mac;
             if (vmMac.containsKey(oui)) {
-                return vmVendor.get(oui);
+                return vmMac.get(oui);
             }
         }
 
@@ -158,10 +158,9 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                 return "Hyper-V";
             }
         }
-
         //检查是否在Docker容器中
-        //Docker检查只在Linux上执行
-        if (System.getProperties().getProperty("os.name").toUpperCase().contains("NUX")) {
+        //Docker检查只在非Windows上执行
+        else {
             var file = new File("/.dockerenv");
             if (file.exists()) {
                 return "Docker";
@@ -173,8 +172,8 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                     if (searchResult.findAny().isPresent()) {
                         return "Docker";
                     }
-                } catch (IOException ignored) {
-
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         }
