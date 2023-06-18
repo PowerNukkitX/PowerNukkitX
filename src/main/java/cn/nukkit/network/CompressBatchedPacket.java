@@ -2,6 +2,7 @@ package cn.nukkit.network;
 
 import cn.nukkit.Server;
 import cn.nukkit.scheduler.AsyncTask;
+import cn.nukkit.utils.SnappyCompression;
 
 import java.net.InetSocketAddress;
 import java.util.List;
@@ -35,7 +36,11 @@ public class CompressBatchedPacket extends AsyncTask {
     @Override
     public void onRun() {
         try {
-            this.finalData = Network.deflateRaw(data, level);
+            if (Server.getInstance().isEnableSnappy()) {
+                this.finalData = SnappyCompression.compress(data);
+            } else {
+                this.finalData = Network.deflateRaw(data, level);
+            }
             this.data = null;
         } catch (Exception e) {
             //ignore

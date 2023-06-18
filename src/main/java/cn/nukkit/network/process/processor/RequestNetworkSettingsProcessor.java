@@ -1,6 +1,7 @@
 package cn.nukkit.network.process.processor;
 
 import cn.nukkit.PlayerHandle;
+import cn.nukkit.Server;
 import cn.nukkit.network.CompressionProvider;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.NetworkSettingsPacket;
@@ -19,9 +20,15 @@ public class RequestNetworkSettingsProcessor extends DataPacketProcessor<Request
         var protocolVersion = pk.protocolVersion;
         String message;
         var settingsPacket = new NetworkSettingsPacket();
-        settingsPacket.compressionAlgorithm = PacketCompressionAlgorithm.ZLIB;
+        PacketCompressionAlgorithm algorithm;
+        if (Server.getInstance().isEnableSnappy()) {
+            algorithm = PacketCompressionAlgorithm.SNAPPY;
+        } else  {
+            algorithm = PacketCompressionAlgorithm.ZLIB;
+        }
+        settingsPacket.compressionAlgorithm = algorithm;
         settingsPacket.compressionThreshold = 1; // compress everything
-        player.forceDataPacket(settingsPacket, () -> playerHandle.getNetworkSession().setCompression(CompressionProvider.ZLIB));
+        player.forceDataPacket(settingsPacket, () -> playerHandle.getNetworkSession().setCompression(CompressionProvider.from(algorithm)));
         if (!ProtocolInfo.SUPPORTED_PROTOCOLS.contains(protocolVersion)) {
             if (protocolVersion < ProtocolInfo.CURRENT_PROTOCOL) {
                 message = "disconnectionScreen.outdatedClient";
