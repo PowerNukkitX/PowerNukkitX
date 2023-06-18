@@ -14,7 +14,10 @@ import oshi.hardware.HardwareAbstractionLayer;
 import oshi.hardware.NetworkIF;
 import oshi.util.platform.windows.WmiQueryHandler;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -153,6 +156,26 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
             var tmp = result.getValue(ComputerSystemEntry.HYPERVISORPRESENT, 0);
             if (tmp != null && tmp.toString().equals("true")) {
                 return "Hyper-V";
+            }
+        }
+
+        //检查是否在Docker容器中
+        //Docker检查只在Linux上执行
+        if (System.getProperties().getProperty("os.name").toUpperCase().contains("NUX")) {
+            var file = new File("/.dockerenv");
+            if (file.exists()) {
+                return "Docker";
+            }
+            var cgroupFile = new File("/proc/1/cgroup");
+            if (cgroupFile.exists()) {
+                try(var lineStream = Files.lines(cgroupFile.toPath())) {
+                    var searchResult = lineStream.filter(line -> line.contains("docker") || line.contains("lxc"));
+                    if (searchResult.findAny().isPresent()) {
+                        return "Docker";
+                    }
+                } catch (IOException ignored) {
+
+                }
             }
         }
 
