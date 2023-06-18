@@ -94,7 +94,7 @@ public class TestLegacyItemIds {
                 try {
                     legacyIds.put(item.getId(), item.getNamespaceId());
                 } catch (IllegalArgumentException | UnknownNetworkIdException ignore) {
-                    errors.put(item.getName(), item.getId());
+                    errors.put(item.getDisplayName(), item.getId());
                 }
             }
         }

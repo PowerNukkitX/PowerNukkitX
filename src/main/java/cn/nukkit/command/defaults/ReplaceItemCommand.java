@@ -136,10 +136,10 @@ public class ReplaceItemCommand extends VanillaCommand {
                     item.readItemJsonComponents(Item.ItemJsonComponents.fromJson(components));
                 }
                 if (holder.getInventory().setItem(slotId, item)) {
-                    log.addSuccess("commands.replaceitem.success", "slot.container", String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()).output();
+                    log.addSuccess("commands.replaceitem.success", "slot.container", String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getDisplayName()).output();
                     return 1;
                 } else {
-                    log.addError("commands.replaceitem.failed", "slot.container", String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()).output();
+                    log.addError("commands.replaceitem.failed", "slot.container", String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getDisplayName()).output();
                     return 0;
                 }
             }
@@ -185,10 +185,10 @@ public class ReplaceItemCommand extends VanillaCommand {
                             continue;
                         }
                         if (player.getInventory().setItemInHand(item)) {
-                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getDisplayName());
                             successCount++;
                         } else {
-                            log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getDisplayName());
                         }
                     } else if (entity instanceof EntityInventoryHolder entityMob) {
                         Item old = entityMob.getItemInHand();
@@ -197,10 +197,10 @@ public class ReplaceItemCommand extends VanillaCommand {
                             continue;
                         }
                         if (entityMob.setItemInHand(item)) {
-                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getDisplayName());
                             successCount++;
                         } else {
-                            log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getDisplayName());
                         }
                     }
                 }
@@ -212,10 +212,10 @@ public class ReplaceItemCommand extends VanillaCommand {
                             continue;
                         }
                         if (player.getOffhandInventory().setItem(0, item)) {
-                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getDisplayName());
                             successCount++;
                         } else {
-                            log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getDisplayName());
                         }
                     } else if (entity instanceof EntityInventoryHolder entityMob) {
                         Item old = entityMob.getItemInOffhand();
@@ -224,10 +224,10 @@ public class ReplaceItemCommand extends VanillaCommand {
                             continue;
                         }
                         if (entityMob.setItemInOffhand(item)) {
-                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getDisplayName());
                             successCount++;
                         } else {
-                            log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getDisplayName());
                         }
                     }
                 }
@@ -239,10 +239,10 @@ public class ReplaceItemCommand extends VanillaCommand {
                             continue;
                         }
                         if (player.getInventory().setHelmet(item)) {
-                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getDisplayName());
                             successCount++;
                         } else {
-                            log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getDisplayName());
                             continue;
                         }
                     }
@@ -253,10 +253,10 @@ public class ReplaceItemCommand extends VanillaCommand {
                             continue;
                         }
                         if (entityMob.setHelmet(item)) {
-                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getDisplayName());
                             successCount++;
                         } else {
-                            log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getDisplayName());
                         }
                     }
                 }
@@ -268,10 +268,10 @@ public class ReplaceItemCommand extends VanillaCommand {
                             continue;
                         }
                         if (player.getInventory().setChestplate(item)) {
-                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getDisplayName());
                             successCount++;
                         } else {
-                            log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getDisplayName());
                             continue;
                         }
                     }
@@ -282,10 +282,10 @@ public class ReplaceItemCommand extends VanillaCommand {
                             continue;
                         }
                         if (entityMob.setChestplate(item)) {
-                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getDisplayName());
                             successCount++;
                         } else {
-                            log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getDisplayName());
                         }
                     }
                 }
@@ -297,10 +297,10 @@ public class ReplaceItemCommand extends VanillaCommand {
                             continue;
                         }
                         if (player.getInventory().setLeggings(item)) {
-                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getDisplayName());
                             successCount++;
                         } else {
-                            log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getDisplayName());
                             continue;
                         }
                     }
@@ -311,10 +311,10 @@ public class ReplaceItemCommand extends VanillaCommand {
                             continue;
                         }
                         if (entityMob.setLeggings(item)) {
-                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getDisplayName());
                             successCount++;
                         } else {
-                            log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getDisplayName());
                         }
                     }
                 }
@@ -326,10 +326,10 @@ public class ReplaceItemCommand extends VanillaCommand {
                             continue;
                         }
                         if (player.getInventory().setBoots(item)) {
-                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getDisplayName());
                             successCount++;
                         } else {
-                            log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getDisplayName());
                             continue;
                         }
                     }
@@ -340,10 +340,10 @@ public class ReplaceItemCommand extends VanillaCommand {
                             continue;
                         }
                         if (entityMob.setBoots(item)) {
-                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getDisplayName());
                             successCount++;
                         } else {
-                            log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getDisplayName());
                         }
                     }
                 }
@@ -359,13 +359,13 @@ public class ReplaceItemCommand extends VanillaCommand {
                             continue;
                         }
                         if (player.getEnderChestInventory().setItem(slotId, item)) {
-                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getDisplayName());
                             successCount++;
                         } else {
-                            log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getDisplayName());
                         }
                     } else {
-                        log.addError("commands.replaceitem.failed", slotType, "0", String.valueOf(item.getCount()), item.getName());
+                        log.addError("commands.replaceitem.failed", slotType, "0", String.valueOf(item.getCount()), item.getDisplayName());
                     }
                 }
                 case "slot.hotbar" -> {
@@ -380,13 +380,13 @@ public class ReplaceItemCommand extends VanillaCommand {
                             continue;
                         }
                         if (player.getInventory().setItem(slotId, item)) {
-                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getDisplayName());
                             successCount++;
                         } else {
-                            log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            log.addError("commands.replaceitem.failed", slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getDisplayName());
                         }
                     } else {
-                        log.addError("commands.replaceitem.failed", slotType, "0", String.valueOf(item.getCount()), item.getName());
+                        log.addError("commands.replaceitem.failed", slotType, "0", String.valueOf(item.getCount()), item.getDisplayName());
                     }
                 }
                 case "slot.inventory" -> {
@@ -401,10 +401,10 @@ public class ReplaceItemCommand extends VanillaCommand {
                             continue;
                         }
                         if (player.getInventory().setItem(slotId, item)) {
-                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getDisplayName());
                             successCount++;
                         } else {
-                            log.addError("commands.replaceitem.failed", slotType, "0", String.valueOf(item.getCount()), item.getName());
+                            log.addError("commands.replaceitem.failed", slotType, "0", String.valueOf(item.getCount()), item.getDisplayName());
                         }
                     } else if (entity instanceof EntityInventoryHolder entityMob) {
                         Item old = entityMob.getInventory().getItem(slotId);
@@ -417,10 +417,10 @@ public class ReplaceItemCommand extends VanillaCommand {
                             continue;
                         }
                         if (entityMob.getInventory().setItem(slotId, item)) {
-                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName());
+                            log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getDisplayName());
                             successCount++;
                         } else {
-                            log.addError("commands.replaceitem.failed", slotType, "0", String.valueOf(item.getCount()), item.getName());
+                            log.addError("commands.replaceitem.failed", slotType, "0", String.valueOf(item.getCount()), item.getDisplayName());
                         }
                     }
                 }

@@ -17,6 +17,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddItemEntityPacket;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.EntityEventPacket;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author MagicDroidX
@@ -293,6 +294,7 @@ public class EntityItem extends Entity {
         return "Item";
     }
 
+    @NotNull
     @Override
     public String getName() {
         if (this.hasCustomName()) {
@@ -301,7 +303,7 @@ public class EntityItem extends Entity {
         if (item == null) {
             return getOriginalName();
         }
-        return item.count + "x " + this.item.getName();
+        return item.count + "x " + this.item.getDisplayName();
     }
 
     public Item getItem() {

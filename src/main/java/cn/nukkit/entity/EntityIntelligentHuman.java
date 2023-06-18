@@ -316,6 +316,7 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
         return "EntityIntelligentHuman";
     }
 
+    @NotNull
     @Override
     public String getName() {
         return this.getNameTag();

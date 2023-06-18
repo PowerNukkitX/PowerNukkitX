@@ -14,6 +14,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddPlayerPacket;
 import cn.nukkit.network.protocol.RemoveEntityPacket;
 import cn.nukkit.network.protocol.SetEntityLinkPacket;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
@@ -110,6 +111,7 @@ public class EntityHuman extends EntityHumanType {
         return "Human";
     }
 
+    @NotNull
     @Override
     public String getName() {
         return this.getNameTag();

@@ -48,11 +48,11 @@ public class GiveCommand extends VanillaCommand {
 
         Item item = list.getResult(1);
         if (item.isNull() && item.getId() != 0) {
-            log.addError("commands.give.item.notFound", item.getName()).output();
+            log.addError("commands.give.item.notFound", item.getDisplayName()).output();
             return 0;
         }
         if (item instanceof ItemBlock && item.getBlock() instanceof BlockUnknown) {
-            log.addError("commands.give.block.notFound", item.getName()).output();
+            log.addError("commands.give.block.notFound", item.getDisplayName()).output();
             return 0;
         }
         int count;
@@ -98,10 +98,10 @@ public class GiveCommand extends VanillaCommand {
             for (Item drop : drops) {
                 player.dropItem(drop);
             }
-            log.outputObjectWhisper(player, "commands.give.successRecipient", item.getName() + " (" + item.getNamespaceId() + (item.getDamage() != 0 ? ":" + item.getDamage() : "") + ")",
+            log.outputObjectWhisper(player, "commands.give.successRecipient", item.getDisplayName() + " (" + item.getNamespaceId() + (item.getDamage() != 0 ? ":" + item.getDamage() : "") + ")",
                     String.valueOf(item.getCount()));
         }
-        log.addSuccess("commands.give.success", item.getName() + " (" + item.getNamespaceId() + (item.getDamage() != 0 ? ":" + item.getDamage() : "") + ")",
+        log.addSuccess("commands.give.success", item.getDisplayName() + " (" + item.getNamespaceId() + (item.getDamage() != 0 ? ":" + item.getDamage() : "") + ")",
                 String.valueOf(item.getCount()),
                 players.stream().map(Player::getName).collect(Collectors.joining(","))).successCount(players.size()).output(true);
         return players.size();

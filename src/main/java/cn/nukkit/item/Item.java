@@ -34,6 +34,7 @@ import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -159,10 +160,6 @@ public class Item implements Cloneable, BlockID, ItemID {
         }
         this.count = count;
         this.name = name != null ? name.intern() : null;
-        /*f (this.block != null && this.id <= 0xff && Block.list[id] != null) { //probably useless
-            this.block = Block.get(this.id, this.meta);
-            this.name = this.block.getName();
-        }*/
     }
 
     public boolean hasMeta() {
@@ -957,7 +954,7 @@ public class Item implements Cloneable, BlockID, ItemID {
                  * 因为getDefinition中如果需要使用Item.fromString()获取自定义物品,此时RuntimeItems中还没注册自定义物品,留一个备用构造。
                  * 主要用于getDefinition中addRepairItems
                  */
-                if (result.getName() != null && result.getName().equals(Item.UNKNOWN_STR)) {
+                if (result.getDisplayName().equals(Item.UNKNOWN_STR)) {
                     result = CUSTOM_ITEMS.get(namespacedId).get();
                 }
             } else {
@@ -982,7 +979,7 @@ public class Item implements Cloneable, BlockID, ItemID {
             result = get(id, meta.orElse(0));
         }
         if (result != null) {
-            if (result.isNull() || result.getName().equals(Item.UNKNOWN_STR) || result instanceof StringItemUnknown) {
+            if (result.isNull() || (result.getBlock() != null && result.getDisplayName().equals(Item.UNKNOWN_STR)) || result instanceof StringItemUnknown) {
                 log.debug("Get `" + str + "` item from string error!");
                 return Item.AIR_ITEM;
             }
@@ -1391,7 +1388,7 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     private String setCustomEnchantDisplay(ListTag<CompoundTag> custom_ench) {
-        StringJoiner joiner = new StringJoiner("\n", "" + TextFormat.RESET + TextFormat.AQUA + this.name + "\n", "");
+        StringJoiner joiner = new StringJoiner("\n", String.valueOf(TextFormat.RESET) + TextFormat.AQUA + this.name + "\n", "");
         for (var ench : custom_ench.getAll()) {
             var enchantment = Enchantment.getEnchantment(ench.getString("id"));
             joiner.add(enchantment.getLore());
@@ -1695,8 +1692,14 @@ public class Item implements Cloneable, BlockID, ItemID {
         return this.count <= 0 || this.id == AIR || this.id == STRING_IDENTIFIED_ITEM && !(this instanceof StringItem);
     }
 
+    @Nullable
     final public String getName() {
         return this.hasCustomName() ? this.getCustomName() : this.name;
+    }
+
+    @NotNull
+    final public String getDisplayName() {
+        return this.hasCustomName() ? this.getCustomName() : this.name == null ? StringItem.createItemName(getNamespaceId()) : name;
     }
 
     final public boolean canBePlaced() {

@@ -52,15 +52,15 @@ public class BasicAttributesXmlTest {
         String prefix = namespaceId + (damage != 0? ":" + damage : "") + " -> " + item.getClass().getSimpleName() + " -> ";
         assertEquals(definition.getAttribute("namespaced-id"), namespaceId, ()-> prefix + "Wrong namespaced-id");
         getInt("numeric-id", definition).ifPresent(id-> assertEquals(id, item.getId(), ()-> prefix + "Wrong numeric-id"));
-        assertEquals(definition.getAttribute("name"), item.getName(), ()-> prefix + "Wrong name test method 1");
+        assertEquals(definition.getAttribute("name"), item.getDisplayName(), ()-> prefix + "Wrong name test method 1");
         final int id = item.getId();
         Item item2 = Item.get(id, damage);
-        assertEquals(definition.getAttribute("name"), item2.getName(), ()-> prefix + "Wrong name test method 2");
+        assertEquals(definition.getAttribute("name"), item2.getDisplayName(), ()-> prefix + "Wrong name test method 2");
         if (id >= 0 && id < Item.list.length) {
             try {
                 Constructor<?> constructor = ((Class<?>) Item.list[id]).getDeclaredConstructor(Integer.class);
                 item2 = (Item) constructor.newInstance(damage);
-                assertEquals(definition.getAttribute("name"), item2.getName(), ()-> prefix + "Wrong name test method 3");
+                assertEquals(definition.getAttribute("name"), item2.getDisplayName(), ()-> prefix + "Wrong name test method 3");
             } catch (ReflectiveOperationException e) {
                 fail(prefix + "Missing constructor (Integer)", e);
             }
@@ -68,7 +68,7 @@ public class BasicAttributesXmlTest {
             try {
                 Constructor<?> constructor = ((Class<?>) Item.list[id]).getDeclaredConstructor(Integer.class, Integer.TYPE);
                 item2 = (Item) constructor.newInstance(damage, 1);
-                assertEquals(definition.getAttribute("name"), item2.getName(), ()-> prefix + "Wrong name test method 4");
+                assertEquals(definition.getAttribute("name"), item2.getDisplayName(), ()-> prefix + "Wrong name test method 4");
             } catch (ReflectiveOperationException e) {
                 fail(prefix + "Missing constructor (Integer, int)", e);
             }
@@ -77,7 +77,7 @@ public class BasicAttributesXmlTest {
                 try {
                     Constructor<?> constructor = ((Class<?>) Item.list[id]).getDeclaredConstructor();
                     item2 = (Item) constructor.newInstance();
-                    assertEquals(definition.getAttribute("name"), item2.getName(), ()-> prefix + "Wrong name test method 5");
+                    assertEquals(definition.getAttribute("name"), item2.getDisplayName(), ()-> prefix + "Wrong name test method 5");
                 } catch (ReflectiveOperationException e) {
                     fail(prefix + "Missing constructor ()", e);
                 }

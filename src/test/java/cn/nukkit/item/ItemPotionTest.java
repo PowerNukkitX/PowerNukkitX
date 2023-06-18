@@ -22,7 +22,7 @@ class ItemPotionTest {
     @Test
     void defaultName() {
         item = new ItemPotion(1000);
-        assertEquals("Potion", item.getName());
+        assertEquals("Potion", item.getDisplayName());
         assertNull(item.getPotion());
     }
 }
