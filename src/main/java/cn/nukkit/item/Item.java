@@ -1697,6 +1697,8 @@ public class Item implements Cloneable, BlockID, ItemID {
         return this.hasCustomName() ? this.getCustomName() : this.name;
     }
 
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
     @NotNull
     final public String getDisplayName() {
         return this.hasCustomName() ? this.getCustomName() : this.name == null ? StringItem.createItemName(getNamespaceId()) : name;
