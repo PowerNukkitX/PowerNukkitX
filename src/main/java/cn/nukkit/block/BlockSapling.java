@@ -22,7 +22,6 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
-
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;

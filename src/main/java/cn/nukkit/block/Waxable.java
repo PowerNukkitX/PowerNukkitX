@@ -9,7 +9,6 @@ import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.particle.WaxOffParticle;
 import cn.nukkit.level.particle.WaxOnParticle;
-
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;

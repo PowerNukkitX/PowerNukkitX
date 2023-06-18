@@ -11,7 +11,6 @@ import cn.nukkit.positiontracking.PositionTracking;
 import cn.nukkit.positiontracking.PositionTrackingService;
 import it.unimi.dsi.fastutil.ints.IntList;
 import lombok.extern.log4j.Log4j2;
-
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;

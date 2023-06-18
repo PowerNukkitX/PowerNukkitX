@@ -6,6 +6,7 @@ import cn.nukkit.api.*;
 import cn.nukkit.block.*;
 import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
@@ -194,6 +195,8 @@ public class Level implements ChunkManager, Metadatable {
         randomTickBlocks.add(BlockID.AZALEA_LEAVES);
         randomTickBlocks.add(BlockID.AZALEA_LEAVES_FLOWERED);
         randomTickBlocks.add(BlockID.MANGROVE_LEAVES);
+        randomTickBlocks.add(BlockID.CHERRY_SAPLING);
+        randomTickBlocks.add(BlockID.CHERRY_LEAVES);
         randomTickBlocks.trim();
     }
 
@@ -3086,7 +3089,7 @@ public class Level implements ChunkManager, Metadatable {
         if (target.getId() == Item.AIR) {
             return null;
         }
-
+        int touchStatus = 0;
         if (player != null) {
             PlayerInteractEvent ev = new PlayerInteractEvent(player, item, target, face, target.getId() == 0 ? Action.RIGHT_CLICK_AIR : Action.RIGHT_CLICK_BLOCK);
 
@@ -3097,10 +3100,12 @@ public class Level implements ChunkManager, Metadatable {
             if (!player.isOp() && isInSpawnRadius(target)) {
                 ev.setCancelled();
             }
-
             this.server.getPluginManager().callEvent(ev);
             if (!ev.isCancelled()) {
-                target.onTouch(player, ev.getAction(), face);
+                touchStatus = target.onTouch(player, ev.getAction(), face);
+                if (ev.getAction() == Action.LEFT_CLICK_BLOCK || ev.getAction() == Action.RIGHT_CLICK_BLOCK) {
+                    target.onClick(player, item, ev.getAction(), face, new Vector3(fx, fy, fz));
+                }
                 if ((!player.isSneaking() || player.getInventory().getItemInHand().isNull()) && target.canBeActivated() && target.onActivate(item, player)) {
                     if (item.isTool() && item.getDamage() >= item.getMaxDurability()) {
                         addSound(player, Sound.RANDOM_BREAK);
@@ -3131,6 +3136,10 @@ public class Level implements ChunkManager, Metadatable {
             }
             return item;
         }
+        if (touchStatus != 0) {
+            return null;
+        }
+
         Block hand;
         if (item.canBePlaced()) {
             hand = item.getBlock();
@@ -3143,16 +3152,17 @@ public class Level implements ChunkManager, Metadatable {
             return null;
         }
 
+        //处理放置梯子,我们应该提前给hand设置方向,这样后面计算是否碰撞实体才准确
+        if (hand instanceof BlockLadder) {
+            if (target instanceof BlockLadder) {
+                hand.setPropertyValue(CommonBlockProperties.FACING_DIRECTION, face.getOpposite());
+            } else hand.setPropertyValue(CommonBlockProperties.FACING_DIRECTION, face);
+        }
+
         //cause bug (eg: frog_spawn) (and I don't know what this is for)
         if (!(hand instanceof BlockFrogSpawn) && target.canBeReplaced()) {
             block = target;
             hand.position(block);
-        }
-        //处理放置梯子,我们应该提前给hand设置方向,这样后面计算是否碰撞实体才准确
-        if (hand instanceof BlockLadder) {
-            if (target instanceof BlockLadder) {
-                hand.setDamage(face.getOpposite().getIndex());
-            } else hand.setDamage(face.getIndex());
         }
 
         if (!hand.canPassThrough() && hand.getBoundingBox() != null) {
@@ -3801,12 +3811,13 @@ public class Level implements ChunkManager, Metadatable {
             color = brighter(color, 0.875 - Math.min(5, block.getFloorY() - nzy.getFloorY()) * 0.05);
         }
 
-        var deltaY = block.y - 128;
-        if (deltaY > 0) {
-            color = brighter(color, 1 - deltaY / (192 * 3));
-        } else if (deltaY < 0) {
-            color = darker(color, 1 - (-deltaY) / (192 * 3));
-        }
+        //效果不好，暂时禁用
+//        var deltaY = block.y - 128;
+//        if (deltaY > 0) {
+//            color = brighter(color, 1 - deltaY / (192 * 3));
+//        } else if (deltaY < 0) {
+//            color = darker(color, 1 - (-deltaY) / (192 * 3));
+//        }
 
         var up = block.getSide(BlockFace.UP);
         var up1 = block.getSideAtLayer(1, BlockFace.UP);
@@ -3843,24 +3854,24 @@ public class Level implements ChunkManager, Metadatable {
         int b = source.getBlue();
         int alpha = source.getAlpha();
 
-        int i = (int)(1.0/(1.0-factor));
-        if ( r == 0 && g == 0 && b == 0) {
+        int i = (int) (1.0 / (1.0 - factor));
+        if (r == 0 && g == 0 && b == 0) {
             return new Color(i, i, i, alpha);
         }
-        if ( r > 0 && r < i ) r = i;
-        if ( g > 0 && g < i ) g = i;
-        if ( b > 0 && b < i ) b = i;
+        if (r > 0 && r < i) r = i;
+        if (g > 0 && g < i) g = i;
+        if (b > 0 && b < i) b = i;
 
-        return new Color(Math.min((int)(r/factor), 255),
-                Math.min((int)(g/factor), 255),
-                Math.min((int)(b/factor), 255),
+        return new Color(Math.min((int) (r / factor), 255),
+                Math.min((int) (g / factor), 255),
+                Math.min((int) (b / factor), 255),
                 alpha);
     }
 
     protected Color darker(Color source, double factor) {
-        return new Color(Math.max((int)(source.getRed()*factor), 0),
-                Math.max((int)(source.getGreen()*factor), 0),
-                Math.max((int)(source.getBlue()*factor), 0),
+        return new Color(Math.max((int) (source.getRed() * factor), 0),
+                Math.max((int) (source.getGreen() * factor), 0),
+                Math.max((int) (source.getBlue() * factor), 0),
                 source.getAlpha());
     }
 
@@ -3869,12 +3880,11 @@ public class Level implements ChunkManager, Metadatable {
         if (chunk == null) return null;
         var chunkX = x & 0xF;
         var chunkZ = z & 0xF;
-        //TODO: 地形生成器不会更新heightMap，按理说这边的cache应该是true。需要等待heightMap的384适配以及地形生成器的heightMap修复
         int y = chunk.getHighestBlockAt(chunkX, chunkZ, false);
         while (y > getMinHeight()) {
             Block block = getBlock(x, y, z);
             if (block.getColor() == null) return null;
-            if (block.getColor().getAlpha() < 255 || block instanceof BlockWater) {
+            if (block.getColor().getAlpha() == 0/* || block instanceof BlockWater*/) {
                 y--;
             } else {
                 return block;

@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
  * @author LoboMetalurgico

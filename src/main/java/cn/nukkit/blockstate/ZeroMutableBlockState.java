@@ -22,11 +22,9 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.api.Unsigned;
 import cn.nukkit.blockproperty.BlockProperties;
-
-import javax.annotation.Nonnegative;
-
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnegative;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.Serializable;

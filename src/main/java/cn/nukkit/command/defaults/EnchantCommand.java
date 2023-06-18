@@ -56,13 +56,17 @@ public class EnchantCommand extends VanillaCommand {
                 int enchant = list.getResult(1);
                 enchantment = Enchantment.getEnchantment(enchant);
                 if (enchantment.getOriginalName().equals("unknown")) {
-                    log.addError("commands.enchant.notFound", String.valueOf(enchant));
+                    log.addError("commands.enchant.notFound", String.valueOf(enchant)).output();
                     return 0;
                 }
             }
             case "byName" -> {
                 String str = list.getResult(1);
                 enchantment = Enchantment.getEnchantment(str);
+                if (enchantment == null) {
+                    log.addError("commands.enchant.notFound", String.valueOf(str)).output();
+                    return 0;
+                }
             }
             default -> {
                 return 0;

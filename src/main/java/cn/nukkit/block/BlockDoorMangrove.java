@@ -30,5 +30,4 @@ public class BlockDoorMangrove extends BlockDoorWood{
     public Item toItem() {
         return new ItemDoorMangrove();
     }
-
 }

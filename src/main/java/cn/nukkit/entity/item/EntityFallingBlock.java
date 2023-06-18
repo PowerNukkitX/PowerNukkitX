@@ -148,7 +148,7 @@ public class EntityFallingBlock extends Entity {
             if (breakOnLava && level.getBlock(pos.subtract(0, 1, 0)) instanceof BlockLava) {
                 close();
                 if (this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
-                    getLevel().dropItem(this, Block.get(this.getBlock(), this.getDamage()).toItem());
+                    dropItems();
                 }
                 level.addParticle(new DestroyBlockParticle(pos, Block.get(getBlock(), getDamage())));
                 return true;
@@ -187,7 +187,7 @@ public class EntityFallingBlock extends Entity {
                     }
                 } else if (block.getId() > 0 && block.isTransparent() && !block.canBeReplaced() || this.getBlock() == Block.SNOW_LAYER && block instanceof BlockLiquid) {
                     if (this.getBlock() != Block.SNOW_LAYER ? this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS) : this.level.getGameRules().getBoolean(GameRule.DO_TILE_DROPS)) {
-                        getLevel().dropItem(this, Block.get(this.getBlock(), this.getDamage()).toItem());
+                        dropItems();
                     }
                 } else {
                     EntityBlockChangeEvent event = new EntityBlockChangeEvent(this, block, Block.get(getBlock(), getDamage()));
@@ -197,7 +197,7 @@ public class EntityFallingBlock extends Entity {
                             getLevel().setBlock(pos, event.getTo(), true);
                         else {
                             if (this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
-                                getLevel().dropItem(this, Block.get(this.getBlock(), this.getDamage()).toItem());
+                                dropItems();
                             }
                             level.addParticle(new DestroyBlockParticle(pos, Block.get(getBlock(), getDamage())));
                         }
@@ -272,5 +272,11 @@ public class EntityFallingBlock extends Entity {
     @Override
     public String getOriginalName() {
         return "Falling Block";
+    }
+
+    private void dropItems() {
+        for (var i : Block.get(this.getBlock(), this.getDamage()).getDrops(Item.AIR_ITEM)) {
+            getLevel().dropItem(this, i);
+        }
     }
 }

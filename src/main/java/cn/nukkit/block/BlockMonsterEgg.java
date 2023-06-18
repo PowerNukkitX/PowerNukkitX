@@ -6,7 +6,6 @@ import cn.nukkit.blockproperty.ArrayBlockProperty;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.value.MonsterEggStoneType;
 import cn.nukkit.item.Item;
-
 import org.jetbrains.annotations.NotNull;
 
 public class BlockMonsterEgg extends BlockSolidMeta {

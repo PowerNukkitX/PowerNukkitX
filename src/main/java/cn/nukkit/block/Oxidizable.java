@@ -11,7 +11,6 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.particle.ScrapeParticle;
-
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;

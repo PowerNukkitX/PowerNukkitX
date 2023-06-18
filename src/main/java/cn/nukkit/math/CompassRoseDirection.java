@@ -2,9 +2,8 @@ package cn.nukkit.math;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.block.BlockSignPost;
+import cn.nukkit.blockproperty.CommonBlockProperties;
 import lombok.RequiredArgsConstructor;
-
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -92,7 +91,7 @@ public enum CompassRoseDirection {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static CompassRoseDirection getClosestFromYaw(double yaw, @NotNull Precision precision) {
-        return BlockSignPost.GROUND_SIGN_DIRECTION.getValueForMeta(
+        return CommonBlockProperties.GROUND_SIGN_DIRECTION.getValueForMeta(
                 (int) Math.round(Math.round((yaw + 180.0) * precision.directions / 360.0) * (16.0 / precision.directions)) & 0x0f
         );
     }

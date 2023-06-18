@@ -3,7 +3,6 @@ package cn.nukkit.blockproperty.value;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import lombok.RequiredArgsConstructor;
-
 import org.jetbrains.annotations.NotNull;
 
 @Since("1.4.0.0-PN")

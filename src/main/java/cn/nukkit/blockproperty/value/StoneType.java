@@ -22,7 +22,6 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.utils.BlockColor;
 import lombok.AllArgsConstructor;
-
 import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.utils.BlockColor.*;

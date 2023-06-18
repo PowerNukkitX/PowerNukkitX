@@ -2,7 +2,6 @@ package cn.nukkit.blockstate.exception;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;

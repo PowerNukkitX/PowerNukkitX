@@ -2,12 +2,18 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import lombok.Getter;
+import lombok.Setter;
+
+import java.io.IOException;
+import java.nio.ByteOrder;
 
 @Since("1.19.70-r1")
 @PowerNukkitXOnly
 @Getter
+@Setter
 public class CameraPresetsPacket extends DataPacket {
     private CompoundTag data;
 
@@ -24,6 +30,10 @@ public class CameraPresetsPacket extends DataPacket {
     @Override
     public void encode() {
         this.reset();
-        this.putTag(this.data);
+        try {
+            this.put(NBTIO.write(this.data, ByteOrder.LITTLE_ENDIAN, true));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

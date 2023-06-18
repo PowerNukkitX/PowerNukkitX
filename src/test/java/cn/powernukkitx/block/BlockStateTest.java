@@ -12,11 +12,7 @@ import cn.nukkit.level.biome.EnumBiome;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.potion.Potion;
 
-/**
- * Author: Cool_Loong <br>
- * Date: 6/8/2023 <br>
- * Allay Project
- */
+
 public class BlockStateTest {
     public static void main(String[] args) {
         Block.init();

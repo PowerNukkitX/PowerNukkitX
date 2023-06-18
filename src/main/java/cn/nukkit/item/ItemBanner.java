@@ -8,7 +8,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.BannerPattern;
 import cn.nukkit.utils.DyeColor;
-
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -17,6 +16,9 @@ import java.util.Objects;
  * @author PetteriM1
  */
 public class ItemBanner extends Item {
+
+    public static final int COMMON_BANNER_TYPE = 0;
+    public static final int OMINOUS_BANNER_TYPE = 1;
 
     public ItemBanner() {
         this(0);
@@ -76,8 +78,8 @@ public class ItemBanner extends Item {
         CompoundTag tag = this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag();
         ListTag<CompoundTag> patterns = tag.getList("Patterns", CompoundTag.class);
         patterns.add(new CompoundTag("").
-                putInt("Color", pattern.getColor().getDyeData() & 0x0f).
-                putString("Pattern", pattern.getType().getName()));
+                putInt("Color", pattern.color().getDyeData() & 0x0f).
+                putString("Pattern", pattern.type().getName()));
         tag.putList(patterns);
         this.setNamedTag(tag);
     }

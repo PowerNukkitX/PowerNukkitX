@@ -1,6 +1,7 @@
 package cn.nukkit.item;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.utils.BannerPattern;
 
@@ -27,6 +28,10 @@ public class ItemBannerPattern extends Item {
     @PowerNukkitOnly
     @Since("FUTURE")
     public static final int PATTERN_SNOUT = 6;
+
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
+    public static final int PATTERN_GLOBE = 7;
 
     public ItemBannerPattern() {
         this(0, 1);
@@ -64,16 +69,16 @@ public class ItemBannerPattern extends Item {
         if (getId() != BANNER_PATTERN) {
             return BannerPattern.Type.PATTERN_CREEPER;
         }
-        switch (getDamage()) {
-            default:
-            case PATTERN_CREEPER_CHARGE: return BannerPattern.Type.PATTERN_CREEPER; 
-            case PATTERN_SKULL_CHARGE: return BannerPattern.Type.PATTERN_SKULL; 
-            case PATTERN_FLOWER_CHARGE: return BannerPattern.Type.PATTERN_FLOWER;
-            case PATTERN_THING: return BannerPattern.Type.PATTERN_MOJANG;
-            case PATTERN_FIELD_MASONED: return BannerPattern.Type.PATTERN_BRICK; 
-            case PATTERN_BORDURE_INDENTED: return BannerPattern.Type.PATTERN_CURLY_BORDER;
-            case PATTERN_SNOUT: return BannerPattern.Type.PATTERN_SNOUT;
-        }
+        return switch (getDamage()) {
+            default -> BannerPattern.Type.PATTERN_CREEPER;
+            case PATTERN_SKULL_CHARGE -> BannerPattern.Type.PATTERN_SKULL;
+            case PATTERN_FLOWER_CHARGE -> BannerPattern.Type.PATTERN_FLOWER;
+            case PATTERN_THING -> BannerPattern.Type.PATTERN_MOJANG;
+            case PATTERN_FIELD_MASONED -> BannerPattern.Type.PATTERN_BRICK;
+            case PATTERN_BORDURE_INDENTED -> BannerPattern.Type.PATTERN_CURLY_BORDER;
+            case PATTERN_SNOUT -> BannerPattern.Type.PATTERN_SNOUT;
+            case PATTERN_GLOBE -> BannerPattern.Type.PATTERN_GLOBE;
+        };
     }
 
     @PowerNukkitOnly
@@ -82,29 +87,15 @@ public class ItemBannerPattern extends Item {
             return;
         }
         switch (super.meta) {
-            case PATTERN_CREEPER_CHARGE:
-                name = "Creeper Charge Banner Pattern";
-                return;
-            case PATTERN_SKULL_CHARGE:
-                name = "Skull Charge Banner Pattern";
-                return;
-            case PATTERN_FLOWER_CHARGE:
-                name = "Flower Charge Banner Pattern";
-                return;
-            case PATTERN_THING:
-                name = "Thing Banner Pattern";
-                return;
-            case PATTERN_FIELD_MASONED:
-                name = "Field Banner Pattern";
-                return;
-            case PATTERN_BORDURE_INDENTED:
-                name = "Bordure Indented Banner Pattern";
-                return;
-            case PATTERN_SNOUT:
-                name = "Snout Banner Pattern";
-                return;
-            default:
-                name = "Banner Pattern";
+            case PATTERN_CREEPER_CHARGE -> name = "Creeper Charge Banner Pattern";
+            case PATTERN_SKULL_CHARGE -> name = "Skull Charge Banner Pattern";
+            case PATTERN_FLOWER_CHARGE -> name = "Flower Charge Banner Pattern";
+            case PATTERN_THING -> name = "Thing Banner Pattern";
+            case PATTERN_FIELD_MASONED -> name = "Field Banner Pattern";
+            case PATTERN_BORDURE_INDENTED -> name = "Bordure Indented Banner Pattern";
+            case PATTERN_SNOUT -> name = "Snout Banner Pattern";
+            case PATTERN_GLOBE -> name = "Globe Banner Pattern";
+            default -> name = "Banner Pattern";
         }
     }
 }

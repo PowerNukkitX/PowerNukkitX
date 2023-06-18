@@ -58,7 +58,7 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
     public BaseChunk clone() {
         BaseChunk chunk = (BaseChunk) super.clone();
         if (this.biomes != null) chunk.biomes = this.biomes.clone();
-        chunk.heightMap = this.getHeightMapArray().clone();
+        chunk.heightMap = this.getNewHeightMapArray().clone();
         if (sections != null && sections[0] != null) {
             chunk.sections = new ChunkSection[sections.length];
             chunk.sectionLength = sections.length;
@@ -416,8 +416,20 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
         return sections;
     }
 
+    @SuppressWarnings("removal")
     @Override
+    @Deprecated(since = "1.20.0-r2", forRemoval = true)
+    @DeprecationDetails(since = "1.20.0-r2", reason = "HeightMapArray is now a short[], Use getNewHeightMapArray() instead")
     public byte[] getHeightMapArray() {
+        var heightMap = new byte[256];
+        for (int i = 0; i < 256; i++) {
+            heightMap[i] = (byte) (this.heightMap[i] & 0xFF);
+        }
+        return heightMap;
+    }
+
+    @Override
+    public short[] getNewHeightMapArray() {
         return this.heightMap;
     }
 

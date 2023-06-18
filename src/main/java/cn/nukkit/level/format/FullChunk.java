@@ -9,7 +9,6 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.biome.Biome;
-
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -255,7 +254,11 @@ public interface FullChunk extends Cloneable {
 
     byte[] getBiomeIdArray();
 
+    @Deprecated(since = "1.20.0-r2", forRemoval = true)
+    @DeprecationDetails(since = "1.20.0-r2", reason = "HeightMapArray is now a short[], Use getNewHeightMapArray() instead")
     byte[] getHeightMapArray();
+
+    short[] getNewHeightMapArray();
 
     Map<Integer, Integer> getBlockExtraDataArray();
 

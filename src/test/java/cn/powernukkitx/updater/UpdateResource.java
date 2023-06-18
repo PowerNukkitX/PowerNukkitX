@@ -1,6 +1,7 @@
 package cn.powernukkitx.updater;
 
 import cn.nukkit.inventory.ItemTag;
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import lombok.SneakyThrows;
 
@@ -14,24 +15,28 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
 
+@SuppressWarnings("unchecked")
 public class UpdateResource {
+    Gson gson = new GsonBuilder().setPrettyPrinting()
+            .setObjectToNumberStrategy(jsonReader -> Double.valueOf(jsonReader.nextString()).intValue())
+            .disableHtmlEscaping()
+            .create();
+
     /**
      * Pre-requisites:<br>
-     * - Make sure that ProxyPass is updated and working with the last Minecraft Bedrock Edition client<br>
-     * - Make sure PocketMine has released their exports: https://github.com/pmmp/BedrockData<br>
-     * - Run ProxyPass with export-data in config.yml set to true, the proxy pass must be<br>
-     * pointing to a vanilla BDS server from https://www.minecraft.net/en-us/download/server/bedrock<br>
-     * - Connect to the ProxyPass server with the last Minecraft Bedrock Edition client at least once<br>
-     * - Adjust the path bellow if necessary for your machine<br>
+     * - Make sure PocketMine has released their exports: <a href="https://github.com/pmmp/BedrockData">BedrockData</a><br>
      */
     public static void main(String[] args) {
         new UpdateResource().execute();
-        System.out.println("OK");
     }
 
+    @SneakyThrows
     private void execute() {
-        downloadResources();
-        update();
+//        downloadResources();
+//        updateItem2Tags(Path.of("src/main/resources/item_2_tags.json"));
+//        convertRequiredItemList(Path.of("src/main/resources/runtime_item_states.json"));
+        updateRecipes();
+        System.exit(0);
     }
 
     private void downloadResources() {
@@ -63,6 +68,32 @@ public class UpdateResource {
                 "src/test/resources/org/powernukkit/updater/dumps/pmmp/required_item_list.json");
     }
 
+    //update item_2_tags.json
+    private void updateItem2Tags(Path target) throws IOException {
+        Map<String, Set<String>> test = new LinkedHashMap<>();
+        for (var entry : ItemTag.getTag2Items().entrySet()) {
+            for (var v : entry.getValue()) {
+                test.computeIfAbsent(v, k -> new LinkedHashSet<>());
+                test.get(v).add(entry.getKey());
+            }
+        }
+        Files.writeString(target, gson.toJson(test), StandardCharsets.UTF_8);
+        System.out.println("update item_2_tags.json success!");
+    }
+
+    //convert required_item_list.json to runtime_item_states.json
+    private void convertRequiredItemList(Path target) throws IOException {
+        var runtime_item_states = new ArrayList<RuntimeEntry>();
+        Map<String, ?> map = gson.fromJson(new FileReader("./src/test/resources/org/powernukkit/updater/dumps/pmmp/required_item_list.json"), Map.class);
+        map.forEach((k, v) -> {
+            String runtime_id = ((Map) v).get("runtime_id").toString();
+            int id = Double.valueOf(runtime_id).intValue();
+            runtime_item_states.add(new RuntimeEntry(k, id));
+        });
+        Files.writeString(target, gson.toJson(runtime_item_states), StandardCharsets.UTF_8);
+        System.out.println("convert required_item_list.json to runtime_item_states.json success!");
+    }
+
     private void copyProxyPassResources(String pathProxyPassData) {
         copy(pathProxyPassData, "runtime_item_states.json", "src/main/resources/runtime_item_states.json");
     }
@@ -90,33 +121,28 @@ public class UpdateResource {
         }
     }
 
-    @SneakyThrows
-    private void update() {
-        //update item_2_tags.json
-        var gson1 = new GsonBuilder().setPrettyPrinting().create();
-        Map<String, Set<String>> test = new LinkedHashMap<>();
-        for (var entry : ItemTag.getTag2Items().entrySet()) {
-            for (var v : entry.getValue()) {
-                test.computeIfAbsent(v, k -> new LinkedHashSet<>());
-                test.get(v).add(entry.getKey());
+    private void updateRecipes() throws IOException {
+        Path p = Path.of("src/main/resources/vanilla_recipes/shaped_crafting.json");
+        //todo These are wrong recipes, their `result` should not have `data`, if this bug is fixed, please remove it
+        Map<String, String> errorRecipes = Map.of(
+                "minecraft:dispenser", "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgAAAAABDQB0cmlnZ2VyZWRfYml0AAA=",
+                "minecraft:dropper", "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgAAAAABDQB0cmlnZ2VyZWRfYml0AAA=",
+                "minecraft:piston", "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgAAAAAA",
+                "minecraft:sticky_piston", "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgAAAAAA"
+        );
+        List<Map<String, Object>> data = gson.fromJson(new FileReader(p.toFile()), List.class);
+        for (var fix : data) {
+            List<Map<String, Object>> output = (List<Map<String, Object>>) fix.get("output");
+            Map<String, Object> o = output.get(0);
+            var name = o.get("name").toString();
+            if (errorRecipes.containsKey(name)) {
+                o.put("block_states", errorRecipes.get(name));
             }
         }
-        Files.writeString(Path.of("./src/main/resources/item_2_tags.json"), gson1.toJson(test), StandardCharsets.UTF_8);
-
-        //convert required_item_list.json to runtime_item_states.json
-
-        var gson2 = new GsonBuilder().setPrettyPrinting().create();
-        var runtime_item_states = new ArrayList<RuntimeEntry>();
-        Map<String, ?> map = gson2.fromJson(new FileReader("./src/test/resources/org/powernukkit/updater/dumps/pmmp/required_item_list.json"), Map.class);
-
-        map.forEach((k, v) -> {
-            String runtime_id = ((Map) v).get("runtime_id").toString();
-            int id = Double.valueOf(runtime_id).intValue();
-            runtime_item_states.add(new RuntimeEntry(k, id));
-        });
-        Files.writeString(Path.of("./src/main/resources/runtime_item_states.json"), gson2.toJson(runtime_item_states), StandardCharsets.UTF_8);
+        Files.writeString(p, gson.toJson(data), StandardCharsets.UTF_8);
     }
 
     private record RuntimeEntry(String name, int id) {
+
     }
 }

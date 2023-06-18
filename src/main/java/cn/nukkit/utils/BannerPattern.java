@@ -1,31 +1,18 @@
 package cn.nukkit.utils;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class BannerPattern {
+public record BannerPattern(@NotNull cn.nukkit.utils.BannerPattern.Type type, @NotNull DyeColor color) {
 
-    private Type type;
-    private DyeColor color;
-
-    public BannerPattern(Type type, DyeColor color) {
-        this.type = type;
-        this.color = color;
-    }
-
-    public DyeColor getColor() {
-        return this.color;
-    }
-
-    public Type getType() {
-        return this.type;
-    }
-
-    public static BannerPattern fromCompoundTag(CompoundTag compoundTag) {
+    @NotNull
+    public static BannerPattern fromCompoundTag(@NotNull CompoundTag compoundTag) {
         return new BannerPattern(Type.getByName(compoundTag.contains("Pattern") ? compoundTag.getString("Pattern") : ""), compoundTag.contains("Color") ? DyeColor.getByDyeData(compoundTag.getInt("Color")) : DyeColor.BLACK);
     }
 
@@ -69,11 +56,12 @@ public class BannerPattern {
         PATTERN_SKULL("sku"),
         PATTERN_FLOWER("flo"),
         PATTERN_MOJANG("moj"),
+        @Since("1.20.0-r2") @PowerNukkitXOnly PATTERN_GLOBE("glb"),
         @Since("1.4.0.0-PN") @PowerNukkitOnly PATTERN_SNOUT("pig");
 
         private final static Map<String, Type> BY_NAME = new HashMap<>();
 
-        private String name;
+        private final String name;
 
         Type(String name) {
             this.name = name;

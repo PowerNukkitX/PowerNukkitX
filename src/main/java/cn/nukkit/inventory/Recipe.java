@@ -11,13 +11,14 @@ import java.util.List;
  * @author MagicDroidX (Nukkit Project)
  */
 public interface Recipe {
+    String getRecipeId();
 
     Item getResult();
 
     void registerToCraftingManager(CraftingManager manager);
 
     RecipeType getType();
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     static boolean matchItemList(List<Item> haveItems, List<Item> needItems) {

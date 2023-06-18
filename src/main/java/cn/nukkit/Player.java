@@ -7,6 +7,7 @@ import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySign;
 import cn.nukkit.blockentity.BlockEntitySpawnable;
+import cn.nukkit.camera.data.CameraPreset;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandDataVersions;
@@ -843,6 +844,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(pk);
 
         this.sendFogStack();
+        this.sendCameraPresets();
         if (this.getHealth() < 1) {
             this.setHealth(0);
         }
@@ -2345,7 +2347,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         Map<String, CommandDataVersions> data = new HashMap<>();
         int count = 0;
         for (Command command : this.server.getCommandMap().getCommands().values()) {
-            if (!command.testPermissionSilent(this) || !command.isRegistered()) {
+            if (!command.testPermissionSilent(this) || !command.isRegistered() || command.isServerSideOnly()) {
                 continue;
             }
             ++count;
@@ -3163,6 +3165,18 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         pk.setFogStack(this.fogStack);
         pk.encode();
         this.dataPacket(pk);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
+    public void sendCameraPresets() {
+        var presetListTag = new ListTag<CompoundTag>("presets");
+        for (var preset : CameraPreset.getPresets().values()) {
+            presetListTag.add(preset.serialize());
+        }
+        var pk = new CameraPresetsPacket();
+        pk.setData(new CompoundTag().putList("presets", presetListTag));
+        dataPacket(pk);
     }
 
     @Override
@@ -6155,16 +6169,17 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (openSignFront == null) {
             BlockEntity blockEntity = this.getLevel().getBlockEntity(position);
             if (blockEntity instanceof BlockEntitySign blockEntitySign) {
-                blockEntitySign.setEditorEntityRuntimeId(this.getId());
-                OpenSignPacket openSignPacket = new OpenSignPacket();
-                openSignPacket.setPosition(position.asBlockVector3());
-                openSignPacket.setFrontSide(frontSide);
-                this.dataPacket(openSignPacket);
-                setOpenSignFront(frontSide);
+                if (blockEntitySign.getEditorEntityRuntimeId() == -1) {
+                    blockEntitySign.setEditorEntityRuntimeId(this.getId());
+                    OpenSignPacket openSignPacket = new OpenSignPacket();
+                    openSignPacket.setPosition(position.asBlockVector3());
+                    openSignPacket.setFrontSide(frontSide);
+                    this.dataPacket(openSignPacket);
+                    setOpenSignFront(frontSide);
+                }
             } else {
                 throw new IllegalArgumentException("Block at this position is not a sign");
             }
         }
     }
-
 }

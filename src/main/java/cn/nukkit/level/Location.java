@@ -5,7 +5,6 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.LevelException;
-
 import org.jetbrains.annotations.NotNull;
 
 /**

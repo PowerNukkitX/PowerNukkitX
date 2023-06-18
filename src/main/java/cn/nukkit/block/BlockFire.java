@@ -24,7 +24,6 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.potion.Effect;
-
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;

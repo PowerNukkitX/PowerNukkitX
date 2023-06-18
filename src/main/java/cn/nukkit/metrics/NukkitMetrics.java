@@ -9,7 +9,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.LoginChainData;
 import lombok.extern.log4j.Log4j2;
-
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedWriter;

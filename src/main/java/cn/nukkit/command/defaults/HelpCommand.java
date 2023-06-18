@@ -23,6 +23,7 @@ public class HelpCommand extends VanillaCommand {
         this.commandParameters.put("default", new CommandParameter[]{
                 CommandParameter.newType("page", true, CommandParamType.INT)
         });
+        this.serverSideOnly = true;
     }
 
     @Override

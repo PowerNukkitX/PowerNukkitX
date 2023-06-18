@@ -7,7 +7,6 @@ import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.blockproperty.exception.InvalidBlockPropertyValueException;
 import cn.nukkit.blockproperty.value.WoodType;
-
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -36,7 +35,8 @@ public abstract class BlockFenceBase extends BlockFence {
         return CommonBlockProperties.EMPTY_PROPERTIES;
     }
 
-    @Deprecated @DeprecationDetails(
+    @Deprecated
+    @DeprecationDetails(
             reason = "Will always returns empty on this type. It is here for backward compatibility",
             since = "1.4.0.0-PN")
     @Override
@@ -45,7 +45,8 @@ public abstract class BlockFenceBase extends BlockFence {
         return Optional.empty();
     }
 
-    @Deprecated @DeprecationDetails(
+    @Deprecated
+    @DeprecationDetails(
             reason = "Only accepts null. It is here for backward compatibility",
             since = "1.4.0.0-PN")
     @Override

@@ -57,7 +57,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
 
     protected byte[] blockLight;
 
-    protected byte[] heightMap;
+    protected short[] heightMap;
 
     protected List<CompoundTag> NBTtiles;
 
@@ -103,7 +103,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
         }
 
         if (this.heightMap != null) {
-            chunk.heightMap = this.getHeightMapArray().clone();
+            chunk.heightMap = this.getNewHeightMapArray().clone();
         }
         return chunk;
     }
@@ -245,12 +245,12 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
 
     @Override
     public int getHeightMap(int x, int z) {
-        return this.heightMap[(z << 4) | x] & 0xFF;
+        return this.heightMap[(z << 4) | x];
     }
 
     @Override
     public void setHeightMap(int x, int z, int value) {
-        this.heightMap[(z << 4) | x] = (byte) value;
+        this.heightMap[(z << 4) | x] = (short) value;
     }
 
     @Override
@@ -519,8 +519,20 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
         return this.biomes;
     }
 
+    @SuppressWarnings("removal")
+    @Deprecated(since = "1.20.0-r2", forRemoval = true)
+    @DeprecationDetails(since = "1.20.0-r2", reason = "HeightMapArray is now a short[], Use getNewHeightMapArray() instead")
     @Override
     public byte[] getHeightMapArray() {
+        var heightMap = new byte[256];
+        for (int i = 0; i < 256; i++) {
+            heightMap[i] = (byte) (this.heightMap[i] & 0xFF);
+        }
+        return heightMap;
+    }
+
+    @Override
+    public short[] getNewHeightMapArray() {
         return this.heightMap;
     }
 

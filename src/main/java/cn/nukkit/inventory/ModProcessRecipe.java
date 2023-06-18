@@ -21,6 +21,10 @@ public interface ModProcessRecipe extends Recipe {
     @NotNull
     List<Item> getExtraResults();
 
+    default String getRecipeId() {
+        return CraftingManager.getShapelessItemDescriptorHash(getIngredients()).toString();
+    }
+
     @Nullable
     default EnergyType getEnergyType() {
         return null;

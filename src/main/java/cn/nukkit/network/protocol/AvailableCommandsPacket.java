@@ -53,8 +53,8 @@ public class AvailableCommandsPacket extends DataPacket {
     public static final int ARG_TYPE_MESSAGE = dynamic(55);
     public static final int ARG_TYPE_RAWTEXT = dynamic(58);
     public static final int ARG_TYPE_JSON = dynamic(62);
-    public static final int ARG_TYPE_BLOCK_STATES = dynamic(71);
-    public static final int ARG_TYPE_COMMAND = dynamic(74);
+    public static final int ARG_TYPE_BLOCK_STATES = dynamic(72);
+    public static final int ARG_TYPE_COMMAND = dynamic(75);
 
     public Map<String, CommandDataVersions> commands;
     @Deprecated
@@ -184,7 +184,7 @@ public class AvailableCommandsPacket extends DataPacket {
         this.putString(commandData.description);
         int flags = 0;
         for (CommandData.Flag flag : commandData.flags) {
-            flags |= 1 << flag.ordinal();
+            flags |= flag.bit;
         }
         this.putLShort(flags);
         this.putByte((byte) commandData.permission);

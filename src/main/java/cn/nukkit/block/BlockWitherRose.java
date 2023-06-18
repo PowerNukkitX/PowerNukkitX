@@ -10,9 +10,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.AxisAlignedBB;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.potion.Effect;
-
 import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly

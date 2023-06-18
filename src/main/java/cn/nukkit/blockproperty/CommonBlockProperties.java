@@ -1,10 +1,14 @@
 package cn.nukkit.blockproperty;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.value.ChiselType;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.CompassRoseDirection;
 import cn.nukkit.utils.DyeColor;
+
+import static cn.nukkit.math.CompassRoseDirection.*;
 
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
@@ -43,6 +47,29 @@ public final class CommonBlockProperties {
             BlockFace.WEST, BlockFace.EAST,
     }).ordinal(true);
 
+    @Since("1.20.0-r2")
+    @PowerNukkitXOnly
+    public static final ArrayBlockProperty<BlockFace> FACING_DIRECTION_ARRAY = new ArrayBlockProperty<>("facing_direction", false, new BlockFace[] {
+            // Index based
+            BlockFace.DOWN, BlockFace.UP,
+            BlockFace.NORTH, BlockFace.SOUTH,
+            BlockFace.WEST, BlockFace.EAST,
+    });
+
+    public static final ArrayBlockProperty<CompassRoseDirection> GROUND_SIGN_DIRECTION = new ArrayBlockProperty<>("ground_sign_direction", false, new CompassRoseDirection[]{
+            SOUTH, SOUTH_SOUTH_WEST, SOUTH_WEST, WEST_SOUTH_WEST,
+            WEST, WEST_NORTH_WEST, NORTH_WEST, NORTH_NORTH_WEST,
+            NORTH, NORTH_NORTH_EAST, NORTH_EAST, EAST_NORTH_EAST,
+            EAST, EAST_SOUTH_EAST, SOUTH_EAST, SOUTH_SOUTH_EAST
+    }).ordinal(true);
+
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
+    public static final BooleanBlockProperty ATTACHED = new BooleanBlockProperty("attached_bit", false);
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
+    public static final BooleanBlockProperty HANGING = new BooleanBlockProperty("hanging", false);
+
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
     public static final ArrayBlockProperty<ChiselType> CHISEL_TYPE = new ArrayBlockProperty<>("chisel_type", true, ChiselType.class);
@@ -69,6 +96,14 @@ public final class CommonBlockProperties {
             BlockFace.Axis.Y, BlockFace.Axis.X, BlockFace.Axis.Z
     });
 
+    @Since("1.20.0-r2")
+    @PowerNukkitXOnly
+    public static final ArrayBlockProperty<BlockFace> DIRECTION_ARRAY = (ArrayBlockProperty<BlockFace>) DIRECTION;
+
+    @Since("1.20.0-r2")
+    @PowerNukkitXOnly
+    public static final ArrayBlockProperty<BlockFace.Axis> PILLAR_AXIS_ARRAY = (ArrayBlockProperty<BlockFace.Axis>) PILLAR_AXIS;
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final IntBlockProperty DEPRECATED = new IntBlockProperty("deprecated", false, 3);
@@ -83,6 +118,10 @@ public final class CommonBlockProperties {
             "white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray", "silver", "cyan", "purple", "blue",
             "brown", "green", "red", "black"
     });
+
+    @Since("1.20.0-r2")
+    @PowerNukkitXOnly
+    public static final ArrayBlockProperty<DyeColor> COLOR_ARRAY = (ArrayBlockProperty<DyeColor>) COLOR;
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")

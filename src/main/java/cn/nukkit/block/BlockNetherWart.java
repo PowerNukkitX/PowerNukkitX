@@ -11,7 +11,6 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemNetherWart;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
-
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;

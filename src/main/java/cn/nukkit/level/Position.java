@@ -12,7 +12,6 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.positiontracking.NamedPosition;
 import cn.nukkit.utils.LevelException;
-
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;

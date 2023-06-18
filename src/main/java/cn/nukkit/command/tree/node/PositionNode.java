@@ -58,8 +58,8 @@ public abstract class PositionNode extends ParamNode<Position> {
         var str = TMP.stream().reduce((s1, s2) -> s1 + s2);
         if (str.isEmpty()) this.error();
         else if (str.get().length() != arg.length()) this.error();
-            //parse
         else {
+            //parse
             try {
                 Location loc = this.parent.parent.getSender().getLocation();
                 for (String s : TMP) {
