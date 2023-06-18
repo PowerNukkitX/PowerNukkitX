@@ -180,7 +180,7 @@ public class RakNetPlayerSession implements NetworkPlayerSession, RakNetSessionL
         batched.put(buf);
         try {
             byte[] payload;
-            if (Server.getInstance().isEnableSnappy()){
+            if (Server.getInstance().isEnableSnappy()) {
                 payload = SnappyCompression.compress(batched.getBuffer());
             } else {
                 payload = Network.deflateRaw(batched.getBuffer(), server.getNetwork().getServer().networkCompressionLevel);
@@ -199,7 +199,7 @@ public class RakNetPlayerSession implements NetworkPlayerSession, RakNetSessionL
                 } catch (Exception e) {
                     log.error("Unable to encrypt packet", e);
                 }
-            }else {
+            } else {
                 byteBuf.writeBytes(payload);
             }
             this.session.sendImmediate(byteBuf);
@@ -278,7 +278,7 @@ public class RakNetPlayerSession implements NetworkPlayerSession, RakNetSessionL
             } catch (Exception e) {
                 log.error("Unable to encrypt packet", e);
             }
-        }else {
+        } else {
             byteBuf.writeBytes(payload);
         }
 
@@ -342,7 +342,7 @@ public class RakNetPlayerSession implements NetworkPlayerSession, RakNetSessionL
                 } catch (Exception e) {
                     log.error("Unable to encrypt packet", e);
                 }
-            }else {
+            } else {
                 byteBuf.writeBytes(payload);
             }
             this.session.send(byteBuf);
