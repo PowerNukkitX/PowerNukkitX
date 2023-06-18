@@ -167,7 +167,7 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
             }
             var cgroupFile = new File("/proc/1/cgroup");
             if (cgroupFile.exists()) {
-                try(var lineStream = Files.lines(cgroupFile.toPath())) {
+                try (var lineStream = Files.lines(cgroupFile.toPath())) {
                     var searchResult = lineStream.filter(line -> line.contains("docker") || line.contains("lxc"));
                     if (searchResult.findAny().isPresent()) {
                         return "Docker Container";
@@ -310,7 +310,7 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                 sender.sendMessage("");
             }
             // 网络信息
-            {
+            try {
                 var network = server.getNetwork();
                 if (network.getHardWareNetworkInterfaces() != null) {
                     sender.sendMessage(TextFormat.YELLOW + ">>> " + TextFormat.WHITE + "Network Info" + TextFormat.YELLOW + " <<<" + TextFormat.RESET);
@@ -327,6 +327,8 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                     }
                     sender.sendMessage("");
                 }
+            } catch (Exception ignored) {
+                sender.sendMessage(TextFormat.RED + "    Failed to get network info.");
             }
             // CPU信息
             {
@@ -364,7 +366,7 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                 sender.sendMessage(TextFormat.GOLD + "  Total JVM memory: " + TextFormat.RED + totalMB + " MB.");
                 sender.sendMessage(TextFormat.GOLD + "  Maximum JVM memory: " + TextFormat.RED + maxMB + " MB.");
                 // 操作系统内存
-                usage = (double) usedVirtualMemory / allVirtualMemory * 100;
+                usage = (double) usedPhysicalMemory / allPhysicalMemory * 100;
                 usageColor = TextFormat.GREEN;
                 if (usage > 85) {
                     usageColor = TextFormat.GOLD;
@@ -377,7 +379,8 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                     usageColor = TextFormat.GOLD;
                 }
                 sender.sendMessage(TextFormat.GOLD + "  Virtual memory: " + TextFormat.GREEN + usageColor + formatMB(usedVirtualMemory) + " / " + formatMB(allVirtualMemory) + ". (" + NukkitMath.round(usage, 2) + "%)");
-                sender.sendMessage(TextFormat.GOLD + "  Hardware list: ");
+                if (physicalMemories.size() > 0)
+                    sender.sendMessage(TextFormat.GOLD + "  Hardware list: ");
                 for (var each : physicalMemories) {
                     sender.sendMessage(TextFormat.AQUA + "    " + each.getBankLabel() + " @ " + formatFreq(each.getClockSpeed()) + TextFormat.WHITE + " " + formatMB(each.getCapacity() / 1000));
                     sender.sendMessage(TextFormat.GRAY + "      " + each.getMemoryType() + ", " + each.getManufacturer());
