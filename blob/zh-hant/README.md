@@ -66,7 +66,7 @@ java -Dfile.encoding=UTF-8 ^
 -XX:+UseG1GC ^
 -XX:+UseStringDeduplication ^
 -XX:+EnableJVMCI ^
---module-path=.\libs\graal-sdk-22.2.0.jar;.\libs\truffle-api-22.2.0.jar; ^
+--module-path=.\libs\graal-sdk-23.0.0.jar;.\libs\truffle-api-23.0.0.jar; ^
 --add-opens java.base/java.lang=ALL-UNNAMED ^
 --add-opens java.base/java.io=ALL-UNNAMED ^
 -cp .\powernukkitx.jar;.\libs\* ^
@@ -83,7 +83,7 @@ java -Dfile.encoding=UTF-8 \
 -XX:+UseG1GC \
 -XX:+UseStringDeduplication \
 -XX:+EnableJVMCI \
---module-path=./libs/truffle-api-22.2.0.jar:./libs/graal-sdk-22.2.0.jar: \
+--module-path=./libs/truffle-api-23.0.0.jar:./libs/graal-sdk-23.0.0.jar: \
 --add-opens java.base/java.lang=ALL-UNNAMED \
 --add-opens java.base/java.io=ALL-UNNAMED \
 -cp ./powernukkitx.jar:./libs/* \
