@@ -142,25 +142,26 @@ public class BlockLeaves extends BlockTransparentMeta {
         int stickOdds;
         int saplingOdds;
         switch (fortune) {
-            case 0:
+            case 0 -> {
                 appleOdds = 200;
                 stickOdds = 50;
-                saplingOdds = getType() == WoodType.JUNGLE? 40 : 20;
-                break;
-            case 1:
+                saplingOdds = getType() == WoodType.JUNGLE ? 40 : 20;
+            }
+            case 1 -> {
                 appleOdds = 180;
                 stickOdds = 45;
-                saplingOdds = getType() == WoodType.JUNGLE? 36 : 16;
-                break;
-            case 2:
+                saplingOdds = getType() == WoodType.JUNGLE ? 36 : 16;
+            }
+            case 2 -> {
                 appleOdds = 160;
                 stickOdds = 40;
-                saplingOdds = getType() == WoodType.JUNGLE? 32 : 12;
-                break;
-            default:
+                saplingOdds = getType() == WoodType.JUNGLE ? 32 : 12;
+            }
+            default -> {
                 appleOdds = 120;
                 stickOdds = 30;
-                saplingOdds = getType() == WoodType.JUNGLE? 24 : 10;
+                saplingOdds = getType() == WoodType.JUNGLE ? 24 : 10;
+            }
         }
 
         ThreadLocalRandom random = ThreadLocalRandom.current();
@@ -202,8 +203,7 @@ public class BlockLeaves extends BlockTransparentMeta {
             // Slowly propagates the need to update instead of peaking down the TPS for huge trees
             for (BlockFace side : BlockFace.values()) {
                 Block other = getSide(side);
-                if (other instanceof BlockLeaves) {
-                    BlockLeaves otherLeave = (BlockLeaves) other;
+                if (other instanceof BlockLeaves otherLeave) {
                     if (!otherLeave.isCheckDecay()) {
                         getLevel().scheduleUpdate(otherLeave, 2);
                     }
@@ -219,7 +219,7 @@ public class BlockLeaves extends BlockTransparentMeta {
             visited = new Long2LongOpenHashMap();
             visited.defaultReturnValue(-1);
         }
-        if (current instanceof BlockWood) {
+        if (current instanceof IBlockWood) {
             return true;
         }
         if (distance == 0 || !(current instanceof BlockLeaves)) {

@@ -60,7 +60,7 @@ public class BlockWoodCherry extends BlockLog {
 
     @PowerNukkitOnly
     @Override
-    protected BlockState getStrippedState() {
+    public BlockState getStrippedState() {
         return BlockState.of(STRIPPED_CHERRY_WOOD).withProperty(PILLAR_AXIS, getPillarAxis());
     }
 }

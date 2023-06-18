@@ -32,7 +32,7 @@ public class BlockHyphaeWarped extends BlockStem {
 
     @PowerNukkitOnly
     @Override
-    protected BlockState getStrippedState() {
+    public BlockState getStrippedState() {
         return getCurrentState().withBlockId(STRIPPED_WARPED_HYPHAE);
     }
 

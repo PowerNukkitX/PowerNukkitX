@@ -61,7 +61,7 @@ public class BlockWoodStrippedCherry extends BlockLog {
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     @Override
-    protected BlockState getStrippedState() {
+    public BlockState getStrippedState() {
         return getCurrentState();
     }
 

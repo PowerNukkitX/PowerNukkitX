@@ -35,7 +35,7 @@ public abstract class BlockWoodStripped extends BlockWood {
 
     @PowerNukkitOnly
     @Override
-    protected BlockState getStrippedState() {
+    public BlockState getStrippedState() {
         return getCurrentState();
     }
 
