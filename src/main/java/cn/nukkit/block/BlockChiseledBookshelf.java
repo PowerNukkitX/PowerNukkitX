@@ -8,7 +8,6 @@ import cn.nukkit.blockentity.BlockEntityChiseledBookshelf;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.blockproperty.IntBlockProperty;
-import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBook;
 import cn.nukkit.item.ItemBookEnchanted;
@@ -94,7 +93,7 @@ public class BlockChiseledBookshelf extends BlockBookshelf implements BlockEntit
 
     @Since("1.20.0-r2")
     @Override
-    public void onClick(@NotNull Player player, Item item, PlayerInteractEvent.Action action, BlockFace face, Vector3 clickPoint) {
+    public void onPlayerRightClick(@NotNull Player player, Item item, BlockFace face, Vector3 clickPoint) {
         BlockFace blockFace = getBlockFace();
         if (player.getHorizontalFacing().getOpposite() == blockFace) {
             /*

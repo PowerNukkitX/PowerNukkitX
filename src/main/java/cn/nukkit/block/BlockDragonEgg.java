@@ -6,7 +6,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.event.block.BlockFromToEvent;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.level.Level;
-import cn.nukkit.math.BlockFace;
 import cn.nukkit.network.protocol.LevelEventPacket;
 
 import javax.annotation.Nullable;
@@ -64,7 +63,7 @@ public class BlockDragonEgg extends BlockFallable {
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     @Override
-    public int onTouch(@Nullable Player player, Action action, BlockFace face) {
+    public int onTouch(@Nullable Player player, Action action) {
         if (player != null && (action == Action.RIGHT_CLICK_BLOCK || action == Action.LEFT_CLICK_BLOCK)) {
             if (player.isCreative() && action == Action.LEFT_CLICK_BLOCK) {
                 return 0;

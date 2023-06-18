@@ -10,10 +10,10 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.DyeColor;
+import cn.nukkit.utils.StringUtils;
 import cn.nukkit.utils.TextFormat;
 
 import java.util.Objects;
-import java.util.StringJoiner;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -83,10 +83,10 @@ public class BlockEntitySign extends BlockEntitySpawnable {
     public void saveNBT() {
         super.saveNBT();
         this.namedTag.getCompound(TAG_FRONT_TEXT)
-                .putString(TAG_TEXT_BLOB, joinNotNull("\n", frontText))
+                .putString(TAG_TEXT_BLOB, StringUtils.joinNotNull("\n", frontText))
                 .putByte(TAG_PERSIST_FORMATTING, 1);
         this.namedTag.getCompound(TAG_BACK_TEXT)
-                .putString(TAG_TEXT_BLOB, joinNotNull("\n", backText))
+                .putString(TAG_TEXT_BLOB, StringUtils.joinNotNull("\n", backText))
                 .putByte(TAG_PERSIST_FORMATTING, 1);
         this.namedTag.putBoolean(TAG_LEGACY_BUG_RESOLVE, true)
                 .putByte(TAG_WAXED, 0)
@@ -109,16 +109,6 @@ public class BlockEntitySign extends BlockEntitySpawnable {
     @PowerNukkitXOnly
     public void setWaxed(boolean waxed) {
         this.namedTag.putByte(TAG_WAXED, waxed ? (byte) 1 : (byte) 0);
-    }
-
-    private static String joinNotNull(String delim, String... elements) {
-        StringJoiner join = new StringJoiner(delim);
-        for (var element : elements) {
-            if (element != null) {
-                join.add(element);
-            }
-        }
-        return join.toString();
     }
 
     @Override
@@ -146,7 +136,7 @@ public class BlockEntitySign extends BlockEntitySpawnable {
                 else
                     frontText[i] = "";
             }
-            this.namedTag.getCompound(TAG_FRONT_TEXT).putString(TAG_TEXT_BLOB, joinNotNull("\n", lines));
+            this.namedTag.getCompound(TAG_FRONT_TEXT).putString(TAG_TEXT_BLOB, StringUtils.joinNotNull("\n", lines));
         } else {
             for (int i = 0; i < 4; i++) {
                 if (i < lines.length)
@@ -154,7 +144,7 @@ public class BlockEntitySign extends BlockEntitySpawnable {
                 else
                     backText[i] = "";
             }
-            this.namedTag.getCompound(TAG_BACK_TEXT).putString(TAG_TEXT_BLOB, joinNotNull("\n", lines));
+            this.namedTag.getCompound(TAG_BACK_TEXT).putString(TAG_TEXT_BLOB, StringUtils.joinNotNull("\n", lines));
         }
         this.spawnToAll();
         if (this.chunk != null) {
@@ -170,6 +160,18 @@ public class BlockEntitySign extends BlockEntitySpawnable {
 
     public String[] getText(boolean front) {
         return front ? frontText : backText;
+    }
+
+    public boolean isEmpty() {
+        return isEmpty(true);
+    }
+
+    public boolean isEmpty(boolean front) {
+        if (front) {
+            return (frontText[0] == null || frontText[0].isEmpty()) && frontText[1] == null && frontText[2] == null && frontText[3] == null;
+        } else {
+            return (backText[0] == null || backText[0].isEmpty()) && backText[1] == null && backText[2] == null && backText[3] == null;
+        }
     }
 
     /**
@@ -327,7 +329,7 @@ public class BlockEntitySign extends BlockEntitySpawnable {
                 else
                     frontText[i] = "";
             }
-            this.namedTag.getCompound(TAG_FRONT_TEXT).putString(TAG_TEXT_BLOB, joinNotNull("\n", frontText));
+            this.namedTag.getCompound(TAG_FRONT_TEXT).putString(TAG_TEXT_BLOB, StringUtils.joinNotNull("\n", frontText));
             this.namedTag.remove(TAG_TEXT_BLOB);
         } else {
             int count = 0;
@@ -341,7 +343,7 @@ public class BlockEntitySign extends BlockEntitySpawnable {
                 }
             }
             if (count == 4) {
-                this.namedTag.getCompound(TAG_FRONT_TEXT).putString(TAG_TEXT_BLOB, joinNotNull("\n", frontText));
+                this.namedTag.getCompound(TAG_FRONT_TEXT).putString(TAG_TEXT_BLOB, StringUtils.joinNotNull("\n", frontText));
             }
         }
         if (this.namedTag.contains(TAG_GLOWING_TEXT)) {
@@ -364,4 +366,6 @@ public class BlockEntitySign extends BlockEntitySpawnable {
             }
         }
     }
+
+
 }

@@ -552,7 +552,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return;
         }
 
-        if (target.onTouch(this, playerInteractEvent.getAction(), face) != 0) return;
+        if (target.onTouch(this, playerInteractEvent.getAction()) != 0) return;
 
         Block block = target.getSide(face);
         if (block.getId() == Block.FIRE || block.getId() == BlockID.SOUL_FIRE) {

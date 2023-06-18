@@ -103,6 +103,9 @@ public abstract class BlockHangingSign extends BlockSignBase implements BlockEnt
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+        if (player != null && !player.isSneaking() && target instanceof BlockSignBase) {
+            return false;
+        }
         if (face == BlockFace.UP) {
             BlockFace blockFace = checkGroundBlock();
             if (blockFace == null) {

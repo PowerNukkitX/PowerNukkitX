@@ -3102,9 +3102,9 @@ public class Level implements ChunkManager, Metadatable {
             }
             this.server.getPluginManager().callEvent(ev);
             if (!ev.isCancelled()) {
-                touchStatus = target.onTouch(player, ev.getAction(), face);
-                if (ev.getAction() == Action.LEFT_CLICK_BLOCK || ev.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                    target.onClick(player, item, ev.getAction(), face, new Vector3(fx, fy, fz));
+                target.onTouch(player, ev.getAction());
+                if (ev.getAction() == Action.RIGHT_CLICK_BLOCK) {
+                    target.onPlayerRightClick(player, item, face, new Vector3(fx, fy, fz));
                 }
                 if ((!player.isSneaking() || player.getInventory().getItemInHand().isNull()) && target.canBeActivated() && target.onActivate(item, player)) {
                     if (item.isTool() && item.getDamage() >= item.getMaxDurability()) {
@@ -3135,9 +3135,6 @@ public class Level implements ChunkManager, Metadatable {
                 item = new ItemBlock(Block.get(BlockID.AIR), 0, 0);
             }
             return item;
-        }
-        if (touchStatus != 0) {
-            return null;
         }
 
         Block hand;
