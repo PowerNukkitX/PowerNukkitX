@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -75,5 +76,15 @@ public final class StringUtils {
             }
         }
         return results;
+    }
+
+    public static String joinNotNull(String delim, String... elements) {
+        StringJoiner join = new StringJoiner(delim);
+        for (var element : elements) {
+            if (element != null) {
+                join.add(element);
+            }
+        }
+        return join.toString();
     }
 }
