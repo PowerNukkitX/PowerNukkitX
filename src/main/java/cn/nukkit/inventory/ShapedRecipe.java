@@ -360,7 +360,7 @@ public class ShapedRecipe implements CraftingRecipe {
             switch (itemDescriptor.getType()) {
                 case DEFAULT -> {
                     var item = itemDescriptor.toItem();
-                    joiner.add(item.getName() + ":" + item.getDamage());
+                    joiner.add(item.getDisplayName() + ":" + item.getDamage());
                 }
                 case ITEM_TAG -> joiner.add(((ItemTagDescriptor) itemDescriptor).getItemTag());
                 default -> {

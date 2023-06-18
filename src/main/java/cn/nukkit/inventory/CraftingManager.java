@@ -968,9 +968,7 @@ public class CraftingManager {
                     return null;
                 }
                 itemDescriptors.add(new DefaultDescriptor(recipeItem));
-                if (recipeItem.getName() != null && !recipeItem.getName().isBlank()) {
-                    id.append(StringUtils.fastSplit(":", recipeItem.getNamespaceId()).get(1).toLowerCase()).append(recipeItem.getDamage()).append('_');
-                }
+                id.append(StringUtils.fastSplit(":", recipeItem.getNamespaceId()).get(1).toLowerCase()).append(recipeItem.getDamage()).append('_');
             }
         }
         id.append(StringUtils.fastSplit(":", result.getNamespaceId()).get(1).toLowerCase()).append(result.getDamage());
@@ -1026,9 +1024,7 @@ public class CraftingManager {
                     return null;
                 }
                 ingredients.put(ingredientChar, new DefaultDescriptor(recipeItem));
-                if (recipeItem.getName() != null && !recipeItem.getName().isBlank()) {
-                    id.append(StringUtils.fastSplit(":", recipeItem.getNamespaceId()).get(1).toLowerCase()).append(recipeItem.getDamage()).append('_');
-                }
+                id.append(StringUtils.fastSplit(":", recipeItem.getNamespaceId()).get(1).toLowerCase()).append(recipeItem.getDamage()).append('_');
             }
         }
         id.append(StringUtils.fastSplit(":", primaryResult.getNamespaceId()).get(1).toLowerCase()).append(primaryResult.getDamage());

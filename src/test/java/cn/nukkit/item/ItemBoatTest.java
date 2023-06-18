@@ -39,7 +39,7 @@ class ItemBoatTest {
     @Test
     void defaultName() {
         item = new ItemBoat(1000);
-        assertEquals("Boat", item.getName());
+        assertEquals("Boat", item.getDisplayName());
     }
 
     @Test

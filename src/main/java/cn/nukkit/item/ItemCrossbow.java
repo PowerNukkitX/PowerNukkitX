@@ -118,7 +118,7 @@ public class ItemCrossbow extends ItemTool {
     public void loadArrow(Player player, Item arrow) {
         if (arrow != null) {
             CompoundTag tag = this.getNamedTag() == null ? new CompoundTag() : this.getNamedTag();
-            tag.putBoolean("Charged", true).putCompound("chargedItem", (new CompoundTag("chargedItem")).putByte("Count", arrow.getCount()).putShort("Damage", arrow.getDamage()).putString("Name", "minecraft:" + arrow.getName()));
+            tag.putBoolean("Charged", true).putCompound("chargedItem", (new CompoundTag("chargedItem")).putByte("Count", arrow.getCount()).putShort("Damage", arrow.getDamage()).putString("Name", "minecraft:" + arrow.getDisplayName()));
             this.setCompoundTag(tag);
             this.loadTick = Server.getInstance().getTick();
             player.getInventory().setItemInHand(this);

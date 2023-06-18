@@ -21,7 +21,7 @@ class BannerPatternTest {
     @Test
     void defaultName() {
         item = new ItemBannerPattern(1000);
-        assertEquals("Banner Pattern", item.getName());
+        assertEquals("Banner Pattern", item.getDisplayName());
     }
 
     @Test
