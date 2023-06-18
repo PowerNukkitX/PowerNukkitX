@@ -181,4 +181,9 @@ public abstract class BlockSignBase extends BlockTransparentMeta implements Face
     public boolean breaksWhenMoved() {
         return true;
     }
+
+    @Override
+    public boolean canBeActivated() {
+        return true;
+    }
 }
