@@ -163,14 +163,14 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
         else {
             var file = new File("/.dockerenv");
             if (file.exists()) {
-                return "Docker";
+                return "Docker Container";
             }
             var cgroupFile = new File("/proc/1/cgroup");
             if (cgroupFile.exists()) {
                 try(var lineStream = Files.lines(cgroupFile.toPath())) {
                     var searchResult = lineStream.filter(line -> line.contains("docker") || line.contains("lxc"));
                     if (searchResult.findAny().isPresent()) {
-                        return "Docker";
+                        return "Docker Container";
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
