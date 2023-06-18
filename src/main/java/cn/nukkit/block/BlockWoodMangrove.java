@@ -67,7 +67,7 @@ public class BlockWoodMangrove extends BlockWood {
 
     @PowerNukkitOnly
     @Override
-    protected BlockState getStrippedState() {
+    public BlockState getStrippedState() {
         return BlockState.of(STRIPPED_MANGROVE_WOOD).withProperty(PILLAR_AXIS, getPillarAxis());
     }
 }

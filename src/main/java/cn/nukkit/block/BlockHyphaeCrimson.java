@@ -31,7 +31,7 @@ public class BlockHyphaeCrimson extends BlockStem {
 
     @PowerNukkitOnly
     @Override
-    protected BlockState getStrippedState() {
+    public BlockState getStrippedState() {
         return getCurrentState().withBlockId(STRIPPED_CRIMSON_HYPHAE);
     }
 
