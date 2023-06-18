@@ -34,7 +34,7 @@ import static cn.nukkit.math.CompassRoseDirection.*;
 @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder only in PowerNukkit")
 @Log4j2
 public class BlockSignPost extends BlockSignBase implements BlockEntityHolder<BlockEntitySign> {
-    @Deprecated(since = "1.20.0-r2",forRemoval = true)
+    @Deprecated(since = "1.20.0-r2", forRemoval = true)
     @DeprecationDetails(since = "1.20.0-r2", reason = "replace to CommonBlockProperties")
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -125,6 +125,9 @@ public class BlockSignPost extends BlockSignBase implements BlockEntityHolder<Bl
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (face == BlockFace.DOWN) {
+            return false;
+        }
+        if (player != null && !player.isSneaking() && target instanceof BlockSignBase) {
             return false;
         }
 

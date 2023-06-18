@@ -12,6 +12,7 @@ import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.TextFormat;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -111,16 +112,6 @@ public class BlockEntitySign extends BlockEntitySpawnable {
         this.namedTag.putByte(TAG_WAXED, waxed ? (byte) 1 : (byte) 0);
     }
 
-    private static String joinNotNull(String delim, String... elements) {
-        StringJoiner join = new StringJoiner(delim);
-        for (var element : elements) {
-            if (element != null) {
-                join.add(element);
-            }
-        }
-        return join.toString();
-    }
-
     @Override
     public boolean isBlockEntityValid() {
         Block block = getBlock();
@@ -170,6 +161,18 @@ public class BlockEntitySign extends BlockEntitySpawnable {
 
     public String[] getText(boolean front) {
         return front ? frontText : backText;
+    }
+
+    public boolean isEmpty() {
+        return isEmpty(true);
+    }
+
+    public boolean isEmpty(boolean front) {
+        if (front) {
+            return (frontText[0] == null || frontText[0].isEmpty()) && frontText[1] == null && frontText[2] == null && frontText[3] == null;
+        }else{
+            return (backText[0] == null || backText[0].isEmpty()) && backText[1] == null && backText[2] == null && backText[3] == null;
+        }
     }
 
     /**
@@ -363,5 +366,15 @@ public class BlockEntitySign extends BlockEntitySpawnable {
                 lines[i] = lines[i].substring(0, Math.min(255, lines[i].length()));
             }
         }
+    }
+
+    private static String joinNotNull(String delim, String... elements) {
+        StringJoiner join = new StringJoiner(delim);
+        for (var element : elements) {
+            if (element != null) {
+                join.add(element);
+            }
+        }
+        return join.toString();
     }
 }
