@@ -34,6 +34,8 @@ public interface CompressionProvider {
         }
     };
 
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
     CompressionProvider SNAPPY = new CompressionProvider() {
         @Override
         public byte[] compress(BinaryStream packet, int level) throws Exception {
