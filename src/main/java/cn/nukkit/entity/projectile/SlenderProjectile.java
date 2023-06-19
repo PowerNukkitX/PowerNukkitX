@@ -1,15 +1,23 @@
 package cn.nukkit.entity.projectile;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockSignPost;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.ProjectileHitEvent;
 import cn.nukkit.level.MovingObjectPosition;
-import cn.nukkit.level.Position;
 import cn.nukkit.level.format.FullChunk;
-import cn.nukkit.math.AxisAlignedBB;
+import cn.nukkit.level.generator.populator.impl.structure.utils.block.state.Direction;
+import cn.nukkit.math.BVector3;
+import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.CompassRoseDirection;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import co.aikar.timings.Timings;
+
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.function.Predicate;
 
 /**
  * 这个抽象类代表较为细长的投射物实体(例如弓箭,三叉戟),它通过重写{@link Entity#move}方法实现这些实体较为准确的碰撞箱计算。
@@ -17,7 +25,8 @@ import co.aikar.timings.Timings;
  * This abstract class represents slender projectile entities (e.g.arrow, trident), and it realized a more accurate collision box calculation for these entities by overriding the {@link Entity#move} method.
  */
 public abstract class SlenderProjectile extends EntityProjectile {
-    private static final int SPLIT_NUMBER = 15;
+    private static final int SPLIT_NUMBER = 10;
+    private MovingObjectPosition lastHitBlock;
 
     public SlenderProjectile(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -55,17 +64,45 @@ public abstract class SlenderProjectile extends EntityProjectile {
         double movY = dy;
         double movZ = dz;
 
+        final SlenderProjectile projectile = this;
+        final Entity shootEntity = shootingEntity;
+        final int ticks = ticksLived;
+
         var currentAABB = this.boundingBox.clone();
         var dirVector = new Vector3(dx, dy, dz).multiply(1 / (double) SPLIT_NUMBER);
+
+        Entity collisionEntity = null;
+        Block collisionBlock = null;
         for (int i = 0; i < SPLIT_NUMBER; ++i) {
-            var collisionResult = this.level.fastCollisionCubes(this, currentAABB.offset(dirVector.x, dirVector.y, dirVector.z), false);
-            if (!collisionResult.isEmpty()) {
+            var collisionBlocks = this.level.getCollisionBlocks(currentAABB.offset(dirVector.x, dirVector.y, dirVector.z));
+            var collisionEntities = this.getLevel().fastCollidingEntities(currentAABB, this);
+            if (collisionBlocks.length != 0) {
+                currentAABB.offset(-dirVector.x, -dirVector.y, -dirVector.z);
+                collisionBlock = Arrays.stream(collisionBlocks).min(Comparator.comparingDouble(projectile::distanceSquared)).get();
+                break;
+            }
+            collisionEntity = collisionEntities.stream()
+                    .filter(Predicate.not(entity -> (entity == shootEntity && ticks < 5) ||
+                            (entity instanceof Player && ((Player) entity).getGamemode() == Player.SPECTATOR)))
+                    .min(Comparator.comparingDouble(o -> o.distanceSquared(projectile)))
+                    .orElse(null);
+            if (collisionEntity != null) {
                 break;
             }
         }
         Vector3 centerPoint1 = new Vector3((currentAABB.getMinX() + currentAABB.getMaxX()) / 2,
                 (currentAABB.getMinY() + currentAABB.getMaxY()) / 2,
                 (currentAABB.getMinZ() + currentAABB.getMaxZ()) / 2);
+        //collide with entity
+        if (collisionEntity != null) {
+            MovingObjectPosition movingObject = new MovingObjectPosition();
+            movingObject.typeOfHit = 1;
+            movingObject.entityHit = collisionEntity;
+            movingObject.hitVector = centerPoint1;
+            onCollideWithEntity(movingObject.entityHit);
+            return true;
+        }
+
         Vector3 centerPoint2 = new Vector3((this.boundingBox.getMinX() + this.boundingBox.getMaxX()) / 2,
                 (this.boundingBox.getMinY() + this.boundingBox.getMaxY()) / 2,
                 (this.boundingBox.getMinZ() + this.boundingBox.getMaxZ()) / 2);
@@ -80,7 +117,6 @@ public abstract class SlenderProjectile extends EntityProjectile {
                 dy = diff.getY();
             }
         }
-
         if (dx > 0) {
             if (diff.getX() + 0.001 < dx) {
                 dx = diff.getX();
@@ -91,7 +127,6 @@ public abstract class SlenderProjectile extends EntityProjectile {
                 dx = diff.getX();
             }
         }
-
         if (dz > 0) {
             if (diff.getZ() + 0.001 < dz) {
                 dz = diff.getZ();
@@ -117,13 +152,36 @@ public abstract class SlenderProjectile extends EntityProjectile {
         if (movX != dx) {
             this.motionX = 0;
         }
-
         if (movY != dy) {
             this.motionY = 0;
         }
-
         if (movZ != dz) {
             this.motionZ = 0;
+        }
+
+        //collide with block
+        if (this.isCollided && !this.hadCollision) {
+            this.hadCollision = true;
+            this.motionX = 0;
+            this.motionY = 0;
+            this.motionZ = 0;
+            BVector3 bVector3 = BVector3.fromPos(new Vector3(dx, dy, dz));
+            BlockFace blockFace = BlockFace.fromHorizontalAngle(bVector3.getYaw());
+            Block block = level.getBlock(this.getFloorX(), this.getFloorY(), this.getFloorZ()).getSide(blockFace);
+            if (block.getId() == 0) {
+                blockFace = BlockFace.DOWN;
+                block = level.getBlock(this.getFloorX(), this.getFloorY(), this.getFloorZ()).down();
+            }
+            if (block.getId() == 0) {
+                blockFace = BlockFace.UP;
+                block = level.getBlock(this.getFloorX(), this.getFloorY(), this.getFloorZ()).up();
+            }
+            if (block.getId() == 0 && collisionBlock != null) {
+                block = collisionBlock;
+            }
+            this.server.getPluginManager().callEvent(new ProjectileHitEvent(this, lastHitBlock = MovingObjectPosition.fromBlock(block.getFloorX(), block.getFloorY(), block.getFloorZ(), blockFace, this)));
+            onCollideWithBlock(getPosition(), getMotion());
+            addHitEffect();
         }
 
         Timings.entityMoveTimer.stopTiming();
@@ -135,7 +193,15 @@ public abstract class SlenderProjectile extends EntityProjectile {
         if (this.closed) {
             return false;
         }
-
+        if (this.isCollided && this.hadCollision) {
+            if (lastHitBlock != null && lastHitBlock.typeOfHit == 0 && level.getBlock(lastHitBlock.blockX, lastHitBlock.blockY, lastHitBlock.blockZ).getId() == 0) {
+                this.motionY -= this.getGravity();
+                updateRotation();
+                this.move(this.motionX, this.motionY, this.motionZ);
+                this.updateMovement();
+            }
+            return false;
+        }
         int tickDiff = currentTick - this.lastUpdate;
         if (tickDiff <= 0 && !this.justCreated) {
             return true;
@@ -152,57 +218,8 @@ public abstract class SlenderProjectile extends EntityProjectile {
                 updateRotation();
                 hasUpdate = true;
             }
-            var old = this.clone();
             this.move(this.motionX, this.motionY, this.motionZ);
             this.updateMovement();
-
-            Entity[] list = this.getLevel().getCollidingEntities(this.boundingBox.grow(1, 1, 1), this);
-            double nearDistance = Integer.MAX_VALUE;
-            Entity nearEntity = null;
-            MovingObjectPosition movingObjectPosition = null;
-            for (Entity entity : list) {
-                if ((entity == this.shootingEntity && this.ticksLived < 5) ||
-                        (entity instanceof Player && ((Player) entity).getGamemode() == Player.SPECTATOR)) {
-                    continue;
-                }
-                AxisAlignedBB axisalignedbb = entity.boundingBox.grow(0.3, 0.3, 0.3);
-                MovingObjectPosition ob = axisalignedbb.calculateIntercept(old, this);
-                if (ob == null) {
-                    continue;
-                }
-                double distance = this.distanceSquared(ob.hitVector);
-                if (distance < nearDistance) {
-                    nearDistance = distance;
-                    nearEntity = entity;
-                }
-            }
-            if (nearEntity != null) {
-                movingObjectPosition = MovingObjectPosition.fromEntity(nearEntity);
-            }
-            if (movingObjectPosition != null) {
-                if (movingObjectPosition.entityHit != null) {
-                    onCollideWithEntity(movingObjectPosition.entityHit);
-                    hasUpdate = true;
-                    if (closed) {
-                        return true;
-                    }
-                }
-            }
-
-            Position position = getPosition();
-            Vector3 motion = getMotion();
-            if (this.isCollided && !this.hadCollision) { //collide with block
-                this.hadCollision = true;
-                this.motionX = 0;
-                this.motionY = 0;
-                this.motionZ = 0;
-                this.server.getPluginManager().callEvent(new ProjectileHitEvent(this, MovingObjectPosition.fromBlock(this.getFloorX(), this.getFloorY(), this.getFloorZ(), -1, this)));
-                onCollideWithBlock(position, motion);
-                addHitEffect();
-                return false;
-            } else if (!this.isCollided && this.hadCollision) {
-                this.hadCollision = false;
-            }
         }
         return hasUpdate;
     }
