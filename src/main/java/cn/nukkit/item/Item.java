@@ -1708,6 +1708,7 @@ public class Item implements Cloneable, BlockID, ItemID {
         return ((this.block != null) && this.block.canBePlaced());
     }
 
+    @NotNull
     public Block getBlock() {
         if (this.block != null) {
             return this.block.clone();

@@ -280,7 +280,7 @@ public interface AxisAlignedBB extends Cloneable {
             f = BlockFace.UP;
         } else if (vector == v5) {
             f = BlockFace.NORTH;
-        } else if (vector == v6) {
+        } else {
             f = BlockFace.SOUTH;
         }
 
