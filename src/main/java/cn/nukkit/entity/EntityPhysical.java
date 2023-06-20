@@ -196,7 +196,9 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     @Since("1.19.60-r1")
     public double getGroundFrictionFactor() {
         if (!this.onGround) return 1.0;
-        return this.getLevel().getTickCachedBlock(this.temporalVector.setComponents((int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z))).getFrictionFactor();
+        return 1.0 - this.getLevel().getTickCachedBlock(this.temporalVector.setComponents(
+                (int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z))
+        ).getFrictionFactor();
     }
 
     /**

@@ -69,7 +69,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
             components.putCompound("minecraft:friction", new CompoundTag()
                             // TODO: 2023/6/20 计算正确的摩擦系数公式/优化摩擦计算
                             // TODO: 2023/6/20 Calculate the correct friction coefficient formula / optimize friction calculation
-                            .putFloat("value", (float) NukkitMath.clamp(1 - customBlock.getFrictionFactor(), 0, 0.9))) // in vanilla, the closer factor to 0, the more slippery the block is. But in PNX it's reversed.
+                            .putFloat("value", (float) NukkitMath.clamp(customBlock.getFrictionFactor(), 0, 0.9))) // in vanilla, the closer factor to 0, the more slippery the block is. But in PNX it's reversed.
                     .putCompound("minecraft:destructible_by_explosion", new CompoundTag()
                             .putInt("explosion_resistance", (int) customBlock.getResistance()))
                     .putCompound("minecraft:light_dampening", new CompoundTag()

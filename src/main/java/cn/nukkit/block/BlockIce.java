@@ -39,7 +39,7 @@ public class BlockIce extends BlockTransparent {
 
     @Override
     public double getFrictionFactor() {
-        return 0.98;
+        return 0.02;
     }
 
     @Override

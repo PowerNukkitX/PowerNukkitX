@@ -63,7 +63,7 @@ public class BlockIceFrosted extends BlockTransparentMeta {
 
     @Override
     public double getFrictionFactor() {
-        return 0.98;
+        return 0.02;
     }
 
     @Override

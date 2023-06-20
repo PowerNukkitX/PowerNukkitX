@@ -21,9 +21,10 @@ import java.util.Locale;
 @Since("1.6.0.0-PNX")
 public interface CustomBlock {
     /**
-     * 覆写该方法设置自定义方块的摩擦因数
+     * 覆写该方法设置自定义方块的摩擦因数，此值应为[0, 1], 值越小在地面上受到的阻力越小
      * <p>
-     * {@code @Override} this method to set the friction factor of the custom block
+     * {@code @Override} this method to set the friction factor of the custom block.
+     * The grater the value, the less resistance on the ground.
      */
     double getFrictionFactor();
 

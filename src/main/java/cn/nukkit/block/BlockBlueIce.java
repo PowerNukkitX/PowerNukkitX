@@ -21,7 +21,7 @@ public class BlockBlueIce extends BlockIcePacked {
     
     @Override
     public double getFrictionFactor() {
-        return 0.989;
+        return 0.011;
     }
     
     @Override

@@ -1539,7 +1539,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return ItemTool.TYPE_NONE;
     }
 
-    public static final double DEFAULT_FRICTION_FACTOR = 0.6;
+    public static final double DEFAULT_FRICTION_FACTOR = 0.4;
 
     /**
      * 控制方块的摩擦因素。此值越小阻力越大
