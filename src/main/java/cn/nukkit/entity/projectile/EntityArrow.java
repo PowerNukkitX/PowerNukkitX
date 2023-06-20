@@ -75,7 +75,6 @@ public class EntityArrow extends SlenderProjectile {
     @Override
     protected void initEntity() {
         super.initEntity();
-        closeOnCollide = false;
 
         this.damage = namedTag.contains("damage") ? namedTag.getDouble("damage") : 2;
         this.pickupMode = namedTag.contains("pickup") ? namedTag.getByte("pickup") : PICKUP_ANY;

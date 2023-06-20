@@ -7,6 +7,7 @@ import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
 import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -68,6 +69,7 @@ public class ItemBlock extends Item {
         return block;
     }
 
+    @NotNull
     @Override
     public Block getBlock() {
         return this.block.clone();
