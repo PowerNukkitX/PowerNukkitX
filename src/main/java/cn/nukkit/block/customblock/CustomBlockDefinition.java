@@ -5,6 +5,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.customblock.data.*;
 import cn.nukkit.blockproperty.*;
+import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.*;
@@ -66,7 +67,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
 
             //设置一些与PNX内部对应的方块属性
             components.putCompound("minecraft:friction", new CompoundTag()
-                            .putFloat("value", (float) Math.abs(1 - customBlock.getFrictionFactor()))) // in vanilla, the closer factor to 0, the more slippery the block is. But in PNX it's reversed.
+                            .putFloat("value", (float) NukkitMath.clamp(1 - customBlock.getFrictionFactor(), 0, 0.9))) // in vanilla, the closer factor to 0, the more slippery the block is. But in PNX it's reversed.
                     .putCompound("minecraft:destructible_by_explosion", new CompoundTag()
                             .putInt("explosion_resistance", (int) customBlock.getResistance()))
                     .putCompound("minecraft:light_dampening", new CompoundTag()
