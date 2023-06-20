@@ -3175,7 +3175,7 @@ public class Level implements ChunkManager, Metadatable {
             if (player != null) {
                 var diff = player.getNextPosition().subtract(player.getPosition());
                 var aabb = player.getBoundingBox().getOffsetBoundingBox(diff.x, diff.y, diff.z);
-                if (aabb.intersectsWith(hand.getBoundingBox().shrink(0.05, 0, 0.05))) {
+                if (aabb.intersectsWith(hand.getBoundingBox().shrink(0.02, 0.02, 0.02))) {
                     ++realCount;
                 }
             }
