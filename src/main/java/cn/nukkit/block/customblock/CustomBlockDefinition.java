@@ -66,7 +66,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
 
             //设置一些与PNX内部对应的方块属性
             components.putCompound("minecraft:friction", new CompoundTag()
-                            .putFloat("value", (float) Math.min(customBlock.getFrictionFactor(), 0.9)))
+                            .putFloat("value", (float) (1 - Block.DEFAULT_FRICTION_FACTOR)))
                     .putCompound("minecraft:destructible_by_explosion", new CompoundTag()
                             .putInt("explosion_resistance", (int) customBlock.getResistance()))
                     .putCompound("minecraft:light_dampening", new CompoundTag()
@@ -265,6 +265,25 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
                 stringTagListTag.add(new StringTag("", s));
             }
             this.nbt.putList("blockTags", stringTagListTag);
+            return this;
+        }
+
+        /**
+         * 由于傻逼mojang像智障一样乱改客户端摩擦，PNX中的摩擦计算与客户端并不同步，这个方法可以让你设置客户端摩擦系数。
+         * <br>
+         * Since the silly mojang messes with the client friction like a retard,
+         * the friction calculation in PNX is not synchronized with the client,
+         * and this method allows you to set the client friction factor.
+         * <p>
+         * 屮你*mojang！
+         * <br>
+         * FU*K YOU MOJANG!
+         */
+        @Since("1.20.0-r2")
+        public Builder clientFriction(float friction) {
+            this.nbt.getCompound("components")
+                    .putCompound("minecraft:friction", new CompoundTag()
+                            .putFloat("value", friction));
             return this;
         }
 

@@ -44,6 +44,9 @@ public class Component implements NBTData {
     Boolean unitCube;
     @Nullable
     Vector3f rotation;
+    @Since("1.20.0-r2")
+    @Nullable
+    Float clientFriction;
 
     public CompoundTag toCompoundTag() {
         if (unitCube != null) {
@@ -96,6 +99,10 @@ public class Component implements NBTData {
         }
         if (rotation != null) {
             this.result.putCompound(new Transformation(new Vector3(0, 0, 0), new Vector3(1, 1, 1), rotation.asVector3()).toCompoundTag());
+        }
+        if (clientFriction != null) {
+            this.result.putCompound("minecraft:friction", new CompoundTag()
+                    .putFloat("value", clientFriction));
         }
         return this.result;
     }
