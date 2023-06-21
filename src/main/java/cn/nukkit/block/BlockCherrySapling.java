@@ -64,7 +64,7 @@ public class BlockCherrySapling extends BlockFlowable implements BlockFlowerPot.
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (!BlockFlower.isSupportValid(down())) {
+            if (!isSupportInvalid()) {
                 this.getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
