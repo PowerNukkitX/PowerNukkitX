@@ -66,7 +66,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
 
             //设置一些与PNX内部对应的方块属性
             components.putCompound("minecraft:friction", new CompoundTag()
-                            .putFloat("value", 0.4f))
+                            .putFloat("value", (float) (1 - Block.DEFAULT_FRICTION_FACTOR)))
                     .putCompound("minecraft:destructible_by_explosion", new CompoundTag()
                             .putInt("explosion_resistance", (int) customBlock.getResistance()))
                     .putCompound("minecraft:light_dampening", new CompoundTag()
