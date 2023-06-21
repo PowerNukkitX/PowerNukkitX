@@ -21,11 +21,30 @@ import java.util.Locale;
 @Since("1.6.0.0-PNX")
 public interface CustomBlock {
     /**
-     * 覆写该方法设置自定义方块的摩擦因数
+     * 覆写该方法设置自定义方块的摩擦因数。<br>
+     * 警告：如果你想要让玩家在你的自定义方块上的摩擦不同，请覆写{@link CustomBlock#getClientFriction}方法。
      * <p>
-     * {@code @Override} this method to set the friction factor of the custom block
+     * {@code @Override} this method to set the friction factor of the custom block.<br>
+     * Warning: If you want to make the friction of the player on your custom block different,
+     * please override the {@link CustomBlock#getClientFriction} method.
      */
     double getFrictionFactor();
+
+    /**
+     * 由于傻逼mojang像智障一样乱改客户端摩擦，PNX中的摩擦计算与客户端并不同步，这个方法可以让你设置客户端摩擦系数。
+     * <br>
+     * Since the silly mojang messes with the client friction like a retard,
+     * the friction calculation in PNX is not synchronized with the client,
+     * and this method allows you to set the client friction factor.
+     * <p>
+     * 屮你*mojang！
+     * <br>
+     * FU*K YOU MOJANG!
+     */
+    @Since("1.20.0-r2")
+    default float getClientFriction() {
+        return 0.4f;
+    }
 
     /**
      * 覆写该方法设置自定义方块的爆炸抗性
