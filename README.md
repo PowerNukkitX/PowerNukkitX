@@ -45,7 +45,7 @@ What's new in PowerNukkitX? Let's See：
 ### 1.Run from [PNX-CLI](https://github.com/PowerNukkitX/PNX-CLI):
 
 1. Download the `PNX-CLI-Jar.zip` latest version from [release](https://github.com/PowerNukkitX/PNX-CLI/releases)
-2. Run `java -jar PNX-CLI-0.1.4.jar`
+2. Run `java -jar PNX-CLI-0.1.6.jar`
 
 you can [click here](https://www.powernukkitx.com/doc/en-us/Get_Started.html) to get more information.
 
