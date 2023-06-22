@@ -2,13 +2,13 @@
 
 <h2>🌐Need to switch languages?&ensp;/&ensp;多语言文档</h2>
 
-[![Discord](https://img.shields.io/discord/944227466912870410?style=flat-square)](https://discord.gg/BcPhZCVJHJ)
-[![English](https://img.shields.io/badge/English-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/README.md)
-[![简体中文](https://img.shields.io/badge/简体中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hans/README.md)
-[![繁體中文](https://img.shields.io/badge/繁體中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/README.md)
+[![Discord](https://img.shields.io/discord/944227466912870410?color=7289da&logo=discord&logoColor=white&style=flat-square)](https://discord.gg/BcPhZCVJHJ)
+[![English](https://img.shields.io/badge/English-Click%20me-purple?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/README.md)
+[![简体中文](https://img.shields.io/badge/简体中文-Click%20me-purple?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hans/README.md)
+[![繁體中文](https://img.shields.io/badge/繁體中文-Click%20me-purple?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/README.md)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/LICENSE)
 [![ChangeLog](https://img.shields.io/badge/ChangeLog-blue?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hans/CHANGELOG.md)
-[![FAQ](https://img.shields.io/badge/FAQ-blue?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/wiki/FAQ)
+[![FAQ](https://img.shields.io/badge/FAQ-blue?style=flat-square)](https://doc.powernukkitx.cn/zh-cn/faq/common.html)
 [![PNX-DOC](https://img.shields.io/badge/PNX-DOC文档库-blue?style=flat-square)](https://doc.powernukkitx.cn)
 [![Maven Central](https://img.shields.io/maven-central/v/cn.powernukkitx/powernukkitx.svg?label=Maven%20Central&style=flat-square)](https://search.maven.org/search?q=g:%22cn.powernukkitx%22%20AND%20a:%22powernukkitx%22)
 [![](https://www.jitpack.io/v/PowerNukkitX/PowerNukkitX.svg)](https://www.jitpack.io/#PowerNukkitX/PowerNukkitX)
@@ -29,8 +29,7 @@ PowerNukkitX的优势：
 3. 原生支持地狱世界，无需另外安装插件补丁等。
 4. 支持3D生物群系（完善中）。<!--自定义维度接口 TODO-->
 5. 原生支持香草命令和命令方块等（完善中）。
-6. 内置[Terra](https://github.com/PolyhedralDev/Terra)
-   地形生成器（如有问题[点此查看](https://doc.powernukkitx.cn/zh-cn/faq/terra.html)）。
+6. 内置[Terra](https://github.com/PolyhedralDev/Terra)地形生成器（如有问题[点此查看](https://doc.powernukkitx.cn/zh-cn/faq/terra.html)）。
 7. 支持使用JavaSrcipt语言编写插件 （可在[此处](https://doc.powernukkitx.cn/zh-cn/dev/js/setup_dev_env.html)
    查找开发文档）。
 8. 支持自定义方块 / 物品 / 实体（完善中，[文档](https://doc.powernukkitx.cn)待补充）。
@@ -44,7 +43,7 @@ PowerNukkitX的优势：
 ### 1.从[PNX-CLI](https://github.com/PowerNukkitX/PNX-CLI)启动:
 
 1. 从[release](https://github.com/PowerNukkitX/PNX-CLI/releases)下载`PNX-CLI-Jar.zip`最新版本
-2. 运行`java -jar PNX-CLI-0.1.4.jar`
+2. 运行`java -jar PNX-CLI-0.1.6.jar`
 
 您还可以在[此处](https://doc.powernukkitx.cn/zh-cn/Get_Started.html)查阅更多信息。
 
@@ -187,7 +186,7 @@ dependencies {
 [![Pull-pr](https://img.shields.io/github/issues-pr/PowerNukkitX/PowerNukkitX?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/pulls)
 [![Pull-pr-closed](https://img.shields.io/github/issues-pr-closed/PowerNukkitX/PowerNukkitX?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/pulls?q=is%3Apr+is%3Aclosed)
 
-## Stargazers over time
+## ⭐ Stargazers over time
 
 [![Stargazers over time](https://starchart.cc/PowerNukkitX/PowerNukkitX.svg)](https://starchart.cc/PowerNukkitX/PowerNukkitX)
 
