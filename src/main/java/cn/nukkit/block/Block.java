@@ -1542,9 +1542,9 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     public static final double DEFAULT_FRICTION_FACTOR = 0.6;
 
     /**
-     * 控制方块的摩擦因素。此值越小阻力越大
-     *
-     * @return 方块的摩擦因素 (0-1)
+     * 服务端侧的摩擦系数，用于控制玩家丢弃物品、实体、船其在上方移动的速度。值越大，移动越快。
+     * <p>
+     * The friction on the server side, which is used to control the speed that player drops item,entity walk and boat movement on the block.The larger the value, the faster the movement.
      */
     public double getFrictionFactor() {
         return DEFAULT_FRICTION_FACTOR;
