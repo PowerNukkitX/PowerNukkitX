@@ -64,7 +64,7 @@ public class BlockCherrySapling extends BlockFlowable implements BlockFlowerPot.
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (!isSupportInvalid()) {
+            if (isSupportInvalid()) {
                 this.getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
@@ -144,7 +144,7 @@ public class BlockCherrySapling extends BlockFlowable implements BlockFlowerPot.
 
     private boolean isSupportInvalid() {
         int downId = down().getId();
-        return downId != DIRT && downId != GRASS && downId != SAND && downId != GRAVEL && downId != PODZOL;
+        return !(downId == DIRT || downId == GRASS || downId == SAND || downId == GRAVEL || downId == PODZOL);
     }
 
     public boolean isAge() {
