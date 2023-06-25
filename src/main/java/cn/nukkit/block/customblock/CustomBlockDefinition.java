@@ -269,15 +269,9 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
         }
 
         /**
-         * 由于傻逼mojang像智障一样乱改客户端摩擦，PNX中的摩擦计算与客户端并不同步，这个方法可以让你设置客户端摩擦系数。
-         * <br>
-         * Since the silly mojang messes with the client friction like a retard,
-         * the friction calculation in PNX is not synchronized with the client,
-         * and this method allows you to set the client friction factor.
+         * 客户端摩擦系数，用于控制玩家在自定义方块上行走的速度，值越大，移动越快。
          * <p>
-         * 屮你*mojang！
-         * <br>
-         * FU*K YOU MOJANG!
+         * the client friction, which is used to control the speed at which the player walks on the custom block.The larger the value, the faster the movement.
          */
         @Since("1.20.0-r2")
         public Builder clientFriction(float friction) {
