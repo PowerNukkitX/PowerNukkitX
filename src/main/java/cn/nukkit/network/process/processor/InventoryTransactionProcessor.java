@@ -3,6 +3,7 @@ package cn.nukkit.network.process.processor;
 import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
+import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.blockentity.BlockEntity;
@@ -10,12 +11,15 @@ import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.item.EntityArmorStand;
+import cn.nukkit.entity.passive.EntityVillager;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.player.PlayerInteractEntityEvent;
 import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.event.player.PlayerKickEvent;
+import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.SmithingInventory;
+import cn.nukkit.inventory.TradeInventory;
 import cn.nukkit.inventory.transaction.*;
 import cn.nukkit.inventory.transaction.action.InventoryAction;
 import cn.nukkit.inventory.transaction.data.ReleaseItemData;
@@ -31,6 +35,8 @@ import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.InventoryTransactionPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
@@ -300,6 +306,24 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
             }
             if (playerHandle.getTradingTransaction().canExecute()) {
                 playerHandle.getTradingTransaction().execute();
+
+                for(Inventory inventory : playerHandle.getTradingTransaction().getInventories()) {
+
+                    if(inventory instanceof TradeInventory tradeInventory) {
+                        EntityVillager ent = tradeInventory.getHolder();
+                        ent.namedTag.putBoolean("traded", true);
+                        for(Tag tag : ent.getRecipes().getAll()) {
+                            CompoundTag ta = (CompoundTag) tag;
+                            if(ta.getCompound("buyA").getString("Name").equals(tradeInventory.getItem(0).getNamespaceId())) {
+                                int tradeXP = ta.getInt("traderExp");
+                                player.addExperience(ta.getByte("rewardExp"));
+                                ent.addExperience(tradeXP);
+                                player.level.addSound(player, Sound.RANDOM_ORB, 0,3f, 1, player);
+                            }
+                        }
+                    }
+                }
+
                 playerHandle.setTradingTransaction(null);
             }
             return;
