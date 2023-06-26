@@ -425,7 +425,7 @@ public class EntityVillager extends EntityIntelligent implements InventoryHolder
         this.tradeExp += xp;
         this.setDataProperty(new IntEntityData(DATA_TRADE_EXPERIENCE, this.tradeExp));
         int next = getTradeTier()+1;
-        if(next <= getMaxTradeTier()+1) {
+        if(next < this.tierExpRequirement.length) {
             if(tradeExp >= this.tierExpRequirement[next]) {
                 setTradeTier(next+1);
             }

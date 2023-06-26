@@ -318,7 +318,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                                 int tradeXP = ta.getInt("traderExp");
                                 player.addExperience(ta.getByte("rewardExp"));
                                 ent.addExperience(tradeXP);
-                                player.level.addSound(player, Sound.RANDOM_ORB, 0,3f, 1, player);
+                                player.level.addSound(player, Sound.RANDOM_ORB, 0,3f, player);
                             }
                         }
                     }
