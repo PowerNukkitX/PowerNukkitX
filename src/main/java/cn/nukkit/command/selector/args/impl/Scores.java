@@ -71,7 +71,17 @@ public class Scores extends CachedSimpleSelectorArgument {
         return 5;
     }
 
-    protected record ScoreCondition(String objectiveName, int min, int max, boolean reversed){
+    /**
+     * 表示根据特定目标的分数条件来选择实体的条件。
+     * 它定义了目标名称、最小和最大值，以及条件是否被反转。
+     */
+    protected record ScoreCondition(String objectiveName, int min, int max, boolean reversed) {
+        /**
+         * 检查给定实体的分数是否满足条件。
+         *
+         * @param entity 要测试分数条件的实体。
+         * @return 如果实体的分数满足条件则返回 {@code true}，否则返回 {@code false}。
+         */
         boolean test(Entity entity) {
             var scoreboard = Server.getInstance().getScoreboardManager().getScoreboard(objectiveName);
             if (scoreboard == null) return false;
@@ -81,4 +91,5 @@ public class Scores extends CachedSimpleSelectorArgument {
             return (value >= min && value <= max) != reversed;
         }
     }
+
 }

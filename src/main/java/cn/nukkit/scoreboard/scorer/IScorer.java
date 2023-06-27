@@ -15,6 +15,11 @@ import cn.nukkit.scoreboard.scoreboard.IScoreboardLine;
 public interface IScorer {
 
     /**
+     * package cn.nukkit.command.selector.args.impl;
+     * IScorer scorer = entity instanceof Player player ? new PlayerScorer(player) : new EntityScorer(entity);
+     * 78:0
+     */
+    /**
      * 获取追踪对象类型
      * @return 追踪对象类型
      */
