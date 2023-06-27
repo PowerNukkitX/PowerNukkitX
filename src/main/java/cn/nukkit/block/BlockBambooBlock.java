@@ -24,10 +24,12 @@ public class BlockBambooBlock extends BlockLog {
         return PILLAR_PROPERTIES;
     }
 
+    @Override
     public int getId() {
         return BAMBOO_BLOCK;
     }
 
+    @Override
     public String getName() {
         return "Bamboo Block";
     }

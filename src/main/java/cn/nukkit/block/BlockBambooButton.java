@@ -10,10 +10,12 @@ public class BlockBambooButton extends BlockButtonWooden {
     public BlockBambooButton() {
     }
 
+    @Override
     public int getId() {
         return BAMBOO_BUTTON;
     }
 
+    @Override
     public String getName() {
         return "Bamboo Button";
     }
