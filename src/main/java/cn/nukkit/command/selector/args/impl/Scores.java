@@ -76,6 +76,7 @@ public class Scores extends CachedSimpleSelectorArgument {
      * 它定义了目标名称、最小和最大值，以及条件是否被反转。
      */
     protected record ScoreCondition(String objectiveName, int min, int max, boolean reversed) {
+
         /**
          * 检查给定实体的分数是否满足条件。
          *
