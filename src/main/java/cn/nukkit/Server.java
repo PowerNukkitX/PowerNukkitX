@@ -77,6 +77,7 @@ import cn.nukkit.scheduler.Task;
 import cn.nukkit.scoreboard.manager.IScoreboardManager;
 import cn.nukkit.scoreboard.manager.ScoreboardManager;
 import cn.nukkit.scoreboard.storage.JSONScoreboardStorage;
+import cn.nukkit.spark.SparkInstaller;
 import cn.nukkit.utils.*;
 import cn.nukkit.utils.bugreport.ExceptionHandler;
 import cn.nukkit.utils.collection.FreezableArrayManager;
@@ -951,6 +952,15 @@ public class Server {
         }
 
         this.enablePlugins(PluginLoadOrder.POSTWORLD);
+
+        if (!this.getConfig("timings.completely-close", false)) {
+            Server.getInstance().getLogger().alert("Timings has been deprecated and will be replaced by Spark profiler.");
+            Server.getInstance().getLogger().alert("Download Spark profiler from here: https://sparkapi.lucko.me/download/nukkit");
+        }
+
+        if (this.getConfig("timings.download-spark", false)) {
+            SparkInstaller.initSpark(this);
+        }
 
         if (/*Nukkit.DEBUG < 2 && */!Boolean.parseBoolean(System.getProperty("disableWatchdog", "false"))) {
             this.watchdog = new Watchdog(this, 60000);

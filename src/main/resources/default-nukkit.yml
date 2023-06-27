@@ -31,6 +31,7 @@ timings:
  bypass-max: false
  privacy: false
  ignore: []
+ download-spark: false
 
 level-settings:
  default-format: anvil

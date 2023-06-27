@@ -24,9 +24,7 @@
 package co.aikar.timings;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
+import cn.nukkit.api.*;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.command.Command;
 import cn.nukkit.entity.Entity;
@@ -47,6 +45,8 @@ import java.util.Set;
 import static co.aikar.timings.TimingIdentifier.DEFAULT_GROUP;
 
 @Log4j2
+@Deprecated(forRemoval = true)
+@DeprecationDetails(since = "1.20.0-r2", reason = "Timings has been deprecated and will be replaced by Spark profiler.")
 public final class Timings {
     private static final boolean timingsCompletelyClosed;
     private static boolean timingsEnabled = false;
