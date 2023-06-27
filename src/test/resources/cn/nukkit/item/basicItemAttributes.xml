@@ -550,7 +550,7 @@
     <item namespaced-id="minecraft:trident" numeric-id="455" name="Trident" tool="true" stack-size="1" durability="251"/>
     <item namespaced-id="minecraft:beetroot" numeric-id="457" name="Beetroot"/>
     <item namespaced-id="minecraft:beetroot_seeds" numeric-id="458" name="Beetroot Seeds"/>
-    <item namespaced-id="minecraft:beetroot_soup" numeric-id="459" name="Beetroot Soup"/>
+    <item namespaced-id="minecraft:beetroot_soup" numeric-id="459" name="Beetroot Soup" stack-size="1"/>
     <item namespaced-id="minecraft:salmon" numeric-id="460" name="Raw Salmon"/>
     <item namespaced-id="minecraft:tropical_fish" numeric-id="461" name="Tropical Fish"/>
     <item namespaced-id="minecraft:pufferfish" numeric-id="462" name="Pufferfish"/>
