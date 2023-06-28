@@ -439,7 +439,7 @@ public class Chunk extends BaseChunk {
     }
 
     @Override
-    @PowerNukkitXDifference(since = "1.20.0-r3", info = "Do not calc heightMap since it's not used in this method.")
+    @PowerNukkitXDifference(since = "1.20.0-r2", info = "Do not calc heightMap since it's not used in this method.")
     public byte[] toFastBinary() {
         CompoundTag nbt = this.getNBT().copy();
         nbt.remove("BiomeColors");
@@ -516,7 +516,7 @@ public class Chunk extends BaseChunk {
     }
 
     @Override
-    @PowerNukkitXDifference(since= "1.20.0-r2", info = "Do not save entities which marked as not savable with chunk.")
+    @PowerNukkitXDifference(since= "1.20.0-r3", info = "Do not save entities which marked as not savable with chunk.")
     public byte[] toBinary() {
         CompoundTag nbt = this.getNBT().copy();
         nbt.remove("BiomeColors");
