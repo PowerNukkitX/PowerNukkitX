@@ -114,8 +114,6 @@ public class EntityArrow extends SlenderProjectile {
             return false;
         }
 
-        this.timing.startTiming();
-
         boolean hasUpdate = super.onUpdate(currentTick);
 
         if (this.onGround || this.hadCollision) {
@@ -132,8 +130,6 @@ public class EntityArrow extends SlenderProjectile {
 
             hasUpdate = true;
         }
-
-        this.timing.stopTiming();
 
         return hasUpdate;
     }

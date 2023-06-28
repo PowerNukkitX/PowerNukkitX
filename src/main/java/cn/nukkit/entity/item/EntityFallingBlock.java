@@ -121,8 +121,6 @@ public class EntityFallingBlock extends Entity {
             return false;
         }
 
-        this.timing.startTiming();
-
         int tickDiff = currentTick - lastUpdate;
         if (tickDiff <= 0 && !justCreated) {
             return true;
@@ -229,8 +227,6 @@ public class EntityFallingBlock extends Entity {
 
             updateMovement();
         }
-
-        this.timing.stopTiming();
 
         return hasUpdate || !onGround || Math.abs(motionX) > 0.00001 || Math.abs(motionY) > 0.00001 || Math.abs(motionZ) > 0.00001;
     }

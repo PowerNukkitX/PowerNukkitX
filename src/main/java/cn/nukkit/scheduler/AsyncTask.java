@@ -2,7 +2,6 @@ package cn.nukkit.scheduler;
 
 import cn.nukkit.Server;
 import cn.nukkit.utils.ThreadStore;
-import co.aikar.timings.Timings;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.Queue;
@@ -79,7 +78,6 @@ public abstract class AsyncTask implements Runnable {
     }
 
     public static void collectTask() {
-        Timings.schedulerAsyncTimer.startTiming();
         while (!FINISHED_LIST.isEmpty()) {
             AsyncTask task = FINISHED_LIST.poll();
             try {
@@ -88,7 +86,6 @@ public abstract class AsyncTask implements Runnable {
                 log.fatal("Exception while async task {} invoking onCompletion", task.getTaskId(), e);
             }
         }
-        Timings.schedulerAsyncTimer.stopTiming();
     }
 
 }

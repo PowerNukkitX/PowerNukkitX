@@ -81,7 +81,6 @@ import cn.nukkit.spark.SparkInstaller;
 import cn.nukkit.utils.*;
 import cn.nukkit.utils.bugreport.ExceptionHandler;
 import cn.nukkit.utils.collection.FreezableArrayManager;
-import co.aikar.timings.Timings;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Files;
@@ -1025,7 +1024,6 @@ public class Server {
         this.enablePlugins(PluginLoadOrder.POSTWORLD);
         ServerStartedEvent serverStartedEvent = new ServerStartedEvent();
         getPluginManager().callEvent(serverStartedEvent);
-        Timings.reset();
     }
 
 
@@ -1110,7 +1108,6 @@ public class Server {
             this.computeThreadPool.shutdownNow();
 
             log.debug("Disabling timings");
-            Timings.stopServer();
             //todo other things
         } catch (Exception e) {
             log.fatal("Exception happened while shutting down, exiting the process", e);
@@ -1245,7 +1242,6 @@ public class Server {
 
     public void doAutoSave() {
         if (this.getAutoSave()) {
-            Timings.levelSaveTimer.startTiming();
             for (Player player : new ArrayList<>(this.players.values())) {
                 if (player.isOnline()) {
                     player.save(true);
@@ -1257,7 +1253,6 @@ public class Server {
             for (Level level : this.levelArray) {
                 level.save();
             }
-            Timings.levelSaveTimer.stopTiming();
             this.getScoreboardManager().save();
         }
     }
@@ -1280,21 +1275,14 @@ public class Server {
             return false;
         }
 
-        Timings.fullServerTickTimer.startTiming();
-
         ++this.tickCounter;
-
-        Timings.connectionTimer.startTiming();
         this.network.processInterfaces();
 
         if (this.rcon != null) {
             this.rcon.check();
         }
-        Timings.connectionTimer.stopTiming();
 
-        Timings.schedulerTimer.startTiming();
         this.scheduler.mainThreadHeartbeat(this.tickCounter);
-        Timings.schedulerTimer.stopTiming();
 
         this.checkTickUpdates(this.tickCounter, tickTime);
 
@@ -1344,8 +1332,6 @@ public class Server {
             freezableArrayManager.setMaxCompressionTime(freezableArrayCompressTime).tick();
         }
 
-
-        Timings.fullServerTickTimer.stopTiming();
         //long now = System.currentTimeMillis();
         long nowNano = System.nanoTime();
         //float tick = Math.min(20, 1000 / Math.max(1, now - tickTime));
@@ -1780,7 +1766,6 @@ public class Server {
             return;
         }
 
-        Timings.playerNetworkSendTimer.startTiming();
         byte[][] payload = new byte[packets.length * 2][];
         for (int i = 0; i < packets.length; i++) {
             DataPacket p = packets[i];
@@ -1813,7 +1798,6 @@ public class Server {
                 throw new RuntimeException(e);
             }
         }
-        Timings.playerNetworkSendTimer.stopTiming();
     }
 
     public void broadcastPacketsCallback(byte[] data, List<InetSocketAddress> targets) {
