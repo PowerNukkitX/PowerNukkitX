@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityCauldron;
@@ -20,6 +21,8 @@ import cn.nukkit.potion.Effect;
 import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
+@Deprecated(since = "1.20.0-r3")
+@DeprecationDetails(since = "1.20.0-r3", reason = "Use BlockCauldron instead")
 public class BlockCauldronLava extends BlockCauldron {
     @PowerNukkitOnly
     public BlockCauldronLava() {
