@@ -578,8 +578,8 @@ public abstract class Entity extends Location implements Metadatable {
     private volatile boolean initialized;
 
     @PowerNukkitXOnly
-    @Since("1.20.0-r2")
-    protected boolean saveWithChunk = true;
+    @Since("1.20.0-r3")
+    protected volatile boolean saveWithChunk = true;
 
     public Entity(FullChunk chunk, CompoundTag nbt) {
         if (this instanceof Player) {
@@ -1982,11 +1982,11 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     @PowerNukkitXOnly
-    @Since("1.20.0-r2")
+    @Since("1.20.0-r3")
     public boolean canBeSavedWithChunk() { return saveWithChunk; }
 
     @PowerNukkitXOnly
-    @Since("1.20.0-r2")
+    @Since("1.20.0-r3")
     public void setCanBeSavedWithChunk(boolean saveWithChunk) { this.saveWithChunk = saveWithChunk; }
 
     protected boolean checkObstruction(double x, double y, double z) {
