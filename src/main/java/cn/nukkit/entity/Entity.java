@@ -1986,7 +1986,7 @@ public abstract class Entity extends Location implements Metadatable {
     public boolean canBeSavedWithChunk() { return saveWithChunk; }
 
     @PowerNukkitXOnly
-    @Since("1.20.0-PNX")
+    @Since("1.20.0-r2")
     public void setCanBeSavedWithChunk(boolean saveWithChunk) { this.saveWithChunk = saveWithChunk; }
 
     protected boolean checkObstruction(double x, double y, double z) {
