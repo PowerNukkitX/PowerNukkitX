@@ -71,7 +71,7 @@ public class Scoreboard implements IScoreboard{
 
     @Override
     public boolean addViewer(IScoreboardViewer viewer, DisplaySlot slot) {
-        boolean added =  this.viewers.get(slot).add(viewer);
+        boolean added = this.viewers.get(slot).add(viewer);
         if (added) viewer.display(this, slot);
         return added;
     }
