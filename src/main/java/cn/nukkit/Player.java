@@ -2262,6 +2262,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.server.addOp(this.getName());
         } else {
             this.server.removeOp(this.getName());
+            this.adventureSettings.set(PlayerAbility.TELEPORT, false);
+            this.adventureSettings.set(PlayerAbility.OPERATOR_COMMANDS, false);
+            this.adventureSettings.update();
         }
     }
 
