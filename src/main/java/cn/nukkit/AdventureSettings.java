@@ -165,10 +165,10 @@ public class AdventureSettings implements Cloneable {
         if (op) {
             for (PlayerAbility controllableAbility : RequestPermissionsPacket.CONTROLLABLE_ABILITIES)
                 set(controllableAbility, true);
-            //设置op特有属性
-            set(Type.OPERATOR, true);
-            set(Type.TELEPORT, true);
         }
+        //设置op特有属性
+        set(Type.OPERATOR, op);
+        set(Type.TELEPORT, op);
 
         commandPermission = op ? CommandPermission.OPERATOR : CommandPermission.NORMAL;
         //不要覆盖自定义/访客状态
