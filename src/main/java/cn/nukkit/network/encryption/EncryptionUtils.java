@@ -1,5 +1,6 @@
 package cn.nukkit.network.encryption;
 
+import cn.nukkit.api.PowerNukkitXOnly;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
@@ -26,9 +27,16 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
 import java.util.Base64;
 
+@PowerNukkitXOnly
 public final class EncryptionUtils {
 
+    private static final ECPublicKey MOJANG_PUBLIC_KEY;
+    private static final ECPublicKey OLD_MOJANG_PUBLIC_KEY;
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
+    private static final String MOJANG_PUBLIC_KEY_BASE64 =
+            "MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAECRXueJeTDqNRRgJi/vlRufByu/2G0i2Ebt6YMar5QX/R0DIIyrJMcUpruK4QveTfJSTp3Shlq4Gk34cD/4GUWwkv0DVuzeuB+tXija7HBxii03NHDbPAD0AKnLr2wdAp";
+    private static final String OLD_MOJANG_PUBLIC_KEY_BASE64 =
+            "MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAE8ELkixyLcwlZryUQcu1TvPOmI2B7vX83ndnWRUaXm74wFfa5f/lwQNTfrLVHa2PmenpGI6JhIMUJaWZrjmMj90NoKNFSNBuKdm8rYiXsfaz3K36x/1U26HpG0ZxK/V1V";
     private static final KeyPairGenerator KEY_PAIR_GEN;
 
     static {
@@ -40,7 +48,10 @@ public final class EncryptionUtils {
         try {
             KEY_PAIR_GEN = KeyPairGenerator.getInstance("EC");
             KEY_PAIR_GEN.initialize(new ECGenParameterSpec("secp384r1"));
-        } catch (NoSuchAlgorithmException | InvalidAlgorithmParameterException e) {
+
+            MOJANG_PUBLIC_KEY = generateKey(MOJANG_PUBLIC_KEY_BASE64);
+            OLD_MOJANG_PUBLIC_KEY = generateKey(OLD_MOJANG_PUBLIC_KEY_BASE64);
+        } catch (Exception e) {
             throw new AssertionError("Unable to initialize required encryption", e);
         }
     }
@@ -109,6 +120,14 @@ public final class EncryptionUtils {
         byte[] token = new byte[16];
         SECURE_RANDOM.nextBytes(token);
         return token;
+    }
+
+    public static ECPublicKey getMojangPublicKey() {
+        return MOJANG_PUBLIC_KEY;
+    }
+
+    public static ECPublicKey getOldMojangPublicKey() {
+        return OLD_MOJANG_PUBLIC_KEY;
     }
 
     public static Cipher createCipher(boolean gcm, boolean encrypt, SecretKey key) {
