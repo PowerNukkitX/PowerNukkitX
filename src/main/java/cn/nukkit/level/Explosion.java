@@ -212,7 +212,7 @@ public class Explosion {
      * @return {@code false} if explosion was canceled, otherwise {@code true}
      */
     @PowerNukkitDifference(info = "Using new method to play sounds", since = "1.4.0.0-PN")
-    @PowerNukkitXDifference(info = "Reduce explosion damage if entities behind blocks", since = "1.20.0-r2")
+    @PowerNukkitXDifference(info = "Reduce explosion damage if entities behind blocks", since = "1.20.0-r3")
     public boolean explodeB() {
 
         LongArraySet updateBlocks = new LongArraySet();

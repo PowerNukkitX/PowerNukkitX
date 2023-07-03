@@ -5283,18 +5283,16 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     @PowerNukkitXOnly
-    @Since("1.20.0-r2")
-    public boolean isRayCollidingWithBlocks(Vector3 src, Vector3 dst, double stepSize) {
-        Vector3 direction = new Vector3(dst.x - src.x, dst.y - src.y, dst.z - src.z);
-        double length = Math.sqrt(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
-        Vector3 normalizedDirection = direction.multiply(1 / length);
+    @Since("1.20.0-r3")
+    public boolean isRayCollidingWithBlocks(double srcX, double srcY, double srcZ, double dstX, double dstY, double dstZ, double stepSize) {
+        Vector3 direction = new Vector3(dstX - srcX, dstY - srcY, dstZ - srcZ);
+        double length = direction.length();
+        Vector3 normalizedDirection = direction.divide(length);
 
-        Vector3 currentPosition;
         for (double t = 0.0; t < length; t += stepSize) {
-            currentPosition = src.add(normalizedDirection.multiply(t));
-            int x = (int) Math.round(currentPosition.x);
-            int y = (int) Math.round(currentPosition.y);
-            int z = (int) Math.round(currentPosition.z);
+            int x = (int) Math.round(srcX + normalizedDirection.x * t);
+            int y = (int) Math.round(srcY + normalizedDirection.y * t);
+            int z = (int) Math.round(srcZ + normalizedDirection.z * t);
 
             Block block = getBlock(x, y, z);
             if (block != null && block.getCollisionBoundingBox() != null) {
@@ -5309,7 +5307,7 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     @PowerNukkitXOnly
-    @Since("1.20.0-r2")
+    @Since("1.20.0-r3")
     public float getBlockDensity(Vector3 source, AxisAlignedBB boundingBox) {
         double xInterval = 1 / ((boundingBox.getMaxX() - boundingBox.getMinX()) * 2 + 1);
         double yInterval = 1 / ((boundingBox.getMaxY() - boundingBox.getMinY()) * 2 + 1);
@@ -5328,7 +5326,7 @@ public class Level implements ChunkManager, Metadatable {
                         double blockY = boundingBox.getMinY() + (boundingBox.getMaxY() - boundingBox.getMinY()) * (double) y;
                         double blockZ = boundingBox.getMinZ() + (boundingBox.getMaxZ() - boundingBox.getMinZ()) * (double) z;
 
-                        if (this.isRayCollidingWithBlocks(source, new Vector3(blockX + xOffset, blockY, blockZ + zOffset), 0.3)) {
+                        if (this.isRayCollidingWithBlocks(source.x, source.y, source.z, blockX + xOffset, blockY, blockZ + zOffset, 0.3)) {
                             visibleBlocks++;
                         }
 
