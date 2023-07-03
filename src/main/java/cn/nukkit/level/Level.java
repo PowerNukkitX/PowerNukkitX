@@ -5283,6 +5283,65 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     @PowerNukkitXOnly
+    public boolean isRayCollidingWithBlocks(Vector3 src, Vector3 dst, double stepSize) {
+        Vector3 direction = new Vector3(dst.x - src.x, dst.y - src.y, dst.z - src.z);
+        double length = Math.sqrt(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
+        Vector3 normalizedDirection = direction.multiply(1 / length);
+
+        Vector3 currentPosition;
+        for (double t = 0.0; t < length; t += stepSize) {
+            currentPosition = src.add(normalizedDirection.multiply(t));
+            int x = (int) Math.round(currentPosition.x);
+            int y = (int) Math.round(currentPosition.y);
+            int z = (int) Math.round(currentPosition.z);
+
+            Block block = getBlock(x, y, z);
+            if (block != null && block.getCollisionBoundingBox() != null) {
+                AxisAlignedBB bb = block.getCollisionBoundingBox();
+                if (bb.isVectorInside(x, y, z)) {
+                    return true;
+                }
+            }
+        }
+
+        return false; // No collision with any blocks
+    }
+
+    @PowerNukkitXOnly
+    public float getBlockDensity(Vector3 source, AxisAlignedBB boundingBox) {
+        double xInterval = 1 / ((boundingBox.getMaxX() - boundingBox.getMinX()) * 2 + 1);
+        double yInterval = 1 / ((boundingBox.getMaxY() - boundingBox.getMinY()) * 2 + 1);
+        double zInterval = 1 / ((boundingBox.getMaxZ() - boundingBox.getMinZ()) * 2 + 1);
+        double xOffset = (1 - Math.floor(1 / xInterval) * xInterval) / 2;
+        double zOffset = (1 - Math.floor(1 / zInterval) * zInterval) / 2;
+
+        if (xInterval >= 0 && yInterval >= 0 && zInterval >= 0) {
+            int visibleBlocks = 0;
+            int totalBlocks = 0;
+
+            for (float x = 0; x <= 1; x = (float) ((double) x + xInterval)) {
+                for (float y = 0; y <= 1; y = (float) ((double) y + yInterval)) {
+                    for (float z = 0; z <= 1; z = (float) ((double) z + zInterval)) {
+                        double blockX = boundingBox.getMinX() + (boundingBox.getMaxX() - boundingBox.getMinX()) * (double) x;
+                        double blockY = boundingBox.getMinY() + (boundingBox.getMaxY() - boundingBox.getMinY()) * (double) y;
+                        double blockZ = boundingBox.getMinZ() + (boundingBox.getMaxZ() - boundingBox.getMinZ()) * (double) z;
+
+                        if (this.isRayCollidingWithBlocks(source, new Vector3(blockX + xOffset, blockY, blockZ + zOffset), 0.3)) {
+                            visibleBlocks++;
+                        }
+
+                        totalBlocks++;
+                    }
+                }
+            }
+
+            return (float) visibleBlocks / (float) totalBlocks;
+        } else {
+            return 0;
+        }
+    }
+
+    @PowerNukkitXOnly
     @Since("1.19.21-r3")
     public VibrationManager getVibrationManager() {
         return this.vibrationManager;

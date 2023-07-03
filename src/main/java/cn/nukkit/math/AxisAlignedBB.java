@@ -1,6 +1,7 @@
 package cn.nukkit.math;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.level.MovingObjectPosition;
 
@@ -186,7 +187,11 @@ public interface AxisAlignedBB extends Cloneable {
 
     default boolean isVectorInside(Vector3 vector) {
         return vector.x >= this.getMinX() && vector.x <= this.getMaxX() && vector.y >= this.getMinY() && vector.y <= this.getMaxY() && vector.z >= this.getMinZ() && vector.z <= this.getMaxZ();
+    }
 
+    @PowerNukkitXOnly
+    default boolean isVectorInside(double x, double y, double z) {
+        return x >= this.getMinX() && x <= this.getMaxX() && y >= this.getMinY() && y <= this.getMaxY() && z >= this.getMinZ() && z <= this.getMaxZ();
     }
 
     default double getAverageEdgeLength() {
