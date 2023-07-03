@@ -5283,6 +5283,7 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     @PowerNukkitXOnly
+    @Since("1.20.0-r2")
     public boolean isRayCollidingWithBlocks(Vector3 src, Vector3 dst, double stepSize) {
         Vector3 direction = new Vector3(dst.x - src.x, dst.y - src.y, dst.z - src.z);
         double length = Math.sqrt(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
@@ -5308,6 +5309,7 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     @PowerNukkitXOnly
+    @Since("1.20.0-r2")
     public float getBlockDensity(Vector3 source, AxisAlignedBB boundingBox) {
         double xInterval = 1 / ((boundingBox.getMaxX() - boundingBox.getMinX()) * 2 + 1);
         double yInterval = 1 / ((boundingBox.getMaxY() - boundingBox.getMinY()) * 2 + 1);

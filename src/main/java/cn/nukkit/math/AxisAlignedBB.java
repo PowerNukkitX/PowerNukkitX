@@ -190,6 +190,7 @@ public interface AxisAlignedBB extends Cloneable {
     }
 
     @PowerNukkitXOnly
+    @Since("1.20.0-r2")
     default boolean isVectorInside(double x, double y, double z) {
         return x >= this.getMinX() && x <= this.getMaxX() && y >= this.getMinY() && y <= this.getMaxY() && z >= this.getMinZ() && z <= this.getMaxZ();
     }
