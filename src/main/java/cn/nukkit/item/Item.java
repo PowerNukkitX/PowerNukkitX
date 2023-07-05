@@ -420,6 +420,7 @@ public class Item implements Cloneable, BlockID, ItemID {
             list[ACACIA_CHEST_BOAT] = ItemChestBoatAcacia.class; //642
             list[DARK_OAK_CHEST_BOAT] = ItemChestBoatDarkOak.class; //643
             list[MANGROVE_CHEST_BOAT] = ItemChestBoatMangrove.class; //644
+            list[BAMBOO_CHEST_RAFT] = ItemChestRaftBamboo.class; //661
 
             list[ECHO_SHARD] = ItemEchoShard.class; //647
 
