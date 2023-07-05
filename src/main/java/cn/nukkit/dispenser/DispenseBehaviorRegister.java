@@ -42,6 +42,7 @@ public final class DispenseBehaviorRegister {
         registerBehavior(ItemID.SPRUCE_CHEST_BOAT, new ChestBoatDispenseBehavior());
         registerBehavior(ItemID.OAK_CHEST_BOAT, new ChestBoatDispenseBehavior());
         registerBehavior(ItemID.MANGROVE_CHEST_BOAT, new ChestBoatDispenseBehavior());
+        registerBehavior(ItemID.BAMBOO_CHEST_RAFT, new ChestBoatDispenseBehavior());
         registerBehavior(ItemID.BOAT, new BoatDispenseBehavior());
         registerBehavior(ItemID.BUCKET, new BucketDispenseBehavior());
         registerBehavior(ItemID.DYE, new DyeDispenseBehavior());
