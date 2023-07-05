@@ -69,7 +69,7 @@ public class ItemBoat extends Item {
                 name = "Mangrove Boat";
                 return;
             case 7:
-                name = "Bamboo raft";
+                name = "Bamboo Raft";
                 return;
             default:
                 name = "Boat";
