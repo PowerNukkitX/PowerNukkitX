@@ -223,9 +223,9 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>cn.powernukkitx</groupId>
+            <groupId>dev.minjae</groupId>
             <artifactId>PowerNukkitX-JUnit5-Framework</artifactId>
-            <version>0.0.3</version>
+            <version>7d63bbf621</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
