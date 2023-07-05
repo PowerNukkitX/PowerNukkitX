@@ -68,6 +68,9 @@ public class ItemBoat extends Item {
             case 6:
                 name = "Mangrove Boat";
                 return;
+            case 7:
+                name = "Bamboo Boat";
+                return;
             default:
                 name = "Boat";
         }
