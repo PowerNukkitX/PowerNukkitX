@@ -19,6 +19,6 @@ public class ItemChestRaftBamboo extends ItemChestBoatBase {
 
     @Override
     public int getBoatId() {
-        return 4;
+        return 7;
     }
 }
