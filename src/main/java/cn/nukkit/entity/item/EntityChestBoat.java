@@ -140,6 +140,7 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
             case 4 -> this.level.dropItem(this, Item.get(ItemID.ACACIA_CHEST_BOAT));
             case 5 -> this.level.dropItem(this, Item.get(ItemID.DARK_OAK_CHEST_BOAT));
             case 6 -> this.level.dropItem(this, Item.get(ItemID.MANGROVE_CHEST_BOAT));
+            case 7 -> this.level.dropItem(this, Item.get(ItemID.BAMBOO_CHEST_RAFT));
             default -> this.level.dropItem(this, Item.get(ItemID.CHEST_BOAT));
         }
 
