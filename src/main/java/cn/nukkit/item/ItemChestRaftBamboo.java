@@ -10,7 +10,7 @@ public class ItemChestRaftBamboo extends ItemChestBoatBase {
     }
 
     public ItemChestRaftBamboo(Integer meta, int count) {
-        this(ACACIA_CHEST_BOAT, meta, count, "Bamboo Chest Raft");
+        this(BAMBOO_CHEST_RAFT, meta, count, "Bamboo Chest Raft");
     }
 
     protected ItemChestRaftBamboo(int id, Integer meta, int count, String name) {
