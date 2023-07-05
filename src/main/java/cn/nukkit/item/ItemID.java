@@ -325,12 +325,11 @@ public interface ItemID {
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    int BAMBOO_CHEST_RAFT = 639; //Minecraft ID https://wiki.biligame.com/mc/%E8%88%B9#%E6%95%B0%E6%8D%AE%E5%80%BC
-
+    int BAMBOO_CHEST_RAFT = 661;
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    int CHEST_BOAT = 645;
+    int CHEST_BOAT = 646;
     @PowerNukkitXOnly
     @Since("1.19.50-r1")
     int ECHO_SHARD = 647;
