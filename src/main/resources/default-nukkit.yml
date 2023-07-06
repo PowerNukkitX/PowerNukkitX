@@ -7,6 +7,7 @@ settings:
  async-workers: auto
  safe-spawn: true
  waterdogpe: false
+ download-spark: true
 
 network:
  maximum-stale-datagrams: 512
@@ -21,17 +22,6 @@ debug:
  commands: false
  ignored-packets:
   - LevelChunkPacket
-
-timings:
- completely-close: false
- enabled: false
- verbose: false
- history-interval: 6000
- history-length: 72000
- bypass-max: false
- privacy: false
- ignore: []
- download-spark: false
 
 level-settings:
  default-format: anvil
