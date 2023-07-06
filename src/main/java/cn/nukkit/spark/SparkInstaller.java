@@ -1,6 +1,8 @@
 package cn.nukkit.spark;
 
 import cn.nukkit.Server;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.plugin.Plugin;
 
 import javax.annotation.Nonnull;
@@ -12,6 +14,8 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.security.MessageDigest;
 
+@PowerNukkitXOnly
+@Since("1.20.0-r3")
 public class SparkInstaller {
 
     public static boolean initSpark(@Nonnull Server server) {
