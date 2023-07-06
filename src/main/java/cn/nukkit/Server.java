@@ -952,12 +952,7 @@ public class Server {
 
         this.enablePlugins(PluginLoadOrder.POSTWORLD);
 
-        if (!this.getConfig("timings.completely-close", false)) {
-            Server.getInstance().getLogger().alert("Timings has been deprecated and will be replaced by Spark profiler.");
-            Server.getInstance().getLogger().alert("Download Spark profiler from here: https://sparkapi.lucko.me/download/nukkit");
-        }
-
-        if (this.getConfig("timings.download-spark", false)) {
+        if (this.getConfig("settings.download-spark", false)) {
             SparkInstaller.initSpark(this);
         }
 
@@ -1106,8 +1101,6 @@ public class Server {
             NukkitMetrics.closeNow(this);
             //close computeThreadPool
             this.computeThreadPool.shutdownNow();
-
-            log.debug("Disabling timings");
             //todo other things
         } catch (Exception e) {
             log.fatal("Exception happened while shutting down, exiting the process", e);
