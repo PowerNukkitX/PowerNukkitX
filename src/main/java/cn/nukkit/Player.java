@@ -75,8 +75,6 @@ import cn.nukkit.scoreboard.scoreboard.IScoreboard;
 import cn.nukkit.scoreboard.scoreboard.IScoreboardLine;
 import cn.nukkit.scoreboard.scorer.PlayerScorer;
 import cn.nukkit.utils.*;
-import co.aikar.timings.Timing;
-import co.aikar.timings.Timings;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.base.Strings;
@@ -716,8 +714,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return;
         }
 
-        Timings.playerChunkSendTimer.startTiming();
-
         if (!loadQueue.isEmpty()) {
             int count = 0;
             ObjectIterator<Long2ObjectMap.Entry<Boolean>> iter = loadQueue.long2ObjectEntrySet().fastIterator();
@@ -754,7 +750,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (this.chunkLoadCount >= this.spawnThreshold && !this.spawned && loggedIn) {
             this.doFirstSpawn();
         }
-        Timings.playerChunkSendTimer.stopTiming();
     }
 
     @Override
@@ -855,8 +850,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return false;
         }
 
-        Timings.playerChunkOrderTimer.startTiming();
-
         this.nextChunkOrderRun = 200;
 
         loadQueue.clear();
@@ -941,8 +934,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             packet.radius = viewDistance << 4;
             this.dataPacket(packet);
         }
-
-        Timings.playerChunkOrderTimer.stopTiming();
         return true;
     }
 
@@ -2767,19 +2758,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (!this.connected) {
             return false;
         }
-
-        try (Timing ignored = Timings.getSendDataPacketTiming(packet)) {
-            DataPacketSendEvent ev = new DataPacketSendEvent(this, packet);
-            this.server.getPluginManager().callEvent(ev);
-            if (ev.isCancelled()) {
-                return false;
-            }
-
-            if (log.isTraceEnabled() && !server.isIgnoredPacket(packet.getClass())) {
-                log.trace("Outbound {}: {}", this.getName(), packet);
-            }
-            this.getNetworkSession().sendPacket(packet);
+        DataPacketSendEvent ev = new DataPacketSendEvent(this, packet);
+        this.server.getPluginManager().callEvent(ev);
+        if (ev.isCancelled()) {
+            return false;
         }
+        if (log.isTraceEnabled() && !server.isIgnoredPacket(packet.getClass())) {
+            log.trace("Outbound {}: {}", this.getName(), packet);
+        }
+        this.getNetworkSession().sendPacket(packet);
         return true;
     }
 
@@ -3073,7 +3060,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @Override
     public boolean fastMove(double dx, double dy, double dz) {
-        Timings.entityMoveTimer.startTiming();
 
         this.x += dx;
         this.y += dy;
@@ -3091,8 +3077,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.isCollided = this.onGround;
             this.updateFallState(this.onGround);
         }
-
-        Timings.entityMoveTimer.stopTiming();
         return true;
     }
 
@@ -3386,8 +3370,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @return Entity|null    如果没有找到实体，则为NULL，或者是实体的一个实例。<br>either NULL if no entity is found or an instance of the entity
      */
     public EntityInteractable getEntityPlayerLookingAt(int maxDistance) {
-        timing.startTiming();
-
         EntityInteractable entity = null;
 
         // just a fix because player MAY not be fully initialized
@@ -3411,8 +3393,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 // nothing to log here!
             }
         }
-
-        timing.stopTiming();
 
         return entity;
     }
@@ -3462,26 +3442,22 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return;
         }
 
-        try (Timing ignored = Timings.getReceiveDataPacketTiming(packet)) {
-            DataPacketReceiveEvent ev = new DataPacketReceiveEvent(this, packet);
-            this.server.getPluginManager().callEvent(ev);
-            if (ev.isCancelled()) {
-                return;
-            }
 
-            if (packet.packetId() == ProtocolInfo.toNewProtocolID(ProtocolInfo.BATCH_PACKET)) {
-                List<DataPacket> dataPackets = unpackBatchedPackets((BatchPacket) packet);
-                dataPackets.forEach(this::handleDataPacket);
-                return;
-            }
-
-            if (log.isTraceEnabled() && !server.isIgnoredPacket(packet.getClass())) {
-                log.trace("Inbound {}: {}", this.getName(), packet);
-            }
-
-            if (DataPacketManager.canProcess(packet.getProtocolUsed(), packet.packetId())) {
-                DataPacketManager.processPacket(this.playerHandle, packet);
-            }
+        DataPacketReceiveEvent ev = new DataPacketReceiveEvent(this, packet);
+        this.server.getPluginManager().callEvent(ev);
+        if (ev.isCancelled()) {
+            return;
+        }
+        if (packet.packetId() == ProtocolInfo.toNewProtocolID(ProtocolInfo.BATCH_PACKET)) {
+            List<DataPacket> dataPackets = unpackBatchedPackets((BatchPacket) packet);
+            dataPackets.forEach(this::handleDataPacket);
+            return;
+        }
+        if (log.isTraceEnabled() && !server.isIgnoredPacket(packet.getClass())) {
+            log.trace("Inbound {}: {}", this.getName(), packet);
+        }
+        if (DataPacketManager.canProcess(packet.getProtocolUsed(), packet.packetId())) {
+            DataPacketManager.processPacket(this.playerHandle, packet);
         }
     }
 
@@ -5970,20 +5946,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (!this.connected) {
             return false;
         }
-
-        try (Timing ignored = Timings.getSendDataPacketTiming(packet)) {
-            DataPacketSendEvent ev = new DataPacketSendEvent(this, packet);
-            this.server.getPluginManager().callEvent(ev);
-            if (ev.isCancelled()) {
-                return false;
-            }
-
-            if (log.isTraceEnabled() && !server.isIgnoredPacket(packet.getClass())) {
-                log.trace("Immediate Outbound {}: {}", this.getName(), packet);
-            }
-            this.getNetworkSession().sendImmediatePacket(packet);
+        DataPacketSendEvent ev = new DataPacketSendEvent(this, packet);
+        this.server.getPluginManager().callEvent(ev);
+        if (ev.isCancelled()) {
+            return false;
         }
-
+        if (log.isTraceEnabled() && !server.isIgnoredPacket(packet.getClass())) {
+            log.trace("Immediate Outbound {}: {}", this.getName(), packet);
+        }
+        this.getNetworkSession().sendImmediatePacket(packet);
         return true;
     }
 
@@ -5993,21 +5964,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (!this.connected) {
             return false;
         }
-
-        try (Timing ignored = Timings.getSendDataPacketTiming(packet)) {
-            DataPacketSendEvent ev = new DataPacketSendEvent(this, packet);
-            this.server.getPluginManager().callEvent(ev);
-            if (ev.isCancelled()) {
-                return false;
-            }
-
-            if (log.isTraceEnabled() && !server.isIgnoredPacket(packet.getClass())) {
-                log.trace("Resource Outbound {}: {}", this.getName(), packet);
-            }
-
-            this.interfaz.putResourcePacket(this, packet);
+        DataPacketSendEvent ev = new DataPacketSendEvent(this, packet);
+        this.server.getPluginManager().callEvent(ev);
+        if (ev.isCancelled()) {
+            return false;
         }
-
+        if (log.isTraceEnabled() && !server.isIgnoredPacket(packet.getClass())) {
+            log.trace("Resource Outbound {}: {}", this.getName(), packet);
+        }
+        this.interfaz.putResourcePacket(this, packet);
         return true;
     }
 

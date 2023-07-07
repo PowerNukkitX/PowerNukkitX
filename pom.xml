@@ -225,7 +225,7 @@
         <dependency>
             <groupId>cn.powernukkitx</groupId>
             <artifactId>PowerNukkitX-JUnit5-Framework</artifactId>
-            <version>0.0.3</version>
+            <version>0.0.4.1</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
