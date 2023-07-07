@@ -7,6 +7,7 @@ import cn.nukkit.api.Since;
 /**
  * Controls the major group of custom items in the creative inventory.
  * <br>Possible values:
+ * 0. NONE
  * 1. ANVIL
  * 2. ARROW
  * 3. AXE
