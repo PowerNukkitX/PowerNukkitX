@@ -456,7 +456,7 @@ public class Chunk extends BaseChunk {
 
         ArrayList<CompoundTag> entities = new ArrayList<>();
         for (Entity entity : this.getEntities().values()) {
-            if (!(entity instanceof Player) && !entity.closed) {
+            if (!(entity instanceof Player) && !entity.closed && entity.canBeSavedWithChunk()) {
                 entity.saveNBT();
                 entities.add(entity.namedTag);
             }
@@ -516,6 +516,7 @@ public class Chunk extends BaseChunk {
     }
 
     @Override
+    @PowerNukkitXDifference(since= "1.20.0-r3", info = "Do not save entities which marked as not savable with chunk.")
     public byte[] toBinary() {
         CompoundTag nbt = this.getNBT().copy();
         nbt.remove("BiomeColors");
@@ -539,7 +540,7 @@ public class Chunk extends BaseChunk {
 
         ArrayList<CompoundTag> entities = new ArrayList<>();
         for (Entity entity : this.getEntities().values()) {
-            if (!(entity instanceof Player) && !entity.closed) {
+            if (!(entity instanceof Player) && !entity.closed && entity.canBeSavedWithChunk()) {
                 entity.saveNBT();
                 entities.add(entity.namedTag);
             }

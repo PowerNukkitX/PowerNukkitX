@@ -7,6 +7,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.item.customitem.data.DigProperty;
 import cn.nukkit.item.customitem.data.ItemCreativeCategory;
+import cn.nukkit.item.customitem.data.ItemCreativeGroup;
 import cn.nukkit.item.customitem.data.RenderOffsets;
 import cn.nukkit.item.food.Food;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -146,7 +147,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
             this.nbt.getCompound("components")
                     .getCompound("item_properties")//1 none
                     .putInt("creative_category", creativeCategory.ordinal() + 1)
-                    .putString("creative_group", "none");
+                    .putString("creative_group", ItemCreativeGroup.NONE.getGroupName());
         }
 
         /**
@@ -198,6 +199,20 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
             this.nbt.getCompound("components")
                     .getCompound("item_properties")
                     .putString("creative_group", creativeGroup);
+            return this;
+        }
+
+        /**
+         * 控制自定义物品在创造栏的分组,例如所有的附魔书是一组
+         * <p>
+         * Control the grouping of custom items in the creation inventory, e.g. all enchantment books are grouped together
+         *
+         * @see <a href="https://wiki.bedrock.dev/documentation/creative-categories.html#list-of-creative-categories">bedrock wiki</a>
+         */
+        public SimpleBuilder creativeGroup(ItemCreativeGroup creativeGroup) {
+            this.nbt.getCompound("components")
+                    .getCompound("item_properties")
+                    .putString("creative_group", creativeGroup.getGroupName());
             return this;
         }
 

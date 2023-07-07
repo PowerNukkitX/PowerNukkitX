@@ -573,6 +573,10 @@ public abstract class Entity extends Location implements Metadatable {
     private int maxHealth = 20;
     private volatile boolean initialized;
 
+    @PowerNukkitXOnly
+    @Since("1.20.0-r3")
+    protected volatile boolean saveWithChunk = true;
+
     public Entity(FullChunk chunk, CompoundTag nbt) {
         if (this instanceof Player) {
             return;
@@ -1970,6 +1974,14 @@ public abstract class Entity extends Location implements Metadatable {
     public boolean canCollideWith(Entity entity) {
         return !this.justCreated && this != entity && !this.noClip;
     }
+
+    @PowerNukkitXOnly
+    @Since("1.20.0-r3")
+    public boolean canBeSavedWithChunk() { return saveWithChunk; }
+
+    @PowerNukkitXOnly
+    @Since("1.20.0-r3")
+    public void setCanBeSavedWithChunk(boolean saveWithChunk) { this.saveWithChunk = saveWithChunk; }
 
     protected boolean checkObstruction(double x, double y, double z) {
         if (this.level.fastCollisionCubes(this, this.getBoundingBox(), false).size() == 0 || this.noClip) {
