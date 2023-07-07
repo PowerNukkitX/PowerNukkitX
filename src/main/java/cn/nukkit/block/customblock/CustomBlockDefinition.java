@@ -5,6 +5,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.customblock.data.*;
 import cn.nukkit.blockproperty.*;
+import cn.nukkit.item.customitem.data.ItemCreativeGroup;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.*;
@@ -124,6 +125,18 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
                 return this;
             }
             this.nbt.getCompound("components").getCompound("menu_category").putString("group", creativeGroup.toLowerCase(Locale.ENGLISH));
+            return this;
+        }
+
+        /**
+         * 控制自定义方块在创造栏中的组。
+         * <p>
+         * Control the grouping of custom blocks in the creation inventory.
+         *
+         * @see <a href="https://wiki.bedrock.dev/documentation/creative-categories.html">wiki.bedrock.dev</a>
+         */
+        public Builder creativeGroup(ItemCreativeGroup creativeGroup) {
+            this.nbt.getCompound("components").getCompound("menu_category").putString("group", creativeGroup.getGroupName());
             return this;
         }
 
