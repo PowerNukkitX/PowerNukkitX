@@ -147,7 +147,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
             this.nbt.getCompound("components")
                     .getCompound("item_properties")//1 none
                     .putInt("creative_category", creativeCategory.ordinal() + 1)
-                    .putString("creative_group", "none");
+                    .putString("creative_group", ItemCreativeGroup.NONE.getGroupName());
         }
 
         /**
