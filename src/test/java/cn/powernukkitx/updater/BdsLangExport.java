@@ -53,7 +53,7 @@ public class BdsLangExport {
                                     i++;
                                 }
                             }
-                            var str = builder.toString().replace(" ", " ");
+                            var str = builder.toString().replace("\u00A0", " ");
                             var last = str.indexOf('#');
                             return str.substring(0, last == -1 ? str.length() : last);
                         });
