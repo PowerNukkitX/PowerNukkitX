@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
 public class BdsLangExport {
-    static final String TARGET = "D:/Minecraft/bedrock-server-1.20.0.01/resource_packs/vanilla/texts";
+    static final String TARGET = "D:/Minecraft/bedrock-server-1.20.1.02/resource_packs/vanilla/texts";
     static Pattern pattern = Pattern.compile("%[0-9]");
 
     public static void main(String[] args) throws IOException, URISyntaxException {
@@ -53,7 +53,7 @@ public class BdsLangExport {
                                     i++;
                                 }
                             }
-                            var str = builder.toString();
+                            var str = builder.toString().replace("\u00A0", " ");
                             var last = str.indexOf('#');
                             return str.substring(0, last == -1 ? str.length() : last);
                         });
@@ -93,7 +93,7 @@ public class BdsLangExport {
             case "deu" -> Path.of(targetFile).resolve("de_DE.lang");
             case "fin" -> Path.of(targetFile).resolve("fi_FI.lang");
             case "eng" -> Path.of(targetFile).resolve("en_US.lang");
-            case "fra" -> Path.of(targetFile).resolve("en_US.lang");
+            case "fra" -> Path.of(targetFile).resolve("fr_FR.lang");
             case "idn" -> Path.of(targetFile).resolve("id_ID.lang");
             case "jpn" -> Path.of(targetFile).resolve("ja_JP.lang");
             case "kor" -> Path.of(targetFile).resolve("ko_KR.lang");
