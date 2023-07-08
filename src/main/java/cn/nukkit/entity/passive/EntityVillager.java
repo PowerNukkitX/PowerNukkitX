@@ -30,11 +30,13 @@ import cn.nukkit.inventory.TradeInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.BlockVector3;
+import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
 import lombok.Getter;
+
 
 import java.util.Random;
 import java.util.Set;
@@ -46,7 +48,7 @@ public class EntityVillager extends EntityIntelligent implements InventoryHolder
      * 代表交易配方
      */
     @Getter
-    public ListTag<Tag> recipes = new ListTag<>("Recipes");
+    protected ListTag<Tag> recipes = new ListTag<>("Recipes");
     /**
      * 用于控制村民的等级成长所需要的经验
      * 例如[0,10,20,30,40] 村民达到1级所需经验0,2级为10,这里的经验是{@link EntityVillager#tradeExp}.
@@ -110,35 +112,11 @@ public class EntityVillager extends EntityIntelligent implements InventoryHolder
     public IBehaviorGroup requireBehaviorGroup() {
         return new BehaviorGroup(
                 this.tickSpread,
+                Set.of(),
                 Set.of(
-                        //用于刷新InLove状态的核心行为
-                        new Behavior(
-                                new InLoveExecutor(400),
-                                all(
-                                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_FEED_TIME, 0, 400),
-                                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE)
-                                ),
-                                1, 1
-                        ),
-                        //生长
-                        new Behavior(
-                                new AnimalGrowExecutor(),
-                                //todo：Growth rate
-                                all(
-                                        new PassByTimeEvaluator(CoreMemoryTypes.ENTITY_SPAWN_TIME, 20 * 60 * 20, Integer.MAX_VALUE),
-                                        entity -> entity instanceof EntityAnimal animal && animal.isBaby()
-                                )
-                                , 1, 1, 1200
-                        )
-                ),
-                Set.of(
-                        new Behavior(new FlatRandomRoamExecutor(0.4f, 12, 40, true, 100, true, 10), new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100), 4, 1),
-                        new Behavior(new EntityBreedingExecutor<>(EntityPig.class, 16, 100, 0.5f), entity -> entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE), 3, 1),
-                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_FEEDING_PLAYER, 0.4f, true), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_FEEDING_PLAYER), 2, 1),
-                        new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100), new ProbabilityEvaluator(4, 10), 1, 1, 100),
                         new Behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
                 ),
-                Set.of(new NearestFeedingPlayerSensor(8, 0), new NearestPlayerSensor(8, 0, 20)),
+                Set.of(),
                 Set.of(new WalkController(), new LookController(true, true), new FluctuateController()),
                 new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
                 this
@@ -191,7 +169,7 @@ public class EntityVillager extends EntityIntelligent implements InventoryHolder
             this.setDataProperty(new IntEntityData(DATA_VARIANT, profession));
         }
         if (!this.namedTag.contains("tradeSeed")) {
-            this.setTradeSeed(new Random().nextInt(Integer.MAX_VALUE));
+            this.setTradeSeed(new NukkitRandom().nextBoundedInt(Integer.MAX_VALUE));
         } else {
             this.tradeSeed = this.namedTag.getInt("tradeSeed");
         }
@@ -437,7 +415,7 @@ public class EntityVillager extends EntityIntelligent implements InventoryHolder
     @Override
     public boolean onUpdate(int tick) {
 
-        if(tick%100 == 0) {
+        if(tick % 100 == 0) {
 
             if(profession != 0) {
                 if(recipes.getAll().size() == 0) applyProfession(Profession.getProfession(this.profession));
@@ -450,16 +428,16 @@ public class EntityVillager extends EntityIntelligent implements InventoryHolder
                         Block block = getLocation().add(x, 0, z).getLevelBlock();
                         int id = block.getId();
                         for (Profession profession : Profession.getProfessions().values()) {
-                            if (id == profession.getBlockid()) {
+                            if (id == profession.getBlockID()) {
                                 professionFound = true;
                                 if (this.profession != profession.getIndex()) {
-                                    this.setTradeSeed(new Random().nextInt(Integer.MAX_VALUE));
+                                    this.setTradeSeed(new NukkitRandom().nextBoundedInt(Integer.MAX_VALUE));
                                     this.setProfession(profession.getIndex());
                                     this.applyProfession(profession);
-                                    BlockVector3 blockVector = block.getLocation().asBlockVector3();
-                                    this.namedTag.putInt("blockX", blockVector.getX());
-                                    this.namedTag.putInt("blockY", blockVector.getY());
-                                    this.namedTag.putInt("blockZ", blockVector.getZ());
+
+                                    this.namedTag.putInt("blockX", block.getFloorX());
+                                    this.namedTag.putInt("blockY", block.getFloorY());
+                                    this.namedTag.putInt("blockZ", block.getFloorZ());
                                 }
                                 break;
                             }
@@ -470,7 +448,7 @@ public class EntityVillager extends EntityIntelligent implements InventoryHolder
                     int x = this.namedTag.getInt("blockX");
                     int y = this.namedTag.getInt("blockY");
                     int z = this.namedTag.getInt("blockZ");
-                    if(level.getBlock(x,y,z).getId() != Profession.getProfession(this.profession).getBlockid()) {
+                    if(level.getBlock(x,y,z).getId() != Profession.getProfession(this.profession).getBlockID()) {
                         setProfession(0);
                         setCanTrade(false);
                     }
