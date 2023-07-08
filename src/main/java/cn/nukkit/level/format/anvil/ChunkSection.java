@@ -896,11 +896,11 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
                     var customBlocksIdMap = new CompoundTag();
                     for (IntIterator iterator = usedCustomIds.intIterator(); iterator.hasNext(); ) {
                         int each = iterator.nextInt();
-                        var namespaceId = Block.ID_TO_CUSTOM_BLOCK.get(each).getNamespaceId();
-                        if (namespaceId == null) {
+                        var block = Block.ID_TO_CUSTOM_BLOCK.get(each);
+                        if (block == null) {
                             log.warn(Server.getInstance().getLanguage().tr("nukkit.anvil.save.unknown-custom-block", each));
                         } else {
-                            customBlocksIdMap.putInt(namespaceId, each);
+                            customBlocksIdMap.putInt(block.getNamespaceId(), each);
                         }
                     }
                     storageTag.putCompound("CustomBlocksIdMap", customBlocksIdMap);

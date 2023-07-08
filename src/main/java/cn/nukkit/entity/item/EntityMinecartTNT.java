@@ -55,8 +55,6 @@ public class EntityMinecartTNT extends EntityMinecartAbstract implements EntityE
 
     @Override
     public boolean onUpdate(int currentTick) {
-        this.timing.startTiming();
-
         if (fuse < 80) {
             int tickDiff = currentTick - lastUpdate;
 
@@ -76,8 +74,6 @@ public class EntityMinecartTNT extends EntityMinecartAbstract implements EntityE
                 return false;
             }
         }
-
-        this.timing.stopTiming();
 
         return super.onUpdate(currentTick);
     }

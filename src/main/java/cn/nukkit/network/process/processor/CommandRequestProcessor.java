@@ -6,7 +6,6 @@ import cn.nukkit.event.player.PlayerCommandPreprocessEvent;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.CommandRequestPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
-import co.aikar.timings.Timings;
 import org.jetbrains.annotations.NotNull;
 
 public class CommandRequestProcessor extends DataPacketProcessor<CommandRequestPacket> {
@@ -22,10 +21,7 @@ public class CommandRequestProcessor extends DataPacketProcessor<CommandRequestP
         if (playerCommandPreprocessEvent.isCancelled()) {
             return;
         }
-
-        Timings.playerCommandTimer.startTiming();
         playerHandle.player.getServer().executeCommand(playerCommandPreprocessEvent.getPlayer(), playerCommandPreprocessEvent.getMessage());
-        Timings.playerCommandTimer.stopTiming();
     }
 
     @Override

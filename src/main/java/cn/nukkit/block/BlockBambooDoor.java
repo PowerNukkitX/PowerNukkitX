@@ -16,11 +16,12 @@ public class BlockBambooDoor extends BlockDoorWood {
         super(meta);
     }
 
-
+    @Override
     public int getId() {
         return BAMBOO_DOOR;
     }
 
+    @Override
     public String getName() {
         return "Bamboo Door";
     }

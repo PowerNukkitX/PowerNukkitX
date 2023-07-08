@@ -348,8 +348,6 @@ public class EntityAreaEffectCloud extends Entity {
             return false;
         }
 
-        this.timing.startTiming();
-
         super.onUpdate(currentTick);
 
         boolean sendRadius = age % 10 == 0;
@@ -410,8 +408,6 @@ public class EntityAreaEffectCloud extends Entity {
         boundingBox.setBounds(x - radius, y - height, z - radius, x + radius, y + height, z + radius);
         this.setDataProperty(new FloatEntityData(DATA_BOUNDING_BOX_HEIGHT, height), false);
         this.setDataProperty(new FloatEntityData(DATA_BOUNDING_BOX_WIDTH, radius), false);
-
-        this.timing.stopTiming();
 
         return true;
     }

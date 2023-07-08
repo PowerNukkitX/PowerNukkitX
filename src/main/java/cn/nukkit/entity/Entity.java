@@ -45,9 +45,6 @@ import cn.nukkit.plugin.Plugin;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.scheduler.Task;
 import cn.nukkit.utils.*;
-import co.aikar.timings.Timing;
-import co.aikar.timings.Timings;
-import co.aikar.timings.TimingsHistory;
 import com.google.common.collect.Iterables;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -572,10 +569,13 @@ public abstract class Entity extends Location implements Metadatable {
     protected boolean inEndPortal;
     protected boolean isStatic = false;
     protected Server server;
-    protected Timing timing;
     protected boolean isPlayer = this instanceof Player;
     private int maxHealth = 20;
     private volatile boolean initialized;
+
+    @PowerNukkitXOnly
+    @Since("1.20.0-r3")
+    protected volatile boolean saveWithChunk = true;
 
     public Entity(FullChunk chunk, CompoundTag nbt) {
         if (this instanceof Player) {
@@ -1224,8 +1224,6 @@ public abstract class Entity extends Location implements Metadatable {
             return;
         }
         this.initialized = true;
-
-        this.timing = Timings.getEntityTiming(this);
 
         this.isPlayer = this instanceof Player;
         this.temporalVector = new Vector3();
@@ -1977,6 +1975,14 @@ public abstract class Entity extends Location implements Metadatable {
         return !this.justCreated && this != entity && !this.noClip;
     }
 
+    @PowerNukkitXOnly
+    @Since("1.20.0-r3")
+    public boolean canBeSavedWithChunk() { return saveWithChunk; }
+
+    @PowerNukkitXOnly
+    @Since("1.20.0-r3")
+    public void setCanBeSavedWithChunk(boolean saveWithChunk) { this.saveWithChunk = saveWithChunk; }
+
     protected boolean checkObstruction(double x, double y, double z) {
         if (this.level.fastCollisionCubes(this, this.getBoundingBox(), false).size() == 0 || this.noClip) {
             return false;
@@ -2077,8 +2083,6 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public boolean entityBaseTick(int tickDiff) {
-        Timings.entityBaseTickTimer.startTiming();
-
         if (!this.isPlayer) {
             this.blocksAround = null;
             this.collisionBlocks = null;
@@ -2091,7 +2095,6 @@ public abstract class Entity extends Location implements Metadatable {
             if (!this.isPlayer) {
                 this.close();
             }
-            Timings.entityBaseTickTimer.stopTiming();
             return false;
         }
         if (riding != null && !riding.isAlive() && riding instanceof EntityRideable) {
@@ -2192,9 +2195,7 @@ public abstract class Entity extends Location implements Metadatable {
         }
         this.age += tickDiff;
         this.ticksLived += tickDiff;
-        TimingsHistory.activatedEntityTicks++;
 
-        Timings.entityBaseTickTimer.stopTiming();
         return hasUpdate;
     }
 
@@ -2880,8 +2881,6 @@ public abstract class Entity extends Location implements Metadatable {
             return true;
         }
 
-        Timings.entityMoveTimer.startTiming();
-
         AxisAlignedBB newBB = this.boundingBox.getOffsetBoundingBox(dx, dy, dz);
 
         if (server.getAllowFlight()
@@ -2904,7 +2903,6 @@ public abstract class Entity extends Location implements Metadatable {
         }
         this.isCollided = this.onGround;
         this.updateFallState(this.onGround);
-        Timings.entityMoveTimer.stopTiming();
         return true;
     }
 
@@ -2922,8 +2920,6 @@ public abstract class Entity extends Location implements Metadatable {
             this.onGround = this.isPlayer;
             return true;
         } else {
-
-            Timings.entityMoveTimer.startTiming();
 
             this.ySize *= 0.4;
 
@@ -3022,7 +3018,6 @@ public abstract class Entity extends Location implements Metadatable {
             }
 
             //TODO: vehicle collision events (first we need to spawn them!)
-            Timings.entityMoveTimer.stopTiming();
             return true;
         }
     }

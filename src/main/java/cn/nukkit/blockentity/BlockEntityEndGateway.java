@@ -86,8 +86,6 @@ public class BlockEntityEndGateway extends BlockEntitySpawnable {
             return false;
         }
         
-        this.timing.startTiming();
-        
         boolean isGenerated = isGenerating();
         
         this.age++;
@@ -108,8 +106,6 @@ public class BlockEntityEndGateway extends BlockEntitySpawnable {
             setDirty();
             this.spawnToAll();
         }
-        
-        this.timing.stopTiming();
         
         return true;
     }

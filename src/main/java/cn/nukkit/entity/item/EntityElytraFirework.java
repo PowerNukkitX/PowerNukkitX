@@ -30,7 +30,6 @@ public class EntityElytraFirework extends EntityFirework {
                 return true;
             } else {
                 this.lastUpdate = currentTick;
-                this.timing.startTiming();
                 boolean hasUpdate = this.entityBaseTick(tickDiff);
                 if (this.isAlive()) {
 
@@ -60,7 +59,6 @@ public class EntityElytraFirework extends EntityFirework {
                         this.kill();
                     }
                 }
-                this.timing.stopTiming();
                 return hasUpdate || !this.onGround || Math.abs(this.motionX) > 1.0E-5D || Math.abs(this.motionY) > 1.0E-5D || Math.abs(this.motionZ) > 1.0E-5D;
 
             }

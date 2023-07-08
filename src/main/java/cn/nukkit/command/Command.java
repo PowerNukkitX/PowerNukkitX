@@ -17,8 +17,6 @@ import cn.nukkit.permission.Permissible;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.TextFormat;
-import co.aikar.timings.Timing;
-import co.aikar.timings.Timings;
 import io.netty.util.internal.EmptyArrays;
 
 import java.util.*;
@@ -28,7 +26,6 @@ import java.util.stream.Collectors;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class Command implements GenericParameter {
-    public Timing timing;
 
     private final String name;
 
@@ -81,7 +78,6 @@ public abstract class Command implements GenericParameter {
         this.usageMessage = usageMessage == null ? "/" + name : usageMessage;
         this.aliases = aliases;
         this.activeAliases = aliases;
-        this.timing = Timings.getCommandTiming(this);
         this.commandParameters.put("default", new CommandParameter[]{CommandParameter.newType("args", true, CommandParamType.RAWTEXT)});
     }
 
@@ -238,7 +234,6 @@ public abstract class Command implements GenericParameter {
         this.nextLabel = name;
         if (!this.isRegistered()) {
             this.label = name;
-            this.timing = Timings.getCommandTiming(this);
             return true;
         }
         return false;

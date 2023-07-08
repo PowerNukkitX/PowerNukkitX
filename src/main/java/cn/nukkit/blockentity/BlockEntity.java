@@ -10,8 +10,6 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.scheduler.Task;
 import cn.nukkit.utils.ChunkException;
-import co.aikar.timings.Timing;
-import co.aikar.timings.Timings;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import lombok.extern.log4j.Log4j2;
@@ -98,14 +96,12 @@ public abstract class BlockEntity extends Position {
     @PowerNukkitDifference(info = "Not updated anymore", since = "1.3.1.2-PN")
     protected long lastUpdate;
     protected Server server;
-    protected Timing timing;
 
     public BlockEntity(FullChunk chunk, CompoundTag nbt) {
         if (chunk == null || chunk.getProvider() == null) {
             throw new ChunkException("Invalid garbage Chunk given to Block Entity");
         }
 
-        this.timing = Timings.getBlockEntityTiming(this);
         this.server = chunk.getProvider().getLevel().getServer();
         this.chunk = chunk;
         this.setLevel(chunk.getProvider().getLevel());
