@@ -9,8 +9,7 @@ COPY entrypoint.sh /work/entrypoint.sh
 
 RUN apk add --no-cache wget && \
     apk add --no-cache unzip && \
-    wget https://github.com/PowerNukkitX/PNX-CLI/releases/download/v0.0.7/PNX-CLI-Jar.zip && \
-    unzip PNX-CLI-Jar.zip -d /work
+    wget https://github.com/PowerNukkitX/PNX-CLI/releases/download/0.1.6/PNX-CLI-0.1.6.jar
 
 # Final image
 FROM findepi/graalvm:java17
@@ -21,7 +20,7 @@ ENV language=eng
 ENV memory=2G
 
 COPY --from=prepare /work/libs /pnx/libs
-COPY --from=prepare /work/PNX-CLI-0.0.1-alpha.jar /pnx/cli.jar
+COPY --from=prepare /work/PNX-CLI-0.1.6.jar /pnx/cli.jar
 COPY --from=prepare /work/nukkit.yml /pnx/nukkit.yml
 COPY --from=prepare /work/entrypoint.sh /pnx/entrypoint.sh
 
