@@ -5,11 +5,13 @@ import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.math.Vector3;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 public class BlockUpdateEntry implements Comparable<BlockUpdateEntry> {
-    private static long entryID = 0;
+    private static final AtomicLong entryID = new AtomicLong(0);
 
     public int priority;
     public long delay;
@@ -26,11 +28,11 @@ public class BlockUpdateEntry implements Comparable<BlockUpdateEntry> {
     public BlockUpdateEntry(Vector3 pos, Block block) {
         this.pos = pos;
         this.block = block;
-        this.id = entryID++;
+        this.id = entryID.getAndIncrement();
     }
 
     public BlockUpdateEntry(Vector3 pos, Block block, long delay, int priority) {
-        this.id = entryID++;
+        this.id = entryID.getAndIncrement();
         this.pos = pos;
         this.priority = priority;
         this.delay = delay;
@@ -38,7 +40,7 @@ public class BlockUpdateEntry implements Comparable<BlockUpdateEntry> {
     }
 
     public BlockUpdateEntry(Vector3 pos, Block block, long delay, int priority, boolean checkBlockWhenUpdate) {
-        this.id = entryID++;
+        this.id = entryID.getAndIncrement();
         this.pos = pos;
         this.priority = priority;
         this.delay = delay;
@@ -53,7 +55,7 @@ public class BlockUpdateEntry implements Comparable<BlockUpdateEntry> {
 
     @Override
     public boolean equals(Object object) {
-        if (!(object instanceof BlockUpdateEntry)) {
+        if (!(object instanceof BlockUpdateEntry entry)) {
             if (object instanceof Block) {
                 return ((Block) object).layer == block.layer && pos.equals(object);
             }
@@ -62,7 +64,6 @@ public class BlockUpdateEntry implements Comparable<BlockUpdateEntry> {
             }
             return false;
         } else {
-            BlockUpdateEntry entry = (BlockUpdateEntry) object;
             return block.layer == entry.block.layer && this.pos.equals(entry.pos) && Block.equals(this.block, entry.block, false);
         }
     }

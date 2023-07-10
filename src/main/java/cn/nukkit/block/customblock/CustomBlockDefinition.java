@@ -84,7 +84,8 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
             components.putCompound("minecraft:unit_cube", new CompoundTag());
             //设置方块在创造栏的分类
             this.nbt.putCompound("menu_category", new CompoundTag()
-                    .putString("category", blockCreativeCategory.name().toLowerCase(Locale.ENGLISH)));
+                    .putString("category", blockCreativeCategory.name().toLowerCase(Locale.ENGLISH))
+                    .putString("group", ItemCreativeGroup.NONE.getGroupName()));
             //molang版本
             this.nbt.putInt("molangVersion", 6);
 
