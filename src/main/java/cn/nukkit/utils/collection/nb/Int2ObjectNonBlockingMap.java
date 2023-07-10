@@ -1,5 +1,6 @@
 package cn.nukkit.utils.collection.nb;
 
+import cn.nukkit.api.NonComputationAtomic;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
@@ -80,6 +81,7 @@ import java.util.function.Function;
  */
 @Since("1.20.0-r3")
 @PowerNukkitXOnly
+@NonComputationAtomic
 public class Int2ObjectNonBlockingMap<TypeV>
         extends AbstractMap<Integer, TypeV>
         implements ConcurrentMap<Integer, TypeV>, Cloneable, Serializable {
