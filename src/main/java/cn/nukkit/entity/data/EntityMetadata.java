@@ -5,6 +5,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.utils.collection.nb.Int2ObjectNonBlockingMap;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.HashMap;
@@ -16,15 +17,15 @@ import java.util.Map;
 @Log4j2
 public class EntityMetadata {
 
-    private final Map<Integer, EntityData> map = new HashMap<>();
+    private final Int2ObjectNonBlockingMap<EntityData<?>> map = new Int2ObjectNonBlockingMap<>();
 
-    public EntityData get(int id) {
+    public EntityData<?> get(int id) {
         return this.getOrDefault(id, null);
     }
 
     @PowerNukkitDifference(info = "Reduce a lot of hidden NullPointerExceptions", since = "1.3.1.2-PN")
-    public EntityData getOrDefault(int id, EntityData defaultValue) {
-        EntityData data = this.map.getOrDefault(id, defaultValue);
+    public EntityData<?> getOrDefault(int id, EntityData<?> defaultValue) {
+        var data = this.map.getOrDefault(id, defaultValue);
         if (data == null) {
             return null;
         }
@@ -36,7 +37,7 @@ public class EntityMetadata {
         return this.map.containsKey(id);
     }
 
-    public EntityMetadata put(EntityData data) {
+    public EntityMetadata put(EntityData<?> data) {
         this.map.put(data.getId(), data);
         //log.info("Updated entity data {}", this::toString);
         return this;
@@ -119,7 +120,7 @@ public class EntityMetadata {
         return this.put(new StringEntityData(id, value));
     }
 
-    public Map<Integer, EntityData> getMap() {
+    public Map<Integer, EntityData<?>> getMap() {
         return new HashMap<>(map);
     }
 
