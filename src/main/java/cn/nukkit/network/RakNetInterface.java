@@ -29,8 +29,10 @@ import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinWorkerThread;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -252,12 +254,8 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
     @Override
     public Integer putResourcePacket(Player player, DataPacket packet) {
         RakNetPlayerSession session = this.sessions.get(player.getRawSocketAddress());
-        if (session != null) {
-            getPacketProcessingThreadPool().execute(() -> {
-                packet.tryEncode();
-                session.sendResourcePacket(packet.clone());
-            });
-        }
+        packet.tryEncode();
+        session.sendResourcePacket(packet.clone());
         return null;
     }
 
