@@ -313,8 +313,11 @@ public class Network {
 
     public void processBatch(BatchPacket packet, Player player) {
         try {
-            unpackBatchedPackets(packet, player.getNetworkSession().getCompression(),
-                    player.getNetworkSession().getPacketProcessingExecutor());
+            if (player.getNetworkSession() != null)
+                unpackBatchedPackets(packet, player.getNetworkSession().getCompression(),
+                        player.getNetworkSession().getPacketProcessingExecutor());
+            else
+                unpackBatchedPackets(packet, CompressionProvider.ZLIB, player.getNetworkSession().getPacketProcessingExecutor());
         } catch (ProtocolException e) {
             player.close("", e.getMessage());
             log.error("Unable to process player packets ", e);
