@@ -251,8 +251,10 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
     @Override
     public Integer putResourcePacket(Player player, DataPacket packet) {
         RakNetPlayerSession session = this.sessions.get(player.getRawSocketAddress());
-        packet.tryEncode();
-        session.sendResourcePacket(packet.clone());
+        if (session != null) {
+            packet.tryEncode();
+            session.sendResourcePacket(packet.clone());
+        }
         return null;
     }
 
