@@ -29,10 +29,8 @@ import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.util.*;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ForkJoinWorkerThread;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -47,8 +45,7 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
     private final RakNetServer raknet;
     @Since("1.20.0-r3")
     @PowerNukkitXOnly
-    private final Executor packetProcessingThreadPool = new ForkJoinPool(Math.min(0x7fff, Runtime.getRuntime().availableProcessors()),
-            new PacketProcessingThreadPoolThreadFactory(), null, false);
+    private final Executor packetProcessingThreadPool = Executors.newFixedThreadPool(1, new PacketProcessingThreadPoolThreadFactory());
     private final Map<InetSocketAddress, RakNetPlayerSession> sessions = new HashMap<>();
     private final Queue<RakNetPlayerSession> sessionCreationQueue = PlatformDependent.newMpscQueue();
 
@@ -263,36 +260,26 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
         return this.network;
     }
 
-    private static class PacketProcessingThreadPoolThreadFactory implements ForkJoinPool.ForkJoinWorkerThreadFactory {
-        @SuppressWarnings("removal")
-        private static final AccessControlContext ACC = contextWithPermissions(
-                new RuntimePermission("getClassLoader"),
-                new RuntimePermission("setContextClassLoader"));
+    private static class PacketProcessingThreadPoolThreadFactory implements ThreadFactory {
 
-        @SuppressWarnings("removal")
-        static AccessControlContext contextWithPermissions(@NotNull Permission... perms) {
-            Permissions permissions = new Permissions();
-            for (var perm : perms)
-                permissions.add(perm);
-            return new AccessControlContext(new ProtectionDomain[]{new ProtectionDomain(null, permissions)});
-        }
-
-        @SuppressWarnings("removal")
-        public ForkJoinWorkerThread newThread(ForkJoinPool pool) {
-            return AccessController.doPrivileged((PrivilegedAction<ForkJoinWorkerThread>) () -> new PacketProcessingThread(pool), ACC);
+        @Override
+        public Thread newThread(@NotNull Runnable r) {
+            return new PacketProcessingThread(r);
         }
     }
 
-    private static class PacketProcessingThread extends ForkJoinWorkerThread {
+    private static class PacketProcessingThread extends Thread {
+        private static final AtomicInteger poolNumber = new AtomicInteger(1);
+
         /**
          * Creates a ForkJoinWorkerThread operating in the given pool.
          *
-         * @param pool the pool this thread works in
+         * @param r the runnable task
          * @throws NullPointerException if pool is null
          */
-        PacketProcessingThread(ForkJoinPool pool) {
-            super(pool);
-            this.setName("PacketProcessingThread");
+        PacketProcessingThread(Runnable r) {
+            super(r);
+            this.setName("PacketProcessingThread" + poolNumber.getAndIncrement());
         }
     }
 }
