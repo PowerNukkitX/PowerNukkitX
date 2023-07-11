@@ -5,7 +5,9 @@ import cn.nukkit.item.Item;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.utils.collection.nb.Int2ObjectNonBlockingMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.HashMap;
@@ -17,7 +19,7 @@ import java.util.Map;
 @Log4j2
 public class EntityMetadata {
 
-    private final Int2ObjectNonBlockingMap<EntityData<?>> map = new Int2ObjectNonBlockingMap<>();
+    private final Int2ObjectMap<EntityData<?>> map = Int2ObjectMaps.synchronize(new Int2ObjectOpenHashMap<>());
 
     public EntityData<?> get(int id) {
         return this.getOrDefault(id, null);
