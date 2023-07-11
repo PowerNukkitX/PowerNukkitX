@@ -489,7 +489,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @SneakyThrows
     private List<DataPacket> unpackBatchedPackets(BatchPacket packet) {
-        return this.server.getNetwork().unpackBatchedPackets(packet, this.server.isEnableSnappy() ? CompressionProvider.SNAPPY : CompressionProvider.ZLIB);
+        return this.server.getNetwork().unpackBatchedPackets(packet,
+                this.server.isEnableSnappy() ? CompressionProvider.SNAPPY : CompressionProvider.ZLIB,
+                this.networkSession.getPacketProcessingExecutor());
     }
 
     @PowerNukkitXDifference(since = "1.19.60-r1", info = "Auto-break custom blocks if client doesn't send the break data-pack.")

@@ -3,6 +3,7 @@ package cn.nukkit.network;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.event.player.PlayerCreationEvent;
 import cn.nukkit.event.server.QueryRegenerateEvent;
@@ -26,8 +27,10 @@ import java.lang.reflect.Constructor;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.security.*;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -40,6 +43,10 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
     private Network network;
 
     private final RakNetServer raknet;
+    @Since("1.20.0-r3")
+    @PowerNukkitXOnly
+    private final Executor packetProcessingThreadPool = new ForkJoinPool(Math.min(0x7fff, Runtime.getRuntime().availableProcessors()),
+            new PacketProcessingThreadPoolThreadFactory(), null, false);
     private final Map<InetSocketAddress, RakNetPlayerSession> sessions = new HashMap<>();
     private final Queue<RakNetPlayerSession> sessionCreationQueue = PlatformDependent.newMpscQueue();
 
@@ -54,6 +61,12 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
         this.raknet.setProtocolVersion(11);
         this.raknet.bind().join();
         this.raknet.setListener(this);
+    }
+
+    @Since("1.20.0-r3")
+    @PowerNukkitXOnly
+    public Executor getPacketProcessingThreadPool() {
+        return packetProcessingThreadPool;
     }
 
     @Override
@@ -240,13 +253,48 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
     public Integer putResourcePacket(Player player, DataPacket packet) {
         RakNetPlayerSession session = this.sessions.get(player.getRawSocketAddress());
         if (session != null) {
-            packet.tryEncode();
-            session.sendResourcePacket(packet.clone());
+            getPacketProcessingThreadPool().execute(() -> {
+                packet.tryEncode();
+                session.sendResourcePacket(packet.clone());
+            });
         }
         return null;
     }
 
     public Network getNetwork() {
         return this.network;
+    }
+
+    private static class PacketProcessingThreadPoolThreadFactory implements ForkJoinPool.ForkJoinWorkerThreadFactory {
+        @SuppressWarnings("removal")
+        private static final AccessControlContext ACC = contextWithPermissions(
+                new RuntimePermission("getClassLoader"),
+                new RuntimePermission("setContextClassLoader"));
+
+        @SuppressWarnings("removal")
+        static AccessControlContext contextWithPermissions(@NotNull Permission... perms) {
+            Permissions permissions = new Permissions();
+            for (var perm : perms)
+                permissions.add(perm);
+            return new AccessControlContext(new ProtectionDomain[]{new ProtectionDomain(null, permissions)});
+        }
+
+        @SuppressWarnings("removal")
+        public ForkJoinWorkerThread newThread(ForkJoinPool pool) {
+            return AccessController.doPrivileged((PrivilegedAction<ForkJoinWorkerThread>) () -> new PacketProcessingThread(pool), ACC);
+        }
+    }
+
+    private static class PacketProcessingThread extends ForkJoinWorkerThread {
+        /**
+         * Creates a ForkJoinWorkerThread operating in the given pool.
+         *
+         * @param pool the pool this thread works in
+         * @throws NullPointerException if pool is null
+         */
+        PacketProcessingThread(ForkJoinPool pool) {
+            super(pool);
+            this.setName("PacketProcessingThread");
+        }
     }
 }

@@ -2,6 +2,7 @@ package cn.nukkit.network.session;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.network.CompressionProvider;
@@ -27,6 +28,7 @@ import io.netty.util.internal.PlatformDependent;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.message.FormattedMessage;
+import org.jetbrains.annotations.NotNull;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -36,6 +38,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -50,7 +53,8 @@ public class RakNetPlayerSession implements NetworkPlayerSession, RakNetSessionL
     private final RakNetInterface server;
     private final RakNetServerSession session;
 
-    private final Queue<DataPacket> inbound = PlatformDependent.newSpscQueue();
+    @PowerNukkitXDifference(since = "1.20.0-r3", info = "change to mpsc queue since mutli-thread decoding")
+    private final Queue<DataPacket> inbound = PlatformDependent.newMpscQueue();
     private final Queue<DataPacket> outbound = PlatformDependent.newMpscQueue();
     private final ScheduledFuture<?> tickFuture;
 
@@ -73,6 +77,12 @@ public class RakNetPlayerSession implements NetworkPlayerSession, RakNetSessionL
         this.agreedKey = null;
         this.encryptionCipher = null;
         this.decryptionCipher = null;
+    }
+
+    @Since("1.20.0-r3")
+    @PowerNukkitXOnly
+    public @NotNull Executor getPacketProcessingExecutor() {
+        return this.server.getPacketProcessingThreadPool();
     }
 
     @Override
@@ -148,8 +158,10 @@ public class RakNetPlayerSession implements NetworkPlayerSession, RakNetSessionL
     @Override
     public void sendPacket(DataPacket packet) {
         if (!this.session.isClosed()) {
-            packet.tryEncode();
-            this.outbound.offer(packet);
+            getPacketProcessingExecutor().execute(() -> {
+                packet.tryEncode();
+                this.outbound.offer(packet);
+            });
         }
     }
 
