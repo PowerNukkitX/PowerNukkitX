@@ -909,29 +909,6 @@
       "A": {
         "block_states": "CgAACAkAd29vZF90eXBlAwBvYWsA",
         "name": "minecraft:planks"
-      },
-      "B": {
-        "meta": 32767,
-        "name": "minecraft:wooden_shovel"
-      }
-    },
-    "output": [
-      {
-        "name": "minecraft:oak_boat"
-      }
-    ],
-    "priority": 0,
-    "shape": [
-      "ABA",
-      "AAA"
-    ]
-  },
-  {
-    "block": "crafting_table",
-    "input": {
-      "A": {
-        "block_states": "CgAACAkAd29vZF90eXBlAwBvYWsA",
-        "name": "minecraft:planks"
       }
     },
     "output": [
@@ -1074,6 +1051,25 @@
     "block": "crafting_table",
     "input": {
       "A": {
+        "block_states": "CgAACAkAd29vZF90eXBlAwBvYWsA",
+        "name": "minecraft:planks"
+      }
+    },
+    "output": [
+      {
+        "name": "minecraft:oak_boat"
+      }
+    ],
+    "priority": 0,
+    "shape": [
+      "A A",
+      "AAA"
+    ]
+  },
+  {
+    "block": "crafting_table",
+    "input": {
+      "A": {
         "block_states": "CgAACAkAd29vZF90eXBlBQBiaXJjaAA=",
         "name": "minecraft:planks"
       },
@@ -1117,29 +1113,6 @@
       "AAA",
       "AAA",
       " B "
-    ]
-  },
-  {
-    "block": "crafting_table",
-    "input": {
-      "A": {
-        "block_states": "CgAACAkAd29vZF90eXBlBQBiaXJjaAA=",
-        "name": "minecraft:planks"
-      },
-      "B": {
-        "meta": 32767,
-        "name": "minecraft:wooden_shovel"
-      }
-    },
-    "output": [
-      {
-        "name": "minecraft:birch_boat"
-      }
-    ],
-    "priority": 0,
-    "shape": [
-      "ABA",
-      "AAA"
     ]
   },
   {
@@ -1290,6 +1263,25 @@
     "block": "crafting_table",
     "input": {
       "A": {
+        "block_states": "CgAACAkAd29vZF90eXBlBQBiaXJjaAA=",
+        "name": "minecraft:planks"
+      }
+    },
+    "output": [
+      {
+        "name": "minecraft:birch_boat"
+      }
+    ],
+    "priority": 0,
+    "shape": [
+      "A A",
+      "AAA"
+    ]
+  },
+  {
+    "block": "crafting_table",
+    "input": {
+      "A": {
         "block_states": "CgAACAkAd29vZF90eXBlBgBhY2FjaWEA",
         "name": "minecraft:planks"
       },
@@ -1333,29 +1325,6 @@
       "AAA",
       "AAA",
       " B "
-    ]
-  },
-  {
-    "block": "crafting_table",
-    "input": {
-      "A": {
-        "block_states": "CgAACAkAd29vZF90eXBlBgBhY2FjaWEA",
-        "name": "minecraft:planks"
-      },
-      "B": {
-        "meta": 32767,
-        "name": "minecraft:wooden_shovel"
-      }
-    },
-    "output": [
-      {
-        "name": "minecraft:acacia_boat"
-      }
-    ],
-    "priority": 0,
-    "shape": [
-      "ABA",
-      "AAA"
     ]
   },
   {
@@ -1506,6 +1475,25 @@
     "block": "crafting_table",
     "input": {
       "A": {
+        "block_states": "CgAACAkAd29vZF90eXBlBgBhY2FjaWEA",
+        "name": "minecraft:planks"
+      }
+    },
+    "output": [
+      {
+        "name": "minecraft:acacia_boat"
+      }
+    ],
+    "priority": 0,
+    "shape": [
+      "A A",
+      "AAA"
+    ]
+  },
+  {
+    "block": "crafting_table",
+    "input": {
+      "A": {
         "block_states": "CgAACAkAd29vZF90eXBlBgBqdW5nbGUA",
         "name": "minecraft:planks"
       },
@@ -1549,29 +1537,6 @@
       "AAA",
       "AAA",
       " B "
-    ]
-  },
-  {
-    "block": "crafting_table",
-    "input": {
-      "A": {
-        "block_states": "CgAACAkAd29vZF90eXBlBgBqdW5nbGUA",
-        "name": "minecraft:planks"
-      },
-      "B": {
-        "meta": 32767,
-        "name": "minecraft:wooden_shovel"
-      }
-    },
-    "output": [
-      {
-        "name": "minecraft:jungle_boat"
-      }
-    ],
-    "priority": 0,
-    "shape": [
-      "ABA",
-      "AAA"
     ]
   },
   {
@@ -1722,6 +1687,25 @@
     "block": "crafting_table",
     "input": {
       "A": {
+        "block_states": "CgAACAkAd29vZF90eXBlBgBqdW5nbGUA",
+        "name": "minecraft:planks"
+      }
+    },
+    "output": [
+      {
+        "name": "minecraft:jungle_boat"
+      }
+    ],
+    "priority": 0,
+    "shape": [
+      "A A",
+      "AAA"
+    ]
+  },
+  {
+    "block": "crafting_table",
+    "input": {
+      "A": {
         "block_states": "CgAACAkAd29vZF90eXBlBgBzcHJ1Y2UA",
         "name": "minecraft:planks"
       },
@@ -1765,29 +1749,6 @@
       "AAA",
       "AAA",
       " B "
-    ]
-  },
-  {
-    "block": "crafting_table",
-    "input": {
-      "A": {
-        "block_states": "CgAACAkAd29vZF90eXBlBgBzcHJ1Y2UA",
-        "name": "minecraft:planks"
-      },
-      "B": {
-        "meta": 32767,
-        "name": "minecraft:wooden_shovel"
-      }
-    },
-    "output": [
-      {
-        "name": "minecraft:spruce_boat"
-      }
-    ],
-    "priority": 0,
-    "shape": [
-      "ABA",
-      "AAA"
     ]
   },
   {
@@ -1938,6 +1899,25 @@
     "block": "crafting_table",
     "input": {
       "A": {
+        "block_states": "CgAACAkAd29vZF90eXBlBgBzcHJ1Y2UA",
+        "name": "minecraft:planks"
+      }
+    },
+    "output": [
+      {
+        "name": "minecraft:spruce_boat"
+      }
+    ],
+    "priority": 0,
+    "shape": [
+      "A A",
+      "AAA"
+    ]
+  },
+  {
+    "block": "crafting_table",
+    "input": {
+      "A": {
         "block_states": "CgAACAkAd29vZF90eXBlCABkYXJrX29hawA=",
         "name": "minecraft:planks"
       },
@@ -1981,29 +1961,6 @@
       "AAA",
       "AAA",
       " B "
-    ]
-  },
-  {
-    "block": "crafting_table",
-    "input": {
-      "A": {
-        "block_states": "CgAACAkAd29vZF90eXBlCABkYXJrX29hawA=",
-        "name": "minecraft:planks"
-      },
-      "B": {
-        "meta": 32767,
-        "name": "minecraft:wooden_shovel"
-      }
-    },
-    "output": [
-      {
-        "name": "minecraft:dark_oak_boat"
-      }
-    ],
-    "priority": 0,
-    "shape": [
-      "ABA",
-      "AAA"
     ]
   },
   {
@@ -2148,6 +2105,25 @@
       "AA",
       "AA",
       "AA"
+    ]
+  },
+  {
+    "block": "crafting_table",
+    "input": {
+      "A": {
+        "block_states": "CgAACAkAd29vZF90eXBlCABkYXJrX29hawA=",
+        "name": "minecraft:planks"
+      }
+    },
+    "output": [
+      {
+        "name": "minecraft:dark_oak_boat"
+      }
+    ],
+    "priority": 0,
+    "shape": [
+      "A A",
+      "AAA"
     ]
   },
   {
@@ -4873,29 +4849,6 @@
       "A": {
         "meta": 32767,
         "name": "minecraft:cherry_planks"
-      },
-      "B": {
-        "meta": 32767,
-        "name": "minecraft:wooden_shovel"
-      }
-    },
-    "output": [
-      {
-        "name": "minecraft:cherry_boat"
-      }
-    ],
-    "priority": 0,
-    "shape": [
-      "ABA",
-      "AAA"
-    ]
-  },
-  {
-    "block": "crafting_table",
-    "input": {
-      "A": {
-        "meta": 32767,
-        "name": "minecraft:cherry_planks"
       }
     },
     "output": [
@@ -5010,6 +4963,25 @@
       "AA",
       "AA",
       "AA"
+    ]
+  },
+  {
+    "block": "crafting_table",
+    "input": {
+      "A": {
+        "meta": 32767,
+        "name": "minecraft:cherry_planks"
+      }
+    },
+    "output": [
+      {
+        "name": "minecraft:cherry_boat"
+      }
+    ],
+    "priority": 0,
+    "shape": [
+      "A A",
+      "AAA"
     ]
   },
   {
@@ -5384,7 +5356,7 @@
     },
     "output": [
       {
-        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgAAAAABCwBwb3dlcmVkX2JpdAAA",
+        "block_states": "CgAACBoAbWluZWNyYWZ0OmZhY2luZ19kaXJlY3Rpb24EAGRvd24BCwBwb3dlcmVkX2JpdAAA",
         "name": "minecraft:observer"
       }
     ],
@@ -13828,31 +13800,6 @@
       },
       "B": {
         "meta": 32767,
-        "name": "minecraft:crimson_slab"
-      }
-    },
-    "output": [
-      {
-        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgAAAAABCABvcGVuX2JpdAAA",
-        "name": "minecraft:barrel"
-      }
-    ],
-    "priority": 2,
-    "shape": [
-      "ABA",
-      "A A",
-      "ABA"
-    ]
-  },
-  {
-    "block": "crafting_table",
-    "input": {
-      "A": {
-        "meta": 32767,
-        "name": "minecraft:stick"
-      },
-      "B": {
-        "meta": 32767,
         "name": "minecraft:iron_ingot"
       },
       "C": {
@@ -13921,31 +13868,6 @@
     "priority": 0,
     "shape": [
       "ABA",
-      "ABA"
-    ]
-  },
-  {
-    "block": "crafting_table",
-    "input": {
-      "A": {
-        "meta": 32767,
-        "name": "minecraft:stick"
-      },
-      "B": {
-        "meta": 32767,
-        "name": "minecraft:mangrove_slab"
-      }
-    },
-    "output": [
-      {
-        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgAAAAABCABvcGVuX2JpdAAA",
-        "name": "minecraft:barrel"
-      }
-    ],
-    "priority": 2,
-    "shape": [
-      "ABA",
-      "A A",
       "ABA"
     ]
   },
@@ -15313,56 +15235,6 @@
         "name": "minecraft:stick"
       },
       "B": {
-        "meta": 32767,
-        "name": "minecraft:warped_slab"
-      }
-    },
-    "output": [
-      {
-        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgAAAAABCABvcGVuX2JpdAAA",
-        "name": "minecraft:barrel"
-      }
-    ],
-    "priority": 2,
-    "shape": [
-      "ABA",
-      "A A",
-      "ABA"
-    ]
-  },
-  {
-    "block": "crafting_table",
-    "input": {
-      "A": {
-        "meta": 32767,
-        "name": "minecraft:stick"
-      },
-      "B": {
-        "meta": 32767,
-        "name": "minecraft:wooden_slab"
-      }
-    },
-    "output": [
-      {
-        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgAAAAABCABvcGVuX2JpdAAA",
-        "name": "minecraft:barrel"
-      }
-    ],
-    "priority": 0,
-    "shape": [
-      "ABA",
-      "A A",
-      "ABA"
-    ]
-  },
-  {
-    "block": "crafting_table",
-    "input": {
-      "A": {
-        "meta": 32767,
-        "name": "minecraft:stick"
-      },
-      "B": {
         "name": "minecraft:coal"
       },
       "C": {
@@ -15794,6 +15666,29 @@
         "name": "minecraft:stick"
       },
       "B": {
+        "name": "minecraft:wool"
+      }
+    },
+    "output": [
+      {
+        "name": "minecraft:painting"
+      }
+    ],
+    "priority": 0,
+    "shape": [
+      "AAA",
+      "ABA",
+      "AAA"
+    ]
+  },
+  {
+    "block": "crafting_table",
+    "input": {
+      "A": {
+        "meta": 32767,
+        "name": "minecraft:stick"
+      },
+      "B": {
         "tag": "minecraft:coals"
       },
       "C": {
@@ -15836,53 +15731,6 @@
       " A ",
       "ABA",
       "CCC"
-    ]
-  },
-  {
-    "block": "crafting_table",
-    "input": {
-      "A": {
-        "meta": 32767,
-        "name": "minecraft:stick"
-      },
-      "B": {
-        "tag": "minecraft:wooden_slabs"
-      }
-    },
-    "output": [
-      {
-        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgAAAAABCABvcGVuX2JpdAAA",
-        "name": "minecraft:barrel"
-      }
-    ],
-    "priority": -1,
-    "shape": [
-      "ABA",
-      "A A",
-      "ABA"
-    ]
-  },
-  {
-    "block": "crafting_table",
-    "input": {
-      "A": {
-        "meta": 32767,
-        "name": "minecraft:stick"
-      },
-      "B": {
-        "tag": "minecraft:wool"
-      }
-    },
-    "output": [
-      {
-        "name": "minecraft:painting"
-      }
-    ],
-    "priority": -1,
-    "shape": [
-      "AAA",
-      "ABA",
-      "AAA"
     ]
   },
   {
@@ -18858,10 +18706,6 @@
     "input": {
       "A": {
         "name": "minecraft:bamboo_planks"
-      },
-      "B": {
-        "meta": 32767,
-        "name": "minecraft:wooden_shovel"
       }
     },
     "output": [
@@ -18871,7 +18715,7 @@
     ],
     "priority": 0,
     "shape": [
-      "ABA",
+      "A A",
       "AAA"
     ]
   },
@@ -18919,6 +18763,28 @@
       "AAA",
       "AAA",
       " B "
+    ]
+  },
+  {
+    "block": "crafting_table",
+    "input": {
+      "A": {
+        "name": "minecraft:black_wool"
+      },
+      "B": {
+        "tag": "minecraft:planks"
+      }
+    },
+    "output": [
+      {
+        "meta": 15,
+        "name": "minecraft:bed"
+      }
+    ],
+    "priority": 1,
+    "shape": [
+      "AAA",
+      "BBB"
     ]
   },
   {
@@ -19006,6 +18872,28 @@
       "AAA",
       "AAA",
       " B "
+    ]
+  },
+  {
+    "block": "crafting_table",
+    "input": {
+      "A": {
+        "name": "minecraft:blue_wool"
+      },
+      "B": {
+        "tag": "minecraft:planks"
+      }
+    },
+    "output": [
+      {
+        "meta": 11,
+        "name": "minecraft:bed"
+      }
+    ],
+    "priority": 1,
+    "shape": [
+      "AAA",
+      "BBB"
     ]
   },
   {
@@ -19132,6 +19020,28 @@
       "AAA",
       "AAA",
       " B "
+    ]
+  },
+  {
+    "block": "crafting_table",
+    "input": {
+      "A": {
+        "name": "minecraft:brown_wool"
+      },
+      "B": {
+        "tag": "minecraft:planks"
+      }
+    },
+    "output": [
+      {
+        "meta": 12,
+        "name": "minecraft:bed"
+      }
+    ],
+    "priority": 1,
+    "shape": [
+      "AAA",
+      "BBB"
     ]
   },
   {
@@ -19970,10 +19880,6 @@
     "input": {
       "A": {
         "name": "minecraft:mangrove_planks"
-      },
-      "B": {
-        "meta": 32767,
-        "name": "minecraft:wooden_shovel"
       }
     },
     "output": [
@@ -19983,7 +19889,7 @@
     ],
     "priority": 0,
     "shape": [
-      "ABA",
+      "A A",
       "AAA"
     ]
   },
@@ -20863,6 +20769,27 @@
     "input": {
       "A": {
         "name": "minecraft:white_wool"
+      },
+      "B": {
+        "tag": "minecraft:planks"
+      }
+    },
+    "output": [
+      {
+        "name": "minecraft:bed"
+      }
+    ],
+    "priority": 1,
+    "shape": [
+      "AAA",
+      "BBB"
+    ]
+  },
+  {
+    "block": "crafting_table",
+    "input": {
+      "A": {
+        "name": "minecraft:white_wool"
       }
     },
     "output": [
@@ -21203,7 +21130,7 @@
         "name": "minecraft:wooden_axe"
       }
     ],
-    "priority": -1,
+    "priority": 0,
     "shape": [
       "AA",
       "AB",
@@ -21226,7 +21153,7 @@
         "name": "minecraft:wooden_hoe"
       }
     ],
-    "priority": -1,
+    "priority": 0,
     "shape": [
       "AA",
       " B",
@@ -21249,7 +21176,7 @@
         "name": "minecraft:wooden_pickaxe"
       }
     ],
-    "priority": -1,
+    "priority": 0,
     "shape": [
       "AAA",
       " B ",
@@ -21272,7 +21199,7 @@
         "name": "minecraft:wooden_shovel"
       }
     ],
-    "priority": -1,
+    "priority": 0,
     "shape": [
       "A",
       "B",
@@ -21295,7 +21222,7 @@
         "name": "minecraft:wooden_sword"
       }
     ],
-    "priority": -1,
+    "priority": 0,
     "shape": [
       "A",
       "A",
@@ -21330,6 +21257,29 @@
     "input": {
       "A": {
         "tag": "minecraft:planks"
+      },
+      "B": {
+        "tag": "minecraft:wooden_slabs"
+      }
+    },
+    "output": [
+      {
+        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgAAAAABCABvcGVuX2JpdAAA",
+        "name": "minecraft:barrel"
+      }
+    ],
+    "priority": -1,
+    "shape": [
+      "ABA",
+      "A A",
+      "ABA"
+    ]
+  },
+  {
+    "block": "crafting_table",
+    "input": {
+      "A": {
+        "tag": "minecraft:planks"
       }
     },
     "output": [
@@ -21338,7 +21288,7 @@
         "name": "minecraft:chest"
       }
     ],
-    "priority": -1,
+    "priority": 0,
     "shape": [
       "AAA",
       "A A",
@@ -21395,7 +21345,7 @@
         "name": "minecraft:crafting_table"
       }
     ],
-    "priority": -1,
+    "priority": 0,
     "shape": [
       "AA",
       "AA"
@@ -21578,6 +21528,129 @@
       "A A",
       "A A",
       "AAA"
+    ]
+  },
+  {
+    "block": "deprecated",
+    "input": {
+      "A": {
+        "meta": 32767,
+        "name": "minecraft:stick"
+      },
+      "B": {
+        "meta": 32767,
+        "name": "minecraft:crimson_slab"
+      }
+    },
+    "output": [
+      {
+        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgAAAAABCABvcGVuX2JpdAAA",
+        "name": "minecraft:barrel"
+      }
+    ],
+    "priority": 2,
+    "shape": [
+      "ABA",
+      "A A",
+      "ABA"
+    ]
+  },
+  {
+    "block": "deprecated",
+    "input": {
+      "A": {
+        "meta": 32767,
+        "name": "minecraft:stick"
+      },
+      "B": {
+        "meta": 32767,
+        "name": "minecraft:mangrove_slab"
+      }
+    },
+    "output": [
+      {
+        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgAAAAABCABvcGVuX2JpdAAA",
+        "name": "minecraft:barrel"
+      }
+    ],
+    "priority": 2,
+    "shape": [
+      "ABA",
+      "A A",
+      "ABA"
+    ]
+  },
+  {
+    "block": "deprecated",
+    "input": {
+      "A": {
+        "meta": 32767,
+        "name": "minecraft:stick"
+      },
+      "B": {
+        "meta": 32767,
+        "name": "minecraft:warped_slab"
+      }
+    },
+    "output": [
+      {
+        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgAAAAABCABvcGVuX2JpdAAA",
+        "name": "minecraft:barrel"
+      }
+    ],
+    "priority": 2,
+    "shape": [
+      "ABA",
+      "A A",
+      "ABA"
+    ]
+  },
+  {
+    "block": "deprecated",
+    "input": {
+      "A": {
+        "meta": 32767,
+        "name": "minecraft:stick"
+      },
+      "B": {
+        "tag": "minecraft:wooden_slabs"
+      }
+    },
+    "output": [
+      {
+        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgAAAAABCABvcGVuX2JpdAAA",
+        "name": "minecraft:barrel"
+      }
+    ],
+    "priority": -1,
+    "shape": [
+      "ABA",
+      "A A",
+      "ABA"
+    ]
+  },
+  {
+    "block": "deprecated",
+    "input": {
+      "A": {
+        "meta": 32767,
+        "name": "minecraft:stick"
+      },
+      "B": {
+        "tag": "minecraft:wooden_slabs"
+      }
+    },
+    "output": [
+      {
+        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgAAAAABCABvcGVuX2JpdAAA",
+        "name": "minecraft:barrel"
+      }
+    ],
+    "priority": -1,
+    "shape": [
+      "ABA",
+      "A A",
+      "ABA"
     ]
   },
   {

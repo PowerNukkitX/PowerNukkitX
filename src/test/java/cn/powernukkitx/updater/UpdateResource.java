@@ -6,8 +6,10 @@ import com.google.gson.GsonBuilder;
 import lombok.SneakyThrows;
 
 import java.io.*;
-import java.net.URL;
-import java.net.URLConnection;
+import java.net.*;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,6 +19,9 @@ import java.util.*;
 
 @SuppressWarnings("unchecked")
 public class UpdateResource {
+    private static final String proxyHost = null;
+    private static final int proxyPort = 0;
+
     Gson gson = new GsonBuilder().setPrettyPrinting()
             .setObjectToNumberStrategy(jsonReader -> Double.valueOf(jsonReader.nextString()).intValue())
             .disableHtmlEscaping()
@@ -32,9 +37,9 @@ public class UpdateResource {
 
     @SneakyThrows
     private void execute() {
-//        downloadResources();
-//        updateItem2Tags(Path.of("src/main/resources/item_2_tags.json"));
-//        convertRequiredItemList(Path.of("src/main/resources/runtime_item_states.json"));
+        downloadResources();
+        updateItem2Tags(Path.of("src/main/resources/item_2_tags.json"));
+        convertRequiredItemList(Path.of("src/main/resources/runtime_item_states.json"));
         updateRecipes();
         System.exit(0);
     }
@@ -105,20 +110,16 @@ public class UpdateResource {
 
     @SneakyThrows
     private void download(String url, String into) {
-        URLConnection connection = new URL(url).openConnection();
-        connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36");
-        try (InputStream input = connection.getInputStream();
-             OutputStream fos = new FileOutputStream(into);
-             BufferedOutputStream bos = new BufferedOutputStream(fos);
-        ) {
-            byte[] buffer = new byte[8 * 1024];
-            int read;
-            while ((read = input.read(buffer)) != -1) {
-                bos.write(buffer, 0, read);
-            }
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
+        var builder = HttpClient.newBuilder()
+                .followRedirects(HttpClient.Redirect.ALWAYS);
+        if (proxyHost != null) {
+            builder.proxy(ProxySelector.of(new InetSocketAddress(proxyHost, proxyPort)));
         }
+        var client = builder.build();
+        var resp = client.send(HttpRequest.newBuilder().uri(URI.create(url)).
+                header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36")
+                .GET().build(), HttpResponse.BodyHandlers.ofFile(Paths.get(into)));
+        System.out.println(resp.statusCode());
     }
 
     private void updateRecipes() throws IOException {
