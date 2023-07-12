@@ -2,6 +2,10 @@ package cn.nukkit.network.protocol;
 
 import lombok.ToString;
 
+/**
+ * Deprecated since v594
+ */
+@Deprecated(since = "1.20.10-r1")
 @ToString
 public class ScriptCustomEventPacket extends DataPacket {
     

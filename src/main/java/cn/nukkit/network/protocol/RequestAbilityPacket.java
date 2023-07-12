@@ -20,7 +20,7 @@ public class RequestAbilityPacket extends DataPacket {
 
     @Override
     public void decode() {
-        this.ability = ABILITIES[this.getVarInt()];
+        this.ability = ABILITIES[this.getByte()];
         this.type = ABILITY_TYPES[this.getByte()];
         this.boolValue = this.getBoolean();
         this.floatValue = this.getLFloat();
