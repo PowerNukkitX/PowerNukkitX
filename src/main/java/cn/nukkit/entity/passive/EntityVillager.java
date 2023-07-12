@@ -2,6 +2,7 @@ package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
@@ -13,15 +14,9 @@ import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.FluctuateController;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
-import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
-import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
-import cn.nukkit.entity.ai.evaluator.ProbabilityEvaluator;
 import cn.nukkit.entity.ai.executor.*;
-import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
-import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
-import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.data.IntEntityData;
 import cn.nukkit.entity.data.LongEntityData;
 import cn.nukkit.entity.data.profession.Profession;
@@ -29,16 +24,12 @@ import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.TradeInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
-import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
 import lombok.Getter;
-
-
-import java.util.Random;
 import java.util.Set;
 
 public class EntityVillager extends EntityIntelligent implements InventoryHolder, EntityNPC, EntityAgeable {
@@ -160,7 +151,6 @@ public class EntityVillager extends EntityIntelligent implements InventoryHolder
         this.setMaxHealth(20);
         super.initEntity();
         setTradingPlayer(0L);
-
         if (!this.namedTag.contains("profession")) {
             this.setProfession(0);
         } else {
@@ -202,10 +192,8 @@ public class EntityVillager extends EntityIntelligent implements InventoryHolder
             this.tradeExp = tradeExp;
             this.setDataProperty(new IntEntityData(DATA_TRADE_EXPERIENCE, tradeExp));
         }
-
         Profession profession = Profession.getProfession(this.profession);
-        if(profession != null) applyProfession(profession);
-
+        if (profession != null) applyProfession(profession);
     }
 
     @Override
@@ -397,33 +385,29 @@ public class EntityVillager extends EntityIntelligent implements InventoryHolder
         this.namedTag.putInt("tradeSeed", tradeSeed);
     }
 
-
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
     public void addExperience(int xp) {
-
         this.tradeExp += xp;
         this.setDataProperty(new IntEntityData(DATA_TRADE_EXPERIENCE, this.tradeExp));
         int next = getTradeTier()+1;
-        if(next < this.tierExpRequirement.length) {
-            if(tradeExp >= this.tierExpRequirement[next]) {
+        if (next < this.tierExpRequirement.length) {
+            if (tradeExp >= this.tierExpRequirement[next]) {
                 setTradeTier(next+1);
             }
         }
-
     }
 
-    @Since("1.20.0-r2")
+    @PowerNukkitXDifference
     @Override
     public boolean onUpdate(int tick) {
-
-        if(tick % 100 == 0) {
-
-            if(profession != 0) {
-                if(recipes.getAll().size() == 0) applyProfession(Profession.getProfession(this.profession));
+        if (tick % 100 == 0) {
+            if (profession != 0) {
+                if (recipes.getAll().size() == 0) applyProfession(Profession.getProfession(this.profession));
             }
-
-            if(tradeExp == 0 && !this.namedTag.contains("traded")) {
+            if (tradeExp == 0 && !this.namedTag.contains("traded")) {
                 boolean professionFound = false;
-                for(int x = -1; x <= 1; x++) {
+                for (int x = -1; x <= 1; x++) {
                     for (int z = -1; z <= 1; z++) {
                         Block block = getLocation().add(x, 0, z).getLevelBlock();
                         int id = block.getId();
@@ -444,29 +428,25 @@ public class EntityVillager extends EntityIntelligent implements InventoryHolder
                         }
                     }
                 }
-                if(this.profession != 0 && !this.namedTag.contains("traded")) {
+                if (this.profession != 0 && !this.namedTag.contains("traded")) {
                     int x = this.namedTag.getInt("blockX");
                     int y = this.namedTag.getInt("blockY");
                     int z = this.namedTag.getInt("blockZ");
-                    if(level.getBlock(x,y,z).getId() != Profession.getProfession(this.profession).getBlockID()) {
+                    if (level.getBlock(x, y, z).getId() != Profession.getProfession(this.profession).getBlockID()) {
                         setProfession(0);
                         setCanTrade(false);
                     }
                 }
-
             }
-
         }
-
         return super.onUpdate(tick);
     }
-
+    @PowerNukkitXOnly
+    @Since("1.20.0-r2")
     public void applyProfession(Profession profession) {
-
         setDisplayName(profession.getName());
         recipes = profession.buildTrades(getTradeSeed());
         this.setCanTrade(true);
-
     }
 
 }

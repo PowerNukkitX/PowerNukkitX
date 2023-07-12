@@ -145,7 +145,6 @@ public class ProfessionTool extends Profession {
                         .setTier(5)
                         .setTraderExp(0)
                         .build());
-
             return recipes;
     }
 

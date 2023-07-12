@@ -121,7 +121,6 @@ public class ProfessionLibrarian extends Profession {
                         .setTier(5)
                         .setTraderExp(2)
                         .build());
-
             return recipes;
     }
 

@@ -27,11 +27,9 @@ public abstract class Profession {
     private final String name;
 
     public Profession(int index, int blockid, String name) {
-
         this.index = index;
         this.blockid = blockid;
         this.name = name;
-
     }
 
     public ListTag<Tag> buildTrades(int seed) {

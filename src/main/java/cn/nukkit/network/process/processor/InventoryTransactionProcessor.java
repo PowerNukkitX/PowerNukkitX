@@ -307,14 +307,14 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
             if (playerHandle.getTradingTransaction().canExecute()) {
                 playerHandle.getTradingTransaction().execute();
 
-                for(Inventory inventory : playerHandle.getTradingTransaction().getInventories()) {
+                for (Inventory inventory : playerHandle.getTradingTransaction().getInventories()) {
 
-                    if(inventory instanceof TradeInventory tradeInventory) {
+                    if (inventory instanceof TradeInventory tradeInventory) {
                         EntityVillager ent = tradeInventory.getHolder();
                         ent.namedTag.putBoolean("traded", true);
-                        for(Tag tag : ent.getRecipes().getAll()) {
+                        for (Tag tag : ent.getRecipes().getAll()) {
                             CompoundTag ta = (CompoundTag) tag;
-                            if(ta.getCompound("buyA").getString("Name").equals(tradeInventory.getItem(0).getNamespaceId())) {
+                            if (ta.getCompound("buyA").getString("Name").equals(tradeInventory.getItem(0).getNamespaceId())) {
                                 int tradeXP = ta.getInt("traderExp");
                                 player.addExperience(ta.getByte("rewardExp"));
                                 ent.addExperience(tradeXP);

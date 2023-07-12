@@ -93,7 +93,6 @@ public class ProfessionMason extends Profession {
                         .setTier(5)
                         .setTraderExp(0)
                         .build());
-
             return recipes;
     }
 
