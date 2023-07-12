@@ -1046,7 +1046,7 @@ public class Level implements ChunkManager, Metadatable {
         }
     }
 
-    @PowerNukkitXDifference(since = "1.20.0-r3", info = "Use concurrency-safe collections")
+    @PowerNukkitXDifference(since = "1.20.10-r1", info = "Use concurrency-safe collections")
     public void addChunkPacket(int chunkX, int chunkZ, DataPacket packet) {
         long index = Level.chunkHash(chunkX, chunkZ);
         Deque<DataPacket> packets = chunkPackets.computeIfAbsent(index, i -> new ConcurrentLinkedDeque<>());
@@ -4587,7 +4587,7 @@ public class Level implements ChunkManager, Metadatable {
      * @param force
      * @return true if there is allocated time remaining
      */
-    @PowerNukkitXDifference(since = "1.20.0-r3", info = "rewrite the method to improve performance")
+    @PowerNukkitXDifference(since = "1.20.10-r1", info = "rewrite the method to improve performance")
     private boolean unloadChunks(long now, long allocatedTime, boolean force) {
         if (!this.unloadQueue.isEmpty()) {
             boolean result = true;
@@ -5242,7 +5242,7 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     @PowerNukkitXOnly
-    @Since("1.20.0-r3")
+    @Since("1.20.10-r1")
     public boolean isRayCollidingWithBlocks(double srcX, double srcY, double srcZ, double dstX, double dstY, double dstZ, double stepSize) {
         Vector3 direction = new Vector3(dstX - srcX, dstY - srcY, dstZ - srcZ);
         double length = direction.length();
@@ -5266,7 +5266,7 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     @PowerNukkitXOnly
-    @Since("1.20.0-r3")
+    @Since("1.20.10-r1")
     public float getBlockDensity(Vector3 source, AxisAlignedBB boundingBox) {
         double xInterval = 1 / ((boundingBox.getMaxX() - boundingBox.getMinX()) * 2 + 1);
         double yInterval = 1 / ((boundingBox.getMaxY() - boundingBox.getMinY()) * 2 + 1);
