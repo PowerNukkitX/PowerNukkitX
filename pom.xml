@@ -515,7 +515,7 @@
         <dependency>
             <groupId>cn.powernukkitx</groupId>
             <artifactId>Terra-Binary</artifactId>
-            <version>6.3.0-BETA</version>
+            <version>6.3.0-BETA-FIX</version>
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
@@ -587,6 +587,7 @@
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
@@ -599,6 +600,7 @@
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.2</version>
                 <configuration>
@@ -704,6 +706,10 @@
                         <group>
                             <title>cn.nukkit.block</title>
                             <packages>cn.nukkit.block.*</packages>
+                        </group>
+                        <group>
+                            <title>cn.nukkit.jemapping</title>
+                            <packages>cn.nukkit.jemapping.*</packages>
                         </group>
                         <group>
                             <title>cn.nukkit.command</title>

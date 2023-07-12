@@ -3,6 +3,7 @@ package cn.nukkit.level.terra;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.jemapping.JeMapping;
 import cn.nukkit.level.biome.Biome;
 import cn.nukkit.level.terra.delegate.PNXBiomeDelegate;
 import cn.nukkit.level.terra.handles.PNXItemHandle;
@@ -37,9 +38,6 @@ public class PNXPlatform extends AbstractPlatform {
     private static final PNXItemHandle pnxItemHandle = new PNXItemHandle();
     private static PNXPlatform INSTANCE = null;
 
-    //je -> be biomes mapping
-    private static final Map<String, Integer> jeBiomesMapping = new HashMap<>();
-
     static {
         DATA_PATH = new File("./terra");
         if (!DATA_PATH.exists()) {
@@ -60,14 +58,6 @@ public class PNXPlatform extends AbstractPlatform {
                 log.info("Failed to extract terra config.");
             }
         }
-        //读取映射
-        final var jeBiomesMappingConfig = new Config(Config.JSON);
-        try {
-            jeBiomesMappingConfig.load(PNXWorldHandle.class.getModule().getResourceAsStream("jeMappings/jeBiomesMapping.json"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        jeBiomesMappingConfig.getAll().forEach((k, v) -> jeBiomesMapping.put(k, ((Map<String, Double>) v).get("bedrock_id").intValue()));
     }
 
     public synchronized static PNXPlatform getInstance() {
@@ -103,8 +93,8 @@ public class PNXPlatform extends AbstractPlatform {
 
     private static PNXBiomeDelegate parseBiome(String str) {
         //使用getOrDefault()防止NPE
-        var id = jeBiomesMapping.getOrDefault(str, 1);
-        return PNXAdapter.adapt(Biome.getBiome(id));
+        var id = JeMapping.getBeBiomeIdByJeBiomeName(str);
+        return PNXAdapter.adapt(Biome.getBiome(id != null ? id : 1));
     }
 
     @Override

@@ -2,35 +2,24 @@ package cn.nukkit.level.terra.handles;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.blockstate.BlockStateRegistry;
+import cn.nukkit.jemapping.JeBlockState;
+import cn.nukkit.jemapping.JeMapping;
 import cn.nukkit.level.terra.PNXAdapter;
 import cn.nukkit.level.terra.delegate.PNXBlockStateDelegate;
 import cn.nukkit.level.terra.delegate.PNXEntityType;
-import cn.nukkit.utils.Config;
 import com.dfsek.terra.api.block.state.BlockState;
 import com.dfsek.terra.api.entity.EntityType;
 import com.dfsek.terra.api.handle.WorldHandle;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import static cn.nukkit.blockstate.BlockStateRegistry.getRuntimeIdByBlockStateHash;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public class PNXWorldHandle implements WorldHandle {
     public static final PNXBlockStateDelegate AIR = new PNXBlockStateDelegate(cn.nukkit.blockstate.BlockState.AIR);
-    public static Map<JeBlockState, Map<String, Object>> jeBlocksMapping = new HashMap<>();
     public static int err = 0;
-
-    static {
-        final var jeBlocksMappingConfig = new Config(Config.JSON);
-        try {
-            jeBlocksMappingConfig.load(PNXWorldHandle.class.getModule().getResourceAsStream("jeMappings/jeBlocksMapping.json"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        jeBlocksMappingConfig.getAll().forEach((k, v) -> jeBlocksMapping.put(new JeBlockState(k), (Map<String, Object>) v));
-    }
 
     @Override
     public @NotNull
@@ -96,50 +85,22 @@ public class PNXWorldHandle implements WorldHandle {
             jeBlockAttributes.putIfAbsent("up", "false");
             jeBlockAttributes.putIfAbsent("west", "false");
         }
-        Map<String, Object> mappedData = jeBlocksMapping.get(jeBlockState);
-        var toDefaultState = false;
+        var bedrockBlockStateHash = JeMapping.getBeBlockStateHashByJeBlockState(jeBlockState);
         //若未获取到属性，排除掉含水再次尝试
-        if (mappedData == null) {
+        if (bedrockBlockStateHash == null) {
             jeBlockState.setEqualsIgnoreWaterlogged(true);
-            mappedData = jeBlocksMapping.get(jeBlockState);
+            bedrockBlockStateHash = JeMapping.getBeBlockStateHashByJeBlockState(jeBlockState);
         }
         //排除所有属性再次尝试
-        if (mappedData == null) {
+        if (bedrockBlockStateHash == null) {
             jeBlockState.setEqualsIgnoreAttributes(true);
-            mappedData = jeBlocksMapping.get(jeBlockState);
-            toDefaultState = true;
+            bedrockBlockStateHash = JeMapping.getBeBlockStateHashByJeBlockState(jeBlockState);
         }
-        if (mappedData == null) {
+        if (bedrockBlockStateHash == null) {
             return AIR;
         }
-        final Map<String, Object> bedrockStates = new HashMap<>();
-        if (mappedData.containsKey("bedrock_states") && !toDefaultState) {
-            ((Map<String, Object>) mappedData.get("bedrock_states")).forEach((k, v) -> {
-                if (v instanceof Boolean) {
-                    if ((Boolean) v) {
-                        bedrockStates.put(k, 1);
-                    } else {
-                        bedrockStates.put(k, 0);
-                    }
-                    return;
-                }
-                if (v instanceof Number) {
-                    bedrockStates.put(k, ((Number) v).intValue());
-                    return;
-                }
-                bedrockStates.put(k, v);
-            });
-        }
-        var identifier = (String) mappedData.get("bedrock_identifier");
-        if (identifier.equals("minecraft:concretePowder"))//specific case
-            identifier = "minecraft:concrete_powder";
-        final var data = new StringBuilder();
-        data.append(identifier);
-        if (!bedrockStates.isEmpty()) {
-            bedrockStates.forEach((k, v) -> data.append(";").append(k).append("=").append(v));
-        }
         try {
-            return PNXAdapter.adapt(cn.nukkit.blockstate.BlockState.of(data.toString()));
+            return PNXAdapter.adapt(BlockStateRegistry.getBlockStateByRuntimeId(getRuntimeIdByBlockStateHash(bedrockBlockStateHash)));
         } catch (Exception e) {
             err++;
             return AIR;

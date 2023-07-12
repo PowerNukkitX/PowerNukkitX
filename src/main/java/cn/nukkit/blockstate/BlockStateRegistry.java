@@ -59,6 +59,9 @@ public class BlockStateRegistry {
     private final Map<BlockState, Registration> blockStateRegistration = new ConcurrentHashMap<>();
     private final Map<String, Registration> stateIdRegistration = new ConcurrentHashMap<>();
     private final Int2ObjectMap<Registration> runtimeIdRegistration = new Int2ObjectOpenHashMap<>();
+
+    @PowerNukkitXOnly
+    @Since("1.20.0-r3")
     private final Int2ObjectMap<Registration> blockStateHashRegistration = new Int2ObjectOpenHashMap();
     private final Int2ObjectMap<String> blockIdToPersistenceName = new Int2ObjectOpenHashMap<>();
     private final Map<String, Integer> persistenceNameToBlockId = new LinkedHashMap<>();
