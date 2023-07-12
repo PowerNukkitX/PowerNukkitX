@@ -16,11 +16,14 @@ import com.dfsek.terra.api.block.state.BlockState;
 import com.dfsek.terra.api.config.ConfigPack;
 import com.dfsek.terra.api.world.biome.generation.BiomeProvider;
 import com.dfsek.terra.api.world.chunk.generation.ChunkGenerator;
+import com.dfsek.terra.api.world.chunk.generation.stage.GenerationStage;
 import com.dfsek.terra.api.world.chunk.generation.util.GeneratorWrapper;
 import com.dfsek.terra.api.world.info.WorldProperties;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.ConcurrentModificationException;
 import java.util.Map;
 
 /**
@@ -163,6 +166,7 @@ public class TerraGenerator implements GeneratorWrapper {
                 generationStage.populate(tmp);
             }
         } catch (Exception e) {
+            //TODO: 未知原因的 ConcurrentModificationException
             e.printStackTrace();
         }
         // 在装饰区块的时候就计算好天光避免重复计算导致内存泄露

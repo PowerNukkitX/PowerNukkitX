@@ -16,6 +16,7 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.ByteOrder;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * PowerNukkitX Project 2023/7/12
@@ -59,7 +60,7 @@ public class JeMapping {
         //Block
         final var jeBlocksMappingConfig = new Config(Config.JSON);
         try {
-            jeBlocksMappingConfig.load(PNXWorldHandle.class.getModule().getResourceAsStream("jeMappings/jeBlocksMapping.json"));
+            jeBlocksMappingConfig.load(JeMapping.class.getModule().getResourceAsStream("jeMappings/jeBlocksMapping.json"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -94,23 +95,27 @@ public class JeMapping {
     }
 
     @SneakyThrows
-    private static int computeBedrockBlockStateHash(String name, Map<String, Object> states) {
+    private static int computeBedrockBlockStateHash(String name, @Nullable Map<String, Object> states) {
         var tag = new CompoundTag();
         tag.putString("name", name);
-        for (var entry : states.entrySet()) {
-            var bedrockPropertyType = PropertyTypes.getPropertyTypeString(entry.getKey());
-            switch (bedrockPropertyType) {
-                case "INTEGER" -> {
-                    tag.putInt(entry.getKey(), (Integer) entry.getValue());
-                }
-                case "BOOLEAN" -> {
-                    tag.putBoolean(entry.getKey(), (Boolean) entry.getValue());
-                }
-                case "ENUM" -> {
-                    tag.putString(entry.getKey(), (String) entry.getValue());
+        var stateTag = new CompoundTag(new TreeMap<>());
+        if (states != null) {
+            for (var entry : states.entrySet()) {
+                var bedrockPropertyType = PropertyTypes.getPropertyTypeString(entry.getKey());
+                switch (bedrockPropertyType) {
+                    case "INTEGER" -> {
+                        stateTag.putInt(entry.getKey(), ((Double) entry.getValue()).intValue());
+                    }
+                    case "BOOLEAN" -> {
+                        stateTag.putBoolean(entry.getKey(), (Boolean) entry.getValue());
+                    }
+                    case "ENUM" -> {
+                        stateTag.putString(entry.getKey(), (String) entry.getValue());
+                    }
                 }
             }
         }
+        tag.putCompound("states", stateTag);
         return MinecraftNamespaceComparator.fnv1a_32(NBTIO.write(tag, ByteOrder.LITTLE_ENDIAN));
     }
 }

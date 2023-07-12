@@ -642,6 +642,9 @@ public class BlockStateRegistry {
                 .remove("blockId")
                 .remove("version")
                 .remove("runtimeId");
+        if (!pureTag.contains("states"))
+            pureTag.putCompound("states", new CompoundTag());
+        else pureTag.putCompound("states", new CompoundTag(new TreeMap<>(pureTag.getCompound("states").getTags())));
         Registration registration = new Registration(null, runtimeId, MinecraftNamespaceComparator.fnv1a_32(NBTIO.write(pureTag, ByteOrder.LITTLE_ENDIAN)), block);
 
         Registration old = stateIdRegistration.putIfAbsent(stateId, registration);
@@ -767,6 +770,13 @@ public class BlockStateRegistry {
             } catch (NumberFormatException ignored) {
             }
         }
+
+        //It's a remapped block
+        var fullId = RuntimeItemMapping.getPureNameBlockMappings().inverse().get(persistenceName);
+        if (fullId != null) {
+            return RuntimeItems.getId(fullId);
+        }
+
         return null;
     }
 

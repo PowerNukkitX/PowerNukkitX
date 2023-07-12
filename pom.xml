@@ -597,6 +597,7 @@
                     <compilerArgs>
                         <arg>-Xpkginfo:always</arg>
                     </compilerArgs>
+                    <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
             <plugin>

@@ -3,6 +3,7 @@ package cn.nukkit.level.terra.delegate;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.jemapping.JeMapping;
 import com.dfsek.terra.api.block.BlockType;
 import com.dfsek.terra.api.block.state.BlockState;
 import com.dfsek.terra.api.block.state.properties.Property;
@@ -37,6 +38,8 @@ public record PNXBlockStateDelegate(cn.nukkit.blockstate.BlockState innerBlockSt
 
     @Override
     public String getAsString(boolean b) {
+//        var jeState = JeMapping.getJeBlockStateByBeBlockStateHash(innerBlockState.getBlock().computeBlockStateHash());
+//        return jeState != null ? jeState.toString() : innerBlockState.getPersistenceName();
         //todo: 未完全实现带状态的toString，因为需要返回一个JE格式的BlockState字符串，这需要做BE->JE的方块状态映射
         //很多的方块生成问题都是因为这里返回的Str不对，需要特别注意
         var name = innerBlockState.getPersistenceName();

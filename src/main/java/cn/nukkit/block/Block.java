@@ -3039,15 +3039,21 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return false;
     }
 
+    private int cachedBlockStateHash = -1;
+
     @PowerNukkitXOnly
     @Since("1.19.80-r3")
     @SneakyThrows
     public int computeBlockStateHash() {
-        if (getPersistenceName().equals("minecraft:unknown")) {
-            return -2; // This is special case
+        if (cachedBlockStateHash != -1) {
+            return cachedBlockStateHash;
+        } else {
+            if (getPersistenceName().equals("minecraft:unknown")) {
+                return cachedBlockStateHash = -2; // This is special case
+            }
+            var tag = NBTIO.putBlockHelper(this, "").remove("version");
+            return cachedBlockStateHash = MinecraftNamespaceComparator.fnv1a_32(NBTIO.write(tag, ByteOrder.LITTLE_ENDIAN));
         }
-        var tag = NBTIO.putBlockHelper(this, "").remove("version");
-        return MinecraftNamespaceComparator.fnv1a_32(NBTIO.write(tag, ByteOrder.LITTLE_ENDIAN));
     }
 
     @Override

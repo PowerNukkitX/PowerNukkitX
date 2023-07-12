@@ -13,8 +13,6 @@ import com.dfsek.terra.api.entity.EntityType;
 import com.dfsek.terra.api.handle.WorldHandle;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.blockstate.BlockStateRegistry.getRuntimeIdByBlockStateHash;
-
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public class PNXWorldHandle implements WorldHandle {
@@ -72,7 +70,7 @@ public class PNXWorldHandle implements WorldHandle {
         if (jeBlockIdentifier.contains("log") || jeBlockIdentifier.contains("wood")) {
             jeBlockAttributes.putIfAbsent("axis", "y");
         }
-        if (jeBlockIdentifier.equals("minecraft:jungle_leaves") || jeBlockIdentifier.equals("minecraft:spruce_leaves") || jeBlockIdentifier.equals("minecraft:oak_leaves")) {
+        if (jeBlockIdentifier.contains("minecraft:leaves")) {
             jeBlockAttributes.putIfAbsent("distance", "7");
             jeBlockAttributes.putIfAbsent("persistent", "true");
         }
@@ -97,10 +95,21 @@ public class PNXWorldHandle implements WorldHandle {
             bedrockBlockStateHash = JeMapping.getBeBlockStateHashByJeBlockState(jeBlockState);
         }
         if (bedrockBlockStateHash == null) {
+            err++;
+            return AIR;
+        }
+        var runtimeId = BlockStateRegistry.getRuntimeIdByBlockStateHash(bedrockBlockStateHash);
+        if (runtimeId == -1) {
+            err++;
             return AIR;
         }
         try {
-            return PNXAdapter.adapt(BlockStateRegistry.getBlockStateByRuntimeId(getRuntimeIdByBlockStateHash(bedrockBlockStateHash)));
+            var bedrockState = BlockStateRegistry.getBlockStateByRuntimeId(runtimeId);
+            if (bedrockState == null) {
+                err++;
+                return AIR;
+            }
+            return PNXAdapter.adapt(bedrockState);
         } catch (Exception e) {
             err++;
             return AIR;
