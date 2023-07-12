@@ -515,7 +515,7 @@
         <dependency>
             <groupId>cn.powernukkitx</groupId>
             <artifactId>Terra-Binary</artifactId>
-            <version>6.2.0-BETA</version>
+            <version>6.3.0-BETA</version>
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>

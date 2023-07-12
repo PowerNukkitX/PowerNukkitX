@@ -13,17 +13,13 @@ import java.util.Map;
 
 @SuppressWarnings("unchecked")
 public final class PropertyTypes {
-    private static final Map<String, String> propertyTypeMap = new Object2ObjectOpenHashMap<>();
+    private static final Map<String, String> propertyTypeMap;
 
     static {
         Gson gson = new GsonBuilder().create();
-        try (InputStream resourceAsStream = Server.class.getModule().getResourceAsStream("block_properties.json")) {
+        try (InputStream resourceAsStream = Server.class.getModule().getResourceAsStream("block_property_types.json")) {
             assert resourceAsStream != null;
-            Map<String, ?> map = gson.fromJson(new InputStreamReader(resourceAsStream), Map.class);
-            for (var entry : map.entrySet()) {
-                Map<String, ?> value = (Map<String, ?>) entry.getValue();
-                propertyTypeMap.put(entry.getKey(), value.get("valueType").toString());
-            }
+            propertyTypeMap = new Object2ObjectOpenHashMap<String, String>(gson.fromJson(new InputStreamReader(resourceAsStream), Map.class));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
