@@ -293,6 +293,9 @@ public abstract class Entity extends Location implements Metadatable {
     @Since("1.19.40-r3")
     public static final int DATA_PLAYER_HAS_DIED = 129;// ???
 
+    @Since("1.20.10-r1")
+    public static final int DATA_COLLISION_BOX = 130; //vector3f
+
     // Flags
     public static final int DATA_FLAG_ONFIRE = dynamic(0);
     public static final int DATA_FLAG_SNEAKING = dynamic(1);
