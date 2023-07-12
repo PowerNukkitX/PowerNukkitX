@@ -23,12 +23,11 @@ import cn.nukkit.utils.HumanStringComparator;
 import cn.nukkit.utils.MinecraftNamespaceComparator;
 import cn.nukkit.utils.OK;
 import com.google.common.base.Preconditions;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -60,6 +59,7 @@ public class BlockStateRegistry {
     private final Map<BlockState, Registration> blockStateRegistration = new ConcurrentHashMap<>();
     private final Map<String, Registration> stateIdRegistration = new ConcurrentHashMap<>();
     private final Int2ObjectMap<Registration> runtimeIdRegistration = new Int2ObjectOpenHashMap<>();
+    private final Int2ObjectMap<Registration> blockStateHashRegistration = new Int2ObjectOpenHashMap();
     private final Int2ObjectMap<String> blockIdToPersistenceName = new Int2ObjectOpenHashMap<>();
     private final Map<String, Integer> persistenceNameToBlockId = new LinkedHashMap<>();
     private byte[] blockPaletteBytes;
@@ -232,6 +232,14 @@ public class BlockStateRegistry {
         return knownStateIds.indexOf(fullStateId);
     }
 
+    @PowerNukkitXOnly
+    @Since("1.20.0-r3")
+    public int getRuntimeIdByBlockStateHash(int blockStateHash) {
+        var reg = blockStateHashRegistration.get(blockStateHash);
+        if (reg != null) return reg.runtimeId;
+        else return -1;
+    }
+
     /**
      * @return {@code null} if the runtime id does not matches any known block state.
      */
@@ -347,7 +355,7 @@ public class BlockStateRegistry {
         if (state.getBlockId() == BlockID.AIR) {
             Registration airRegistration = blockStateRegistration.get(BlockState.AIR);
             if (airRegistration != null) {
-                return new Registration(state, airRegistration.runtimeId, null);
+                return new Registration(state, airRegistration.runtimeId, airRegistration.blockStateHash, null);
             }
         }
 
@@ -623,9 +631,15 @@ public class BlockStateRegistry {
         init();
     }
 
+    @SneakyThrows
     private void registerStateId(CompoundTag block, int runtimeId) {
         String stateId = getStateId(block);
-        Registration registration = new Registration(null, runtimeId, block);
+        CompoundTag pureTag = block
+                .clone()
+                .remove("blockId")
+                .remove("version")
+                .remove("runtimeId");
+        Registration registration = new Registration(null, runtimeId, MinecraftNamespaceComparator.fnv1a_32(NBTIO.write(pureTag, ByteOrder.LITTLE_ENDIAN)), block);
 
         Registration old = stateIdRegistration.putIfAbsent(stateId, registration);
         if (old != null && !old.equals(registration)) {
@@ -633,17 +647,19 @@ public class BlockStateRegistry {
         }
         knownStateIds.add(stateId);
         runtimeIdRegistration.put(runtimeId, registration);
+        blockStateHashRegistration.put(registration.blockStateHash, registration);
     }
 
     private void registerState(int blockId, int meta, CompoundTag originalState, int runtimeId) {
         BlockState state = BlockState.of(blockId, meta);
-        Registration registration = new Registration(state, runtimeId, null);
+        Registration registration = new Registration(state, runtimeId, state.getBlock().computeBlockStateHash(), null);
 
         Registration old = blockStateRegistration.putIfAbsent(state, registration);
         if (old != null && !registration.equals(old)) {
             throw new UnsupportedOperationException("The persistence NBT registration tried to replaced a runtime id. Old:" + old + ", New:" + runtimeId + ", State:" + state);
         }
         runtimeIdRegistration.put(runtimeId, registration);
+        blockStateHashRegistration.put(registration.blockStateHash, registration);
 
         stateIdRegistration.remove(getStateId(originalState));
         stateIdRegistration.remove(state.getLegacyStateId());
@@ -777,6 +793,8 @@ public class BlockStateRegistry {
         private BlockState state;
 
         private final int runtimeId;
+
+        private final int blockStateHash;
 
         @Nullable
         private CompoundTag originalBlock;
