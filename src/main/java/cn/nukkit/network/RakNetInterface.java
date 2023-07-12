@@ -3,6 +3,7 @@ package cn.nukkit.network;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.event.player.PlayerCreationEvent;
 import cn.nukkit.event.server.QueryRegenerateEvent;
@@ -26,8 +27,10 @@ import java.lang.reflect.Constructor;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.security.*;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -40,6 +43,9 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
     private Network network;
 
     private final RakNetServer raknet;
+    @Since("1.20.0-r3")
+    @PowerNukkitXOnly
+    private final Executor packetProcessingThreadPool = Executors.newFixedThreadPool(1, new PacketProcessingThreadPoolThreadFactory());
     private final Map<InetSocketAddress, RakNetPlayerSession> sessions = new HashMap<>();
     private final Queue<RakNetPlayerSession> sessionCreationQueue = PlatformDependent.newMpscQueue();
 
@@ -54,6 +60,12 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
         this.raknet.setProtocolVersion(11);
         this.raknet.bind().join();
         this.raknet.setListener(this);
+    }
+
+    @Since("1.20.0-r3")
+    @PowerNukkitXOnly
+    public Executor getPacketProcessingThreadPool() {
+        return packetProcessingThreadPool;
     }
 
     @Override
@@ -248,5 +260,28 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
 
     public Network getNetwork() {
         return this.network;
+    }
+
+    private static class PacketProcessingThreadPoolThreadFactory implements ThreadFactory {
+
+        @Override
+        public Thread newThread(@NotNull Runnable r) {
+            return new PacketProcessingThread(r);
+        }
+    }
+
+    private static class PacketProcessingThread extends Thread {
+        private static final AtomicInteger poolNumber = new AtomicInteger(1);
+
+        /**
+         * Creates a ForkJoinWorkerThread operating in the given pool.
+         *
+         * @param r the runnable task
+         * @throws NullPointerException if pool is null
+         */
+        PacketProcessingThread(Runnable r) {
+            super(r);
+            this.setName("PacketProcessingThread" + poolNumber.getAndIncrement());
+        }
     }
 }

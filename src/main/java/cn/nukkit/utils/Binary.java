@@ -101,10 +101,10 @@ public class Binary {
 
     public static byte[] writeMetadata(EntityMetadata metadata) {
         BinaryStream stream = new BinaryStream();
-        Map<Integer, EntityData> map = metadata.getMap();
+        Map<Integer, EntityData<?>> map = metadata.getMap();
         stream.putUnsignedVarInt(map.size());
         for (int id : map.keySet()) {
-            EntityData d = map.get(id);
+            EntityData<?> d = map.get(id);
             stream.putUnsignedVarInt(id);
             stream.putUnsignedVarInt(d.getType());
             switch (d.getType()) {
@@ -161,7 +161,7 @@ public class Binary {
         for (int i = 0; i < count; i++) {
             int key = (int) stream.getUnsignedVarInt();
             int type = (int) stream.getUnsignedVarInt();
-            EntityData value = null;
+            EntityData<?> value = null;
             switch (type) {
                 case Entity.DATA_TYPE_BYTE:
                     value = new ByteEntityData(key, stream.getByte());
