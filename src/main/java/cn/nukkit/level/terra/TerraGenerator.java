@@ -165,6 +165,9 @@ public class TerraGenerator implements GeneratorWrapper {
             for (var generationStage : configPack.getStages()) {
                 generationStage.populate(tmp);
             }
+        } catch (ConcurrentModificationException e) {
+            //TODO: 未知原因的 ConcurrentModificationException
+            //Ignore
         } catch (Exception e) {
             //TODO: 未知原因的 ConcurrentModificationException
             e.printStackTrace();
