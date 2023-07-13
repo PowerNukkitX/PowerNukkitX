@@ -175,7 +175,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
             if (components.contains("minecraft:unit_cube")) components.remove("minecraft:unit_cube");
             //设置方块对应的几何模型
             components.putCompound("minecraft:geometry", new CompoundTag()
-                    .putString("value", geometry.toLowerCase(Locale.ENGLISH)));
+                    .putString("identifier", geometry.toLowerCase(Locale.ENGLISH)));
             return this;
         }
 
