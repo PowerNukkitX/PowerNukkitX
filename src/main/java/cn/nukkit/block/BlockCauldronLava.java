@@ -21,8 +21,8 @@ import cn.nukkit.potion.Effect;
 import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
-@Deprecated(since = "1.20.0-r3")
-@DeprecationDetails(since = "1.20.0-r3", reason = "Use BlockCauldron instead")
+@Deprecated(since = "1.20.10-r1")
+@DeprecationDetails(since = "1.20.10-r1", reason = "Use BlockCauldron instead")
 public class BlockCauldronLava extends BlockCauldron {
     @PowerNukkitOnly
     public BlockCauldronLava() {

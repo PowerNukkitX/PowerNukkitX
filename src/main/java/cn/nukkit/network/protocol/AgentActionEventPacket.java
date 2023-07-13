@@ -6,12 +6,12 @@ import cn.nukkit.network.protocol.types.AgentActionType;
  * @since v503
  */
 public class AgentActionEventPacket extends DataPacket {
-    private String requestId;
-    private AgentActionType actionType;
+    public String requestId;
+    public AgentActionType actionType;
     /**
      * @see AgentActionType for type specific JSON
      */
-    private String responseJson;
+    public String responseJson;
 
     @Override
     public byte pid() {

@@ -8131,6 +8131,7 @@
     ],
     "output": [
       {
+        "block_states": "CgAAAwcAY2FuZGxlcwAAAAABAwBsaXQAAA==",
         "name": "minecraft:blue_candle"
       }
     ],
@@ -8282,6 +8283,7 @@
     ],
     "output": [
       {
+        "block_states": "CgAAAwcAY2FuZGxlcwAAAAABAwBsaXQAAA==",
         "name": "minecraft:blue_candle"
       }
     ],
@@ -13457,7 +13459,6 @@
     ],
     "output": [
       {
-        "count": 2,
         "name": "minecraft:cyan_dye"
       }
     ],
@@ -14141,22 +14142,6 @@
       }
     ],
     "priority": 1
-  },
-  {
-    "block": "crafting_table",
-    "input": [
-      {
-        "meta": 32767,
-        "name": "minecraft:web"
-      }
-    ],
-    "output": [
-      {
-        "count": 9,
-        "name": "minecraft:string"
-      }
-    ],
-    "priority": 0
   },
   {
     "block": "crafting_table",
@@ -16363,6 +16348,21 @@
     "output": [
       {
         "name": "minecraft:yellow_dye"
+      }
+    ],
+    "priority": 0
+  },
+  {
+    "block": "deprecated",
+    "input": [
+      {
+        "meta": 32767,
+        "name": "minecraft:string"
+      }
+    ],
+    "output": [
+      {
+        "name": "minecraft:string"
       }
     ],
     "priority": 0

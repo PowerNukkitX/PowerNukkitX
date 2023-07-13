@@ -3,7 +3,7 @@ package cn.nukkit.utils.collection.nb;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 
-@Since("1.20.0-r3")
+@Since("1.20.10-r1")
 @PowerNukkitXOnly
 public final class RangeUtil {
     public static int checkPositiveOrZero(int n, String name) {
