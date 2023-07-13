@@ -23,10 +23,12 @@ import oshi.hardware.NetworkIF;
 import javax.annotation.Nonnegative;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.lang.invoke.VarHandle;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ProtocolException;
 import java.util.*;
+import java.util.concurrent.Executor;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
@@ -311,23 +313,37 @@ public class Network {
 
     public void processBatch(BatchPacket packet, Player player) {
         try {
-            unpackBatchedPackets(packet, player.getNetworkSession().getCompression());
+            if (player.getNetworkSession() != null)
+                unpackBatchedPackets(packet, player.getNetworkSession().getCompression());
+            else
+                unpackBatchedPackets(packet, CompressionProvider.ZLIB);
         } catch (ProtocolException e) {
             player.close("", e.getMessage());
             log.error("Unable to process player packets ", e);
         }
     }
 
+    public List<DataPacket> unpackBatchedPackets(BatchPacket packet, CompressionProvider compression) throws ProtocolException {
+        return unpackBatchedPackets(packet, compression, null);
+    }
+
     @PowerNukkitOnly
     @Since("FUTURE")
-    public List<DataPacket> unpackBatchedPackets(BatchPacket packet, CompressionProvider compression) throws ProtocolException {
+    @PowerNukkitXDifference(since = "1.20.0-r3", info = "Add decodeExecutor parameter")
+    public List<DataPacket> unpackBatchedPackets(BatchPacket packet, CompressionProvider compression, @Nullable Executor decodeExecutor) throws ProtocolException {
         List<DataPacket> packets = new ObjectArrayList<>();
-        processBatch(packet.payload, packets, compression);
+        processBatch(packet.payload, packets, compression, decodeExecutor);
         return packets;
     }
 
-    @Since("1.4.0.0-PN")
     public void processBatch(byte[] payload, Collection<DataPacket> packets, CompressionProvider compression) throws ProtocolException {
+        processBatch(payload, packets, compression, null);
+    }
+
+    @Since("1.4.0.0-PN")
+    @PowerNukkitXDifference(since = "1.20.0-r3", info = "Add decodeExecutor parameter")
+    public void processBatch(byte[] payload, Collection<DataPacket> packets, CompressionProvider compression,
+                             @Nullable Executor decodeExecutor) throws ProtocolException {
         byte[] data;
         try {
             data = compression.decompress(payload);
@@ -358,7 +374,16 @@ public class Network {
                 if (pk != null) {
                     pk.setBuffer(buf, buf.length - bais.available());
                     try {
-                        pk.decode();
+                        if (decodeExecutor != null) {
+                            decodeExecutor.execute(() -> {
+                                VarHandle.fullFence();
+                                pk.decode();
+                                packets.add(pk);
+                            });
+                        } else {
+                            pk.decode();
+                            packets.add(pk);
+                        }
                     } catch (Exception e) {
                         if (log.isTraceEnabled()) {
                             log.trace("Dumping Packet\n{}", ByteBufUtil.prettyHexDump(Unpooled.wrappedBuffer(buf)));
@@ -366,8 +391,6 @@ public class Network {
                         log.error("Unable to decode packet", e);
                         throw new IllegalStateException("Unable to decode " + pk.getClass().getSimpleName());
                     }
-
-                    packets.add(pk);
                 } else {
                     log.debug("Received unknown packet with ID: {}", Integer.toHexString(packetId));
                 }
@@ -541,7 +564,7 @@ public class Network {
         this.registerPacket(ProtocolInfo.NETWORK_CHUNK_PUBLISHER_UPDATE_PACKET, NetworkChunkPublisherUpdatePacket.class);
         this.registerPacket(ProtocolInfo.AVAILABLE_ENTITY_IDENTIFIERS_PACKET, AvailableEntityIdentifiersPacket.class);
         this.registerPacket(ProtocolInfo.LEVEL_SOUND_EVENT_PACKET_V2, LevelSoundEventPacket.class);
-        this.registerPacket(ProtocolInfo.SCRIPT_CUSTOM_EVENT_PACKET, ScriptCustomEventPacket.class);
+//        this.registerPacket(ProtocolInfo.SCRIPT_CUSTOM_EVENT_PACKET, ScriptCustomEventPacket.class); // deprecated since 1.20.10
         this.registerPacket(ProtocolInfo.SPAWN_PARTICLE_EFFECT_PACKET, SpawnParticleEffectPacket.class);
         this.registerPacket(ProtocolInfo.BIOME_DEFINITION_LIST_PACKET, BiomeDefinitionListPacket.class);
         this.registerPacket(ProtocolInfo.LEVEL_SOUND_EVENT_PACKET, LevelSoundEventPacket.class);
@@ -615,6 +638,7 @@ public class Network {
         this.registerPacketNew(ProtocolInfo.COMPRESSED_BIOME_DEFINITIONS_LIST, CompressedBiomeDefinitionListPacket.class);
         this.registerPacketNew(ProtocolInfo.TRIM_DATA, TrimDataPacket.class);
         this.registerPacketNew(ProtocolInfo.OPEN_SIGN, OpenSignPacket.class);
+        this.registerPacketNew(ProtocolInfo.AGENT_ANIMATION, AgentAnimationPacket.class);
 
         this.packetPool.trim();
     }

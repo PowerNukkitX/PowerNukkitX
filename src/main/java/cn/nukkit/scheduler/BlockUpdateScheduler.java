@@ -12,7 +12,7 @@ import cn.nukkit.utils.collection.nb.Long2ObjectNonBlockingMap;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-@PowerNukkitXDifference(since = "1.20.0-r3", info = "Use concurrency-safe collections")
+@PowerNukkitXDifference(since = "1.20.10-r1", info = "Use concurrency-safe collections")
 public class BlockUpdateScheduler {
     private final Level level;
     private long lastTick;
@@ -131,7 +131,7 @@ public class BlockUpdateScheduler {
         return false;
     }
 
-    @Deprecated(since = "1.20.0-r3", forRemoval = true)
+    @Deprecated(since = "1.20.10-r1", forRemoval = true)
     @SuppressWarnings("SuspiciousMethodCalls")
     public boolean remove(Vector3 pos) {
         for (var tickUpdateSet : queuedUpdates.values()) {
