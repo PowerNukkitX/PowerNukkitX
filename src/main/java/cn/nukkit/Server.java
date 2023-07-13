@@ -14,6 +14,7 @@ import cn.nukkit.dispenser.DispenseBehaviorRegister;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.data.Skin;
+import cn.nukkit.entity.data.profession.Profession;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.event.level.LevelInitEvent;
 import cn.nukkit.event.level.LevelLoadEvent;
@@ -402,6 +403,7 @@ public class Server {
 
         setMaxPlayers(10);
 
+        this.registerProfessions();
         this.registerEntities();
         this.registerBlockEntities();
     }
@@ -794,6 +796,7 @@ public class Server {
         NukkitMetrics.startNow(this);
 
         this.registerEntities();
+        this.registerProfessions();
         this.registerBlockEntities();
 
         Block.init();
@@ -2517,6 +2520,11 @@ public class Server {
 
     public FreezableArrayManager getFreezableArrayManager() {
         return freezableArrayManager;
+    }
+
+    // TODO: update PNX Junit5 test framework to remove dependency on this method
+    private void registerProfessions() {
+        Profession.init();
     }
 
     // TODO: update PNX Junit5 test framework to remove dependency on this method
