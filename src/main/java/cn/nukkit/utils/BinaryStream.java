@@ -31,13 +31,10 @@ import lombok.val;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.VarHandle;
 import java.lang.reflect.Array;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicIntegerArray;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -52,7 +49,7 @@ public class BinaryStream {
 
     public int offset;
     private byte[] buffer;
-    protected volatile int count;
+    protected int count;
 
     private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
 
@@ -97,9 +94,7 @@ public class BinaryStream {
     }
 
     public byte[] getBuffer() {
-        VarHandle.fullFence(); // ensure volatile read of array content
-        var tmp = buffer;
-        return Arrays.copyOf(tmp, count);
+        return Arrays.copyOf(buffer, count);
     }
 
     public int getCount() {
