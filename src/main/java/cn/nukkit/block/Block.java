@@ -881,6 +881,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             list[CHERRY_WOOD] = BlockWoodCherry.class;//801
             list[CHERRY_SAPLING] = BlockCherrySapling.class;//802
             list[CHERRY_LEAVES] = BlockCherryLeaves.class;//803
+            list[PINK_PETALS] = BlockPinkPetals.class;//804
             initializing = true;
 
             for (int id = 0; id < MAX_BLOCK_ID; id++) {

@@ -22,6 +22,9 @@ public class PNXWorldHandle implements WorldHandle {
     @Override
     public @NotNull
     BlockState createBlockState(@NotNull String s) {
+        if (!s.startsWith("minecraft:")) {
+            s = "minecraft:" + s;
+        }
         //修正部分属性缺失以能正确获取对应基岩版映射
         switch (s) {
             case "minecraft:water" -> s = "minecraft:water[level=0]";

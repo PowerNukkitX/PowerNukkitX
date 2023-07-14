@@ -1375,7 +1375,10 @@ public enum MinecraftItemID {
     CHERRY_SAPLING,
     @Since("1.20.0-r2")
     @PowerNukkitXOnly
-    CHERRY_LEAVES;
+    CHERRY_LEAVES,
+    @Since("1.20.10-r1")
+    @PowerNukkitXOnly
+    PINK_PETALS;
 
 
     private static final Map<String, MinecraftItemID> namespacedIdMap = Arrays.stream(values())
