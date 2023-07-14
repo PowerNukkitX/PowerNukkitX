@@ -301,5 +301,7 @@ public class BlockComposter extends BlockSolidMeta implements ItemID {
         registerBlock(50, TALL_GRASS, 1);
         registerBlock(65, TALL_GRASS, 2);
         registerBlock(65, TALL_GRASS, 3);
+
+        registerBlock(30, PINK_PETALS);
     }
 }

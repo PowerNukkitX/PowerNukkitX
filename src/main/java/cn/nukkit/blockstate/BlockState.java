@@ -13,10 +13,10 @@ import cn.nukkit.blockstate.exception.InvalidBlockStateDataTypeException;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.RuntimeItemMapping;
-import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.utils.OptionalBoolean;
+import cn.nukkit.utils.StringUtils;
 import cn.nukkit.utils.Validation;
 import lombok.Getter;
 import lombok.ToString;
@@ -194,11 +194,15 @@ public final class BlockState implements Serializable, IBlockState {
         int id;
         Optional<Integer> optionalId = Optional.ofNullable(BlockStateRegistry.getBlockId(namespacedId));
         if (optionalId.isEmpty()) {
-            Integer fullId = RuntimeItemMapping.getBlockMapping().inverse().get(persistedStateId);
+            String fullId = RuntimeItemMapping.getBlockMapping().inverse().get(persistedStateId);
             if (fullId != null) {
-                int blockId = RuntimeItems.getId(fullId);
-                int damage = RuntimeItems.getData(fullId);
-                return of(blockId, damage);
+                List<String> sId = StringUtils.fastSplit(":", fullId);
+                int blockId = Integer.parseInt(sId.get(0));
+                int blockData = Integer.parseInt(sId.get(1));
+                if (blockData < 16) {
+                    return of0xF(blockId, (byte) blockData);
+                }
+                return STATES_UNCOMMON.computeIfAbsent(fullId, k -> new BlockState(blockId, blockData));
             } else {
                 throw new NoSuchElementException("Block " + namespacedId + " not found.");
             }
