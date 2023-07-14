@@ -955,7 +955,7 @@ public class Server {
 
         this.enablePlugins(PluginLoadOrder.POSTWORLD);
 
-        if (this.getConfig("settings.download-spark", true)) {
+        if (this.getConfig("settings.download-spark", false)) {
             SparkInstaller.initSpark(this);
         }
 
