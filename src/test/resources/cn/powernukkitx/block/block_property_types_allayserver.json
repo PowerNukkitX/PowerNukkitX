@@ -862,6 +862,18 @@
                 "west"
             ]
         },
+        "minecraft_facing_direction": {
+            "serializationName": "minecraft:facing_direction",
+            "valueType": "ENUM",
+            "values": [
+                "down",
+                "east",
+                "north",
+                "south",
+                "up",
+                "west"
+            ]
+        },
         "moisturized_amount": {
             "serializationName": "moisturized_amount",
             "valueType": "INTEGER",

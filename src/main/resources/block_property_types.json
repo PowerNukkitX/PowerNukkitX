@@ -79,6 +79,7 @@
   "rail_direction": "INTEGER",
   "chisel_type": "ENUM",
   "sapling_type": "ENUM",
+  "minecraft:facing_direction": "ENUM",
   "stone_slab_type_3": "ENUM",
   "stone_slab_type_2": "ENUM",
   "stone_slab_type_4": "ENUM",
