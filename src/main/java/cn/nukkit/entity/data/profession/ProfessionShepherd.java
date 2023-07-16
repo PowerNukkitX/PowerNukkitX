@@ -63,7 +63,7 @@ public class ProfessionShepherd extends Profession {
                         .setTier(3)
                         .setTraderExp(2)
                         .build())
-                .add(RecipeBuildUtils.of(Item.get(Item.EMERALD,0,3), Item.get(Item.BED, 0 , DyeColor.BLUE.getItemDyeMeta()))
+                .add(RecipeBuildUtils.of(Item.get(Item.EMERALD,0,3), Item.get(Item.BED, DyeColor.BLUE.getItemDyeMeta()))
                         .setMaxUses(16)
                         .setRewardExp((byte) 1)
                         .setTier(3)
