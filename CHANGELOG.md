@@ -11,9 +11,54 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 3. <a href="#CataLogs-Version-history">🔖 Version history / 历史版本 </a>
 
 ## [Dev-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - Future
-This work in progress version supports Minecraft:BE `1.20.0 (Protocol Version 589)`.
+This work in progress version supports Minecraft:BE `1.20.10 (Protocol Version 594)`.
 
 ## Under development, stay tuned!
+
+## [1.20.10-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.10-r2) - 2023-7-15
+This work in progress version supports Minecraft:BE `1.20.10 (Protocol Version 594)`.
+
+## Added
+
+- [#1263] Added Villager Trades and basic movement.
+- [#1269] Remove `Timings` and bundle `Spark`.
+- [#1271] Runtime-only entities.
+- [#1279] Add new Mojang signature support.
+- [#1285] Reduce explosion damage if entities behind blocks.
+- [#1299] Add `Enum ItemCreativeGroup`.
+- [#1302] Add high-performance non-blocking primitive type `ConcurrentMap`.
+- [#1312] Adapt Minecraft:BE `1.20.10  (Protocol Version 594)`.
+- [#1319] `PNX-1.20.10-r1` released.
+
+## Changed
+
+- [#1297] Adjustment of French translation.
+- [#1304] Update `Docker image`.
+- [#1318] `Spark` is not enabled by default (reverting [#1300] changes).
+- [#1307] Parallelize some of the data structures in level.
+- [#1313] Update `Terra`.
+- [#1316] Revert async packet sending (reverting [#1310]/[#1314] changes).
+- [#1317] Parallelize the internal data structures of the chunk.
+
+## Fixes
+
+- [#1259] Fix cherry sapling cant be planted.
+- [#1266] Trying to fix the issue with fishing enchantment books not being enchanted.
+- [#1267] Merge the bug fix code from [NKX-PR2126](https://github.com/CloudburstMC/Nukkit/pull/2116).
+- [#1272] Fix creeper drop item issue.
+- [#1273] Fix cauldron bugs.
+- [#1278] Fix `EmotePacket` compatibility issue.
+- [#1280] Fix the issue of players `still being able to TP` after being `canceled from OP`.
+- [#1282] Fix error when saving uninstalled `Custom Blocks`.
+- [#1290] Fix custom block `CustomBlock#getDefinition()` definition block belonging to the creative mode item column is not categorized correctly (fixed in [#1305]).
+- [#1291] Fix color code issue in `TextFormat.java`.
+- [#1306] Fix bug in `French` `vanilla command` language file.
+
+## Documentation
+
+- [#1258] Adjust `custom block friction` related documentation.
+- [#1265] Supplement the `@OverRide` annotation.
+- [#1303] Remove some old information.
 
 ## [1.20.0-r2-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.0-r2) - 2023-6-22
 This work in progress version supports Minecraft:BE `1.20.0 (Protocol Version 589)`.
@@ -57,8 +102,8 @@ This work in progress version supports Minecraft:BE `1.20.0 (Protocol Version 58
 - [#1238] Fix an error reported after cherry tree leaves decay.
 - [#1239] Fix unknown enchant handling.
 - [#1242] Fix NPE issue with `Item#fromstring`.
-- [#1246] Fix Cauldron Liquid related bugs.
 - [#1245] Fix sign related bug.
+- [#1246] Fix Cauldron Liquid related bugs.
 - [#1250] Fix a bug about wrong placement.
 - [#1255] Fix strange bug that Cherry sapling is on the sand.
 
@@ -1805,6 +1850,13 @@ Fixes several anvil issues.
 
 </details>
 
+<details>
+  <summary>1.20.10-PNX</summary>
+
+   1. [#1.20.10-r1] PNX-1.20.10-r1 (Protocol Version 594)
+
+</details>
+
 ## <a id="CataLogs-Swlang"></a>🌐 多语言文档
 
 ---
@@ -2595,6 +2647,40 @@ Need to switch languages?
 [#1250]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1250
 [#1252]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1252
 [#1255]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1255
+[#1258]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1258
+[#1259]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1259
+[#1263]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1263
+[#1265]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1265
+[#1266]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1266
+[#1267]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1267
+[#1269]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1269
+[#1271]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1271
+[#1272]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1272
+[#1273]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1273
+[#1278]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1278
+[#1279]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1279
+[#1280]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1280
+[#1282]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1282
+[#1285]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1285
+[#1290]: https://github.com/PowerNukkitX/PowerNukkitX/issues/1290
+[#1291]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1291
+[#1297]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1297
+[#1299]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1299
+[#1300]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1300
+[#1302]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1302
+[#1303]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1303
+[#1304]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1304
+[#1305]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1305
+[#1306]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1306
+[#1307]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1307
+[#1310]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1310
+[#1312]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1312
+[#1313]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1313
+[#1314]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1314
+[#1316]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1316
+[#1317]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1317
+[#1318]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1318
+[#1319]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1319
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->
@@ -2679,6 +2765,8 @@ Need to switch languages?
 [#1.20.0-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.0-r1
 <!--1.20.0-r2-PNX Protocol Version 589-->
 [#1.20.0-r2]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.0-r2
+<!--1.20.10-r1-PNX Protocol Version 594-->
+[#1.20.10-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.10-r1
 <!--1.20.xx-PNX Version summary End-->
 
 <!--PowerNukkitX Urls-->

@@ -11,16 +11,61 @@
 3. <a href="#CataLogs-Version-history">🔖 Version history / 历史版本 </a>
 
 ## [Dev-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - Future
-该版本目前支持了Minecraft:BE `1.20.0 (协议版本589)`.
+该版本目前支持了Minecraft:BE `1.20.10 (协议版本594)`.
 
 ## 开发中，敬请期待
+
+## [1.20.10-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.10-r2) - 2023-7-15
+该版本目前支持了Minecraft:BE `1.20.10 (协议版本594)`.
+
+## 新增内容
+
+- [#1263] 添加了村民的交易功能和基础移动。
+- [#1269] 移除`Timings`，将其替换为`Spark`。
+- [#1271] Runtime-only entities。
+- [#1279] 添加新Mojang签名支持。
+- [#1285] 如果实体位于方块后面，则减少爆炸伤害.
+- [#1299] 添加`Enum ItemCreativeGroup`。
+- [#1302] 添加高性能非阻塞式原始类型`ConcurrentMap`。
+- [#1312] 适配`Minecraft:BE 1.20.10`。
+- [#1319] `PNX-1.20.10-r1`正式发布。
+
+## 修改记录
+
+- [#1297] 调整法语翻译文件。
+- [#1304] 更新`Docker`镜像。
+- [#1318] 默认不启用`Spark`（回退[#1300]的修改）。
+- [#1307] 将level中的部分数据结构并行化。
+- [#1313] 更新`Terra`依赖版本。
+- [#1316] 回退异步数据包发送（回退[#1310]/[#1314]的修改）。
+- [#1317] 并行化区块的内部数据结构。
+
+## BUG修复
+
+- [#1259] 修复樱花树苗无法被种植的BUG。
+- [#1266] 尝试修复钓鱼附魔书没有附魔的问题。
+- [#1267] 合并来自[NKX-PR2126](https://github.com/CloudburstMC/Nukkit/pull/2116)的BUG修复代码。
+- [#1272] 修复苦力怕掉落物问题。
+- [#1273] 修复炼药锅相关的BUG。
+- [#1278] 修复`EmotePacket`兼容问题。
+- [#1280] 修复玩家被`取消OP`后`仍可TP`的问题。
+- [#1282] 修复已卸载的`自定义方块`保存时报错。
+- [#1290] 修复自定义方块`CustomBlock#getDefinition()`定义方块所属创造模式物品栏分类不正确（在[#1305]中修复）。
+- [#1291] 修复`TextFormat.java`的颜色代码问题。
+- [#1306] 修复`法语` `香草命令`语言文件的错误。
+
+## 文档内容
+
+- [#1258] 调整`custom block friction`相关文档。
+- [#1265] 补充`@OverRide`注解。
+- [#1303] 移除一些无效或老旧的文档。
 
 ## [1.20.0-r2-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.0-r2) - 2023-6-22
 该版本目前支持了Minecraft:BE `1.20.0 (协议版本589)`.
 
 ## 新增内容
 
-- [#commit-914e68a] `PNX-1.20.0-r2`正式发布
+- [#commit-914e68a] `PNX-1.20.0-r2`正式发布。
 - [#1214] 添加`樱花`。
 - [#1219] 为物品`盾牌`添加`BannerPattern API`。
 - [#1220] 实现告示牌打蜡功能。
@@ -58,8 +103,8 @@
 - [#1238] 修复樱花树叶腐烂后报错的问题。
 - [#1239] 修复未知的enchant handling。
 - [#1242] 修复`Item#fromstring`的NPE问题。
-- [#1246] 修复炼药锅液体相关BUG。
 - [#1245] 修复告示牌相关BUG
+- [#1246] 修复炼药锅液体相关BUG。
 - [#1250] 修复放置位置错误的BUG。
 - [#1255] 修复樱花树苗在沙子上的奇怪BUG。
 
@@ -1808,6 +1853,13 @@ Fixes several anvil issues.
 
 </details>
 
+<details>
+  <summary>1.20.10-PNX</summary>
+
+   1. [#1.20.10-r1] PNX-1.20.10-r1 (协议版本594)
+
+</details>
+
 ## <a id="CataLogs-Swlang"></a>🌐 多语言文档
 
 ---
@@ -2598,6 +2650,40 @@ Need to switch languages?
 [#1250]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1250
 [#1252]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1252
 [#1255]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1255
+[#1258]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1258
+[#1259]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1259
+[#1263]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1263
+[#1265]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1265
+[#1266]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1266
+[#1267]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1267
+[#1269]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1269
+[#1271]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1271
+[#1272]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1272
+[#1273]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1273
+[#1278]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1278
+[#1279]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1279
+[#1280]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1280
+[#1282]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1282
+[#1285]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1285
+[#1290]: https://github.com/PowerNukkitX/PowerNukkitX/issues/1290
+[#1291]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1291
+[#1297]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1297
+[#1299]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1299
+[#1300]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1300
+[#1302]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1302
+[#1303]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1303
+[#1304]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1304
+[#1305]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1305
+[#1306]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1306
+[#1307]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1307
+[#1310]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1310
+[#1312]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1312
+[#1313]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1313
+[#1314]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1314
+[#1316]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1316
+[#1317]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1317
+[#1318]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1318
+[#1319]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1319
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->
@@ -2682,6 +2768,8 @@ Need to switch languages?
 [#1.20.0-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.0-r1
 <!--1.20.0-r2-PNX Protocol Version 589-->
 [#1.20.0-r2]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.0-r2
+<!--1.20.10-r1-PNX Protocol Version 594-->
+[#1.20.10-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.10-r1
 <!--1.20.xx-PNX Version summary End-->
 
 <!--PowerNukkitX Urls-->
