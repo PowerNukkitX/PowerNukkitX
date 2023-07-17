@@ -9,7 +9,6 @@ import cn.nukkit.blockentity.BlockEntityLectern;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.event.block.BlockRedstoneEvent;
 import cn.nukkit.event.block.LecternDropBookEvent;
-import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
@@ -146,24 +145,12 @@ public class BlockLectern extends BlockTransparentMeta implements RedstoneCompon
         return BlockEntityHolder.setBlockAndCreateEntity(this) != null;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @Override
-    public int onTouch(@Nullable Player player, Action action) {
-        onUpdate(Level.BLOCK_UPDATE_TOUCH);
-        if (player != null && action == Action.LEFT_CLICK_BLOCK && player.isSurvival()) {
-            dropBook(player);
-            return 1;
-        }
-        return 0;
-    }
-
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player) {
         BlockEntityLectern lectern = getOrCreateBlockEntity();
         Item currentBook = lectern.getBook();
         if (!currentBook.isNull()) {
-            return false;
+            return true;
         }
 
         if (item.getId() != ItemID.WRITTEN_BOOK && item.getId() != ItemID.BOOK_AND_QUILL) {
