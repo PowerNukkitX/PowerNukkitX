@@ -177,7 +177,7 @@ dependencies {
 - __[💾 下載正式版PowerNukkitX](https://github.com/PowerNukkitX/PowerNukkitX/releases)__
 - __[💾 下載測試版PowerNukkitX](https://ci.lt-name.com/job/PowerNukkitX/)__
 - __[🔌 Cloudburst Nukkit 插件中心](https://cloudburstmc.org/resources/categories/nukkit-plugins.1/)__
-- __[🔌 PowerNukkit 插件中心](https://discuss.powernukkit.org/c/plugins/powernukkit-plugins/14/)__
+- __[🔌 PowerNukkitX 插件中心](https://powernukkitx.com/hub/plugin)__
 
 🎨  數據統計
 ---
