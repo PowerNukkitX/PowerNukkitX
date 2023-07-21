@@ -188,7 +188,7 @@ Please read the [CONTRIBUTING](https://github.com/PowerNukkitX/PowerNukkitX/blob
 - __[💾 Download PowerNukkitX Released Build](https://github.com/PowerNukkitX/PowerNukkitX/releases)__
 - __[💾 Download PowerNukkitX Snapshot Build](https://github.com/PowerNukkitX/PowerNukkitX/actions)__
 - __[🔌 Cloudburst Nukkit Plugins](https://cloudburstmc.org/resources/categories/nukkit-plugins.1/)__
-- __[🔌 PowerNukkit Plugins](https://discuss.powernukkit.org/c/plugins/powernukkit-plugins/14/)__
+- __[🔌 PowerNukkit Plugins](https://powernukkitx.com/hub/plugin)__
 
 🎨  Statistics
 ---
