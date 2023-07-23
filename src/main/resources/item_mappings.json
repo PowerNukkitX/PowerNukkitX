@@ -118,7 +118,8 @@
     "3": "minecraft:jungle_boat",
     "4": "minecraft:acacia_boat",
     "5": "minecraft:dark_oak_boat",
-    "6": "minecraft:mangrove_boat"
+    "6": "minecraft:mangrove_boat",
+    "7": "minecraft:bamboo_raft"
   },
   "minecraft:bucket": {
     "0": "minecraft:bucket",
