@@ -172,8 +172,7 @@ public class FillCommand extends VanillaCommand {
                                 level.setBlock(block, Block.get(tileId, tileData));
                                 ++count;
                             }
-                        }
-                        else {
+                        } else {
                             if (block.getId() == replaceTileId && block.getDamage() == replaceDataValue) {
                                 level.setBlock(block, Block.get(tileId, tileData));
                                 ++count;
