@@ -184,6 +184,7 @@ public enum MinecraftItemID {
     @PowerNukkitOnly @Since("1.4.0.0-PN") SCAFFOLDING,
     @PowerNukkitOnly @Since("1.4.0.0-PN") BAMBOO_SAPLING(false, true),
     @PowerNukkitOnly @Since("1.4.0.0-PN") BAMBOO,
+    @PowerNukkitOnly @Since("1.4.0.0-PN") BAMBOO_RAFT,
     @PowerNukkitOnly @Since("1.4.0.0-PN") DOUBLE_STONE_SLAB3,
     @PowerNukkitOnly @Since("1.4.0.0-PN") BARRIER,
     @PowerNukkitOnly @Since("1.4.0.0-PN") BUBBLE_COLUMN,
