@@ -516,7 +516,7 @@ public class Chunk extends BaseChunk {
     }
 
     @Override
-    @PowerNukkitXDifference(since= "1.20.0-r3", info = "Do not save entities which marked as not savable with chunk.")
+    @PowerNukkitXDifference(since= "1.20.10-r1", info = "Do not save entities which marked as not savable with chunk.")
     public byte[] toBinary() {
         CompoundTag nbt = this.getNBT().copy();
         nbt.remove("BiomeColors");

@@ -24,7 +24,7 @@
 
 PowerNukkitX的優勢：
 
-1. 支持1.20.0協議。
+1. 支持1.20.10協議。
 2. 原生支持384限高（目前僅限主世界，其餘則為256格限高）。
 3. 原生支持地獄世界，無需另外安裝插件補丁等。
 4. 支持3D生物群系（完善中）。<!--自定義維度接口 TODO-->
@@ -134,7 +134,7 @@ repositories {
 }
 
 dependencies {
-    compile group: 'cn.powernukkitx', name: 'powernukkitx', version: '1.20.0-r2'
+    compile group: 'cn.powernukkitx', name: 'powernukkitx', version: '1.20.10-r1'
 }
 ```
 
@@ -145,7 +145,7 @@ dependencies {
     <dependency>
         <groupId>cn.powernukkitx</groupId>
         <artifactId>powernukkitx</artifactId>
-        <version>1.20.0-r2</version>
+        <version>1.20.10-r1</version>
     </dependency>
 </dependencies>
 ```
@@ -177,7 +177,7 @@ dependencies {
 - __[💾 下載正式版PowerNukkitX](https://github.com/PowerNukkitX/PowerNukkitX/releases)__
 - __[💾 下載測試版PowerNukkitX](https://ci.lt-name.com/job/PowerNukkitX/)__
 - __[🔌 Cloudburst Nukkit 插件中心](https://cloudburstmc.org/resources/categories/nukkit-plugins.1/)__
-- __[🔌 PowerNukkit 插件中心](https://discuss.powernukkit.org/c/plugins/powernukkit-plugins/14/)__
+- __[🔌 PowerNukkitX 插件中心](https://powernukkitx.com/hub/plugin)__
 
 🎨  數據統計
 ---

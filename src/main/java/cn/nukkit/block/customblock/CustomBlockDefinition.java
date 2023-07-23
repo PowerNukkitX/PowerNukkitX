@@ -5,6 +5,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.customblock.data.*;
 import cn.nukkit.blockproperty.*;
+import cn.nukkit.item.customitem.data.ItemCreativeGroup;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.*;
@@ -83,7 +84,8 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
             components.putCompound("minecraft:unit_cube", new CompoundTag());
             //设置方块在创造栏的分类
             this.nbt.putCompound("menu_category", new CompoundTag()
-                    .putString("category", blockCreativeCategory.name().toLowerCase(Locale.ENGLISH)));
+                    .putString("category", blockCreativeCategory.name().toLowerCase(Locale.ENGLISH))
+                    .putString("group", ItemCreativeGroup.NONE.getGroupName()));
             //molang版本
             this.nbt.putInt("molangVersion", 6);
 
@@ -128,6 +130,18 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
         }
 
         /**
+         * 控制自定义方块在创造栏中的组。
+         * <p>
+         * Control the grouping of custom blocks in the creation inventory.
+         *
+         * @see <a href="https://wiki.bedrock.dev/documentation/creative-categories.html">wiki.bedrock.dev</a>
+         */
+        public Builder creativeGroup(ItemCreativeGroup creativeGroup) {
+            this.nbt.getCompound("components").getCompound("menu_category").putString("group", creativeGroup.getGroupName());
+            return this;
+        }
+
+        /**
          * supports rotation, scaling, and translation. The component can be added to the whole block and/or to individual block permutations. Transformed geometries still have the same restrictions that non-transformed geometries have such as a maximum size of 30/16 units.
          */
         public Builder transformation(@NotNull Transformation transformation) {
@@ -161,7 +175,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
             if (components.contains("minecraft:unit_cube")) components.remove("minecraft:unit_cube");
             //设置方块对应的几何模型
             components.putCompound("minecraft:geometry", new CompoundTag()
-                    .putString("value", geometry.toLowerCase(Locale.ENGLISH)));
+                    .putString("identifier", geometry.toLowerCase(Locale.ENGLISH)));
             return this;
         }
 

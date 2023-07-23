@@ -54,7 +54,7 @@ public class TradeInventory extends BaseInventory {
             tierExpRequirements.add(i, new CompoundTag().putInt(String.valueOf(i), villager.tierExpRequirement[i]));
         }
         pk1.offers = new CompoundTag()
-                .putList(villager.recipes)
+                .putList(villager.getRecipes())
                 .putList(tierExpRequirements);
         pk1.newTradingUi = true;
         pk1.usingEconomyTrade = true;

@@ -372,8 +372,6 @@ public class BlockEntityBeehive extends BlockEntity {
         if (this.closed || isEmpty()) {
             return false;
         }
-        
-        this.timing.startTiming();
 
         List<BlockFace> validSpawnFaces = null;
 
@@ -391,8 +389,6 @@ public class BlockEntityBeehive extends BlockEntity {
                 level.addSound(add(0.5, 0, 0.5), occupant.workSound, 1f, occupant.workSoundPitch);
             }
         }
-
-        this.timing.stopTiming();
 
         return true;
     }

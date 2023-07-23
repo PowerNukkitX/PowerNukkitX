@@ -14,6 +14,7 @@ import cn.nukkit.dispenser.DispenseBehaviorRegister;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.data.Skin;
+import cn.nukkit.entity.data.profession.Profession;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.event.level.LevelInitEvent;
 import cn.nukkit.event.level.LevelLoadEvent;
@@ -77,10 +78,10 @@ import cn.nukkit.scheduler.Task;
 import cn.nukkit.scoreboard.manager.IScoreboardManager;
 import cn.nukkit.scoreboard.manager.ScoreboardManager;
 import cn.nukkit.scoreboard.storage.JSONScoreboardStorage;
+import cn.nukkit.spark.SparkInstaller;
 import cn.nukkit.utils.*;
 import cn.nukkit.utils.bugreport.ExceptionHandler;
 import cn.nukkit.utils.collection.FreezableArrayManager;
-import co.aikar.timings.Timings;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Files;
@@ -402,6 +403,7 @@ public class Server {
 
         setMaxPlayers(10);
 
+        this.registerProfessions();
         this.registerEntities();
         this.registerBlockEntities();
     }
@@ -794,6 +796,7 @@ public class Server {
         NukkitMetrics.startNow(this);
 
         this.registerEntities();
+        this.registerProfessions();
         this.registerBlockEntities();
 
         Block.init();
@@ -952,6 +955,10 @@ public class Server {
 
         this.enablePlugins(PluginLoadOrder.POSTWORLD);
 
+        if (this.getConfig("settings.download-spark", false)) {
+            SparkInstaller.initSpark(this);
+        }
+
         if (/*Nukkit.DEBUG < 2 && */!Boolean.parseBoolean(System.getProperty("disableWatchdog", "false"))) {
             this.watchdog = new Watchdog(this, 60000);
             this.watchdog.start();
@@ -1015,7 +1022,6 @@ public class Server {
         this.enablePlugins(PluginLoadOrder.POSTWORLD);
         ServerStartedEvent serverStartedEvent = new ServerStartedEvent();
         getPluginManager().callEvent(serverStartedEvent);
-        Timings.reset();
     }
 
 
@@ -1098,9 +1104,6 @@ public class Server {
             NukkitMetrics.closeNow(this);
             //close computeThreadPool
             this.computeThreadPool.shutdownNow();
-
-            log.debug("Disabling timings");
-            Timings.stopServer();
             //todo other things
         } catch (Exception e) {
             log.fatal("Exception happened while shutting down, exiting the process", e);
@@ -1235,7 +1238,6 @@ public class Server {
 
     public void doAutoSave() {
         if (this.getAutoSave()) {
-            Timings.levelSaveTimer.startTiming();
             for (Player player : new ArrayList<>(this.players.values())) {
                 if (player.isOnline()) {
                     player.save(true);
@@ -1247,7 +1249,6 @@ public class Server {
             for (Level level : this.levelArray) {
                 level.save();
             }
-            Timings.levelSaveTimer.stopTiming();
             this.getScoreboardManager().save();
         }
     }
@@ -1270,21 +1271,14 @@ public class Server {
             return false;
         }
 
-        Timings.fullServerTickTimer.startTiming();
-
         ++this.tickCounter;
-
-        Timings.connectionTimer.startTiming();
         this.network.processInterfaces();
 
         if (this.rcon != null) {
             this.rcon.check();
         }
-        Timings.connectionTimer.stopTiming();
 
-        Timings.schedulerTimer.startTiming();
         this.scheduler.mainThreadHeartbeat(this.tickCounter);
-        Timings.schedulerTimer.stopTiming();
 
         this.checkTickUpdates(this.tickCounter, tickTime);
 
@@ -1334,8 +1328,6 @@ public class Server {
             freezableArrayManager.setMaxCompressionTime(freezableArrayCompressTime).tick();
         }
 
-
-        Timings.fullServerTickTimer.stopTiming();
         //long now = System.currentTimeMillis();
         long nowNano = System.nanoTime();
         //float tick = Math.min(20, 1000 / Math.max(1, now - tickTime));
@@ -1770,7 +1762,6 @@ public class Server {
             return;
         }
 
-        Timings.playerNetworkSendTimer.startTiming();
         byte[][] payload = new byte[packets.length * 2][];
         for (int i = 0; i < packets.length; i++) {
             DataPacket p = packets[i];
@@ -1803,7 +1794,6 @@ public class Server {
                 throw new RuntimeException(e);
             }
         }
-        Timings.playerNetworkSendTimer.stopTiming();
     }
 
     public void broadcastPacketsCallback(byte[] data, List<InetSocketAddress> targets) {
@@ -2530,6 +2520,11 @@ public class Server {
 
     public FreezableArrayManager getFreezableArrayManager() {
         return freezableArrayManager;
+    }
+
+    // TODO: update PNX Junit5 test framework to remove dependency on this method
+    private void registerProfessions() {
+        Profession.init();
     }
 
     // TODO: update PNX Junit5 test framework to remove dependency on this method

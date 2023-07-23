@@ -7,7 +7,6 @@ import cn.nukkit.event.Event;
 import cn.nukkit.event.EventPriority;
 import cn.nukkit.event.Listener;
 import cn.nukkit.utils.EventException;
-import co.aikar.timings.Timing;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -27,15 +26,12 @@ public class RegisteredListener {
 
     private final boolean ignoreCancelled;
 
-    private final Timing timing;
-
-    public RegisteredListener(Listener listener, EventExecutor executor, EventPriority priority, Plugin plugin, boolean ignoreCancelled, Timing timing) {
+    public RegisteredListener(Listener listener, EventExecutor executor, EventPriority priority, Plugin plugin, boolean ignoreCancelled) {
         this.listener = listener;
         this.priority = priority;
         this.plugin = plugin;
         this.executor = executor;
         this.ignoreCancelled = ignoreCancelled;
-        this.timing = timing;
     }
 
     public Listener getListener() {
@@ -56,7 +52,6 @@ public class RegisteredListener {
                 return;
             }
         }
-        this.timing.startTiming();
         try {
             executor.execute(listener, event);
         } catch (IllegalAccessError | NoSuchMethodError e) { // 动态编译的字节码调用失败时的逃生门
@@ -65,8 +60,6 @@ public class RegisteredListener {
                 executor.execute(listener, event);
             }
         }
-
-        this.timing.stopTiming();
     }
 
     public boolean isIgnoringCancelled() {

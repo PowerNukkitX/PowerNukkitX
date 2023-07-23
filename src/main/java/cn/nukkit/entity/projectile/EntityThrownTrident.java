@@ -226,8 +226,6 @@ public class EntityThrownTrident extends SlenderProjectile {
             return false;
         }
 
-        this.timing.startTiming();
-
         if (this.isCollided && !this.hadCollision) {
             this.getLevel().addSound(this, Sound.ITEM_TRIDENT_HIT_GROUND);
         }
@@ -252,8 +250,6 @@ public class EntityThrownTrident extends SlenderProjectile {
                 this.close();
             }
         }
-
-        this.timing.stopTiming();
 
         return hasUpdate;
     }

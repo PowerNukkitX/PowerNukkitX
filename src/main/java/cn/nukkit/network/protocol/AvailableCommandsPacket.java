@@ -4,6 +4,7 @@ import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.command.data.*;
 import cn.nukkit.network.protocol.types.CommandEnumConstraintData;
 import cn.nukkit.utils.BinaryStream;
+import cn.nukkit.utils.SequencedHashSet;
 import com.nukkitx.network.util.Preconditions;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -13,6 +14,7 @@ import java.util.*;
 import java.util.function.ObjIntConsumer;
 
 import static cn.nukkit.utils.Utils.dynamic;
+import static com.nukkitx.network.util.Preconditions.checkArgument;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -75,7 +77,9 @@ public class AvailableCommandsPacket extends DataPacket {
     public void encode() {
         this.reset();
         Set<String> enumValuesSet = new ObjectOpenHashSet<>();
+        SequencedHashSet<String> subCommandValues = new SequencedHashSet<>();
         Set<String> postfixSet = new ObjectOpenHashSet<>();
+        SequencedHashSet<ChainedSubCommandData> subCommandData = new SequencedHashSet<>();
         Set<CommandEnum> enumsSet = new ObjectOpenHashSet<>();
         Set<CommandEnum> softEnumsSet = new ObjectOpenHashSet<>();
 
@@ -85,6 +89,23 @@ public class AvailableCommandsPacket extends DataPacket {
             if (data.aliases != null) {
                 enumValuesSet.addAll(data.aliases.getValues());
                 enumsSet.add(data.aliases);
+            }
+
+            for (ChainedSubCommandData subcommand : data.subcommands) {
+                if (subCommandData.contains(subcommand)) {
+                    continue;
+                }
+
+                subCommandData.add(subcommand);
+                for (ChainedSubCommandData.Value value : subcommand.getValues()) {
+                    if (subCommandValues.contains(value.getFirst())) {
+                        subCommandValues.add(value.getFirst());
+                    }
+
+                    if (subCommandValues.contains(value.getSecond())) {
+                        subCommandValues.add(value.getSecond());
+                    }
+                }
             }
 
             for (CommandParameter[] overload : data.overloads.values().stream().map(o -> o.input.parameters).toList()) {
@@ -127,6 +148,12 @@ public class AvailableCommandsPacket extends DataPacket {
         for (var enumValue : enumValues) {
             this.putString(enumValue);
         }
+
+        this.putUnsignedVarInt(subCommandValues.size());
+        for (var subCommandValue : subCommandValues) {
+            this.putString(subCommandValue);
+        }
+
         putUnsignedVarInt(postFixes.size());
         for (var postFix : postFixes) {
             this.putString(postFix);
@@ -134,9 +161,25 @@ public class AvailableCommandsPacket extends DataPacket {
 
         this.writeEnums(enumValues, enums);
 
+        this.putUnsignedVarInt(subCommandData.size());
+        for (ChainedSubCommandData chainedSubCommandData : subCommandData) {
+            this.putString(chainedSubCommandData.getName());
+            this.putUnsignedVarInt(chainedSubCommandData.getValues().size());
+            for (ChainedSubCommandData.Value value : chainedSubCommandData.getValues()) {
+                int first = subCommandValues.indexOf(value.getFirst());
+                checkArgument(first > -1, "Invalid enum value detected: " + value.getFirst());
+
+                int second = subCommandValues.indexOf(value.getSecond());
+                checkArgument(second > -1, "Invalid enum value detected: " + value.getSecond());
+
+                this.putLShort(first);
+                this.putLShort(second);
+            }
+        }
+
         this.putUnsignedVarInt(commands.size());
         for (var entry : commands.entrySet()) {
-            this.writeCommand(entry, enums, softEnums, postFixes);
+            this.writeCommand(entry, enums, softEnums, postFixes, subCommandData);
         }
 
         this.putUnsignedVarInt(softEnums.size());
@@ -178,7 +221,7 @@ public class AvailableCommandsPacket extends DataPacket {
         }
     }
 
-    private void writeCommand(Map.Entry<String, CommandDataVersions> commandEntry, List<CommandEnum> enums, List<CommandEnum> softEnums, List<String> postFixes) {
+    private void writeCommand(Map.Entry<String, CommandDataVersions> commandEntry, List<CommandEnum> enums, List<CommandEnum> softEnums, List<String> postFixes, List<ChainedSubCommandData> subCommands) {
         var commandData = commandEntry.getValue().versions.get(0);
         this.putString(commandEntry.getKey());
         this.putString(commandData.description);
@@ -192,9 +235,17 @@ public class AvailableCommandsPacket extends DataPacket {
         CommandEnum aliases = commandData.aliases;
         this.putLInt(commandData.aliases == null ? -1 : enums.indexOf(commandData.aliases));
 
+        this.putUnsignedVarInt(subCommands.size());
+        for (ChainedSubCommandData subcommand : subCommands) {
+            int index = subCommands.indexOf(subcommand);
+            checkArgument(index > -1, "Invalid subcommand index: " + subcommand);
+            this.putLShort(index);
+        }
+
         Collection<CommandOverload> overloads = commandData.overloads.values();
         this.putUnsignedVarInt(overloads.size());
         for (CommandOverload overload : overloads) {
+            this.putBoolean(overload.chaining);
             this.putUnsignedVarInt(overload.input.parameters.length);
             for (CommandParameter param : overload.input.parameters) {
                 this.writeParameter(param, enums, softEnums, postFixes);

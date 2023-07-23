@@ -365,13 +365,11 @@ public class ServerScheduler {
                 } else if (taskHandler.isAsynchronous()) {
                     asyncPool.execute(taskHandler.getTask());
                 } else {
-                    taskHandler.timing.startTiming();
                     try {
                         taskHandler.run(currentTick);
                     } catch (Throwable e) {
                         log.fatal("Could not execute taskHandler {}", taskHandler.getTaskId(), e);
                     }
-                    taskHandler.timing.stopTiming();
                 }
                 if (taskHandler.isRepeating()) {
                     taskHandler.setNextRunTick(currentTick + taskHandler.getPeriod());

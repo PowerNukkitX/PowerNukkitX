@@ -25,7 +25,7 @@ public class TradeAction extends InventoryAction {
         if (type == NetworkInventoryAction.SOURCE_TYPE_TRADING_INPUT_1) {
             var result1 = false;
             var result2 = false;
-            for (var tag : villager.recipes.getAll()) {
+            for (var tag : villager.getRecipes().getAll()) {
                 var cmp = (CompoundTag) tag;
                 if (cmp.containsCompound("buyA")) {
                     var buyA = cmp.getCompound("buyA");
@@ -50,7 +50,7 @@ public class TradeAction extends InventoryAction {
             return false;
         } else if (type == NetworkInventoryAction.SOURCE_TYPE_TRADING_OUTPUT) {
             var result = false;
-            for (var tag : villager.recipes.getAll()) {
+            for (var tag : villager.getRecipes().getAll()) {
                 var cmp = (CompoundTag) tag;
                 if (cmp.contains("sell")) {
                     var sell = cmp.getCompound("sell");

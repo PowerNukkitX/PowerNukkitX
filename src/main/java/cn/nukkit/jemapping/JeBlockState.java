@@ -1,4 +1,4 @@
-package cn.nukkit.level.terra.handles;
+package cn.nukkit.jemapping;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -15,7 +15,7 @@ import java.util.Map;
 public class JeBlockState {
 
     private final String identifier;
-    private final Map<String, Object> attributes = new Object2ObjectArrayMap<>(1);
+    private final Map<String, String> attributes = new Object2ObjectArrayMap<>(1);
     private boolean equalsIgnoreAttributes = false;
     private boolean equalsIgnoreWaterlogged = false;
 

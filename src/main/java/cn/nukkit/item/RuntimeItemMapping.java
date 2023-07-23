@@ -56,7 +56,7 @@ public class RuntimeItemMapping {
     private final Map<String, Supplier<Item>> namespacedIdItem = new HashMap<>();
     @PowerNukkitXOnly
     @Since("1.19.80-r1")
-    private static final BiMap<Integer, String> blockMappings = HashBiMap.create();
+    private static final BiMap<String, String> blockMappings = HashBiMap.create();
     private byte[] itemPalette;
 
     public RuntimeItemMapping(Map<String, MappingEntry> mappings) {
@@ -119,7 +119,7 @@ public class RuntimeItemMapping {
 
         try (InputStream stream = Server.class.getClassLoader().getResourceAsStream("block_mappings.json")) {
             if (stream == null) {
-                throw new AssertionError("Unable to load item_mappings.json");
+                throw new AssertionError("Unable to load block_mappings.json");
             }
             JsonObject itemMapping = JsonParser.parseReader(new InputStreamReader(stream)).getAsJsonObject();
             for (String legacyID : itemMapping.keySet()) {
@@ -128,7 +128,7 @@ public class RuntimeItemMapping {
                 for (String damageStr : convertData.keySet()) {
                     String identifier = convertData.get(damageStr).getAsString();
                     int damage = Integer.parseInt(damageStr);
-                    blockMappings.put(RuntimeItems.getFullId(id, damage), identifier);
+                    blockMappings.put(id + ":" + damage, identifier);
                 }
             }
         } catch (IOException e) {
@@ -430,7 +430,7 @@ public class RuntimeItemMapping {
     @DoNotModify
     @Since("1.19.80-r1")
     @PowerNukkitXOnly
-    public static BiMap<Integer, String> getBlockMapping() {
+    public static BiMap<String, String> getBlockMapping() {
         return blockMappings;
     }
 
