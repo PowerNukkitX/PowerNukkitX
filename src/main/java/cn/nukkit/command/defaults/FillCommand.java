@@ -58,7 +58,7 @@ public class FillCommand extends VanillaCommand {
         int tileData = 0;
         FillMode oldBlockHandling = FillMode.REPLACE;
         int replaceTileId;
-        int replaceDataValue = 0;
+        int replaceDataValue = -1;
 
         AxisAlignedBB aabb = new SimpleAxisAlignedBB(Math.min(from.getX(), to.getX()), Math.min(from.getY(), to.getY()), Math.min(from.getZ(), to.getZ()), Math.max(from.getX(), to.getX()), Math.max(from.getY(), to.getY()), Math.max(from.getZ(), to.getZ()));
         if (aabb.getMinY() < -64 || aabb.getMaxY() > 320) {
@@ -159,9 +159,17 @@ public class FillCommand extends VanillaCommand {
                 blocks = getLevelBlocks(level, aabb);
                 for (Block block : blocks) {
                     if (replaceTileId != -1) {
-                        if (block.getId() == replaceTileId && block.getDamage() == replaceDataValue) {
-                            level.setBlock(block, Block.get(tileId, tileData));
-                            ++count;
+                        if (replaceDataValue == -1) {
+                            if (block.getId() == replaceTileId) {
+                                level.setBlock(block, Block.get(tileId, tileData));
+                                ++count;
+                            }
+                        }
+                        else {
+                            if (block.getId() == replaceTileId && block.getDamage() == replaceDataValue) {
+                                level.setBlock(block, Block.get(tileId, tileData));
+                                ++count;
+                            }
                         }
                     } else {
                         level.setBlock(block, Block.get(tileId, tileData));
