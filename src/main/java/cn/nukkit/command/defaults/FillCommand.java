@@ -97,7 +97,12 @@ public class FillCommand extends VanillaCommand {
                         for (int x = NukkitMath.floorDouble(aabb.getMinX()); x <= NukkitMath.floorDouble(aabb.getMaxX()); x++) {
                             for (int z = NukkitMath.floorDouble(aabb.getMinZ()); z <= NukkitMath.floorDouble(aabb.getMaxZ()); z++) {
                                 for (int y = NukkitMath.floorDouble(aabb.getMinY()); y <= NukkitMath.floorDouble(aabb.getMaxY()); y++) {
-                                    if (x == from.x || x == to.x || z == from.z || z == to.z || y == from.y || y == to.y) {
+
+                                    boolean isBorderX = x == NukkitMath.floorDouble(from.x) || x == NukkitMath.floorDouble(to.x);
+                                    boolean isBorderZ = z == NukkitMath.floorDouble(from.z) || z == NukkitMath.floorDouble(to.z);
+                                    boolean isBorderY = y == NukkitMath.floorDouble(from.y) || y == NukkitMath.floorDouble(to.y);
+
+                                    if (isBorderX|| isBorderZ || isBorderY) {
                                         level.setBlock(x, y, z, Block.get(tileId, tileData), false, true);
                                         ++count;
                                     }
@@ -110,8 +115,11 @@ public class FillCommand extends VanillaCommand {
                             for (int z = NukkitMath.floorDouble(aabb.getMinZ()); z <= NukkitMath.floorDouble(aabb.getMaxZ()); z++) {
                                 for (int y = NukkitMath.floorDouble(aabb.getMinY()); y <= NukkitMath.floorDouble(aabb.getMaxY()); y++) {
                                     Block block;
+                                    boolean isBorderX = x == NukkitMath.floorDouble(from.x) || x == NukkitMath.floorDouble(to.x);
+                                    boolean isBorderZ = z == NukkitMath.floorDouble(from.z) || z == NukkitMath.floorDouble(to.z);
+                                    boolean isBorderY = y == NukkitMath.floorDouble(from.y) || y == NukkitMath.floorDouble(to.y);
 
-                                    if (x == from.x || x == to.x || z == from.z || z == to.z || y == from.y || y == to.y) {
+                                    if (isBorderX || isBorderZ || isBorderY) {
                                         block = Block.get(tileId, tileData);
                                     } else {
                                         block = Block.get(Block.AIR);
