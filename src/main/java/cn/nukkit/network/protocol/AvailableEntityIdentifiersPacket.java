@@ -5,11 +5,10 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-import lombok.ToString;
-
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.nio.ByteOrder;
+import lombok.ToString;
 
 @ToString(exclude = {"tag"})
 public class AvailableEntityIdentifiersPacket extends DataPacket {

@@ -19,11 +19,14 @@ public class RequestAbilityProcessor extends DataPacketProcessor<RequestAbilityP
         Player player = playerHandle.player;
         PlayerAbility ability = pk.ability;
         if (ability != PlayerAbility.FLYING) {
-            log.info("[" + player.getName() + "] has tried to trigger " + ability + " ability " + (pk.boolValue ? "on" : "off"));
+            log.info("[" + player.getName() + "] has tried to trigger " + ability + " ability "
+                    + (pk.boolValue ? "on" : "off"));
             return;
         }
 
-        if (!player.getServer().getAllowFlight() && pk.boolValue && !player.getAdventureSettings().get(AdventureSettings.Type.ALLOW_FLIGHT)) {
+        if (!player.getServer().getAllowFlight()
+                && pk.boolValue
+                && !player.getAdventureSettings().get(AdventureSettings.Type.ALLOW_FLIGHT)) {
             player.kick(PlayerKickEvent.Reason.FLYING_DISABLED, "Flying is not enabled on this server");
             return;
         }

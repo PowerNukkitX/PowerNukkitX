@@ -44,7 +44,12 @@ public class StructureBoundingBox {
      * @return true if this box intersects the block containing {@code vec}
      */
     public boolean isVectorInside(BlockVector3 vec) {
-        return vec.x >= this.min.x && vec.x <= this.max.x && vec.y >= this.min.y && vec.y <= this.max.y && vec.z >= this.min.z && vec.z <= this.max.z;
+        return vec.x >= this.min.x
+                && vec.x <= this.max.x
+                && vec.y >= this.min.y
+                && vec.y <= this.max.y
+                && vec.z >= this.min.z
+                && vec.z <= this.max.z;
     }
 
     /**
@@ -54,7 +59,12 @@ public class StructureBoundingBox {
      * @return true if the given box intersects this box; false otherwise
      */
     public boolean intersectsWith(StructureBoundingBox boundingBox) {
-        return boundingBox.getMin().x <= this.max.x && boundingBox.getMax().x >= this.min.x && boundingBox.getMin().y <= this.max.y && boundingBox.getMax().y >= this.min.y && boundingBox.getMin().z <= this.max.z && boundingBox.getMax().z >= this.min.z;
+        return boundingBox.getMin().x <= this.max.x
+                && boundingBox.getMax().x >= this.min.x
+                && boundingBox.getMin().y <= this.max.y
+                && boundingBox.getMax().y >= this.min.y
+                && boundingBox.getMin().z <= this.max.z
+                && boundingBox.getMax().z >= this.min.z;
     }
 
     /**
@@ -77,8 +87,14 @@ public class StructureBoundingBox {
      * @param boundingBox the other bounding box to contain
      */
     public void expandTo(StructureBoundingBox boundingBox) {
-        this.min = new BlockVector3(Math.min(this.min.x, boundingBox.getMin().x), Math.min(this.min.y, boundingBox.getMin().y), Math.min(this.min.z, boundingBox.getMin().z));
-        this.max = new BlockVector3(Math.max(this.max.x, boundingBox.getMax().x), Math.max(this.max.y, boundingBox.getMax().y), Math.max(this.max.z, boundingBox.getMax().z));
+        this.min = new BlockVector3(
+                Math.min(this.min.x, boundingBox.getMin().x),
+                Math.min(this.min.y, boundingBox.getMin().y),
+                Math.min(this.min.z, boundingBox.getMin().z));
+        this.max = new BlockVector3(
+                Math.max(this.max.x, boundingBox.getMax().x),
+                Math.max(this.max.y, boundingBox.getMax().y),
+                Math.max(this.max.z, boundingBox.getMax().z));
     }
 
     public void offset(BlockVector3 offset) {

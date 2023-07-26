@@ -264,11 +264,7 @@ public class Vector3f implements Cloneable {
      * @return a Vector at right angle to this and other
      */
     public Vector3f cross(Vector3f v) {
-        return new Vector3f(
-                this.y * v.z - this.z * v.y,
-                this.z * v.x - this.x * v.z,
-                this.x * v.y - this.y * v.x
-        );
+        return new Vector3f(this.y * v.z - this.z * v.y, this.z * v.x - this.x * v.z, this.x * v.y - this.y * v.x);
     }
 
     /* PowerNukkit: The Angle class was removed because it had all rights reserved copyright on it.
@@ -356,7 +352,7 @@ public class Vector3f implements Cloneable {
         this.z = z;
         return this;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public float getAxis(BlockFace.Axis axis) {

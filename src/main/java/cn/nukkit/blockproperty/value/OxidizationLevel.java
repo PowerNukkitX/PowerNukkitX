@@ -10,8 +10,16 @@ import cn.nukkit.api.Since;
 @PowerNukkitOnly
 @Since("FUTURE")
 public enum OxidizationLevel {
-    @PowerNukkitOnly @Since("FUTURE") UNAFFECTED,
-    @PowerNukkitOnly @Since("FUTURE") EXPOSED,
-    @PowerNukkitOnly @Since("FUTURE") WEATHERED,
-    @PowerNukkitOnly @Since("FUTURE") OXIDIZED
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    UNAFFECTED,
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    EXPOSED,
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    WEATHERED,
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    OXIDIZED
 }

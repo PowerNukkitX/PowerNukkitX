@@ -2,10 +2,9 @@ package cn.nukkit.plugin.js.feature;
 
 import cn.nukkit.plugin.js.JSFeature;
 import cn.nukkit.plugin.js.feature.ws.WsClientBuilder;
+import java.util.*;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.proxy.Proxy;
-
-import java.util.*;
 
 public class WsClientFeature implements JSFeature {
     @Override

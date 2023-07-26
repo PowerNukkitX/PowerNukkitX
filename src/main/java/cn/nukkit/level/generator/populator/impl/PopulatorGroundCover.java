@@ -20,7 +20,7 @@ public class PopulatorGroundCover extends Populator {
 
     @Override
     public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
-        //reverse iteration to 0 is faster
+        // reverse iteration to 0 is faster
         for (int x = 15; x >= 0; x--) {
             for (int z = 15; z >= 0; z--) {
                 Biome realBiome = EnumBiome.getBiome(chunk.getBiomeId(x, z));

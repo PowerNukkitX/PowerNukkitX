@@ -12,7 +12,6 @@ import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.utils.TextFormat;
-
 import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.List;
@@ -28,16 +27,17 @@ public class SpawnpointCommand extends VanillaCommand {
         super(name, "commands.spawnpoint.description");
         this.setPermission("nukkit.command.spawnpoint");
         this.commandParameters.clear();
-        this.commandParameters.put("default", new CommandParameter[]{
-                CommandParameter.newType("player", true, CommandParamType.TARGET, new PlayersNode()),
-                CommandParameter.newType("spawnPos", true, CommandParamType.POSITION),
+        this.commandParameters.put("default", new CommandParameter[] {
+            CommandParameter.newType("player", true, CommandParamType.TARGET, new PlayersNode()),
+            CommandParameter.newType("spawnPos", true, CommandParamType.POSITION),
         });
         this.enableParamTree();
     }
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         List<Player> players = sender.isPlayer() ? Collections.singletonList(sender.asPlayer()) : List.of();
         DecimalFormat round2 = new DecimalFormat("##0.00");
@@ -61,10 +61,14 @@ public class SpawnpointCommand extends VanillaCommand {
                     for (Player player : players) {
                         player.setSpawn(position);
                     }
-                    log.addSuccess("commands.spawnpoint.success.multiple.specific", players.stream().map(Player::getName).collect(Collectors.joining(" ")),
-                            round2.format(position.x),
-                            round2.format(position.y),
-                            round2.format(position.z)).successCount(players.size()).output(true);
+                    log.addSuccess(
+                                    "commands.spawnpoint.success.multiple.specific",
+                                    players.stream().map(Player::getName).collect(Collectors.joining(" ")),
+                                    round2.format(position.x),
+                                    round2.format(position.y),
+                                    round2.format(position.z))
+                            .successCount(players.size())
+                            .output(true);
                     return players.size();
                 }
             }
@@ -74,10 +78,13 @@ public class SpawnpointCommand extends VanillaCommand {
         if (!players.isEmpty()) {
             Position pos = players.get(0).getPosition();
             players.get(0).setSpawn(pos);
-            log.addSuccess("commands.spawnpoint.success.single", sender.getName(),
-                    round2.format(pos.x),
-                    round2.format(pos.y),
-                    round2.format(pos.z)).output(true);
+            log.addSuccess(
+                            "commands.spawnpoint.success.single",
+                            sender.getName(),
+                            round2.format(pos.x),
+                            round2.format(pos.y),
+                            round2.format(pos.z))
+                    .output(true);
             return 1;
         } else {
             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.noTargetMatch"));

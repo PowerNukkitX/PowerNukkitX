@@ -33,7 +33,7 @@ public class PopulatorMineshaft extends PopulatorStructure {
         VALID_BIOMES[EnumBiome.FROZEN_OCEAN.id] = true;
         VALID_BIOMES[EnumBiome.FROZEN_RIVER.id] = true;
         VALID_BIOMES[EnumBiome.ICE_PLAINS.id] = true;
-        VALID_BIOMES[13] = true; //SNOWY_MOUNTAINS
+        VALID_BIOMES[13] = true; // SNOWY_MOUNTAINS
         VALID_BIOMES[EnumBiome.MUSHROOM_ISLAND.id] = true;
         VALID_BIOMES[EnumBiome.MUSHROOM_ISLAND_SHORE.id] = true;
         VALID_BIOMES[EnumBiome.BEACH.id] = true;
@@ -81,15 +81,15 @@ public class PopulatorMineshaft extends PopulatorStructure {
         VALID_BIOMES[EnumBiome.ROOFED_FOREST_M.id] = true;
         VALID_BIOMES[EnumBiome.COLD_TAIGA_M.id] = true;
         VALID_BIOMES[EnumBiome.MEGA_SPRUCE_TAIGA.id] = true;
-        VALID_BIOMES[161] = true; //GIANT_SPRUCE_TAIGA_HILLS
+        VALID_BIOMES[161] = true; // GIANT_SPRUCE_TAIGA_HILLS
         VALID_BIOMES[EnumBiome.EXTREME_HILLS_PLUS_M.id] = true;
         VALID_BIOMES[EnumBiome.SAVANNA_M.id] = true;
         VALID_BIOMES[EnumBiome.SAVANNA_PLATEAU_M.id] = true;
         VALID_BIOMES[EnumBiome.MESA_BRYCE.id] = true;
         VALID_BIOMES[EnumBiome.MESA_PLATEAU_F_M.id] = true;
         VALID_BIOMES[EnumBiome.MESA_PLATEAU_M.id] = true;
-        VALID_BIOMES[168] = true; //BAMBOO_JUNGLE
-        VALID_BIOMES[169] = true; //BAMBOO_JUNGLE_HILLS
+        VALID_BIOMES[168] = true; // BAMBOO_JUNGLE
+        VALID_BIOMES[169] = true; // BAMBOO_JUNGLE_HILLS
 
         MineshaftPieces.init();
     }
@@ -98,7 +98,7 @@ public class PopulatorMineshaft extends PopulatorStructure {
     public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
         if (!chunk.isOverWorld()) return;
         if (VALID_BIOMES[chunk.getBiomeId(7, chunk.getHighestBlockAt(7, 7), 7)]) {
-            //\\ MineshaftFeature::isFeatureChunk(BiomeSource const &,Random &,ChunkPos const &,uint)
+            // \\ MineshaftFeature::isFeatureChunk(BiomeSource const &,Random &,ChunkPos const &,uint)
             long seed = level.getSeed();
             random.setSeed(seed);
             int r1 = random.nextInt();
@@ -106,11 +106,11 @@ public class PopulatorMineshaft extends PopulatorStructure {
             random.setSeed((long) chunkX * r1 ^ (long) chunkZ * r2 ^ seed);
 
             if (random.nextBoundedInt(1000) < PROBABILITY) {
-                //\\ MineshaftFeature::createStructureStart(Dimension &,BiomeSource &,Random &,ChunkPos const &)
+                // \\ MineshaftFeature::createStructureStart(Dimension &,BiomeSource &,Random &,ChunkPos const &)
                 MineshaftStart start = new MineshaftStart(level, chunkX, chunkZ);
                 start.generatePieces(level, chunkX, chunkZ);
 
-                if (start.isValid()) { //TODO: serialize nbt
+                if (start.isValid()) { // TODO: serialize nbt
                     BoundingBox boundingBox = start.getBoundingBox();
                     for (int cx = boundingBox.x0 >> 4; cx <= boundingBox.x1 >> 4; cx++) {
                         for (int cz = boundingBox.z0 >> 4; cz <= boundingBox.z1 >> 4; cz++) {
@@ -127,9 +127,19 @@ public class PopulatorMineshaft extends PopulatorStructure {
                             } else {
                                 int f_cx = cx;
                                 int f_cz = cz;
-                                chunk.getProvider().getLevel().getGenerator().handleAsyncStructureGenTask(new CallbackableChunkGenerationTask<>(
-                                        chunk.getProvider().getLevel(), ck, start,
-                                        structure -> structure.postProcess(level, rand, new BoundingBox(x, z, x + 15, z + 15), f_cx, f_cz)));
+                                chunk.getProvider()
+                                        .getLevel()
+                                        .getGenerator()
+                                        .handleAsyncStructureGenTask(new CallbackableChunkGenerationTask<>(
+                                                chunk.getProvider().getLevel(),
+                                                ck,
+                                                start,
+                                                structure -> structure.postProcess(
+                                                        level,
+                                                        rand,
+                                                        new BoundingBox(x, z, x + 15, z + 15),
+                                                        f_cx,
+                                                        f_cz)));
                             }
                         }
                     }
@@ -168,9 +178,13 @@ public class PopulatorMineshaft extends PopulatorStructure {
             BaseFullChunk chunk = level.getChunk(chunkX, chunkZ);
             if (chunk != null) {
                 int biome = chunk.getBiomeId(7, chunk.getHighestBlockAt(7, 7), 7);
-                Type type = biome >= EnumBiome.MESA.id && biome <= EnumBiome.MESA_PLATEAU.id || biome >= EnumBiome.MESA_BRYCE.id && biome <= EnumBiome.MESA_PLATEAU_M.id ? Type.MESA : Type.NORMAL;
+                Type type = biome >= EnumBiome.MESA.id && biome <= EnumBiome.MESA_PLATEAU.id
+                                || biome >= EnumBiome.MESA_BRYCE.id && biome <= EnumBiome.MESA_PLATEAU_M.id
+                        ? Type.MESA
+                        : Type.NORMAL;
 
-                MineshaftPieces.MineshaftRoom start = new MineshaftPieces.MineshaftRoom(0, this.random, (chunkX << 4) + 2, (chunkZ << 4) + 2, type);
+                MineshaftPieces.MineshaftRoom start =
+                        new MineshaftPieces.MineshaftRoom(0, this.random, (chunkX << 4) + 2, (chunkZ << 4) + 2, type);
                 this.pieces.add(start);
                 start.addChildren(start, this.pieces, this.random);
                 this.calculateBoundingBox();
@@ -187,7 +201,7 @@ public class PopulatorMineshaft extends PopulatorStructure {
             }
         }
 
-        @Override //\\ MineshaftStart::getType(void) // 3
+        @Override // \\ MineshaftStart::getType(void) // 3
         public String getType() {
             return "Mineshaft";
         }

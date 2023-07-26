@@ -4,12 +4,11 @@ import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
-import lombok.Getter;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import lombok.Getter;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -23,7 +22,11 @@ public class Function {
         this.fullPath = fullPath;
         try {
             commands = Files.readAllLines(fullPath);
-            commands = commands.stream().filter(s -> !s.isBlank()).map(s -> s.split("#")[0]).filter(s -> !s.isEmpty()).toList();
+            commands = commands.stream()
+                    .filter(s -> !s.isBlank())
+                    .map(s -> s.split("#")[0])
+                    .filter(s -> !s.isEmpty())
+                    .toList();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -36,8 +39,7 @@ public class Function {
     public boolean dispatch(CommandSender sender) {
         boolean success = true;
         for (String command : commands) {
-            if (Server.getInstance().executeCommand(sender, command) <= 0)
-                success = false;
+            if (Server.getInstance().executeCommand(sender, command) <= 0) success = false;
         }
         return success;
     }

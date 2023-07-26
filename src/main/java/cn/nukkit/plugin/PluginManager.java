@@ -12,14 +12,13 @@ import cn.nukkit.plugin.js.JSFeatures;
 import cn.nukkit.utils.PluginException;
 import cn.nukkit.utils.Utils;
 import io.netty.util.internal.EmptyArrays;
-import lombok.Getter;
-import lombok.extern.log4j.Log4j2;
-
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.regex.Pattern;
+import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * @author MagicDroidX
@@ -88,7 +87,11 @@ public class PluginManager {
         info.put("main", InternalPlugin.class.getName());
         File file;
         try {
-            file = new File(Server.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+            file = new File(Server.class
+                    .getProtectionDomain()
+                    .getCodeSource()
+                    .getLocation()
+                    .toURI());
         } catch (Exception e) {
             file = new File(".");
         }
@@ -128,7 +131,8 @@ public class PluginManager {
                                 List<PluginCommand> pluginCommands = this.parseYamlCommands(plugin);
 
                                 if (!pluginCommands.isEmpty()) {
-                                    this.commandMap.registerAll(plugin.getDescription().getName(), pluginCommands);
+                                    this.commandMap.registerAll(
+                                            plugin.getDescription().getName(), pluginCommands);
                                 }
 
                                 return plugin;
@@ -207,24 +211,30 @@ public class PluginManager {
                             for (String version : description.getCompatibleAPIs()) {
 
                                 try {
-                                    //Check the format: majorVersion.minorVersion.patch
+                                    // Check the format: majorVersion.minorVersion.patch
                                     if (!Pattern.matches("^[0-9]+\\.[0-9]+\\.[0-9]+$", version)) {
-                                        throw new IllegalArgumentException("The getCompatibleAPI version don't match the format majorVersion.minorVersion.patch");
+                                        throw new IllegalArgumentException(
+                                                "The getCompatibleAPI version don't match the format majorVersion.minorVersion.patch");
                                     }
                                 } catch (NullPointerException | IllegalArgumentException e) {
-                                    log.error(this.server.getLanguage().tr("nukkit.plugin.loadError", new String[]{name, "Wrong API format"}), e);
+                                    log.error(
+                                            this.server.getLanguage().tr("nukkit.plugin.loadError", new String[] {
+                                                name, "Wrong API format"
+                                            }),
+                                            e);
                                     continue;
                                 }
 
                                 String[] versionArray = version.split("\\.");
-                                String[] apiVersion = this.server.getApiVersion().split("\\.");
+                                String[] apiVersion =
+                                        this.server.getApiVersion().split("\\.");
 
-                                //Completely different API version
+                                // Completely different API version
                                 if (!Objects.equals(Integer.valueOf(versionArray[0]), Integer.valueOf(apiVersion[0]))) {
                                     continue;
                                 }
 
-                                //If the plugin requires new API features, being backwards compatible
+                                // If the plugin requires new API features, being backwards compatible
                                 if (Integer.parseInt(versionArray[1]) > Integer.parseInt(apiVersion[1])) {
                                     continue;
                                 }
@@ -234,7 +244,9 @@ public class PluginManager {
                             }
 
                             if (!compatible) {
-                                log.error(this.server.getLanguage().tr("nukkit.plugin.loadError", new String[]{name, "%nukkit.plugin.incompatibleAPI"}));
+                                log.error(this.server.getLanguage().tr("nukkit.plugin.loadError", new String[] {
+                                    name, "%nukkit.plugin.incompatibleAPI"
+                                }));
                             }
 
                             plugins.put(name, file);
@@ -254,9 +266,15 @@ public class PluginManager {
                             }
                         }
                     } catch (Exception e) {
-                        log.error(this.server.getLanguage().tr("nukkit.plugin" +
-                                ".fileError", file.getName(), dictionary.toString(), Utils
-                                .getExceptionMessage(e)), e);
+                        log.error(
+                                this.server
+                                        .getLanguage()
+                                        .tr(
+                                                "nukkit.plugin" + ".fileError",
+                                                file.getName(),
+                                                dictionary.toString(),
+                                                Utils.getExceptionMessage(e)),
+                                e);
                     }
                 }
             }
@@ -283,8 +301,10 @@ public class PluginManager {
                     }
 
                     if (softDependencies.containsKey(name)) {
-                        softDependencies.get(name).removeIf(dependency ->
-                                loadedPlugins.containsKey(dependency) || this.getPlugin(dependency) != null);
+                        softDependencies
+                                .get(name)
+                                .removeIf(dependency ->
+                                        loadedPlugins.containsKey(dependency) || this.getPlugin(dependency) != null);
 
                         if (softDependencies.get(name).isEmpty()) {
                             softDependencies.remove(name);
@@ -321,7 +341,9 @@ public class PluginManager {
 
                     if (missingDependency) {
                         for (String name : plugins.keySet()) {
-                            log.fatal(this.server.getLanguage().tr("nukkit.plugin.loadError", new String[]{name, "%nukkit.plugin.circularDependency"}));
+                            log.fatal(this.server.getLanguage().tr("nukkit.plugin.loadError", new String[] {
+                                name, "%nukkit.plugin.circularDependency"
+                            }));
                         }
                         plugins.clear();
                     }
@@ -377,12 +399,14 @@ public class PluginManager {
     }
 
     private void calculatePermissionDefault(Permission permission) {
-        if (permission.getDefault().equals(Permission.DEFAULT_OP) || permission.getDefault().equals(Permission.DEFAULT_TRUE)) {
+        if (permission.getDefault().equals(Permission.DEFAULT_OP)
+                || permission.getDefault().equals(Permission.DEFAULT_TRUE)) {
             this.defaultPermsOp.put(permission.getName(), permission);
             this.dirtyPermissibles(true);
         }
 
-        if (permission.getDefault().equals(Permission.DEFAULT_NOT_OP) || permission.getDefault().equals(Permission.DEFAULT_TRUE)) {
+        if (permission.getDefault().equals(Permission.DEFAULT_NOT_OP)
+                || permission.getDefault().equals(Permission.DEFAULT_TRUE)) {
             this.defaultPerms.put(permission.getName(), permission);
             this.dirtyPermissibles(false);
         }
@@ -461,8 +485,12 @@ public class PluginManager {
                 }
                 plugin.getPluginLoader().enablePlugin(plugin);
             } catch (Throwable e) {
-                log.fatal("An error occurred while enabling the plugin {}, {}, {}",
-                        plugin.getDescription().getName(), plugin.getDescription().getVersion(), plugin.getDescription().getMain(), e);
+                log.fatal(
+                        "An error occurred while enabling the plugin {}, {}, {}",
+                        plugin.getDescription().getName(),
+                        plugin.getDescription().getVersion(),
+                        plugin.getDescription().getMain(),
+                        e);
                 this.disablePlugin(plugin);
             }
         }
@@ -475,7 +503,9 @@ public class PluginManager {
             String key = (String) entry.getKey();
             Object data = entry.getValue();
             if (key.contains(":")) {
-                log.fatal(this.server.getLanguage().tr("nukkit.plugin.commandError", new String[]{key, plugin.getDescription().getFullName()}));
+                log.fatal(this.server.getLanguage().tr("nukkit.plugin.commandError", new String[] {
+                    key, plugin.getDescription().getFullName()
+                }));
                 continue;
             }
             if (data instanceof Map) {
@@ -495,7 +525,9 @@ public class PluginManager {
                         List<String> aliasList = new ArrayList<>();
                         for (String alias : (List<String>) aliases) {
                             if (alias.contains(":")) {
-                                log.fatal(this.server.getLanguage().tr("nukkit.plugin.aliasError", new String[]{alias, plugin.getDescription().getFullName()}));
+                                log.fatal(this.server.getLanguage().tr("nukkit.plugin.aliasError", new String[] {
+                                    alias, plugin.getDescription().getFullName()
+                                }));
                                 continue;
                             }
                             aliasList.add(alias);
@@ -521,9 +553,12 @@ public class PluginManager {
     }
 
     @PowerNukkitDifference(info = "Makes sure the PowerNukkitPlugin is never disabled", since = "1.3.0.0-PN")
-    @PowerNukkitXDifference(info = "Makes sure the PowerNukkitX Internal Plugin is never disabled", since = "1.19.60-r1")
+    @PowerNukkitXDifference(
+            info = "Makes sure the PowerNukkitX Internal Plugin is never disabled",
+            since = "1.19.60-r1")
     public void disablePlugins() {
-        ListIterator<Plugin> plugins = new ArrayList<>(this.getPlugins().values()).listIterator(this.getPlugins().size());
+        ListIterator<Plugin> plugins = new ArrayList<>(this.getPlugins().values())
+                .listIterator(this.getPlugins().size());
 
         while (plugins.hasPrevious()) {
             Plugin previous = plugins.previous();
@@ -542,8 +577,12 @@ public class PluginManager {
             try {
                 plugin.getPluginLoader().disablePlugin(plugin);
             } catch (Exception e) {
-                log.fatal("An error occurred while disabling the plugin {}, {}, {}",
-                        plugin.getDescription().getName(), plugin.getDescription().getVersion(), plugin.getDescription().getMain(), e);
+                log.fatal(
+                        "An error occurred while disabling the plugin {}, {}, {}",
+                        plugin.getDescription().getName(),
+                        plugin.getDescription().getVersion(),
+                        plugin.getDescription().getMain(),
+                        e);
             }
 
             this.server.getScheduler().cancelTask(plugin);
@@ -564,10 +603,11 @@ public class PluginManager {
     }
 
     public void callEvent(Event event) {
-        //Used for event listeners inside command blocks
+        // Used for event listeners inside command blocks
         String eventName = event.getClass().getSimpleName();
         try {
-            for (RegisteredListener registration : getEventListeners(event.getClass()).getRegisteredListeners()) {
+            for (RegisteredListener registration :
+                    getEventListeners(event.getClass()).getRegisteredListeners()) {
                 if (!registration.getPlugin().isEnabled()) {
                     continue;
                 }
@@ -575,7 +615,22 @@ public class PluginManager {
                 try {
                     registration.callEvent(event);
                 } catch (Exception e) {
-                    log.error(this.server.getLanguage().tr("nukkit.plugin.eventError", event.getEventName(), registration.getPlugin().getDescription().getFullName(), e.getMessage(), registration.getListener().getClass().getName()), e);
+                    log.error(
+                            this.server
+                                    .getLanguage()
+                                    .tr(
+                                            "nukkit.plugin.eventError",
+                                            event.getEventName(),
+                                            registration
+                                                    .getPlugin()
+                                                    .getDescription()
+                                                    .getFullName(),
+                                            e.getMessage(),
+                                            registration
+                                                    .getListener()
+                                                    .getClass()
+                                                    .getName()),
+                            e);
                 }
             }
         } catch (IllegalAccessException e) {
@@ -585,7 +640,8 @@ public class PluginManager {
 
     public void registerEvents(Listener listener, Plugin plugin) {
         if (!plugin.isEnabled()) {
-            throw new PluginException("Plugin attempted to register " + listener.getClass().getName() + " while not enabled");
+            throw new PluginException(
+                    "Plugin attempted to register " + listener.getClass().getName() + " while not enabled");
         }
 
         Map<Class<? extends Event>, Set<RegisteredListener>> ret = new HashMap<>();
@@ -597,7 +653,9 @@ public class PluginManager {
             Collections.addAll(methods, publicMethods);
             Collections.addAll(methods, privateMethods);
         } catch (NoClassDefFoundError e) {
-            plugin.getLogger().error("Plugin " + plugin.getDescription().getFullName() + " has failed to register events for " + listener.getClass() + " because " + e.getMessage() + " does not exist.");
+            plugin.getLogger()
+                    .error("Plugin " + plugin.getDescription().getFullName() + " has failed to register events for "
+                            + listener.getClass() + " because " + e.getMessage() + " does not exist.");
             return;
         }
 
@@ -609,8 +667,12 @@ public class PluginManager {
             }
             final Class<?> checkClass;
 
-            if (method.getParameterTypes().length != 1 || !Event.class.isAssignableFrom(checkClass = method.getParameterTypes()[0])) {
-                plugin.getLogger().error(plugin.getDescription().getFullName() + " attempted to register an invalid EventHandler method signature \"" + method.toGenericString() + "\" in " + listener.getClass());
+            if (method.getParameterTypes().length != 1
+                    || !Event.class.isAssignableFrom(checkClass = method.getParameterTypes()[0])) {
+                plugin.getLogger()
+                        .error(plugin.getDescription().getFullName()
+                                + " attempted to register an invalid EventHandler method signature \""
+                                + method.toGenericString() + "\" in " + listener.getClass());
                 continue;
             }
 
@@ -620,8 +682,15 @@ public class PluginManager {
             for (Class<?> clazz = eventClass; Event.class.isAssignableFrom(clazz); clazz = clazz.getSuperclass()) {
                 // This loop checks for extending deprecated events
                 if (clazz.getAnnotation(Deprecated.class) != null) {
-                    if (Boolean.parseBoolean(String.valueOf(this.server.getConfig("settings.deprecated-verbose", true)))) {
-                        log.warn(this.server.getLanguage().tr("nukkit.plugin.deprecatedEvent", plugin.getName(), clazz.getName(), listener.getClass().getName() + "." + method.getName() + "()"));
+                    if (Boolean.parseBoolean(
+                            String.valueOf(this.server.getConfig("settings.deprecated-verbose", true)))) {
+                        log.warn(this.server
+                                .getLanguage()
+                                .tr(
+                                        "nukkit.plugin.deprecatedEvent",
+                                        plugin.getName(),
+                                        clazz.getName(),
+                                        listener.getClass().getName() + "." + method.getName() + "()"));
                     }
                     break;
                 }
@@ -635,20 +704,39 @@ public class PluginManager {
         }
     }
 
-    public void registerEvent(Class<? extends Event> event, Listener listener, EventPriority priority, EventExecutor executor, Plugin plugin) throws PluginException {
+    public void registerEvent(
+            Class<? extends Event> event,
+            Listener listener,
+            EventPriority priority,
+            EventExecutor executor,
+            Plugin plugin)
+            throws PluginException {
         this.registerEvent(event, listener, priority, executor, plugin, false);
     }
 
-    public void registerEvent(Class<? extends Event> event, Listener listener, EventPriority priority, EventExecutor executor, Plugin plugin, boolean ignoreCancelled) throws PluginException {
+    public void registerEvent(
+            Class<? extends Event> event,
+            Listener listener,
+            EventPriority priority,
+            EventExecutor executor,
+            Plugin plugin,
+            boolean ignoreCancelled)
+            throws PluginException {
         if (!plugin.isEnabled()) {
             throw new PluginException("Plugin attempted to register " + event + " while not enabled");
         }
 
         try {
-            this.getEventListeners(event).register(new RegisteredListener(listener, executor, priority, plugin, ignoreCancelled));
+            this.getEventListeners(event)
+                    .register(new RegisteredListener(listener, executor, priority, plugin, ignoreCancelled));
         } catch (IllegalAccessException e) {
-            log.error("An error occurred while registering the event listener event:{}, listener:{} for plugin:{} version:{}",
-                    event, listener, plugin.getDescription().getName(), plugin.getDescription().getVersion(), e);
+            log.error(
+                    "An error occurred while registering the event listener event:{}, listener:{} for plugin:{} version:{}",
+                    event,
+                    listener,
+                    plugin.getDescription().getName(),
+                    plugin.getDescription().getVersion(),
+                    e);
         }
     }
 
@@ -676,7 +764,8 @@ public class PluginManager {
                     && Event.class.isAssignableFrom(clazz.getSuperclass())) {
                 return getRegistrationClass(clazz.getSuperclass().asSubclass(Event.class));
             } else {
-                throw new IllegalAccessException("Unable to find handler list for event " + clazz.getName() + ". Static getHandlers method required!");
+                throw new IllegalAccessException("Unable to find handler list for event " + clazz.getName()
+                        + ". Static getHandlers method required!");
             }
         }
     }

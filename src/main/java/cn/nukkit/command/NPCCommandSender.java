@@ -16,10 +16,9 @@ import cn.nukkit.permission.Permission;
 import cn.nukkit.permission.PermissionAttachment;
 import cn.nukkit.permission.PermissionAttachmentInfo;
 import cn.nukkit.plugin.Plugin;
+import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Map;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -43,25 +42,21 @@ public class NPCCommandSender implements CommandSender {
     }
 
     @Override
-    public void sendMessage(String message) {
-    }
+    public void sendMessage(String message) {}
 
     @Override
-    public void sendMessage(TextContainer message) {
-    }
+    public void sendMessage(TextContainer message) {}
 
     @Since("1.19.60-r1")
     @Override
-    public void sendCommandOutput(CommandOutputContainer container) {
-    }
+    public void sendCommandOutput(CommandOutputContainer container) {}
 
     @Override
     public Server getServer() {
         return npc.getServer();
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getName() {
         return npc.getName();
     }
@@ -80,32 +75,28 @@ public class NPCCommandSender implements CommandSender {
 
     @Since("1.6.0.0-PNX")
     @PowerNukkitOnly
-    @Nullable
-    @Override
+    @Nullable @Override
     public Entity asEntity() {
         return npc;
     }
 
     @Since("1.6.0.0-PNX")
     @PowerNukkitOnly
-    @Nullable
-    @Override
+    @Nullable @Override
     public Player asPlayer() {
         return null;
     }
 
     @Since("1.6.0.0-PNX")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public Position getPosition() {
         return npc.getPosition();
     }
 
     @Since("1.6.0.0-PNX")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public Location getLocation() {
         return npc.getLocation();
     }

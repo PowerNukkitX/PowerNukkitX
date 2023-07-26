@@ -12,7 +12,6 @@ import org.jetbrains.annotations.NotNull;
  * @author LoboMetalurgico
  * @since 13/06/2021
  */
-
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public class BlockItemFrameGlow extends BlockItemFrame {
@@ -40,8 +39,7 @@ public class BlockItemFrameGlow extends BlockItemFrame {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getBlockEntityType() {
         return BlockEntity.GLOW_ITEM_FRAME;
     }

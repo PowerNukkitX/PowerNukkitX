@@ -13,9 +13,8 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 public class LiftController implements IController {
     @Override
     public boolean control(EntityIntelligent entity) {
-        //add lift force
-        if (entity.getMemoryStorage().get(CoreMemoryTypes.ENABLE_LIFT_FORCE))
-            entity.motionY += entity.getGravity();
+        // add lift force
+        if (entity.getMemoryStorage().get(CoreMemoryTypes.ENABLE_LIFT_FORCE)) entity.motionY += entity.getGravity();
         return true;
     }
 }

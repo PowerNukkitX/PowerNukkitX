@@ -8,7 +8,6 @@ import cn.nukkit.event.block.BlockIgniteEvent;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.network.protocol.LevelEventPacket;
-
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -34,7 +33,8 @@ public class ItemFireCharge extends Item {
     }
 
     @Override
-    public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
+    public boolean onActivate(
+            Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         if (player.isAdventure()) {
             return false;
         }
@@ -53,13 +53,15 @@ public class ItemFireCharge extends Item {
             fire.level = level;
 
             if (fire.isBlockTopFacingSurfaceSolid(fire.down()) || fire.canNeighborBurn()) {
-                BlockIgniteEvent e = new BlockIgniteEvent(block, null, player, BlockIgniteEvent.BlockIgniteCause.FLINT_AND_STEEL);
+                BlockIgniteEvent e =
+                        new BlockIgniteEvent(block, null, player, BlockIgniteEvent.BlockIgniteCause.FLINT_AND_STEEL);
                 block.getLevel().getServer().getPluginManager().callEvent(e);
 
                 if (!e.isCancelled()) {
                     level.setBlock(fire, fire, true);
                     level.addLevelEvent(block, LevelEventPacket.EVENT_SOUND_GHAST_SHOOT, 78642);
-                    level.scheduleUpdate(fire, fire.tickRate() + ThreadLocalRandom.current().nextInt(10));
+                    level.scheduleUpdate(
+                            fire, fire.tickRate() + ThreadLocalRandom.current().nextInt(10));
                 }
                 if (player.isSurvival()) {
                     Item item = player.getInventory().getItemInHand();

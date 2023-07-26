@@ -10,9 +10,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemStick;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Random;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author xtypr
@@ -40,8 +39,7 @@ public class BlockDeadBush extends BlockFlowable implements BlockFlowerPot.Flowe
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return CommonBlockProperties.EMPTY_PROPERTIES;
     }
@@ -51,7 +49,7 @@ public class BlockDeadBush extends BlockFlowable implements BlockFlowerPot.Flowe
     public int getWaterloggingLevel() {
         return 1;
     }
-    
+
     @Override
     public boolean canBeReplaced() {
         return true;
@@ -59,14 +57,22 @@ public class BlockDeadBush extends BlockFlowable implements BlockFlowerPot.Flowe
 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed support logic")
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         if (isSupportValid()) {
             this.getLevel().setBlock(block, this, true, true);
             return true;
         }
         return false;
     }
-    
+
     private boolean isSupportValid() {
         switch (down().getId()) {
             case SAND:
@@ -99,14 +105,9 @@ public class BlockDeadBush extends BlockFlowable implements BlockFlowerPot.Flowe
     @Override
     public Item[] getDrops(Item item) {
         if (item.isShears()) {
-            return new Item[]{
-                    toItem()
-            };
+            return new Item[] {toItem()};
         } else {
-            return new Item[]{
-                    new ItemStick(0, new Random().nextInt(3))
-            };
+            return new Item[] {new ItemStick(0, new Random().nextInt(3))};
         }
     }
-
 }

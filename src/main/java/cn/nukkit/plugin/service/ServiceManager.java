@@ -1,7 +1,6 @@
 package cn.nukkit.plugin.service;
 
 import cn.nukkit.plugin.Plugin;
-
 import java.util.List;
 
 /**

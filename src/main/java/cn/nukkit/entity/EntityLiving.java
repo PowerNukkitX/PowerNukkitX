@@ -24,7 +24,6 @@ import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.TickCachedBlockIterator;
 import cn.nukkit.utils.Utils;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -34,7 +33,7 @@ import java.util.Map;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class EntityLiving extends Entity implements EntityDamageable {
-    public final static float DEFAULT_SPEED = 0.1f;
+    public static final float DEFAULT_SPEED = 0.1f;
     protected int attackTime = 0;
     protected boolean invisible = false;
     protected float movementSpeed = DEFAULT_SPEED;
@@ -91,7 +90,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     public boolean hasLineOfSight(Entity entity) {
-        //todo
+        // todo
         return true;
     }
 
@@ -102,7 +101,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     @PowerNukkitDifference(info = "Using new method to play sounds", since = "1.4.0.0-PN")
     @Override
     public boolean attack(EntityDamageEvent source) {
-        if (this.noDamageTicks > 0 && source.getCause() != DamageCause.SUICIDE) {//ignore it if the cause is SUICIDE
+        if (this.noDamageTicks > 0 && source.getCause() != DamageCause.SUICIDE) { // ignore it if the cause is SUICIDE
             return false;
         } else if (this.attackTime > 0 && !attackTimeByShieldKb) {
             EntityDamageEvent lastCause = this.getLastDamageCause();
@@ -122,7 +121,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                     damager = ((EntityDamageByChildEntityEvent) source).getChild();
                 }
 
-                //Critical hit
+                // Critical hit
                 if (damager instanceof Player && !damager.onGround) {
                     AnimatePacket animate = new AnimatePacket();
                     animate.action = AnimatePacket.Action.CRITICAL_HIT;
@@ -140,7 +139,12 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
                 double deltaX = this.x - damager.x;
                 double deltaZ = this.z - damager.z;
-                this.knockBack(damager, source.getDamage(), deltaX, deltaZ, ((EntityDamageByEntityEvent) source).getKnockBack());
+                this.knockBack(
+                        damager,
+                        source.getDamage(),
+                        deltaX,
+                        deltaZ,
+                        ((EntityDamageByEntityEvent) source).getKnockBack());
             }
 
             EntityEventPacket pk = new EntityEventPacket();
@@ -197,7 +201,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         this.server.getPluginManager().callEvent(ev);
 
         var manager = this.server.getScoreboardManager();
-        //测试环境中此项会null，所以说需要判空下
+        // 测试环境中此项会null，所以说需要判空下
         if (manager != null) manager.onEntityDead(this);
 
         if (this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
@@ -244,8 +248,12 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                 this.resetFallDistance();
             }
 
-            if (!this.hasEffect(Effect.WATER_BREATHING) && !this.hasEffect(Effect.CONDUIT_POWER) && this.isInsideOfWater()) {
-                if (this instanceof EntitySwimmable || (this instanceof Player && (((Player) this).isCreative() || ((Player) this).isSpectator()))) {
+            if (!this.hasEffect(Effect.WATER_BREATHING)
+                    && !this.hasEffect(Effect.CONDUIT_POWER)
+                    && this.isInsideOfWater()) {
+                if (this instanceof EntitySwimmable
+                        || (this instanceof Player
+                                && (((Player) this).isCreative() || ((Player) this).isSpectator()))) {
                     this.setAirTicks(400);
                 } else {
                     if (turtleTicks == 0 || turtleTicks == 200) {
@@ -289,15 +297,16 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             hasUpdate = true;
         }
 
-        //吐槽：性能不要了是吧放EntityLiving这里
-        //逻辑迁移到EntityVehicle去了
-//        if (this.riding == null) {
-//            for (Entity entity : level.fastNearbyEntities(this.boundingBox.grow(0.20000000298023224, 0.0D, 0.20000000298023224), this)) {
-//                if (entity instanceof EntityRideable) {
-//                    this.collidingWith(entity);
-//                }
-//            }
-//        }
+        // 吐槽：性能不要了是吧放EntityLiving这里
+        // 逻辑迁移到EntityVehicle去了
+        //        if (this.riding == null) {
+        //            for (Entity entity : level.fastNearbyEntities(this.boundingBox.grow(0.20000000298023224, 0.0D,
+        // 0.20000000298023224), this)) {
+        //                if (entity instanceof EntityRideable) {
+        //                    this.collidingWith(entity);
+        //                }
+        //            }
+        //        }
 
         // Used to check collisions with magma / cactus blocks
         // Math.round处理在某些条件下 出现x.999999的坐标条件,这里选择四舍五入
@@ -316,7 +325,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     public Block[] getLineOfSight(int maxDistance, int maxLength) {
-        return this.getLineOfSight(maxDistance, maxLength, new Integer[]{});
+        return this.getLineOfSight(maxDistance, maxLength, new Integer[] {});
     }
 
     @Deprecated
@@ -335,7 +344,8 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
         List<Block> blocks = new ArrayList<>();
 
-        var itr = new TickCachedBlockIterator(this.level, this.getPosition(), this.getDirectionVector(), this.getEyeHeight(), maxDistance);
+        var itr = new TickCachedBlockIterator(
+                this.level, this.getPosition(), this.getDirectionVector(), this.getEyeHeight(), maxDistance);
 
         while (itr.hasNext()) {
             Block block = itr.next();
@@ -362,7 +372,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     public Block getTargetBlock(int maxDistance) {
-        return getTargetBlock(maxDistance, new Integer[]{});
+        return getTargetBlock(maxDistance, new Integer[] {});
     }
 
     @Deprecated

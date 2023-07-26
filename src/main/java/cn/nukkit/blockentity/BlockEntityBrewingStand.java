@@ -19,13 +19,13 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.ContainerSetDataPacket;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
-public class BlockEntityBrewingStand extends BlockEntitySpawnable implements InventoryHolder, BlockEntityContainer, BlockEntityNameable {
+public class BlockEntityBrewingStand extends BlockEntitySpawnable
+        implements InventoryHolder, BlockEntityContainer, BlockEntityNameable {
 
     protected BrewingInventory inventory;
 
@@ -36,12 +36,28 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
     public int fuelAmount;
 
     @Deprecated
-    @DeprecationDetails(since = "1.3.1.2-PN", reason = "Makes no sense and is unused", replaceWith = "Use CraftingManager")
+    @DeprecationDetails(
+            since = "1.3.1.2-PN",
+            reason = "Makes no sense and is unused",
+            replaceWith = "Use CraftingManager")
     public static final List<Integer> ingredients = new ArrayList<>(Arrays.asList(
-            ItemID.NETHER_WART, ItemID.GHAST_TEAR, ItemID.GLOWSTONE_DUST, ItemID.REDSTONE_DUST, ItemID.GUNPOWDER,
-            ItemID.MAGMA_CREAM, ItemID.BLAZE_POWDER, ItemID.GOLDEN_CARROT, ItemID.SPIDER_EYE, ItemID.FERMENTED_SPIDER_EYE,
-            ItemID.GLISTERING_MELON, ItemID.SUGAR, ItemID.RABBIT_FOOT, ItemID.PUFFERFISH, ItemID.TURTLE_SHELL, 
-            ItemID.PHANTOM_MEMBRANE, 437));
+            ItemID.NETHER_WART,
+            ItemID.GHAST_TEAR,
+            ItemID.GLOWSTONE_DUST,
+            ItemID.REDSTONE_DUST,
+            ItemID.GUNPOWDER,
+            ItemID.MAGMA_CREAM,
+            ItemID.BLAZE_POWDER,
+            ItemID.GOLDEN_CARROT,
+            ItemID.SPIDER_EYE,
+            ItemID.FERMENTED_SPIDER_EYE,
+            ItemID.GLISTERING_MELON,
+            ItemID.SUGAR,
+            ItemID.RABBIT_FOOT,
+            ItemID.PUFFERFISH,
+            ItemID.TURTLE_SHELL,
+            ItemID.PHANTOM_MEMBRANE,
+            437));
 
     public BlockEntityBrewingStand(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -183,7 +199,8 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
         return inventory;
     }
 
-    @Deprecated @DeprecationDetails(since = "1.3.1.2-PN", reason = "Checks the wrong location")
+    @Deprecated
+    @DeprecationDetails(since = "1.3.1.2-PN", reason = "Checks the wrong location")
     protected boolean checkIngredient(Item ingredient) {
         return ingredients.contains(ingredient.getId());
     }
@@ -202,7 +219,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
             stopBrewing();
             return false;
         }
-        
+
         if (brewTime == MAX_BREW_TIME) {
             StartBrewEvent e = new StartBrewEvent(this);
             this.server.getPluginManager().callEvent(e);
@@ -215,15 +232,15 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
         }
 
         if (--brewTime > 0) {
-            
+
             if (brewTime % 40 == 0) {
                 sendBrewTime();
             }
-            
+
             return true;
         }
 
-        //20 seconds
+        // 20 seconds
         BrewEvent e = new BrewEvent(this);
         this.server.getPluginManager().callEvent(e);
 
@@ -231,7 +248,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
             stopBrewing();
             return true;
         }
-        
+
         boolean mixed = false;
         MixRecipe[] recipes = matchRecipes(false);
         for (int i = 0; i < 3; i++) {
@@ -251,7 +268,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
                 mixed = true;
             }
         }
-        
+
         if (mixed) {
             Item ingredient = this.inventory.getIngredient();
             ingredient.count--;
@@ -262,7 +279,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
 
             this.getLevel().addSound(this, Sound.RANDOM_POTION_BREWED);
         }
-        
+
         stopBrewing();
         return true;
     }
@@ -272,7 +289,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
         if (this.fuelAmount > 0 || fuel.getId() != ItemID.BLAZE_POWDER || fuel.getCount() <= 0) {
             return;
         }
-        
+
         fuel.count--;
         this.fuelAmount = 20;
         this.fuelTotal = 20;
@@ -286,9 +303,9 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
         this.sendBrewTime();
         this.brewTime = MAX_BREW_TIME;
     }
-    
+
     private MixRecipe[] matchRecipes(boolean quickTest) {
-        MixRecipe[] recipes = new MixRecipe[quickTest? 1 : 3];
+        MixRecipe[] recipes = new MixRecipe[quickTest ? 1 : 3];
         Item ingredient = inventory.getIngredient();
         CraftingManager craftingManager = getLevel().getServer().getCraftingManager();
         for (int i = 0; i < 3; i++) {
@@ -296,23 +313,23 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
             if (potion.isNull()) {
                 continue;
             }
-            
+
             MixRecipe recipe = craftingManager.matchBrewingRecipe(ingredient, potion);
             if (recipe == null) {
                 recipe = craftingManager.matchContainerRecipe(ingredient, potion);
-            } 
+            }
             if (recipe == null) {
                 continue;
             }
-            
+
             if (quickTest) {
                 recipes[0] = recipe;
                 return recipes;
             }
-            
+
             recipes[i] = recipe;
         }
-        
+
         return recipes;
     }
 
@@ -350,7 +367,9 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
         }
     }
 
-    @PowerNukkitDifference(info = "Will stop the processing if there are no other matching recipe", since = "1.3.1.2-PN")
+    @PowerNukkitDifference(
+            info = "Will stop the processing if there are no other matching recipe",
+            since = "1.3.1.2-PN")
     public void updateBlock() {
         Block block = this.getLevelBlock();
 
@@ -364,14 +383,15 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
             Item potion = this.inventory.getItem(i);
 
             int id = potion.getId();
-            if ((id == ItemID.POTION || id == ItemID.SPLASH_POTION || id == ItemID.LINGERING_POTION) && potion.getCount() > 0) {
+            if ((id == ItemID.POTION || id == ItemID.SPLASH_POTION || id == ItemID.LINGERING_POTION)
+                    && potion.getCount() > 0) {
                 meta |= 1 << (i - 1);
             }
         }
 
         block.setDamage(meta);
         this.level.setBlock(block, block, false, false);
-        
+
         if (brewTime != MAX_BREW_TIME && matchRecipes(true)[0] == null) {
             stopBrewing();
         }

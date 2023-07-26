@@ -18,16 +18,14 @@ import cn.nukkit.level.generator.object.ObjectTallGrass;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
+import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Angelic47 (Nukkit Project)
  */
-
 public class BlockGrass extends BlockDirt {
 
     public BlockGrass() {
@@ -41,8 +39,7 @@ public class BlockGrass extends BlockDirt {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return CommonBlockProperties.EMPTY_PROPERTIES;
     }
@@ -69,8 +66,7 @@ public class BlockGrass extends BlockDirt {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public Optional<DirtType> getDirtType() {
         return Optional.empty();
     }
@@ -80,7 +76,8 @@ public class BlockGrass extends BlockDirt {
     @Override
     public void setDirtType(@Nullable DirtType dirtType) {
         if (dirtType != null) {
-            throw new InvalidBlockPropertyValueException(DIRT_TYPE, null, dirtType, getName()+" don't support DirtType");
+            throw new InvalidBlockPropertyValueException(
+                    DIRT_TYPE, null, dirtType, getName() + " don't support DirtType");
         }
     }
 
@@ -105,7 +102,7 @@ public class BlockGrass extends BlockDirt {
         } else if (item.isHoe()) {
             item.useOn(this);
             this.getLevel().setBlock(this, Block.get(BlockID.FARMLAND));
-            if(player != null){
+            if (player != null) {
                 player.getLevel().addSound(player, Sound.USE_GRASS);
             }
             return true;
@@ -125,10 +122,10 @@ public class BlockGrass extends BlockDirt {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_RANDOM) {
-            // Grass dies and changes to dirt after a random time (when a random tick lands on the block) 
+            // Grass dies and changes to dirt after a random time (when a random tick lands on the block)
             // if directly covered by any opaque block.
-            // Transparent blocks can kill grass in a similar manner, 
-            // but only if they cause the light level above the grass block to be four or below (like water does), 
+            // Transparent blocks can kill grass in a similar manner,
+            // but only if they cause the light level above the grass block to be four or below (like water does),
             // and the surrounding area is not otherwise sufficiently lit up.
             if (up().getLightFilter() > 1) {
                 BlockFadeEvent ev = new BlockFadeEvent(this, Block.get(BlockID.DIRT));
@@ -138,15 +135,15 @@ public class BlockGrass extends BlockDirt {
                     return type;
                 }
             }
-            
-            // Grass can spread to nearby dirt blocks. 
-            // Grass spreading without player intervention depends heavily on the time of day. 
+
+            // Grass can spread to nearby dirt blocks.
+            // Grass spreading without player intervention depends heavily on the time of day.
             // For a dirt block to accept grass from a nearby grass block, the following requirements must be met:
-            
+
             // The source block must have a light level of 9 or brighter directly above it.
             if (getLevel().getFullLight(add(0, 1, 0)) >= BlockCrops.MINIMUM_LIGHT_LEVEL) {
-                
-                // The dirt block receiving grass must be within a 3×5×3 range of the source block 
+
+                // The dirt block receiving grass must be within a 3×5×3 range of the source block
                 // where the source block is in the center of the second topmost layer of that range.
                 ThreadLocalRandom random = ThreadLocalRandom.current();
                 int x = random.nextInt((int) this.x - 1, (int) this.x + 1 + 1);
@@ -154,13 +151,13 @@ public class BlockGrass extends BlockDirt {
                 int z = random.nextInt((int) this.z - 1, (int) this.z + 1 + 1);
                 Block block = this.getLevel().getBlock(new Vector3(x, y, z));
                 if (block.getId() == Block.DIRT
-                        
-                        // It cannot spread to coarse dirt        
+
+                        // It cannot spread to coarse dirt
                         && block.getPropertyValue(DIRT_TYPE) == DirtType.NORMAL
-                        
+
                         // The dirt block must have a light level of at least 4 above it.
                         && getLevel().getFullLight(block) >= 4
-                        
+
                         // Any block directly above the dirt block must not reduce light by 2 levels or more.
                         && block.up().getLightFilter() < 2) {
                     BlockSpreadEvent ev = new BlockSpreadEvent(block, this, Block.get(BlockID.GRASS));

@@ -21,11 +21,10 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class EntityHumanType extends EntityCreature implements IHuman {
 
@@ -73,22 +72,33 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman {
             return false;
         }
 
-        if (source.getCause() != DamageCause.VOID && source.getCause() != DamageCause.CUSTOM && source.getCause() != DamageCause.MAGIC && source.getCause() != DamageCause.HUNGER) {
+        if (source.getCause() != DamageCause.VOID
+                && source.getCause() != DamageCause.CUSTOM
+                && source.getCause() != DamageCause.MAGIC
+                && source.getCause() != DamageCause.HUNGER) {
             int armorPoints = 0;
             int epf = 0;
-//            int toughness = 0;
+            //            int toughness = 0;
 
             for (Item armor : inventory.getArmorContents()) {
                 armorPoints += armor.getArmorPoints();
                 epf += calculateEnchantmentProtectionFactor(armor, source);
-                //toughness += armor.getToughness();
+                // toughness += armor.getToughness();
             }
 
             if (source.canBeReducedByArmor()) {
                 source.setDamage(-source.getFinalDamage() * armorPoints * 0.04f, DamageModifier.ARMOR);
             }
 
-            source.setDamage(-source.getFinalDamage() * Math.min(NukkitMath.ceilFloat(Math.min(epf, 25) * ((float) ThreadLocalRandom.current().nextInt(50, 100) / 100)), 20) * 0.04f,
+            source.setDamage(
+                    -source.getFinalDamage()
+                            * Math.min(
+                                    NukkitMath.ceilFloat(Math.min(epf, 25)
+                                            * ((float) ThreadLocalRandom.current()
+                                                            .nextInt(50, 100)
+                                                    / 100)),
+                                    20)
+                            * 0.04f,
                     DamageModifier.ARMOR_ENCHANTMENTS);
 
             source.setDamage(-Math.min(this.getAbsorption(), source.getFinalDamage()), DamageModifier.ABSORPTION);
@@ -181,14 +191,14 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman {
             }
         }
 
-        if (event.getCause() != DamageCause.VOID &&
-                event.getCause() != DamageCause.MAGIC &&
-                event.getCause() != DamageCause.HUNGER &&
-                event.getCause() != DamageCause.DROWNING &&
-                event.getCause() != DamageCause.SUFFOCATION &&
-                event.getCause() != DamageCause.SUICIDE &&
-                event.getCause() != DamageCause.FIRE_TICK &&
-                event.getCause() != DamageCause.FALL) { // No armor damage
+        if (event.getCause() != DamageCause.VOID
+                && event.getCause() != DamageCause.MAGIC
+                && event.getCause() != DamageCause.HUNGER
+                && event.getCause() != DamageCause.DROWNING
+                && event.getCause() != DamageCause.SUFFOCATION
+                && event.getCause() != DamageCause.SUICIDE
+                && event.getCause() != DamageCause.FIRE_TICK
+                && event.getCause() != DamageCause.FALL) { // No armor damage
 
             if (armor.isUnbreakable() || armor.getMaxDurability() < 0) {
                 return armor;
@@ -196,8 +206,7 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman {
 
             if (armor instanceof ItemShield)
                 armor.setDamage(armor.getDamage() + (event.getDamage() >= 3 ? (int) event.getDamage() + 1 : 0));
-            else
-                armor.setDamage(armor.getDamage() + Math.max(1, (int) (event.getDamage() / 4.0f)));
+            else armor.setDamage(armor.getDamage() + Math.max(1, (int) (event.getDamage() / 4.0f)));
 
             if (armor.getDamage() >= armor.getMaxDurability()) {
                 getLevel().addSound(this, Sound.RANDOM_BREAK);

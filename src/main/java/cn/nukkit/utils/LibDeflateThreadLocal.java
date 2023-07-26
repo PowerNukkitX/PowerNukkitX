@@ -7,7 +7,6 @@ import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
 import cn.powernukkitx.libdeflate.CompressionType;
 import cn.powernukkitx.libdeflate.LibdeflateCompressor;
 import cn.powernukkitx.libdeflate.LibdeflateDecompressor;
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -19,9 +18,11 @@ import java.util.zip.Inflater;
 @Since("1.19.40-r3")
 public class LibDeflateThreadLocal implements ZlibProvider {
     private static final ThreadLocal<Inflater> INFLATER = ThreadLocal.withInitial(Inflater::new);
-    private static final ThreadLocal<LibdeflateDecompressor> PNX_INFLATER = ThreadLocal.withInitial(PNXLibInflater::new);
+    private static final ThreadLocal<LibdeflateDecompressor> PNX_INFLATER =
+            ThreadLocal.withInitial(PNXLibInflater::new);
     private static final ThreadLocal<LibdeflateCompressor> DEFLATER = ThreadLocal.withInitial(PNXLibDeflater::new);
     private static final ThreadLocal<byte[]> BUFFER = ThreadLocal.withInitial(() -> new byte[8192]);
+
     @Since("1.20.0-r2")
     private static final ThreadLocal<ByteBuffer> DIRECT_BUFFER = ThreadLocal.withInitial(() -> {
         var maximumSizePerChunk = 1024 * 1024;
@@ -45,7 +46,9 @@ public class LibDeflateThreadLocal implements ZlibProvider {
             bos.write(data, 0, data.length);
         }
         var data = bos.toByteArray();
-        byte[] buffer = deflater.getCompressBound(data.length, CompressionType.ZLIB) < 8192 ? BUFFER.get() : new byte[data.length];
+        byte[] buffer = deflater.getCompressBound(data.length, CompressionType.ZLIB) < 8192
+                ? BUFFER.get()
+                : new byte[data.length];
         int compressedSize = deflater.compress(data, buffer, CompressionType.ZLIB);
         return Arrays.copyOf(buffer, compressedSize);
     }
@@ -53,7 +56,9 @@ public class LibDeflateThreadLocal implements ZlibProvider {
     @Override
     public byte[] deflate(byte[] data, int level) throws IOException {
         var deflater = DEFLATER.get();
-        byte[] buffer = deflater.getCompressBound(data.length, CompressionType.ZLIB) < 8192 ? BUFFER.get() : new byte[data.length];
+        byte[] buffer = deflater.getCompressBound(data.length, CompressionType.ZLIB) < 8192
+                ? BUFFER.get()
+                : new byte[data.length];
         int compressedSize = deflater.compress(data, buffer, CompressionType.ZLIB);
         byte[] output = new byte[compressedSize];
         System.arraycopy(buffer, 0, output, 0, compressedSize);
@@ -67,7 +72,8 @@ public class LibDeflateThreadLocal implements ZlibProvider {
         try {
             if (maxSize < 8192) {
                 byte[] buffer = BUFFER.get();
-                var result = pnxInflater.decompressUnknownSize(data, 0, data.length, buffer, 0, buffer.length, CompressionType.ZLIB);
+                var result = pnxInflater.decompressUnknownSize(
+                        data, 0, data.length, buffer, 0, buffer.length, CompressionType.ZLIB);
                 if (result == -1) {
                     return inflateD(data, maxSize);
                 } else if (maxSize > 0 && result >= maxSize) {

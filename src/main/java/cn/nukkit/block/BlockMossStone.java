@@ -9,8 +9,7 @@ import cn.nukkit.item.ItemTool;
  */
 public class BlockMossStone extends BlockSolid {
 
-    public BlockMossStone() {
-    }
+    public BlockMossStone() {}
 
     @Override
     public String getName() {

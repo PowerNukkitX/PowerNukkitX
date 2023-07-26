@@ -8,7 +8,7 @@ import cn.nukkit.utils.DyeColor;
  * @author fromgate
  * @since 27.03.2016
  */
-abstract public class ItemColorArmor extends ItemArmor {
+public abstract class ItemColorArmor extends ItemArmor {
 
     public ItemColorArmor(int id) {
         super(id);

@@ -3,9 +3,8 @@ package cn.nukkit.inventory;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.item.Item;
-
-import javax.annotation.Nullable;
 import java.util.List;
+import javax.annotation.Nullable;
 
 @PowerNukkitOnly
 public class BlastFurnaceRecipe implements SmeltingRecipe {
@@ -20,7 +19,9 @@ public class BlastFurnaceRecipe implements SmeltingRecipe {
 
     @PowerNukkitXOnly
     public BlastFurnaceRecipe(@Nullable String recipeId, Item result, Item ingredient) {
-        this.recipeId = recipeId == null ? CraftingManager.getMultiItemHash(List.of(ingredient, result)).toString() : recipeId;
+        this.recipeId = recipeId == null
+                ? CraftingManager.getMultiItemHash(List.of(ingredient, result)).toString()
+                : recipeId;
         this.output = result.clone();
         this.ingredient = ingredient.clone();
     }

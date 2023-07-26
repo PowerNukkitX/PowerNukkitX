@@ -22,7 +22,8 @@ public enum EnchantmentType {
     BOW,
     WEARABLE,
     TRIDENT,
-    @Since("1.4.0.0-PN") CROSSBOW;
+    @Since("1.4.0.0-PN")
+    CROSSBOW;
 
     public boolean canEnchantItem(@NotNull Item item) {
         if (this == ALL) {

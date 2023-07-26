@@ -45,8 +45,7 @@ public abstract class ItemCustomBookEnchanted extends ItemBookEnchanted implemen
                         .putBoolean("mirrored_art", false)
                         .putInt("use_animation", 0)
                         .putInt("use_duration", 0)
-                        .putBoolean("animates_in_toolbar", false)
-                );
+                        .putBoolean("animates_in_toolbar", false));
     }
 
     public Enchantment getEnchantment() {

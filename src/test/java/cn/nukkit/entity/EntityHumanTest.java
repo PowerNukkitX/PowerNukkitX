@@ -18,6 +18,8 @@
 
 package cn.nukkit.entity;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import cn.nukkit.Player;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.blockstate.BlockState;
@@ -30,8 +32,6 @@ import org.powernukkit.tests.api.MockLevel;
 import org.powernukkit.tests.api.MockPlayer;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 /**
  * @author joserobjr
  * @since 2021-06-29
@@ -40,20 +40,20 @@ import static org.junit.jupiter.api.Assertions.*;
 class EntityHumanTest {
     @MockPlayer
     Player player;
-    
+
     @MockLevel
     Level level;
-    
+
     EntityHuman human;
 
     @BeforeEach
     void setUp() {
         level.setBlockStateAt(0, 63, 0, BlockState.of(BlockID.STONE));
-        human = new EntityHuman(level.getChunk(0,0), 
+        human = new EntityHuman(
+                level.getChunk(0, 0),
                 Entity.getDefaultNBT(new Vector3(0, 64, 0))
                         .putString("NameTag", "A Random Human")
-                        .putCompound("Skin", player.namedTag.getCompound("Skin").copy())
-        );
+                        .putCompound("Skin", player.namedTag.getCompound("Skin").copy()));
     }
 
     @Test

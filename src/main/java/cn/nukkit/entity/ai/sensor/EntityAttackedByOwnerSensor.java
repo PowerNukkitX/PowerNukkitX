@@ -24,9 +24,11 @@ public class EntityAttackedByOwnerSensor implements ISensor {
                     else entity.getMemoryStorage().clear(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER);
                 }
                 if (player.getLastBeAttackEntity() != null) {
-                    entity.getMemoryStorage().put(CoreMemoryTypes.ENTITY_ATTACKING_OWNER, player.getLastBeAttackEntity());
+                    entity.getMemoryStorage()
+                            .put(CoreMemoryTypes.ENTITY_ATTACKING_OWNER, player.getLastBeAttackEntity());
                 } else if (player.getLastAttackEntity() != null) {
-                    entity.getMemoryStorage().put(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER, player.getLastAttackEntity());
+                    entity.getMemoryStorage()
+                            .put(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER, player.getLastAttackEntity());
                 } else entity.getMemoryStorage().clear(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER);
             }
         }

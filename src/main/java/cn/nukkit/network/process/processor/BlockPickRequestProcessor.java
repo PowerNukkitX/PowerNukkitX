@@ -68,7 +68,8 @@ public class BlockPickRequestProcessor extends DataPacketProcessor<BlockPickRequ
                         return;
                     } else if (itemSlot > -1) {
                         player.getInventory().setHeldItemSlot(slot);
-                        player.getInventory().setItemInHand(player.getInventory().getItem(itemSlot));
+                        player.getInventory()
+                                .setItemInHand(player.getInventory().getItem(itemSlot));
                         player.getInventory().clear(itemSlot, true);
                         return;
                     }

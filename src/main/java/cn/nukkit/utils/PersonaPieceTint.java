@@ -1,10 +1,9 @@
 package cn.nukkit.utils;
 
 import com.google.common.collect.ImmutableList;
+import java.util.List;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-
-import java.util.List;
 
 @ToString
 @EqualsAndHashCode

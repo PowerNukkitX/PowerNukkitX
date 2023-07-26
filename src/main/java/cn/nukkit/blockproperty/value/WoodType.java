@@ -31,7 +31,7 @@ public enum WoodType {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     DARK_OAK(BlockColor.BROWN_BLOCK_COLOR, "Dark Oak");
-    
+
     private final BlockColor color;
     private final String englishName;
 
@@ -43,7 +43,7 @@ public enum WoodType {
         this.color = color;
         englishName = name().substring(0, 1) + name().substring(1).toLowerCase();
     }
-    
+
     WoodType(BlockColor color, String name) {
         this.color = color;
         englishName = name;

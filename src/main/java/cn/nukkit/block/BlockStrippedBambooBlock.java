@@ -19,7 +19,6 @@ public class BlockStrippedBambooBlock extends BlockLog {
         super(meta);
     }
 
-
     public int getId() {
         return STRIPPED_BAMBOO_BLOCK;
     }
@@ -28,8 +27,7 @@ public class BlockStrippedBambooBlock extends BlockLog {
         return "Stripped Bamboo Block";
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PILLAR_PROPERTIES;
     }

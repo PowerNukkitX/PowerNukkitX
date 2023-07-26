@@ -1,5 +1,7 @@
 package cn.nukkit.item.randomitem;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
@@ -8,8 +10,6 @@ import cn.nukkit.item.enchantment.Enchantment;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
-
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * @author joserobjr

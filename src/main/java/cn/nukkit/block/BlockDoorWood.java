@@ -46,5 +46,4 @@ public class BlockDoorWood extends BlockDoor {
     public Item toItem() {
         return new ItemDoorWood();
     }
-
 }

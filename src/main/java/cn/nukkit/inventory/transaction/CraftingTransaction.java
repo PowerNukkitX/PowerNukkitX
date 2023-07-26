@@ -12,11 +12,10 @@ import cn.nukkit.inventory.transaction.action.InventoryAction;
 import cn.nukkit.inventory.transaction.action.SlotChangeAction;
 import cn.nukkit.inventory.transaction.action.TakeLevelAction;
 import cn.nukkit.item.Item;
-
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import javax.annotation.Nullable;
 
 /**
  * @author CreeperFace
@@ -32,17 +31,19 @@ public class CraftingTransaction extends InventoryTransaction {
     protected Item primaryOutput;
 
     @Deprecated
-    @DeprecationDetails(since = "FUTURE", reason = "When the recipe is not a CraftingRecipe, this is set to null instead of the recipe",
-            by = "PowerNukkit", replaceWith = "getTransactionRecipe()")
-    @Nullable
-    @Since("FUTURE")
+    @DeprecationDetails(
+            since = "FUTURE",
+            reason = "When the recipe is not a CraftingRecipe, this is set to null instead of the recipe",
+            by = "PowerNukkit",
+            replaceWith = "getTransactionRecipe()")
+    @Nullable @Since("FUTURE")
     protected CraftingRecipe recipe;
 
     private Recipe transactionRecipe;
 
     @PowerNukkitOnly
     protected int craftingType;
-    
+
     private boolean readyToExecute;
 
     public CraftingTransaction(Player source, List<InventoryAction> actions) {
@@ -51,9 +52,9 @@ public class CraftingTransaction extends InventoryTransaction {
         this.craftingType = source.craftingType;
         if (source.craftingType == Player.CRAFTING_STONECUTTER) {
             this.gridSize = 1;
-            
+
             this.inputs = new ArrayList<>(1);
-            
+
             this.secondaryOutputs = new ArrayList<>(1);
         } else {
             this.gridSize = (source.getCraftingGrid() instanceof BigCraftingGrid) ? 3 : 2;
@@ -65,7 +66,7 @@ public class CraftingTransaction extends InventoryTransaction {
 
         init(source, actions);
     }
-    
+
     public void setInput(Item item) {
         if (inputs.size() < gridSize * gridSize) {
             for (Item existingInput : this.inputs) {
@@ -100,16 +101,20 @@ public class CraftingTransaction extends InventoryTransaction {
         if (primaryOutput == null) {
             primaryOutput = item.clone();
         } else if (!primaryOutput.equals(item)) {
-            throw new RuntimeException("Primary result item has already been set and does not match the current item (expected " + primaryOutput + ", got " + item + ")");
+            throw new RuntimeException(
+                    "Primary result item has already been set and does not match the current item (expected "
+                            + primaryOutput + ", got " + item + ")");
         }
     }
 
     @Deprecated
-    @DeprecationDetails(since = "FUTURE", reason = "When the recipe is not a CraftingRecipe, returns null instead of the recipe",
-        by = "PowerNukkit", replaceWith = "getTransactionRecipe()")
+    @DeprecationDetails(
+            since = "FUTURE",
+            reason = "When the recipe is not a CraftingRecipe, returns null instead of the recipe",
+            by = "PowerNukkit",
+            replaceWith = "getTransactionRecipe()")
     @Since("FUTURE")
-    @Nullable
-    public CraftingRecipe getRecipe() {
+    @Nullable public CraftingRecipe getRecipe() {
         return recipe;
     }
 
@@ -123,7 +128,7 @@ public class CraftingTransaction extends InventoryTransaction {
     @Since("FUTURE")
     protected void setTransactionRecipe(Recipe recipe) {
         this.transactionRecipe = recipe;
-        this.recipe = (recipe instanceof CraftingRecipe)? (CraftingRecipe) recipe: null;
+        this.recipe = (recipe instanceof CraftingRecipe) ? (CraftingRecipe) recipe : null;
     }
 
     @Override
@@ -135,7 +140,8 @@ public class CraftingTransaction extends InventoryTransaction {
                 setTransactionRecipe(craftingManager.matchStonecutterRecipe(this.primaryOutput));
                 break;
             case Player.CRAFTING_CARTOGRAPHY:
-                setTransactionRecipe(craftingManager.matchCartographyRecipe(inputs, this.primaryOutput, this.secondaryOutputs));
+                setTransactionRecipe(
+                        craftingManager.matchCartographyRecipe(inputs, this.primaryOutput, this.secondaryOutputs));
                 break;
             case Player.CRAFTING_SMITHING:
                 inventory = source.getWindowById(Player.SMITHING_WINDOW_ID);
@@ -143,11 +149,13 @@ public class CraftingTransaction extends InventoryTransaction {
                     addInventory(inventory);
                     SmithingInventory smithingInventory = (SmithingInventory) inventory;
                     SmithingRecipe smithingRecipe = smithingInventory.matchRecipe();
-                    if (smithingRecipe != null && this.primaryOutput.equals(smithingRecipe.getFinalResult(smithingInventory.getEquipment()), true, true)) {
+                    if (smithingRecipe != null
+                            && this.primaryOutput.equals(
+                                    smithingRecipe.getFinalResult(smithingInventory.getEquipment()), true, true)) {
                         setTransactionRecipe(smithingRecipe);
                     }
                 }
-                
+
                 break;
             case Player.CRAFTING_ANVIL:
                 inventory = source.getWindowById(Player.ANVIL_WINDOW_ID);
@@ -159,9 +167,14 @@ public class CraftingTransaction extends InventoryTransaction {
                         TakeLevelAction takeLevel = new TakeLevelAction(anvil.getLevelCost());
                         addAction(takeLevel);
                         if (takeLevel.isValid(source)) {
-                            setTransactionRecipe(new RepairRecipe(InventoryType.ANVIL, this.primaryOutput, this.inputs));
+                            setTransactionRecipe(
+                                    new RepairRecipe(InventoryType.ANVIL, this.primaryOutput, this.inputs));
                             PlayerUIInventory uiInventory = source.getUIInventory();
-                            actions.add(new DamageAnvilAction(anvil, !source.isCreative() && ThreadLocalRandom.current().nextFloat() < 0.12F, this));
+                            actions.add(new DamageAnvilAction(
+                                    anvil,
+                                    !source.isCreative()
+                                            && ThreadLocalRandom.current().nextFloat() < 0.12F,
+                                    this));
                             actions.stream()
                                     .filter(a -> a instanceof SlotChangeAction)
                                     .map(a -> (SlotChangeAction) a)
@@ -169,7 +182,8 @@ public class CraftingTransaction extends InventoryTransaction {
                                     .filter(a -> a.getSlot() == 50)
                                     .findFirst()
                                     .ifPresent(a -> {
-                                        // Move the set result action to the end, otherwise the result would be cleared too early
+                                        // Move the set result action to the end, otherwise the result would be cleared
+                                        // too early
                                         actions.remove(a);
                                         actions.add(a);
                                     });
@@ -186,8 +200,10 @@ public class CraftingTransaction extends InventoryTransaction {
                 if (inventory instanceof GrindstoneInventory) {
                     GrindstoneInventory grindstone = (GrindstoneInventory) inventory;
                     addInventory(grindstone);
-                    if (grindstone.updateResult(false) && this.primaryOutput.equals(grindstone.getResult(), true, true)) {
-                        setTransactionRecipe(new RepairRecipe(InventoryType.GRINDSTONE, this.primaryOutput, this.inputs));
+                    if (grindstone.updateResult(false)
+                            && this.primaryOutput.equals(grindstone.getResult(), true, true)) {
+                        setTransactionRecipe(
+                                new RepairRecipe(InventoryType.GRINDSTONE, this.primaryOutput, this.inputs));
                         grindstone.setResult(Item.get(0), false);
                     }
                 }
@@ -261,8 +277,9 @@ public class CraftingTransaction extends InventoryTransaction {
         for (InventoryAction action : actions) {
             if (action instanceof SlotChangeAction) {
                 SlotChangeAction slotChangeAction = (SlotChangeAction) action;
-                if (slotChangeAction.getInventory().getType() == InventoryType.UI && slotChangeAction.getSlot() == 50 &&
-                        !slotChangeAction.getSourceItem().equals(slotChangeAction.getTargetItem())) {
+                if (slotChangeAction.getInventory().getType() == InventoryType.UI
+                        && slotChangeAction.getSlot() == 50
+                        && !slotChangeAction.getSourceItem().equals(slotChangeAction.getTargetItem())) {
                     return true;
                 }
             }

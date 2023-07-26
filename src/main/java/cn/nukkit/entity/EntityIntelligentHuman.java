@@ -22,12 +22,11 @@ import cn.nukkit.network.protocol.AddPlayerPacket;
 import cn.nukkit.network.protocol.RemoveEntityPacket;
 import cn.nukkit.network.protocol.SetEntityLinkPacket;
 import cn.nukkit.utils.Utils;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * 用来提供给插件基础，以方便的使用带有智能的EntityHuman
@@ -143,19 +142,31 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
         if (!this.onGround && this.y < this.highestPosition) {
             this.fallingTick++;
         }
-        //这样做是为了向后兼容旧插件
+        // 这样做是为了向后兼容旧插件
         if (!enableHeadYaw()) {
             this.headYaw = this.yaw;
         }
-        double diffPosition = (this.x - this.lastX) * (this.x - this.lastX) + (this.y - this.lastY) * (this.y - this.lastY) + (this.z - this.lastZ) * (this.z - this.lastZ);
-        double diffRotation = enableHeadYaw() ? (this.headYaw - this.lastHeadYaw) * (this.headYaw - this.lastHeadYaw) : 0 + (this.yaw - this.lastYaw) * (this.yaw - this.lastYaw) + (this.pitch - this.lastPitch) * (this.pitch - this.lastPitch);
-        double diffMotion = (this.motionX - this.lastMotionX) * (this.motionX - this.lastMotionX) + (this.motionY - this.lastMotionY) * (this.motionY - this.lastMotionY) + (this.motionZ - this.lastMotionZ) * (this.motionZ - this.lastMotionZ);
-        if (diffPosition > 0.0001 || diffRotation > 1.0) { //0.2 ** 2, 1.5 ** 2
+        double diffPosition = (this.x - this.lastX) * (this.x - this.lastX)
+                + (this.y - this.lastY) * (this.y - this.lastY)
+                + (this.z - this.lastZ) * (this.z - this.lastZ);
+        double diffRotation = enableHeadYaw()
+                ? (this.headYaw - this.lastHeadYaw) * (this.headYaw - this.lastHeadYaw)
+                : 0
+                        + (this.yaw - this.lastYaw) * (this.yaw - this.lastYaw)
+                        + (this.pitch - this.lastPitch) * (this.pitch - this.lastPitch);
+        double diffMotion = (this.motionX - this.lastMotionX) * (this.motionX - this.lastMotionX)
+                + (this.motionY - this.lastMotionY) * (this.motionY - this.lastMotionY)
+                + (this.motionZ - this.lastMotionZ) * (this.motionZ - this.lastMotionZ);
+        if (diffPosition > 0.0001 || diffRotation > 1.0) { // 0.2 ** 2, 1.5 ** 2
             if (diffPosition > 0.0001) {
                 if (this.isOnGround()) {
-                    this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.STEP));
+                    this.level
+                            .getVibrationManager()
+                            .callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.STEP));
                 } else if (this.isTouchingWater()) {
-                    this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.SWIM));
+                    this.level
+                            .getVibrationManager()
+                            .callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.SWIM));
                 }
             }
             this.broadcastMovement();
@@ -169,7 +180,7 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
         } else {
             this.positionChanged = false;
         }
-        if (diffMotion > 0.0025 || (diffMotion > 0.0001 && this.getMotion().lengthSquared() <= 0.0001)) { //0.05 ** 2
+        if (diffMotion > 0.0025 || (diffMotion > 0.0001 && this.getMotion().lengthSquared() <= 0.0001)) { // 0.05 ** 2
             this.lastMotionX = this.motionX;
             this.lastMotionY = this.motionY;
             this.lastMotionZ = this.motionZ;
@@ -194,25 +205,39 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
             return false;
         }
 
-        if (source.getCause() != EntityDamageEvent.DamageCause.VOID && source.getCause() != EntityDamageEvent.DamageCause.CUSTOM && source.getCause() != EntityDamageEvent.DamageCause.MAGIC && source.getCause() != EntityDamageEvent.DamageCause.HUNGER) {
+        if (source.getCause() != EntityDamageEvent.DamageCause.VOID
+                && source.getCause() != EntityDamageEvent.DamageCause.CUSTOM
+                && source.getCause() != EntityDamageEvent.DamageCause.MAGIC
+                && source.getCause() != EntityDamageEvent.DamageCause.HUNGER) {
             int armorPoints = 0;
             int epf = 0;
-            //int toughness = 0;
+            // int toughness = 0;
 
             for (Item armor : inventory.getArmorContents()) {
                 armorPoints += armor.getArmorPoints();
                 epf += calculateEnchantmentProtectionFactor(armor, source);
-                //toughness += armor.getToughness();
+                // toughness += armor.getToughness();
             }
 
             if (source.canBeReducedByArmor()) {
-                source.setDamage(-source.getFinalDamage() * armorPoints * 0.04f, EntityDamageEvent.DamageModifier.ARMOR);
+                source.setDamage(
+                        -source.getFinalDamage() * armorPoints * 0.04f, EntityDamageEvent.DamageModifier.ARMOR);
             }
 
-            source.setDamage(-source.getFinalDamage() * Math.min(NukkitMath.ceilFloat(Math.min(epf, 25) * ((float) ThreadLocalRandom.current().nextInt(50, 100) / 100)), 20) * 0.04f,
+            source.setDamage(
+                    -source.getFinalDamage()
+                            * Math.min(
+                                    NukkitMath.ceilFloat(Math.min(epf, 25)
+                                            * ((float) ThreadLocalRandom.current()
+                                                            .nextInt(50, 100)
+                                                    / 100)),
+                                    20)
+                            * 0.04f,
                     EntityDamageEvent.DamageModifier.ARMOR_ENCHANTMENTS);
 
-            source.setDamage(-Math.min(this.getAbsorption(), source.getFinalDamage()), EntityDamageEvent.DamageModifier.ABSORPTION);
+            source.setDamage(
+                    -Math.min(this.getAbsorption(), source.getFinalDamage()),
+                    EntityDamageEvent.DamageModifier.ABSORPTION);
         }
 
         if (super.attack(source)) {
@@ -284,14 +309,14 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
             }
         }
 
-        if (event.getCause() != EntityDamageEvent.DamageCause.VOID &&
-                event.getCause() != EntityDamageEvent.DamageCause.MAGIC &&
-                event.getCause() != EntityDamageEvent.DamageCause.HUNGER &&
-                event.getCause() != EntityDamageEvent.DamageCause.DROWNING &&
-                event.getCause() != EntityDamageEvent.DamageCause.SUFFOCATION &&
-                event.getCause() != EntityDamageEvent.DamageCause.SUICIDE &&
-                event.getCause() != EntityDamageEvent.DamageCause.FIRE_TICK &&
-                event.getCause() != EntityDamageEvent.DamageCause.FALL) { // No armor damage
+        if (event.getCause() != EntityDamageEvent.DamageCause.VOID
+                && event.getCause() != EntityDamageEvent.DamageCause.MAGIC
+                && event.getCause() != EntityDamageEvent.DamageCause.HUNGER
+                && event.getCause() != EntityDamageEvent.DamageCause.DROWNING
+                && event.getCause() != EntityDamageEvent.DamageCause.SUFFOCATION
+                && event.getCause() != EntityDamageEvent.DamageCause.SUICIDE
+                && event.getCause() != EntityDamageEvent.DamageCause.FIRE_TICK
+                && event.getCause() != EntityDamageEvent.DamageCause.FALL) { // No armor damage
 
             if (armor.isUnbreakable() || armor.getMaxDurability() < 0) {
                 return armor;
@@ -299,8 +324,7 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
 
             if (armor instanceof ItemShield)
                 armor.setDamage(armor.getDamage() + (event.getDamage() >= 3 ? (int) event.getDamage() + 1 : 0));
-            else
-                armor.setDamage(armor.getDamage() + Math.max(1, (int) (event.getDamage() / 4.0f)));
+            else armor.setDamage(armor.getDamage() + Math.max(1, (int) (event.getDamage() / 4.0f)));
 
             if (armor.getDamage() >= armor.getMaxDurability()) {
                 getLevel().addSound(this, Sound.RANDOM_BREAK);
@@ -316,8 +340,7 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
         return "EntityIntelligentHuman";
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getName() {
         return this.getNameTag();
     }
@@ -336,7 +359,8 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
                 throw new IllegalStateException(this.getClass().getSimpleName() + " must have a valid skin set");
             }
 
-            this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getName(), this.skin, new Player[]{player});
+            this.server.updatePlayerListData(
+                    this.getUniqueId(), this.getId(), this.getName(), this.skin, new Player[] {player});
 
             AddPlayerPacket pk = new AddPlayerPacket();
             pk.uuid = this.getUniqueId();

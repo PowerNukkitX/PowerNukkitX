@@ -1,5 +1,8 @@
 package cn.nukkit.utils;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
@@ -7,9 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.powernukkit.tests.api.MockPlayer;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * @author joserobjr
@@ -21,11 +21,15 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 class DummyBossBarTest {
     @MockPlayer
     Player player;
+
     DummyBossBar bossBar;
 
     @Test
     void color() {
-        bossBar = new DummyBossBar.Builder(player).color(BossBarColor.BLUE).text("Testing").build();
+        bossBar = new DummyBossBar.Builder(player)
+                .color(BossBarColor.BLUE)
+                .text("Testing")
+                .build();
         assertEquals(BossBarColor.BLUE, bossBar.getColor());
         bossBar.setColor(BossBarColor.GREEN);
         assertEquals(BossBarColor.GREEN, bossBar.getColor());

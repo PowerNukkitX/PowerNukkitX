@@ -24,10 +24,9 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.potion.Effect;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -56,8 +55,7 @@ public class BlockFire extends BlockFlowable {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -118,7 +116,12 @@ public class BlockFire extends BlockFlowable {
             if (type == Level.BLOCK_UPDATE_NORMAL) {
                 int downId = down.getId();
                 if (downId == Block.SOUL_SAND || downId == Block.SOUL_SOIL) {
-                    this.getLevel().setBlock(this, getCurrentState().withBlockId(BlockID.SOUL_FIRE).getBlock(this));
+                    this.getLevel()
+                            .setBlock(
+                                    this,
+                                    getCurrentState()
+                                            .withBlockId(BlockID.SOUL_FIRE)
+                                            .getBlock(this));
                     return type;
                 }
             }
@@ -133,7 +136,7 @@ public class BlockFire extends BlockFlowable {
                 level.scheduleUpdate(this, tickRate());
             }
 
-            //在第一次放置时就检查下雨
+            // 在第一次放置时就检查下雨
             checkRain();
 
             return Level.BLOCK_UPDATE_NORMAL;
@@ -143,7 +146,7 @@ public class BlockFire extends BlockFlowable {
 
             ThreadLocalRandom random = ThreadLocalRandom.current();
 
-            //TODO: END
+            // TODO: END
 
             if (!this.isBlockTopFacingSurfaceSolid(down) && !this.canNeighborBurn()) {
                 BlockFadeEvent event = new BlockFadeEvent(this, get(AIR));
@@ -153,7 +156,8 @@ public class BlockFire extends BlockFlowable {
                 }
             }
 
-            boolean forever = downId == BlockID.NETHERRACK || downId == BlockID.MAGMA
+            boolean forever = downId == BlockID.NETHERRACK
+                    || downId == BlockID.MAGMA
                     || downId == BlockID.BEDROCK && ((BlockBedrock) down).getBurnIndefinitely();
 
             if (!checkRain()) {
@@ -184,7 +188,7 @@ public class BlockFire extends BlockFlowable {
                 } else {
                     int o = 0;
 
-                    //TODO: decrease the o if the rainfall values are high
+                    // TODO: decrease the o if the rainfall values are high
 
                     this.tryToCatchBlockOnFire(this.east(), 300 + o, meta);
                     this.tryToCatchBlockOnFire(this.west(), 300 + o, meta);
@@ -207,9 +211,15 @@ public class BlockFire extends BlockFlowable {
                                     int chance = this.getChanceOfNeighborsEncouragingFire(block);
 
                                     if (chance > 0) {
-                                        int t = (chance + 40 + this.getLevel().getServer().getDifficulty() * 7) / (meta + 30);
+                                        int t = (chance
+                                                        + 40
+                                                        + this.getLevel()
+                                                                        .getServer()
+                                                                        .getDifficulty()
+                                                                * 7)
+                                                / (meta + 30);
 
-                                        //TODO: decrease the t if the rainfall values are high
+                                        // TODO: decrease the t if the rainfall values are high
 
                                         if (t > 0 && random.nextInt(k) <= t) {
                                             int damage = meta + random.nextInt(5) / 4;
@@ -218,8 +228,12 @@ public class BlockFire extends BlockFlowable {
                                                 damage = 15;
                                             }
 
-                                            BlockIgniteEvent e = new BlockIgniteEvent(block, this, null, BlockIgniteEvent.BlockIgniteCause.SPREAD);
-                                            this.level.getServer().getPluginManager().callEvent(e);
+                                            BlockIgniteEvent e = new BlockIgniteEvent(
+                                                    block, this, null, BlockIgniteEvent.BlockIgniteCause.SPREAD);
+                                            this.level
+                                                    .getServer()
+                                                    .getPluginManager()
+                                                    .callEvent(e);
 
                                             if (!e.isCancelled()) {
                                                 this.getLevel().setBlock(block, Block.get(BlockID.FIRE, damage), true);
@@ -344,16 +358,17 @@ public class BlockFire extends BlockFlowable {
     protected boolean checkRain() {
         var down = down();
         int downId = down.getId();
-        boolean forever = downId == BlockID.NETHERRACK || downId == BlockID.MAGMA
+        boolean forever = downId == BlockID.NETHERRACK
+                || downId == BlockID.MAGMA
                 || downId == BlockID.BEDROCK && ((BlockBedrock) down).getBurnIndefinitely();
 
-        if (!forever && this.getLevel().isRaining() &&
-                (this.getLevel().canBlockSeeSky(this) ||
-                        this.getLevel().canBlockSeeSky(this.east()) ||
-                        this.getLevel().canBlockSeeSky(this.west()) ||
-                        this.getLevel().canBlockSeeSky(this.south()) ||
-                        this.getLevel().canBlockSeeSky(this.north()))
-        ) {
+        if (!forever
+                && this.getLevel().isRaining()
+                && (this.getLevel().canBlockSeeSky(this)
+                        || this.getLevel().canBlockSeeSky(this.east())
+                        || this.getLevel().canBlockSeeSky(this.west())
+                        || this.getLevel().canBlockSeeSky(this.south())
+                        || this.getLevel().canBlockSeeSky(this.north()))) {
             BlockFadeEvent event = new BlockFadeEvent(this, get(AIR));
             level.getServer().getPluginManager().callEvent(event);
             if (!event.isCancelled()) {

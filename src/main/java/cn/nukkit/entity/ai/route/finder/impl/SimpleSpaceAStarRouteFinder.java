@@ -17,11 +17,11 @@ import org.jetbrains.annotations.NotNull;
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public class SimpleSpaceAStarRouteFinder extends SimpleFlatAStarRouteFinder {
-    //直接移动成本
-    protected final static int DIRECT_MOVE_COST = 10;
-    //倾斜移动成本
-    protected final static int OBLIQUE_2D_MOVE_COST = 14;
-    protected final static int OBLIQUE_3D_MOVE_COST = 17;
+    // 直接移动成本
+    protected static final int DIRECT_MOVE_COST = 10;
+    // 倾斜移动成本
+    protected static final int OBLIQUE_2D_MOVE_COST = 14;
+    protected static final int OBLIQUE_3D_MOVE_COST = 17;
 
     public SimpleSpaceAStarRouteFinder(IPosEvaluator blockEvaluator, EntityIntelligent entity) {
         super(blockEvaluator, entity);
@@ -41,12 +41,16 @@ public class SimpleSpaceAStarRouteFinder extends SimpleFlatAStarRouteFinder {
                     var vec = centeredNode.add(dx, dy, dz);
                     if (!existInCloseList(vec) && evalPos(vec)) {
                         // 计算移动1格的开销
-                        var cost = switch (Math.abs(dx) + Math.abs(dy) + Math.abs(dz)) {
-                            case 1 -> DIRECT_MOVE_COST;
-                            case 2 -> OBLIQUE_2D_MOVE_COST;
-                            case 3 -> OBLIQUE_3D_MOVE_COST;
-                            default -> Integer.MIN_VALUE;
-                        } + getBlockMoveCostAt(this.entity.level, vec) + node.getG() - dy; // -dy是为了倾向于从空中飞而不是贴地飞
+                        var cost =
+                                switch (Math.abs(dx) + Math.abs(dy) + Math.abs(dz)) {
+                                            case 1 -> DIRECT_MOVE_COST;
+                                            case 2 -> OBLIQUE_2D_MOVE_COST;
+                                            case 3 -> OBLIQUE_3D_MOVE_COST;
+                                            default -> Integer.MIN_VALUE;
+                                        }
+                                        + getBlockMoveCostAt(this.entity.level, vec)
+                                        + node.getG()
+                                        - dy; // -dy是为了倾向于从空中飞而不是贴地飞
                         if (cost < 0) continue;
                         var nodeNear = getOpenNode(vec);
                         if (nodeNear == null) {
@@ -69,8 +73,7 @@ public class SimpleSpaceAStarRouteFinder extends SimpleFlatAStarRouteFinder {
      */
     protected boolean hasBarrier(Vector3 pos1, Vector3 pos2) {
         if (pos1.equals(pos2)) return false;
-        return VectorMath.getPassByVector3(pos1, pos2).stream().anyMatch(
-                (pos) -> !evalPos(this.entity.level.getTickCachedBlock(pos.add(0, -1)))
-        );
+        return VectorMath.getPassByVector3(pos1, pos2).stream()
+                .anyMatch((pos) -> !evalPos(this.entity.level.getTickCachedBlock(pos.add(0, -1))));
     }
 }

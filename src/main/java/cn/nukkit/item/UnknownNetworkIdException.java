@@ -1,4 +1,3 @@
-
 /*
  * https://PowerNukkit.org - The Nukkit you know but Powerful!
  * Copyright (C) 2021  José Roberto de Araújo Júnior
@@ -21,7 +20,6 @@ package cn.nukkit.item;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-
 import javax.annotation.Nullable;
 
 /**
@@ -31,9 +29,8 @@ import javax.annotation.Nullable;
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
 public class UnknownNetworkIdException extends IllegalStateException {
-    @Nullable
-    private final transient Item item;
-    
+    @Nullable private final transient Item item;
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public UnknownNetworkIdException() {
@@ -87,15 +84,14 @@ public class UnknownNetworkIdException extends IllegalStateException {
         super(cause);
         this.item = copy(item);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nullable
-    public Item getItem() {
-        return item == null? null : item.clone();
+    @Nullable public Item getItem() {
+        return item == null ? null : item.clone();
     }
 
     private static Item copy(Item item) {
-        return item == null? null : item.clone();
+        return item == null ? null : item.clone();
     }
 }

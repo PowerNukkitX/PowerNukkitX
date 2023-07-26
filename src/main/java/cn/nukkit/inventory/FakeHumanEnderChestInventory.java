@@ -21,18 +21,15 @@ public class FakeHumanEnderChestInventory extends BaseInventory {
         return (EntityIntelligentHuman) this.holder;
     }
 
-    //non
+    // non
     @Override
-    public void close(Player who) {
-    }
+    public void close(Player who) {}
 
     @Override
-    public void onOpen(Player who) {
-    }
+    public void onOpen(Player who) {}
 
     @Override
-    public void onClose(Player who) {
-    }
+    public void onClose(Player who) {}
 
     @Override
     public boolean open(Player who) {

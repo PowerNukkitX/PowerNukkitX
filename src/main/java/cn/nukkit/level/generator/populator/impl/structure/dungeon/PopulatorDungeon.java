@@ -22,7 +22,9 @@ import cn.nukkit.nbt.tag.ListTag;
 @Since("1.19.21-r2")
 public class PopulatorDungeon extends PopulatorStructure {
 
-    private static final int[] MOBS = {EntitySkeleton.NETWORK_ID, EntityZombie.NETWORK_ID, EntityZombie.NETWORK_ID, EntitySpider.NETWORK_ID};
+    private static final int[] MOBS = {
+        EntitySkeleton.NETWORK_ID, EntityZombie.NETWORK_ID, EntityZombie.NETWORK_ID, EntitySpider.NETWORK_ID
+    };
 
     @Override
     public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
@@ -62,7 +64,9 @@ public class PopulatorDungeon extends PopulatorStructure {
                         if (dy == 4 && !isSolid) {
                             continue chance;
                         }
-                        if ((dx == x1 || dx == x2 || dz == z1 || dz == z2) && dy == 0 && level.getBlockIdAt(tx, ty + 1, tz) == AIR) {
+                        if ((dx == x1 || dx == x2 || dz == z1 || dz == z2)
+                                && dy == 0
+                                && level.getBlockIdAt(tx, ty + 1, tz) == AIR) {
                             ++t;
                         }
                     }
@@ -83,9 +87,14 @@ public class PopulatorDungeon extends PopulatorStructure {
                                 if (id != CHEST) {
                                     level.setBlockAt(tx, ty, tz, AIR);
                                 }
-                            } else if (ty >= 0 && !Block.fullList[(level.getBlockIdAt(tx, ty - 1, tz) << 4) + level.getBlockDataAt(tx, ty - 1, tz)].isSolid()) {
+                            } else if (ty >= 0
+                                    && !Block.fullList[
+                                            (level.getBlockIdAt(tx, ty - 1, tz) << 4)
+                                                    + level.getBlockDataAt(tx, ty - 1, tz)]
+                                            .isSolid()) {
                                 level.setBlockAt(tx, ty, tz, AIR);
-                            } else if (Block.fullList[(id << 4) + level.getBlockDataAt(tx, ty, tz)].isSolid() && id != CHEST) {
+                            } else if (Block.fullList[(id << 4) + level.getBlockDataAt(tx, ty, tz)].isSolid()
+                                    && id != CHEST) {
                                 if (dy == -1 && random.nextBoundedInt(4) != 0) {
                                     level.setBlockAt(tx, ty, tz, MOSSY_STONE);
                                 } else {
@@ -104,16 +113,24 @@ public class PopulatorDungeon extends PopulatorStructure {
                         if (level.getBlockIdAt(tx, y, tz) == AIR) {
                             int n = 0;
 
-                            if (Block.fullList[(level.getBlockIdAt(tx - 1, y, tz) << 4) + level.getBlockDataAt(tx - 1, y, tz)].isSolid()) {
+                            if (Block.fullList[
+                                    (level.getBlockIdAt(tx - 1, y, tz) << 4) + level.getBlockDataAt(tx - 1, y, tz)]
+                                    .isSolid()) {
                                 ++n;
                             }
-                            if (Block.fullList[(level.getBlockIdAt(tx + 1, y, tz) << 4) + level.getBlockDataAt(tx + 1, y, tz)].isSolid()) {
+                            if (Block.fullList[
+                                    (level.getBlockIdAt(tx + 1, y, tz) << 4) + level.getBlockDataAt(tx + 1, y, tz)]
+                                    .isSolid()) {
                                 ++n;
                             }
-                            if (Block.fullList[(level.getBlockIdAt(tx, y, tz - 1) << 4) + level.getBlockDataAt(tx, y, tz - 1)].isSolid()) {
+                            if (Block.fullList[
+                                    (level.getBlockIdAt(tx, y, tz - 1) << 4) + level.getBlockDataAt(tx, y, tz - 1)]
+                                    .isSolid()) {
                                 ++n;
                             }
-                            if (Block.fullList[(level.getBlockIdAt(tx, y, tz + 1) << 4) + level.getBlockDataAt(tx, y, tz + 1)].isSolid()) {
+                            if (Block.fullList[
+                                    (level.getBlockIdAt(tx, y, tz + 1) << 4) + level.getBlockDataAt(tx, y, tz + 1)]
+                                    .isSolid()) {
                                 ++n;
                             }
 
@@ -125,7 +142,12 @@ public class PopulatorDungeon extends PopulatorStructure {
                                 ListTag<CompoundTag> items = new ListTag<>("Items");
                                 DungeonChest.get().create(items, random);
                                 chest.putList(items);
-                                Server.getInstance().getScheduler().scheduleTask(null, new BlockActorSpawnTask(chunk.getProvider().getLevel(), chest));
+                                Server.getInstance()
+                                        .getScheduler()
+                                        .scheduleTask(
+                                                null,
+                                                new BlockActorSpawnTask(
+                                                        chunk.getProvider().getLevel(), chest));
                                 break;
                             }
                         }
@@ -133,9 +155,14 @@ public class PopulatorDungeon extends PopulatorStructure {
                 }
 
                 level.setBlockAt(x, y, z, MONSTER_SPAWNER);
-                Server.getInstance().getScheduler().scheduleTask(null, new BlockActorSpawnTask(chunk.getProvider().getLevel(),
-                        BlockEntity.getDefaultCompound(new Vector3(x, y, z), BlockEntity.MOB_SPAWNER)
-                                .putInt("EntityId", MOBS[random.nextBoundedInt(MOBS.length)])));
+                Server.getInstance()
+                        .getScheduler()
+                        .scheduleTask(
+                                null,
+                                new BlockActorSpawnTask(
+                                        chunk.getProvider().getLevel(),
+                                        BlockEntity.getDefaultCompound(new Vector3(x, y, z), BlockEntity.MOB_SPAWNER)
+                                                .putInt("EntityId", MOBS[random.nextBoundedInt(MOBS.length)])));
             }
         }
     }

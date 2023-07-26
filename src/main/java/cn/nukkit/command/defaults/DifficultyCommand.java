@@ -9,7 +9,6 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.network.protocol.SetDifficultyPacket;
-
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -23,18 +22,20 @@ public class DifficultyCommand extends VanillaCommand {
         super(name, "commands.difficulty.description", "%commands.difficulty.usage");
         this.setPermission("nukkit.command.difficulty");
         this.commandParameters.clear();
-        this.commandParameters.put("default", new CommandParameter[]{
-                CommandParameter.newType("difficulty", CommandParamType.INT)
-        });
-        this.commandParameters.put("byString", new CommandParameter[]{
-                CommandParameter.newEnum("difficulty", new CommandEnum("Difficulty", "peaceful", "p", "easy", "e", "normal", "n", "hard", "h"))
+        this.commandParameters.put(
+                "default", new CommandParameter[] {CommandParameter.newType("difficulty", CommandParamType.INT)});
+        this.commandParameters.put("byString", new CommandParameter[] {
+            CommandParameter.newEnum(
+                    "difficulty",
+                    new CommandEnum("Difficulty", "peaceful", "p", "easy", "e", "normal", "n", "hard", "h"))
         });
         this.enableParamTree();
     }
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         int difficulty;
         switch (result.getKey()) {
@@ -56,8 +57,10 @@ public class DifficultyCommand extends VanillaCommand {
             sender.getServer().setDifficulty(difficulty);
             SetDifficultyPacket pk = new SetDifficultyPacket();
             pk.difficulty = sender.getServer().getDifficulty();
-            Server.broadcastPacket(new ArrayList<>(sender.getServer().getOnlinePlayers().values()), pk);
-            log.addSuccess("commands.difficulty.success", String.valueOf(difficulty)).output(true);
+            Server.broadcastPacket(
+                    new ArrayList<>(sender.getServer().getOnlinePlayers().values()), pk);
+            log.addSuccess("commands.difficulty.success", String.valueOf(difficulty))
+                    .output(true);
             return 1;
         } else {
             log.addSyntaxErrors(0).output();

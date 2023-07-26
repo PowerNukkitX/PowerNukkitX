@@ -29,8 +29,7 @@ public class BlockWaterLily extends BlockFlowable {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return CommonBlockProperties.EMPTY_PROPERTIES;
     }
@@ -76,7 +75,15 @@ public class BlockWaterLily extends BlockFlowable {
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         if (target instanceof BlockWater || target.getLevelBlockAtLayer(1) instanceof BlockWater) {
             Block up = target.up();
             if (up.getId() == Block.AIR) {
@@ -91,8 +98,10 @@ public class BlockWaterLily extends BlockFlowable {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             Block down = this.down();
-            if (!(down instanceof BlockWater) && !(down.getLevelBlockAtLayer(1) instanceof BlockWater)
-                    && !(down instanceof BlockIceFrosted) && !(down.getLevelBlockAtLayer(1) instanceof BlockIceFrosted)) {
+            if (!(down instanceof BlockWater)
+                    && !(down.getLevelBlockAtLayer(1) instanceof BlockWater)
+                    && !(down instanceof BlockIceFrosted)
+                    && !(down.getLevelBlockAtLayer(1) instanceof BlockIceFrosted)) {
                 this.getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
             }

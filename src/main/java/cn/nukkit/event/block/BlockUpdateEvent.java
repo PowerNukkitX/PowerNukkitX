@@ -18,5 +18,4 @@ public class BlockUpdateEvent extends BlockEvent implements Cancellable {
     public BlockUpdateEvent(Block block) {
         super(block);
     }
-
 }

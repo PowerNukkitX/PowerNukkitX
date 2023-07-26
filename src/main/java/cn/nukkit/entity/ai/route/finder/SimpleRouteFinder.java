@@ -4,11 +4,10 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.ai.route.data.Node;
 import cn.nukkit.entity.ai.route.posevaluator.IPosEvaluator;
-import lombok.Getter;
-
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nullable;
+import lombok.Getter;
 
 /**
  * 非异步的路径查找抽象类 <br/>
@@ -19,13 +18,13 @@ import java.util.List;
 @Since("1.6.0.0-PNX")
 public abstract class SimpleRouteFinder implements IRouteFinder {
 
-    //用于存储寻路结果的List
+    // 用于存储寻路结果的List
     protected List<Node> nodes = new ArrayList<>();
 
-    //索引值
+    // 索引值
     protected int currentIndex = 0;
 
-    //方块评估器
+    // 方块评估器
     @Getter
     protected IPosEvaluator evalPos;
 
@@ -33,17 +32,17 @@ public abstract class SimpleRouteFinder implements IRouteFinder {
         this.evalPos = blockEvaluator;
     }
 
-    //添加寻路结果节点
+    // 添加寻路结果节点
     protected void addNode(Node node) {
         nodes.add(node);
     }
 
-    //批量添加寻路结果节点
+    // 批量添加寻路结果节点
     protected void addNode(List<Node> node) {
         nodes.addAll(node);
     }
 
-    //重置寻路结果
+    // 重置寻路结果
     protected void resetNodes() {
         this.nodes.clear();
     }
@@ -54,8 +53,7 @@ public abstract class SimpleRouteFinder implements IRouteFinder {
     }
 
     @Override
-    @Nullable
-    public Node getCurrentNode() {
+    @Nullable public Node getCurrentNode() {
         if (this.hasCurrentNode()) {
             return nodes.get(currentIndex);
         }
@@ -74,8 +72,7 @@ public abstract class SimpleRouteFinder implements IRouteFinder {
     }
 
     @Override
-    @Nullable
-    public Node next() {
+    @Nullable public Node next() {
         if (this.hasNext()) {
             return this.nodes.get(++currentIndex);
         }
@@ -97,8 +94,7 @@ public abstract class SimpleRouteFinder implements IRouteFinder {
         this.currentIndex = index;
     }
 
-    @Nullable
-    @Override
+    @Nullable @Override
     public Node getNode(int index) {
         if (index + 1 < nodes.size()) {
             return this.nodes.get(index);

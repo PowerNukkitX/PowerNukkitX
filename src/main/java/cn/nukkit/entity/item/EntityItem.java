@@ -115,20 +115,22 @@ public class EntityItem extends Entity {
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Netherite stuff is immune to fire and lava damage")
     @Override
     public boolean attack(EntityDamageEvent source) {
-        if (item != null && item.isLavaResistant() && (
-                source.getCause() == DamageCause.LAVA ||
-                        source.getCause() == DamageCause.FIRE ||
-                        source.getCause() == DamageCause.FIRE_TICK)) {
+        if (item != null
+                && item.isLavaResistant()
+                && (source.getCause() == DamageCause.LAVA
+                        || source.getCause() == DamageCause.FIRE
+                        || source.getCause() == DamageCause.FIRE_TICK)) {
             return false;
         }
 
-        return (source.getCause() == DamageCause.VOID ||
-                source.getCause() == DamageCause.CONTACT ||
-                source.getCause() == DamageCause.FIRE_TICK ||
-                (source.getCause() == DamageCause.ENTITY_EXPLOSION ||
-                        source.getCause() == DamageCause.BLOCK_EXPLOSION) &&
-                        !this.isInsideOfWater() && (this.item == null ||
-                        this.item.getId() != Item.NETHER_STAR)) && super.attack(source);
+        return (source.getCause() == DamageCause.VOID
+                        || source.getCause() == DamageCause.CONTACT
+                        || source.getCause() == DamageCause.FIRE_TICK
+                        || (source.getCause() == DamageCause.ENTITY_EXPLOSION
+                                        || source.getCause() == DamageCause.BLOCK_EXPLOSION)
+                                && !this.isInsideOfWater()
+                                && (this.item == null || this.item.getId() != Item.NETHER_STAR))
+                && super.attack(source);
     }
 
     @Override
@@ -147,7 +149,8 @@ public class EntityItem extends Entity {
 
         if (this.age % 60 == 0 && this.onGround && this.getItem() != null && this.isAlive()) {
             if (this.getItem().getCount() < this.getItem().getMaxStackSize()) {
-                for (Entity entity : this.getLevel().getNearbyEntities(getBoundingBox().grow(1, 1, 1), this, false)) {
+                for (Entity entity :
+                        this.getLevel().getNearbyEntities(getBoundingBox().grow(1, 1, 1), this, false)) {
                     if (entity instanceof EntityItem) {
                         if (!entity.isAlive()) {
                             continue;
@@ -189,35 +192,40 @@ public class EntityItem extends Entity {
                 if (this.pickupDelay < 0) {
                     this.pickupDelay = 0;
                 }
-            }/* else { // Done in Player#checkNearEntities
-                for (Entity entity : this.level.getNearbyEntities(this.boundingBox.grow(1, 0.5, 1), this)) {
-                    if (entity instanceof Player) {
-                        if (((Player) entity).pickupEntity(this, true)) {
-                            return true;
-                        }
-                    }
-                }
-            }*/
+            } /* else { // Done in Player#checkNearEntities
+                  for (Entity entity : this.level.getNearbyEntities(this.boundingBox.grow(1, 0.5, 1), this)) {
+                      if (entity instanceof Player) {
+                          if (((Player) entity).pickupEntity(this, true)) {
+                              return true;
+                          }
+                      }
+                  }
+              }*/
 
             int bid = this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 0);
-            if (bid == BlockID.FLOWING_WATER || bid == BlockID.STILL_WATER
-                    || (bid = this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 1)) == BlockID.FLOWING_WATER
+            if (bid == BlockID.FLOWING_WATER
                     || bid == BlockID.STILL_WATER
-            ) {
-                //item is fully in water or in still water
+                    || (bid = this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 1))
+                            == BlockID.FLOWING_WATER
+                    || bid == BlockID.STILL_WATER) {
+                // item is fully in water or in still water
                 this.motionY -= this.getGravity() * -0.015;
-            } else if (lavaResistant && (
-                    this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 0) == BlockID.FLOWING_LAVA
-                            || this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 0) == BlockID.STILL_LAVA
-                            || this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 1) == BlockID.FLOWING_LAVA
-                            || this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 1) == BlockID.STILL_LAVA
-            )) {
-                //item is fully in lava or in still lava
+            } else if (lavaResistant
+                    && (this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 0)
+                                    == BlockID.FLOWING_LAVA
+                            || this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 0)
+                                    == BlockID.STILL_LAVA
+                            || this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 1)
+                                    == BlockID.FLOWING_LAVA
+                            || this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 1)
+                                    == BlockID.STILL_LAVA)) {
+                // item is fully in lava or in still lava
                 this.motionY -= this.getGravity() * -0.015;
             } else if (this.isInsideOfWater() || lavaResistant && this.isInsideOfLava()) {
-                this.motionY = this.getGravity() - 0.06; //item is going up in water, don't let it go back down too fast
+                this.motionY =
+                        this.getGravity() - 0.06; // item is going up in water, don't let it go back down too fast
             } else {
-                this.motionY -= this.getGravity(); //item is not in water
+                this.motionY -= this.getGravity(); // item is not in water
             }
 
             if (this.checkObstruction(this.x, this.y, this.z)) {
@@ -229,7 +237,10 @@ public class EntityItem extends Entity {
             double friction = 1 - this.getDrag();
 
             if (this.onGround && (Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionZ) > 0.00001)) {
-                friction *= this.getLevel().getBlock(this.temporalVector.setComponents((int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z))).getFrictionFactor();
+                friction *= this.getLevel()
+                        .getBlock(this.temporalVector.setComponents(
+                                (int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z)))
+                        .getFrictionFactor();
             }
 
             this.motionX *= friction;
@@ -254,7 +265,11 @@ public class EntityItem extends Entity {
             }
         }
 
-        return hasUpdate || !this.onGround || Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionY) > 0.00001 || Math.abs(this.motionZ) > 0.00001;
+        return hasUpdate
+                || !this.onGround
+                || Math.abs(this.motionX) > 0.00001
+                || Math.abs(this.motionY) > 0.00001
+                || Math.abs(this.motionZ) > 0.00001;
     }
 
     @Override
@@ -290,8 +305,7 @@ public class EntityItem extends Entity {
         return "Item";
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getName() {
         if (this.hasCustomName()) {
             return getNameTag();

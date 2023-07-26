@@ -19,5 +19,4 @@ public class IntNode extends ParamNode<Integer> {
             this.error();
         }
     }
-
 }

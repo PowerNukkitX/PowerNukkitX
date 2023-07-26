@@ -18,7 +18,6 @@ import cn.nukkit.command.tree.node.RelativeFloatNode;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.level.Position;
 import cn.nukkit.network.protocol.CameraInstructionPacket;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -33,127 +32,132 @@ import java.util.Map;
 @Since("1.20.0-r2")
 public class CameraCommand extends VanillaCommand {
 
-    public static final String[] EASE_TYPES = Arrays.stream(EaseType.values()).map(EaseType::getType).toArray(String[]::new);
+    public static final String[] EASE_TYPES =
+            Arrays.stream(EaseType.values()).map(EaseType::getType).toArray(String[]::new);
 
     public CameraCommand(String name) {
         super(name, "commands.camera.description");
         this.setPermission("nukkit.command.camera");
         this.commandParameters.clear();
-        this.commandParameters.put("clear", new CommandParameter[]{
-                CommandParameter.newType("players", false, CommandParamType.TARGET, new PlayersNode()),
-                CommandParameter.newEnum("clear", false, new String[]{"clear"})
+        this.commandParameters.put("clear", new CommandParameter[] {
+            CommandParameter.newType("players", false, CommandParamType.TARGET, new PlayersNode()),
+            CommandParameter.newEnum("clear", false, new String[] {"clear"})
         });
-        this.commandParameters.put("fade", new CommandParameter[]{
-                CommandParameter.newType("players", false, CommandParamType.TARGET, new PlayersNode()),
-                CommandParameter.newEnum("fade", false, new String[]{"fade"})
+        this.commandParameters.put("fade", new CommandParameter[] {
+            CommandParameter.newType("players", false, CommandParamType.TARGET, new PlayersNode()),
+            CommandParameter.newEnum("fade", false, new String[] {"fade"})
         });
-        this.commandParameters.put("fade-color", new CommandParameter[]{
-                CommandParameter.newType("players", false, CommandParamType.TARGET, new PlayersNode()),
-                CommandParameter.newEnum("fade", false, new String[]{"fade"}),
-                CommandParameter.newEnum("color", false, new String[]{"color"}),
-                CommandParameter.newType("red", false, CommandParamType.FLOAT),
-                CommandParameter.newType("green", false, CommandParamType.FLOAT),
-                CommandParameter.newType("blue", false, CommandParamType.FLOAT)
+        this.commandParameters.put("fade-color", new CommandParameter[] {
+            CommandParameter.newType("players", false, CommandParamType.TARGET, new PlayersNode()),
+            CommandParameter.newEnum("fade", false, new String[] {"fade"}),
+            CommandParameter.newEnum("color", false, new String[] {"color"}),
+            CommandParameter.newType("red", false, CommandParamType.FLOAT),
+            CommandParameter.newType("green", false, CommandParamType.FLOAT),
+            CommandParameter.newType("blue", false, CommandParamType.FLOAT)
         });
-        this.commandParameters.put("fade-time-color", new CommandParameter[]{
-                CommandParameter.newType("players", false, CommandParamType.TARGET, new PlayersNode()),
-                CommandParameter.newEnum("fade", false, new String[]{"fade"}),
-                CommandParameter.newEnum("time", false, new String[]{"time"}),
-                CommandParameter.newType("fadeInSeconds", false, CommandParamType.FLOAT),
-                CommandParameter.newType("holdSeconds", false, CommandParamType.FLOAT),
-                CommandParameter.newType("fadeOutSeconds", false, CommandParamType.FLOAT),
-                CommandParameter.newEnum("color", false, new String[]{"color"}),
-                CommandParameter.newType("red", false, CommandParamType.FLOAT),
-                CommandParameter.newType("green", false, CommandParamType.FLOAT),
-                CommandParameter.newType("blue", false, CommandParamType.FLOAT)
+        this.commandParameters.put("fade-time-color", new CommandParameter[] {
+            CommandParameter.newType("players", false, CommandParamType.TARGET, new PlayersNode()),
+            CommandParameter.newEnum("fade", false, new String[] {"fade"}),
+            CommandParameter.newEnum("time", false, new String[] {"time"}),
+            CommandParameter.newType("fadeInSeconds", false, CommandParamType.FLOAT),
+            CommandParameter.newType("holdSeconds", false, CommandParamType.FLOAT),
+            CommandParameter.newType("fadeOutSeconds", false, CommandParamType.FLOAT),
+            CommandParameter.newEnum("color", false, new String[] {"color"}),
+            CommandParameter.newType("red", false, CommandParamType.FLOAT),
+            CommandParameter.newType("green", false, CommandParamType.FLOAT),
+            CommandParameter.newType("blue", false, CommandParamType.FLOAT)
         });
-        this.commandParameters.put("set-default", new CommandParameter[]{
-                CommandParameter.newType("players", false, CommandParamType.TARGET, new PlayersNode()),
-                CommandParameter.newEnum("set", false, new String[]{"set"}),
-                CommandParameter.newEnum("preset", false, CommandEnum.CAMERA_PRESETS),
-                CommandParameter.newEnum("default", true, new String[]{"default"})
+        this.commandParameters.put("set-default", new CommandParameter[] {
+            CommandParameter.newType("players", false, CommandParamType.TARGET, new PlayersNode()),
+            CommandParameter.newEnum("set", false, new String[] {"set"}),
+            CommandParameter.newEnum("preset", false, CommandEnum.CAMERA_PRESETS),
+            CommandParameter.newEnum("default", true, new String[] {"default"})
         });
-        this.commandParameters.put("set-rot", new CommandParameter[]{
-                CommandParameter.newType("players", false, CommandParamType.TARGET, new PlayersNode()),
-                CommandParameter.newEnum("set", false, new String[]{"set"}),
-                CommandParameter.newEnum("preset", false, CommandEnum.CAMERA_PRESETS),
-                CommandParameter.newEnum("rot", false, new String[]{"rot"}),
-                CommandParameter.newType("xRot", false, CommandParamType.VALUE, new RelativeFloatNode()),
-                CommandParameter.newType("yRot", false, CommandParamType.VALUE, new RelativeFloatNode())
+        this.commandParameters.put("set-rot", new CommandParameter[] {
+            CommandParameter.newType("players", false, CommandParamType.TARGET, new PlayersNode()),
+            CommandParameter.newEnum("set", false, new String[] {"set"}),
+            CommandParameter.newEnum("preset", false, CommandEnum.CAMERA_PRESETS),
+            CommandParameter.newEnum("rot", false, new String[] {"rot"}),
+            CommandParameter.newType("xRot", false, CommandParamType.VALUE, new RelativeFloatNode()),
+            CommandParameter.newType("yRot", false, CommandParamType.VALUE, new RelativeFloatNode())
         });
-        this.commandParameters.put("set-pos", new CommandParameter[]{
-                CommandParameter.newType("players", false, CommandParamType.TARGET, new PlayersNode()),
-                CommandParameter.newEnum("set", false, new String[]{"set"}),
-                CommandParameter.newEnum("preset", false, CommandEnum.CAMERA_PRESETS),
-                CommandParameter.newEnum("pos", false, new String[]{"pos"}),
-                CommandParameter.newType("position", false, CommandParamType.POSITION),
+        this.commandParameters.put("set-pos", new CommandParameter[] {
+            CommandParameter.newType("players", false, CommandParamType.TARGET, new PlayersNode()),
+            CommandParameter.newEnum("set", false, new String[] {"set"}),
+            CommandParameter.newEnum("preset", false, CommandEnum.CAMERA_PRESETS),
+            CommandParameter.newEnum("pos", false, new String[] {"pos"}),
+            CommandParameter.newType("position", false, CommandParamType.POSITION),
         });
-        this.commandParameters.put("set-pos-rot", new CommandParameter[]{
-                CommandParameter.newType("players", false, CommandParamType.TARGET, new PlayersNode()),
-                CommandParameter.newEnum("set", false, new String[]{"set"}),
-                CommandParameter.newEnum("preset", false, CommandEnum.CAMERA_PRESETS),
-                CommandParameter.newEnum("pos", false, new String[]{"pos"}),
-                CommandParameter.newType("position", false, CommandParamType.POSITION),
-                CommandParameter.newEnum("rot", false, new String[]{"rot"}),
-                CommandParameter.newType("xRot", false, CommandParamType.VALUE, new RelativeFloatNode()),
-                CommandParameter.newType("yRot", false, CommandParamType.VALUE, new RelativeFloatNode())
+        this.commandParameters.put("set-pos-rot", new CommandParameter[] {
+            CommandParameter.newType("players", false, CommandParamType.TARGET, new PlayersNode()),
+            CommandParameter.newEnum("set", false, new String[] {"set"}),
+            CommandParameter.newEnum("preset", false, CommandEnum.CAMERA_PRESETS),
+            CommandParameter.newEnum("pos", false, new String[] {"pos"}),
+            CommandParameter.newType("position", false, CommandParamType.POSITION),
+            CommandParameter.newEnum("rot", false, new String[] {"rot"}),
+            CommandParameter.newType("xRot", false, CommandParamType.VALUE, new RelativeFloatNode()),
+            CommandParameter.newType("yRot", false, CommandParamType.VALUE, new RelativeFloatNode())
         });
-        this.commandParameters.put("set-ease-default", new CommandParameter[]{
-                CommandParameter.newType("players", false, CommandParamType.TARGET, new PlayersNode()),
-                CommandParameter.newEnum("set", false, new String[]{"set"}),
-                CommandParameter.newEnum("preset", false, CommandEnum.CAMERA_PRESETS),
-                CommandParameter.newEnum("ease", false, new String[]{"ease"}),
-                CommandParameter.newType("easeTime", false, CommandParamType.FLOAT, new FloatNode()),
-                CommandParameter.newEnum("easeType", false, EASE_TYPES),
-                CommandParameter.newEnum("default", true, new String[]{"default"})
+        this.commandParameters.put("set-ease-default", new CommandParameter[] {
+            CommandParameter.newType("players", false, CommandParamType.TARGET, new PlayersNode()),
+            CommandParameter.newEnum("set", false, new String[] {"set"}),
+            CommandParameter.newEnum("preset", false, CommandEnum.CAMERA_PRESETS),
+            CommandParameter.newEnum("ease", false, new String[] {"ease"}),
+            CommandParameter.newType("easeTime", false, CommandParamType.FLOAT, new FloatNode()),
+            CommandParameter.newEnum("easeType", false, EASE_TYPES),
+            CommandParameter.newEnum("default", true, new String[] {"default"})
         });
-        this.commandParameters.put("set-ease-rot", new CommandParameter[]{
-                CommandParameter.newType("players", false, CommandParamType.TARGET, new PlayersNode()),
-                CommandParameter.newEnum("set", false, new String[]{"set"}),
-                CommandParameter.newEnum("preset", false, CommandEnum.CAMERA_PRESETS),
-                CommandParameter.newEnum("ease", false, new String[]{"ease"}),
-                CommandParameter.newType("easeTime", false, CommandParamType.FLOAT, new FloatNode()),
-                CommandParameter.newEnum("easeType", false, EASE_TYPES),
-                CommandParameter.newEnum("rot", false, new String[]{"rot"}),
-                CommandParameter.newType("xRot", false, CommandParamType.VALUE, new RelativeFloatNode()),
-                CommandParameter.newType("yRot", false, CommandParamType.VALUE, new RelativeFloatNode())
+        this.commandParameters.put("set-ease-rot", new CommandParameter[] {
+            CommandParameter.newType("players", false, CommandParamType.TARGET, new PlayersNode()),
+            CommandParameter.newEnum("set", false, new String[] {"set"}),
+            CommandParameter.newEnum("preset", false, CommandEnum.CAMERA_PRESETS),
+            CommandParameter.newEnum("ease", false, new String[] {"ease"}),
+            CommandParameter.newType("easeTime", false, CommandParamType.FLOAT, new FloatNode()),
+            CommandParameter.newEnum("easeType", false, EASE_TYPES),
+            CommandParameter.newEnum("rot", false, new String[] {"rot"}),
+            CommandParameter.newType("xRot", false, CommandParamType.VALUE, new RelativeFloatNode()),
+            CommandParameter.newType("yRot", false, CommandParamType.VALUE, new RelativeFloatNode())
         });
-        this.commandParameters.put("set-ease-pos", new CommandParameter[]{
-                CommandParameter.newType("players", false, CommandParamType.TARGET, new PlayersNode()),
-                CommandParameter.newEnum("set", false, new String[]{"set"}),
-                CommandParameter.newEnum("preset", false, CommandEnum.CAMERA_PRESETS),
-                CommandParameter.newEnum("ease", false, new String[]{"ease"}),
-                CommandParameter.newType("easeTime", false, CommandParamType.FLOAT, new FloatNode()),
-                CommandParameter.newEnum("easeType", false, EASE_TYPES),
-                CommandParameter.newEnum("pos", false, new String[]{"pos"}),
-                CommandParameter.newType("position", false, CommandParamType.POSITION),
+        this.commandParameters.put("set-ease-pos", new CommandParameter[] {
+            CommandParameter.newType("players", false, CommandParamType.TARGET, new PlayersNode()),
+            CommandParameter.newEnum("set", false, new String[] {"set"}),
+            CommandParameter.newEnum("preset", false, CommandEnum.CAMERA_PRESETS),
+            CommandParameter.newEnum("ease", false, new String[] {"ease"}),
+            CommandParameter.newType("easeTime", false, CommandParamType.FLOAT, new FloatNode()),
+            CommandParameter.newEnum("easeType", false, EASE_TYPES),
+            CommandParameter.newEnum("pos", false, new String[] {"pos"}),
+            CommandParameter.newType("position", false, CommandParamType.POSITION),
         });
-        this.commandParameters.put("set-ease-pos-rot", new CommandParameter[]{
-                CommandParameter.newType("players", false, CommandParamType.TARGET, new PlayersNode()),
-                CommandParameter.newEnum("set", false, new String[]{"set"}),
-                CommandParameter.newEnum("preset", false, CommandEnum.CAMERA_PRESETS),
-                CommandParameter.newEnum("ease", false, new String[]{"ease"}),
-                CommandParameter.newType("easeTime", false, CommandParamType.FLOAT, new FloatNode()),
-                CommandParameter.newEnum("easeType", false, EASE_TYPES),
-                CommandParameter.newEnum("pos", false, new String[]{"pos"}),
-                CommandParameter.newType("position", false, CommandParamType.POSITION),
-                CommandParameter.newEnum("rot", false, new String[]{"rot"}),
-                CommandParameter.newType("xRot", false, CommandParamType.VALUE, new RelativeFloatNode()),
-                CommandParameter.newType("yRot", false, CommandParamType.VALUE, new RelativeFloatNode())
+        this.commandParameters.put("set-ease-pos-rot", new CommandParameter[] {
+            CommandParameter.newType("players", false, CommandParamType.TARGET, new PlayersNode()),
+            CommandParameter.newEnum("set", false, new String[] {"set"}),
+            CommandParameter.newEnum("preset", false, CommandEnum.CAMERA_PRESETS),
+            CommandParameter.newEnum("ease", false, new String[] {"ease"}),
+            CommandParameter.newType("easeTime", false, CommandParamType.FLOAT, new FloatNode()),
+            CommandParameter.newEnum("easeType", false, EASE_TYPES),
+            CommandParameter.newEnum("pos", false, new String[] {"pos"}),
+            CommandParameter.newType("position", false, CommandParamType.POSITION),
+            CommandParameter.newEnum("rot", false, new String[] {"rot"}),
+            CommandParameter.newType("xRot", false, CommandParamType.VALUE, new RelativeFloatNode()),
+            CommandParameter.newType("yRot", false, CommandParamType.VALUE, new RelativeFloatNode())
         });
         this.enableParamTree();
     }
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         List<Player> players = list.getResult(0);
         if (players.isEmpty()) {
             log.addNoTargetMatch().output();
             return 0;
         }
-        var playerNames = players.stream().map(Player::getName).reduce((a, b) -> a + " " + b).orElse("");
+        var playerNames = players.stream()
+                .map(Player::getName)
+                .reduce((a, b) -> a + " " + b)
+                .orElse("");
         var pk = new CameraInstructionPacket();
         var senderLocation = sender.getLocation();
         switch (result.getKey()) {
@@ -164,16 +168,23 @@ public class CameraCommand extends VanillaCommand {
                 pk.setInstruction(FadeInstruction.builder().build());
             }
             case "fade-color" -> {
-                pk.setInstruction(FadeInstruction
-                        .builder()
-                        .color(new Color(list.get(3).get(), list.get(4).get(), list.get(5).get()))
+                pk.setInstruction(FadeInstruction.builder()
+                        .color(new Color(
+                                list.get(3).get(),
+                                list.get(4).get(),
+                                list.get(5).get()))
                         .build());
             }
             case "fade-time-color" -> {
-                pk.setInstruction(FadeInstruction
-                        .builder()
-                        .time(new Time(list.get(3).get(), list.get(4).get(), list.get(5).get()))
-                        .color(new Color(list.get(7).get(), list.get(8).get(), list.get(9).get()))
+                pk.setInstruction(FadeInstruction.builder()
+                        .time(new Time(
+                                list.get(3).get(),
+                                list.get(4).get(),
+                                list.get(5).get()))
+                        .color(new Color(
+                                list.get(7).get(),
+                                list.get(8).get(),
+                                list.get(9).get()))
                         .build());
             }
             case "set-default" -> {
@@ -192,7 +203,9 @@ public class CameraCommand extends VanillaCommand {
                 }
                 pk.setInstruction(SetInstruction.builder()
                         .preset(preset)
-                        .rot(new Rot(((RelativeFloatNode)list.get(4)).get((float) senderLocation.getPitch()), ((RelativeFloatNode)list.get(5)).get((float) senderLocation.getYaw())))
+                        .rot(new Rot(
+                                ((RelativeFloatNode) list.get(4)).get((float) senderLocation.getPitch()),
+                                ((RelativeFloatNode) list.get(5)).get((float) senderLocation.getYaw())))
                         .build());
             }
             case "set-pos" -> {
@@ -217,7 +230,9 @@ public class CameraCommand extends VanillaCommand {
                 pk.setInstruction(SetInstruction.builder()
                         .preset(preset)
                         .pos(new Pos((float) position.getX(), (float) position.getY(), (float) position.getZ()))
-                        .rot(new Rot(((RelativeFloatNode)list.get(6)).get((float) senderLocation.getPitch()), ((RelativeFloatNode)list.get(7)).get((float) senderLocation.getYaw())))
+                        .rot(new Rot(
+                                ((RelativeFloatNode) list.get(6)).get((float) senderLocation.getPitch()),
+                                ((RelativeFloatNode) list.get(7)).get((float) senderLocation.getYaw())))
                         .build());
             }
             case "set-ease-default" -> {
@@ -227,7 +242,7 @@ public class CameraCommand extends VanillaCommand {
                     return 0;
                 }
                 float easeTime = list.get(4).get();
-                var easeType = EaseType.valueOf(((String)list.get(5).get()).toUpperCase());
+                var easeType = EaseType.valueOf(((String) list.get(5).get()).toUpperCase());
                 pk.setInstruction(SetInstruction.builder()
                         .preset(preset)
                         .ease(new Ease(easeTime, easeType))
@@ -240,11 +255,13 @@ public class CameraCommand extends VanillaCommand {
                     return 0;
                 }
                 float easeTime = list.get(4).get();
-                var easeType = EaseType.valueOf(((String)list.get(5).get()).toUpperCase());
+                var easeType = EaseType.valueOf(((String) list.get(5).get()).toUpperCase());
                 pk.setInstruction(SetInstruction.builder()
                         .preset(preset)
                         .ease(new Ease(easeTime, easeType))
-                        .rot(new Rot(((RelativeFloatNode)list.get(7)).get((float) senderLocation.getPitch()), ((RelativeFloatNode)list.get(8)).get((float) senderLocation.getYaw())))
+                        .rot(new Rot(
+                                ((RelativeFloatNode) list.get(7)).get((float) senderLocation.getPitch()),
+                                ((RelativeFloatNode) list.get(8)).get((float) senderLocation.getYaw())))
                         .build());
             }
             case "set-ease-pos" -> {
@@ -254,7 +271,7 @@ public class CameraCommand extends VanillaCommand {
                     return 0;
                 }
                 float easeTime = list.get(4).get();
-                var easeType = EaseType.valueOf(((String)list.get(5).get()).toUpperCase());
+                var easeType = EaseType.valueOf(((String) list.get(5).get()).toUpperCase());
                 Position position = list.get(7).get();
                 pk.setInstruction(SetInstruction.builder()
                         .preset(preset)
@@ -269,13 +286,15 @@ public class CameraCommand extends VanillaCommand {
                     return 0;
                 }
                 float easeTime = list.get(4).get();
-                var easeType = EaseType.valueOf(((String)list.get(5).get()).toUpperCase());
+                var easeType = EaseType.valueOf(((String) list.get(5).get()).toUpperCase());
                 Position position = list.get(7).get();
                 pk.setInstruction(SetInstruction.builder()
                         .preset(preset)
                         .ease(new Ease(easeTime, easeType))
                         .pos(new Pos((float) position.getX(), (float) position.getY(), (float) position.getZ()))
-                        .rot(new Rot(((RelativeFloatNode)list.get(9)).get((float) senderLocation.getPitch()), ((RelativeFloatNode)list.get(10)).get((float) senderLocation.getYaw())))
+                        .rot(new Rot(
+                                ((RelativeFloatNode) list.get(9)).get((float) senderLocation.getPitch()),
+                                ((RelativeFloatNode) list.get(10)).get((float) senderLocation.getYaw())))
                         .build());
             }
             default -> {

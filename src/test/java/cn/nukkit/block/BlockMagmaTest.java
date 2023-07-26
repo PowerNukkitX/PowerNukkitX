@@ -1,5 +1,10 @@
 package cn.nukkit.block;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import cn.nukkit.Player;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.entity.Entity;
@@ -10,6 +15,7 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
 import cn.nukkit.potion.Effect;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,13 +25,6 @@ import org.powernukkit.tests.api.MockEntity;
 import org.powernukkit.tests.api.MockLevel;
 import org.powernukkit.tests.api.MockPlayer;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
-
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(PowerNukkitExtension.class)
 class BlockMagmaTest {

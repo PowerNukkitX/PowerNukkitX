@@ -9,7 +9,6 @@ import cn.nukkit.level.generator.noise.nukkit.f.SimplexF;
 import cn.nukkit.level.generator.populator.impl.PopulatorCactus;
 import cn.nukkit.level.generator.populator.impl.PopulatorDeadBush;
 import cn.nukkit.math.NukkitRandom;
-
 import java.util.Arrays;
 import java.util.Random;
 
@@ -54,6 +53,7 @@ public class MesaBiome extends CoveredBiome {
 
     protected int moundHeight;
     private final SimplexF moundNoise = new SimplexF(new NukkitRandom(347228794), 2f, 1 / 4f, getMoundFrequency());
+
     public MesaBiome() {
         PopulatorCactus cactus = new PopulatorCactus();
         cactus.setBaseAmount(1);

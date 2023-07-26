@@ -46,5 +46,4 @@ public class BlockDaylightDetectorInverted extends BlockDaylightDetector {
     public boolean isInverted() {
         return true;
     }
-
 }

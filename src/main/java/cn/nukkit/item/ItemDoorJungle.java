@@ -16,5 +16,4 @@ public class ItemDoorJungle extends Item {
         super(JUNGLE_DOOR, 0, count, "Jungle Door");
         this.block = Block.get(BlockID.JUNGLE_DOOR_BLOCK);
     }
-
 }

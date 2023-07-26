@@ -4,11 +4,10 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.io.IOException;
 import java.nio.ByteOrder;
+import lombok.Getter;
+import lombok.Setter;
 
 @Since("1.19.70-r1")
 @PowerNukkitXOnly

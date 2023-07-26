@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.potion.Effect.getEffect;
+
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
@@ -12,8 +14,6 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
-
-import static cn.nukkit.potion.Effect.getEffect;
 
 /**
  * @author xtypr
@@ -30,7 +30,7 @@ public class BlockHayBale extends BlockSolidMeta implements Faceable {
 
     public BlockHayBale(int meta) {
         super(meta);
-     }
+    }
 
     @Override
     public int getId() {
@@ -39,8 +39,7 @@ public class BlockHayBale extends BlockSolidMeta implements Faceable {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -76,14 +75,17 @@ public class BlockHayBale extends BlockSolidMeta implements Faceable {
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        int[] faces = new int[]{
-                0,
-                0,
-                0b1000,
-                0b1000,
-                0b0100,
-                0b0100,
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
+        int[] faces = new int[] {
+            0, 0, 0b1000, 0b1000, 0b0100, 0b0100,
         };
         this.setDamage((this.getDamage() & 0x03) | faces[face.getIndex()]);
         this.getLevel().setBlock(block, this, true, true);
@@ -107,7 +109,9 @@ public class BlockHayBale extends BlockSolidMeta implements Faceable {
     @PowerNukkitOnly
     @Override
     public void onEntityFallOn(Entity entity, float fallDistance) {
-        int jumpBoost = entity.hasEffect(Effect.JUMP_BOOST)? (getEffect(Effect.JUMP_BOOST).getAmplifier() + 1) : 0;
+        int jumpBoost = entity.hasEffect(Effect.JUMP_BOOST)
+                ? (getEffect(Effect.JUMP_BOOST).getAmplifier() + 1)
+                : 0;
         float damage = (float) Math.floor(fallDistance - 3 - jumpBoost);
 
         damage *= 0.2F;

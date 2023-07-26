@@ -34,8 +34,7 @@ public class BlockPistonHead extends BlockTransparentMeta implements Faceable {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -70,7 +69,7 @@ public class BlockPistonHead extends BlockTransparentMeta implements Faceable {
             BlockPistonBase piston = (BlockPistonBase) side;
             piston.onBreak(item);
 
-            if(piston.getBlockEntity() != null) piston.getBlockEntity().close();
+            if (piston.getBlockEntity() != null) piston.getBlockEntity().close();
         }
         return true;
     }
@@ -95,7 +94,7 @@ public class BlockPistonHead extends BlockTransparentMeta implements Faceable {
 
     @Override
     @PowerNukkitOnly
-    public  boolean canBePulled() {
+    public boolean canBePulled() {
         return false;
     }
 

@@ -41,14 +41,21 @@ public class ItemBlock extends Item {
         try {
             if (block instanceof BlockUnknown) {
                 block = BlockState.of(blockId, blockMeta).getBlock();
-                log.info("An invalid ItemBlock for {} was set to a valid meta {} and it is now safe again", block.getPersistenceName(), meta);
+                log.info(
+                        "An invalid ItemBlock for {} was set to a valid meta {} and it is now safe again",
+                        block.getPersistenceName(),
+                        meta);
             } else {
                 block.setDataStorageFromItemBlockMeta(blockMeta);
                 name = block.getName();
             }
         } catch (InvalidBlockStateException e) {
-            log.warn("An ItemBlock for {} was set to have meta {}"+
-                    " but this value is not valid. The item stack is now unsafe.", block.getPersistenceName(), meta, e);
+            log.warn(
+                    "An ItemBlock for {} was set to have meta {}"
+                            + " but this value is not valid. The item stack is now unsafe.",
+                    block.getPersistenceName(),
+                    meta,
+                    e);
             block = new BlockUnknown(blockId, blockMeta);
             name = block.getName();
             return;
@@ -56,9 +63,13 @@ public class ItemBlock extends Item {
 
         int expected = block.asItemBlock().getDamage();
         if (expected != blockMeta) {
-            log.warn("An invalid ItemBlock for {} was set to an valid meta {} for item blocks, " +
-                    "it was expected to have meta {} the stack is now unsafe.\nProperties: {}",
-                    block.getPersistenceName(), meta, expected, block.getProperties());
+            log.warn(
+                    "An invalid ItemBlock for {} was set to an valid meta {} for item blocks, "
+                            + "it was expected to have meta {} the stack is now unsafe.\nProperties: {}",
+                    block.getPersistenceName(),
+                    meta,
+                    expected,
+                    block.getProperties());
         }
     }
 
@@ -69,8 +80,7 @@ public class ItemBlock extends Item {
         return block;
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public Block getBlock() {
         return this.block.clone();
     }
@@ -84,11 +94,7 @@ public class ItemBlock extends Item {
     @Since("1.6.0.0-PNX")
     @Override
     public String getNamespaceId() {
-        if (this.id != Item.AIR)
-            return super.getNamespaceId();
-        else
-            return "minecraft:air";
+        if (this.id != Item.AIR) return super.getNamespaceId();
+        else return "minecraft:air";
     }
-
-
 }

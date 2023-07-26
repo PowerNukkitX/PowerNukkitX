@@ -23,9 +23,6 @@ import cn.nukkit.utils.ChunkException;
 import cn.nukkit.utils.ThreadCache;
 import cn.nukkit.utils.Utils;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.Nullable;
-
 import java.io.*;
 import java.nio.ByteOrder;
 import java.util.HashMap;
@@ -35,6 +32,8 @@ import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
+import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -43,18 +42,24 @@ import java.util.stream.IntStream;
 public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
     @PowerNukkitDifference(info = "pre-1.17 old chunk version", since = "1.6.0.0-PNX")
     public static final int OLD_VERSION = 19133;
+
     @PowerNukkitDifference(info = "1.18 new chunk support version", since = "1.6.0.0-PNX")
     public static final int VERSION = 19134;
+
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public static final int LOWER_PADDING_SIZE = 4;
-    static private final byte[] PAD_256 = new byte[256];
+
+    private static final byte[] PAD_256 = new byte[256];
+
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     private final boolean isOldAnvil;
+
     @PowerNukkitXOnly
     @Since("1.19.20-r3")
     private DimensionData dimensionData;
+
     private int lastPosition = 0;
 
     public Anvil(Level level, String path) throws IOException {
@@ -63,7 +68,12 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
         if (getLevelData().contains("dimensionData")) {
             var dimNBT = getLevelData().getCompound("dimensionData");
             int chunkSectionCount;
-            dimensionData = new DimensionData(dimNBT.getString("dimensionName"), dimNBT.getInt("dimensionId"), dimNBT.getInt("minHeight"), dimNBT.getInt("maxHeight"), (chunkSectionCount = dimNBT.getInt("chunkSectionCount")) != 0 ? chunkSectionCount : null);
+            dimensionData = new DimensionData(
+                    dimNBT.getString("dimensionName"),
+                    dimNBT.getInt("dimensionId"),
+                    dimNBT.getInt("minHeight"),
+                    dimNBT.getInt("maxHeight"),
+                    (chunkSectionCount = dimNBT.getInt("chunkSectionCount")) != 0 ? chunkSectionCount : null);
         }
         getLevelData().putInt("version", VERSION);
     }
@@ -95,13 +105,16 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
     }
 
     @UsedByReflection
-    public static void generate(String path, String name, long seed, Class<? extends Generator> generator) throws IOException {
+    public static void generate(String path, String name, long seed, Class<? extends Generator> generator)
+            throws IOException {
         generate(path, name, seed, generator, new HashMap<>());
     }
 
     @UsedByReflection
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed resource leak")
-    public static void generate(String path, String name, long seed, Class<? extends Generator> generator, Map<String, String> options) throws IOException {
+    public static void generate(
+            String path, String name, long seed, Class<? extends Generator> generator, Map<String, String> options)
+            throws IOException {
         File regionDir = new File(path + "/region");
         if (!regionDir.exists() && !regionDir.mkdirs()) {
             throw new IOException("Could not create the directory " + regionDir);
@@ -109,7 +122,6 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
 
         CompoundTag levelData = new CompoundTag("Data")
                 .putCompound("GameRules", new CompoundTag())
-
                 .putLong("DayTime", 0)
                 .putInt("GameType", 0)
                 .putString("generatorName", Generator.getGeneratorName(generator))
@@ -132,7 +144,8 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
                 .putLong("SizeOnDisk", 0);
 
         Utils.safeWrite(new File(path, "level.dat"), file -> {
-            try (FileOutputStream fos = new FileOutputStream(file); BufferedOutputStream out = new BufferedOutputStream(fos)) {
+            try (FileOutputStream fos = new FileOutputStream(file);
+                    BufferedOutputStream out = new BufferedOutputStream(fos)) {
                 NBTIO.writeGZIPCompressed(new CompoundTag().putCompound("Data", levelData), out, ByteOrder.BIG_ENDIAN);
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
@@ -160,7 +173,8 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
 
     private static byte[] serializeBiomes(BaseFullChunk chunk, int sectionCount) {
         var stream = ThreadCache.binaryStream.get().reset();
-        if (chunk instanceof cn.nukkit.level.format.Chunk sectionChunk && sectionChunk.isChunkSection3DBiomeSupported()) {
+        if (chunk instanceof cn.nukkit.level.format.Chunk sectionChunk
+                && sectionChunk.isChunkSection3DBiomeSupported()) {
             var sections = sectionChunk.getSections();
             var len = Math.min(sections.length, sectionCount);
             final var tmpSectionBiomeStream = new BinaryStream[len];
@@ -169,7 +183,8 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
             }
             IntStream.range(0, len).parallel().forEach(i -> {
                 if (sections[i] instanceof ChunkSection3DBiome each) {
-                    var palette = PalettedBlockStorage.createWithDefaultState(Biome.getBiomeIdOrCorrect(chunk.getBiomeId(0, 0) & 0xFF));
+                    var palette = PalettedBlockStorage.createWithDefaultState(
+                            Biome.getBiomeIdOrCorrect(chunk.getBiomeId(0, 0) & 0xFF));
                     var biomeData = each.get3DBiomeDataArray();
                     for (int x = 0; x < 16; x++) {
                         for (int z = 0; z < 16; z++) {
@@ -181,7 +196,8 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
                     }
                     palette.writeTo(tmpSectionBiomeStream[i]);
                 } else {
-                    var palette = PalettedBlockStorage.createWithDefaultState(Biome.getBiomeIdOrCorrect(chunk.getBiomeId(0, 0) & 0xFF));
+                    var palette = PalettedBlockStorage.createWithDefaultState(
+                            Biome.getBiomeIdOrCorrect(chunk.getBiomeId(0, 0) & 0xFF));
                     for (int x = 0; x < 16; x++) {
                         for (int z = 0; z < 16; z++) {
                             int biomeId = Biome.getBiomeIdOrCorrect(chunk.getBiomeId(x, z) & 0xFF);
@@ -197,7 +213,8 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
                 stream.put(tmpSectionBiomeStream[i].getBuffer());
             }
         } else {
-            PalettedBlockStorage palette = PalettedBlockStorage.createWithDefaultState(Biome.getBiomeIdOrCorrect(chunk.getBiomeId(0, 0) & 0xFF));
+            PalettedBlockStorage palette = PalettedBlockStorage.createWithDefaultState(
+                    Biome.getBiomeIdOrCorrect(chunk.getBiomeId(0, 0) & 0xFF));
             for (int x = 0; x < 16; x++) {
                 for (int z = 0; z < 16; z++) {
                     int biomeId = Biome.getBiomeIdOrCorrect(chunk.getBiomeId(x, z));
@@ -252,7 +269,8 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
     }
 
     @PowerNukkitXDifference(info = "Non-static")
-    public final void serialize(BaseChunk chunk, BiConsumer<BinaryStream, Integer> callback, DimensionData dimensionData) {
+    public final void serialize(
+            BaseChunk chunk, BiConsumer<BinaryStream, Integer> callback, DimensionData dimensionData) {
         byte[] blockEntities;
         if (chunk.getBlockEntities().isEmpty()) {
             blockEntities = new byte[0];
@@ -402,8 +420,7 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
         return 1;
     }
 
-    @Nullable
-    @Override
+    @Nullable @Override
     public DimensionData getDimensionData() {
         return dimensionData;
     }
@@ -412,12 +429,14 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
     public void setDimensionData(DimensionData dimensionData) {
         this.dimensionData = dimensionData;
         if (dimensionData != null) {
-            levelData.putCompound("dimensionData", new CompoundTag("dimensionData")
-                    .putString("dimensionName", dimensionData.getDimensionName())
-                    .putInt("dimensionId", dimensionData.getDimensionId())
-                    .putInt("maxHeight", dimensionData.getMaxHeight())
-                    .putInt("minHeight", dimensionData.getMinHeight())
-                    .putInt("chunkSectionCount", dimensionData.getChunkSectionCount()));
+            levelData.putCompound(
+                    "dimensionData",
+                    new CompoundTag("dimensionData")
+                            .putString("dimensionName", dimensionData.getDimensionName())
+                            .putInt("dimensionId", dimensionData.getDimensionId())
+                            .putInt("maxHeight", dimensionData.getMaxHeight())
+                            .putInt("minHeight", dimensionData.getMinHeight())
+                            .putInt("chunkSectionCount", dimensionData.getChunkSectionCount()));
         }
     }
 }

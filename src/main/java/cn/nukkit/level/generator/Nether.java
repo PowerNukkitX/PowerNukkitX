@@ -21,7 +21,6 @@ import cn.nukkit.level.generator.populator.impl.nether.PopulatorGlowStone;
 import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
-
 import java.util.*;
 
 public class Nether extends Generator {
@@ -33,6 +32,7 @@ public class Nether extends Generator {
      * @var Random
      */
     private NukkitRandom nukkitRandom;
+
     private Random random;
     private final double lavaHeight = 32;
     private final double bedrockDepth = 5;
@@ -46,7 +46,7 @@ public class Nether extends Generator {
     }
 
     public Nether(Map<String, Object> options) {
-        //Nothing here. Just used for future update.
+        // Nothing here. Just used for future update.
     }
 
     @Override
@@ -96,11 +96,11 @@ public class Nether extends Generator {
         this.localSeed1 = this.random.nextLong();
         this.localSeed2 = this.random.nextLong();
 
-        PopulatorOre ores = new PopulatorOre(Block.NETHERRACK, new OreType[]{
-                new OreType(Block.get(BlockID.QUARTZ_ORE), 20, 16, 0, 128),
-                new OreType(Block.get(BlockID.SOUL_SAND), 5, 64, 0, 128),
-                new OreType(Block.get(BlockID.GRAVEL), 5, 64, 0, 128),
-                new OreType(Block.get(BlockID.FLOWING_LAVA), 1, 16, 0, (int) this.lavaHeight),
+        PopulatorOre ores = new PopulatorOre(Block.NETHERRACK, new OreType[] {
+            new OreType(Block.get(BlockID.QUARTZ_ORE), 20, 16, 0, 128),
+            new OreType(Block.get(BlockID.SOUL_SAND), 5, 64, 0, 128),
+            new OreType(Block.get(BlockID.GRAVEL), 5, 64, 0, 128),
+            new OreType(Block.get(BlockID.FLOWING_LAVA), 1, 16, 0, (int) this.lavaHeight),
         });
         this.populators.add(ores);
 
@@ -114,14 +114,14 @@ public class Nether extends Generator {
         lava.setRandomAmount(2);
         this.populators.add(lava);
         this.populators.add(new PopulatorGlowStone());
-        PopulatorOre ore = new PopulatorOre(Block.NETHERRACK, new OreType[]{
-                new OreType(Block.get(BlockID.QUARTZ_ORE), 20, 16, 0, 128, NETHERRACK),
-                new OreType(Block.get(BlockID.SOUL_SAND), 1, 64, 30, 35, NETHERRACK),
-                new OreType(Block.get(BlockID.FLOWING_LAVA), 32, 1, 0, 32, NETHERRACK),
-                new OreType(Block.get(BlockID.MAGMA), 32, 16, 26, 37, NETHERRACK),
-                new OreType(Block.get(BlockID.NETHER_GOLD_ORE), 5, 16, 10, 117, NETHERRACK),
-                new OreType(Block.get(BlockID.ANCIENT_DERBRIS), 2, 2, 8, 119, NETHERRACK),
-                new OreType(Block.get(BlockID.ANCIENT_DERBRIS), 1, 3, 8, 22, NETHERRACK),
+        PopulatorOre ore = new PopulatorOre(Block.NETHERRACK, new OreType[] {
+            new OreType(Block.get(BlockID.QUARTZ_ORE), 20, 16, 0, 128, NETHERRACK),
+            new OreType(Block.get(BlockID.SOUL_SAND), 1, 64, 30, 35, NETHERRACK),
+            new OreType(Block.get(BlockID.FLOWING_LAVA), 32, 1, 0, 32, NETHERRACK),
+            new OreType(Block.get(BlockID.MAGMA), 32, 16, 26, 37, NETHERRACK),
+            new OreType(Block.get(BlockID.NETHER_GOLD_ORE), 5, 16, 10, 117, NETHERRACK),
+            new OreType(Block.get(BlockID.ANCIENT_DERBRIS), 2, 2, 8, 119, NETHERRACK),
+            new OreType(Block.get(BlockID.ANCIENT_DERBRIS), 1, 3, 8, 22, NETHERRACK),
         });
         this.populators.add(ore);
     }
@@ -211,7 +211,8 @@ public class Nether extends Generator {
 
     public EnumBiome pickBiomeExperimental(int x, int z) {
         double value = biomeGen.noise2(x / BIOME_AMPLIFICATION, z / BIOME_AMPLIFICATION);
-        double secondaryValue = biomeGen.noise3_XZBeforeY(x / (BIOME_AMPLIFICATION * 2d), 0, z / (BIOME_AMPLIFICATION * 2d));
+        double secondaryValue =
+                biomeGen.noise3_XZBeforeY(x / (BIOME_AMPLIFICATION * 2d), 0, z / (BIOME_AMPLIFICATION * 2d));
         if (value >= 1 / 3f) {
             return secondaryValue >= 0 ? EnumBiome.WARPED_FOREST : EnumBiome.CRIMSON_FOREST;
         } else if (value >= -1 / 3f) {

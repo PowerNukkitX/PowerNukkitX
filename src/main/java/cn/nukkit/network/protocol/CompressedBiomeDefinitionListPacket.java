@@ -19,20 +19,23 @@ public class CompressedBiomeDefinitionListPacket extends DataPacket {
     }
 
     @Deprecated(since = "1.19.70")
-    @DeprecationDetails(since = "1.19.70-r1", reason = "pid could be more than 255, so it should be an int",
+    @DeprecationDetails(
+            since = "1.19.70-r1",
+            reason = "pid could be more than 255, so it should be an int",
             replaceWith = "packetId()")
     @Override
     public byte pid() {
         return (byte) 255;
     }
 
-    protected static final byte[] COMPRESSED_INDICATOR = new byte[]{(byte) 0xe4, (byte) 0x92, 0x3f, 0x43, 0x4f, 0x4d, 0x50, 0x52, 0x45, 0x53, 0x53, 0x45, 0x44}; // __?COMPRESSED
+    protected static final byte[] COMPRESSED_INDICATOR =
+            new byte[] {(byte) 0xe4, (byte) 0x92, 0x3f, 0x43, 0x4f, 0x4d, 0x50, 0x52, 0x45, 0x53, 0x53, 0x45, 0x44
+            }; // __?COMPRESSED
 
     @Override
-    public void encode() {//todo 计划实现
+    public void encode() { // todo 计划实现
     }
 
     @Override
-    public void decode() {
-    }
+    public void decode() {}
 }

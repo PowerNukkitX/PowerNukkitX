@@ -7,16 +7,15 @@ import cn.nukkit.api.Since;
 import cn.nukkit.resourcepacks.loader.ResourcePackLoader;
 import cn.nukkit.resourcepacks.loader.ZippedResourcePackLoader;
 import com.dfsek.terra.lib.google.common.collect.Sets;
-import lombok.extern.log4j.Log4j2;
-
 import java.io.File;
 import java.util.*;
+import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 public class ResourcePackManager {
 
-    private int maxChunkSize = 1024 * 32;// 32kb is default
-    
+    private int maxChunkSize = 1024 * 32; // 32kb is default
+
     private final Map<UUID, ResourcePack> resourcePacksById = new HashMap<>();
     private final Set<ResourcePack> resourcePacks = new HashSet<>();
     private final Set<ResourcePackLoader> loaders;
@@ -49,13 +48,13 @@ public class ResourcePackManager {
     public ResourcePack getPackById(UUID id) {
         return this.resourcePacksById.get(id);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
     public int getMaxChunkSize() {
         return this.maxChunkSize;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
     public void setMaxChunkSize(int size) {
@@ -79,7 +78,8 @@ public class ResourcePackManager {
             this.resourcePacks.addAll(loadedPacks);
         });
 
-        log.info(Server.getInstance().getLanguage()
+        log.info(Server.getInstance()
+                .getLanguage()
                 .tr("nukkit.resources.success", String.valueOf(this.resourcePacks.size())));
     }
 }

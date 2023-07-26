@@ -18,14 +18,14 @@
 
 package cn.nukkit.network.protocol;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.network.protocol.NPCDialoguePacket.NPCDialogAction;
 import lombok.val;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author joserobjr
@@ -44,12 +44,12 @@ class NPCDialoguePacketTest {
         packet.setNpcName("npcName");
         packet.setActionJson("json");
         packet.encode();
-        
+
         val packet2 = new NPCDialoguePacket();
         packet2.setBuffer(packet.getBuffer());
         packet2.getUnsignedVarInt();
         packet2.decode();
-        
+
         assertEquals(1L, packet2.getRuntimeEntityId());
         assertEquals(NPCDialogAction.CLOSE, packet2.getAction());
         assertEquals("dialog", packet2.getDialogue());

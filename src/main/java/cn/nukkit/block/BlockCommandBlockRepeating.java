@@ -19,5 +19,4 @@ public class BlockCommandBlockRepeating extends BlockCommandBlock {
     public String getName() {
         return "Repeating Command Block";
     }
-
 }

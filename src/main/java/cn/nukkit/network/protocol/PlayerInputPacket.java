@@ -25,13 +25,10 @@ public class PlayerInputPacket extends DataPacket {
     }
 
     @Override
-    public void encode() {
-
-    }
+    public void encode() {}
 
     @Override
     public byte pid() {
         return NETWORK_ID;
     }
-
 }

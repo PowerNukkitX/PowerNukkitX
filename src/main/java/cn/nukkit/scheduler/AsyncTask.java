@@ -2,10 +2,9 @@ package cn.nukkit.scheduler;
 
 import cn.nukkit.Server;
 import cn.nukkit.utils.ThreadStore;
-import lombok.extern.log4j.Log4j2;
-
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * @author Nukkit Project Team
@@ -67,9 +66,7 @@ public abstract class AsyncTask implements Runnable {
 
     public abstract void onRun();
 
-    public void onCompletion(Server server) {
-
-    }
+    public void onCompletion(Server server) {}
 
     public void cleanObject() {
         this.result = null;
@@ -87,5 +84,4 @@ public abstract class AsyncTask implements Runnable {
             }
         }
     }
-
 }

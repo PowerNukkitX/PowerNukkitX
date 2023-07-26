@@ -12,7 +12,6 @@ import org.jetbrains.annotations.NotNull;
  * @author LoboMetalurgico
  * @since 08/06/2021
  */
-
 @PowerNukkitOnly
 @PowerNukkitXDifference(info = "not isLavaResistant")
 public class BlockCalcite extends BlockSolid {
@@ -20,12 +19,10 @@ public class BlockCalcite extends BlockSolid {
     public static final BlockProperties PROPERTIES = CommonBlockProperties.EMPTY_PROPERTIES;
 
     @PowerNukkitOnly
-    public BlockCalcite() {
-    }
+    public BlockCalcite() {}
 
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }

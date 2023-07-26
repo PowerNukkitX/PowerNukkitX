@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import cn.nukkit.Player;
 import cn.nukkit.blockproperty.value.TallGrassType;
 import cn.nukkit.blockstate.BlockState;
@@ -12,8 +14,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.powernukkit.tests.api.MockLevel;
 import org.powernukkit.tests.api.MockPlayer;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author joserobjr
@@ -37,20 +37,24 @@ class BlockItemFrameTest {
         level.setBlock(0, 100, 0, grass, true, false);
         level.setBlock(0, 101, 0, tallGrass, true, false);
 
-        assertTrue(itemFrame.place(Item.get(ItemID.ITEM_FRAME), tallGrass, tallGrass, BlockFace.NORTH, 0, 0, 0, player));
+        assertTrue(
+                itemFrame.place(Item.get(ItemID.ITEM_FRAME), tallGrass, tallGrass, BlockFace.NORTH, 0, 0, 0, player));
         assertEquals(BlockFace.UP, itemFrame.getBlockFace());
 
-
         tallGrass = tallGrass.clone();
-        Block tallGrassTop = BlockState.of(BlockID.TALL_GRASS).withProperty(BlockTallGrass.TALL_GRASS_TYPE, TallGrassType.TALL).getBlock();
+        Block tallGrassTop = BlockState.of(BlockID.TALL_GRASS)
+                .withProperty(BlockTallGrass.TALL_GRASS_TYPE, TallGrassType.TALL)
+                .getBlock();
         level.setBlock(2, 100, 0, grass.clone(), true, false);
         level.setBlock(2, 101, 0, tallGrass, true, false);
         level.setBlock(2, 103, 0, tallGrassTop, true, false);
-        assertFalse(itemFrame.place(Item.get(ItemID.ITEM_FRAME), tallGrassTop, tallGrassTop, BlockFace.NORTH, 0, 0, 0, player));
+        assertFalse(itemFrame.place(
+                Item.get(ItemID.ITEM_FRAME), tallGrassTop, tallGrassTop, BlockFace.NORTH, 0, 0, 0, player));
 
         Block wall = Block.get(BlockID.COBBLE_WALL);
         level.setBlock(2, 100, 0, wall, true, false);
-        assertTrue(itemFrame.place(Item.get(ItemID.ITEM_FRAME), tallGrass, tallGrass, BlockFace.NORTH, 0, 0, 0, player));
+        assertTrue(
+                itemFrame.place(Item.get(ItemID.ITEM_FRAME), tallGrass, tallGrass, BlockFace.NORTH, 0, 0, 0, player));
         assertTrue(itemFrame.place(Item.get(ItemID.ITEM_FRAME), wall.north(), wall, BlockFace.SOUTH, 0, 0, 0, player));
     }
 

@@ -11,8 +11,7 @@ public class BlockNetherSprout extends BlockRoots {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public BlockNetherSprout() {
-    }
+    public BlockNetherSprout() {}
 
     @Override
     public int getId() {
@@ -32,7 +31,7 @@ public class BlockNetherSprout extends BlockRoots {
     @Override
     public Item[] getDrops(Item item) {
         if (item.isShears()) {
-            return new Item[]{ toItem() };
+            return new Item[] {toItem()};
         }
         return Item.EMPTY_ARRAY;
     }

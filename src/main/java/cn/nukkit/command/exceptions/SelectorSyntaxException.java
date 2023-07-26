@@ -21,7 +21,8 @@ public class SelectorSyntaxException extends Exception {
         super(cause);
     }
 
-    protected SelectorSyntaxException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    protected SelectorSyntaxException(
+            String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 
@@ -30,7 +31,7 @@ public class SelectorSyntaxException extends Exception {
         var builder = new StringBuilder(super.getMessage());
         Throwable t = this;
         while (t.getCause() != null) {
-            //到达最底层
+            // 到达最底层
             t = t.getCause();
             builder.append("\n");
             builder.append("§cCaused by ");

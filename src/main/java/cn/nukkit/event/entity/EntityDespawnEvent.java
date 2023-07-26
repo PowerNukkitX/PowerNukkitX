@@ -55,5 +55,4 @@ public class EntityDespawnEvent extends EntityEvent implements Cancellable {
     public boolean isItem() {
         return this.entity instanceof EntityItem;
     }
-
 }

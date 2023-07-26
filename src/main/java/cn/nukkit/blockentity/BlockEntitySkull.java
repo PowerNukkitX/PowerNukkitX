@@ -15,9 +15,9 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
     public BlockEntitySkull(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
-    
+
     private boolean mouthMoving;
-    
+
     private int mouthTickCount;
 
     @Since("1.19.60-r1")
@@ -127,5 +127,4 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
                 .putBoolean("MouthMoving", this.mouthMoving)
                 .putInt("MouthTickCount", mouthTickCount);
     }
-
 }

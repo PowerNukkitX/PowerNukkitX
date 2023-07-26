@@ -19,8 +19,6 @@ import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import lombok.Getter;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import lombok.Getter;
 
 /**
  * 此命令解析器为旧的基于正则表达式的实现，存在性能问题且编写较混乱<p/>
@@ -42,21 +41,28 @@ import java.util.stream.Collectors;
 public class CommandParser {
 
     private static final String STRING_PATTERN = "(\\S+)";
-    private static final String TARGET_PATTERN = "(\"@(?:[aeprs]|initiator)(?:\\[.*])?\"|@(?:[aeprs]|initiator)(?:\\[[^ ]*])?|\"[A-Za-z][A-Za-z0-9\\s]*\"|[A-Za-z][A-Za-z0-9_]*)";
+    private static final String TARGET_PATTERN =
+            "(\"@(?:[aeprs]|initiator)(?:\\[.*])?\"|@(?:[aeprs]|initiator)(?:\\[[^ ]*])?|\"[A-Za-z][A-Za-z0-9\\s]*\"|[A-Za-z][A-Za-z0-9_]*)";
     private static final String WILDCARD_TARGET_PATTERN = "(\\S+)";
     private static final String MULTIPLE_STRING_PATTERN = "(.+)";
-    private static final String INT_PATTERN = "(~-?\\d+|-?\\d+|~)";//only int
-    private static final String WILDCARD_INT_PATTERN = "(~-?\\d+|-?\\d+|~|\\*)";//only int
-    private static final String FLOAT_PATTERN = "(~-?\\d+(?:\\.\\d+)?|-?\\d+(?:\\.\\d+)?|~)";//float or int
-    private static final String COORDINATE_PATTERN = "([~^]-?\\d+(?:\\.\\d+)?|-?\\d+(?:\\.\\d+)?|[~^])";//coordinate part value
-    private static final String BLOCK_COORDINATE_PATTERN = "([~^]-?\\d+|-?\\d+|[~^])";//block coordinate part value
+    private static final String INT_PATTERN = "(~-?\\d+|-?\\d+|~)"; // only int
+    private static final String WILDCARD_INT_PATTERN = "(~-?\\d+|-?\\d+|~|\\*)"; // only int
+    private static final String FLOAT_PATTERN = "(~-?\\d+(?:\\.\\d+)?|-?\\d+(?:\\.\\d+)?|~)"; // float or int
+    private static final String COORDINATE_PATTERN =
+            "([~^]-?\\d+(?:\\.\\d+)?|-?\\d+(?:\\.\\d+)?|[~^])"; // coordinate part value
+    private static final String BLOCK_COORDINATE_PATTERN = "([~^]-?\\d+|-?\\d+|[~^])"; // block coordinate part value
 
-    //using cache to improve performance
-    private static Cache<String, CommandParser> result_cache = CacheBuilder.newBuilder().maximumSize(65535).expireAfterAccess(1, TimeUnit.MINUTES).build();
-    private static Cache<String, PatternCache> pattern_cache = CacheBuilder.newBuilder().maximumSize(65535).expireAfterAccess(1, TimeUnit.MINUTES).build();
+    // using cache to improve performance
+    private static Cache<String, CommandParser> result_cache = CacheBuilder.newBuilder()
+            .maximumSize(65535)
+            .expireAfterAccess(1, TimeUnit.MINUTES)
+            .build();
+    private static Cache<String, PatternCache> pattern_cache = CacheBuilder.newBuilder()
+            .maximumSize(65535)
+            .expireAfterAccess(1, TimeUnit.MINUTES)
+            .build();
 
-    private record PatternCache(Pattern pattern, int length) {
-    }
+    private record PatternCache(Pattern pattern, int length) {}
 
     private final Command command;
     private final CommandSender sender;
@@ -99,10 +105,8 @@ public class CommandParser {
     }
 
     private String next(boolean moveCursor) throws ArrayIndexOutOfBoundsException {
-        if (moveCursor)
-            return useParsedArgs ? this.parsedArgs[++this.cursor] : this.args[++this.cursor];
-        else
-            return useParsedArgs ? this.parsedArgs[this.cursor + 1] : this.args[this.cursor + 1];
+        if (moveCursor) return useParsedArgs ? this.parsedArgs[++this.cursor] : this.args[++this.cursor];
+        else return useParsedArgs ? this.parsedArgs[this.cursor + 1] : this.args[this.cursor + 1];
     }
 
     public String matchCommandForm() {
@@ -115,16 +119,17 @@ public class CommandParser {
             }
         }
         String argString = argStringBuilder.toString();
-        if (matchedCommandForm != null) return matchedCommandForm;//already got its form
-        CommandParser tmp_parsedArgs = result_cache.getIfPresent(argString);//get from cache to improve performance
+        if (matchedCommandForm != null) return matchedCommandForm; // already got its form
+        CommandParser tmp_parsedArgs = result_cache.getIfPresent(argString); // get from cache to improve performance
         if (tmp_parsedArgs != null) {
             this.parsedArgs = tmp_parsedArgs.parsedArgs;
             this.matchedCommandForm = tmp_parsedArgs.matchedCommandForm;
             return this.matchedCommandForm;
         }
         Map<String, Pattern> commandPatterns = new HashMap<>();
-        Map<String, Integer> commandArgLength = new HashMap<>();//non-optional args' length
-        for (Map.Entry<String, CommandParameter[]> entry : command.getCommandParameters().entrySet()) {
+        Map<String, Integer> commandArgLength = new HashMap<>(); // non-optional args' length
+        for (Map.Entry<String, CommandParameter[]> entry :
+                command.getCommandParameters().entrySet()) {
             PatternCache pcache = pattern_cache.getIfPresent(command.getName() + "_" + entry.getKey());
             if (pcache != null) {
                 commandPatterns.put(entry.getKey(), pcache.pattern);
@@ -132,7 +137,7 @@ public class CommandParser {
             } else {
                 StringBuilder pattern = new StringBuilder();
                 pattern.append("^");
-                int length = 0;//non-optional args' length
+                int length = 0; // non-optional args' length
                 for (CommandParameter parameter : entry.getValue()) {
                     pattern.append("(?:");
                     if (parameter.enumData == null) {
@@ -187,13 +192,16 @@ public class CommandParser {
                             }
                         }
                     } else {
-                        if (parameter.enumData.getName().equals("Block") || parameter.enumData.getName().equals("Item") || parameter.enumData.isSoft()) {
+                        if (parameter.enumData.getName().equals("Block")
+                                || parameter.enumData.getName().equals("Item")
+                                || parameter.enumData.isSoft()) {
                             pattern.append(STRING_PATTERN);
                         } else {
                             pattern.append("(");
                             for (String str : parameter.enumData.getValues()) {
                                 for (char c : str.toCharArray()) {
-                                    if (c == '$' || c == '(' || c == ')' || c == '*' || c == '+' || c == '.' || c == '[' || c == '?' || c == '\\' || c == '^' || c == '{' || c == '|') {
+                                    if (c == '$' || c == '(' || c == ')' || c == '*' || c == '+' || c == '.' || c == '['
+                                            || c == '?' || c == '\\' || c == '^' || c == '{' || c == '|') {
                                         pattern.append("\\");
                                     }
                                     pattern.append(c);
@@ -207,7 +215,8 @@ public class CommandParser {
                     }
                     pattern.append(")");
                     if (!parameter.optional) {
-                        if (parameter.type == CommandParamType.POSITION || parameter.type == CommandParamType.BLOCK_POSITION) {
+                        if (parameter.type == CommandParamType.POSITION
+                                || parameter.type == CommandParamType.BLOCK_POSITION) {
                             length += 3;
                         } else {
                             length++;
@@ -222,7 +231,9 @@ public class CommandParser {
                 commandPatterns.put(entry.getKey(), compiled);
                 commandArgLength.put(entry.getKey(), length);
 
-                pattern_cache.put(command.getName() + "_" + entry.getKey(), new PatternCache(compiled, length));//cache the compiled pattern
+                pattern_cache.put(
+                        command.getName() + "_" + entry.getKey(),
+                        new PatternCache(compiled, length)); // cache the compiled pattern
             }
         }
 
@@ -291,9 +302,9 @@ public class CommandParser {
     }
 
     public boolean hasNext() {
-        return this.useParsedArgs ?
-                this.cursor < this.parsedArgs.length - 1 && this.parsedArgs[this.cursor + 1] != null :
-                this.cursor < this.args.length - 1 && this.args[this.cursor + 1] != null;
+        return this.useParsedArgs
+                ? this.cursor < this.parsedArgs.length - 1 && this.parsedArgs[this.cursor + 1] != null
+                : this.cursor < this.args.length - 1 && this.args[this.cursor + 1] != null;
     }
 
     public int parseInt() throws CommandSyntaxException {
@@ -403,7 +414,7 @@ public class CommandParser {
         }
     }
 
-    //only for non-wildcard target selector
+    // only for non-wildcard target selector
     public List<Entity> parseTargets() throws CommandSyntaxException {
         return parseTargets(true);
     }
@@ -428,7 +439,10 @@ public class CommandParser {
 
     public List<Player> parseTargetPlayers(boolean moveCursor) throws CommandSyntaxException {
         try {
-            return this.parseTargets(moveCursor).stream().filter(entity -> entity instanceof Player).map(entity -> (Player) entity).collect(Collectors.toList());
+            return this.parseTargets(moveCursor).stream()
+                    .filter(entity -> entity instanceof Player)
+                    .map(entity -> (Player) entity)
+                    .collect(Collectors.toList());
         } catch (Exception e) {
             throw new CommandSyntaxException();
         }
@@ -501,7 +515,8 @@ public class CommandParser {
         return parseCoordinate(baseVector3, type, true);
     }
 
-    private Vector3 parseCoordinate(Vector3 baseVector3, CoordinateType type, boolean moveCursor) throws CommandSyntaxException {
+    private Vector3 parseCoordinate(Vector3 baseVector3, CoordinateType type, boolean moveCursor)
+            throws CommandSyntaxException {
         try {
             String arg = this.next(moveCursor);
             if (arg.startsWith("~")) {
@@ -521,18 +536,24 @@ public class CommandParser {
                     return baseVector3;
                 }
                 return switch (type) {
-                    case X ->
-                            BVector3.fromLocation(sender.getLocation()).rotateYaw(-90).setPitch(0).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(baseVector3);
-                    case Y ->
-                            BVector3.fromLocation(sender.getLocation()).rotatePitch(90).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(baseVector3);
-                    case Z ->
-                            BVector3.fromLocation(sender.getLocation()).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(baseVector3);
+                    case X -> BVector3.fromLocation(sender.getLocation())
+                            .rotateYaw(-90)
+                            .setPitch(0)
+                            .setLength(Double.parseDouble(relativeAngleCoordinate))
+                            .addToPos(baseVector3);
+                    case Y -> BVector3.fromLocation(sender.getLocation())
+                            .rotatePitch(90)
+                            .setLength(Double.parseDouble(relativeAngleCoordinate))
+                            .addToPos(baseVector3);
+                    case Z -> BVector3.fromLocation(sender.getLocation())
+                            .setLength(Double.parseDouble(relativeAngleCoordinate))
+                            .addToPos(baseVector3);
                 };
             }
             return switch (type) {
                 case X -> baseVector3.clone().setX(Double.parseDouble(arg));
                 case Y -> baseVector3.clone().setY(Double.parseDouble(arg));
-                case Z -> baseVector3.clone().setZ(Double.parseDouble(arg));//return a new vector
+                case Z -> baseVector3.clone().setZ(Double.parseDouble(arg)); // return a new vector
             };
         } catch (Exception e) {
             throw new CommandSyntaxException();
@@ -540,6 +561,8 @@ public class CommandParser {
     }
 
     enum CoordinateType {
-        X, Y, Z
+        X,
+        Y,
+        Z
     }
 }

@@ -5,11 +5,10 @@ import cn.nukkit.api.Since;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
+import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Interface, all redstone components implement, containing redstone related methods.

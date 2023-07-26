@@ -16,5 +16,4 @@ public class ItemDoorDarkOak extends Item {
         super(DARK_OAK_DOOR, 0, count, "Dark Oak Door");
         this.block = Block.get(BlockID.DARK_OAK_DOOR_BLOCK);
     }
-
 }

@@ -19,12 +19,12 @@ public class ItemStackResponsePacket extends DataPacket {
 
     @Override
     public void encode() {
-        throw new UnsupportedOperationException(); //TODO
+        throw new UnsupportedOperationException(); // TODO
     }
 
     @Override
     public void decode() {
-        throw new UnsupportedOperationException(); //TODO
+        throw new UnsupportedOperationException(); // TODO
     }
 
     @Override

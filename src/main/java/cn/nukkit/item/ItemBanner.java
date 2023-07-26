@@ -8,9 +8,8 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.BannerPattern;
 import cn.nukkit.utils.DyeColor;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Objects;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author PetteriM1
@@ -59,8 +58,7 @@ public class ItemBanner extends Item {
 
     @PowerNukkitOnly
     @Since("FUTURE")
-    @NotNull
-    public DyeColor getBaseDyeColor() {
+    @NotNull public DyeColor getBaseDyeColor() {
         return Objects.requireNonNull(DyeColor.getByDyeData(getBaseColor()));
     }
 
@@ -77,31 +75,36 @@ public class ItemBanner extends Item {
     public void addPattern(BannerPattern pattern) {
         CompoundTag tag = this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag();
         ListTag<CompoundTag> patterns = tag.getList("Patterns", CompoundTag.class);
-        patterns.add(new CompoundTag("").
-                putInt("Color", pattern.color().getDyeData() & 0x0f).
-                putString("Pattern", pattern.type().getName()));
+        patterns.add(new CompoundTag("")
+                .putInt("Color", pattern.color().getDyeData() & 0x0f)
+                .putString("Pattern", pattern.type().getName()));
         tag.putList(patterns);
         this.setNamedTag(tag);
     }
 
     public BannerPattern getPattern(int index) {
         CompoundTag tag = this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag();
-        return BannerPattern.fromCompoundTag(tag.getList("Patterns").size() > index && index >= 0 ? tag.getList("Patterns", CompoundTag.class).get(index) : new CompoundTag());
+        return BannerPattern.fromCompoundTag(
+                tag.getList("Patterns").size() > index && index >= 0
+                        ? tag.getList("Patterns", CompoundTag.class).get(index)
+                        : new CompoundTag());
     }
 
     public void removePattern(int index) {
         CompoundTag tag = this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag();
         ListTag<CompoundTag> patterns = tag.getList("Patterns", CompoundTag.class);
-        if(patterns.size() > index && index >= 0) {
+        if (patterns.size() > index && index >= 0) {
             patterns.remove(index);
         }
         this.setNamedTag(tag);
     }
 
     public int getPatternsSize() {
-        return (this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag()).getList("Patterns").size();
+        return (this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag())
+                .getList("Patterns")
+                .size();
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean hasPattern() {
@@ -109,9 +112,9 @@ public class ItemBanner extends Item {
     }
 
     @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", 
-            reason = "Does nothing, used to do a backward compatibility but the content and usage were removed by Cloudburst")
-    public void correctNBT() {
-
-    }
+    @DeprecationDetails(
+            since = "1.4.0.0-PN",
+            reason =
+                    "Does nothing, used to do a backward compatibility but the content and usage were removed by Cloudburst")
+    public void correctNBT() {}
 }

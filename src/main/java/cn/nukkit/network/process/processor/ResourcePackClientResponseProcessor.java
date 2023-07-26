@@ -21,7 +21,8 @@ public class ResourcePackClientResponseProcessor extends DataPacketProcessor<Res
             }
             case ResourcePackClientResponsePacket.STATUS_SEND_PACKS -> {
                 for (ResourcePackClientResponsePacket.Entry entry : pk.packEntries) {
-                    ResourcePack resourcePack = player.getServer().getResourcePackManager().getPackById(entry.uuid);
+                    ResourcePack resourcePack =
+                            player.getServer().getResourcePackManager().getPackById(entry.uuid);
                     if (resourcePack == null) {
                         player.close("", "disconnectionScreen.resourcePack");
                         return;
@@ -30,8 +31,10 @@ public class ResourcePackClientResponseProcessor extends DataPacketProcessor<Res
                     ResourcePackDataInfoPacket dataInfoPacket = new ResourcePackDataInfoPacket();
                     dataInfoPacket.packId = resourcePack.getPackId();
                     dataInfoPacket.setPackVersion(new Version(resourcePack.getPackVersion()));
-                    dataInfoPacket.maxChunkSize = player.getServer().getResourcePackManager().getMaxChunkSize();
-                    dataInfoPacket.chunkCount = (int) Math.ceil(resourcePack.getPackSize() / (double) dataInfoPacket.maxChunkSize);
+                    dataInfoPacket.maxChunkSize =
+                            player.getServer().getResourcePackManager().getMaxChunkSize();
+                    dataInfoPacket.chunkCount =
+                            (int) Math.ceil(resourcePack.getPackSize() / (double) dataInfoPacket.maxChunkSize);
                     dataInfoPacket.compressedPackSize = resourcePack.getPackSize();
                     dataInfoPacket.sha256 = resourcePack.getSha256();
                     player.dataResourcePacket(dataInfoPacket);
@@ -39,21 +42,18 @@ public class ResourcePackClientResponseProcessor extends DataPacketProcessor<Res
             }
             case ResourcePackClientResponsePacket.STATUS_HAVE_ALL_PACKS -> {
                 ResourcePackStackPacket stackPacket = new ResourcePackStackPacket();
-                stackPacket.mustAccept = player.getServer().getForceResources() && !player.getServer().getForceResourcesAllowOwnPacks();
-                stackPacket.resourcePackStack = player.getServer().getResourcePackManager().getResourceStack();
-                if (player.getServer().isEnableExperimentMode() && !player.getServer().getConfig("settings.waterdogpe", false)) {
+                stackPacket.mustAccept = player.getServer().getForceResources()
+                        && !player.getServer().getForceResourcesAllowOwnPacks();
+                stackPacket.resourcePackStack =
+                        player.getServer().getResourcePackManager().getResourceStack();
+                if (player.getServer().isEnableExperimentMode()
+                        && !player.getServer().getConfig("settings.waterdogpe", false)) {
+                    stackPacket.experiments.add(new ResourcePackStackPacket.ExperimentData("data_driven_items", true));
                     stackPacket.experiments.add(
-                            new ResourcePackStackPacket.ExperimentData("data_driven_items", true)
-                    );
+                            new ResourcePackStackPacket.ExperimentData("upcoming_creator_features", true));
                     stackPacket.experiments.add(
-                            new ResourcePackStackPacket.ExperimentData("upcoming_creator_features", true)
-                    );
-                    stackPacket.experiments.add(
-                            new ResourcePackStackPacket.ExperimentData("experimental_molang_features", true)
-                    );
-                    stackPacket.experiments.add(
-                            new ResourcePackStackPacket.ExperimentData("cameras", true)
-                    );
+                            new ResourcePackStackPacket.ExperimentData("experimental_molang_features", true));
+                    stackPacket.experiments.add(new ResourcePackStackPacket.ExperimentData("cameras", true));
                 }
                 player.dataResourcePacket(stackPacket);
             }

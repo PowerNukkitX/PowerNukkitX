@@ -7,7 +7,6 @@ import cn.nukkit.level.generator.object.tree.ObjectWarpedTree;
 import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.NukkitRandom;
-
 import java.util.ArrayList;
 
 public class WarpedFungiTreePopulator extends Populator {

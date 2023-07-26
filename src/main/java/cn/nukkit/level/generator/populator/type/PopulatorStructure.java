@@ -17,7 +17,6 @@ import cn.nukkit.level.generator.populator.impl.structure.shipwreck.PopulatorShi
 import cn.nukkit.level.generator.populator.impl.structure.stronghold.PopulatorStronghold;
 import cn.nukkit.level.generator.populator.impl.structure.swamphut.PopulatorSwampHut;
 import cn.nukkit.level.generator.populator.impl.structure.village.PopulatorVillage;
-
 import java.util.ArrayList;
 import java.util.List;
 

@@ -1,5 +1,7 @@
 package cn.nukkit.blockstate;
 
+import static cn.nukkit.blockstate.Loggers.logIBlockState;
+
 import cn.nukkit.Server;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
@@ -21,18 +23,15 @@ import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.plugin.PluginManager;
 import cn.nukkit.utils.HumanStringComparator;
-import org.jetbrains.annotations.NotNull;
-
+import java.io.Serializable;
+import java.math.BigInteger;
+import java.util.*;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.function.Consumer;
 import javax.annotation.Nonnegative;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.io.Serializable;
-import java.math.BigInteger;
-import java.util.AbstractMap.SimpleEntry;
-import java.util.*;
-import java.util.function.Consumer;
-
-import static cn.nukkit.blockstate.Loggers.logIBlockState;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
@@ -45,8 +44,7 @@ public interface IBlockState {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    @Nonnegative
+    @NotNull @Nonnegative
     Number getDataStorage();
 
     @PowerNukkitOnly
@@ -55,27 +53,34 @@ public interface IBlockState {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    BlockProperties getProperties();
+    @NotNull BlockProperties getProperties();
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Deprecated
-    @DeprecationDetails(reason = "Can't store all data, exists for backward compatibility reasons", since = "1.4.0.0-PN", replaceWith = "getDataStorage()")
+    @DeprecationDetails(
+            reason = "Can't store all data, exists for backward compatibility reasons",
+            since = "1.4.0.0-PN",
+            replaceWith = "getDataStorage()")
     @Nonnegative
     int getLegacyDamage();
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Deprecated
-    @DeprecationDetails(reason = "Can't store all data, exists for backward compatibility reasons", since = "1.4.0.0-PN", replaceWith = "getDataStorage()")
-    @Unsigned
-    int getBigDamage();
+    @DeprecationDetails(
+            reason = "Can't store all data, exists for backward compatibility reasons",
+            since = "1.4.0.0-PN",
+            replaceWith = "getDataStorage()")
+    @Unsigned int getBigDamage();
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Deprecated
-    @DeprecationDetails(reason = "Can't store all data, exists for backward compatibility reasons", since = "1.4.0.0-PN", replaceWith = "getDataStorage()")
+    @DeprecationDetails(
+            reason = "Can't store all data, exists for backward compatibility reasons",
+            since = "1.4.0.0-PN",
+            replaceWith = "getDataStorage()")
     @Nonnegative
     default int getSignedBigDamage() {
         return getBigDamage();
@@ -83,8 +88,7 @@ public interface IBlockState {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    @Nonnegative
+    @NotNull @Nonnegative
     BigInteger getHugeDamage();
 
     /**
@@ -93,18 +97,16 @@ public interface IBlockState {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    Serializable getPropertyValue(String propertyName);
+    @NotNull Serializable getPropertyValue(String propertyName);
 
     /**
      * @throws NoSuchElementException If the property is not registered
      * @throws InvalidBlockPropertyValueException If the new value is not accepted by the property
-     * @throws ClassCastException If the actual property value don't match the type of the given property 
+     * @throws ClassCastException If the actual property value don't match the type of the given property
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    default <V extends Serializable> V getPropertyValue(BlockProperty<V> property) {
+    @NotNull default <V extends Serializable> V getPropertyValue(BlockProperty<V> property) {
         return getCheckedPropertyValue(property.getName(), property.getValueClass());
     }
 
@@ -114,8 +116,7 @@ public interface IBlockState {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    default <V extends Serializable> V getUncheckedPropertyValue(BlockProperty<V> property) {
+    @NotNull default <V extends Serializable> V getUncheckedPropertyValue(BlockProperty<V> property) {
         return getUncheckedPropertyValue(property.getName());
     }
 
@@ -163,8 +164,7 @@ public interface IBlockState {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    String getPersistenceValue(String propertyName);
+    @NotNull String getPersistenceValue(String propertyName);
 
     /**
      * @throws NoSuchElementException If the property is not registered
@@ -172,15 +172,13 @@ public interface IBlockState {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    default String getPersistenceValue(BlockProperty<?> property) {
+    @NotNull default String getPersistenceValue(BlockProperty<?> property) {
         return getPersistenceValue(property.getName());
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    default String getPersistenceName() {
+    @NotNull default String getPersistenceName() {
         return BlockStateRegistry.getPersistenceName(getBlockId());
     }
 
@@ -190,19 +188,27 @@ public interface IBlockState {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    default String getStateId() {
+    @NotNull default String getStateId() {
         BlockProperties properties = getProperties();
         Map<String, String> propertyMap = new TreeMap<>(HumanStringComparator.getInstance());
         try {
-            properties.getNames().forEach(name -> propertyMap.put(properties.getBlockProperty(name).getPersistenceName(), getPersistenceValue(name)));
+            properties
+                    .getNames()
+                    .forEach(name -> propertyMap.put(
+                            properties.getBlockProperty(name).getPersistenceName(), getPersistenceValue(name)));
         } catch (InvalidBlockPropertyException e) {
-            logIBlockState.debug("Attempted to get the stateId of an invalid state {}:{}\nProperties: {}", getBlockId(), getDataStorage(), properties, e);
+            logIBlockState.debug(
+                    "Attempted to get the stateId of an invalid state {}:{}\nProperties: {}",
+                    getBlockId(),
+                    getDataStorage(),
+                    properties,
+                    e);
             return getLegacyStateId();
         }
 
         StringBuilder stateId = new StringBuilder(getPersistenceName());
-        propertyMap.forEach((name, value) -> stateId.append(';').append(name).append('=').append(value));
+        propertyMap.forEach(
+                (name, value) -> stateId.append(';').append(name).append('=').append(value));
         return stateId.toString();
     }
 
@@ -220,34 +226,37 @@ public interface IBlockState {
                     .filter(entry -> !entry.getKey().isDefaultPersistentValue(entry.getValue()))
                     .forEach(entry -> propertyMap.put(entry.getKey().getPersistenceName(), entry.getValue()));
         } catch (InvalidBlockPropertyException e) {
-            logIBlockState.debug("Attempted to get the stateId of an invalid state {}:{}\nProperties: {}", getBlockId(), getDataStorage(), properties, e);
+            logIBlockState.debug(
+                    "Attempted to get the stateId of an invalid state {}:{}\nProperties: {}",
+                    getBlockId(),
+                    getDataStorage(),
+                    properties,
+                    e);
             return getLegacyStateId();
         }
 
         StringBuilder stateId = new StringBuilder(getPersistenceName());
-        propertyMap.forEach((name, value) -> stateId.append(';').append(name).append('=').append(value));
+        propertyMap.forEach(
+                (name, value) -> stateId.append(';').append(name).append('=').append(value));
         return stateId.toString();
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    default String getLegacyStateId() {
-        return getPersistenceName()+";nukkit-unknown="+getDataStorage();
+    @NotNull default String getLegacyStateId() {
+        return getPersistenceName() + ";nukkit-unknown=" + getDataStorage();
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    BlockState getCurrentState();
+    @NotNull BlockState getCurrentState();
 
     /**
      * @throws InvalidBlockStateException if the state contains invalid property values
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    default Block getBlock() {
+    @NotNull default Block getBlock() {
         Block block = Block.get(getBlockId());
         return block.forState(this);
     }
@@ -257,8 +266,7 @@ public interface IBlockState {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    default Block getBlock(@Nullable Level level, int x, int y, int z) {
+    @NotNull default Block getBlock(@Nullable Level level, int x, int y, int z) {
         return getBlock(level, x, y, z, 0, false, null);
     }
 
@@ -267,8 +275,7 @@ public interface IBlockState {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    default Block getBlock(@Nullable Level level, int x, int y, int z, int layer) {
+    @NotNull default Block getBlock(@Nullable Level level, int x, int y, int z, int layer) {
         return getBlock(level, x, y, z, layer, false, null);
     }
 
@@ -277,8 +284,7 @@ public interface IBlockState {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    default Block getBlock(@Nullable Level level, int x, int y, int z, int layer, boolean repair) {
+    @NotNull default Block getBlock(@Nullable Level level, int x, int y, int z, int layer, boolean repair) {
         return getBlock(level, x, y, z, layer, repair, null);
     }
 
@@ -287,8 +293,14 @@ public interface IBlockState {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    default Block getBlock(@Nullable Level level, int x, int y, int z, int layer, boolean repair, @Nullable Consumer<BlockStateRepair> callback) {
+    @NotNull default Block getBlock(
+            @Nullable Level level,
+            int x,
+            int y,
+            int z,
+            int layer,
+            boolean repair,
+            @Nullable Consumer<BlockStateRepair> callback) {
         Block block = Block.get(getBlockId());
         block.level = level;
         block.x = x;
@@ -301,13 +313,20 @@ public interface IBlockState {
                 return block.forState(currentState);
             }
         } catch (Exception e) {
-            logIBlockState.error("Unexpected error while trying to set the cached valid state to the block. State: {}, Block: {}", currentState, block, e);
+            logIBlockState.error(
+                    "Unexpected error while trying to set the cached valid state to the block. State: {}, Block: {}",
+                    currentState,
+                    block,
+                    e);
         }
-        
+
         try {
             block.setDataStorage(currentState.getDataStorage(), repair, callback);
         } catch (InvalidBlockStateException e) {
-            throw new InvalidBlockStateException(getCurrentState(), "Invalid block state in layer "+layer+" at: "+new Position(x, y, z, level), e);
+            throw new InvalidBlockStateException(
+                    getCurrentState(),
+                    "Invalid block state in layer " + layer + " at: " + new Position(x, y, z, level),
+                    e);
         }
         return block;
     }
@@ -317,8 +336,7 @@ public interface IBlockState {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    default Block getBlock(Position position) {
+    @NotNull default Block getBlock(Position position) {
         return getBlock(position, 0);
     }
 
@@ -327,8 +345,7 @@ public interface IBlockState {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    default Block getBlock(Block position) {
+    @NotNull default Block getBlock(Block position) {
         return getBlock(position, position.layer);
     }
 
@@ -337,81 +354,71 @@ public interface IBlockState {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    default Block getBlock(Position position, int layer) {
+    @NotNull default Block getBlock(Position position, int layer) {
         return getBlock(position.getLevel(), position.getFloorX(), position.getFloorY(), position.getFloorZ(), layer);
     }
 
-
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    default Block getBlockRepairing(Block pos) {
+    @NotNull default Block getBlockRepairing(Block pos) {
         return getBlockRepairing(pos, pos.layer);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    default Block getBlockRepairing(Position position, int layer) {
+    @NotNull default Block getBlockRepairing(Position position, int layer) {
         return getBlockRepairing(position.level, position, layer);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    default Block getBlockRepairing(@Nullable Level level, BlockVector3 pos, int layer) {
+    @NotNull default Block getBlockRepairing(@Nullable Level level, BlockVector3 pos, int layer) {
         return getBlockRepairing(level, pos.x, pos.y, pos.z, layer);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    default Block getBlockRepairing(@Nullable Level level, Vector3 pos) {
+    @NotNull default Block getBlockRepairing(@Nullable Level level, Vector3 pos) {
         return getBlockRepairing(level, pos, 0);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    default Block getBlockRepairing(@Nullable Level level, Vector3 pos, int layer) {
+    @NotNull default Block getBlockRepairing(@Nullable Level level, Vector3 pos, int layer) {
         return getBlockRepairing(level, pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    default Block getBlockRepairing(@Nullable Level level, int x, int y, int z) {
+    @NotNull default Block getBlockRepairing(@Nullable Level level, int x, int y, int z) {
         return getBlockRepairing(level, x, y, z, 0);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    default Block getBlockRepairing(@Nullable Level level, int x, int y, int z, int layer) {
+    @NotNull default Block getBlockRepairing(@Nullable Level level, int x, int y, int z, int layer) {
         return getBlockRepairing(level, x, y, z, layer, null);
     }
 
-
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    default Block getBlockRepairing(@Nullable Level level, int x, int y, int z, int layer, @Nullable Consumer<BlockStateRepair> callback) {
+    @NotNull default Block getBlockRepairing(
+            @Nullable Level level, int x, int y, int z, int layer, @Nullable Consumer<BlockStateRepair> callback) {
         List<BlockStateRepair> repairs = new ArrayList<>(0);
-        
+
         Consumer<BlockStateRepair> callbackChain = repairs::add;
 
         if (!BlockStateRepairEvent.getHandlers().isEmpty()) {
             PluginManager manager = Server.getInstance().getPluginManager();
             callbackChain = callbackChain.andThen(repair -> manager.callEvent(new BlockStateRepairEvent(repair)));
         }
-        
+
         if (callback != null) {
             callbackChain = callbackChain.andThen(callback);
         }
-        
+
         Block block = getBlock(level, x, y, z, layer, true, callbackChain);
-        
+
         if (!BlockStateRepairFinishEvent.getHandlers().isEmpty()) {
             BlockStateRepairFinishEvent event = new BlockStateRepairFinishEvent(repairs, block);
             Server.getInstance().getPluginManager().callEvent(event);
@@ -419,12 +426,18 @@ public interface IBlockState {
         }
 
         if (!repairs.isEmpty() && logIBlockState.isDebugEnabled()) {
-            logIBlockState.debug("The block that at Level:{}, X:{}, Y:{}, Z:{}, L:{} was repaired. Result: {}, Repairs: {}",
-                    level, x, y, z, layer, block, repairs,
-                    new Exception("Stacktrace")
-            );
+            logIBlockState.debug(
+                    "The block that at Level:{}, X:{}, Y:{}, Z:{}, L:{} was repaired. Result: {}, Repairs: {}",
+                    level,
+                    x,
+                    y,
+                    z,
+                    layer,
+                    block,
+                    repairs,
+                    new Exception("Stacktrace"));
         }
-        
+
         return block;
     }
 
@@ -437,51 +450,52 @@ public interface IBlockState {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Deprecated
-    @DeprecationDetails(reason = "Can't store all data, exists for backward compatibility reasons", since = "1.4.0.0-PN", replaceWith = "the BlockState itself")
+    @DeprecationDetails(
+            reason = "Can't store all data, exists for backward compatibility reasons",
+            since = "1.4.0.0-PN",
+            replaceWith = "the BlockState itself")
     default int getFullId() {
         return (getBlockId() << Block.DATA_BITS) | (getLegacyDamage() & Block.DATA_MASK);
     }
 
     @PowerNukkitOnly
     @Deprecated
-    @DeprecationDetails(reason = "Can't store all data, exists for backward compatibility reasons", since = "1.4.0.0-PN", replaceWith = "the BlockState itself")
+    @DeprecationDetails(
+            reason = "Can't store all data, exists for backward compatibility reasons",
+            since = "1.4.0.0-PN",
+            replaceWith = "the BlockState itself")
     default long getBigId() {
-        return ((long)getBlockId() << 32) | (getBigDamage() & BlockStateRegistry.BIG_META_MASK);
+        return ((long) getBlockId() << 32) | (getBigDamage() & BlockStateRegistry.BIG_META_MASK);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @SuppressWarnings("rawtypes")
-    @NotNull
-    default BlockProperty getProperty(String propertyName) {
+    @NotNull default BlockProperty getProperty(String propertyName) {
         return getProperties().getBlockProperty(propertyName);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    default <T extends BlockProperty<?>> T getCheckedProperty(String propertyName, Class<T> tClass) {
+    @NotNull default <T extends BlockProperty<?>> T getCheckedProperty(String propertyName, Class<T> tClass) {
         return getProperties().getBlockProperty(propertyName, tClass);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    default Set<String> getPropertyNames() {
+    @NotNull default Set<String> getPropertyNames() {
         return getProperties().getNames();
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    default <T> T getCheckedPropertyValue(String propertyName, Class<T> tClass) {
+    @NotNull default <T> T getCheckedPropertyValue(String propertyName, Class<T> tClass) {
         return tClass.cast(getPropertyValue(propertyName));
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    @SuppressWarnings("unchecked")
+    @NotNull @SuppressWarnings("unchecked")
     default <T> T getUncheckedPropertyValue(String propertyName) {
         return (T) getPropertyValue(propertyName);
     }
@@ -499,15 +513,13 @@ public interface IBlockState {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    default ItemBlock asItemBlock() {
+    @NotNull default ItemBlock asItemBlock() {
         return asItemBlock(1);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    default ItemBlock asItemBlock(int count) {
+    @NotNull default ItemBlock asItemBlock(int count) {
         return getCurrentState().asItemBlock(count);
     }
 }

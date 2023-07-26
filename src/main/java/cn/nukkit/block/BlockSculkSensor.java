@@ -18,7 +18,8 @@ import org.jetbrains.annotations.NotNull;
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class BlockSculkSensor extends BlockSolid implements BlockEntityHolder<BlockEntitySculkSensor>, RedstoneComponent {
+public class BlockSculkSensor extends BlockSolid
+        implements BlockEntityHolder<BlockEntitySculkSensor>, RedstoneComponent {
 
     public static final BooleanBlockProperty SCULK_SENSOR_PHASE = new BooleanBlockProperty("sculk_sensor_phase", false);
     public static final BlockProperties PROPERTIES = new BlockProperties(SCULK_SENSOR_PHASE);
@@ -38,14 +39,12 @@ public class BlockSculkSensor extends BlockSolid implements BlockEntityHolder<Bl
         return PROPERTIES;
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public Class<? extends BlockEntitySculkSensor> getBlockEntityClass() {
         return BlockEntitySculkSensor.class;
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getBlockEntityType() {
         return BlockEntity.SCULK_SENSOR;
     }
@@ -74,7 +73,7 @@ public class BlockSculkSensor extends BlockSolid implements BlockEntityHolder<Bl
     public int onUpdate(int type) {
         getOrCreateBlockEntity();
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
-            if (level.getServer().isRedstoneEnabled()){
+            if (level.getServer().isRedstoneEnabled()) {
                 this.getBlockEntity().calPower();
                 this.setPowered(false);
                 updateAroundRedstone();
@@ -85,8 +84,8 @@ public class BlockSculkSensor extends BlockSolid implements BlockEntityHolder<Bl
     }
 
     public void setPowered(boolean powered) {
-        if (powered) this.level.addSound(this.add(0.5,0.5,0.5), Sound.POWER_ON_SCULK_SENSOR);
-        else this.level.addSound(this.add(0.5,0.5,0.5), Sound.POWER_OFF_SCULK_SENSOR);
+        if (powered) this.level.addSound(this.add(0.5, 0.5, 0.5), Sound.POWER_ON_SCULK_SENSOR);
+        else this.level.addSound(this.add(0.5, 0.5, 0.5), Sound.POWER_OFF_SCULK_SENSOR);
         this.setBooleanValue(SCULK_SENSOR_PHASE, powered);
         this.level.setBlock(this, this, true, false);
     }
@@ -102,5 +101,4 @@ public class BlockSculkSensor extends BlockSolid implements BlockEntityHolder<Bl
     public boolean isSolid(BlockFace side) {
         return false;
     }
-
 }

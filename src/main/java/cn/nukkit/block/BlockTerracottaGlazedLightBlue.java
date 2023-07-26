@@ -29,5 +29,4 @@ public class BlockTerracottaGlazedLightBlue extends BlockTerracottaGlazed {
     public DyeColor getDyeColor() {
         return DyeColor.LIGHT_BLUE;
     }
-
 }

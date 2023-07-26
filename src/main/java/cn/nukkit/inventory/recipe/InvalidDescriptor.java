@@ -11,8 +11,7 @@ public class InvalidDescriptor implements ItemDescriptor {
 
     public static final InvalidDescriptor INSTANCE = new InvalidDescriptor();
 
-    private InvalidDescriptor() {
-    }
+    private InvalidDescriptor() {}
 
     @Override
     public ItemDescriptorType getType() {

@@ -8,7 +8,6 @@ import cn.nukkit.level.generator.populator.helper.PopulatorHelpers;
 import cn.nukkit.level.generator.populator.type.PopulatorCount;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.NukkitRandom;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -35,7 +34,13 @@ public class PopulatorDisk extends PopulatorCount {
         this.replaceBlocks = Arrays.asList(BlockState.of(DIRT), BlockState.of(GRASS));
     }
 
-    public PopulatorDisk(double probability, BlockState sourceBlock, int radiusMin, int radiusMax, int radiusY, List<BlockState> replaceBlocks) {
+    public PopulatorDisk(
+            double probability,
+            BlockState sourceBlock,
+            int radiusMin,
+            int radiusMax,
+            int radiusY,
+            List<BlockState> replaceBlocks) {
         this.probability = probability;
         this.sourceBlock = sourceBlock;
         this.radiusMin = radiusMin;

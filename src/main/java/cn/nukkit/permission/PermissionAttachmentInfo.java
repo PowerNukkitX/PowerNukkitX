@@ -13,7 +13,8 @@ public class PermissionAttachmentInfo {
 
     private boolean value;
 
-    public PermissionAttachmentInfo(Permissible permissible, String permission, PermissionAttachment attachment, boolean value) {
+    public PermissionAttachmentInfo(
+            Permissible permissible, String permission, PermissionAttachment attachment, boolean value) {
         if (permission == null) {
             throw new IllegalStateException("Permission may not be null");
         }

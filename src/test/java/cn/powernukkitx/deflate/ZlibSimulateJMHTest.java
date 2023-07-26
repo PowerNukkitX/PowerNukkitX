@@ -1,16 +1,10 @@
 package cn.powernukkitx.deflate;
 
 import cn.nukkit.utils.Zlib;
-import cn.powernukkitx.libdeflate.CompressionType;
-import cn.powernukkitx.libdeflate.LibdeflateCompressor;
+import java.io.IOException;
+import java.util.concurrent.ThreadLocalRandom;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.zip.Deflater;
-
 
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.Throughput)

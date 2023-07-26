@@ -4,7 +4,6 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemGlowstoneDust;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.math.MathHelper;
-
 import java.util.Random;
 
 /**
@@ -12,8 +11,7 @@ import java.util.Random;
  * @since 2015/12/6
  */
 public class BlockGlowstone extends BlockTransparent {
-    public BlockGlowstone() {
-    }
+    public BlockGlowstone() {}
 
     @Override
     public String getName() {
@@ -50,9 +48,7 @@ public class BlockGlowstone extends BlockTransparent {
             count += random.nextInt(fortune.getLevel() + 1);
         }
 
-        return new Item[]{
-                new ItemGlowstoneDust(0, MathHelper.clamp(count, 1, 4))
-        };
+        return new Item[] {new ItemGlowstoneDust(0, MathHelper.clamp(count, 1, 4))};
     }
 
     @Override

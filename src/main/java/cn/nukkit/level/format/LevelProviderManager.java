@@ -1,10 +1,9 @@
 package cn.nukkit.level.format;
 
 import cn.nukkit.Server;
-import lombok.extern.log4j.Log4j2;
-
 import java.util.HashMap;
 import java.util.Map;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -38,5 +37,4 @@ public abstract class LevelProviderManager {
         name = name.trim().toLowerCase();
         return providers.getOrDefault(name, null);
     }
-
 }

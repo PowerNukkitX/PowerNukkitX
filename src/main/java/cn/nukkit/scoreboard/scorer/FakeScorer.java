@@ -44,6 +44,7 @@ public class FakeScorer implements IScorer {
 
     @Override
     public SetScorePacket.ScoreInfo toNetworkInfo(IScoreboard scoreboard, IScoreboardLine line) {
-        return new SetScorePacket.ScoreInfo(line.getLineId(), scoreboard.getObjectiveName(), line.getScore(), getFakeName());
+        return new SetScorePacket.ScoreInfo(
+                line.getLineId(), scoreboard.getObjectiveName(), line.getScore(), getFakeName());
     }
 }

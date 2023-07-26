@@ -12,10 +12,9 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.nbt.tag.CompoundTag;
-
-import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.List;
+import javax.annotation.Nullable;
 
 @PowerNukkitXOnly
 @Since("1.19.21-r2")
@@ -24,8 +23,9 @@ public abstract class StructurePiece {
     protected ChunkManager level;
     protected BoundingBox boundingBox;
     protected int genDepth;
-    @Nullable
-    private BlockFace orientation;
+
+    @Nullable private BlockFace orientation;
+
     private Rotation rotation = Rotation.NONE;
 
     protected StructurePiece(int genDepth) {
@@ -70,10 +70,11 @@ public abstract class StructurePiece {
     protected abstract void addAdditionalSaveData(CompoundTag tag);
 
     public void addChildren(StructurePiece piece, List<StructurePiece> pieces, NukkitRandom random) {
-        //NOOP
+        // NOOP
     }
 
-    public abstract boolean postProcess(ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ);
+    public abstract boolean postProcess(
+            ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ);
 
     public BoundingBox getBoundingBox() {
         return this.boundingBox;
@@ -84,7 +85,10 @@ public abstract class StructurePiece {
     }
 
     protected boolean isLiquid(int id) {
-        return id == Block.FLOWING_WATER || id == Block.STILL_WATER || id == Block.FLOWING_LAVA || id == Block.STILL_LAVA;
+        return id == Block.FLOWING_WATER
+                || id == Block.STILL_WATER
+                || id == Block.FLOWING_LAVA
+                || id == Block.STILL_LAVA;
     }
 
     protected boolean edgesLiquid(ChunkManager level, final BoundingBox boundingBox) {
@@ -261,7 +265,9 @@ public abstract class StructurePiece {
 
     protected BlockState getBlock(ChunkManager level, int x, int y, int z, BoundingBox boundingBox) {
         BlockVector3 vec = new BlockVector3(this.getWorldX(x, z), this.getWorldY(y), this.getWorldZ(x, z));
-        return !boundingBox.isInside(vec) ? BlockState.AIR : new BlockState(level.getBlockIdAt(vec.x, vec.y, vec.z), level.getBlockDataAt(vec.x, vec.y, vec.z));
+        return !boundingBox.isInside(vec)
+                ? BlockState.AIR
+                : new BlockState(level.getBlockIdAt(vec.x, vec.y, vec.z), level.getBlockDataAt(vec.x, vec.y, vec.z));
     }
 
     protected boolean isInterior(ChunkManager level, int x, int y, int z, BoundingBox boundingBox) {
@@ -279,7 +285,8 @@ public abstract class StructurePiece {
         }
     }
 
-    protected void generateAirBox(ChunkManager level, BoundingBox boundingBox, int x1, int y1, int z1, int x2, int y2, int z2) {
+    protected void generateAirBox(
+            ChunkManager level, BoundingBox boundingBox, int x1, int y1, int z1, int x2, int y2, int z2) {
         for (int y = y1; y <= y2; ++y) {
             for (int x = x1; x <= x2; ++x) {
                 for (int z = z1; z <= z2; ++z) {
@@ -289,7 +296,18 @@ public abstract class StructurePiece {
         }
     }
 
-    protected void generateBox(ChunkManager level, BoundingBox boundingBox, int x1, int y1, int z1, int x2, int y2, int z2, BlockState outsideBlock, BlockState insideBlock, boolean skipAir) {
+    protected void generateBox(
+            ChunkManager level,
+            BoundingBox boundingBox,
+            int x1,
+            int y1,
+            int z1,
+            int x2,
+            int y2,
+            int z2,
+            BlockState outsideBlock,
+            BlockState insideBlock,
+            boolean skipAir) {
         for (int y = y1; y <= y2; ++y) {
             for (int x = x1; x <= x2; ++x) {
                 for (int z = z1; z <= z2; ++z) {
@@ -305,7 +323,18 @@ public abstract class StructurePiece {
         }
     }
 
-    protected void generateBox(ChunkManager level, BoundingBox boundingBox, int x1, int y1, int z1, int x2, int y2, int z2, boolean skipAir, NukkitRandom random, BlockSelector selector) {
+    protected void generateBox(
+            ChunkManager level,
+            BoundingBox boundingBox,
+            int x1,
+            int y1,
+            int z1,
+            int x2,
+            int y2,
+            int z2,
+            boolean skipAir,
+            NukkitRandom random,
+            BlockSelector selector) {
         for (int y = y1; y <= y2; ++y) {
             for (int x = x1; x <= x2; ++x) {
                 for (int z = z1; z <= z2; ++z) {
@@ -318,11 +347,29 @@ public abstract class StructurePiece {
         }
     }
 
-    protected void generateMaybeBox(ChunkManager level, BoundingBox boundingBox, NukkitRandom random, int prob, int x1, int y1, int z1, int x2, int y2, int z2, BlockState outsideBlock, BlockState insideBlock, boolean skipAir, boolean checkInterior) {
+    protected void generateMaybeBox(
+            ChunkManager level,
+            BoundingBox boundingBox,
+            NukkitRandom random,
+            int prob,
+            int x1,
+            int y1,
+            int z1,
+            int x2,
+            int y2,
+            int z2,
+            BlockState outsideBlock,
+            BlockState insideBlock,
+            boolean skipAir,
+            boolean checkInterior) {
         for (int y = y1; y <= y2; ++y) {
             for (int x = x1; x <= x2; ++x) {
                 for (int z = z1; z <= z2; ++z) {
-                    if (random.nextBoundedInt(100) <= prob && (!skipAir || !this.getBlock(level, x, y, z, boundingBox).equals(BlockState.AIR)) && (!checkInterior || this.isInterior(level, x, y, z, boundingBox))) {
+                    if (random.nextBoundedInt(100) <= prob
+                            && (!skipAir
+                                    || !this.getBlock(level, x, y, z, boundingBox)
+                                            .equals(BlockState.AIR))
+                            && (!checkInterior || this.isInterior(level, x, y, z, boundingBox))) {
                         if (y != y1 && y != y2 && x != x1 && x != x2 && z != z1 && z != z2) {
                             this.placeBlock(level, insideBlock, x, y, z, boundingBox);
                         } else {
@@ -334,13 +381,31 @@ public abstract class StructurePiece {
         }
     }
 
-    protected void maybeGenerateBlock(ChunkManager level, BoundingBox boundingBox, NukkitRandom random, int prob, int x, int y, int z, BlockState block) {
+    protected void maybeGenerateBlock(
+            ChunkManager level,
+            BoundingBox boundingBox,
+            NukkitRandom random,
+            int prob,
+            int x,
+            int y,
+            int z,
+            BlockState block) {
         if (random.nextBoundedInt(100) < prob) {
             this.placeBlock(level, block, x, y, z, boundingBox);
         }
     }
 
-    protected void generateUpperHalfSphere(ChunkManager level, BoundingBox boundingBox, int x1, int y1, int z1, int x2, int y2, int z2, BlockState block, boolean skipAir) {
+    protected void generateUpperHalfSphere(
+            ChunkManager level,
+            BoundingBox boundingBox,
+            int x1,
+            int y1,
+            int z1,
+            int x2,
+            int y2,
+            int z2,
+            BlockState block,
+            boolean skipAir) {
         float xLen = x2 - x1 + 1;
         float yLen = y2 - y1 + 1;
         float zLen = z2 - z1 + 1;
@@ -383,14 +448,27 @@ public abstract class StructurePiece {
             int cx = worldX & 0xf;
             int cz = worldZ & 0xf;
             int blockId = chunk.getBlockId(cx, worldY, cz);
-            while ((blockId == Block.AIR || blockId == Block.WATER || blockId == Block.STILL_WATER || blockId == Block.LAVA || blockId == Block.STILL_LAVA) && worldY > 1) {
+            while ((blockId == Block.AIR
+                            || blockId == Block.WATER
+                            || blockId == Block.STILL_WATER
+                            || blockId == Block.LAVA
+                            || blockId == Block.STILL_LAVA)
+                    && worldY > 1) {
                 chunk.setBlock(cx, worldY, cz, block.getId(), block.getMeta());
                 blockId = chunk.getBlockId(cx, --worldY, cz);
             }
         }
     }
 
-    protected void generateDoor(ChunkManager level, BoundingBox boundingBox, NukkitRandom random, int x, int y, int z, BlockFace orientation, BlockState door) {
+    protected void generateDoor(
+            ChunkManager level,
+            BoundingBox boundingBox,
+            NukkitRandom random,
+            int x,
+            int y,
+            int z,
+            BlockFace orientation,
+            BlockState door) {
         switch (orientation) {
             case NORTH:
             default:
@@ -409,8 +487,7 @@ public abstract class StructurePiece {
         this.boundingBox.move(x, y, z);
     }
 
-    @Nullable
-    public BlockFace getOrientation() {
+    @Nullable public BlockFace getOrientation() {
         return this.orientation;
     }
 

@@ -6,7 +6,6 @@ import cn.nukkit.block.BlockPistonBase;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.math.BlockFace;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +25,12 @@ public class BlockPistonEvent extends BlockEvent implements Cancellable {
     private final boolean extending;
 
     @PowerNukkitOnly
-    public BlockPistonEvent(BlockPistonBase piston, BlockFace direction, List<Block> blocks, List<Block> destroyedBlocks, boolean extending) {
+    public BlockPistonEvent(
+            BlockPistonBase piston,
+            BlockFace direction,
+            List<Block> blocks,
+            List<Block> destroyedBlocks,
+            boolean extending) {
         super(piston);
         this.direction = direction;
         this.blocks = blocks;

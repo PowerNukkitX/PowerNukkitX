@@ -1,12 +1,12 @@
 package cn.nukkit.math;
 
+import static java.lang.StrictMath.*;
+
 import cn.nukkit.api.DoNotModify;
 import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.level.Location;
-
-import static java.lang.StrictMath.*;
 
 /**
  * 向量计算工具，同时整合了yaw和pitch与坐标空间的转换功能
@@ -22,9 +22,10 @@ public final class BVector3 {
      * <p>
      * the unit vector of a vector
      */
-    private Vector3 vector3;//标准化的方向向量,模长为1
-    private double yaw;//-90 270
-    private double pitch;//-90 90
+    private Vector3 vector3; // 标准化的方向向量,模长为1
+
+    private double yaw; // -90 270
+    private double pitch; // -90 90
     /**
      * 向量的模
      */
@@ -137,7 +138,7 @@ public final class BVector3 {
      */
     public BVector3 setYaw(double yaw) {
         this.vector3 = getDirectionVector(yaw, this.pitch);
-        //重新计算在范围内的等价yaw值
+        // 重新计算在范围内的等价yaw值
         this.yaw = getYawFromVector(this.vector3);
         return this;
     }
@@ -150,7 +151,7 @@ public final class BVector3 {
      */
     public BVector3 setPitch(double pitch) {
         this.vector3 = getDirectionVector(this.yaw, pitch);
-        //重新计算在范围内的等价pitch值
+        // 重新计算在范围内的等价pitch值
         this.pitch = getPitchFromVector(this.vector3);
         return this;
     }
@@ -166,7 +167,7 @@ public final class BVector3 {
     public BVector3 rotateYaw(double yaw) {
         this.yaw += yaw;
         this.vector3 = getDirectionVector(this.yaw, this.pitch);
-        //重新计算在范围内的等价yaw值
+        // 重新计算在范围内的等价yaw值
         this.yaw = getYawFromVector(this.vector3);
         return this;
     }
@@ -182,7 +183,7 @@ public final class BVector3 {
     public BVector3 rotatePitch(double pitch) {
         this.pitch += pitch;
         this.vector3 = getDirectionVector(this.yaw, this.pitch);
-        //重新计算在范围内的等价pitch值
+        // 重新计算在范围内的等价pitch值
         this.pitch = getPitchFromVector(this.vector3);
         return this;
     }
@@ -200,7 +201,7 @@ public final class BVector3 {
         this.pitch += pitch;
         this.yaw += yaw;
         this.vector3 = getDirectionVector(this.yaw, this.pitch);
-        //重新计算在范围内的等价pitch值
+        // 重新计算在范围内的等价pitch值
         this.pitch = getPitchFromVector(this.vector3);
         this.pitch = getYawFromVector(this.vector3);
         return this;
@@ -271,8 +272,7 @@ public final class BVector3 {
      * @return 自身
      */
     public BVector3 extend(double length) {
-        if ((this.length + length) <= 0)
-            throw new IllegalArgumentException("Vector length must bigger than zero");
+        if ((this.length + length) <= 0) throw new IllegalArgumentException("Vector length must bigger than zero");
         this.length += length;
         return this;
     }

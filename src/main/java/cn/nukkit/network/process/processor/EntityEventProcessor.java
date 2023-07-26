@@ -19,9 +19,8 @@ public class EntityEventProcessor extends DataPacketProcessor<EntityEventPacket>
         }
         if (player.craftingType != Player.CRAFTING_ANVIL && pk.event != EntityEventPacket.ENCHANT) {
             player.craftingType = Player.CRAFTING_SMALL;
-            //player.resetCraftingGridType();
+            // player.resetCraftingGridType();
         }
-
 
         if (pk.event == EntityEventPacket.EATING_ITEM) {
             if (pk.data == 0 || pk.eid != player.getId()) {

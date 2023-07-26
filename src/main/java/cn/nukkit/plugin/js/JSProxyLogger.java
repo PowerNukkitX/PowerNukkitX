@@ -72,9 +72,7 @@ public final class JSProxyLogger implements ProxyObject {
             }
 
             @Override
-            public void set(long index, Value value) {
-
-            }
+            public void set(long index, Value value) {}
 
             @Override
             public long getSize() {
@@ -85,11 +83,13 @@ public final class JSProxyLogger implements ProxyObject {
 
     @Override
     public boolean hasMember(String key) {
-        return "log".equals(key) || "info".equals(key) || "warn".equals(key) || "error".equals(key) || "debug".equals(key);
+        return "log".equals(key)
+                || "info".equals(key)
+                || "warn".equals(key)
+                || "error".equals(key)
+                || "debug".equals(key);
     }
 
     @Override
-    public void putMember(String key, Value value) {
-
-    }
+    public void putMember(String key, Value value) {}
 }

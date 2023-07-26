@@ -2,7 +2,6 @@ package cn.nukkit.utils.functional;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-
 import java.util.Objects;
 import java.util.function.Function;
 

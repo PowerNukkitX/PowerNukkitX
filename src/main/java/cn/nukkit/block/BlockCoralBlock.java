@@ -10,9 +10,8 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.concurrent.ThreadLocalRandom;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 public class BlockCoralBlock extends BlockSolidMeta {
@@ -30,7 +29,7 @@ public class BlockCoralBlock extends BlockSolidMeta {
     public BlockCoralBlock(int meta) {
         super(meta);
     }
-    
+
     @Override
     public int getId() {
         return CORAL_BLOCK;
@@ -38,8 +37,7 @@ public class BlockCoralBlock extends BlockSolidMeta {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -57,19 +55,19 @@ public class BlockCoralBlock extends BlockSolidMeta {
             setDamage(getDamage() ^ 0x8);
         }
     }
-    
+
     @Override
     public String getName() {
         String[] names = new String[] {
-                "Tube Coral Block",
-                "Brain Coral Block",
-                "Bubble Coral Block",
-                "Fire Coral Block",
-                "Horn Coral Block",
-                // Invalid
-                "Tube Coral Block",
-                "Tube Coral Block",
-                "Tube Coral Block"
+            "Tube Coral Block",
+            "Brain Coral Block",
+            "Bubble Coral Block",
+            "Fire Coral Block",
+            "Horn Coral Block",
+            // Invalid
+            "Tube Coral Block",
+            "Tube Coral Block",
+            "Tube Coral Block"
         };
         String name = names[getDamage() & 0x7];
         if (isDead()) {
@@ -83,34 +81,37 @@ public class BlockCoralBlock extends BlockSolidMeta {
     public double getHardness() {
         return 7;
     }
-    
+
     @Override
     public double getResistance() {
         return 6.0;
     }
-    
+
     @Override
     public boolean canHarvestWithHand() {
         return false;
     }
-    
+
     @Override
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
-    
+
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!isDead()) {
-                this.getLevel().scheduleUpdate(this, 60 + ThreadLocalRandom.current().nextInt(40));
+                this.getLevel()
+                        .scheduleUpdate(this, 60 + ThreadLocalRandom.current().nextInt(40));
             }
             return type;
         } else if (type == Level.BLOCK_UPDATE_SCHEDULED) {
             if (!isDead()) {
                 for (BlockFace face : BlockFace.values()) {
-                    if (getSideAtLayer(0, face) instanceof BlockWater || getSideAtLayer(1, face) instanceof BlockWater
-                        || getSideAtLayer(0, face) instanceof BlockIceFrosted || getSideAtLayer(1, face) instanceof BlockIceFrosted) {
+                    if (getSideAtLayer(0, face) instanceof BlockWater
+                            || getSideAtLayer(1, face) instanceof BlockWater
+                            || getSideAtLayer(0, face) instanceof BlockIceFrosted
+                            || getSideAtLayer(1, face) instanceof BlockIceFrosted) {
                         return type;
                     }
                 }
@@ -124,14 +125,14 @@ public class BlockCoralBlock extends BlockSolidMeta {
         }
         return 0;
     }
-    
+
     @Override
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
             if (item.getEnchantment(Enchantment.ID_SILK_TOUCH) != null) {
-                return new Item[]{ toItem() };
+                return new Item[] {toItem()};
             } else {
-                return new Item[]{ new ItemBlock(clone(), getDamage() | 0x8) };
+                return new Item[] {new ItemBlock(clone(), getDamage() | 0x8)};
             }
         } else {
             return Item.EMPTY_ARRAY;

@@ -4,9 +4,8 @@ import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.ConsoleCommandSender;
 import cn.nukkit.lang.TranslationContainer;
-import lombok.extern.log4j.Log4j2;
-
 import java.lang.reflect.Method;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * @author Tee7even
@@ -19,7 +18,8 @@ public class SimpleCommand extends Command {
     private int maxArgs;
     private int minArgs;
 
-    public SimpleCommand(Object object, Method method, String name, String description, String usageMessage, String[] aliases) {
+    public SimpleCommand(
+            Object object, Method method, String name, String description, String usageMessage, String[] aliases) {
         super(name, description, usageMessage, aliases);
         this.object = object;
         this.method = method;

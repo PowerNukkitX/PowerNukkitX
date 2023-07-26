@@ -1,13 +1,13 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.COLOR;
+
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.utils.DyeColor;
 import org.jetbrains.annotations.NotNull;
-
-import static cn.nukkit.blockproperty.CommonBlockProperties.COLOR;
 
 /**
  * @author CreeperFace
@@ -31,8 +31,7 @@ public class BlockGlassStained extends BlockGlass {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -47,8 +46,7 @@ public class BlockGlassStained extends BlockGlass {
         return getDyeColor().getName() + " Stained Glass";
     }
 
-    @NotNull
-    public DyeColor getDyeColor() {
+    @NotNull public DyeColor getDyeColor() {
         return getPropertyValue(COLOR);
     }
 

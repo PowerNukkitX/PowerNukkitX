@@ -132,5 +132,4 @@ public class Vector2f {
     public String toString() {
         return "Vector2(x=" + this.x + ",y=" + this.y + ")";
     }
-
 }

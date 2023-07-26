@@ -1,5 +1,7 @@
 package cn.nukkit.level.format.updater;
 
+import static cn.nukkit.block.BlockID.*;
+
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockDoor;
@@ -9,8 +11,6 @@ import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.blockstate.MutableBlockState;
 import cn.nukkit.level.format.Chunk;
 import cn.nukkit.level.format.ChunkSection;
-
-import static cn.nukkit.block.BlockID.*;
 
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
@@ -56,13 +56,16 @@ public class DoorUpdater implements Updater {
             if (underY >= 0) {
                 BlockState underState = chunk.getBlockState(x, underY, z);
                 if (underState.getBlockId() == state.getBlockId()) {
-                    mutableState.setPropertyValue(BlockDoor.DOOR_DIRECTION, underState.getPropertyValue(BlockDoor.DOOR_DIRECTION));
-                    mutableState.setBooleanValue(CommonBlockProperties.OPEN, underState.getPropertyValue(CommonBlockProperties.OPEN));
+                    mutableState.setPropertyValue(
+                            BlockDoor.DOOR_DIRECTION, underState.getPropertyValue(BlockDoor.DOOR_DIRECTION));
+                    mutableState.setBooleanValue(
+                            CommonBlockProperties.OPEN, underState.getPropertyValue(CommonBlockProperties.OPEN));
                 }
             }
         } else {
             mutableState.setBooleanValue(CommonBlockProperties.UPPER_BLOCK, false);
-            mutableState.setPropertyValue(BlockDoor.DOOR_DIRECTION, BlockDoor.DOOR_DIRECTION.getValueForMeta(legacy & 0x3));
+            mutableState.setPropertyValue(
+                    BlockDoor.DOOR_DIRECTION, BlockDoor.DOOR_DIRECTION.getValueForMeta(legacy & 0x3));
             mutableState.setBooleanValue(CommonBlockProperties.OPEN, (legacy & DOOR_OPEN_BIT) > 0);
         }
 

@@ -1,7 +1,6 @@
 package cn.nukkit.nbt.stream;
 
 import cn.nukkit.utils.VarInt;
-
 import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.IOException;

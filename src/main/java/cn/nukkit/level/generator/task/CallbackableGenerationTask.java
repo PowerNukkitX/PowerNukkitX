@@ -11,7 +11,6 @@ import cn.nukkit.level.generator.populator.impl.structure.utils.populator.Popula
 import cn.nukkit.level.generator.populator.impl.structure.utils.structure.ScatteredStructurePiece;
 import cn.nukkit.scheduler.AsyncTask;
 
-
 @PowerNukkitXOnly
 @Since("1.19.21-r2")
 public class CallbackableGenerationTask extends AsyncTask {
@@ -25,7 +24,14 @@ public class CallbackableGenerationTask extends AsyncTask {
     public boolean state = true;
     private BaseFullChunk chunk;
 
-    public CallbackableGenerationTask(Level world, BaseFullChunk chunk, PopulatorScatteredStructure structure, ScatteredStructurePiece piece, ChunkManager level, int startChunkX, int startChunkZ) {
+    public CallbackableGenerationTask(
+            Level world,
+            BaseFullChunk chunk,
+            PopulatorScatteredStructure structure,
+            ScatteredStructurePiece piece,
+            ChunkManager level,
+            int startChunkX,
+            int startChunkZ) {
         this.chunk = chunk;
         this.world = world;
         this.structure = structure;
@@ -64,13 +70,19 @@ public class CallbackableGenerationTask extends AsyncTask {
                 }
             }
         }
-        //}
+        // }
 
-        //@Override
-        //public void onCompletion(Server server) {
+        // @Override
+        // public void onCompletion(Server server) {
         if (this.state && this.world != null) {
             if (this.chunk != null) {
-                this.structure.generateChunkCallback(this.level, this.startChunkX, this.startChunkZ, this.piece, this.chunk.getX(), this.chunk.getZ());
+                this.structure.generateChunkCallback(
+                        this.level,
+                        this.startChunkX,
+                        this.startChunkZ,
+                        this.piece,
+                        this.chunk.getX(),
+                        this.chunk.getZ());
             }
         }
     }

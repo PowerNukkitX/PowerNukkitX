@@ -4,7 +4,6 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import com.google.common.collect.Iterators;
-
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
@@ -28,7 +27,7 @@ public enum BlockFace {
     private static final BlockFace[] HORIZONTALS = new BlockFace[4];
 
     static {
-        //Circular dependency
+        // Circular dependency
         DOWN.axis = Axis.Y;
         UP.axis = Axis.Y;
         NORTH.axis = Axis.Z;
@@ -65,7 +64,6 @@ public enum BlockFace {
      */
     private final String name;
 
-
     private Axis axis;
     private final AxisDirection axisDirection;
 
@@ -74,7 +72,13 @@ public enum BlockFace {
      */
     private final Vector3 unitVector;
 
-    BlockFace(int index, int opposite, int horizontalIndex, String name, AxisDirection axisDirection, Vector3 unitVector) {
+    BlockFace(
+            int index,
+            int opposite,
+            int horizontalIndex,
+            String name,
+            AxisDirection axisDirection,
+            Vector3 unitVector) {
         this.index = index;
         this.opposite = opposite;
         this.horizontalIndex = horizontalIndex;
@@ -83,7 +87,7 @@ public enum BlockFace {
         this.unitVector = unitVector;
     }
 
-    public static BlockFace[] getHorizontals(){
+    public static BlockFace[] getHorizontals() {
         return HORIZONTALS.clone();
     }
 
@@ -372,7 +376,7 @@ public enum BlockFace {
         private Plane plane;
 
         static {
-            //Circular dependency
+            // Circular dependency
             X.plane = Plane.HORIZONTAL;
             Y.plane = Plane.VERTICAL;
             Z.plane = Plane.HORIZONTAL;
@@ -436,9 +440,9 @@ public enum BlockFace {
         VERTICAL;
 
         static {
-            //Circular dependency
-            HORIZONTAL.faces = new BlockFace[]{NORTH, EAST, SOUTH, WEST};
-            VERTICAL.faces = new BlockFace[]{UP, DOWN};
+            // Circular dependency
+            HORIZONTAL.faces = new BlockFace[] {NORTH, EAST, SOUTH, WEST};
+            VERTICAL.faces = new BlockFace[] {UP, DOWN};
         }
 
         private BlockFace[] faces;

@@ -2,7 +2,6 @@ package cn.nukkit.nbt.tag;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-
 import java.util.LinkedHashMap;
 import java.util.Map;
 

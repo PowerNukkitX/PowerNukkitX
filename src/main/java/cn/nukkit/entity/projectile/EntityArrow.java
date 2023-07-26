@@ -8,7 +8,6 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
-
 import java.util.concurrent.ThreadLocalRandom;
 
 /**

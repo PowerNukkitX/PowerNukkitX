@@ -1,5 +1,7 @@
 package cn.nukkit.command.defaults;
 
+import static cn.nukkit.utils.Utils.getLevelBlocks;
+
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
@@ -14,11 +16,8 @@ import cn.nukkit.level.Position;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.SimpleAxisAlignedBB;
-
 import java.util.Locale;
 import java.util.Map;
-
-import static cn.nukkit.utils.Utils.getLevelBlocks;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -28,28 +27,30 @@ public class FillCommand extends VanillaCommand {
         super(name, "commands.fill.description");
         this.setPermission("nukkit.command.fill");
         this.getCommandParameters().clear();
-        this.addCommandParameters("default", new CommandParameter[]{
-                CommandParameter.newType("from", false, CommandParamType.BLOCK_POSITION),
-                CommandParameter.newType("to", false, CommandParamType.BLOCK_POSITION),
-                CommandParameter.newEnum("tileName", false, CommandEnum.ENUM_BLOCK),
-                CommandParameter.newType("tileData", true, CommandParamType.INT),
-                CommandParameter.newEnum("oldBlockHandling", true, new String[]{"destroy", "hollow", "keep", "outline", "replace"}),
+        this.addCommandParameters("default", new CommandParameter[] {
+            CommandParameter.newType("from", false, CommandParamType.BLOCK_POSITION),
+            CommandParameter.newType("to", false, CommandParamType.BLOCK_POSITION),
+            CommandParameter.newEnum("tileName", false, CommandEnum.ENUM_BLOCK),
+            CommandParameter.newType("tileData", true, CommandParamType.INT),
+            CommandParameter.newEnum(
+                    "oldBlockHandling", true, new String[] {"destroy", "hollow", "keep", "outline", "replace"}),
         });
-        this.addCommandParameters("replace", new CommandParameter[]{
-                CommandParameter.newType("from", false, CommandParamType.BLOCK_POSITION),
-                CommandParameter.newType("to", false, CommandParamType.BLOCK_POSITION),
-                CommandParameter.newEnum("tileName", false, CommandEnum.ENUM_BLOCK),
-                CommandParameter.newType("tileData", false, CommandParamType.INT),
-                CommandParameter.newEnum("oldBlockHandling", false, new String[]{"replace"}),
-                CommandParameter.newEnum("replaceTileName", false, CommandEnum.ENUM_BLOCK),
-                CommandParameter.newType("replaceDataValue", true, CommandParamType.INT)
+        this.addCommandParameters("replace", new CommandParameter[] {
+            CommandParameter.newType("from", false, CommandParamType.BLOCK_POSITION),
+            CommandParameter.newType("to", false, CommandParamType.BLOCK_POSITION),
+            CommandParameter.newEnum("tileName", false, CommandEnum.ENUM_BLOCK),
+            CommandParameter.newType("tileData", false, CommandParamType.INT),
+            CommandParameter.newEnum("oldBlockHandling", false, new String[] {"replace"}),
+            CommandParameter.newEnum("replaceTileName", false, CommandEnum.ENUM_BLOCK),
+            CommandParameter.newType("replaceDataValue", true, CommandParamType.INT)
         });
         this.enableParamTree();
     }
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         Position from = list.getResult(0);
         Position to = list.getResult(1);
@@ -60,13 +61,21 @@ public class FillCommand extends VanillaCommand {
         int replaceTileId;
         int replaceDataValue = -1;
 
-        AxisAlignedBB aabb = new SimpleAxisAlignedBB(Math.min(from.getX(), to.getX()), Math.min(from.getY(), to.getY()), Math.min(from.getZ(), to.getZ()), Math.max(from.getX(), to.getX()), Math.max(from.getY(), to.getY()), Math.max(from.getZ(), to.getZ()));
+        AxisAlignedBB aabb = new SimpleAxisAlignedBB(
+                Math.min(from.getX(), to.getX()),
+                Math.min(from.getY(), to.getY()),
+                Math.min(from.getZ(), to.getZ()),
+                Math.max(from.getX(), to.getX()),
+                Math.max(from.getY(), to.getY()),
+                Math.max(from.getZ(), to.getZ()));
         if (aabb.getMinY() < -64 || aabb.getMaxY() > 320) {
             log.addError("commands.fill.outOfWorld").output();
             return 0;
         }
 
-        int size = NukkitMath.floorDouble((aabb.getMaxX() - aabb.getMinX() + 1) * (aabb.getMaxY() - aabb.getMinY() + 1) * (aabb.getMaxZ() - aabb.getMinZ() + 1));
+        int size = NukkitMath.floorDouble((aabb.getMaxX() - aabb.getMinX() + 1)
+                * (aabb.getMaxY() - aabb.getMinY() + 1)
+                * (aabb.getMaxZ() - aabb.getMinZ() + 1));
         if (size > 16 * 16 * 16 * 8) {
             log.addError("commands.fill.tooManyBlocks", String.valueOf(size), String.valueOf(16 * 16 * 16 * 8));
             log.addError("Operation will continue, but too many blocks may cause stuttering");
@@ -74,8 +83,12 @@ public class FillCommand extends VanillaCommand {
 
         Level level = from.getLevel();
 
-        for (int chunkX = NukkitMath.floorDouble(aabb.getMinX()) >> 4; chunkX <= NukkitMath.floorDouble(aabb.getMaxX()) >> 4; chunkX++) {
-            for (int chunkZ = NukkitMath.floorDouble(aabb.getMinZ()) >> 4; chunkZ <= NukkitMath.floorDouble(aabb.getMaxZ()) >> 4; chunkZ++) {
+        for (int chunkX = NukkitMath.floorDouble(aabb.getMinX()) >> 4;
+                chunkX <= NukkitMath.floorDouble(aabb.getMaxX()) >> 4;
+                chunkX++) {
+            for (int chunkZ = NukkitMath.floorDouble(aabb.getMinZ()) >> 4;
+                    chunkZ <= NukkitMath.floorDouble(aabb.getMaxZ()) >> 4;
+                    chunkZ++) {
                 if (level.getChunkIfLoaded(chunkX, chunkZ) == null) {
                     log.addError("commands.fill.failed").output();
                     return 0;
@@ -94,15 +107,24 @@ public class FillCommand extends VanillaCommand {
                 }
                 switch (oldBlockHandling) {
                     case OUTLINE -> {
-                        for (int x = NukkitMath.floorDouble(aabb.getMinX()); x <= NukkitMath.floorDouble(aabb.getMaxX()); x++) {
-                            for (int z = NukkitMath.floorDouble(aabb.getMinZ()); z <= NukkitMath.floorDouble(aabb.getMaxZ()); z++) {
-                                for (int y = NukkitMath.floorDouble(aabb.getMinY()); y <= NukkitMath.floorDouble(aabb.getMaxY()); y++) {
+                        for (int x = NukkitMath.floorDouble(aabb.getMinX());
+                                x <= NukkitMath.floorDouble(aabb.getMaxX());
+                                x++) {
+                            for (int z = NukkitMath.floorDouble(aabb.getMinZ());
+                                    z <= NukkitMath.floorDouble(aabb.getMaxZ());
+                                    z++) {
+                                for (int y = NukkitMath.floorDouble(aabb.getMinY());
+                                        y <= NukkitMath.floorDouble(aabb.getMaxY());
+                                        y++) {
 
-                                    boolean isBorderX = x == NukkitMath.floorDouble(from.x) || x == NukkitMath.floorDouble(to.x);
-                                    boolean isBorderZ = z == NukkitMath.floorDouble(from.z) || z == NukkitMath.floorDouble(to.z);
-                                    boolean isBorderY = y == NukkitMath.floorDouble(from.y) || y == NukkitMath.floorDouble(to.y);
+                                    boolean isBorderX =
+                                            x == NukkitMath.floorDouble(from.x) || x == NukkitMath.floorDouble(to.x);
+                                    boolean isBorderZ =
+                                            z == NukkitMath.floorDouble(from.z) || z == NukkitMath.floorDouble(to.z);
+                                    boolean isBorderY =
+                                            y == NukkitMath.floorDouble(from.y) || y == NukkitMath.floorDouble(to.y);
 
-                                    if (isBorderX|| isBorderZ || isBorderY) {
+                                    if (isBorderX || isBorderZ || isBorderY) {
                                         level.setBlock(x, y, z, Block.get(tileId, tileData), false, true);
                                         ++count;
                                     }
@@ -111,13 +133,22 @@ public class FillCommand extends VanillaCommand {
                         }
                     }
                     case HOLLOW -> {
-                        for (int x = NukkitMath.floorDouble(aabb.getMinX()); x <= NukkitMath.floorDouble(aabb.getMaxX()); x++) {
-                            for (int z = NukkitMath.floorDouble(aabb.getMinZ()); z <= NukkitMath.floorDouble(aabb.getMaxZ()); z++) {
-                                for (int y = NukkitMath.floorDouble(aabb.getMinY()); y <= NukkitMath.floorDouble(aabb.getMaxY()); y++) {
+                        for (int x = NukkitMath.floorDouble(aabb.getMinX());
+                                x <= NukkitMath.floorDouble(aabb.getMaxX());
+                                x++) {
+                            for (int z = NukkitMath.floorDouble(aabb.getMinZ());
+                                    z <= NukkitMath.floorDouble(aabb.getMaxZ());
+                                    z++) {
+                                for (int y = NukkitMath.floorDouble(aabb.getMinY());
+                                        y <= NukkitMath.floorDouble(aabb.getMaxY());
+                                        y++) {
                                     Block block;
-                                    boolean isBorderX = x == NukkitMath.floorDouble(from.x) || x == NukkitMath.floorDouble(to.x);
-                                    boolean isBorderZ = z == NukkitMath.floorDouble(from.z) || z == NukkitMath.floorDouble(to.z);
-                                    boolean isBorderY = y == NukkitMath.floorDouble(from.y) || y == NukkitMath.floorDouble(to.y);
+                                    boolean isBorderX =
+                                            x == NukkitMath.floorDouble(from.x) || x == NukkitMath.floorDouble(to.x);
+                                    boolean isBorderZ =
+                                            z == NukkitMath.floorDouble(from.z) || z == NukkitMath.floorDouble(to.z);
+                                    boolean isBorderY =
+                                            y == NukkitMath.floorDouble(from.y) || y == NukkitMath.floorDouble(to.y);
 
                                     if (isBorderX || isBorderZ || isBorderY) {
                                         block = Block.get(tileId, tileData);

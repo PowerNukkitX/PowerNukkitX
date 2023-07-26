@@ -6,24 +6,23 @@ import cn.nukkit.api.PowerNukkitOnly;
 public class BlockBlueIce extends BlockIcePacked {
 
     @PowerNukkitOnly
-    public BlockBlueIce() {
-    }
-    
+    public BlockBlueIce() {}
+
     @Override
     public int getId() {
         return BLUE_ICE;
     }
-    
+
     @Override
     public String getName() {
         return "Blue Ice";
     }
-    
+
     @Override
     public double getFrictionFactor() {
         return 0.989;
     }
-    
+
     @Override
     public double getHardness() {
         return 2.8;

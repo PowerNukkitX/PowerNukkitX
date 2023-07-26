@@ -26,8 +26,12 @@ public class WolfAttackExecutor extends MeleeAttackExecutor {
      * @param clearDataWhenLose 失去目标时清空记忆
      * @param coolDown          攻击冷却时间(单位tick)
      */
-
-    public WolfAttackExecutor(MemoryType<? extends Entity> memory, float speed, int maxSenseRange, boolean clearDataWhenLose, int coolDown) {
+    public WolfAttackExecutor(
+            MemoryType<? extends Entity> memory,
+            float speed,
+            int maxSenseRange,
+            boolean clearDataWhenLose,
+            int coolDown) {
         super(memory, speed, maxSenseRange, clearDataWhenLose, coolDown);
     }
 
@@ -35,8 +39,8 @@ public class WolfAttackExecutor extends MeleeAttackExecutor {
     public boolean execute(EntityIntelligent entity) {
         var wolf = (EntityWolf) entity;
 
-//        target = entity.getBehaviorGroup().getMemoryStorage().get(memory);
-//        if ((target != null && !target.isAlive()) || (target != null && target.equals(entity))) return false;
+        //        target = entity.getBehaviorGroup().getMemoryStorage().get(memory);
+        //        if ((target != null && !target.isAlive()) || (target != null && target.equals(entity))) return false;
 
         wolf.setAngry(true);
 

@@ -40,11 +40,10 @@ public class ModalFormResponseProcessor extends DataPacketProcessor<ModalFormRes
             PlayerSettingsRespondedEvent event = new PlayerSettingsRespondedEvent(player, pk.formId, window);
             player.getServer().getPluginManager().callEvent(event);
 
-            //Set back new settings if not been cancelled
+            // Set back new settings if not been cancelled
             if (!event.isCancelled() && window instanceof FormWindowCustom formWindowCustom)
                 formWindowCustom.setElementsFromResponse();
         }
-
     }
 
     @Override

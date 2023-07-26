@@ -25,7 +25,8 @@ public class PlayerActionPacket extends DataPacket {
     public static final int ACTION_START_SNEAK = 11;
     public static final int ACTION_STOP_SNEAK = 12;
     public static final int ACTION_CREATIVE_PLAYER_DESTROY_BLOCK = 13;
-    public static final int ACTION_DIMENSION_CHANGE_ACK = 14; //sent when spawning in a different dimension to tell the server we spawned
+    public static final int ACTION_DIMENSION_CHANGE_ACK =
+            14; // sent when spawning in a different dimension to tell the server we spawned
     public static final int ACTION_START_GLIDE = 15;
     public static final int ACTION_STOP_GLIDE = 16;
     public static final int ACTION_BUILD_DENIED = 17;
@@ -75,5 +76,4 @@ public class PlayerActionPacket extends DataPacket {
     public byte pid() {
         return NETWORK_ID;
     }
-
 }

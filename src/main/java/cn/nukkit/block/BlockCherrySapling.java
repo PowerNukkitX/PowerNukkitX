@@ -15,9 +15,8 @@ import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.concurrent.ThreadLocalRandom;
+import org.jetbrains.annotations.NotNull;
 
 @Since("1.20.0-r2")
 @PowerNukkitXOnly
@@ -42,8 +41,7 @@ public class BlockCherrySapling extends BlockFlowable implements BlockFlowerPot.
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -68,7 +66,7 @@ public class BlockCherrySapling extends BlockFlowable implements BlockFlowerPot.
                 this.getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
-        } else if (type == Level.BLOCK_UPDATE_RANDOM) { //Growth
+        } else if (type == Level.BLOCK_UPDATE_RANDOM) { // Growth
             if (getLevel().getFullLight(add(0, 1, 0)) >= BlockCrops.MINIMUM_LIGHT_LEVEL) {
                 if (isAged()) {
                     this.grow();
@@ -104,7 +102,15 @@ public class BlockCherrySapling extends BlockFlowable implements BlockFlowerPot.
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         if (isSupportInvalid()) {
             return false;
         }
@@ -116,7 +122,6 @@ public class BlockCherrySapling extends BlockFlowable implements BlockFlowerPot.
         this.level.setBlock(this, this, true, true);
         return true;
     }
-
 
     @Override
     public boolean canBeActivated() {

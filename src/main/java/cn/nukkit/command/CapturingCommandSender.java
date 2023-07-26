@@ -9,11 +9,10 @@ import cn.nukkit.level.GameRule;
 import cn.nukkit.permission.*;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.utils.TextFormat;
-import lombok.AllArgsConstructor;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Map;
 import java.util.function.Function;
+import lombok.AllArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @since 1.2.1.0-PN
@@ -23,13 +22,11 @@ import java.util.function.Function;
 public class CapturingCommandSender implements CommandSender {
     private final StringBuilder captured = new StringBuilder();
 
-    @NotNull
-    private String name;
+    @NotNull private String name;
 
     private boolean isOp;
 
-    @NotNull
-    private final Permissible perms;
+    @NotNull private final Permissible perms;
 
     @PowerNukkitOnly
     public CapturingCommandSender() {
@@ -50,14 +47,14 @@ public class CapturingCommandSender implements CommandSender {
     }
 
     @PowerNukkitOnly
-    public CapturingCommandSender(@NotNull String name, boolean isOp, @NotNull Function<ServerOperator, Permissible> permissibleFactory) {
+    public CapturingCommandSender(
+            @NotNull String name, boolean isOp, @NotNull Function<ServerOperator, Permissible> permissibleFactory) {
         this.name = name;
         this.isOp = isOp;
         this.perms = permissibleFactory.apply(this);
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getName() {
         return name;
     }
@@ -94,9 +91,7 @@ public class CapturingCommandSender implements CommandSender {
 
     @Override
     public String toString() {
-        return "CapturingCommandSender{" +
-                "name='" + name + '\'' +
-                '}';
+        return "CapturingCommandSender{" + "name='" + name + '\'' + '}';
     }
 
     @Override
@@ -112,8 +107,12 @@ public class CapturingCommandSender implements CommandSender {
     @Since("1.19.60-r1")
     @Override
     public void sendCommandOutput(CommandOutputContainer container) {
-        if (!container.getMessages().isEmpty() && this.getLocation().getLevel().getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK)) {
-            sendMessage(container.getMessages().get(container.getMessages().size() - 1).getMessageId());
+        if (!container.getMessages().isEmpty()
+                && this.getLocation().getLevel().getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK)) {
+            sendMessage(container
+                    .getMessages()
+                    .get(container.getMessages().size() - 1)
+                    .getMessageId());
         }
     }
 

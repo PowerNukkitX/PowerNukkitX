@@ -12,7 +12,7 @@ public abstract class BlockSolidMeta extends BlockMeta {
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public BlockSolidMeta(){}
+    public BlockSolidMeta() {}
 
     @Override
     public boolean isSolid() {
@@ -25,5 +25,4 @@ public abstract class BlockSolidMeta extends BlockMeta {
     public boolean isSolid(BlockFace side) {
         return true;
     }
-
 }

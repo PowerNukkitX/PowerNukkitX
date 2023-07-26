@@ -21,7 +21,6 @@ import cn.nukkit.math.MathHelper;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
 import com.google.common.collect.ImmutableList;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -147,7 +146,7 @@ public class Normal extends Generator {
     }
 
     public Normal(Map<String, Object> options) {
-        //Nothing here. Just used for future update.
+        // Nothing here. Just used for future update.
     }
 
     @Override
@@ -197,31 +196,30 @@ public class Normal extends Generator {
         this.scaleNoise = new NoiseGeneratorOctavesF(random, 10);
         this.depthNoise = new NoiseGeneratorOctavesF(random, 16);
 
-        //this should run before all other populators so that we don't do things like generate ground cover on bedrock or something
-        this.generationPopulators = ImmutableList.of(
-                new PopulatorBedrock(),
-                new PopulatorGroundCover()
-        );
+        // this should run before all other populators so that we don't do things like generate ground cover on bedrock
+        // or something
+        this.generationPopulators = ImmutableList.of(new PopulatorBedrock(), new PopulatorGroundCover());
 
         this.populators = ImmutableList.of(
-                new PopulatorOre(STONE, new OreType[]{
-                        new OreType(Block.get(BlockID.COAL_ORE), 20, 17, 0, 128),
-                        new OreType(Block.get(BlockID.IRON_ORE), 20, 9, 0, 64),
-                        new OreType(Block.get(BlockID.REDSTONE_ORE), 8, 8, 0, 16),
-                        new OreType(Block.get(BlockID.LAPIS_ORE), 1, 7, 0, 16),
-                        new OreType(Block.get(BlockID.GOLD_ORE), 2, 9, 0, 32),
-                        new OreType(Block.get(BlockID.DIAMOND_ORE), 1, 8, 0, 16),
-                        new OreType(Block.get(BlockID.DIRT), 10, 33, 0, 128),
-                        new OreType(Block.get(BlockID.GRAVEL), 8, 33, 0, 128),
-                        new OreType(Block.get(BlockID.STONE, BlockStone.GRANITE), 10, 33, 0, 80),
-                        new OreType(Block.get(BlockID.STONE, BlockStone.DIORITE), 10, 33, 0, 80),
-                        new OreType(Block.get(BlockID.STONE, BlockStone.ANDESITE), 10, 33, 0, 80)
+                new PopulatorOre(STONE, new OreType[] {
+                    new OreType(Block.get(BlockID.COAL_ORE), 20, 17, 0, 128),
+                    new OreType(Block.get(BlockID.IRON_ORE), 20, 9, 0, 64),
+                    new OreType(Block.get(BlockID.REDSTONE_ORE), 8, 8, 0, 16),
+                    new OreType(Block.get(BlockID.LAPIS_ORE), 1, 7, 0, 16),
+                    new OreType(Block.get(BlockID.GOLD_ORE), 2, 9, 0, 32),
+                    new OreType(Block.get(BlockID.DIAMOND_ORE), 1, 8, 0, 16),
+                    new OreType(Block.get(BlockID.DIRT), 10, 33, 0, 128),
+                    new OreType(Block.get(BlockID.GRAVEL), 8, 33, 0, 128),
+                    new OreType(Block.get(BlockID.STONE, BlockStone.GRANITE), 10, 33, 0, 80),
+                    new OreType(Block.get(BlockID.STONE, BlockStone.DIORITE), 10, 33, 0, 80),
+                    new OreType(Block.get(BlockID.STONE, BlockStone.ANDESITE), 10, 33, 0, 80)
                 }),
                 new PopulatorCaves(),
-                //new PopulatorRavines()
-                new PopulatorSpring(BlockState.of(BlockID.WATER), ImmutableList.of(BlockState.of(BlockID.STONE)), 50, 8, 255),
-                new PopulatorSpring(BlockState.of(BlockID.LAVA), ImmutableList.of(BlockState.of(BlockID.STONE)), 20, 16, 255)
-        );
+                // new PopulatorRavines()
+                new PopulatorSpring(
+                        BlockState.of(BlockID.WATER), ImmutableList.of(BlockState.of(BlockID.STONE)), 50, 8, 255),
+                new PopulatorSpring(
+                        BlockState.of(BlockID.LAVA), ImmutableList.of(BlockState.of(BlockID.STONE)), 20, 16, 255));
     }
 
     @Override
@@ -232,18 +230,31 @@ public class Normal extends Generator {
 
         BaseFullChunk chunk = this.level.getChunk(chunkX, chunkZ);
 
-        //generate base noise values
-        float[] depthRegion = this.depthNoise.generateNoiseOctaves(this.depthRegion.get(), chunkX * 4, chunkZ * 4, 5, 5, 200f, 200f, 0.5f);
+        // generate base noise values
+        float[] depthRegion = this.depthNoise.generateNoiseOctaves(
+                this.depthRegion.get(), chunkX * 4, chunkZ * 4, 5, 5, 200f, 200f, 0.5f);
         this.depthRegion.set(depthRegion);
-        float[] mainNoiseRegion = this.mainPerlinNoise.generateNoiseOctaves(this.mainNoiseRegion.get(), chunkX * 4, 0, chunkZ * 4, 5, 33, 5, 684.412f / 60f, 684.412f / 160f, 684.412f / 60f);
+        float[] mainNoiseRegion = this.mainPerlinNoise.generateNoiseOctaves(
+                this.mainNoiseRegion.get(),
+                chunkX * 4,
+                0,
+                chunkZ * 4,
+                5,
+                33,
+                5,
+                684.412f / 60f,
+                684.412f / 160f,
+                684.412f / 60f);
         this.mainNoiseRegion.set(mainNoiseRegion);
-        float[] minLimitRegion = this.minLimitPerlinNoise.generateNoiseOctaves(this.minLimitRegion.get(), chunkX * 4, 0, chunkZ * 4, 5, 33, 5, 684.412f, 684.412f, 684.412f);
+        float[] minLimitRegion = this.minLimitPerlinNoise.generateNoiseOctaves(
+                this.minLimitRegion.get(), chunkX * 4, 0, chunkZ * 4, 5, 33, 5, 684.412f, 684.412f, 684.412f);
         this.minLimitRegion.set(minLimitRegion);
-        float[] maxLimitRegion = this.maxLimitPerlinNoise.generateNoiseOctaves(this.maxLimitRegion.get(), chunkX * 4, 0, chunkZ * 4, 5, 33, 5, 684.412f, 684.412f, 684.412f);
+        float[] maxLimitRegion = this.maxLimitPerlinNoise.generateNoiseOctaves(
+                this.maxLimitRegion.get(), chunkX * 4, 0, chunkZ * 4, 5, 33, 5, 684.412f, 684.412f, 684.412f);
         this.maxLimitRegion.set(maxLimitRegion);
         float[] heightMap = this.heightMap.get();
 
-        //generate heightmap and smooth biome heights
+        // generate heightmap and smooth biome heights
         int horizCounter = 0;
         int vertCounter = 0;
         for (int xSeg = 0; xSeg < 5; ++xSeg) {
@@ -330,7 +341,7 @@ public class Normal extends Generator {
             }
         }
 
-        //place blocks
+        // place blocks
         for (int xSeg = 0; xSeg < 4; ++xSeg) {
             int xScale = xSeg * 5;
             int xScaleEnd = (xSeg + 1) * 5;
@@ -390,7 +401,7 @@ public class Normal extends Generator {
             }
         }
 
-        //populate chunk
+        // populate chunk
         for (Populator populator : this.generationPopulators) {
             populator.populate(this.level, chunkX, chunkZ, this.nukkitRandom, chunk);
         }

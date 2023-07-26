@@ -37,8 +37,7 @@ public enum StructureBlockType {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    public String getEnglishName() {
+    @NotNull public String getEnglishName() {
         return englishName;
     }
 

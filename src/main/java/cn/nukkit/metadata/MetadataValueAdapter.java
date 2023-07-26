@@ -74,5 +74,4 @@ public abstract class MetadataValueAdapter extends MetadataValue {
         }
         return value.toString();
     }
-
 }

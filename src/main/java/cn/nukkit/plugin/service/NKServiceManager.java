@@ -1,11 +1,9 @@
 package cn.nukkit.plugin.service;
 
-
 import cn.nukkit.Server;
 import cn.nukkit.plugin.Plugin;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-
 import java.util.*;
 
 /**
@@ -33,7 +31,8 @@ public class NKServiceManager implements ServiceManager {
         synchronized (handle) {
             List<RegisteredServiceProvider<?>> list = handle.computeIfAbsent(service, k -> new ArrayList<>());
 
-            RegisteredServiceProvider<T> registered = new RegisteredServiceProvider<>(service, instance, priority, plugin);
+            RegisteredServiceProvider<T> registered =
+                    new RegisteredServiceProvider<>(service, instance, priority, plugin);
 
             int position = Collections.binarySearch(list, registered);
 
@@ -63,7 +62,6 @@ public class NKServiceManager implements ServiceManager {
                         builder.add(registered);
                     }
                 }
-
             }
         }
 
@@ -85,7 +83,6 @@ public class NKServiceManager implements ServiceManager {
                     result = next;
                 }
             }
-
         }
 
         return result;
@@ -130,7 +127,7 @@ public class NKServiceManager implements ServiceManager {
                 return empty;
             }
             for (RegisteredServiceProvider<?> provider : registered) {
-                builder.add((RegisteredServiceProvider<T>)provider);
+                builder.add((RegisteredServiceProvider<T>) provider);
             }
         }
         return builder.build();

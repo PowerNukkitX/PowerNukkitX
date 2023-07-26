@@ -9,9 +9,8 @@ import cn.nukkit.blockproperty.BooleanBlockProperty;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -34,7 +33,7 @@ public abstract class BlockSlab extends BlockTransparentMeta {
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public BlockSlab(int doubleSlab){
+    public BlockSlab(int doubleSlab) {
         this.doubleSlab = doubleSlab;
     }
 
@@ -44,7 +43,7 @@ public abstract class BlockSlab extends BlockTransparentMeta {
 
     @Override
     public String getName() {
-        return (isOnTop()? "Upper " : "") + getSlabName() + " Slab";
+        return (isOnTop() ? "Upper " : "") + getSlabName() + " Slab";
     }
 
     @Override
@@ -72,7 +71,7 @@ public abstract class BlockSlab extends BlockTransparentMeta {
     public int getWaterloggingLevel() {
         return 1;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean isOnTop() {
@@ -97,35 +96,63 @@ public abstract class BlockSlab extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
         setOnTop(false);
         if (face == BlockFace.DOWN) {
-            if (target instanceof BlockSlab && target.getBooleanValue(TOP_SLOT_PROPERTY) && isSameType((BlockSlab) target)) {
-                this.getLevel().setBlock(target, getCurrentState().withBlockId(doubleSlab).getBlock(target), true);
+            if (target instanceof BlockSlab
+                    && target.getBooleanValue(TOP_SLOT_PROPERTY)
+                    && isSameType((BlockSlab) target)) {
+                this.getLevel()
+                        .setBlock(
+                                target,
+                                getCurrentState().withBlockId(doubleSlab).getBlock(target),
+                                true);
 
                 return true;
             } else if (block instanceof BlockSlab && isSameType((BlockSlab) block)) {
-                this.getLevel().setBlock(block, getCurrentState().withBlockId(doubleSlab).getBlock(target), true);
+                this.getLevel()
+                        .setBlock(
+                                block, getCurrentState().withBlockId(doubleSlab).getBlock(target), true);
 
                 return true;
             } else {
                 setOnTop(true);
             }
         } else if (face == BlockFace.UP) {
-            if (target instanceof BlockSlab && !target.getBooleanValue(TOP_SLOT_PROPERTY) && isSameType((BlockSlab) target)) {
-                this.getLevel().setBlock(target, getCurrentState().withBlockId(doubleSlab).getBlock(target), true);
+            if (target instanceof BlockSlab
+                    && !target.getBooleanValue(TOP_SLOT_PROPERTY)
+                    && isSameType((BlockSlab) target)) {
+                this.getLevel()
+                        .setBlock(
+                                target,
+                                getCurrentState().withBlockId(doubleSlab).getBlock(target),
+                                true);
 
                 return true;
             } else if (block instanceof BlockSlab && isSameType((BlockSlab) block)) {
-                this.getLevel().setBlock(block, getCurrentState().withBlockId(doubleSlab).getBlock(target), true);
+                this.getLevel()
+                        .setBlock(
+                                block, getCurrentState().withBlockId(doubleSlab).getBlock(target), true);
 
                 return true;
             }
-            //TODO: check for collision
+            // TODO: check for collision
         } else {
             if (block instanceof BlockSlab) {
                 if (isSameType((BlockSlab) block)) {
-                    this.getLevel().setBlock(block, getCurrentState().withBlockId(doubleSlab).getBlock(block), true);
+                    this.getLevel()
+                            .setBlock(
+                                    block,
+                                    getCurrentState().withBlockId(doubleSlab).getBlock(block),
+                                    true);
 
                     return true;
                 }

@@ -10,8 +10,7 @@ import cn.nukkit.item.ItemBlock;
  */
 public class BlockBedrockInvisible extends BlockSolid {
 
-    public BlockBedrockInvisible() {
-    }
+    public BlockBedrockInvisible() {}
 
     @Override
     public int getId() {
@@ -56,7 +55,7 @@ public class BlockBedrockInvisible extends BlockSolid {
 
     @Override
     @PowerNukkitOnly
-    public  boolean canBePulled() {
+    public boolean canBePulled() {
         return false;
     }
 

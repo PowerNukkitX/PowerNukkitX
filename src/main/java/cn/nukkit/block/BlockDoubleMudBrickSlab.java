@@ -6,7 +6,7 @@ import cn.nukkit.api.Since;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class BlockDoubleMudBrickSlab extends BlockDoubleSlabBase{
+public class BlockDoubleMudBrickSlab extends BlockDoubleSlabBase {
     @Override
     public int getId() {
         return MUD_BRICK_DOUBLE_SLAB;

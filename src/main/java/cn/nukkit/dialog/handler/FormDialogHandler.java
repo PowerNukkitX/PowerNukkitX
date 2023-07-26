@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.dialog.response.FormResponseDialog;
-
 import java.util.function.Consumer;
 
 @PowerNukkitXOnly

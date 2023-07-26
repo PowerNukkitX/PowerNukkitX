@@ -22,12 +22,11 @@ import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.UpdateBlockPacket;
 import com.google.common.base.Preconditions;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author xtypr, joserobjr
@@ -38,9 +37,11 @@ public class BlockSnowLayer extends BlockFallableMeta {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final IntBlockProperty SNOW_HEIGHT = new IntBlockProperty("height", true, 7);
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BooleanBlockProperty COVERED = new BooleanBlockProperty("covered_bit", false);
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(SNOW_HEIGHT, COVERED);
@@ -65,8 +66,7 @@ public class BlockSnowLayer extends BlockFallableMeta {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -103,8 +103,7 @@ public class BlockSnowLayer extends BlockFallableMeta {
 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Renders a bounding box that the entities stands on top")
     @Override
-    @Nullable
-    protected AxisAlignedBB recalculateBoundingBox() {
+    @Nullable protected AxisAlignedBB recalculateBoundingBox() {
         int snowHeight = getSnowHeight();
         if (snowHeight < 3) {
             return null;
@@ -143,20 +142,30 @@ public class BlockSnowLayer extends BlockFallableMeta {
         return getSnowHeight() < SNOW_HEIGHT.getMaxValue();
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Will increase the layers and behave as expected in vanilla and will cover grass blocks")
+    @PowerNukkitDifference(
+            since = "1.4.0.0-PN",
+            info = "Will increase the layers and behave as expected in vanilla and will cover grass blocks")
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         Optional<BlockSnowLayer> increment = Stream.of(target, block)
-                .filter(b -> b.getId() == SNOW_LAYER).map(BlockSnowLayer.class::cast)
+                .filter(b -> b.getId() == SNOW_LAYER)
+                .map(BlockSnowLayer.class::cast)
                 .filter(b -> b.getSnowHeight() < SNOW_HEIGHT.getMaxValue())
                 .findFirst();
 
         if (increment.isPresent()) {
             BlockSnowLayer other = increment.get();
-            if (Arrays.stream(level.getCollidingEntities(new SimpleAxisAlignedBB(
-                    other.x, other.y, other.z,
-                    other.x + 1, other.y + 1, other.z + 1
-            ))).anyMatch(e -> e instanceof EntityLiving)) {
+            if (Arrays.stream(level.getCollidingEntities(
+                            new SimpleAxisAlignedBB(other.x, other.y, other.z, other.x + 1, other.y + 1, other.z + 1)))
+                    .anyMatch(e -> e instanceof EntityLiving)) {
                 return false;
             }
             other.setSnowHeight(other.getSnowHeight() + 1);
@@ -187,7 +196,9 @@ public class BlockSnowLayer extends BlockFallableMeta {
         return this.getLevel().setBlock(block, this, true);
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Will move the block in layer 1 to layer 0 when breaking in layer 0")
+    @PowerNukkitDifference(
+            since = "1.4.0.0-PN",
+            info = "Will move the block in layer 1 to layer 0 when breaking in layer 0")
     @Override
     public boolean onBreak(Item item) {
         if (layer != 0) {
@@ -195,7 +206,6 @@ public class BlockSnowLayer extends BlockFallableMeta {
         }
         return this.getLevel().setBlock(this, 0, getLevelBlockAtLayer(1), true, true);
     }
-
 
     @Since("1.2.1.0-PN")
     @PowerNukkitOnly
@@ -215,20 +225,29 @@ public class BlockSnowLayer extends BlockFallableMeta {
         level.setBlock(this, 0, layer1, true, false);
         level.setBlock(this, 1, get(AIR), true, false);
         level.setBlock(this, 0, newBlock, true, false);
-        Server.getInstance().getScheduler().scheduleDelayedTask(() -> {
-            Player[] target = level.getChunkPlayers(getChunkX(), getChunkZ()).values().toArray(Player.EMPTY_ARRAY);
-            Vector3[] blocks = {getLocation()};
-            level.sendBlocks(target, blocks, UpdateBlockPacket.FLAG_ALL_PRIORITY, 0, false);
-            level.sendBlocks(target, blocks, UpdateBlockPacket.FLAG_ALL_PRIORITY, 1, false);
-        }, 10);
+        Server.getInstance()
+                .getScheduler()
+                .scheduleDelayedTask(
+                        () -> {
+                            Player[] target = level.getChunkPlayers(getChunkX(), getChunkZ())
+                                    .values()
+                                    .toArray(Player.EMPTY_ARRAY);
+                            Vector3[] blocks = {getLocation()};
+                            level.sendBlocks(target, blocks, UpdateBlockPacket.FLAG_ALL_PRIORITY, 0, false);
+                            level.sendBlocks(target, blocks, UpdateBlockPacket.FLAG_ALL_PRIORITY, 1, false);
+                        },
+                        10);
 
-        Player[] target = level.getChunkPlayers(getChunkX(), getChunkZ()).values().toArray(Player.EMPTY_ARRAY);
+        Player[] target =
+                level.getChunkPlayers(getChunkX(), getChunkZ()).values().toArray(Player.EMPTY_ARRAY);
         Vector3[] blocks = {getLocation()};
         level.sendBlocks(target, blocks, UpdateBlockPacket.FLAG_ALL_PRIORITY, 0, false);
         level.sendBlocks(target, blocks, UpdateBlockPacket.FLAG_ALL_PRIORITY, 1, false);
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Will melt on dry biomes and will melt gradually and will cover grass blocks")
+    @PowerNukkitDifference(
+            since = "1.4.0.0-PN",
+            info = "Will melt on dry biomes and will melt gradually and will cover grass blocks")
     @Override
     public int onUpdate(int type) {
         super.onUpdate(type);
@@ -270,7 +289,9 @@ public class BlockSnowLayer extends BlockFallableMeta {
         }
 
         int snowHeight = toMelt.getIntValue(SNOW_HEIGHT) - layers;
-        Block newState = snowHeight < 0 ? get(AIR) : getCurrentState().withProperty(SNOW_HEIGHT, snowHeight).getBlock(toMelt);
+        Block newState = snowHeight < 0
+                ? get(AIR)
+                : getCurrentState().withProperty(SNOW_HEIGHT, snowHeight).getBlock(toMelt);
         BlockFadeEvent event = new BlockFadeEvent(toMelt, newState);
         level.getServer().getPluginManager().callEvent(event);
         if (event.isCancelled()) {
@@ -312,7 +333,7 @@ public class BlockSnowLayer extends BlockFallableMeta {
             case 7:
                 amount = 4;
         }
-        return new Item[]{Item.get(ItemID.SNOWBALL, 0, amount)};
+        return new Item[] {Item.get(ItemID.SNOWBALL, 0, amount)};
     }
 
     @Override

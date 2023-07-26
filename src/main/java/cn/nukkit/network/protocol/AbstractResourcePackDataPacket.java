@@ -2,10 +2,9 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import java.util.UUID;
 import lombok.NoArgsConstructor;
 import org.powernukkit.version.Version;
-
-import java.util.UUID;
 
 @PowerNukkitOnly
 @Since("1.5.2.0-PN")
@@ -37,7 +36,7 @@ public abstract class AbstractResourcePackDataPacket extends DataPacket {
         } catch (IllegalArgumentException exception) {
             setPackId(null);
         }
-        setPackVersion((packInfoParts.length > 1)? new Version(packInfoParts[1]) : null);
+        setPackVersion((packInfoParts.length > 1) ? new Version(packInfoParts[1]) : null);
     }
 
     @PowerNukkitOnly

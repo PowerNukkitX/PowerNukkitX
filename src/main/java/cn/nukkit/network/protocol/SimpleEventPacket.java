@@ -13,9 +13,7 @@ public class SimpleEventPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-
-    }
+    public void decode() {}
 
     @Override
     public void encode() {

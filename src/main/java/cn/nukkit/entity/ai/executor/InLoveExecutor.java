@@ -21,14 +21,16 @@ public class InLoveExecutor implements IBehaviorExecutor {
     @Override
     public boolean execute(EntityIntelligent entity) {
         if (currentTick == 0) {
-//            var memory = entity.getMemoryStorage().get(InLoveMemory.class);
-//            memory.setData(Server.getInstance().getTick());
-//            memory.setInLove(true);
-            entity.getMemoryStorage().put(CoreMemoryTypes.LAST_IN_LOVE_TIME, Server.getInstance().getTick());
+            //            var memory = entity.getMemoryStorage().get(InLoveMemory.class);
+            //            memory.setData(Server.getInstance().getTick());
+            //            memory.setInLove(true);
+            entity.getMemoryStorage()
+                    .put(CoreMemoryTypes.LAST_IN_LOVE_TIME, Server.getInstance().getTick());
             entity.getMemoryStorage().put(CoreMemoryTypes.IS_IN_LOVE, true);
         }
         currentTick++;
-        if (currentTick > duration || !entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)/*interrupt by other*/) {
+        if (currentTick > duration
+                || !entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE) /*interrupt by other*/) {
             currentTick = 0;
             entity.getMemoryStorage().put(CoreMemoryTypes.IS_IN_LOVE, false);
             return false;

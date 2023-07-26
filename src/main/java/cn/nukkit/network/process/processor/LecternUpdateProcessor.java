@@ -23,9 +23,11 @@ public class LecternUpdateProcessor extends DataPacketProcessor<LecternUpdatePac
                 ((BlockLectern) blockLectern).dropBook(playerHandle.player);
             }
         } else {
-            BlockEntity blockEntityLectern = playerHandle.player.level.getBlockEntity(playerHandle.player.temporalVector);
+            BlockEntity blockEntityLectern =
+                    playerHandle.player.level.getBlockEntity(playerHandle.player.temporalVector);
             if (blockEntityLectern instanceof BlockEntityLectern lectern) {
-                LecternPageChangeEvent lecternPageChangeEvent = new LecternPageChangeEvent(playerHandle.player, lectern, pk.page);
+                LecternPageChangeEvent lecternPageChangeEvent =
+                        new LecternPageChangeEvent(playerHandle.player, lectern, pk.page);
                 playerHandle.player.getServer().getPluginManager().callEvent(lecternPageChangeEvent);
                 if (!lecternPageChangeEvent.isCancelled()) {
                     lectern.setRawPage(lecternPageChangeEvent.getNewRawPage());

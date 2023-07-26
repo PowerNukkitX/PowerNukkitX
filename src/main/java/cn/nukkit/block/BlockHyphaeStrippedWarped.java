@@ -23,7 +23,7 @@ public class BlockHyphaeStrippedWarped extends BlockStemStripped {
     public int getId() {
         return STRIPPED_WARPED_HYPHAE;
     }
-    
+
     @Override
     public String getName() {
         return "Warped Stripped Hyphae";
@@ -33,5 +33,4 @@ public class BlockHyphaeStrippedWarped extends BlockStemStripped {
     public double getHardness() {
         return 0.4;
     }
-
 }

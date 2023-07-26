@@ -10,8 +10,7 @@ import cn.nukkit.item.ItemMangroveSign;
 @Since("1.6.0.0-PNX")
 public class BlockMangroveSignPost extends BlockSignPost {
     @PowerNukkitOnly
-    public BlockMangroveSignPost() {
-    }
+    public BlockMangroveSignPost() {}
 
     @PowerNukkitOnly
     public BlockMangroveSignPost(int meta) {

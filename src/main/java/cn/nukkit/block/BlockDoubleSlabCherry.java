@@ -33,8 +33,7 @@ public class BlockDoubleSlabCherry extends BlockDoubleSlabBase {
         return DOUBLE_CHERRY_SLAB;
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return BlockSlab.SIMPLE_SLAB_PROPERTIES;
     }

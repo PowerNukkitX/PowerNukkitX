@@ -7,7 +7,10 @@ import cn.nukkit.api.PowerNukkitDifference;
  * @author MagicDroidX (Nukkit Project)
  */
 @Deprecated
-@DeprecationDetails(reason = "Unused and the same as BlockDoubleSlabStone", since = "1.4.0.0-PN", replaceWith = "BlockDoubleSlabBase")
+@DeprecationDetails(
+        reason = "Unused and the same as BlockDoubleSlabStone",
+        since = "1.4.0.0-PN",
+        replaceWith = "BlockDoubleSlabBase")
 @PowerNukkitDifference(info = "Overrides BlockDoubleSlabStone only in PowerNukkit", since = "1.4.0.0-PN")
 public class BlockDoubleSlab extends BlockDoubleSlabStone {
     public static final int STONE = 0;

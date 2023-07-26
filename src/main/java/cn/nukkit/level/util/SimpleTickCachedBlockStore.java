@@ -4,7 +4,6 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.level.Level;
-
 import java.util.concurrent.ConcurrentHashMap;
 
 @PowerNukkitXOnly
@@ -35,6 +34,7 @@ public final class SimpleTickCachedBlockStore implements TickCachedBlockStore {
 
     @Override
     public Block computeFromCachedStore(int x, int y, int z, int layer, CachedBlockComputer cachedBlockComputer) {
-        return tickCachedBlockStore.computeIfAbsent(Level.localBlockHash(x, y, z, layer, level), ignore -> cachedBlockComputer.compute());
+        return tickCachedBlockStore.computeIfAbsent(
+                Level.localBlockHash(x, y, z, layer, level), ignore -> cachedBlockComputer.compute());
     }
 }

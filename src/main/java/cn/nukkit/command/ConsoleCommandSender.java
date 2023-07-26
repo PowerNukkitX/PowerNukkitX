@@ -12,10 +12,9 @@ import cn.nukkit.permission.Permission;
 import cn.nukkit.permission.PermissionAttachment;
 import cn.nukkit.permission.PermissionAttachmentInfo;
 import cn.nukkit.plugin.Plugin;
+import java.util.Map;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Map;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -106,7 +105,9 @@ public class ConsoleCommandSender implements CommandSender {
     public void sendCommandOutput(CommandOutputContainer container) {
         if (this.getLocation().getLevel().getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK)) {
             for (var msg : container.getMessages()) {
-                var text = this.getServer().getLanguage().tr(new TranslationContainer(msg.getMessageId(), msg.getParameters()));
+                var text = this.getServer()
+                        .getLanguage()
+                        .tr(new TranslationContainer(msg.getMessageId(), msg.getParameters()));
                 ConsoleCommandOutputEvent event = new ConsoleCommandOutputEvent(this, text);
                 this.getServer().getPluginManager().callEvent(event);
                 if (event.isCancelled()) continue;
@@ -116,8 +117,7 @@ public class ConsoleCommandSender implements CommandSender {
         }
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getName() {
         return "CONSOLE";
     }
@@ -128,7 +128,5 @@ public class ConsoleCommandSender implements CommandSender {
     }
 
     @Override
-    public void setOp(boolean value) {
-
-    }
+    public void setOp(boolean value) {}
 }

@@ -32,16 +32,14 @@ public class BlockBlastFurnaceBurning extends BlockFurnaceBurning {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getBlockEntityType() {
         return BlockEntity.BLAST_FURNACE;
     }
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public Class<? extends BlockEntityBlastFurnace> getBlockEntityClass() {
         return BlockEntityBlastFurnace.class;
     }

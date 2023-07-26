@@ -6,7 +6,6 @@ import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Map;
@@ -20,19 +19,21 @@ public class PardonIpCommand extends VanillaCommand {
     public PardonIpCommand(String name) {
         super(name, "unban an IP");
         this.setPermission("nukkit.command.unban.ip");
-        this.setAliases(new String[]{"unbanip", "unban-ip", "pardonip"});
+        this.setAliases(new String[] {"unbanip", "unban-ip", "pardonip"});
         this.commandParameters.clear();
-        this.commandParameters.put("default", new CommandParameter[]{
-                CommandParameter.newType("ip", CommandParamType.STRING)
-        });
+        this.commandParameters.put(
+                "default", new CommandParameter[] {CommandParameter.newType("ip", CommandParamType.STRING)});
         this.enableParamTree();
     }
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         String value = result.getValue().getResult(0);
-        if (Pattern.matches("^(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9])\\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[0-9])$", value)) {
+        if (Pattern.matches(
+                "^(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9])\\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[0-9])$",
+                value)) {
             sender.getServer().getIPBans().remove(value);
             try {
                 sender.getServer().getNetwork().unblockAddress(InetAddress.getByName(value));

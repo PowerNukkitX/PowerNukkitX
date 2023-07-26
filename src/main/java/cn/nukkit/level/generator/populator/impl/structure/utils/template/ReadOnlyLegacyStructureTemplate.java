@@ -17,13 +17,13 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
-
 import java.util.Comparator;
 import java.util.function.Consumer;
 
 @PowerNukkitXOnly
 @Since("1.19.21-r2")
-public class ReadOnlyLegacyStructureTemplate extends AbstractLegacyStructureTemplate implements ReadableStructureTemplate {
+public class ReadOnlyLegacyStructureTemplate extends AbstractLegacyStructureTemplate
+        implements ReadableStructureTemplate {
 
     @Override
     public ReadableStructureTemplate load(CompoundTag root) {
@@ -71,7 +71,12 @@ public class ReadOnlyLegacyStructureTemplate extends AbstractLegacyStructureTemp
     }
 
     @Override
-    public boolean placeInChunk(FullChunk chunk, NukkitRandom random, BlockVector3 position, int integrity, Consumer<CompoundTag> blockActorProcessor) {
+    public boolean placeInChunk(
+            FullChunk chunk,
+            NukkitRandom random,
+            BlockVector3 position,
+            int integrity,
+            Consumer<CompoundTag> blockActorProcessor) {
         if (this.isInvalid() || this.size.getX() > 16 || this.size.getZ() > 16) {
             return false;
         }
@@ -79,7 +84,8 @@ public class ReadOnlyLegacyStructureTemplate extends AbstractLegacyStructureTemp
         for (StructureBlockInfo blockInfo : this.blockInfoList) {
             BlockEntry entry = blockInfo.state;
 
-            if (entry.getId() == Block.AIR || integrity <= random.nextBoundedInt(100) && entry.getId() != BlockID.STRUCTURE_BLOCK) {
+            if (entry.getId() == Block.AIR
+                    || integrity <= random.nextBoundedInt(100) && entry.getId() != BlockID.STRUCTURE_BLOCK) {
                 continue;
             }
 
@@ -88,8 +94,10 @@ public class ReadOnlyLegacyStructureTemplate extends AbstractLegacyStructureTemp
             if (entry.getId() != BlockID.STRUCTURE_BLOCK) {
                 int BlockIDLayer0 = chunk.getBlockId(vec.getX(), vec.getY(), vec.getZ(), 0);
                 int BlockIDLayer1 = chunk.getBlockId(vec.getX(), vec.getY(), vec.getZ(), 1);
-                boolean shouldFillWater = BlockIDLayer0 == BlockID.FLOWING_WATER || BlockIDLayer0 == BlockID.STILL_WATER ||
-                        BlockIDLayer1 == BlockID.FLOWING_WATER || BlockIDLayer1 == BlockID.STILL_WATER;
+                boolean shouldFillWater = BlockIDLayer0 == BlockID.FLOWING_WATER
+                        || BlockIDLayer0 == BlockID.STILL_WATER
+                        || BlockIDLayer1 == BlockID.FLOWING_WATER
+                        || BlockIDLayer1 == BlockID.STILL_WATER;
                 chunk.setBlockAtLayer(vec.getX(), vec.getY(), vec.getZ(), 0, entry.getId(), entry.getMeta());
                 if (shouldFillWater) chunk.setBlockAtLayer(vec.getX(), vec.getY(), vec.getZ(), 1, BlockID.STILL_WATER);
             }
@@ -103,7 +111,10 @@ public class ReadOnlyLegacyStructureTemplate extends AbstractLegacyStructureTemp
                 nbt.putInt("z", pos.getZ());
 
                 if (entry.getId() != BlockID.STRUCTURE_BLOCK) {
-                    Server.getInstance().getScheduler().scheduleTask(new BlockActorSpawnTask(chunk.getProvider().getLevel(), nbt));
+                    Server.getInstance()
+                            .getScheduler()
+                            .scheduleTask(
+                                    new BlockActorSpawnTask(chunk.getProvider().getLevel(), nbt));
                 }
 
                 if (blockActorProcessor != null) {
@@ -118,17 +129,25 @@ public class ReadOnlyLegacyStructureTemplate extends AbstractLegacyStructureTemp
     }
 
     @Override
-    public boolean placeInLevel(ChunkManager level, NukkitRandom random, BlockVector3 position, int integrity, Consumer<CompoundTag> blockActorProcessor) {
+    public boolean placeInLevel(
+            ChunkManager level,
+            NukkitRandom random,
+            BlockVector3 position,
+            int integrity,
+            Consumer<CompoundTag> blockActorProcessor) {
         if (this.isInvalid()) {
             return false;
         }
 
-        Level world = level.getChunk(position.getX() >> 4, position.getZ() >> 4).getProvider().getLevel();
+        Level world = level.getChunk(position.getX() >> 4, position.getZ() >> 4)
+                .getProvider()
+                .getLevel();
 
         for (StructureBlockInfo blockInfo : this.blockInfoList) {
             BlockEntry entry = blockInfo.state;
 
-            if (entry.getId() == Block.AIR || integrity <= random.nextBoundedInt(100) && entry.getId() != BlockID.STRUCTURE_BLOCK) {
+            if (entry.getId() == Block.AIR
+                    || integrity <= random.nextBoundedInt(100) && entry.getId() != BlockID.STRUCTURE_BLOCK) {
                 continue;
             }
 
@@ -137,8 +156,10 @@ public class ReadOnlyLegacyStructureTemplate extends AbstractLegacyStructureTemp
             if (entry.getId() != BlockID.STRUCTURE_BLOCK) {
                 int BlockIDLayer0 = level.getBlockIdAt(vec.getX(), vec.getY(), vec.getZ(), 0);
                 int BlockIDLayer1 = level.getBlockIdAt(vec.getX(), vec.getY(), vec.getZ(), 1);
-                boolean shouldFillWater = BlockIDLayer0 == BlockID.FLOWING_WATER || BlockIDLayer0 == BlockID.STILL_WATER ||
-                        BlockIDLayer1 == BlockID.FLOWING_WATER || BlockIDLayer1 == BlockID.STILL_WATER;
+                boolean shouldFillWater = BlockIDLayer0 == BlockID.FLOWING_WATER
+                        || BlockIDLayer0 == BlockID.STILL_WATER
+                        || BlockIDLayer1 == BlockID.FLOWING_WATER
+                        || BlockIDLayer1 == BlockID.STILL_WATER;
                 level.setBlockAtLayer(vec.getX(), vec.getY(), vec.getZ(), 0, entry.getId(), entry.getMeta());
                 if (shouldFillWater) level.setBlockAtLayer(vec.getX(), vec.getY(), vec.getZ(), 1, BlockID.STILL_WATER);
             }
@@ -166,7 +187,8 @@ public class ReadOnlyLegacyStructureTemplate extends AbstractLegacyStructureTemp
     }
 
     @Override
-    public boolean placeInChunk(FullChunk chunk, NukkitRandom random, BlockVector3 position, StructurePlaceSettings settings) {
+    public boolean placeInChunk(
+            FullChunk chunk, NukkitRandom random, BlockVector3 position, StructurePlaceSettings settings) {
         if (this.isInvalid() || this.size.getX() > 16 || this.size.getZ() > 16) {
             return false;
         }
@@ -179,7 +201,10 @@ public class ReadOnlyLegacyStructureTemplate extends AbstractLegacyStructureTemp
         for (StructureBlockInfo blockInfo : this.blockInfoList) {
             BlockEntry entry = blockInfo.state;
 
-            if (entry.getId() == Block.AIR && isIgnoreAir || !isIntact && integrity <= random.nextBoundedInt(100) && entry.getId() != BlockID.STRUCTURE_BLOCK) {
+            if (entry.getId() == Block.AIR && isIgnoreAir
+                    || !isIntact
+                            && integrity <= random.nextBoundedInt(100)
+                            && entry.getId() != BlockID.STRUCTURE_BLOCK) {
                 continue;
             }
 
@@ -188,9 +213,12 @@ public class ReadOnlyLegacyStructureTemplate extends AbstractLegacyStructureTemp
             if (entry.getId() != BlockID.STRUCTURE_BLOCK) {
                 int BlockIDLayer0 = chunk.getBlockId(vec.getX() & 0xf, vec.getY(), vec.getZ() & 0xf, 0);
                 int BlockIDLayer1 = chunk.getBlockId(vec.getX() & 0xf, vec.getY(), vec.getZ() & 0xf, 1);
-                boolean shouldFillWater = BlockIDLayer0 == BlockID.FLOWING_WATER || BlockIDLayer0 == BlockID.STILL_WATER ||
-                        BlockIDLayer1 == BlockID.FLOWING_WATER || BlockIDLayer1 == BlockID.STILL_WATER;
-                chunk.setBlockAtLayer(vec.getX() & 0xf, vec.getY(), vec.getZ() & 0xf, 0, entry.getId(), entry.getMeta());
+                boolean shouldFillWater = BlockIDLayer0 == BlockID.FLOWING_WATER
+                        || BlockIDLayer0 == BlockID.STILL_WATER
+                        || BlockIDLayer1 == BlockID.FLOWING_WATER
+                        || BlockIDLayer1 == BlockID.STILL_WATER;
+                chunk.setBlockAtLayer(
+                        vec.getX() & 0xf, vec.getY(), vec.getZ() & 0xf, 0, entry.getId(), entry.getMeta());
                 if (shouldFillWater)
                     chunk.setBlockAtLayer(vec.getX() & 0xf, vec.getY(), vec.getZ() & 0xf, 1, BlockID.STILL_WATER);
             } else if (!isIgnoreAir) {
@@ -205,7 +233,10 @@ public class ReadOnlyLegacyStructureTemplate extends AbstractLegacyStructureTemp
                 nbt.putInt("z", vec.getZ());
 
                 if (entry.getId() != BlockID.STRUCTURE_BLOCK) {
-                    Server.getInstance().getScheduler().scheduleTask(new BlockActorSpawnTask(chunk.getProvider().getLevel(), nbt));
+                    Server.getInstance()
+                            .getScheduler()
+                            .scheduleTask(
+                                    new BlockActorSpawnTask(chunk.getProvider().getLevel(), nbt));
                 }
 
                 if (blockActorProcessor != null) {
@@ -222,7 +253,8 @@ public class ReadOnlyLegacyStructureTemplate extends AbstractLegacyStructureTemp
     }
 
     @Override
-    public boolean placeInLevel(ChunkManager level, NukkitRandom random, BlockVector3 position, StructurePlaceSettings settings) {
+    public boolean placeInLevel(
+            ChunkManager level, NukkitRandom random, BlockVector3 position, StructurePlaceSettings settings) {
         if (this.isInvalid()) {
             return false;
         }
@@ -231,12 +263,17 @@ public class ReadOnlyLegacyStructureTemplate extends AbstractLegacyStructureTemp
         int integrity = settings.getIntegrity();
         Consumer<CompoundTag> blockActorProcessor = settings.getBlockActorProcessor();
         boolean isIntact = integrity >= 100;
-        Level world = level.getChunk(position.getX() >> 4, position.getZ() >> 4).getProvider().getLevel();
+        Level world = level.getChunk(position.getX() >> 4, position.getZ() >> 4)
+                .getProvider()
+                .getLevel();
 
         for (StructureBlockInfo blockInfo : this.blockInfoList) {
             BlockEntry entry = blockInfo.state;
 
-            if (entry.getId() == Block.AIR && isIgnoreAir || !isIntact && integrity <= random.nextBoundedInt(100) && entry.getId() != BlockID.STRUCTURE_BLOCK) {
+            if (entry.getId() == Block.AIR && isIgnoreAir
+                    || !isIntact
+                            && integrity <= random.nextBoundedInt(100)
+                            && entry.getId() != BlockID.STRUCTURE_BLOCK) {
                 continue;
             }
 
@@ -245,8 +282,10 @@ public class ReadOnlyLegacyStructureTemplate extends AbstractLegacyStructureTemp
             if (entry.getId() != BlockID.STRUCTURE_BLOCK) {
                 int BlockIDLayer0 = level.getBlockIdAt(vec.getX(), vec.getY(), vec.getZ(), 0);
                 int BlockIDLayer1 = level.getBlockIdAt(vec.getX(), vec.getY(), vec.getZ(), 1);
-                boolean shouldFillWater = BlockIDLayer0 == BlockID.FLOWING_WATER || BlockIDLayer0 == BlockID.STILL_WATER ||
-                        BlockIDLayer1 == BlockID.FLOWING_WATER || BlockIDLayer1 == BlockID.STILL_WATER;
+                boolean shouldFillWater = BlockIDLayer0 == BlockID.FLOWING_WATER
+                        || BlockIDLayer0 == BlockID.STILL_WATER
+                        || BlockIDLayer1 == BlockID.FLOWING_WATER
+                        || BlockIDLayer1 == BlockID.STILL_WATER;
                 level.setBlockAtLayer(vec.getX(), vec.getY(), vec.getZ(), 0, entry.getId(), entry.getMeta());
                 if (shouldFillWater) level.setBlockAtLayer(vec.getX(), vec.getY(), vec.getZ(), 1, BlockID.STILL_WATER);
             } else if (!isIgnoreAir) {

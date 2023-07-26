@@ -2,12 +2,10 @@ package cn.nukkit.utils.collection.nb;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-
 import java.io.Serializable;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
-
 
 /**
  * An auto-resizing table of {@code longs}, supporting low-contention CAS
@@ -58,7 +56,9 @@ public class ConcurrentAutoLongTable implements Serializable {
     public void set(long x) {
         CAT newcat = new CAT(null, 4, x);
         // Spin until CAS works
-        while (!CAS_cat(_cat, newcat)) {/*empty*/}
+        while (!CAS_cat(_cat, newcat)) {
+            /*empty*/
+        }
     }
 
     /**
@@ -115,7 +115,7 @@ public class ConcurrentAutoLongTable implements Serializable {
     }
 
     // The underlying array of concurrently updated long counters
-    private volatile CAT _cat = new CAT(null, 16/*Start Small, Think Big!*/, 0L);
+    private volatile CAT _cat = new CAT(null, 16 /*Start Small, Think Big!*/, 0L);
     private static AtomicReferenceFieldUpdater<ConcurrentAutoLongTable, CAT> _catUpdater =
             AtomicReferenceFieldUpdater.newUpdater(ConcurrentAutoLongTable.class, CAT.class, "_cat");
 
@@ -125,9 +125,9 @@ public class ConcurrentAutoLongTable implements Serializable {
 
     // Hash spreader
     private static int hash() {
-        //int h = (int)Thread.currentThread().getId();
+        // int h = (int)Thread.currentThread().getId();
         int h = System.identityHashCode(Thread.currentThread());
-        return h << 3;                // Pad out cache lines.  The goal is to avoid cache-line contention
+        return h << 3; // Pad out cache lines.  The goal is to avoid cache-line contention
     }
 
     // --- CAT -----------------------------------------------------------------
@@ -138,15 +138,15 @@ public class ConcurrentAutoLongTable implements Serializable {
             return _LHandle.compareAndSet(A, idx, old, nnn);
         }
 
-        //volatile long _resizers;    // count of threads attempting a resize
-        //static private final AtomicLongFieldUpdater<CAT> _resizerUpdater =
+        // volatile long _resizers;    // count of threads attempting a resize
+        // static private final AtomicLongFieldUpdater<CAT> _resizerUpdater =
         //  AtomicLongFieldUpdater.newUpdater(CAT.class, "_resizers");
 
         private final CAT _next;
         private volatile long _fuzzy_sum_cache;
         private volatile long _fuzzy_time;
         private static final int MAX_SPIN = 1;
-        private final long[] _t;     // Power-of-2 array of longs
+        private final long[] _t; // Power-of-2 array of longs
 
         CAT(CAT next, int sz, long init) {
             _next = next;
@@ -163,7 +163,7 @@ public class ConcurrentAutoLongTable implements Serializable {
             // Peel loop; try once fast
             long old = t[idx];
             final boolean ok = CAS(t, idx, old, old + x);
-            if (ok) return old;      // Got it
+            if (ok) return old; // Got it
             // Try harder
             int cnt = 0;
             while (true) {
@@ -175,29 +175,30 @@ public class ConcurrentAutoLongTable implements Serializable {
             if (t.length >= 1024 * 1024) return old; // too big already
 
             // Too much contention; double array size in an effort to reduce contention
-            //long r = _resizers;
-            //final int newbytes = (t.length<<1)<<3/*word to bytes*/;
-            //while( !_resizerUpdater.compareAndSet(this,r,r+newbytes) )
+            // long r = _resizers;
+            // final int newbytes = (t.length<<1)<<3/*word to bytes*/;
+            // while( !_resizerUpdater.compareAndSet(this,r,r+newbytes) )
             //  r = _resizers;
-            //r += newbytes;
+            // r += newbytes;
             if (master._cat != this) return old; // Already doubled, don't bother
-            //if( (r>>17) != 0 ) {      // Already too much allocation attempts?
+            // if( (r>>17) != 0 ) {      // Already too much allocation attempts?
             //  // We could use a wait with timeout, so we'll wakeup as soon as the new
             //  // table is ready, or after the timeout in any case.  Annoyingly, this
             //  // breaks the non-blocking property - so for now we just briefly sleep.
             //  //synchronized( this ) { wait(8*megs); }         // Timeout - we always wakeup
             //  try { Thread.sleep(r>>17); } catch( InterruptedException e ) { }
             //  if( master._cat != this ) return old;
-            //}
+            // }
 
             CAT newcat = new CAT(this, t.length * 2, 0);
             // Take 1 stab at updating the CAT with the new larger size.  If this
             // fails, we assume some other thread already expanded the CAT - so we
             // do not need to retry until it succeeds.
-            while (master._cat == this && !master.CAS_cat(this, newcat)) {/*empty*/}
+            while (master._cat == this && !master.CAS_cat(this, newcat)) {
+                /*empty*/
+            }
             return old;
         }
-
 
         // Return the current sum of all things in the table.  Writers can be
         // updating the table furiously, so the sum is only locally accurate.
@@ -217,9 +218,9 @@ public class ConcurrentAutoLongTable implements Serializable {
             long millis = System.currentTimeMillis();
             if (_fuzzy_time != millis) { // Time marches on?
                 _fuzzy_sum_cache = sum(); // Get sum the hard way
-                _fuzzy_time = millis;   // Indicate freshness of cached value
+                _fuzzy_time = millis; // Indicate freshness of cached value
             }
-            return _fuzzy_sum_cache;  // Return cached sum
+            return _fuzzy_sum_cache; // Return cached sum
         }
 
         public String toString() {

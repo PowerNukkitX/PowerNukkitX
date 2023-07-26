@@ -7,8 +7,7 @@ import cn.nukkit.item.ItemTool;
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public class BlockPlanksMangrove extends BlockSolid {
-    public BlockPlanksMangrove() {
-    }
+    public BlockPlanksMangrove() {}
 
     @Override
     public int getId() {
@@ -44,5 +43,4 @@ public class BlockPlanksMangrove extends BlockSolid {
     public int getToolType() {
         return ItemTool.TYPE_AXE;
     }
-
 }

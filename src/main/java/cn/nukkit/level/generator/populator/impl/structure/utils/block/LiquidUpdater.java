@@ -6,9 +6,7 @@ import cn.nukkit.math.BlockVector3;
 
 public final class LiquidUpdater {
 
-    private LiquidUpdater() {
-
-    }
+    private LiquidUpdater() {}
 
     public static void lavaSpread(ChunkManager level, BlockVector3 vec) {
         lavaSpread(level, vec.x, vec.y, vec.z);
@@ -111,11 +109,15 @@ public final class LiquidUpdater {
         return id == Block.AIR || id == Block.LAVA || id == Block.STILL_LAVA;
     }
 
-    private static int calculateFlowCost(ChunkManager level, int xx, int yy, int zz, int accumulatedCost, int previousDirection) {
+    private static int calculateFlowCost(
+            ChunkManager level, int xx, int yy, int zz, int accumulatedCost, int previousDirection) {
         int cost = 1000;
 
         for (int j = 0; j < 4; ++j) {
-            if ((j == 0 && previousDirection == 1) || (j == 1 && previousDirection == 0) || (j == 2 && previousDirection == 3) || (j == 3 && previousDirection == 2)) {
+            if ((j == 0 && previousDirection == 1)
+                    || (j == 1 && previousDirection == 0)
+                    || (j == 2 && previousDirection == 3)
+                    || (j == 3 && previousDirection == 2)) {
                 int x = xx;
                 int y = yy;
                 int z = zz;
@@ -193,7 +195,8 @@ public final class LiquidUpdater {
         return isOptimalFlowDirection;
     }
 
-    private static int getSmallestFlowDecay(ChunkManager level, int x1, int y1, int z1, int x2, int y2, int z2, int decay) {
+    private static int getSmallestFlowDecay(
+            ChunkManager level, int x1, int y1, int z1, int x2, int y2, int z2, int decay) {
         int blockDecay = getFlowDecay(level, x1, y1, z1, x2, y2, z2);
         if (blockDecay < 0) {
             return decay;

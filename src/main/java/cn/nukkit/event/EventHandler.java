@@ -22,7 +22,6 @@ import java.lang.annotation.Target;
  * @see cn.nukkit.event.Event
  * @since Nukkit 1.0 | Nukkit API 1.0.0
  */
-
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface EventHandler {

@@ -3,11 +3,10 @@ package cn.nukkit.entity.ai.memory;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
-import lombok.Getter;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import lombok.Getter;
 
 /**
  * 记忆存储器标准实现
@@ -16,10 +15,11 @@ import java.util.concurrent.ConcurrentHashMap;
 @Since("1.19.50-r1")
 public class MemoryStorage implements IMemoryStorage {
 
-    //表示一个空值(null)，这样做是因为在ConcurrentHashMap中不允许放入null值
+    // 表示一个空值(null)，这样做是因为在ConcurrentHashMap中不允许放入null值
     public static final Object EMPTY_VALUE = new Object();
 
     protected Map<MemoryType<?>, Object> memoryMap = new ConcurrentHashMap<>();
+
     @Getter
     protected EntityIntelligent entity;
 

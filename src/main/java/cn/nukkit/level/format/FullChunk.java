@@ -9,11 +9,10 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.biome.Biome;
-import org.jetbrains.annotations.NotNull;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -74,12 +73,16 @@ public interface FullChunk extends Cloneable {
     }
 
     @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", reason = "If the stored state is invalid, returns a BlockUnknown",
+    @DeprecationDetails(
+            since = "1.4.0.0-PN",
+            reason = "If the stored state is invalid, returns a BlockUnknown",
             replaceWith = "getAndSetBlockState")
     Block getAndSetBlock(int x, int y, int z, Block block);
 
     @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", reason = "If the stored state is invalid, returns a BlockUnknown",
+    @DeprecationDetails(
+            since = "1.4.0.0-PN",
+            reason = "If the stored state is invalid, returns a BlockUnknown",
             replaceWith = "getAndSetBlockState")
     @PowerNukkitOnly
     Block getAndSetBlock(int x, int y, int z, int layer, Block block);
@@ -95,14 +98,20 @@ public interface FullChunk extends Cloneable {
     }
 
     @Deprecated
-    @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.3.0.0-PN", replaceWith = "setBlock(int x, int y, int z, int  blockId, int  meta)")
+    @DeprecationDetails(
+            reason = "The meta is limited to 32 bits",
+            since = "1.3.0.0-PN",
+            replaceWith = "setBlock(int x, int y, int z, int  blockId, int  meta)")
     default boolean setFullBlockId(int x, int y, int z, int fullId) {
         return setFullBlockId(x, y, z, 0, fullId >> Block.DATA_BITS);
     }
 
     @PowerNukkitOnly
     @Deprecated
-    @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.3.0.0-PN", replaceWith = "setBlockAtLayer(int x, int y, int z, int layer, int  blockId)")
+    @DeprecationDetails(
+            reason = "The meta is limited to 32 bits",
+            since = "1.3.0.0-PN",
+            replaceWith = "setBlockAtLayer(int x, int y, int z, int layer, int  blockId)")
     default boolean setFullBlockId(int x, int y, int z, int layer, int fullId) {
         return setBlockAtLayer(x, y, z, layer, fullId >> Block.DATA_BITS, fullId & Block.DATA_MASK);
     }
@@ -255,7 +264,9 @@ public interface FullChunk extends Cloneable {
     byte[] getBiomeIdArray();
 
     @Deprecated(since = "1.20.0-r2", forRemoval = true)
-    @DeprecationDetails(since = "1.20.0-r2", reason = "HeightMapArray is now a short[], Use getNewHeightMapArray() instead")
+    @DeprecationDetails(
+            since = "1.20.0-r2",
+            reason = "HeightMapArray is now a short[], Use getNewHeightMapArray() instead")
     byte[] getHeightMapArray();
 
     short[] getNewHeightMapArray();
@@ -286,8 +297,7 @@ public interface FullChunk extends Cloneable {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    List<Block> findBorders(int x, int z);
+    @NotNull List<Block> findBorders(int x, int z);
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -295,9 +305,7 @@ public interface FullChunk extends Cloneable {
 
     @PowerNukkitXOnly
     @Since("1.19.21-r1")
-    default void reObfuscateChunk() {
-
-    }
+    default void reObfuscateChunk() {}
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")

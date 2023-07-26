@@ -9,8 +9,7 @@ import cn.nukkit.item.ItemTool;
  */
 public class BlockClay extends BlockSolid {
 
-    public BlockClay() {
-    }
+    public BlockClay() {}
 
     @Override
     public double getHardness() {
@@ -39,9 +38,7 @@ public class BlockClay extends BlockSolid {
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{
-                new ItemClay(0, 4)
-        };
+        return new Item[] {new ItemClay(0, 4)};
     }
 
     @Override

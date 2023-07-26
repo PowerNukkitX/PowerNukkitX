@@ -3,12 +3,11 @@ package cn.nukkit.utils;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.utils.functional.BooleanConsumer;
-
-import javax.annotation.Nullable;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
+import javax.annotation.Nullable;
 
 /**
  * @author joserobjr
@@ -28,8 +27,7 @@ public enum OptionalBoolean {
     @Since("1.4.0.0-PN")
     EMPTY(null);
 
-    @Nullable
-    private final Boolean value;
+    @Nullable private final Boolean value;
 
     OptionalBoolean(@Nullable Boolean value) {
         this.value = value;
@@ -106,8 +104,6 @@ public enum OptionalBoolean {
 
     @Override
     public String toString() {
-        return value == null ? "OptionalBoolean.empty" :
-                value ? "OptionalBoolean[true]" :
-                        "OptionalBoolean[false]";
+        return value == null ? "OptionalBoolean.empty" : value ? "OptionalBoolean[true]" : "OptionalBoolean[false]";
     }
 }

@@ -13,9 +13,7 @@ public class SpawnExperienceOrbPacket extends DataPacket {
     public int amount;
 
     @Override
-    public void decode() {
-
-    }
+    public void decode() {}
 
     @Override
     public void encode() {

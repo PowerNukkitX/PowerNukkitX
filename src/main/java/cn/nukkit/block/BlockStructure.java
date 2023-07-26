@@ -21,9 +21,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockStructure extends BlockSolidMeta implements BlockEntityHolder<BlockEntityStructBlock> {
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    public static final BlockProperty<StructureBlockType> STRUCTURE_BLOCK_TYPE = new ArrayBlockProperty<>(
-            "structure_block_type", true, StructureBlockType.class
-    );
+    public static final BlockProperty<StructureBlockType> STRUCTURE_BLOCK_TYPE =
+            new ArrayBlockProperty<>("structure_block_type", true, StructureBlockType.class);
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
@@ -48,8 +47,7 @@ public class BlockStructure extends BlockSolidMeta implements BlockEntityHolder<
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -84,7 +82,15 @@ public class BlockStructure extends BlockSolidMeta implements BlockEntityHolder<
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         if (player != null && (!player.isCreative() || !player.isOp())) {
             return false;
         }
@@ -127,19 +133,16 @@ public class BlockStructure extends BlockSolidMeta implements BlockEntityHolder<
         return false;
     }
 
-
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public Class<? extends BlockEntityStructBlock> getBlockEntityClass() {
         return BlockEntityStructBlock.class;
     }
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getBlockEntityType() {
         return BlockEntity.STRUCTURE_BLOCK;
     }

@@ -3,9 +3,8 @@ package cn.nukkit.block.customblock.data;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.nbt.tag.CompoundTag;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Locale;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * 用于将方块的face(面)映射到实际的材质实例,并且设置渲染方法和参数
@@ -29,7 +28,6 @@ public class Materials implements NBTData {
     public static Materials builder() {
         return new Materials();
     }
-
 
     /**
      * ambientOcclusion=true, faceDimming=true
@@ -222,26 +220,39 @@ public class Materials implements NBTData {
      * @param renderMethodName 要使用的渲染方法<br>Rendering method to be used
      * @param texture          材质名称<br>Specify the texture's name
      */
-    public void process(@NotNull String face, boolean ambientOcclusion, boolean faceDimming, @NotNull String renderMethodName, @NotNull String texture) {
-        this.tag.putCompound(face, new CompoundTag()
-                .putBoolean("ambient_occlusion", ambientOcclusion)
-                .putBoolean("face_dimming", faceDimming)
-                .putString("render_method", renderMethodName)
-                .putString("texture", texture));
+    public void process(
+            @NotNull String face,
+            boolean ambientOcclusion,
+            boolean faceDimming,
+            @NotNull String renderMethodName,
+            @NotNull String texture) {
+        this.tag.putCompound(
+                face,
+                new CompoundTag()
+                        .putBoolean("ambient_occlusion", ambientOcclusion)
+                        .putBoolean("face_dimming", faceDimming)
+                        .putString("render_method", renderMethodName)
+                        .putString("texture", texture));
     }
 
-    private void process(@NotNull String face, boolean ambientOcclusion, boolean faceDimming, @NotNull RenderMethod renderMethod, @NotNull String texture) {
-        this.tag.putCompound(face, new CompoundTag()
-                .putBoolean("ambient_occlusion", ambientOcclusion)
-                .putBoolean("face_dimming", faceDimming)
-                .putString("render_method", renderMethod.name().toLowerCase(Locale.ENGLISH))
-                .putString("texture", texture));
+    private void process(
+            @NotNull String face,
+            boolean ambientOcclusion,
+            boolean faceDimming,
+            @NotNull RenderMethod renderMethod,
+            @NotNull String texture) {
+        this.tag.putCompound(
+                face,
+                new CompoundTag()
+                        .putBoolean("ambient_occlusion", ambientOcclusion)
+                        .putBoolean("face_dimming", faceDimming)
+                        .putString("render_method", renderMethod.name().toLowerCase(Locale.ENGLISH))
+                        .putString("texture", texture));
     }
 
     public CompoundTag toCompoundTag() {
         return tag;
     }
-
 
     /**
      * 渲染方法枚举

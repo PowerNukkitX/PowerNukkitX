@@ -9,7 +9,6 @@ import cn.nukkit.network.protocol.UpdateSoftEnumPacket;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.Identifier;
 import com.google.common.collect.ImmutableList;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
@@ -22,30 +21,58 @@ public class CommandEnum {
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
     public static final CommandEnum ENUM_ENCHANTMENT;
+
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
     public static final CommandEnum ENUM_EFFECT;
+
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
-    public static final CommandEnum FUNCTION_FILE = new CommandEnum("filepath", () -> Server.getInstance().getFunctionManager().getFunctions().keySet());
+    public static final CommandEnum FUNCTION_FILE = new CommandEnum(
+            "filepath",
+            () -> Server.getInstance().getFunctionManager().getFunctions().keySet());
+
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
-    public static final CommandEnum SCOREBOARD_OBJECTIVES = new CommandEnum("ScoreboardObjectives", () -> Server.getInstance().getScoreboardManager().getScoreboards().keySet());
+    public static final CommandEnum SCOREBOARD_OBJECTIVES = new CommandEnum(
+            "ScoreboardObjectives",
+            () -> Server.getInstance().getScoreboardManager().getScoreboards().keySet());
+
     @PowerNukkitXOnly
     @Since("1.20.0-r2")
-    public static final CommandEnum CAMERA_PRESETS = new CommandEnum("preset", () -> CameraPreset.getPresets().keySet());
+    public static final CommandEnum CAMERA_PRESETS =
+            new CommandEnum("preset", () -> CameraPreset.getPresets().keySet());
+
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
-    public static final CommandEnum CHAINED_COMMAND_ENUM = new CommandEnum("ExecuteChainedOption_0", "run", "as", "at", "positioned", "if", "unless", "in", "align", "anchored", "rotated", "facing");
+    public static final CommandEnum CHAINED_COMMAND_ENUM = new CommandEnum(
+            "ExecuteChainedOption_0",
+            "run",
+            "as",
+            "at",
+            "positioned",
+            "if",
+            "unless",
+            "in",
+            "align",
+            "anchored",
+            "rotated",
+            "facing");
+
     @Since("1.4.0.0-PN")
     public static final CommandEnum ENUM_BOOLEAN = new CommandEnum("Boolean", ImmutableList.of("true", "false"));
+
     @Since("1.4.0.0-PN")
-    public static final CommandEnum ENUM_GAMEMODE = new CommandEnum("GameMode",
+    public static final CommandEnum ENUM_GAMEMODE = new CommandEnum(
+            "GameMode",
             ImmutableList.of("survival", "creative", "s", "c", "adventure", "a", "spectator", "view", "v", "spc"));
+
     @Since("1.4.0.0-PN")
     public static final CommandEnum ENUM_BLOCK;
+
     @Since("1.4.0.0-PN")
     public static final CommandEnum ENUM_ITEM;
+
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public static final CommandEnum ENUM_ENTITY;
@@ -57,19 +84,23 @@ public class CommandEnum {
         }*/
         ENUM_BLOCK = new CommandEnum("Block", /*blocks.build()*/ Collections.emptyList());
 
-        ENUM_ITEM = new CommandEnum("Item", /*ImmutableList.copyOf(Arrays.stream(MinecraftItemID.values())
-            .filter(it -> !it.isTechnical())
-            .filter(it -> !it.isEducationEdition())
-            .flatMap(it -> Stream.of(Stream.of(it.getNamespacedId())*//*, Arrays.stream(it.getAliases())*//*).flatMap(Function.identity()))
-            .map(it-> it.substring(10).toLowerCase())
-            .toArray(String[]::new)
-        )*/ Collections.emptyList());
+        ENUM_ITEM = new CommandEnum(
+                "Item", /*ImmutableList.copyOf(Arrays.stream(MinecraftItemID.values())
+                        .filter(it -> !it.isTechnical())
+                        .filter(it -> !it.isEducationEdition())
+                        .flatMap(it -> Stream.of(Stream.of(it.getNamespacedId())*/
+                /*, Arrays.stream(it.getAliases())*/
+                /*).flatMap(Function.identity()))
+                    .map(it-> it.substring(10).toLowerCase())
+                    .toArray(String[]::new)
+                )*/ Collections.emptyList());
 
         ENUM_ENTITY = new CommandEnum("Entity", Collections.emptyList());
 
         List<String> effects = new ArrayList<>();
         for (Field field : Effect.class.getDeclaredFields()) {
-            if (field.getType() == int.class && field.getModifiers() == (Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL)) {
+            if (field.getType() == int.class
+                    && field.getModifiers() == (Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL)) {
                 effects.add(field.getName().toLowerCase());
             }
         }
@@ -90,7 +121,7 @@ public class CommandEnum {
 
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
-    private final boolean isSoft;//softEnum
+    private final boolean isSoft; // softEnum
 
     @PowerNukkitXOnly
     @Since("1.19.60-r1")

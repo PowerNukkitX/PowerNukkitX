@@ -32,12 +32,12 @@ public class NPCDialoguePacket extends DataPacket {
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
     public static final byte NETWORK_ID = ProtocolInfo.NPC_DIALOGUE_PACKET;
-    
+
     private static final NPCDialogAction[] ACTIONS = NPCDialogAction.values();
-    
+
     private long runtimeEntityId;
     private NPCDialogAction action = NPCDialogAction.OPEN;
-    private String dialogue = "";//content
+    private String dialogue = ""; // content
     private String sceneName = "";
     private String npcName = "";
     private String actionJson = "";
@@ -88,8 +88,7 @@ public class NPCDialoguePacket extends DataPacket {
 
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
-    @NotNull
-    public NPCDialogAction getAction() {
+    @NotNull public NPCDialogAction getAction() {
         return action;
     }
 
@@ -101,8 +100,7 @@ public class NPCDialoguePacket extends DataPacket {
 
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
-    @NotNull
-    public String getDialogue() {
+    @NotNull public String getDialogue() {
         return dialogue;
     }
 
@@ -114,8 +112,7 @@ public class NPCDialoguePacket extends DataPacket {
 
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
-    @NotNull
-    public String getSceneName() {
+    @NotNull public String getSceneName() {
         return sceneName;
     }
 
@@ -127,8 +124,7 @@ public class NPCDialoguePacket extends DataPacket {
 
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
-    @NotNull
-    public String getNpcName() {
+    @NotNull public String getNpcName() {
         return npcName;
     }
 
@@ -140,8 +136,7 @@ public class NPCDialoguePacket extends DataPacket {
 
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
-    @NotNull
-    public String getActionJson() {
+    @NotNull public String getActionJson() {
         return actionJson;
     }
 
@@ -154,7 +149,11 @@ public class NPCDialoguePacket extends DataPacket {
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
     public enum NPCDialogAction {
-        @PowerNukkitOnly @Since("1.5.2.0-PN") OPEN,
-        @PowerNukkitOnly @Since("1.5.2.0-PN") CLOSE
+        @PowerNukkitOnly
+        @Since("1.5.2.0-PN")
+        OPEN,
+        @PowerNukkitOnly
+        @Since("1.5.2.0-PN")
+        CLOSE
     }
 }

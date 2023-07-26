@@ -9,9 +9,8 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.RedstoneComponent;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Nukkit Project Team
@@ -19,8 +18,7 @@ import javax.annotation.Nullable;
 @PowerNukkitDifference(info = "Implements RedstoneComponent.", since = "1.4.0.0-PN")
 public class BlockRedstoneLamp extends BlockSolid implements RedstoneComponent {
 
-    public BlockRedstoneLamp() {
-    }
+    public BlockRedstoneLamp() {}
 
     @Override
     public String getName() {
@@ -49,7 +47,15 @@ public class BlockRedstoneLamp extends BlockSolid implements RedstoneComponent {
 
     @PowerNukkitDifference(info = "Using new method for checking if powered", since = "1.4.0.0-PN")
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
         if (this.isGettingPower()) {
             this.level.setBlock(this, Block.get(BlockID.LIT_REDSTONE_LAMP), false, true);
         } else {
@@ -58,8 +64,9 @@ public class BlockRedstoneLamp extends BlockSolid implements RedstoneComponent {
         return true;
     }
 
-    @PowerNukkitDifference(info = "Redstone Event after Block powered check + use #isGettingPower() method" +
-            " + trigger observer.", since = "1.4.0.0-PN")
+    @PowerNukkitDifference(
+            info = "Redstone Event after Block powered check + use #isGettingPower() method" + " + trigger observer.",
+            since = "1.4.0.0-PN")
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_REDSTONE) {
@@ -87,9 +94,6 @@ public class BlockRedstoneLamp extends BlockSolid implements RedstoneComponent {
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{
-                new ItemBlock(Block.get(BlockID.REDSTONE_LAMP))
-        };
+        return new Item[] {new ItemBlock(Block.get(BlockID.REDSTONE_LAMP))};
     }
-
 }

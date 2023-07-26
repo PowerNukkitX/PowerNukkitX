@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
+
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
@@ -19,15 +21,14 @@ import cn.nukkit.utils.RedstoneComponent;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
-
 /**
  * @author CreeperFace
  */
 @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder only in PowerNukkit")
 @PowerNukkitDifference(info = "Implements RedstoneComponent and uses methods from it.", since = "1.4.0.0-PN")
 @Log4j2
-public abstract class BlockRedstoneComparator extends BlockRedstoneDiode implements RedstoneComponent, BlockEntityHolder<BlockEntityComparator> {
+public abstract class BlockRedstoneComparator extends BlockRedstoneDiode
+        implements RedstoneComponent, BlockEntityHolder<BlockEntityComparator> {
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
@@ -51,24 +52,21 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public Class<? extends BlockEntityComparator> getBlockEntityClass() {
         return BlockEntityComparator.class;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getBlockEntityType() {
         return BlockEntity.COMPARATOR;
     }
@@ -100,7 +98,7 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
     @Override
     protected int getRedstoneSignal() {
         BlockEntityComparator comparator = getBlockEntity();
-        return comparator == null? 0 : comparator.getOutputSignal();
+        return comparator == null ? 0 : comparator.getOutputSignal();
     }
 
     @Override
@@ -149,7 +147,9 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
     }
 
     private int calculateOutput() {
-        return getMode() == Mode.SUBTRACT ? Math.max(this.calculateInputStrength() - this.getPowerOnSides(), 0) : this.calculateInputStrength();
+        return getMode() == Mode.SUBTRACT
+                ? Math.max(this.calculateInputStrength() - this.getPowerOnSides(), 0)
+                : this.calculateInputStrength();
     }
 
     @PowerNukkitDifference(info = "Trigger observer.", since = "1.4.0.0-PN")
@@ -161,10 +161,13 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
             this.setDamage(this.getDamage() + 4);
         }
 
-        this.level.addLevelEvent(this.add(0.5, 0.5, 0.5), LevelEventPacket.EVENT_SOUND_BUTTON_CLICK, this.getMode() == Mode.SUBTRACT ? 500 : 550);
+        this.level.addLevelEvent(
+                this.add(0.5, 0.5, 0.5),
+                LevelEventPacket.EVENT_SOUND_BUTTON_CLICK,
+                this.getMode() == Mode.SUBTRACT ? 500 : 550);
         this.level.setBlock(this, this, true, false);
         this.level.updateComparatorOutputLevelSelective(this, true);
-        //bug?
+        // bug?
 
         this.onChange();
         return true;
@@ -191,8 +194,7 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
         // before the "real" BlockEntity is set. That means, if we'd use the other method here,
         // it would create two BlockEntities.
         BlockEntityComparator blockEntityComparator = getBlockEntity();
-        if (blockEntityComparator == null)
-            return;
+        if (blockEntityComparator == null) return;
 
         int currentOutput = blockEntityComparator.getOutputSignal();
         blockEntityComparator.setOutputSignal(output);
@@ -216,7 +218,15 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         Block layer0 = level.getBlock(this, 0);
         Block layer1 = level.getBlock(this, 1);
         if (!super.place(item, block, target, face, fx, fy, fz, player)) {
@@ -231,7 +241,7 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
             level.setBlock(layer1, 1, layer1, true);
             return false;
         }
-        
+
         onUpdate(Level.BLOCK_UPDATE_REDSTONE);
         return true;
     }
@@ -250,5 +260,4 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
         COMPARE,
         SUBTRACT
     }
-
 }

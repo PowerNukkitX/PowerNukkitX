@@ -2,15 +2,14 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.Nukkit;
 import com.google.common.io.ByteStreams;
-import lombok.ToString;
-
 import java.io.InputStream;
+import lombok.ToString;
 
 @ToString(exclude = "tag")
 public class BiomeDefinitionListPacket extends DataPacket {
     public static final byte NETWORK_ID = ProtocolInfo.BIOME_DEFINITION_LIST_PACKET;
 
-    //原版群系定义数据
+    // 原版群系定义数据
     private static final byte[] TAG;
 
     static {
@@ -33,8 +32,7 @@ public class BiomeDefinitionListPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-    }
+    public void decode() {}
 
     @Override
     public void encode() {

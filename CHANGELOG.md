@@ -271,7 +271,7 @@ This work in progress version supports Minecraft:BE `1.19.63 (Protocol Version 5
 - [#1064] Implement digging display for digging while jumping.
 - [#1065] Implemented 1.19.63 compatibility.
 - [#1066] Synchronize with the original version the effect of clicking on bamboo squares and bamboo shoot squares with bamboo items.
- 
+
 ## Changed
 
 - [#1059] Campfire stacking should be 64.
@@ -372,7 +372,7 @@ This work in progress version supports Minecraft:BE `1.19.60 (Protocol Version 5
 - [#916] Try to fix crafting grid sync.
 - [#917] Fix diff hand damage array out of bound again.
 - [#919] Fix candle cake related bug.
-- [#923] Fix smithingRecipe register. 
+- [#923] Fix smithingRecipe register.
 - [#925] Fix custom block friction coefficient issue.
 - [#927] Fix a bug in respawn teleport.
 - [#932] Fix a compatibility issue between `Player.setGamemode()` and WaterDog.
@@ -404,7 +404,7 @@ This work in progress version supports Minecraft:BE `1.19.60 (Protocol Version 5
 This work in progress version supports Minecraft:BE `1.19.50 (Protocol Version 560)`.
 
 ## Added
- 
+
 - [#840] Add `EntityIntelligentHuman`.
 - [#841] Implemented the ability to gain experience by burning items in the furnace.
 - [#845] Added cat creature AI.
@@ -479,7 +479,7 @@ This work in progress version supports Minecraft:BE `1.19.50 (Protocol Version 5
 
 - [#187] Resolving thread leaks for graceful downtime (implemented in [#808]).
 - [#781] Initial optimization of the funnel.
-- [#784] Add issue template. 
+- [#784] Add issue template.
 - [#794] Remove the `isServerAuthoritativeBlockBreaking`.
 - [#799] some adopt change.
 - [#811] Using `ForkJoinPool` to implement `AsyncPool`.
@@ -1036,7 +1036,7 @@ Our goal on this version was to fix bugs, and we did it, we fixed a lot of them!
 Thank you for the translations!
 Help us to translate PowerNukkit at https://translate.powernukkit.org
 
-Want to talk? 
+Want to talk?
 Talk to us at https://discuss.powernukkit.org and/or https://powernukkit.org/discord
 
 ### Changed
@@ -1057,7 +1057,7 @@ Talk to us at https://discuss.powernukkit.org and/or https://powernukkit.org/dis
 
 ### Added
 - [#PN-1146] Added implementation for `AnimateEntityPacket`
-- [#PN-1150] The `freeze_damage` gamerule 
+- [#PN-1150] The `freeze_damage` gamerule
 - [#PN-1150] Mappings for Goat, Glow Squid, and Axolotl entities and spawn eggs
 - [#PN-783] Campfire and Soul Campfire can now be lit by burning entities stepping on it
 - [#PN-783] Campfire and Soul Campfire can now be unlit by throwing a splash water bottle on it
@@ -1065,7 +1065,7 @@ Talk to us at https://discuss.powernukkit.org and/or https://powernukkit.org/dis
 - [#PN-669] New API methods to get the name of the entity for display
 
 ### Fixes
-- [#PN-1119] `TickSyncPacket` was not registered 
+- [#PN-1119] `TickSyncPacket` was not registered
 - [#PN-1120] Entities sometimes gets invisible for some players
 - [#PN-1122] Backward compatibility with plugins setting full bark logs with 17:13
 - [#PN-1132] You don't dismount the vehicle when you teleport, causing you to glitch
@@ -1404,8 +1404,8 @@ Fixes an important stability issue and improves resource pack compatibility
 ## [1.3.1.0-PN] - 2020-07-09 ([Check the milestone](https://github.com/PowerNukkit/PowerNukkit/milestone/13?closed=1))
 Security, stability and enchanting table fixes alongside with few additions.
 
-PowerNukkit now has its own [discord guild], click the link below to join and have fun!  
-💬 https://powernukkit.org/discord 💬  
+PowerNukkit now has its own [discord guild], click the link below to join and have fun!
+💬 https://powernukkit.org/discord 💬
 [![Discord](https://img.shields.io/discord/728280425255927879)](https://powernukkit.org/discord)
 
 ### Fixes
@@ -1449,7 +1449,7 @@ Improves plugin compatibility and downgrade the RakNet lib to solve a memory lea
 Added support for Bedrock Edition 1.16.0 and 1.16.1
 
 ### Breaking change!
-***This version supports a new major Minecraft version, some plugin sources might need to be updated or recompiled!*** 
+***This version supports a new major Minecraft version, some plugin sources might need to be updated or recompiled!***
 
 The following breaking change will be pulled in `1.3.0.0-PN`
 - [8a09f93](https://github.com/PowerNukkit/PowerNukkit/commit/8a09f933f83c9a52531ff8a184a58c6d733c9174) Quick craft implementation. ([NukkitX#1473](https://github.com/NukkitX/Nukkit/pull/1473)) Jedrzej* 05/06/2020
@@ -1471,12 +1471,12 @@ it's planned to be fixed on 1.3.1.0-PN
 
 ### Experimental warning!
 This is the first release of a huge set of changes to accommodate the new Bedrock Edition 1.16.0/1.16.1 release,
-please take extra cautions with this version, make constant backups and report any issues you find. 
+please take extra cautions with this version, make constant backups and report any issues you find.
 
 ### Deprecation warnings!
 - [#PN-293] Many `Entity` constants are deprecated and might be removed on `1.4.0.0-PN`
 - [#PN-293] `Entity.DATA_FLAG_TRANSITION_SITTING` and `DATA_FLAG_TRANSITION_SETTING` only one of them is correct, the incorrect will be removed
-- [#PN-293] `Network.inflate_raw` and `deflate_raw` does not follow the correct naming convention and will be removed. Use `inflateRaw` and `deflateRaw` instead. 
+- [#PN-293] `Network.inflate_raw` and `deflate_raw` does not follow the correct naming convention and will be removed. Use `inflateRaw` and `deflateRaw` instead.
 - [#PN-293] `HurtArmorPacket.health` was renamed to `damage` and will be removed on `1.4.0.0-PN`. A backward compatibility code has been added.
 - [#PN-293] `SetSpawnPositionPacket.spawnForce` is now unused and will be removed on `1.4.0.0-PN`
 - [#PN-293] `TextPacket.TYPE_JSON` was renamed to `TYPE_OBJECT` and will be removed on `1.4.0.0-PN`
@@ -1495,7 +1495,7 @@ please take extra cautions with this version, make constant backups and report a
 - [#PN-293] The server now logs a warning when a packet violation warning is correctly received
 - [#PN-293] 12 new packets, please see the pull request file changes for details
 - [#PN-293] Many new entity data constants, please see the `Entity.java` file in the PR for details
- 
+
 ### Changed
 - [#PN-293] Thorns can now be applied to any armor while enchanting
 - [#PN-293] The server now requires the clients to playing on Bedrock Edition 1.16.0
@@ -1510,7 +1510,7 @@ please take extra cautions with this version, make constant backups and report a
 
 
 ## [1.2.1.0-PN] - 2020-06-07 ([Check the milestone](https://github.com/PowerNukkit/PowerNukkit/milestone/9?closed=1))
-Adds new methods to be used by plugins and fixes many issues. 
+Adds new methods to be used by plugins and fixes many issues.
 
 ### Fixes
 - [#PN-224] Enchantment compatibility rules when merging enchanted items in an anvil
@@ -1530,7 +1530,7 @@ Adds new methods to be used by plugins and fixes many issues.
 ### Added
 - [#PN-227] PlayerJumpEvent called when jump packets are received.
 - [#PN-242] `Item.equalsIgnoringEnchantmentOrder` method for public usage.
-- [#PN-244] `Enchantment.getPowerNukkit().isItemAcceptable(Item)` to check if an enchantment can exist 
+- [#PN-244] `Enchantment.getPowerNukkit().isItemAcceptable(Item)` to check if an enchantment can exist
          in a given item stack by any non-hack means.
 - [#PN-256] `CapturingCommandSender` intended to capture output of commands which don't require players.
 - [#PN-259] `Hash.hashBlock(Vector3)` method for public usage.
@@ -1593,7 +1593,7 @@ Contains several fixes, including issues which cause item losses and performance
 Fixes several anvil issues.
 
 ### Added
-- [#PN-224] Added option to disable watchdog with `-DdisableWatchdog=true`. 
+- [#PN-224] Added option to disable watchdog with `-DdisableWatchdog=true`.
   This should be used **only by developers** to debug the server without interruptions by the crash detection system.
 
 ### Fixes
@@ -1603,10 +1603,10 @@ Fixes several anvil issues.
 - [#PN-222] Anvil changes the level twice and fails the transaction if the player doesn't have enough.
 - [#PN-235] Wrong flags in MoveEntityAbsolutePacket
 - [#PN-234] Failed anvil transactions caused all involved items to be destroyed
-- [#PN-234] Visual desync in the player's experience level when an anvil transaction fails or is cancelled. 
+- [#PN-234] Visual desync in the player's experience level when an anvil transaction fails or is cancelled.
 
 ### Changed
-- [#PN-234] Anvil's result is no longer stored in the PlayerUIInventory at slot 50 as 
+- [#PN-234] Anvil's result is no longer stored in the PlayerUIInventory at slot 50 as
          it was vulnerable to heavy duplication exploits.
 - [#PN-234] `setResult` methods in `AnvilInventory` are now deprecated and marked for removal at 1.3.0.0-PN
          because it's not supported by the client and changing it will fail the transaction.
@@ -1675,7 +1675,7 @@ Fixes several anvil issues.
 - [#PN-50] The kick message is now more descriptive
 - [#PN-80] Merged the "New RakNet Implementation" pull request which greatly improves the server performance and connections
 
-### Added 
+### Added
 - Waterlogging support
 - Support with blocks ID higher then 255 to the Anvil save format
 - Support for blocks with 6 bits data value (used to support only 4 bits)
@@ -1860,7 +1860,7 @@ Fixes several anvil issues.
 ## <a id="CataLogs-Swlang"></a>🌐 多语言文档
 
 ---
-Need to switch languages? 
+Need to switch languages?
 
 [![简体中文](https://img.shields.io/badge/简体中文-Click%20me-purple?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hans/CHANGELOG.md)
 [![繁體中文](https://img.shields.io/badge/繁體中文-Click%20me-purple?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/CHANGELOG.md)
@@ -2685,7 +2685,7 @@ Need to switch languages?
 
 <!--1.6.0.0-PNX Version summary Start-->
 <!--Protocol Version 486-->
-[#V1-dev]: https://github.com/PowerNukkitX/PowerNukkitX/actions/runs/2179919470 
+[#V1-dev]: https://github.com/PowerNukkitX/PowerNukkitX/actions/runs/2179919470
 
 <!--Protocol Version 503-->
 [#V2-dev]: https://github.com/PowerNukkitX/PowerNukkitX/actions/runs/2479714447

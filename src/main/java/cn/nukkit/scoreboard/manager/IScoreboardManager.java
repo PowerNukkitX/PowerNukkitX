@@ -8,10 +8,9 @@ import cn.nukkit.scoreboard.data.DisplaySlot;
 import cn.nukkit.scoreboard.displayer.IScoreboardViewer;
 import cn.nukkit.scoreboard.scoreboard.IScoreboard;
 import cn.nukkit.scoreboard.storage.IScoreboardStorage;
-
-import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.Nullable;
 
 /**
  * 管理，储存一批计分板 <br>

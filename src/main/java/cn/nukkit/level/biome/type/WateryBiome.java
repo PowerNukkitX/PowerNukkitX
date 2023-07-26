@@ -24,7 +24,7 @@ public abstract class WateryBiome extends CoveredBiome {
         if (useNewRakNetSurface()) {
             return getSurfaceId(0, y, 0) >> 4;
         }
-        //doesn't matter, surface depth is 0
+        // doesn't matter, surface depth is 0
         return 0;
     }
 

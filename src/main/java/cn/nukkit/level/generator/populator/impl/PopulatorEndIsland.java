@@ -34,9 +34,21 @@ public class PopulatorEndIsland extends Populator {
             if (height < -20f) {
                 Vector3 position = new Vector3(chunkX << 4, 0, chunkZ << 4);
 
-                objectEndIsland.generate(level, random, position.add(8 + random.nextBoundedInt(16), 55 + random.nextBoundedInt(16), 8 + random.nextBoundedInt(16)));
+                objectEndIsland.generate(
+                        level,
+                        random,
+                        position.add(
+                                8 + random.nextBoundedInt(16),
+                                55 + random.nextBoundedInt(16),
+                                8 + random.nextBoundedInt(16)));
                 if (random.nextBoundedInt(4) == 0) {
-                    objectEndIsland.generate(level, random, position.add(8 + random.nextBoundedInt(16), 55 + random.nextBoundedInt(16), 8 + random.nextBoundedInt(16)));
+                    objectEndIsland.generate(
+                            level,
+                            random,
+                            position.add(
+                                    8 + random.nextBoundedInt(16),
+                                    55 + random.nextBoundedInt(16),
+                                    8 + random.nextBoundedInt(16)));
                 }
             }
         }

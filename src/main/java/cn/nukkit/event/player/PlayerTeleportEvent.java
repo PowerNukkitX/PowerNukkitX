@@ -58,16 +58,21 @@ public class PlayerTeleportEvent extends PlayerEvent implements Cancellable {
         return new Location(vector.getX(), vector.getY(), vector.getZ(), 0, 0, baseLevel);
     }
 
-
     public enum TeleportCause {
-        COMMAND,       // For Nukkit tp command only
-        PLUGIN,        // Every plugin
+        COMMAND, // For Nukkit tp command only
+        PLUGIN, // Every plugin
         NETHER_PORTAL, // Teleport using Nether portal
-        ENDER_PEARL,   // Teleport by ender pearl
-        CHORUS_FRUIT,  // Teleport by chorus fruit
-        UNKNOWN,       // Unknown cause
-        @PowerNukkitOnly @Since("1.4.0.0-PN") END_PORTAL,    // Teleport using End Portal
-        @PowerNukkitOnly @Since("1.4.0.0-PN") END_GATEWAY,    // Teleport using End Gateway
-        @PowerNukkitXOnly @Since("1.19.50-r3") PLAYER_SPAWN    // Teleport when players are spawn
+        ENDER_PEARL, // Teleport by ender pearl
+        CHORUS_FRUIT, // Teleport by chorus fruit
+        UNKNOWN, // Unknown cause
+        @PowerNukkitOnly
+        @Since("1.4.0.0-PN")
+        END_PORTAL, // Teleport using End Portal
+        @PowerNukkitOnly
+        @Since("1.4.0.0-PN")
+        END_GATEWAY, // Teleport using End Gateway
+        @PowerNukkitXOnly
+        @Since("1.19.50-r3")
+        PLAYER_SPAWN // Teleport when players are spawn
     }
 }

@@ -10,9 +10,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemRecord;
 import cn.nukkit.math.BlockFace;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author CreeperFace
@@ -37,16 +36,14 @@ public class BlockJukebox extends BlockSolid implements BlockEntityHolder<BlockE
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public Class<? extends BlockEntityJukebox> getBlockEntityClass() {
         return BlockEntityJukebox.class;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getBlockEntityType() {
         return BlockEntity.JUKEBOX;
     }
@@ -87,8 +84,15 @@ public class BlockJukebox extends BlockSolid implements BlockEntityHolder<BlockE
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
         return BlockEntityHolder.setBlockAndCreateEntity(this) != null;
     }
-
 }

@@ -5,9 +5,8 @@ import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.math.Vector3;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.concurrent.ThreadLocalRandom;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -28,7 +27,8 @@ public class FlatRandomRoamExecutor implements EntityControl, IBehaviorExecutor 
         this(speed, maxRoamRange, frequency, false, 100);
     }
 
-    public FlatRandomRoamExecutor(float speed, int maxRoamRange, int frequency, boolean calNextTargetImmediately, int runningTime) {
+    public FlatRandomRoamExecutor(
+            float speed, int maxRoamRange, int frequency, boolean calNextTargetImmediately, int runningTime) {
         this(speed, maxRoamRange, frequency, calNextTargetImmediately, runningTime, false, 10);
     }
 
@@ -43,7 +43,14 @@ public class FlatRandomRoamExecutor implements EntityControl, IBehaviorExecutor 
      * @param avoidWater               是否避开水行走<br>Whether to walk away from water
      * @param maxRetryTime             选取目标点的最大尝试次数<br>Pick the maximum number of attempts at the target point
      */
-    public FlatRandomRoamExecutor(float speed, int maxRoamRange, int frequency, boolean calNextTargetImmediately, int runningTime, boolean avoidWater, int maxRetryTime) {
+    public FlatRandomRoamExecutor(
+            float speed,
+            int maxRoamRange,
+            int frequency,
+            boolean calNextTargetImmediately,
+            int runningTime,
+            boolean avoidWater,
+            int maxRetryTime) {
         this.speed = speed;
         this.maxRoamRange = maxRoamRange;
         this.frequency = frequency;
@@ -64,22 +71,25 @@ public class FlatRandomRoamExecutor implements EntityControl, IBehaviorExecutor 
             if (avoidWater) {
                 int blockId;
                 int time = 0;
-                while (time <= maxRetryTime && ((blockId = entity.level.getTickCachedBlock(target.add(0, -1, 0)).getId()) == Block.FLOWING_WATER || blockId == Block.STILL_WATER)) {
+                while (time <= maxRetryTime
+                        && ((blockId = entity.level
+                                                .getTickCachedBlock(target.add(0, -1, 0))
+                                                .getId())
+                                        == Block.FLOWING_WATER
+                                || blockId == Block.STILL_WATER)) {
                     target = next(entity);
                     time++;
                 }
             }
-            if (entity.getMovementSpeed() != speed)
-                entity.setMovementSpeed(speed);
-            //更新寻路target
+            if (entity.getMovementSpeed() != speed) entity.setMovementSpeed(speed);
+            // 更新寻路target
             setRouteTarget(entity, target);
-            //更新视线target
+            // 更新视线target
             setLookTarget(entity, target);
             currentTargetCalTick = 0;
             entity.getBehaviorGroup().setForceUpdateRoute(calNextTargetImmediately);
         }
-        if (durationTick <= runningTime || runningTime == -1)
-            return true;
+        if (durationTick <= runningTime || runningTime == -1) return true;
         else {
             currentTargetCalTick = 0;
             durationTick = 0;

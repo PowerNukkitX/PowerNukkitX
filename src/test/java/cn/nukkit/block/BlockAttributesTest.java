@@ -3,19 +3,15 @@ package cn.nukkit.block;
 import cn.nukkit.blockstate.BlockState;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import java.io.BufferedInputStream;
+import java.io.InputStreamReader;
+import java.util.*;
+import java.util.List;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
-
-import java.io.BufferedInputStream;
-import java.io.InputStreamReader;
-import java.util.List;
-import java.util.*;
-
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Author: daoge_cmd <br>
@@ -34,7 +30,8 @@ public class BlockAttributesTest {
     @SneakyThrows
     @BeforeAll
     static void loadBlockAttributesReference() {
-        var reader = new InputStreamReader(new BufferedInputStream(Objects.requireNonNull(BlockAttributesTest.class.getClassLoader().getResourceAsStream(BLOCK_ATTRIBUTES_REFERENCE_FILE_PATH))));
+        var reader = new InputStreamReader(new BufferedInputStream(Objects.requireNonNull(
+                BlockAttributesTest.class.getClassLoader().getResourceAsStream(BLOCK_ATTRIBUTES_REFERENCE_FILE_PATH))));
         var parser = JsonParser.parseReader(reader);
         var missingBlockSB = new StringBuilder();
         var failingBlockSB = new StringBuilder();
@@ -53,7 +50,7 @@ public class BlockAttributesTest {
                         .append(entry.getValue().getAsJsonPrimitive().toString().replaceAll("\"", ""));
             }
             try {
-                //TODO: 羊毛，木头等被拆分了的方块不能正常工作
+                // TODO: 羊毛，木头等被拆分了的方块不能正常工作
                 var block = BlockState.of(strIdBuilder.toString()).getBlock();
                 if (block instanceof BlockUnknown) {
                     missingBlockSB.append(strIdBuilder).append(" ");
@@ -69,26 +66,29 @@ public class BlockAttributesTest {
         log.error("Failed to load block " + failingBlockSB);
     }
 
-//    @Test
-//    void testBlockHash() {
-//        for (var block : BLOCKS.values()) {
-//            var ref = BLOCK_ATTRIBUTES_REFERENCE.get(block.computeUnsignedBlockStateHash());
-//            assertNotNull(ref, () -> "Failed to hash block: " + block);
-//        }
-//    }
+    //    @Test
+    //    void testBlockHash() {
+    //        for (var block : BLOCKS.values()) {
+    //            var ref = BLOCK_ATTRIBUTES_REFERENCE.get(block.computeUnsignedBlockStateHash());
+    //            assertNotNull(ref, () -> "Failed to hash block: " + block);
+    //        }
+    //    }
 
-//    @Test
-//    void testBlockColor() {
-//        boolean failed = false;
-//        for (var block : BLOCKS.values()) {
-//            var ref = BLOCK_ATTRIBUTES_REFERENCE.get(block.computeUnsignedBlockStateHash()).get("color").getAsJsonObject();
-//            var currentColor = block.getColor().toAwtColor();
-//            var refColor = new Color(ref.get("r").getAsInt(), ref.get("g").getAsInt(), ref.get("b").getAsInt(), ref.get("a").getAsInt());
-//            if (!currentColor.equals(refColor)) {
-//                log.warn("Incorrect block color! Block: " + block.getPersistenceName() + ", ref: " + refColor + ", current: " + currentColor);
-//                failed = true;
-//            }
-//        }
-//        assertFalse(failed);
-//    }
+    //    @Test
+    //    void testBlockColor() {
+    //        boolean failed = false;
+    //        for (var block : BLOCKS.values()) {
+    //            var ref =
+    // BLOCK_ATTRIBUTES_REFERENCE.get(block.computeUnsignedBlockStateHash()).get("color").getAsJsonObject();
+    //            var currentColor = block.getColor().toAwtColor();
+    //            var refColor = new Color(ref.get("r").getAsInt(), ref.get("g").getAsInt(), ref.get("b").getAsInt(),
+    // ref.get("a").getAsInt());
+    //            if (!currentColor.equals(refColor)) {
+    //                log.warn("Incorrect block color! Block: " + block.getPersistenceName() + ", ref: " + refColor + ",
+    // current: " + currentColor);
+    //                failed = true;
+    //            }
+    //        }
+    //        assertFalse(failed);
+    //    }
 }

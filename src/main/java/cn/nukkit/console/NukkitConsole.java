@@ -3,14 +3,13 @@ package cn.nukkit.console;
 import cn.nukkit.Server;
 import cn.nukkit.event.server.ServerCommandEvent;
 import cn.nukkit.plugin.InternalPlugin;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.RequiredArgsConstructor;
 import net.minecrell.terminalconsole.SimpleTerminalConsole;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
-
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @RequiredArgsConstructor
 public class NukkitConsole extends SimpleTerminalConsole {
@@ -31,7 +30,11 @@ public class NukkitConsole extends SimpleTerminalConsole {
                 server.getPluginManager().callEvent(event);
             }
             if (!event.isCancelled()) {
-                Server.getInstance().getScheduler().scheduleTask(InternalPlugin.INSTANCE, () -> server.executeCommand(event.getSender(), event.getCommand()));
+                Server.getInstance()
+                        .getScheduler()
+                        .scheduleTask(
+                                InternalPlugin.INSTANCE,
+                                () -> server.executeCommand(event.getSender(), event.getCommand()));
             }
         } else {
             consoleQueue.add(command);

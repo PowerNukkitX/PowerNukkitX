@@ -13,8 +13,7 @@ import cn.nukkit.level.Level;
  */
 public class BlockSoulSand extends BlockSolid {
 
-    public BlockSoulSand() {
-    }
+    public BlockSoulSand() {}
 
     @Override
     public String getName() {
@@ -41,7 +40,9 @@ public class BlockSoulSand extends BlockSolid {
         return ItemTool.TYPE_SHOVEL;
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed MaxY BB, soul sand is a normal full cube in Bedrock Edition")
+    @PowerNukkitDifference(
+            since = "1.4.0.0-PN",
+            info = "Fixed MaxY BB, soul sand is a normal full cube in Bedrock Edition")
     @Override
     public double getMaxY() {
         return this.y + 1;
@@ -80,5 +81,4 @@ public class BlockSoulSand extends BlockSolid {
         }
         return 0;
     }
-
 }

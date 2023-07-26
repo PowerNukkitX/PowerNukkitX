@@ -21,13 +21,10 @@ public class RequestChunkRadiusPacket_v575 extends DataPacket {
     }
 
     @Override
-    public void encode() {
-
-    }
+    public void encode() {}
 
     @Override
     public byte pid() {
         return NETWORK_ID;
     }
-
 }

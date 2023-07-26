@@ -50,7 +50,7 @@ public class EntityPhantom extends EntityMob implements EntityFlyable, EntitySmi
 
     @Override
     public Item[] getDrops() {
-        return new Item[]{Item.get(470)};
+        return new Item[] {Item.get(470)};
     }
 
     @PowerNukkitOnly

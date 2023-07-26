@@ -42,7 +42,7 @@ public class PlayerOffhandInventory extends BaseInventory {
             if (player == this.getHolder()) {
                 InventoryContentPacket pk2 = new InventoryContentPacket();
                 pk2.inventoryId = ContainerIds.OFFHAND;
-                pk2.slots = new Item[]{item};
+                pk2.slots = new Item[] {item};
                 player.dataPacket(pk2);
             } else {
                 player.dataPacket(pk);

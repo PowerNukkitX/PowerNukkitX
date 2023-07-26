@@ -22,5 +22,4 @@ public class BlockNyliumWarped extends BlockNylium {
     public int getId() {
         return WARPED_NYLIUM;
     }
-
 }

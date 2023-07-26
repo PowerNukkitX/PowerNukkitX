@@ -4,7 +4,20 @@ import cn.nukkit.math.NukkitRandom;
 
 public class NoiseGeneratorSimplexF {
     public static final float SQRT_3 = (float) Math.sqrt(3.0f);
-    private static final int[][] grad3 = new int[][]{{1, 1, 0}, {-1, 1, 0}, {1, -1, 0}, {-1, -1, 0}, {1, 0, 1}, {-1, 0, 1}, {1, 0, -1}, {-1, 0, -1}, {0, 1, 1}, {0, -1, 1}, {0, 1, -1}, {0, -1, -1}};
+    private static final int[][] grad3 = new int[][] {
+        {1, 1, 0},
+        {-1, 1, 0},
+        {1, -1, 0},
+        {-1, -1, 0},
+        {1, 0, 1},
+        {-1, 0, 1},
+        {1, 0, -1},
+        {-1, 0, -1},
+        {0, 1, 1},
+        {0, -1, 1},
+        {0, 1, -1},
+        {0, -1, -1}
+    };
     private static final float F2 = 0.5f * (SQRT_3 - 1.0f);
     private static final float G2 = (3.0f - SQRT_3) / 6.0f;
     private final int[] p;
@@ -108,7 +121,15 @@ public class NoiseGeneratorSimplexF {
         return 70.0f * (d0 + d1 + d2);
     }
 
-    public void add(float[] p_151606_1_, float p_151606_2_, float p_151606_4_, int p_151606_6_, int p_151606_7_, float p_151606_8_, float p_151606_10_, float p_151606_12_) {
+    public void add(
+            float[] p_151606_1_,
+            float p_151606_2_,
+            float p_151606_4_,
+            int p_151606_6_,
+            int p_151606_7_,
+            float p_151606_8_,
+            float p_151606_10_,
+            float p_151606_12_) {
         int i = 0;
 
         for (int j = 0; j < p_151606_7_; ++j) {

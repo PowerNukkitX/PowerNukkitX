@@ -47,9 +47,8 @@ public class EntityPolarBear extends EntityAnimal implements EntityWalkable {
 
     @Override
     public Item[] getDrops() {
-        return new Item[]{Item.get(Item.RAW_FISH), Item.get(Item.RAW_SALMON)};
+        return new Item[] {Item.get(Item.RAW_FISH), Item.get(Item.RAW_SALMON)};
     }
-
 
     @PowerNukkitOnly
     @Since("1.5.1.0-PN")

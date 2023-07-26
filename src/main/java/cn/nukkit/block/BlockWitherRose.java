@@ -32,8 +32,7 @@ public class BlockWitherRose extends BlockFlower {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return CommonBlockProperties.EMPTY_PROPERTIES;
     }
@@ -53,8 +52,10 @@ public class BlockWitherRose extends BlockFlower {
     public void onEntityCollide(Entity entity) {
         if (level.getServer().getDifficulty() != 0 && entity instanceof EntityLiving) {
             EntityLiving living = (EntityLiving) entity;
-            if (!living.invulnerable && !living.hasEffect(Effect.WITHER)
-                    && (!(living instanceof Player) || !((Player) living).isCreative() && !((Player) living).isSpectator())) {
+            if (!living.invulnerable
+                    && !living.hasEffect(Effect.WITHER)
+                    && (!(living instanceof Player)
+                            || !((Player) living).isCreative() && !((Player) living).isSpectator())) {
                 Effect effect = Effect.getEffect(Effect.WITHER);
                 effect.setDuration(40);
                 effect.setAmplifier(1);
@@ -72,7 +73,6 @@ public class BlockWitherRose extends BlockFlower {
     public boolean hasEntityCollision() {
         return true;
     }
-
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly

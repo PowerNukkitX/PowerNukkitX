@@ -7,9 +7,8 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.MinecraftItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.math.NukkitMath;
-
-import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
+import javax.annotation.Nullable;
 
 /**
  * @author joserobjr
@@ -20,8 +19,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public abstract class BlockOre extends BlockSolid {
     @PowerNukkitOnly
     @Since("FUTURE")
-    public BlockOre() {
-    }
+    public BlockOre() {}
 
     @Override
     public Item[] getDrops(Item item) {
@@ -40,16 +38,15 @@ public abstract class BlockOre extends BlockSolid {
         }
         int fortuneLevel = NukkitMath.clamp(item.getEnchantmentLevel(Enchantment.ID_FORTUNE_DIGGING), 0, 3);
         if (fortuneLevel > 0) {
-            int increase = ThreadLocalRandom.current().nextInt((int)(multiplier * fortuneLevel) + 1);
+            int increase = ThreadLocalRandom.current().nextInt((int) (multiplier * fortuneLevel) + 1);
             amount += increase;
         }
-        return new Item[]{ rawMaterial.get(amount) };
+        return new Item[] {rawMaterial.get(amount)};
     }
 
     @PowerNukkitOnly
     @Since("FUTURE")
-    @Nullable
-    protected abstract MinecraftItemID getRawMaterial();
+    @Nullable protected abstract MinecraftItemID getRawMaterial();
 
     @PowerNukkitOnly
     @Since("FUTURE")

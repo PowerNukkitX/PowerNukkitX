@@ -10,5 +10,4 @@ public interface Library {
     String getArtifactId();
 
     String getVersion();
-
 }

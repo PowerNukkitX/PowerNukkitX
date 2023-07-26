@@ -23,8 +23,7 @@ public abstract class BlockFallableMeta extends BlockFallable {
     }
 
     @Since("1.4.0.0-PN")
-    @NotNull
-    @PowerNukkitOnly
+    @NotNull @PowerNukkitOnly
     @Override
     public abstract BlockProperties getProperties();
 }

@@ -5,8 +5,6 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.ai.route.finder.IRouteFinder;
 import cn.nukkit.math.Vector3;
-import org.jetbrains.annotations.NotNull;
-
 import java.security.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
@@ -15,6 +13,7 @@ import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * 寻路管理器，所有的寻路任务都应该提交到这个管理器中，管理器负责调度寻路任务，实现资源利用最大化
@@ -27,7 +26,8 @@ public class RouteFindingManager {
     protected final ExecutorService pool;
 
     protected RouteFindingManager() {
-        pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors(), new RouteFindingPoolThreadFactory(), null, true);
+        pool = new ForkJoinPool(
+                Runtime.getRuntime().availableProcessors(), new RouteFindingPoolThreadFactory(), null, true);
     }
 
     public static RouteFindingManager getInstance() {
@@ -56,20 +56,19 @@ public class RouteFindingManager {
     public static final class RouteFindingPoolThreadFactory implements ForkJoinPool.ForkJoinWorkerThreadFactory {
         @SuppressWarnings("removal")
         private static final AccessControlContext ACC = contextWithPermissions(
-                new RuntimePermission("getClassLoader"),
-                new RuntimePermission("setContextClassLoader"));
+                new RuntimePermission("getClassLoader"), new RuntimePermission("setContextClassLoader"));
 
         @SuppressWarnings("removal")
         static AccessControlContext contextWithPermissions(@NotNull Permission... perms) {
             Permissions permissions = new Permissions();
-            for (var perm : perms)
-                permissions.add(perm);
-            return new AccessControlContext(new ProtectionDomain[]{new ProtectionDomain(null, permissions)});
+            for (var perm : perms) permissions.add(perm);
+            return new AccessControlContext(new ProtectionDomain[] {new ProtectionDomain(null, permissions)});
         }
 
         @SuppressWarnings("removal")
         public ForkJoinWorkerThread newThread(ForkJoinPool pool) {
-            return AccessController.doPrivileged((PrivilegedAction<ForkJoinWorkerThread>) () -> new RouteFindingThread(pool), ACC);
+            return AccessController.doPrivileged(
+                    (PrivilegedAction<ForkJoinWorkerThread>) () -> new RouteFindingThread(pool), ACC);
         }
     }
 

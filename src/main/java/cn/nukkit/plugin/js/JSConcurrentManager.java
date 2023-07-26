@@ -1,13 +1,12 @@
 package cn.nukkit.plugin.js;
 
 import cn.nukkit.plugin.CommonJSPlugin;
-import org.graalvm.polyglot.Context;
-import org.graalvm.polyglot.Value;
-
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.Value;
 
 public final class JSConcurrentManager {
     public static final Object PROMISE_FAILED = new Object();

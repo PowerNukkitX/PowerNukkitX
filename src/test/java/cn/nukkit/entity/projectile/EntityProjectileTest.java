@@ -1,5 +1,10 @@
 package cn.nukkit.entity.projectile;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
@@ -19,11 +24,6 @@ import org.powernukkit.tests.api.MockLevel;
 import org.powernukkit.tests.api.MockPlayer;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-
 /**
  * @author joserobjr
  * @since 2021-12-15
@@ -39,6 +39,7 @@ class EntityProjectileTest {
     Level level;
 
     TestProjectile projectile;
+
     @BeforeEach
     void setUp() {
         level.setBlockStateAt(0, 63, 0, BlockState.of(BlockID.STONE));

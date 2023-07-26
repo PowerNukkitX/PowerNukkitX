@@ -13,16 +13,16 @@ import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.utils.Faceable;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 @Since("1.6.0.0-PNX")
 @PowerNukkitOnly
 public class BlockSmallDripleaf extends BlockFlowable implements Faceable {
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.DIRECTION,CommonBlockProperties.UPPER_BLOCK);
+    public static final BlockProperties PROPERTIES =
+            new BlockProperties(CommonBlockProperties.DIRECTION, CommonBlockProperties.UPPER_BLOCK);
 
     protected BlockSmallDripleaf() {
         super(0);
@@ -40,8 +40,7 @@ public class BlockSmallDripleaf extends BlockFlowable implements Faceable {
 
     @Since("1.6.0.0-PNX")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -58,12 +57,12 @@ public class BlockSmallDripleaf extends BlockFlowable implements Faceable {
         setPropertyValue(CommonBlockProperties.DIRECTION, face);
     }
 
-    public boolean isUpperBlock(){
+    public boolean isUpperBlock() {
         return this.getBooleanValue(CommonBlockProperties.UPPER_BLOCK);
     }
 
-    public void setUpperBlock(boolean isUpperBlock){
-        this.setBooleanValue(CommonBlockProperties.UPPER_BLOCK,isUpperBlock);
+    public void setUpperBlock(boolean isUpperBlock) {
+        this.setBooleanValue(CommonBlockProperties.UPPER_BLOCK, isUpperBlock);
     }
 
     @PowerNukkitOnly
@@ -78,7 +77,15 @@ public class BlockSmallDripleaf extends BlockFlowable implements Faceable {
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
         BlockSmallDripleaf dripleaf = new BlockSmallDripleaf();
         BlockSmallDripleaf dripleafTop = new BlockSmallDripleaf();
         dripleafTop.setUpperBlock(true);
@@ -95,8 +102,8 @@ public class BlockSmallDripleaf extends BlockFlowable implements Faceable {
     @Override
     public Item[] getDrops(Item item) {
         if (item.isShears()) {
-            return new Item[]{toItem()};
-        }else{
+            return new Item[] {toItem()};
+        } else {
             return Item.EMPTY_ARRAY;
         }
     }
@@ -104,8 +111,7 @@ public class BlockSmallDripleaf extends BlockFlowable implements Faceable {
     @Override
     public boolean onBreak(@NotNull Item item) {
         this.level.setBlock(this, new BlockAir(), true, true);
-        if (item != null && item.isShears())
-            this.level.dropItem(this, this.toItem());
+        if (item != null && item.isShears()) this.level.dropItem(this, this.toItem());
         if (this.getSide(BlockFace.UP).getId() == BlockID.SMALL_DRIPLEAF_BLOCK) {
             this.level.getBlock(this.getSide(BlockFace.UP)).onBreak(null);
         }
@@ -142,33 +148,39 @@ public class BlockSmallDripleaf extends BlockFlowable implements Faceable {
             blockBigDripleafHead.setHead(true);
 
             Block buttom = this.getBlock();
-            while(buttom.getSide(BlockFace.DOWN).getId() == BlockID.SMALL_DRIPLEAF_BLOCK){
+            while (buttom.getSide(BlockFace.DOWN).getId() == BlockID.SMALL_DRIPLEAF_BLOCK) {
                 buttom = buttom.getSide(BlockFace.DOWN);
             }
 
             for (int i = 0; i < height; i++) {
-                this.level.setBlock(buttom.add(0,i,0),blockBigDripleafDown,true,true);
+                this.level.setBlock(buttom.add(0, i, 0), blockBigDripleafDown, true, true);
             }
-            this.level.setBlock(buttom.add(0,height,0),blockBigDripleafHead,true,true);
+            this.level.setBlock(buttom.add(0, height, 0), blockBigDripleafHead, true, true);
 
-            this.level.addParticleEffect(this.add(0.5,0.5,0.5), ParticleEffect.CROP_GROWTH);
+            this.level.addParticleEffect(this.add(0.5, 0.5, 0.5), ParticleEffect.CROP_GROWTH);
             item.count--;
             return true;
         }
         return false;
     }
 
-    public boolean canKeepAlive(Position pos){
+    public boolean canKeepAlive(Position pos) {
         Block blockDown = this.level.getBlock(pos.getSide(BlockFace.DOWN));
-        Block blockHere = this.level.getBlock(pos,1);
+        Block blockHere = this.level.getBlock(pos, 1);
         Block blockUp = this.level.getBlock(pos.getSide(BlockFace.UP));
         if (this.level.getBlock(blockDown) instanceof BlockClay) {
             return true;
         }
-        if (this.level.getBlock(blockDown) instanceof BlockSmallDripleaf && !((BlockSmallDripleaf)this.level.getBlock(blockDown)).isUpperBlock()){
+        if (this.level.getBlock(blockDown) instanceof BlockSmallDripleaf
+                && !((BlockSmallDripleaf) this.level.getBlock(blockDown)).isUpperBlock()) {
             return true;
         }
-        if (blockHere instanceof BlockWater && (blockUp instanceof BlockAir || blockUp instanceof BlockSmallDripleaf) && (blockDown instanceof BlockGrass || blockDown instanceof BlockDirt || blockDown instanceof BlockDirtWithRoots || blockDown instanceof BlockMoss)){
+        if (blockHere instanceof BlockWater
+                && (blockUp instanceof BlockAir || blockUp instanceof BlockSmallDripleaf)
+                && (blockDown instanceof BlockGrass
+                        || blockDown instanceof BlockDirt
+                        || blockDown instanceof BlockDirtWithRoots
+                        || blockDown instanceof BlockMoss)) {
             return true;
         }
         return false;

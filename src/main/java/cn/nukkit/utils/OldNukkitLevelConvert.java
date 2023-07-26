@@ -9,14 +9,15 @@ import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 
-
 @Log4j2
 public final class OldNukkitLevelConvert {
 
-    //更新旧的Nukkit 256世界到384世界
+    // 更新旧的Nukkit 256世界到384世界
     @SneakyThrows
     public static void convertToPNXWorld(@NotNull LevelProvider levelProvider, @NotNull BaseRegionLoader loader) {
-        log.info(Server.getInstance().getLanguage().tr("nukkit.anvil.converter.update-region", levelProvider.getName(), loader.getX(), loader.getZ()));
+        log.info(Server.getInstance()
+                .getLanguage()
+                .tr("nukkit.anvil.converter.update-region", levelProvider.getName(), loader.getX(), loader.getZ()));
         for (int chunkX = 0; chunkX < 32; chunkX++) {
             for (int chunkZ = 0; chunkZ < 32; chunkZ++) {
                 var chunk = loader.readChunk(chunkX, chunkZ);
@@ -34,7 +35,10 @@ public final class OldNukkitLevelConvert {
                             }
                         }
                     }
-                    levelProvider.setChunk(chunk.getX(), chunk.getZ(), chunk);//使用levelProvider.setChunk，用loader.writeChunk()在世界重生点会失效，不知道为什么
+                    levelProvider.setChunk(
+                            chunk.getX(),
+                            chunk.getZ(),
+                            chunk); // 使用levelProvider.setChunk，用loader.writeChunk()在世界重生点会失效，不知道为什么
                 }
             }
         }

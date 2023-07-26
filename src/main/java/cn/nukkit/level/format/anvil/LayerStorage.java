@@ -26,10 +26,9 @@ import cn.nukkit.level.format.anvil.util.BlockStorage;
 import cn.nukkit.level.format.anvil.util.ImmutableBlockStorage;
 import cn.nukkit.level.format.updater.ChunkUpdater;
 import cn.nukkit.utils.BinaryStream;
-
-import javax.annotation.Nullable;
 import java.util.function.Consumer;
 import java.util.function.IntSupplier;
+import javax.annotation.Nullable;
 
 /**
  * @author joserobjr
@@ -45,9 +44,7 @@ public class LayerStorage implements Cloneable {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    protected LayerStorage() {
-
-    }
+    protected LayerStorage() {}
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -79,15 +76,13 @@ public class LayerStorage implements Cloneable {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nullable
-    public BlockStorage getStorageOrNull(int layer) {
+    @Nullable public BlockStorage getStorageOrNull(int layer) {
         return null;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public void delayPaletteUpdates() {
-    }
+    public void delayPaletteUpdates() {}
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -104,9 +99,7 @@ public class LayerStorage implements Cloneable {
 
     @PowerNukkitXOnly
     @Since("1.19.21-r1")
-    public void setNeedReObfuscate() {
-
-    }
+    public void setNeedReObfuscate() {}
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -116,8 +109,7 @@ public class LayerStorage implements Cloneable {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public void compress(Consumer<LayerStorage> setLayerStorage) {
-    }
+    public void compress(Consumer<LayerStorage> setLayerStorage) {}
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")

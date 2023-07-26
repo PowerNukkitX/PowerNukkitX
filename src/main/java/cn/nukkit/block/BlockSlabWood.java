@@ -14,10 +14,7 @@ import org.jetbrains.annotations.NotNull;
 public class BlockSlabWood extends BlockSlab {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(
-            WoodType.PROPERTY,
-            TOP_SLOT_PROPERTY
-    );
+    public static final BlockProperties PROPERTIES = new BlockProperties(WoodType.PROPERTY, TOP_SLOT_PROPERTY);
 
     public BlockSlabWood() {
         this(0);
@@ -29,7 +26,7 @@ public class BlockSlabWood extends BlockSlab {
 
     @Override
     public String getName() {
-        return (isOnTop()? "Upper " : "") + getSlabName() + " Wood Slab";
+        return (isOnTop() ? "Upper " : "") + getSlabName() + " Wood Slab";
     }
 
     @PowerNukkitOnly
@@ -46,13 +43,13 @@ public class BlockSlabWood extends BlockSlab {
     @PowerNukkitOnly
     @Override
     public boolean isSameType(BlockSlab slab) {
-        return slab.getId() == getId() && slab.getPropertyValue(WoodType.PROPERTY).equals(getWoodType());
+        return slab.getId() == getId()
+                && slab.getPropertyValue(WoodType.PROPERTY).equals(getWoodType());
     }
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -71,7 +68,7 @@ public class BlockSlabWood extends BlockSlab {
     public int getToolType() {
         return ItemTool.TYPE_AXE;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public WoodType getWoodType() {
@@ -83,5 +80,4 @@ public class BlockSlabWood extends BlockSlab {
     public void setWoodType(WoodType type) {
         setPropertyValue(WoodType.PROPERTY, type);
     }
-
 }

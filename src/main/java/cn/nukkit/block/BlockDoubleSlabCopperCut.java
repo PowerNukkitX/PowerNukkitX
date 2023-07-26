@@ -3,10 +3,9 @@ package cn.nukkit.block;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.value.OxidizationLevel;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 import java.util.Locale;
+import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author joserobjr
@@ -43,7 +42,9 @@ public class BlockDoubleSlabCopperCut extends BlockDoubleSlabCopperBase {
         OxidizationLevel oxidizationLevel = getOxidizationLevel();
         if (!OxidizationLevel.UNAFFECTED.equals(oxidizationLevel)) {
             String name = oxidizationLevel.name();
-            sb.append(name.charAt(0)).append(name.substring(1).toLowerCase(Locale.ENGLISH)).append(' ');
+            sb.append(name.charAt(0))
+                    .append(name.substring(1).toLowerCase(Locale.ENGLISH))
+                    .append(' ');
         }
         return sb.append("Cut Copper").toString();
     }
@@ -64,13 +65,13 @@ public class BlockDoubleSlabCopperCut extends BlockDoubleSlabCopperBase {
         }
         switch (oxidizationLevel) {
             case UNAFFECTED:
-                return waxed? WAXED_DOUBLE_CUT_COPPER_SLAB : DOUBLE_CUT_COPPER_SLAB;
+                return waxed ? WAXED_DOUBLE_CUT_COPPER_SLAB : DOUBLE_CUT_COPPER_SLAB;
             case EXPOSED:
-                return waxed? WAXED_EXPOSED_DOUBLE_CUT_COPPER_SLAB : EXPOSED_DOUBLE_CUT_COPPER_SLAB;
+                return waxed ? WAXED_EXPOSED_DOUBLE_CUT_COPPER_SLAB : EXPOSED_DOUBLE_CUT_COPPER_SLAB;
             case WEATHERED:
-                return waxed? WAXED_WEATHERED_DOUBLE_CUT_COPPER_SLAB : WEATHERED_DOUBLE_CUT_COPPER_SLAB;
+                return waxed ? WAXED_WEATHERED_DOUBLE_CUT_COPPER_SLAB : WEATHERED_DOUBLE_CUT_COPPER_SLAB;
             case OXIDIZED:
-                return waxed? WAXED_OXIDIZED_DOUBLE_CUT_COPPER_SLAB : OXIDIZED_DOUBLE_CUT_COPPER_SLAB;
+                return waxed ? WAXED_OXIDIZED_DOUBLE_CUT_COPPER_SLAB : OXIDIZED_DOUBLE_CUT_COPPER_SLAB;
             default:
                 return getId();
         }
@@ -78,8 +79,7 @@ public class BlockDoubleSlabCopperCut extends BlockDoubleSlabCopperBase {
 
     @Since("FUTURE")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public OxidizationLevel getOxidizationLevel() {
         return OxidizationLevel.UNAFFECTED;
     }

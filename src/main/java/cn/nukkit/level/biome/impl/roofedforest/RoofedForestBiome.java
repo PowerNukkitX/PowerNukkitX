@@ -29,5 +29,4 @@ public class RoofedForestBiome extends GrassyBiome {
     public String getName() {
         return "Roofed Forest";
     }
-
 }

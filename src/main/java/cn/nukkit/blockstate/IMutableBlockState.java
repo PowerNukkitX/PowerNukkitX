@@ -1,5 +1,7 @@
 package cn.nukkit.blockstate;
 
+import static cn.nukkit.blockstate.Loggers.logIMutableBlockState;
+
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
@@ -9,17 +11,14 @@ import cn.nukkit.blockstate.exception.InvalidBlockStateDataTypeException;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.utils.Validation;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nonnegative;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.function.Consumer;
-
-import static cn.nukkit.blockstate.Loggers.logIMutableBlockState;
+import javax.annotation.Nonnegative;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
@@ -40,7 +39,7 @@ public interface IMutableBlockState extends IBlockState {
         if (state.getBlockId() == getBlockId()) {
             setDataStorage(state.getDataStorage());
         } else {
-            //TODO Implement property value copying
+            // TODO Implement property value copying
             throw new UnsupportedOperationException();
         }
     }
@@ -61,12 +60,11 @@ public interface IMutableBlockState extends IBlockState {
      */
     @PowerNukkitOnly
     @Since("1.5.1.0-PN")
-    @NotNull
-    default IMutableBlockState forState(@NotNull IBlockState state) throws InvalidBlockStateException {
+    @NotNull default IMutableBlockState forState(@NotNull IBlockState state) throws InvalidBlockStateException {
         setState(state);
         return this;
     }
-    
+
     /**
      * @throws InvalidBlockStateException If the given storage has invalid data properties
      * @throws InvalidBlockStateDataTypeException If the storage class type is not supported
@@ -108,7 +106,8 @@ public interface IMutableBlockState extends IBlockState {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    default boolean setDataStorage(@Nonnegative Number storage, boolean repair, @Nullable Consumer<BlockStateRepair> callback) {
+    default boolean setDataStorage(
+            @Nonnegative Number storage, boolean repair, @Nullable Consumer<BlockStateRepair> callback) {
         try {
             setDataStorage(storage);
             return false;
@@ -122,11 +121,12 @@ public interface IMutableBlockState extends IBlockState {
                     ex.addSuppressed(e);
                     throw ex;
                 }
-                
+
                 try {
                     setDataStorage(repairStorage(getBlockId(), bigInteger, getProperties(), callback));
                 } catch (InvalidBlockPropertyException | InvalidBlockStateException e2) {
-                    InvalidBlockStateException ex = new InvalidBlockStateException(e.getState(), "The state is invalid and could not be repaired", e);
+                    InvalidBlockStateException ex = new InvalidBlockStateException(
+                            e.getState(), "The state is invalid and could not be repaired", e);
                     ex.addSuppressed(e2);
                     throw ex;
                 }
@@ -141,7 +141,8 @@ public interface IMutableBlockState extends IBlockState {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    default boolean setDataStorageFromInt(@Nonnegative final int storage, boolean repair, @Nullable Consumer<BlockStateRepair> callback) {
+    default boolean setDataStorageFromInt(
+            @Nonnegative final int storage, boolean repair, @Nullable Consumer<BlockStateRepair> callback) {
         try {
             setDataStorageFromInt(storage);
             return false;
@@ -163,13 +164,14 @@ public interface IMutableBlockState extends IBlockState {
             setDataStorageFromInt(itemBlockMeta);
             return;
         }
-        
+
         MutableBlockState item = itemBlockProperties.createMutableState(getBlockId());
         item.setDataStorageFromInt(itemBlockMeta);
 
         MutableBlockState converted = allProperties.createMutableState(getBlockId());
-        itemBlockProperties.getItemPropertyNames().forEach(property ->
-                converted.setPropertyValue(property, item.getPropertyValue(property)));
+        itemBlockProperties
+                .getItemPropertyNames()
+                .forEach(property -> converted.setPropertyValue(property, item.getPropertyValue(property)));
         setDataStorage(converted.getDataStorage());
     }
 
@@ -220,12 +222,13 @@ public interface IMutableBlockState extends IBlockState {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @SuppressWarnings("unchecked")
-    @NotNull
-    static BigInteger repairStorage(
-            @Nonnegative int blockId, @NotNull final BigInteger storage, @NotNull final BlockProperties properties,
+    @NotNull static BigInteger repairStorage(
+            @Nonnegative int blockId,
+            @NotNull final BigInteger storage,
+            @NotNull final BlockProperties properties,
             @Nullable final Consumer<BlockStateRepair> callback) {
         Validation.checkPositive("blockId", blockId);
-        
+
         int checkedBits = 0;
         int repairs = 0;
         BigInteger current = storage;
@@ -240,18 +243,27 @@ public interface IMutableBlockState extends IBlockState {
                 if (callback != null) {
                     Serializable fixed = property.getValue(next, offset);
                     BlockStateRepair stateRepair = new BlockStateRepair(
-                            blockId, properties,
-                            storage, current, next, repairs++, property, offset,
+                            blockId,
+                            properties,
+                            storage,
+                            current,
+                            next,
+                            repairs++,
+                            property,
+                            offset,
                             property.getMetaFromBigInt(current, offset),
-                            fixed, fixed, e
-                    );
+                            fixed,
+                            fixed,
+                            e);
                     callback.accept(stateRepair);
                     Serializable proposed = stateRepair.getProposedPropertyValue();
                     if (!fixed.equals(proposed)) {
                         try {
                             next = ((BlockProperty<Serializable>) property).setValue(current, offset, proposed);
                         } catch (InvalidBlockPropertyException proposedFailed) {
-                            logIMutableBlockState.warn("Could not apply the proposed repair, using the default proposal. "+stateRepair, proposedFailed);
+                            logIMutableBlockState.warn(
+                                    "Could not apply the proposed repair, using the default proposal. " + stateRepair,
+                                    proposedFailed);
                         }
                     }
                 }
@@ -264,26 +276,35 @@ public interface IMutableBlockState extends IBlockState {
             BigInteger next = current.and(validMask);
             if (callback != null) {
                 BlockStateRepair stateRepair = new BlockStateRepair(
-                        blockId, properties,
-                        storage, current, next, repairs, null,
-                        checkedBits, current.shiftRight(checkedBits).intValue(), 0, 0,
+                        blockId,
+                        properties,
+                        storage,
+                        current,
+                        next,
+                        repairs,
+                        null,
+                        checkedBits,
+                        current.shiftRight(checkedBits).intValue(),
+                        0,
+                        0,
                         null);
                 callback.accept(stateRepair);
                 if (!Integer.valueOf(0).equals(stateRepair.getProposedPropertyValue())) {
-                    logIMutableBlockState.warn("Could not apply the proposed repair, using the default proposal. "+stateRepair, 
+                    logIMutableBlockState.warn(
+                            "Could not apply the proposed repair, using the default proposal. " + stateRepair,
                             new IllegalStateException("Attempted to propose a value outside the properties boundary"));
                 }
             }
             current = next;
         }
-        
+
         return current;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    static RuntimeException handleUnsupportedStorageType(@Nonnegative int blockId, @Nonnegative Number storage, RuntimeException e) {
+    @NotNull static RuntimeException handleUnsupportedStorageType(
+            @Nonnegative int blockId, @Nonnegative Number storage, RuntimeException e) {
         InvalidBlockStateException ex;
         try {
             ex = new InvalidBlockStateException(BlockState.of(blockId, storage), e);

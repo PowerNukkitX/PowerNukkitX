@@ -2,13 +2,12 @@ package cn.nukkit.utils;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import lombok.NoArgsConstructor;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
@@ -129,7 +128,8 @@ public class HumanStringComparator implements Comparator<String> {
         return Integer.compare(len1, len2);
     }
 
-    private boolean detectOmittedNumber(List<String> l1, int len1, int i, String str2, int strLen2, int minStrLen, String commonPart1) {
+    private boolean detectOmittedNumber(
+            List<String> l1, int len1, int i, String str2, int strLen2, int minStrLen, String commonPart1) {
         String combined;
         String comparingWith;
         String next1 = len1 > i + 1 ? l1.get(i + 1) : null;
@@ -173,8 +173,7 @@ public class HumanStringComparator implements Comparator<String> {
         return list;
     }
 
-    @NotNull
-    private List<String> split(String str) {
+    @NotNull private List<String> split(String str) {
         int length = str.length();
         if (length == 0) {
             return Collections.emptyList();

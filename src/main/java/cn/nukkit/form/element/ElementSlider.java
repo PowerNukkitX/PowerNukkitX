@@ -4,11 +4,13 @@ import com.google.gson.annotations.SerializedName;
 
 public class ElementSlider extends Element {
 
-    private final String type = "slider"; //This variable is used for JSON import operations. Do NOT delete :) -- @Snake1999
+    private final String type =
+            "slider"; // This variable is used for JSON import operations. Do NOT delete :) -- @Snake1999
     private String text = "";
     private float min = 0f;
     private float max = 100f;
     private int step;
+
     @SerializedName("default")
     private float defaultValue;
 

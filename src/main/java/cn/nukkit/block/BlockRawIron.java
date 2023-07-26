@@ -7,7 +7,6 @@ import cn.nukkit.api.Since;
  * @author LoboMetalurgico
  * @since 08/06/2021
  */
-
 @PowerNukkitOnly
 @Since("FUTURE")
 public class BlockRawIron extends BlockRaw {
@@ -32,5 +31,4 @@ public class BlockRawIron extends BlockRaw {
     public int getId() {
         return RAW_IRON_BLOCK;
     }
-
 }

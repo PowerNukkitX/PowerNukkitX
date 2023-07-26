@@ -55,7 +55,7 @@ public class EntityExplosionPrimeEvent extends EntityEvent implements Cancellabl
         if (!incendiary) {
             fireChance = 0;
         } else if (fireChance <= 0) {
-            fireChance = 1.0/3.0;
+            fireChance = 1.0 / 3.0;
         }
     }
 

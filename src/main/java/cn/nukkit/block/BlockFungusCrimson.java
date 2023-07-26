@@ -5,7 +5,6 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.level.generator.object.tree.ObjectCrimsonTree;
 import cn.nukkit.math.NukkitRandom;
-
 import javax.annotation.Nullable;
 
 @Since("1.4.0.0-PN")
@@ -50,5 +49,4 @@ public class BlockFungusCrimson extends BlockFungus {
         this.feature.placeObject(this.getLevel(), this.getFloorX(), this.getFloorY(), this.getFloorZ(), nukkitRandom);
         return true;
     }
-
 }

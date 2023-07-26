@@ -4,7 +4,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
-
 import java.util.List;
 import java.util.Objects;
 
@@ -44,8 +43,6 @@ public class StructureGrowEvent extends LevelEvent implements Cancellable {
     @Since("1.4.0.0-PN")
     public void setBlockList(List<Block> blocks) {
         this.blocks.clear();
-        if(blocks != null)
-            this.blocks.addAll(blocks);
+        if (blocks != null) this.blocks.addAll(blocks);
     }
-
 }

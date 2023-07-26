@@ -18,14 +18,14 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.Faceable;
+import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
-
 @PowerNukkitXOnly
 @Since("1.20.0-r2")
-public class BlockChiseledBookshelf extends BlockBookshelf implements BlockEntityHolder<BlockEntityChiseledBookshelf>, Faceable {
+public class BlockChiseledBookshelf extends BlockBookshelf
+        implements BlockEntityHolder<BlockEntityChiseledBookshelf>, Faceable {
     public static final IntBlockProperty BOOKS_STORED = new IntBlockProperty("books_stored", false, 63);
     public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.DIRECTION, BOOKS_STORED);
 
@@ -37,8 +37,7 @@ public class BlockChiseledBookshelf extends BlockBookshelf implements BlockEntit
         this(0);
     }
 
-    @NotNull
-    public BlockProperties getProperties() {
+    @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -60,7 +59,15 @@ public class BlockChiseledBookshelf extends BlockBookshelf implements BlockEntit
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
         if (player != null) {
             setBlockFace(player.getHorizontalFacing().getOpposite());
         } else {
@@ -79,14 +86,12 @@ public class BlockChiseledBookshelf extends BlockBookshelf implements BlockEntit
         return BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt) != null;
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public Class<? extends BlockEntityChiseledBookshelf> getBlockEntityClass() {
         return BlockEntityChiseledBookshelf.class;
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getBlockEntityType() {
         return BlockEntity.CHISELED_BOOKSHELF;
     }
@@ -102,20 +107,23 @@ public class BlockChiseledBookshelf extends BlockBookshelf implements BlockEntit
              * west  x==0  The lower left corner is the origin
              * north z==0  The lower right corner is the origin
              */
-            Vector2 clickPos = switch (blockFace) {
-                case NORTH -> new Vector2(1 - clickPoint.getX(), clickPoint.getY());
-                case SOUTH -> new Vector2(clickPoint.getX(), clickPoint.getY());
-                case WEST -> new Vector2(clickPoint.getZ(),  clickPoint.getY());
-                case EAST -> new Vector2(1 -clickPoint.getZ(), clickPoint.getY());
-                default -> throw new IllegalArgumentException(blockFace.toString());
-            };
+            Vector2 clickPos =
+                    switch (blockFace) {
+                        case NORTH -> new Vector2(1 - clickPoint.getX(), clickPoint.getY());
+                        case SOUTH -> new Vector2(clickPoint.getX(), clickPoint.getY());
+                        case WEST -> new Vector2(clickPoint.getZ(), clickPoint.getY());
+                        case EAST -> new Vector2(1 - clickPoint.getZ(), clickPoint.getY());
+                        default -> throw new IllegalArgumentException(blockFace.toString());
+                    };
             int index = getRegion(clickPos);
             BlockEntityChiseledBookshelf blockEntity = this.getBlockEntity();
             if (blockEntity != null) {
                 if (blockEntity.hasBook(index)) {
                     Item book = blockEntity.removeBook(index);
                     player.getInventory().addItem(book);
-                }else if (item instanceof ItemBook || item instanceof ItemBookEnchanted || item instanceof ItemBookWritable) {
+                } else if (item instanceof ItemBook
+                        || item instanceof ItemBookEnchanted
+                        || item instanceof ItemBookWritable) {
                     Item itemClone = item.clone();
                     if (!player.isCreative()) {
                         itemClone.setCount(itemClone.getCount() - 1);

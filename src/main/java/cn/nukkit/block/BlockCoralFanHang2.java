@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.PERMANENTLY_DEAD;
+
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.ArrayBlockProperty;
@@ -7,15 +9,13 @@ import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.value.CoralType;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.PERMANENTLY_DEAD;
-
 @PowerNukkitOnly
 public class BlockCoralFanHang2 extends BlockCoralFanHang {
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
-    public static final ArrayBlockProperty<CoralType> HANG2_TYPE = new ArrayBlockProperty<>("coral_hang_type_bit", true,
-            new CoralType[]{CoralType.PURPLE, CoralType.RED}
-    ).ordinal(true);
+    public static final ArrayBlockProperty<CoralType> HANG2_TYPE = new ArrayBlockProperty<>(
+                    "coral_hang_type_bit", true, new CoralType[] {CoralType.PURPLE, CoralType.RED})
+            .ordinal(true);
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
@@ -30,7 +30,7 @@ public class BlockCoralFanHang2 extends BlockCoralFanHang {
     public BlockCoralFanHang2(int meta) {
         super(meta);
     }
-    
+
     @Override
     public int getId() {
         return CORAL_FAN_HANG2;
@@ -38,8 +38,7 @@ public class BlockCoralFanHang2 extends BlockCoralFanHang {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }

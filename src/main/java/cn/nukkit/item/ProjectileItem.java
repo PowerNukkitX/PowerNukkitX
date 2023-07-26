@@ -22,9 +22,9 @@ public abstract class ProjectileItem extends Item {
         super(id, meta, count, name);
     }
 
-    abstract public String getProjectileEntityType();
+    public abstract String getProjectileEntityType();
 
-    abstract public float getThrowForce();
+    public abstract float getThrowForce();
 
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
@@ -43,7 +43,11 @@ public abstract class ProjectileItem extends Item {
 
         this.correctNBT(nbt);
 
-        Entity projectile = Entity.createEntity(this.getProjectileEntityType(), player.getLevel().getChunk(player.getFloorX() >> 4, player.getFloorZ() >> 4), nbt, player);
+        Entity projectile = Entity.createEntity(
+                this.getProjectileEntityType(),
+                player.getLevel().getChunk(player.getFloorX() >> 4, player.getFloorZ() >> 4),
+                nbt,
+                player);
         if (projectile != null) {
             projectile = correctProjectile(player, projectile);
             if (projectile == null) {
@@ -77,7 +81,8 @@ public abstract class ProjectileItem extends Item {
 
     @PowerNukkitOnly
     protected void addThrowSound(Player player) {
-        player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacketV2.SOUND_THROW, -1, "minecraft:player", false, false);
+        player.getLevel()
+                .addLevelSoundEvent(player, LevelSoundEventPacketV2.SOUND_THROW, -1, "minecraft:player", false, false);
     }
 
     @PowerNukkitOnly
@@ -85,7 +90,5 @@ public abstract class ProjectileItem extends Item {
         return projectile;
     }
 
-    protected void correctNBT(CompoundTag nbt) {
-
-    }
+    protected void correctNBT(CompoundTag nbt) {}
 }

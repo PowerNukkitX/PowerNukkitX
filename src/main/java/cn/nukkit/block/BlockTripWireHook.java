@@ -1,5 +1,8 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
+import static cn.nukkit.blockproperty.CommonBlockProperties.POWERED;
+
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
@@ -17,12 +20,8 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.RedstoneComponent;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
-
-import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
-import static cn.nukkit.blockproperty.CommonBlockProperties.POWERED;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author CreeperFace
@@ -32,7 +31,8 @@ public class BlockTripWireHook extends BlockTransparentMeta implements RedstoneC
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(DIRECTION, CommonBlockProperties.ATTACHED, POWERED);
+    public static final BlockProperties PROPERTIES =
+            new BlockProperties(DIRECTION, CommonBlockProperties.ATTACHED, POWERED);
 
     public BlockTripWireHook() {
         this(0);
@@ -54,8 +54,7 @@ public class BlockTripWireHook extends BlockTransparentMeta implements RedstoneC
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -82,9 +81,19 @@ public class BlockTripWireHook extends BlockTransparentMeta implements RedstoneC
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
         var supportBlock = this.getSide(face.getOpposite());
-        if (face == BlockFace.DOWN || face == BlockFace.UP || (!supportBlock.isNormalBlock() && !(supportBlock instanceof BlockGlass))) {
+        if (face == BlockFace.DOWN
+                || face == BlockFace.UP
+                || (!supportBlock.isNormalBlock() && !(supportBlock instanceof BlockGlass))) {
             return false;
         }
 
@@ -172,7 +181,6 @@ public class BlockTripWireHook extends BlockTransparentMeta implements RedstoneC
         hook.setAttached(canConnect);
         hook.setPowered(nextPowered);
 
-
         if (distance > 0) {
             Position p = position.getSide(facing, distance);
             BlockFace face = facing.getOpposite();
@@ -200,7 +208,8 @@ public class BlockTripWireHook extends BlockTransparentMeta implements RedstoneC
                 Vector3 vc = position.getSide(facing, i);
                 block = blocks[i];
 
-                if (block != null && this.level.getBlockIdAt(vc.getFloorX(), vc.getFloorY(), vc.getFloorZ()) != Block.AIR) {
+                if (block != null
+                        && this.level.getBlockIdAt(vc.getFloorX(), vc.getFloorY(), vc.getFloorZ()) != Block.AIR) {
                     if (canConnect ^ ((block.getDamage() & 0x04) > 0)) {
                         block.setDamage(block.getDamage() ^ 0x04);
                     }
@@ -238,9 +247,13 @@ public class BlockTripWireHook extends BlockTransparentMeta implements RedstoneC
             this.setDamage(this.getDamage() ^ 0x08);
             var pos = this.add(0.5, 0.5, 0.5);
             if (value) {
-                this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, pos, VibrationType.BLOCK_ACTIVATE));
+                this.level
+                        .getVibrationManager()
+                        .callVibrationEvent(new VibrationEvent(this, pos, VibrationType.BLOCK_ACTIVATE));
             } else {
-                this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, pos, VibrationType.BLOCK_DEACTIVATE));
+                this.level
+                        .getVibrationManager()
+                        .callVibrationEvent(new VibrationEvent(this, pos, VibrationType.BLOCK_DEACTIVATE));
             }
         }
     }
@@ -250,9 +263,13 @@ public class BlockTripWireHook extends BlockTransparentMeta implements RedstoneC
             this.setDamage(this.getDamage() ^ 0x04);
             var pos = this.add(0.5, 0.5, 0.5);
             if (value) {
-                this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, pos, VibrationType.BLOCK_ATTACH));
+                this.level
+                        .getVibrationManager()
+                        .callVibrationEvent(new VibrationEvent(this, pos, VibrationType.BLOCK_ATTACH));
             } else {
-                this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, pos, VibrationType.BLOCK_DETACH));
+                this.level
+                        .getVibrationManager()
+                        .callVibrationEvent(new VibrationEvent(this, pos, VibrationType.BLOCK_DETACH));
             }
         }
     }

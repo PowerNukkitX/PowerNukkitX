@@ -3,7 +3,6 @@ package cn.nukkit;
 import cn.nukkit.metadata.MetadataValue;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.plugin.Plugin;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -178,5 +177,4 @@ public class OfflinePlayer implements IPlayer {
     public void removeMetadata(String metadataKey, Plugin owningPlugin) {
         this.server.getPlayerMetadata().removeMetadata(this, metadataKey, owningPlugin);
     }
-
 }

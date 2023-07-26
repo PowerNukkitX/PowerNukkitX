@@ -12,8 +12,6 @@ import cn.nukkit.utils.ChunkException;
 import cn.nukkit.utils.Zlib;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.longs.LongSet;
-import lombok.extern.log4j.Log4j2;
-
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -21,6 +19,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -116,7 +115,8 @@ public class RegionLoader extends BaseRegionLoader {
     protected void saveChunk(int x, int z, byte[] chunkData) throws IOException {
         int length = chunkData.length + 1;
         if (length + 4 > Server.getInstance().getMaximumSizePerChunk()) {
-            throw new ChunkException("Chunk is too big! " + (length + 4) + " > " + Server.getInstance().getMaximumSizePerChunk());
+            throw new ChunkException("Chunk is too big! " + (length + 4) + " > "
+                    + Server.getInstance().getMaximumSizePerChunk());
         }
         int sectors = (int) Math.ceil((length + 4) / 4096d);
         int index = getChunkOffset(x, z);
@@ -193,12 +193,12 @@ public class RegionLoader extends BaseRegionLoader {
             raf.readFully(chunk);
             int length = Binary.readInt(Arrays.copyOfRange(chunk, 0, 3));
             if (length <= 1) {
-                this.primitiveLocationTable.put(i, (table = new int[]{0, 0, 0}));
+                this.primitiveLocationTable.put(i, (table = new int[] {0, 0, 0}));
             }
             try {
                 chunk = Zlib.inflate(Arrays.copyOf(chunk, 5));
             } catch (Exception e) {
-                this.primitiveLocationTable.put(i, new int[]{0, 0, 0});
+                this.primitiveLocationTable.put(i, new int[] {0, 0, 0});
                 continue;
             }
             chunk = Zlib.deflate(chunk, 9);
@@ -230,14 +230,16 @@ public class RegionLoader extends BaseRegionLoader {
         RandomAccessFile raf = this.getRandomAccessFile();
         raf.seek(0);
         this.lastSector = 1;
-        int[] data = new int[1024 * 2]; //1024 records * 2 times
+        int[] data = new int[1024 * 2]; // 1024 records * 2 times
         for (int i = 0; i < 1024 * 2; i++) {
             data[i] = raf.readInt();
         }
         for (int i = 0; i < 1024; ++i) {
             int index = data[i];
-            this.primitiveLocationTable.put(i, new int[]{index >> 8, index & 0xff, data[1024 + i]});
-            int value = this.primitiveLocationTable.get(i)[0] + this.primitiveLocationTable.get(i)[1] - 1;
+            this.primitiveLocationTable.put(i, new int[] {index >> 8, index & 0xff, data[1024 + i]});
+            int value = this.primitiveLocationTable.get(i)[0]
+                    + this.primitiveLocationTable.get(i)[1]
+                    - 1;
             if (value > this.lastSector) {
                 this.lastSector = value;
             }
@@ -264,7 +266,7 @@ public class RegionLoader extends BaseRegionLoader {
             int index = entry.getIntKey();
             int[] data = entry.getValue();
             if (data[0] == 0 || data[1] == 0) {
-                this.primitiveLocationTable.put(index, new int[]{0, 0, 0});
+                this.primitiveLocationTable.put(index, new int[] {0, 0, 0});
                 continue;
             }
             sectors.put(data[0], index);
@@ -318,7 +320,7 @@ public class RegionLoader extends BaseRegionLoader {
         this.lastSector = 1;
         int time = (int) (System.currentTimeMillis() / 1000d);
         for (int i = 0; i < 1024; ++i) {
-            this.primitiveLocationTable.put(i, new int[]{0, 0, time});
+            this.primitiveLocationTable.put(i, new int[] {0, 0, time});
             raf.writeInt(0);
         }
         for (int i = 0; i < 1024; ++i) {

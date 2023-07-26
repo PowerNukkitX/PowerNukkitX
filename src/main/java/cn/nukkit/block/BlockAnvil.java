@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
+
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
@@ -16,11 +18,8 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.utils.Faceable;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Collection;
-
-import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Pub4Game
@@ -30,13 +29,13 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
 public class BlockAnvil extends BlockFallableMeta implements Faceable {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final BlockProperty<AnvilDamage> DAMAGE = new ArrayBlockProperty<>("damage", false, AnvilDamage.class);
+    public static final BlockProperty<AnvilDamage> DAMAGE =
+            new ArrayBlockProperty<>("damage", false, AnvilDamage.class);
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(
-        DIRECTION.exportingToItems(true), DAMAGE.exportingToItems(true)
-    );
+    public static final BlockProperties PROPERTIES =
+            new BlockProperties(DIRECTION.exportingToItems(true), DAMAGE.exportingToItems(true));
 
     public BlockAnvil() {
         // Does nothing
@@ -53,8 +52,7 @@ public class BlockAnvil extends BlockFallableMeta implements Faceable {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -107,15 +105,27 @@ public class BlockAnvil extends BlockFallableMeta implements Faceable {
         return getAnvilDamage().getEnglishName();
     }
 
-    @PowerNukkitDifference(info = "Just like sand, it can now be placed anywhere and removed the sound for the player who placed, was duplicated", since = "1.3.0.0-PN")
+    @PowerNukkitDifference(
+            info =
+                    "Just like sand, it can now be placed anywhere and removed the sound for the player who placed, was duplicated",
+            since = "1.3.0.0-PN")
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         setBlockFace(player != null ? player.getDirection().rotateY() : BlockFace.SOUTH);
         this.getLevel().setBlock(this, this, true);
         if (player == null) {
             this.getLevel().addSound(this, Sound.RANDOM_ANVIL_LAND, 1, 0.8F);
         } else {
-            Collection<Player> players = getLevel().getChunkPlayers(getChunkX(), getChunkZ()).values();
+            Collection<Player> players =
+                    getLevel().getChunkPlayers(getChunkX(), getChunkZ()).values();
             players.remove(player);
             if (!players.isEmpty()) {
                 getLevel().addSound(this, Sound.RANDOM_ANVIL_LAND, 1, 0.8F, players);
@@ -159,8 +169,8 @@ public class BlockAnvil extends BlockFallableMeta implements Faceable {
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
         BlockFace face = getBlockFace().rotateY();
-        double xOffset = Math.abs(face.getXOffset()) * (2/16.0);
-        double zOffset = Math.abs(face.getZOffset()) * (2/16.0);
+        double xOffset = Math.abs(face.getXOffset()) * (2 / 16.0);
+        double zOffset = Math.abs(face.getZOffset()) * (2 / 16.0);
         return new SimpleAxisAlignedBB(x + xOffset, y, z + zOffset, x + 1 - xOffset, y + 1, z + 1 - zOffset);
     }
 }

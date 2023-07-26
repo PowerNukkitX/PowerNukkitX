@@ -10,7 +10,7 @@ import lombok.Getter;
 @PowerNukkitXOnly
 @Since("1.19.30-r1")
 @Getter
-public class ScoreboardLine implements IScoreboardLine{
+public class ScoreboardLine implements IScoreboardLine {
 
     protected static long staticLineId = 0;
 
@@ -33,7 +33,8 @@ public class ScoreboardLine implements IScoreboardLine{
     @Override
     public boolean setScore(int score) {
         if (scoreboard.shouldCallEvent()) {
-            var event = new ScoreboardLineChangeEvent(scoreboard, this, score, this.score, ScoreboardLineChangeEvent.ActionType.SCORE_CHANGE);
+            var event = new ScoreboardLineChangeEvent(
+                    scoreboard, this, score, this.score, ScoreboardLineChangeEvent.ActionType.SCORE_CHANGE);
             Server.getInstance().getPluginManager().callEvent(event);
             if (event.isCancelled()) {
                 return false;

@@ -1,5 +1,8 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
+import static cn.nukkit.blockproperty.CommonBlockProperties.OPEN;
+
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
@@ -16,12 +19,8 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.Faceable;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Map;
-
-import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
-import static cn.nukkit.blockproperty.CommonBlockProperties.OPEN;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 public class BlockBarrel extends BlockSolidMeta implements Faceable, BlockEntityHolder<BlockEntityBarrel> {
@@ -52,30 +51,35 @@ public class BlockBarrel extends BlockSolidMeta implements Faceable, BlockEntity
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getBlockEntityType() {
         return BlockEntity.BARREL;
     }
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public Class<? extends BlockEntityBarrel> getBlockEntityClass() {
         return BlockEntityBarrel.class;
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         if (Math.abs(player.x - this.x) < 2 && Math.abs(player.z - this.z) < 2) {
             double y = player.y + player.getEyeHeight();
 
@@ -102,7 +106,7 @@ public class BlockBarrel extends BlockSolidMeta implements Faceable, BlockEntity
                 nbt.put(tag.getKey(), tag.getValue());
             }
         }
-        
+
         return BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt) != null;
     }
 
@@ -114,7 +118,8 @@ public class BlockBarrel extends BlockSolidMeta implements Faceable, BlockEntity
 
         BlockEntityBarrel barrel = getOrCreateBlockEntity();
 
-        if (barrel.namedTag.contains("Lock") && barrel.namedTag.get("Lock") instanceof StringTag
+        if (barrel.namedTag.contains("Lock")
+                && barrel.namedTag.get("Lock") instanceof StringTag
                 && !barrel.namedTag.getString("Lock").equals(item.getCustomName())) {
             return false;
         }
@@ -168,7 +173,7 @@ public class BlockBarrel extends BlockSolidMeta implements Faceable, BlockEntity
 
     @PowerNukkitOnly
     public void setOpen(boolean open) {
-        setDamage((getDamage() & 0x7) | (open? 0x8 : 0x0));
+        setDamage((getDamage() & 0x7) | (open ? 0x8 : 0x0));
     }
 
     @Override

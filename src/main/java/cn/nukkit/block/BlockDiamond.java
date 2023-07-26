@@ -8,8 +8,7 @@ import cn.nukkit.item.ItemTool;
  */
 public class BlockDiamond extends BlockSolid {
 
-    public BlockDiamond() {
-    }
+    public BlockDiamond() {}
 
     @Override
     public double getHardness() {

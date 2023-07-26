@@ -22,7 +22,6 @@ public class BlockPlanks extends BlockSolidMeta {
     @Since("1.4.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(WoodType.PROPERTY);
 
-
     public BlockPlanks() {
         this(0);
     }
@@ -38,8 +37,7 @@ public class BlockPlanks extends BlockSolidMeta {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -66,9 +64,9 @@ public class BlockPlanks extends BlockSolidMeta {
 
     @Override
     public String getName() {
-        return getWoodType().getEnglishName()+" Wood Planks";
+        return getWoodType().getEnglishName() + " Wood Planks";
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public WoodType getWoodType() {
@@ -85,5 +83,4 @@ public class BlockPlanks extends BlockSolidMeta {
     public int getToolType() {
         return ItemTool.TYPE_AXE;
     }
-
 }

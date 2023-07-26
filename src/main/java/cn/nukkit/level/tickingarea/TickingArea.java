@@ -4,7 +4,6 @@ import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.level.Level;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -23,8 +22,7 @@ public class TickingArea {
         else {
             String randomName = randomName();
             var manager = Server.getInstance().getTickingAreaManager();
-            while (manager.containTickingArea(randomName))
-                randomName = randomName();
+            while (manager.containTickingArea(randomName)) randomName = randomName();
             this.name = randomName;
         }
         this.levelName = levelName;
@@ -38,8 +36,7 @@ public class TickingArea {
     }
 
     public boolean loadAllChunk() {
-        if (!Server.getInstance().loadLevel(levelName))
-            return false;
+        if (!Server.getInstance().loadLevel(levelName)) return false;
         Level level = Server.getInstance().getLevelByName(levelName);
         for (ChunkPos pos : chunks) {
             level.loadChunk(pos.x, pos.z);
@@ -47,7 +44,7 @@ public class TickingArea {
         return true;
     }
 
-    //two entry [0] => min, [1] => max
+    // two entry [0] => min, [1] => max
     public List<ChunkPos> minAndMaxChunkPos() {
         ChunkPos min = new ChunkPos(Integer.MAX_VALUE, Integer.MAX_VALUE);
         ChunkPos max = new ChunkPos(Integer.MIN_VALUE, Integer.MIN_VALUE);

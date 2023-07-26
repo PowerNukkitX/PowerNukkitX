@@ -18,5 +18,4 @@ public class ConduitActivateEvent extends BlockEvent {
     public static HandlerList getHandlers() {
         return handlers;
     }
-
 }

@@ -55,5 +55,4 @@ public class BlockDoubleSlabBlackstonePolished extends BlockDoubleSlabBase {
     public double getResistance() {
         return 6.0;
     }
-
 }

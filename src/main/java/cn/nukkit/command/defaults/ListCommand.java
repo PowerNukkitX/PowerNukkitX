@@ -7,7 +7,6 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.lang.TranslationContainer;
-
 import java.util.Map;
 
 /**
@@ -26,7 +25,8 @@ public class ListCommand extends VanillaCommand {
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         StringBuilder online = new StringBuilder();
         int onlineCount = 0;
         for (Player player : sender.getServer().getOnlinePlayers().values()) {
@@ -38,8 +38,10 @@ public class ListCommand extends VanillaCommand {
         if (online.length() > 0) {
             online = new StringBuilder(online.substring(0, online.length() - 2));
         }
-        sender.sendMessage(new TranslationContainer("commands.players.list",
-                String.valueOf(onlineCount), String.valueOf(sender.getServer().getMaxPlayers())));
+        sender.sendMessage(new TranslationContainer(
+                "commands.players.list",
+                String.valueOf(onlineCount),
+                String.valueOf(sender.getServer().getMaxPlayers())));
         sender.sendMessage(online.toString());
         return 1;
     }

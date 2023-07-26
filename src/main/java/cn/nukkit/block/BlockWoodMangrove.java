@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
+
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -9,20 +11,15 @@ import cn.nukkit.blockproperty.value.WoodType;
 import cn.nukkit.blockstate.BlockState;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
-
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public class BlockWoodMangrove extends BlockWood {
     public static final String STRIPPED_BIT = "stripped_bit";
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(
-            new BooleanBlockProperty(STRIPPED_BIT, true),
-            PILLAR_AXIS
-    );
+    public static final BlockProperties PROPERTIES =
+            new BlockProperties(new BooleanBlockProperty(STRIPPED_BIT, true), PILLAR_AXIS);
 
-    public BlockWoodMangrove() {
-    }
+    public BlockWoodMangrove() {}
 
     @Override
     public int getId() {
@@ -31,8 +28,7 @@ public class BlockWoodMangrove extends BlockWood {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -50,8 +46,7 @@ public class BlockWoodMangrove extends BlockWood {
 
     @PowerNukkitOnly
     @Override
-    public void setWoodType(WoodType woodType) {
-    }
+    public void setWoodType(WoodType woodType) {}
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")

@@ -3,7 +3,6 @@ package cn.nukkit.entity;
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
-
 import javax.annotation.Nullable;
 
 /**
@@ -12,8 +11,7 @@ import javax.annotation.Nullable;
  * @author BeYkeRYkt (Nukkit Project)
  */
 public interface EntityOwnable extends EntityComponent {
-    @Nullable
-    default String getOwnerName() {
+    @Nullable default String getOwnerName() {
         return getMemoryStorage().get(CoreMemoryTypes.OWNER_NAME);
     }
 
@@ -21,8 +19,7 @@ public interface EntityOwnable extends EntityComponent {
         getMemoryStorage().put(CoreMemoryTypes.OWNER_NAME, playerName);
     }
 
-    @Nullable
-    default Player getOwner() {
+    @Nullable default Player getOwner() {
         var owner = getMemoryStorage().get(CoreMemoryTypes.OWNER);
         if (owner != null && owner.isOnline()) return owner;
         else {

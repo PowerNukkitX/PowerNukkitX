@@ -13,22 +13,28 @@ public class PlayerRespawnEvent extends PlayerEvent {
         return handlers;
     }
 
-    private Position position;//Respawn Position
+    private Position position; // Respawn Position
+
     @Deprecated
     private Position spawnBlock;
 
     @Deprecated
     private Position originalSpawnPosition;
+
     @Deprecated
     private boolean spawnBlockAvailable;
 
     private boolean firstSpawn;
+
     @Deprecated
     private boolean keepRespawnBlockPosition;
+
     @Deprecated
     private boolean keepRespawnPosition;
+
     @Deprecated
     private boolean sendInvalidRespawnBlockMessage = true;
+
     @Deprecated
     private boolean consumeCharge = true;
 

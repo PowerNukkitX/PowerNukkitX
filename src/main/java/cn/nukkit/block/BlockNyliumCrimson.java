@@ -21,5 +21,4 @@ public class BlockNyliumCrimson extends BlockNylium {
     public int getId() {
         return CRIMSON_NYLIUM;
     }
-
 }

@@ -1,9 +1,7 @@
 package cn.nukkit.command.tree.node;
 
-
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-
 
 /**
  * 解析为{@link String}值
@@ -16,8 +14,7 @@ public class WildcardTargetStringNode extends StringNode {
 
     @Override
     public void fill(String arg) {
-        //WILDCARD_TARGET不可能解析错误
+        // WILDCARD_TARGET不可能解析错误
         this.value = arg;
     }
-
 }

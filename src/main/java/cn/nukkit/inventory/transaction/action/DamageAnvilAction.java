@@ -15,7 +15,7 @@ import lombok.ToString;
 @PowerNukkitOnly
 @ToString(callSuper = true)
 public class DamageAnvilAction extends InventoryAction {
-    
+
     private final AnvilInventory anvil;
     private boolean shouldDamage;
     private CraftingTransaction transaction;
@@ -27,12 +27,12 @@ public class DamageAnvilAction extends InventoryAction {
         this.shouldDamage = shouldDamage;
         this.transaction = transaction;
     }
-    
+
     @Override
     public boolean isValid(Player source) {
         return true;
     }
-    
+
     @Override
     public boolean execute(Player source) {
         Block levelBlock = anvil.getHolder().getLevelBlock();
@@ -46,7 +46,8 @@ public class DamageAnvilAction extends InventoryAction {
         } else {
             newState.setDamage(newState.getDamage() & (Block.DATA_MASK ^ 0b1100) | (damage << 2));
         }
-        AnvilDamageEvent ev = new AnvilDamageEvent(levelBlock, newState, source, transaction, AnvilDamageEvent.DamageCause.USE);
+        AnvilDamageEvent ev =
+                new AnvilDamageEvent(levelBlock, newState, source, transaction, AnvilDamageEvent.DamageCause.USE);
         ev.setCancelled(!shouldDamage);
         source.getServer().getPluginManager().callEvent(ev);
         if (ev.isCancelled()) {
@@ -61,14 +62,10 @@ public class DamageAnvilAction extends InventoryAction {
             return levelBlock.getLevel().setBlock(levelBlock, newState, true, true);
         }
     }
-    
+
     @Override
-    public void onExecuteSuccess(Player source) {
-    
-    }
-    
+    public void onExecuteSuccess(Player source) {}
+
     @Override
-    public void onExecuteFail(Player source) {
-    
-    }
+    public void onExecuteFail(Player source) {}
 }

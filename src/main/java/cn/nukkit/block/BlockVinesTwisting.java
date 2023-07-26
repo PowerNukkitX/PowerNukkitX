@@ -21,8 +21,7 @@ public class BlockVinesTwisting extends BlockVinesNether {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final IntBlockProperty TWISTING_VINES_AGE = new IntBlockProperty(
-            "twisting_vines_age", false, 25);
+    public static final IntBlockProperty TWISTING_VINES_AGE = new IntBlockProperty("twisting_vines_age", false, 25);
 
     /**
      * Holds the {@code twisting_vines} block property definitions.
@@ -52,8 +51,7 @@ public class BlockVinesTwisting extends BlockVinesNether {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -68,8 +66,7 @@ public class BlockVinesTwisting extends BlockVinesNether {
         return "Twisting Vines";
     }
 
-    @NotNull
-    @Since("1.4.0.0-PN")
+    @NotNull @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     @Override
     public BlockFace getGrowthDirection() {
@@ -96,5 +93,4 @@ public class BlockVinesTwisting extends BlockVinesNether {
     public int getMaxVineAge() {
         return TWISTING_VINES_AGE.getMaxValue();
     }
-
 }

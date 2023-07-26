@@ -42,9 +42,8 @@ public class EntitySquid extends EntityAnimal implements EntitySwimmable {
 
     @Override
     public Item[] getDrops() {
-        return new Item[]{MinecraftItemID.INK_SAC.get(1)};
+        return new Item[] {MinecraftItemID.INK_SAC.get(1)};
     }
-
 
     @PowerNukkitOnly
     @Since("1.5.1.0-PN")

@@ -1,18 +1,17 @@
 package cn.nukkit.plugin.js;
 
-import org.graalvm.polyglot.Context;
-import org.graalvm.polyglot.HostAccess;
-import org.graalvm.polyglot.Source;
-import org.graalvm.polyglot.Value;
-import org.graalvm.polyglot.proxy.ProxyExecutable;
+import static cn.nukkit.plugin.js.JSConcurrentManager.PROMISE_FAILED;
+import static cn.nukkit.plugin.js.JSConcurrentManager.wrapPromise;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
-
-import static cn.nukkit.plugin.js.JSConcurrentManager.PROMISE_FAILED;
-import static cn.nukkit.plugin.js.JSConcurrentManager.wrapPromise;
+import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.HostAccess;
+import org.graalvm.polyglot.Source;
+import org.graalvm.polyglot.Value;
+import org.graalvm.polyglot.proxy.ProxyExecutable;
 
 public final class JSWorker implements AutoCloseable {
     private static final Value NULL = Value.asValue(null);
@@ -38,7 +37,9 @@ public final class JSWorker implements AutoCloseable {
         this.workerContext = Context.newBuilder("js")
                 .fileSystem(fileSystem)
                 .allowAllAccess(true)
-                .allowHostAccess(HostAccess.newBuilder(HostAccess.ALL).targetTypeMapping(Double.class, Float.class, null, Double::floatValue).build())
+                .allowHostAccess(HostAccess.newBuilder(HostAccess.ALL)
+                        .targetTypeMapping(Double.class, Float.class, null, Double::floatValue)
+                        .build())
                 .allowHostClassLoading(true)
                 .allowHostClassLookup(className -> true)
                 .allowIO(true)
@@ -53,16 +54,14 @@ public final class JSWorker implements AutoCloseable {
         var workerGlobal = workerContext.getBindings("js");
         workerGlobal.putMember("postMessage", (ProxyExecutable) arguments -> {
             synchronized (sourceContext) {
-                if (sourceReceiveCallback != null)
-                    return sourceReceiveCallback.execute((Object[]) arguments);
+                if (sourceReceiveCallback != null) return sourceReceiveCallback.execute((Object[]) arguments);
                 else return NULL;
             }
         });
-        workerGlobal.putMember("postMessageAsync", (ProxyExecutable) arguments -> JSConcurrentManager.wrapPromise(workerContext,
-                CompletableFuture.supplyAsync(() -> {
+        workerGlobal.putMember("postMessageAsync", (ProxyExecutable)
+                arguments -> JSConcurrentManager.wrapPromise(workerContext, CompletableFuture.supplyAsync(() -> {
                     synchronized (sourceContext) {
-                        if (sourceReceiveCallback != null)
-                            return sourceReceiveCallback.execute((Object[]) arguments);
+                        if (sourceReceiveCallback != null) return sourceReceiveCallback.execute((Object[]) arguments);
                         else return PROMISE_FAILED;
                     }
                 })));
@@ -77,9 +76,13 @@ public final class JSWorker implements AutoCloseable {
         }
         this.workerThread = new Thread(() -> {
             try {
-                var exports = workerContext.eval(Source.newBuilder("js", sourceReader,
-                                fileSystem.baseDir.getName() + "/worker-" + sourcePath.getFileName() + "-" + workerThread.getId())
-                        .mimeType("application/javascript+module").build());
+                var exports = workerContext.eval(Source.newBuilder(
+                                "js",
+                                sourceReader,
+                                fileSystem.baseDir.getName() + "/worker-" + sourcePath.getFileName() + "-"
+                                        + workerThread.getId())
+                        .mimeType("application/javascript+module")
+                        .build());
                 this.setWorkerReceiveCallback(exports.getMember("onmessage"));
             } catch (IOException e) {
                 e.printStackTrace();

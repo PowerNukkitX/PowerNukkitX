@@ -174,7 +174,8 @@ public class BigMushroom extends BasicGenerator {
                                 if (position.getY() >= position.getY() + i - 1 || meta != ALL_INSIDE) {
                                     Vector3 blockPos = new Vector3(l1, l2, i2);
 
-                                    if (!Block.isSolid(level.getBlockIdAt(blockPos.getFloorX(), blockPos.getFloorY(), blockPos.getFloorZ()))) {
+                                    if (!Block.isSolid(level.getBlockIdAt(
+                                            blockPos.getFloorX(), blockPos.getFloorY(), blockPos.getFloorZ()))) {
                                         mushroom.setDamage(meta);
                                         this.setBlockAndNotifyAdequately(level, blockPos, mushroom);
                                     }

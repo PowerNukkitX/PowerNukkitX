@@ -26,8 +26,7 @@ public class RemoteConsoleCommandSender extends ConsoleCommandSender {
         return messages.toString();
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getName() {
         return "Rcon";
     }

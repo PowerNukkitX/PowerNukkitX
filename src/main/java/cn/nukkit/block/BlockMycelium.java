@@ -18,8 +18,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class BlockMycelium extends BlockSolid {
 
-    public BlockMycelium() {
-    }
+    public BlockMycelium() {}
 
     @Override
     public String getName() {
@@ -48,16 +47,14 @@ public class BlockMycelium extends BlockSolid {
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{
-                new ItemBlock(Block.get(BlockID.DIRT))
-        };
+        return new Item[] {new ItemBlock(Block.get(BlockID.DIRT))};
     }
 
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_RANDOM) {
             if (getLevel().getFullLight(add(0, 1, 0)) >= BlockCrops.MINIMUM_LIGHT_LEVEL) {
-                //TODO: light levels
+                // TODO: light levels
                 NukkitRandom random = new NukkitRandom();
                 x = random.nextRange((int) x - 1, (int) x + 1);
                 y = random.nextRange((int) y - 1, (int) y + 1);
@@ -81,7 +78,7 @@ public class BlockMycelium extends BlockSolid {
     public boolean canSilkTouch() {
         return true;
     }
-    
+
     @Override
     public boolean canBeActivated() {
         return true;

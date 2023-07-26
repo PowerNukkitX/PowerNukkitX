@@ -35,7 +35,8 @@ public class PopulatorChorusTree extends Populator {
                 int z = (chunkZ << 4) + random.nextBoundedInt(16);
                 int y = this.getHighestWorkableBlock(level, x, z, chunk);
                 if (y > 0) {
-                    if (level.getBlockStateAt(x, y + 1, z).equals(BlockState.AIR) && level.getBlockStateAt(x, y, z).equals(STATE_END_STONE)) {
+                    if (level.getBlockStateAt(x, y + 1, z).equals(BlockState.AIR)
+                            && level.getBlockStateAt(x, y, z).equals(STATE_END_STONE)) {
                         objectChorusTree.generate(level, random, new Vector3(x, y + 1, z), 8);
                     }
                 }

@@ -11,8 +11,7 @@ import cn.nukkit.item.Item;
 public class BlockBarrier extends BlockSolid {
 
     @PowerNukkitOnly
-    public BlockBarrier() {
-    }
+    public BlockBarrier() {}
 
     @Override
     public int getId() {

@@ -10,7 +10,7 @@ import cn.nukkit.math.Vector3;
 @Since("1.6.0.0-PNX")
 public class LookAtTargetExecutor implements EntityControl, IBehaviorExecutor {
 
-    //指示执行器应该从哪个Memory获取目标位置
+    // 指示执行器应该从哪个Memory获取目标位置
     protected MemoryType<? extends Vector3> memory;
     protected int duration;
     protected int currentTick;

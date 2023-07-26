@@ -52,8 +52,10 @@ public class FoodChorusFruit extends FoodNormal {
             Block blockUp = level.getBlock(new Vector3(x, y + 1, z));
             Block blockUp2 = level.getBlock(new Vector3(x, y + 2, z));
 
-            if (blockUp.isSolid() || blockUp instanceof BlockLiquid ||
-                    blockUp2.isSolid() || blockUp2 instanceof BlockLiquid) {
+            if (blockUp.isSolid()
+                    || blockUp instanceof BlockLiquid
+                    || blockUp2.isSolid()
+                    || blockUp2 instanceof BlockLiquid) {
                 continue;
             }
 
@@ -67,5 +69,4 @@ public class FoodChorusFruit extends FoodNormal {
 
         return true;
     }
-
 }

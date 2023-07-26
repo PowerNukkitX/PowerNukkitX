@@ -29,12 +29,7 @@ public class BlockPurpur extends BlockSolidMeta {
 
     @Override
     public String getName() {
-        String[] names = new String[]{
-                "Purpur Block",
-                "",
-                "Purpur Pillar",
-                ""
-        };
+        String[] names = new String[] {"Purpur Block", "", "Purpur Pillar", ""};
 
         return names[this.getDamage() & 0x03];
     }
@@ -46,8 +41,7 @@ public class BlockPurpur extends BlockSolidMeta {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -68,16 +62,17 @@ public class BlockPurpur extends BlockSolidMeta {
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         if (this.getDamage() != PURPUR_NORMAL) {
-            short[] faces = new short[]{
-                    0,
-                    0,
-                    0b1000,
-                    0b1000,
-                    0b0100,
-                    0b0100
-            };
+            short[] faces = new short[] {0, 0, 0b1000, 0b1000, 0b0100, 0b0100};
 
             this.setDamage(((this.getDamage() & 0x03) | faces[face.getIndex()]));
         }
@@ -97,5 +92,4 @@ public class BlockPurpur extends BlockSolidMeta {
     public Item toItem() {
         return new ItemBlock(Block.get(BlockID.PURPUR_BLOCK), this.getDamage() & 0x03, 1);
     }
-
 }

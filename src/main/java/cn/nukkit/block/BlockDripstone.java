@@ -11,7 +11,6 @@ import org.jetbrains.annotations.NotNull;
  * @author LoboMetalurgico
  * @since 08/06/2021
  */
-
 @PowerNukkitOnly
 @Since("FUTURE")
 public class BlockDripstone extends BlockSolid {
@@ -21,13 +20,11 @@ public class BlockDripstone extends BlockSolid {
 
     @PowerNukkitOnly
     @Since("FUTURE")
-    public BlockDripstone() {
-    }
+    public BlockDripstone() {}
 
     @PowerNukkitOnly
     @Since("FUTURE")
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }

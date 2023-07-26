@@ -18,7 +18,6 @@ import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.TextFormat;
 import io.netty.util.internal.EmptyArrays;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -78,7 +77,8 @@ public abstract class Command implements GenericParameter {
         this.usageMessage = usageMessage == null ? "/" + name : usageMessage;
         this.aliases = aliases;
         this.activeAliases = aliases;
-        this.commandParameters.put("default", new CommandParameter[]{CommandParameter.newType("args", true, CommandParamType.RAWTEXT)});
+        this.commandParameters.put(
+                "default", new CommandParameter[] {CommandParameter.newType("args", true, CommandParamType.RAWTEXT)});
     }
 
     /**
@@ -117,7 +117,8 @@ public abstract class Command implements GenericParameter {
         if (!this.testPermission(player)) {
             return null;
         }
-        var plugin = this instanceof PluginCommand<?> pluginCommand ? pluginCommand.getPlugin() : InternalPlugin.INSTANCE;
+        var plugin =
+                this instanceof PluginCommand<?> pluginCommand ? pluginCommand.getPlugin() : InternalPlugin.INSTANCE;
         CommandData customData = this.commandData.clone();
 
         if (getAliases().length > 0) {
@@ -130,7 +131,9 @@ public abstract class Command implements GenericParameter {
         }
 
         if (plugin == InternalPlugin.INSTANCE) {
-            customData.description = player.getServer().getLanguage().tr(this.getDescription(), CommandOutputContainer.EMPTY_STRING, "commands.", false);
+            customData.description = player.getServer()
+                    .getLanguage()
+                    .tr(this.getDescription(), CommandOutputContainer.EMPTY_STRING, "commands.", false);
         } else if (plugin instanceof PluginBase pluginBase) {
             var i18n = PluginI18nManager.getI18n(pluginBase);
             if (i18n != null) {
@@ -181,7 +184,8 @@ public abstract class Command implements GenericParameter {
      */
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         throw new UnsupportedOperationException();
     }
 
@@ -297,15 +301,59 @@ public abstract class Command implements GenericParameter {
             for (CommandParameter commandParameter : commandParameters) {
                 if (!commandParameter.optional) {
                     if (commandParameter.enumData == null) {
-                        builder.append(" <").append(commandParameter.name + ": " + commandParameter.type.name().toLowerCase()).append(">");
+                        builder.append(" <")
+                                .append(commandParameter.name + ": "
+                                        + commandParameter.type.name().toLowerCase())
+                                .append(">");
                     } else {
-                        builder.append(" <").append(commandParameter.enumData.getValues().subList(0, commandParameter.enumData.getValues().size() > 10 ? 10 : commandParameter.enumData.getValues().size()).stream().collect(Collectors.joining("|"))).append(commandParameter.enumData.getValues().size() > 10 ? "|..." : "").append(">");
+                        builder.append(" <")
+                                .append(commandParameter
+                                        .enumData
+                                        .getValues()
+                                        .subList(
+                                                0,
+                                                commandParameter
+                                                                        .enumData
+                                                                        .getValues()
+                                                                        .size()
+                                                                > 10
+                                                        ? 10
+                                                        : commandParameter
+                                                                .enumData
+                                                                .getValues()
+                                                                .size())
+                                        .stream()
+                                        .collect(Collectors.joining("|")))
+                                .append(commandParameter.enumData.getValues().size() > 10 ? "|..." : "")
+                                .append(">");
                     }
                 } else {
                     if (commandParameter.enumData == null) {
-                        builder.append(" [").append(commandParameter.name + ": " + commandParameter.type.name().toLowerCase()).append("]");
+                        builder.append(" [")
+                                .append(commandParameter.name + ": "
+                                        + commandParameter.type.name().toLowerCase())
+                                .append("]");
                     } else {
-                        builder.append(" [").append(commandParameter.enumData.getValues().subList(0, commandParameter.enumData.getValues().size() > 10 ? 10 : commandParameter.enumData.getValues().size()).stream().collect(Collectors.joining("|"))).append(commandParameter.enumData.getValues().size() > 10 ? "|..." : "").append("]");
+                        builder.append(" [")
+                                .append(commandParameter
+                                        .enumData
+                                        .getValues()
+                                        .subList(
+                                                0,
+                                                commandParameter
+                                                                        .enumData
+                                                                        .getValues()
+                                                                        .size()
+                                                                > 10
+                                                        ? 10
+                                                        : commandParameter
+                                                                .enumData
+                                                                .getValues()
+                                                                .size())
+                                        .stream()
+                                        .collect(Collectors.joining("|")))
+                                .append(commandParameter.enumData.getValues().size() > 10 ? "|..." : "")
+                                .append("]");
                     }
                 }
             }
@@ -361,8 +409,7 @@ public abstract class Command implements GenericParameter {
             reason = "Unused and always throws an exception even in Cloudburst Nukkit")
     @PowerNukkitDifference(
             since = "1.5.2.0-PN",
-            info = "Throws UnsupportedOperationException instead of NullPointerException"
-    )
+            info = "Throws UnsupportedOperationException instead of NullPointerException")
     public static CommandData generateDefaultData() {
         throw new UnsupportedOperationException();
     }
@@ -372,11 +419,14 @@ public abstract class Command implements GenericParameter {
     }
 
     public static void broadcastCommandMessage(CommandSender source, String message, boolean sendToSource) {
-        Set<Permissible> users = source.getServer().getPluginManager().getPermissionSubscriptions(Server.BROADCAST_CHANNEL_ADMINISTRATIVE);
+        Set<Permissible> users = source.getServer()
+                .getPluginManager()
+                .getPermissionSubscriptions(Server.BROADCAST_CHANNEL_ADMINISTRATIVE);
 
         TranslationContainer result = new TranslationContainer("chat.type.admin", source.getName(), message);
 
-        TranslationContainer colored = new TranslationContainer(TextFormat.GRAY + "" + TextFormat.ITALIC + "%chat.type.admin", source.getName(), message);
+        TranslationContainer colored = new TranslationContainer(
+                TextFormat.GRAY + "" + TextFormat.ITALIC + "%chat.type.admin", source.getName(), message);
 
         if (sendToSource && !(source instanceof ConsoleCommandSender)) {
             source.sendMessage(message);
@@ -398,15 +448,22 @@ public abstract class Command implements GenericParameter {
     }
 
     public static void broadcastCommandMessage(CommandSender source, TextContainer message, boolean sendToSource) {
-        if ((source instanceof ICommandBlock && !source.getPosition().getLevel().getGameRules().getBoolean(GameRule.COMMAND_BLOCK_OUTPUT)) ||
-                (source instanceof ExecutorCommandSender exeSender && exeSender.getExecutor() instanceof ICommandBlock && !source.getPosition().getLevel().getGameRules().getBoolean(GameRule.COMMAND_BLOCK_OUTPUT))) {
+        if ((source instanceof ICommandBlock
+                        && !source.getPosition().getLevel().getGameRules().getBoolean(GameRule.COMMAND_BLOCK_OUTPUT))
+                || (source instanceof ExecutorCommandSender exeSender
+                        && exeSender.getExecutor() instanceof ICommandBlock
+                        && !source.getPosition().getLevel().getGameRules().getBoolean(GameRule.COMMAND_BLOCK_OUTPUT))) {
             return;
         }
 
         TextContainer m = message.clone();
-        String resultStr = "[" + source.getName() + ": " + (!m.getText().equals(source.getServer().getLanguage().get(m.getText())) ? "%" : "") + m.getText() + "]";
+        String resultStr = "[" + source.getName() + ": "
+                + (!m.getText().equals(source.getServer().getLanguage().get(m.getText())) ? "%" : "") + m.getText()
+                + "]";
 
-        Set<Permissible> users = source.getServer().getPluginManager().getPermissionSubscriptions(Server.BROADCAST_CHANNEL_ADMINISTRATIVE);
+        Set<Permissible> users = source.getServer()
+                .getPluginManager()
+                .getPermissionSubscriptions(Server.BROADCAST_CHANNEL_ADMINISTRATIVE);
 
         String coloredStr = TextFormat.GRAY + "" + TextFormat.ITALIC + resultStr;
 

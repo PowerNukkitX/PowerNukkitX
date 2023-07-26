@@ -8,9 +8,6 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
-import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
-
 import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
@@ -26,6 +23,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -180,7 +179,6 @@ public class Utils {
         return builder.toString();
     }
 
-
     public static String getExceptionMessage(Throwable e) {
         StringWriter stringWriter = new StringWriter();
         try (PrintWriter printWriter = new PrintWriter(stringWriter)) {
@@ -256,7 +254,8 @@ public class Utils {
             arrays[i] = Arrays.copyOfRange(arrayToSplit, i * chunkSize, i * chunkSize + chunkSize);
         }
         if (rest > 0) {
-            arrays[chunks - 1] = Arrays.copyOfRange(arrayToSplit, (chunks - 1) * chunkSize, (chunks - 1) * chunkSize + rest);
+            arrays[chunks - 1] =
+                    Arrays.copyOfRange(arrayToSplit, (chunks - 1) * chunkSize, (chunks - 1) * chunkSize + rest);
         }
         return arrays;
     }
@@ -333,8 +332,7 @@ public class Utils {
         final int len = s.length();
 
         // "111" is not a valid hex encoding.
-        if (len % 2 != 0)
-            throw new IllegalArgumentException("hexBinary needs to be even-length: " + s);
+        if (len % 2 != 0) throw new IllegalArgumentException("hexBinary needs to be even-length: " + s);
 
         byte[] out = new byte[len / 2];
 
@@ -425,7 +423,8 @@ public class Utils {
             Files.walkFileTree(sourceFolderPath, new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    zos.putNextEntry(new ZipEntry(sourceFolderPath.relativize(file).toString()));
+                    zos.putNextEntry(
+                            new ZipEntry(sourceFolderPath.relativize(file).toString()));
                     Files.copy(file, zos);
                     zos.closeEntry();
                     return FileVisitResult.CONTINUE;
@@ -460,8 +459,8 @@ public class Utils {
         return true;
     }
 
-    //used for commands /fill , /clone and so on
-    //todo: using other methods instead of this one
+    // used for commands /fill , /clone and so on
+    // todo: using other methods instead of this one
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public static Block[] getLevelBlocks(Level level, AxisAlignedBB bb) {
@@ -489,6 +488,7 @@ public class Utils {
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public static final int ACCORDING_X_OBTAIN_Y = 0;
+
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public static final int ACCORDING_Y_OBTAIN_X = 1;
@@ -505,9 +505,11 @@ public class Utils {
             else return Double.MAX_VALUE;
         } else {
             if (type == ACCORDING_X_OBTAIN_Y) {
-                return (element - pos1.getX()) * (pos1.getZ() - pos2.getZ()) / (pos1.getX() - pos2.getX()) + pos1.getZ();
+                return (element - pos1.getX()) * (pos1.getZ() - pos2.getZ()) / (pos1.getX() - pos2.getX())
+                        + pos1.getZ();
             } else {
-                return (element - pos1.getZ()) * (pos1.getX() - pos2.getX()) / (pos1.getZ() - pos2.getZ()) + pos1.getX();
+                return (element - pos1.getZ()) * (pos1.getX() - pos2.getX()) / (pos1.getZ() - pos2.getZ())
+                        + pos1.getX();
             }
         }
     }
@@ -526,7 +528,7 @@ public class Utils {
             for (int x = minX; x <= maxX; ++x) {
                 for (int y = minY; y <= maxY; ++y) {
                     Block block = level.getBlock(x, y, z, false);
-                    //判断是否和非空气方块有碰撞
+                    // 判断是否和非空气方块有碰撞
                     if (block != null && !block.canPassThrough() && block.collidesWithBB(bb)) {
                         return true;
                     }
@@ -551,7 +553,7 @@ public class Utils {
             for (int x = minX; x <= maxX; ++x) {
                 for (int y = minY; y <= maxY; ++y) {
                     Block block = level.getTickCachedBlock(x, y, z, false);
-                    //判断是否和非空气方块有碰撞
+                    // 判断是否和非空气方块有碰撞
                     if (block != null && block.collidesWithBB(bb) && !block.canPassThrough()) {
                         return true;
                     }
@@ -592,7 +594,7 @@ public class Utils {
             for (int x = minX; x <= maxX; ++x) {
                 for (int y = minY; y <= maxY; ++y) {
                     Block block = level.getTickCachedBlock(x, y, z, false);
-                    //判断是否和非空气方块有碰撞
+                    // 判断是否和非空气方块有碰撞
                     if (block != null && block.collidesWithBB(bb) && !block.canPassThrough()) {
                         if (x < centerX) {
                             returnValue |= 0b010000;
@@ -621,7 +623,7 @@ public class Utils {
     public static final boolean[] isPlant = new boolean[2048];
 
     static {
-        isPlant[Block.AIR] = true; //gap
+        isPlant[Block.AIR] = true; // gap
         isPlant[Block.LOG] = true;
         isPlant[Block.LEAVES] = true;
         isPlant[Block.TALL_GRASS] = true;
@@ -630,7 +632,7 @@ public class Utils {
         isPlant[Block.RED_FLOWER] = true;
         isPlant[Block.BROWN_MUSHROOM] = true;
         isPlant[Block.RED_MUSHROOM] = true;
-        isPlant[Block.SNOW_LAYER] = true; //falls on trees
+        isPlant[Block.SNOW_LAYER] = true; // falls on trees
         isPlant[Block.CACTUS] = true;
         isPlant[Block.REEDS] = true;
         isPlant[Block.PUMPKIN] = true;
@@ -652,7 +654,7 @@ public class Utils {
         isPlantOrFluid[Block.STILL_WATER] = true;
         isPlantOrFluid[Block.FLOWING_LAVA] = true;
         isPlantOrFluid[Block.STILL_LAVA] = true;
-        isPlantOrFluid[Block.ICE] = true; //solid water
-        isPlantOrFluid[Block.PACKED_ICE] = true; //solid water
+        isPlantOrFluid[Block.ICE] = true; // solid water
+        isPlantOrFluid[Block.PACKED_ICE] = true; // solid water
     }
 }

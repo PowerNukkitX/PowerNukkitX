@@ -28,7 +28,6 @@ public class PopulatorGroundSoulFire extends PopulatorSurfaceBlockPN {
         return BlockState.of(SOUL_FIRE);
     }
 
-
     @Override
     protected void placeBlock(int x, int y, int z, BlockState blockState, FullChunk chunk, NukkitRandom random) {
         super.placeBlock(x, y, z, blockState, chunk, random);

@@ -10,17 +10,16 @@ import cn.nukkit.plugin.js.*;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.PluginException;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import org.graalvm.polyglot.Context;
-import org.graalvm.polyglot.HostAccess;
-import org.graalvm.polyglot.Source;
-import org.graalvm.polyglot.Value;
-import org.jetbrains.annotations.NotNull;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.concurrent.ConcurrentHashMap;
+import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.HostAccess;
+import org.graalvm.polyglot.Source;
+import org.graalvm.polyglot.Value;
+import org.jetbrains.annotations.NotNull;
 
 public class CommonJSPlugin implements Plugin, Listener {
 
@@ -48,7 +47,8 @@ public class CommonJSPlugin implements Plugin, Listener {
 
     public final int id = globalMaxId++;
 
-    public final void init(@NotNull JSPluginLoader jsPluginLoader, File pluginDir, PluginDescription pluginDescription) {
+    public final void init(
+            @NotNull JSPluginLoader jsPluginLoader, File pluginDir, PluginDescription pluginDescription) {
         this.jsPluginLoader = jsPluginLoader;
         this.server = jsPluginLoader.server;
         this.pluginDir = pluginDir;
@@ -72,10 +72,14 @@ public class CommonJSPlugin implements Plugin, Listener {
             usedFeatures.put(each, feature);
         }
         var cbd = Context.newBuilder("js")
-                .hostClassLoader(classLoader = new JSClassLoader(this, Thread.currentThread().getContextClassLoader()))
+                .hostClassLoader(
+                        classLoader =
+                                new JSClassLoader(this, Thread.currentThread().getContextClassLoader()))
                 .fileSystem(fileSystem = new ESMFileSystem(pluginDir, this, classLoader))
                 .allowAllAccess(true)
-                .allowHostAccess(HostAccess.newBuilder(HostAccess.ALL).targetTypeMapping(Double.class, Float.class, null, Double::floatValue).build())
+                .allowHostAccess(HostAccess.newBuilder(HostAccess.ALL)
+                        .targetTypeMapping(Double.class, Float.class, null, Double::floatValue)
+                        .build())
                 .allowHostClassLoading(true)
                 .allowHostClassLookup(className -> true)
                 .allowIO(true)
@@ -114,7 +118,8 @@ public class CommonJSPlugin implements Plugin, Listener {
         try {
             jsExports = jsContext.eval(Source.newBuilder("js", mainJSFile)
                     .name("@" + description.getName() + "/" + mainJSFile.getName())
-                    .mimeType("application/javascript+module").build());
+                    .mimeType("application/javascript+module")
+                    .build());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -200,19 +205,13 @@ public class CommonJSPlugin implements Plugin, Listener {
     }
 
     @Override
-    public void saveConfig() {
-
-    }
+    public void saveConfig() {}
 
     @Override
-    public void saveDefaultConfig() {
-
-    }
+    public void saveDefaultConfig() {}
 
     @Override
-    public void reloadConfig() {
-
-    }
+    public void reloadConfig() {}
 
     @Override
     public Server getServer() {

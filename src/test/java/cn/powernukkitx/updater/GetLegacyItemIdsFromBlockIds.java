@@ -2,7 +2,6 @@ package cn.powernukkitx.updater;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -10,12 +9,12 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
 
-
 public class GetLegacyItemIdsFromBlockIds {
     static Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     public static void main(String[] args) throws IOException {
-        try (InputStream stream = GetLegacyItemIdsFromBlockIds.class.getClassLoader().getResourceAsStream("block_ids.csv")) {
+        try (InputStream stream =
+                GetLegacyItemIdsFromBlockIds.class.getClassLoader().getResourceAsStream("block_ids.csv")) {
             if (stream == null) {
                 throw new AssertionError("Unable to locate block_ids.csv");
             }
@@ -48,7 +47,8 @@ public class GetLegacyItemIdsFromBlockIds {
             }
             File file = Path.of("target/legacyItemIdsFromBlockIds.json").toFile();
             if (!file.exists()) file.createNewFile();
-            Files.writeString(file.toPath(), gson.toJson(reversedMap), StandardCharsets.UTF_8, StandardOpenOption.WRITE);
+            Files.writeString(
+                    file.toPath(), gson.toJson(reversedMap), StandardCharsets.UTF_8, StandardOpenOption.WRITE);
         }
     }
 }

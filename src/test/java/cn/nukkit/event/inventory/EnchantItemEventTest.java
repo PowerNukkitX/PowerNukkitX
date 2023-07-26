@@ -1,5 +1,7 @@
 package cn.nukkit.event.inventory;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
@@ -13,8 +15,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.powernukkit.tests.api.MockPlayer;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author joserobjr

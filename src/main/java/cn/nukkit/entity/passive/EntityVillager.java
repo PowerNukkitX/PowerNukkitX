@@ -29,8 +29,8 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
-import lombok.Getter;
 import java.util.Set;
+import lombok.Getter;
 
 public class EntityVillager extends EntityIntelligent implements InventoryHolder, EntityNPC, EntityAgeable {
 
@@ -45,6 +45,7 @@ public class EntityVillager extends EntityIntelligent implements InventoryHolder
      * 例如[0,10,20,30,40] 村民达到1级所需经验0,2级为10,这里的经验是{@link EntityVillager#tradeExp}.
      */
     public int[] tierExpRequirement;
+
     @PowerNukkitXOnly
     @Since("1.19.21-r1")
     protected TradeInventory inventory;
@@ -92,7 +93,7 @@ public class EntityVillager extends EntityIntelligent implements InventoryHolder
     protected int profession;
 
     {
-        this.tierExpRequirement = new int[]{0, 10, 70, 150, 250};
+        this.tierExpRequirement = new int[] {0, 10, 70, 150, 250};
     }
 
     public EntityVillager(FullChunk chunk, CompoundTag nbt) {
@@ -104,18 +105,15 @@ public class EntityVillager extends EntityIntelligent implements InventoryHolder
         return new BehaviorGroup(
                 this.tickSpread,
                 Set.of(),
-                Set.of(
-                        new Behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
-                ),
+                Set.of(new Behavior(
+                        new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)),
                 Set.of(),
                 Set.of(new WalkController(), new LookController(true, true), new FluctuateController()),
                 new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
-                this
-        );
+                this);
     }
 
-
-    //todo 实现不同群系的村民
+    // todo 实现不同群系的村民
     @Override
     public int getNetworkId() {
         return NETWORK_ID;
@@ -390,10 +388,10 @@ public class EntityVillager extends EntityIntelligent implements InventoryHolder
     public void addExperience(int xp) {
         this.tradeExp += xp;
         this.setDataProperty(new IntEntityData(DATA_TRADE_EXPERIENCE, this.tradeExp));
-        int next = getTradeTier()+1;
+        int next = getTradeTier() + 1;
         if (next < this.tierExpRequirement.length) {
             if (tradeExp >= this.tierExpRequirement[next]) {
-                setTradeTier(next+1);
+                setTradeTier(next + 1);
             }
         }
     }
@@ -432,7 +430,8 @@ public class EntityVillager extends EntityIntelligent implements InventoryHolder
                     int x = this.namedTag.getInt("blockX");
                     int y = this.namedTag.getInt("blockY");
                     int z = this.namedTag.getInt("blockZ");
-                    if (level.getBlock(x, y, z).getId() != Profession.getProfession(this.profession).getBlockID()) {
+                    if (level.getBlock(x, y, z).getId()
+                            != Profession.getProfession(this.profession).getBlockID()) {
                         setProfession(0);
                         setCanTrade(false);
                     }
@@ -441,6 +440,7 @@ public class EntityVillager extends EntityIntelligent implements InventoryHolder
         }
         return super.onUpdate(tick);
     }
+
     @PowerNukkitXOnly
     @Since("1.20.0-r2")
     public void applyProfession(Profession profession) {
@@ -448,5 +448,4 @@ public class EntityVillager extends EntityIntelligent implements InventoryHolder
         recipes = profession.buildTrades(getTradeSeed());
         this.setCanTrade(true);
     }
-
 }

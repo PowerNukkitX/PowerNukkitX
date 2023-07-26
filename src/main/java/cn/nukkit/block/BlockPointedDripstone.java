@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.potion.Effect.getEffect;
+
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
@@ -22,12 +24,9 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.potion.Effect;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 import java.util.Random;
-
-import static cn.nukkit.potion.Effect.getEffect;
+import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author CoolLoong
@@ -38,15 +37,8 @@ import static cn.nukkit.potion.Effect.getEffect;
 public class BlockPointedDripstone extends BlockFallableMeta {
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    private static final ArrayBlockProperty<String> DRIPSTONE_THICKNESS = new ArrayBlockProperty<>("dripstone_thickness", false,
-            new String[]{
-                    "base",
-                    "frustum",
-                    "merge",
-                    "middle",
-                    "tip"
-            }
-    );
+    private static final ArrayBlockProperty<String> DRIPSTONE_THICKNESS = new ArrayBlockProperty<>(
+            "dripstone_thickness", false, new String[] {"base", "frustum", "merge", "middle", "tip"});
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
@@ -58,30 +50,29 @@ public class BlockPointedDripstone extends BlockFallableMeta {
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public boolean isHanging(){
+    public boolean isHanging() {
         return getPropertyValue(HANGING);
     }
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public void setHanging(boolean value){
+    public void setHanging(boolean value) {
         setPropertyValue(HANGING, value);
     }
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public void setThickness(String value){
+    public void setThickness(String value) {
         setPropertyValue(DRIPSTONE_THICKNESS, value);
     }
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public String getThickness(){
+    public String getThickness() {
         return getPropertyValue(DRIPSTONE_THICKNESS);
     }
 
-    public BlockPointedDripstone() {
-    }
+    public BlockPointedDripstone() {}
 
     public BlockPointedDripstone(int meta) {
         super(meta);
@@ -99,8 +90,7 @@ public class BlockPointedDripstone extends BlockFallableMeta {
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -144,10 +134,10 @@ public class BlockPointedDripstone extends BlockFallableMeta {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_RANDOM && this.getThickness().equals("tip")){
+        if (type == Level.BLOCK_UPDATE_RANDOM && this.getThickness().equals("tip")) {
             Random rand = new Random();
             double nextDouble = rand.nextDouble();
-            if (nextDouble <= 0.011377778){
+            if (nextDouble <= 0.011377778) {
                 this.grow();
             }
 
@@ -172,12 +162,11 @@ public class BlockPointedDripstone extends BlockFallableMeta {
         while (blockUp.getSide(BlockFace.UP).getId() == POINTED_DRIPSTONE) {
             blockUp = blockUp.getSide(BlockFace.UP);
         }
-        if (!blockUp.getSide(BlockFace.UP).isSolid())
-            AirUp = true;
+        if (!blockUp.getSide(BlockFace.UP).isSolid()) AirUp = true;
         if (AirUp) {
             BlockFallEvent event = new BlockFallEvent(this);
             Server.getInstance().getPluginManager().callEvent(event);
-            if (event.isCancelled()){
+            if (event.isCancelled()) {
                 return;
             }
             BlockPointedDripstone block = (BlockPointedDripstone) blockUp;
@@ -190,7 +179,15 @@ public class BlockPointedDripstone extends BlockFallableMeta {
     }
 
     @Override
-    public boolean place(@Nullable Item item, @NotNull Block block, @Nullable Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @Nullable Item item,
+            @NotNull Block block,
+            @Nullable Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         int placeX = block.getFloorX();
         int placeY = block.getFloorY();
         int placeZ = block.getFloorZ();
@@ -204,7 +201,9 @@ public class BlockPointedDripstone extends BlockFallableMeta {
           3   no    no
           4   no    yes
         */
-        int state = (upBlockID == POINTED_DRIPSTONE) ? (downBlockID == POINTED_DRIPSTONE ? 1 : 2) : (downBlockID != POINTED_DRIPSTONE ? 3 : 4);
+        int state = (upBlockID == POINTED_DRIPSTONE)
+                ? (downBlockID == POINTED_DRIPSTONE ? 1 : 2)
+                : (downBlockID != POINTED_DRIPSTONE ? 3 : 4);
         boolean hanging = false;
         switch (state) {
             case 1 -> {
@@ -295,11 +294,14 @@ public class BlockPointedDripstone extends BlockFallableMeta {
 
     @Override
     public void onEntityFallOn(Entity entity, float fallDistance) {
-        if (this.level.gameRules.getBoolean(GameRule.FALL_DAMAGE) && this.getPropertyValue(DRIPSTONE_THICKNESS).equals("tip") && !this.getPropertyValue(HANGING)) {
-            int jumpBoost = entity.hasEffect(Effect.JUMP_BOOST) ? (getEffect(Effect.JUMP_BOOST).getAmplifier() + 1) : 0;
+        if (this.level.gameRules.getBoolean(GameRule.FALL_DAMAGE)
+                && this.getPropertyValue(DRIPSTONE_THICKNESS).equals("tip")
+                && !this.getPropertyValue(HANGING)) {
+            int jumpBoost = entity.hasEffect(Effect.JUMP_BOOST)
+                    ? (getEffect(Effect.JUMP_BOOST).getAmplifier() + 1)
+                    : 0;
             float damage = (fallDistance - jumpBoost) * 2 - 2;
-            if (damage > 0)
-                entity.attack(new EntityDamageEvent(entity, EntityDamageEvent.DamageCause.FALL, damage));
+            if (damage > 0) entity.attack(new EntityDamageEvent(entity, EntityDamageEvent.DamageCause.FALL, damage));
         }
     }
 
@@ -376,7 +378,6 @@ public class BlockPointedDripstone extends BlockFallableMeta {
         }
     }
 
-
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public void grow() {
@@ -389,51 +390,61 @@ public class BlockPointedDripstone extends BlockFallableMeta {
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public void drippingLiquid(){//features according to https://minecraft.fandom.com/zh/wiki/%E6%BB%B4%E6%B0%B4%E7%9F%B3%E9%94%A5
-        if (this.getBlock(this,1) instanceof BlockLiquid || !this.getThickness().equals("tip") || !this.isHanging()) {
+    public void drippingLiquid() { // features according to
+        // https://minecraft.fandom.com/zh/wiki/%E6%BB%B4%E6%B0%B4%E7%9F%B3%E9%94%A5
+        if (this.getBlock(this, 1) instanceof BlockLiquid
+                || !this.getThickness().equals("tip")
+                || !this.isHanging()) {
             return;
         }
         Block highestPDS = this;
         int height = 1;
-        while(highestPDS.getSide(BlockFace.UP) instanceof BlockPointedDripstone){
+        while (highestPDS.getSide(BlockFace.UP) instanceof BlockPointedDripstone) {
             highestPDS = highestPDS.getSide(BlockFace.UP);
             height++;
         }
 
         boolean isWaterloggingBlock = false;
-        if (height >= 11 ||
-            !(highestPDS.getSide(BlockFace.UP,2) instanceof BlockLiquid ||
-            highestPDS.getSide(BlockFace.UP,2).getLevelBlockAtLayer(1).getId() == BlockID.FLOWING_WATER)
-        ){
+        if (height >= 11
+                || !(highestPDS.getSide(BlockFace.UP, 2) instanceof BlockLiquid
+                        || highestPDS
+                                        .getSide(BlockFace.UP, 2)
+                                        .getLevelBlockAtLayer(1)
+                                        .getId()
+                                == BlockID.FLOWING_WATER)) {
             return;
         }
 
-        if (highestPDS.getSide(BlockFace.UP,2).getLevelBlockAtLayer(1).getId() == BlockID.FLOWING_WATER){
+        if (highestPDS.getSide(BlockFace.UP, 2).getLevelBlockAtLayer(1).getId() == BlockID.FLOWING_WATER) {
             isWaterloggingBlock = true;
         }
 
         Block tmp = this;
         BlockCauldron cauldron;
-        while(tmp.getSide(BlockFace.DOWN) instanceof BlockAir){
+        while (tmp.getSide(BlockFace.DOWN) instanceof BlockAir) {
             tmp = tmp.getSide(BlockFace.DOWN);
         }
-        if (tmp.getSide(BlockFace.DOWN) instanceof BlockCauldron){
+        if (tmp.getSide(BlockFace.DOWN) instanceof BlockCauldron) {
             cauldron = (BlockCauldron) tmp.getSide(BlockFace.DOWN);
-        }else{
+        } else {
             return;
         }
 
         Random rand = new Random();
         double nextDouble;
-        Block filledWith = isWaterloggingBlock ? highestPDS.getSideAtLayer(1,BlockFace.UP,2) : highestPDS.getSide(BlockFace.UP,2);
+        Block filledWith = isWaterloggingBlock
+                ? highestPDS.getSideAtLayer(1, BlockFace.UP, 2)
+                : highestPDS.getSide(BlockFace.UP, 2);
         switch (filledWith.getId()) {
             case FLOWING_LAVA -> {
                 nextDouble = rand.nextDouble();
-                if ((cauldron.getCauldronLiquid() == CauldronLiquid.LAVA || cauldron.isEmpty()) && cauldron.getFillLevel() < 6 && nextDouble <= 15.0 / 256.0) {
-                    CauldronFilledByDrippingLiquidEvent event = new CauldronFilledByDrippingLiquidEvent(cauldron, CauldronLiquid.LAVA, 1);
+                if ((cauldron.getCauldronLiquid() == CauldronLiquid.LAVA || cauldron.isEmpty())
+                        && cauldron.getFillLevel() < 6
+                        && nextDouble <= 15.0 / 256.0) {
+                    CauldronFilledByDrippingLiquidEvent event =
+                            new CauldronFilledByDrippingLiquidEvent(cauldron, CauldronLiquid.LAVA, 1);
                     Server.getInstance().getPluginManager().callEvent(event);
-                    if (event.isCancelled())
-                        return;
+                    if (event.isCancelled()) return;
                     cauldron.setCauldronLiquid(event.getLiquid());
                     cauldron.setFillLevel(cauldron.getFillLevel() + event.getLiquidLevelIncrement());
                     cauldron.level.setBlock(cauldron, cauldron, true, true);
@@ -442,11 +453,13 @@ public class BlockPointedDripstone extends BlockFallableMeta {
             }
             case FLOWING_WATER -> {
                 nextDouble = rand.nextDouble();
-                if ((cauldron.getCauldronLiquid() == CauldronLiquid.WATER || cauldron.isEmpty()) && cauldron.getFillLevel() < 6 && nextDouble <= 45.0 / 256.0) {
-                    CauldronFilledByDrippingLiquidEvent event = new CauldronFilledByDrippingLiquidEvent(cauldron, CauldronLiquid.WATER, 1);
+                if ((cauldron.getCauldronLiquid() == CauldronLiquid.WATER || cauldron.isEmpty())
+                        && cauldron.getFillLevel() < 6
+                        && nextDouble <= 45.0 / 256.0) {
+                    CauldronFilledByDrippingLiquidEvent event =
+                            new CauldronFilledByDrippingLiquidEvent(cauldron, CauldronLiquid.WATER, 1);
                     Server.getInstance().getPluginManager().callEvent(event);
-                    if (event.isCancelled())
-                        return;
+                    if (event.isCancelled()) return;
                     cauldron.setCauldronLiquid(event.getLiquid());
                     cauldron.setFillLevel(cauldron.getFillLevel() + event.getLiquidLevelIncrement());
                     cauldron.level.setBlock(cauldron, cauldron, true, true);
@@ -455,5 +468,4 @@ public class BlockPointedDripstone extends BlockFallableMeta {
             }
         }
     }
-
 }

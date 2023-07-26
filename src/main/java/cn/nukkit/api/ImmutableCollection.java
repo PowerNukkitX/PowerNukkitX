@@ -10,5 +10,4 @@ import java.lang.annotation.*;
 @Documented
 @Retention(RetentionPolicy.SOURCE)
 @Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER})
-public @interface ImmutableCollection {
-}
+public @interface ImmutableCollection {}

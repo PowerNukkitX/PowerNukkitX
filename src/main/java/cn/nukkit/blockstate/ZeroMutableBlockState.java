@@ -18,21 +18,20 @@
 
 package cn.nukkit.blockstate;
 
+import static cn.nukkit.blockstate.IMutableBlockState.handleUnsupportedStorageType;
+
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.api.Unsigned;
 import cn.nukkit.blockproperty.BlockProperties;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nonnegative;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.NoSuchElementException;
-
-import static cn.nukkit.blockstate.IMutableBlockState.handleUnsupportedStorageType;
+import javax.annotation.Nonnegative;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author joserobjr
@@ -53,12 +52,10 @@ public class ZeroMutableBlockState extends MutableBlockState {
 
     @PowerNukkitOnly
     @Override
-    public void validate() {
-    }
+    public void validate() {}
 
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public ZeroMutableBlockState copy() {
         return this;
     }
@@ -79,7 +76,8 @@ public class ZeroMutableBlockState extends MutableBlockState {
             }
         }
         if (state != 0) {
-            throw handleUnsupportedStorageType(getBlockId(), storage, new ArithmeticException("ZeroMutableBlockState only accepts zero"));
+            throw handleUnsupportedStorageType(
+                    getBlockId(), storage, new ArithmeticException("ZeroMutableBlockState only accepts zero"));
         }
     }
 
@@ -88,7 +86,8 @@ public class ZeroMutableBlockState extends MutableBlockState {
     @Override
     public void setDataStorageFromInt(@Nonnegative int storage) {
         if (storage != 0) {
-            throw handleUnsupportedStorageType(getBlockId(), storage, new ArithmeticException("ZeroMutableBlockState only accepts zero"));
+            throw handleUnsupportedStorageType(
+                    getBlockId(), storage, new ArithmeticException("ZeroMutableBlockState only accepts zero"));
         }
     }
 
@@ -96,28 +95,30 @@ public class ZeroMutableBlockState extends MutableBlockState {
     @PowerNukkitOnly
     @Override
     public void setPropertyValue(String propertyName, @Nullable Serializable value) {
-        throw new NoSuchElementException("ZeroMutableBlockState can't have properties. Attempted to set "+propertyName+" to "+value);
+        throw new NoSuchElementException(
+                "ZeroMutableBlockState can't have properties. Attempted to set " + propertyName + " to " + value);
     }
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     @Override
     public void setBooleanValue(String propertyName, boolean value) {
-        throw new NoSuchElementException("ZeroMutableBlockState can't have properties. Attempted to set "+propertyName+" to "+value);
+        throw new NoSuchElementException(
+                "ZeroMutableBlockState can't have properties. Attempted to set " + propertyName + " to " + value);
     }
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     @Override
     public void setIntValue(String propertyName, int value) {
-        throw new NoSuchElementException("ZeroMutableBlockState can't have properties. Attempted to set "+propertyName+" to "+value);
+        throw new NoSuchElementException(
+                "ZeroMutableBlockState can't have properties. Attempted to set " + propertyName + " to " + value);
     }
 
     @Nonnegative
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public Number getDataStorage() {
         return 0;
     }
@@ -137,8 +138,7 @@ public class ZeroMutableBlockState extends MutableBlockState {
         return 0;
     }
 
-    @Unsigned
-    @Since("1.4.0.0-PN")
+    @Unsigned @Since("1.4.0.0-PN")
     @Override
     @PowerNukkitOnly
     public int getBigDamage() {
@@ -148,46 +148,46 @@ public class ZeroMutableBlockState extends MutableBlockState {
     @Nonnegative
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BigInteger getHugeDamage() {
         return BigInteger.ZERO;
     }
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public Serializable getPropertyValue(String propertyName) {
-        throw new NoSuchElementException("ZeroMutableBlockState can't have properties. Attempted get property "+propertyName);
+        throw new NoSuchElementException(
+                "ZeroMutableBlockState can't have properties. Attempted get property " + propertyName);
     }
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     @Override
     public int getIntValue(String propertyName) {
-        throw new NoSuchElementException("ZeroMutableBlockState can't have properties. Attempted get property "+propertyName);
+        throw new NoSuchElementException(
+                "ZeroMutableBlockState can't have properties. Attempted get property " + propertyName);
     }
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     @Override
     public boolean getBooleanValue(String propertyName) {
-        throw new NoSuchElementException("ZeroMutableBlockState can't have properties. Attempted get property "+propertyName);
+        throw new NoSuchElementException(
+                "ZeroMutableBlockState can't have properties. Attempted get property " + propertyName);
     }
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getPersistenceValue(String propertyName) {
-        throw new NoSuchElementException("ZeroMutableBlockState can't have properties. Attempted get property "+propertyName);
+        throw new NoSuchElementException(
+                "ZeroMutableBlockState can't have properties. Attempted get property " + propertyName);
     }
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockState getCurrentState() {
         return state;
     }

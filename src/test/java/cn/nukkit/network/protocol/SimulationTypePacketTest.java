@@ -18,14 +18,14 @@
 
 package cn.nukkit.network.protocol;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.network.protocol.SimulationTypePacket.SimulationType;
 import lombok.val;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author joserobjr
@@ -39,12 +39,12 @@ class SimulationTypePacketTest {
         val packet = new SimulationTypePacket();
         packet.setSimulationType(SimulationType.EDITOR);
         packet.encode();
-        
+
         val packet2 = new SimulationTypePacket();
         packet2.setBuffer(packet.getBuffer());
         packet2.getUnsignedVarInt();
         packet2.decode();
-        
+
         assertEquals(SimulationType.EDITOR, packet2.getSimulationType());
         assertTrue(packet2.feof());
     }

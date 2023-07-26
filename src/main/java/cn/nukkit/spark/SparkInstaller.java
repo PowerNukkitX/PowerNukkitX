@@ -4,8 +4,6 @@ import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.plugin.Plugin;
-
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,6 +11,7 @@ import java.math.BigInteger;
 import java.net.URL;
 import java.nio.file.Files;
 import java.security.MessageDigest;
+import javax.annotation.Nonnull;
 
 @PowerNukkitXOnly
 @Since("1.20.10-r1")
@@ -65,7 +64,8 @@ public class SparkInstaller {
     }
 
     private static String getFileSha1(File file) throws Exception {
-        return String.format("%040x", new BigInteger(1,
-                MessageDigest.getInstance("SHA-1").digest(Files.readAllBytes(file.toPath()))));
+        return String.format(
+                "%040x",
+                new BigInteger(1, MessageDigest.getInstance("SHA-1").digest(Files.readAllBytes(file.toPath()))));
     }
 }

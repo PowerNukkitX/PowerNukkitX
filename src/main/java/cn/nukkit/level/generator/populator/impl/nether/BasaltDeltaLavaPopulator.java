@@ -7,7 +7,6 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.NukkitRandom;
-
 import java.util.ArrayList;
 
 public class BasaltDeltaLavaPopulator extends Populator {
@@ -34,13 +33,12 @@ public class BasaltDeltaLavaPopulator extends Populator {
         ArrayList<Integer> blockYs = new ArrayList<>();
         for (y = 128; y > 0; --y) {
             int b = this.level.getBlockIdAt(x, y, z);
-            if ((b == Block.BASALT || b == Block.BLACKSTONE) &&
-                    this.level.getBlockIdAt(x, y + 1, z) == 0 &&
-                    this.level.getBlockIdAt(x + 1, y, z) != 0 &&
-                    this.level.getBlockIdAt(x - 1, y, z) != 0 &&
-                    this.level.getBlockIdAt(x, y, z + 1) != 0 &&
-                    this.level.getBlockIdAt(x, y, z - 1) != 0
-            ) {
+            if ((b == Block.BASALT || b == Block.BLACKSTONE)
+                    && this.level.getBlockIdAt(x, y + 1, z) == 0
+                    && this.level.getBlockIdAt(x + 1, y, z) != 0
+                    && this.level.getBlockIdAt(x - 1, y, z) != 0
+                    && this.level.getBlockIdAt(x, y, z + 1) != 0
+                    && this.level.getBlockIdAt(x, y, z - 1) != 0) {
                 blockYs.add(y);
             }
         }

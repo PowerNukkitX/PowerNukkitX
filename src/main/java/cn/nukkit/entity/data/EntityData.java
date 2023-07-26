@@ -3,7 +3,6 @@ package cn.nukkit.entity.data;
 import cn.nukkit.entity.Entity;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Objects;
@@ -68,7 +67,9 @@ public abstract class EntityData<T> {
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof EntityData && ((EntityData) obj).getId() == this.getId() && Objects.equals(((EntityData) obj).getData(), this.getData());
+        return obj instanceof EntityData
+                && ((EntityData) obj).getId() == this.getId()
+                && Objects.equals(((EntityData) obj).getData(), this.getData());
     }
 
     private SortedSet<String> readFlags(int offset, long flags) {
@@ -94,9 +95,6 @@ public abstract class EntityData<T> {
         } else if (id == Entity.DATA_FLAGS_EXTENDED) {
             data = readFlags(64, (long) data);
         }
-        return getClass().getSimpleName() + "{" +
-                "id=" + idStr + "," +
-                "data=" + data +
-                '}';
+        return getClass().getSimpleName() + "{" + "id=" + idStr + "," + "data=" + data + '}';
     }
 }

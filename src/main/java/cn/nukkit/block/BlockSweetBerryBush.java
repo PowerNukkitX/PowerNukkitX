@@ -19,9 +19,8 @@ import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.MathHelper;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.concurrent.ThreadLocalRandom;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 public class BlockSweetBerryBush extends BlockFlowable {
@@ -46,8 +45,7 @@ public class BlockSweetBerryBush extends BlockFlowable {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -74,7 +72,7 @@ public class BlockSweetBerryBush extends BlockFlowable {
 
     @Override
     public double getHardness() {
-        return getDamage() == 0? 0 : 0.25;
+        return getDamage() == 0 ? 0 : 0.25;
     }
 
     @Override
@@ -105,7 +103,7 @@ public class BlockSweetBerryBush extends BlockFlowable {
             return true;
         }
 
-        if (age < 2){
+        if (age < 2) {
             return true;
         }
 
@@ -114,10 +112,8 @@ public class BlockSweetBerryBush extends BlockFlowable {
             amount++;
         }
 
-        BlockHarvestEvent event = new BlockHarvestEvent(this,
-                new BlockSweetBerryBush(1),
-                new Item[]{ new ItemSweetBerries(0, amount) }
-        );
+        BlockHarvestEvent event =
+                new BlockHarvestEvent(this, new BlockSweetBerryBush(1), new Item[] {new ItemSweetBerries(0, amount)});
 
         getLevel().getServer().getPluginManager().callEvent(event);
         if (!event.isCancelled()) {
@@ -144,7 +140,8 @@ public class BlockSweetBerryBush extends BlockFlowable {
                 return Level.BLOCK_UPDATE_NORMAL;
             }
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {
-            if (getDamage() < 3 && ThreadLocalRandom.current().nextInt(5) == 0
+            if (getDamage() < 3
+                    && ThreadLocalRandom.current().nextInt(5) == 0
                     && getLevel().getFullLight(add(0, 1, 0)) >= BlockCrops.MINIMUM_LIGHT_LEVEL) {
                 BlockGrowEvent event = new BlockGrowEvent(this, Block.get(getId(), getDamage() + 1));
                 if (!event.isCancelled()) {
@@ -157,7 +154,15 @@ public class BlockSweetBerryBush extends BlockFlowable {
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         if (target.getId() == SWEET_BERRY_BUSH || block.getId() != AIR) {
             return false;
         }
@@ -167,7 +172,7 @@ public class BlockSweetBerryBush extends BlockFlowable {
         }
         return false;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static boolean isSupportValid(Block block) {
@@ -191,8 +196,11 @@ public class BlockSweetBerryBush extends BlockFlowable {
     @Override
     public void onEntityCollide(Entity entity) {
         if (getDamage() > 0) {
-            if (entity.positionChanged && !entity.isSneaking() && ThreadLocalRandom.current().nextInt(20) == 0) {
-                if (entity.attack(new EntityDamageByBlockEvent(this, entity, EntityDamageEvent.DamageCause.CONTACT, 1))) {
+            if (entity.positionChanged
+                    && !entity.isSneaking()
+                    && ThreadLocalRandom.current().nextInt(20) == 0) {
+                if (entity.attack(
+                        new EntityDamageByBlockEvent(this, entity, EntityDamageEvent.DamageCause.CONTACT, 1))) {
                     getLevel().addSound(entity, Sound.BLOCK_SWEET_BERRY_BUSH_HURT);
                 }
             }
@@ -201,13 +209,13 @@ public class BlockSweetBerryBush extends BlockFlowable {
 
     @Override
     public AxisAlignedBB getCollisionBoundingBox() {
-        return getDamage() > 0? this : null;
+        return getDamage() > 0 ? this : null;
     }
 
     @Override
     public Item[] getDrops(Item item) {
         int age = MathHelper.clamp(getDamage(), 0, 3);
-        
+
         int amount = 1;
         if (age > 1) {
             amount = 1 + ThreadLocalRandom.current().nextInt(2);
@@ -216,7 +224,7 @@ public class BlockSweetBerryBush extends BlockFlowable {
             }
         }
 
-        return new Item[]{ new ItemSweetBerries(0, amount) };
+        return new Item[] {new ItemSweetBerries(0, amount)};
     }
 
     @Override

@@ -37,7 +37,8 @@ public class ObjectSavannaTree extends TreeGenerator {
                         if (j >= 0 && j < 256) {
 
                             vector3.setComponents(l, j, i1);
-                            if (!this.canGrowInto(level.getBlockIdAt((int) vector3.x, (int) vector3.y, (int) vector3.z))) {
+                            if (!this.canGrowInto(
+                                    level.getBlockIdAt((int) vector3.x, (int) vector3.y, (int) vector3.z))) {
                                 flag = false;
                             }
                         } else {
@@ -72,7 +73,8 @@ public class ObjectSavannaTree extends TreeGenerator {
                         }
 
                         Vector3 blockpos = new Vector3(i3, i2, j1);
-                        int material = level.getBlockIdAt(blockpos.getFloorX(), blockpos.getFloorY(), blockpos.getFloorZ());
+                        int material =
+                                level.getBlockIdAt(blockpos.getFloorX(), blockpos.getFloorY(), blockpos.getFloorZ());
 
                         if (material == Block.AIR || material == Block.LEAVES) {
                             this.placeLogAt(level, blockpos);
@@ -117,7 +119,8 @@ public class ObjectSavannaTree extends TreeGenerator {
                                 i3 += face1.getXOffset();
                                 j1 += face1.getZOffset();
                                 Vector3 blockpos1 = new Vector3(i3, j2, j1);
-                                int material1 = level.getBlockIdAt(blockpos1.getFloorX(), blockpos1.getFloorY(), blockpos1.getFloorZ());
+                                int material1 = level.getBlockIdAt(
+                                        blockpos1.getFloorX(), blockpos1.getFloorY(), blockpos1.getFloorZ());
 
                                 if (material1 == Block.AIR || material1 == Block.LEAVES) {
                                     this.placeLogAt(level, blockpos1);

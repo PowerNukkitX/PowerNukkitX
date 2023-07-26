@@ -12,7 +12,6 @@ import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -206,7 +205,8 @@ public class ScatteredStructureBuilder {
      * @param random the PRNG to use
      * @param blocks a map of possible blocks to integer weights
      */
-    public void fillWithRandomBlock(BlockVector3 min, BlockVector3 max, NukkitRandom random, Map<Integer, Integer> blocks) {
+    public void fillWithRandomBlock(
+            BlockVector3 min, BlockVector3 max, NukkitRandom random, Map<Integer, Integer> blocks) {
         for (int y = min.y; y <= max.y; y++) {
             for (int x = min.x; x <= max.x; x++) {
                 for (int z = min.z; z <= max.z; z++) {

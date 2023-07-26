@@ -1,17 +1,15 @@
 package cn.nukkit.plugin.js.compiler;
 
+import java.lang.reflect.Method;
 import org.jetbrains.annotations.Nullable;
 import org.objectweb.asm.Type;
-
-import java.lang.reflect.Method;
 
 public record JType(Type asmType) {
     public static JType of(Type type) {
         return new JType(type);
     }
 
-    @Nullable
-    public static JType ofClassName(String className) {
+    @Nullable public static JType ofClassName(String className) {
         switch (className) {
             case "int" -> {
                 return of(int.class);

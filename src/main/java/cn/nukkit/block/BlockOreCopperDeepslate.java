@@ -7,7 +7,6 @@ import cn.nukkit.api.Since;
  * @author LoboMetalurgico
  * @since 11/06/2021
  */
-
 @PowerNukkitOnly
 @Since("FUTURE")
 public class BlockOreCopperDeepslate extends BlockOreCopper {
@@ -31,5 +30,4 @@ public class BlockOreCopperDeepslate extends BlockOreCopper {
     public double getHardness() {
         return 4.5;
     }
-
 }

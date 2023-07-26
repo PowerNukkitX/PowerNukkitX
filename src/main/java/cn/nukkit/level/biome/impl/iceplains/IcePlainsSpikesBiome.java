@@ -57,14 +57,14 @@ public class IcePlainsSpikesBiome extends IcePlainsBiome {
                 int maxY = startY + height;
                 if (isTall) {
                     for (int y = startY; y < maxY; y++) {
-                        //center column
+                        // center column
                         level.setBlockAt(x, y, z, PACKED_ICE);
-                        //t shape
+                        // t shape
                         level.setBlockAt(x + 1, y, z, PACKED_ICE);
                         level.setBlockAt(x - 1, y, z, PACKED_ICE);
                         level.setBlockAt(x, y, z + 1, PACKED_ICE);
                         level.setBlockAt(x, y, z - 1, PACKED_ICE);
-                        //additional blocks on the side
+                        // additional blocks on the side
                         if (random.nextBoolean()) {
                             level.setBlockAt(x + 1, y, z + 1, PACKED_ICE);
                         }
@@ -78,7 +78,7 @@ public class IcePlainsSpikesBiome extends IcePlainsBiome {
                             level.setBlockAt(x - 1, y, z - 1, PACKED_ICE);
                         }
                     }
-                    //finish with a point
+                    // finish with a point
                     level.setBlockAt(x + 1, maxY, z, PACKED_ICE);
                     level.setBlockAt(x - 1, maxY, z, PACKED_ICE);
                     level.setBlockAt(x, maxY, z + 1, PACKED_ICE);
@@ -87,7 +87,7 @@ public class IcePlainsSpikesBiome extends IcePlainsBiome {
                         level.setBlockAt(x, y, z, PACKED_ICE);
                     }
                 } else {
-                    //the maximum possible radius in blocks
+                    // the maximum possible radius in blocks
                     int baseWidth = random.nextBoundedInt(1) + 4;
                     float shrinkFactor = baseWidth / (float) height;
                     float currWidth = baseWidth;

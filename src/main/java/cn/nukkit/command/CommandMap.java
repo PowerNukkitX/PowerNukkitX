@@ -3,7 +3,6 @@ package cn.nukkit.command;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-
 import java.util.List;
 
 /**
@@ -45,7 +44,6 @@ public interface CommandMap {
      */
     void registerSimpleCommands(Object object);
 
-
     /**
      * 执行命令
      *
@@ -82,5 +80,4 @@ public interface CommandMap {
      * @return the command
      */
     Command getCommand(String name);
-
 }

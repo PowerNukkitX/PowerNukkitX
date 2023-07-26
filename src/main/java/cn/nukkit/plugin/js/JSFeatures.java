@@ -4,7 +4,6 @@ import cn.nukkit.plugin.js.feature.ConvertFeature;
 import cn.nukkit.plugin.js.feature.TestFeature;
 import cn.nukkit.plugin.js.feature.WsClientFeature;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -15,8 +14,7 @@ public final class JSFeatures {
     public static final Int2ObjectOpenHashMap<Object> FEATURE_GENERATED_TMP_MAP = new Int2ObjectOpenHashMap<>();
     public static final AtomicInteger FEATURE_GENERATED_TMP_ID = new AtomicInteger(0);
 
-    private JSFeatures() {
-    }
+    private JSFeatures() {}
 
     public static void registerFeature(JSFeature feature) {
         JS_FEATURE_MAP.put(feature.getName(), feature);

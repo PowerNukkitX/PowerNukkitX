@@ -6,9 +6,8 @@ import cn.nukkit.blockproperty.value.WoodType;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class BlockLogStrippedMangrove extends BlockWoodStripped{
-    public BlockLogStrippedMangrove() {
-    }
+public class BlockLogStrippedMangrove extends BlockWoodStripped {
+    public BlockLogStrippedMangrove() {}
 
     @Override
     public int getId() {
@@ -26,6 +25,5 @@ public class BlockLogStrippedMangrove extends BlockWoodStripped{
     }
 
     @Override
-    public void setWoodType(WoodType woodType) {
-    }
+    public void setWoodType(WoodType woodType) {}
 }

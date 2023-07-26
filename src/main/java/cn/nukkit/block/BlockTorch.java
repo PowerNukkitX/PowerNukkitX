@@ -13,10 +13,9 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Faceable;
+import javax.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 
 /**
  * @author xtypr
@@ -25,7 +24,8 @@ import javax.annotation.Nullable;
 public class BlockTorch extends BlockFlowable implements Faceable {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final BlockProperty<TorchAttachment> TORCH_FACING_DIRECTION = new ArrayBlockProperty<>("torch_facing_direction", false, TorchAttachment.class);
+    public static final BlockProperty<TorchAttachment> TORCH_FACING_DIRECTION =
+            new ArrayBlockProperty<>("torch_facing_direction", false, TorchAttachment.class);
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -51,8 +51,7 @@ public class BlockTorch extends BlockFlowable implements Faceable {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -62,7 +61,9 @@ public class BlockTorch extends BlockFlowable implements Faceable {
         return 14;
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed the block update logic to follow the same behaviour has vanilla")
+    @PowerNukkitDifference(
+            since = "1.4.0.0-PN",
+            info = "Fixed the block update logic to follow the same behaviour has vanilla")
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
@@ -78,9 +79,8 @@ public class BlockTorch extends BlockFlowable implements Faceable {
 
         return 0;
     }
-    
-    @Nullable
-    private BlockFace findValidSupport() {
+
+    @Nullable private BlockFace findValidSupport() {
         for (BlockFace horizontalFace : BlockFace.Plane.HORIZONTAL) {
             if (BlockLever.isSupportValid(getSide(horizontalFace.getOpposite()), horizontalFace)) {
                 return horizontalFace;
@@ -94,7 +94,15 @@ public class BlockTorch extends BlockFlowable implements Faceable {
 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed the logic to follow the same behaviour has vanilla")
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         if (target.canBeReplaced()) {
             target = target.down();
             face = BlockFace.UP;
@@ -107,7 +115,7 @@ public class BlockTorch extends BlockFlowable implements Faceable {
             }
             face = valid;
         }
-        
+
         this.setBlockFace(face);
         this.getLevel().setBlock(block, this, true, true);
         return true;
@@ -127,9 +135,13 @@ public class BlockTorch extends BlockFlowable implements Faceable {
     public void setBlockFace(BlockFace face) {
         TorchAttachment torchAttachment = TorchAttachment.getByTorchDirection(face);
         if (torchAttachment == null) {
-            throw new InvalidBlockPropertyValueException(TORCH_FACING_DIRECTION, getTorchAttachment(), face, "The give BlockFace can't be mapped to TorchFace");
+            throw new InvalidBlockPropertyValueException(
+                    TORCH_FACING_DIRECTION,
+                    getTorchAttachment(),
+                    face,
+                    "The give BlockFace can't be mapped to TorchFace");
         }
-        
+
         setTorchAttachment(torchAttachment);
     }
 
@@ -155,12 +167,24 @@ public class BlockTorch extends BlockFlowable implements Faceable {
     @Since("1.4.0.0-PN")
     @RequiredArgsConstructor
     public enum TorchAttachment {
-        @PowerNukkitOnly @Since("1.4.0.0-PN") UNKNOWN(BlockFace.UP),
-        @PowerNukkitOnly @Since("1.4.0.0-PN") WEST(BlockFace.EAST),
-        @PowerNukkitOnly @Since("1.4.0.0-PN") EAST(BlockFace.WEST),
-        @PowerNukkitOnly @Since("1.4.0.0-PN") NORTH(BlockFace.SOUTH),
-        @PowerNukkitOnly @Since("1.4.0.0-PN") SOUTH(BlockFace.NORTH),
-        @PowerNukkitOnly @Since("1.4.0.0-PN") TOP(BlockFace.UP);
+        @PowerNukkitOnly
+        @Since("1.4.0.0-PN")
+        UNKNOWN(BlockFace.UP),
+        @PowerNukkitOnly
+        @Since("1.4.0.0-PN")
+        WEST(BlockFace.EAST),
+        @PowerNukkitOnly
+        @Since("1.4.0.0-PN")
+        EAST(BlockFace.WEST),
+        @PowerNukkitOnly
+        @Since("1.4.0.0-PN")
+        NORTH(BlockFace.SOUTH),
+        @PowerNukkitOnly
+        @Since("1.4.0.0-PN")
+        SOUTH(BlockFace.NORTH),
+        @PowerNukkitOnly
+        @Since("1.4.0.0-PN")
+        TOP(BlockFace.UP);
         private final BlockFace torchDirection;
 
         /**
@@ -174,8 +198,7 @@ public class BlockTorch extends BlockFlowable implements Faceable {
 
         @PowerNukkitOnly
         @Since("1.4.0.0-PN")
-        @Nullable
-        public static TorchAttachment getByTorchDirection(@NotNull BlockFace face) {
+        @Nullable public static TorchAttachment getByTorchDirection(@NotNull BlockFace face) {
             switch (face) {
                 default:
                 case DOWN:
@@ -198,8 +221,7 @@ public class BlockTorch extends BlockFlowable implements Faceable {
          */
         @PowerNukkitOnly
         @Since("1.4.0.0-PN")
-        @NotNull
-        public BlockFace getAttachedFace() {
+        @NotNull public BlockFace getAttachedFace() {
             switch (this) {
                 default:
                 case UNKNOWN:
@@ -218,8 +240,7 @@ public class BlockTorch extends BlockFlowable implements Faceable {
 
         @PowerNukkitOnly
         @Since("1.4.0.0-PN")
-        @Nullable
-        public static TorchAttachment getByAttachedFace(@NotNull BlockFace face) {
+        @Nullable public static TorchAttachment getByAttachedFace(@NotNull BlockFace face) {
             switch (face) {
                 default:
                 case UP:

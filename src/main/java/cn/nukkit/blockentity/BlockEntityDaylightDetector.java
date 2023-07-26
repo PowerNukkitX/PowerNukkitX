@@ -32,7 +32,7 @@ public class BlockEntityDaylightDetector extends BlockEntity {
             return false;
         }
         if (this.level.getCurrentTick() % 20 != 0) {
-            //阳光传感器每20gt更新一次
+            // 阳光传感器每20gt更新一次
             return true;
         }
         Block block = getLevelBlock();
@@ -43,5 +43,4 @@ public class BlockEntityDaylightDetector extends BlockEntity {
             return false;
         }
     }
-
 }

@@ -31,8 +31,7 @@ public abstract class BlockTerracottaGlazed extends BlockSolidMeta implements Fa
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -59,7 +58,15 @@ public abstract class BlockTerracottaGlazed extends BlockSolidMeta implements Fa
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         int[] faces = {2, 5, 3, 4};
         this.setDamage(faces[player != null ? player.getDirection().getHorizontalIndex() : 0]);
         return this.getLevel().setBlock(block, this, true, true);
@@ -75,8 +82,8 @@ public abstract class BlockTerracottaGlazed extends BlockSolidMeta implements Fa
         return BlockFace.fromHorizontalIndex(this.getDamage() & 0x07);
     }
 
-    //带釉陶瓦可以被推动但不能被收回
-    //see: https://minecraft.fandom.com/zh/wiki/%E5%B8%A6%E9%87%89%E9%99%B6%E7%93%A6
+    // 带釉陶瓦可以被推动但不能被收回
+    // see: https://minecraft.fandom.com/zh/wiki/%E5%B8%A6%E9%87%89%E9%99%B6%E7%93%A6
 
     @Override
     public boolean canBePushed() {

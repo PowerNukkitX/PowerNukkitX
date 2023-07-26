@@ -19,9 +19,7 @@ public class BatchPacket extends DataPacket {
     }
 
     @Override
-    public void encode() {
-
-    }
+    public void encode() {}
 
     public void trim() {
         setBuffer(null);

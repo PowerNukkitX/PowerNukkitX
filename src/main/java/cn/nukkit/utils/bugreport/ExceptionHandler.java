@@ -23,5 +23,4 @@ public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
             // Fail Safe
         }
     }
-
 }

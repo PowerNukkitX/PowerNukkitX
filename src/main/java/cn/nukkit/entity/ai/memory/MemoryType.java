@@ -5,12 +5,11 @@ import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.ai.memory.codec.IMemoryCodec;
 import cn.nukkit.utils.Identifier;
-import lombok.Getter;
-
-import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
+import javax.annotation.Nullable;
+import lombok.Getter;
 
 /**
  * 实体记忆是一个存储实体数据的类，同时如果实现了{@link IMemoryCodec}，实体记忆还可以被持久化存储以及链接实体元数据
@@ -28,10 +27,11 @@ public final class MemoryType<Data> {
 
     @Getter
     private final Identifier identifier;
+
     private final Supplier<Data> defaultData;
+
     @Getter
-    @Nullable
-    private IMemoryCodec<Data> codec;
+    @Nullable private IMemoryCodec<Data> codec;
 
     public MemoryType(Identifier identifier) {
         this(identifier, () -> null);
@@ -100,8 +100,7 @@ public final class MemoryType<Data> {
     }
 
     @Since("1.19.63-r1")
-    @Nullable
-    public Data decode(Entity entity) {
+    @Nullable public Data decode(Entity entity) {
         if (codec != null) {
             var tag = entity.namedTag;
             return codec.decode(tag);

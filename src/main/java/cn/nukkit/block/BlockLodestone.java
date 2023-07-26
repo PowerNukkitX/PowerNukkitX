@@ -11,11 +11,10 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
+import java.io.IOException;
+import javax.annotation.Nullable;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
-import java.io.IOException;
 
 /**
  * @author joserobjr
@@ -29,7 +28,7 @@ public class BlockLodestone extends BlockSolid implements BlockEntityHolder<Bloc
     public BlockLodestone() {
         // Does nothing
     }
-    
+
     @Override
     public int getId() {
         return LODESTONE;
@@ -37,22 +36,28 @@ public class BlockLodestone extends BlockSolid implements BlockEntityHolder<Bloc
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public Class<? extends BlockEntityLodestone> getBlockEntityClass() {
         return BlockEntityLodestone.class;
     }
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getBlockEntityType() {
         return BlockEntity.LODESTONE;
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
         return BlockEntityHolder.setBlockAndCreateEntity(this) != null;
     }
 
@@ -63,16 +68,17 @@ public class BlockLodestone extends BlockSolid implements BlockEntityHolder<Bloc
 
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player) {
-        if (player == null || item.isNull() || item.getId() != ItemID.COMPASS && item.getId() != ItemID.LODESTONE_COMPASS) {
+        if (player == null
+                || item.isNull()
+                || item.getId() != ItemID.COMPASS && item.getId() != ItemID.LODESTONE_COMPASS) {
             return false;
         }
-
 
         ItemCompassLodestone compass = (ItemCompassLodestone) Item.get(ItemID.LODESTONE_COMPASS);
         if (item.hasCompoundTag()) {
             compass.setCompoundTag(item.getCompoundTag().clone());
         }
-        
+
         int trackingHandle;
         try {
             trackingHandle = getOrCreateBlockEntity().requestTrackingHandler();
@@ -94,18 +100,23 @@ public class BlockLodestone extends BlockSolid implements BlockEntityHolder<Bloc
                 player.getLevel().dropItem(player.getPosition(), failed);
             }
         }
-        
+
         getLevel().addSound(player.getPosition(), Sound.LODESTONE_COMPASS_LINK_COMPASS_TO_LODESTONE);
-        
+
         if (added) {
             try {
                 getLevel().getServer().getPositionTrackingService().startTracking(player, trackingHandle, false);
             } catch (IOException e) {
-                log.warn("Failed to make the player {} track {} at {}", player.getName(), trackingHandle, getLocation(),  e);
+                log.warn(
+                        "Failed to make the player {} track {} at {}",
+                        player.getName(),
+                        trackingHandle,
+                        getLocation(),
+                        e);
             }
             getLevel().getServer().getScheduler().scheduleTask(null, player::updateTrackingPositions);
         }
-        
+
         return true;
     }
 
@@ -143,7 +154,7 @@ public class BlockLodestone extends BlockSolid implements BlockEntityHolder<Bloc
 
     @Override
     @PowerNukkitOnly
-    public  boolean sticksToPiston() {
+    public boolean sticksToPiston() {
         return false;
     }
 

@@ -8,12 +8,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import lombok.extern.log4j.Log4j2;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Map;
+import lombok.extern.log4j.Log4j2;
 
 @PowerNukkitOnly("Map between legacy integer biome id and new string id")
 @Since("1.6.0.0-PNX")
@@ -29,7 +28,8 @@ public final class BiomeLegacyId2StringIdMap {
             if (inputStream == null) {
                 log.warn("Cannot read biome_id_map.json. No biomes will be sent to client.");
             } else {
-                final JsonObject biomeIdMap = JsonParser.parseReader(new InputStreamReader(inputStream)).getAsJsonObject();
+                final JsonObject biomeIdMap = JsonParser.parseReader(new InputStreamReader(inputStream))
+                        .getAsJsonObject();
                 for (final Map.Entry<String, JsonElement> entry : biomeIdMap.entrySet()) {
                     final int id = entry.getValue().getAsInt();
                     legacy2StringMap.put(id, entry.getKey());

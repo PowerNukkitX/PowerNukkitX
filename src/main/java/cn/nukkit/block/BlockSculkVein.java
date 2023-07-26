@@ -5,7 +5,7 @@ import cn.nukkit.api.Since;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class BlockSculkVein extends BlockLichen{
+public class BlockSculkVein extends BlockLichen {
     @Override
     public String getName() {
         return "Sculk Vein";
@@ -15,5 +15,4 @@ public class BlockSculkVein extends BlockLichen{
     public int getId() {
         return BlockID.SCULK_VEIN;
     }
-
 }

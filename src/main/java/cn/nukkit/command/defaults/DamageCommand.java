@@ -12,7 +12,6 @@ import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.lang.TranslationContainer;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,24 +26,37 @@ public class DamageCommand extends VanillaCommand {
         super(name, "commands.damage.description");
         this.setPermission("nukkit.command.damage");
         this.getCommandParameters().clear();
-        this.addCommandParameters("default", new CommandParameter[]{
-                CommandParameter.newType("target", false, CommandParamType.TARGET),
-                CommandParameter.newType("amount", false, CommandParamType.INT),
-                CommandParameter.newEnum("cause", true, Arrays.stream(EntityDamageEvent.DamageCause.values()).map(e -> e.name().toLowerCase()).toList().toArray(new String[0]))
+        this.addCommandParameters("default", new CommandParameter[] {
+            CommandParameter.newType("target", false, CommandParamType.TARGET),
+            CommandParameter.newType("amount", false, CommandParamType.INT),
+            CommandParameter.newEnum(
+                    "cause",
+                    true,
+                    Arrays.stream(EntityDamageEvent.DamageCause.values())
+                            .map(e -> e.name().toLowerCase())
+                            .toList()
+                            .toArray(new String[0]))
         });
-        this.addCommandParameters("damager", new CommandParameter[]{
-                CommandParameter.newType("target", false, CommandParamType.TARGET),
-                CommandParameter.newType("amount", false, CommandParamType.INT),
-                CommandParameter.newEnum("cause", false, Arrays.stream(EntityDamageEvent.DamageCause.values()).map(e -> e.name().toLowerCase()).toList().toArray(new String[0])),
-                CommandParameter.newEnum("entity", false, new String[]{"entity"}),
-                CommandParameter.newType("damager", false, CommandParamType.TARGET)
+        this.addCommandParameters("damager", new CommandParameter[] {
+            CommandParameter.newType("target", false, CommandParamType.TARGET),
+            CommandParameter.newType("amount", false, CommandParamType.INT),
+            CommandParameter.newEnum(
+                    "cause",
+                    false,
+                    Arrays.stream(EntityDamageEvent.DamageCause.values())
+                            .map(e -> e.name().toLowerCase())
+                            .toList()
+                            .toArray(new String[0])),
+            CommandParameter.newEnum("entity", false, new String[] {"entity"}),
+            CommandParameter.newType("damager", false, CommandParamType.TARGET)
         });
         this.enableParamTree();
     }
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         List<Entity> entities = list.getResult(0);
         if (entities.isEmpty()) {
@@ -79,7 +91,10 @@ public class DamageCommand extends VanillaCommand {
                     log.addSuccess("commands.damage.success", entities_str).output();
                     return 1;
                 } else {
-                    log.addError("commands.damage.failed", failed.stream().map(Entity::getName).collect(Collectors.joining(" "))).output();
+                    log.addError(
+                                    "commands.damage.failed",
+                                    failed.stream().map(Entity::getName).collect(Collectors.joining(" ")))
+                            .output();
                     return 0;
                 }
             }
@@ -111,7 +126,10 @@ public class DamageCommand extends VanillaCommand {
                     sender.sendMessage(new TranslationContainer("", entities_str));
                     return 1;
                 } else {
-                    log.addError("commands.damage.failed", failed.stream().map(Entity::getName).collect(Collectors.joining(" "))).output();
+                    log.addError(
+                                    "commands.damage.failed",
+                                    failed.stream().map(Entity::getName).collect(Collectors.joining(" ")))
+                            .output();
                     return 0;
                 }
             }

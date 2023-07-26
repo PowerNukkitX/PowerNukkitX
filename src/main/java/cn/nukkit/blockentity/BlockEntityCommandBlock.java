@@ -31,12 +31,11 @@ import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.TextFormat;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
-import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -56,7 +55,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
     protected boolean conditionMet;
     protected boolean powered;
     protected int tickDelay;
-    protected boolean executingOnFirstTick; //TODO: ???
+    protected boolean executingOnFirstTick; // TODO: ???
 
     protected PermissibleBase perm;
     protected final Set<Player> viewers = Sets.newHashSet();
@@ -232,11 +231,12 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
     @Override
     public boolean isBlockEntityValid() {
         int blockId = this.getLevelBlock().getId();
-        return blockId == BlockID.COMMAND_BLOCK || blockId == BlockID.CHAIN_COMMAND_BLOCK || blockId == BlockID.REPEATING_COMMAND_BLOCK;
+        return blockId == BlockID.COMMAND_BLOCK
+                || blockId == BlockID.CHAIN_COMMAND_BLOCK
+                || blockId == BlockID.REPEATING_COMMAND_BLOCK;
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getName() {
         return this.hasName() ? this.namedTag.getString(TAG_CUSTOM_NAME) : "!";
     }
@@ -286,8 +286,13 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
         if (!this.level.gameRules.getBoolean(GameRule.COMMAND_BLOCKS_ENABLED)) {
             return false;
         }
-        if (this.getLevelBlock().getSide(((Faceable) this.getLevelBlock()).getBlockFace().getOpposite()) instanceof BlockCommandBlock lastCB) {
-            if (this.isConditional() && lastCB.getBlockEntity().getSuccessCount() == 0) {//jump over because this CB is conditional and the last CB didn't succeed
+        if (this.getLevelBlock()
+                        .getSide(
+                                ((Faceable) this.getLevelBlock()).getBlockFace().getOpposite())
+                instanceof BlockCommandBlock lastCB) {
+            if (this.isConditional()
+                    && lastCB.getBlockEntity().getSuccessCount()
+                            == 0) { // jump over because this CB is conditional and the last CB didn't succeed
                 Block next = this.getLevelBlock().getSide(((Faceable) this.getLevelBlock()).getBlockFace());
                 if (next instanceof BlockCommandBlockChain nextChainBlock) {
                     nextChainBlock.getBlockEntity().trigger(++chain);
@@ -331,7 +336,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
             this.successCount = 0;
         }
 
-        this.getLevelBlockAround().forEach(block -> block.onUpdate(Level.BLOCK_UPDATE_REDSTONE));//update redstone
+        this.getLevelBlockAround().forEach(block -> block.onUpdate(Level.BLOCK_UPDATE_REDSTONE)); // update redstone
         return true;
     }
 
@@ -564,14 +569,12 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
     @Since("1.6.0.0-PNX")
     @PowerNukkitOnly
     @Override
-    @NotNull
-    public Position getPosition() {
+    @NotNull public Position getPosition() {
         return this;
     }
 
     @Since("1.19.60-r1")
-    @NotNull
-    @Override
+    @NotNull @Override
     public Location getLocation() {
         return Location.fromObject(this.getPosition(), this.getLevel());
     }
@@ -599,9 +602,12 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
             }
         }
         if (this.getLevel().getGameRules().getBoolean(GameRule.COMMAND_BLOCK_OUTPUT)) {
-            message.setText(TextFormat.GRAY + "" + TextFormat.ITALIC + "[" + this.getName() + ": " + TextFormat.RESET +
-                    (!message.getText().equals(this.getServer().getLanguage().get(message.getText())) ? "%" : "") + message.getText() + "]");
-            Set<Permissible> users = this.getServer().getPluginManager().getPermissionSubscriptions(Server.BROADCAST_CHANNEL_ADMINISTRATIVE);
+            message.setText(TextFormat.GRAY + "" + TextFormat.ITALIC + "[" + this.getName() + ": " + TextFormat.RESET
+                    + (!message.getText().equals(this.getServer().getLanguage().get(message.getText())) ? "%" : "")
+                    + message.getText() + "]");
+            Set<Permissible> users = this.getServer()
+                    .getPluginManager()
+                    .getPermissionSubscriptions(Server.BROADCAST_CHANNEL_ADMINISTRATIVE);
             for (var user : users) {
                 if (user instanceof Player || user instanceof ConsoleCommandSender) {
                     ((CommandSender) user).sendMessage(message);
@@ -622,9 +628,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
     }
 
     @Override
-    public void setOp(boolean value) {
-
-    }
+    public void setOp(boolean value) {}
 
     @Override
     public Inventory getInventory() {

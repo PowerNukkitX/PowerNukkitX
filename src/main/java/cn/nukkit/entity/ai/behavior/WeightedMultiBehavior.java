@@ -4,12 +4,11 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * 由多个行为{@link IBehavior}组成的组（注意和行为组{@link IBehaviorGroup}区分）<br>
@@ -34,7 +33,9 @@ public class WeightedMultiBehavior extends AbstractBehavior {
      * The priority of this group. In Behavior Group, getting the priority will return this value to refer to the priority of the entire group
      */
     protected final int priority;
+
     protected Set<IBehavior> behaviors;
+
     @Setter
     protected IBehavior currentBehavior;
 
@@ -58,7 +59,7 @@ public class WeightedMultiBehavior extends AbstractBehavior {
             setCurrentBehavior(result.iterator().next());
             return true;
         }
-        //根据Weight选取一个行为
+        // 根据Weight选取一个行为
         int totalWeight = 0;
         for (IBehavior behavior : result) {
             totalWeight += behavior.getWeight();
@@ -114,7 +115,7 @@ public class WeightedMultiBehavior extends AbstractBehavior {
      * @return 最高优先级且评估成功的一组行为（包含评估结果）
      */
     protected Set<IBehavior> evaluateBehaviors(EntityIntelligent entity) {
-        //存储评估成功的行为（未过滤优先级）
+        // 存储评估成功的行为（未过滤优先级）
         var evalSucceed = new HashSet<IBehavior>();
         int highestPriority = Integer.MIN_VALUE;
         for (IBehavior behavior : behaviors) {
@@ -125,11 +126,11 @@ public class WeightedMultiBehavior extends AbstractBehavior {
                 }
             }
         }
-        //如果没有评估结果，则返回空
+        // 如果没有评估结果，则返回空
         if (evalSucceed.isEmpty()) {
             return evalSucceed;
         }
-        //过滤掉低优先级的行为
+        // 过滤掉低优先级的行为
         var result = new HashSet<IBehavior>();
         for (IBehavior entry : evalSucceed) {
             if (entry.getPriority() == highestPriority) {

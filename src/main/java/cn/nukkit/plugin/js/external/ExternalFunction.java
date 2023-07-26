@@ -14,8 +14,7 @@ public final class ExternalFunction extends JSExternal implements ProxyExecutabl
     public Object execute(Value... arguments) {
         synchronized (sourceContext) {
             checkAlive();
-            if(value.canExecute())
-                return value.execute((Object[]) arguments);
+            if (value.canExecute()) return value.execute((Object[]) arguments);
             return null;
         }
     }

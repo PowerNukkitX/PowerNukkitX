@@ -9,7 +9,6 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.level.Level;
-
 import java.util.Map;
 
 /**
@@ -20,32 +19,33 @@ public class TimeCommand extends VanillaCommand {
 
     public TimeCommand(String name) {
         super(name, "commands.time.description");
-        this.setPermission("nukkit.command.time.add;" +
-                "nukkit.command.time.set;" +
-                "nukkit.command.time.start;" +
-                "nukkit.command.time.stop");
+        this.setPermission("nukkit.command.time.add;" + "nukkit.command.time.set;"
+                + "nukkit.command.time.start;"
+                + "nukkit.command.time.stop");
         this.commandParameters.clear();
-        this.commandParameters.put("1arg", new CommandParameter[]{
-                CommandParameter.newEnum("mode", new CommandEnum("TimeMode", "query", "start", "stop"))
+        this.commandParameters.put("1arg", new CommandParameter[] {
+            CommandParameter.newEnum("mode", new CommandEnum("TimeMode", "query", "start", "stop"))
         });
-        this.commandParameters.put("add", new CommandParameter[]{
-                CommandParameter.newEnum("mode", new CommandEnum("TimeModeAdd", "add")),
-                CommandParameter.newType("amount", CommandParamType.INT)
+        this.commandParameters.put("add", new CommandParameter[] {
+            CommandParameter.newEnum("mode", new CommandEnum("TimeModeAdd", "add")),
+            CommandParameter.newType("amount", CommandParamType.INT)
         });
-        this.commandParameters.put("setAmount", new CommandParameter[]{
-                CommandParameter.newEnum("mode", false, new CommandEnum("TimeModeSet", "set")),
-                CommandParameter.newType("amount", CommandParamType.INT)
+        this.commandParameters.put("setAmount", new CommandParameter[] {
+            CommandParameter.newEnum("mode", false, new CommandEnum("TimeModeSet", "set")),
+            CommandParameter.newType("amount", CommandParamType.INT)
         });
-        this.commandParameters.put("setTime", new CommandParameter[]{
-                CommandParameter.newEnum("mode", new CommandEnum("TimeModeSet", "set")),
-                CommandParameter.newEnum("time", new CommandEnum("TimeSpec", "day", "night", "midnight", "noon", "sunrise", "sunset"))
+        this.commandParameters.put("setTime", new CommandParameter[] {
+            CommandParameter.newEnum("mode", new CommandEnum("TimeModeSet", "set")),
+            CommandParameter.newEnum(
+                    "time", new CommandEnum("TimeSpec", "day", "night", "midnight", "noon", "sunrise", "sunset"))
         });
         this.enableParamTree();
     }
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         switch (result.getKey()) {
             case "1arg" -> {
@@ -83,7 +83,8 @@ public class TimeCommand extends VanillaCommand {
                     } else {
                         level = sender.getServer().getDefaultLevel();
                     }
-                    log.addSuccess("commands.time.query.gametime", String.valueOf(level.getTime())).output(true);
+                    log.addSuccess("commands.time.query.gametime", String.valueOf(level.getTime()))
+                            .output(true);
                 }
                 return 1;
             }

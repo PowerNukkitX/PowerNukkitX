@@ -9,7 +9,6 @@ import cn.nukkit.network.Network;
 import cn.nukkit.utils.Binary;
 import cn.nukkit.utils.BinaryStream;
 import com.nukkitx.network.raknet.RakNetReliability;
-
 import javax.annotation.Nonnegative;
 
 /**
@@ -25,7 +24,9 @@ public abstract class DataPacket extends BinaryStream implements Cloneable {
     public RakNetReliability reliability = RakNetReliability.RELIABLE_ORDERED;
 
     @Deprecated(since = "1.19.70")
-    @DeprecationDetails(since = "1.19.70-r1", reason = "pid could be more than 255, so it should be an int",
+    @DeprecationDetails(
+            since = "1.19.70-r1",
+            reason = "pid could be more than 255, so it should be an int",
             replaceWith = "packetId()")
     public abstract byte pid();
 

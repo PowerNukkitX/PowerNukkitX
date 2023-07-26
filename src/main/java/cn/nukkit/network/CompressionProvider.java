@@ -48,7 +48,6 @@ public interface CompressionProvider {
         }
     };
 
-
     byte[] compress(BinaryStream packet, int level) throws Exception;
 
     byte[] decompress(byte[] compressed) throws Exception;

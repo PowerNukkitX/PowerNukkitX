@@ -8,11 +8,16 @@ import java.lang.annotation.*;
  * This represents an interface that should only be used internally in PNX, Plugins should not be used without knowing the implementation
  */
 @Retention(RetentionPolicy.CLASS)
-@Target({ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.TYPE,
-        ElementType.FIELD, ElementType.PACKAGE})
+@Target({
+    ElementType.CONSTRUCTOR,
+    ElementType.METHOD,
+    ElementType.ANNOTATION_TYPE,
+    ElementType.TYPE,
+    ElementType.FIELD,
+    ElementType.PACKAGE
+})
 @PowerNukkitXInternal
 @Since("1.6.0.0-PNX")
 @Inherited
 @Documented
-public @interface PowerNukkitXInternal {
-}
+public @interface PowerNukkitXInternal {}

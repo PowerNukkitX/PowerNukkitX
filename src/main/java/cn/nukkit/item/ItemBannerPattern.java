@@ -62,7 +62,7 @@ public class ItemBannerPattern extends Item {
         super.setDamage(meta);
         updateName();
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public BannerPattern.Type getPatternType() {

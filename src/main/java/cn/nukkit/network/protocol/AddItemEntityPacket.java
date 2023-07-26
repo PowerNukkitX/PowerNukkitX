@@ -30,9 +30,7 @@ public class AddItemEntityPacket extends DataPacket {
     public boolean isFromFishing = false;
 
     @Override
-    public void decode() {
-
-    }
+    public void decode() {}
 
     @Override
     public void encode() {

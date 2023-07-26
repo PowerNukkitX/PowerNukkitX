@@ -7,8 +7,6 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import org.jetbrains.annotations.NotNull;
-
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -17,11 +15,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import org.jetbrains.annotations.NotNull;
 
 public class JSONTickingAreaStorage implements TickingAreaStorage {
 
-    private static final Type type = new TypeToken<HashSet<TickingArea>>() {
-    }.getType();
+    private static final Type type = new TypeToken<HashSet<TickingArea>>() {}.getType();
 
     protected static Gson gson = new Gson();
 
@@ -100,7 +98,12 @@ public class JSONTickingAreaStorage implements TickingAreaStorage {
         try {
             for (Level level : Server.getInstance().getLevels().values()) {
                 if (areaMap.containsRow(level.getName())) {
-                    Files.writeString(Path.of(filePath.toString(), level.getName(), "tickingarea.json"), gson.toJson(areaMap.rowMap().get(level.getName()).values().toArray()));
+                    Files.writeString(
+                            Path.of(filePath.toString(), level.getName(), "tickingarea.json"),
+                            gson.toJson(areaMap.rowMap()
+                                    .get(level.getName())
+                                    .values()
+                                    .toArray()));
                 } else {
                     Files.deleteIfExists(Path.of(filePath.toString(), level.getName(), "tickingarea.json"));
                 }

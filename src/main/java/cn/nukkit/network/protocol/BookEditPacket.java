@@ -52,9 +52,7 @@ public class BookEditPacket extends DataPacket {
     }
 
     @Override
-    public void encode() {
-
-    }
+    public void encode() {}
 
     public enum Action {
         REPLACE_PAGE,

@@ -17,7 +17,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
-
 import java.util.Random;
 import java.util.stream.Stream;
 
@@ -50,8 +49,8 @@ public class ItemBow extends ItemTool {
 
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
-        return player.isCreative() ||
-                Stream.of(player.getInventory(), player.getOffhandInventory())
+        return player.isCreative()
+                || Stream.of(player.getInventory(), player.getOffhandInventory())
                         .anyMatch(inv -> inv.contains(Item.get(ItemID.ARROW)));
     }
 
@@ -62,7 +61,9 @@ public class ItemBow extends ItemTool {
 
         Inventory inventory = player.getOffhandInventory();
 
-        if (!inventory.contains(itemArrow) && !(inventory = player.getInventory()).contains(itemArrow) && (player.isAdventure() || player.isSurvival())) {
+        if (!inventory.contains(itemArrow)
+                && !(inventory = player.getInventory()).contains(itemArrow)
+                && (player.isAdventure() || player.isSurvival())) {
             player.getOffhandInventory().sendContents(player);
             inventory.sendContents(player);
             return false;
@@ -84,9 +85,11 @@ public class ItemBow extends ItemTool {
                         .add(new DoubleTag("", player.y + player.getEyeHeight()))
                         .add(new DoubleTag("", player.z)))
                 .putList(new ListTag<DoubleTag>("Motion")
-                        .add(new DoubleTag("", -Math.sin(player.yaw / 180 * Math.PI) * Math.cos(player.pitch / 180 * Math.PI)))
+                        .add(new DoubleTag(
+                                "", -Math.sin(player.yaw / 180 * Math.PI) * Math.cos(player.pitch / 180 * Math.PI)))
                         .add(new DoubleTag("", -Math.sin(player.pitch / 180 * Math.PI)))
-                        .add(new DoubleTag("", Math.cos(player.yaw / 180 * Math.PI) * Math.cos(player.pitch / 180 * Math.PI))))
+                        .add(new DoubleTag(
+                                "", Math.cos(player.yaw / 180 * Math.PI) * Math.cos(player.pitch / 180 * Math.PI))))
                 .putList(new ListTag<FloatTag>("Rotation")
                         .add(new FloatTag("", (player.yaw > 180 ? 360 : 0) - (float) player.yaw))
                         .add(new FloatTag("", (float) -player.pitch)))
@@ -114,7 +117,10 @@ public class ItemBow extends ItemTool {
             player.getInventory().sendContents(player);
             player.getOffhandInventory().sendContents(player);
         } else {
-            entityShootBowEvent.getProjectile().setMotion(entityShootBowEvent.getProjectile().getMotion().multiply(entityShootBowEvent.getForce()));
+            entityShootBowEvent
+                    .getProjectile()
+                    .setMotion(
+                            entityShootBowEvent.getProjectile().getMotion().multiply(entityShootBowEvent.getForce()));
             Enchantment infinityEnchant = this.getEnchantment(Enchantment.ID_BOW_INFINITY);
             boolean infinity = infinityEnchant != null && infinityEnchant.getLevel() > 0;
             EntityProjectile projectile;
@@ -134,7 +140,9 @@ public class ItemBow extends ItemTool {
                 }
                 if (!this.isUnbreakable()) {
                     Enchantment durability = this.getEnchantment(Enchantment.ID_DURABILITY);
-                    if (!(durability != null && durability.getLevel() > 0 && (100 / (durability.getLevel() + 1)) <= new Random().nextInt(100))) {
+                    if (!(durability != null
+                            && durability.getLevel() > 0
+                            && (100 / (durability.getLevel() + 1)) <= new Random().nextInt(100))) {
                         this.setDamage(this.getDamage() + 1);
                         if (this.getDamage() >= getMaxDurability()) {
                             player.getLevel().addSound(player, Sound.RANDOM_BREAK);
@@ -145,7 +153,8 @@ public class ItemBow extends ItemTool {
                 }
             }
             if (entityShootBowEvent.getProjectile() != null) {
-                ProjectileLaunchEvent projectev = new ProjectileLaunchEvent(entityShootBowEvent.getProjectile(), player);
+                ProjectileLaunchEvent projectev =
+                        new ProjectileLaunchEvent(entityShootBowEvent.getProjectile(), player);
                 Server.getInstance().getPluginManager().callEvent(projectev);
                 if (projectev.isCancelled()) {
                     entityShootBowEvent.getProjectile().kill();

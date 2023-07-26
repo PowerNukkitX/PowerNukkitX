@@ -7,7 +7,6 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.lang.TranslationContainer;
-
 import java.util.Map;
 
 /**
@@ -20,15 +19,15 @@ public class SayCommand extends VanillaCommand {
         super(name, "commands.say.description");
         this.setPermission("nukkit.command.say");
         this.commandParameters.clear();
-        this.commandParameters.put("default", new CommandParameter[]{
-                CommandParameter.newType("message", CommandParamType.MESSAGE)
-        });
+        this.commandParameters.put(
+                "default", new CommandParameter[] {CommandParameter.newType("message", CommandParamType.MESSAGE)});
         this.enableParamTree();
     }
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         String senderString = sender.getName();
         String message = result.getValue().getResult(0);
         sender.getServer().broadcastMessage(new TranslationContainer("%chat.type.announcement", senderString, message));

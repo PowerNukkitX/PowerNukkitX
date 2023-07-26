@@ -10,9 +10,8 @@ import cn.nukkit.inventory.BeaconInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Angelic47 (Nukkit Project)
@@ -31,16 +30,14 @@ public class BlockBeacon extends BlockTransparent implements BlockEntityHolder<B
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public Class<? extends BlockEntityBeacon> getBlockEntityClass() {
         return BlockEntityBeacon.class;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getBlockEntityType() {
         return BlockEntity.BEACON;
     }
@@ -52,16 +49,14 @@ public class BlockBeacon extends BlockTransparent implements BlockEntityHolder<B
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public double calculateBreakTime(@NotNull Item item) {
         return calculateBreakTime(item, null);
     }
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public double calculateBreakTime(@NotNull Item item, @org.jetbrains.annotations.Nullable Player player) {
         return 4.5;
     }
@@ -109,7 +104,15 @@ public class BlockBeacon extends BlockTransparent implements BlockEntityHolder<B
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
         return BlockEntityHolder.setBlockAndCreateEntity(this) != null;
     }
 
@@ -120,7 +123,7 @@ public class BlockBeacon extends BlockTransparent implements BlockEntityHolder<B
 
     @Override
     @PowerNukkitOnly
-    public  boolean canBePulled() {
+    public boolean canBePulled() {
         return false;
     }
 }

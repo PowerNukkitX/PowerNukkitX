@@ -4,7 +4,6 @@ import cn.nukkit.block.Block;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-
 import java.util.Iterator;
 
 /**
@@ -156,7 +155,11 @@ public class BlockIterator implements Iterator<Block> {
             throw new IllegalStateException("Start block missed in BlockIterator");
         }
 
-        this.maxDistanceInt = (int) Math.round(maxDistance / (Math.sqrt(mainDirection * mainDirection + secondDirection * secondDirection + thirdDirection * thirdDirection) / mainDirection));
+        this.maxDistanceInt = (int) Math.round(maxDistance
+                / (Math.sqrt(mainDirection * mainDirection
+                                + secondDirection * secondDirection
+                                + thirdDirection * thirdDirection)
+                        / mainDirection));
     }
 
     private boolean blockEquals(Block a, Block b) {

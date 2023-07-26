@@ -8,9 +8,8 @@ import cn.nukkit.blockproperty.IntBlockProperty;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.concurrent.ThreadLocalRandom;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 public class BlockIceFrosted extends BlockTransparentMeta {
@@ -40,8 +39,7 @@ public class BlockIceFrosted extends BlockTransparentMeta {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -67,7 +65,15 @@ public class BlockIceFrosted extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         boolean success = super.place(item, block, target, face, fx, fy, fz, player);
         if (success) {
             level.scheduleUpdate(this, ThreadLocalRandom.current().nextInt(20, 40));
@@ -84,7 +90,8 @@ public class BlockIceFrosted extends BlockTransparentMeta {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
-            if (level.getBlockLightAt(getFloorX(), getFloorY(), getFloorZ()) > 11 && (ThreadLocalRandom.current().nextInt(3) == 0 || countNeighbors() < 4)) {
+            if (level.getBlockLightAt(getFloorX(), getFloorY(), getFloorZ()) > 11
+                    && (ThreadLocalRandom.current().nextInt(3) == 0 || countNeighbors() < 4)) {
                 slightlyMelt(true);
             } else {
                 level.scheduleUpdate(this, ThreadLocalRandom.current().nextInt(20, 40));
@@ -113,7 +120,8 @@ public class BlockIceFrosted extends BlockTransparentMeta {
         if (age < 3) {
             setDamage(age + 1);
             level.setBlock(this, layer, this, true);
-            level.scheduleUpdate(level.getBlock(this), ThreadLocalRandom.current().nextInt(20, 40));
+            level.scheduleUpdate(
+                    level.getBlock(this), ThreadLocalRandom.current().nextInt(20, 40));
         } else {
             level.setBlock(this, layer, get(FLOWING_WATER), true);
             if (isSource) {

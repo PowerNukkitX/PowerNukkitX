@@ -8,7 +8,6 @@ import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.BlockUpdateEntry;
 import cn.nukkit.utils.collection.nb.Long2ObjectNonBlockingMap;
-
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -28,7 +27,7 @@ public class BlockUpdateScheduler {
 
     public void tick(long currentTick) {
         // Should only perform once, unless ticks were skipped
-        if (currentTick - lastTick < Short.MAX_VALUE) {// Arbitrary
+        if (currentTick - lastTick < Short.MAX_VALUE) { // Arbitrary
             for (long tick = lastTick + 1; tick <= currentTick; tick++) {
                 perform(tick);
             }
@@ -83,8 +82,10 @@ public class BlockUpdateScheduler {
             for (BlockUpdateEntry update : tickSet) {
                 Vector3 pos = update.pos;
 
-                if (pos.getX() >= boundingBox.getMinX() && pos.getX() < boundingBox.getMaxX() &&
-                        pos.getZ() >= boundingBox.getMinZ() && pos.getZ() < boundingBox.getMaxZ()) {
+                if (pos.getX() >= boundingBox.getMinX()
+                        && pos.getX() < boundingBox.getMaxX()
+                        && pos.getZ() >= boundingBox.getMinZ()
+                        && pos.getZ() < boundingBox.getMaxZ()) {
                     set.add(update);
                 }
             }

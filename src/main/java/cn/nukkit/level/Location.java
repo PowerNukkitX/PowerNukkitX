@@ -14,6 +14,7 @@ public class Location extends Position {
 
     public double yaw;
     public double pitch;
+
     @Since("1.6.0.0-PNX")
     public double headYaw;
 
@@ -78,7 +79,13 @@ public class Location extends Position {
     }
 
     public static Location fromObject(Vector3 pos, Level level, double yaw, double pitch) {
-        return new Location(pos.x, pos.y, pos.z, yaw, pitch, (level == null) ? ((pos instanceof Position) ? ((Position) pos).level : null) : level);
+        return new Location(
+                pos.x,
+                pos.y,
+                pos.z,
+                yaw,
+                pitch,
+                (level == null) ? ((pos instanceof Position) ? ((Position) pos).level : null) : level);
     }
 
     @Since("FUTURE")
@@ -144,11 +151,12 @@ public class Location extends Position {
 
     @Override
     public String toString() {
-        return "Location (level=" + (this.isValid() ? this.getLevel().getName() : "null") + ", x=" + this.x + ", y=" + this.y + ", z=" + this.z + ", yaw=" + this.yaw + ", pitch=" + this.pitch + ", headYaw=" + this.headYaw + ")";
+        return "Location (level=" + (this.isValid() ? this.getLevel().getName() : "null") + ", x=" + this.x + ", y="
+                + this.y + ", z=" + this.z + ", yaw=" + this.yaw + ", pitch=" + this.pitch + ", headYaw=" + this.headYaw
+                + ")";
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public Location getLocation() {
         if (this.isValid()) return new Location(this.x, this.y, this.z, this.yaw, this.pitch, this.headYaw, this.level);
         else throw new LevelException("Undefined Level reference");
@@ -171,7 +179,14 @@ public class Location extends Position {
 
     @Override
     public Location add(Vector3 x) {
-        return new Location(this.x + x.getX(), this.y + x.getY(), this.z + x.getZ(), this.yaw, this.pitch, this.headYaw, this.level);
+        return new Location(
+                this.x + x.getX(),
+                this.y + x.getY(),
+                this.z + x.getZ(),
+                this.yaw,
+                this.pitch,
+                this.headYaw,
+                this.level);
     }
 
     @Override
@@ -201,32 +216,56 @@ public class Location extends Position {
 
     @Override
     public Location multiply(double number) {
-        return new Location(this.x * number, this.y * number, this.z * number, this.yaw, this.pitch, this.headYaw, this.level);
+        return new Location(
+                this.x * number, this.y * number, this.z * number, this.yaw, this.pitch, this.headYaw, this.level);
     }
 
     @Override
     public Location divide(double number) {
-        return new Location(this.x / number, this.y / number, this.z / number, this.yaw, this.pitch, this.headYaw, this.level);
+        return new Location(
+                this.x / number, this.y / number, this.z / number, this.yaw, this.pitch, this.headYaw, this.level);
     }
 
     @Override
     public Location ceil() {
-        return new Location((int) Math.ceil(this.x), (int) Math.ceil(this.y), (int) Math.ceil(this.z), this.yaw, this.pitch, this.headYaw, this.level);
+        return new Location(
+                (int) Math.ceil(this.x),
+                (int) Math.ceil(this.y),
+                (int) Math.ceil(this.z),
+                this.yaw,
+                this.pitch,
+                this.headYaw,
+                this.level);
     }
 
     @Override
     public Location floor() {
-        return new Location(this.getFloorX(), this.getFloorY(), this.getFloorZ(), this.yaw, this.pitch, this.headYaw, this.level);
+        return new Location(
+                this.getFloorX(), this.getFloorY(), this.getFloorZ(), this.yaw, this.pitch, this.headYaw, this.level);
     }
 
     @Override
     public Location round() {
-        return new Location(Math.round(this.x), Math.round(this.y), Math.round(this.z), this.yaw, this.pitch, this.headYaw, this.level);
+        return new Location(
+                Math.round(this.x),
+                Math.round(this.y),
+                Math.round(this.z),
+                this.yaw,
+                this.pitch,
+                this.headYaw,
+                this.level);
     }
 
     @Override
     public Location abs() {
-        return new Location((int) Math.abs(this.x), (int) Math.abs(this.y), (int) Math.abs(this.z), this.yaw, this.pitch, this.headYaw, this.level);
+        return new Location(
+                (int) Math.abs(this.x),
+                (int) Math.abs(this.y),
+                (int) Math.abs(this.z),
+                this.yaw,
+                this.pitch,
+                this.headYaw,
+                this.level);
     }
 
     public Vector3 getDirectionVector() {

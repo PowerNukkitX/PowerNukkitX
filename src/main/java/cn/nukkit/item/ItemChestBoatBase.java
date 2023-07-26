@@ -26,10 +26,13 @@ public abstract class ItemChestBoatBase extends Item {
     public abstract int getBoatId();
 
     @Override
-    public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
+    public boolean onActivate(
+            Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         if (face != BlockFace.UP || block instanceof BlockWater) return false;
-        EntityChestBoat boat = (EntityChestBoat) Entity.createEntity("ChestBoat",
-                level.getChunk(block.getFloorX() >> 4, block.getFloorZ() >> 4), new CompoundTag("")
+        EntityChestBoat boat = (EntityChestBoat) Entity.createEntity(
+                "ChestBoat",
+                level.getChunk(block.getFloorX() >> 4, block.getFloorZ() >> 4),
+                new CompoundTag("")
                         .putList(new ListTag<DoubleTag>("Pos")
                                 .add(new DoubleTag("", block.getX() + 0.5))
                                 .add(new DoubleTag("", block.getY() - (target instanceof BlockWater ? 0.375 : 0)))
@@ -41,8 +44,7 @@ public abstract class ItemChestBoatBase extends Item {
                         .putList(new ListTag<FloatTag>("Rotation")
                                 .add(new FloatTag("", (float) ((player.yaw + 90f) % 360)))
                                 .add(new FloatTag("", 0)))
-                        .putInt("Variant", getBoatId())
-        );
+                        .putInt("Variant", getBoatId()));
 
         if (boat == null) {
             return false;

@@ -7,9 +7,9 @@ import cn.nukkit.math.NukkitRandom;
  */
 public class SimplexF extends PerlinF {
     public static final int[][] grad3 = {
-            {1, 1, 0}, {-1, 1, 0}, {1, -1, 0}, {-1, -1, 0},
-            {1, 0, 1}, {-1, 0, 1}, {1, 0, -1}, {-1, 0, -1},
-            {0, 1, 1}, {0, -1, 1}, {0, 1, -1}, {0, -1, -1}
+        {1, 1, 0}, {-1, 1, 0}, {1, -1, 0}, {-1, -1, 0},
+        {1, 0, 1}, {-1, 0, 1}, {1, 0, -1}, {-1, 0, -1},
+        {0, 1, 1}, {0, -1, 1}, {0, 1, -1}, {0, -1, -1}
     };
     protected static float SQRT_3;
     protected static float SQRT_5;
@@ -58,7 +58,6 @@ public class SimplexF extends PerlinF {
         G43 = G4 * 3.0f;
         G44 = G4 * 4.0f - 1.0f;
     }
-
 
     protected static float dot2D(int[] g, float x, float y) {
         return g[0] * x + g[1] * y;

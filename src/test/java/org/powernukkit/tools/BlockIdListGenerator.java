@@ -21,7 +21,6 @@ package org.powernukkit.tools;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockstate.BlockStateRegistry;
 import com.google.common.base.Preconditions;
-
 import java.io.*;
 import java.util.Map;
 import java.util.TreeMap;
@@ -32,7 +31,8 @@ public class BlockIdListGenerator {
 
         File file = new File("src/main/resources/block_ids.csv");
         int count = 0;
-        try (FileReader fr = new FileReader(file); BufferedReader reader = new BufferedReader(fr)) {
+        try (FileReader fr = new FileReader(file);
+                BufferedReader reader = new BufferedReader(fr)) {
             String line;
             while ((line = reader.readLine()) != null) {
                 count++;
@@ -47,19 +47,20 @@ public class BlockIdListGenerator {
                 }
             }
         } catch (Exception e) {
-            throw new IOException("Error reading the line "+count, e);
+            throw new IOException("Error reading the line " + count, e);
         }
-        
+
         for (int id = 0; id < Block.MAX_BLOCK_ID; id++) {
             String persistenceName = BlockStateRegistry.getPersistenceName(id);
-            if (!persistenceName.equals("blockid:"+id)) {
+            if (!persistenceName.equals("blockid:" + id)) {
                 ids.put(id, persistenceName);
             } else {
                 ids.putIfAbsent(id, "");
             }
         }
-        
-        try (FileWriter fw = new FileWriter(file); BufferedWriter writer = new BufferedWriter(fw)) {
+
+        try (FileWriter fw = new FileWriter(file);
+                BufferedWriter writer = new BufferedWriter(fw)) {
             for (Map.Entry<Integer, String> entry : ids.entrySet()) {
                 writer.write(entry.getKey().toString());
                 writer.write(',');

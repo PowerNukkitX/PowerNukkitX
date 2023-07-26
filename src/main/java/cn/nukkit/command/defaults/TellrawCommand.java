@@ -13,7 +13,6 @@ import cn.nukkit.command.utils.RawText;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.utils.TextFormat;
 import com.google.gson.JsonSyntaxException;
-
 import java.util.List;
 import java.util.Map;
 
@@ -25,16 +24,17 @@ public class TellrawCommand extends VanillaCommand {
         super(name, "commands.tellraw.description");
         this.setPermission("nukkit.command.tellraw");
         this.commandParameters.clear();
-        this.commandParameters.put("default", new CommandParameter[]{
-                CommandParameter.newType("player", CommandParamType.TARGET, new PlayersNode()),
-                CommandParameter.newType("rawtext", CommandParamType.RAWTEXT)
+        this.commandParameters.put("default", new CommandParameter[] {
+            CommandParameter.newType("player", CommandParamType.TARGET, new PlayersNode()),
+            CommandParameter.newType("rawtext", CommandParamType.RAWTEXT)
         });
         this.enableParamTree();
     }
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         try {
             List<Player> players = list.getResult(0);

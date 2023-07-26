@@ -16,5 +16,4 @@ public class ItemDoorSpruce extends Item {
         super(SPRUCE_DOOR, 0, count, "Spruce Door");
         this.block = Block.get(BlockID.SPRUCE_DOOR_BLOCK);
     }
-
 }

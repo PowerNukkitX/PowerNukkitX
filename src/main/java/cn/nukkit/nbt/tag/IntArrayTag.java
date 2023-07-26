@@ -4,7 +4,6 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.stream.NBTOutputStream;
-
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -77,18 +76,19 @@ public class IntArrayTag extends Tag {
     public boolean equals(Object obj) {
         if (super.equals(obj)) {
             IntArrayTag intArrayTag = (IntArrayTag) obj;
-            return ((data == null && intArrayTag.data == null) || (data != null && Arrays.equals(data, intArrayTag.data)));
+            return ((data == null && intArrayTag.data == null)
+                    || (data != null && Arrays.equals(data, intArrayTag.data)));
         }
         return false;
     }
-    
+
     @Override
     public int hashCode() {
         int result = super.hashCode();
         result = 31 * result + Arrays.hashCode(data);
         return result;
     }
-    
+
     @Override
     public Tag copy() {
         int[] cp = new int[data.length];

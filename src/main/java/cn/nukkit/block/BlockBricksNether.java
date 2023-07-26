@@ -10,8 +10,7 @@ import cn.nukkit.item.ItemTool;
  */
 public class BlockBricksNether extends BlockSolid {
 
-    public BlockBricksNether() {
-    }
+    public BlockBricksNether() {}
 
     @Override
     public String getName() {

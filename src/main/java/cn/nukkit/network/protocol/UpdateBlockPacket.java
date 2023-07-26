@@ -1,6 +1,5 @@
 package cn.nukkit.network.protocol;
 
-
 import lombok.ToString;
 
 /**
@@ -32,9 +31,7 @@ public class UpdateBlockPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-
-    }
+    public void decode() {}
 
     @Override
     public void encode() {

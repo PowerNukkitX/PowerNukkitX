@@ -16,12 +16,13 @@ public class EntityLink {
     public long toEntityUniquieId;
     public byte type;
     public boolean immediate;
-    
+
     @Since("1.3.0.0-PN")
     public boolean riderInitiated;
 
     @Since("1.3.0.0-PN")
-    public EntityLink(long fromEntityUniquieId, long toEntityUniquieId, byte type, boolean immediate, boolean riderInitiated) {
+    public EntityLink(
+            long fromEntityUniquieId, long toEntityUniquieId, byte type, boolean immediate, boolean riderInitiated) {
         this.fromEntityUniquieId = fromEntityUniquieId;
         this.toEntityUniquieId = toEntityUniquieId;
         this.type = type;

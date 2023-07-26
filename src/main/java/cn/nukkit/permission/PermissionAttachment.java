@@ -2,7 +2,6 @@ package cn.nukkit.permission;
 
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.utils.PluginException;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -94,5 +93,4 @@ public class PermissionAttachment {
     public void remove() {
         this.permissible.removeAttachment(this);
     }
-
 }

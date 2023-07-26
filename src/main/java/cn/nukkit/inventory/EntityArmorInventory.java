@@ -9,7 +9,6 @@ import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.InventoryContentPacket;
 import cn.nukkit.network.protocol.InventorySlotPacket;
 import cn.nukkit.network.protocol.MobArmorEquipmentPacket;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,10 +18,21 @@ public class EntityArmorInventory extends BaseInventory {
 
     private final Entity entity;
 
-    @PowerNukkitOnly @Since("1.4.0.0-PN") public static final int SLOT_HEAD = 0;
-    @PowerNukkitOnly @Since("1.4.0.0-PN") public static final int SLOT_CHEST = 1;
-    @PowerNukkitOnly @Since("1.4.0.0-PN") public static final int SLOT_LEGS = 2;
-    @PowerNukkitOnly @Since("1.4.0.0-PN") public static final int SLOT_FEET = 3;
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public static final int SLOT_HEAD = 0;
+
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public static final int SLOT_CHEST = 1;
+
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public static final int SLOT_LEGS = 2;
+
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public static final int SLOT_FEET = 3;
 
     /**
      * @param entity an Entity which implements {@link InventoryHolder}.
@@ -58,54 +68,54 @@ public class EntityArmorInventory extends BaseInventory {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public Item getHelmet(){
+    public Item getHelmet() {
         return this.getItem(SLOT_HEAD);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public Item getChestplate(){
+    public Item getChestplate() {
         return this.getItem(SLOT_CHEST);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public Item getLeggings(){
+    public Item getLeggings() {
         return this.getItem(SLOT_LEGS);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public Item getBoots(){
+    public Item getBoots() {
         return this.getItem(SLOT_FEET);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @PowerNukkitDifference(info = "now this method will return an Boolean",since = "1.6.0.0-PNX")
+    @PowerNukkitDifference(info = "now this method will return an Boolean", since = "1.6.0.0-PNX")
     public boolean setHelmet(Item item) {
         return this.setItem(SLOT_HEAD, item);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @PowerNukkitDifference(info = "now this method will return an Boolean",since = "1.6.0.0-PNX")
+    @PowerNukkitDifference(info = "now this method will return an Boolean", since = "1.6.0.0-PNX")
     public boolean setChestplate(Item item) {
         return this.setItem(SLOT_CHEST, item);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @PowerNukkitDifference(info = "now this method will return an Boolean",since = "1.6.0.0-PNX")
+    @PowerNukkitDifference(info = "now this method will return an Boolean", since = "1.6.0.0-PNX")
     public boolean setLeggings(Item item) {
         return this.setItem(SLOT_LEGS, item);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @PowerNukkitDifference(info = "now this method will return an Boolean",since = "1.6.0.0-PNX")
+    @PowerNukkitDifference(info = "now this method will return an Boolean", since = "1.6.0.0-PNX")
     public boolean setBoots(Item item) {
-        return  this.setItem(SLOT_FEET, item);
+        return this.setItem(SLOT_FEET, item);
     }
 
     @Override
@@ -119,7 +129,8 @@ public class EntityArmorInventory extends BaseInventory {
     public void sendSlot(int index, Player player) {
         MobArmorEquipmentPacket mobArmorEquipmentPacket = new MobArmorEquipmentPacket();
         mobArmorEquipmentPacket.eid = this.entity.getId();
-        mobArmorEquipmentPacket.slots = new Item[]{this.getHelmet(), this.getChestplate(), this.getLeggings(), this.getBoots()};
+        mobArmorEquipmentPacket.slots =
+                new Item[] {this.getHelmet(), this.getChestplate(), this.getLeggings(), this.getBoots()};
 
         if (player == this.holder) {
             InventorySlotPacket inventorySlotPacket = new InventorySlotPacket();
@@ -143,12 +154,14 @@ public class EntityArmorInventory extends BaseInventory {
     public void sendContents(Player player) {
         MobArmorEquipmentPacket mobArmorEquipmentPacket = new MobArmorEquipmentPacket();
         mobArmorEquipmentPacket.eid = this.entity.getId();
-        mobArmorEquipmentPacket.slots = new Item[]{this.getHelmet(), this.getChestplate(), this.getLeggings(), this.getBoots()};
+        mobArmorEquipmentPacket.slots =
+                new Item[] {this.getHelmet(), this.getChestplate(), this.getLeggings(), this.getBoots()};
 
         if (player == this.holder) {
             InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
             inventoryContentPacket.inventoryId = player.getWindowId(this);
-            inventoryContentPacket.slots = new Item[]{this.getHelmet(), this.getChestplate(), this.getLeggings(), this.getBoots()};
+            inventoryContentPacket.slots =
+                    new Item[] {this.getHelmet(), this.getChestplate(), this.getLeggings(), this.getBoots()};
             player.dataPacket(inventoryContentPacket);
         } else {
             player.dataPacket(mobArmorEquipmentPacket);

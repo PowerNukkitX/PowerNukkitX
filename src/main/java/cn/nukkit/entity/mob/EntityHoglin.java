@@ -15,7 +15,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements EntityAgeable only in PowerNukkit!")
 public class EntityHoglin extends EntityMob implements EntityWalkable, EntityAgeable {
 
-    public final static int NETWORK_ID = 124;
+    public static final int NETWORK_ID = 124;
 
     public EntityHoglin(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);

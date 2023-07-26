@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
+
 import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
 import cn.nukkit.api.*;
@@ -15,11 +17,8 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
-
-import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author CreeperFace
@@ -30,12 +29,10 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     protected static final BooleanBlockProperty BUTTON_PRESSED = new BooleanBlockProperty("button_pressed_bit", false);
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(
-            FACING_DIRECTION,
-            BUTTON_PRESSED
-    );
+    public static final BlockProperties PROPERTIES = new BlockProperties(FACING_DIRECTION, BUTTON_PRESSED);
 
     @UsedByReflection
     public BlockButton() {
@@ -49,8 +46,7 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -79,7 +75,15 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
     @PowerNukkitDifference(info = "Allow to be placed on top of the walls", since = "1.3.0.0-PN")
     @PowerNukkitDifference(info = "Now, can be placed on solid blocks", since = "1.4.0.0-PN")
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         if (!BlockLever.isSupportValid(target, face)) {
             return false;
         }
@@ -96,8 +100,7 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
-        if (!player.getAdventureSettings().get(AdventureSettings.Type.DOORS_AND_SWITCHED))
-            return false;
+        if (!player.getAdventureSettings().get(AdventureSettings.Type.DOORS_AND_SWITCHED)) return false;
         if (this.isActivated()) {
             return false;
         }
@@ -106,7 +109,10 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
 
         setActivated(true, player);
         this.level.setBlock(this, this, true, false);
-        this.level.addLevelSoundEvent(this.add(0.5, 0.5, 0.5), LevelSoundEventPacket.SOUND_POWER_ON, GlobalBlockPalette.getOrCreateRuntimeId(this.getId(), this.getDamage()));
+        this.level.addLevelSoundEvent(
+                this.add(0.5, 0.5, 0.5),
+                LevelSoundEventPacket.SOUND_POWER_ON,
+                GlobalBlockPalette.getOrCreateRuntimeId(this.getId(), this.getDamage()));
         if (this.level.getServer().isRedstoneEnabled()) {
             this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 0, 15));
 
@@ -132,7 +138,10 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
             if (this.isActivated()) {
                 setActivated(false);
                 this.level.setBlock(this, this, true, false);
-                this.level.addLevelSoundEvent(this.add(0.5, 0.5, 0.5), LevelSoundEventPacket.SOUND_POWER_OFF, GlobalBlockPalette.getOrCreateRuntimeId(this.getId(), this.getDamage()));
+                this.level.addLevelSoundEvent(
+                        this.add(0.5, 0.5, 0.5),
+                        LevelSoundEventPacket.SOUND_POWER_OFF,
+                        GlobalBlockPalette.getOrCreateRuntimeId(this.getId(), this.getDamage()));
 
                 if (this.level.getServer().isRedstoneEnabled()) {
                     this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 15, 0));
@@ -163,9 +172,15 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
         setBooleanValue(BUTTON_PRESSED, activated);
         var pos = this.add(0.5, 0.5, 0.5);
         if (activated) {
-            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(player != null ? player : this, pos, VibrationType.BLOCK_ACTIVATE));
+            this.level
+                    .getVibrationManager()
+                    .callVibrationEvent(
+                            new VibrationEvent(player != null ? player : this, pos, VibrationType.BLOCK_ACTIVATE));
         } else {
-            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(player != null ? player : this, pos, VibrationType.BLOCK_DEACTIVATE));
+            this.level
+                    .getVibrationManager()
+                    .callVibrationEvent(
+                            new VibrationEvent(player != null ? player : this, pos, VibrationType.BLOCK_DEACTIVATE));
         }
     }
 

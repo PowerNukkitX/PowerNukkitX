@@ -18,10 +18,9 @@ import cn.nukkit.level.Position;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
+import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 public class BlockChorusFlower extends BlockTransparentMeta {
 
@@ -36,11 +35,11 @@ public class BlockChorusFlower extends BlockTransparentMeta {
     public BlockChorusFlower() {
         this(0);
     }
-    
+
     public BlockChorusFlower(int meta) {
         super(meta);
     }
-    
+
     @Override
     public int getId() {
         return CHORUS_FLOWER;
@@ -48,8 +47,7 @@ public class BlockChorusFlower extends BlockTransparentMeta {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -75,7 +73,8 @@ public class BlockChorusFlower extends BlockTransparentMeta {
     }
 
     private boolean isPositionValid() {
-        // Chorus flowers must be above end stone or chorus plant, or be above air and horizontally adjacent to exactly one chorus plant.
+        // Chorus flowers must be above end stone or chorus plant, or be above air and horizontally adjacent to exactly
+        // one chorus plant.
         // If these conditions are not met, the block breaks without dropping anything.
         Block down = down();
         if (down.getId() == CHORUS_PLANT || down.getId() == END_STONE) {
@@ -128,19 +127,19 @@ public class BlockChorusFlower extends BlockTransparentMeta {
                                 break;
                             }
                         }
-                        
+
                         if (height < 2 || height <= ThreadLocalRandom.current().nextInt(ground ? 5 : 4)) {
                             growUp = true;
                         }
                     }
-                    
+
                     // Grow Upward
                     if (growUp && this.up(2).getId() == AIR && isHorizontalAir(this.up())) {
                         BlockChorusFlower block = (BlockChorusFlower) this.clone();
                         block.y = this.y + 1;
                         BlockGrowEvent ev = new BlockGrowEvent(this, block);
                         Server.getInstance().getPluginManager().callEvent(ev);
-                        
+
                         if (!ev.isCancelled()) {
                             this.getLevel().setBlock(this, Block.get(CHORUS_PLANT));
                             this.getLevel().setBlock(block, ev.getNewState());
@@ -148,12 +147,14 @@ public class BlockChorusFlower extends BlockTransparentMeta {
                         } else {
                             return Level.BLOCK_UPDATE_RANDOM;
                         }
-                    // Grow Horizontally
+                        // Grow Horizontally
                     } else if (!isFullyAged()) {
                         for (int i = 0; i < ThreadLocalRandom.current().nextInt(ground ? 5 : 4); i++) {
                             BlockFace face = BlockFace.Plane.HORIZONTAL.random();
                             Block check = this.getSide(face);
-                            if (check.getId() == AIR && check.down().getId() == AIR && isHorizontalAirExcept(check, face.getOpposite())) {
+                            if (check.getId() == AIR
+                                    && check.down().getId() == AIR
+                                    && isHorizontalAirExcept(check, face.getOpposite())) {
                                 BlockChorusFlower block = (BlockChorusFlower) this.clone();
                                 block.x = check.x;
                                 block.y = check.y;
@@ -161,7 +162,7 @@ public class BlockChorusFlower extends BlockTransparentMeta {
                                 block.setAge(getAge() + 1);
                                 BlockGrowEvent ev = new BlockGrowEvent(this, block);
                                 Server.getInstance().getPluginManager().callEvent(ev);
-                                
+
                                 if (!ev.isCancelled()) {
                                     this.getLevel().setBlock(this, Block.get(CHORUS_PLANT));
                                     this.getLevel().setBlock(block, ev.getNewState());
@@ -171,13 +172,13 @@ public class BlockChorusFlower extends BlockTransparentMeta {
                                 }
                             }
                         }
-                    // Death
+                        // Death
                     } else {
                         BlockChorusFlower block = (BlockChorusFlower) this.clone();
                         block.setAge(getMaxAge());
                         BlockGrowEvent ev = new BlockGrowEvent(this, block);
                         Server.getInstance().getPluginManager().callEvent(ev);
-                        
+
                         if (!ev.isCancelled()) {
                             this.getLevel().setBlock(block, ev.getNewState());
                             this.getLevel().addSound(this.add(0.5, 0.5, 0.5), Sound.BLOCK_CHORUSFLOWER_DEATH);
@@ -190,12 +191,20 @@ public class BlockChorusFlower extends BlockTransparentMeta {
                 return Level.BLOCK_UPDATE_RANDOM;
             }
         }
-        
+
         return 0;
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
         if (!isPositionValid()) {
             return false;
         }
@@ -204,7 +213,7 @@ public class BlockChorusFlower extends BlockTransparentMeta {
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{ this.toItem() };
+        return new Item[] {this.toItem()};
     }
 
     @Override
@@ -215,7 +224,7 @@ public class BlockChorusFlower extends BlockTransparentMeta {
 
     @Override
     @PowerNukkitOnly
-    public  boolean sticksToPiston() {
+    public boolean sticksToPiston() {
         return false;
     }
 
@@ -223,37 +232,39 @@ public class BlockChorusFlower extends BlockTransparentMeta {
     @Since("1.4.0.0-PN")
     @Override
     public boolean onProjectileHit(@NotNull Entity projectile, @NotNull Position position, @NotNull Vector3 motion) {
-        if (projectile instanceof EntityArrow || projectile instanceof EntitySnowball || projectile instanceof EntitySmallFireBall) {
+        if (projectile instanceof EntityArrow
+                || projectile instanceof EntitySnowball
+                || projectile instanceof EntitySmallFireBall) {
             this.getLevel().useBreakOn(this);
             return true;
         }
         return super.onProjectileHit(projectile, position, motion);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public int getMaxAge() {
         return AGE.getMaxValue();
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public int getAge() {
         return getIntValue(AGE);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void setAge(int age) {
         setIntValue(AGE, age);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean isFullyAged() {
         return getAge() >= getMaxAge();
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     private boolean isHorizontalAir(Block block) {
@@ -264,7 +275,7 @@ public class BlockChorusFlower extends BlockTransparentMeta {
         }
         return true;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     private boolean isHorizontalAirExcept(Block block, BlockFace except) {

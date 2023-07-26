@@ -3,7 +3,6 @@ package cn.nukkit.level.generator.populator.impl.structure.utils;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.math.NukkitRandom;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
@@ -15,9 +14,7 @@ public class NukkitCollections {
 
     private static final int SHUFFLE_THRESHOLD = 5;
 
-    private NukkitCollections() {
-
-    }
+    private NukkitCollections() {}
 
     /**
      * Randomly permute the specified list using the specified source of
@@ -46,14 +43,12 @@ public class NukkitCollections {
     public static void shuffle(List<?> list, NukkitRandom rnd) {
         int size = list.size();
         if (size < SHUFFLE_THRESHOLD || list instanceof RandomAccess) {
-            for (int i = size; i > 1; i--)
-                Collections.swap(list, i - 1, rnd.nextBoundedInt(i));
+            for (int i = size; i > 1; i--) Collections.swap(list, i - 1, rnd.nextBoundedInt(i));
         } else {
             Object[] arr = list.toArray();
 
             // Shuffle array
-            for (int i = size; i > 1; i--)
-                swap(arr, i - 1, rnd.nextBoundedInt(i));
+            for (int i = size; i > 1; i--) swap(arr, i - 1, rnd.nextBoundedInt(i));
 
             // Dump array back into list
             // instead of using a raw type here, it's possible to capture

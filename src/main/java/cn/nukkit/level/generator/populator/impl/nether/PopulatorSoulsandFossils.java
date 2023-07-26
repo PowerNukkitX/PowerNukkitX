@@ -16,7 +16,11 @@ public class PopulatorSoulsandFossils extends Populator {
             if (y != -1 && level.getBlockIdAt(x, y, z) != NETHERRACK) {
                 int count = NukkitMath.randomRange(random, 10, 20);
                 for (int i = 0; i < count; i++) {
-                    level.setBlockAt(x + (random.nextBoundedInt(6) - 3), y + (random.nextBoundedInt(3)), z + (random.nextBoundedInt(6) - 3), BONE_BLOCK);
+                    level.setBlockAt(
+                            x + (random.nextBoundedInt(6) - 3),
+                            y + (random.nextBoundedInt(3)),
+                            z + (random.nextBoundedInt(6) - 3),
+                            BONE_BLOCK);
                 }
             }
         }
@@ -24,7 +28,7 @@ public class PopulatorSoulsandFossils extends Populator {
 
     private int getHighestWorkableBlock(FullChunk chunk, int x, int z) {
         int y;
-        //start scanning a bit lower down to allow space for placing on top
+        // start scanning a bit lower down to allow space for placing on top
         for (y = 120; y >= 0; y--) {
             int b = chunk.getBlockId(x, y, z);
             if (b == SOUL_SAND || b == SOUL_SOIL) {

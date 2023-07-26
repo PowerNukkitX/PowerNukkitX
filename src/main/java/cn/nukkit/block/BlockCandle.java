@@ -11,15 +11,13 @@ import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Gabriel8579
  * @since 2021-07-14
  */
-
 @PowerNukkitOnly
 @Since("FUTURE")
 public class BlockCandle extends BlockFlowable {
@@ -49,8 +47,16 @@ public class BlockCandle extends BlockFlowable {
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        if (target.getId() == BlockID.CAKE_BLOCK && target.getDamage() == 0) {//必须是完整的蛋糕才能插蜡烛
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
+        if (target.getId() == BlockID.CAKE_BLOCK && target.getDamage() == 0) { // 必须是完整的蛋糕才能插蜡烛
             target.getLevel().setBlock(target, toCakeForm(), true, true);
             return true;
         }
@@ -98,9 +104,7 @@ public class BlockCandle extends BlockFlowable {
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{
-                new ItemBlock(this, 0, getPropertyValue(CANDLES) + 1)
-        };
+        return new Item[] {new ItemBlock(this, 0, getPropertyValue(CANDLES) + 1)};
     }
 
     @Override
@@ -135,10 +139,8 @@ public class BlockCandle extends BlockFlowable {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
-
 }

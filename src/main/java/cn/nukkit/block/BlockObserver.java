@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.POWERED;
+
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitDifference;
@@ -18,11 +20,8 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.plugin.PluginManager;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
-
-import static cn.nukkit.blockproperty.CommonBlockProperties.POWERED;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Leonidius20, joserobjr
@@ -32,12 +31,14 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.POWERED;
 public class BlockObserver extends BlockSolidMeta implements RedstoneComponent, Faceable {
     @Since("1.20.10-r1")
     @PowerNukkitXOnly
-    public static final BlockProperty<BlockFace> FACING_DIRECTION = new ArrayBlockProperty<>("minecraft:facing_direction", false, new BlockFace[]{
-            // Index based
-            BlockFace.DOWN, BlockFace.UP,
-            BlockFace.NORTH, BlockFace.SOUTH,
-            BlockFace.WEST, BlockFace.EAST,
-    });
+    public static final BlockProperty<BlockFace> FACING_DIRECTION =
+            new ArrayBlockProperty<>("minecraft:facing_direction", false, new BlockFace[] {
+                // Index based
+                BlockFace.DOWN, BlockFace.UP,
+                BlockFace.NORTH, BlockFace.SOUTH,
+                BlockFace.WEST, BlockFace.EAST,
+            });
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(FACING_DIRECTION, POWERED);
@@ -62,14 +63,21 @@ public class BlockObserver extends BlockSolidMeta implements RedstoneComponent, 
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
         if (player != null) {
             if (Math.abs(player.getFloorX() - this.x) <= 1 && Math.abs(player.getFloorZ() - this.z) <= 1) {
                 double y = player.y + player.getEyeHeight();
@@ -124,7 +132,8 @@ public class BlockObserver extends BlockSolidMeta implements RedstoneComponent, 
 
                 if (level.setBlock(this, this)) {
                     getSide(getBlockFace().getOpposite()).onUpdate(Level.BLOCK_UPDATE_REDSTONE);
-                    RedstoneComponent.updateAroundRedstone(getSide(getBlockFace().getOpposite()));
+                    RedstoneComponent.updateAroundRedstone(
+                            getSide(getBlockFace().getOpposite()));
                     level.scheduleUpdate(this, 2);
                 }
             } else {

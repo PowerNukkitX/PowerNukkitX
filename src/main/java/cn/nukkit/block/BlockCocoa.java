@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
+
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
@@ -16,12 +18,9 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.utils.Faceable;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
-
-import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
+import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author CreeperFace
@@ -37,10 +36,26 @@ public class BlockCocoa extends BlockTransparentMeta implements Faceable {
     @Since("1.5.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(DIRECTION, AGE);
 
-    protected static final AxisAlignedBB[] EAST = new SimpleAxisAlignedBB[]{new SimpleAxisAlignedBB(0.6875D, 0.4375D, 0.375D, 0.9375D, 0.75D, 0.625D), new SimpleAxisAlignedBB(0.5625D, 0.3125D, 0.3125D, 0.9375D, 0.75D, 0.6875D), new SimpleAxisAlignedBB(0.5625D, 0.3125D, 0.3125D, 0.9375D, 0.75D, 0.6875D)};
-    protected static final AxisAlignedBB[] WEST = new SimpleAxisAlignedBB[]{new SimpleAxisAlignedBB(0.0625D, 0.4375D, 0.375D, 0.3125D, 0.75D, 0.625D), new SimpleAxisAlignedBB(0.0625D, 0.3125D, 0.3125D, 0.4375D, 0.75D, 0.6875D), new SimpleAxisAlignedBB(0.0625D, 0.3125D, 0.3125D, 0.4375D, 0.75D, 0.6875D)};
-    protected static final AxisAlignedBB[] NORTH = new SimpleAxisAlignedBB[]{new SimpleAxisAlignedBB(0.375D, 0.4375D, 0.0625D, 0.625D, 0.75D, 0.3125D), new SimpleAxisAlignedBB(0.3125D, 0.3125D, 0.0625D, 0.6875D, 0.75D, 0.4375D), new SimpleAxisAlignedBB(0.3125D, 0.3125D, 0.0625D, 0.6875D, 0.75D, 0.4375D)};
-    protected static final AxisAlignedBB[] SOUTH = new SimpleAxisAlignedBB[]{new SimpleAxisAlignedBB(0.375D, 0.4375D, 0.6875D, 0.625D, 0.75D, 0.9375D), new SimpleAxisAlignedBB(0.3125D, 0.3125D, 0.5625D, 0.6875D, 0.75D, 0.9375D), new SimpleAxisAlignedBB(0.3125D, 0.3125D, 0.5625D, 0.6875D, 0.75D, 0.9375D)};
+    protected static final AxisAlignedBB[] EAST = new SimpleAxisAlignedBB[] {
+        new SimpleAxisAlignedBB(0.6875D, 0.4375D, 0.375D, 0.9375D, 0.75D, 0.625D),
+        new SimpleAxisAlignedBB(0.5625D, 0.3125D, 0.3125D, 0.9375D, 0.75D, 0.6875D),
+        new SimpleAxisAlignedBB(0.5625D, 0.3125D, 0.3125D, 0.9375D, 0.75D, 0.6875D)
+    };
+    protected static final AxisAlignedBB[] WEST = new SimpleAxisAlignedBB[] {
+        new SimpleAxisAlignedBB(0.0625D, 0.4375D, 0.375D, 0.3125D, 0.75D, 0.625D),
+        new SimpleAxisAlignedBB(0.0625D, 0.3125D, 0.3125D, 0.4375D, 0.75D, 0.6875D),
+        new SimpleAxisAlignedBB(0.0625D, 0.3125D, 0.3125D, 0.4375D, 0.75D, 0.6875D)
+    };
+    protected static final AxisAlignedBB[] NORTH = new SimpleAxisAlignedBB[] {
+        new SimpleAxisAlignedBB(0.375D, 0.4375D, 0.0625D, 0.625D, 0.75D, 0.3125D),
+        new SimpleAxisAlignedBB(0.3125D, 0.3125D, 0.0625D, 0.6875D, 0.75D, 0.4375D),
+        new SimpleAxisAlignedBB(0.3125D, 0.3125D, 0.0625D, 0.6875D, 0.75D, 0.4375D)
+    };
+    protected static final AxisAlignedBB[] SOUTH = new SimpleAxisAlignedBB[] {
+        new SimpleAxisAlignedBB(0.375D, 0.4375D, 0.6875D, 0.625D, 0.75D, 0.9375D),
+        new SimpleAxisAlignedBB(0.3125D, 0.3125D, 0.5625D, 0.6875D, 0.75D, 0.9375D),
+        new SimpleAxisAlignedBB(0.3125D, 0.3125D, 0.5625D, 0.6875D, 0.75D, 0.9375D)
+    };
     protected static final AxisAlignedBB[] ALL = new AxisAlignedBB[12];
 
     public BlockCocoa() {
@@ -58,8 +73,7 @@ public class BlockCocoa extends BlockTransparentMeta implements Faceable {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -134,16 +148,19 @@ public class BlockCocoa extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
         if (target.getId() == Block.WOOD && (target.getDamage() & 0x03) == BlockWood.JUNGLE) {
             if (face != BlockFace.DOWN && face != BlockFace.UP) {
-                int[] faces = new int[]{
-                        0,
-                        0,
-                        0,
-                        2,
-                        3,
-                        1,
+                int[] faces = new int[] {
+                    0, 0, 0, 2, 3, 1,
                 };
 
                 this.setDamage(faces[face.getIndex()]);
@@ -157,9 +174,7 @@ public class BlockCocoa extends BlockTransparentMeta implements Faceable {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            int[] faces = new int[]{
-                    3, 4, 2, 5, 3, 4, 2, 5, 3, 4, 2, 5
-            };
+            int[] faces = new int[] {3, 4, 2, 5, 3, 4, 2, 5, 3, 4, 2, 5};
 
             Block side = this.getSide(BlockFace.fromIndex(faces[this.getDamage()]));
 
@@ -254,9 +269,7 @@ public class BlockCocoa extends BlockTransparentMeta implements Faceable {
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{
-                MinecraftItemID.COCOA_BEANS.get(this.getDamage() >= 8 ? 3 : 1)
-        };
+        return new Item[] {MinecraftItemID.COCOA_BEANS.get(this.getDamage() >= 8 ? 3 : 1)};
     }
 
     @Override
@@ -272,7 +285,7 @@ public class BlockCocoa extends BlockTransparentMeta implements Faceable {
 
     @Override
     @PowerNukkitOnly
-    public  boolean sticksToPiston() {
+    public boolean sticksToPiston() {
         return false;
     }
 }

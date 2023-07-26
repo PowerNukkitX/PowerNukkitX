@@ -18,9 +18,7 @@ public class EntityFallPacket extends DataPacket {
     }
 
     @Override
-    public void encode() {
-
-    }
+    public void encode() {}
 
     @Override
     public byte pid() {

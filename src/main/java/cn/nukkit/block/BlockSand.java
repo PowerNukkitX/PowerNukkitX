@@ -17,7 +17,8 @@ public class BlockSand extends BlockFallableMeta {
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
-    public static final ArrayBlockProperty<SandType> SAND_TYPE = new ArrayBlockProperty<>("sand_type", true, SandType.class);
+    public static final ArrayBlockProperty<SandType> SAND_TYPE =
+            new ArrayBlockProperty<>("sand_type", true, SandType.class);
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
@@ -41,8 +42,7 @@ public class BlockSand extends BlockFallableMeta {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -70,5 +70,4 @@ public class BlockSand extends BlockFallableMeta {
 
         return "Sand";
     }
-
 }

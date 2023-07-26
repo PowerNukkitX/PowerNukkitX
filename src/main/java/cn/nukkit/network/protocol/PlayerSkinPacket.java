@@ -2,9 +2,8 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.Server;
 import cn.nukkit.entity.data.Skin;
-import lombok.ToString;
-
 import java.util.UUID;
+import lombok.ToString;
 
 @ToString
 public class PlayerSkinPacket extends DataPacket {

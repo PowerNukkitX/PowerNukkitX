@@ -4,10 +4,9 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.nbt.tag.CompoundTag;
-
-import javax.annotation.Nullable;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import javax.annotation.Nullable;
 
 /**
  * 记忆编解码器
@@ -43,8 +42,7 @@ public interface IMemoryCodec<Data> {
      */
     void init(@Nullable Data data, EntityIntelligent entity);
 
-    @Nullable
-    default Data decode(CompoundTag tag) {
+    @Nullable default Data decode(CompoundTag tag) {
         return getDecoder().apply(tag);
     }
 

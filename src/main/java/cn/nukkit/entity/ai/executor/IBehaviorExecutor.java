@@ -36,8 +36,7 @@ public interface IBehaviorExecutor {
      *
      * @param entity 目标实体
      */
-    default void onInterrupt(EntityIntelligent entity) {
-    }
+    default void onInterrupt(EntityIntelligent entity) {}
 
     /**
      * 行为评估成功后，进入激活状态前调用
@@ -46,8 +45,7 @@ public interface IBehaviorExecutor {
      *
      * @param entity 目标实体
      */
-    default void onStart(EntityIntelligent entity) {
-    }
+    default void onStart(EntityIntelligent entity) {}
 
     /**
      * 行为正常结束时(execute()方法返回false)调用
@@ -56,6 +54,5 @@ public interface IBehaviorExecutor {
      *
      * @param entity 目标实体
      */
-    default void onStop(EntityIntelligent entity) {
-    }
+    default void onStop(EntityIntelligent entity) {}
 }

@@ -1,7 +1,6 @@
 package cn.nukkit.command.simple;
 
 import cn.nukkit.command.data.CommandParamType;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

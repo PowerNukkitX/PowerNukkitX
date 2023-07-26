@@ -18,16 +18,16 @@
 
 package cn.nukkit.api;
 
-import javax.annotation.meta.TypeQualifier;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import javax.annotation.meta.TypeQualifier;
 
 /**
- * Indicates that the number may be negative in raw form but must be treated as an unsigned value by 
+ * Indicates that the number may be negative in raw form but must be treated as an unsigned value by
  * considering the sign bit as part of the number.
- * 
+ *
  * @author joserobjr
  * @since 2020-10-11
  */
@@ -37,5 +37,4 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.CLASS)
 @Documented
 @Inherited
-public @interface Unsigned {
-}
+public @interface Unsigned {}

@@ -3,7 +3,6 @@ package cn.nukkit.nbt.snbt;
 
 import java.util.*;
 
-
 /**
  * The base concrete class for non-terminal Nodes
  */
@@ -24,7 +23,7 @@ public class BaseNode implements Node {
         this.tokenSource = tokenSource;
     }
 
-    static private Class<? extends List> listClass;
+    private static Class<? extends List> listClass;
 
     /**
      * Sets the List class that is used to store child nodes. By default,
@@ -35,7 +34,7 @@ public class BaseNode implements Node {
      * @param listClass the #java.util.List implementation to use internally
      *                  for the child nodes. By default #java.util.ArrayList is used.
      */
-    static public void setListClass(Class<? extends List> listClass) {
+    public static void setListClass(Class<? extends List> listClass) {
         BaseNode.listClass = listClass;
     }
 
@@ -59,6 +58,7 @@ public class BaseNode implements Node {
      * the child nodes
      */
     private List<Node> children = newList();
+
     private int beginOffset, endOffset;
     private boolean unparsed;
 
@@ -177,7 +177,4 @@ public class BaseNode implements Node {
         }
         nodeList.add(node);
     }
-
 }
-
-

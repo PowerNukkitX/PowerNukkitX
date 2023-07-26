@@ -8,10 +8,8 @@ import cn.nukkit.blockentity.BlockEntityItemFrame;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
-
+import org.jetbrains.annotations.NotNull;
 
 /**
  * 物品展示框被使用的事件，会在放置物品，旋转物品，掉落物品时调用
@@ -31,7 +29,12 @@ public class ItemFrameUseEvent extends BlockEvent implements Cancellable {
         return handlers;
     }
 
-    public ItemFrameUseEvent(@Nullable Player player, @NotNull Block block, @NotNull BlockEntityItemFrame itemFrame, @Nullable Item item, Action action) {
+    public ItemFrameUseEvent(
+            @Nullable Player player,
+            @NotNull Block block,
+            @NotNull BlockEntityItemFrame itemFrame,
+            @Nullable Item item,
+            Action action) {
         super(block);
         this.player = player;
         this.itemFrame = itemFrame;
@@ -45,8 +48,7 @@ public class ItemFrameUseEvent extends BlockEvent implements Cancellable {
      *
      * @return the player
      */
-    @Nullable
-    public Player getPlayer() {
+    @Nullable public Player getPlayer() {
         return player;
     }
 
@@ -57,8 +59,7 @@ public class ItemFrameUseEvent extends BlockEvent implements Cancellable {
      *
      * @return the item frame
      */
-    @NotNull
-    public BlockEntityItemFrame getItemFrame() {
+    @NotNull public BlockEntityItemFrame getItemFrame() {
         return itemFrame;
     }
 
@@ -69,8 +70,7 @@ public class ItemFrameUseEvent extends BlockEvent implements Cancellable {
      *
      * @return the item
      */
-    @Nullable
-    public Item getItem() {
+    @Nullable public Item getItem() {
         return item;
     }
 
@@ -81,8 +81,7 @@ public class ItemFrameUseEvent extends BlockEvent implements Cancellable {
      *
      * @return the action
      */
-    @NotNull
-    public Action getAction() {
+    @NotNull public Action getAction() {
         return action;
     }
 

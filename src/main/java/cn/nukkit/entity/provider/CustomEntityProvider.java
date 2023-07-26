@@ -36,14 +36,12 @@ public abstract class CustomEntityProvider implements EntityProvider<Entity> {
         return customEntityDefinition.getRuntimeId();
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getName() {
         return customEntityDefinition.getStringId();
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getSimpleName() {
         return customEntityDefinition.getStringId();
     }

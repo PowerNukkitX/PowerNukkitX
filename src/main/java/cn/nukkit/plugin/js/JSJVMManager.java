@@ -1,9 +1,8 @@
 package cn.nukkit.plugin.js;
 
 import cn.nukkit.plugin.CommonJSPlugin;
-import org.jetbrains.annotations.NotNull;
-
 import java.lang.management.ManagementFactory;
+import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings({"unused", "ClassCanBeRecord"})
 public final class JSJVMManager {
@@ -13,14 +12,12 @@ public final class JSJVMManager {
         this.jsPlugin = jsPlugin;
     }
 
-    @NotNull
-    public String getJVMVersion() {
+    @NotNull public String getJVMVersion() {
         var mxBean = ManagementFactory.getRuntimeMXBean();
         return mxBean.getVmName() + " " + mxBean.getVmVendor() + " " + mxBean.getVmVersion();
     }
 
-    @NotNull
-    public String getJITVersion() {
+    @NotNull public String getJITVersion() {
         var mxBean = ManagementFactory.getCompilationMXBean();
         return mxBean.getName();
     }

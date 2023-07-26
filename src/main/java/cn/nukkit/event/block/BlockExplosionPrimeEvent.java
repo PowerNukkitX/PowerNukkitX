@@ -25,7 +25,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
-
 import javax.annotation.Nullable;
 
 /**
@@ -130,8 +129,7 @@ public class BlockExplosionPrimeEvent extends BlockEvent implements Cancellable 
         this.fireChance = fireChance;
     }
 
-    @Nullable
-    @PowerNukkitXOnly
+    @Nullable @PowerNukkitXOnly
     @Since("1.19.60-r1")
     public Player getPlayer() {
         return player;

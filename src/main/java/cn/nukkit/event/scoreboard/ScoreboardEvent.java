@@ -28,7 +28,7 @@ public abstract class ScoreboardEvent extends Event implements Cancellable {
         return handlers;
     }
 
-    public IScoreboard getScoreboard(){
+    public IScoreboard getScoreboard() {
         return this.scoreboard;
     }
 }

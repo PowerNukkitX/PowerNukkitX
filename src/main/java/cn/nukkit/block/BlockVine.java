@@ -15,13 +15,12 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
+import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Pub4Game
@@ -54,8 +53,7 @@ public class BlockVine extends BlockTransparentMeta {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -163,18 +161,19 @@ public class BlockVine extends BlockTransparentMeta {
             f3 = 0;
             f6 = 1;
         }
-        return new SimpleAxisAlignedBB(
-                this.x + f1,
-                this.y + f2,
-                this.z + f3,
-                this.x + f4,
-                this.y + f5,
-                this.z + f6
-        );
+        return new SimpleAxisAlignedBB(this.x + f1, this.y + f2, this.z + f3, this.x + f4, this.y + f5, this.z + f6);
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
         if (block.getId() != VINE && target.isSolid() && face.getHorizontalIndex() != -1) {
             this.setDamage(getMetaFromFace(face.getOpposite()));
             this.getLevel().setBlock(block, this, true, true);
@@ -187,9 +186,7 @@ public class BlockVine extends BlockTransparentMeta {
     @Override
     public Item[] getDrops(Item item) {
         if (item.isShears()) {
-            return new Item[]{
-                    toItem()
-            };
+            return new Item[] {toItem()};
         } else {
             return Item.EMPTY_ARRAY;
         }
@@ -231,7 +228,10 @@ public class BlockVine extends BlockTransparentMeta {
                 if (this.y < 255 && face == BlockFace.UP && block.getId() == AIR) {
                     if (this.canSpread()) {
                         for (BlockFace horizontalFace : BlockFace.Plane.HORIZONTAL) {
-                            if (random.nextBoolean() || !this.getSide(horizontalFace).getSide(face).isSolid()) {
+                            if (random.nextBoolean()
+                                    || !this.getSide(horizontalFace)
+                                            .getSide(face)
+                                            .isSolid()) {
                                 meta &= ~getMetaFromFace(horizontalFace);
                             }
                         }
@@ -253,9 +253,13 @@ public class BlockVine extends BlockTransparentMeta {
                                 putVine(block, getMetaFromFace(cwFace), this);
                             } else if (onCcw && ccwBlock.isSolid()) {
                                 putVine(block, getMetaFromFace(ccwFace), this);
-                            } else if (onCw && cwBlock.getId() == AIR && this.getSide(cwFace).isSolid()) {
+                            } else if (onCw
+                                    && cwBlock.getId() == AIR
+                                    && this.getSide(cwFace).isSolid()) {
                                 putVine(cwBlock, getMetaFromFace(face.getOpposite()), this);
-                            } else if (onCcw && ccwBlock.getId() == AIR && this.getSide(ccwFace).isSolid()) {
+                            } else if (onCcw
+                                    && ccwBlock.getId() == AIR
+                                    && this.getSide(ccwFace).isSolid()) {
                                 putVine(ccwBlock, getMetaFromFace(face.getOpposite()), this);
                             } else if (block.up().isSolid()) {
                                 putVine(block, 0, this);
@@ -356,7 +360,6 @@ public class BlockVine extends BlockTransparentMeta {
 
         for (BlockFace face : faces) {
             meta |= getMetaFromFace(face);
-
         }
 
         return meta;
@@ -389,7 +392,7 @@ public class BlockVine extends BlockTransparentMeta {
 
     @Override
     @PowerNukkitOnly
-    public  boolean sticksToPiston() {
+    public boolean sticksToPiston() {
         return false;
     }
 

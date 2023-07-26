@@ -1,9 +1,8 @@
 package cn.nukkit.energy;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.HashMap;
 import java.util.Map;
+import org.jetbrains.annotations.NotNull;
 
 public final class EnergyRegistry {
     public static final Map<String, EnergyType> registeredEnergyTypes = new HashMap<>();

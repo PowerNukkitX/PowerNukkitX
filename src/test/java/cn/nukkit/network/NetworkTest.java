@@ -22,12 +22,9 @@ import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author joserobjr
@@ -39,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class NetworkTest {
     @Mock
     Server server;
-    
+
     Network network;
 
     @BeforeEach

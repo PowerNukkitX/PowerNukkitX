@@ -18,20 +18,19 @@
 
 package cn.nukkit.utils;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.item.Item;
+import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
-
-import java.util.Arrays;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author joserobjr

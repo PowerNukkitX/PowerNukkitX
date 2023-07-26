@@ -2,7 +2,6 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
-
 import java.util.List;
 import java.util.UUID;
 

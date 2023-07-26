@@ -1,5 +1,8 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
+import static cn.nukkit.blockproperty.CommonBlockProperties.TOGGLE;
+
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.*;
@@ -25,19 +28,16 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
-
-import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
-import static cn.nukkit.blockproperty.CommonBlockProperties.TOGGLE;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author CreeperFace
  */
 @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder only in PowerNukkit")
 @PowerNukkitDifference(info = "Implements RedstoneComponent.", since = "1.4.0.0-PN")
-public class BlockHopper extends BlockTransparentMeta implements RedstoneComponent, Faceable, BlockEntityHolder<BlockEntityHopper> {
+public class BlockHopper extends BlockTransparentMeta
+        implements RedstoneComponent, Faceable, BlockEntityHolder<BlockEntityHopper> {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -58,24 +58,21 @@ public class BlockHopper extends BlockTransparentMeta implements RedstoneCompone
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public Class<? extends BlockEntityHopper> getBlockEntityClass() {
         return BlockEntityHopper.class;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getBlockEntityType() {
         return BlockEntity.HOPPER;
     }
@@ -103,7 +100,15 @@ public class BlockHopper extends BlockTransparentMeta implements RedstoneCompone
 
     @PowerNukkitDifference(info = "Using new method for checking if powered", since = "1.4.0.0-PN")
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
         BlockFace facing = face.getOpposite();
 
         if (facing == BlockFace.UP) {
@@ -245,14 +250,16 @@ public class BlockHopper extends BlockTransparentMeta implements RedstoneCompone
         default boolean pullItems(InventoryHolder hopperHolder, Position hopperPos) {
             var hopperInv = hopperHolder.getInventory();
 
-            if (hopperInv.isFull())
-                return false;
+            if (hopperInv.isFull()) return false;
 
             Block blockSide = hopperPos.getSide(BlockFace.UP).getTickCachedLevelBlock();
-            BlockEntity blockEntity = hopperPos.level.getBlockEntity(new Vector3().setComponentsAdding(hopperPos, BlockFace.UP));
+            BlockEntity blockEntity =
+                    hopperPos.level.getBlockEntity(new Vector3().setComponentsAdding(hopperPos, BlockFace.UP));
 
             if (blockEntity instanceof InventoryHolder) {
-                Inventory inv = blockEntity instanceof RecipeInventoryHolder recipeInventoryHolder ? recipeInventoryHolder.getProductView() : ((InventoryHolder) blockEntity).getInventory();
+                Inventory inv = blockEntity instanceof RecipeInventoryHolder recipeInventoryHolder
+                        ? recipeInventoryHolder.getProductView()
+                        : ((InventoryHolder) blockEntity).getInventory();
 
                 for (int i = 0; i < inv.getSize(); i++) {
                     Item item = inv.getItem(i);
@@ -261,19 +268,17 @@ public class BlockHopper extends BlockTransparentMeta implements RedstoneCompone
                         Item itemToAdd = item.clone();
                         itemToAdd.count = 1;
 
-                        if (!hopperInv.canAddItem(itemToAdd))
-                            continue;
+                        if (!hopperInv.canAddItem(itemToAdd)) continue;
 
-                        InventoryMoveItemEvent ev = new InventoryMoveItemEvent(inv, hopperInv, hopperHolder, itemToAdd, InventoryMoveItemEvent.Action.SLOT_CHANGE);
+                        InventoryMoveItemEvent ev = new InventoryMoveItemEvent(
+                                inv, hopperInv, hopperHolder, itemToAdd, InventoryMoveItemEvent.Action.SLOT_CHANGE);
                         Server.getInstance().getPluginManager().callEvent(ev);
 
-                        if (ev.isCancelled())
-                            continue;
+                        if (ev.isCancelled()) continue;
 
                         Item[] items = hopperInv.addItem(itemToAdd);
 
-                        if (items.length >= 1)
-                            continue;
+                        if (items.length >= 1) continue;
 
                         item.count--;
 
@@ -283,15 +288,13 @@ public class BlockHopper extends BlockTransparentMeta implements RedstoneCompone
                 }
             } else if (blockSide instanceof BlockComposter blockComposter) {
                 if (blockComposter.isFull()) {
-                    //检查是否能输入
-                    if (!hopperInv.canAddItem(blockComposter.getOutPutItem()))
-                        return false;
+                    // 检查是否能输入
+                    if (!hopperInv.canAddItem(blockComposter.getOutPutItem())) return false;
 
-                    //Will call BlockComposterEmptyEvent
+                    // Will call BlockComposterEmptyEvent
                     var item = blockComposter.empty();
 
-                    if (item == null || item.isNull())
-                        return false;
+                    if (item == null || item.isNull()) return false;
 
                     Item itemToAdd = item.clone();
                     itemToAdd.count = 1;
@@ -307,27 +310,24 @@ public class BlockHopper extends BlockTransparentMeta implements RedstoneCompone
         default boolean pickupItems(InventoryHolder hopperHolder, Position hopperPos, AxisAlignedBB pickupArea) {
             var hopperInv = hopperHolder.getInventory();
 
-            if (hopperInv.isFull())
-                return false;
+            if (hopperInv.isFull()) return false;
 
             boolean pickedUpItem = false;
 
             for (Entity entity : hopperPos.level.getCollidingEntities(pickupArea)) {
-                if (entity.isClosed() || !(entity instanceof EntityItem itemEntity))
-                    continue;
+                if (entity.isClosed() || !(entity instanceof EntityItem itemEntity)) continue;
 
                 Item item = itemEntity.getItem();
 
-                if (item.isNull() || !hopperInv.canAddItem(item))
-                    continue;
+                if (item.isNull() || !hopperInv.canAddItem(item)) continue;
 
                 int originalCount = item.getCount();
 
-                InventoryMoveItemEvent ev = new InventoryMoveItemEvent(null, hopperInv, hopperHolder, item, InventoryMoveItemEvent.Action.PICKUP);
+                InventoryMoveItemEvent ev = new InventoryMoveItemEvent(
+                        null, hopperInv, hopperHolder, item, InventoryMoveItemEvent.Action.PICKUP);
                 Server.getInstance().getPluginManager().callEvent(ev);
 
-                if (ev.isCancelled())
-                    continue;
+                if (ev.isCancelled()) continue;
 
                 Item[] items = hopperInv.addItem(item);
 

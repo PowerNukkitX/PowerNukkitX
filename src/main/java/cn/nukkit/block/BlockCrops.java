@@ -11,9 +11,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.concurrent.ThreadLocalRandom;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -36,12 +35,11 @@ public abstract class BlockCrops extends BlockFlowable {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public int getMinimumLightLevel() {
@@ -77,9 +75,16 @@ public abstract class BlockCrops extends BlockFlowable {
         return true;
     }
 
-
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         if (block.down().getId() == FARMLAND) {
             this.getLevel().setBlock(block, this, true, true);
             return true;
@@ -89,7 +94,7 @@ public abstract class BlockCrops extends BlockFlowable {
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
-        //Bone meal
+        // Bone meal
         if (item.isFertilizer()) {
             int max = getMaxGrowth();
             int growth = getGrowth();
@@ -126,7 +131,8 @@ public abstract class BlockCrops extends BlockFlowable {
                 return Level.BLOCK_UPDATE_NORMAL;
             }
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {
-            if (ThreadLocalRandom.current().nextInt(2) == 1 && getLevel().getFullLight(this) >= getMinimumLightLevel()) {
+            if (ThreadLocalRandom.current().nextInt(2) == 1
+                    && getLevel().getFullLight(this) >= getMinimumLightLevel()) {
                 int growth = getGrowth();
                 if (growth < getMaxGrowth()) {
                     BlockCrops block = (BlockCrops) this.clone();
@@ -147,5 +153,4 @@ public abstract class BlockCrops extends BlockFlowable {
 
         return 0;
     }
-
 }

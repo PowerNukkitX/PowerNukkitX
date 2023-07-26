@@ -12,13 +12,12 @@ import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.inventory.transaction.CraftingTransaction;
 import com.google.common.base.Preconditions;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 @Since("1.1.1.0-PN")
 public class AnvilDamageEvent extends BlockEvent implements Cancellable {
-    
+
     private static final HandlerList handlers = new HandlerList();
 
     @Since("1.1.1.0-PN")
@@ -26,35 +25,41 @@ public class AnvilDamageEvent extends BlockEvent implements Cancellable {
         return handlers;
     }
 
-    @Nullable
-    private final Player player;
+    @Nullable private final Player player;
 
-    @Nullable
-    private final CraftingTransaction transaction;
+    @Nullable private final CraftingTransaction transaction;
 
-    @NotNull
-    private final DamageCause cause;
+    @NotNull private final DamageCause cause;
 
-    @NotNull
-    private final BlockState oldState;
+    @NotNull private final BlockState oldState;
 
-    @NotNull
-    private BlockState newState;
+    @NotNull private BlockState newState;
 
     @Since("1.4.0.0-PN")
-    public AnvilDamageEvent(@NotNull Block block, int oldDamage, int newDamage, @NotNull DamageCause cause, @Nullable Player player) {
+    public AnvilDamageEvent(
+            @NotNull Block block, int oldDamage, int newDamage, @NotNull DamageCause cause, @Nullable Player player) {
         this(adjustBlock(block, oldDamage), block.getCurrentState().withData(newDamage), player, null, cause);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public AnvilDamageEvent(@NotNull Block block, @NotNull Block newState, @Nullable Player player, @Nullable CraftingTransaction transaction, @NotNull DamageCause cause) {
+    public AnvilDamageEvent(
+            @NotNull Block block,
+            @NotNull Block newState,
+            @Nullable Player player,
+            @Nullable CraftingTransaction transaction,
+            @NotNull DamageCause cause) {
         this(block, newState.getCurrentState(), player, transaction, cause);
     }
 
     @PowerNukkitOnly
     @Since("FUTURE")
-    public AnvilDamageEvent(@NotNull Block block, @NotNull BlockState newState, @Nullable Player player, @Nullable CraftingTransaction transaction, @NotNull DamageCause cause) {
+    public AnvilDamageEvent(
+            @NotNull Block block,
+            @NotNull BlockState newState,
+            @Nullable Player player,
+            @Nullable CraftingTransaction transaction,
+            @NotNull DamageCause cause) {
         super(Preconditions.checkNotNull(block, "block").clone());
         this.oldState = block.getCurrentState();
         this.player = player;
@@ -62,23 +67,25 @@ public class AnvilDamageEvent extends BlockEvent implements Cancellable {
         this.cause = Preconditions.checkNotNull(cause, "cause");
         this.newState = Preconditions.checkNotNull(newState, "newState");
     }
-    
+
     @PowerNukkitOnly
     @Since("1.1.1.0-PN")
-    @Nullable
-    public CraftingTransaction getTransaction() {
+    @Nullable public CraftingTransaction getTransaction() {
         return transaction;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public DamageCause getDamageCause() {
+    @NotNull public DamageCause getDamageCause() {
         return cause;
     }
 
     @Deprecated
-    @DeprecationDetails(since = "FUTURE", by = "PowerNukkit", reason = "Unstable use of raw block state data", replaceWith = "getOldAnvilDamage or getOldBlockState")
+    @DeprecationDetails(
+            since = "FUTURE",
+            by = "PowerNukkit",
+            reason = "Unstable use of raw block state data",
+            replaceWith = "getOldAnvilDamage or getOldBlockState")
     @Since("1.4.0.0-PN")
     public int getOldDamage() {
         if (!block.getProperties().contains(BlockAnvil.DAMAGE)) {
@@ -89,8 +96,7 @@ public class AnvilDamageEvent extends BlockEvent implements Cancellable {
 
     @PowerNukkitOnly
     @Since("FUTURE")
-    @Nullable
-    public AnvilDamage getOldAnvilDamage() {
+    @Nullable public AnvilDamage getOldAnvilDamage() {
         if (oldState.getProperties().contains(BlockAnvil.DAMAGE)) {
             return oldState.getPropertyValue(BlockAnvil.DAMAGE);
         }
@@ -99,31 +105,34 @@ public class AnvilDamageEvent extends BlockEvent implements Cancellable {
 
     @PowerNukkitOnly
     @Since("FUTURE")
-    @NotNull
-    public BlockState getOldBlockState() {
+    @NotNull public BlockState getOldBlockState() {
         return oldState;
     }
 
     @PowerNukkitOnly
     @Since("FUTURE")
-    @NotNull
-    public BlockState getNewBlockState() {
+    @NotNull public BlockState getNewBlockState() {
         return newState;
     }
 
     @PowerNukkitOnly("Used to be inherited from BlockFadeEvent")
     @Since("1.1.1.0-PN")
-    @NotNull
-    public Block getNewState() {
+    @NotNull public Block getNewState() {
         return newState.getBlockRepairing(block);
     }
 
     @Deprecated
-    @DeprecationDetails(since = "FUTURE", by = "PowerNukkit", reason = "Unstable use of raw block state data", replaceWith = "getNewAnvilDamage or getNewBlockState")
+    @DeprecationDetails(
+            since = "FUTURE",
+            by = "PowerNukkit",
+            reason = "Unstable use of raw block state data",
+            replaceWith = "getNewAnvilDamage or getNewBlockState")
     @Since("1.4.0.0-PN")
     public int getNewDamage() {
         BlockState newBlockState = getNewBlockState();
-        return newBlockState.getProperties().contains(BlockAnvil.DAMAGE)? newBlockState.getIntValue(BlockAnvil.DAMAGE) : 0;
+        return newBlockState.getProperties().contains(BlockAnvil.DAMAGE)
+                ? newBlockState.getIntValue(BlockAnvil.DAMAGE)
+                : 0;
     }
 
     @PowerNukkitOnly
@@ -133,13 +142,18 @@ public class AnvilDamageEvent extends BlockEvent implements Cancellable {
     }
 
     @Deprecated
-    @DeprecationDetails(since = "FUTURE", by = "PowerNukkit", reason = "Unstable use of raw block state data",
-            replaceWith = "setNewBlockState example: setNewBlockState(BlockState.of(BlockID.ANVIL).withProperty(BlockAnvil.DAMAGE, AnvilDamage.VERY_DAMAGED))")
+    @DeprecationDetails(
+            since = "FUTURE",
+            by = "PowerNukkit",
+            reason = "Unstable use of raw block state data",
+            replaceWith =
+                    "setNewBlockState example: setNewBlockState(BlockState.of(BlockID.ANVIL).withProperty(BlockAnvil.DAMAGE, AnvilDamage.VERY_DAMAGED))")
     @Since("1.4.0.0-PN")
     public void setNewDamage(int newDamage) {
         BlockState newBlockState = getNewBlockState();
         if (newBlockState.getProperties().contains(BlockAnvil.DAMAGE)) {
-            this.setNewBlockState(newBlockState.withProperty(BlockAnvil.DAMAGE, BlockAnvil.DAMAGE.getValueForMeta(newDamage)));
+            this.setNewBlockState(
+                    newBlockState.withProperty(BlockAnvil.DAMAGE, BlockAnvil.DAMAGE.getValueForMeta(newDamage)));
         }
     }
 
@@ -150,21 +164,21 @@ public class AnvilDamageEvent extends BlockEvent implements Cancellable {
     }
 
     @Since("FUTURE")
-    @NotNull
-    public DamageCause getCause() {
+    @NotNull public DamageCause getCause() {
         return this.cause;
     }
 
     @Since("1.1.1.0-PN")
-    @Nullable
-    public Player getPlayer() {
+    @Nullable public Player getPlayer() {
         return this.player;
     }
 
     @Since("1.4.0.0-PN")
     public enum DamageCause {
-        @Since("1.4.0.0-PN") USE,
-        @Since("1.4.0.0-PN") FALL
+        @Since("1.4.0.0-PN")
+        USE,
+        @Since("1.4.0.0-PN")
+        FALL
     }
 
     private static Block adjustBlock(Block block, int damage) {

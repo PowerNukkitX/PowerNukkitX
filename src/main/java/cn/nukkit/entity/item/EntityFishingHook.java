@@ -29,10 +29,8 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddEntityPacket;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.EntityEventPacket;
-
 import java.util.Collection;
 import java.util.concurrent.ThreadLocalRandom;
-
 
 /**
  * @author PetteriM1
@@ -47,6 +45,7 @@ public class EntityFishingHook extends SlenderProjectile {
     public int attractTimer = 0;
     public boolean caught = false;
     public int caughtTimer = 0;
+
     @SuppressWarnings("java:S1845")
     public boolean canCollide = true;
 
@@ -109,7 +108,7 @@ public class EntityFishingHook extends SlenderProjectile {
         hasUpdate = super.onUpdate(currentTick);
 
         boolean inWater = this.isInsideOfWater();
-        if (inWater) {//防止鱼钩沉底 水中的阻力
+        if (inWater) { // 防止鱼钩沉底 水中的阻力
             this.motionX = 0;
             this.motionY -= getGravity() * -0.04;
             this.motionZ = 0;
@@ -167,16 +166,16 @@ public class EntityFishingHook extends SlenderProjectile {
     @PowerNukkitOnly
     @Override
     protected void updateMotion() {
-        //正确的浮力
+        // 正确的浮力
         if (this.isInsideOfWater() && this.getY() < this.getWaterHeight() - 2) {
             this.motionX = 0;
             this.motionY += getGravity();
             this.motionZ = 0;
-        } else if (this.isInsideOfWater() && this.getY() >= this.getWaterHeight() - 2) {//防止鱼钩上浮超出水面
+        } else if (this.isInsideOfWater() && this.getY() >= this.getWaterHeight() - 2) { // 防止鱼钩上浮超出水面
             this.motionX = 0;
             this.motionZ = 0;
             this.motionY = 0;
-        } else {//处理不在水中的情况
+        } else { // 处理不在水中的情况
             super.updateMotion();
         }
     }
@@ -214,8 +213,7 @@ public class EntityFishingHook extends SlenderProjectile {
             this.level.addParticle(new BubbleParticle(this.setComponents(
                     this.x + random.nextDouble() * 0.5 - 0.25,
                     this.getWaterHeight(),
-                    this.z + random.nextDouble() * 0.5 - 0.25
-            )));
+                    this.z + random.nextDouble() * 0.5 - 0.25)));
         }
     }
 
@@ -224,8 +222,7 @@ public class EntityFishingHook extends SlenderProjectile {
         this.fish = new Vector3(
                 this.x + (random.nextDouble() * 1.2 + 1) * (random.nextBoolean() ? -1 : 1),
                 this.getWaterHeight(),
-                this.z + (random.nextDouble() * 1.2 + 1) * (random.nextBoolean() ? -1 : 1)
-        );
+                this.z + (random.nextDouble() * 1.2 + 1) * (random.nextBoolean() ? -1 : 1));
     }
 
     public boolean attractFish() {
@@ -233,12 +230,12 @@ public class EntityFishingHook extends SlenderProjectile {
         this.fish.setComponents(
                 this.fish.x + (this.x - this.fish.x) * multiply,
                 this.fish.y,
-                this.fish.z + (this.z - this.fish.z) * multiply
-        );
+                this.fish.z + (this.z - this.fish.z) * multiply);
         if (ThreadLocalRandom.current().nextInt(100) < 85) {
             this.level.addParticle(new WaterParticle(this.fish));
         }
-        double dist = Math.abs(Math.sqrt(this.x * this.x + this.z * this.z) - Math.sqrt(this.fish.x * this.fish.x + this.fish.z * this.fish.z));
+        double dist = Math.abs(Math.sqrt(this.x * this.x + this.z * this.z)
+                - Math.sqrt(this.fish.x * this.fish.x + this.fish.z * this.fish.z));
         return dist < 0.15;
     }
 
@@ -247,7 +244,7 @@ public class EntityFishingHook extends SlenderProjectile {
         if (this.shootingEntity instanceof Player player && this.caught) {
             Item item = Fishing.getFishingResult(this.rod);
             int experience = ThreadLocalRandom.current().nextInt(3) + 1;
-            Vector3 pos = new Vector3(this.x, this.getWaterHeight(), this.z); //实体生成在水面上
+            Vector3 pos = new Vector3(this.x, this.getWaterHeight(), this.z); // 实体生成在水面上
             Vector3 motion = player.subtract(pos).multiply(0.1);
             motion.y += Math.sqrt(player.distance(pos)) * 0.08;
 
@@ -255,13 +252,15 @@ public class EntityFishingHook extends SlenderProjectile {
             this.getServer().getPluginManager().callEvent(event);
 
             if (!event.isCancelled()) {
-                EntityItem itemEntity = (EntityItem) Entity.createEntity(EntityItem.NETWORK_ID,
+                EntityItem itemEntity = (EntityItem) Entity.createEntity(
+                        EntityItem.NETWORK_ID,
                         this.level.getChunk((int) this.x >> 4, (int) this.z >> 4, true),
                         Entity.getDefaultNBT(
                                         pos,
-                                        event.getMotion(), ThreadLocalRandom.current().nextFloat() * 360,
-                                        0
-                                ).putCompound("Item", NBTIO.putItemHelper(event.getLoot()))
+                                        event.getMotion(),
+                                        ThreadLocalRandom.current().nextFloat() * 360,
+                                        0)
+                                .putCompound("Item", NBTIO.putItemHelper(event.getLoot()))
                                 .putShort("Health", 5)
                                 .putShort("PickupDelay", 1));
 
@@ -275,7 +274,8 @@ public class EntityFishingHook extends SlenderProjectile {
             var eid = this.getDataPropertyLong(DATA_TARGET_EID);
             var targetEntity = this.getLevel().getEntity(eid);
             if (targetEntity != null && targetEntity.isAlive()) { // 钓鱼竿收杆应该牵引被钓生物
-                targetEntity.setMotion(this.shootingEntity.subtract(targetEntity).divide(8).add(0, 0.3, 0));
+                targetEntity.setMotion(
+                        this.shootingEntity.subtract(targetEntity).divide(8).add(0, 0.3, 0));
             }
         }
         this.close();

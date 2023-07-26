@@ -48,6 +48,6 @@ public class EntitySlime extends EntityMob implements EntityWalkable {
 
     @Override
     public Item[] getDrops() {
-        return new Item[]{Item.get(Item.SLIMEBALL)};
+        return new Item[] {Item.get(Item.SLIMEBALL)};
     }
 }

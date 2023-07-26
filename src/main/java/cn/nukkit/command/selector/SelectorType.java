@@ -13,8 +13,8 @@ import lombok.Getter;
 public enum SelectorType {
     ALL_PLAYERS("a"),
     ALL_ENTITIES("e"),
-    //可通过指定type选择随机非玩家实体
-    //https://minecraft.fandom.com/zh/wiki/%E7%9B%AE%E6%A0%87%E9%80%89%E6%8B%A9%E5%99%A8
+    // 可通过指定type选择随机非玩家实体
+    // https://minecraft.fandom.com/zh/wiki/%E7%9B%AE%E6%A0%87%E9%80%89%E6%8B%A9%E5%99%A8
     RANDOM_PLAYER("r"),
     SELF("s"),
     NEAREST_PLAYER("p"),
@@ -38,5 +38,4 @@ public enum SelectorType {
             default -> throw new SelectorSyntaxException("Unknown selector type: " + type);
         };
     }
-
 }

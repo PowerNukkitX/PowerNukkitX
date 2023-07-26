@@ -14,8 +14,7 @@ public interface EnergyHolder {
     /**
      * @return The name of this energy holder.
      */
-    @NotNull
-    String getName();
+    @NotNull String getName();
 
     /**
      * @param energyType The type of energy to accept.
@@ -62,8 +61,7 @@ public interface EnergyHolder {
     /**
      * @return The type of the energy stored in this energy holder. If it can't store any energy, it returns null.
      */
-    @Nullable
-    EnergyType getStoredEnergyType();
+    @Nullable EnergyType getStoredEnergyType();
 
     /**
      * @return The max amount of energy that can stored in this energy holder. If it can't store any energy, it returns 0.

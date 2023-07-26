@@ -33,8 +33,7 @@ public class BlockDoubleSlabMangrove extends BlockDoubleSlabBase {
         return DOUBLE_MANGROVE_SLAB;
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return BlockSlab.SIMPLE_SLAB_PROPERTIES;
     }
@@ -58,5 +57,4 @@ public class BlockDoubleSlabMangrove extends BlockDoubleSlabBase {
     public int getSingleSlabId() {
         return MANGROVE_SLAB;
     }
-
 }

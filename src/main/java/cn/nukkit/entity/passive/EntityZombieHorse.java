@@ -42,7 +42,7 @@ public class EntityZombieHorse extends EntityAnimal implements EntityWalkable, E
 
     @Override
     public Item[] getDrops() {
-        return new Item[]{Item.get(Item.ROTTEN_FLESH, 1, 1)};
+        return new Item[] {Item.get(Item.ROTTEN_FLESH, 1, 1)};
     }
 
     @PowerNukkitOnly

@@ -72,12 +72,13 @@ public class ThreadCache {
         }
     };
 
-    public static final IterableThreadLocal<FastByteArrayOutputStream> fbaos = new IterableThreadLocal<FastByteArrayOutputStream>() {
-        @Override
-        public FastByteArrayOutputStream init() {
-            return new FastByteArrayOutputStream(1024);
-        }
-    };
+    public static final IterableThreadLocal<FastByteArrayOutputStream> fbaos =
+            new IterableThreadLocal<FastByteArrayOutputStream>() {
+                @Override
+                public FastByteArrayOutputStream init() {
+                    return new FastByteArrayOutputStream(1024);
+                }
+            };
 
     public static final IterableThreadLocal<BinaryStream> binaryStream = new IterableThreadLocal<BinaryStream>() {
         @Override

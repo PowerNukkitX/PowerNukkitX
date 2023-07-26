@@ -10,10 +10,9 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.BlockEntityDataPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
-import org.jetbrains.annotations.NotNull;
-
 import java.io.IOException;
 import java.nio.ByteOrder;
+import org.jetbrains.annotations.NotNull;
 
 public class BlockEntityDataProcessor extends DataPacketProcessor<BlockEntityDataPacket> {
     @Override

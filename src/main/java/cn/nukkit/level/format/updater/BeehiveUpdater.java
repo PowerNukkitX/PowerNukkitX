@@ -49,5 +49,4 @@ public class BeehiveUpdater implements Updater {
         }
         return false;
     }
-
 }

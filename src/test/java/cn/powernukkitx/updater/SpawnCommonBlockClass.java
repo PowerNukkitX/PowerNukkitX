@@ -4,14 +4,12 @@ import cn.nukkit.math.Vector2;
 import cn.nukkit.utils.StringUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
-
 
 public class SpawnCommonBlockClass {
     static Vector2 range = new Vector2(755, 784);
@@ -20,7 +18,8 @@ public class SpawnCommonBlockClass {
     static String version = "1.20.0-r2";
 
     public static void main(String[] args) throws IOException {
-        try (InputStream stream = GetLegacyItemIdsFromBlockIds.class.getClassLoader().getResourceAsStream("block_ids.csv")) {
+        try (InputStream stream =
+                GetLegacyItemIdsFromBlockIds.class.getClassLoader().getResourceAsStream("block_ids.csv")) {
             if (stream == null) {
                 throw new AssertionError("Unable to locate block_ids.csv");
             }
@@ -60,13 +59,17 @@ public class SpawnCommonBlockClass {
                         name.append(" ");
                     }
                 }
-                if (spawnBlockClass(className.toString(), entry.getValue().toUpperCase(Locale.ENGLISH), name.toString(), version)) {
-                    registerInfo.add("list[" + entry.getValue().toUpperCase(Locale.ENGLISH) + "] = " + className + ".class;//" + entry.getKey());
-                    blockIDInfo.add("""
+                if (spawnBlockClass(
+                        className.toString(), entry.getValue().toUpperCase(Locale.ENGLISH), name.toString(), version)) {
+                    registerInfo.add("list[" + entry.getValue().toUpperCase(Locale.ENGLISH) + "] = " + className
+                            + ".class;//" + entry.getKey());
+                    blockIDInfo.add(
+                            """
                             @PowerNukkitXOnly
                             @Since(%s)
                             int %s = %s;
-                            """.formatted(version, entry.getValue().toUpperCase(Locale.ENGLISH), entry.getKey()));
+                            """
+                                    .formatted(version, entry.getValue().toUpperCase(Locale.ENGLISH), entry.getKey()));
                 }
             }
             System.out.println("BlockID.java: ");
@@ -80,15 +83,17 @@ public class SpawnCommonBlockClass {
         return id <= range.y && id >= range.x;
     }
 
-    private static boolean spawnBlockClass(String className, String idFieldName, String blockName, String version) throws IOException {
-        String s = """
+    private static boolean spawnBlockClass(String className, String idFieldName, String blockName, String version)
+            throws IOException {
+        String s =
+                """
                 package cn.nukkit.block;
 
                 import cn.nukkit.api.Since;
                 import cn.nukkit.api.PowerNukkitXOnly;
-                                
+
                 import static cn.nukkit.block.BlockID.[idFieldName];
-                                
+
                 @PowerNukkitXOnly
                 @Since("[version]")
                 public class [className]{
@@ -102,7 +107,11 @@ public class SpawnCommonBlockClass {
                     public String getName() {
                         return "[blockName]";
                     }
-                }""".replace("[className]", className).replace("[idFieldName]", idFieldName).replace("[blockName]", blockName).replace("[version]", version);
+                }"""
+                        .replace("[className]", className)
+                        .replace("[idFieldName]", idFieldName)
+                        .replace("[blockName]", blockName)
+                        .replace("[version]", version);
         Path path = Path.of(targetPath).resolve(className + ".java");
         File file = path.toFile();
         if (file.exists()) {

@@ -4,7 +4,6 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.data.CommandEnum;
 import com.google.common.collect.Sets;
-
 import java.util.Set;
 
 /**
@@ -15,7 +14,7 @@ import java.util.Set;
 @PowerNukkitXOnly
 @Since("1.19.60-r1")
 public class BooleanNode extends ParamNode<Boolean> {
-    private final static Set<String> ENUM_BOOLEAN = Sets.newHashSet(CommandEnum.ENUM_BOOLEAN.getValues());
+    private static final Set<String> ENUM_BOOLEAN = Sets.newHashSet(CommandEnum.ENUM_BOOLEAN.getValues());
 
     @Override
     public void fill(String arg) {

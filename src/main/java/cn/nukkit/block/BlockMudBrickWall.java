@@ -5,7 +5,7 @@ import cn.nukkit.api.Since;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class BlockMudBrickWall extends BlockWallBase{
+public class BlockMudBrickWall extends BlockWallBase {
     @Override
     public String getName() {
         return "Mud Brick Wall";
@@ -15,5 +15,4 @@ public class BlockMudBrickWall extends BlockWallBase{
     public int getId() {
         return MUD_BRICK_WALL;
     }
-
 }

@@ -13,7 +13,7 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 public class DiveController implements IController {
     @Override
     public boolean control(EntityIntelligent entity) {
-        //add dive force
+        // add dive force
         if (entity.getMemoryStorage().get(CoreMemoryTypes.ENABLE_DIVE_FORCE))
             //                                                                  抵消额外的浮力即可
             entity.motionY -= entity.getGravity() * (entity.getFloatingForceFactor() - 1);

@@ -10,12 +10,11 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BinaryStream;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiPredicate;
+import javax.annotation.ParametersAreNonnullByDefault;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -58,30 +57,30 @@ public interface ChunkSection {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    default BlockState getBlockState(int x, int y, int z) {
+    @NotNull default BlockState getBlockState(int x, int y, int z) {
         return getBlockState(x, y, z, 0);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    default BlockState getBlockState(int x, int y, int z, int layer) {
+    @NotNull default BlockState getBlockState(int x, int y, int z, int layer) {
         return BlockState.of(getBlockId(x, y, z, layer), getBlockData(x, y, z, layer));
     }
 
     @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", reason = "If the stored state is invalid, returns a BlockUnknown",
+    @DeprecationDetails(
+            since = "1.4.0.0-PN",
+            reason = "If the stored state is invalid, returns a BlockUnknown",
             replaceWith = "getAndSetBlockState")
     @PowerNukkitOnly
-    @NotNull
-    Block getAndSetBlock(int x, int y, int z, int layer, Block block);
+    @NotNull Block getAndSetBlock(int x, int y, int z, int layer, Block block);
 
     @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", reason = "If the stored state is invalid, returns a BlockUnknown",
+    @DeprecationDetails(
+            since = "1.4.0.0-PN",
+            reason = "If the stored state is invalid, returns a BlockUnknown",
             replaceWith = "getAndSetBlockState")
-    @NotNull
-    Block getAndSetBlock(int x, int y, int z, Block block);
+    @NotNull Block getAndSetBlock(int x, int y, int z, Block block);
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -97,11 +96,17 @@ public interface ChunkSection {
     void setBlockId(int x, int y, int z, int layer, int id);
 
     @Deprecated
-    @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.3.0.0-PN", replaceWith = "setBlockState(int x, int y, int z, BlockState state)")
+    @DeprecationDetails(
+            reason = "The meta is limited to 32 bits",
+            since = "1.3.0.0-PN",
+            replaceWith = "setBlockState(int x, int y, int z, BlockState state)")
     boolean setFullBlockId(int x, int y, int z, int fullId);
 
     @Deprecated
-    @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.3.0.0-PN", replaceWith = "setBlockStateAtLayer(int x, int y, int z, int layer, BlockState state)")
+    @DeprecationDetails(
+            reason = "The meta is limited to 32 bits",
+            since = "1.3.0.0-PN",
+            replaceWith = "setBlockStateAtLayer(int x, int y, int z, int layer, BlockState state)")
     @PowerNukkitOnly
     boolean setFullBlockId(int x, int y, int z, int layer, int fullId);
 
@@ -150,9 +155,7 @@ public interface ChunkSection {
 
     @PowerNukkitXOnly
     @Since("1.19.21-r1")
-    default void setNeedReObfuscate() {
-
-    }
+    default void setNeedReObfuscate() {}
 
     /**
      * @return 此section的方块变更数
@@ -172,11 +175,9 @@ public interface ChunkSection {
     int getMaximumLayer();
 
     @PowerNukkitOnly
-    @NotNull
-    CompoundTag toNBT();
+    @NotNull CompoundTag toNBT();
 
-    @NotNull
-    ChunkSection copy();
+    @NotNull ChunkSection copy();
 
     @PowerNukkitOnly("Needed for level backward compatibility")
     @Since("1.3.0.0-PN")
@@ -218,7 +219,13 @@ public interface ChunkSection {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    default List<Block> scanBlocks(LevelProvider provider, int offsetX, int offsetZ, BlockVector3 min, BlockVector3 max, BiPredicate<BlockVector3, BlockState> condition) {
+    default List<Block> scanBlocks(
+            LevelProvider provider,
+            int offsetX,
+            int offsetZ,
+            BlockVector3 min,
+            BlockVector3 max,
+            BiPredicate<BlockVector3, BlockState> condition) {
         int offsetY = getY() << 4;
         List<Block> results = new ArrayList<>();
 
@@ -247,6 +254,5 @@ public interface ChunkSection {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    default void compressStorageLayers() {
-    }
+    default void compressStorageLayers() {}
 }

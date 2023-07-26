@@ -28,6 +28,6 @@ public class MobSpawnParticle extends Particle {
         packet.z = (float) this.z;
         packet.data = (this.width & 0xff) + ((this.height & 0xff) << 8);
 
-        return new DataPacket[]{packet};
+        return new DataPacket[] {packet};
     }
 }

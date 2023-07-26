@@ -22,13 +22,14 @@ import org.jetbrains.annotations.NotNull;
 @Since("1.19.80-r3")
 public class TameHorseExecutor extends FlatRandomRoamExecutor {
     protected final int tameProbability;
-    private int tick1;//control the stopTameFailAnimation
+    private int tick1; // control the stopTameFailAnimation
 
     public TameHorseExecutor(float speed, int maxRoamRange, int frequency) {
         this(speed, maxRoamRange, frequency, false, 100);
     }
 
-    public TameHorseExecutor(float speed, int maxRoamRange, int frequency, boolean calNextTargetImmediately, int runningTime) {
+    public TameHorseExecutor(
+            float speed, int maxRoamRange, int frequency, boolean calNextTargetImmediately, int runningTime) {
         this(speed, maxRoamRange, frequency, calNextTargetImmediately, runningTime, false, 10, 35);
     }
 
@@ -44,7 +45,15 @@ public class TameHorseExecutor extends FlatRandomRoamExecutor {
      * @param maxRetryTime             选取目标点的最大尝试次数<br>Pick the maximum number of attempts at the target point
      * @param tameProbability          马被驯服的概率(取值范围1-100)<br>Probability of a horse being tamed (value range 1-100)
      */
-    public TameHorseExecutor(float speed, int maxRoamRange, int frequency, boolean calNextTargetImmediately, int runningTime, boolean avoidWater, int maxRetryTime, int tameProbability) {
+    public TameHorseExecutor(
+            float speed,
+            int maxRoamRange,
+            int frequency,
+            boolean calNextTargetImmediately,
+            int runningTime,
+            boolean avoidWater,
+            int maxRetryTime,
+            int tameProbability) {
         super(speed, maxRoamRange, frequency, calNextTargetImmediately, runningTime, avoidWater, maxRetryTime);
         Preconditions.checkArgument(tameProbability > 0 && tameProbability <= 100);
         this.tameProbability = tameProbability;
@@ -53,7 +62,7 @@ public class TameHorseExecutor extends FlatRandomRoamExecutor {
 
     @Override
     public boolean execute(@NotNull EntityIntelligent entity) {
-        //Fail Animation
+        // Fail Animation
         if (tick1 != 0) {
             if (tick1 > 13) {
                 var horse = (EntityHorse) entity;
@@ -72,22 +81,25 @@ public class TameHorseExecutor extends FlatRandomRoamExecutor {
             if (avoidWater) {
                 int blockId;
                 int time = 0;
-                while (time <= maxRetryTime && ((blockId = entity.level.getTickCachedBlock(target.add(0, -1, 0)).getId()) == Block.FLOWING_WATER || blockId == Block.STILL_WATER)) {
+                while (time <= maxRetryTime
+                        && ((blockId = entity.level
+                                                .getTickCachedBlock(target.add(0, -1, 0))
+                                                .getId())
+                                        == Block.FLOWING_WATER
+                                || blockId == Block.STILL_WATER)) {
                     target = next(entity);
                     time++;
                 }
             }
-            if (entity.getMovementSpeed() != speed)
-                entity.setMovementSpeed(speed);
-            //更新寻路target
+            if (entity.getMovementSpeed() != speed) entity.setMovementSpeed(speed);
+            // 更新寻路target
             setRouteTarget(entity, target);
-            //更新视线target
+            // 更新视线target
             setLookTarget(entity, target);
             currentTargetCalTick = 0;
             entity.getBehaviorGroup().setForceUpdateRoute(calNextTargetImmediately);
         }
-        if (durationTick <= runningTime || runningTime == -1)
-            return true;
+        if (durationTick <= runningTime || runningTime == -1) return true;
         else {
             currentTargetCalTick = 0;
             durationTick = 0;

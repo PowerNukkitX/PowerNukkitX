@@ -66,10 +66,10 @@ public class EntityMinecartHopper extends EntityMinecartAbstract implements Inve
         boolean changed;
 
         if (blockEntity instanceof InventoryHolder || blockSide instanceof BlockComposter) {
-            //从容器中拉取物品
+            // 从容器中拉取物品
             changed = pullItems(this, this);
         } else {
-            //收集掉落物
+            // 收集掉落物
             changed = pickupItems(this, this, pickupArea);
         }
 
@@ -177,7 +177,9 @@ public class EntityMinecartHopper extends EntityMinecartAbstract implements Inve
     @PowerNukkitXOnly
     @Since("1.19.21-r3")
     public void updatePickupArea() {
-        this.pickupArea = new SimpleAxisAlignedBB(this.x - 0.5, this.y - 0.5, this.z - 0.5, this.x + 1, this.y + 2.5, this.z + 1).expand(0.25, 0, 0.25);
+        this.pickupArea = new SimpleAxisAlignedBB(
+                        this.x - 0.5, this.y - 0.5, this.z - 0.5, this.x + 1, this.y + 2.5, this.z + 1)
+                .expand(0.25, 0, 0.25);
     }
 
     @PowerNukkitXOnly
@@ -209,8 +211,7 @@ public class EntityMinecartHopper extends EntityMinecartAbstract implements Inve
             for (int slot = 0; slot < 5; ++slot) {
                 Item item = this.inventory.getItem(slot);
                 if (item != null && item.getId() != Item.AIR) {
-                    this.namedTag.getList("Items", CompoundTag.class)
-                            .add(NBTIO.putItemHelper(item, slot));
+                    this.namedTag.getList("Items", CompoundTag.class).add(NBTIO.putItemHelper(item, slot));
                 }
             }
         }

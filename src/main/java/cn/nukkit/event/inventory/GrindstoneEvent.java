@@ -50,7 +50,13 @@ public class GrindstoneEvent extends InventoryEvent implements Cancellable {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public GrindstoneEvent(GrindstoneInventory inventory, @NotNull Item firstItem, @NotNull Item resultItem, @NotNull Item secondItem, int cost, @NotNull Player player) {
+    public GrindstoneEvent(
+            GrindstoneInventory inventory,
+            @NotNull Item firstItem,
+            @NotNull Item resultItem,
+            @NotNull Item secondItem,
+            int cost,
+            @NotNull Player player) {
         super(inventory);
         this.firstItem = firstItem;
         this.resultItem = resultItem;
@@ -61,22 +67,19 @@ public class GrindstoneEvent extends InventoryEvent implements Cancellable {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public Item getFirstItem() {
+    @NotNull public Item getFirstItem() {
         return this.firstItem;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public Item getResultItem() {
+    @NotNull public Item getResultItem() {
         return this.resultItem;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public Item getSecondItem() {
+    @NotNull public Item getSecondItem() {
         return this.secondItem;
     }
 
@@ -94,8 +97,7 @@ public class GrindstoneEvent extends InventoryEvent implements Cancellable {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public Player getPlayer() {
+    @NotNull public Player getPlayer() {
         return this.player;
     }
 }

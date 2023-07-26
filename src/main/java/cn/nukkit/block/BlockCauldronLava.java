@@ -33,27 +33,27 @@ public class BlockCauldronLava extends BlockCauldron {
     public BlockCauldronLava(int meta) {
         super(meta);
     }
-    
+
     @Override
     public String getName() {
         return "Lava Cauldron";
     }
-    
+
     @Override
     public int getId() {
         return LAVA_CAULDRON;
     }
-    
+
     @Override
     public int getLightLevel() {
         return 15;
     }
-    
+
     @Override
     public boolean hasEntityCollision() {
         return true;
     }
-    
+
     @Override
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
         return shrink(0.3, 0.3, 0.3);
@@ -65,7 +65,7 @@ public class BlockCauldronLava extends BlockCauldron {
         super.setFillLevel(fillLevel);
         setDamage(getDamage() | 0x8);
     }
-    
+
     @Override
     public void onEntityCollide(Entity entity) {
         // Always setting the duration to 15 seconds? TODO
@@ -77,7 +77,7 @@ public class BlockCauldronLava extends BlockCauldron {
                 && entity.noDamageTicks == 0) {
             entity.setOnFire(ev.getDuration());
         }
-    
+
         if (!entity.hasEffect(Effect.FIRE_RESISTANCE)) {
             entity.attack(new EntityDamageByBlockEvent(this, entity, EntityDamageEvent.DamageCause.LAVA, 4));
         }
@@ -99,34 +99,41 @@ public class BlockCauldronLava extends BlockCauldron {
                 if (bucket.getFishEntityId() != null) {
                     break;
                 }
-                if (item.getDamage() == 0) { //empty
+                if (item.getDamage() == 0) { // empty
                     if (!isFull() || cauldron.isCustomColor() || cauldron.hasPotion()) {
                         break;
                     }
-    
-                    PlayerBucketFillEvent ev = new PlayerBucketFillEvent(player, this, null, this, item, MinecraftItemID.LAVA_BUCKET.get(1, bucket.getCompoundTag()));
+
+                    PlayerBucketFillEvent ev = new PlayerBucketFillEvent(
+                            player,
+                            this,
+                            null,
+                            this,
+                            item,
+                            MinecraftItemID.LAVA_BUCKET.get(1, bucket.getCompoundTag()));
                     this.level.getServer().getPluginManager().callEvent(ev);
                     if (!ev.isCancelled()) {
                         replaceBucket(bucket, player, ev.getItem());
-                        this.setFillLevel(FILL_LEVEL.getMinValue(), player);//empty
+                        this.setFillLevel(FILL_LEVEL.getMinValue(), player); // empty
                         this.level.setBlock(this, new BlockCauldron(0), true);
                         cauldron.clearCustomColor();
                         this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.BUCKET_FILL_LAVA);
                     }
-                } else if (bucket.isWater() || bucket.isLava()) { //water or lava bucket
+                } else if (bucket.isWater() || bucket.isLava()) { // water or lava bucket
                     if (isFull() && !cauldron.isCustomColor() && !cauldron.hasPotion() && item.getDamage() == 10) {
                         break;
                     }
-    
-                    PlayerBucketEmptyEvent ev = new PlayerBucketEmptyEvent(player, this, null, this, item, MinecraftItemID.BUCKET.get(1, bucket.getCompoundTag()));
+
+                    PlayerBucketEmptyEvent ev = new PlayerBucketEmptyEvent(
+                            player, this, null, this, item, MinecraftItemID.BUCKET.get(1, bucket.getCompoundTag()));
                     this.level.getServer().getPluginManager().callEvent(ev);
                     if (!ev.isCancelled()) {
                         replaceBucket(bucket, player, ev.getItem());
-    
-                        if (cauldron.hasPotion()) {//if has potion
+
+                        if (cauldron.hasPotion()) { // if has potion
                             clearWithFizz(cauldron);
-                        } else if (bucket.isLava()) { //lava bucket
-                            this.setFillLevel(FILL_LEVEL.getMaxValue(), player);//fill
+                        } else if (bucket.isLava()) { // lava bucket
+                            this.setFillLevel(FILL_LEVEL.getMaxValue(), player); // fill
                             cauldron.clearCustomColor();
                             this.level.setBlock(this, this, true);
                             this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.BUCKET_EMPTY_LAVA);
@@ -145,7 +152,10 @@ public class BlockCauldronLava extends BlockCauldron {
             case Item.POTION:
             case Item.SPLASH_POTION:
             case Item.LINGERING_POTION:
-                if (!isEmpty() && (cauldron.hasPotion()? cauldron.getPotionId() != item.getDamage() : item.getDamage() != 0)) {
+                if (!isEmpty()
+                        && (cauldron.hasPotion()
+                                ? cauldron.getPotionId() != item.getDamage()
+                                : item.getDamage() != 0)) {
                     clearWithFizz(cauldron);
                     break;
                 }
@@ -157,7 +167,7 @@ public class BlockCauldronLava extends BlockCauldron {
             default:
                 return true;
         }
-    
+
         this.level.updateComparatorOutputLevel(this);
         return true;
     }

@@ -8,9 +8,8 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import com.google.common.base.Preconditions;
-
-import javax.annotation.Nullable;
 import java.util.List;
+import javax.annotation.Nullable;
 
 public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
     public static final String LAST_INTERACTED_SLOT = "LastInteractedSlot";
@@ -88,7 +87,7 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
     @Override
     public void loadNBT() {
         super.loadNBT();
-        items = new Item[]{Item.AIR_ITEM, Item.AIR_ITEM, Item.AIR_ITEM, Item.AIR_ITEM, Item.AIR_ITEM, Item.AIR_ITEM};
+        items = new Item[] {Item.AIR_ITEM, Item.AIR_ITEM, Item.AIR_ITEM, Item.AIR_ITEM, Item.AIR_ITEM, Item.AIR_ITEM};
         if (namedTag.containsInt(LAST_INTERACTED_SLOT)) {
             this.lastInteractedSlot = namedTag.getInt(LAST_INTERACTED_SLOT);
         }
@@ -125,8 +124,7 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
                         .putByte("Count", 0)
                         .putString("Name", "")
                         .putByte("Damage", 0)
-                        .putBoolean("WasPickedUp", false)
-                );
+                        .putBoolean("WasPickedUp", false));
             } else {
                 CompoundTag compoundTag = new CompoundTag()
                         .putByte("Count", item.getCount())
@@ -138,7 +136,6 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
                 }
                 compoundTagListTag.add(compoundTag);
             }
-
         }
         namedTag.putList("Items", compoundTagListTag);
     }

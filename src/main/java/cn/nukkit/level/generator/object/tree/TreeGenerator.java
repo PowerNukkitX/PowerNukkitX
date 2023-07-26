@@ -7,7 +7,6 @@ import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
-
 import java.util.Random;
 
 public abstract class TreeGenerator extends cn.nukkit.level.generator.object.BasicGenerator {
@@ -18,15 +17,25 @@ public abstract class TreeGenerator extends cn.nukkit.level.generator.object.Bas
      */
     protected boolean canGrowInto(int id) {
         return switch (id) {
-            case Item.AIR, Item.LEAVES, Item.GRASS, Item.DIRT, Item.LOG, Item.LOG2, Item.SAPLING, Item.VINE,
-                    Item.DIRT_WITH_ROOTS, Item.AZALEA_LEAVES, Item.AZALEA_LEAVES_FLOWERED, Item.CHERRY_LEAVES,
-                    Item.CHERRY_LOG, Item.CHERRY_SAPLING -> true;
+            case Item.AIR,
+                    Item.LEAVES,
+                    Item.GRASS,
+                    Item.DIRT,
+                    Item.LOG,
+                    Item.LOG2,
+                    Item.SAPLING,
+                    Item.VINE,
+                    Item.DIRT_WITH_ROOTS,
+                    Item.AZALEA_LEAVES,
+                    Item.AZALEA_LEAVES_FLOWERED,
+                    Item.CHERRY_LEAVES,
+                    Item.CHERRY_LOG,
+                    Item.CHERRY_SAPLING -> true;
             default -> false;
         };
     }
 
-    public void generateSaplings(Level level, Random random, Vector3 pos) {
-    }
+    public void generateSaplings(Level level, Random random, Vector3 pos) {}
 
     protected void setDirtAt(ChunkManager level, BlockVector3 pos) {
         setDirtAt(level, new Vector3(pos.x, pos.y, pos.z));

@@ -6,16 +6,14 @@ import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.MinecraftItemID;
 import cn.nukkit.item.enchantment.Enchantment;
-
-import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
+import javax.annotation.Nullable;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 @PowerNukkitDifference(since = "FUTURE", info = "Extends BlockOre instead of BlockSolid only in PowerNukkit")
 public class BlockOreLapis extends BlockOre {
-
 
     public BlockOreLapis() {
         // Does nothing
@@ -47,9 +45,7 @@ public class BlockOreLapis extends BlockOre {
                 count *= (i + 1);
             }
 
-            return new Item[]{
-                    MinecraftItemID.LAPIS_LAZULI.get(count)
-            };
+            return new Item[] {MinecraftItemID.LAPIS_LAZULI.get(count)};
         } else {
             return Item.EMPTY_ARRAY;
         }
@@ -57,8 +53,7 @@ public class BlockOreLapis extends BlockOre {
 
     @Since("FUTURE")
     @PowerNukkitOnly
-    @Nullable
-    @Override
+    @Nullable @Override
     protected MinecraftItemID getRawMaterial() {
         return MinecraftItemID.LAPIS_LAZULI;
     }

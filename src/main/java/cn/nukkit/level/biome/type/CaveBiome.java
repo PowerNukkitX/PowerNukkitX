@@ -10,5 +10,4 @@ import cn.nukkit.level.biome.Biome;
  */
 @PowerNukkitXOnly
 @Since("1.19.40-r3")
-public abstract class CaveBiome extends Biome {
-}
+public abstract class CaveBiome extends Biome {}

@@ -19,9 +19,7 @@ public class AddPaintingPacket extends DataPacket {
     public String title;
 
     @Override
-    public void decode() {
-
-    }
+    public void decode() {}
 
     @Override
     public void encode() {
@@ -38,5 +36,4 @@ public class AddPaintingPacket extends DataPacket {
     public byte pid() {
         return NETWORK_ID;
     }
-
 }

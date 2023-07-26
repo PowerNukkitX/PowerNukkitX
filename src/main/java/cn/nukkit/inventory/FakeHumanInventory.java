@@ -16,7 +16,6 @@ import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.network.protocol.MobArmorEquipmentPacket;
 import cn.nukkit.network.protocol.MobEquipmentPacket;
-
 import java.util.Collection;
 
 /**
@@ -124,7 +123,11 @@ public class FakeHumanInventory extends BaseInventory {
             if (index >= this.getSize()) {
                 this.sendArmorSlot(index, this.getHolder().getViewers().values());
                 if (this.getItem(index) instanceof ItemArmor) {
-                    this.getHolder().level.getVibrationManager().callVibrationEvent(new VibrationEvent(getHolder(), this.getHolder().clone(), VibrationType.EQUIP));
+                    this.getHolder()
+                            .level
+                            .getVibrationManager()
+                            .callVibrationEvent(new VibrationEvent(
+                                    getHolder(), this.getHolder().clone(), VibrationType.EQUIP));
                 }
             } else if (isHotbarSlot(index)) {
                 this.sendArmorSlot(index, this.getHolder().getViewers().values());
@@ -253,7 +256,7 @@ public class FakeHumanInventory extends BaseInventory {
         } else if (item.getId() == 0 || item.getCount() <= 0) {
             return this.clear(index);
         }
-        //Armor change
+        // Armor change
         if (!ignoreArmorEvents && index >= this.getSize()) {
             EntityArmorChangeEvent ev = new EntityArmorChangeEvent(this.getHolder(), this.getItem(index), item, index);
             Server.getInstance().getPluginManager().callEvent(ev);
@@ -263,7 +266,8 @@ public class FakeHumanInventory extends BaseInventory {
             }
             item = ev.getNewItem();
         } else {
-            EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent(this.getHolder(), this.getItem(index), item, index);
+            EntityInventoryChangeEvent ev =
+                    new EntityInventoryChangeEvent(this.getHolder(), this.getItem(index), item, index);
             Server.getInstance().getPluginManager().callEvent(ev);
             if (ev.isCancelled()) {
                 this.sendSlot(index, this.getViewers());
@@ -346,7 +350,7 @@ public class FakeHumanInventory extends BaseInventory {
      * @param player 指定玩家
      */
     public void sendArmorContents(Player player) {
-        this.sendArmorContents(new Player[]{player});
+        this.sendArmorContents(new Player[] {player});
     }
 
     /**
@@ -392,7 +396,6 @@ public class FakeHumanInventory extends BaseInventory {
         }
     }
 
-
     /**
      * @see #sendArmorContents(Player[])
      */
@@ -407,7 +410,7 @@ public class FakeHumanInventory extends BaseInventory {
      * @param player 指定的玩家
      */
     public void sendArmorSlot(int index, Player player) {
-        this.sendArmorSlot(index, new Player[]{player});
+        this.sendArmorSlot(index, new Player[] {player});
     }
 
     /**
@@ -428,7 +431,6 @@ public class FakeHumanInventory extends BaseInventory {
             player.dataPacket(pk);
         }
     }
-
 
     /**
      * @see #sendArmorSlot(int, Player[])
@@ -461,42 +463,33 @@ public class FakeHumanInventory extends BaseInventory {
         return (EntityIntelligentHuman) super.getHolder();
     }
 
-    //non
+    // non
     @Override
-    public void sendContents(Player player) {
-    }
+    public void sendContents(Player player) {}
 
     @Override
-    public void sendContents(Collection<Player> players) {
-    }
+    public void sendContents(Collection<Player> players) {}
 
     @Override
-    public void sendContents(Player[] players) {
-    }
+    public void sendContents(Player[] players) {}
 
     @Override
-    public void sendSlot(int index, Player player) {
-    }
+    public void sendSlot(int index, Player player) {}
 
     @Override
-    public void sendSlot(int index, Collection<Player> players) {
-    }
+    public void sendSlot(int index, Collection<Player> players) {}
 
     @Override
-    public void sendSlot(int index, Player... players) {
-    }
+    public void sendSlot(int index, Player... players) {}
 
     @Override
-    public void close(Player who) {
-    }
+    public void close(Player who) {}
 
     @Override
-    public void onOpen(Player who) {
-    }
+    public void onOpen(Player who) {}
 
     @Override
-    public void onClose(Player who) {
-    }
+    public void onClose(Player who) {}
 
     @Override
     public boolean open(Player who) {

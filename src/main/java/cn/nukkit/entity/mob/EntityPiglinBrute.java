@@ -17,7 +17,7 @@ public class EntityPiglinBrute extends EntityMob implements EntityWalkable {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    public final static int NETWORK_ID = 127;
+    public static final int NETWORK_ID = 127;
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly

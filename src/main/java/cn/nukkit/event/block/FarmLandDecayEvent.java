@@ -6,7 +6,6 @@ import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
-
 import javax.annotation.Nullable;
 
 @PowerNukkitXOnly
@@ -25,8 +24,7 @@ public class FarmLandDecayEvent extends BlockEvent implements Cancellable {
         this.entity = entity;
     }
 
-    @Nullable
-    public Entity getEntity() {
+    @Nullable public Entity getEntity() {
         return entity;
     }
 }

@@ -8,7 +8,6 @@ import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
-
 import java.util.Map;
 
 @PowerNukkitXOnly
@@ -19,15 +18,16 @@ public class SetMaxPlayersCommand extends VanillaCommand {
         super(name, "commands.setmaxplayers.description");
         this.setPermission("nukkit.command.setmaxplayers");
         this.getCommandParameters().clear();
-        this.addCommandParameters("default", new CommandParameter[]{
-                CommandParameter.newType("maxPlayers", false, CommandParamType.INT)
-        });
+        this.addCommandParameters(
+                "default",
+                new CommandParameter[] {CommandParameter.newType("maxPlayers", false, CommandParamType.INT)});
         this.enableParamTree();
     }
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         int maxPlayers = result.getValue().getResult(0);
         boolean lowerBound = false;
 

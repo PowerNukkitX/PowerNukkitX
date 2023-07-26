@@ -6,16 +6,6 @@ import cn.nukkit.utils.HumanStringComparator;
 import com.google.common.base.Preconditions;
 import com.google.gson.GsonBuilder;
 import io.netty.util.internal.EmptyArrays;
-import lombok.*;
-import lombok.extern.log4j.Log4j2;
-import spoon.Launcher;
-import spoon.MavenLauncher;
-import spoon.reflect.CtModel;
-import spoon.reflect.declaration.*;
-import spoon.reflect.reference.CtTypeReference;
-import spoon.support.compiler.SpoonPom;
-import spoon.support.reflect.declaration.CtConstructorImpl;
-
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -25,6 +15,15 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import lombok.*;
+import lombok.extern.log4j.Log4j2;
+import spoon.Launcher;
+import spoon.MavenLauncher;
+import spoon.reflect.CtModel;
+import spoon.reflect.declaration.*;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.support.compiler.SpoonPom;
+import spoon.support.reflect.declaration.CtConstructorImpl;
 
 /**
  * @author joserobjr
@@ -41,14 +40,10 @@ public class AnnotationProblemScanner {
 
     public static void main(String[] args) {
         Preconditions.checkArgument(args.length == 0 || args.length == 1, "Invalid arguments");
-        Path clourburstNukkitSourceCode = Paths.get(args.length == 1? args[0] : "../../org.cloudburst/Nukkit");
+        Path clourburstNukkitSourceCode = Paths.get(args.length == 1 ? args[0] : "../../org.cloudburst/Nukkit");
 
-        new AnnotationProblemScanner().execute(
-                clourburstNukkitSourceCode,
-                Paths.get(".")
-        );
+        new AnnotationProblemScanner().execute(clourburstNukkitSourceCode, Paths.get("."));
     }
-
 
     private static boolean isApi(CtModifiable obj) {
         if (obj instanceof CtMethod<?>) {
@@ -102,24 +97,26 @@ public class AnnotationProblemScanner {
             return true;
         }
         String name = powerNukkitMethod.getSimpleName();
-        CtTypeReference<?>[] parameters = powerNukkitMethod.getParameters().stream().map(CtParameter::getType).toArray(CtTypeReference<?>[]::new);
+        CtTypeReference<?>[] parameters = powerNukkitMethod.getParameters().stream()
+                .map(CtParameter::getType)
+                .toArray(CtTypeReference<?>[]::new);
         CtMethod<?> nkMethod = nukkitType.getMethod(name, parameters);
         if (nkMethod != null) {
             return !isApi(nkMethod);
         }
 
-        String[] parameterTypes = Arrays.stream(parameters).map(CtTypeInformation::getQualifiedName).toArray(String[]::new);
+        String[] parameterTypes = Arrays.stream(parameters)
+                .map(CtTypeInformation::getQualifiedName)
+                .toArray(String[]::new);
         return nukkitType.getAllMethods().stream()
-                        .filter(AnnotationProblemScanner::isApi)
-                        .noneMatch(nukkitMethod ->
-                                name.equals(nukkitMethod.getSimpleName())
-                                        && Arrays.equals(parameterTypes,
-                                                nukkitMethod.getParameters().stream()
-                                                        .map(CtParameter::getType)
-                                                        .map(CtTypeInformation::getQualifiedName)
-                                                        .toArray(String[]::new)
-                                        )
-                        );
+                .filter(AnnotationProblemScanner::isApi)
+                .noneMatch(nukkitMethod -> name.equals(nukkitMethod.getSimpleName())
+                        && Arrays.equals(
+                                parameterTypes,
+                                nukkitMethod.getParameters().stream()
+                                        .map(CtParameter::getType)
+                                        .map(CtTypeInformation::getQualifiedName)
+                                        .toArray(String[]::new)));
     }
 
     private boolean isPowerNukkitOnlyConstructor(CtConstructorImpl<?> constructor, CtType<?> nukkitType) {
@@ -130,22 +127,24 @@ public class AnnotationProblemScanner {
             return true;
         }
         CtClass<?> nukkitClass = (CtClass<?>) nukkitType;
-        CtTypeReference<?>[] parameters = constructor.getParameters().stream().map(CtParameter::getType).toArray(CtTypeReference<?>[]::new);
+        CtTypeReference<?>[] parameters =
+                constructor.getParameters().stream().map(CtParameter::getType).toArray(CtTypeReference<?>[]::new);
         CtConstructorImpl<?> nkConstructor = (CtConstructorImpl<?>) nukkitClass.getConstructor(parameters);
         if (nkConstructor != null) {
             return !isApi(nkConstructor);
         }
 
-        String[] parameterTypes = Arrays.stream(parameters).map(CtTypeInformation::getQualifiedName).toArray(String[]::new);
+        String[] parameterTypes = Arrays.stream(parameters)
+                .map(CtTypeInformation::getQualifiedName)
+                .toArray(String[]::new);
         return nukkitClass.getConstructors().stream()
                 .filter(AnnotationProblemScanner::isApi)
-                .noneMatch(nukkitConstructor -> Arrays.equals(parameterTypes,
-                                nukkitConstructor.getParameters().stream()
-                                        .map(CtParameter::getType)
-                                        .map(CtTypeInformation::getQualifiedName)
-                                        .toArray(String[]::new)
-                        )
-                );
+                .noneMatch(nukkitConstructor -> Arrays.equals(
+                        parameterTypes,
+                        nukkitConstructor.getParameters().stream()
+                                .map(CtParameter::getType)
+                                .map(CtTypeInformation::getQualifiedName)
+                                .toArray(String[]::new)));
     }
 
     @SneakyThrows
@@ -199,15 +198,22 @@ public class AnnotationProblemScanner {
     private Launcher createLauncher(Path src) {
         log.info("Creating launcher for " + src.toAbsolutePath().normalize());
         Launcher launcher = new Launcher();
-        SpoonPom pom = new SpoonPom(src.toAbsolutePath().normalize().toString(), MavenLauncher.SOURCE_TYPE.APP_SOURCE, launcher.getEnvironment());
+        SpoonPom pom = new SpoonPom(
+                src.toAbsolutePath().normalize().toString(),
+                MavenLauncher.SOURCE_TYPE.APP_SOURCE,
+                launcher.getEnvironment());
 
         List<File> sourceDirectories = new ArrayList<>(pom.getSourceDirectories());
-        File srcMainJava = src.resolve("src/main/java").toAbsolutePath().normalize().toFile();
+        File srcMainJava =
+                src.resolve("src/main/java").toAbsolutePath().normalize().toFile();
         sourceDirectories.removeIf(file -> file.getAbsoluteFile().equals(srcMainJava));
-        sourceDirectories.add(src.resolve("target/delombok").toAbsolutePath().normalize().toFile());
-        sourceDirectories.forEach(file -> launcher.addInputResource(file.toPath().toAbsolutePath().normalize().toString()));
+        sourceDirectories.add(
+                src.resolve("target/delombok").toAbsolutePath().normalize().toFile());
+        sourceDirectories.forEach(file -> launcher.addInputResource(
+                file.toPath().toAbsolutePath().normalize().toString()));
 
-        String[] classpath = String.join("\n", Files.readAllLines(src.resolve("target/classpath.txt"))).split(File.pathSeparator);
+        String[] classpath = String.join("\n", Files.readAllLines(src.resolve("target/classpath.txt")))
+                .split(File.pathSeparator);
         log.info("Classpath: " + Arrays.asList(classpath));
 
         launcher.getEnvironment().setNoClasspath(false);
@@ -225,9 +231,14 @@ public class AnnotationProblemScanner {
         Launcher nukkitLauncher = createLauncher(nukkitSrc);
 
         log.info("Building " + powerNukkitSrc.toAbsolutePath().normalize());
-        mvn(powerNukkitSrc,
-                "clean", "lombok:delombok", "dependency:build-classpath", "-Dmdep.outputFile=target/classpath.txt",
-                "compile", "compiler:testCompile");
+        mvn(
+                powerNukkitSrc,
+                "clean",
+                "lombok:delombok",
+                "dependency:build-classpath",
+                "-Dmdep.outputFile=target/classpath.txt",
+                "compile",
+                "compiler:testCompile");
         Launcher powerNukkitLauncher = createLauncher(powerNukkitSrc);
 
         log.info("Builing model for " + nukkitSrc.toAbsolutePath().normalize());
@@ -237,25 +248,34 @@ public class AnnotationProblemScanner {
         CtModel powerNukkitModel = powerNukkitLauncher.buildModel();
 
         log.info("Caching Nukkit types");
-        nukkitTypes = nukkitModel.getAllTypes().stream().collect(Collectors.toMap(CtType::getQualifiedName, Function.identity()));
+        nukkitTypes = nukkitModel.getAllTypes().stream()
+                .collect(Collectors.toMap(CtType::getQualifiedName, Function.identity()));
 
         log.info("Verifying annotations...");
         Map<String, NeededClassChanges> neededClassChanges = powerNukkitModel.getAllTypes().parallelStream()
-                .map(type-> checkType(type, nukkitTypes))
+                .map(type -> checkType(type, nukkitTypes))
                 .peek(NeededClassChanges::close)
                 .filter(NeededClassChanges::isNotEmpty)
-                .collect(Collectors.toMap(NeededClassChanges::getName, Function.identity(),
-                        (a,b)-> { throw new UnsupportedOperationException("Can't combine " + a + " with " + b); },
-                        ()-> new TreeMap<>(HumanStringComparator.getInstance())));
+                .collect(Collectors.toMap(
+                        NeededClassChanges::getName,
+                        Function.identity(),
+                        (a, b) -> {
+                            throw new UnsupportedOperationException("Can't combine " + a + " with " + b);
+                        },
+                        () -> new TreeMap<>(HumanStringComparator.getInstance())));
 
-        Path jsonFile = Paths.get("dumps/needed-class-changes.json").toAbsolutePath().normalize();
+        Path jsonFile =
+                Paths.get("dumps/needed-class-changes.json").toAbsolutePath().normalize();
         log.info("Creating ..." + jsonFile);
         neededClassChanges.values().forEach(NeededClassChanges::removeName);
-        Files.write(jsonFile,
-                new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create()
+        Files.write(
+                jsonFile,
+                new GsonBuilder()
+                        .setPrettyPrinting()
+                        .disableHtmlEscaping()
+                        .create()
                         .toJson(neededClassChanges)
-                                .getBytes(StandardCharsets.UTF_8)
-        );
+                        .getBytes(StandardCharsets.UTF_8));
 
         log.info("Process completed");
     }
@@ -284,7 +304,8 @@ public class AnnotationProblemScanner {
                 .filter(AnnotationProblemScanner::isApi)
                 .filter(method -> method.isStatic()
                         || method.getTopDefinitions().isEmpty()
-                        || method.getTopDefinitions().stream().allMatch(powerNukkitMethod -> isPowerNukkitOnlyMethod(powerNukkitMethod, null)))
+                        || method.getTopDefinitions().stream()
+                                .allMatch(powerNukkitMethod -> isPowerNukkitOnlyMethod(powerNukkitMethod, null)))
                 .peek(method -> needsPowerNukkitOnly(neededClassChanges, method))
                 .collect(Collectors.toSet());
 
@@ -297,10 +318,10 @@ public class AnnotationProblemScanner {
                 .forEachOrdered(field -> dontNeedsPowerNukkitOnly(neededClassChanges, field));
 
         powerNukkitType.getMethods().stream()
-                .filter(method-> !powerNukkitOnlyMethods.contains(method))
+                .filter(method -> !powerNukkitOnlyMethods.contains(method))
                 .forEachOrdered(method -> dontNeedsPowerNukkitOnly(neededClassChanges, method));
 
-        //powerNukkitType.getNestedTypes().forEach(this::addPowerNukkitOnlyToEverything);
+        // powerNukkitType.getNestedTypes().forEach(this::addPowerNukkitOnlyToEverything);
         return neededClassChanges;
     }
 
@@ -316,19 +337,19 @@ public class AnnotationProblemScanner {
 
         checkForMissingOverrides(neededClassChanges, powerNukkitType);
 
-        List<CtTypedElement<?>> powerNukkitOnlyMethods =
-                Stream.concat(powerNukkitType.getMethods().stream(), constructorStream(powerNukkitType))
-                        .filter(it -> isApi((CtModifiable) it))
-                        .filter(powerNukkitMethod -> isPowerNukkitOnlyExecutable(powerNukkitMethod, nukkitType))
-                        .peek(method -> needsPowerNukkitOnly(neededClassChanges, method))
-                        .collect(Collectors.toList());
+        List<CtTypedElement<?>> powerNukkitOnlyMethods = Stream.concat(
+                        powerNukkitType.getMethods().stream(), constructorStream(powerNukkitType))
+                .filter(it -> isApi((CtModifiable) it))
+                .filter(powerNukkitMethod -> isPowerNukkitOnlyExecutable(powerNukkitMethod, nukkitType))
+                .peek(method -> needsPowerNukkitOnly(neededClassChanges, method))
+                .collect(Collectors.toList());
 
         powerNukkitType.getFields().stream()
                 .filter(field -> !powerNukkitOnlyFields.contains(field))
                 .forEachOrdered(field -> dontNeedsPowerNukkitOnly(neededClassChanges, field));
 
         Stream.concat(powerNukkitType.getMethods().stream(), constructorStream(powerNukkitType))
-                .filter(method-> !powerNukkitOnlyMethods.contains(method))
+                .filter(method -> !powerNukkitOnlyMethods.contains(method))
                 .forEachOrdered(method -> dontNeedsPowerNukkitOnly(neededClassChanges, method));
 
         return neededClassChanges;
@@ -353,14 +374,21 @@ public class AnnotationProblemScanner {
         boolean valid = false;
         if (nukkitFieldType.isGenerics()) {
             if (powerNukkitFieldType.isGenerics()) {
-                valid = nukkitFieldType.getSimpleName().equals(powerNukkitFieldType.getSimpleName()) &&
-                        nukkitFieldType.getTypeErasure().getQualifiedName().equals(powerNukkitFieldType.getTypeErasure().getQualifiedName());
+                valid = nukkitFieldType.getSimpleName().equals(powerNukkitFieldType.getSimpleName())
+                        && nukkitFieldType
+                                .getTypeErasure()
+                                .getQualifiedName()
+                                .equals(powerNukkitFieldType.getTypeErasure().getQualifiedName());
             }
         } else if (!powerNukkitFieldType.isGenerics()) {
-            valid = nukkitFieldType.getTypeDeclaration().getQualifiedName().equals(powerNukkitFieldType.getTypeDeclaration().getQualifiedName());
+            valid = nukkitFieldType
+                    .getTypeDeclaration()
+                    .getQualifiedName()
+                    .equals(powerNukkitFieldType.getTypeDeclaration().getQualifiedName());
         }
         if (!valid) {
-            log.error("Incompatible field declared at " + powerNukkitField.getDeclaringType().getQualifiedName() + "#" + powerNukkitField.getSimpleName());
+            log.error("Incompatible field declared at "
+                    + powerNukkitField.getDeclaringType().getQualifiedName() + "#" + powerNukkitField.getSimpleName());
             return true;
         }
         return false;
@@ -385,10 +413,12 @@ public class AnnotationProblemScanner {
     }
 
     private String methodString(CtTypedElement<?> method) {
-        return ((CtTypeMember) method).getDeclaringType().getQualifiedName() + "#" + ((CtNamedElement)method).getSimpleName()
+        return ((CtTypeMember) method).getDeclaringType().getQualifiedName() + "#"
+                + ((CtNamedElement) method).getSimpleName()
                 + "("
                 + getParameters(method).stream()
-                        .map(param -> param.getType().getSimpleName()).collect(Collectors.joining(", "))
+                        .map(param -> param.getType().getSimpleName())
+                        .collect(Collectors.joining(", "))
                 + ")";
     }
 

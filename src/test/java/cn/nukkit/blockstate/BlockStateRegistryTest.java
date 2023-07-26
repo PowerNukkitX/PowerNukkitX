@@ -1,17 +1,16 @@
 package cn.nukkit.blockstate;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockWall;
 import cn.nukkit.math.BlockFace;
+import java.util.NoSuchElementException;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
-
-import java.util.NoSuchElementException;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(PowerNukkitExtension.class)
 class BlockStateRegistryTest {
@@ -25,7 +24,7 @@ class BlockStateRegistryTest {
         val stateId = wall.getStateId();
         val minimalistStateId = wall.getMinimalistStateId();
         val legacyStateId = wall.getLegacyStateId();
-        val unknownStateId = wall.getPersistenceName()+";unknown="+wall.getDataStorage();
+        val unknownStateId = wall.getPersistenceName() + ";unknown=" + wall.getDataStorage();
 
         assertEquals(stateId, BlockStateRegistry.getKnownBlockStateIdByRuntimeId(runtimeId));
         assertEquals(runtimeId, BlockStateRegistry.getKnownRuntimeIdByBlockStateId(stateId));
@@ -37,8 +36,9 @@ class BlockStateRegistryTest {
 
     @Test
     void getBlockIdByRuntimeId() {
-        assertThrows(NoSuchElementException.class, ()-> BlockStateRegistry.getBlockIdByRuntimeId(999999999));
-        int runtimeId = BlockStateRegistry.getKnownRuntimeIdByBlockStateId("minecraft:stone_brick_stairs;upside_down_bit=0;weirdo_direction=1");
+        assertThrows(NoSuchElementException.class, () -> BlockStateRegistry.getBlockIdByRuntimeId(999999999));
+        int runtimeId = BlockStateRegistry.getKnownRuntimeIdByBlockStateId(
+                "minecraft:stone_brick_stairs;upside_down_bit=0;weirdo_direction=1");
         assertEquals(109, BlockStateRegistry.getBlockIdByRuntimeId(runtimeId));
     }
 }

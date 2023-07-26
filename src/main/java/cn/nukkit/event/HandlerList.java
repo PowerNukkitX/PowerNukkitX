@@ -4,7 +4,6 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.plugin.RegisteredListener;
-
 import java.util.*;
 
 /**
@@ -67,7 +66,8 @@ public class HandlerList {
 
     public synchronized void register(RegisteredListener listener) {
         if (handlerslots.get(listener.getPriority()).contains(listener))
-            throw new IllegalStateException("This listener is already registered to priority " + listener.getPriority().toString());
+            throw new IllegalStateException("This listener is already registered to priority "
+                    + listener.getPriority().toString());
         handlers = null;
         handlerslots.get(listener.getPriority()).add(listener);
     }
@@ -127,7 +127,6 @@ public class HandlerList {
         return handlers;
     }
 
-
     public static ArrayList<RegisteredListener> getRegisteredListeners(Plugin plugin) {
         ArrayList<RegisteredListener> listeners = new ArrayList<>();
         synchronized (allLists) {
@@ -151,7 +150,7 @@ public class HandlerList {
             return new ArrayList<>(allLists);
         }
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean isEmpty() {
@@ -161,5 +160,4 @@ public class HandlerList {
         }
         return getRegisteredListeners().length == 0;
     }
-
 }

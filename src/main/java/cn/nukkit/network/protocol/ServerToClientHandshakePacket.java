@@ -13,8 +13,7 @@ public class ServerToClientHandshakePacket extends DataPacket {
     public String jwt;
 
     @Override
-    public void decode() {
-    }
+    public void decode() {}
 
     @Override
     public void encode() {

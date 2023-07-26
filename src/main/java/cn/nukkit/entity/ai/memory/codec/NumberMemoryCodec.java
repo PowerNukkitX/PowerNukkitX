@@ -11,8 +11,7 @@ public class NumberMemoryCodec<Data extends Number> extends MemoryCodec<Data> {
     public NumberMemoryCodec(String key) {
         super(
                 tag -> tag.contains(key) ? (new TagReader<>((NumberTag<Data>) tag.get(key))).getData() : null,
-                (data, tag) -> tag.put(key, newTag(data))
-        );
+                (data, tag) -> tag.put(key, newTag(data)));
     }
 
     protected static NumberTag<?> newTag(Number data) {
@@ -29,7 +28,8 @@ public class NumberMemoryCodec<Data extends Number> extends MemoryCodec<Data> {
         } else if (data instanceof Double) {
             return new DoubleTag(data.doubleValue());
         } else {
-            throw new IllegalArgumentException("Unknown number type: " + data.getClass().getName());
+            throw new IllegalArgumentException(
+                    "Unknown number type: " + data.getClass().getName());
         }
     }
 
@@ -43,7 +43,7 @@ public class NumberMemoryCodec<Data extends Number> extends MemoryCodec<Data> {
         Data getData() {
             String simpleName = tag.getClass().getSimpleName();
             Number data = tag.getData();
-            //hack convert byteTag and shortTag because they data storage is all int type
+            // hack convert byteTag and shortTag because they data storage is all int type
             if (simpleName.equals("ByteTag")) {
                 return (Data) Byte.valueOf(data.byteValue());
             } else if (simpleName.equals("ShortTag")) {
@@ -57,7 +57,8 @@ public class NumberMemoryCodec<Data extends Number> extends MemoryCodec<Data> {
             } else if (data instanceof Double) {
                 return tag.getData();
             } else {
-                throw new IllegalArgumentException("Unknown number type: " + data.getClass().getName());
+                throw new IllegalArgumentException(
+                        "Unknown number type: " + data.getClass().getName());
             }
         }
     }

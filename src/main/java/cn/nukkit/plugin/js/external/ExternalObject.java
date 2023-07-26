@@ -24,7 +24,6 @@ public final class ExternalObject extends JSExternal implements ProxyObject {
             checkAlive();
             return value.getMemberKeys();
         }
-
     }
 
     @Override
@@ -33,7 +32,6 @@ public final class ExternalObject extends JSExternal implements ProxyObject {
             checkAlive();
             return value.hasMember(key);
         }
-
     }
 
     @Override

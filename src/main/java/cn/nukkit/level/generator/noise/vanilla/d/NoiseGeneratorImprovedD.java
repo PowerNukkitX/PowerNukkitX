@@ -3,11 +3,21 @@ package cn.nukkit.level.generator.noise.vanilla.d;
 import cn.nukkit.math.NukkitRandom;
 
 public class NoiseGeneratorImprovedD {
-    private static final double[] GRAD_X = new double[]{1.0D, -1.0D, 1.0D, -1.0D, 1.0D, -1.0D, 1.0D, -1.0D, 0.0D, 0.0D, 0.0D, 0.0D, 1.0D, 0.0D, -1.0D, 0.0D};
-    private static final double[] GRAD_Y = new double[]{1.0D, 1.0D, -1.0D, -1.0D, 0.0D, 0.0D, 0.0D, 0.0D, 1.0D, -1.0D, 1.0D, -1.0D, 1.0D, -1.0D, 1.0D, -1.0D};
-    private static final double[] GRAD_Z = new double[]{0.0D, 0.0D, 0.0D, 0.0D, 1.0D, 1.0D, -1.0D, -1.0D, 1.0D, 1.0D, -1.0D, -1.0D, 0.0D, 1.0D, 0.0D, -1.0D};
-    private static final double[] GRAD_2X = new double[]{1.0D, -1.0D, 1.0D, -1.0D, 1.0D, -1.0D, 1.0D, -1.0D, 0.0D, 0.0D, 0.0D, 0.0D, 1.0D, 0.0D, -1.0D, 0.0D};
-    private static final double[] GRAD_2Z = new double[]{0.0D, 0.0D, 0.0D, 0.0D, 1.0D, 1.0D, -1.0D, -1.0D, 1.0D, 1.0D, -1.0D, -1.0D, 0.0D, 1.0D, 0.0D, -1.0D};
+    private static final double[] GRAD_X = new double[] {
+        1.0D, -1.0D, 1.0D, -1.0D, 1.0D, -1.0D, 1.0D, -1.0D, 0.0D, 0.0D, 0.0D, 0.0D, 1.0D, 0.0D, -1.0D, 0.0D
+    };
+    private static final double[] GRAD_Y = new double[] {
+        1.0D, 1.0D, -1.0D, -1.0D, 0.0D, 0.0D, 0.0D, 0.0D, 1.0D, -1.0D, 1.0D, -1.0D, 1.0D, -1.0D, 1.0D, -1.0D
+    };
+    private static final double[] GRAD_Z = new double[] {
+        0.0D, 0.0D, 0.0D, 0.0D, 1.0D, 1.0D, -1.0D, -1.0D, 1.0D, 1.0D, -1.0D, -1.0D, 0.0D, 1.0D, 0.0D, -1.0D
+    };
+    private static final double[] GRAD_2X = new double[] {
+        1.0D, -1.0D, 1.0D, -1.0D, 1.0D, -1.0D, 1.0D, -1.0D, 0.0D, 0.0D, 0.0D, 0.0D, 1.0D, 0.0D, -1.0D, 0.0D
+    };
+    private static final double[] GRAD_2Z = new double[] {
+        0.0D, 0.0D, 0.0D, 0.0D, 1.0D, 1.0D, -1.0D, -1.0D, 1.0D, 1.0D, -1.0D, -1.0D, 0.0D, 1.0D, 0.0D, -1.0D
+    };
     private final int[] permutations;
     public double xCoord;
     public double yCoord;
@@ -54,7 +64,18 @@ public class NoiseGeneratorImprovedD {
     /*
      * noiseArray should be xSize*ySize*zSize in size
      */
-    public void populateNoiseArray(double[] noiseArray, double xOffset, double yOffset, double zOffset, int xSize, int ySize, int zSize, double xScale, double yScale, double zScale, double noiseScale) {
+    public void populateNoiseArray(
+            double[] noiseArray,
+            double xOffset,
+            double yOffset,
+            double zOffset,
+            int xSize,
+            int ySize,
+            int zSize,
+            double xScale,
+            double yScale,
+            double zScale,
+            double noiseScale) {
         if (ySize == 1) {
             int i5 = 0;
             int j5 = 0;
@@ -92,8 +113,14 @@ public class NoiseGeneratorImprovedD {
                     j5 = this.permutations[i5] + l6;
                     j = this.permutations[k2 + 1];
                     k5 = this.permutations[j] + l6;
-                    d14 = this.lerp(d18, this.grad2(this.permutations[j5], d17, d19), this.grad(this.permutations[k5], d17 - 1.0D, 0.0D, d19));
-                    d15 = this.lerp(d18, this.grad(this.permutations[j5 + 1], d17, 0.0D, d19 - 1.0D), this.grad(this.permutations[k5 + 1], d17 - 1.0D, 0.0D, d19 - 1.0D));
+                    d14 = this.lerp(
+                            d18,
+                            this.grad2(this.permutations[j5], d17, d19),
+                            this.grad(this.permutations[k5], d17 - 1.0D, 0.0D, d19));
+                    d15 = this.lerp(
+                            d18,
+                            this.grad(this.permutations[j5 + 1], d17, 0.0D, d19 - 1.0D),
+                            this.grad(this.permutations[k5 + 1], d17 - 1.0D, 0.0D, d19 - 1.0D));
                     double d21 = this.lerp(d20, d14, d15);
                     int i7 = l5++;
                     noiseArray[i7] += d21 * d16;
@@ -158,10 +185,22 @@ public class NoiseGeneratorImprovedD {
                             k1 = this.permutations[j3 + 1] + l4;
                             l1 = this.permutations[k1] + i4;
                             i2 = this.permutations[k1 + 1] + i4;
-                            d1 = this.lerp(d6, this.grad(this.permutations[i1], d5, d9, d7), this.grad(this.permutations[l1], d5 - 1.0D, d9, d7));
-                            d2 = this.lerp(d6, this.grad(this.permutations[j1], d5, d9 - 1.0D, d7), this.grad(this.permutations[i2], d5 - 1.0D, d9 - 1.0D, d7));
-                            d3 = this.lerp(d6, this.grad(this.permutations[i1 + 1], d5, d9, d7 - 1.0D), this.grad(this.permutations[l1 + 1], d5 - 1.0D, d9, d7 - 1.0D));
-                            d4 = this.lerp(d6, this.grad(this.permutations[j1 + 1], d5, d9 - 1.0D, d7 - 1.0D), this.grad(this.permutations[i2 + 1], d5 - 1.0D, d9 - 1.0D, d7 - 1.0D));
+                            d1 = this.lerp(
+                                    d6,
+                                    this.grad(this.permutations[i1], d5, d9, d7),
+                                    this.grad(this.permutations[l1], d5 - 1.0D, d9, d7));
+                            d2 = this.lerp(
+                                    d6,
+                                    this.grad(this.permutations[j1], d5, d9 - 1.0D, d7),
+                                    this.grad(this.permutations[i2], d5 - 1.0D, d9 - 1.0D, d7));
+                            d3 = this.lerp(
+                                    d6,
+                                    this.grad(this.permutations[i1 + 1], d5, d9, d7 - 1.0D),
+                                    this.grad(this.permutations[l1 + 1], d5 - 1.0D, d9, d7 - 1.0D));
+                            d4 = this.lerp(
+                                    d6,
+                                    this.grad(this.permutations[j1 + 1], d5, d9 - 1.0D, d7 - 1.0D),
+                                    this.grad(this.permutations[i2 + 1], d5 - 1.0D, d9 - 1.0D, d7 - 1.0D));
                         }
 
                         double d11 = this.lerp(d10, d1, d2);

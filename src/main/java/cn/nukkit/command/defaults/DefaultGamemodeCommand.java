@@ -8,7 +8,6 @@ import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
-
 import java.util.Map;
 
 /**
@@ -21,18 +20,17 @@ public class DefaultGamemodeCommand extends VanillaCommand {
         super(name, "commands.defaultgamemode.description");
         this.setPermission("nukkit.command.defaultgamemode");
         this.commandParameters.clear();
-        this.commandParameters.put("default", new CommandParameter[]{
-                CommandParameter.newType("gameMode", CommandParamType.INT)
-        });
-        this.commandParameters.put("byString", new CommandParameter[]{
-                CommandParameter.newEnum("gameMode", CommandEnum.ENUM_GAMEMODE)
-        });
+        this.commandParameters.put(
+                "default", new CommandParameter[] {CommandParameter.newType("gameMode", CommandParamType.INT)});
+        this.commandParameters.put(
+                "byString", new CommandParameter[] {CommandParameter.newEnum("gameMode", CommandEnum.ENUM_GAMEMODE)});
         this.enableParamTree();
     }
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         int gameMode;
         switch (result.getKey()) {
@@ -49,10 +47,12 @@ public class DefaultGamemodeCommand extends VanillaCommand {
         boolean valid = gameMode >= 0 && gameMode <= 3;
         if (valid) {
             sender.getServer().setPropertyInt("gamemode", gameMode);
-            log.addSuccess("commands.defaultgamemode.success", Server.getGamemodeString(gameMode)).output();
+            log.addSuccess("commands.defaultgamemode.success", Server.getGamemodeString(gameMode))
+                    .output();
             return 1;
         } else {
-            log.addError("commands.gamemode.fail.invalid", String.valueOf(gameMode)).output();
+            log.addError("commands.gamemode.fail.invalid", String.valueOf(gameMode))
+                    .output();
             return 0;
         }
     }

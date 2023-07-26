@@ -26,5 +26,4 @@ public class PlayerChangeSkinEvent extends PlayerEvent implements Cancellable {
     public Skin getSkin() {
         return this.skin;
     }
-
 }

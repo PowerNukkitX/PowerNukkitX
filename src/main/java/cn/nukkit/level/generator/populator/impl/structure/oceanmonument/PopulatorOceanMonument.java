@@ -16,7 +16,6 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitRandom;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-
 import java.util.Map;
 import java.util.Set;
 
@@ -37,7 +36,7 @@ public class PopulatorOceanMonument extends PopulatorStructure {
         WATER_BIOMES[EnumBiome.COLD_OCEAN.id] = true;
         WATER_BIOMES[EnumBiome.WARM_OCEAN.id] = true;
 
-        //Deep Oceans
+        // Deep Oceans
         WATER_BIOMES[EnumBiome.DEEP_OCEAN.id] = DEEP_OCEAN_BIOMES[EnumBiome.DEEP_OCEAN.id] = true;
         WATER_BIOMES[EnumBiome.DEEP_WARM_OCEAN.id] = DEEP_OCEAN_BIOMES[EnumBiome.DEEP_WARM_OCEAN.id] = true;
         WATER_BIOMES[EnumBiome.DEEP_LUKEWARM_OCEAN.id] = DEEP_OCEAN_BIOMES[EnumBiome.DEEP_LUKEWARM_OCEAN.id] = true;
@@ -55,13 +54,21 @@ public class PopulatorOceanMonument extends PopulatorStructure {
     public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
         if (!chunk.isOverWorld()) return;
         if (DEEP_OCEAN_BIOMES[chunk.getBiomeId(7, chunk.getHighestBlockAt(7, 7), 7)]) {
-            //\\ OceanMonumentFeature::isFeatureChunk(BiomeSource const &,Random &,ChunkPos const &,uint)
+            // \\ OceanMonumentFeature::isFeatureChunk(BiomeSource const &,Random &,ChunkPos const &,uint)
             int cX = (chunkX < 0 ? chunkX - SPACING + 1 : chunkX) / SPACING;
             int cZ = (chunkZ < 0 ? chunkZ - SPACING + 1 : chunkZ) / SPACING;
             random.setSeed(cX * 0x4f9939f508L + cZ * 0x1ef1565bd5L + level.getSeed() + 0x9e7f71L);
 
-            if (chunkX == cX * SPACING + (random.nextBoundedInt(SPACING - SEPARATION) + random.nextBoundedInt(SPACING - SEPARATION)) / 2
-                    && chunkZ == cZ * SPACING + (random.nextBoundedInt(SPACING - SEPARATION) + random.nextBoundedInt(SPACING - SEPARATION)) / 2) {
+            if (chunkX
+                            == cX * SPACING
+                                    + (random.nextBoundedInt(SPACING - SEPARATION)
+                                                    + random.nextBoundedInt(SPACING - SEPARATION))
+                                            / 2
+                    && chunkZ
+                            == cZ * SPACING
+                                    + (random.nextBoundedInt(SPACING - SEPARATION)
+                                                    + random.nextBoundedInt(SPACING - SEPARATION))
+                                            / 2) {
                 int startX = (chunkX << 4) + 9;
                 int startZ = (chunkZ << 4) + 9;
 
@@ -85,8 +92,15 @@ public class PopulatorOceanMonument extends PopulatorStructure {
                     Level world = chunk.getProvider().getLevel();
                     this.waitingChunks.put(Level.chunkHash(chunkX, chunkZ), indexes);
                     for (BaseFullChunk ck : chunks) {
-                        chunk.getProvider().getLevel().getGenerator().handleAsyncStructureGenTask(new CallbackableChunkGenerationTask<>(world, ck, this,
-                                feature -> feature.generateChunkCallback(level, startX, startZ, chunk, ck.getX(), ck.getZ())));
+                        chunk.getProvider()
+                                .getLevel()
+                                .getGenerator()
+                                .handleAsyncStructureGenTask(new CallbackableChunkGenerationTask<>(
+                                        world,
+                                        ck,
+                                        this,
+                                        feature -> feature.generateChunkCallback(
+                                                level, startX, startZ, chunk, ck.getX(), ck.getZ())));
                     }
                     return;
                 }
@@ -150,7 +164,9 @@ public class PopulatorOceanMonument extends PopulatorStructure {
                         if (x >= minX && x <= maxX) {
                             for (int cz = 0; cz < 16; cz++) {
                                 int z = baseZ + cz;
-                                if (z >= minZ && z <= maxZ && !WATER_BIOMES[ck.getBiomeId(cx, ck.getHighestBlockAt(cx, cz), cz)]) {
+                                if (z >= minZ
+                                        && z <= maxZ
+                                        && !WATER_BIOMES[ck.getBiomeId(cx, ck.getHighestBlockAt(cx, cz), cz)]) {
                                     return;
                                 }
                             }
@@ -160,11 +176,11 @@ public class PopulatorOceanMonument extends PopulatorStructure {
             }
         }
 
-        //\\ OceanMonumentFeature::createStructureStart(Dimension &,BiomeSource &,Random &,ChunkPos const &)
+        // \\ OceanMonumentFeature::createStructureStart(Dimension &,BiomeSource &,Random &,ChunkPos const &)
         OceanMonumentStart start = new OceanMonumentStart(level, chunkX, chunkZ);
         start.generatePieces(level, chunkX, chunkZ);
 
-        if (start.isValid()) { //TODO: serialize nbt
+        if (start.isValid()) { // TODO: serialize nbt
             long seed = level.getSeed();
             NukkitRandom random = new NukkitRandom(seed);
             int r1 = random.nextInt();
@@ -186,16 +202,23 @@ public class PopulatorOceanMonument extends PopulatorStructure {
                     } else {
                         int f_cx = cx;
                         int f_cz = cz;
-                        chunk.getProvider().getLevel().getGenerator().handleAsyncStructureGenTask(new CallbackableChunkGenerationTask<>(
-                                chunk.getProvider().getLevel(), ck, start,
-                                structure -> structure.postProcess(level, rand, new BoundingBox(x, z, x + 15, z + 15), f_cx, f_cz)));
+                        chunk.getProvider()
+                                .getLevel()
+                                .getGenerator()
+                                .handleAsyncStructureGenTask(new CallbackableChunkGenerationTask<>(
+                                        chunk.getProvider().getLevel(),
+                                        ck,
+                                        start,
+                                        structure -> structure.postProcess(
+                                                level, rand, new BoundingBox(x, z, x + 15, z + 15), f_cx, f_cz)));
                     }
                 }
             }
         }
     }
 
-    public synchronized void generateChunkCallback(ChunkManager level, int startX, int startZ, FullChunk chunk, int chunkX, int chunkZ) {
+    public synchronized void generateChunkCallback(
+            ChunkManager level, int startX, int startZ, FullChunk chunk, int chunkX, int chunkZ) {
         Set<Long> indexes = this.waitingChunks.get(Level.chunkHash(startX >> 4, startZ >> 4));
         indexes.remove(Level.chunkHash(chunkX, chunkZ));
         if (indexes.isEmpty()) {
@@ -217,16 +240,18 @@ public class PopulatorOceanMonument extends PopulatorStructure {
             super(level, chunkX, chunkZ);
         }
 
-        @Override //\\ OceanMonumentStart::createMonument(Dimension &,Random &,int,int)
+        @Override // \\ OceanMonumentStart::createMonument(Dimension &,Random &,int,int)
         public void generatePieces(ChunkManager level, int chunkX, int chunkZ) {
-            this.pieces.add(new OceanMonumentPieces.MonumentBuilding(this.random, chunkX * 16 - 29, chunkZ * 16 - 29, BlockFace.Plane.HORIZONTAL.random(this.random)));
+            this.pieces.add(new OceanMonumentPieces.MonumentBuilding(
+                    this.random, chunkX * 16 - 29, chunkZ * 16 - 29, BlockFace.Plane.HORIZONTAL.random(this.random)));
             this.calculateBoundingBox();
 
             this.isCreated = true;
         }
 
-        @Override //\\ OceanMonumentStart::postProcess(BlockSource *,Random &,BoundingBox const &)
-        public void postProcess(ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
+        @Override // \\ OceanMonumentStart::postProcess(BlockSource *,Random &,BoundingBox const &)
+        public void postProcess(
+                ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
             if (!this.isCreated) {
                 this.pieces.clear();
                 this.generatePieces(level, chunkX, chunkZ);
@@ -235,7 +260,7 @@ public class PopulatorOceanMonument extends PopulatorStructure {
             super.postProcess(level, random, boundingBox, chunkX, chunkZ);
         }
 
-        @Override //\\ OceanMonumentStart::getType(void) // 4
+        @Override // \\ OceanMonumentStart::getType(void) // 4
         public String getType() {
             return "Monument";
         }

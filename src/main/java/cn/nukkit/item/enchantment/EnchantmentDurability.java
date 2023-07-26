@@ -2,7 +2,6 @@ package cn.nukkit.item.enchantment;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.Item;
-
 import java.util.Random;
 
 /**

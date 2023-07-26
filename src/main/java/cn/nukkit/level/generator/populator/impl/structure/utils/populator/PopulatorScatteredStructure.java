@@ -15,10 +15,8 @@ import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.NukkitRandom;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-
 import java.util.Map;
 import java.util.Set;
-
 
 @PowerNukkitXOnly
 @Since("1.19.21-r2")
@@ -35,7 +33,8 @@ public abstract class PopulatorScatteredStructure extends PopulatorStructure {
             ScatteredStructurePiece piece = this.getPiece(chunkX, chunkZ);
             StructureBoundingBox boundingBox = piece.getBoundingBox();
 
-            if (boundingBox.getMinChunkX() != boundingBox.getMaxChunkX() || boundingBox.getMinChunkZ() != boundingBox.getMaxChunkZ()) { // cross-chunk
+            if (boundingBox.getMinChunkX() != boundingBox.getMaxChunkX()
+                    || boundingBox.getMinChunkZ() != boundingBox.getMaxChunkZ()) { // cross-chunk
                 Level world = chunk.getProvider().getLevel();
                 Set<BaseFullChunk> chunks = Sets.newHashSet();
                 Set<Long> indexes = Sets.newConcurrentHashSet();
@@ -52,7 +51,11 @@ public abstract class PopulatorScatteredStructure extends PopulatorStructure {
 
                 if (!chunks.isEmpty()) {
                     this.waitingChunks.put(Level.chunkHash(chunkX, chunkZ), indexes);
-                    chunks.forEach(ck -> Server.getInstance().getScheduler().scheduleAsyncTask(null, new CallbackableGenerationTask(world, ck, this, piece, level, chunkX, chunkZ)));
+                    chunks.forEach(ck -> Server.getInstance()
+                            .getScheduler()
+                            .scheduleAsyncTask(
+                                    null,
+                                    new CallbackableGenerationTask(world, ck, this, piece, level, chunkX, chunkZ)));
                     return;
                 }
             }
@@ -66,7 +69,13 @@ public abstract class PopulatorScatteredStructure extends PopulatorStructure {
         this.waitingChunks.remove(Level.chunkHash(chunkX, chunkZ));
     }
 
-    public void generateChunkCallback(ChunkManager level, int startChunkX, int startChunkZ, ScatteredStructurePiece piece, int chunkX, int chunkZ) {
+    public void generateChunkCallback(
+            ChunkManager level,
+            int startChunkX,
+            int startChunkZ,
+            ScatteredStructurePiece piece,
+            int chunkX,
+            int chunkZ) {
         Set<Long> indexes = this.waitingChunks.get(Level.chunkHash(startChunkX, startChunkZ));
         indexes.remove(Level.chunkHash(chunkX, chunkZ));
         if (indexes.isEmpty()) {
@@ -75,7 +84,12 @@ public abstract class PopulatorScatteredStructure extends PopulatorStructure {
     }
 
     protected boolean canGenerate(int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
-        return (chunkX < 0 ? (chunkX - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkX / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkX && (chunkZ < 0 ? (chunkZ - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkZ / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkZ;
+        return (chunkX < 0 ? (chunkX - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkX / MAX_DISTANCE) * MAX_DISTANCE
+                                + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE)
+                        == chunkX
+                && (chunkZ < 0 ? (chunkZ - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkZ / MAX_DISTANCE) * MAX_DISTANCE
+                                + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE)
+                        == chunkZ;
     }
 
     protected BlockVector3 getStart(int chunkX, int chunkZ) {

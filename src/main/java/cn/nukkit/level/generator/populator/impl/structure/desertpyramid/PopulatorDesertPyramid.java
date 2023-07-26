@@ -9,7 +9,6 @@ import cn.nukkit.level.generator.populator.impl.structure.utils.populator.Popula
 import cn.nukkit.level.generator.populator.impl.structure.utils.structure.ScatteredStructurePiece;
 import cn.nukkit.math.NukkitRandom;
 
-
 @PowerNukkitXOnly
 @Since("1.19.21-r2")
 public class PopulatorDesertPyramid extends PopulatorScatteredStructure {
@@ -18,7 +17,8 @@ public class PopulatorDesertPyramid extends PopulatorScatteredStructure {
     protected boolean canGenerate(int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
         if (!chunk.isOverWorld()) return false;
         int biome = chunk.getBiomeId(7, chunk.getHighestBlockAt(7, 7), 7);
-        return (biome == EnumBiome.DESERT.id || biome == EnumBiome.DESERT_HILLS.id || biome == EnumBiome.DESERT_M.id) && super.canGenerate(chunkX, chunkZ, random, chunk);
+        return (biome == EnumBiome.DESERT.id || biome == EnumBiome.DESERT_HILLS.id || biome == EnumBiome.DESERT_M.id)
+                && super.canGenerate(chunkX, chunkZ, random, chunk);
     }
 
     @Override

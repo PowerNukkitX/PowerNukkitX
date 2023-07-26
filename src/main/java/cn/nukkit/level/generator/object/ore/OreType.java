@@ -1,5 +1,7 @@
 package cn.nukkit.level.generator.object.ore;
 
+import static cn.nukkit.block.BlockID.STONE;
+
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
@@ -8,12 +10,10 @@ import cn.nukkit.level.ChunkManager;
 import cn.nukkit.math.MathHelper;
 import cn.nukkit.math.NukkitRandom;
 
-import static cn.nukkit.block.BlockID.STONE;
-
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-//porktodo: rewrite this, the whole class is terrible and generated ores look stupid
+// porktodo: rewrite this, the whole class is terrible and generated ores look stupid
 public class OreType {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -41,7 +41,8 @@ public class OreType {
         this(material, clusterCount, clusterSize, minHeight, maxHeight, STONE);
     }
 
-    public OreType(Block material, int clusterCount, int clusterSize, int minHeight, int maxHeight, int replaceBlockId) {
+    public OreType(
+            Block material, int clusterCount, int clusterSize, int minHeight, int maxHeight, int replaceBlockId) {
         this.fullId = material.getFullId();
         this.blockId = material.getId();
         this.blockData = material.getDamage();

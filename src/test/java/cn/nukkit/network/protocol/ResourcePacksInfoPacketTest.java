@@ -18,20 +18,19 @@
 
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.resourcepacks.ResourcePack;
-import lombok.val;
-import org.junit.jupiter.api.Test;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
+import cn.nukkit.resourcepacks.ResourcePack;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.UUID;
+import lombok.val;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author joserobjr
@@ -47,20 +46,20 @@ class ResourcePacksInfoPacketTest {
         when(resourcePack.getPackVersion()).thenReturn("1.0");
         when(resourcePack.getPackSize()).thenReturn(1000);
         when(resourcePack.getEncryptionKey()).thenReturn("");
-        
+
         val packet = new ResourcePacksInfoPacket();
-        packet.setBehaviourPackEntries(new ResourcePack[]{resourcePack});
-        packet.setResourcePackEntries(new ResourcePack[]{resourcePack});
+        packet.setBehaviourPackEntries(new ResourcePack[] {resourcePack});
+        packet.setResourcePackEntries(new ResourcePack[] {resourcePack});
         packet.setForcedToAccept(true);
         packet.setForcingServerPacksEnabled(true);
         packet.setScriptingEnabled(true);
         packet.encode();
         packet.decode();
-        
+
         assertTrue(packet.isForcedToAccept());
         assertTrue(packet.isScriptingEnabled());
         assertTrue(packet.isForcingServerPacksEnabled());
-        
+
         assertEquals(Collections.singletonList(resourcePack), Arrays.asList(packet.getBehaviourPackEntries()));
         assertEquals(Collections.singletonList(resourcePack), Arrays.asList(packet.getResourcePackEntries()));
     }

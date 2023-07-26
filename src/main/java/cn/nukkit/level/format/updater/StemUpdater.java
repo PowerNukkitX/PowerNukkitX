@@ -35,10 +35,7 @@ class StemUpdater implements Updater {
 
         for (BlockFace blockFace : BlockFace.Plane.HORIZONTAL) {
             int sideId = level.getBlockIdAt(
-                    offsetX + x + blockFace.getXOffset(),
-                    offsetY + y,
-                    offsetZ + z + blockFace.getZOffset()
-            );
+                    offsetX + x + blockFace.getXOffset(), offsetY + y, offsetZ + z + blockFace.getZOffset());
             if (sideId == productId) {
                 Block blockStem = state.getBlock(level, offsetX + x, offsetY + y, offsetZ + z, 0);
                 ((Faceable) blockStem).setBlockFace(blockFace);

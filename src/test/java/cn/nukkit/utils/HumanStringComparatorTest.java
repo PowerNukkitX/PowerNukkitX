@@ -1,9 +1,9 @@
 package cn.nukkit.utils;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author joserobjr
@@ -35,12 +35,10 @@ class HumanStringComparatorTest {
     void coralFan() {
         assertNegative(comparator.compare(
                 "minecraft:coral_fan_hang;coral_hang_type_bit=0;coral_direction=0;dead_bit=0",
-                "minecraft:coral_fan_hang3;coral_hang_type_bit=1;coral_direction=3;dead_bit=1"
-        ));
+                "minecraft:coral_fan_hang3;coral_hang_type_bit=1;coral_direction=3;dead_bit=1"));
         assertNegative(comparator.compare(
                 "minecraft:coral_fan_hang2;coral_hang_type_bit=0;coral_direction=0;dead_bit=0",
-                "minecraft:coral_fan_hang3;coral_hang_type_bit=1;coral_direction=3;dead_bit=1"
-        ));
+                "minecraft:coral_fan_hang3;coral_hang_type_bit=1;coral_direction=3;dead_bit=1"));
     }
 
     @Test
@@ -77,6 +75,6 @@ class HumanStringComparatorTest {
     }
 
     private void assertZero(int actual) {
-        assertEquals(0 , actual);
+        assertEquals(0, actual);
     }
 }

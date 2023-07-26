@@ -2,7 +2,6 @@ package cn.nukkit.resourcepacks;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-
 import java.util.UUID;
 
 /**
@@ -48,5 +47,7 @@ public interface ResourcePack {
     /**
      * @return 资源包密钥（若加密）
      */
-    default String getEncryptionKey() {return "";}
+    default String getEncryptionKey() {
+        return "";
+    }
 }

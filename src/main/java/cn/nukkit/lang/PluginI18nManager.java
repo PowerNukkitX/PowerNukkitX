@@ -3,9 +3,6 @@ package cn.nukkit.lang;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.plugin.PluginBase;
-import lombok.extern.log4j.Log4j2;
-
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -14,7 +11,8 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-
+import javax.annotation.Nullable;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * 注册插件多语言，要求插件资源文件中存在一个language文件夹，或者指定language文件夹的外部保存路径
@@ -33,8 +31,7 @@ import java.util.jar.JarFile;
 public final class PluginI18nManager {
     private static final HashMap<String, PluginI18n> PLUGINS_MULTI_LANGUAGE = new HashMap<>();
 
-    private PluginI18nManager() {
-    }
+    private PluginI18nManager() {}
 
     /**
      * 重新加载指定插件的多语言，多语言保存在插件jar中的language文件夹下
@@ -159,8 +156,7 @@ public final class PluginI18nManager {
         }
     }
 
-    @Nullable
-    public static PluginI18n getI18n(PluginBase plugin) {
+    @Nullable public static PluginI18n getI18n(PluginBase plugin) {
         return PLUGINS_MULTI_LANGUAGE.get(plugin.getFile().getName());
     }
 }

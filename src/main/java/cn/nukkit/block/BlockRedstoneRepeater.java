@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
+
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
@@ -11,8 +13,6 @@ import cn.nukkit.item.ItemRedstoneRepeater;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
-
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
 public abstract class BlockRedstoneRepeater extends BlockRedstoneDiode {
@@ -22,15 +22,11 @@ public abstract class BlockRedstoneRepeater extends BlockRedstoneDiode {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(
-            DIRECTION,
-            REPEATER_DELAY
-    );
+    public static final BlockProperties PROPERTIES = new BlockProperties(DIRECTION, REPEATER_DELAY);
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -56,12 +52,25 @@ public abstract class BlockRedstoneRepeater extends BlockRedstoneDiode {
 
     @PowerNukkitDifference(info = "Allow to be placed on top of the walls", since = "1.3.0.0-PN")
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         if (!isSupportValid(down())) {
             return false;
         }
 
-        setPropertyValue(DIRECTION, player != null ? BlockFace.fromHorizontalIndex(player.getDirection().getOpposite().getHorizontalIndex()) : BlockFace.SOUTH);
+        setPropertyValue(
+                DIRECTION,
+                player != null
+                        ? BlockFace.fromHorizontalIndex(
+                                player.getDirection().getOpposite().getHorizontalIndex())
+                        : BlockFace.SOUTH);
         if (!this.level.setBlock(block, this, true, true)) {
             return false;
         }

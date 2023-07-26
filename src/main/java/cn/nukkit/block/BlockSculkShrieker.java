@@ -30,8 +30,7 @@ public class BlockSculkShrieker extends BlockSolid implements BlockEntityHolder<
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -62,16 +61,13 @@ public class BlockSculkShrieker extends BlockSolid implements BlockEntityHolder<
         return ItemTool.TYPE_HOE;
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public Class<? extends BlockEntitySculkShrieker> getBlockEntityClass() {
         return BlockEntitySculkShrieker.class;
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getBlockEntityType() {
         return BlockEntity.SCULK_SHRIEKER;
     }
-
 }

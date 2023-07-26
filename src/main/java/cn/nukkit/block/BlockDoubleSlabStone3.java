@@ -9,14 +9,29 @@ import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 public class BlockDoubleSlabStone3 extends BlockDoubleSlabBase {
-    @PowerNukkitOnly public static final int END_STONE_BRICKS = 0;
-    @PowerNukkitOnly public static final int SMOOTH_RED_SANDSTONE = 1;
-    @PowerNukkitOnly public static final int POLISHED_ANDESITE = 2;
-    @PowerNukkitOnly public static final int ANDESITE = 3;
-    @PowerNukkitOnly public static final int DIORITE = 4;
-    @PowerNukkitOnly public static final int POLISHED_DIORITE = 5;
-    @PowerNukkitOnly public static final int GRANITE = 6;
-    @PowerNukkitOnly public static final int POLISHED_GRANITE = 7;
+    @PowerNukkitOnly
+    public static final int END_STONE_BRICKS = 0;
+
+    @PowerNukkitOnly
+    public static final int SMOOTH_RED_SANDSTONE = 1;
+
+    @PowerNukkitOnly
+    public static final int POLISHED_ANDESITE = 2;
+
+    @PowerNukkitOnly
+    public static final int ANDESITE = 3;
+
+    @PowerNukkitOnly
+    public static final int DIORITE = 4;
+
+    @PowerNukkitOnly
+    public static final int POLISHED_DIORITE = 5;
+
+    @PowerNukkitOnly
+    public static final int GRANITE = 6;
+
+    @PowerNukkitOnly
+    public static final int POLISHED_GRANITE = 7;
 
     @PowerNukkitOnly
     public BlockDoubleSlabStone3() {
@@ -35,8 +50,7 @@ public class BlockDoubleSlabStone3 extends BlockDoubleSlabBase {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return BlockSlabStone3.PROPERTIES;
     }

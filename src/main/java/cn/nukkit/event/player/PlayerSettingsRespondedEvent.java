@@ -55,5 +55,4 @@ public class PlayerSettingsRespondedEvent extends PlayerEvent implements Cancell
     public void setCancelled() {
         super.setCancelled();
     }
-
 }

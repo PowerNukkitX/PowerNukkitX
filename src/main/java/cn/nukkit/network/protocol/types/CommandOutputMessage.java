@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 @Value
 public class CommandOutputMessage {
     public CommandOutputMessage(@NotNull String messageId) {
-        this(false, messageId, new String[]{});
+        this(false, messageId, new String[] {});
     }
 
     public CommandOutputMessage(@NotNull String messageId, @NotNull String... parameters) {
@@ -20,8 +20,8 @@ public class CommandOutputMessage {
     }
 
     boolean internal;
-    @NotNull
-    String messageId;
-    @NotNull
-    String[] parameters;
+
+    @NotNull String messageId;
+
+    @NotNull String[] parameters;
 }

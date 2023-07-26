@@ -3,6 +3,7 @@ package cn.nukkit.block;
 /**
  * @author Justin
  */
+import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
@@ -24,15 +25,13 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
-
-import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder only in PowerNukkit")
 @PowerNukkitDifference(info = "Implements RedstoneComponent.", since = "1.4.0.0-PN")
-public class BlockSkull extends BlockTransparentMeta implements RedstoneComponent, BlockEntityHolder<BlockEntitySkull>, Faceable {
+public class BlockSkull extends BlockTransparentMeta
+        implements RedstoneComponent, BlockEntityHolder<BlockEntitySkull>, Faceable {
     @PowerNukkitOnly
     @Deprecated
     @Since("1.6.0.0-PNX")
@@ -57,24 +56,21 @@ public class BlockSkull extends BlockTransparentMeta implements RedstoneComponen
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getBlockEntityType() {
         return BlockEntity.SKULL;
     }
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public Class<? extends BlockEntitySkull> getBlockEntityClass() {
         return BlockEntitySkull.class;
     }
@@ -127,7 +123,15 @@ public class BlockSkull extends BlockTransparentMeta implements RedstoneComponen
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
         switch (face) {
             case NORTH:
             case SOUTH:
@@ -155,7 +159,8 @@ public class BlockSkull extends BlockTransparentMeta implements RedstoneComponen
     @Override
     @PowerNukkitDifference(info = "Using new method for checking if powered", since = "1.4.0.0-PN")
     public int onUpdate(int type) {
-        if ((type != Level.BLOCK_UPDATE_REDSTONE && type != Level.BLOCK_UPDATE_NORMAL) || !level.getServer().isRedstoneEnabled()) {
+        if ((type != Level.BLOCK_UPDATE_REDSTONE && type != Level.BLOCK_UPDATE_NORMAL)
+                || !level.getServer().isRedstoneEnabled()) {
             return 0;
         }
 
@@ -181,9 +186,7 @@ public class BlockSkull extends BlockTransparentMeta implements RedstoneComponen
         if (entitySkull != null) {
             dropMeta = entitySkull.namedTag.getByte("SkullType");
         }
-        return new Item[]{
-                new ItemSkull(dropMeta)
-        };
+        return new Item[] {new ItemSkull(dropMeta)};
     }
 
     @Override
@@ -222,7 +225,8 @@ public class BlockSkull extends BlockTransparentMeta implements RedstoneComponen
 
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
-        AxisAlignedBB bb = new SimpleAxisAlignedBB(this.x + 0.25, this.y, this.z + 0.25, this.x + 1 - 0.25, this.y + 0.5, this.z + 1 - 0.25);
+        AxisAlignedBB bb = new SimpleAxisAlignedBB(
+                this.x + 0.25, this.y, this.z + 0.25, this.x + 1 - 0.25, this.y + 0.5, this.z + 1 - 0.25);
         switch (this.getBlockFace()) {
             case NORTH:
                 return bb.offset(0, 0.25, 0.25);

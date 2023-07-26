@@ -1,13 +1,13 @@
 package cn.nukkit.utils;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.ItemBannerPattern;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author joserobjr
@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ExtendWith(PowerNukkitExtension.class)
 class BannerPatternTest {
     ItemBannerPattern item;
+
     @Test
     void defaultName() {
         item = new ItemBannerPattern(1000);
@@ -32,7 +33,8 @@ class BannerPatternTest {
         assertEquals(BannerPattern.Type.PATTERN_FLOWER, setAndReturnType(ItemBannerPattern.PATTERN_FLOWER_CHARGE));
         assertEquals(BannerPattern.Type.PATTERN_MOJANG, setAndReturnType(ItemBannerPattern.PATTERN_THING));
         assertEquals(BannerPattern.Type.PATTERN_BRICK, setAndReturnType(ItemBannerPattern.PATTERN_FIELD_MASONED));
-        assertEquals(BannerPattern.Type.PATTERN_CURLY_BORDER, setAndReturnType(ItemBannerPattern.PATTERN_BORDURE_INDENTED));
+        assertEquals(
+                BannerPattern.Type.PATTERN_CURLY_BORDER, setAndReturnType(ItemBannerPattern.PATTERN_BORDURE_INDENTED));
         assertEquals(BannerPattern.Type.PATTERN_SNOUT, setAndReturnType(ItemBannerPattern.PATTERN_SNOUT));
     }
 

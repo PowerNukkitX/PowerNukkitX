@@ -4,8 +4,6 @@ import cn.nukkit.Server;
 import cn.nukkit.event.server.QueryRegenerateEvent;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
-import lombok.extern.log4j.Log4j2;
-
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -15,6 +13,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -43,7 +42,8 @@ public class QueryHandler {
         this.regenerateToken();
         this.lastToken = this.token;
         this.regenerateInfo();
-        log.info(this.server.getLanguage().tr("nukkit.server.query.running", new String[]{addr, String.valueOf(port)}));
+        log.info(
+                this.server.getLanguage().tr("nukkit.server.query.running", new String[] {addr, String.valueOf(port)}));
     }
 
     public void regenerateInfo() {
@@ -73,7 +73,9 @@ public class QueryHandler {
             digest.update(token);
             return Arrays.copyOf(digest.digest(), 4);
         } catch (NoSuchAlgorithmException e) {
-            return ByteBuffer.allocate(4).putInt(ThreadLocalRandom.current().nextInt()).array();
+            return ByteBuffer.allocate(4)
+                    .putInt(ThreadLocalRandom.current().nextInt())
+                    .array();
         }
     }
 
@@ -95,8 +97,8 @@ public class QueryHandler {
                 byte[] token = new byte[4];
                 packet.readBytes(token);
 
-                if (!Arrays.equals(token, getTokenString(this.token, address.getAddress())) &&
-                        !Arrays.equals(token, getTokenString(this.lastToken, address.getAddress()))) {
+                if (!Arrays.equals(token, getTokenString(this.token, address.getAddress()))
+                        && !Arrays.equals(token, getTokenString(this.lastToken, address.getAddress()))) {
                     break;
                 }
 

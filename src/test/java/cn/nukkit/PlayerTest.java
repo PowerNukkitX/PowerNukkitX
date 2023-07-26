@@ -1,5 +1,8 @@
 package cn.nukkit;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 import cn.nukkit.block.BlockID;
 import cn.nukkit.command.SimpleCommandMap;
 import cn.nukkit.entity.Entity;
@@ -22,6 +25,12 @@ import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.InventorySource;
 import cn.nukkit.network.protocol.types.NetworkInventoryAction;
 import cn.nukkit.plugin.PluginManager;
+import java.awt.image.BufferedImage;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,16 +41,6 @@ import org.powernukkit.tests.api.MockLevel;
 import org.powernukkit.tests.api.ReflectionUtil;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
 import org.powernukkit.tests.mocks.DelegatePlayer;
-
-import java.awt.image.BufferedImage;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(PowerNukkitExtension.class)
 class PlayerTest {
@@ -264,50 +263,51 @@ class PlayerTest {
         PlayerInventory inventory = player.getInventory();
 
         ////// Block in armor content ////////
-        inventory.setArmorContents(new Item[]{
-                Item.getBlock(BlockID.WOOL),
-                Item.getBlock(BlockID.WOOL, 1),
-                Item.getBlock(BlockID.WOOL, 2),
-                Item.getBlock(BlockID.WOOL, 3)
+        inventory.setArmorContents(new Item[] {
+            Item.getBlock(BlockID.WOOL),
+            Item.getBlock(BlockID.WOOL, 1),
+            Item.getBlock(BlockID.WOOL, 2),
+            Item.getBlock(BlockID.WOOL, 3)
         });
         for (int i = 0; i < 100; i++) {
             player.setHealth(20);
             player.attack(new EntityDamageEvent(player, EntityDamageEvent.DamageCause.FALL, 1));
             player.entityBaseTick(20);
         }
-        assertEquals(Arrays.asList(
-                Item.getBlock(BlockID.WOOL),
-                Item.getBlock(BlockID.WOOL, 1),
-                Item.getBlock(BlockID.WOOL, 2),
-                Item.getBlock(BlockID.WOOL, 3)
-        ), Arrays.asList(inventory.getArmorContents()));
+        assertEquals(
+                Arrays.asList(
+                        Item.getBlock(BlockID.WOOL),
+                        Item.getBlock(BlockID.WOOL, 1),
+                        Item.getBlock(BlockID.WOOL, 2),
+                        Item.getBlock(BlockID.WOOL, 3)),
+                Arrays.asList(inventory.getArmorContents()));
 
         ////// Valid armor in armor content ///////
-        inventory.setArmorContents(new Item[]{
-                Item.get(ItemID.LEATHER_CAP),
-                Item.get(ItemID.LEATHER_TUNIC),
-                Item.get(ItemID.LEATHER_PANTS),
-                Item.get(ItemID.LEATHER_BOOTS)
+        inventory.setArmorContents(new Item[] {
+            Item.get(ItemID.LEATHER_CAP),
+            Item.get(ItemID.LEATHER_TUNIC),
+            Item.get(ItemID.LEATHER_PANTS),
+            Item.get(ItemID.LEATHER_BOOTS)
         });
         for (int i = 0; i < 100; i++) {
             player.setHealth(20);
             player.attack(new EntityDamageEvent(player, EntityDamageEvent.DamageCause.ENTITY_ATTACK, 1));
             player.entityBaseTick(20);
         }
-        assertEquals(Arrays.asList(
-                Item.getBlock(BlockID.AIR),
-                Item.getBlock(BlockID.AIR),
-                Item.getBlock(BlockID.AIR),
-                Item.getBlock(BlockID.AIR)
-        ), Arrays.asList(inventory.getArmorContents()));
+        assertEquals(
+                Arrays.asList(
+                        Item.getBlock(BlockID.AIR),
+                        Item.getBlock(BlockID.AIR),
+                        Item.getBlock(BlockID.AIR),
+                        Item.getBlock(BlockID.AIR)),
+                Arrays.asList(inventory.getArmorContents()));
 
         ////// Unbreakable armor in armor content ///////
         List<Item> items = Arrays.asList(
                 Item.get(ItemID.LEATHER_CAP),
                 Item.get(ItemID.LEATHER_TUNIC),
                 Item.get(ItemID.LEATHER_PANTS),
-                Item.get(ItemID.LEATHER_BOOTS)
-        );
+                Item.get(ItemID.LEATHER_BOOTS));
         items.forEach(item -> item.setNamedTag(new CompoundTag().putBoolean("Unbreakable", true)));
         Item[] array = new Item[items.size()];
         for (int i = 0; i < items.size(); i++) {

@@ -1,13 +1,12 @@
 package cn.nukkit.scheduler;
 
 import cn.nukkit.utils.Utils;
-import lombok.extern.log4j.Log4j2;
-
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -53,5 +52,4 @@ public class FileWriteTask extends AsyncTask {
             log.fatal("An error occurred while writing the file {}", file, e);
         }
     }
-
 }

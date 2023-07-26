@@ -1,5 +1,8 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
+import static cn.nukkit.math.BlockFace.AxisDirection.POSITIVE;
+
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
@@ -22,13 +25,9 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.utils.Faceable;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
-
-import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
-import static cn.nukkit.math.BlockFace.AxisDirection.POSITIVE;
+import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Pub4Game
@@ -63,16 +62,14 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockFace getBlockFace() {
         return getPropertyValue(FACING_DIRECTION);
     }
@@ -110,16 +107,14 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getBlockEntityType() {
         return BlockEntity.ITEM_FRAME;
     }
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public Class<? extends BlockEntityItemFrame> getBlockEntityClass() {
         return BlockEntityItemFrame.class;
     }
@@ -170,7 +165,8 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
         BlockEntityItemFrame itemFrame = getOrCreateBlockEntity();
         if (itemFrame.getItem().isNull()) {
             Item itemOnFrame = item.clone();
-            ItemFrameUseEvent event = new ItemFrameUseEvent(player, this, itemFrame, itemOnFrame, ItemFrameUseEvent.Action.PUT);
+            ItemFrameUseEvent event =
+                    new ItemFrameUseEvent(player, this, itemFrame, itemOnFrame, ItemFrameUseEvent.Action.PUT);
             this.getLevel().getServer().getPluginManager().callEvent(event);
             if (event.isCancelled()) return false;
             if (player != null && !player.isCreative()) {
@@ -185,7 +181,8 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
             }
             this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ITEM_FRAME_ITEM_ADDED);
         } else {
-            ItemFrameUseEvent event = new ItemFrameUseEvent(player, this, itemFrame, null, ItemFrameUseEvent.Action.ROTATION);
+            ItemFrameUseEvent event =
+                    new ItemFrameUseEvent(player, this, itemFrame, null, ItemFrameUseEvent.Action.ROTATION);
             this.getLevel().getServer().getPluginManager().callEvent(event);
             if (event.isCancelled()) return false;
             itemFrame.setItemRotation((itemFrame.getItemRotation() + 1) % 8);
@@ -200,8 +197,17 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
 
     @PowerNukkitDifference(info = "Allow to place on walls", since = "1.3.0.0-PN")
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        if ((!(target.isSolid() || target instanceof BlockWall) && !target.equals(block) || (block.isSolid() && !block.canBeReplaced()))) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
+        if ((!(target.isSolid() || target instanceof BlockWall) && !target.equals(block)
+                || (block.isSolid() && !block.canBeReplaced()))) {
             return false;
         }
 
@@ -215,9 +221,7 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
 
         setBlockFace(face);
         setStoringMap(item.getId() == ItemID.MAP);
-        CompoundTag nbt = new CompoundTag()
-                .putByte("ItemRotation", 0)
-                .putFloat("ItemDropChance", 1.0f);
+        CompoundTag nbt = new CompoundTag().putByte("ItemRotation", 0).putFloat("ItemDropChance", 1.0f);
         if (item.hasCustomBlockData()) {
             for (Tag aTag : item.getCustomBlockData().getAllTags()) {
                 nbt.put(aTag.getName(), aTag);
@@ -243,13 +247,9 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
     public Item[] getDrops(Item item) {
         BlockEntityItemFrame itemFrame = getBlockEntity();
         if (itemFrame != null && ThreadLocalRandom.current().nextFloat() <= itemFrame.getItemDropChance()) {
-            return new Item[]{
-                    toItem(), itemFrame.getItem().clone()
-            };
+            return new Item[] {toItem(), itemFrame.getItem().clone()};
         } else {
-            return new Item[]{
-                    toItem()
-            };
+            return new Item[] {toItem()};
         }
     }
 
@@ -304,9 +304,9 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
         double[][] aabb = {
-                {2.0 / 16, 14.0 / 16},
-                {2.0 / 16, 14.0 / 16},
-                {2.0 / 16, 14.0 / 16}
+            {2.0 / 16, 14.0 / 16},
+            {2.0 / 16, 14.0 / 16},
+            {2.0 / 16, 14.0 / 16}
         };
 
         BlockFace facing = getFacing();
@@ -317,8 +317,6 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
         }
 
         return new SimpleAxisAlignedBB(
-                aabb[0][0] + x, aabb[1][0] + y, aabb[2][0] + z,
-                aabb[0][1] + x, aabb[1][1] + y, aabb[2][1] + z
-        );
+                aabb[0][0] + x, aabb[1][0] + y, aabb[2][0] + z, aabb[0][1] + x, aabb[1][1] + y, aabb[2][1] + z);
     }
 }

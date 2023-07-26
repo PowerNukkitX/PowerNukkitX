@@ -8,15 +8,12 @@ import cn.nukkit.item.Item;
  * @author LoboMetalurgico
  * @since 13/06/2021
  */
-
 @PowerNukkitOnly
 @Since("FUTURE")
 public class BlockGlassTinted extends BlockGlass {
     @PowerNukkitOnly
     @Since("FUTURE")
-    public BlockGlassTinted() {
-
-    }
+    public BlockGlassTinted() {}
 
     @Override
     public String getName() {
@@ -30,7 +27,7 @@ public class BlockGlassTinted extends BlockGlass {
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[] { toItem() };
+        return new Item[] {toItem()};
     }
 
     @Override

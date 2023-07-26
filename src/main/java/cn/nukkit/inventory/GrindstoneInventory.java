@@ -11,17 +11,16 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.nbt.tag.CompoundTag;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 public class GrindstoneInventory extends FakeBlockUIComponent {
     @PowerNukkitOnly
     public static final int OFFSET = 16;
-    
+
     private static final int SLOT_FIRST_ITEM = 0;
     private static final int SLOT_SECOND_ITEM = 1;
     private static final int SLOT_RESULT = 50 - OFFSET;
@@ -53,7 +52,7 @@ public class GrindstoneInventory extends FakeBlockUIComponent {
         super.onClose(who);
         who.craftingType = Player.CRAFTING_SMALL;
 
-        Item[] drops = new Item[]{ getFirstItem(), getSecondItem() };
+        Item[] drops = new Item[] {getFirstItem(), getSecondItem()};
         drops = who.getInventory().addItem(drops);
         for (Item drop : drops) {
             if (!who.dropItem(drop)) {
@@ -117,7 +116,7 @@ public class GrindstoneInventory extends FakeBlockUIComponent {
     public boolean setResult(Item item) {
         return setResult(item, true);
     }
-    
+
     @Override
     public void onSlotChange(int index, Item before, boolean send) {
         try {
@@ -167,7 +166,7 @@ public class GrindstoneInventory extends FakeBlockUIComponent {
         CompoundTag tag = result.getNamedTag();
         if (tag == null) tag = new CompoundTag();
         tag.remove("ench");
-        
+
         result.setCompoundTag(tag);
         if (!secondItem.isNull() && firstItem.getMaxDurability() > 0) {
             int first = firstItem.getMaxDurability() - firstItem.getDamage();
@@ -209,19 +208,16 @@ public class GrindstoneInventory extends FakeBlockUIComponent {
                         return Arrays.stream(enchantments).flatMap(Arrays::stream);
                     }
                 })
-                .mapToInt(enchantment-> enchantment.getMinEnchantAbility(enchantment.getLevel()))
+                .mapToInt(enchantment -> enchantment.getMinEnchantAbility(enchantment.getLevel()))
                 .sum();
 
-        resultExperience = ThreadLocalRandom.current().nextInt(
-                NukkitMath.ceilDouble((double)resultExperience / 2),
-                resultExperience + 1
-        );
+        resultExperience = ThreadLocalRandom.current()
+                .nextInt(NukkitMath.ceilDouble((double) resultExperience / 2), resultExperience + 1);
 
         setResultExperience(resultExperience);
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public Item getItem(int index) {
         if (index < 0 || index > 3) {
             return Item.get(0);
@@ -252,11 +248,11 @@ public class GrindstoneInventory extends FakeBlockUIComponent {
         if (index < 0 || index > 3) {
             return false;
         }
-        
+
         if (index == 2) {
             index = SLOT_RESULT;
         }
-        
+
         return super.setItem(index, item, send);
     }
 

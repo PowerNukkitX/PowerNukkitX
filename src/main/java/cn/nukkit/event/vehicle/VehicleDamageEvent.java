@@ -20,7 +20,6 @@ public class VehicleDamageEvent extends VehicleEvent implements Cancellable {
      * @param vehicle the damaged vehicle
      * @param damage  the caused damage on the vehicle
      */
-
     @PowerNukkitOnly
     public VehicleDamageEvent(final EntityVehicle vehicle, final double damage) {
         super(vehicle);
@@ -37,7 +36,6 @@ public class VehicleDamageEvent extends VehicleEvent implements Cancellable {
      *
      * @return caused damage on the vehicle
      */
-
     public double getDamage() {
         return damage;
     }
@@ -47,7 +45,6 @@ public class VehicleDamageEvent extends VehicleEvent implements Cancellable {
      *
      * @param damage the caused damage
      */
-
     public void setDamage(final double damage) {
         this.damage = damage;
     }

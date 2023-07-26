@@ -1,6 +1,5 @@
 package cn.nukkit.entity;
 
-
 import cn.nukkit.Player;
 
 /**

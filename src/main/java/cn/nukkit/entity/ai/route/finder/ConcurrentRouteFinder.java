@@ -4,7 +4,6 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.ai.route.data.Node;
 import cn.nukkit.entity.ai.route.posevaluator.IPosEvaluator;
-
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -18,7 +17,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 @Since("1.6.0.0-PNX")
 public abstract class ConcurrentRouteFinder extends SimpleRouteFinder {
 
-    //同步访问锁
+    // 同步访问锁
     protected final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
     public ConcurrentRouteFinder(IPosEvaluator blockEvaluator) {
@@ -104,7 +103,6 @@ public abstract class ConcurrentRouteFinder extends SimpleRouteFinder {
         } finally {
             lock.readLock().unlock();
         }
-
     }
 
     @Override
@@ -122,7 +120,7 @@ public abstract class ConcurrentRouteFinder extends SimpleRouteFinder {
         this.currentIndex = index;
     }
 
-    //异步查找路径
+    // 异步查找路径
     public CompletableFuture<Void> asyncSearch() {
         return CompletableFuture.runAsync(this::search);
     }

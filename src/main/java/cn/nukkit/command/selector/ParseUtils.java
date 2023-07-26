@@ -61,8 +61,7 @@ public class ParseUtils {
      * @param value 给定字符串
      */
     public static void cannotReversed(String value) throws SelectorSyntaxException {
-        if (checkReversed(value))
-            throw new SelectorSyntaxException("Argument cannot be reversed!");
+        if (checkReversed(value)) throw new SelectorSyntaxException("Argument cannot be reversed!");
     }
 
     /**
@@ -71,8 +70,7 @@ public class ParseUtils {
      * @param keyName 参数键名
      */
     public static void singleArgument(String[] args, String keyName) throws SelectorSyntaxException {
-        if (args.length > 1)
-            throw new SelectorSyntaxException("Multiple arguments is not allow in arg " + keyName);
+        if (args.length > 1) throw new SelectorSyntaxException("Multiple arguments is not allow in arg " + keyName);
     }
 
     /**
@@ -83,9 +81,7 @@ public class ParseUtils {
      * @return 给定值是否在给定的两个数之间
      */
     public static boolean checkBetween(double bound1, double bound2, double value) {
-        return bound1 < bound2 ?
-                (value >= bound1 && value <= bound2) :
-                (value >= bound2 && value <= bound1);
+        return bound1 < bound2 ? (value >= bound1 && value <= bound2) : (value >= bound2 && value <= bound1);
     }
 
     /**

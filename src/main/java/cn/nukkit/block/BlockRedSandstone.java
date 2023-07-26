@@ -24,13 +24,9 @@ public class BlockRedSandstone extends BlockSandstone {
 
     @Override
     public String getName() {
-        String[] names = new String[]{
-                "Red Sandstone",
-                "Chiseled Red Sandstone",
-                "Cut Red Sandstone",
-                "Smooth Red Sandstone",
-                ""
-        };
+        String[] names =
+                new String[] {"Red Sandstone", "Chiseled Red Sandstone", "Cut Red Sandstone", "Smooth Red Sandstone", ""
+                };
 
         return names[this.getDamage() & 0x03];
     }
@@ -44,5 +40,4 @@ public class BlockRedSandstone extends BlockSandstone {
     public boolean canHarvestWithHand() {
         return false;
     }
-
 }

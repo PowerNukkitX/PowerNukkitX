@@ -1,5 +1,8 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
+import static cn.nukkit.blockproperty.CommonBlockProperties.TOGGLE;
+
 import cn.nukkit.Player;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
@@ -25,18 +28,16 @@ import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
+import javax.annotation.Nullable;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
-
-import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
-import static cn.nukkit.blockproperty.CommonBlockProperties.TOGGLE;
-
 @PowerNukkitOnly
-public class BlockBell extends BlockTransparentMeta implements RedstoneComponent, Faceable, BlockEntityHolder<BlockEntityBell> {
+public class BlockBell extends BlockTransparentMeta
+        implements RedstoneComponent, Faceable, BlockEntityHolder<BlockEntityBell> {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final BlockProperty<AttachmentType> ATTACHMENT_TYPE = new ArrayBlockProperty<>("attachment", false, AttachmentType.class);
+    public static final BlockProperty<AttachmentType> ATTACHMENT_TYPE =
+            new ArrayBlockProperty<>("attachment", false, AttachmentType.class);
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -44,26 +45,38 @@ public class BlockBell extends BlockTransparentMeta implements RedstoneComponent
 
     @PowerNukkitOnly
     @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit",
-        reason = "Magic values", replaceWith = "BellAttachmentType.STANDING")
+    @DeprecationDetails(
+            since = "1.4.0.0-PN",
+            by = "PowerNukkit",
+            reason = "Magic values",
+            replaceWith = "BellAttachmentType.STANDING")
     public static final int TYPE_ATTACHMENT_STANDING = 0;
-    
+
     @PowerNukkitOnly
     @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit",
-            reason = "Magic values", replaceWith = "BellAttachmentType.HANGING")
+    @DeprecationDetails(
+            since = "1.4.0.0-PN",
+            by = "PowerNukkit",
+            reason = "Magic values",
+            replaceWith = "BellAttachmentType.HANGING")
     public static final int TYPE_ATTACHMENT_HANGING = 1;
-    
+
     @PowerNukkitOnly
     @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit",
-            reason = "Magic values", replaceWith = "BellAttachmentType.SIDE")
+    @DeprecationDetails(
+            since = "1.4.0.0-PN",
+            by = "PowerNukkit",
+            reason = "Magic values",
+            replaceWith = "BellAttachmentType.SIDE")
     public static final int TYPE_ATTACHMENT_SIDE = 2;
-    
+
     @PowerNukkitOnly
     @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit",
-            reason = "Magic values", replaceWith = "BellAttachmentType.MULTIPLE")
+    @DeprecationDetails(
+            since = "1.4.0.0-PN",
+            by = "PowerNukkit",
+            reason = "Magic values",
+            replaceWith = "BellAttachmentType.MULTIPLE")
     public static final int TYPE_ATTACHMENT_MULTIPLE = 3;
 
     @PowerNukkitOnly
@@ -88,24 +101,21 @@ public class BlockBell extends BlockTransparentMeta implements RedstoneComponent
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public Class<? extends BlockEntityBell> getBlockEntityClass() {
         return BlockEntityBell.class;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getBlockEntityType() {
         return BlockEntity.BELL;
     }
@@ -148,14 +158,7 @@ public class BlockBell extends BlockTransparentMeta implements RedstoneComponent
         double d = down ? 0 : 0.25;
         double u = up ? 1 : 0.75;
 
-        return new SimpleAxisAlignedBB(
-                this.x + w,
-                this.y + d,
-                this.z + n,
-                this.x + e,
-                this.y + u,
-                this.z + s
-        );
+        return new SimpleAxisAlignedBB(this.x + w, this.y + d, this.z + n, this.x + e, this.y + u, this.z + s);
     }
 
     @Override
@@ -167,25 +170,22 @@ public class BlockBell extends BlockTransparentMeta implements RedstoneComponent
                 Vector3 entityCenter = new Vector3(
                         (boundingBox.getMaxX() - boundingBox.getMinX()) / 2,
                         (boundingBox.getMaxY() - boundingBox.getMinY()) / 2,
-                        (boundingBox.getMaxZ() - boundingBox.getMinZ()) / 2
-                );
+                        (boundingBox.getMaxZ() - boundingBox.getMinZ()) / 2);
 
                 Vector3 blockCenter = new Vector3(
                         (blockBoundingBox.getMaxX() - blockBoundingBox.getMinX()) / 2,
                         (blockBoundingBox.getMaxY() - blockBoundingBox.getMinY()) / 2,
-                        (blockBoundingBox.getMaxZ() - blockBoundingBox.getMinZ()) / 2
-                );
+                        (blockBoundingBox.getMaxZ() - blockBoundingBox.getMinZ()) / 2);
                 Vector3 entityPos = entity.add(entityCenter);
                 Vector3 blockPos = this.add(
                         blockBoundingBox.getMinX() - x + blockCenter.x,
                         blockBoundingBox.getMinY() - y + blockCenter.y,
-                        blockBoundingBox.getMinZ() - z + blockCenter.z
-                );
+                        blockBoundingBox.getMinZ() - z + blockCenter.z);
 
                 Vector3 entityVector = entityPos.subtract(blockPos);
                 entityVector = entityVector.normalize().multiply(0.4);
                 entityVector.y = Math.max(0.15, entityVector.y);
-                if(ring(entity, BellRingEvent.RingCause.DROPPED_ITEM)) {
+                if (ring(entity, BellRingEvent.RingCause.DROPPED_ITEM)) {
                     entity.setMotion(entityVector);
                 }
             }
@@ -209,7 +209,8 @@ public class BlockBell extends BlockTransparentMeta implements RedstoneComponent
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
-        return ring(player, player != null ? BellRingEvent.RingCause.HUMAN_INTERACTION : BellRingEvent.RingCause.UNKNOWN);
+        return ring(
+                player, player != null ? BellRingEvent.RingCause.HUMAN_INTERACTION : BellRingEvent.RingCause.UNKNOWN);
     }
 
     @PowerNukkitOnly
@@ -227,8 +228,8 @@ public class BlockBell extends BlockTransparentMeta implements RedstoneComponent
                 if (causeEntity instanceof EntityItem) {
                     Position blockMid = add(0.5, 0.5, 0.5);
                     Vector3 vector = causeEntity.subtract(blockMid).normalize();
-                    int x = vector.x < 0? -1 : vector.x > 0? 1 : 0;
-                    int z = vector.z < 0? -1 : vector.z > 0? 1 : 0;
+                    int x = vector.x < 0 ? -1 : vector.x > 0 ? 1 : 0;
+                    int z = vector.z < 0 ? -1 : vector.z > 0 ? 1 : 0;
                     if (x != 0 && z != 0) {
                         if (Math.abs(vector.x) < Math.abs(vector.z)) {
                             x = 0;
@@ -299,8 +300,8 @@ public class BlockBell extends BlockTransparentMeta implements RedstoneComponent
                 break;
             case MULTIPLE:
                 BlockFace blockFace = getBlockFace();
-                if (checkSupport(getSide(blockFace), blockFace.getOpposite()) &&
-                        checkSupport(getSide(blockFace.getOpposite()), blockFace)) {
+                if (checkSupport(getSide(blockFace), blockFace.getOpposite())
+                        && checkSupport(getSide(blockFace.getOpposite()), blockFace)) {
                     return true;
                 }
                 break;
@@ -319,7 +320,7 @@ public class BlockBell extends BlockTransparentMeta implements RedstoneComponent
         if (BlockLever.isSupportValid(support, attachmentFace)) {
             return true;
         }
-        
+
         if (attachmentFace == BlockFace.DOWN) {
             switch (support.getId()) {
                 case CHAIN_BLOCK:
@@ -330,7 +331,7 @@ public class BlockBell extends BlockTransparentMeta implements RedstoneComponent
                     return support instanceof BlockFence || support instanceof BlockWallBase;
             }
         }
-        
+
         if (support instanceof BlockCauldron) {
             return attachmentFace == BlockFace.UP;
         }
@@ -381,8 +382,19 @@ public class BlockBell extends BlockTransparentMeta implements RedstoneComponent
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        if (block.canBeReplaced() && block.getId() != AIR && block.getId() != BUBBLE_COLUMN && !(block instanceof BlockLiquid)) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
+        if (block.canBeReplaced()
+                && block.getId() != AIR
+                && block.getId() != BUBBLE_COLUMN
+                && !(block instanceof BlockLiquid)) {
             face = BlockFace.UP;
         }
         BlockFace playerDirection = player != null ? player.getDirection() : BlockFace.EAST;
@@ -414,7 +426,9 @@ public class BlockBell extends BlockTransparentMeta implements RedstoneComponent
     @Override
     public boolean onProjectileHit(@NotNull Entity projectile, @NotNull Position position, @NotNull Vector3 motion) {
         ring(projectile, BellRingEvent.RingCause.PROJECTILE);
-        if (projectile.isOnFire() && projectile instanceof EntityArrow && level.getBlock(projectile).getId() == BlockID.AIR) {
+        if (projectile.isOnFire()
+                && projectile instanceof EntityArrow
+                && level.getBlock(projectile).getId() == BlockID.AIR) {
             level.setBlock(projectile, Block.get(BlockID.FIRE), true);
         }
         return true;
@@ -437,13 +451,13 @@ public class BlockBell extends BlockTransparentMeta implements RedstoneComponent
     public AttachmentType getAttachment() {
         return getPropertyValue(ATTACHMENT_TYPE);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
     public void setAttachment(AttachmentType attachmentType) {
         setPropertyValue(ATTACHMENT_TYPE, attachmentType);
     }
-    
+
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "Magic values.", replaceWith = "getAttachment()")
     @PowerNukkitOnly
@@ -504,5 +518,4 @@ public class BlockBell extends BlockTransparentMeta implements RedstoneComponent
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
-
 }

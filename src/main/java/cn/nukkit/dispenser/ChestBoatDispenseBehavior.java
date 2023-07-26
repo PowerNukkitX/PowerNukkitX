@@ -11,13 +11,12 @@ import cn.nukkit.math.Vector3;
 
 @PowerNukkitXOnly
 @Since("1.19.60-r1")
-public class ChestBoatDispenseBehavior extends BoatDispenseBehavior{
+public class ChestBoatDispenseBehavior extends BoatDispenseBehavior {
     @Override
     protected void spawnBoatEntity(Level level, Vector3 pos, Item item) {
-        EntityChestBoat boat = new EntityChestBoat(level.getChunk(pos.getChunkX(), pos.getChunkZ()),
-                Entity.getDefaultNBT(pos)
-                        .putInt("Variant", ((ItemChestBoatBase) item).getBoatId())
-        );
+        EntityChestBoat boat = new EntityChestBoat(
+                level.getChunk(pos.getChunkX(), pos.getChunkZ()),
+                Entity.getDefaultNBT(pos).putInt("Variant", ((ItemChestBoatBase) item).getBoatId()));
         boat.spawnToAll();
     }
 }

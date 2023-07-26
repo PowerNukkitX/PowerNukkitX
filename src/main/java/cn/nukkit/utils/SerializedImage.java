@@ -1,12 +1,11 @@
 package cn.nukkit.utils;
 
+import static cn.nukkit.entity.data.Skin.*;
+
 import io.netty.util.internal.EmptyArrays;
+import java.util.Objects;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-
-import java.util.Objects;
-
-import static cn.nukkit.entity.data.Skin.*;
 
 @ToString(exclude = {"data"})
 @EqualsAndHashCode

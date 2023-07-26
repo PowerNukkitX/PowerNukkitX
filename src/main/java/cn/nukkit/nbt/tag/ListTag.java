@@ -2,7 +2,6 @@ package cn.nukkit.nbt.tag;
 
 import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.stream.NBTOutputStream;
-
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.*;
@@ -56,14 +55,13 @@ public class ListTag<T extends Tag> extends Tag {
     public String toString() {
         StringJoiner joiner = new StringJoiner(",\n\t");
         list.forEach(tag -> joiner.add(tag.toString().replace("\n", "\n\t")));
-        return "ListTag '" + this.getName() + "' (" + list.size() + " entries of type " + Tag.getTagName(type) + ") {\n\t" + joiner + "\n}";
+        return "ListTag '" + this.getName() + "' (" + list.size() + " entries of type " + Tag.getTagName(type)
+                + ") {\n\t" + joiner + "\n}";
     }
 
     @Override
     public String toSNBT() {
-        return "[" + list.stream()
-                .map(Tag::toSNBT)
-                .collect(Collectors.joining(",")) + "]";
+        return "[" + list.stream().map(Tag::toSNBT).collect(Collectors.joining(",")) + "]";
     }
 
     @Override
@@ -72,7 +70,9 @@ public class ListTag<T extends Tag> extends Tag {
         addSpace.append(" ".repeat(Math.max(0, space)));
         if (list.isEmpty()) {
             return "[]";
-        } else if (list.get(0) instanceof StringTag || list.get(0) instanceof CompoundTag || list.get(0) instanceof ListTag<?>) {
+        } else if (list.get(0) instanceof StringTag
+                || list.get(0) instanceof CompoundTag
+                || list.get(0) instanceof ListTag<?>) {
             StringJoiner joiner1 = new StringJoiner(",\n" + addSpace);
             list.forEach(tag -> joiner1.add(tag.toSNBT(space).replace("\n", "\n" + addSpace)));
             return "[\n" + addSpace + joiner1 + "\n]";

@@ -23,7 +23,8 @@ import org.jetbrains.annotations.NotNull;
  */
 @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder only in PowerNukkit")
 @PowerNukkitDifference(info = "Implements RedstoneComponent and uses methods from it.", since = "1.4.0.0-PN")
-public class BlockDaylightDetector extends BlockTransparentMeta implements RedstoneComponent, BlockEntityHolder<BlockEntityDaylightDetector> {
+public class BlockDaylightDetector extends BlockTransparentMeta
+        implements RedstoneComponent, BlockEntityHolder<BlockEntityDaylightDetector> {
 
     @Since("1.5.0.0-PN")
     @PowerNukkitOnly
@@ -40,8 +41,7 @@ public class BlockDaylightDetector extends BlockTransparentMeta implements Redst
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -53,16 +53,14 @@ public class BlockDaylightDetector extends BlockTransparentMeta implements Redst
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getBlockEntityType() {
         return BlockEntity.DAYLIGHT_DETECTOR;
     }
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public Class<? extends BlockEntityDaylightDetector> getBlockEntityClass() {
         return BlockEntityDaylightDetector.class;
     }
@@ -109,7 +107,15 @@ public class BlockDaylightDetector extends BlockTransparentMeta implements Redst
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         BlockEntityDaylightDetector detector = BlockEntityHolder.setBlockAndCreateEntity(this);
         if (detector == null) {
             return false;
@@ -162,7 +168,8 @@ public class BlockDaylightDetector extends BlockTransparentMeta implements Redst
     public void updatePower() {
         int i;
         if (getLevel().getDimension() == Level.DIMENSION_OVERWORLD) {
-            i = getLevel().getBlockSkyLightAt((int) x, (int) y, (int) z) - getLevel().calculateSkylightSubtracted(1.0F);
+            i = getLevel().getBlockSkyLightAt((int) x, (int) y, (int) z)
+                    - getLevel().calculateSkylightSubtracted(1.0F);
             float f = getLevel().getCelestialAngle(1.0F) * 6.2831855F;
 
             if (this.isInverted()) {

@@ -11,7 +11,7 @@ public class PlayerHotbarProcessor extends DataPacketProcessor<PlayerHotbarPacke
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull PlayerHotbarPacket pk) {
         if (pk.windowId != ContainerIds.INVENTORY) {
-            return; //In PE this should never happen
+            return; // In PE this should never happen
         }
         playerHandle.player.getInventory().equipItem(pk.selectedHotbarSlot);
     }

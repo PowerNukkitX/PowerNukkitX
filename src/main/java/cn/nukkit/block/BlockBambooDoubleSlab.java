@@ -8,8 +8,7 @@ import cn.nukkit.item.ItemTool;
 @PowerNukkitXOnly
 @Since("1.20.0-r2")
 public class BlockBambooDoubleSlab extends BlockDoubleSlabBase {
-    public BlockBambooDoubleSlab() {
-    }
+    public BlockBambooDoubleSlab() {}
 
     public int getId() {
         return BAMBOO_DOUBLE_SLAB;

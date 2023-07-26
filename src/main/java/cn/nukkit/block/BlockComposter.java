@@ -16,22 +16,24 @@ import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 import java.util.Random;
+import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 public class BlockComposter extends BlockSolidMeta implements ItemID {
 
     private static Int2IntMap compostableItems = new Int2IntOpenHashMap();
     private static Object2IntMap<String> compostableStringItems = new Object2IntOpenHashMap<>();
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final IntBlockProperty COMPOSTER_FILL_LEVEL = new IntBlockProperty("composter_fill_level", false, 8);
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(COMPOSTER_FILL_LEVEL);
+
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
     public static final Item OUTPUT_ITEM = new ItemDye(DyeColor.BONE_MEAL, 1);
@@ -42,8 +44,7 @@ public class BlockComposter extends BlockSolidMeta implements ItemID {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -135,7 +136,8 @@ public class BlockComposter extends BlockSolidMeta implements ItemID {
         }
 
         if (isFull()) {
-            ComposterEmptyEvent event = new ComposterEmptyEvent(this, player, item, MinecraftItemID.BONE_MEAL.get(1), 0);
+            ComposterEmptyEvent event =
+                    new ComposterEmptyEvent(this, player, item, MinecraftItemID.BONE_MEAL.get(1), 0);
             this.level.getServer().getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
                 setDamage(event.getNewLevel());
@@ -279,8 +281,18 @@ public class BlockComposter extends BlockSolidMeta implements ItemID {
     }
 
     private static void registerDefaults() {
-        registerItems(30, KELP, BEETROOT_SEEDS, DRIED_KELP, MELON_SEEDS, PUMPKIN_SEEDS, SWEET_BERRIES,
-                WHEAT_SEEDS, MOSS_CARPET, HANGING_ROOTS, SMALL_DRIPLEAF_BLOCK);
+        registerItems(
+                30,
+                KELP,
+                BEETROOT_SEEDS,
+                DRIED_KELP,
+                MELON_SEEDS,
+                PUMPKIN_SEEDS,
+                SWEET_BERRIES,
+                WHEAT_SEEDS,
+                MOSS_CARPET,
+                HANGING_ROOTS,
+                SMALL_DRIPLEAF_BLOCK);
         registerItems(30, MinecraftItemID.GLOW_BERRIES);
         registerItems(50, MELON_SLICE, SUGAR_CANE, NETHER_SPROUTS, GLOW_LICHEN);
         registerItems(65, APPLE, BEETROOT, CARROT, COCOA, POTATO, WHEAT);
@@ -288,11 +300,35 @@ public class BlockComposter extends BlockSolidMeta implements ItemID {
         registerItems(100, CAKE, PUMPKIN_PIE);
 
         registerBlocks(30, BLOCK_KELP, LEAVES, LEAVES2, SAPLING, SEAGRASS, SWEET_BERRY_BUSH);
-        registerBlocks(50, GRASS, CACTUS, DRIED_KELP_BLOCK, VINE, NETHER_SPROUTS_BLOCK,
-                TWISTING_VINES, WEEPING_VINES, GLOW_LICHEN);
-        registerBlocks(65, DANDELION, RED_FLOWER, DOUBLE_PLANT, WITHER_ROSE, WATERLILY, MELON_BLOCK,
-                PUMPKIN, CARVED_PUMPKIN, SEA_PICKLE, BROWN_MUSHROOM, RED_MUSHROOM,
-                WARPED_ROOTS, CRIMSON_ROOTS, SHROOMLIGHT, AZALEA, BIG_DRIPLEAF, MOSS_BLOCK,
+        registerBlocks(
+                50,
+                GRASS,
+                CACTUS,
+                DRIED_KELP_BLOCK,
+                VINE,
+                NETHER_SPROUTS_BLOCK,
+                TWISTING_VINES,
+                WEEPING_VINES,
+                GLOW_LICHEN);
+        registerBlocks(
+                65,
+                DANDELION,
+                RED_FLOWER,
+                DOUBLE_PLANT,
+                WITHER_ROSE,
+                WATERLILY,
+                MELON_BLOCK,
+                PUMPKIN,
+                CARVED_PUMPKIN,
+                SEA_PICKLE,
+                BROWN_MUSHROOM,
+                RED_MUSHROOM,
+                WARPED_ROOTS,
+                CRIMSON_ROOTS,
+                SHROOMLIGHT,
+                AZALEA,
+                BIG_DRIPLEAF,
+                MOSS_BLOCK,
                 SPORE_BLOSSOM);
         registerBlocks(85, HAY_BALE, BROWN_MUSHROOM_BLOCK, RED_MUSHROOM_BLOCK, MUSHROOM_STEW);
         registerBlocks(100, CAKE_BLOCK);

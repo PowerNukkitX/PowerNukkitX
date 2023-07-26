@@ -7,27 +7,29 @@ import cn.nukkit.blockproperty.exception.InvalidBlockPropertyPersistenceValueExc
 import cn.nukkit.blockproperty.exception.InvalidBlockPropertyValueException;
 import cn.nukkit.math.NukkitMath;
 import com.google.common.base.Preconditions;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
 public class IntBlockProperty extends BlockProperty<Integer> {
     private static final long serialVersionUID = -2239010977496415152L;
-    
+
     private final int minValue;
     private final int maxValue;
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public IntBlockProperty(String name, boolean exportedToItem, int maxValue, int minValue, int bitSize, String persistenceName) {
+    public IntBlockProperty(
+            String name, boolean exportedToItem, int maxValue, int minValue, int bitSize, String persistenceName) {
         super(name, exportedToItem, bitSize, persistenceName);
         int delta = maxValue - minValue;
-        Preconditions.checkArgument(delta > 0, "maxValue must be higher than minValue. Got min:%s and max:%s", minValue, maxValue);
-        
+        Preconditions.checkArgument(
+                delta > 0, "maxValue must be higher than minValue. Got min:%s and max:%s", minValue, maxValue);
+
         int mask = -1 >>> (32 - bitSize);
-        Preconditions.checkArgument(delta <= mask, "The data range from %s to %s can't be stored in %s bits", minValue, maxValue, bitSize);
+        Preconditions.checkArgument(
+                delta <= mask, "The data range from %s to %s can't be stored in %s bits", minValue, maxValue, bitSize);
 
         this.minValue = minValue;
         this.maxValue = maxValue;
@@ -55,14 +57,16 @@ public class IntBlockProperty extends BlockProperty<Integer> {
     @PowerNukkitOnly
     @Override
     public IntBlockProperty copy() {
-        return new IntBlockProperty(getName(), isExportedToItem(), getMaxValue(), getMinValue(), getBitSize(), getPersistenceName());
+        return new IntBlockProperty(
+                getName(), isExportedToItem(), getMaxValue(), getMinValue(), getBitSize(), getPersistenceName());
     }
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     @Override
     public IntBlockProperty exportingToItems(boolean exportedToItem) {
-        return new IntBlockProperty(getName(), exportedToItem, getMaxValue(), getMinValue(), getBitSize(), getPersistenceName());
+        return new IntBlockProperty(
+                getName(), exportedToItem, getMaxValue(), getMinValue(), getBitSize(), getPersistenceName());
     }
 
     @PowerNukkitOnly
@@ -86,8 +90,7 @@ public class IntBlockProperty extends BlockProperty<Integer> {
     }
 
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public Integer getValueForMeta(int meta) {
         return getIntValueForMeta(meta);
     }
@@ -130,8 +133,10 @@ public class IntBlockProperty extends BlockProperty<Integer> {
     }
 
     private void validateDirectly(int newValue) {
-        Preconditions.checkArgument(newValue >= minValue, "New value (%s) must be higher or equals to %s", newValue, minValue);
-        Preconditions.checkArgument(maxValue >= newValue, "New value (%s) must be less or equals to %s", newValue, maxValue);
+        Preconditions.checkArgument(
+                newValue >= minValue, "New value (%s) must be higher or equals to %s", newValue, minValue);
+        Preconditions.checkArgument(
+                maxValue >= newValue, "New value (%s) must be less or equals to %s", newValue, maxValue);
     }
 
     @PowerNukkitOnly
@@ -162,8 +167,7 @@ public class IntBlockProperty extends BlockProperty<Integer> {
     @Override
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public Integer getDefaultValue() {
+    @NotNull public Integer getDefaultValue() {
         return minValue;
     }
 
@@ -189,8 +193,7 @@ public class IntBlockProperty extends BlockProperty<Integer> {
     }
 
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public Class<Integer> getValueClass() {
         return Integer.class;
     }

@@ -10,10 +10,9 @@ import cn.nukkit.camera.data.Rot;
 import cn.nukkit.camera.instruction.CameraInstruction;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
+import javax.annotation.Nullable;
 import lombok.Builder;
 import lombok.Getter;
-
-import javax.annotation.Nullable;
 
 /**
  * @author daoge_cmd
@@ -26,24 +25,21 @@ import javax.annotation.Nullable;
 @Getter
 public class SetInstruction implements CameraInstruction {
 
-    @Nullable
-    private final Ease ease;
-    @Nullable
-    private final Pos pos;
-    @Nullable
-    private final Rot rot;
+    @Nullable private final Ease ease;
+
+    @Nullable private final Pos pos;
+
+    @Nullable private final Rot rot;
+
     private final CameraPreset preset;
 
     @Override
     @DoNotModify
     public Tag serialize() {
         var tag = new CompoundTag("set");
-        if (ease != null)
-            tag.putCompound("ease", ease.serialize());
-        if (pos != null)
-            tag.putCompound("pos", pos.serialize());
-        if (rot != null)
-            tag.putCompound("rot", rot.serialize());
+        if (ease != null) tag.putCompound("ease", ease.serialize());
+        if (pos != null) tag.putCompound("pos", pos.serialize());
+        if (rot != null) tag.putCompound("rot", rot.serialize());
         tag.putInt("preset", preset.getId());
         return tag;
     }

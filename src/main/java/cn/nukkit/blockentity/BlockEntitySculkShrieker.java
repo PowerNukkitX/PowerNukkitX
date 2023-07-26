@@ -23,5 +23,4 @@ public class BlockEntitySculkShrieker extends BlockEntity {
     public boolean isBlockEntityValid() {
         return getLevelBlock().getId() == BlockID.SCULK_SHRIEKER;
     }
-
 }

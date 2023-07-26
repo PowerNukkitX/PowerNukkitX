@@ -55,7 +55,15 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Redsto
     @PowerNukkitDifference(info = "Allow to be placed on top of the walls", since = "1.3.0.0-PN")
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed support logic")
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         if (!isSupportValid(down())) {
             return false;
         }
@@ -131,7 +139,8 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Redsto
         if (!this.isLocked()) {
             boolean shouldPowered = this.shouldBePowered();
 
-            if ((this.isPowered && !shouldPowered || !this.isPowered && shouldPowered) && !this.level.isBlockTickPending(this, this)) {
+            if ((this.isPowered && !shouldPowered || !this.isPowered && shouldPowered)
+                    && !this.level.isBlockTickPending(this, this)) {
                 /*int priority = -1;
 
                 if (this.isFacingTowardsRepeater()) {
@@ -173,7 +182,13 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Redsto
 
     protected int getPowerOnSide(Vector3 pos, BlockFace side) {
         Block block = this.level.getBlock(pos);
-        return isAlternateInput(block) ? (block.getId() == Block.REDSTONE_BLOCK ? 15 : (block.getId() == Block.REDSTONE_WIRE ? block.getDamage() : this.level.getStrongPower(pos, side))) : 0;
+        return isAlternateInput(block)
+                ? (block.getId() == Block.REDSTONE_BLOCK
+                        ? 15
+                        : (block.getId() == Block.REDSTONE_WIRE
+                                ? block.getDamage()
+                                : this.level.getStrongPower(pos, side)))
+                : 0;
     }
 
     @Override
@@ -249,5 +264,4 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Redsto
     public BlockFace getBlockFace() {
         return BlockFace.fromHorizontalIndex(this.getDamage() & 0x07);
     }
-
 }

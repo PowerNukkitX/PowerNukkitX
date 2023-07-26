@@ -6,9 +6,6 @@ import cn.nukkit.utils.*;
 import com.google.common.base.Preconditions;
 import com.nimbusds.jose.shaded.json.JSONObject;
 import com.nimbusds.jose.shaded.json.JSONValue;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.nio.charset.StandardCharsets;
@@ -16,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -35,8 +34,10 @@ public class Skin {
     private final List<PersonaPieceTint> tintColors = new ArrayList<>();
     private String skinId;
     private String fullSkinId;
+
     @Since("1.4.0.0-PN")
     private String playFabId = "";
+
     private String skinResourcePatch = GEOMETRY_CUSTOM;
     private SerializedImage skinData;
     private SerializedImage capeData;
@@ -77,15 +78,19 @@ public class Skin {
     }
 
     private boolean isValidSkin() {
-        return skinId != null && !skinId.trim().isEmpty() && skinId.length() < 100 &&
-                skinData != null && skinData.width >= 64 && skinData.height >= 32 &&
-                skinData.data.length >= SINGLE_SKIN_SIZE &&
-                (playFabId == null || playFabId.length() < 100) &&
-                (capeId == null || capeId.length() < 100) &&
-                (skinColor == null || skinColor.length() < 100) &&
-                (armSize == null || armSize.length() < 100) &&
-                (fullSkinId == null || fullSkinId.length() < 200) &&
-                (geometryDataEngineVersion == null || geometryDataEngineVersion.length() < 100);
+        return skinId != null
+                && !skinId.trim().isEmpty()
+                && skinId.length() < 100
+                && skinData != null
+                && skinData.width >= 64
+                && skinData.height >= 32
+                && skinData.data.length >= SINGLE_SKIN_SIZE
+                && (playFabId == null || playFabId.length() < 100)
+                && (capeId == null || capeId.length() < 100)
+                && (skinColor == null || skinColor.length() < 100)
+                && (armSize == null || armSize.length() < 100)
+                && (fullSkinId == null || fullSkinId.length() < 200)
+                && (geometryDataEngineVersion == null || geometryDataEngineVersion.length() < 100);
     }
 
     private boolean isValidResourcePatch() {
@@ -136,7 +141,8 @@ public class Skin {
     }
 
     public void generateSkinId(String name) {
-        byte[] data = Binary.appendBytes(getSkinData().data, getSkinResourcePatch().getBytes(StandardCharsets.UTF_8));
+        byte[] data =
+                Binary.appendBytes(getSkinData().data, getSkinResourcePatch().getBytes(StandardCharsets.UTF_8));
         this.skinId = UUID.nameUUIDFromBytes(data) + "." + name;
     }
 

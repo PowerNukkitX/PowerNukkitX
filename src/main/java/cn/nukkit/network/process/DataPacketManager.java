@@ -16,13 +16,15 @@ import org.jetbrains.annotations.NotNull;
 @Since("1.19.80-r2")
 @PowerNukkitXOnly
 public final class DataPacketManager {
-    private static final Int2ObjectOpenHashMap<DataPacketProcessor> CURRENT_PROTOCOL_PROCESSORS = new Int2ObjectOpenHashMap<>(300);
+    private static final Int2ObjectOpenHashMap<DataPacketProcessor> CURRENT_PROTOCOL_PROCESSORS =
+            new Int2ObjectOpenHashMap<>(300);
 
     public static void registerProcessor(@NotNull DataPacketProcessor... processors) {
         for (var processor : processors) {
             if (processor.getProtocol() != ProtocolInfo.CURRENT_PROTOCOL) {
-                throw new IllegalArgumentException("Processor protocol " + processor.getProtocol() + " does not match current protocol " + ProtocolInfo.CURRENT_PROTOCOL
-                        + ". Multi-version support is not implemented yet.");
+                throw new IllegalArgumentException(
+                        "Processor protocol " + processor.getProtocol() + " does not match current protocol "
+                                + ProtocolInfo.CURRENT_PROTOCOL + ". Multi-version support is not implemented yet.");
             }
             CURRENT_PROTOCOL_PROCESSORS.put(processor.getPacketId(), processor);
         }
@@ -38,15 +40,17 @@ public final class DataPacketManager {
 
     public static void processPacket(@NotNull PlayerHandle playerHandle, @NotNull DataPacket packet) {
         if (packet.getProtocolUsed() != ProtocolInfo.CURRENT_PROTOCOL) {
-            throw new IllegalArgumentException("Packet protocol " + packet.getProtocolUsed() + " does not match current protocol " + ProtocolInfo.CURRENT_PROTOCOL
-                    + ". Multi-version support is not implemented yet.");
+            throw new IllegalArgumentException(
+                    "Packet protocol " + packet.getProtocolUsed() + " does not match current protocol "
+                            + ProtocolInfo.CURRENT_PROTOCOL + ". Multi-version support is not implemented yet.");
         }
         var processor = CURRENT_PROTOCOL_PROCESSORS.get(packet.packetId());
         if (processor != null) {
             //noinspection unchecked
             processor.handle(playerHandle, packet);
         } else {
-            throw new UnsupportedOperationException("No processor found for packet " + packet.getClass().getName() + " with id " + packet.packetId() + ".");
+            throw new UnsupportedOperationException("No processor found for packet "
+                    + packet.getClass().getName() + " with id " + packet.packetId() + ".");
         }
     }
 
@@ -100,7 +104,6 @@ public final class DataPacketManager {
                 new ShowCreditsProcessor(),
                 new TickSyncProcessor(),
                 new RequestPermissionsProcessor(),
-                new RiderJumpProcessor()
-        );
+                new RiderJumpProcessor());
     }
 }

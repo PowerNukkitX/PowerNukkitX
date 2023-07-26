@@ -11,9 +11,8 @@ import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Faceable;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * http://minecraft.gamepedia.com/End_Rod
@@ -46,8 +45,7 @@ public class BlockEndRod extends BlockTransparentMeta implements Faceable {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -104,7 +102,15 @@ public class BlockEndRod extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
         int[] faces = {0, 1, 3, 2, 5, 4};
         this.setDamage(faces[player != null ? face.getIndex() : 0]);
         this.getLevel().setBlock(block, this, true, true);
@@ -122,5 +128,4 @@ public class BlockEndRod extends BlockTransparentMeta implements Faceable {
     public BlockFace getBlockFace() {
         return BlockFace.fromIndex(this.getDamage() & 0x07);
     }
-
 }

@@ -13,7 +13,6 @@ import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
-
 import java.util.Map;
 
 @PowerNukkitXOnly
@@ -24,18 +23,19 @@ public class SetBlockCommand extends VanillaCommand {
         super(name, "commands.setblock.description");
         this.setPermission("nukkit.command.setblock");
         this.commandParameters.clear();
-        this.commandParameters.put("default", new CommandParameter[]{
-                CommandParameter.newType("position", CommandParamType.POSITION),
-                CommandParameter.newEnum("tileName", false, CommandEnum.ENUM_BLOCK),
-                CommandParameter.newType("tileData", true, CommandParamType.INT),
-                CommandParameter.newEnum("oldBlockHandling", true, new String[]{"destroy", "keep", "replace"})
+        this.commandParameters.put("default", new CommandParameter[] {
+            CommandParameter.newType("position", CommandParamType.POSITION),
+            CommandParameter.newEnum("tileName", false, CommandEnum.ENUM_BLOCK),
+            CommandParameter.newType("tileData", true, CommandParamType.INT),
+            CommandParameter.newEnum("oldBlockHandling", true, new String[] {"destroy", "keep", "replace"})
         });
         this.enableParamTree();
     }
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         Position position = list.getResult(0);
         Block block = list.getResult(1);
@@ -45,7 +45,8 @@ public class SetBlockCommand extends VanillaCommand {
                 block.setDamage(data);
             }
         } catch (IndexOutOfBoundsException | InvalidBlockStateException ignored) {
-            log.addError("commands.setblock.notFound", block.getPersistenceName()).output();
+            log.addError("commands.setblock.notFound", block.getPersistenceName())
+                    .output();
             return 0;
         }
         String oldBlockHandling = "replace";

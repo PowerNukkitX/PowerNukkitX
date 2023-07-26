@@ -42,7 +42,13 @@ public class StructureBlockUpdatePacket extends DataPacket {
         var type = this.getVarInt();
         var structureSettings = readStructureSettings();
         var redstoneSaveMode = this.getVarInt();
-        return new StructureEditorData(name, dataField, isIncludingPlayers, isBoundingBoxVisible, StructureBlockType.from(type), structureSettings,
+        return new StructureEditorData(
+                name,
+                dataField,
+                isIncludingPlayers,
+                isBoundingBoxVisible,
+                StructureBlockType.from(type),
+                structureSettings,
                 StructureRedstoneSaveMode.from(redstoneSaveMode));
     }
 
@@ -61,10 +67,21 @@ public class StructureBlockUpdatePacket extends DataPacket {
         var integrityValue = this.getLFloat();
         var integritySeed = this.getLInt();
         var pivot = this.getVector3f();
-        return new StructureSettings(paletteName, isIgnoringEntities, isIgnoringBlocks, isNonTickingPlayersAndTickingAreasEnabled, size, offset,
-                lastEditedByEntityId, StructureRotation.from(rotation), StructureMirror.from(mirror), StructureAnimationMode.from(animationMode),
-                animationSeconds, integrityValue, integritySeed, pivot
-        );
+        return new StructureSettings(
+                paletteName,
+                isIgnoringEntities,
+                isIgnoringBlocks,
+                isNonTickingPlayersAndTickingAreasEnabled,
+                size,
+                offset,
+                lastEditedByEntityId,
+                StructureRotation.from(rotation),
+                StructureMirror.from(mirror),
+                StructureAnimationMode.from(animationMode),
+                animationSeconds,
+                integrityValue,
+                integritySeed,
+                pivot);
     }
 
     private void writeEditorData(StructureEditorData editorData) {

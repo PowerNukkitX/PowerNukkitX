@@ -19,20 +19,36 @@ public enum RecipeType {
      * @since v582
      */
     SMITHING_TRIM(9),
-    @PowerNukkitOnly BLAST_FURNACE(2),
-    @PowerNukkitOnly BLAST_FURNACE_DATA(3),
-    @PowerNukkitOnly SMOKER(2),
-    @PowerNukkitOnly SMOKER_DATA(3),
-    @PowerNukkitOnly CAMPFIRE(2),
-    @PowerNukkitOnly CAMPFIRE_DATA(3),
-    @PowerNukkitOnly STONECUTTER(0),
-    @PowerNukkitOnly CARTOGRAPHY(0),
-    @PowerNukkitOnly REPAIR(-1),
-    @PowerNukkitOnly @Since("1.4.0.0-PN") @Deprecated(since = "1.19.63-r2")
-    @DeprecationDetails(since = "1.19.63-r2", reason = "Use SMITHING_TRANSFORM instead", replaceWith = "SMITHING_TRANSFORM")
+    @PowerNukkitOnly
+    BLAST_FURNACE(2),
+    @PowerNukkitOnly
+    BLAST_FURNACE_DATA(3),
+    @PowerNukkitOnly
+    SMOKER(2),
+    @PowerNukkitOnly
+    SMOKER_DATA(3),
+    @PowerNukkitOnly
+    CAMPFIRE(2),
+    @PowerNukkitOnly
+    CAMPFIRE_DATA(3),
+    @PowerNukkitOnly
+    STONECUTTER(0),
+    @PowerNukkitOnly
+    CARTOGRAPHY(0),
+    @PowerNukkitOnly
+    REPAIR(-1),
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    @Deprecated(since = "1.19.63-r2")
+    @DeprecationDetails(
+            since = "1.19.63-r2",
+            reason = "Use SMITHING_TRANSFORM instead",
+            replaceWith = "SMITHING_TRANSFORM")
     SMITHING(8),
     // For mods
-    @PowerNukkitXOnly @Since("1.19.50-r3") MOD_PROCESS(0);
+    @PowerNukkitXOnly
+    @Since("1.19.50-r3")
+    MOD_PROCESS(0);
 
     @PowerNukkitOnly
     public final int networkType;

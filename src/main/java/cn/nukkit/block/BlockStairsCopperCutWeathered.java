@@ -31,10 +31,8 @@ public class BlockStairsCopperCutWeathered extends BlockStairsCopperCut {
 
     @Since("FUTURE")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public OxidizationLevel getOxidizationLevel() {
         return OxidizationLevel.WEATHERED;
     }
-
 }

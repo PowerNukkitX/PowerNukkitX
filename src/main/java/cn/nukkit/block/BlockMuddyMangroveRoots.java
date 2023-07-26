@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
+
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -10,15 +12,12 @@ import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
-
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public class BlockMuddyMangroveRoots extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(PILLAR_AXIS);
 
-    public BlockMuddyMangroveRoots() {
-    }
+    public BlockMuddyMangroveRoots() {}
 
     @Override
     public String getName() {
@@ -30,8 +29,7 @@ public class BlockMuddyMangroveRoots extends BlockSolid {
         return MUDDY_MANGROVE_ROOTS;
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -70,7 +68,15 @@ public class BlockMuddyMangroveRoots extends BlockSolid {
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
         setPillarAxis(face.getAxis());
         getLevel().setBlock(block, this, true, true);
         return true;

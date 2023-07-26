@@ -1,7 +1,6 @@
 package cn.nukkit.scheduler;
 
 import cn.nukkit.InterruptibleThread;
-
 import java.util.LinkedList;
 
 /**
@@ -45,9 +44,8 @@ public class AsyncWorker extends Thread implements InterruptibleThread {
             try {
                 sleep(5);
             } catch (InterruptedException e) {
-                //igonre
+                // igonre
             }
         }
     }
-
 }

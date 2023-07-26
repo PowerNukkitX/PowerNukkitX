@@ -53,7 +53,8 @@ public class ObjectDarkOakTree extends TreeGenerator {
 
                     int k2 = k + j2;
                     Vector3 blockpos1 = new Vector3(k1, k2, l1);
-                    int material = level.getBlockIdAt(blockpos1.getFloorX(), blockpos1.getFloorY(), blockpos1.getFloorZ());
+                    int material =
+                            level.getBlockIdAt(blockpos1.getFloorX(), blockpos1.getFloorY(), blockpos1.getFloorZ());
 
                     if (material == Block.AIR || material == Block.LEAVES) {
                         this.placeLogAt(level, blockpos1);
@@ -90,7 +91,11 @@ public class ObjectDarkOakTree extends TreeGenerator {
 
                 for (int j3 = -3; j3 <= 4; ++j3) {
                     for (int i4 = -3; i4 <= 4; ++i4) {
-                        if ((j3 != -3 || i4 != -3) && (j3 != -3 || i4 != 4) && (j3 != 4 || i4 != -3) && (j3 != 4 || i4 != 4) && (Math.abs(j3) < 3 || Math.abs(i4) < 3)) {
+                        if ((j3 != -3 || i4 != -3)
+                                && (j3 != -3 || i4 != 4)
+                                && (j3 != 4 || i4 != -3)
+                                && (j3 != 4 || i4 != 4)
+                                && (Math.abs(j3) < 3 || Math.abs(i4) < 3)) {
                             this.placeLeafAt(level, k1 + j3, i2, l1 + i4);
                         }
                     }
@@ -149,7 +154,8 @@ public class ObjectDarkOakTree extends TreeGenerator {
             for (int j1 = -i1; j1 <= i1; ++j1) {
                 for (int k1 = -i1; k1 <= i1; ++k1) {
                     blockPos.setComponents(i + j1, j + l, k + k1);
-                    if (!this.canGrowInto(worldIn.getBlockIdAt(blockPos.getFloorX(), blockPos.getFloorY(), blockPos.getFloorZ()))) {
+                    if (!this.canGrowInto(
+                            worldIn.getBlockIdAt(blockPos.getFloorX(), blockPos.getFloorY(), blockPos.getFloorZ()))) {
                         return false;
                     }
                 }

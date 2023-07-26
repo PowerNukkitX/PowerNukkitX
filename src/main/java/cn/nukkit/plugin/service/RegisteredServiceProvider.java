@@ -1,6 +1,5 @@
 package cn.nukkit.plugin.service;
 
-
 import cn.nukkit.plugin.Plugin;
 
 /**
@@ -71,5 +70,4 @@ public class RegisteredServiceProvider<T> implements Comparable<RegisteredServic
     public int compareTo(RegisteredServiceProvider<T> other) {
         return other.priority.ordinal() - priority.ordinal();
     }
-
 }

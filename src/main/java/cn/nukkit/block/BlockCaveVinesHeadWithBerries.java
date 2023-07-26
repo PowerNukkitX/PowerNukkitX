@@ -27,8 +27,7 @@ public class BlockCaveVinesHeadWithBerries extends BlockCaveVines {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -45,6 +44,6 @@ public class BlockCaveVinesHeadWithBerries extends BlockCaveVines {
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{Item.get(ItemID.GLOW_BERRIES)};
+        return new Item[] {Item.get(ItemID.GLOW_BERRIES)};
     }
 }

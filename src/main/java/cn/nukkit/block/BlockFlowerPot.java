@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.block.BlockLeaves.UPDATE;
+
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
@@ -16,11 +18,8 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
-
-import static cn.nukkit.block.BlockLeaves.UPDATE;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Nukkit Project Team
@@ -41,8 +40,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -65,16 +63,14 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public Class<? extends BlockEntityFlowerPot> getBlockEntityClass() {
         return BlockEntityFlowerPot.class;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getBlockEntityType() {
         return BlockEntity.FLOWER_POT;
     }
@@ -103,7 +99,15 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed support logic")
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         if (!BlockLever.isSupportValid(down(), BlockFace.UP)) {
             return false;
         }
@@ -120,8 +124,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public Item getFlower() {
+    @NotNull public Item getFlower() {
         BlockEntityFlowerPot blockEntity = getBlockEntity();
         if (blockEntity == null || !blockEntity.namedTag.containsCompound("PlantBlock")) {
             return Item.get(0, 0, 0);
@@ -187,8 +190,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
                 return false;
             }
 
-            if (!item.isNull())
-                return false;
+            if (!item.isNull()) return false;
 
             if (hasFlower()) {
                 var flower = getFlower();
@@ -229,14 +231,9 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
             insideMeta = blockEntity.namedTag.getCompound("PlantBlock").getInt("itemMeta");
         }
         if (dropInside) {
-            return new Item[]{
-                    new ItemFlowerPot(),
-                    Item.get(insideID, insideMeta)
-            };
+            return new Item[] {new ItemFlowerPot(), Item.get(insideID, insideMeta)};
         } else {
-            return new Item[]{
-                    new ItemFlowerPot()
-            };
+            return new Item[] {new ItemFlowerPot()};
         }
     }
 
@@ -308,7 +305,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
             var tag = NBTIO.putBlockHelper(block);
             tag.setName("PlantBlock");
             var item = block.toItem();
-            //only exist in PNX
+            // only exist in PNX
             tag.putInt("itemId", item.getId());
             tag.putInt("itemMeta", item.getDamage());
             return tag;

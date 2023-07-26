@@ -7,7 +7,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.command.tree.node.IParamNode;
 import cn.nukkit.item.Item;
 import com.google.common.collect.Lists;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -21,12 +20,15 @@ public class CommandParameter {
     public String name;
     public CommandParamType type;
     public boolean optional;
+
     @Deprecated
     @DeprecationDetails(since = "1.19.20-r1", reason = "use CommandParamOption instead")
     public byte options = 0;
+
     @PowerNukkitXOnly
     @Since("1.19.20-r2")
     public List<CommandParamOption> paramOptions;
+
     public CommandEnum enumData;
     public String postFix;
 
@@ -38,7 +40,10 @@ public class CommandParameter {
      * @deprecated use {@link #newType(String, boolean, CommandParamType)} instead
      */
     @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", reason = "Deprecated by Cloudburst Nukkit", replaceWith = "newType(String, boolean, CommandParamType)")
+    @DeprecationDetails(
+            since = "1.4.0.0-PN",
+            reason = "Deprecated by Cloudburst Nukkit",
+            replaceWith = "newType(String, boolean, CommandParamType)")
     public CommandParameter(String name, String type, boolean optional) {
         this(name, fromString(type), optional);
     }
@@ -47,7 +52,10 @@ public class CommandParameter {
      * @deprecated use {@link #newType(String, boolean, CommandParamType)} instead
      */
     @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", reason = "Deprecated by Cloudburst Nukkit", replaceWith = "newType(String, boolean, CommandParamType)")
+    @DeprecationDetails(
+            since = "1.4.0.0-PN",
+            reason = "Deprecated by Cloudburst Nukkit",
+            replaceWith = "newType(String, boolean, CommandParamType)")
     public CommandParameter(String name, CommandParamType type, boolean optional) {
         this.name = name;
         this.type = type;
@@ -58,7 +66,10 @@ public class CommandParameter {
      * @deprecated use {@link #newType(String, boolean, CommandParamType)} instead
      */
     @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", reason = "Deprecated by Cloudburst Nukkit", replaceWith = "newType(String, boolean, CommandParamType)")
+    @DeprecationDetails(
+            since = "1.4.0.0-PN",
+            reason = "Deprecated by Cloudburst Nukkit",
+            replaceWith = "newType(String, boolean, CommandParamType)")
     public CommandParameter(String name, boolean optional) {
         this(name, CommandParamType.RAWTEXT, optional);
     }
@@ -67,7 +78,10 @@ public class CommandParameter {
      * @deprecated use {@link #newType(String, CommandParamType)} instead
      */
     @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", reason = "Deprecated by Cloudburst Nukkit", replaceWith = "newType(String, CommandParamType)")
+    @DeprecationDetails(
+            since = "1.4.0.0-PN",
+            reason = "Deprecated by Cloudburst Nukkit",
+            replaceWith = "newType(String, CommandParamType)")
     public CommandParameter(String name) {
         this(name, false);
     }
@@ -76,19 +90,26 @@ public class CommandParameter {
      * @deprecated use {@link #newEnum(String, boolean, String)} instead
      */
     @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", reason = "Deprecated by Cloudburst Nukkit", replaceWith = "newEnum(String, boolean, String)")
+    @DeprecationDetails(
+            since = "1.4.0.0-PN",
+            reason = "Deprecated by Cloudburst Nukkit",
+            replaceWith = "newEnum(String, boolean, String)")
     public CommandParameter(String name, boolean optional, String enumType) {
         this.name = name;
         this.type = CommandParamType.RAWTEXT;
         this.optional = optional;
-        this.enumData = new CommandEnum(enumType, ENUM_TYPE_ITEM_LIST.equals(enumType) ? Item.getItemList() : new ArrayList<>());
+        this.enumData = new CommandEnum(
+                enumType, ENUM_TYPE_ITEM_LIST.equals(enumType) ? Item.getItemList() : new ArrayList<>());
     }
 
     /**
      * @deprecated use {@link #newEnum(String, boolean, String[])} instead
      */
     @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", reason = "Deprecated by Cloudburst Nukkit", replaceWith = "newEnum(String, boolean, String[])")
+    @DeprecationDetails(
+            since = "1.4.0.0-PN",
+            reason = "Deprecated by Cloudburst Nukkit",
+            replaceWith = "newEnum(String, boolean, String[])")
     public CommandParameter(String name, boolean optional, String[] enumValues) {
         this.name = name;
         this.type = CommandParamType.RAWTEXT;
@@ -100,7 +121,10 @@ public class CommandParameter {
      * @deprecated use {@link #newEnum(String, String)} instead
      */
     @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", reason = "Deprecated by Cloudburst Nukkit", replaceWith = "newEnum(String, String)")
+    @DeprecationDetails(
+            since = "1.4.0.0-PN",
+            reason = "Deprecated by Cloudburst Nukkit",
+            replaceWith = "newEnum(String, String)")
     public CommandParameter(String name, String enumType) {
         this(name, false, enumType);
     }
@@ -109,18 +133,28 @@ public class CommandParameter {
      * @deprecated use {@link #newEnum(String, String[])} instead
      */
     @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", reason = "Deprecated by Cloudburst Nukkit", replaceWith = "newEnum(String, String[])")
+    @DeprecationDetails(
+            since = "1.4.0.0-PN",
+            reason = "Deprecated by Cloudburst Nukkit",
+            replaceWith = "newEnum(String, String[])")
     public CommandParameter(String name, String[] enumValues) {
         this(name, false, enumValues);
     }
 
-    private CommandParameter(String name, boolean optional, CommandParamType type, CommandEnum enumData, String postFix) {
+    private CommandParameter(
+            String name, boolean optional, CommandParamType type, CommandEnum enumData, String postFix) {
         this(name, optional, type, enumData, postFix, null);
     }
 
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
-    private CommandParameter(String name, boolean optional, CommandParamType type, CommandEnum enumData, String postFix, IParamNode<?> paramNode) {
+    private CommandParameter(
+            String name,
+            boolean optional,
+            CommandParamType type,
+            CommandEnum enumData,
+            String postFix,
+            IParamNode<?> paramNode) {
         this.name = name;
         this.optional = optional;
         this.type = type;
@@ -128,7 +162,6 @@ public class CommandParameter {
         this.postFix = postFix;
         this.paramNode = paramNode;
     }
-
 
     /**
      * optional = false
@@ -139,7 +172,6 @@ public class CommandParameter {
     public static CommandParameter newType(String name, CommandParamType type) {
         return newType(name, false, type);
     }
-
 
     /**
      * optional = false,CommandParamOption=[]
@@ -152,7 +184,6 @@ public class CommandParameter {
         return newType(name, false, type, paramNode);
     }
 
-
     /**
      * paramNode = null , CommandParamOption=[]
      *
@@ -160,7 +191,7 @@ public class CommandParameter {
      */
     @Since("1.4.0.0-PN")
     public static CommandParameter newType(String name, boolean optional, CommandParamType type) {
-        return newType(name, optional, type, null, new CommandParamOption[]{});
+        return newType(name, optional, type, null, new CommandParamOption[] {});
     }
 
     /**
@@ -170,7 +201,8 @@ public class CommandParameter {
      */
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
-    public static CommandParameter newType(String name, boolean optional, CommandParamType type, CommandParamOption... options) {
+    public static CommandParameter newType(
+            String name, boolean optional, CommandParamType type, CommandParamOption... options) {
         return newType(name, optional, type, null, options);
     }
 
@@ -186,7 +218,12 @@ public class CommandParameter {
      */
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
-    public static CommandParameter newType(String name, boolean optional, CommandParamType type, IParamNode<?> paramNode, CommandParamOption... options) {
+    public static CommandParameter newType(
+            String name,
+            boolean optional,
+            CommandParamType type,
+            IParamNode<?> paramNode,
+            CommandParamOption... options) {
         var result = new CommandParameter(name, optional, type, null, null, paramNode);
         if (options.length != 0) {
             result.paramOptions = Lists.newArrayList(options);
@@ -271,10 +308,10 @@ public class CommandParameter {
      */
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
-    public static CommandParameter newEnum(String name, boolean optional, CommandEnum data, CommandParamOption... options) {
+    public static CommandParameter newEnum(
+            String name, boolean optional, CommandEnum data, CommandParamOption... options) {
         return newEnum(name, optional, data, null, options);
     }
-
 
     /**
      * optional = false
@@ -284,7 +321,7 @@ public class CommandParameter {
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
     public static CommandParameter newEnum(String name, boolean optional, CommandEnum data, IParamNode<?> paramNode) {
-        return newEnum(name, optional, data, paramNode, new CommandParamOption[]{});
+        return newEnum(name, optional, data, paramNode, new CommandParamOption[] {});
     }
 
     /**
@@ -299,7 +336,8 @@ public class CommandParameter {
      */
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
-    public static CommandParameter newEnum(String name, boolean optional, CommandEnum data, IParamNode<?> paramNode, CommandParamOption... options) {
+    public static CommandParameter newEnum(
+            String name, boolean optional, CommandEnum data, IParamNode<?> paramNode, CommandParamOption... options) {
         var result = new CommandParameter(name, optional, null, data, null, paramNode);
         if (options.length != 0) {
             result.paramOptions = Lists.newArrayList(options);
@@ -307,8 +345,8 @@ public class CommandParameter {
         return result;
     }
 
-    //此方法使用不当会崩溃客户端，请谨慎使用！
-    //todo 注释掉创建Postfix的方法直到能够稳定运行
+    // 此方法使用不当会崩溃客户端，请谨慎使用！
+    // todo 注释掉创建Postfix的方法直到能够稳定运行
     /*@Since("1.4.0.0-PN")
     public static CommandParameter newPostfix(String name, String postfix) {
         return newPostfix(name, false, postfix);
@@ -340,42 +378,42 @@ public class CommandParameter {
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "Removed from Cloudburst Nukkit")
     @PowerNukkitOnly("Re-added for backward compatibility")
-    public final static String ARG_TYPE_STRING = "string";
+    public static final String ARG_TYPE_STRING = "string";
 
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "Removed from Cloudburst Nukkit")
     @PowerNukkitOnly("Re-added for backward compatibility")
-    public final static String ARG_TYPE_STRING_ENUM = "stringenum";
+    public static final String ARG_TYPE_STRING_ENUM = "stringenum";
 
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "Removed from Cloudburst Nukkit")
     @PowerNukkitOnly("Re-added for backward compatibility")
-    public final static String ARG_TYPE_BOOL = "bool";
+    public static final String ARG_TYPE_BOOL = "bool";
 
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "Removed from Cloudburst Nukkit")
     @PowerNukkitOnly("Re-added for backward compatibility")
-    public final static String ARG_TYPE_TARGET = "target";
+    public static final String ARG_TYPE_TARGET = "target";
 
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "Removed from Cloudburst Nukkit")
     @PowerNukkitOnly("Re-added for backward compatibility")
-    public final static String ARG_TYPE_PLAYER = "target";
+    public static final String ARG_TYPE_PLAYER = "target";
 
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "Removed from Cloudburst Nukkit")
     @PowerNukkitOnly("Re-added for backward compatibility")
-    public final static String ARG_TYPE_BLOCK_POS = "blockpos";
+    public static final String ARG_TYPE_BLOCK_POS = "blockpos";
 
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "Removed from Cloudburst Nukkit")
     @PowerNukkitOnly("Re-added for backward compatibility")
-    public final static String ARG_TYPE_RAW_TEXT = "rawtext";
+    public static final String ARG_TYPE_RAW_TEXT = "rawtext";
 
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "Removed from Cloudburst Nukkit")
     @PowerNukkitOnly("Re-added for backward compatibility")
-    public final static String ARG_TYPE_INT = "int";
+    public static final String ARG_TYPE_INT = "int";
 
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "Removed from Cloudburst Nukkit")

@@ -7,10 +7,9 @@ import cn.nukkit.event.player.PlayerChangeSkinEvent;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.PlayerSkinPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
+import java.util.concurrent.TimeUnit;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.concurrent.TimeUnit;
 
 @Log4j2
 public class PlayerSkinProcessor extends DataPacketProcessor<PlayerSkinPacket> {
@@ -30,7 +29,8 @@ public class PlayerSkinProcessor extends DataPacketProcessor<PlayerSkinPacket> {
         }
 
         PlayerChangeSkinEvent playerChangeSkinEvent = new PlayerChangeSkinEvent(player, skin);
-        var tooQuick = TimeUnit.SECONDS.toMillis(player.getServer().getPlayerSkinChangeCooldown()) > System.currentTimeMillis() - player.lastSkinChange;
+        var tooQuick = TimeUnit.SECONDS.toMillis(player.getServer().getPlayerSkinChangeCooldown())
+                > System.currentTimeMillis() - player.lastSkinChange;
         if (tooQuick) {
             playerChangeSkinEvent.setCancelled(true);
             log.warn("Player " + playerHandle.getUsername() + " change skin too quick!");

@@ -25,9 +25,8 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Position;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author joserobjr
@@ -38,7 +37,7 @@ import javax.annotation.Nullable;
 public class SmithingInventory extends FakeBlockUIComponent {
     private static final int EQUIPMENT = 0;
     private static final int INGREDIENT = 1;
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final int SMITHING_EQUIPMENT_UI_SLOT = 51;
@@ -59,8 +58,7 @@ public class SmithingInventory extends FakeBlockUIComponent {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nullable
-    public SmithingRecipe matchRecipe() {
+    @Nullable public SmithingRecipe matchRecipe() {
         return Server.getInstance().getCraftingManager().matchSmithingRecipe(getEquipment(), getIngredient());
     }
 
@@ -78,23 +76,22 @@ public class SmithingInventory extends FakeBlockUIComponent {
         Item result;
         SmithingRecipe recipe = matchRecipe();
         if (recipe == null) {
-            result =  AIR_ITEM;
+            result = AIR_ITEM;
         } else {
             result = recipe.getFinalResult(getEquipment());
         }
         setResult(result);
     }
-    
+
     private void setResult(Item result) {
-//        We don't need to send the result to the player, because the client will do it for us
-//        playerUI.setItem(50, result);
+        //        We don't need to send the result to the player, because the client will do it for us
+        //        playerUI.setItem(50, result);
         this.currentResult = result;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public Item getResult() {
+    @NotNull public Item getResult() {
         SmithingRecipe recipe = matchRecipe();
         if (recipe == null) {
             return AIR_ITEM;
@@ -138,7 +135,7 @@ public class SmithingInventory extends FakeBlockUIComponent {
         who.craftingType = Player.CRAFTING_SMALL;
 
         who.giveItem(getItem(EQUIPMENT), getItem(INGREDIENT));
-        
+
         this.clear(EQUIPMENT);
         this.clear(INGREDIENT);
         playerUI.clear(50);

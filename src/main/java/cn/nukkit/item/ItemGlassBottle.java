@@ -1,6 +1,5 @@
 package cn.nukkit.item;
 
-
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBeehive;
@@ -30,7 +29,8 @@ public class ItemGlassBottle extends Item {
     }
 
     @Override
-    public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
+    public boolean onActivate(
+            Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         Item filled = null;
         if (target.getId() == FLOWING_WATER || target.getId() == STILL_WATER) {
             filled = new ItemPotion();
@@ -39,7 +39,7 @@ public class ItemGlassBottle extends Item {
             ((BlockBeehive) target).honeyCollected(player);
             level.addSound(player, Sound.BUCKET_FILL_WATER);
         }
-        
+
         if (filled != null) {
             if (this.count == 1) {
                 player.getInventory().setItemInHand(filled);
@@ -49,13 +49,19 @@ public class ItemGlassBottle extends Item {
                 if (player.getInventory().canAddItem(filled)) {
                     player.getInventory().addItem(filled);
                 } else {
-                    player.getLevel().dropItem(player.add(0, 1.3, 0), filled, player.getDirectionVector().multiply(0.4));
+                    player.getLevel()
+                            .dropItem(
+                                    player.add(0, 1.3, 0),
+                                    filled,
+                                    player.getDirectionVector().multiply(0.4));
                 }
             }
-            
-            level.getVibrationManager().callVibrationEvent(new VibrationEvent(player, target.add(0.5, 0.5, 0.5), VibrationType.FLUID_PICKUP));
+
+            level.getVibrationManager()
+                    .callVibrationEvent(
+                            new VibrationEvent(player, target.add(0.5, 0.5, 0.5), VibrationType.FLUID_PICKUP));
         }
-        
+
         return false;
     }
 }

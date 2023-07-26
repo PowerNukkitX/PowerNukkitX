@@ -46,8 +46,7 @@ public class BlockSlabMangrove extends BlockSlab {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return SIMPLE_SLAB_PROPERTIES;
     }
@@ -66,5 +65,4 @@ public class BlockSlabMangrove extends BlockSlab {
     public int getToolType() {
         return ItemTool.TYPE_AXE;
     }
-
 }

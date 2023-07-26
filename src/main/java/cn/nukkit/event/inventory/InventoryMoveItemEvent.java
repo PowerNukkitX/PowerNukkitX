@@ -26,7 +26,8 @@ public class InventoryMoveItemEvent extends InventoryEvent implements Cancellabl
 
     private final Action action;
 
-    public InventoryMoveItemEvent(Inventory from, Inventory targetInventory, InventoryHolder source, Item item, Action action) {
+    public InventoryMoveItemEvent(
+            Inventory from, Inventory targetInventory, InventoryHolder source, Item item, Action action) {
         super(from);
         this.targetInventory = targetInventory;
         this.source = source;
@@ -55,7 +56,7 @@ public class InventoryMoveItemEvent extends InventoryEvent implements Cancellabl
     }
 
     public enum Action {
-        SLOT_CHANGE, //transaction between 2 inventories
+        SLOT_CHANGE, // transaction between 2 inventories
         PICKUP,
         DROP,
         DISPENSE

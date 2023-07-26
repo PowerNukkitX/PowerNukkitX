@@ -5,14 +5,13 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import lombok.experimental.UtilityClass;
-import lombok.extern.log4j.Log4j2;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.experimental.UtilityClass;
+import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @UtilityClass
@@ -33,7 +32,8 @@ public class RuntimeItems {
             if (itemIdsStream == null) {
                 throw new AssertionError("Unable to load legacy_item_ids.json");
             }
-            JsonObject json = JsonParser.parseReader(new InputStreamReader(itemIdsStream)).getAsJsonObject();
+            JsonObject json =
+                    JsonParser.parseReader(new InputStreamReader(itemIdsStream)).getAsJsonObject();
             for (String identifier : json.keySet()) {
                 legacyString2LegacyInt.put(identifier, json.get(identifier).getAsInt());
             }
@@ -46,7 +46,8 @@ public class RuntimeItems {
             if (mappingStream == null) {
                 throw new AssertionError("Unable to load item_mappings.json");
             }
-            JsonObject itemMapping = JsonParser.parseReader(new InputStreamReader(mappingStream)).getAsJsonObject();
+            JsonObject itemMapping =
+                    JsonParser.parseReader(new InputStreamReader(mappingStream)).getAsJsonObject();
             for (String legacyName : itemMapping.keySet()) {
                 JsonObject convertData = itemMapping.getAsJsonObject(legacyName);
                 for (String damageStr : convertData.keySet()) {
@@ -62,8 +63,7 @@ public class RuntimeItems {
         itemPalette = new RuntimeItemMapping(mappingEntries);
     }
 
-    public static void init() {
-    }
+    public static void init() {}
 
     public static RuntimeItemMapping getMapping() {
         return itemPalette;
@@ -103,6 +103,5 @@ public class RuntimeItems {
         return legacyString2LegacyInt.getOrDefault(identifier, -1);
     }
 
-    public record MappingEntry(String legacyName, int damage) {
-    }
+    public record MappingEntry(String legacyName, int damage) {}
 }

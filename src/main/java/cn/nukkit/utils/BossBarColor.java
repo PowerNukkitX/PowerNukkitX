@@ -7,13 +7,18 @@ import cn.nukkit.api.Since;
  */
 @Since("FUTURE")
 public enum BossBarColor {
-
-    @Since("FUTURE") PINK,
-    @Since("FUTURE") BLUE,
-    @Since("FUTURE") RED,
-    @Since("FUTURE") GREEN,
-    @Since("FUTURE") YELLOW,
-    @Since("FUTURE") PURPLE,
-    @Since("FUTURE") WHITE
-
+    @Since("FUTURE")
+    PINK,
+    @Since("FUTURE")
+    BLUE,
+    @Since("FUTURE")
+    RED,
+    @Since("FUTURE")
+    GREEN,
+    @Since("FUTURE")
+    YELLOW,
+    @Since("FUTURE")
+    PURPLE,
+    @Since("FUTURE")
+    WHITE
 }

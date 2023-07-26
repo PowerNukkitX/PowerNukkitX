@@ -7,7 +7,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.plugin.InternalPlugin;
-
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @PowerNukkitXOnly
@@ -39,7 +38,9 @@ public class ItemGoatHorn extends StringItemBase {
     public boolean onClickAir(Player player, Vector3 directionVector) {
         if (!banUse.getAndSet(true)) {
             playSound(player);
-            Server.getInstance().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> banUse.set(false), coolDownTick);
+            Server.getInstance()
+                    .getScheduler()
+                    .scheduleDelayedTask(InternalPlugin.INSTANCE, () -> banUse.set(false), coolDownTick);
             player.setItemCoolDown(coolDownTick, "goat_horn");
             return true;
         } else return false;

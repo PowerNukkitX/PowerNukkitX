@@ -7,12 +7,11 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.Utils;
 import io.netty.util.internal.EmptyArrays;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import lombok.Getter;
-import lombok.ToString;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
+import lombok.Getter;
+import lombok.ToString;
 
 /**
  * @author CreeperFace
@@ -43,7 +42,7 @@ public class ClientboundMapItemDataPacket extends DataPacket {
     public int[] colors = EmptyArrays.EMPTY_INTS;
     public BufferedImage image = null;
 
-    //update
+    // update
     public static final int TEXTURE_UPDATE = 0x02;
     public static final int DECORATIONS_UPDATE = 0x04;
     public static final int ENTITIES_UPDATE = 0x08;
@@ -54,9 +53,7 @@ public class ClientboundMapItemDataPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-
-    }
+    public void decode() {}
 
     @Override
     public void encode() {
@@ -79,7 +76,7 @@ public class ClientboundMapItemDataPacket extends DataPacket {
         this.putBoolean(this.isLocked);
         this.putBlockVector3(this.origin);
 
-        if ((update & ENTITIES_UPDATE) != 0) { //TODO: find out what these are for
+        if ((update & ENTITIES_UPDATE) != 0) { // TODO: find out what these are for
             this.putUnsignedVarInt(eids.length);
             for (long eid : eids) {
                 this.putEntityUniqueId(eid);
@@ -95,7 +92,10 @@ public class ClientboundMapItemDataPacket extends DataPacket {
                 switch (object.getType()) {
                     case BLOCK -> {
                         this.putLInt(object.getType().ordinal());
-                        this.putBlockVector3(object.getPosition().getFloorX(), object.getPosition().getFloorY(), object.getPosition().getFloorZ());
+                        this.putBlockVector3(
+                                object.getPosition().getFloorX(),
+                                object.getPosition().getFloorY(),
+                                object.getPosition().getFloorZ());
                     }
                     case ENTITY -> {
                         this.putLInt(object.getType().ordinal());
@@ -143,7 +143,7 @@ public class ClientboundMapItemDataPacket extends DataPacket {
         @PowerNukkitOnly
         @Since("1.4.0.0-PN")
         public static final MapDecorator[] EMPTY_ARRAY = new MapDecorator[0];
-        
+
         public byte rotation;
         public byte icon;
         public byte offsetX;

@@ -24,13 +24,16 @@ public final class BitArray256 {
         int bitIndexStart = index * bitsPerEntry;
         int longIndexStart = bitIndexStart >> 6;
         int localBitIndexStart = bitIndexStart & 63;
-        this.data[longIndexStart] = this.data[longIndexStart] & ~((long) ((1L << bitsPerEntry) - 1) << localBitIndexStart) | ((long) value) << localBitIndexStart;
+        this.data[longIndexStart] =
+                this.data[longIndexStart] & ~((long) ((1L << bitsPerEntry) - 1) << localBitIndexStart)
+                        | ((long) value) << localBitIndexStart;
 
         if (localBitIndexStart > 64 - bitsPerEntry) {
             int longIndexEnd = longIndexStart + 1;
             int localShiftStart = 64 - localBitIndexStart;
             int localShiftEnd = bitsPerEntry - localShiftStart;
-            this.data[longIndexEnd] = this.data[longIndexEnd] >>> localShiftEnd << localShiftEnd | (((long) value) >> localShiftStart);
+            this.data[longIndexEnd] =
+                    this.data[longIndexEnd] >>> localShiftEnd << localShiftEnd | (((long) value) >> localShiftStart);
         }
     }
 
@@ -44,7 +47,9 @@ public final class BitArray256 {
             return (int) (this.data[longIndexStart] >>> localBitIndexStart & ((1 << bitsPerEntry) - 1));
         } else {
             int localShift = 64 - localBitIndexStart;
-            return (int) ((this.data[longIndexStart] >>> localBitIndexStart | this.data[longIndexStart + 1] << localShift) & ((1 << bitsPerEntry) - 1));
+            return (int)
+                    ((this.data[longIndexStart] >>> localBitIndexStart | this.data[longIndexStart + 1] << localShift)
+                            & ((1 << bitsPerEntry) - 1));
         }
     }
 

@@ -12,9 +12,8 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Nukkit Project Team
@@ -49,8 +48,7 @@ public class BlockCake extends BlockTransparentMeta {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -107,7 +105,15 @@ public class BlockCake extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
         if (down().getId() != Block.AIR) {
             getLevel().setBlock(block, this, true, true);
 
@@ -144,7 +150,10 @@ public class BlockCake extends BlockTransparentMeta {
         if (item.getBlockId() >= BlockID.CANDLE && item.getBlockId() <= BlockID.BLACK_CANDLE) {
             return false;
         }
-        if (player != null && (player.getFoodData().getLevel() < player.getFoodData().getMaxLevel() || player.isCreative() || player.getServer().getDifficulty() == 0)) {
+        if (player != null
+                && (player.getFoodData().getLevel() < player.getFoodData().getMaxLevel()
+                        || player.isCreative()
+                        || player.getServer().getDifficulty() == 0)) {
             if (getDamage() <= 0x06) setDamage(getDamage() + 1);
             if (getDamage() >= 0x06) {
                 getLevel().setBlock(this, Block.get(BlockID.AIR), true);
@@ -152,7 +161,9 @@ public class BlockCake extends BlockTransparentMeta {
                 Food.getByRelative(this).eatenBy(player);
                 getLevel().setBlock(this, this, true);
             }
-            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(player, this.add(0.5, 0.5, 0.5), VibrationType.EAT));
+            this.level
+                    .getVibrationManager()
+                    .callVibrationEvent(new VibrationEvent(player, this.add(0.5, 0.5, 0.5), VibrationType.EAT));
             return true;
         }
         return false;

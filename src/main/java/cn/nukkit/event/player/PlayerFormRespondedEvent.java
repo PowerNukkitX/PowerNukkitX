@@ -49,5 +49,4 @@ public class PlayerFormRespondedEvent extends PlayerEvent {
     public boolean wasClosed() {
         return window.wasClosed();
     }
-
 }

@@ -35,11 +35,9 @@ public class EntityShootBowEvent extends EntityEvent implements Cancellable {
         return (EntityLiving) this.entity;
     }
 
-
     public Item getBow() {
         return this.bow;
     }
-
 
     public EntityProjectile getProjectile() {
         return this.projectile;

@@ -29,9 +29,8 @@ public class InteractProcessor extends DataPacketProcessor<InteractPacket> {
 
         if (pk.action != InteractPacket.ACTION_MOUSEOVER || pk.target != 0) {
             player.craftingType = Player.CRAFTING_SMALL;
-            //player.resetCraftingGridType();
+            // player.resetCraftingGridType();
         }
-
 
         Entity targetEntity = player.level.getEntity(pk.target);
 
@@ -39,7 +38,9 @@ public class InteractProcessor extends DataPacketProcessor<InteractPacket> {
             return;
         }
 
-        if (targetEntity instanceof EntityItem || targetEntity instanceof EntityArrow || targetEntity instanceof EntityXPOrb) {
+        if (targetEntity instanceof EntityItem
+                || targetEntity instanceof EntityArrow
+                || targetEntity instanceof EntityXPOrb) {
             // 自定义实体在客户端中可以互动, 所以不踢出玩家
             if (targetEntity instanceof CustomEntity) {
                 return;

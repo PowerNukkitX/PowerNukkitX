@@ -22,5 +22,4 @@ public class BlockFenceGateAcacia extends BlockFenceGate {
     public String getName() {
         return "Acacia Fence Gate";
     }
-
 }

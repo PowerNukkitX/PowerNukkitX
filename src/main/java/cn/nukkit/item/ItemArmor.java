@@ -1,5 +1,7 @@
 package cn.nukkit.item;
 
+import static cn.nukkit.utils.Utils.dynamic;
+
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.Since;
@@ -8,19 +10,19 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.ByteTag;
 import cn.nukkit.nbt.tag.Tag;
 
-import static cn.nukkit.utils.Utils.dynamic;
-
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-abstract public class ItemArmor extends Item implements ItemDurable {
+public abstract class ItemArmor extends Item implements ItemDurable {
 
     public static final int TIER_LEATHER = 1;
     public static final int TIER_IRON = 2;
     public static final int TIER_CHAIN = 3;
     public static final int TIER_GOLD = 4;
     public static final int TIER_DIAMOND = 5;
-    @Since("1.4.0.0-PN") public static final int TIER_NETHERITE = 6;
+
+    @Since("1.4.0.0-PN")
+    public static final int TIER_NETHERITE = 6;
 
     public static final int TIER_OTHER = dynamic(1000);
 

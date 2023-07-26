@@ -3,12 +3,11 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.utils.Identifier;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @PowerNukkitXOnly
 @Since("1.19.50-r3")
@@ -29,7 +28,7 @@ public class PlayerFogPacket extends DataPacket {
 
     @Override
     public void decode() {
-        //unused
+        // unused
     }
 
     @Override
@@ -42,7 +41,5 @@ public class PlayerFogPacket extends DataPacket {
      * @param identifier 这个迷雾的命名空间id
      * @param userProvidedId 用户指定的特征id
      */
-    public record Fog(Identifier identifier, String userProvidedId){
-
-    }
+    public record Fog(Identifier identifier, String userProvidedId) {}
 }

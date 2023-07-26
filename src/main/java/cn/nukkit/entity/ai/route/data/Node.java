@@ -3,11 +3,10 @@ package cn.nukkit.entity.ai.route.data;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.math.Vector3;
+import java.util.Objects;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Objects;
 
 /**
  * 寻路节点
@@ -50,7 +49,8 @@ public final class Node implements Comparable<Node> {
 
     @Override
     public String toString() {
-        return vector3.toString() + "| G:" + this.G + " H:" + this.H + " F" + this.getF() + (this.parent != null ? "\tparent:" + this.parent.getVector3() : "");
+        return vector3.toString() + "| G:" + this.G + " H:" + this.H + " F" + this.getF()
+                + (this.parent != null ? "\tparent:" + this.parent.getVector3() : "");
     }
 
     @Override
@@ -58,7 +58,11 @@ public final class Node implements Comparable<Node> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Node node = (Node) o;
-        return G == node.G && H == node.H && F == node.F && Objects.equals(vector3, node.vector3) && Objects.equals(parent, node.parent);
+        return G == node.G
+                && H == node.H
+                && F == node.F
+                && Objects.equals(vector3, node.vector3)
+                && Objects.equals(parent, node.parent);
     }
 
     @Override

@@ -5,7 +5,7 @@ import cn.nukkit.api.Since;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class BlockFenceGateMangrove extends BlockFenceGate{
+public class BlockFenceGateMangrove extends BlockFenceGate {
     public BlockFenceGateMangrove() {
         this(0);
     }
@@ -23,5 +23,4 @@ public class BlockFenceGateMangrove extends BlockFenceGate{
     public String getName() {
         return "Mangrove Fence Gate";
     }
-
 }

@@ -43,5 +43,4 @@ public class BlockStairsPurpur extends BlockStairs {
     public String getName() {
         return "Purpur Stairs";
     }
-
 }

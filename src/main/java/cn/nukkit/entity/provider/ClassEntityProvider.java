@@ -5,12 +5,11 @@ import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @PowerNukkitXOnly
 @Since("1.19.21-r2")
@@ -62,7 +61,6 @@ public class ClassEntityProvider implements EntityProvider<Entity>, EntityProvid
                     objects[1] = nbt;
                     System.arraycopy(args, 0, objects, 2, args.length);
                     entity = (Entity) constructor.newInstance(objects);
-
                 }
             } catch (Exception e) {
                 if (exceptions == null) {
@@ -70,17 +68,19 @@ public class ClassEntityProvider implements EntityProvider<Entity>, EntityProvid
                 }
                 exceptions.add(e);
             }
-
         }
 
         if (entity == null) {
-            Exception cause = new IllegalArgumentException("Could not create an entity of type " + name, exceptions != null && exceptions.size() > 0 ? exceptions.get(0) : null);
+            Exception cause = new IllegalArgumentException(
+                    "Could not create an entity of type " + name,
+                    exceptions != null && exceptions.size() > 0 ? exceptions.get(0) : null);
             if (exceptions != null && exceptions.size() > 1) {
                 for (int i = 1; i < exceptions.size(); i++) {
                     cause.addSuppressed(exceptions.get(i));
                 }
             }
-            log.debug("Could not create an entity of type {} with {} args", name, args == null ? 0 : args.length, cause);
+            log.debug(
+                    "Could not create an entity of type {} with {} args", name, args == null ? 0 : args.length, cause);
         } else {
             return entity;
         }
@@ -92,14 +92,12 @@ public class ClassEntityProvider implements EntityProvider<Entity>, EntityProvid
         return networkId;
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getName() {
         return name;
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getSimpleName() {
         return clazz.getSimpleName();
     }

@@ -4,14 +4,14 @@ import cn.nukkit.form.element.*;
 import cn.nukkit.form.response.FormResponseCustom;
 import cn.nukkit.form.response.FormResponseData;
 import com.google.gson.reflect.TypeToken;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class FormWindowCustom extends FormWindow {
 
-    private final String type = "custom_form"; //This variable is used for JSON import operations. Do NOT delete :) -- @Snake1999
+    private final String type =
+            "custom_form"; // This variable is used for JSON import operations. Do NOT delete :) -- @Snake1999
     private String title = "";
     private ElementButtonImageData icon;
     private List<Element> content;
@@ -27,7 +27,10 @@ public class FormWindowCustom extends FormWindow {
     }
 
     public FormWindowCustom(String title, List<Element> contents, String icon) {
-        this(title, contents, icon.isEmpty() ? null : new ElementButtonImageData(ElementButtonImageData.IMAGE_DATA_TYPE_URL, icon));
+        this(
+                title,
+                contents,
+                icon.isEmpty() ? null : new ElementButtonImageData(ElementButtonImageData.IMAGE_DATA_TYPE_URL, icon));
     }
 
     public FormWindowCustom(String title, List<Element> contents, ElementButtonImageData icon) {
@@ -76,9 +79,8 @@ public class FormWindowCustom extends FormWindow {
             return;
         }
 
-        List<String> elementResponses = GSON.fromJson(data, new TypeToken<List<String>>() {
-        }.getType());
-        //elementResponses.remove(elementResponses.size() - 1); //submit button //maybe mojang removed that?
+        List<String> elementResponses = GSON.fromJson(data, new TypeToken<List<String>>() {}.getType());
+        // elementResponses.remove(elementResponses.size() - 1); //submit button //maybe mojang removed that?
 
         int i = 0;
 
@@ -123,8 +125,14 @@ public class FormWindowCustom extends FormWindow {
             i++;
         }
 
-        this.response = new FormResponseCustom(responses, dropdownResponses, inputResponses,
-                sliderResponses, stepSliderResponses, toggleResponses, labelResponses);
+        this.response = new FormResponseCustom(
+                responses,
+                dropdownResponses,
+                inputResponses,
+                sliderResponses,
+                stepSliderResponses,
+                toggleResponses,
+                labelResponses);
     }
 
     /**
@@ -137,19 +145,22 @@ public class FormWindowCustom extends FormWindow {
                 Element e = content.get(i);
                 if (e != null) {
                     if (e instanceof ElementDropdown) {
-                        ((ElementDropdown) e).setDefaultOptionIndex(((ElementDropdown) e).getOptions().indexOf(response));
+                        ((ElementDropdown) e)
+                                .setDefaultOptionIndex(
+                                        ((ElementDropdown) e).getOptions().indexOf(response));
                     } else if (e instanceof ElementInput) {
-                        ((ElementInput) e).setDefaultText((String)response);
+                        ((ElementInput) e).setDefaultText((String) response);
                     } else if (e instanceof ElementSlider) {
-                        ((ElementSlider) e).setDefaultValue((Float)response);
+                        ((ElementSlider) e).setDefaultValue((Float) response);
                     } else if (e instanceof ElementStepSlider) {
-                        ((ElementStepSlider) e).setDefaultOptionIndex(((ElementStepSlider) e).getSteps().indexOf(response));
+                        ((ElementStepSlider) e)
+                                .setDefaultOptionIndex(
+                                        ((ElementStepSlider) e).getSteps().indexOf(response));
                     } else if (e instanceof ElementToggle) {
-                        ((ElementToggle) e).setDefaultValue((Boolean)response);
+                        ((ElementToggle) e).setDefaultValue((Boolean) response);
                     }
                 }
             });
         }
     }
-
 }

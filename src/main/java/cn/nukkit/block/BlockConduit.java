@@ -9,9 +9,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 public class BlockConduit extends BlockTransparent implements BlockEntityHolder<BlockEntityConduit> {
@@ -32,16 +31,14 @@ public class BlockConduit extends BlockTransparent implements BlockEntityHolder<
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public Class<? extends BlockEntityConduit> getBlockEntityClass() {
         return BlockEntityConduit.class;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getBlockEntityType() {
         return BlockEntity.CONDUIT;
     }
@@ -63,13 +60,21 @@ public class BlockConduit extends BlockTransparent implements BlockEntityHolder<
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
         if (item.getBlock() != null && item.getBlockId() == CONDUIT && target.getId() == CONDUIT) {
             return false;
         }
 
-        BlockEntityConduit conduit = BlockEntityHolder.setBlockAndCreateEntity(this, true, true,
-                new CompoundTag().putBoolean("IsMovable", true));
+        BlockEntityConduit conduit = BlockEntityHolder.setBlockAndCreateEntity(
+                this, true, true, new CompoundTag().putBoolean("IsMovable", true));
         if (conduit != null) {
             conduit.scheduleUpdate();
             return true;
@@ -90,31 +95,31 @@ public class BlockConduit extends BlockTransparent implements BlockEntityHolder<
 
     @Override
     public double getMinX() {
-        return x + (5.0/16);
+        return x + (5.0 / 16);
     }
 
     @Override
     public double getMinY() {
-        return y + (5.0/16);
+        return y + (5.0 / 16);
     }
 
     @Override
     public double getMinZ() {
-        return z + (5.0/16);
+        return z + (5.0 / 16);
     }
 
     @Override
     public double getMaxX() {
-        return x + (11.0/16);
+        return x + (11.0 / 16);
     }
 
     @Override
     public double getMaxY() {
-        return y + (11.0/16);
+        return y + (11.0 / 16);
     }
 
     @Override
     public double getMaxZ() {
-        return z + (11.0/16);
+        return z + (11.0 / 16);
     }
 }

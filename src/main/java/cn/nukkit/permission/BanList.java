@@ -4,13 +4,12 @@ import cn.nukkit.utils.Utils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import lombok.extern.log4j.Log4j2;
-
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -87,7 +86,6 @@ public class BanList {
         }
     }
 
-
     public void removeExpired() {
         for (String name : new ArrayList<>(this.list.keySet())) {
             BanEntry entry = this.list.get(name);
@@ -106,8 +104,10 @@ public class BanList {
                 this.save();
             } else {
 
-                LinkedList<TreeMap<String, String>> list = new Gson().fromJson(Utils.readFile(this.file), new TypeToken<LinkedList<TreeMap<String, String>>>() {
-                }.getType());
+                LinkedList<TreeMap<String, String>> list = new Gson()
+                        .fromJson(
+                                Utils.readFile(this.file),
+                                new TypeToken<LinkedList<TreeMap<String, String>>>() {}.getType());
                 for (TreeMap<String, String> map : list) {
                     BanEntry entry = BanEntry.fromMap(map);
                     this.list.put(entry.getName(), entry);
@@ -116,7 +116,6 @@ public class BanList {
         } catch (IOException e) {
             log.error("Could not load ban list: ", e);
         }
-
     }
 
     public void save() {
@@ -132,7 +131,13 @@ public class BanList {
             for (BanEntry entry : this.list.values()) {
                 list.add(entry.getMap());
             }
-            Utils.writeFile(this.file, new ByteArrayInputStream(new GsonBuilder().setPrettyPrinting().create().toJson(list).getBytes(StandardCharsets.UTF_8)));
+            Utils.writeFile(
+                    this.file,
+                    new ByteArrayInputStream(new GsonBuilder()
+                            .setPrettyPrinting()
+                            .create()
+                            .toJson(list)
+                            .getBytes(StandardCharsets.UTF_8)));
         } catch (IOException e) {
             log.error("Could not save ban list ", e);
         }

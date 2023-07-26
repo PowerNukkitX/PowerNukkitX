@@ -38,10 +38,8 @@ public class BlockDoubleSlabCopperCutWeathered extends BlockDoubleSlabCopperCut 
 
     @Since("FUTURE")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public OxidizationLevel getOxidizationLevel() {
         return OxidizationLevel.WEATHERED;
     }
-
 }

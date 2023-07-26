@@ -1,7 +1,6 @@
 package cn.nukkit.utils;
 
 import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
-
 import java.io.IOException;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
@@ -30,7 +29,7 @@ public class ZlibSingleThreadLowMem implements ZlibProvider {
             int i = DEFLATER.deflate(BUFFER);
             bos.write(BUFFER, 0, i);
         }
-        //Deflater::end is called the time when the process exits.
+        // Deflater::end is called the time when the process exits.
         return bos.toByteArray();
     }
 
@@ -47,7 +46,7 @@ public class ZlibSingleThreadLowMem implements ZlibProvider {
                 bos.write(BUFFER, 0, i);
             }
         } finally {
-            //deflater.end();
+            // deflater.end();
         }
         return bos.toByteArray();
     }

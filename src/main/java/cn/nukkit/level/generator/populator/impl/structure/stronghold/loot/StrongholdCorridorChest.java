@@ -7,7 +7,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.generator.populator.impl.structure.utils.loot.RandomizableContainer;
 import com.google.common.collect.Maps;
 
-//\\ ./data/behavior_packs/vanilla/loot_tables/chests/stronghold_corridor.json
+// \\ ./data/behavior_packs/vanilla/loot_tables/chests/stronghold_corridor.json
 @PowerNukkitXOnly
 @Since("1.19.21-r2")
 public class StrongholdCorridorChest extends RandomizableContainer {
@@ -37,7 +37,7 @@ public class StrongholdCorridorChest extends RandomizableContainer {
                 .register(new ItemEntry(Item.IRON_HORSE_ARMOR, 5))
                 .register(new ItemEntry(Item.GOLD_HORSE_ARMOR, 5))
                 .register(new ItemEntry(Item.DIAMOND_HORSE_ARMOR, 5))
-                .register(new ItemEntry(Item.ENCHANTED_BOOK, 6)); //TODO: treasure enchant_with_levels 30
+                .register(new ItemEntry(Item.ENCHANTED_BOOK, 6)); // TODO: treasure enchant_with_levels 30
         this.pools.put(pool1.build(), new RollEntry(3, 2, pool1.getTotalWeight()));
     }
 

@@ -33,5 +33,4 @@ public class BlockSoulLantern extends BlockLantern {
     public int getLightLevel() {
         return 10;
     }
-
 }

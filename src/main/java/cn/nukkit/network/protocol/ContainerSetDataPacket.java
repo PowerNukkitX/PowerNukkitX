@@ -12,7 +12,7 @@ public class ContainerSetDataPacket extends DataPacket {
     public static final int PROPERTY_FURNACE_TICK_COUNT = 0;
     public static final int PROPERTY_FURNACE_LIT_TIME = 1;
     public static final int PROPERTY_FURNACE_LIT_DURATION = 2;
-    //TODO: check property 3
+    // TODO: check property 3
     public static final int PROPERTY_FURNACE_FUEL_AUX = 4;
 
     public static final int PROPERTY_BREWING_STAND_BREW_TIME = 0;
@@ -29,9 +29,7 @@ public class ContainerSetDataPacket extends DataPacket {
     public int value;
 
     @Override
-    public void decode() {
-
-    }
+    public void decode() {}
 
     @Override
     public void encode() {

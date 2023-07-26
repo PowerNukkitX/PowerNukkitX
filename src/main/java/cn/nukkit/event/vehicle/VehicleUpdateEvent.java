@@ -14,5 +14,4 @@ public class VehicleUpdateEvent extends VehicleEvent {
     public VehicleUpdateEvent(Entity vehicle) {
         super(vehicle);
     }
-
 }

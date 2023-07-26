@@ -3,11 +3,10 @@ package cn.powernukkitx.deflate;
 import cn.nukkit.utils.Zlib;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.handler.codec.compression.Snappy;
-import org.openjdk.jmh.annotations.*;
-import org.openjdk.jmh.infra.Blackhole;
-
 import java.io.IOException;
 import java.util.concurrent.ThreadLocalRandom;
+import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.infra.Blackhole;
 
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.Throughput)

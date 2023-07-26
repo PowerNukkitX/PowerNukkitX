@@ -6,19 +6,18 @@ import cn.nukkit.blockproperty.exception.InvalidBlockPropertyMetaException;
 import cn.nukkit.blockproperty.exception.InvalidBlockPropertyPersistenceValueException;
 import cn.nukkit.blockproperty.exception.InvalidBlockPropertyValueException;
 import com.google.common.base.Preconditions;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.Serializable;
 import java.math.BigInteger;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
 @ParametersAreNonnullByDefault
 public abstract class BlockProperty<T extends Serializable> implements Serializable {
     private static final long serialVersionUID = -2594821043880025191L;
-    
+
     private final int bitSize;
     private final String name;
     private final String persistenceName;
@@ -36,13 +35,13 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
         this.persistenceName = persistenceName;
         this.exportedToItem = exportedToItem;
     }
-    
+
     private int computeRightMask(int bitOffset) {
-        return bitOffset == 0? 0 : -1 >>> (32 - bitOffset);
+        return bitOffset == 0 ? 0 : -1 >>> (32 - bitOffset);
     }
-    
+
     private long computeBigRightMask(int bitOffset) {
-        return bitOffset == 0L? 0L : -1L >>> (64 - bitOffset);
+        return bitOffset == 0L ? 0L : -1L >>> (64 - bitOffset);
     }
 
     private BigInteger computeHugeRightMask(int bitOffset) {
@@ -54,10 +53,14 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
      */
     private int computeValueMask(int bitOffset) {
         Preconditions.checkArgument(bitOffset >= 0, "Bit offset can not be negative. Got %s", bitOffset);
-        
+
         int maskBits = bitSize + bitOffset;
-        Preconditions.checkArgument(0 < maskBits && maskBits <= 32, "The bit offset %s plus the bit size %s causes memory overflow (32 bits)", bitOffset, bitSize);
-        
+        Preconditions.checkArgument(
+                0 < maskBits && maskBits <= 32,
+                "The bit offset %s plus the bit size %s causes memory overflow (32 bits)",
+                bitOffset,
+                bitSize);
+
         int rightMask = computeRightMask(bitOffset);
         int leftMask = -1 << maskBits;
         return ~rightMask & ~leftMask;
@@ -68,10 +71,14 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
      */
     private long computeBigValueMask(int bitOffset) {
         Preconditions.checkArgument(bitOffset >= 0, "Bit offset can not be negative. Got %s", bitOffset);
-        
+
         int maskBits = bitSize + bitOffset;
-        Preconditions.checkArgument(0 < maskBits && maskBits <= 64, "The bit offset %s plus the bit size %s causes memory overflow (64 bits)", bitOffset, bitSize);
-        
+        Preconditions.checkArgument(
+                0 < maskBits && maskBits <= 64,
+                "The bit offset %s plus the bit size %s causes memory overflow (64 bits)",
+                bitOffset,
+                bitSize);
+
         long rightMask = computeBigRightMask(bitOffset);
         long leftMask = -1L << maskBits;
         return ~rightMask & ~leftMask;
@@ -84,11 +91,15 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
         Preconditions.checkArgument(bitOffset >= 0, "Bit offset can not be negative. Got %s", bitOffset);
 
         int maskBits = bitSize + bitOffset;
-        Preconditions.checkArgument(0 < maskBits, "The bit offset %s plus the bit size %s causes memory overflow (huge)", bitOffset, bitSize);
-        
+        Preconditions.checkArgument(
+                0 < maskBits,
+                "The bit offset %s plus the bit size %s causes memory overflow (huge)",
+                bitOffset,
+                bitSize);
+
         BigInteger rightMask = computeHugeRightMask(bitOffset);
         BigInteger leftMask = BigInteger.valueOf(-1).shiftLeft(maskBits);
-        
+
         return rightMask.not().andNot(leftMask);
     }
 
@@ -104,7 +115,9 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
             int value = getMetaForValue(newValue) << bitOffset;
 
             if ((value & ~mask) != 0) {
-                throw new IllegalStateException("Attempted to set a value which overflows the size of " + bitSize + " bits. Current:" + currentMeta + ", offset:" + bitOffset + ", meta:" + value + ", value:" + newValue);
+                throw new IllegalStateException(
+                        "Attempted to set a value which overflows the size of " + bitSize + " bits. Current:"
+                                + currentMeta + ", offset:" + bitOffset + ", meta:" + value + ", value:" + newValue);
             }
 
             return currentMeta & ~mask | (value & mask);
@@ -116,7 +129,8 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
             } catch (Exception e2) {
                 suppressed = new InvalidBlockPropertyMetaException(this, currentMeta, currentMeta & mask, e2);
             }
-            InvalidBlockPropertyValueException toThrow = new InvalidBlockPropertyValueException(this, oldValue, newValue, e);
+            InvalidBlockPropertyValueException toThrow =
+                    new InvalidBlockPropertyValueException(this, oldValue, newValue, e);
             if (suppressed != null) {
                 toThrow.addSuppressed(suppressed);
             }
@@ -136,7 +150,9 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
             long value = getMetaForValue(newValue) << bitOffset;
 
             if ((value & ~mask) != 0L) {
-                throw new IllegalStateException("Attempted to set a value which overflows the size of " + bitSize + " bits. Current:" + currentBigMeta + ", offset:" + bitOffset + ", meta:" + value + ", value:" + newValue);
+                throw new IllegalStateException(
+                        "Attempted to set a value which overflows the size of " + bitSize + " bits. Current:"
+                                + currentBigMeta + ", offset:" + bitOffset + ", meta:" + value + ", value:" + newValue);
             }
 
             return currentBigMeta & ~mask | (value & mask);
@@ -148,7 +164,8 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
             } catch (Exception e2) {
                 suppressed = new InvalidBlockPropertyMetaException(this, currentBigMeta, currentBigMeta & mask, e2);
             }
-            InvalidBlockPropertyValueException toThrow = new InvalidBlockPropertyValueException(this, oldValue, newValue, e);
+            InvalidBlockPropertyValueException toThrow =
+                    new InvalidBlockPropertyValueException(this, oldValue, newValue, e);
             if (suppressed != null) {
                 toThrow.addSuppressed(suppressed);
             }
@@ -168,7 +185,9 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
             BigInteger value = BigInteger.valueOf(getMetaForValue(newValue)).shiftLeft(bitOffset);
 
             if (!value.andNot(mask).equals(BigInteger.ZERO)) {
-                throw new IllegalStateException("Attempted to set a value which overflows the size of " + bitSize + " bits. Current:" + currentHugeMeta + ", offset:" + bitOffset + ", meta:" + value + ", value:" + newValue);
+                throw new IllegalStateException("Attempted to set a value which overflows the size of " + bitSize
+                        + " bits. Current:" + currentHugeMeta + ", offset:" + bitOffset + ", meta:" + value + ", value:"
+                        + newValue);
             }
 
             return currentHugeMeta.andNot(mask).or(value.and(mask));
@@ -178,9 +197,11 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
             try {
                 oldValue = getValue(currentHugeMeta, bitOffset);
             } catch (Exception e2) {
-                suppressed = new InvalidBlockPropertyMetaException(this, currentHugeMeta, currentHugeMeta.and(mask), e2);
+                suppressed =
+                        new InvalidBlockPropertyMetaException(this, currentHugeMeta, currentHugeMeta.and(mask), e2);
             }
-            InvalidBlockPropertyValueException toThrow = new InvalidBlockPropertyValueException(this, oldValue, newValue, e);
+            InvalidBlockPropertyValueException toThrow =
+                    new InvalidBlockPropertyValueException(this, oldValue, newValue, e);
             if (suppressed != null) {
                 toThrow.addSuppressed(suppressed);
             }
@@ -212,7 +233,10 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public final int getMetaFromBigInt(BigInteger currentMeta, int bitOffset) {
-        return currentMeta.and(computeHugeValueMask(bitOffset)).shiftRight(bitOffset).intValue();
+        return currentMeta
+                .and(computeHugeValueMask(bitOffset))
+                .shiftRight(bitOffset)
+                .intValue();
     }
 
     /**
@@ -221,13 +245,13 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public T getValue(int currentMeta, int bitOffset) {
+    @NotNull public T getValue(int currentMeta, int bitOffset) {
         int meta = getMetaFromInt(currentMeta, bitOffset);
         try {
             return getValueForMeta(meta);
         } catch (Exception e) {
-            throw new InvalidBlockPropertyMetaException(this, currentMeta, currentMeta & computeValueMask(bitOffset), e);
+            throw new InvalidBlockPropertyMetaException(
+                    this, currentMeta, currentMeta & computeValueMask(bitOffset), e);
         }
     }
 
@@ -237,13 +261,13 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public T getValue(long currentBigMeta, int bitOffset) {
+    @NotNull public T getValue(long currentBigMeta, int bitOffset) {
         int meta = getMetaFromLong(currentBigMeta, bitOffset);
         try {
             return getValueForMeta(meta);
         } catch (Exception e) {
-            throw new InvalidBlockPropertyMetaException(this, currentBigMeta, currentBigMeta & computeBigValueMask(bitOffset), e);
+            throw new InvalidBlockPropertyMetaException(
+                    this, currentBigMeta, currentBigMeta & computeBigValueMask(bitOffset), e);
         }
     }
 
@@ -253,13 +277,13 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public T getValue(BigInteger currentHugeMeta, int bitOffset) {
+    @NotNull public T getValue(BigInteger currentHugeMeta, int bitOffset) {
         int meta = getMetaFromBigInt(currentHugeMeta, bitOffset);
         try {
             return getValueForMeta(meta);
         } catch (Exception e) {
-            throw new InvalidBlockPropertyMetaException(this, currentHugeMeta, currentHugeMeta.and(computeHugeValueMask(bitOffset)), e);
+            throw new InvalidBlockPropertyMetaException(
+                    this, currentHugeMeta, currentHugeMeta.and(computeHugeValueMask(bitOffset)), e);
         }
     }
 
@@ -274,7 +298,8 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
         try {
             return getIntValueForMeta(meta);
         } catch (Exception e) {
-            throw new InvalidBlockPropertyMetaException(this, currentMeta, currentMeta & computeValueMask(bitOffset), e);
+            throw new InvalidBlockPropertyMetaException(
+                    this, currentMeta, currentMeta & computeValueMask(bitOffset), e);
         }
     }
 
@@ -289,7 +314,8 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
         try {
             return getIntValueForMeta(meta);
         } catch (Exception e) {
-            throw new InvalidBlockPropertyMetaException(this, currentMeta, currentMeta & computeBigValueMask(bitOffset), e);
+            throw new InvalidBlockPropertyMetaException(
+                    this, currentMeta, currentMeta & computeBigValueMask(bitOffset), e);
         }
     }
 
@@ -304,7 +330,8 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
         try {
             return getIntValueForMeta(meta);
         } catch (Exception e) {
-            throw new InvalidBlockPropertyMetaException(this, currentMeta, currentMeta.and(computeHugeValueMask(bitOffset)), e);
+            throw new InvalidBlockPropertyMetaException(
+                    this, currentMeta, currentMeta.and(computeHugeValueMask(bitOffset)), e);
         }
     }
 
@@ -314,13 +341,13 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public String getPersistenceValue(int currentMeta, int bitOffset) {
+    @NotNull public String getPersistenceValue(int currentMeta, int bitOffset) {
         int meta = getMetaFromInt(currentMeta, bitOffset);
         try {
             return getPersistenceValueForMeta(meta);
         } catch (Exception e) {
-            throw new InvalidBlockPropertyMetaException(this, currentMeta, currentMeta & computeValueMask(bitOffset), e);
+            throw new InvalidBlockPropertyMetaException(
+                    this, currentMeta, currentMeta & computeValueMask(bitOffset), e);
         }
     }
 
@@ -330,13 +357,13 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public String getPersistenceValue(long currentMeta, int bitOffset) {
+    @NotNull public String getPersistenceValue(long currentMeta, int bitOffset) {
         int meta = getMetaFromLong(currentMeta, bitOffset);
         try {
             return getPersistenceValueForMeta(meta);
         } catch (Exception e) {
-            throw new InvalidBlockPropertyMetaException(this, currentMeta, currentMeta & computeBigValueMask(bitOffset), e);
+            throw new InvalidBlockPropertyMetaException(
+                    this, currentMeta, currentMeta & computeBigValueMask(bitOffset), e);
         }
     }
 
@@ -346,13 +373,13 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public String getPersistenceValue(BigInteger currentMeta, int bitOffset) {
+    @NotNull public String getPersistenceValue(BigInteger currentMeta, int bitOffset) {
         int meta = getMetaFromBigInt(currentMeta, bitOffset);
         try {
             return getPersistenceValueForMeta(meta);
         } catch (Exception e) {
-            throw new InvalidBlockPropertyMetaException(this, currentMeta, currentMeta.and(computeHugeValueMask(bitOffset)), e);
+            throw new InvalidBlockPropertyMetaException(
+                    this, currentMeta, currentMeta.and(computeHugeValueMask(bitOffset)), e);
         }
     }
 
@@ -368,8 +395,7 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public abstract T getValueForMeta(int meta);
+    @NotNull public abstract T getValueForMeta(int meta);
 
     /**
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
@@ -461,22 +487,19 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public String getName() {
+    @NotNull public String getName() {
         return name;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public String getPersistenceName() {
+    @NotNull public String getPersistenceName() {
         return persistenceName;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public abstract Class<T> getValueClass();
+    @NotNull public abstract Class<T> getValueClass();
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -486,12 +509,11 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
 
     @Override
     public String toString() {
-        return getClass().getSimpleName()+"{" +
-                "name='" + name + '\'' +
-                ", bitSize=" + bitSize +
-                ", exportedToItem=" + exportedToItem +
-                ", persistenceName='" + persistenceName + '\'' +
-                '}';
+        return getClass().getSimpleName() + "{" + "name='"
+                + name + '\'' + ", bitSize="
+                + bitSize + ", exportedToItem="
+                + exportedToItem + ", persistenceName='"
+                + persistenceName + '\'' + '}';
     }
 
     @PowerNukkitOnly
@@ -509,8 +531,7 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public abstract T getDefaultValue();
+    @NotNull public abstract T getDefaultValue();
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")

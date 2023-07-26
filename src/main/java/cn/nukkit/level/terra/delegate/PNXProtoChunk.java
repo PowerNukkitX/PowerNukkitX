@@ -24,15 +24,16 @@ public record PNXProtoChunk(BaseFullChunk chunk) implements ProtoChunk {
         if (innerBlockState.getBlockId() == BlockID.BLOCK_KELP) {
             chunk.setBlockStateAt(i, i1, i2, innerBlockState);
             chunk.setBlockAtLayer(i, i1, i2, 1, BlockID.STILL_WATER);
-        } else if (ob.getBlockId() == BlockID.WATERLILY || ob.getBlockId() == BlockID.STILL_WATER || ob.getBlockId() == BlockID.FLOWING_WATER) {
+        } else if (ob.getBlockId() == BlockID.WATERLILY
+                || ob.getBlockId() == BlockID.STILL_WATER
+                || ob.getBlockId() == BlockID.FLOWING_WATER) {
             chunk.setBlockStateAt(i, i1, i2, innerBlockState);
             chunk.setBlockStateAt(i, i1, i2, 1, ob);
         } else chunk.setBlockStateAt(i, i1, i2, innerBlockState);
     }
 
     @Override
-    public @NotNull
-    BlockState getBlock(int i, int i1, int i2) {
+    public @NotNull BlockState getBlock(int i, int i1, int i2) {
         return PNXAdapter.adapt(chunk.getBlockState(i, i1, i2));
     }
 

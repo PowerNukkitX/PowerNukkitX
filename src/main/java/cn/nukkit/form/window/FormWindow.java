@@ -4,7 +4,6 @@ import cn.nukkit.form.handler.FormResponseHandler;
 import cn.nukkit.form.response.FormResponse;
 import com.google.gson.Gson;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-
 import java.util.List;
 
 public abstract class FormWindow {
@@ -33,5 +32,4 @@ public abstract class FormWindow {
     public List<FormResponseHandler> getHandlers() {
         return handlers;
     }
-
 }

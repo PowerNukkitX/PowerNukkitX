@@ -43,5 +43,4 @@ public enum AttachmentType {
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
     MULTIPLE;
-    
 }

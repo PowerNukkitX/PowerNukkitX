@@ -14,13 +14,12 @@ import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.event.Event;
 import cn.nukkit.event.EventPriority;
 import cn.nukkit.plugin.CommonJSPlugin;
-import org.graalvm.polyglot.Value;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.graalvm.polyglot.Value;
+import org.jetbrains.annotations.NotNull;
 
 public final class JSEventManager {
     private final CommonJSPlugin jsPlugin;
@@ -37,11 +36,18 @@ public final class JSEventManager {
                 if (!Event.class.isAssignableFrom(clazz)) {
                     return false;
                 }
-                Server.getInstance().getPluginManager().registerEvent((Class<? extends Event>) clazz, jsPlugin, priority, (listener, event) -> {
-                    synchronized (jsPlugin.getJsContext()) {
-                        callback.executeVoid(event);
-                    }
-                }, jsPlugin);
+                Server.getInstance()
+                        .getPluginManager()
+                        .registerEvent(
+                                (Class<? extends Event>) clazz,
+                                jsPlugin,
+                                priority,
+                                (listener, event) -> {
+                                    synchronized (jsPlugin.getJsContext()) {
+                                        callback.executeVoid(event);
+                                    }
+                                },
+                                jsPlugin);
                 return true;
             } catch (ClassNotFoundException e) {
                 return false;
@@ -175,7 +181,12 @@ public final class JSEventManager {
             return this;
         }
 
-        public CommandBuilder addCustomTypeParameter(String name, boolean optional, CommandParamType type, IParamNode<?> paramNode, CommandParamOption... options) {
+        public CommandBuilder addCustomTypeParameter(
+                String name,
+                boolean optional,
+                CommandParamType type,
+                IParamNode<?> paramNode,
+                CommandParamOption... options) {
             currentCommandParameterList.add(CommandParameter.newType(name, optional, type, paramNode, options));
             return this;
         }
@@ -241,11 +252,17 @@ public final class JSEventManager {
         }
 
         public CommandBuilder addEnumParameter(String name, boolean optional, String... enumValues) {
-            currentCommandParameterList.add(CommandParameter.newEnum(name, optional, new CommandEnum(name, enumValues)));
+            currentCommandParameterList.add(
+                    CommandParameter.newEnum(name, optional, new CommandEnum(name, enumValues)));
             return this;
         }
 
-        public CommandBuilder addCustomEnumParameter(String name, boolean optional, CommandEnum data, IParamNode<?> paramNode, CommandParamOption... options) {
+        public CommandBuilder addCustomEnumParameter(
+                String name,
+                boolean optional,
+                CommandEnum data,
+                IParamNode<?> paramNode,
+                CommandParamOption... options) {
             currentCommandParameterList.add(CommandParameter.newEnum(name, optional, data, paramNode, options));
             return this;
         }
@@ -277,7 +294,8 @@ public final class JSEventManager {
 
         public boolean registerOld() {
             if (currentCommandPatternId != null && currentCommandParameterList.size() != 0) {
-                commandParameters.put(currentCommandPatternId, currentCommandParameterList.toArray(CommandParameter.EMPTY_ARRAY));
+                commandParameters.put(
+                        currentCommandPatternId, currentCommandParameterList.toArray(CommandParameter.EMPTY_ARRAY));
             }
             if (commandName.toLowerCase().equals(commandName)) {
                 if (!callback.canExecute()) {
@@ -289,8 +307,7 @@ public final class JSEventManager {
                 if (alias == null) {
                     alias = new String[0];
                 }
-                command = new Command(commandName, description,
-                        usageMessage, alias) {
+                command = new Command(commandName, description, usageMessage, alias) {
                     @Override
                     public boolean execute(CommandSender sender, String commandLabel, String... args) {
                         synchronized (jsPlugin.getJsContext()) {
@@ -318,10 +335,11 @@ public final class JSEventManager {
 
         public boolean register() {
             if (currentCommandPatternId != null && currentCommandParameterList.size() != 0) {
-                commandParameters.put(currentCommandPatternId, currentCommandParameterList.toArray(CommandParameter.EMPTY_ARRAY));
+                commandParameters.put(
+                        currentCommandPatternId, currentCommandParameterList.toArray(CommandParameter.EMPTY_ARRAY));
             }
             if (commandParameters.isEmpty()) commandParameters.put("default", CommandParameter.EMPTY_ARRAY);
-            if (commandName.toLowerCase().equals(commandName)) {//强制命令名小写
+            if (commandName.toLowerCase().equals(commandName)) { // 强制命令名小写
                 if (!callback.canExecute()) {
                     return false;
                 }
@@ -334,7 +352,11 @@ public final class JSEventManager {
                 command = new Command(commandName, description, usageMessage, alias) {
                     @Since("1.19.60-r1")
                     @Override
-                    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+                    public int execute(
+                            CommandSender sender,
+                            String commandLabel,
+                            Map.Entry<String, ParamList> result,
+                            CommandLogger log) {
                         synchronized (jsPlugin.getJsContext()) {
                             var r = callback.execute(sender, result, log);
                             if (r.isBoolean()) {

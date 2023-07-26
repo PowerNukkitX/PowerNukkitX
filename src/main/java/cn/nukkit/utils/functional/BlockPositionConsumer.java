@@ -5,7 +5,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.math.IntIncrementSupplier;
 import cn.nukkit.math.NukkitMath;
 import com.google.common.base.Preconditions;
-
 import java.util.stream.IntStream;
 
 @PowerNukkitOnly
@@ -40,24 +39,43 @@ public interface BlockPositionConsumer {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    static void xzy(int fromX, int fromY, int fromZ, int toX, int toY, int toZ, int xInc, int yInc, int zInc, BlockPositionConsumer iterator) {
+    static void xzy(
+            int fromX,
+            int fromY,
+            int fromZ,
+            int toX,
+            int toY,
+            int toZ,
+            int xInc,
+            int yInc,
+            int zInc,
+            BlockPositionConsumer iterator) {
         validate(fromX, fromY, fromZ, toX, toY, toZ, xInc, yInc, zInc);
 
-        IntStream xStream = new IntIncrementSupplier(fromX, xInc).stream().limit(NukkitMath.floorFloat((toX - fromX) / (float) xInc));
-        IntStream yStream = new IntIncrementSupplier(fromY, yInc).stream().limit(NukkitMath.floorFloat((toY - fromY) / (float) yInc));
-        IntStream zStream = new IntIncrementSupplier(fromZ, zInc).stream().limit(NukkitMath.floorFloat((toZ - fromZ) / (float) zInc));
+        IntStream xStream = new IntIncrementSupplier(fromX, xInc)
+                .stream().limit(NukkitMath.floorFloat((toX - fromX) / (float) xInc));
+        IntStream yStream = new IntIncrementSupplier(fromY, yInc)
+                .stream().limit(NukkitMath.floorFloat((toY - fromY) / (float) yInc));
+        IntStream zStream = new IntIncrementSupplier(fromZ, zInc)
+                .stream().limit(NukkitMath.floorFloat((toZ - fromZ) / (float) zInc));
 
-        xStream.forEachOrdered(x ->
-                zStream.forEachOrdered(z ->
-                        yStream.forEachOrdered(y ->
-                                iterator.accept(x, y, z)
-                        )));
+        xStream.forEachOrdered(x -> zStream.forEachOrdered(z -> yStream.forEachOrdered(y -> iterator.accept(x, y, z))));
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     static void xzy(int fromX, int fromY, int fromZ, int toX, int toY, int toZ, BlockPositionConsumer iterator) {
-        xzy(fromX, fromY, fromZ, toX, toY, toZ, fromX <= toX ? 1 : -1, fromY <= toY ? 1 : -1, fromZ <= toZ ? 1 : -1, iterator);
+        xzy(
+                fromX,
+                fromY,
+                fromZ,
+                toX,
+                toY,
+                toZ,
+                fromX <= toX ? 1 : -1,
+                fromY <= toY ? 1 : -1,
+                fromZ <= toZ ? 1 : -1,
+                iterator);
     }
 
     @PowerNukkitOnly

@@ -9,10 +9,9 @@ import cn.nukkit.blockproperty.exception.InvalidBlockPropertyValueException;
 import cn.nukkit.blockproperty.value.DirtType;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 import java.util.Optional;
+import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author xtypr
@@ -31,8 +30,7 @@ public class BlockPodzol extends BlockDirt {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return CommonBlockProperties.EMPTY_PROPERTIES;
     }
@@ -49,8 +47,7 @@ public class BlockPodzol extends BlockDirt {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public Optional<DirtType> getDirtType() {
         return Optional.empty();
     }
@@ -60,7 +57,8 @@ public class BlockPodzol extends BlockDirt {
     @Override
     public void setDirtType(@Nullable DirtType dirtType) {
         if (dirtType != null) {
-            throw new InvalidBlockPropertyValueException(DIRT_TYPE, null, dirtType, getName()+" don't support DirtType");
+            throw new InvalidBlockPropertyValueException(
+                    DIRT_TYPE, null, dirtType, getName() + " don't support DirtType");
         }
     }
 
@@ -85,5 +83,4 @@ public class BlockPodzol extends BlockDirt {
         }
         return false;
     }
-
 }

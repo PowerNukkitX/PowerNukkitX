@@ -7,7 +7,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.command.exceptions.SelectorSyntaxException;
 import cn.nukkit.command.selector.EntitySelectorAPI;
 import cn.nukkit.entity.Entity;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,7 +19,7 @@ import java.util.stream.Collectors;
 @PowerNukkitXOnly
 @Since("1.19.60-r1")
 public class PlayersNode extends TargetNode<Player> {
-    //todo 支持uuid 或者 xuid
+    // todo 支持uuid 或者 xuid
     @Override
     public void fill(String arg) {
         if (arg.isBlank()) {
@@ -34,7 +33,10 @@ public class PlayersNode extends TargetNode<Player> {
                 error(exception.getMessage());
                 return;
             }
-            result = entities.stream().filter(entity -> entity instanceof Player).map(entity -> (Player) entity).collect(Collectors.toList());
+            result = entities.stream()
+                    .filter(entity -> entity instanceof Player)
+                    .map(entity -> (Player) entity)
+                    .collect(Collectors.toList());
             this.value = result;
         } else {
             this.value = Collections.singletonList(Server.getInstance().getPlayer(arg));

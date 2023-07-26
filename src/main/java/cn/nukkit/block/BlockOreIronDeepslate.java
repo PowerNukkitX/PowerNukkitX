@@ -31,5 +31,4 @@ public class BlockOreIronDeepslate extends BlockOreIron {
     public String getName() {
         return "Deepslate Iron Ore";
     }
-
 }

@@ -3,7 +3,6 @@ package cn.nukkit.item.customitem.data;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.nbt.tag.CompoundTag;
-
 import javax.annotation.Nullable;
 
 @PowerNukkitXOnly
@@ -25,8 +24,7 @@ public class DigProperty {
         this.speed = speed;
     }
 
-    @Nullable
-    public Integer getSpeed() {
+    @Nullable public Integer getSpeed() {
         return speed;
     }
 

@@ -18,9 +18,8 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.Faceable;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Map;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Angelic47 (Nukkit Project)
@@ -47,8 +46,7 @@ public class BlockFurnaceBurning extends BlockSolidMeta implements Faceable, Blo
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -60,16 +58,14 @@ public class BlockFurnaceBurning extends BlockSolidMeta implements Faceable, Blo
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public Class<? extends BlockEntityFurnace> getBlockEntityClass() {
         return BlockEntityFurnace.class;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getBlockEntityType() {
         return BlockEntity.FURNACE;
     }
@@ -100,7 +96,15 @@ public class BlockFurnaceBurning extends BlockSolidMeta implements Faceable, Blo
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         int[] faces = {2, 5, 3, 4};
         this.setDamage(faces[player != null ? player.getDirection().getHorizontalIndex() : 0]);
         CompoundTag nbt = new CompoundTag().putList(new ListTag<>("Items"));
@@ -132,14 +136,14 @@ public class BlockFurnaceBurning extends BlockSolidMeta implements Faceable, Blo
         }
 
         BlockEntityFurnace furnace = getOrCreateBlockEntity();
-        if (furnace.namedTag.contains("Lock") && furnace.namedTag.get("Lock") instanceof StringTag
+        if (furnace.namedTag.contains("Lock")
+                && furnace.namedTag.get("Lock") instanceof StringTag
                 && !furnace.namedTag.getString("Lock").equals(item.getCustomName())) {
             return false;
         }
 
         player.addWindow(furnace.getInventory());
         return true;
-
     }
 
     @Override

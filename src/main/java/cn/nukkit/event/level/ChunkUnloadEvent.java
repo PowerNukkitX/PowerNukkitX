@@ -18,5 +18,4 @@ public class ChunkUnloadEvent extends ChunkEvent implements Cancellable {
     public ChunkUnloadEvent(FullChunk chunk) {
         super(chunk);
     }
-
 }

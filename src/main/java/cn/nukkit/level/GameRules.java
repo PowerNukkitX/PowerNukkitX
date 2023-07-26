@@ -1,26 +1,23 @@
 package cn.nukkit.level;
 
+import static cn.nukkit.level.GameRule.*;
+
 import cn.nukkit.api.Since;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BinaryStream;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
-
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-
-import static cn.nukkit.level.GameRule.*;
 
 @SuppressWarnings({"unchecked"})
 public class GameRules {
     private final EnumMap<GameRule, Value> gameRules = new EnumMap<>(GameRule.class);
     private boolean stale;
 
-    private GameRules() {
-    }
-
+    private GameRules() {}
 
     public static GameRules getDefault() {
         GameRules gameRules = new GameRules();
@@ -51,7 +48,8 @@ public class GameRules {
         gameRules.gameRules.put(SHOW_COORDINATES, new Value<>(Type.BOOLEAN, false));
         gameRules.gameRules.put(SHOW_DEATH_MESSAGES, new Value<>(Type.BOOLEAN, true));
 
-        @SuppressWarnings("deprecation") GameRule deprecated = SHOW_DEATH_MESSAGE;
+        @SuppressWarnings("deprecation")
+        GameRule deprecated = SHOW_DEATH_MESSAGE;
         gameRules.gameRules.put(deprecated, gameRules.gameRules.get(SHOW_DEATH_MESSAGES));
 
         gameRules.gameRules.put(SPAWN_RADIUS, new Value<>(Type.INTEGER, 5));
@@ -178,8 +176,7 @@ public class GameRules {
     public enum Type {
         UNKNOWN {
             @Override
-            void write(BinaryStream pk, Value value) {
-            }
+            void write(BinaryStream pk, Value value) {}
         },
         BOOLEAN {
             @Override
@@ -215,7 +212,8 @@ public class GameRules {
 
         private void setValue(T value, Type type) {
             if (this.type != type) {
-                throw new UnsupportedOperationException("Rule not of type " + type.name().toLowerCase());
+                throw new UnsupportedOperationException(
+                        "Rule not of type " + type.name().toLowerCase());
             }
             this.value = value;
         }

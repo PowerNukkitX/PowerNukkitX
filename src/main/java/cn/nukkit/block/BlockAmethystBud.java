@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
+
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
@@ -11,12 +13,9 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Faceable;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 import java.util.Arrays;
-
-import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
+import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 @Since("1.6.0.0-PNX")
 @PowerNukkitOnly
@@ -78,8 +77,7 @@ public abstract class BlockAmethystBud extends BlockTransparentMeta implements F
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -97,9 +95,16 @@ public abstract class BlockAmethystBud extends BlockTransparentMeta implements F
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        if (!target.isSolid())
-            return false;
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
+        if (!target.isSolid()) return false;
         setBlockFace(face);
         this.level.setBlock(block, this, true, true);
         return true;
@@ -107,10 +112,10 @@ public abstract class BlockAmethystBud extends BlockTransparentMeta implements F
 
     @Override
     public boolean onBreak(Item item) {
-        if (item.isPickaxe()){
-            Arrays.stream(this.getDrops(item)).forEach(item1 -> this.level.dropItem(this.add(0.5,0,0.5), item1));
+        if (item.isPickaxe()) {
+            Arrays.stream(this.getDrops(item)).forEach(item1 -> this.level.dropItem(this.add(0.5, 0, 0.5), item1));
             this.getLevel().setBlock(this, layer, Block.get(BlockID.AIR), true, true);
-        }else {
+        } else {
             this.getLevel().setBlock(this, layer, Block.get(BlockID.AIR), true, true);
         }
         return true;

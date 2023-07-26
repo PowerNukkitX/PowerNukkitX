@@ -1,7 +1,6 @@
 package cn.nukkit.network.protocol.types;
 
 public enum PlayerActionType {
-
     START_DESTROY_BLOCK,
     ABORT_DESTROY_BLOCK,
     STOP_DESTROY_BLOCK,

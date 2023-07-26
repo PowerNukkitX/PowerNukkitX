@@ -8,9 +8,7 @@ import cn.nukkit.item.ItemTool;
  */
 public class BlockLapis extends BlockSolid {
 
-
-    public BlockLapis() {
-    }
+    public BlockLapis() {}
 
     @Override
     public int getId() {
@@ -47,5 +45,4 @@ public class BlockLapis extends BlockSolid {
     public boolean canHarvestWithHand() {
         return false;
     }
-
 }

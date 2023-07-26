@@ -37,5 +37,4 @@ public class PlayerItemHeldEvent extends PlayerEvent implements Cancellable {
     public Item getItem() {
         return item;
     }
-
 }

@@ -134,5 +134,4 @@ public interface PluginLoader {
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */
     void disablePlugin(Plugin plugin);
-
 }

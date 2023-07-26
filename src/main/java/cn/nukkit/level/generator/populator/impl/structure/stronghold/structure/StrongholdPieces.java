@@ -21,22 +21,23 @@ import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import com.google.common.collect.Lists;
-
-import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.List;
+import javax.annotation.Nullable;
 
 @PowerNukkitXOnly
 @Since("1.19.21-r2")
 public class StrongholdPieces {
 
-    private static final BlockState INFESTED_STONE_BRICKS = new BlockState(Block.MONSTER_EGG, BlockMonsterEgg.STONE_BRICK);
+    private static final BlockState INFESTED_STONE_BRICKS =
+            new BlockState(Block.MONSTER_EGG, BlockMonsterEgg.STONE_BRICK);
     private static final BlockState STONE_BRICKS = new BlockState(Block.STONE_BRICKS, BlockBricksStone.NORMAL);
     private static final BlockState MOSSY_STONE_BRICKS = new BlockState(Block.STONE_BRICKS, BlockBricksStone.MOSSY);
     private static final BlockState CRACKED_STONE_BRICKS = new BlockState(Block.STONE_BRICKS, BlockBricksStone.CRACKED);
     private static final BlockState STONE_BRICK_SLAB = new BlockState(Block.STONE_SLAB, BlockSlabStone.STONE_BRICK);
     private static final BlockState SMOOTH_STONE_SLAB = new BlockState(Block.STONE_SLAB, BlockSlabStone.STONE);
-    private static final BlockState SMOOTH_STONE_SLAB_DOUBLE = new BlockState(Block.DOUBLE_STONE_SLAB, BlockDoubleSlabStone.STONE);
+    private static final BlockState SMOOTH_STONE_SLAB_DOUBLE =
+            new BlockState(Block.DOUBLE_STONE_SLAB, BlockDoubleSlabStone.STONE);
     private static final BlockState COBBLESTONE = new BlockState(Block.COBBLESTONE);
     private static final BlockState WATER = new BlockState(Block.STILL_WATER);
     private static final BlockState LAVA = new BlockState(Block.STILL_LAVA);
@@ -53,28 +54,28 @@ public class StrongholdPieces {
 
     private static final Object lock = new Object();
 
-    private static final PieceWeight[] STRONGHOLD_PIECE_WEIGHTS = new PieceWeight[]{
-            new PieceWeight(Straight.class, 40, 0),
-            new PieceWeight(PrisonHall.class, 5, 5),
-            new PieceWeight(LeftTurn.class, 20, 0),
-            new PieceWeight(RightTurn.class, 20, 0),
-            new PieceWeight(RoomCrossing.class, 10, 6),
-            new PieceWeight(StraightStairsDown.class, 5, 5),
-            new PieceWeight(StairsDown.class, 5, 5),
-            new PieceWeight(FiveCrossing.class, 5, 4),
-            new PieceWeight(ChestCorridor.class, 5, 4),
-            new PieceWeight(Library.class, 10, 2) {
-                @Override
-                public boolean doPlace(int genDepth) {
-                    return super.doPlace(genDepth) && genDepth > 4;
-                }
-            },
-            new PieceWeight(PortalRoom.class, 20, 1) {
-                @Override
-                public boolean doPlace(int genDepth) {
-                    return super.doPlace(genDepth) && genDepth > 5;
-                }
+    private static final PieceWeight[] STRONGHOLD_PIECE_WEIGHTS = new PieceWeight[] {
+        new PieceWeight(Straight.class, 40, 0),
+        new PieceWeight(PrisonHall.class, 5, 5),
+        new PieceWeight(LeftTurn.class, 20, 0),
+        new PieceWeight(RightTurn.class, 20, 0),
+        new PieceWeight(RoomCrossing.class, 10, 6),
+        new PieceWeight(StraightStairsDown.class, 5, 5),
+        new PieceWeight(StairsDown.class, 5, 5),
+        new PieceWeight(FiveCrossing.class, 5, 4),
+        new PieceWeight(ChestCorridor.class, 5, 4),
+        new PieceWeight(Library.class, 10, 2) {
+            @Override
+            public boolean doPlace(int genDepth) {
+                return super.doPlace(genDepth) && genDepth > 4;
             }
+        },
+        new PieceWeight(PortalRoom.class, 20, 1) {
+            @Override
+            public boolean doPlace(int genDepth) {
+                return super.doPlace(genDepth) && genDepth > 5;
+            }
+        }
     };
     private static final SmoothStoneSelector SMOOTH_STONE_SELECTOR = new SmoothStoneSelector();
     private static List<PieceWeight> currentPieces;
@@ -101,7 +102,9 @@ public class StrongholdPieces {
         totalWeight = 0;
 
         PieceWeight weight;
-        for (Iterator<PieceWeight> iterator = currentPieces.iterator(); iterator.hasNext(); totalWeight += weight.weight) {
+        for (Iterator<PieceWeight> iterator = currentPieces.iterator();
+                iterator.hasNext();
+                totalWeight += weight.weight) {
             weight = iterator.next();
             if (weight.maxPlaceCount > 0 && weight.placeCount < weight.maxPlaceCount) {
                 success = true;
@@ -111,8 +114,18 @@ public class StrongholdPieces {
         return success;
     }
 
-    //\\ StrongholdPiece::findAndCreatePieceFactory(std::basic_string<char,std::char_traits<char>,std::allocator<char>> const &,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int,int,int,int)
-    private static StrongholdPiece findAndCreatePieceFactory(Class<? extends StructurePiece> pieceClass, List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, @Nullable BlockFace orientation, int genDepth) {
+    // \\ StrongholdPiece::findAndCreatePieceFactory(std::basic_string<char,std::char_traits<char>,std::allocator<char>>
+    // const
+    // &,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int,int,int,int)
+    private static StrongholdPiece findAndCreatePieceFactory(
+            Class<? extends StructurePiece> pieceClass,
+            List<StructurePiece> pieces,
+            NukkitRandom random,
+            int x,
+            int y,
+            int z,
+            @Nullable BlockFace orientation,
+            int genDepth) {
         if (pieceClass == Straight.class) {
             return Straight.createPiece(pieces, random, x, y, z, orientation, genDepth);
         } else if (pieceClass == PrisonHall.class) {
@@ -140,11 +153,21 @@ public class StrongholdPieces {
     }
 
     @Nullable
-    //\\ StrongholdPiece::generatePieceFromSmallDoor(SHStartPiece *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random const &,int,int,int,int,int)
-    private static StrongholdPiece generatePieceFromSmallDoor(StartPiece piece, List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
+    // \\ StrongholdPiece::generatePieceFromSmallDoor(SHStartPiece
+    // *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random const &,int,int,int,int,int)
+    private static StrongholdPiece generatePieceFromSmallDoor(
+            StartPiece piece,
+            List<StructurePiece> pieces,
+            NukkitRandom random,
+            int x,
+            int y,
+            int z,
+            BlockFace orientation,
+            int genDepth) {
         if (updatePieceWeight()) {
             if (imposedPiece != null) {
-                StrongholdPiece result = findAndCreatePieceFactory(imposedPiece, pieces, random, x, y, z, orientation, genDepth);
+                StrongholdPiece result =
+                        findAndCreatePieceFactory(imposedPiece, pieces, random, x, y, z, orientation, genDepth);
                 imposedPiece = null;
                 if (result != null) {
                     return result;
@@ -162,7 +185,8 @@ public class StrongholdPieces {
                             break;
                         }
 
-                        StrongholdPiece result = findAndCreatePieceFactory(weight.pieceClass, pieces, random, x, y, z, orientation, genDepth);
+                        StrongholdPiece result = findAndCreatePieceFactory(
+                                weight.pieceClass, pieces, random, x, y, z, orientation, genDepth);
                         if (result != null) {
                             ++weight.placeCount;
                             piece.previousPiece = weight;
@@ -186,12 +210,22 @@ public class StrongholdPieces {
     }
 
     @Nullable
-    //\\ StrongholdPiece::generateAndAddPiece(SHStartPiece *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int,int,int,int)
-    private static StructurePiece generateAndAddPiece(StartPiece start, List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, @Nullable BlockFace orientation, int genDepth) {
+    // \\ StrongholdPiece::generateAndAddPiece(SHStartPiece
+    // *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int,int,int,int)
+    private static StructurePiece generateAndAddPiece(
+            StartPiece start,
+            List<StructurePiece> pieces,
+            NukkitRandom random,
+            int x,
+            int y,
+            int z,
+            @Nullable BlockFace orientation,
+            int genDepth) {
         if (genDepth > 50) {
             return null;
         } else if (Math.abs(x - start.getBoundingBox().x0) <= 112 && Math.abs(z - start.getBoundingBox().z0) <= 112) {
-            StructurePiece piece = generatePieceFromSmallDoor(start, pieces, random, x, y, z, orientation, genDepth + 1);
+            StructurePiece piece =
+                    generatePieceFromSmallDoor(start, pieces, random, x, y, z, orientation, genDepth + 1);
             if (piece != null) {
                 pieces.add(piece);
                 start.pendingChildren.add(piece);
@@ -204,7 +238,7 @@ public class StrongholdPieces {
     }
 
     public static void init() {
-        //NOOP
+        // NOOP
     }
 
     static class PieceWeight {
@@ -248,7 +282,7 @@ public class StrongholdPieces {
             return boundingBox != null && boundingBox.y0 > 10;
         }
 
-        @Override //\\ SHStartPiece::getType(void) // 1397248082i64
+        @Override // \\ SHStartPiece::getType(void) // 1397248082i64
         public String getType() {
             return "SHStart";
         }
@@ -258,11 +292,30 @@ public class StrongholdPieces {
             tag.putString("EntryDoor", this.entryDoor.name());
         }
 
-        //\\ StrongholdPiece::generateSmallDoor(BlockSource *,Random &,BoundingBox const &,StrongholdPiece::SmallDoorType,int,int,int)
-        protected void generateSmallDoor(ChunkManager level, NukkitRandom random, BoundingBox boundingBox, SmallDoorType type, int x, int y, int z) {
+        // \\ StrongholdPiece::generateSmallDoor(BlockSource *,Random &,BoundingBox const
+        // &,StrongholdPiece::SmallDoorType,int,int,int)
+        protected void generateSmallDoor(
+                ChunkManager level,
+                NukkitRandom random,
+                BoundingBox boundingBox,
+                SmallDoorType type,
+                int x,
+                int y,
+                int z) {
             switch (type) {
                 case OPENING:
-                    this.generateBox(level, boundingBox, x, y, z, x + 3 - 1, y + 3 - 1, z, BlockState.AIR, BlockState.AIR, false);
+                    this.generateBox(
+                            level,
+                            boundingBox,
+                            x,
+                            y,
+                            z,
+                            x + 3 - 1,
+                            y + 3 - 1,
+                            z,
+                            BlockState.AIR,
+                            BlockState.AIR,
+                            false);
                     break;
                 case WOOD_DOOR:
                     this.placeBlock(level, STONE_BRICKS, x, y, z, boundingBox);
@@ -274,7 +327,13 @@ public class StrongholdPieces {
                     this.placeBlock(level, STONE_BRICKS, x + 2, y, z, boundingBox);
 
                     this.placeBlock(level, OAK_DOOR, x + 1, y, z, boundingBox);
-                    this.placeBlock(level, new BlockState(Block.WOOD_DOOR_BLOCK, UpperBlockBit.UPPER), x + 1, y + 1, z, boundingBox);
+                    this.placeBlock(
+                            level,
+                            new BlockState(Block.WOOD_DOOR_BLOCK, UpperBlockBit.UPPER),
+                            x + 1,
+                            y + 1,
+                            z,
+                            boundingBox);
                     break;
                 case GRATES:
                     this.placeBlock(level, BlockState.AIR, x + 1, y, z, boundingBox);
@@ -298,10 +357,28 @@ public class StrongholdPieces {
                     this.placeBlock(level, STONE_BRICKS, x + 2, y, z, boundingBox);
 
                     this.placeBlock(level, IRON_DOOR, x + 1, y, z, boundingBox);
-                    this.placeBlock(level, new BlockState(Block.IRON_DOOR_BLOCK, UpperBlockBit.UPPER), x + 1, y + 1, z, boundingBox);
+                    this.placeBlock(
+                            level,
+                            new BlockState(Block.IRON_DOOR_BLOCK, UpperBlockBit.UPPER),
+                            x + 1,
+                            y + 1,
+                            z,
+                            boundingBox);
 
-                    this.placeBlock(level, new BlockState(Block.STONE_BUTTON, FacingDirection.NORTH), x + 2, y + 1, z + 1, boundingBox);
-                    this.placeBlock(level, new BlockState(Block.STONE_BUTTON, FacingDirection.SOUTH), x + 2, y + 1, z - 1, boundingBox);
+                    this.placeBlock(
+                            level,
+                            new BlockState(Block.STONE_BUTTON, FacingDirection.NORTH),
+                            x + 2,
+                            y + 1,
+                            z + 1,
+                            boundingBox);
+                    this.placeBlock(
+                            level,
+                            new BlockState(Block.STONE_BUTTON, FacingDirection.SOUTH),
+                            x + 2,
+                            y + 1,
+                            z - 1,
+                            boundingBox);
             }
         }
 
@@ -322,19 +399,53 @@ public class StrongholdPieces {
         }
 
         @Nullable
-        //\\ StrongholdPiece::generateSmallDoorChildForward(SHStartPiece *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int)
-        protected StructurePiece generateSmallDoorChildForward(StartPiece piece, List<StructurePiece> pieces, NukkitRandom random, int x, int y) {
+        // \\ StrongholdPiece::generateSmallDoorChildForward(SHStartPiece
+        // *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int)
+        protected StructurePiece generateSmallDoorChildForward(
+                StartPiece piece, List<StructurePiece> pieces, NukkitRandom random, int x, int y) {
             BlockFace orientation = this.getOrientation();
             if (orientation != null) {
                 switch (orientation) {
                     case NORTH:
-                        return generateAndAddPiece(piece, pieces, random, this.boundingBox.x0 + x, this.boundingBox.y0 + y, this.boundingBox.z0 - 1, orientation, this.getGenDepth());
+                        return generateAndAddPiece(
+                                piece,
+                                pieces,
+                                random,
+                                this.boundingBox.x0 + x,
+                                this.boundingBox.y0 + y,
+                                this.boundingBox.z0 - 1,
+                                orientation,
+                                this.getGenDepth());
                     case SOUTH:
-                        return generateAndAddPiece(piece, pieces, random, this.boundingBox.x0 + x, this.boundingBox.y0 + y, this.boundingBox.z1 + 1, orientation, this.getGenDepth());
+                        return generateAndAddPiece(
+                                piece,
+                                pieces,
+                                random,
+                                this.boundingBox.x0 + x,
+                                this.boundingBox.y0 + y,
+                                this.boundingBox.z1 + 1,
+                                orientation,
+                                this.getGenDepth());
                     case WEST:
-                        return generateAndAddPiece(piece, pieces, random, this.boundingBox.x0 - 1, this.boundingBox.y0 + y, this.boundingBox.z0 + x, orientation, this.getGenDepth());
+                        return generateAndAddPiece(
+                                piece,
+                                pieces,
+                                random,
+                                this.boundingBox.x0 - 1,
+                                this.boundingBox.y0 + y,
+                                this.boundingBox.z0 + x,
+                                orientation,
+                                this.getGenDepth());
                     case EAST:
-                        return generateAndAddPiece(piece, pieces, random, this.boundingBox.x1 + 1, this.boundingBox.y0 + y, this.boundingBox.z0 + x, orientation, this.getGenDepth());
+                        return generateAndAddPiece(
+                                piece,
+                                pieces,
+                                random,
+                                this.boundingBox.x1 + 1,
+                                this.boundingBox.y0 + y,
+                                this.boundingBox.z0 + x,
+                                orientation,
+                                this.getGenDepth());
                 }
             }
 
@@ -342,17 +453,35 @@ public class StrongholdPieces {
         }
 
         @Nullable
-        //\\ StrongholdPiece::generateSmallDoorChildLeft(SHStartPiece *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int)
-        protected StructurePiece generateSmallDoorChildLeft(StartPiece piece, List<StructurePiece> pieces, NukkitRandom random, int y, int z) {
+        // \\ StrongholdPiece::generateSmallDoorChildLeft(SHStartPiece
+        // *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int)
+        protected StructurePiece generateSmallDoorChildLeft(
+                StartPiece piece, List<StructurePiece> pieces, NukkitRandom random, int y, int z) {
             BlockFace orientation = this.getOrientation();
             if (orientation != null) {
                 switch (orientation) {
                     case NORTH:
                     case SOUTH:
-                        return generateAndAddPiece(piece, pieces, random, this.boundingBox.x0 - 1, this.boundingBox.y0 + y, this.boundingBox.z0 + z, BlockFace.WEST, this.getGenDepth());
+                        return generateAndAddPiece(
+                                piece,
+                                pieces,
+                                random,
+                                this.boundingBox.x0 - 1,
+                                this.boundingBox.y0 + y,
+                                this.boundingBox.z0 + z,
+                                BlockFace.WEST,
+                                this.getGenDepth());
                     case WEST:
                     case EAST:
-                        return generateAndAddPiece(piece, pieces, random, this.boundingBox.x0 + z, this.boundingBox.y0 + y, this.boundingBox.z0 - 1, BlockFace.NORTH, this.getGenDepth());
+                        return generateAndAddPiece(
+                                piece,
+                                pieces,
+                                random,
+                                this.boundingBox.x0 + z,
+                                this.boundingBox.y0 + y,
+                                this.boundingBox.z0 - 1,
+                                BlockFace.NORTH,
+                                this.getGenDepth());
                 }
             }
 
@@ -360,17 +489,35 @@ public class StrongholdPieces {
         }
 
         @Nullable
-        //\\ StrongholdPiece::generateSmallDoorChildRight(SHStartPiece *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int)
-        protected StructurePiece generateSmallDoorChildRight(StartPiece piece, List<StructurePiece> pieces, NukkitRandom random, int y, int z) {
+        // \\ StrongholdPiece::generateSmallDoorChildRight(SHStartPiece
+        // *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int)
+        protected StructurePiece generateSmallDoorChildRight(
+                StartPiece piece, List<StructurePiece> pieces, NukkitRandom random, int y, int z) {
             BlockFace orientation = this.getOrientation();
             if (orientation != null) {
                 switch (orientation) {
                     case NORTH:
                     case SOUTH:
-                        return generateAndAddPiece(piece, pieces, random, this.boundingBox.x1 + 1, this.boundingBox.y0 + y, this.boundingBox.z0 + z, BlockFace.EAST, this.getGenDepth());
+                        return generateAndAddPiece(
+                                piece,
+                                pieces,
+                                random,
+                                this.boundingBox.x1 + 1,
+                                this.boundingBox.y0 + y,
+                                this.boundingBox.z0 + z,
+                                BlockFace.EAST,
+                                this.getGenDepth());
                     case WEST:
                     case EAST:
-                        return generateAndAddPiece(piece, pieces, random, this.boundingBox.x0 + z, this.boundingBox.y0 + y, this.boundingBox.z1 + 1, BlockFace.SOUTH, this.getGenDepth());
+                        return generateAndAddPiece(
+                                piece,
+                                pieces,
+                                random,
+                                this.boundingBox.x0 + z,
+                                this.boundingBox.y0 + y,
+                                this.boundingBox.z1 + 1,
+                                BlockFace.SOUTH,
+                                this.getGenDepth());
                 }
             }
 
@@ -393,7 +540,9 @@ public class StrongholdPieces {
             super(genDepth);
             this.setOrientation(orientation);
             this.boundingBox = boundingBox;
-            this.steps = orientation != BlockFace.NORTH && orientation != BlockFace.SOUTH ? boundingBox.getXSpan() : boundingBox.getZSpan();
+            this.steps = orientation != BlockFace.NORTH && orientation != BlockFace.SOUTH
+                    ? boundingBox.getXSpan()
+                    : boundingBox.getZSpan();
         }
 
         public FillerCorridor(CompoundTag tag) {
@@ -401,8 +550,10 @@ public class StrongholdPieces {
             this.steps = tag.getInt("Steps");
         }
 
-        //\\ SHFillerCorridor::findPieceBox(std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int,int,int)
-        public static BoundingBox findPieceBox(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation) {
+        // \\
+        // SHFillerCorridor::findPieceBox(std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int,int,int)
+        public static BoundingBox findPieceBox(
+                List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation) {
             BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -1, -1, 0, 5, 5, 4, orientation);
             StructurePiece piece = StructurePiece.findCollisionPiece(pieces, boundingBox);
             if (piece != null) {
@@ -414,12 +565,11 @@ public class StrongholdPieces {
                         }
                     }
                 }
-
             }
             return null;
         }
 
-        @Override //\\ SHFillerCorridor::getType(void) // 1397245513i64
+        @Override // \\ SHFillerCorridor::getType(void) // 1397245513i64
         public String getType() {
             return "SHFC";
         }
@@ -431,7 +581,8 @@ public class StrongholdPieces {
         }
 
         @Override
-        public boolean postProcess(ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
+        public boolean postProcess(
+                ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
             for (int z = 0; z < this.steps; ++z) {
                 this.placeBlock(level, STONE_BRICKS, 0, 0, z, boundingBox);
                 this.placeBlock(level, STONE_BRICKS, 1, 0, z, boundingBox);
@@ -483,13 +634,23 @@ public class StrongholdPieces {
             this.isSource = tag.getBoolean("Source");
         }
 
-        //\\ SHStairsDown::createPiece(std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int,int,int,int)
-        public static StairsDown createPiece(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
+        // \\
+        // SHStairsDown::createPiece(std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int,int,int,int)
+        public static StairsDown createPiece(
+                List<StructurePiece> pieces,
+                NukkitRandom random,
+                int x,
+                int y,
+                int z,
+                BlockFace orientation,
+                int genDepth) {
             BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -1, -7, 0, 5, 11, 5, orientation);
-            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new StairsDown(genDepth, random, boundingBox, orientation) : null;
+            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null
+                    ? new StairsDown(genDepth, random, boundingBox, orientation)
+                    : null;
         }
 
-        @Override //\\ SHStairsDown::getType(void) // 1397248836i64
+        @Override // \\ SHStairsDown::getType(void) // 1397248836i64
         public String getType() {
             return "SHSD";
         }
@@ -501,7 +662,8 @@ public class StrongholdPieces {
         }
 
         @Override
-        //\\ SHStairsDown::addChildren(StructurePiece *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &)
+        // \\ SHStairsDown::addChildren(StructurePiece
+        // *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &)
         public void addChildren(StructurePiece piece, List<StructurePiece> pieces, NukkitRandom random) {
             if (this.isSource) {
                 imposedPiece = FiveCrossing.class;
@@ -510,8 +672,9 @@ public class StrongholdPieces {
             this.generateSmallDoorChildForward((StartPiece) piece, pieces, random, 1, 1);
         }
 
-        @Override //\\ SHStairsDown::postProcess(BlockSource *,Random &,BoundingBox const &)
-        public boolean postProcess(ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
+        @Override // \\ SHStairsDown::postProcess(BlockSource *,Random &,BoundingBox const &)
+        public boolean postProcess(
+                ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
             this.generateBox(level, boundingBox, 0, 0, 0, 4, 10, 4, true, random, SMOOTH_STONE_SELECTOR);
             this.generateSmallDoor(level, random, boundingBox, this.entryDoor, 1, 7, 0);
             this.generateSmallDoor(level, random, boundingBox, SmallDoorType.OPENING, 1, 1, 4);
@@ -541,8 +704,8 @@ public class StrongholdPieces {
 
         public final List<StructurePiece> pendingChildren = Lists.newArrayList();
         public PieceWeight previousPiece;
-        @Nullable
-        public PortalRoom portalRoomPiece;
+
+        @Nullable public PortalRoom portalRoomPiece;
 
         public StartPiece(NukkitRandom random, int x, int z) {
             super(0, random, x, z);
@@ -569,12 +732,21 @@ public class StrongholdPieces {
             this.rightChild = tag.getBoolean("Right");
         }
 
-        public static Straight createPiece(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
+        public static Straight createPiece(
+                List<StructurePiece> pieces,
+                NukkitRandom random,
+                int x,
+                int y,
+                int z,
+                BlockFace orientation,
+                int genDepth) {
             BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -1, -1, 0, 5, 5, 7, orientation);
-            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new Straight(genDepth, random, boundingBox, orientation) : null;
+            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null
+                    ? new Straight(genDepth, random, boundingBox, orientation)
+                    : null;
         }
 
-        @Override //\\ SHStraight::getType(void) // 1397248852i64
+        @Override // \\ SHStraight::getType(void) // 1397248852i64
         public String getType() {
             return "SHS";
         }
@@ -599,7 +771,8 @@ public class StrongholdPieces {
         }
 
         @Override
-        public boolean postProcess(ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
+        public boolean postProcess(
+                ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
             this.generateBox(level, boundingBox, 0, 0, 0, 4, 4, 6, true, random, SMOOTH_STONE_SELECTOR);
             this.generateSmallDoor(level, random, boundingBox, this.entryDoor, 1, 1, 0);
             this.generateSmallDoor(level, random, boundingBox, SmallDoorType.OPENING, 1, 1, 6);
@@ -638,12 +811,21 @@ public class StrongholdPieces {
             this.hasPlacedChest = tag.getBoolean("Chest");
         }
 
-        public static ChestCorridor createPiece(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
+        public static ChestCorridor createPiece(
+                List<StructurePiece> pieces,
+                NukkitRandom random,
+                int x,
+                int y,
+                int z,
+                BlockFace orientation,
+                int genDepth) {
             BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -1, -1, 0, 5, 5, 7, orientation);
-            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new ChestCorridor(genDepth, random, boundingBox, orientation) : null;
+            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null
+                    ? new ChestCorridor(genDepth, random, boundingBox, orientation)
+                    : null;
         }
 
-        @Override //\\ SHChestCorridor::getType(void) // 1397244744i64
+        @Override // \\ SHChestCorridor::getType(void) // 1397244744i64
         public String getType() {
             return "SHCC";
         }
@@ -660,7 +842,8 @@ public class StrongholdPieces {
         }
 
         @Override
-        public boolean postProcess(ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
+        public boolean postProcess(
+                ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
             this.generateBox(level, boundingBox, 0, 0, 0, 4, 4, 6, true, random, SMOOTH_STONE_SELECTOR);
             this.generateSmallDoor(level, random, boundingBox, this.entryDoor, 1, 1, 0);
             this.generateSmallDoor(level, random, boundingBox, SmallDoorType.OPENING, 1, 1, 6);
@@ -675,11 +858,23 @@ public class StrongholdPieces {
                 this.placeBlock(level, STONE_BRICK_SLAB, 2, 1, i, boundingBox);
             }
 
-            if (!this.hasPlacedChest && boundingBox.isInside(new BlockVector3(this.getWorldX(3, 3), this.getWorldY(2), this.getWorldZ(3, 3)))) {
+            if (!this.hasPlacedChest
+                    && boundingBox.isInside(
+                            new BlockVector3(this.getWorldX(3, 3), this.getWorldY(2), this.getWorldZ(3, 3)))) {
                 this.hasPlacedChest = true;
 
                 BlockFace orientation = this.getOrientation();
-                this.placeBlock(level, new BlockState(Block.CHEST, (orientation == null ? BlockFace.NORTH : orientation).getOpposite().getIndex()), 3, 2, 3, boundingBox);
+                this.placeBlock(
+                        level,
+                        new BlockState(
+                                Block.CHEST,
+                                (orientation == null ? BlockFace.NORTH : orientation)
+                                        .getOpposite()
+                                        .getIndex()),
+                        3,
+                        2,
+                        3,
+                        boundingBox);
 
                 BlockVector3 vec = new BlockVector3(this.getWorldX(3, 3), this.getWorldY(2), this.getWorldZ(3, 3));
                 if (boundingBox.isInside(vec)) {
@@ -689,7 +884,10 @@ public class StrongholdPieces {
                         ListTag<CompoundTag> itemList = new ListTag<>("Items");
                         StrongholdCorridorChest.get().create(itemList, random);
                         nbt.putList(itemList);
-                        Server.getInstance().getScheduler().scheduleTask(new BlockActorSpawnTask(chunk.getProvider().getLevel(), nbt));
+                        Server.getInstance()
+                                .getScheduler()
+                                .scheduleTask(new BlockActorSpawnTask(
+                                        chunk.getProvider().getLevel(), nbt));
                     }
                 }
             }
@@ -711,9 +909,18 @@ public class StrongholdPieces {
             super(tag);
         }
 
-        public static StraightStairsDown createPiece(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
+        public static StraightStairsDown createPiece(
+                List<StructurePiece> pieces,
+                NukkitRandom random,
+                int x,
+                int y,
+                int z,
+                BlockFace orientation,
+                int genDepth) {
             BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -1, -7, 0, 5, 11, 8, orientation);
-            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new StraightStairsDown(genDepth, random, boundingBox, orientation) : null;
+            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null
+                    ? new StraightStairsDown(genDepth, random, boundingBox, orientation)
+                    : null;
         }
 
         @Override
@@ -727,7 +934,8 @@ public class StrongholdPieces {
         }
 
         @Override
-        public boolean postProcess(ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
+        public boolean postProcess(
+                ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
             this.generateBox(level, boundingBox, 0, 0, 0, 4, 10, 7, true, random, SMOOTH_STONE_SELECTOR);
             this.generateSmallDoor(level, random, boundingBox, this.entryDoor, 1, 7, 0);
             this.generateSmallDoor(level, random, boundingBox, SmallDoorType.OPENING, 1, 1, 7);
@@ -773,12 +981,21 @@ public class StrongholdPieces {
             super(tag);
         }
 
-        public static LeftTurn createPiece(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
+        public static LeftTurn createPiece(
+                List<StructurePiece> pieces,
+                NukkitRandom random,
+                int x,
+                int y,
+                int z,
+                BlockFace orientation,
+                int genDepth) {
             BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -1, -1, 0, 5, 5, 5, orientation);
-            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new LeftTurn(genDepth, random, boundingBox, orientation) : null;
+            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null
+                    ? new LeftTurn(genDepth, random, boundingBox, orientation)
+                    : null;
         }
 
-        @Override //\\ SHLeftTurn::getType(void) // 1397247060i64
+        @Override // \\ SHLeftTurn::getType(void) // 1397247060i64
         public String getType() {
             return "SHLT";
         }
@@ -794,7 +1011,8 @@ public class StrongholdPieces {
         }
 
         @Override
-        public boolean postProcess(ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
+        public boolean postProcess(
+                ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
             this.generateBox(level, boundingBox, 0, 0, 0, 4, 4, 4, true, random, SMOOTH_STONE_SELECTOR);
             this.generateSmallDoor(level, random, boundingBox, this.entryDoor, 1, 1, 0);
 
@@ -822,12 +1040,21 @@ public class StrongholdPieces {
             super(tag);
         }
 
-        public static RightTurn createPiece(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
+        public static RightTurn createPiece(
+                List<StructurePiece> pieces,
+                NukkitRandom random,
+                int x,
+                int y,
+                int z,
+                BlockFace orientation,
+                int genDepth) {
             BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -1, -1, 0, 5, 5, 5, orientation);
-            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new RightTurn(genDepth, random, boundingBox, orientation) : null;
+            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null
+                    ? new RightTurn(genDepth, random, boundingBox, orientation)
+                    : null;
         }
 
-        @Override //\\ SHRightTurn::getType(void) // 1397248596i64
+        @Override // \\ SHRightTurn::getType(void) // 1397248596i64
         public String getType() {
             return "SHRT";
         }
@@ -843,7 +1070,8 @@ public class StrongholdPieces {
         }
 
         @Override
-        public boolean postProcess(ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
+        public boolean postProcess(
+                ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
             this.generateBox(level, boundingBox, 0, 0, 0, 4, 4, 4, true, random, SMOOTH_STONE_SELECTOR);
             this.generateSmallDoor(level, random, boundingBox, this.entryDoor, 1, 1, 0);
 
@@ -875,12 +1103,21 @@ public class StrongholdPieces {
             this.type = tag.getInt("Type");
         }
 
-        public static RoomCrossing createPiece(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
+        public static RoomCrossing createPiece(
+                List<StructurePiece> pieces,
+                NukkitRandom random,
+                int x,
+                int y,
+                int z,
+                BlockFace orientation,
+                int genDepth) {
             BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -4, -1, 0, 11, 7, 11, orientation);
-            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new RoomCrossing(genDepth, random, boundingBox, orientation) : null;
+            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null
+                    ? new RoomCrossing(genDepth, random, boundingBox, orientation)
+                    : null;
         }
 
-        @Override //\\ SHRoomCrossing::getType(void) // 1397248579i64
+        @Override // \\ SHRoomCrossing::getType(void) // 1397248579i64
         public String getType() {
             return "SHRC";
         }
@@ -899,7 +1136,8 @@ public class StrongholdPieces {
         }
 
         @Override
-        public boolean postProcess(ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
+        public boolean postProcess(
+                ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
             this.generateBox(level, boundingBox, 0, 0, 0, 10, 6, 10, true, random, SMOOTH_STONE_SELECTOR);
             this.generateSmallDoor(level, random, boundingBox, this.entryDoor, 4, 1, 0);
             this.generateBox(level, boundingBox, 4, 1, 10, 6, 3, 10, BlockState.AIR, BlockState.AIR, false);
@@ -912,10 +1150,14 @@ public class StrongholdPieces {
                     this.placeBlock(level, STONE_BRICKS, 5, 2, 5, boundingBox);
                     this.placeBlock(level, STONE_BRICKS, 5, 3, 5, boundingBox);
 
-                    this.placeBlock(level, new BlockState(Block.TORCH, TorchFacingDirection.WEST), 4, 3, 5, boundingBox);
-                    this.placeBlock(level, new BlockState(Block.TORCH, TorchFacingDirection.EAST), 6, 3, 5, boundingBox);
-                    this.placeBlock(level, new BlockState(Block.TORCH, TorchFacingDirection.SOUTH), 5, 3, 4, boundingBox);
-                    this.placeBlock(level, new BlockState(Block.TORCH, TorchFacingDirection.NORTH), 5, 3, 6, boundingBox);
+                    this.placeBlock(
+                            level, new BlockState(Block.TORCH, TorchFacingDirection.WEST), 4, 3, 5, boundingBox);
+                    this.placeBlock(
+                            level, new BlockState(Block.TORCH, TorchFacingDirection.EAST), 6, 3, 5, boundingBox);
+                    this.placeBlock(
+                            level, new BlockState(Block.TORCH, TorchFacingDirection.SOUTH), 5, 3, 4, boundingBox);
+                    this.placeBlock(
+                            level, new BlockState(Block.TORCH, TorchFacingDirection.NORTH), 5, 3, 6, boundingBox);
 
                     this.placeBlock(level, SMOOTH_STONE_SLAB, 4, 1, 4, boundingBox);
                     this.placeBlock(level, SMOOTH_STONE_SLAB, 4, 1, 5, boundingBox);
@@ -1007,7 +1249,17 @@ public class StrongholdPieces {
                     this.placeBlock(level, ladderW, 9, 3, 3, boundingBox);
 
                     BlockFace orientation = this.getOrientation();
-                    this.placeBlock(level, new BlockState(Block.CHEST, (orientation == null ? BlockFace.NORTH : orientation).getOpposite().getIndex()), 3, 4, 8, boundingBox);
+                    this.placeBlock(
+                            level,
+                            new BlockState(
+                                    Block.CHEST,
+                                    (orientation == null ? BlockFace.NORTH : orientation)
+                                            .getOpposite()
+                                            .getIndex()),
+                            3,
+                            4,
+                            8,
+                            boundingBox);
 
                     BlockVector3 vec = new BlockVector3(this.getWorldX(3, 8), this.getWorldY(4), this.getWorldZ(3, 8));
                     if (boundingBox.isInside(vec)) {
@@ -1017,7 +1269,10 @@ public class StrongholdPieces {
                             ListTag<CompoundTag> itemList = new ListTag<>("Items");
                             StrongholdCrossingChest.get().create(itemList, random);
                             nbt.putList(itemList);
-                            Server.getInstance().getScheduler().scheduleTask(new BlockActorSpawnTask(chunk.getProvider().getLevel(), nbt));
+                            Server.getInstance()
+                                    .getScheduler()
+                                    .scheduleTask(new BlockActorSpawnTask(
+                                            chunk.getProvider().getLevel(), nbt));
                         }
                     }
             }
@@ -1039,12 +1294,21 @@ public class StrongholdPieces {
             super(tag);
         }
 
-        public static PrisonHall createPiece(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
+        public static PrisonHall createPiece(
+                List<StructurePiece> pieces,
+                NukkitRandom random,
+                int x,
+                int y,
+                int z,
+                BlockFace orientation,
+                int genDepth) {
             BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -1, -1, 0, 9, 5, 11, orientation);
-            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new PrisonHall(genDepth, random, boundingBox, orientation) : null;
+            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null
+                    ? new PrisonHall(genDepth, random, boundingBox, orientation)
+                    : null;
         }
 
-        @Override //\\ SHPrisonHall::getType(void) // 1397248072i64
+        @Override // \\ SHPrisonHall::getType(void) // 1397248072i64
         public String getType() {
             return "SHPH";
         }
@@ -1055,7 +1319,8 @@ public class StrongholdPieces {
         }
 
         @Override
-        public boolean postProcess(ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
+        public boolean postProcess(
+                ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
             this.generateBox(level, boundingBox, 0, 0, 0, 8, 4, 10, true, random, SMOOTH_STONE_SELECTOR);
             this.generateSmallDoor(level, random, boundingBox, this.entryDoor, 1, 1, 0);
             this.generateBox(level, boundingBox, 1, 1, 10, 3, 3, 10, BlockState.AIR, BlockState.AIR, false);
@@ -1105,7 +1370,14 @@ public class StrongholdPieces {
             this.isTall = tag.getBoolean("Tall");
         }
 
-        public static Library createPiece(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
+        public static Library createPiece(
+                List<StructurePiece> pieces,
+                NukkitRandom random,
+                int x,
+                int y,
+                int z,
+                BlockFace orientation,
+                int genDepth) {
             BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -4, -1, 0, 14, 11, 15, orientation);
             if (!isOkBox(boundingBox) || StructurePiece.findCollisionPiece(pieces, boundingBox) != null) {
                 boundingBox = BoundingBox.orientBox(x, y, z, -4, -1, 0, 14, 6, 15, orientation);
@@ -1117,7 +1389,7 @@ public class StrongholdPieces {
             return new Library(genDepth, random, boundingBox, orientation);
         }
 
-        @Override //\\ SHLibrary::getType(void) // 1397247049i64
+        @Override // \\ SHLibrary::getType(void) // 1397247049i64
         public String getType() {
             return "SHLi";
         }
@@ -1129,7 +1401,8 @@ public class StrongholdPieces {
         }
 
         @Override
-        public boolean postProcess(ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
+        public boolean postProcess(
+                ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
             int height = 11;
             if (!this.isTall) {
                 height = 6;
@@ -1143,8 +1416,10 @@ public class StrongholdPieces {
                 if ((z - 1) % 4 == 0) {
                     this.generateBox(level, boundingBox, 1, 1, z, 1, 4, z, OAK_PLANKS, OAK_PLANKS, false);
                     this.generateBox(level, boundingBox, 12, 1, z, 12, 4, z, OAK_PLANKS, OAK_PLANKS, false);
-                    this.placeBlock(level, new BlockState(Block.TORCH, TorchFacingDirection.EAST), 2, 3, z, boundingBox);
-                    this.placeBlock(level, new BlockState(Block.TORCH, TorchFacingDirection.WEST), 11, 3, z, boundingBox);
+                    this.placeBlock(
+                            level, new BlockState(Block.TORCH, TorchFacingDirection.EAST), 2, 3, z, boundingBox);
+                    this.placeBlock(
+                            level, new BlockState(Block.TORCH, TorchFacingDirection.WEST), 11, 3, z, boundingBox);
                     if (this.isTall) {
                         this.generateBox(level, boundingBox, 1, 6, z, 1, 9, z, OAK_PLANKS, OAK_PLANKS, false);
                         this.generateBox(level, boundingBox, 12, 6, z, 12, 9, z, OAK_PLANKS, OAK_PLANKS, false);
@@ -1219,7 +1494,11 @@ public class StrongholdPieces {
             }
 
             BlockFace orientation = this.getOrientation();
-            BlockState chest = new BlockState(Block.CHEST, (orientation == null ? BlockFace.NORTH : orientation).getOpposite().getIndex());
+            BlockState chest = new BlockState(
+                    Block.CHEST,
+                    (orientation == null ? BlockFace.NORTH : orientation)
+                            .getOpposite()
+                            .getIndex());
             this.placeBlock(level, chest, 3, 3, 5, boundingBox);
 
             BlockVector3 vec = new BlockVector3(this.getWorldX(3, 5), this.getWorldY(3), this.getWorldZ(3, 5));
@@ -1230,7 +1509,10 @@ public class StrongholdPieces {
                     ListTag<CompoundTag> itemList = new ListTag<>("Items");
                     StrongholdLibraryChest.get().create(itemList, random);
                     nbt.putList(itemList);
-                    Server.getInstance().getScheduler().scheduleTask(new BlockActorSpawnTask(chunk.getProvider().getLevel(), nbt));
+                    Server.getInstance()
+                            .getScheduler()
+                            .scheduleTask(
+                                    new BlockActorSpawnTask(chunk.getProvider().getLevel(), nbt));
                 }
             }
 
@@ -1246,7 +1528,10 @@ public class StrongholdPieces {
                         ListTag<CompoundTag> itemList = new ListTag<>("Items");
                         StrongholdLibraryChest.get().create(itemList, random);
                         nbt.putList(itemList);
-                        Server.getInstance().getScheduler().scheduleTask(new BlockActorSpawnTask(chunk.getProvider().getLevel(), nbt));
+                        Server.getInstance()
+                                .getScheduler()
+                                .scheduleTask(new BlockActorSpawnTask(
+                                        chunk.getProvider().getLevel(), nbt));
                     }
                 }
             }
@@ -1281,12 +1566,21 @@ public class StrongholdPieces {
             this.rightHigh = tag.getBoolean("rightHigh");
         }
 
-        public static FiveCrossing createPiece(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
+        public static FiveCrossing createPiece(
+                List<StructurePiece> pieces,
+                NukkitRandom random,
+                int x,
+                int y,
+                int z,
+                BlockFace orientation,
+                int genDepth) {
             BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -4, -3, 0, 10, 9, 11, orientation);
-            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new FiveCrossing(genDepth, random, boundingBox, orientation) : null;
+            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null
+                    ? new FiveCrossing(genDepth, random, boundingBox, orientation)
+                    : null;
         }
 
-        @Override //\\ SHFiveCrossing::getType(void) // 1397241155i64
+        @Override // \\ SHFiveCrossing::getType(void) // 1397241155i64
         public String getType() {
             return "SH5C";
         }
@@ -1328,7 +1622,8 @@ public class StrongholdPieces {
         }
 
         @Override
-        public boolean postProcess(ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
+        public boolean postProcess(
+                ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
             this.generateBox(level, boundingBox, 0, 0, 0, 9, 8, 10, true, random, SMOOTH_STONE_SELECTOR);
             this.generateSmallDoor(level, random, boundingBox, this.entryDoor, 4, 3, 0);
 
@@ -1359,7 +1654,8 @@ public class StrongholdPieces {
             this.generateBox(level, boundingBox, 5, 2, 7, 7, 2, 7, STONE_BRICK_SLAB, STONE_BRICK_SLAB, false);
             this.generateBox(level, boundingBox, 4, 5, 7, 4, 5, 9, STONE_BRICK_SLAB, STONE_BRICK_SLAB, false);
             this.generateBox(level, boundingBox, 8, 5, 7, 8, 5, 9, STONE_BRICK_SLAB, STONE_BRICK_SLAB, false);
-            this.generateBox(level, boundingBox, 5, 5, 7, 7, 5, 9, SMOOTH_STONE_SLAB_DOUBLE, SMOOTH_STONE_SLAB_DOUBLE, false);
+            this.generateBox(
+                    level, boundingBox, 5, 5, 7, 7, 5, 9, SMOOTH_STONE_SLAB_DOUBLE, SMOOTH_STONE_SLAB_DOUBLE, false);
 
             this.placeBlock(level, new BlockState(Block.TORCH, TorchFacingDirection.SOUTH), 6, 5, 6, boundingBox);
 
@@ -1382,9 +1678,12 @@ public class StrongholdPieces {
             this.hasPlacedSpawner = tag.getBoolean("Mob");
         }
 
-        public static PortalRoom createPiece(List<StructurePiece> pieces, int x, int y, int z, BlockFace orientation, int genDepth) {
+        public static PortalRoom createPiece(
+                List<StructurePiece> pieces, int x, int y, int z, BlockFace orientation, int genDepth) {
             BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -4, -1, 0, 11, 8, 16, orientation);
-            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new PortalRoom(genDepth, boundingBox, orientation) : null;
+            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null
+                    ? new PortalRoom(genDepth, boundingBox, orientation)
+                    : null;
         }
 
         @Override
@@ -1406,7 +1705,8 @@ public class StrongholdPieces {
         }
 
         @Override
-        public boolean postProcess(ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
+        public boolean postProcess(
+                ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
             this.generateBox(level, boundingBox, 0, 0, 0, 10, 7, 15, false, random, SMOOTH_STONE_SELECTOR);
             this.generateSmallDoor(level, random, boundingBox, SmallDoorType.GRATES, 4, 1, 0);
 
@@ -1454,18 +1754,114 @@ public class StrongholdPieces {
                 actived &= hasEye[i];
             }
 
-            this.placeBlock(level, hasEye[0] ? new BlockState(Block.END_PORTAL_FRAME, frameN.getMeta() | EndPortalEyeBit.HAS_EYE) : frameN, 4, 3, 8, boundingBox);
-            this.placeBlock(level, hasEye[1] ? new BlockState(Block.END_PORTAL_FRAME, frameN.getMeta() | EndPortalEyeBit.HAS_EYE) : frameN, 5, 3, 8, boundingBox);
-            this.placeBlock(level, hasEye[2] ? new BlockState(Block.END_PORTAL_FRAME, frameN.getMeta() | EndPortalEyeBit.HAS_EYE) : frameN, 6, 3, 8, boundingBox);
-            this.placeBlock(level, hasEye[3] ? new BlockState(Block.END_PORTAL_FRAME, frameS.getMeta() | EndPortalEyeBit.HAS_EYE) : frameS, 4, 3, 12, boundingBox);
-            this.placeBlock(level, hasEye[4] ? new BlockState(Block.END_PORTAL_FRAME, frameS.getMeta() | EndPortalEyeBit.HAS_EYE) : frameS, 5, 3, 12, boundingBox);
-            this.placeBlock(level, hasEye[5] ? new BlockState(Block.END_PORTAL_FRAME, frameS.getMeta() | EndPortalEyeBit.HAS_EYE) : frameS, 6, 3, 12, boundingBox);
-            this.placeBlock(level, hasEye[6] ? new BlockState(Block.END_PORTAL_FRAME, frameE.getMeta() | EndPortalEyeBit.HAS_EYE) : frameE, 3, 3, 9, boundingBox);
-            this.placeBlock(level, hasEye[7] ? new BlockState(Block.END_PORTAL_FRAME, frameE.getMeta() | EndPortalEyeBit.HAS_EYE) : frameE, 3, 3, 10, boundingBox);
-            this.placeBlock(level, hasEye[8] ? new BlockState(Block.END_PORTAL_FRAME, frameE.getMeta() | EndPortalEyeBit.HAS_EYE) : frameE, 3, 3, 11, boundingBox);
-            this.placeBlock(level, hasEye[9] ? new BlockState(Block.END_PORTAL_FRAME, frameW.getMeta() | EndPortalEyeBit.HAS_EYE) : frameW, 7, 3, 9, boundingBox);
-            this.placeBlock(level, hasEye[10] ? new BlockState(Block.END_PORTAL_FRAME, frameW.getMeta() | EndPortalEyeBit.HAS_EYE) : frameW, 7, 3, 10, boundingBox);
-            this.placeBlock(level, hasEye[11] ? new BlockState(Block.END_PORTAL_FRAME, frameW.getMeta() | EndPortalEyeBit.HAS_EYE) : frameW, 7, 3, 11, boundingBox);
+            this.placeBlock(
+                    level,
+                    hasEye[0]
+                            ? new BlockState(Block.END_PORTAL_FRAME, frameN.getMeta() | EndPortalEyeBit.HAS_EYE)
+                            : frameN,
+                    4,
+                    3,
+                    8,
+                    boundingBox);
+            this.placeBlock(
+                    level,
+                    hasEye[1]
+                            ? new BlockState(Block.END_PORTAL_FRAME, frameN.getMeta() | EndPortalEyeBit.HAS_EYE)
+                            : frameN,
+                    5,
+                    3,
+                    8,
+                    boundingBox);
+            this.placeBlock(
+                    level,
+                    hasEye[2]
+                            ? new BlockState(Block.END_PORTAL_FRAME, frameN.getMeta() | EndPortalEyeBit.HAS_EYE)
+                            : frameN,
+                    6,
+                    3,
+                    8,
+                    boundingBox);
+            this.placeBlock(
+                    level,
+                    hasEye[3]
+                            ? new BlockState(Block.END_PORTAL_FRAME, frameS.getMeta() | EndPortalEyeBit.HAS_EYE)
+                            : frameS,
+                    4,
+                    3,
+                    12,
+                    boundingBox);
+            this.placeBlock(
+                    level,
+                    hasEye[4]
+                            ? new BlockState(Block.END_PORTAL_FRAME, frameS.getMeta() | EndPortalEyeBit.HAS_EYE)
+                            : frameS,
+                    5,
+                    3,
+                    12,
+                    boundingBox);
+            this.placeBlock(
+                    level,
+                    hasEye[5]
+                            ? new BlockState(Block.END_PORTAL_FRAME, frameS.getMeta() | EndPortalEyeBit.HAS_EYE)
+                            : frameS,
+                    6,
+                    3,
+                    12,
+                    boundingBox);
+            this.placeBlock(
+                    level,
+                    hasEye[6]
+                            ? new BlockState(Block.END_PORTAL_FRAME, frameE.getMeta() | EndPortalEyeBit.HAS_EYE)
+                            : frameE,
+                    3,
+                    3,
+                    9,
+                    boundingBox);
+            this.placeBlock(
+                    level,
+                    hasEye[7]
+                            ? new BlockState(Block.END_PORTAL_FRAME, frameE.getMeta() | EndPortalEyeBit.HAS_EYE)
+                            : frameE,
+                    3,
+                    3,
+                    10,
+                    boundingBox);
+            this.placeBlock(
+                    level,
+                    hasEye[8]
+                            ? new BlockState(Block.END_PORTAL_FRAME, frameE.getMeta() | EndPortalEyeBit.HAS_EYE)
+                            : frameE,
+                    3,
+                    3,
+                    11,
+                    boundingBox);
+            this.placeBlock(
+                    level,
+                    hasEye[9]
+                            ? new BlockState(Block.END_PORTAL_FRAME, frameW.getMeta() | EndPortalEyeBit.HAS_EYE)
+                            : frameW,
+                    7,
+                    3,
+                    9,
+                    boundingBox);
+            this.placeBlock(
+                    level,
+                    hasEye[10]
+                            ? new BlockState(Block.END_PORTAL_FRAME, frameW.getMeta() | EndPortalEyeBit.HAS_EYE)
+                            : frameW,
+                    7,
+                    3,
+                    10,
+                    boundingBox);
+            this.placeBlock(
+                    level,
+                    hasEye[11]
+                            ? new BlockState(Block.END_PORTAL_FRAME, frameW.getMeta() | EndPortalEyeBit.HAS_EYE)
+                            : frameW,
+                    7,
+                    3,
+                    11,
+                    boundingBox);
 
             if (actived) {
                 this.placeBlock(level, END_PORTAL, 4, 3, 9, boundingBox);
@@ -1487,9 +1883,12 @@ public class StrongholdPieces {
 
                     BaseFullChunk chunk = level.getChunk(vec.x >> 4, vec.z >> 4);
                     if (chunk != null) {
-                        Server.getInstance().getScheduler().scheduleTask(new BlockActorSpawnTask(chunk.getProvider().getLevel(),
-                                BlockEntity.getDefaultCompound(vec.asVector3(), BlockEntity.MOB_SPAWNER)
-                                        .putInt("EntityId", EntitySilverfish.NETWORK_ID)));
+                        Server.getInstance()
+                                .getScheduler()
+                                .scheduleTask(new BlockActorSpawnTask(
+                                        chunk.getProvider().getLevel(),
+                                        BlockEntity.getDefaultCompound(vec.asVector3(), BlockEntity.MOB_SPAWNER)
+                                                .putInt("EntityId", EntitySilverfish.NETWORK_ID)));
                     }
                 }
             }

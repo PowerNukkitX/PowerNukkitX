@@ -1,11 +1,10 @@
 package cn.nukkit.network.protocol;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-
 import java.util.List;
 import java.util.UUID;
 
-//May be obsolete, this package is not used now
+// May be obsolete, this package is not used now
 public class SetScoreboardIdentityPacket extends DataPacket {
 
     private final List<Entry> entries = new ObjectArrayList<>();
@@ -18,7 +17,7 @@ public class SetScoreboardIdentityPacket extends DataPacket {
 
     @Override
     public void decode() {
-        //only server -> client
+        // only server -> client
     }
 
     @Override

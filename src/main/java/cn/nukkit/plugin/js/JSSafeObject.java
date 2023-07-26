@@ -1,12 +1,11 @@
 package cn.nukkit.plugin.js;
 
-import org.graalvm.polyglot.Context;
+import static cn.nukkit.plugin.js.JSConcurrentManager.PROMISE_FAILED;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
-
-import static cn.nukkit.plugin.js.JSConcurrentManager.PROMISE_FAILED;
+import org.graalvm.polyglot.Context;
 
 public final class JSSafeObject {
     private final Context jsContext;

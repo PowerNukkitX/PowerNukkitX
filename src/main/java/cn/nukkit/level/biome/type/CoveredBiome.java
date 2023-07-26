@@ -7,10 +7,9 @@ import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.biome.Biome;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.generator.Normal;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author DaPorkchop_ (Nukkit Project), joserobjr
@@ -20,8 +19,11 @@ import java.util.function.Supplier;
  */
 public abstract class CoveredBiome extends Biome {
     private static final BlockState STATE_STONE = BlockState.of(STONE);
+
     @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", reason = "Exposed lock object and removed from new-raknet and not used by PowerNukkit")
+    @DeprecationDetails(
+            since = "1.4.0.0-PN",
+            reason = "Exposed lock object and removed from new-raknet and not used by PowerNukkit")
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     public final Object synchronizeCover = new Object();
@@ -29,15 +31,19 @@ public abstract class CoveredBiome extends Biome {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     protected Boolean useNewRakNetCover;
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     protected Boolean useNewRakNetSurfaceDepth;
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     protected Boolean useNewRakNetSurface;
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     protected Boolean useNewRakNetGroundDepth;
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     protected Boolean useNewRakNetGroundBlock;
@@ -76,8 +82,7 @@ public abstract class CoveredBiome extends Biome {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public BlockState getCoverState(int x, int z) {
+    @NotNull public BlockState getCoverState(int x, int z) {
         if (useNewRakNetCover()) {
             int fullId = getCoverId(x, z);
             int blockId = fullId >> 4;
@@ -135,7 +140,6 @@ public abstract class CoveredBiome extends Biome {
             return AIR;
         }
     }
-
 
     /**
      * The metadata of the surface block
@@ -282,7 +286,7 @@ public abstract class CoveredBiome extends Biome {
 
         boolean hasCovered = false;
         int realY;
-        //start one below build limit in case of cover blocks
+        // start one below build limit in case of cover blocks
         for (int y = 254; y > 32; y--) {
             if (chunk.getBlockState(x, y, z).equals(STATE_STONE)) {
                 COVER:
@@ -305,13 +309,14 @@ public abstract class CoveredBiome extends Biome {
                             chunk.setBlockState(x, realY, z, this.getGroundState(fullX, realY, fullZ));
                         } else break COVER;
                     }
-                    //don't take all of groundDepth away because we do y-- in the loop
+                    // don't take all of groundDepth away because we do y-- in the loop
                     y -= groundDepth - 1;
                 }
                 hasCovered = true;
             } else {
                 if (hasCovered) {
-                    //reset it if this isn't a valid stone block (allows us to place ground cover on top and below overhangs)
+                    // reset it if this isn't a valid stone block (allows us to place ground cover on top and below
+                    // overhangs)
                     hasCovered = false;
                 }
             }
@@ -325,11 +330,7 @@ public abstract class CoveredBiome extends Biome {
         if (useNewRakNet != null) {
             return useNewRakNet;
         }
-        return attemptToUseNewRakNet(
-                () -> getCoverId(0, 0),
-                () -> useNewRakNetCover,
-                val -> useNewRakNetCover = val
-        );
+        return attemptToUseNewRakNet(() -> getCoverId(0, 0), () -> useNewRakNetCover, val -> useNewRakNetCover = val);
     }
 
     @PowerNukkitOnly
@@ -340,10 +341,7 @@ public abstract class CoveredBiome extends Biome {
             return useNewRakNet;
         }
         return attemptToUseNewRakNet(
-                () -> getSurfaceDepth(0, 0, 0),
-                () -> useNewRakNetSurfaceDepth,
-                val -> useNewRakNetSurfaceDepth = val
-        );
+                () -> getSurfaceDepth(0, 0, 0), () -> useNewRakNetSurfaceDepth, val -> useNewRakNetSurfaceDepth = val);
     }
 
     @PowerNukkitOnly
@@ -354,10 +352,7 @@ public abstract class CoveredBiome extends Biome {
             return useNewRakNet;
         }
         return attemptToUseNewRakNet(
-                () -> getSurfaceId(0, 0, 0),
-                () -> useNewRakNetSurface,
-                val -> useNewRakNetSurface = val
-        );
+                () -> getSurfaceId(0, 0, 0), () -> useNewRakNetSurface, val -> useNewRakNetSurface = val);
     }
 
     @PowerNukkitOnly
@@ -368,10 +363,7 @@ public abstract class CoveredBiome extends Biome {
             return useNewRakNet;
         }
         return attemptToUseNewRakNet(
-                () -> getGroundDepth(0, 0, 0),
-                () -> useNewRakNetGroundDepth,
-                val -> useNewRakNetGroundDepth = val
-        );
+                () -> getGroundDepth(0, 0, 0), () -> useNewRakNetGroundDepth, val -> useNewRakNetGroundDepth = val);
     }
 
     @PowerNukkitOnly
@@ -382,15 +374,13 @@ public abstract class CoveredBiome extends Biome {
             return useNewRakNet;
         }
         return attemptToUseNewRakNet(
-                () -> getGroundId(0, 0, 0),
-                () -> useNewRakNetGroundBlock,
-                val -> useNewRakNetGroundBlock = val
-        );
+                () -> getGroundId(0, 0, 0), () -> useNewRakNetGroundBlock, val -> useNewRakNetGroundBlock = val);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    protected boolean attemptToUseNewRakNet(Runnable method, Supplier<Boolean> flagGetter, Consumer<Boolean> flagSetter) {
+    protected boolean attemptToUseNewRakNet(
+            Runnable method, Supplier<Boolean> flagGetter, Consumer<Boolean> flagSetter) {
         method.run();
         Boolean useNewRak = flagGetter.get();
         if (useNewRak != null) {

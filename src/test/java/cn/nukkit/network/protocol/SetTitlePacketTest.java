@@ -18,13 +18,13 @@
 
 package cn.nukkit.network.protocol;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.network.protocol.SetTitlePacket.TitleAction;
 import lombok.val;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author joserobjr
@@ -44,12 +44,12 @@ class SetTitlePacketTest {
         packet.setXuid("xuid");
         packet.setPlatformOnlineId("poid");
         packet.encode();
-        
+
         val packet2 = new SetTitlePacket();
         packet2.setBuffer(packet.getBuffer());
         packet2.getUnsignedVarInt();
         packet2.decode();
-        
+
         assertEquals(TitleAction.SET_TITLE_MESSAGE, packet2.getTitleAction());
         assertEquals("text", packet2.getText());
         assertEquals(1, packet2.getFadeInTime());

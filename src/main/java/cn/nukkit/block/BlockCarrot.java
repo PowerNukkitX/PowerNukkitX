@@ -3,7 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
-
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -32,9 +31,7 @@ public class BlockCarrot extends BlockCrops {
     @Override
     public Item[] getDrops(Item item) {
         if (!isFullyGrown()) {
-            return new Item[]{
-                    Item.get(ItemID.CARROT)
-            };
+            return new Item[] {Item.get(ItemID.CARROT)};
         }
 
         int drops = 2;
@@ -46,9 +43,7 @@ public class BlockCarrot extends BlockCrops {
             }
         }
 
-        return new Item[]{
-                Item.get(ItemID.CARROT, 0, drops)
-        };
+        return new Item[] {Item.get(ItemID.CARROT, 0, drops)};
     }
 
     @Override

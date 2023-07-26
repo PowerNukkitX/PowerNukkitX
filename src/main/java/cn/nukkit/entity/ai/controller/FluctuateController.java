@@ -3,7 +3,6 @@ package cn.nukkit.entity.ai.controller;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
-
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -22,7 +21,7 @@ public class FluctuateController implements IController {
             if (lastTickInWater) {
                 lastTickInWater = false;
                 if (entity.hasWaterAt(0)) {
-                    if (ThreadLocalRandom.current().nextInt(0, 4) == 3) {// 1/3
+                    if (ThreadLocalRandom.current().nextInt(0, 4) == 3) { // 1/3
                         entity.motionY += entity.getFloatingHeight() * 0.8;
                     } else {
                         entity.motionY += entity.getFloatingHeight() * 0.6;

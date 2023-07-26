@@ -6,9 +6,7 @@ import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.tree.ParamList;
 import com.google.common.collect.Sets;
-
 import java.util.Set;
-
 
 /**
  * 解析为{@link String}值
@@ -32,12 +30,17 @@ public class EnumNode extends ParamNode<String> {
     }
 
     @Override
-    public IParamNode<String> init(ParamList parent, String name, boolean optional, CommandParamType type, CommandEnum enumData, String postFix) {
+    public IParamNode<String> init(
+            ParamList parent,
+            String name,
+            boolean optional,
+            CommandParamType type,
+            CommandEnum enumData,
+            String postFix) {
         this.parent = parent;
         this.commandEnum = enumData;
         this.enums = Sets.newHashSet(this.commandEnum.getValues());
         this.optional = optional;
         return this;
     }
-
 }

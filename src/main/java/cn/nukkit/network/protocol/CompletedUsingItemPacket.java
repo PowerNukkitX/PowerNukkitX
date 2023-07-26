@@ -25,6 +25,7 @@ public class CompletedUsingItemPacket extends DataPacket {
     public static final int ACTION_RETRIEVE = 12;
     public static final int ACTION_DYED = 13;
     public static final int ACTION_TRADED = 14;
+
     @Since("1.20.10-r1")
     @PowerNukkitXOnly
     public static final int ACTION_BRUSHING_COMPLETED = 15;
@@ -32,15 +33,13 @@ public class CompletedUsingItemPacket extends DataPacket {
     public int itemId;
     public int action;
 
-
     @Override
     public byte pid() {
         return NETWORK_ID;
     }
 
     @Override
-    public void decode() {
-    }
+    public void decode() {}
 
     @Override
     public void encode() {

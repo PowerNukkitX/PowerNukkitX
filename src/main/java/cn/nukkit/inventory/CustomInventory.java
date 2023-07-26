@@ -1,7 +1,6 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.item.Item;
-
 import java.util.Map;
 
 /**
@@ -20,7 +19,12 @@ public abstract class CustomInventory extends ContainerInventory {
         super(holder, type, items, overrideSize);
     }
 
-    public CustomInventory(InventoryHolder holder, InventoryType type, Map<Integer, Item> items, Integer overrideSize, String overrideTitle) {
+    public CustomInventory(
+            InventoryHolder holder,
+            InventoryType type,
+            Map<Integer, Item> items,
+            Integer overrideSize,
+            String overrideTitle) {
         super(holder, type, items, overrideSize, overrideTitle);
     }
 }

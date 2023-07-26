@@ -3,7 +3,6 @@ package cn.nukkit.level.generator.populator.impl.structure.utils.template;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.nbt.tag.CompoundTag;
-
 import java.util.function.Consumer;
 
 @PowerNukkitXOnly

@@ -21,7 +21,6 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.potion.Effect;
-
 import java.util.Set;
 
 /**
@@ -39,42 +38,68 @@ public class EntityHusk extends EntityZombie {
     public int getNetworkId() {
         return NETWORK_ID;
     }
+
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
         return new BehaviorGroup(
                 this.tickSpread,
                 Set.of(),
                 Set.of(
-                        new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 40, true, 10, Effect.getEffect(Effect.HUNGER).setDuration(140)), all(
-                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET),
-                                entity -> !entity.getMemoryStorage().notEmpty(CoreMemoryTypes.ATTACK_TARGET) || !(entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET) instanceof Player player) || player.isSurvival() || player.isAdventure()
-                        ), 3, 1),
-                        new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 40, false, 10, Effect.getEffect(Effect.HUNGER).setDuration(140)), all(
-                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
-                                entity -> {
-                                    if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_PLAYER))
-                                        return true;
+                        new Behavior(
+                                new MeleeAttackExecutor(
+                                        CoreMemoryTypes.ATTACK_TARGET,
+                                        0.3f,
+                                        40,
+                                        true,
+                                        10,
+                                        Effect.getEffect(Effect.HUNGER).setDuration(140)),
+                                all(
+                                        new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET),
+                                        entity -> !entity.getMemoryStorage().notEmpty(CoreMemoryTypes.ATTACK_TARGET)
+                                                || !(entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET)
+                                                        instanceof Player player)
+                                                || player.isSurvival()
+                                                || player.isAdventure()),
+                                3,
+                                1),
+                        new Behavior(
+                                new MeleeAttackExecutor(
+                                        CoreMemoryTypes.NEAREST_PLAYER,
+                                        0.3f,
+                                        40,
+                                        false,
+                                        10,
+                                        Effect.getEffect(Effect.HUNGER).setDuration(140)),
+                                all(new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_PLAYER), entity -> {
+                                    if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_PLAYER)) return true;
                                     Player player = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
                                     return player.isSurvival() || player.isAdventure();
-                                }
-                        ), 2, 1),
-                        new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
-                ),
+                                }),
+                                2,
+                                1),
+                        new Behavior(
+                                new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10),
+                                (entity -> true),
+                                1,
+                                1)),
                 Set.of(new NearestPlayerSensor(40, 0, 20)),
                 Set.of(new WalkController(), new LookController(true, true)),
                 new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
-                this
-        );
+                this);
     }
+
     @Override
     protected void initEntity() {
         this.setMaxHealth(20);
-        this.diffHandDamage = new float[]{2.5f, 3f, 4.5f};
+        this.diffHandDamage = new float[] {2.5f, 3f, 4.5f};
         super.initEntity();
-        this.setDataProperty(new IntEntityData(Entity.DATA_AMBIENT_SOUND_INTERVAL, Entity.DATA_AMBIENT_SOUND_INTERVAL_RANGE));
-        this.setDataProperty(new IntEntityData(Entity.DATA_AMBIENT_SOUND_EVENT_NAME, LevelSoundEventPacket.SOUND_AMBIENT));
+        this.setDataProperty(
+                new IntEntityData(Entity.DATA_AMBIENT_SOUND_INTERVAL, Entity.DATA_AMBIENT_SOUND_INTERVAL_RANGE));
+        this.setDataProperty(
+                new IntEntityData(Entity.DATA_AMBIENT_SOUND_EVENT_NAME, LevelSoundEventPacket.SOUND_AMBIENT));
         if (this.isBaby()) {
-            this.setDataProperty(new IntEntityData(Entity.DATA_AMBIENT_SOUND_EVENT_NAME, LevelSoundEventPacket.SOUND_AMBIENT_BABY));
+            this.setDataProperty(
+                    new IntEntityData(Entity.DATA_AMBIENT_SOUND_EVENT_NAME, LevelSoundEventPacket.SOUND_AMBIENT_BABY));
         }
     }
 

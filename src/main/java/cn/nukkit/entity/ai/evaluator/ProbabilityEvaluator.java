@@ -3,7 +3,6 @@ package cn.nukkit.entity.ai.evaluator;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
-
 import java.util.concurrent.ThreadLocalRandom;
 
 @PowerNukkitXOnly

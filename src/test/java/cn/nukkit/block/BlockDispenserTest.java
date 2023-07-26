@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
@@ -13,8 +15,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.powernukkit.tests.api.MockLevel;
 import org.powernukkit.tests.api.MockPlayer;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author joserobjr
@@ -42,7 +42,8 @@ class BlockDispenserTest {
         level.setBlock(0, 100, 0, grass, true, false);
         level.setBlock(0, 101, 0, tallGrass, true, false);
 
-        assertTrue(dispenser.place(Item.getBlock(BlockID.DISPENSER), tallGrass, tallGrass, BlockFace.NORTH, 0, 0, 0, player));
+        assertTrue(dispenser.place(
+                Item.getBlock(BlockID.DISPENSER), tallGrass, tallGrass, BlockFace.NORTH, 0, 0, 0, player));
         BlockEntityDispenser entityDispenser = (BlockEntityDispenser) dispenser.getBlockEntity();
         assertNotNull(entityDispenser);
         assertTrue(entityDispenser.isBlockEntityValid());

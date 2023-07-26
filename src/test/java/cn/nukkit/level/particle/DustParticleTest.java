@@ -1,10 +1,10 @@
 package cn.nukkit.level.particle;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.BlockColor;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class DustParticleTest {
     @Test

@@ -1,5 +1,8 @@
 package cn.nukkit.inventory;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.doCallRealMethod;
+
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
@@ -10,18 +13,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.powernukkit.tests.api.MockPlayer;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.doCallRealMethod;
-
 /**
  * @author joserobjr
  */
 @ExtendWith(PowerNukkitExtension.class)
 class EnchantInventoryTest {
-    
+
     @MockPlayer
     Player player;
-    
+
     PlayerInventory playerInventory;
 
     PlayerUIInventory playerUIInventory;
@@ -51,7 +51,7 @@ class EnchantInventoryTest {
     void setUp() {
         playerInventory = player.getInventory();
         playerUIInventory = player.getUIInventory();
-        
+
         enchantInventory = new EnchantInventory(playerUIInventory, new Position(1, 2, 3, player.getLevel()));
     }
 }

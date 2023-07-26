@@ -2,7 +2,6 @@ package cn.nukkit.command.tree.node;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-
 import java.util.regex.Pattern;
 
 /**
@@ -18,5 +17,4 @@ public class FloatPositionNode extends PositionNode {
     public FloatPositionNode() {
         super(FLOAT_POS_PATTERN);
     }
-
 }

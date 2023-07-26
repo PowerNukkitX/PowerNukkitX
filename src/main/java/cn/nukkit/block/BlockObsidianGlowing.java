@@ -12,8 +12,7 @@ import cn.nukkit.item.ItemTool;
  */
 public class BlockObsidianGlowing extends BlockSolid {
 
-    public BlockObsidianGlowing() {
-    }
+    public BlockObsidianGlowing() {}
 
     @Override
     public int getId() {
@@ -60,9 +59,7 @@ public class BlockObsidianGlowing extends BlockSolid {
     @Override
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() > ItemTool.DIAMOND_PICKAXE) {
-            return new Item[]{
-                    toItem()
-            };
+            return new Item[] {toItem()};
         } else {
             return Item.EMPTY_ARRAY;
         }
@@ -75,7 +72,7 @@ public class BlockObsidianGlowing extends BlockSolid {
 
     @Override
     @PowerNukkitOnly
-    public  boolean canBePulled() {
+    public boolean canBePulled() {
         return false;
     }
 

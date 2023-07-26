@@ -7,7 +7,6 @@ import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.generator.Generator;
 import cn.nukkit.level.generator.SimpleChunkManager;
 import cn.nukkit.scheduler.AsyncTask;
-
 import java.util.function.Consumer;
 
 @PowerNukkitXOnly

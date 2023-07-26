@@ -10,7 +10,7 @@ import cn.nukkit.utils.Faceable;
 /**
  * @author Pub4Game
  * @since 15.01.2016
- * 
+ *
  * @apiNote Implements {@link Faceable} only on PowerNukkit since 1.3.0.0-PN
  * and extends {@link BlockCropsStem} instead of {@link BlockCrops} only in PowerNukkit since 1.4.0.0-PN
  */

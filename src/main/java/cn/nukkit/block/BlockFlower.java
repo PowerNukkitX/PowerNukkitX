@@ -15,9 +15,8 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.concurrent.ThreadLocalRandom;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author xtypr
@@ -26,19 +25,20 @@ import java.util.concurrent.ThreadLocalRandom;
 public class BlockFlower extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final BlockProperty<SmallFlowerType> RED_FLOWER_TYPE = new ArrayBlockProperty<>("flower_type", true, new SmallFlowerType[]{
-            SmallFlowerType.POPPY,
-            SmallFlowerType.ORCHID,
-            SmallFlowerType.ALLIUM,
-            SmallFlowerType.HOUSTONIA,
-            SmallFlowerType.TULIP_RED,
-            SmallFlowerType.TULIP_ORANGE,
-            SmallFlowerType.TULIP_WHITE,
-            SmallFlowerType.TULIP_PINK,
-            SmallFlowerType.OXEYE,
-            SmallFlowerType.CORNFLOWER,
-            SmallFlowerType.LILY_OF_THE_VALLEY
-    });
+    public static final BlockProperty<SmallFlowerType> RED_FLOWER_TYPE =
+            new ArrayBlockProperty<>("flower_type", true, new SmallFlowerType[] {
+                SmallFlowerType.POPPY,
+                SmallFlowerType.ORCHID,
+                SmallFlowerType.ALLIUM,
+                SmallFlowerType.HOUSTONIA,
+                SmallFlowerType.TULIP_RED,
+                SmallFlowerType.TULIP_ORANGE,
+                SmallFlowerType.TULIP_WHITE,
+                SmallFlowerType.TULIP_PINK,
+                SmallFlowerType.OXEYE,
+                SmallFlowerType.CORNFLOWER,
+                SmallFlowerType.LILY_OF_THE_VALLEY
+            });
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -79,6 +79,7 @@ public class BlockFlower extends BlockFlowable implements BlockFlowerPot.FlowerP
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", reason = "Magic value. Use FlowerType instead")
     public static final int TYPE_OXEYE_DAISY = 8;
+
     public static final int TYPE_CORNFLOWER = 9;
     public static final int TYPE_LILY_OF_THE_VALLEY = 10;
 
@@ -97,8 +98,7 @@ public class BlockFlower extends BlockFlowable implements BlockFlowerPot.FlowerP
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -122,11 +122,10 @@ public class BlockFlower extends BlockFlowable implements BlockFlowerPot.FlowerP
         }
         String persistenceName = getPersistenceName();
         throw new InvalidBlockPropertyValueException(
-                new ArrayBlockProperty<>(persistenceName +"_type", false, new SmallFlowerType[]{acceptsOnly}),
+                new ArrayBlockProperty<>(persistenceName + "_type", false, new SmallFlowerType[] {acceptsOnly}),
                 acceptsOnly,
                 attemptedToSet,
-                persistenceName+" only accepts "+acceptsOnly.name().toLowerCase()
-        );
+                persistenceName + " only accepts " + acceptsOnly.name().toLowerCase());
     }
 
     @PowerNukkitOnly
@@ -157,7 +156,15 @@ public class BlockFlower extends BlockFlowable implements BlockFlowerPot.FlowerP
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         Block down = this.down();
         if (canPlantOn(down)) {
             this.getLevel().setBlock(block, this, true);
@@ -167,7 +174,9 @@ public class BlockFlower extends BlockFlowable implements BlockFlowerPot.FlowerP
         return false;
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Will break on normal update if the supporting block is invalid")
+    @PowerNukkitDifference(
+            since = "1.4.0.0-PN",
+            info = "Will break on normal update if the supporting block is invalid")
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
@@ -188,7 +197,7 @@ public class BlockFlower extends BlockFlowable implements BlockFlowerPot.FlowerP
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
-        if (item.isFertilizer()) { //Bone meal
+        if (item.isFertilizer()) { // Bone meal
             if (player != null && (player.gamemode & 0x01) == 0) {
                 item.count--;
             }
@@ -201,7 +210,10 @@ public class BlockFlower extends BlockFlowable implements BlockFlowerPot.FlowerP
                         ThreadLocalRandom.current().nextInt(-1, 2),
                         ThreadLocalRandom.current().nextInt(-3, 4));
 
-                if (level.getBlock(vec).getId() == AIR && level.getBlock(vec.down()).getId() == GRASS && vec.getY() >= 0 && vec.getY() < level.getMaxHeight()) {
+                if (level.getBlock(vec).getId() == AIR
+                        && level.getBlock(vec.down()).getId() == GRASS
+                        && vec.getY() >= 0
+                        && vec.getY() < level.getMaxHeight()) {
                     if (ThreadLocalRandom.current().nextInt(10) == 0) {
                         this.level.setBlock(vec, this.getUncommonFlower(), true);
                     } else {

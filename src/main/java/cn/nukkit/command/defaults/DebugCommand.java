@@ -13,7 +13,6 @@ import cn.nukkit.entity.ai.EntityAI;
 import cn.nukkit.item.ItemMap;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.scheduler.AsyncTask;
-
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
@@ -25,22 +24,28 @@ public class DebugCommand extends TestCommand implements CoreCommand {
         super(name, "commands.debug.description");
         this.setPermission("nukkit.command.debug");
         this.commandParameters.clear();
-        //生物AI debug模式开关
-        this.commandParameters.put("entity", new CommandParameter[]{
-                CommandParameter.newEnum("entity", new String[]{"entity"}),
-                CommandParameter.newEnum("option", Arrays.stream(EntityAI.DebugOption.values()).map(option -> option.name().toLowerCase()).toList().toArray(new String[0])),
-                CommandParameter.newEnum("value", false, CommandEnum.ENUM_BOOLEAN)
+        // 生物AI debug模式开关
+        this.commandParameters.put("entity", new CommandParameter[] {
+            CommandParameter.newEnum("entity", new String[] {"entity"}),
+            CommandParameter.newEnum(
+                    "option",
+                    Arrays.stream(EntityAI.DebugOption.values())
+                            .map(option -> option.name().toLowerCase())
+                            .toList()
+                            .toArray(new String[0])),
+            CommandParameter.newEnum("value", false, CommandEnum.ENUM_BOOLEAN)
         });
-        this.commandParameters.put("rendermap", new CommandParameter[]{
-                CommandParameter.newEnum("rendermap", new String[]{"rendermap"}),
-                CommandParameter.newType("zoom", CommandParamType.INT)
+        this.commandParameters.put("rendermap", new CommandParameter[] {
+            CommandParameter.newEnum("rendermap", new String[] {"rendermap"}),
+            CommandParameter.newType("zoom", CommandParamType.INT)
         });
         this.enableParamTree();
     }
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         switch (result.getKey()) {
             case "entity" -> {
@@ -48,12 +53,13 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                 var option = EntityAI.DebugOption.valueOf(str.toUpperCase(Locale.ENGLISH));
                 boolean value = list.getResult(2);
                 EntityAI.setDebugOption(option, value);
-                log.addSuccess("Entity AI framework " + option.name() + " debug mode have been set to: " + EntityAI.checkDebugOption(option)).output();
+                log.addSuccess("Entity AI framework " + option.name() + " debug mode have been set to: "
+                                + EntityAI.checkDebugOption(option))
+                        .output();
                 return 1;
             }
             case "rendermap" -> {
-                if (!sender.isPlayer())
-                    return 0;
+                if (!sender.isPlayer()) return 0;
                 int zoom = list.getResult(1);
                 if (zoom < 1) {
                     log.addError("Zoom must bigger than one").output();
@@ -64,13 +70,15 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                     Server.getInstance().getScheduler().scheduleAsyncTask(InternalPlugin.INSTANCE, new AsyncTask() {
                         @Override
                         public void onRun() {
-                            itemMap.renderMap(player.getLevel(), player.getFloorX() - 64, player.getFloorZ() - 64, zoom);
+                            itemMap.renderMap(
+                                    player.getLevel(), player.getFloorX() - 64, player.getFloorZ() - 64, zoom);
                             player.getInventory().setItemInHand(itemMap);
                             itemMap.sendImage(player);
                             player.sendMessage("Successfully rendered the map in your hand");
                         }
                     });
-                    log.addSuccess("Start rendering the map in your hand. Zoom: " + zoom).output();
+                    log.addSuccess("Start rendering the map in your hand. Zoom: " + zoom)
+                            .output();
                     return 1;
                 }
                 return 0;

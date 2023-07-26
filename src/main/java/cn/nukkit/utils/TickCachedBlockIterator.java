@@ -4,7 +4,6 @@ import cn.nukkit.block.Block;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-
 import java.util.Iterator;
 
 /**
@@ -62,7 +61,8 @@ public class TickCachedBlockIterator implements Iterator<Block> {
         double thirdPosition = 0;
 
         Vector3 pos = new Vector3(startClone.x, startClone.y, startClone.z);
-        Block startBlock = this.level.getTickCachedBlock(new Vector3(Math.floor(pos.x), Math.floor(pos.y), Math.floor(pos.z)));
+        Block startBlock =
+                this.level.getTickCachedBlock(new Vector3(Math.floor(pos.x), Math.floor(pos.y), Math.floor(pos.z)));
 
         if (this.getXLength(direction) > mainDirection) {
             this.mainFace = this.getXFace(direction);
@@ -156,7 +156,11 @@ public class TickCachedBlockIterator implements Iterator<Block> {
             throw new IllegalStateException("Start block missed in BlockIterator");
         }
 
-        this.maxDistanceInt = (int) Math.round(maxDistance / (Math.sqrt(mainDirection * mainDirection + secondDirection * secondDirection + thirdDirection * thirdDirection) / mainDirection));
+        this.maxDistanceInt = (int) Math.round(maxDistance
+                / (Math.sqrt(mainDirection * mainDirection
+                                + secondDirection * secondDirection
+                                + thirdDirection * thirdDirection)
+                        / mainDirection));
     }
 
     private boolean blockEquals(Block a, Block b) {

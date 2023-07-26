@@ -5,13 +5,12 @@ import cn.nukkit.api.Since;
 import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.stream.NBTOutputStream;
 import io.netty.util.internal.EmptyArrays;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.*;
 import java.util.Map.Entry;
+import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 public class CompoundTag extends Tag implements Cloneable {
     protected final Map<String, Tag> tags;
@@ -237,7 +236,6 @@ public class CompoundTag extends Tag implements Cloneable {
         return (T) tags.remove(name);
     }
 
-
     public int getByte(String name) {
         if (!tags.containsKey(name)) return (byte) 0;
         return ((NumberTag<?>) tags.get(name)).getData().intValue();
@@ -327,7 +325,8 @@ public class CompoundTag extends Tag implements Cloneable {
     @Override
     public String toString() {
         StringJoiner joiner = new StringJoiner(",\n\t");
-        tags.forEach((key, tag) -> joiner.add('\'' + key + "' : " + tag.toString().replace("\n", "\n\t")));
+        tags.forEach(
+                (key, tag) -> joiner.add('\'' + key + "' : " + tag.toString().replace("\n", "\n\t")));
         return "CompoundTag '" + this.getName() + "' (" + tags.size() + " entries) {\n\t" + joiner + "\n}";
     }
 
@@ -342,7 +341,8 @@ public class CompoundTag extends Tag implements Cloneable {
         StringBuilder addSpace = new StringBuilder();
         addSpace.append(" ".repeat(Math.max(0, space)));
         StringJoiner joiner = new StringJoiner(",\n" + addSpace);
-        tags.forEach((key, tag) -> joiner.add("\"" + key + "\": " + tag.toSNBT(space).replace("\n", "\n" + addSpace)));
+        tags.forEach(
+                (key, tag) -> joiner.add("\"" + key + "\": " + tag.toSNBT(space).replace("\n", "\n" + addSpace)));
         return "{\n" + addSpace + joiner + "\n}";
     }
 

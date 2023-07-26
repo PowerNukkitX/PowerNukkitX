@@ -35,16 +35,14 @@ public class BlockDropper extends BlockDispenser {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public Class<? extends BlockEntityDropper> getBlockEntityClass() {
         return BlockEntityDropper.class;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getBlockEntityType() {
         return BlockEntity.DROPPER;
     }

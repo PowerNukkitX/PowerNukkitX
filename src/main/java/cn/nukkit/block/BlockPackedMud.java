@@ -1,6 +1,6 @@
 package cn.nukkit.block;
 
-public class BlockPackedMud extends BlockSolid{
+public class BlockPackedMud extends BlockSolid {
     @Override
     public String getName() {
         return "Packed Mud";

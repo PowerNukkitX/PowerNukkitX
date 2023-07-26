@@ -78,9 +78,10 @@ public abstract class EntityVehicle extends Entity implements EntityRideable, En
         // Movement code
         updateMovement();
 
-        //Check riding
+        // Check riding
         if (this.riding == null) {
-            for (Entity entity : level.fastNearbyEntities(this.boundingBox.grow(0.20000000298023224, 0.0D, 0.20000000298023224), this)) {
+            for (Entity entity : level.fastNearbyEntities(
+                    this.boundingBox.grow(0.20000000298023224, 0.0D, 0.20000000298023224), this)) {
                 if (entity instanceof EntityLiving entityLiving) {
                     entityLiving.collidingWith(this);
                 }
@@ -104,12 +105,12 @@ public abstract class EntityVehicle extends Entity implements EntityRideable, En
         if (source instanceof EntityDamageByEntityEvent) {
             final Entity damagingEntity = ((EntityDamageByEntityEvent) source).getDamager();
 
-            final VehicleDamageByEntityEvent byEvent = new VehicleDamageByEntityEvent(this, damagingEntity, source.getFinalDamage());
+            final VehicleDamageByEntityEvent byEvent =
+                    new VehicleDamageByEntityEvent(this, damagingEntity, source.getFinalDamage());
 
             getServer().getPluginManager().callEvent(byEvent);
 
-            if (byEvent.isCancelled())
-                return false;
+            if (byEvent.isCancelled()) return false;
 
             instantKill = damagingEntity instanceof Player && ((Player) damagingEntity).isCreative();
         } else {
@@ -118,32 +119,29 @@ public abstract class EntityVehicle extends Entity implements EntityRideable, En
 
             getServer().getPluginManager().callEvent(damageEvent);
 
-            if (damageEvent.isCancelled())
-                return false;
+            if (damageEvent.isCancelled()) return false;
         }
 
         if (instantKill || getHealth() - source.getFinalDamage() < 1) {
             if (source instanceof EntityDamageByEntityEvent) {
                 final Entity damagingEntity = ((EntityDamageByEntityEvent) source).getDamager();
-                final VehicleDestroyByEntityEvent byDestroyEvent = new VehicleDestroyByEntityEvent(this, damagingEntity);
+                final VehicleDestroyByEntityEvent byDestroyEvent =
+                        new VehicleDestroyByEntityEvent(this, damagingEntity);
 
                 getServer().getPluginManager().callEvent(byDestroyEvent);
 
-                if (byDestroyEvent.isCancelled())
-                    return false;
+                if (byDestroyEvent.isCancelled()) return false;
             } else {
 
                 final VehicleDestroyEvent destroyEvent = new VehicleDestroyEvent(this);
 
                 getServer().getPluginManager().callEvent(destroyEvent);
 
-                if (destroyEvent.isCancelled())
-                    return false;
+                if (destroyEvent.isCancelled()) return false;
             }
         }
 
-        if (instantKill)
-            source.setDamage(1000);
+        if (instantKill) source.setDamage(1000);
 
         return super.attack(source);
     }

@@ -4,10 +4,9 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.permission.Permission;
 import cn.nukkit.utils.PluginException;
+import java.util.*;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
-
-import java.util.*;
 
 /* TODO Add these to Javadoc：
  *     <li><i>softdepend</i><br>
@@ -162,7 +161,9 @@ public class PluginDescription {
             list.add((String) api);
             this.api = list;
         }
-        if (this.main.startsWith("cn.nukkit.") && !this.main.equals("cn.nukkit.plugin.InternalPlugin") && !name.equals("PowerNukkit")) {
+        if (this.main.startsWith("cn.nukkit.")
+                && !this.main.equals("cn.nukkit.plugin.InternalPlugin")
+                && !name.equals("PowerNukkit")) {
             throw new PluginException("Invalid PluginDescription main, cannot start within the cn.nukkit. package");
         }
 

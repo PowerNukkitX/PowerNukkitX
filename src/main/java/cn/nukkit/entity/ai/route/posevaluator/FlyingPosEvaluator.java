@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 public class FlyingPosEvaluator implements IPosEvaluator {
     @Override
     public boolean evalPos(@NotNull EntityIntelligent entity, @NotNull Vector3 vec) {
-        //检查是否可到达
+        // 检查是否可到达
         return isPassable(entity, vec);
     }
 
@@ -26,7 +26,13 @@ public class FlyingPosEvaluator implements IPosEvaluator {
         double radius = (entity.getWidth() * entity.getScale()) * 0.5 + 0.1;
         float height = entity.getHeight() * entity.getScale();
         // 原版中不会贴地飞行
-        AxisAlignedBB bb = new SimpleAxisAlignedBB(vector3.getX() - radius, vector3.getY() - height * 0.5, vector3.getZ() - radius, vector3.getX() + radius, vector3.getY() + height, vector3.getZ() + radius);
+        AxisAlignedBB bb = new SimpleAxisAlignedBB(
+                vector3.getX() - radius,
+                vector3.getY() - height * 0.5,
+                vector3.getZ() - radius,
+                vector3.getX() + radius,
+                vector3.getY() + height,
+                vector3.getZ() + radius);
         return !Utils.hasCollisionTickCachedBlocks(entity.level, bb);
     }
 }

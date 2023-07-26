@@ -8,7 +8,6 @@ import cn.nukkit.item.ItemTool;
  * @author LoboMetalurgico
  * @since 08/06/2021
  */
-
 @PowerNukkitOnly
 @Since("FUTURE")
 public class BlockRawGold extends BlockRaw {

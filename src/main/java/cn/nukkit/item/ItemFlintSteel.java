@@ -11,7 +11,6 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
-
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -38,7 +37,8 @@ public class ItemFlintSteel extends ItemTool {
 
     @PowerNukkitDifference(info = "Using new method to play sounds", since = "1.4.0.0-PN")
     @Override
-    public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
+    public boolean onActivate(
+            Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         if (player.isAdventure()) {
             return false;
         }
@@ -60,12 +60,14 @@ public class ItemFlintSteel extends ItemTool {
             fire.level = level;
 
             if (fire.isBlockTopFacingSurfaceSolid(fire.down()) || fire.canNeighborBurn()) {
-                BlockIgniteEvent e = new BlockIgniteEvent(block, null, player, BlockIgniteEvent.BlockIgniteCause.FLINT_AND_STEEL);
+                BlockIgniteEvent e =
+                        new BlockIgniteEvent(block, null, player, BlockIgniteEvent.BlockIgniteCause.FLINT_AND_STEEL);
                 block.getLevel().getServer().getPluginManager().callEvent(e);
 
                 if (!e.isCancelled()) {
                     level.setBlock(fire, fire, true);
-                    level.scheduleUpdate(fire, fire.tickRate() + ThreadLocalRandom.current().nextInt(10));
+                    level.scheduleUpdate(
+                            fire, fire.tickRate() + ThreadLocalRandom.current().nextInt(10));
                 }
                 damageItem(player, block);
                 return true;
@@ -97,8 +99,10 @@ public class ItemFlintSteel extends ItemTool {
 
     @Override
     public boolean useOn(Block block) {
-        //todo: initiator should be an entity who use it but not null
-        block.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(null, block.add(0.5, 0.5, 0.5), VibrationType.BLOCK_PLACE));
+        // todo: initiator should be an entity who use it but not null
+        block.getLevel()
+                .getVibrationManager()
+                .callVibrationEvent(new VibrationEvent(null, block.add(0.5, 0.5, 0.5), VibrationType.BLOCK_PLACE));
         return super.useOn(block);
     }
 }

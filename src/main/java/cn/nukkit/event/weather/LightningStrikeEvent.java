@@ -30,5 +30,4 @@ public class LightningStrikeEvent extends WeatherEvent implements Cancellable {
     public EntityLightningStrike getLightning() {
         return bolt;
     }
-
 }

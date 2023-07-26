@@ -10,7 +10,7 @@ public class PlayerJumpEvent extends PlayerEvent {
         return handlers;
     }
 
-    public PlayerJumpEvent(Player player){
+    public PlayerJumpEvent(Player player) {
         this.player = player;
     }
 }

@@ -15,7 +15,6 @@ import cn.nukkit.network.protocol.ContainerClosePacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.network.protocol.MobArmorEquipmentPacket;
 import cn.nukkit.network.protocol.UpdateEquipmentPacket;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -30,10 +29,21 @@ public class HorseInventory extends BaseInventory {
     }
 
     static {
-        ListTag<CompoundTag> saddle = new ListTag<CompoundTag>().add(new CompoundTag().putCompound(new CompoundTag("slotItem").putShort("Aux", Short.MAX_VALUE).putString("Name", "minecraft:saddle")));
+        ListTag<CompoundTag> saddle = new ListTag<CompoundTag>()
+                .add(new CompoundTag()
+                        .putCompound(new CompoundTag("slotItem")
+                                .putShort("Aux", Short.MAX_VALUE)
+                                .putString("Name", "minecraft:saddle")));
         ListTag<CompoundTag> horseArmor = new ListTag<>();
-        for (var h : List.of("minecraft:leather_horse_armor", "minecraft:iron_horse_armor", "minecraft:golden_horse_armor", "minecraft:diamond_horse_armor")) {
-            horseArmor.add(new CompoundTag().putCompound(new CompoundTag("slotItem").putShort("Aux", Short.MAX_VALUE).putString("Name", h)));
+        for (var h : List.of(
+                "minecraft:leather_horse_armor",
+                "minecraft:iron_horse_armor",
+                "minecraft:golden_horse_armor",
+                "minecraft:diamond_horse_armor")) {
+            horseArmor.add(new CompoundTag()
+                    .putCompound(new CompoundTag("slotItem")
+                            .putShort("Aux", Short.MAX_VALUE)
+                            .putString("Name", h)));
         }
         slot0 = new CompoundTag().putList("acceptedItems", saddle).putInt("slotNumber", 0);
         slot1 = new CompoundTag().putList("acceptedItems", horseArmor).putInt("slotNumber", 1);
@@ -64,7 +74,15 @@ public class HorseInventory extends BaseInventory {
                 this.getHolder().setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_WASD_CONTROLLED, false);
                 this.getHolder().setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_CAN_POWER_JUMP, false);
             } else {
-                this.getHolder().getLevel().addLevelSoundEvent(this.getHolder(), LevelSoundEventPacket.SOUND_SADDLE, -1, this.getHolder().getIdentifier().getNamespace(), false, false);
+                this.getHolder()
+                        .getLevel()
+                        .addLevelSoundEvent(
+                                this.getHolder(),
+                                LevelSoundEventPacket.SOUND_SADDLE,
+                                -1,
+                                this.getHolder().getIdentifier().getNamespace(),
+                                false,
+                                false);
                 this.getHolder().setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_SADDLED);
                 this.getHolder().setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_WASD_CONTROLLED);
                 this.getHolder().setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_CAN_POWER_JUMP);
@@ -75,7 +93,9 @@ public class HorseInventory extends BaseInventory {
             }
             MobArmorEquipmentPacket mobArmorEquipmentPacket = new MobArmorEquipmentPacket();
             mobArmorEquipmentPacket.eid = this.getHolder().getId();
-            mobArmorEquipmentPacket.slots = new Item[]{Item.AIR_ITEM.clone(), this.getHorseArmor(), Item.AIR_ITEM.clone(), Item.AIR_ITEM.clone()};
+            mobArmorEquipmentPacket.slots = new Item[] {
+                Item.AIR_ITEM.clone(), this.getHorseArmor(), Item.AIR_ITEM.clone(), Item.AIR_ITEM.clone()
+            };
             Server.broadcastPacket(this.getViewers(), mobArmorEquipmentPacket);
         }
     }
@@ -106,10 +126,16 @@ public class HorseInventory extends BaseInventory {
         Item saddle = getSaddle();
         Item horseArmor = getHorseArmor();
         if (!saddle.isNull()) {
-            slots.add(slot0.clone().putCompound(new CompoundTag("item").putString("Name", saddle.getNamespaceId()).putShort("Aux", Short.MAX_VALUE)));
+            slots.add(slot0.clone()
+                    .putCompound(new CompoundTag("item")
+                            .putString("Name", saddle.getNamespaceId())
+                            .putShort("Aux", Short.MAX_VALUE)));
         } else slots.add(slot0.clone());
         if (!horseArmor.isNull()) {
-            slots.add(slot1.clone().putCompound(new CompoundTag("item").putString("Name", horseArmor.getNamespaceId()).putShort("Aux", Short.MAX_VALUE)));
+            slots.add(slot1.clone()
+                    .putCompound(new CompoundTag("item")
+                            .putString("Name", horseArmor.getNamespaceId())
+                            .putShort("Aux", Short.MAX_VALUE)));
         } else slots.add(slot1.clone());
         var nbt = new CompoundTag().putList("slots", slots);
         UpdateEquipmentPacket updateEquipmentPacket = new UpdateEquipmentPacket();

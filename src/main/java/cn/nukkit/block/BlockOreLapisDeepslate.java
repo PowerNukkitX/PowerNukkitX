@@ -31,5 +31,4 @@ public class BlockOreLapisDeepslate extends BlockOreLapis {
     public String getName() {
         return "Deepslate Lapis Lazuli Ore";
     }
-
 }

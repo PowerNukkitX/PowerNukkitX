@@ -5,8 +5,8 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.InventorySlotPacket;
 import cn.nukkit.network.protocol.types.ContainerIds;
-
 import java.util.HashMap;
+
 /**
  * 这个Inventory并不代表玩家的背包,若想获取玩家背包请使用{@link PlayerInventory}<br>
  * 0是cursorInventory<br>
@@ -45,14 +45,10 @@ public class PlayerUIInventory extends BaseInventory {
     }
 
     @Override
-    public void onOpen(Player who) {
-
-    }
+    public void onOpen(Player who) {}
 
     @Override
-    public void onClose(Player who) {
-
-    }
+    public void onClose(Player who) {}
 
     @Override
     public void setSize(int size) {
@@ -83,7 +79,7 @@ public class PlayerUIInventory extends BaseInventory {
 
     @Override
     public void sendContents(Player... target) {
-        //doesn't work here
+        // doesn't work here
     }
 
     @Override
@@ -92,7 +88,8 @@ public class PlayerUIInventory extends BaseInventory {
             case Player.CRAFTING_GRINDSTONE:
                 if (index >= GrindstoneInventory.OFFSET) {
                     Inventory inventory = player.getWindowById(Player.ANVIL_WINDOW_ID);
-                    if (inventory instanceof GrindstoneInventory && (index == 50 || index - GrindstoneInventory.OFFSET < inventory.getSize())) {
+                    if (inventory instanceof GrindstoneInventory
+                            && (index == 50 || index - GrindstoneInventory.OFFSET < inventory.getSize())) {
                         inventory.onSlotChange(index == 50 ? 2 : index - GrindstoneInventory.OFFSET, before, send);
                     }
                 }
@@ -100,7 +97,8 @@ public class PlayerUIInventory extends BaseInventory {
             case Player.CRAFTING_ANVIL:
                 if (index >= AnvilInventory.OFFSET) {
                     Inventory inventory = player.getWindowById(Player.ANVIL_WINDOW_ID);
-                    if (inventory instanceof AnvilInventory && (index == 50 || index - AnvilInventory.OFFSET < inventory.getSize())) {
+                    if (inventory instanceof AnvilInventory
+                            && (index == 50 || index - AnvilInventory.OFFSET < inventory.getSize())) {
                         inventory.onSlotChange(index == 50 ? 2 : index - AnvilInventory.OFFSET, before, send);
                     }
                 }

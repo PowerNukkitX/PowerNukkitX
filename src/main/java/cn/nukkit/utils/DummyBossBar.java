@@ -7,9 +7,8 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.data.EntityMetadata;
 import cn.nukkit.entity.mob.EntityCreeper;
 import cn.nukkit.network.protocol.*;
-
-import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
+import javax.annotation.Nullable;
 
 /**
  * @author boybook (Nukkit Project)
@@ -107,8 +106,7 @@ public class DummyBossBar {
     }
 
     @Since("FUTURE")
-    @Nullable
-    public BossBarColor getColor() {
+    @Nullable public BossBarColor getColor() {
         return this.color;
     }
 
@@ -139,9 +137,11 @@ public class DummyBossBar {
         UpdateAttributesPacket pkAttributes = new UpdateAttributesPacket();
         pkAttributes.entityId = bossBarId;
         Attribute attr = Attribute.getAttribute(Attribute.MAX_HEALTH);
-        attr.setMaxValue(100); // Max value - We need to change the max value first, or else the "setValue" will return a IllegalArgumentException
+        attr.setMaxValue(
+                100); // Max value - We need to change the max value first, or else the "setValue" will return a
+        // IllegalArgumentException
         attr.setValue(length); // Entity health
-        pkAttributes.entries = new Attribute[]{attr};
+        pkAttributes.entries = new Attribute[] {attr};
         player.dataPacket(pkAttributes);
     }
 
@@ -236,5 +236,4 @@ public class DummyBossBar {
         sendHideBossBar();
         removeBossEntity();
     }
-
 }

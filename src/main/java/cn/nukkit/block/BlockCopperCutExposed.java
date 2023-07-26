@@ -9,7 +9,6 @@ import org.jetbrains.annotations.NotNull;
  * @author LoboMetalurgico
  * @since 11/06/2021
  */
-
 @PowerNukkitOnly
 @Since("FUTURE")
 public class BlockCopperCutExposed extends BlockCopperCut {
@@ -31,8 +30,7 @@ public class BlockCopperCutExposed extends BlockCopperCut {
 
     @Since("FUTURE")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public OxidizationLevel getOxidizationLevel() {
         return OxidizationLevel.EXPOSED;
     }

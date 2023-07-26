@@ -8,8 +8,7 @@ import cn.nukkit.item.ItemTool;
  * @since 2015/11/24
  */
 public class BlockCoal extends BlockSolid {
-    public BlockCoal() {
-    }
+    public BlockCoal() {}
 
     @Override
     public int getId() {
@@ -56,5 +55,4 @@ public class BlockCoal extends BlockSolid {
     public boolean canHarvestWithHand() {
         return false;
     }
-
 }

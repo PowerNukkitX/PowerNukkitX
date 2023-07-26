@@ -18,17 +18,16 @@
 
 package cn.nukkit.level.format.anvil;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import cn.nukkit.block.BlockID;
 import cn.nukkit.blockstate.BlockState;
+import java.util.function.Consumer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
-
-import java.util.function.Consumer;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author joserobjr
@@ -36,8 +35,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 @ExtendWith(PowerNukkitExtension.class)
 class ChunkTest {
-     final int x = 5, y = 6, z = 7;
-    
+    final int x = 5, y = 6, z = 7;
+
     Chunk chunk;
 
     @BeforeEach
@@ -48,22 +47,22 @@ class ChunkTest {
     @Test
     void emptyMiddleSection() {
         chunk.setBlockState(x, y, z, BlockState.of(BlockID.STONE));
-        chunk.setBlockState(x, y+100, z, BlockState.of(BlockID.DIRT));
+        chunk.setBlockState(x, y + 100, z, BlockState.of(BlockID.DIRT));
         Consumer<Chunk> checker = chunk -> {
             assertFalse(chunk.getSection(0).isEmpty());
             assertTrue(chunk.getSection(1).isEmpty());
             assertFalse(chunk.getSection((y + 100) >> 4).isEmpty());
         };
-        
+
         checker.accept(chunk);
-        
+
         byte[] persisted = chunk.toBinary();
         Chunk reloaded = Chunk.fromBinary(persisted);
         checker.accept(reloaded);
-        
+
         reloaded.setBlockState(x, y, z, BlockState.AIR);
         checker.accept(reloaded);
-        
+
         persisted = reloaded.toBinary();
         reloaded = Chunk.fromBinary(persisted);
         assertTrue(reloaded.getSection(0).isEmpty());

@@ -3,7 +3,6 @@ package cn.nukkit.item;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import com.google.common.base.Preconditions;
-
 import java.util.List;
 
 public abstract class ItemBookWritable extends Item {
@@ -166,7 +165,7 @@ public abstract class ItemBookWritable extends Item {
         return true;
     }
 
-     /**
+    /**
      * Switches the text of two pages with each other.
      * @return boolean indicating success
      */
@@ -209,8 +208,6 @@ public abstract class ItemBookWritable extends Item {
     }
 
     protected static CompoundTag createPageTag(String pageText) {
-        return new CompoundTag()
-                .putString("text", pageText)
-                .putString("photoname", "");
+        return new CompoundTag().putString("text", pageText).putString("photoname", "");
     }
 }

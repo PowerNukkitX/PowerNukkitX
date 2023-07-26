@@ -3,9 +3,8 @@ package cn.nukkit.entity.ai.evaluator;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Set;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * 全部行为评估通过才执行的一个评估器.

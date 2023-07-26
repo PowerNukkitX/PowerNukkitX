@@ -12,7 +12,6 @@ import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Position;
 import cn.nukkit.network.protocol.AddEntityPacket;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -30,18 +29,19 @@ public class SummonCommand extends VanillaCommand {
             entity_key.add(key);
             entity_key.add(key.substring(10));
         }
-        this.commandParameters.put("default", new CommandParameter[]{
-                CommandParameter.newEnum("entityType", false, entity_key.toArray(new String[0]), true),
-                CommandParameter.newType("spawnPos", true, CommandParamType.POSITION),
-                CommandParameter.newType("nameTag", true, CommandParamType.STRING),
-                CommandParameter.newEnum("nameTagAlwaysVisible", true, CommandEnum.ENUM_BOOLEAN)
+        this.commandParameters.put("default", new CommandParameter[] {
+            CommandParameter.newEnum("entityType", false, entity_key.toArray(new String[0]), true),
+            CommandParameter.newType("spawnPos", true, CommandParamType.POSITION),
+            CommandParameter.newType("nameTag", true, CommandParamType.STRING),
+            CommandParameter.newEnum("nameTagAlwaysVisible", true, CommandEnum.ENUM_BOOLEAN)
         });
         this.enableParamTree();
     }
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         String entityType = completionPrefix(list.getResult(0));
         if (entityType.equals("minecraft:player")) {
@@ -67,10 +67,10 @@ public class SummonCommand extends VanillaCommand {
         }
         Entity entity;
         if (entityId != null) {
-            //原版生物
+            // 原版生物
             entity = Entity.createEntity(entityId, pos);
         } else {
-            //自定义生物
+            // 自定义生物
             entity = Entity.createEntity(entityType, pos);
         }
         if (entity == null) {
@@ -89,7 +89,7 @@ public class SummonCommand extends VanillaCommand {
     protected String completionPrefix(String type) {
         var completed = type.startsWith("minecraft:") ? type : "minecraft:" + type;
         if (!Type.ENTITY_TYPE2ID.containsKey(type) && !Type.ENTITY_TYPE2ID.containsKey(completed)) {
-            //是自定义生物，不需要补全
+            // 是自定义生物，不需要补全
             return type;
         }
         return completed;

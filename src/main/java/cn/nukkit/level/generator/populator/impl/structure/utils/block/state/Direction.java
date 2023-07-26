@@ -3,7 +3,7 @@ package cn.nukkit.level.generator.populator.impl.structure.utils.block.state;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 
-//\\ VanillaStates::Direction
+// \\ VanillaStates::Direction
 @PowerNukkitXOnly
 @Since("1.19.21-r2")
 public final class Direction {
@@ -13,7 +13,5 @@ public final class Direction {
     public static final int NORTH = 0b10;
     public static final int EAST = 0b11;
 
-    private Direction() {
-
-    }
+    private Direction() {}
 }

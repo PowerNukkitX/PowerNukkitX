@@ -11,7 +11,6 @@ import lombok.ToString;
 @ToString
 public abstract class InventoryAction {
 
-
     private long creationTime;
 
     protected Item sourceItem;
@@ -64,16 +63,14 @@ public abstract class InventoryAction {
      * @param source player
      * @return valid
      */
-    abstract public boolean isValid(Player source);
+    public abstract boolean isValid(Player source);
 
     /**
      * Called when the action is added to the specified InventoryTransaction.
      *
      * @param transaction to add
      */
-    public void onAddToTransaction(InventoryTransaction transaction) {
-
-    }
+    public void onAddToTransaction(InventoryTransaction transaction) {}
 
     /**
      * Performs actions needed to complete the inventory-action server-side. Returns if it was successful. Will return
@@ -83,19 +80,19 @@ public abstract class InventoryAction {
      * @param source player
      * @return successfully executed
      */
-    abstract public boolean execute(Player source);
+    public abstract boolean execute(Player source);
 
     /**
      * Performs additional actions when this inventory-action completed successfully.
      *
      * @param source player
      */
-    abstract public void onExecuteSuccess(Player source);
+    public abstract void onExecuteSuccess(Player source);
 
     /**
      * Performs additional actions when this inventory-action did not complete successfully.
      *
      * @param source player
      */
-    abstract public void onExecuteFail(Player source);
+    public abstract void onExecuteFail(Player source);
 }

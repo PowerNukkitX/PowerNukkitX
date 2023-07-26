@@ -18,6 +18,9 @@
 
 package cn.nukkit.level.format.updater;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockWall;
@@ -30,9 +33,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.powernukkit.tests.api.MockLevel;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 /**
  * @author joserobjr
  * @since 2020-09-20
@@ -40,12 +40,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ExtendWith(PowerNukkitExtension.class)
 class WallUpdaterTest implements BlockID {
     int x = 3, y = 4, z = 5;
-    
+
     @MockLevel
     Level level;
 
     ChunkSection section;
-    
+
     WallUpdater updater;
 
     @Test
@@ -65,7 +65,7 @@ class WallUpdaterTest implements BlockID {
         section = new ChunkSection(0);
         section.setContentVersion(0);
         section.delayPaletteUpdates();
-        
+
         updater = new WallUpdater(level, section);
     }
 }

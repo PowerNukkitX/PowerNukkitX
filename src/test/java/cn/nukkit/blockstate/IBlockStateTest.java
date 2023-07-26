@@ -1,5 +1,10 @@
 package cn.nukkit.blockstate;
 
+import static cn.nukkit.block.BlockID.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import cn.nukkit.block.*;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
 import cn.nukkit.math.BlockFace;
@@ -12,18 +17,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
 
-import static cn.nukkit.block.BlockID.*;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 @ExtendWith(PowerNukkitExtension.class)
 class IBlockStateTest {
     static LogLevelAdjuster logLevelAdjuster = new LogLevelAdjuster();
 
     Block pos = BlockState.AIR.getBlock(null, 1, 2, 3);
-    
-    
+
     @BeforeAll
     static void beforeAll() {
         logLevelAdjuster.setLevel(MainLogger.class, Level.ERROR);
@@ -42,7 +41,8 @@ class IBlockStateTest {
         wall.setWallType(BlockWall.WallType.DIORITE);
         assertEquals("minecraft:cobblestone_wall;wall_block_type=diorite", wall.getMinimalistStateId());
         assertEquals("minecraft:cobblestone_wall;nukkit-unknown=3", wall.getLegacyStateId());
-        BlockUnknown unknwon = new BlockUnknown(wall.getId(), wall.getCurrentState().getDataStorage());
+        BlockUnknown unknwon =
+                new BlockUnknown(wall.getId(), wall.getCurrentState().getDataStorage());
         assertEquals("minecraft:cobblestone_wall;nukkit-unknown=3", unknwon.getMinimalistStateId());
         assertEquals("minecraft:cobblestone_wall;nukkit-unknown=3", unknwon.getLegacyStateId());
     }
@@ -56,7 +56,7 @@ class IBlockStateTest {
 
         BlockState invalidBlockState = BlockState.of(PLANKS, 5000);
         assertThrows(InvalidBlockStateException.class, invalidBlockState::getBlock);
-        
+
         Block fixedBlock = invalidBlockState.getBlockRepairing(pos);
         assertEquals(PLANKS, fixedBlock.getId());
         assertEquals(0, fixedBlock.getExactIntStorage());
@@ -77,9 +77,10 @@ class IBlockStateTest {
         wall.setWallType(BlockWall.WallType.MOSSY_STONE_BRICK);
         wall.setWallPost(true);
         wall.setConnection(BlockFace.SOUTH, BlockWall.WallConnectionType.TALL);
-        assertEquals("minecraft:cobblestone_wall;wall_block_type=mossy_stone_brick;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=tall;wall_connection_type_west=none;wall_post_bit=1", 
+        assertEquals(
+                "minecraft:cobblestone_wall;wall_block_type=mossy_stone_brick;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=tall;wall_connection_type_west=none;wall_post_bit=1",
                 wall.getStateId());
-        
+
         Block block = Block.get(CRIMSON_PLANKS);
         assertEquals("minecraft:crimson_planks", block.getStateId());
 
@@ -87,12 +88,12 @@ class IBlockStateTest {
         Block fake = Block.get(fakeId);
         assertThat(fake).isInstanceOf(BlockUnknown.class);
         assertEquals("blockid:"+ fakeId +";nukkit-unknown=0", fake.getStateId());
-        
+
         assertEquals("blockid:"+fakeId, BlockStateRegistry.getPersistenceName(fakeId));
         assertEquals("blockid:10000", BlockStateRegistry.getPersistenceName(10_000));
         assertEquals(80000, BlockStateRegistry.getBlockId("blockid:80000"));*/
     }
-    
+
     @Test
     void negativeByte() {
         BlockState state = BlockState.of(COBBLE_WALL, 173);

@@ -11,8 +11,7 @@ import cn.nukkit.item.ItemTool;
  */
 public class BlockObsidian extends BlockSolid {
 
-    public BlockObsidian() {
-    }
+    public BlockObsidian() {}
 
     @Override
     public String getName() {
@@ -37,7 +36,7 @@ public class BlockObsidian extends BlockSolid {
 
     @Override
     public double getHardness() {
-        return 35; //TODO Should be 50 but the break time calculation is broken
+        return 35; // TODO Should be 50 but the break time calculation is broken
     }
 
     @Override
@@ -47,11 +46,11 @@ public class BlockObsidian extends BlockSolid {
 
     @Override
     public boolean onBreak(Item item) {
-        //destroy the nether portal
-        Block[] nearby = new Block[]{
-                this.up(), this.down(),
-                this.north(), south(),
-                this.west(), this.east(),
+        // destroy the nether portal
+        Block[] nearby = new Block[] {
+            this.up(), this.down(),
+            this.north(), south(),
+            this.west(), this.east(),
         };
         for (Block aNearby : nearby) {
             if (aNearby != null && aNearby.getId() == NETHER_PORTAL) {
@@ -77,7 +76,7 @@ public class BlockObsidian extends BlockSolid {
 
     @Override
     @PowerNukkitOnly
-    public  boolean canBePulled() {
+    public boolean canBePulled() {
         return false;
     }
 

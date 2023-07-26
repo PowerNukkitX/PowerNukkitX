@@ -6,9 +6,8 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author joserobjr
@@ -16,8 +15,7 @@ import javax.annotation.Nullable;
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
 public class PositionTracking extends NamedPosition {
-    @NotNull
-    private String levelName;
+    @NotNull private String levelName;
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -58,8 +56,7 @@ public class PositionTracking extends NamedPosition {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getLevelName() {
         return levelName;
     }
@@ -70,8 +67,7 @@ public class PositionTracking extends NamedPosition {
         this.levelName = levelName;
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public PositionTracking add(double x) {
         return add(x, 0, 0);
     }
@@ -153,7 +149,8 @@ public class PositionTracking extends NamedPosition {
 
     @Override
     public PositionTracking getSide(BlockFace face, int step) {
-        return new PositionTracking(levelName, x + face.getXOffset() * step, y + face.getYOffset() * step, z + face.getZOffset() * step);
+        return new PositionTracking(
+                levelName, x + face.getXOffset() * step, y + face.getYOffset() * step, z + face.getZOffset() * step);
     }
 
     @Override
@@ -216,8 +213,7 @@ public class PositionTracking extends NamedPosition {
         return getSide(BlockFace.WEST, step);
     }
 
-    @Nullable
-    @Override
+    @Nullable @Override
     public PositionTracking getIntermediateWithXValue(@NotNull Vector3 v, double x) {
         Vector3 intermediateWithXValue = super.getIntermediateWithXValue(v, x);
         if (intermediateWithXValue == null) {
@@ -226,8 +222,7 @@ public class PositionTracking extends NamedPosition {
         return new PositionTracking(levelName, intermediateWithXValue);
     }
 
-    @Nullable
-    @Override
+    @Nullable @Override
     public Vector3 getIntermediateWithYValue(@NotNull Vector3 v, double y) {
         Vector3 intermediateWithYValue = super.getIntermediateWithYValue(v, y);
         if (intermediateWithYValue == null) {
@@ -236,8 +231,7 @@ public class PositionTracking extends NamedPosition {
         return new PositionTracking(levelName, intermediateWithYValue);
     }
 
-    @Nullable
-    @Override
+    @Nullable @Override
     public Vector3 getIntermediateWithZValue(@NotNull Vector3 v, double z) {
         Vector3 intermediateWithZValue = super.getIntermediateWithZValue(v, z);
         if (intermediateWithZValue == null) {
@@ -246,8 +240,7 @@ public class PositionTracking extends NamedPosition {
         return new PositionTracking(levelName, intermediateWithZValue);
     }
 
-    @Nullable
-    @Override
+    @Nullable @Override
     public PositionTracking setComponents(double x, double y, double z) {
         super.setComponents(x, y, z);
         return this;

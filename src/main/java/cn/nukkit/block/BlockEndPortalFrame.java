@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
+
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
@@ -12,13 +14,10 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.Faceable;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-
-import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
+import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Pub4Game
@@ -48,15 +47,14 @@ public class BlockEndPortalFrame extends BlockTransparentMeta implements Faceabl
     public int getId() {
         return END_PORTAL_FRAME;
     }
-    
+
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
-    
+
     @Override
     public double getResistance() {
         return 3600000;
@@ -100,7 +98,7 @@ public class BlockEndPortalFrame extends BlockTransparentMeta implements Faceabl
 
     @Override
     @PowerNukkitOnly
-    public  boolean canBePulled() {
+    public boolean canBePulled() {
         return false;
     }
 
@@ -138,8 +136,7 @@ public class BlockEndPortalFrame extends BlockTransparentMeta implements Faceabl
         if (centerSpot != null) {
             for (int x = -2; x <= 2; x++) {
                 for (int z = -2; z <= 2; z++) {
-                    if ((x == -2 || x == 2) && (z == -2 || z == 2))
-                        continue;
+                    if ((x == -2 || x == 2) && (z == -2 || z == 2)) continue;
                     if (x == -2 || x == 2 || z == -2 || z == 2) {
                         if (!this.checkFrame(this.getLevel().getBlock(centerSpot.add(x, 0, z)), x, z)) {
                             return;
@@ -162,8 +159,7 @@ public class BlockEndPortalFrame extends BlockTransparentMeta implements Faceabl
 
     private Vector3 searchCenter(List<Block> visited) {
         for (int x = -2; x <= 2; x++) {
-            if (x == 0)
-                continue;
+            if (x == 0) continue;
             Block block = this.getLevel().getBlock(this.add(x, 0, 0));
             Block iBlock = this.getLevel().getBlock(this.add(x * 2, 0, 0));
             if (this.checkFrame(block) && !visited.contains(block)) {
@@ -171,8 +167,7 @@ public class BlockEndPortalFrame extends BlockTransparentMeta implements Faceabl
                 if ((x == -1 || x == 1) && this.checkFrame(iBlock))
                     return ((BlockEndPortalFrame) block).searchCenter(visited);
                 for (int z = -4; z <= 4; z++) {
-                    if (z == 0)
-                        continue;
+                    if (z == 0) continue;
                     block = this.getLevel().getBlock(this.add(x, 0, z));
                     if (this.checkFrame(block)) {
                         return this.add(x / 2, 0, z / 2);
@@ -181,8 +176,7 @@ public class BlockEndPortalFrame extends BlockTransparentMeta implements Faceabl
             }
         }
         for (int z = -2; z <= 2; z++) {
-            if (z == 0)
-                continue;
+            if (z == 0) continue;
             Block block = this.getLevel().getBlock(this.add(0, 0, z));
             Block iBlock = this.getLevel().getBlock(this.add(0, 0, z * 2));
             if (this.checkFrame(block) && !visited.contains(block)) {
@@ -190,8 +184,7 @@ public class BlockEndPortalFrame extends BlockTransparentMeta implements Faceabl
                 if ((z == -1 || z == 1) && this.checkFrame(iBlock))
                     return ((BlockEndPortalFrame) block).searchCenter(visited);
                 for (int x = -4; x <= 4; x++) {
-                    if (x == 0)
-                        continue;
+                    if (x == 0) continue;
                     block = this.getLevel().getBlock(this.add(x, 0, z));
                     if (this.checkFrame(block)) {
                         return this.add(x / 2, 0, z / 2);
@@ -207,7 +200,8 @@ public class BlockEndPortalFrame extends BlockTransparentMeta implements Faceabl
     }
 
     private boolean checkFrame(Block block, int x, int z) {
-        return block.getId() == this.getId() && (block.getDamage() - 4) == (x == -2 ? 3 : x == 2 ? 1 : z == -2 ? 0 : z == 2 ? 2 : -1);
+        return block.getId() == this.getId()
+                && (block.getDamage() - 4) == (x == -2 ? 3 : x == 2 ? 1 : z == -2 ? 0 : z == 2 ? 2 : -1);
     }
 
     @Override
@@ -224,7 +218,7 @@ public class BlockEndPortalFrame extends BlockTransparentMeta implements Faceabl
     public BlockFace getBlockFace() {
         return getPropertyValue(DIRECTION);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Override
@@ -233,7 +227,15 @@ public class BlockEndPortalFrame extends BlockTransparentMeta implements Faceabl
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
         if (player == null) {
             setBlockFace(BlockFace.SOUTH);
         } else {
@@ -248,7 +250,7 @@ public class BlockEndPortalFrame extends BlockTransparentMeta implements Faceabl
     public boolean isEndPortalEye() {
         return getPropertyValue(END_PORTAL_EYE);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void setEndPortalEye(boolean endPortalEye) {

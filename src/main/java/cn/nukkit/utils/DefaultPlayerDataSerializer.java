@@ -3,7 +3,6 @@ package cn.nukkit.utils;
 import cn.nukkit.Server;
 import cn.nukkit.api.Since;
 import com.google.common.base.Preconditions;
-
 import java.io.*;
 import java.util.Optional;
 import java.util.UUID;
@@ -29,7 +28,6 @@ public class DefaultPlayerDataSerializer implements PlayerDataSerializer {
             return Optional.empty();
         }
         return Optional.of(new FileInputStream(file));
-
     }
 
     @Override

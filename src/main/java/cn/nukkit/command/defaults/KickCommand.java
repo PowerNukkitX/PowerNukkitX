@@ -9,7 +9,6 @@ import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.node.PlayersNode;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.event.player.PlayerKickEvent;
-
 import java.util.List;
 import java.util.Map;
 
@@ -23,16 +22,17 @@ public class KickCommand extends VanillaCommand {
         super(name, "commands.kick.description");
         this.setPermission("nukkit.command.kick");
         this.commandParameters.clear();
-        this.commandParameters.put("default", new CommandParameter[]{
-                CommandParameter.newType("player", CommandParamType.TARGET, new PlayersNode()),
-                CommandParameter.newType("reason", true, CommandParamType.MESSAGE)
+        this.commandParameters.put("default", new CommandParameter[] {
+            CommandParameter.newType("player", CommandParamType.TARGET, new PlayersNode()),
+            CommandParameter.newType("reason", true, CommandParamType.MESSAGE)
         });
         this.enableParamTree();
     }
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         List<Player> players = list.getResult(0);
         if (players.isEmpty()) {

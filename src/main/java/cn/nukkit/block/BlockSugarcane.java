@@ -49,8 +49,7 @@ public class BlockSugarcane extends BlockFlowable {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -67,7 +66,7 @@ public class BlockSugarcane extends BlockFlowable {
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
-        if (item.isFertilizer()) { //Bonemeal
+        if (item.isFertilizer()) { // Bonemeal
             int count = 1;
 
             for (int i = 1; i <= 2; i++) {
@@ -118,14 +117,14 @@ public class BlockSugarcane extends BlockFlowable {
             level.scheduleUpdate(this, 0);
             return type;
         }
-        
+
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
             if (!isSupportValid()) {
                 level.useBreakOn(this);
             }
             return type;
         }
-        
+
         if (type == Level.BLOCK_UPDATE_RANDOM) {
             if (!isSupportValid()) {
                 level.scheduleUpdate(this, 0);
@@ -140,7 +139,7 @@ public class BlockSugarcane extends BlockFlowable {
             if (up.getId() != AIR) {
                 return type;
             }
-            
+
             int height = 0;
             for (Block current = this; height < 3 && current.getId() == REEDS; height++) {
                 current = current.down();
@@ -155,11 +154,11 @@ public class BlockSugarcane extends BlockFlowable {
             if (ev.isCancelled()) {
                 return type;
             }
-            
+
             if (!level.setBlock(up, Block.get(BlockID.REEDS), false)) {
                 return type;
             }
-            
+
             setDamage(0);
             level.setBlock(this, this, false);
             return type;
@@ -168,7 +167,15 @@ public class BlockSugarcane extends BlockFlowable {
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         if (block.getId() != AIR) {
             return false;
         }
@@ -201,5 +208,4 @@ public class BlockSugarcane extends BlockFlowable {
         }
         return false;
     }
-
 }

@@ -12,8 +12,7 @@ import org.jetbrains.annotations.Nullable;
 @Since("1.6.0.0-PNX")
 @PowerNukkitOnly
 public class BlockSculk extends BlockSolid {
-    public BlockSculk() {
-    }
+    public BlockSculk() {}
 
     @Override
     public String getName() {
@@ -46,8 +45,7 @@ public class BlockSculk extends BlockSolid {
         return ItemTool.TIER_WOODEN;
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public double calculateBreakTime(@NotNull Item item, @Nullable Player player) {
         if (canHarvest(item)) {
             return super.calculateBreakTime(item, player);
@@ -64,5 +62,4 @@ public class BlockSculk extends BlockSolid {
             return Item.EMPTY_ARRAY;
         }
     }
-
 }

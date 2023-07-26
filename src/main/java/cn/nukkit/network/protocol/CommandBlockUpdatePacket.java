@@ -21,9 +21,11 @@ public class CommandBlockUpdatePacket extends DataPacket {
     public String lastOutput;
     public String name;
     public boolean shouldTrackOutput;
+
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public int tickDelay;
+
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public boolean executingOnFirstTick;

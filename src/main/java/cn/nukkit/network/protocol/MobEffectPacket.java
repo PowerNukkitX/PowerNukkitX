@@ -27,9 +27,7 @@ public class MobEffectPacket extends DataPacket {
     public int duration = 0;
 
     @Override
-    public void decode() {
-
-    }
+    public void decode() {}
 
     @Override
     public void encode() {

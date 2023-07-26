@@ -11,8 +11,7 @@ import cn.nukkit.command.tree.ParamList;
 @Since("1.19.60-r1")
 public class VoidNode implements IParamNode<Void> {
     @Override
-    public void fill(String arg) {
-    }
+    public void fill(String arg) {}
 
     @Override
     public <E> E get() {
@@ -20,8 +19,7 @@ public class VoidNode implements IParamNode<Void> {
     }
 
     @Override
-    public void reset() {
-    }
+    public void reset() {}
 
     @Override
     public ParamList getParent() {

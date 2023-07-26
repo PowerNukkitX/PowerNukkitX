@@ -3,7 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
-
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -38,11 +37,9 @@ public class BlockPotato extends BlockCrops {
     @Override
     public Item[] getDrops(Item item) {
         if (!isFullyGrown()) {
-            return new Item[]{
-                    Item.get(ItemID.POTATO)
-            };
+            return new Item[] {Item.get(ItemID.POTATO)};
         }
-        
+
         int drops = 2;
         int attempts = 3 + Math.min(0, item.getEnchantmentLevel(Enchantment.ID_FORTUNE_DIGGING));
         ThreadLocalRandom random = ThreadLocalRandom.current();
@@ -51,16 +48,11 @@ public class BlockPotato extends BlockCrops {
                 drops++;
             }
         }
-        
+
         if (random.nextInt(5) < 1) { // 1/5, 0.2
-            return new Item[]{
-                    Item.get(ItemID.POTATO,0, drops),
-                    Item.get(ItemID.POISONOUS_POTATO)
-            };
+            return new Item[] {Item.get(ItemID.POTATO, 0, drops), Item.get(ItemID.POISONOUS_POTATO)};
         } else {
-            return new Item[]{
-                    Item.get(ItemID.POTATO, 0, drops)
-            };
+            return new Item[] {Item.get(ItemID.POTATO, 0, drops)};
         }
     }
 }

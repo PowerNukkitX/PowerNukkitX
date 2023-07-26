@@ -32,9 +32,7 @@ public class InventoryContentPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-
-    }
+    public void decode() {}
 
     @Override
     public void encode() {

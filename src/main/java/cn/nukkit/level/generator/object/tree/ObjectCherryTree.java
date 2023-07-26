@@ -48,7 +48,8 @@ public class ObjectCherryTree extends TreeGenerator {
         return generateSmallTree(level, rand, x, y, z);
     }
 
-    protected boolean generateBigTree(ChunkManager level, @NotNull NukkitRandom rand, final int x, final int y, final int z) {
+    protected boolean generateBigTree(
+            ChunkManager level, @NotNull NukkitRandom rand, final int x, final int y, final int z) {
         final int mainTrunkHeight = (rand.nextBoolean() ? 1 : 0) + 10;
 
         if (!canPlaceObject(level, mainTrunkHeight, x, y, z)) return false;
@@ -61,13 +62,21 @@ public class ObjectCherryTree extends TreeGenerator {
         final int leftSideTrunkHeight = rand.nextRange(3, 5);
         final int leftSideTrunkStartY = rand.nextRange(4, 5);
 
-        if (!canPlaceObject(level, leftSideTrunkHeight, x - leftSideTrunkLength * xMultiplier,
-                y + leftSideTrunkStartY, z - leftSideTrunkLength * zMultiplier)) {
+        if (!canPlaceObject(
+                level,
+                leftSideTrunkHeight,
+                x - leftSideTrunkLength * xMultiplier,
+                y + leftSideTrunkStartY,
+                z - leftSideTrunkLength * zMultiplier)) {
             growOnXAxis = !growOnXAxis;
             xMultiplier = growOnXAxis ? 1 : 0;
             zMultiplier = growOnXAxis ? 0 : 1;
-            if (!canPlaceObject(level, leftSideTrunkHeight, x - leftSideTrunkLength * xMultiplier,
-                    y + leftSideTrunkStartY, z - leftSideTrunkLength * zMultiplier)) {
+            if (!canPlaceObject(
+                    level,
+                    leftSideTrunkHeight,
+                    x - leftSideTrunkLength * xMultiplier,
+                    y + leftSideTrunkStartY,
+                    z - leftSideTrunkLength * zMultiplier)) {
                 return false;
             }
         }
@@ -76,8 +85,12 @@ public class ObjectCherryTree extends TreeGenerator {
         final int rightSideTrunkHeight = rand.nextRange(3, 5);
         final int rightSideTrunkStartY = rand.nextRange(4, 5);
 
-        if (!canPlaceObject(level, rightSideTrunkHeight, x + rightSideTrunkLength * xMultiplier,
-                y + rightSideTrunkStartY, z + rightSideTrunkLength * zMultiplier)) return false;
+        if (!canPlaceObject(
+                level,
+                rightSideTrunkHeight,
+                x + rightSideTrunkLength * xMultiplier,
+                y + rightSideTrunkStartY,
+                z + rightSideTrunkLength * zMultiplier)) return false;
 
         this.setDirtAt(level, new BlockVector3(x, y - 1, z));
 
@@ -89,14 +102,21 @@ public class ObjectCherryTree extends TreeGenerator {
         final var sideBlockState = growOnXAxis ? LOG_X_AXIS : LOG_Z_AXIS;
         // generate left-side trunk
         for (int xx = 1; xx <= leftSideTrunkLength; ++xx) {
-            if (this.canGrowInto(level.getBlockIdAt(x - xx * xMultiplier, y + leftSideTrunkStartY, z - xx * zMultiplier)))
-                level.setBlockStateAt(x - xx * xMultiplier, y + leftSideTrunkStartY, z - xx * zMultiplier, sideBlockState);
+            if (this.canGrowInto(
+                    level.getBlockIdAt(x - xx * xMultiplier, y + leftSideTrunkStartY, z - xx * zMultiplier)))
+                level.setBlockStateAt(
+                        x - xx * xMultiplier, y + leftSideTrunkStartY, z - xx * zMultiplier, sideBlockState);
         }
         for (int yy = 1; yy < leftSideTrunkHeight; ++yy) {
-            if (this.canGrowInto(level.getBlockIdAt(x - leftSideTrunkLength * xMultiplier,
-                    y + leftSideTrunkStartY + yy, z - leftSideTrunkLength * zMultiplier)))
-                level.setBlockStateAt(x - leftSideTrunkLength * xMultiplier, y + leftSideTrunkStartY + yy,
-                        z - leftSideTrunkLength * zMultiplier, LOG_Y_AXIS);
+            if (this.canGrowInto(level.getBlockIdAt(
+                    x - leftSideTrunkLength * xMultiplier,
+                    y + leftSideTrunkStartY + yy,
+                    z - leftSideTrunkLength * zMultiplier)))
+                level.setBlockStateAt(
+                        x - leftSideTrunkLength * xMultiplier,
+                        y + leftSideTrunkStartY + yy,
+                        z - leftSideTrunkLength * zMultiplier,
+                        LOG_Y_AXIS);
         }
         // We just generated this above
         //       |
@@ -127,14 +147,21 @@ public class ObjectCherryTree extends TreeGenerator {
         }
         // generate right-side trunk
         for (int xx = 1; xx <= rightSideTrunkLength; ++xx) {
-            if (this.canGrowInto(level.getBlockIdAt(x + xx * xMultiplier, y + rightSideTrunkStartY, z + xx * zMultiplier)))
-                level.setBlockStateAt(x + xx * xMultiplier, y + rightSideTrunkStartY, z + xx * zMultiplier, sideBlockState);
+            if (this.canGrowInto(
+                    level.getBlockIdAt(x + xx * xMultiplier, y + rightSideTrunkStartY, z + xx * zMultiplier)))
+                level.setBlockStateAt(
+                        x + xx * xMultiplier, y + rightSideTrunkStartY, z + xx * zMultiplier, sideBlockState);
         }
         for (int yy = 1; yy < rightSideTrunkHeight; ++yy) {
-            if (this.canGrowInto(level.getBlockIdAt(x + rightSideTrunkLength * xMultiplier,
-                    y + rightSideTrunkStartY + yy, z + rightSideTrunkLength * zMultiplier)))
-                level.setBlockStateAt(x + rightSideTrunkLength * xMultiplier, y + rightSideTrunkStartY + yy,
-                        z + rightSideTrunkLength * zMultiplier, LOG_Y_AXIS);
+            if (this.canGrowInto(level.getBlockIdAt(
+                    x + rightSideTrunkLength * xMultiplier,
+                    y + rightSideTrunkStartY + yy,
+                    z + rightSideTrunkLength * zMultiplier)))
+                level.setBlockStateAt(
+                        x + rightSideTrunkLength * xMultiplier,
+                        y + rightSideTrunkStartY + yy,
+                        z + rightSideTrunkLength * zMultiplier,
+                        LOG_Y_AXIS);
         }
         if (rightSideTrunkStartY == 4) {
             var tmpX = x + rightSideTrunkLength * xMultiplier;
@@ -156,15 +183,24 @@ public class ObjectCherryTree extends TreeGenerator {
         // generate main trunk leaves
         generateLeaves(level, rand, x, y + mainTrunkHeight + 1, z);
         // generate left-side trunk leaves
-        generateLeaves(level, rand, x - leftSideTrunkLength * xMultiplier,
-                y + leftSideTrunkStartY + leftSideTrunkHeight + 1, z - leftSideTrunkLength * zMultiplier);
+        generateLeaves(
+                level,
+                rand,
+                x - leftSideTrunkLength * xMultiplier,
+                y + leftSideTrunkStartY + leftSideTrunkHeight + 1,
+                z - leftSideTrunkLength * zMultiplier);
         // generate right-side trunk leaves
-        generateLeaves(level, rand, x + rightSideTrunkLength * xMultiplier,
-                y + rightSideTrunkStartY + rightSideTrunkHeight + 1, z + rightSideTrunkLength * zMultiplier);
+        generateLeaves(
+                level,
+                rand,
+                x + rightSideTrunkLength * xMultiplier,
+                y + rightSideTrunkStartY + rightSideTrunkHeight + 1,
+                z + rightSideTrunkLength * zMultiplier);
         return true;
     }
 
-    protected boolean generateSmallTree(ChunkManager level, @NotNull NukkitRandom rand, final int x, final int y, final int z) {
+    protected boolean generateSmallTree(
+            ChunkManager level, @NotNull NukkitRandom rand, final int x, final int y, final int z) {
         final int mainTrunkHeight = (rand.nextBoolean() ? 1 : 0) + 4;
         final int sideTrunkHeight = rand.nextRange(3, 5);
 
@@ -179,15 +215,13 @@ public class ObjectCherryTree extends TreeGenerator {
             xMultiplier = switch (growDirection) {
                 case 0 -> -1;
                 case 1 -> 1;
-                default -> 0;
-            };
+                default -> 0;};
             zMultiplier = switch (growDirection) {
                 case 2 -> -1;
                 case 3 -> 1;
-                default -> 0;
-            };
-            if (canPlaceObject(level, sideTrunkHeight, x + xMultiplier * sideTrunkHeight, y,
-                    z + zMultiplier * sideTrunkHeight)) {
+                default -> 0;};
+            if (canPlaceObject(
+                    level, sideTrunkHeight, x + xMultiplier * sideTrunkHeight, y, z + zMultiplier * sideTrunkHeight)) {
                 canPlace = true;
                 break;
             }
@@ -196,12 +230,10 @@ public class ObjectCherryTree extends TreeGenerator {
             return false;
         }
 
-
         final var sideBlockState = xMultiplier == 0 ? LOG_Z_AXIS : LOG_X_AXIS;
         // Generate main trunk
         for (int yy = 0; yy < mainTrunkHeight; ++yy) {
-            if (this.canGrowInto(level.getBlockIdAt(x, y + yy, z)))
-                level.setBlockStateAt(x, y + yy, z, LOG_Y_AXIS);
+            if (this.canGrowInto(level.getBlockIdAt(x, y + yy, z))) level.setBlockStateAt(x, y + yy, z, LOG_Y_AXIS);
         }
         // Generate side trunk
         // (└)-┐      <- if side trunk is 4 or more blocks high, do not place the last block
@@ -227,7 +259,11 @@ public class ObjectCherryTree extends TreeGenerator {
         }
 
         // generate leaves
-        generateLeaves(level, rand, x + sideTrunkHeight * xMultiplier, y + mainTrunkHeight + sideTrunkHeight,
+        generateLeaves(
+                level,
+                rand,
+                x + sideTrunkHeight * xMultiplier,
+                y + mainTrunkHeight + sideTrunkHeight,
                 z + sideTrunkHeight * zMultiplier);
 
         return true;
@@ -242,14 +278,20 @@ public class ObjectCherryTree extends TreeGenerator {
                     var currentRadius = LEAVES_RADIUS - (Math.max(1, Math.abs(dy)));
                     if (dx * dx + dz * dz > currentRadius * currentRadius) continue;
                     var blockId = level.getBlockIdAt(x + dx, y + dy, z + dz);
-                    if (blockId == 0 || blockId == BlockID.LEAVES || blockId == BlockID.LEAVES2 ||
-                            blockId == BlockID.AZALEA_LEAVES || blockId == BlockID.AZALEA_LEAVES_FLOWERED) {
+                    if (blockId == 0
+                            || blockId == BlockID.LEAVES
+                            || blockId == BlockID.LEAVES2
+                            || blockId == BlockID.AZALEA_LEAVES
+                            || blockId == BlockID.AZALEA_LEAVES_FLOWERED) {
                         level.setBlockStateAt(x + dx, y + dy, z + dz, LEAVES);
                     }
                     if (dy == -2 && rand.nextRange(0, 2) == 0) {
                         blockId = level.getBlockIdAt(x + dx, y + dy - 1, z + dz);
-                        if (blockId == 0 || blockId == BlockID.LEAVES || blockId == BlockID.LEAVES2 ||
-                                blockId == BlockID.AZALEA_LEAVES || blockId == BlockID.AZALEA_LEAVES_FLOWERED) {
+                        if (blockId == 0
+                                || blockId == BlockID.LEAVES
+                                || blockId == BlockID.LEAVES2
+                                || blockId == BlockID.AZALEA_LEAVES
+                                || blockId == BlockID.AZALEA_LEAVES_FLOWERED) {
                             level.setBlockStateAt(x + dx, y + dy - 1, z + dz, LEAVES);
                         }
                     }

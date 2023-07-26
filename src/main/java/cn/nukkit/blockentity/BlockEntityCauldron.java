@@ -25,28 +25,28 @@ import org.jetbrains.annotations.NotNull;
 public class BlockEntityCauldron extends BlockEntitySpawnable {
 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Using -1 instead of the overflown 0xFFFF")
-    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN",
-            reason = "Magic value", replaceWith = "PotionType")
+    @Deprecated
+    @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN", reason = "Magic value", replaceWith = "PotionType")
     @PowerNukkitOnly
     public static final int POTION_TYPE_EMPTY = -1;
 
-    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN",
-            reason = "Magic value", replaceWith = "PotionType")
+    @Deprecated
+    @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN", reason = "Magic value", replaceWith = "PotionType")
     @PowerNukkitOnly
     public static final int POTION_TYPE_NORMAL = 0;
 
-    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN",
-            reason = "Magic value", replaceWith = "PotionType")
+    @Deprecated
+    @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN", reason = "Magic value", replaceWith = "PotionType")
     @PowerNukkitOnly
     public static final int POTION_TYPE_SPLASH = 1;
 
-    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN",
-            reason = "Magic value", replaceWith = "PotionType")
+    @Deprecated
+    @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN", reason = "Magic value", replaceWith = "PotionType")
     @PowerNukkitOnly
     public static final int POTION_TYPE_LINGERING = 2;
 
-    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN",
-            reason = "Magic value", replaceWith = "PotionType")
+    @Deprecated
+    @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN", reason = "Magic value", replaceWith = "PotionType")
     @PowerNukkitOnly
     public static final int POTION_TYPE_LAVA = 0xF19B;
 
@@ -64,7 +64,7 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
         }
         potionId = namedTag.getShort("PotionId");
 
-        int potionType = (potionId & 0xFFFF) == 0xFFFF? POTION_TYPE_EMPTY : POTION_TYPE_NORMAL;
+        int potionType = (potionId & 0xFFFF) == 0xFFFF ? POTION_TYPE_EMPTY : POTION_TYPE_NORMAL;
         if (namedTag.getBoolean("SplashPotion")) {
             potionType = POTION_TYPE_SPLASH;
             namedTag.remove("SplashPotion");
@@ -80,7 +80,7 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
         super.saveNBT();
         namedTag.putShort("PotionId", getPotionId());
         int potionId = namedTag.getShort("PotionId");
-        int potionType = (potionId & 0xFFFF) == 0xFFFF? POTION_TYPE_EMPTY : POTION_TYPE_NORMAL;
+        int potionType = (potionId & 0xFFFF) == 0xFFFF ? POTION_TYPE_EMPTY : POTION_TYPE_NORMAL;
         namedTag.putShort("PotionType", potionType);
     }
 
@@ -99,12 +99,12 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
 
     @PowerNukkitOnly
     public void setPotionType(int potionType) {
-        this.namedTag.putShort("PotionType", (short)(potionType & 0xFFFF));
+        this.namedTag.putShort("PotionType", (short) (potionType & 0xFFFF));
     }
 
     @PowerNukkitOnly
     public int getPotionType() {
-        return (short)(this.namedTag.getShort("PotionType") & 0xFFFF);
+        return (short) (this.namedTag.getShort("PotionType") & 0xFFFF);
     }
 
     @PowerNukkitOnly
@@ -122,7 +122,7 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
     public boolean isSplashPotion() {
         return namedTag.getShort("PotionType") == POTION_TYPE_SPLASH;
     }
-    
+
     /**
      * @deprecated Use {@link #setPotionType(int)} instead.
      */
@@ -172,15 +172,16 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
             return;
         }
         BlockCauldron block = (BlockCauldron) getBlock();
-        Player[] viewers = this.level.getChunkPlayers(getChunkX(), getChunkZ()).values().toArray(Player.EMPTY_ARRAY);
-        this.level.sendBlocks(viewers, new Vector3[]{block});
+        Player[] viewers =
+                this.level.getChunkPlayers(getChunkX(), getChunkZ()).values().toArray(Player.EMPTY_ARRAY);
+        this.level.sendBlocks(viewers, new Vector3[] {block});
         super.spawnToAll();
         Location location = getLocation();
-        Server.getInstance().getScheduler().scheduleTask(null, ()-> {
+        Server.getInstance().getScheduler().scheduleTask(null, () -> {
             if (isValid()) {
                 BlockEntity cauldron = this.level.getBlockEntity(location);
                 if (cauldron == BlockEntityCauldron.this) {
-                    this.level.sendBlocks(viewers, new Vector3[]{location});
+                    this.level.sendBlocks(viewers, new Vector3[] {location});
                     super.spawnToAll();
                 }
             }
@@ -214,14 +215,27 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
     @Since("1.4.0.0-PN")
     @RequiredArgsConstructor
     public enum PotionType {
-        @PowerNukkitOnly @Since("1.4.0.0-PN") EMPTY(POTION_TYPE_EMPTY),
-        @PowerNukkitOnly @Since("1.4.0.0-PN") NORMAL(POTION_TYPE_NORMAL),
-        @PowerNukkitOnly @Since("1.4.0.0-PN") SPLASH(POTION_TYPE_SPLASH),
-        @PowerNukkitOnly @Since("1.4.0.0-PN") LINGERING(POTION_TYPE_LINGERING),
-        @PowerNukkitOnly @Since("1.4.0.0-PN") LAVA(POTION_TYPE_LAVA),
-        @PowerNukkitOnly @Since("1.4.0.0-PN") UNKNOWN(-2);
+        @PowerNukkitOnly
+        @Since("1.4.0.0-PN")
+        EMPTY(POTION_TYPE_EMPTY),
+        @PowerNukkitOnly
+        @Since("1.4.0.0-PN")
+        NORMAL(POTION_TYPE_NORMAL),
+        @PowerNukkitOnly
+        @Since("1.4.0.0-PN")
+        SPLASH(POTION_TYPE_SPLASH),
+        @PowerNukkitOnly
+        @Since("1.4.0.0-PN")
+        LINGERING(POTION_TYPE_LINGERING),
+        @PowerNukkitOnly
+        @Since("1.4.0.0-PN")
+        LAVA(POTION_TYPE_LAVA),
+        @PowerNukkitOnly
+        @Since("1.4.0.0-PN")
+        UNKNOWN(-2);
         private final int potionTypeData;
         private static final Int2ObjectMap<PotionType> BY_DATA;
+
         static {
             PotionType[] types = values();
             BY_DATA = new Int2ObjectOpenHashMap<>(types.length);
@@ -232,8 +246,7 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
 
         @PowerNukkitOnly
         @Since("1.4.0.0-PN")
-        @NotNull
-        public static PotionType getByTypeData(int typeData) {
+        @NotNull public static PotionType getByTypeData(int typeData) {
             return BY_DATA.getOrDefault(typeData, PotionType.UNKNOWN);
         }
     }

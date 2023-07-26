@@ -15,15 +15,15 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.Faceable;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder only in PowerNukkit")
-public class BlockEnderChest extends BlockTransparentMeta implements Faceable, BlockEntityHolder<BlockEntityEnderChest> {
+public class BlockEnderChest extends BlockTransparentMeta
+        implements Faceable, BlockEntityHolder<BlockEntityEnderChest> {
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
@@ -51,24 +51,21 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable, B
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getBlockEntityType() {
         return BlockEntity.ENDER_CHEST;
     }
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public Class<? extends BlockEntityEnderChest> getBlockEntityClass() {
         return BlockEntityEnderChest.class;
     }
@@ -130,7 +127,15 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable, B
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
         int[] faces = {2, 5, 3, 4};
         this.setDamage(faces[player != null ? player.getDirection().getHorizontalIndex() : 0]);
 
@@ -162,7 +167,8 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable, B
         }
 
         BlockEntityEnderChest chest = getOrCreateBlockEntity();
-        if (chest.namedTag.contains("Lock") && chest.namedTag.get("Lock") instanceof StringTag 
+        if (chest.namedTag.contains("Lock")
+                && chest.namedTag.get("Lock") instanceof StringTag
                 && !chest.namedTag.getString("Lock").equals(item.getCustomName())) {
             return false;
         }
@@ -182,9 +188,7 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable, B
     @Override
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= getToolTier()) {
-            return new Item[]{
-                    Item.get(Item.OBSIDIAN, 0, 8)
-            };
+            return new Item[] {Item.get(Item.OBSIDIAN, 0, 8)};
         } else {
             return Item.EMPTY_ARRAY;
         }
@@ -201,7 +205,7 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable, B
 
     @Override
     @PowerNukkitOnly
-    public  boolean canBePulled() {
+    public boolean canBePulled() {
         return false;
     }
 
@@ -226,8 +230,7 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable, B
     }
 
     @PowerNukkitOnly
-    @Nullable
-    @Override
+    @Nullable @Override
     public BlockEntityEnderChest getBlockEntity() {
         return getTypedBlockEntity(BlockEntityEnderChest.class);
     }

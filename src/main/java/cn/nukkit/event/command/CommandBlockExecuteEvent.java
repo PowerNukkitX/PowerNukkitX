@@ -15,7 +15,7 @@ public class CommandBlockExecuteEvent extends BlockEvent implements Cancellable 
     private static final HandlerList handlers = new HandlerList();
     private String command;
 
-    public CommandBlockExecuteEvent(Block block,String command) {
+    public CommandBlockExecuteEvent(Block block, String command) {
         super(block);
         this.command = command;
     }

@@ -4,7 +4,6 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.math.Vector3;
-
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -20,11 +19,25 @@ public class SpaceRandomRoamExecutor extends FlatRandomRoamExecutor {
         this(speed, maxXZRoamRange, maxYRoamRange, frequency, false, 100);
     }
 
-    public SpaceRandomRoamExecutor(float speed, int maxXZRoamRange, int maxYRoamRange, int frequency, boolean calNextTargetImmediately, int runningTime) {
+    public SpaceRandomRoamExecutor(
+            float speed,
+            int maxXZRoamRange,
+            int maxYRoamRange,
+            int frequency,
+            boolean calNextTargetImmediately,
+            int runningTime) {
         this(speed, maxXZRoamRange, maxYRoamRange, frequency, calNextTargetImmediately, runningTime, true, 10);
     }
 
-    public SpaceRandomRoamExecutor(float speed, int maxXZRoamRange, int maxYRoamRange, int frequency, boolean calNextTargetImmediately, int runningTime, boolean avoidWater, int maxRetryTime) {
+    public SpaceRandomRoamExecutor(
+            float speed,
+            int maxXZRoamRange,
+            int maxYRoamRange,
+            int frequency,
+            boolean calNextTargetImmediately,
+            int runningTime,
+            boolean avoidWater,
+            int maxRetryTime) {
         super(speed, maxXZRoamRange, frequency, calNextTargetImmediately, runningTime, avoidWater, maxRetryTime);
         this.maxYRoamRange = maxYRoamRange;
     }

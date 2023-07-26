@@ -3,7 +3,6 @@ package cn.nukkit.lang;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.network.protocol.types.CommandOutputMessage;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +12,7 @@ import java.util.List;
 @PowerNukkitXOnly
 @Since("1.19.60-r1")
 public class CommandOutputContainer implements Cloneable {
-    public static final String[] EMPTY_STRING = new String[]{};
+    public static final String[] EMPTY_STRING = new String[] {};
     private final List<CommandOutputMessage> messages;
     private int successCount;
 

@@ -26,9 +26,8 @@ public class ExtremeHillsBiome extends GrassyBiome {
 
         PopulatorOreEmerald oreEmerald = new PopulatorOreEmerald();
         this.addPopulator(oreEmerald);
-        this.addPopulator(new PopulatorOre(STONE, new OreType[]{
-                new OreType(Block.get(BlockID.MONSTER_EGG), 7, 9, 0, 63)
-        }));
+        this.addPopulator(
+                new PopulatorOre(STONE, new OreType[] {new OreType(Block.get(BlockID.MONSTER_EGG), 7, 9, 0, 63)}));
 
         if (tree) {
             PopulatorTree trees = new PopulatorTree(BlockSapling.SPRUCE);

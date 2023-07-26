@@ -1,5 +1,7 @@
 package cn.nukkit.level;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
@@ -11,8 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.powernukkit.tests.api.MockLevel;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author joserobjr
@@ -107,7 +107,10 @@ class LocationTest {
         assertEquals(YAW, location.yaw);
         assertEquals(PITCH, location.pitch);
         assertEquals(HEAD_YAW, location.headYaw);
-        assertEquals("Location (level=null, x=" + X + ", y=" + Y + ", z=" + Z + ", yaw=" + YAW + ", pitch=" + PITCH + ", headYaw=" + HEAD_YAW + ")", location.toString());
+        assertEquals(
+                "Location (level=null, x=" + X + ", y=" + Y + ", z=" + Z + ", yaw=" + YAW + ", pitch=" + PITCH
+                        + ", headYaw=" + HEAD_YAW + ")",
+                location.toString());
     }
 
     @Test
@@ -121,7 +124,10 @@ class LocationTest {
         assertEquals(PITCH, location.pitch);
         assertEquals(HEAD_YAW, location.headYaw);
         assertEquals(HEAD_YAW, location.getHeadYaw());
-        assertEquals("Location (level=" + level.getName() + ", x=" + X + ", y=" + Y + ", z=" + Z + ", yaw=" + YAW + ", pitch=" + PITCH + ", headYaw=" + HEAD_YAW + ")", location.toString());
+        assertEquals(
+                "Location (level=" + level.getName() + ", x=" + X + ", y=" + Y + ", z=" + Z + ", yaw=" + YAW
+                        + ", pitch=" + PITCH + ", headYaw=" + HEAD_YAW + ")",
+                location.toString());
     }
 
     @Test
@@ -144,7 +150,8 @@ class LocationTest {
         assertEquals(new Location(X + 1, Y, Z, YAW, PITCH, HEAD_YAW, level), location.add(1));
         assertEquals(new Location(X + 1, Y + 2, Z, YAW, PITCH, HEAD_YAW, level), location.add(1, 2));
         assertEquals(new Location(X + 1, Y + 2, Z + 3, YAW, PITCH, HEAD_YAW, level), location.add(1, 2, 3));
-        assertEquals(new Location(X + 1, Y + 2, Z + 3, YAW, PITCH, HEAD_YAW, level), location.add(new Vector3(1, 2, 3)));
+        assertEquals(
+                new Location(X + 1, Y + 2, Z + 3, YAW, PITCH, HEAD_YAW, level), location.add(new Vector3(1, 2, 3)));
     }
 
     @Test
@@ -153,7 +160,9 @@ class LocationTest {
         assertEquals(new Location(X - 1, Y, Z, YAW, PITCH, HEAD_YAW, level), location.subtract(1));
         assertEquals(new Location(X - 1, Y - 2, Z, YAW, PITCH, HEAD_YAW, level), location.subtract(1, 2));
         assertEquals(new Location(X - 1, Y - 2, Z - 3, YAW, PITCH, HEAD_YAW, level), location.subtract(1, 2, 3));
-        assertEquals(new Location(X - 1, Y - 2, Z - 3, YAW, PITCH, HEAD_YAW, level), location.subtract(new Vector3(1, 2, 3)));
+        assertEquals(
+                new Location(X - 1, Y - 2, Z - 3, YAW, PITCH, HEAD_YAW, level),
+                location.subtract(new Vector3(1, 2, 3)));
     }
 
     @Test
@@ -183,7 +192,8 @@ class LocationTest {
     @Test
     void round() {
         Location location = new Location(X + 0.8, Y + 0.8, Z + 0.8, YAW + 0.8, PITCH + 0.8, HEAD_YAW + 0.8, level);
-        assertEquals(new Location(X + 1, Y + 1, Z + 1, YAW + 0.8, PITCH + 0.8, HEAD_YAW + 0.8, level), location.round());
+        assertEquals(
+                new Location(X + 1, Y + 1, Z + 1, YAW + 0.8, PITCH + 0.8, HEAD_YAW + 0.8, level), location.round());
     }
 
     @Test

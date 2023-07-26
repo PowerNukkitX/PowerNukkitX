@@ -3,7 +3,6 @@ package cn.nukkit.math;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-
 import java.math.BigInteger;
 
 /**
@@ -158,5 +157,4 @@ public class NukkitMath {
 
         return data.bitLength();
     }
-
 }

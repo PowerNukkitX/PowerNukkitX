@@ -11,10 +11,10 @@ import cn.nukkit.math.NukkitRandom;
  */
 public class PopulatorSeagrass extends PopulatorOceanFloorSurfaceBlock {
 
-    private final static BlockState STATE_STILL_WATER = BlockState.of(STILL_WATER);
-    private final static BlockState STATE_SEAGRASS = BlockState.of(SEAGRASS);
-    private final static BlockState STATE_TALL_SEAGRASS_TOP = BlockState.of(SEAGRASS, 1);
-    private final static BlockState STATE_TALL_SEAGRASS_BOT = BlockState.of(SEAGRASS, 2);
+    private static final BlockState STATE_STILL_WATER = BlockState.of(STILL_WATER);
+    private static final BlockState STATE_SEAGRASS = BlockState.of(SEAGRASS);
+    private static final BlockState STATE_TALL_SEAGRASS_TOP = BlockState.of(SEAGRASS, 1);
+    private static final BlockState STATE_TALL_SEAGRASS_BOT = BlockState.of(SEAGRASS, 2);
 
     private final double tallSeagrassProbability;
 
@@ -55,7 +55,8 @@ public class PopulatorSeagrass extends PopulatorOceanFloorSurfaceBlock {
         if (tallSeagrass) {
             return chunk.getBlockState(x, y, z).equals(STATE_STILL_WATER);
         } else {
-            return chunk.getBlockState(x, y, z).equals(STATE_STILL_WATER) && chunk.getBlockState(x, y - 1, z).getBlock().isSolid();
+            return chunk.getBlockState(x, y, z).equals(STATE_STILL_WATER)
+                    && chunk.getBlockState(x, y - 1, z).getBlock().isSolid();
         }
     }
 

@@ -4,10 +4,9 @@ import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import javax.annotation.Nullable;
 import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -69,6 +68,7 @@ public class Vector3 implements Cloneable {
         this.z = z;
         return this;
     }
+
     public int getFloorX() {
         return (int) Math.floor(this.x);
     }
@@ -88,13 +88,13 @@ public class Vector3 implements Cloneable {
     public int getChunkZ() {
         return getFloorZ() >> 4;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public int getChunkSectionY() {
         return getFloorY() >> 4;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public ChunkVector2 getChunkVector() {
@@ -188,12 +188,16 @@ public class Vector3 implements Cloneable {
     }
 
     public Vector3 getSide(BlockFace face, int step) {
-        return new Vector3(this.getX() + face.getXOffset() * step, this.getY() + face.getYOffset() * step, this.getZ() + face.getZOffset() * step);
+        return new Vector3(
+                this.getX() + face.getXOffset() * step,
+                this.getY() + face.getYOffset() * step,
+                this.getZ() + face.getZOffset() * step);
     }
 
     // Get as a Vector3 for better performance. Do not override in Block!
     public Vector3 getSideVec(BlockFace face) {
-        return new Vector3(this.getX() + face.getXOffset(), this.getY() + face.getYOffset(), this.getZ() + face.getZOffset());
+        return new Vector3(
+                this.getX() + face.getXOffset(), this.getY() + face.getYOffset(), this.getZ() + face.getZOffset());
     }
 
     public Vector3 up() {
@@ -250,7 +254,7 @@ public class Vector3 implements Cloneable {
         double x = Math.abs(pos.getX() - this.getX());
         double y = Math.abs(pos.getY() - this.getY());
         double z = Math.abs(pos.getZ() - this.getZ());
-        return (int)(x + y + z);
+        return (int) (x + y + z);
     }
 
     public double distance(Vector3 pos) {
@@ -334,11 +338,7 @@ public class Vector3 implements Cloneable {
      * @return a Vector at right angle to this and other
      */
     public Vector3 cross(Vector3 v) {
-        return new Vector3(
-                this.y * v.z - this.z * v.y,
-                this.z * v.x - this.x * v.z,
-                this.x * v.y - this.y * v.x
-        );
+        return new Vector3(this.y * v.z - this.z * v.y, this.z * v.x - this.x * v.z, this.x * v.y - this.y * v.x);
     }
 
     /* PowerNukkit: The Angle class was removed because it had all rights reserved copyright on it.
@@ -359,8 +359,7 @@ public class Vector3 implements Cloneable {
      * @param x x value
      * @return intermediate vector
      */
-    @Nullable
-    public Vector3 getIntermediateWithXValue(@NotNull Vector3 v, double x) {
+    @Nullable public Vector3 getIntermediateWithXValue(@NotNull Vector3 v, double x) {
         double xDiff = v.x - this.x;
         double yDiff = v.y - this.y;
         double zDiff = v.z - this.z;
@@ -383,8 +382,7 @@ public class Vector3 implements Cloneable {
      * @param y y value
      * @return intermediate vector
      */
-    @Nullable
-    public Vector3 getIntermediateWithYValue(@NotNull Vector3 v, double y) {
+    @Nullable public Vector3 getIntermediateWithYValue(@NotNull Vector3 v, double y) {
         double xDiff = v.x - this.x;
         double yDiff = v.y - this.y;
         double zDiff = v.z - this.z;
@@ -407,8 +405,7 @@ public class Vector3 implements Cloneable {
      * @param z z value
      * @return intermediate vector
      */
-    @Nullable
-    public Vector3 getIntermediateWithZValue(@NotNull Vector3 v, double z) {
+    @Nullable public Vector3 getIntermediateWithZValue(@NotNull Vector3 v, double z) {
         double xDiff = v.x - this.x;
         double yDiff = v.y - this.y;
         double zDiff = v.z - this.z;
@@ -432,8 +429,7 @@ public class Vector3 implements Cloneable {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public Vector3 setComponentsAdding(double x, double y, double z, double ax, double ay, double az) {
+    @NotNull public Vector3 setComponentsAdding(double x, double y, double z, double ax, double ay, double az) {
         this.x = x + ax;
         this.y = y + ay;
         this.z = z + az;
@@ -442,15 +438,13 @@ public class Vector3 implements Cloneable {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public Vector3 setComponentsAdding(@NotNull Vector3 pos, @NotNull BlockFace face) {
+    @NotNull public Vector3 setComponentsAdding(@NotNull Vector3 pos, @NotNull BlockFace face) {
         return setComponentsAdding(pos.x, pos.y, pos.z, face.getXOffset(), face.getYOffset(), face.getZOffset());
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public Vector3 setComponents(@NotNull Vector3 pos) {
+    @NotNull public Vector3 setComponents(@NotNull Vector3 pos) {
         this.x = pos.x;
         this.y = pos.y;
         this.z = pos.z;

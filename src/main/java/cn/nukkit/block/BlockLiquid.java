@@ -19,10 +19,9 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import it.unimi.dsi.fastutil.longs.Long2ByteMap;
 import it.unimi.dsi.fastutil.longs.Long2ByteOpenHashMap;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -49,8 +48,7 @@ public abstract class BlockLiquid extends BlockTransparentMeta {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -206,14 +204,14 @@ public abstract class BlockLiquid extends BlockTransparentMeta {
             }
         }
         if (getLiquidDepth() >= 8) {
-            if (!this.canFlowInto(this.level.getBlock((int) this.x, (int) this.y, (int) this.z - 1)) ||
-                    !this.canFlowInto(this.level.getBlock((int) this.x, (int) this.y, (int) this.z + 1)) ||
-                    !this.canFlowInto(this.level.getBlock((int) this.x - 1, (int) this.y, (int) this.z)) ||
-                    !this.canFlowInto(this.level.getBlock((int) this.x + 1, (int) this.y, (int) this.z)) ||
-                    !this.canFlowInto(this.level.getBlock((int) this.x, (int) this.y + 1, (int) this.z - 1)) ||
-                    !this.canFlowInto(this.level.getBlock((int) this.x, (int) this.y + 1, (int) this.z + 1)) ||
-                    !this.canFlowInto(this.level.getBlock((int) this.x - 1, (int) this.y + 1, (int) this.z)) ||
-                    !this.canFlowInto(this.level.getBlock((int) this.x + 1, (int) this.y + 1, (int) this.z))) {
+            if (!this.canFlowInto(this.level.getBlock((int) this.x, (int) this.y, (int) this.z - 1))
+                    || !this.canFlowInto(this.level.getBlock((int) this.x, (int) this.y, (int) this.z + 1))
+                    || !this.canFlowInto(this.level.getBlock((int) this.x - 1, (int) this.y, (int) this.z))
+                    || !this.canFlowInto(this.level.getBlock((int) this.x + 1, (int) this.y, (int) this.z))
+                    || !this.canFlowInto(this.level.getBlock((int) this.x, (int) this.y + 1, (int) this.z - 1))
+                    || !this.canFlowInto(this.level.getBlock((int) this.x, (int) this.y + 1, (int) this.z + 1))
+                    || !this.canFlowInto(this.level.getBlock((int) this.x - 1, (int) this.y + 1, (int) this.z))
+                    || !this.canFlowInto(this.level.getBlock((int) this.x + 1, (int) this.y + 1, (int) this.z))) {
                 vector = vector.normalize().add(0, -6, 0);
             }
         }
@@ -243,7 +241,8 @@ public abstract class BlockLiquid extends BlockTransparentMeta {
                 if (layer0.getId() == 0) {
                     this.level.setBlock(this, 1, Block.get(BlockID.AIR), false, false);
                     this.level.setBlock(this, 0, this, false, false);
-                } else if (layer0.getWaterloggingLevel() <= 0 || layer0.getWaterloggingLevel() == 1 && getLiquidDepth() > 0) {
+                } else if (layer0.getWaterloggingLevel() <= 0
+                        || layer0.getWaterloggingLevel() == 1 && getLiquidDepth() > 0) {
                     this.level.setBlock(this, 1, Block.get(BlockID.AIR), true, true);
                 }
             }
@@ -255,10 +254,14 @@ public abstract class BlockLiquid extends BlockTransparentMeta {
             if (decay > 0) {
                 int smallestFlowDecay = -100;
                 this.adjacentSources = 0;
-                smallestFlowDecay = this.getSmallestFlowDecay(this.level.getBlock((int) this.x, (int) this.y, (int) this.z - 1), smallestFlowDecay);
-                smallestFlowDecay = this.getSmallestFlowDecay(this.level.getBlock((int) this.x, (int) this.y, (int) this.z + 1), smallestFlowDecay);
-                smallestFlowDecay = this.getSmallestFlowDecay(this.level.getBlock((int) this.x - 1, (int) this.y, (int) this.z), smallestFlowDecay);
-                smallestFlowDecay = this.getSmallestFlowDecay(this.level.getBlock((int) this.x + 1, (int) this.y, (int) this.z), smallestFlowDecay);
+                smallestFlowDecay = this.getSmallestFlowDecay(
+                        this.level.getBlock((int) this.x, (int) this.y, (int) this.z - 1), smallestFlowDecay);
+                smallestFlowDecay = this.getSmallestFlowDecay(
+                        this.level.getBlock((int) this.x, (int) this.y, (int) this.z + 1), smallestFlowDecay);
+                smallestFlowDecay = this.getSmallestFlowDecay(
+                        this.level.getBlock((int) this.x - 1, (int) this.y, (int) this.z), smallestFlowDecay);
+                smallestFlowDecay = this.getSmallestFlowDecay(
+                        this.level.getBlock((int) this.x + 1, (int) this.y, (int) this.z), smallestFlowDecay);
                 int newDecay = smallestFlowDecay + multiplier;
                 if (newDecay >= 8 || smallestFlowDecay < 0) {
                     newDecay = -1;
@@ -302,7 +305,10 @@ public abstract class BlockLiquid extends BlockTransparentMeta {
             if (decay >= 0) {
                 Block bottomBlock = this.level.getBlock((int) this.x, (int) this.y - 1, (int) this.z);
                 this.flowIntoBlock(bottomBlock, decay | 0x08);
-                if (decay == 0 || !(usesWaterLogging() ? bottomBlock.canWaterloggingFlowInto() : bottomBlock.canBeFlowedInto())) {
+                if (decay == 0
+                        || !(usesWaterLogging()
+                                ? bottomBlock.canWaterloggingFlowInto()
+                                : bottomBlock.canBeFlowedInto())) {
                     int adjacentDecay;
                     if (decay >= 8) {
                         adjacentDecay = 1;
@@ -312,16 +318,20 @@ public abstract class BlockLiquid extends BlockTransparentMeta {
                     if (adjacentDecay < 8) {
                         boolean[] flags = this.getOptimalFlowDirections();
                         if (flags[0]) {
-                            this.flowIntoBlock(this.level.getBlock((int) this.x - 1, (int) this.y, (int) this.z), adjacentDecay);
+                            this.flowIntoBlock(
+                                    this.level.getBlock((int) this.x - 1, (int) this.y, (int) this.z), adjacentDecay);
                         }
                         if (flags[1]) {
-                            this.flowIntoBlock(this.level.getBlock((int) this.x + 1, (int) this.y, (int) this.z), adjacentDecay);
+                            this.flowIntoBlock(
+                                    this.level.getBlock((int) this.x + 1, (int) this.y, (int) this.z), adjacentDecay);
                         }
                         if (flags[2]) {
-                            this.flowIntoBlock(this.level.getBlock((int) this.x, (int) this.y, (int) this.z - 1), adjacentDecay);
+                            this.flowIntoBlock(
+                                    this.level.getBlock((int) this.x, (int) this.y, (int) this.z - 1), adjacentDecay);
                         }
                         if (flags[3]) {
-                            this.flowIntoBlock(this.level.getBlock((int) this.x, (int) this.y, (int) this.z + 1), adjacentDecay);
+                            this.flowIntoBlock(
+                                    this.level.getBlock((int) this.x, (int) this.y, (int) this.z + 1), adjacentDecay);
                         }
                     }
                 }
@@ -356,7 +366,14 @@ public abstract class BlockLiquid extends BlockTransparentMeta {
         }
     }
 
-    private int calculateFlowCost(int blockX, int blockY, int blockZ, int accumulatedCost, int maxCost, int originOpposite, int lastOpposite) {
+    private int calculateFlowCost(
+            int blockX,
+            int blockY,
+            int blockZ,
+            int accumulatedCost,
+            int maxCost,
+            int originOpposite,
+            int lastOpposite) {
         int cost = 1000;
         for (int j = 0; j < 4; ++j) {
             if (j == originOpposite || j == lastOpposite) {
@@ -379,9 +396,9 @@ public abstract class BlockLiquid extends BlockTransparentMeta {
                 Block blockSide = this.level.getBlock(x, y, z);
                 if (!this.canFlowInto(blockSide)) {
                     this.flowCostVisited.put(hash, BLOCKED);
-                } else if (usesWaterLogging() ?
-                        this.level.getBlock(x, y - 1, z).canWaterloggingFlowInto() :
-                        this.level.getBlock(x, y - 1, z).canBeFlowedInto()) {
+                } else if (usesWaterLogging()
+                        ? this.level.getBlock(x, y - 1, z).canWaterloggingFlowInto()
+                        : this.level.getBlock(x, y - 1, z).canBeFlowedInto()) {
                     this.flowCostVisited.put(hash, CAN_FLOW_DOWN);
                 } else {
                     this.flowCostVisited.put(hash, CAN_FLOW);
@@ -415,12 +432,7 @@ public abstract class BlockLiquid extends BlockTransparentMeta {
     }
 
     private boolean[] getOptimalFlowDirections() {
-        int[] flowCost = new int[]{
-                1000,
-                1000,
-                1000,
-                1000
-        };
+        int[] flowCost = new int[] {1000, 1000, 1000, 1000};
         int maxCost = 4 / this.getFlowDecayPerBlock();
         for (int j = 0; j < 4; ++j) {
             int x = (int) this.x;
@@ -438,9 +450,9 @@ public abstract class BlockLiquid extends BlockTransparentMeta {
             Block block = this.level.getBlock(x, y, z);
             if (!this.canFlowInto(block)) {
                 this.flowCostVisited.put(Level.blockHash(x, y, z, this.getLevel()), BLOCKED);
-            } else if (usesWaterLogging() ?
-                    this.level.getBlock(x, y - 1, z).canWaterloggingFlowInto() :
-                    this.level.getBlock(x, y - 1, z).canBeFlowedInto()) {
+            } else if (usesWaterLogging()
+                    ? this.level.getBlock(x, y - 1, z).canWaterloggingFlowInto()
+                    : this.level.getBlock(x, y - 1, z).canBeFlowedInto()) {
                 this.flowCostVisited.put(Level.blockHash(x, y, z, this.getLevel()), CAN_FLOW_DOWN);
                 flowCost[j] = maxCost = 0;
             } else if (maxCost > 0) {
@@ -476,12 +488,15 @@ public abstract class BlockLiquid extends BlockTransparentMeta {
         return (decay >= 0 && blockDecay >= decay) ? decay : blockDecay;
     }
 
-    protected void checkForHarden() {
-    }
+    protected void checkForHarden() {}
 
     protected void triggerLavaMixEffects(Vector3 pos) {
         Random random = ThreadLocalRandom.current();
-        this.getLevel().addLevelEvent(pos.add(0.5, 0.5, 0.5), LevelEventPacket.EVENT_SOUND_FIZZ, (int) ((random.nextFloat() - random.nextFloat()) * 800) + 2600);
+        this.getLevel()
+                .addLevelEvent(
+                        pos.add(0.5, 0.5, 0.5),
+                        LevelEventPacket.EVENT_SOUND_FIZZ,
+                        (int) ((random.nextFloat() - random.nextFloat()) * 800) + 2600);
 
         for (int i = 0; i < 8; ++i) {
             this.getLevel().addParticle(new SmokeParticle(pos.add(Math.random(), 1.2, Math.random())));
@@ -517,10 +532,12 @@ public abstract class BlockLiquid extends BlockTransparentMeta {
         if (usesWaterLogging()) {
             if (block.canWaterloggingFlowInto()) {
                 Block blockLayer1 = block.getLevelBlockAtLayer(1);
-                return !(block instanceof BlockLiquid && ((BlockLiquid) block).getLiquidDepth() == 0) && !(blockLayer1 instanceof BlockLiquid && ((BlockLiquid) blockLayer1).getLiquidDepth() == 0);
+                return !(block instanceof BlockLiquid && ((BlockLiquid) block).getLiquidDepth() == 0)
+                        && !(blockLayer1 instanceof BlockLiquid && ((BlockLiquid) blockLayer1).getLiquidDepth() == 0);
             }
         }
-        return block.canBeFlowedInto() && !(block instanceof BlockLiquid && ((BlockLiquid) block).getLiquidDepth() == 0);
+        return block.canBeFlowedInto()
+                && !(block instanceof BlockLiquid && ((BlockLiquid) block).getLiquidDepth() == 0);
     }
 
     @Override

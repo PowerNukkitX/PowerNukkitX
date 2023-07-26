@@ -7,7 +7,6 @@ import cn.nukkit.api.Since;
  * @author LoboMetalurgico
  * @since 08/06/2021
  */
-
 @PowerNukkitOnly
 @Since("FUTURE")
 public class BlockRawCopper extends BlockRaw {

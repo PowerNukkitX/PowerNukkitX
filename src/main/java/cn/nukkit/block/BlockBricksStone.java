@@ -17,26 +17,39 @@ import org.jetbrains.annotations.NotNull;
 public class BlockBricksStone extends BlockSolidMeta {
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
-    public static final BlockProperty<StoneBrickType> STONE_BRICK_TYPE = new ArrayBlockProperty<>("stone_brick_type", true, StoneBrickType.class);
+    public static final BlockProperty<StoneBrickType> STONE_BRICK_TYPE =
+            new ArrayBlockProperty<>("stone_brick_type", true, StoneBrickType.class);
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(STONE_BRICK_TYPE);
 
     @Deprecated
-    @DeprecationDetails(since = "1.5.0.0-PN", replaceWith = "getStoneBrickType()", reason = "Use the BlockProperty API instead")
+    @DeprecationDetails(
+            since = "1.5.0.0-PN",
+            replaceWith = "getStoneBrickType()",
+            reason = "Use the BlockProperty API instead")
     public static final int NORMAL = 0;
 
     @Deprecated
-    @DeprecationDetails(since = "1.5.0.0-PN", replaceWith = "getStoneBrickType()", reason = "Use the BlockProperty API instead")
+    @DeprecationDetails(
+            since = "1.5.0.0-PN",
+            replaceWith = "getStoneBrickType()",
+            reason = "Use the BlockProperty API instead")
     public static final int MOSSY = 1;
 
     @Deprecated
-    @DeprecationDetails(since = "1.5.0.0-PN", replaceWith = "getStoneBrickType()", reason = "Use the BlockProperty API instead")
+    @DeprecationDetails(
+            since = "1.5.0.0-PN",
+            replaceWith = "getStoneBrickType()",
+            reason = "Use the BlockProperty API instead")
     public static final int CRACKED = 2;
 
     @Deprecated
-    @DeprecationDetails(since = "1.5.0.0-PN", replaceWith = "getStoneBrickType()", reason = "Use the BlockProperty API instead")
+    @DeprecationDetails(
+            since = "1.5.0.0-PN",
+            replaceWith = "getStoneBrickType()",
+            reason = "Use the BlockProperty API instead")
     public static final int CHISELED = 3;
 
     public BlockBricksStone() {
@@ -54,8 +67,7 @@ public class BlockBricksStone extends BlockSolidMeta {
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -90,9 +102,7 @@ public class BlockBricksStone extends BlockSolidMeta {
     @Override
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
-            return new Item[] {
-                    toItem()
-            };
+            return new Item[] {toItem()};
         } else {
             return Item.EMPTY_ARRAY;
         }

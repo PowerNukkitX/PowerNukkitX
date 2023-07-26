@@ -1,7 +1,6 @@
 package cn.nukkit.level.format.anvil.palette;
 
 import io.netty.util.internal.EmptyArrays;
-
 import java.util.Arrays;
 
 /**
@@ -24,7 +23,7 @@ public class CharPalette {
     private char[] insert(char val) {
         lastIndex = Character.MAX_VALUE;
         if (keys.length == 0) {
-            return new char[]{val};
+            return new char[] {val};
         } else if (val < keys[0]) {
             char[] s = new char[keys.length + 1];
             System.arraycopy(keys, 0, s, 1, keys.length);
@@ -81,13 +80,10 @@ public class CharPalette {
             int mid = (low + high) >>> 1;
             char midVal = keys[mid];
 
-            if (midVal < key)
-                low = mid + 1;
-            else if (midVal > key)
-                high = mid - 1;
-            else
-                return mid; // key found
+            if (midVal < key) low = mid + 1;
+            else if (midVal > key) high = mid - 1;
+            else return mid; // key found
         }
-        return -(low + 1);  // key not found.
+        return -(low + 1); // key not found.
     }
 }

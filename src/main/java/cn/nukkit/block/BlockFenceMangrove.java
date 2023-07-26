@@ -38,5 +38,4 @@ public class BlockFenceMangrove extends BlockFenceBase {
     public int getBurnAbility() {
         return 0;
     }
-
 }

@@ -9,8 +9,8 @@ import cn.nukkit.api.Since;
 @PowerNukkitXOnly
 @Since("1.19.30-r1")
 public enum SortOrder {
-    //升序
+    // 升序
     ASCENDING,
-    //降序
+    // 降序
     DESCENDING
 }

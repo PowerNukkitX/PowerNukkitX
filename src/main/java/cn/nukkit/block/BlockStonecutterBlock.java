@@ -13,9 +13,8 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.network.protocol.types.ContainerIds;
 import cn.nukkit.utils.Faceable;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 public class BlockStonecutterBlock extends BlockTransparentMeta implements Faceable {
@@ -41,8 +40,7 @@ public class BlockStonecutterBlock extends BlockTransparentMeta implements Facea
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -68,7 +66,15 @@ public class BlockStonecutterBlock extends BlockTransparentMeta implements Facea
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
         int[] faces = {2, 5, 3, 4};
         this.setDamage(faces[player != null ? player.getDirection().getHorizontalIndex() : 0]);
         this.getLevel().setBlock(block, this, true, true);
@@ -123,7 +129,7 @@ public class BlockStonecutterBlock extends BlockTransparentMeta implements Facea
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[] {  toItem() };
+        return new Item[] {toItem()};
     }
 
     @Override
@@ -134,6 +140,6 @@ public class BlockStonecutterBlock extends BlockTransparentMeta implements Facea
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed the returned value")
     @Override
     public double getMaxY() {
-        return y + 9/16.0;
+        return y + 9 / 16.0;
     }
 }

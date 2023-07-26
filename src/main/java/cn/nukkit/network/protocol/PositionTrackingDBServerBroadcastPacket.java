@@ -10,11 +10,10 @@ import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
 import io.netty.handler.codec.EncoderException;
 import it.unimi.dsi.fastutil.io.FastByteArrayInputStream;
+import java.io.IOException;
+import javax.annotation.Nullable;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-
-import javax.annotation.Nullable;
-import java.io.IOException;
 
 /**
  * @author joserobjr
@@ -27,17 +26,16 @@ public class PositionTrackingDBServerBroadcastPacket extends DataPacket {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final byte NETWORK_ID = ProtocolInfo.POS_TRACKING_SERVER_BROADCAST_PACKET;
+
     private static final Action[] ACTIONS = Action.values();
 
     private Action action;
     private int trackingId;
     private CompoundTag tag;
-    
+
     private CompoundTag requireTag() {
         if (tag == null) {
-            tag = new CompoundTag()
-                    .putByte("version", 1)
-                    .putString("id", String.format("0x%08x", trackingId));
+            tag = new CompoundTag().putByte("version", 1).putString("id", String.format("0x%08x", trackingId));
         }
         return tag;
     }
@@ -59,8 +57,7 @@ public class PositionTrackingDBServerBroadcastPacket extends DataPacket {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nullable
-    public BlockVector3 getPosition() {
+    @Nullable public BlockVector3 getPosition() {
         if (tag == null) {
             return null;
         }
@@ -86,11 +83,11 @@ public class PositionTrackingDBServerBroadcastPacket extends DataPacket {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void setPosition(int x, int y, int z) {
-        requireTag().putList(new ListTag<>("pos")
-                .add(new IntTag("", x))
-                .add(new IntTag("", y))
-                .add(new IntTag("", z))
-        );
+        requireTag()
+                .putList(new ListTag<>("pos")
+                        .add(new IntTag("", x))
+                        .add(new IntTag("", y))
+                        .add(new IntTag("", z)));
     }
 
     @PowerNukkitOnly
@@ -131,7 +128,7 @@ public class PositionTrackingDBServerBroadcastPacket extends DataPacket {
         }
         return tag.getByte("dim");
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void setDimension(int dimension) {
@@ -144,7 +141,7 @@ public class PositionTrackingDBServerBroadcastPacket extends DataPacket {
         putByte((byte) action.ordinal());
         putVarInt(trackingId);
         try {
-            put(NBTIO.writeNetwork(tag != null? tag : new CompoundTag()));
+            put(NBTIO.writeNetwork(tag != null ? tag : new CompoundTag()));
         } catch (IOException e) {
             throw new EncoderException(e);
         }
@@ -154,7 +151,7 @@ public class PositionTrackingDBServerBroadcastPacket extends DataPacket {
     public void decode() {
         action = ACTIONS[getByte()];
         trackingId = getVarInt();
-        try(FastByteArrayInputStream inputStream = new FastByteArrayInputStream(get())) {
+        try (FastByteArrayInputStream inputStream = new FastByteArrayInputStream(get())) {
             tag = NBTIO.readNetworkCompressed(inputStream);
         } catch (IOException e) {
             throw new EncoderException(e);

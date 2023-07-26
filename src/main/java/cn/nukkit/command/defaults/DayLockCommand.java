@@ -10,7 +10,6 @@ import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.GameRules;
 import cn.nukkit.level.Level;
-
 import java.util.Map;
 
 @PowerNukkitXOnly
@@ -18,18 +17,18 @@ import java.util.Map;
 public class DayLockCommand extends VanillaCommand {
 
     public DayLockCommand(String name) {
-        super(name, "commands.daylock.description", "", new String[]{"alwaysday"});
+        super(name, "commands.daylock.description", "", new String[] {"alwaysday"});
         this.setPermission("nukkit.command.daylock");
         this.getCommandParameters().clear();
-        this.addCommandParameters("default", new CommandParameter[]{
-                CommandParameter.newEnum("lock", true, CommandEnum.ENUM_BOOLEAN)
-        });
+        this.addCommandParameters(
+                "default", new CommandParameter[] {CommandParameter.newEnum("lock", true, CommandEnum.ENUM_BOOLEAN)});
         this.enableParamTree();
     }
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         boolean lock = true;
 

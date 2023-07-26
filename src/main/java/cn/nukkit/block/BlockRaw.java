@@ -11,7 +11,6 @@ import org.jetbrains.annotations.NotNull;
  * @author LoboMetalurgico
  * @since 08/06/2021
  */
-
 @PowerNukkitOnly
 @Since("FUTURE")
 public abstract class BlockRaw extends BlockSolidMeta {
@@ -33,8 +32,7 @@ public abstract class BlockRaw extends BlockSolidMeta {
 
     @PowerNukkitOnly
     @Since("FUTURE")
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }

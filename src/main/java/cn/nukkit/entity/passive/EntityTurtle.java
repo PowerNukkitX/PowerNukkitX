@@ -54,12 +54,8 @@ public class EntityTurtle extends EntityAnimal implements EntitySwimmable, Entit
     }
 
     @PowerNukkitOnly
-    public void setBreedingAge(int ticks) {
-
-    }
+    public void setBreedingAge(int ticks) {}
 
     @PowerNukkitOnly
-    public void setHomePos(Vector3 pos) {
-
-    }
+    public void setHomePos(Vector3 pos) {}
 }

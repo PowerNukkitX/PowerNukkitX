@@ -27,5 +27,4 @@ public class BlockDoorDarkOak extends BlockDoorWood {
     public Item toItem() {
         return new ItemDoorDarkOak();
     }
-
 }

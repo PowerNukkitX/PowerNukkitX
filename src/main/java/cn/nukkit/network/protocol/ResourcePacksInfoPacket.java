@@ -12,14 +12,15 @@ public class ResourcePacksInfoPacket extends DataPacket {
 
     public boolean mustAccept;
     public boolean scripting;
-    @Since("FUTURE") public boolean forceServerPacks;
+
+    @Since("FUTURE")
+    public boolean forceServerPacks;
+
     public ResourcePack[] behaviourPackEntries = ResourcePack.EMPTY_ARRAY;
     public ResourcePack[] resourcePackEntries = ResourcePack.EMPTY_ARRAY;
 
     @Override
-    public void decode() {
-
-    }
+    public void decode() {}
 
     @Override
     public void encode() {
@@ -39,7 +40,8 @@ public class ResourcePacksInfoPacket extends DataPacket {
             this.putLLong(entry.getPackSize());
             this.putString(entry.getEncryptionKey()); // encryption key
             this.putString(""); // sub-pack name
-            this.putString(!entry.getEncryptionKey().equals("") ? entry.getPackId().toString() : ""); // content identity
+            this.putString(
+                    !entry.getEncryptionKey().equals("") ? entry.getPackId().toString() : ""); // content identity
             this.putBoolean(false); // scripting
             if (!behaviour) {
                 this.putBoolean(false); // raytracing capable

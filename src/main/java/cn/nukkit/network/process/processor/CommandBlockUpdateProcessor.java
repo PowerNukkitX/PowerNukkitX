@@ -23,7 +23,7 @@ public class CommandBlockUpdateProcessor extends DataPacketProcessor<CommandBloc
                 if (blockEntity instanceof BlockEntityCommandBlock commandBlock) {
                     Block cmdBlock = commandBlock.getLevelBlock();
 
-                    //change commandblock type
+                    // change commandblock type
                     switch (pk.commandBlockMode) {
                         case ICommandBlock.MODE_REPEATING:
                             if (cmdBlock.getId() != BlockID.REPEATING_COMMAND_BLOCK) {
@@ -54,13 +54,15 @@ public class CommandBlockUpdateProcessor extends DataPacketProcessor<CommandBloc
                     commandBlock.setTickDelay(pk.tickDelay);
                     commandBlock.setExecutingOnFirstTick(pk.executingOnFirstTick);
 
-                    //redstone mode / auto
+                    // redstone mode / auto
                     boolean isRedstoneMode = pk.isRedstoneMode;
                     commandBlock.setAuto(!isRedstoneMode);
                     if (!isRedstoneMode && pk.commandBlockMode == ICommandBlock.MODE_NORMAL) {
                         commandBlock.trigger();
                     }
-                    commandBlock.getLevelBlockAround().forEach(b -> b.onUpdate(Level.BLOCK_UPDATE_REDSTONE));//update redstone
+                    commandBlock
+                            .getLevelBlockAround()
+                            .forEach(b -> b.onUpdate(Level.BLOCK_UPDATE_REDSTONE)); // update redstone
                     playerHandle.player.level.setBlock(commandBlock, cmdBlock, true);
                 }
             }

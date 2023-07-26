@@ -39,8 +39,7 @@ public class BlockHugeMushroomRed extends BlockSolidMeta {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -63,9 +62,7 @@ public class BlockHugeMushroomRed extends BlockSolidMeta {
     @Override
     public Item[] getDrops(Item item) {
         if (new NukkitRandom().nextRange(1, 20) == 1) {
-            return new Item[]{
-                    new ItemBlock(Block.get(BlockID.RED_MUSHROOM))
-            };
+            return new Item[] {new ItemBlock(Block.get(BlockID.RED_MUSHROOM))};
         } else {
             return Item.EMPTY_ARRAY;
         }
@@ -75,5 +72,4 @@ public class BlockHugeMushroomRed extends BlockSolidMeta {
     public boolean canSilkTouch() {
         return true;
     }
-
 }

@@ -1,5 +1,7 @@
 package cn.nukkit;
 
+import static cn.nukkit.utils.Utils.dynamic;
+
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.nbt.stream.PGZIPOutputStream;
 import cn.nukkit.network.protocol.ProtocolInfo;
@@ -9,6 +11,12 @@ import com.google.common.base.Preconditions;
 import io.netty.util.ResourceLeakDetector;
 import io.netty.util.internal.logging.InternalLoggerFactory;
 import io.netty.util.internal.logging.Log4J2LoggerFactory;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
@@ -18,15 +26,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.LoggerConfig;
-
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import static cn.nukkit.utils.Utils.dynamic;
 
 /*
  * `_   _       _    _    _ _
@@ -48,20 +47,24 @@ import static cn.nukkit.utils.Utils.dynamic;
 @Log4j2
 public class Nukkit {
 
-    public final static Properties GIT_INFO = getGitInfo();
-    public final static String VERSION = getVersion();
-    @PowerNukkitOnly
-    public final static String GIT_COMMIT = getGitCommit();
-    public final static String API_VERSION = dynamic("1.0.14");
-    public final static String CODENAME = dynamic("PowerNukkitX");
-    @Deprecated
-    public final static String MINECRAFT_VERSION = ProtocolInfo.MINECRAFT_VERSION;
-    @Deprecated
-    public final static String MINECRAFT_VERSION_NETWORK = ProtocolInfo.MINECRAFT_VERSION_NETWORK;
+    public static final Properties GIT_INFO = getGitInfo();
+    public static final String VERSION = getVersion();
 
-    public final static String PATH = System.getProperty("user.dir") + "/";
-    public final static String DATA_PATH = System.getProperty("user.dir") + "/";
-    public final static String PLUGIN_PATH = DATA_PATH + "plugins";
+    @PowerNukkitOnly
+    public static final String GIT_COMMIT = getGitCommit();
+
+    public static final String API_VERSION = dynamic("1.0.14");
+    public static final String CODENAME = dynamic("PowerNukkitX");
+
+    @Deprecated
+    public static final String MINECRAFT_VERSION = ProtocolInfo.MINECRAFT_VERSION;
+
+    @Deprecated
+    public static final String MINECRAFT_VERSION_NETWORK = ProtocolInfo.MINECRAFT_VERSION_NETWORK;
+
+    public static final String PATH = System.getProperty("user.dir") + "/";
+    public static final String DATA_PATH = System.getProperty("user.dir") + "/";
+    public static final String PLUGIN_PATH = DATA_PATH + "plugins";
     public static final long START_TIME = System.currentTimeMillis();
     public static boolean ANSI = true;
     public static boolean TITLE = false;
@@ -92,7 +95,8 @@ public class Nukkit {
         // Force IPv4 since Nukkit is not compatible with IPv6
         System.setProperty("java.net.preferIPv4Stack", "true");
         System.setProperty("log4j.skipJansi", "false");
-        System.getProperties().putIfAbsent("io.netty.allocator.type", "unpooled"); // Disable memory pooling unless specified
+        System.getProperties()
+                .putIfAbsent("io.netty.allocator.type", "unpooled"); // Disable memory pooling unless specified
 
         // Force Mapped ByteBuffers for LevelDB till fixed.
         System.setProperty("leveldb.mmap", "true");
@@ -107,11 +111,23 @@ public class Nukkit {
         OptionSpec<Void> helpSpec = parser.accepts("help", "Shows this page").forHelp();
         OptionSpec<Void> ansiSpec = parser.accepts("disable-ansi", "Disables console coloring");
         OptionSpec<Void> titleSpec = parser.accepts("enable-title", "Enables title at the top of the window");
-        OptionSpec<String> vSpec = parser.accepts("v", "Set verbosity of logging").withRequiredArg().ofType(String.class);
-        OptionSpec<String> verbositySpec = parser.accepts("verbosity", "Set verbosity of logging").withRequiredArg().ofType(String.class);
-        OptionSpec<String> languageSpec = parser.accepts("language", "Set a predefined language").withOptionalArg().ofType(String.class);
-        OptionSpec<Integer> chromeDebugPortSpec = parser.accepts("chrome-debug", "Debug javascript using chrome dev tool with specific port.").withRequiredArg().ofType(Integer.class);
-        OptionSpec<String> jsDebugPortSpec = parser.accepts("js-debug", "Debug javascript using chrome dev tool with specific port.").withRequiredArg().ofType(String.class);
+        OptionSpec<String> vSpec = parser.accepts("v", "Set verbosity of logging")
+                .withRequiredArg()
+                .ofType(String.class);
+        OptionSpec<String> verbositySpec = parser.accepts("verbosity", "Set verbosity of logging")
+                .withRequiredArg()
+                .ofType(String.class);
+        OptionSpec<String> languageSpec = parser.accepts("language", "Set a predefined language")
+                .withOptionalArg()
+                .ofType(String.class);
+        OptionSpec<Integer> chromeDebugPortSpec = parser.accepts(
+                        "chrome-debug", "Debug javascript using chrome dev tool with specific port.")
+                .withRequiredArg()
+                .ofType(Integer.class);
+        OptionSpec<String> jsDebugPortSpec = parser.accepts(
+                        "js-debug", "Debug javascript using chrome dev tool with specific port.")
+                .withRequiredArg()
+                .ofType(String.class);
 
         // Parse arguments
         OptionSet options = parser.parse(args);
@@ -150,7 +166,8 @@ public class Nukkit {
         }
 
         if (options.has(jsDebugPortSpec)) {
-            JS_DEBUG_LIST = Arrays.stream(options.valueOf(jsDebugPortSpec).split(",")).toList();
+            JS_DEBUG_LIST =
+                    Arrays.stream(options.valueOf(jsDebugPortSpec).split(",")).toList();
         }
 
         try {
@@ -190,7 +207,7 @@ public class Nukkit {
     }
 
     private static boolean requiresShortTitle() {
-        //Shorter title for windows 8/2012
+        // Shorter title for windows 8/2012
         String osName = System.getProperty("os.name").toLowerCase();
         return osName.contains("windows") && (osName.contains("windows 8") || osName.contains("2012"));
     }
@@ -225,8 +242,8 @@ public class Nukkit {
             return "Unknown-PNX-SNAPSHOT";
         }
         try (InputStream is = resourceAsStream;
-             InputStreamReader reader = new InputStreamReader(is);
-             BufferedReader buffered = new BufferedReader(reader)) {
+                InputStreamReader reader = new InputStreamReader(is);
+                BufferedReader buffered = new BufferedReader(reader)) {
             String line = buffered.readLine().trim();
             if ("${project.version}".equalsIgnoreCase(line)) {
                 return "Unknown-PNX-SNAPSHOT";

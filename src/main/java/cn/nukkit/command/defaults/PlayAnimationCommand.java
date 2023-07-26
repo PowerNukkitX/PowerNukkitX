@@ -9,7 +9,6 @@ import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.network.protocol.AnimateEntityPacket;
-
 import java.util.List;
 import java.util.Map;
 
@@ -20,20 +19,21 @@ public class PlayAnimationCommand extends VanillaCommand {
         super(name, "commands.playanimation.description");
         this.setPermission("nukkit.command.playanimation");
         this.commandParameters.clear();
-        this.commandParameters.put("default", new CommandParameter[]{
-                CommandParameter.newType("entity", CommandParamType.TARGET),
-                CommandParameter.newType("animation", CommandParamType.STRING),
-                CommandParameter.newType("next_state", true, CommandParamType.STRING),
-                CommandParameter.newType("blend_out_time", true, CommandParamType.FLOAT),
-                CommandParameter.newType("stop_expression", true, CommandParamType.STRING),
-                CommandParameter.newType("controller", true, CommandParamType.STRING),
+        this.commandParameters.put("default", new CommandParameter[] {
+            CommandParameter.newType("entity", CommandParamType.TARGET),
+            CommandParameter.newType("animation", CommandParamType.STRING),
+            CommandParameter.newType("next_state", true, CommandParamType.STRING),
+            CommandParameter.newType("blend_out_time", true, CommandParamType.FLOAT),
+            CommandParameter.newType("stop_expression", true, CommandParamType.STRING),
+            CommandParameter.newType("controller", true, CommandParamType.STRING),
         });
         this.enableParamTree();
     }
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         List<Entity> entities = list.getResult(0);
         if (entities.isEmpty()) {
@@ -43,7 +43,7 @@ public class PlayAnimationCommand extends VanillaCommand {
         var animationBuilder = AnimateEntityPacket.Animation.builder();
         String animation = list.getResult(1);
         animationBuilder.animation(animation);
-        //optional
+        // optional
         if (list.hasResult(2)) {
             String next_state = list.getResult(2);
             animationBuilder.nextState(next_state);
@@ -60,7 +60,7 @@ public class PlayAnimationCommand extends VanillaCommand {
             String controller = list.getResult(5);
             animationBuilder.controller(controller);
         }
-        //send animation
+        // send animation
         Entity.playAnimationOnEntities(animationBuilder.build(), entities);
         log.addSuccess("commands.playanimation.success").output();
         return 1;

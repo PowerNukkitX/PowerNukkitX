@@ -4,7 +4,20 @@ import cn.nukkit.math.NukkitRandom;
 
 public class NoiseGeneratorSimplexD {
     public static final double SQRT_3 = Math.sqrt(3.0D);
-    private static final int[][] grad3 = new int[][]{{1, 1, 0}, {-1, 1, 0}, {1, -1, 0}, {-1, -1, 0}, {1, 0, 1}, {-1, 0, 1}, {1, 0, -1}, {-1, 0, -1}, {0, 1, 1}, {0, -1, 1}, {0, 1, -1}, {0, -1, -1}};
+    private static final int[][] grad3 = new int[][] {
+        {1, 1, 0},
+        {-1, 1, 0},
+        {1, -1, 0},
+        {-1, -1, 0},
+        {1, 0, 1},
+        {-1, 0, 1},
+        {1, 0, -1},
+        {-1, 0, -1},
+        {0, 1, 1},
+        {0, -1, 1},
+        {0, 1, -1},
+        {0, -1, -1}
+    };
     private static final double F2 = 0.5D * (SQRT_3 - 1.0D);
     private static final double G2 = (3.0D - SQRT_3) / 6.0D;
     private final int[] p;
@@ -108,7 +121,15 @@ public class NoiseGeneratorSimplexD {
         return 70.0D * (d0 + d1 + d2);
     }
 
-    public void add(double[] p_151606_1_, double p_151606_2_, double p_151606_4_, int p_151606_6_, int p_151606_7_, double p_151606_8_, double p_151606_10_, double p_151606_12_) {
+    public void add(
+            double[] p_151606_1_,
+            double p_151606_2_,
+            double p_151606_4_,
+            int p_151606_6_,
+            int p_151606_7_,
+            double p_151606_8_,
+            double p_151606_10_,
+            double p_151606_12_) {
         int i = 0;
 
         for (int j = 0; j < p_151606_7_; ++j) {

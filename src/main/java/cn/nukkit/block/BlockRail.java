@@ -1,5 +1,8 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.math.BlockFace.*;
+import static cn.nukkit.utils.Rail.Orientation.*;
+
 import cn.nukkit.Player;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitDifference;
@@ -20,14 +23,10 @@ import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.OptionalBoolean;
 import cn.nukkit.utils.Rail;
 import cn.nukkit.utils.Rail.Orientation;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static cn.nukkit.math.BlockFace.*;
-import static cn.nukkit.utils.Rail.Orientation.*;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Snake1999
@@ -40,21 +39,25 @@ public class BlockRail extends BlockFlowable implements Faceable {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final BlockProperty<Rail.Orientation> UNCURVED_RAIL_DIRECTION = new ArrayBlockProperty<>("rail_direction", false, new Rail.Orientation[]{
-            STRAIGHT_NORTH_SOUTH, STRAIGHT_EAST_WEST,
-            ASCENDING_EAST, ASCENDING_WEST,
-            ASCENDING_NORTH, ASCENDING_SOUTH
-    }).ordinal(true);
+    public static final BlockProperty<Rail.Orientation> UNCURVED_RAIL_DIRECTION = new ArrayBlockProperty<>(
+                    "rail_direction", false, new Rail.Orientation[] {
+                        STRAIGHT_NORTH_SOUTH, STRAIGHT_EAST_WEST,
+                        ASCENDING_EAST, ASCENDING_WEST,
+                        ASCENDING_NORTH, ASCENDING_SOUTH
+                    })
+            .ordinal(true);
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final BlockProperty<Rail.Orientation> CURVED_RAIL_DIRECTION = new ArrayBlockProperty<>("rail_direction", false, new Rail.Orientation[]{
-            STRAIGHT_NORTH_SOUTH, STRAIGHT_EAST_WEST,
-            ASCENDING_EAST, ASCENDING_WEST,
-            ASCENDING_NORTH, ASCENDING_SOUTH,
-            CURVED_SOUTH_EAST, CURVED_SOUTH_WEST,
-            CURVED_NORTH_WEST, CURVED_NORTH_EAST
-    }).ordinal(true);
+    public static final BlockProperty<Rail.Orientation> CURVED_RAIL_DIRECTION = new ArrayBlockProperty<>(
+                    "rail_direction", false, new Rail.Orientation[] {
+                        STRAIGHT_NORTH_SOUTH, STRAIGHT_EAST_WEST,
+                        ASCENDING_EAST, ASCENDING_WEST,
+                        ASCENDING_NORTH, ASCENDING_SOUTH,
+                        CURVED_SOUTH_EAST, CURVED_SOUTH_WEST,
+                        CURVED_NORTH_WEST, CURVED_NORTH_EAST
+                    })
+            .ordinal(true);
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -89,8 +92,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -124,7 +126,8 @@ public class BlockRail extends BlockFlowable implements Faceable {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             Optional<BlockFace> ascendingDirection = this.getOrientation().ascendingDirection();
-            if (!checkCanBePlace(this.down()) || (ascendingDirection.isPresent() && !checkCanBePlace(this.getSide(ascendingDirection.get())))) {
+            if (!checkCanBePlace(this.down())
+                    || (ascendingDirection.isPresent() && !checkCanBePlace(this.getSide(ascendingDirection.get())))) {
                 this.getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
@@ -164,9 +167,17 @@ public class BlockRail extends BlockFlowable implements Faceable {
         return this;
     }
 
-    //Information from http://minecraft.gamepedia.com/Rail
+    // Information from http://minecraft.gamepedia.com/Rail
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         Block down = this.down();
         if (!checkCanBePlace(down)) {
             return false;
@@ -179,9 +190,11 @@ public class BlockRail extends BlockFlowable implements Faceable {
             this.setRailDirection(this.connect(other, railsAround.get(other)));
         } else if (railsAround.size() == 4) {
             if (this.isAbstract()) {
-                this.setRailDirection(this.connect(rails.get(faces.indexOf(SOUTH)), SOUTH, rails.get(faces.indexOf(EAST)), EAST));
+                this.setRailDirection(
+                        this.connect(rails.get(faces.indexOf(SOUTH)), SOUTH, rails.get(faces.indexOf(EAST)), EAST));
             } else {
-                this.setRailDirection(this.connect(rails.get(faces.indexOf(EAST)), EAST, rails.get(faces.indexOf(WEST)), WEST));
+                this.setRailDirection(
+                        this.connect(rails.get(faces.indexOf(EAST)), EAST, rails.get(faces.indexOf(WEST)), WEST));
             }
         } else if (!railsAround.isEmpty()) {
             if (this.isAbstract()) {
@@ -192,16 +205,22 @@ public class BlockRail extends BlockFlowable implements Faceable {
                 } else {
                     List<BlockFace> cd = Stream.of(CURVED_SOUTH_EAST, CURVED_NORTH_EAST, CURVED_SOUTH_WEST)
                             .filter(o -> faces.containsAll(o.connectingDirections()))
-                            .findFirst().get().connectingDirections();
+                            .findFirst()
+                            .get()
+                            .connectingDirections();
                     BlockFace f1 = cd.get(0);
                     BlockFace f2 = cd.get(1);
-                    this.setRailDirection(this.connect(rails.get(faces.indexOf(f1)), f1, rails.get(faces.indexOf(f2)), f2));
+                    this.setRailDirection(
+                            this.connect(rails.get(faces.indexOf(f1)), f1, rails.get(faces.indexOf(f2)), f2));
                 }
             } else {
-                BlockFace f = faces.stream().min((f1, f2) -> (f1.getIndex() < f2.getIndex()) ? 1 : ((x == y) ? 0 : -1)).get();
+                BlockFace f = faces.stream()
+                        .min((f1, f2) -> (f1.getIndex() < f2.getIndex()) ? 1 : ((x == y) ? 0 : -1))
+                        .get();
                 BlockFace fo = f.getOpposite();
-                if (faces.contains(fo)) { //Opposite connectable
-                    this.setRailDirection(this.connect(rails.get(faces.indexOf(f)), f, rails.get(faces.indexOf(fo)), fo));
+                if (faces.contains(fo)) { // Opposite connectable
+                    this.setRailDirection(
+                            this.connect(rails.get(faces.indexOf(f)), f, rails.get(faces.indexOf(fo)), fo));
                 } else {
                     this.setRailDirection(this.connect(rails.get(faces.indexOf(f)), f));
                 }
@@ -243,21 +262,21 @@ public class BlockRail extends BlockFlowable implements Faceable {
     private Orientation connect(BlockRail other, BlockFace face) {
         int delta = (int) (this.y - other.y);
         Map<BlockRail, BlockFace> rails = other.checkRailsConnected();
-        if (rails.isEmpty()) { //Only one
+        if (rails.isEmpty()) { // Only one
             other.setOrientation(delta == 1 ? ascending(face.getOpposite()) : straight(face));
             return delta == -1 ? ascending(face) : straight(face);
-        } else if (rails.size() == 1) { //Already connected
+        } else if (rails.size() == 1) { // Already connected
             BlockFace faceConnected = rails.values().iterator().next();
 
-            if (other.isAbstract() && faceConnected != face) { //Curve!
+            if (other.isAbstract() && faceConnected != face) { // Curve!
                 other.setOrientation(curved(face.getOpposite(), faceConnected));
                 return delta == -1 ? ascending(face) : straight(face);
-            } else if (faceConnected == face) { //Turn!
+            } else if (faceConnected == face) { // Turn!
                 if (!other.getOrientation().isAscending()) {
                     other.setOrientation(delta == 1 ? ascending(face.getOpposite()) : straight(face));
                 }
                 return delta == -1 ? ascending(face) : straight(face);
-            } else if (other.getOrientation().hasConnectingDirections(NORTH, SOUTH)) { //North-south
+            } else if (other.getOrientation().hasConnectingDirections(NORTH, SOUTH)) { // North-south
                 other.setOrientation(delta == 1 ? ascending(face.getOpposite()) : straight(face));
                 return delta == -1 ? ascending(face) : straight(face);
             }
@@ -276,17 +295,17 @@ public class BlockRail extends BlockFlowable implements Faceable {
         Map<BlockRail, BlockFace> result = new HashMap<>();
         faces.forEach(f -> {
             Block b = this.getSide(f);
-            Stream.of(b, b.up(), b.down())
-                    .filter(Rail::isRailBlock)
-                    .forEach(block -> result.put((BlockRail) block, f));
+            Stream.of(b, b.up(), b.down()).filter(Rail::isRailBlock).forEach(block -> result.put((BlockRail) block, f));
         });
         return result;
     }
 
     protected Map<BlockRail, BlockFace> checkRailsConnected() {
-        Map<BlockRail, BlockFace> railsAround = this.checkRailsAround(this.getOrientation().connectingDirections());
+        Map<BlockRail, BlockFace> railsAround =
+                this.checkRailsAround(this.getOrientation().connectingDirections());
         return railsAround.keySet().stream()
-                .filter(r -> r.getOrientation().hasConnectingDirections(railsAround.get(r).getOpposite()))
+                .filter(r -> r.getOrientation()
+                        .hasConnectingDirections(railsAround.get(r).getOpposite()))
                 .collect(Collectors.toMap(r -> r, railsAround::get));
     }
 
@@ -300,8 +319,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public final Orientation getRailDirection() {
+    @NotNull public final Orientation getRailDirection() {
         return getOrientation();
     }
 
@@ -336,7 +354,9 @@ public class BlockRail extends BlockFlowable implements Faceable {
     }
 
     @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit",
+    @DeprecationDetails(
+            since = "1.4.0.0-PN",
+            by = "PowerNukkit",
             reason = "This hack is no longer needed after the block state implementation and is no longer maintained")
     public int getRealMeta() {
         // Check if this can be powered
@@ -375,9 +395,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public OptionalBoolean isRailActive() {
-        return getProperties().contains(ACTIVE) ?
-                OptionalBoolean.of(getBooleanValue(ACTIVE)) :
-                OptionalBoolean.empty();
+        return getProperties().contains(ACTIVE) ? OptionalBoolean.of(getBooleanValue(ACTIVE)) : OptionalBoolean.empty();
     }
 
     /**

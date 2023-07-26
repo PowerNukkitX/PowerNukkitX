@@ -11,7 +11,7 @@ import cn.nukkit.network.protocol.UpdateTradePacket;
 @PowerNukkitXOnly
 @Since("1.19.21-r1")
 public class TradeInventory extends BaseInventory {
-    //hack实现
+    // hack实现
     public static final int TRADE_INPUT1_UI_SLOT = 4;
     public static final int TRADE_INPUT2_UI_SLOT = 5;
 
@@ -53,9 +53,7 @@ public class TradeInventory extends BaseInventory {
         for (int i = 0, len = villager.tierExpRequirement.length; i < len; ++i) {
             tierExpRequirements.add(i, new CompoundTag().putInt(String.valueOf(i), villager.tierExpRequirement[i]));
         }
-        pk1.offers = new CompoundTag()
-                .putList(villager.getRecipes())
-                .putList(tierExpRequirements);
+        pk1.offers = new CompoundTag().putList(villager.getRecipes()).putList(tierExpRequirements);
         pk1.newTradingUi = true;
         pk1.usingEconomyTrade = true;
         who.dataPacket(pk1);

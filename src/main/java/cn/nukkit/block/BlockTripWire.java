@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.POWERED;
+
 import cn.nukkit.Player;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitDifference;
@@ -16,17 +18,14 @@ import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
-
-import static cn.nukkit.blockproperty.CommonBlockProperties.POWERED;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author CreeperFace
  */
 public class BlockTripWire extends BlockTransparentMeta {
-    @Deprecated(since = "1.20.0-r2",forRemoval = true)
+    @Deprecated(since = "1.20.0-r2", forRemoval = true)
     @DeprecationDetails(since = "1.20.0-r2", reason = "replace to CommonBlockProperties")
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
@@ -42,7 +41,8 @@ public class BlockTripWire extends BlockTransparentMeta {
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(POWERED, SUSPENDED, CommonBlockProperties.ATTACHED, DISARMED);
+    public static final BlockProperties PROPERTIES =
+            new BlockProperties(POWERED, SUSPENDED, CommonBlockProperties.ATTACHED, DISARMED);
 
     public BlockTripWire(int meta) {
         super(meta);
@@ -59,8 +59,7 @@ public class BlockTripWire extends BlockTransparentMeta {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -164,7 +163,7 @@ public class BlockTripWire extends BlockTransparentMeta {
             return;
         }
 
-        for (BlockFace side : new BlockFace[]{BlockFace.SOUTH, BlockFace.WEST}) {
+        for (BlockFace side : new BlockFace[] {BlockFace.SOUTH, BlockFace.WEST}) {
             for (int i = 1; i < 42; ++i) {
                 Block block = this.getSide(side, i);
 
@@ -225,7 +224,15 @@ public class BlockTripWire extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
         this.getLevel().setBlock(this, this, true, true);
         this.updateHook(false);
 
@@ -239,8 +246,9 @@ public class BlockTripWire extends BlockTransparentMeta {
             this.level.setBlock(this, this, true, false);
             this.updateHook(false);
             this.getLevel().setBlock(this, Block.get(BlockID.AIR), true, true);
-            //todo: initiator should be a entity
-            level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.add(0.5, 0.5, 0.5), VibrationType.SHEAR));
+            // todo: initiator should be a entity
+            level.getVibrationManager()
+                    .callVibrationEvent(new VibrationEvent(this, this.add(0.5, 0.5, 0.5), VibrationType.SHEAR));
         } else {
             this.setPowered(true);
             this.getLevel().setBlock(this, Block.get(BlockID.AIR), true, true);

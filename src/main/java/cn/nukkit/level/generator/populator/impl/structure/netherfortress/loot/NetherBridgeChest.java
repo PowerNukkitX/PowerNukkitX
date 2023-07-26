@@ -9,7 +9,7 @@ import com.google.common.collect.Maps;
 
 @PowerNukkitXOnly
 @Since("1.19.21-r2")
-//\\ ./data/behavior_packs/vanilla/loot_tables/chests/nether_bridge.json
+// \\ ./data/behavior_packs/vanilla/loot_tables/chests/nether_bridge.json
 public class NetherBridgeChest extends RandomizableContainer {
 
     private static final NetherBridgeChest INSTANCE = new NetherBridgeChest();

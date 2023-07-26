@@ -1,11 +1,10 @@
 package cn.nukkit.scheduler;
 
 import cn.nukkit.Server;
-import lombok.extern.log4j.Log4j2;
-
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * @author Nukkit Project Team
@@ -16,10 +15,12 @@ public class AsyncPool extends ThreadPoolExecutor {
 
     public AsyncPool(Server server, int size) {
         super(size, Integer.MAX_VALUE, 60, TimeUnit.MILLISECONDS, new SynchronousQueue<>());
-        this.setThreadFactory(runnable -> new Thread(runnable) {{
-            setDaemon(true);
-            setName(String.format("Nukkit Asynchronous Task Handler #%s", getPoolSize()));
-        }});
+        this.setThreadFactory(runnable -> new Thread(runnable) {
+            {
+                setDaemon(true);
+                setName(String.format("Nukkit Asynchronous Task Handler #%s", getPoolSize()));
+            }
+        });
         this.server = server;
     }
 

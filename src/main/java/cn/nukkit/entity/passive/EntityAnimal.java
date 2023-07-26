@@ -34,7 +34,8 @@ public abstract class EntityAnimal extends EntityIntelligent {
         boolean superResult = super.onInteract(player, item, clickedPos);
         if (isBreedingItem(item)) {
             getMemoryStorage().put(CoreMemoryTypes.LAST_FEED_PLAYER, player);
-            getMemoryStorage().put(CoreMemoryTypes.LAST_BE_FEED_TIME, Server.getInstance().getTick());
+            getMemoryStorage()
+                    .put(CoreMemoryTypes.LAST_BE_FEED_TIME, Server.getInstance().getTick());
             sendBreedingAnimation(item);
             item.count--;
             return player.getInventory().setItemInHand(item) && superResult;
@@ -59,12 +60,11 @@ public abstract class EntityAnimal extends EntityIntelligent {
      * @return boolean 是否可以导致繁殖<br>Whether it can lead to reproduction
      */
     public boolean isBreedingItem(Item item) {
-        return item.getId() == Item.WHEAT; //default
+        return item.getId() == Item.WHEAT; // default
     }
 
     @Override
     protected double getStepHeight() {
         return 0.5;
     }
-
 }

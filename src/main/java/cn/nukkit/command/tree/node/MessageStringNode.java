@@ -5,7 +5,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.command.exceptions.SelectorSyntaxException;
 import cn.nukkit.command.selector.EntitySelectorAPI;
 import cn.nukkit.entity.Entity;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
@@ -45,7 +44,8 @@ public class MessageStringNode extends ParamNode<String> {
                 if (EntitySelectorAPI.getAPI().checkValid(m)) {
                     StringJoiner join = new StringJoiner(", ");
                     try {
-                        for (Entity entity : EntitySelectorAPI.getAPI().matchEntities(this.parent.parent.getSender(), m)) {
+                        for (Entity entity :
+                                EntitySelectorAPI.getAPI().matchEntities(this.parent.parent.getSender(), m)) {
                             var name = entity.getName();
                             if (name.isBlank()) name = entity.getSaveId();
                             join.add(name);

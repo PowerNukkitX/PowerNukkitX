@@ -16,7 +16,6 @@ import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.ContainerIds;
-
 import java.util.Collection;
 
 /**
@@ -39,7 +38,6 @@ public class PlayerInventory extends BaseInventory {
         for (int i = 0; i < this.hotbar.length; i++) {
             this.hotbar[i] = i;
         }
-
     }
 
     @Override
@@ -97,9 +95,7 @@ public class PlayerInventory extends BaseInventory {
     }
 
     @Deprecated
-    public void setHotbarSlotIndex(int index, int slot) {
-
-    }
+    public void setHotbarSlotIndex(int index, int slot) {}
 
     public int getHeldItemIndex() {
         return this.itemInHandIndex;
@@ -186,7 +182,11 @@ public class PlayerInventory extends BaseInventory {
             this.sendArmorSlot(index, this.getViewers());
             this.sendArmorSlot(index, this.getHolder().getViewers().values());
             if (this.getItem(index) instanceof ItemArmor) {
-                this.getHolder().level.getVibrationManager().callVibrationEvent(new VibrationEvent(getHolder(), this.getHolder().clone(), VibrationType.EQUIP));
+                this.getHolder()
+                        .level
+                        .getVibrationManager()
+                        .callVibrationEvent(
+                                new VibrationEvent(getHolder(), this.getHolder().clone(), VibrationType.EQUIP));
             }
         } else {
             super.onSlotChange(index, before, send);
@@ -258,7 +258,7 @@ public class PlayerInventory extends BaseInventory {
             return this.clear(index);
         }
 
-        //Armor change
+        // Armor change
         if (!ignoreArmorEvents && index >= this.getSize()) {
             EntityArmorChangeEvent ev = new EntityArmorChangeEvent(this.getHolder(), this.getItem(index), item, index);
             Server.getInstance().getPluginManager().callEvent(ev);
@@ -268,7 +268,8 @@ public class PlayerInventory extends BaseInventory {
             }
             item = ev.getNewItem();
         } else {
-            EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent(this.getHolder(), this.getItem(index), item, index);
+            EntityInventoryChangeEvent ev =
+                    new EntityInventoryChangeEvent(this.getHolder(), this.getItem(index), item, index);
             Server.getInstance().getPluginManager().callEvent(ev);
             if (ev.isCancelled()) {
                 this.sendSlot(index, this.getViewers());
@@ -344,7 +345,7 @@ public class PlayerInventory extends BaseInventory {
     }
 
     public void sendArmorContents(Player player) {
-        this.sendArmorContents(new Player[]{player});
+        this.sendArmorContents(new Player[] {player});
     }
 
     public void sendArmorContents(Player[] players) {
@@ -392,7 +393,7 @@ public class PlayerInventory extends BaseInventory {
     }
 
     public void sendArmorSlot(int index, Player player) {
-        this.sendArmorSlot(index, new Player[]{player});
+        this.sendArmorSlot(index, new Player[] {player});
     }
 
     public void sendArmorSlot(int index, Player[] players) {
@@ -422,7 +423,7 @@ public class PlayerInventory extends BaseInventory {
 
     @Override
     public void sendContents(Player player) {
-        this.sendContents(new Player[]{player});
+        this.sendContents(new Player[] {player});
     }
 
     @Override
@@ -453,13 +454,12 @@ public class PlayerInventory extends BaseInventory {
             }
             pk.inventoryId = id;
             player.dataPacket(pk.clone());
-
         }
     }
 
     @Override
     public void sendSlot(int index, Player player) {
-        this.sendSlot(index, new Player[]{player});
+        this.sendSlot(index, new Player[] {player});
     }
 
     @Override
@@ -502,7 +502,7 @@ public class PlayerInventory extends BaseInventory {
         p.dataPacket(pk);
     }
 
-    //由于NK从PlayerInventory中分离了盔甲栏，并且getSize值修改为36，但实际上slots最大容量为40，按照逻辑应该将solts size也减4
+    // 由于NK从PlayerInventory中分离了盔甲栏，并且getSize值修改为36，但实际上slots最大容量为40，按照逻辑应该将solts size也减4
     @Override
     public int getFreeSpace(Item item) {
         int maxStackSize = Math.min(item.getMaxStackSize(), this.getMaxStackSize());

@@ -6,7 +6,7 @@ import cn.nukkit.lang.TranslationContainer;
 
 @Since("1.6.0.0-PNX")
 @PowerNukkitXOnly
-public class DeathInfoPacket extends DataPacket{
+public class DeathInfoPacket extends DataPacket {
 
     public static final byte NETWORK_ID = ProtocolInfo.DEATH_INFO_PACKET;
 
@@ -19,7 +19,7 @@ public class DeathInfoPacket extends DataPacket{
 
     @Override
     public void decode() {
-        //empty
+        // empty
     }
 
     @Override

@@ -1,9 +1,6 @@
 package cn.nukkit.plugin.js.compiler;
 
 import cn.nukkit.plugin.CommonJSPlugin;
-import org.graalvm.polyglot.Context;
-import org.graalvm.polyglot.Value;
-
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
@@ -12,6 +9,8 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.Value;
 
 public final class JClassBuilder {
     private final Context jsContext;
@@ -170,8 +169,10 @@ public final class JClassBuilder {
         return clazz;
     }
 
-    public Class<?> compileToClass() throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        return injectDelegate(new DelegateCompiler(this).compileToClass(Thread.currentThread().getContextClassLoader()));
+    public Class<?> compileToClass()
+            throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        return injectDelegate(
+                new DelegateCompiler(this).compileToClass(Thread.currentThread().getContextClassLoader()));
     }
 
     public void compileToFile(String path) {

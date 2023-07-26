@@ -7,15 +7,13 @@ import cn.nukkit.blockproperty.value.OxidizationLevel;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author LoboMetalurgico
  * @since 11/06/2021
  */
-
 @PowerNukkitOnly
 @Since("FUTURE")
 public abstract class BlockCopperBase extends BlockSolid implements Oxidizable, Waxable {
@@ -49,8 +47,7 @@ public abstract class BlockCopperBase extends BlockSolid implements Oxidizable, 
 
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player) {
-        return Waxable.super.onActivate(item, player)
-                || Oxidizable.super.onActivate(item, player);
+        return Waxable.super.onActivate(item, player) || Oxidizable.super.onActivate(item, player);
     }
 
     @Override
@@ -110,13 +107,13 @@ public abstract class BlockCopperBase extends BlockSolid implements Oxidizable, 
         }
         switch (oxidizationLevel) {
             case UNAFFECTED:
-                return waxed? WAXED_COPPER : COPPER_BLOCK;
+                return waxed ? WAXED_COPPER : COPPER_BLOCK;
             case EXPOSED:
-                return waxed? WAXED_EXPOSED_COPPER : EXPOSED_COPPER;
+                return waxed ? WAXED_EXPOSED_COPPER : EXPOSED_COPPER;
             case WEATHERED:
-                return waxed? WAXED_WEATHERED_COPPER : WEATHERED_COPPER;
+                return waxed ? WAXED_WEATHERED_COPPER : WEATHERED_COPPER;
             case OXIDIZED:
-                return waxed? WAXED_OXIDIZED_COPPER : OXIDIZED_COPPER;
+                return waxed ? WAXED_OXIDIZED_COPPER : OXIDIZED_COPPER;
             default:
                 return getId();
         }

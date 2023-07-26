@@ -12,16 +12,15 @@ import cn.nukkit.command.PluginIdentifiableCommand;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.Utils;
 import com.google.common.base.Preconditions;
-import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.Yaml;
-
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedHashMap;
+import javax.annotation.Nullable;
+import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.Yaml;
 
 /**
  * 一般的Nukkit插件需要继承的类。<br>
@@ -33,7 +32,7 @@ import java.util.LinkedHashMap;
  * @since Nukkit 1.0 | Nukkit API 1.0.0
  */
 @Log4j2
-abstract public class PluginBase implements Plugin {
+public abstract class PluginBase implements Plugin {
 
     private PluginLoader loader;
 
@@ -51,21 +50,14 @@ abstract public class PluginBase implements Plugin {
     private File file;
     private PluginLogger logger;
 
+    @Override
+    public void onLoad() {}
 
     @Override
-    public void onLoad() {
-
-    }
+    public void onEnable() {}
 
     @Override
-    public void onEnable() {
-
-    }
-
-    @Override
-    public void onDisable() {
-
-    }
+    public void onDisable() {}
 
     @Override
     public final boolean isEnabled() {
@@ -96,7 +88,9 @@ abstract public class PluginBase implements Plugin {
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */
     @PowerNukkitDifference(info = "Made impossible to disable special the PowerNukkitPlugin", since = "1.3.0.0-PN")
-    @PowerNukkitXDifference(info = "Made impossible to disable special the PowerNukkitX Internal Plugin", since = "1.19.60-r1")
+    @PowerNukkitXDifference(
+            info = "Made impossible to disable special the PowerNukkitX Internal Plugin",
+            since = "1.19.60-r1")
     public final void setEnabled(boolean value) {
         if (isEnabled != value) {
             if (!value && InternalPlugin.INSTANCE == this) {
@@ -145,7 +139,8 @@ abstract public class PluginBase implements Plugin {
      *                    The {@code File} object of this plugin itself. For jar-packed plugins, it is the jar file itself.
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */
-    public final void init(PluginLoader loader, Server server, PluginDescription description, File dataFolder, File file) {
+    public final void init(
+            PluginLoader loader, Server server, PluginDescription description, File dataFolder, File file) {
         if (!initialized) {
             initialized = true;
             this.loader = loader;
@@ -177,11 +172,11 @@ abstract public class PluginBase implements Plugin {
     /**
      * TODO: FINISH JAVADOC
      */
-    @Nullable
-    public PluginIdentifiableCommand getCommand(String name) {
+    @Nullable public PluginIdentifiableCommand getCommand(String name) {
         PluginIdentifiableCommand command = this.getServer().getPluginCommand(name);
         if (command == null || !command.getPlugin().equals(this)) {
-            command = this.getServer().getPluginCommand(this.description.getName().toLowerCase() + ":" + name);
+            command =
+                    this.getServer().getPluginCommand(this.description.getName().toLowerCase() + ":" + name);
         }
 
         if (command != null && command.getPlugin().equals(this)) {
@@ -193,8 +188,7 @@ abstract public class PluginBase implements Plugin {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nullable
-    public PluginCommand<?> getPluginCommand(@NotNull String name) {
+    @Nullable public PluginCommand<?> getPluginCommand(@NotNull String name) {
         PluginIdentifiableCommand command = getCommand(name);
         if (command instanceof PluginCommand<?>) {
             return (PluginCommand<?>) command;
@@ -229,7 +223,8 @@ abstract public class PluginBase implements Plugin {
     @Override
     public boolean saveResource(String filename, String outputName, boolean replace) {
         Preconditions.checkArgument(filename != null && outputName != null, "Filename can not be null!");
-        Preconditions.checkArgument(filename.trim().length() != 0 && outputName.trim().length() != 0, "Filename can not be empty!");
+        Preconditions.checkArgument(
+                filename.trim().length() != 0 && outputName.trim().length() != 0, "Filename can not be empty!");
 
         File out = new File(dataFolder, outputName);
         if (!out.exists() || replace) {
@@ -244,7 +239,13 @@ abstract public class PluginBase implements Plugin {
                     return true;
                 }
             } catch (IOException e) {
-                log.error("Error while saving resource {}, to {} (replace: {}, plugin:{})", filename, outputName, replace, getDescription().getName(), e);
+                log.error(
+                        "Error while saving resource {}, to {} (replace: {}, plugin:{})",
+                        filename,
+                        outputName,
+                        replace,
+                        getDescription().getName(),
+                        e);
             }
         }
         return false;
@@ -283,7 +284,10 @@ abstract public class PluginBase implements Plugin {
             try {
                 this.config.setDefault(yaml.loadAs(Utils.readFile(this.configFile), LinkedHashMap.class));
             } catch (IOException e) {
-                log.error("Error while reloading configs for the plugin {}", getDescription().getName(), e);
+                log.error(
+                        "Error while reloading configs for the plugin {}",
+                        getDescription().getName(),
+                        e);
             }
         }
     }

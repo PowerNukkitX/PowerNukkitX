@@ -5,14 +5,13 @@ import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BlockProperty;
 import cn.nukkit.blockproperty.exception.InvalidBlockPropertyException;
+import java.io.Serializable;
+import javax.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
-import java.io.Serializable;
 
 /**
  * @author joserobjr
@@ -35,32 +34,28 @@ public class BlockStateRepair {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    BlockProperties properties;
-    
+    @NotNull BlockProperties properties;
+
     /**
      * The state that was originally received when the repair started.
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    Number originalState;
+    @NotNull Number originalState;
 
     /**
      * The current state that is being repaired.
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    Number currentState;
+    @NotNull Number currentState;
 
     /**
      * The state after the repair. It does not consider {@link #getProposedPropertyValue()}.
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    Number nextState;
+    @NotNull Number nextState;
 
     /**
      * How many repairs was applied to the original state.
@@ -75,8 +70,7 @@ public class BlockStateRepair {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nullable
-    BlockProperty<?> property;
+    @Nullable BlockProperty<?> property;
 
     /**
      * The bit position of the invalid property value, when {@link #getProperty()} is {@code null} this indicates
@@ -87,7 +81,7 @@ public class BlockStateRepair {
     int propertyOffset;
 
     /**
-     * The current invalid int value that is in the property bit space. 
+     * The current invalid int value that is in the property bit space.
      * If the {@link #getProperty()} is {@code null} than it will hold all remaining data that can be stored in an integer
      */
     @PowerNukkitOnly
@@ -99,24 +93,21 @@ public class BlockStateRepair {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    Serializable fixedPropertyValue;
+    @NotNull Serializable fixedPropertyValue;
 
     /**
-     * The proposed property int value to fix the current block state, 
+     * The proposed property int value to fix the current block state,
      * if the proposed value is not valid {@link #getFixedPropertyValue()} will be used.
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @NonFinal
-    @NotNull
-    Serializable proposedPropertyValue;
+    @NotNull Serializable proposedPropertyValue;
 
     /**
      * The exception that was thrown when trying to validate the {@link #getCurrentState()} and resulted in this repair.
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nullable
-    InvalidBlockPropertyException validationException;
+    @Nullable InvalidBlockPropertyException validationException;
 }

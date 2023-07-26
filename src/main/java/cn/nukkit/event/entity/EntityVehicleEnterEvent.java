@@ -22,5 +22,4 @@ public class EntityVehicleEnterEvent extends EntityEvent implements Cancellable 
     public Entity getVehicle() {
         return vehicle;
     }
-
 }

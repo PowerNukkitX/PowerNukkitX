@@ -6,8 +6,7 @@ import cn.nukkit.api.Since;
 @PowerNukkitXOnly
 @Since("1.20.0-r2")
 public class BlockMangroveHangingSign extends BlockHangingSign {
-    public BlockMangroveHangingSign() {
-    }
+    public BlockMangroveHangingSign() {}
 
     public int getId() {
         return MANGROVE_HANGING_SIGN;

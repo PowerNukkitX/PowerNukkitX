@@ -30,5 +30,6 @@ public abstract class PopulatorCount extends Populator {
         }
     }
 
-    protected abstract void populateCount(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk);
+    protected abstract void populateCount(
+            ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk);
 }

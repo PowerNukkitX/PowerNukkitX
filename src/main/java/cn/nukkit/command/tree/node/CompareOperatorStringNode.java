@@ -3,9 +3,7 @@ package cn.nukkit.command.tree.node;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import com.google.common.collect.Sets;
-
 import java.util.HashSet;
-
 
 /**
  * 负责解析ExecuteCommand中的比较操作，解析为{@link String}值
@@ -22,5 +20,4 @@ public class CompareOperatorStringNode extends StringNode {
         if (COMPARE_OPERATOR.contains(arg)) this.value = arg;
         else this.error();
     }
-
 }

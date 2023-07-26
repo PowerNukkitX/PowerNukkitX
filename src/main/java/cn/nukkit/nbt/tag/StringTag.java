@@ -4,10 +4,9 @@ import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.stream.NBTOutputStream;
 import com.google.common.base.Preconditions;
-import org.jetbrains.annotations.NotNull;
-
 import java.io.IOException;
 import java.util.Objects;
+import org.jetbrains.annotations.NotNull;
 
 public class StringTag extends Tag {
     public String data;
@@ -16,7 +15,9 @@ public class StringTag extends Tag {
         super(name);
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Throws NullPointerException instead of IllegalArgumentException if data is null")
+    @PowerNukkitDifference(
+            since = "1.4.0.0-PN",
+            info = "Throws NullPointerException instead of IllegalArgumentException if data is null")
     public StringTag(String name, @NotNull String data) {
         super(name);
         this.data = Preconditions.checkNotNull(data, "Empty string not allowed");

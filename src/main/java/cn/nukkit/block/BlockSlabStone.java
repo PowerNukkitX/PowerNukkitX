@@ -14,11 +14,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockSlabStone extends BlockSlab {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(
-            StoneSlab1Type.PROPERTY,
-            TOP_SLOT_PROPERTY
-    );
-    
+    public static final BlockProperties PROPERTIES = new BlockProperties(StoneSlab1Type.PROPERTY, TOP_SLOT_PROPERTY);
+
     public static final int STONE = 0;
     public static final int SANDSTONE = 1;
     public static final int WOODEN = 2;
@@ -43,8 +40,7 @@ public class BlockSlabStone extends BlockSlab {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }

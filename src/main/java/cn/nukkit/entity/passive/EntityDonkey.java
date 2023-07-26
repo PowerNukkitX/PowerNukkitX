@@ -47,9 +47,8 @@ public class EntityDonkey extends EntityAnimal implements EntityWalkable {
 
     @Override
     public Item[] getDrops() {
-        return new Item[]{Item.get(Item.LEATHER)};
+        return new Item[] {Item.get(Item.LEATHER)};
     }
-
 
     @PowerNukkitOnly
     @Since("1.5.1.0-PN")

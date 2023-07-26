@@ -12,11 +12,14 @@ public class FormResponseCustom extends FormResponse {
     private final HashMap<Integer, Boolean> toggleResponses;
     private final HashMap<Integer, String> labelResponses;
 
-    public FormResponseCustom(HashMap<Integer, Object> responses, HashMap<Integer, FormResponseData> dropdownResponses,
-                              HashMap<Integer, String> inputResponses, HashMap<Integer, Float> sliderResponses,
-                              HashMap<Integer, FormResponseData> stepSliderResponses,
-                              HashMap<Integer, Boolean> toggleResponses,
-                              HashMap<Integer, String> labelResponses) {
+    public FormResponseCustom(
+            HashMap<Integer, Object> responses,
+            HashMap<Integer, FormResponseData> dropdownResponses,
+            HashMap<Integer, String> inputResponses,
+            HashMap<Integer, Float> sliderResponses,
+            HashMap<Integer, FormResponseData> stepSliderResponses,
+            HashMap<Integer, Boolean> toggleResponses,
+            HashMap<Integer, String> labelResponses) {
         this.responses = responses;
         this.dropdownResponses = dropdownResponses;
         this.inputResponses = inputResponses;

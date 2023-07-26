@@ -30,8 +30,7 @@ public class BlockShulkerBox extends BlockUndyedShulkerBox {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }

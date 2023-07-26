@@ -14,9 +14,8 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.utils.Faceable;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -28,15 +27,16 @@ public abstract class BlockStairs extends BlockTransparentMeta implements Faceab
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final BlockProperty<BlockFace> STAIRS_DIRECTION = new ArrayBlockProperty<>("weirdo_direction", false, new BlockFace[]{
-            BlockFace.EAST, BlockFace.WEST,
-            BlockFace.SOUTH, BlockFace.NORTH
-    }).ordinal(true);
+    public static final BlockProperty<BlockFace> STAIRS_DIRECTION = new ArrayBlockProperty<>(
+                    "weirdo_direction", false, new BlockFace[] {
+                        BlockFace.EAST, BlockFace.WEST,
+                        BlockFace.SOUTH, BlockFace.NORTH
+                    })
+            .ordinal(true);
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(STAIRS_DIRECTION, UPSIDE_DOWN);
-    
 
     protected BlockStairs(int meta) {
         super(meta);
@@ -44,12 +44,11 @@ public abstract class BlockStairs extends BlockTransparentMeta implements Faceab
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public BlockStairs(){}
+    public BlockStairs() {}
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -72,7 +71,15 @@ public abstract class BlockStairs extends BlockTransparentMeta implements Faceab
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
         if (player != null) {
             setBlockFace(player.getDirection());
         }
@@ -92,7 +99,7 @@ public abstract class BlockStairs extends BlockTransparentMeta implements Faceab
         double maxSlabY = 0.5;
         double minHalfSlabY = 0.5;
         double maxHalfSlabY = 1;
-        
+
         if (isUpsideDown()) {
             minSlabY = 0.5;
             maxSlabY = 1;
@@ -101,54 +108,23 @@ public abstract class BlockStairs extends BlockTransparentMeta implements Faceab
         }
 
         if (bb.intersectsWith(new SimpleAxisAlignedBB(
-                this.x,
-                this.y + minSlabY,
-                this.z,
-                this.x + 1,
-                this.y + maxSlabY,
-                this.z + 1
-        ))) {
+                this.x, this.y + minSlabY, this.z, this.x + 1, this.y + maxSlabY, this.z + 1))) {
             return true;
         }
-
 
         switch (face) {
             case EAST:
                 return bb.intersectsWith(new SimpleAxisAlignedBB(
-                        this.x + 0.5,
-                        this.y + minHalfSlabY,
-                        this.z,
-                        this.x + 1,
-                        this.y + maxHalfSlabY,
-                        this.z + 1
-                ));
+                        this.x + 0.5, this.y + minHalfSlabY, this.z, this.x + 1, this.y + maxHalfSlabY, this.z + 1));
             case WEST:
                 return bb.intersectsWith(new SimpleAxisAlignedBB(
-                        this.x,
-                        this.y + minHalfSlabY,
-                        this.z,
-                        this.x + 0.5,
-                        this.y + maxHalfSlabY,
-                        this.z + 1
-                ));
+                        this.x, this.y + minHalfSlabY, this.z, this.x + 0.5, this.y + maxHalfSlabY, this.z + 1));
             case SOUTH:
                 return bb.intersectsWith(new SimpleAxisAlignedBB(
-                        this.x,
-                        this.y + minHalfSlabY,
-                        this.z + 0.5,
-                        this.x + 1,
-                        this.y + maxHalfSlabY,
-                        this.z + 1
-                ));
+                        this.x, this.y + minHalfSlabY, this.z + 0.5, this.x + 1, this.y + maxHalfSlabY, this.z + 1));
             case NORTH:
                 return bb.intersectsWith(new SimpleAxisAlignedBB(
-                        this.x,
-                        this.y + minHalfSlabY,
-                        this.z,
-                        this.x + 1,
-                        this.y + maxHalfSlabY,
-                        this.z + 0.5
-                ));
+                        this.x, this.y + minHalfSlabY, this.z, this.x + 1, this.y + maxHalfSlabY, this.z + 0.5));
             default:
                 return false;
         }
@@ -165,7 +141,7 @@ public abstract class BlockStairs extends BlockTransparentMeta implements Faceab
     public void setUpsideDown(boolean upsideDown) {
         setBooleanValue(UPSIDE_DOWN, upsideDown);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean isUpsideDown() {

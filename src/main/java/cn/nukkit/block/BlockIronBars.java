@@ -11,8 +11,7 @@ import cn.nukkit.item.ItemTool;
  */
 public class BlockIronBars extends BlockThin {
 
-    public BlockIronBars() {
-    }
+    public BlockIronBars() {}
 
     @Override
     public String getName() {

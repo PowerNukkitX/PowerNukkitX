@@ -1,5 +1,7 @@
 package cn.nukkit.entity.passive;
 
+import static cn.nukkit.network.protocol.SetEntityLinkPacket.TYPE_PASSENGER;
+
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
@@ -48,20 +50,24 @@ import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.EntityLink;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.Utils;
-
-import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import static cn.nukkit.network.protocol.SetEntityLinkPacket.TYPE_PASSENGER;
+import javax.annotation.Nullable;
 
 /**
  * @author PikyCZ
  */
-public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityVariant, EntityMarkVariant, EntityRideable, EntityOwnable, InventoryHolder, EntityAgeable {
+public class EntityHorse extends EntityAnimal
+        implements EntityWalkable,
+                EntityVariant,
+                EntityMarkVariant,
+                EntityRideable,
+                EntityOwnable,
+                InventoryHolder,
+                EntityAgeable {
 
     public static final int NETWORK_ID = 23;
     private static final int[] VARIANTS = {0, 1, 2, 3, 4, 5, 6};
@@ -99,7 +105,8 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     public void initEntity() {
         attributeMap = new HashMap<>();
         if (this.namedTag.containsList("Attributes")) {
-            for (var nbt : this.namedTag.getList("Attributes", CompoundTag.class).getAll()) {
+            for (var nbt :
+                    this.namedTag.getList("Attributes", CompoundTag.class).getAll()) {
                 attributeMap.put(nbt.getString("Name"), Attribute.fromNBT(nbt));
             }
         } else {
@@ -163,12 +170,13 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     public void setHealth(float health) {
         super.setHealth(health);
         if (this.isAlive()) {
-            Attribute attr = this.attributeMap.get("minecraft:health")
+            Attribute attr = this.attributeMap
+                    .get("minecraft:health")
                     .setDefaultValue(this.getMaxHealth())
                     .setMaxValue(this.getMaxHealth())
                     .setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
             UpdateAttributesPacket pk = new UpdateAttributesPacket();
-            pk.entries = new Attribute[]{attr};
+            pk.entries = new Attribute[] {attr};
             pk.entityId = this.id;
             Server.broadcastPacket(this.getViewers().values().toArray(Player.EMPTY_ARRAY), pk);
         }
@@ -177,13 +185,14 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     @Override
     public void setMaxHealth(int maxHealth) {
         super.setMaxHealth(maxHealth);
-        Attribute attr = this.attributeMap.get("minecraft:health")
+        Attribute attr = this.attributeMap
+                .get("minecraft:health")
                 .setMaxValue(maxHealth)
                 .setDefaultValue(maxHealth)
                 .setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
         if (this.isAlive()) {
             UpdateAttributesPacket pk = new UpdateAttributesPacket();
-            pk.entries = new Attribute[]{attr};
+            pk.entries = new Attribute[] {attr};
             pk.entityId = this.id;
             Server.broadcastPacket(this.getViewers().values().toArray(Player.EMPTY_ARRAY), pk);
         }
@@ -191,7 +200,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
 
     @Override
     public Item[] getDrops() {
-        return new Item[]{Item.get(Item.LEATHER), getHorseArmor(), getSaddle()};
+        return new Item[] {Item.get(Item.LEATHER), getHorseArmor(), getSaddle()};
     }
 
     @PowerNukkitOnly
@@ -220,35 +229,47 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         return new BehaviorGroup(
                 this.tickSpread,
                 Set.of(
-                        //todo breed
+                        // todo breed
                         new Behavior(
                                 new AnimalGrowExecutor(),
-                                //todo：Growth rate
+                                // todo：Growth rate
                                 all(
-                                        new PassByTimeEvaluator(CoreMemoryTypes.ENTITY_SPAWN_TIME, 20 * 60 * 20, Integer.MAX_VALUE),
-                                        entity -> entity instanceof EntityAnimal animal && animal.isBaby()
-                                )
-                                , 1, 1, 1200
-                        )
-                ),
+                                        new PassByTimeEvaluator(
+                                                CoreMemoryTypes.ENTITY_SPAWN_TIME, 20 * 60 * 20, Integer.MAX_VALUE),
+                                        entity -> entity instanceof EntityAnimal animal && animal.isBaby()),
+                                1,
+                                1,
+                                1200)),
                 Set.of(
-                        new Behavior(new TameHorseExecutor(0.4f, 12, 40, true, 100, true, 10, 35), all(
-                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.RIDER_NAME),
-                                e -> !this.hasOwner(false)
-                        ), 4, 1),
-                        new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100), new ProbabilityEvaluator(4, 10), 1, 1, 100),
-                        new Behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
-                ),
+                        new Behavior(
+                                new TameHorseExecutor(0.4f, 12, 40, true, 100, true, 10, 35),
+                                all(
+                                        new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.RIDER_NAME),
+                                        e -> !this.hasOwner(false)),
+                                4,
+                                1),
+                        new Behavior(
+                                new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
+                                new ProbabilityEvaluator(4, 10),
+                                1,
+                                1,
+                                100),
+                        new Behavior(
+                                new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10),
+                                (entity -> true),
+                                1,
+                                1)),
                 Set.of(new NearestFeedingPlayerSensor(8, 0), new NearestPlayerSensor(8, 0, 20)),
                 Set.of(new WalkController(), new LookController(true, true), new FluctuateController()),
                 new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
-                this
-        );
+                this);
     }
 
     @Override
     public void asyncPrepare(int currentTick) {
-        if (this.getRider() == null || this.getOwner() == null || this.getSaddle().isNull()) {
+        if (this.getRider() == null
+                || this.getOwner() == null
+                || this.getSaddle().isNull()) {
             isActive = level.isHighLightChunk(getChunkX(), getChunkZ());
             if (!this.isImmobile()) {
                 var behaviorGroup = getBehaviorGroup();
@@ -262,7 +283,8 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
                 behaviorGroup.applyController(this);
                 if (EntityAI.checkDebugOption(EntityAI.DebugOption.BEHAVIOR)) behaviorGroup.debugTick(this);
             }
-            this.needsRecalcMovement = this.level.tickRateOptDelay == 1 || ((currentTick + tickSpread) & (this.level.tickRateOptDelay - 1)) == 0;
+            this.needsRecalcMovement = this.level.tickRateOptDelay == 1
+                    || ((currentTick + tickSpread) & (this.level.tickRateOptDelay - 1)) == 0;
             this.calculateOffsetBoundingBox();
             if (!this.isImmobile()) {
                 handleGravity();
@@ -294,7 +316,9 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         fallDistance = event.getFallDistance();
 
         if ((!this.isPlayer || level.getGameRules().getBoolean(GameRule.FALL_DAMAGE)) && down.useDefaultFallDamage()) {
-            int jumpBoost = this.hasEffect(Effect.JUMP_BOOST) ? (getEffect(Effect.JUMP_BOOST).getAmplifier() + 1) : 0;
+            int jumpBoost = this.hasEffect(Effect.JUMP_BOOST)
+                    ? (getEffect(Effect.JUMP_BOOST).getAmplifier() + 1)
+                    : 0;
             float damage = fallDistance - 3 - jumpBoost - getClientMaxJumpHeight();
 
             if (damage > 0) {
@@ -304,7 +328,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
 
         down.onEntityFallOn(this, fallDistance);
 
-        if (fallDistance > 0.75) {//todo: moving these into their own classes (method "onEntityFallOn()")
+        if (fallDistance > 0.75) { // todo: moving these into their own classes (method "onEntityFallOn()")
             if (down.getId() == Block.FARMLAND) {
                 if (onPhysicalInteraction(down, false)) {
                     return;
@@ -344,8 +368,10 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     }
 
     public void onPlayerInput(Location clientLoc) {
-        if (this.getRider() == null || this.getOwner() == null || this.getSaddle().isNull()) return;
-        //每次输入乘骑玩家位置之前都要确保motion为0,避免onGround不更新
+        if (this.getRider() == null
+                || this.getOwner() == null
+                || this.getSaddle().isNull()) return;
+        // 每次输入乘骑玩家位置之前都要确保motion为0,避免onGround不更新
         this.motionX = 0;
         this.motionY = 0;
         this.motionZ = 0;
@@ -357,15 +383,14 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         broadcastMovement();
     }
 
-    @Nullable
-    @Override
+    @Nullable @Override
     public String getOwnerName() {
         String ownerName = EntityOwnable.super.getOwnerName();
         if (ownerName == null) {
             this.setDataProperty(new ByteEntityData(Entity.DATA_CONTAINER_TYPE, 0));
             this.setDataProperty(new IntEntityData(Entity.DATA_CONTAINER_BASE_SIZE, 0));
         } else {
-            //添加两个metadata这个才能交互物品栏
+            // 添加两个metadata这个才能交互物品栏
             this.setDataProperty(new ByteEntityData(Entity.DATA_CONTAINER_TYPE, 12));
             this.setDataProperty(new IntEntityData(Entity.DATA_CONTAINER_BASE_SIZE, 2));
         }
@@ -401,12 +426,11 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         return horseInventory;
     }
 
-    @Nullable
-    public Entity getRider() {
+    @Nullable public Entity getRider() {
         String name = getMemoryStorage().get(CoreMemoryTypes.RIDER_NAME);
         if (name != null) {
             return Server.getInstance().getPlayerExact(name);
-        } else return null;//todo other entity
+        } else return null; // todo other entity
     }
 
     public float getClientMaxJumpHeight() {
@@ -447,7 +471,8 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
      * Play an animation of a failed tamer
      */
     public void playTameFailAnimation() {
-        this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_MAD, -1, "minecraft:horse", this.isBaby(), false);
+        this.getLevel()
+                .addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_MAD, -1, "minecraft:horse", this.isBaby(), false);
         this.setDataFlag(EntityHorse.DATA_FLAGS, EntityHorse.DATA_FLAG_REARING);
     }
 
@@ -463,13 +488,14 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     @Override
     public void spawnTo(Player player) {
         super.spawnTo(player);
-        //确保第一次生成时血量更新，单纯在AddEntityPacket中发送属性似乎还不够，还需要UpdateAttributesPacket
-        Attribute attr = this.attributeMap.get("minecraft:health")
+        // 确保第一次生成时血量更新，单纯在AddEntityPacket中发送属性似乎还不够，还需要UpdateAttributesPacket
+        Attribute attr = this.attributeMap
+                .get("minecraft:health")
                 .setDefaultValue(this.getMaxHealth())
                 .setMaxValue(this.getMaxHealth())
                 .setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
         UpdateAttributesPacket pk = new UpdateAttributesPacket();
-        pk.entries = new Attribute[]{attr};
+        pk.entries = new Attribute[] {attr};
         pk.entityId = this.id;
         player.dataPacket(pk);
     }
@@ -479,21 +505,35 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     }
 
     protected float generateRandomJumpStrength() {
-        return (float) (0.4F + Utils.random.nextDouble() * 0.2D + Utils.random.nextDouble() * 0.2D + Utils.random.nextDouble() * 0.2D);
+        return (float) (0.4F
+                + Utils.random.nextDouble() * 0.2D
+                + Utils.random.nextDouble() * 0.2D
+                + Utils.random.nextDouble() * 0.2D);
     }
 
     protected float generateRandomSpeed() {
-        return (float) ((0.45F + Utils.random.nextDouble() * 0.3D + Utils.random.nextDouble() * 0.3D + Utils.random.nextDouble() * 0.3D) * 0.25D);
+        return (float) ((0.45F
+                        + Utils.random.nextDouble() * 0.3D
+                        + Utils.random.nextDouble() * 0.3D
+                        + Utils.random.nextDouble() * 0.3D)
+                * 0.25D);
     }
 
     protected Attribute[] randomizeAttributes() {
         Attribute[] attributes = new Attribute[3];
         attributes[0] = Attribute.getAttribute(Attribute.MOVEMENT_SPEED).setValue(generateRandomSpeed());
         float maxHealth = generateRandomMaxHealth();
-        attributes[1] = Attribute.getAttribute(Attribute.MAX_HEALTH).setMinValue(0).setMaxValue(maxHealth).setDefaultValue(maxHealth).setValue(maxHealth);
+        attributes[1] = Attribute.getAttribute(Attribute.MAX_HEALTH)
+                .setMinValue(0)
+                .setMaxValue(maxHealth)
+                .setDefaultValue(maxHealth)
+                .setValue(maxHealth);
         attributes[2] = Attribute.getAttribute(Attribute.HORSE_JUMP_STRENGTH).setValue(generateRandomJumpStrength());
         ListTag<CompoundTag> compoundTagListTag = new ListTag<>();
-        compoundTagListTag.add(Attribute.toNBT(attributes[0])).add(Attribute.toNBT(attributes[1])).add(Attribute.toNBT(attributes[2]));
+        compoundTagListTag
+                .add(Attribute.toNBT(attributes[0]))
+                .add(Attribute.toNBT(attributes[1]))
+                .add(Attribute.toNBT(attributes[2]));
         this.namedTag.putList("Attributes", compoundTagListTag);
         return attributes;
     }
@@ -520,7 +560,12 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         addEntity.attributes = this.attributeMap.values().toArray(Attribute.EMPTY_ARRAY);
         addEntity.links = new EntityLink[this.passengers.size()];
         for (int i = 0; i < addEntity.links.length; i++) {
-            addEntity.links[i] = new EntityLink(this.getId(), this.passengers.get(i).getId(), i == 0 ? EntityLink.TYPE_RIDER : TYPE_PASSENGER, false, false);
+            addEntity.links[i] = new EntityLink(
+                    this.getId(),
+                    this.passengers.get(i).getId(),
+                    i == 0 ? EntityLink.TYPE_RIDER : TYPE_PASSENGER,
+                    false,
+                    false);
         }
 
         return addEntity;

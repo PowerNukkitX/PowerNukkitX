@@ -11,15 +11,13 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Sound;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 import java.util.Optional;
+import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author MagicDroidX (Nukkit Project), kvetinac97
  */
-
 public class BlockDirt extends BlockSolidMeta {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -33,7 +31,7 @@ public class BlockDirt extends BlockSolidMeta {
         this(0);
     }
 
-    public BlockDirt(int meta){
+    public BlockDirt(int meta) {
         super(meta);
     }
 
@@ -44,16 +42,14 @@ public class BlockDirt extends BlockSolidMeta {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public Optional<DirtType> getDirtType() {
+    @NotNull public Optional<DirtType> getDirtType() {
         return Optional.of(getPropertyValue(DIRT_TYPE));
     }
 
@@ -62,12 +58,12 @@ public class BlockDirt extends BlockSolidMeta {
     public void setDirtType(@Nullable DirtType dirtType) {
         setPropertyValue(DIRT_TYPE, dirtType);
     }
-    
+
     @Override
     public boolean canBeActivated() {
         return true;
     }
-    
+
     @Override
     public double getResistance() {
         return 2.5;
@@ -115,7 +111,6 @@ public class BlockDirt extends BlockSolidMeta {
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{new ItemBlock(Block.get(BlockID.DIRT))};
+        return new Item[] {new ItemBlock(Block.get(BlockID.DIRT))};
     }
-
 }

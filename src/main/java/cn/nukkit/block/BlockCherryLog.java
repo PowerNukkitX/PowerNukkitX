@@ -48,8 +48,7 @@ public class BlockCherryLog extends BlockLog {
         return CHERRY_LOG;
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PILLAR_PROPERTIES;
     }
@@ -59,4 +58,3 @@ public class BlockCherryLog extends BlockLog {
         return getCurrentState().withBlockId(STRIPPED_CHERRY_LOG);
     }
 }
-

@@ -1,5 +1,8 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
+import static cn.nukkit.blockproperty.CommonBlockProperties.POWERED;
+
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
@@ -17,15 +20,12 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
+import javax.annotation.Nullable;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
-
-import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
-import static cn.nukkit.blockproperty.CommonBlockProperties.POWERED;
-
 @PowerNukkitOnly
-public class BlockLectern extends BlockTransparentMeta implements RedstoneComponent, Faceable, BlockEntityHolder<BlockEntityLectern> {
+public class BlockLectern extends BlockTransparentMeta
+        implements RedstoneComponent, Faceable, BlockEntityHolder<BlockEntityLectern> {
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(DIRECTION, POWERED);
@@ -52,24 +52,21 @@ public class BlockLectern extends BlockTransparentMeta implements RedstoneCompon
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public Class<? extends BlockEntityLectern> getBlockEntityClass() {
         return BlockEntityLectern.class;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getBlockEntityType() {
         return BlockEntity.LECTERN;
     }
@@ -140,7 +137,15 @@ public class BlockLectern extends BlockTransparentMeta implements RedstoneCompon
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
         setBlockFace(player != null ? player.getDirection().getOpposite() : BlockFace.SOUTH);
         return BlockEntityHolder.setBlockAndCreateEntity(this) != null;
     }

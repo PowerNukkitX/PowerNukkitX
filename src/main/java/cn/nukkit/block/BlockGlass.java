@@ -7,8 +7,7 @@ import cn.nukkit.item.Item;
  */
 public class BlockGlass extends BlockTransparent {
 
-    public BlockGlass() {
-    }
+    public BlockGlass() {}
 
     @Override
     public int getId() {
@@ -39,5 +38,4 @@ public class BlockGlass extends BlockTransparent {
     public boolean canSilkTouch() {
         return true;
     }
-
 }

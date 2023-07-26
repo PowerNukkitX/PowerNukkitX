@@ -12,7 +12,7 @@ public interface ICommandBlock extends CommandSender, InventoryHolder {
 
     int CURRENT_VERSION = 10;
 
-    //TODO: enum
+    // TODO: enum
     int MODE_NORMAL = 0;
     int MODE_REPEATING = 1;
     int MODE_CHAIN = 2;
@@ -35,8 +35,7 @@ public interface ICommandBlock extends CommandSender, InventoryHolder {
     String TAG_TICK_DELAY = "TickDelay";
     String TAG_EXECUTE_ON_FIRST_TICK = "ExecuteOnFirstTick";
 
-    @NotNull
-    String getName();
+    @NotNull String getName();
 
     boolean hasName();
 

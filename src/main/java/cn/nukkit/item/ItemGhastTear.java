@@ -17,5 +17,4 @@ public class ItemGhastTear extends Item {
     public ItemGhastTear(Integer meta, int count) {
         super(GHAST_TEAR, meta, count, "Ghast Tear");
     }
-
 }

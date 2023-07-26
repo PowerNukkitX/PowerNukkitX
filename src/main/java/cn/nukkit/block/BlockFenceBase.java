@@ -7,10 +7,9 @@ import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.blockproperty.exception.InvalidBlockPropertyValueException;
 import cn.nukkit.blockproperty.value.WoodType;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 import java.util.Optional;
+import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
@@ -29,8 +28,7 @@ public abstract class BlockFenceBase extends BlockFence {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return CommonBlockProperties.EMPTY_PROPERTIES;
     }
@@ -46,14 +44,13 @@ public abstract class BlockFenceBase extends BlockFence {
     }
 
     @Deprecated
-    @DeprecationDetails(
-            reason = "Only accepts null. It is here for backward compatibility",
-            since = "1.4.0.0-PN")
+    @DeprecationDetails(reason = "Only accepts null. It is here for backward compatibility", since = "1.4.0.0-PN")
     @Override
     @PowerNukkitOnly
     public void setWoodType(@Nullable WoodType woodType) {
         if (woodType != null) {
-            throw new InvalidBlockPropertyValueException(WoodType.PROPERTY, null, woodType, "This block don't have a regular wood type");
+            throw new InvalidBlockPropertyValueException(
+                    WoodType.PROPERTY, null, woodType, "This block don't have a regular wood type");
         }
     }
 }

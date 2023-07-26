@@ -1,6 +1,5 @@
 package cn.nukkit.item.randomitem;
 
-
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;

@@ -1,16 +1,15 @@
 package cn.nukkit.plugin.js;
 
-import org.graalvm.polyglot.Context;
-import org.graalvm.polyglot.HostAccess;
-import org.graalvm.polyglot.Source;
-import org.graalvm.polyglot.Value;
+import static cn.nukkit.plugin.js.JSConcurrentManager.PROMISE_FAILED;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
-
-import static cn.nukkit.plugin.js.JSConcurrentManager.PROMISE_FAILED;
+import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.HostAccess;
+import org.graalvm.polyglot.Source;
+import org.graalvm.polyglot.Value;
 
 public final class JSJob implements AutoCloseable {
     private final Context sourceContext;
@@ -32,7 +31,9 @@ public final class JSJob implements AutoCloseable {
         this.jobContext = Context.newBuilder("js")
                 .fileSystem(fileSystem)
                 .allowAllAccess(true)
-                .allowHostAccess(HostAccess.newBuilder(HostAccess.ALL).targetTypeMapping(Double.class, Float.class, null, Double::floatValue).build())
+                .allowHostAccess(HostAccess.newBuilder(HostAccess.ALL)
+                        .targetTypeMapping(Double.class, Float.class, null, Double::floatValue)
+                        .build())
                 .allowHostClassLoading(true)
                 .allowHostClassLookup(className -> true)
                 .allowIO(true)
@@ -50,9 +51,10 @@ public final class JSJob implements AutoCloseable {
 
     public void start() {
         try {
-            var exports = jobContext.eval(Source.newBuilder("js", sourceReader,
-                            fileSystem.baseDir.getName() + "/job-" + sourcePath.getFileName())
-                    .mimeType("application/javascript+module").build());
+            var exports = jobContext.eval(Source.newBuilder(
+                            "js", sourceReader, fileSystem.baseDir.getName() + "/job-" + sourcePath.getFileName())
+                    .mimeType("application/javascript+module")
+                    .build());
             this.jobMainFunc = exports.getMember("main");
         } catch (IOException e) {
             e.printStackTrace();

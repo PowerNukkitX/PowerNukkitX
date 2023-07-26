@@ -31,7 +31,6 @@ public abstract class EntityHanging extends Entity {
                 this.direction = 2;
             }
         }
-
     }
 
     @Override
@@ -86,5 +85,4 @@ public abstract class EntityHanging extends Entity {
     protected boolean isSurfaceValid() {
         return true;
     }
-
 }

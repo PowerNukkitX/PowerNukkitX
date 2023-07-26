@@ -20,8 +20,6 @@ import cn.nukkit.nbt.tag.NumberTag;
 import cn.nukkit.network.protocol.BatchPacket;
 import cn.nukkit.utils.collection.nb.Long2ObjectNonBlockingMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import org.jetbrains.annotations.NotNull;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiPredicate;
 import java.util.stream.Stream;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -138,7 +137,8 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
                         continue;
                     }
                     ListTag pos = nbt.getList("Pos");
-                    if ((((NumberTag) pos.get(0)).getData().intValue() >> 4) != this.getX() || ((((NumberTag) pos.get(2)).getData().intValue() >> 4) != this.getZ())) {
+                    if ((((NumberTag) pos.get(0)).getData().intValue() >> 4) != this.getX()
+                            || ((((NumberTag) pos.get(2)).getData().intValue() >> 4) != this.getZ())) {
                         changed = true;
                         continue;
                     }
@@ -316,7 +316,9 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
                 // TODO: remove nextLight & nextDecrease, use only light & decrease variables
                 for (y = top; y >= 0; --y) { // going under the top-most block
                     nextLight -= nextDecrease;
-                    int light = nextLight; // this light value will be applied for this block. The following checks are all about the next blocks
+                    int light =
+                            nextLight; // this light value will be applied for this block. The following checks are all
+                    // about the next blocks
 
                     if (light < 0) {
                         light = 0;
@@ -324,7 +326,8 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
 
                     this.setBlockSkyLight(x, y, z, light);
 
-                    if (light == 0) { // skipping block checks, because everything under a block that has a skylight value
+                    if (light
+                            == 0) { // skipping block checks, because everything under a block that has a skylight value
                         // of 0 also has a skylight value of 0
                         continue;
                     }
@@ -339,7 +342,8 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
                         nextDecrease += 1; // skylight value decreases by one for each block under a block
                         // that diffuses skylight. The block itself has a value of 15 (if it's a top-most block)
                     } else {
-                        nextDecrease -= Block.getLightFilter(id); // blocks under a light filtering block will have a skylight value
+                        nextDecrease -= Block.getLightFilter(
+                                id); // blocks under a light filtering block will have a skylight value
                         // decreased by the lightFilter value of that block. The block itself
                         // has a value of 15 (if it's a top-most block)
                     }
@@ -399,7 +403,9 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
             this.tileList = new Long2ObjectNonBlockingMap<>();
         }
         this.tiles.put(blockEntity.getId(), blockEntity);
-        int index = ((blockEntity.getFloorZ() & 0x0f) << 16) | ((blockEntity.getFloorX() & 0x0f) << 12) | (ensureY(blockEntity.getFloorY()) + 64);
+        int index = ((blockEntity.getFloorZ() & 0x0f) << 16)
+                | ((blockEntity.getFloorX() & 0x0f) << 12)
+                | (ensureY(blockEntity.getFloorY()) + 64);
         if (this.tileList.containsKey(index) && !this.tileList.get(index).equals(blockEntity)) {
             BlockEntity entity = this.tileList.get(index);
             this.tiles.remove(entity.getId());
@@ -415,7 +421,9 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
     public void removeBlockEntity(BlockEntity blockEntity) {
         if (this.tiles != null) {
             this.tiles.remove(blockEntity.getId());
-            int index = ((blockEntity.getFloorZ() & 0x0f) << 16) | ((blockEntity.getFloorX() & 0x0f) << 12) | (ensureY(blockEntity.getFloorY()) + 64);
+            int index = ((blockEntity.getFloorZ() & 0x0f) << 16)
+                    | ((blockEntity.getFloorX() & 0x0f) << 12)
+                    | (ensureY(blockEntity.getFloorY()) + 64);
             this.tileList.remove(index);
             if (this.isInit) {
                 this.setChanged();
@@ -515,7 +523,9 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
 
     @SuppressWarnings("removal")
     @Deprecated(since = "1.20.0-r2", forRemoval = true)
-    @DeprecationDetails(since = "1.20.0-r2", reason = "HeightMapArray is now a short[], Use getNewHeightMapArray() instead")
+    @DeprecationDetails(
+            since = "1.20.0-r2",
+            reason = "HeightMapArray is now a short[], Use getNewHeightMapArray() instead")
     @Override
     public byte[] getHeightMapArray() {
         var heightMap = new byte[256];
@@ -583,9 +593,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
     }
 
     @Override
-    public void setLightPopulated(boolean value) {
-
-    }
+    public void setLightPopulated(boolean value) {}
 
     @Override
     public void setLightPopulated() {
@@ -726,8 +734,8 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public Stream<Block> scanBlocks(BlockVector3 min, BlockVector3 max, BiPredicate<BlockVector3, BlockState> condition) {
+    @NotNull public Stream<Block> scanBlocks(
+            BlockVector3 min, BlockVector3 max, BiPredicate<BlockVector3, BlockState> condition) {
         int offsetX = getX() << 4;
         int offsetZ = getZ() << 4;
         List<Block> results = new ArrayList<>();

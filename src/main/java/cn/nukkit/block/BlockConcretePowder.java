@@ -38,8 +38,7 @@ public class BlockConcretePowder extends BlockFallableMeta {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -63,7 +62,7 @@ public class BlockConcretePowder extends BlockFallableMeta {
     public int getToolType() {
         return ItemTool.TYPE_SHOVEL;
     }
-    
+
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
@@ -82,7 +81,15 @@ public class BlockConcretePowder extends BlockFallableMeta {
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block b, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block b,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         boolean concrete = false;
 
         for (int side = 1; side <= 5; side++) {

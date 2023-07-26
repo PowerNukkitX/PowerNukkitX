@@ -10,7 +10,6 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.utils.SerializedImage;
 import com.google.common.base.Strings;
-
 import java.util.ArrayList;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
@@ -54,12 +53,10 @@ public class FloatingTextParticle extends Particle {
         super(pos.x, pos.y, pos.z);
         this.level = level;
 
-        long flags = (
-                1L << Entity.DATA_FLAG_NO_AI
-        );
+        long flags = (1L << Entity.DATA_FLAG_NO_AI);
         metadata.putLong(Entity.DATA_FLAGS, flags)
                 .putLong(Entity.DATA_LEAD_HOLDER_EID, -1)
-                .putFloat(Entity.DATA_SCALE, 0.01f) //zero causes problems on debug builds?
+                .putFloat(Entity.DATA_SCALE, 0.01f) // zero causes problems on debug builds?
                 .putFloat(Entity.DATA_BOUNDING_BOX_HEIGHT, 0.01f)
                 .putFloat(Entity.DATA_BOUNDING_BOX_WIDTH, 0.01f);
         if (!Strings.isNullOrEmpty(title)) {
@@ -127,8 +124,9 @@ public class FloatingTextParticle extends Particle {
         }
 
         if (!this.invisible) {
-            PlayerListPacket.Entry[] entry = {new PlayerListPacket.Entry(uuid, entityId,
-                    metadata.getString(Entity.DATA_NAMETAG), EMPTY_SKIN)};
+            PlayerListPacket.Entry[] entry = {
+                new PlayerListPacket.Entry(uuid, entityId, metadata.getString(Entity.DATA_NAMETAG), EMPTY_SKIN)
+            };
             PlayerListPacket playerAdd = new PlayerListPacket();
             playerAdd.entries = entry;
             playerAdd.type = PlayerListPacket.TYPE_ADD;

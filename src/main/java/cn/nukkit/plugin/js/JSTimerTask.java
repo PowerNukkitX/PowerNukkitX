@@ -1,9 +1,8 @@
 package cn.nukkit.plugin.js;
 
+import java.util.TimerTask;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Value;
-
-import java.util.TimerTask;
 
 public final class JSTimerTask extends TimerTask {
     private final long id;

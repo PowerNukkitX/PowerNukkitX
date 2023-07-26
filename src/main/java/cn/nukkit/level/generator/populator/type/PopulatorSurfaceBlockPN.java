@@ -29,7 +29,7 @@ public abstract class PopulatorSurfaceBlockPN extends PopulatorCount {
     @Override
     protected int getHighestWorkableBlock(ChunkManager level, int x, int z, FullChunk chunk) {
         int y;
-        //start at 254 because we add one afterwards
+        // start at 254 because we add one afterwards
         for (y = 254; y >= 0; --y) {
             if (!PopulatorHelpers.isNonSolid(chunk.getBlockId(x, y, z))) {
                 break;

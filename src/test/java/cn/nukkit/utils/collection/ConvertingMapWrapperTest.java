@@ -18,12 +18,11 @@
 
 package cn.nukkit.utils.collection;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author joserobjr
@@ -32,7 +31,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class ConvertingMapWrapperTest {
 
     private final Map<Long, String> proxy = new HashMap<>();
-    private final ConvertingMapWrapper<Long, Integer, String> map = new ConvertingMapWrapper<>(proxy, Objects::toString, Integer::parseInt);
+    private final ConvertingMapWrapper<Long, Integer, String> map =
+            new ConvertingMapWrapper<>(proxy, Objects::toString, Integer::parseInt);
 
     @BeforeEach
     void setUp() {

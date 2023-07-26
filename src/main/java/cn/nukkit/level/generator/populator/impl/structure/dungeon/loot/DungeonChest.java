@@ -27,7 +27,7 @@ public class DungeonChest extends RandomizableContainer {
                 .register(new ItemEntry(Item.GOLD_HORSE_ARMOR, 10))
                 .register(new ItemEntry(Item.IRON_HORSE_ARMOR, 15))
                 .register(new ItemEntry(Item.DIAMOND_HORSE_ARMOR, 5))
-                .register(new ItemEntry(Item.ENCHANTED_BOOK, 10)); //TODO: ench nbt
+                .register(new ItemEntry(Item.ENCHANTED_BOOK, 10)); // TODO: ench nbt
         this.pools.put(pool1.build(), new RollEntry(3, 1, pool1.getTotalWeight()));
 
         PoolBuilder pool2 = new PoolBuilder()

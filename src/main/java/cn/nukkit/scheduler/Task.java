@@ -52,9 +52,7 @@ public abstract class Task implements Runnable {
         this.onRun(taskHandler.getLastRunTick());
     }
 
-    public void onCancel() {
-
-    }
+    public void onCancel() {}
 
     public void cancel() {
         try {
@@ -63,5 +61,4 @@ public abstract class Task implements Runnable {
             log.fatal("Exception while invoking onCancel", ex);
         }
     }
-
 }

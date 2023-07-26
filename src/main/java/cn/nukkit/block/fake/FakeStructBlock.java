@@ -13,7 +13,6 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.BlockEntityDataPacket;
 import cn.nukkit.network.protocol.UpdateBlockPacket;
-
 import java.io.IOException;
 import java.nio.ByteOrder;
 import java.util.List;
@@ -50,7 +49,8 @@ public class FakeStructBlock extends SingleFakeBlock {
             blockEntityDataPacket.y = position.getFloorY();
             blockEntityDataPacket.z = position.getFloorZ();
             try {
-                blockEntityDataPacket.namedTag = NBTIO.write(this.getBlockEntityDataAt(position, targetStart, targetEnd), ByteOrder.LITTLE_ENDIAN, true);
+                blockEntityDataPacket.namedTag = NBTIO.write(
+                        this.getBlockEntityDataAt(position, targetStart, targetEnd), ByteOrder.LITTLE_ENDIAN, true);
             } catch (IOException exception) {
                 exception.printStackTrace();
             }

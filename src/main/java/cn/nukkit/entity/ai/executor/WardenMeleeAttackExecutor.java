@@ -13,7 +13,6 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.EntityEventPacket;
-
 import java.util.EnumMap;
 import java.util.Map;
 
@@ -38,16 +37,15 @@ public class WardenMeleeAttackExecutor implements EntityControl, IBehaviorExecut
     public boolean execute(EntityIntelligent entity) {
         attackTick++;
         if (entity.getBehaviorGroup().getMemoryStorage().isEmpty(memory)) return false;
-        if (entity.getMovementSpeed() != speed)
-            entity.setMovementSpeed(speed);
-        //获取目标位置（这个clone很重要）
+        if (entity.getMovementSpeed() != speed) entity.setMovementSpeed(speed);
+        // 获取目标位置（这个clone很重要）
         Entity target = entity.getBehaviorGroup().getMemoryStorage().get(memory);
         if (!target.isAlive()) return false;
         this.coolDown = calCoolDown(entity, target);
         Vector3 clonedTarget = target.clone();
-        //更新寻路target
+        // 更新寻路target
         setRouteTarget(entity, clonedTarget);
-        //更新视线target
+        // 更新视线target
         setLookTarget(entity, clonedTarget);
 
         var floor = clonedTarget.floor();
@@ -58,10 +56,12 @@ public class WardenMeleeAttackExecutor implements EntityControl, IBehaviorExecut
         oldTarget = floor;
 
         if (entity.distanceSquared(target) <= 4 && attackTick > coolDown) {
-            Map<EntityDamageEvent.DamageModifier, Float> damages = new EnumMap<>(EntityDamageEvent.DamageModifier.class);
+            Map<EntityDamageEvent.DamageModifier, Float> damages =
+                    new EnumMap<>(EntityDamageEvent.DamageModifier.class);
             damages.put(EntityDamageEvent.DamageModifier.BASE, this.damage);
 
-            EntityDamageByEntityEvent ev = new EntityDamageByEntityEvent(entity, target, EntityDamageEvent.DamageCause.ENTITY_ATTACK, damages, 0.6f, null);
+            EntityDamageByEntityEvent ev = new EntityDamageByEntityEvent(
+                    entity, target, EntityDamageEvent.DamageCause.ENTITY_ATTACK, damages, 0.6f, null);
 
             ev.setBreakShield(true);
             target.attack(ev);
@@ -75,7 +75,9 @@ public class WardenMeleeAttackExecutor implements EntityControl, IBehaviorExecut
 
     protected int calCoolDown(EntityIntelligent entity, Entity target) {
         if (entity instanceof EntityWarden warden) {
-            var anger = warden.getMemoryStorage().get(CoreMemoryTypes.WARDEN_ANGER_VALUE).getOrDefault(target, 0);
+            var anger = warden.getMemoryStorage()
+                    .get(CoreMemoryTypes.WARDEN_ANGER_VALUE)
+                    .getOrDefault(target, 0);
             return anger >= 145 ? 18 : 36;
         } else {
             return 20;
@@ -91,7 +93,7 @@ public class WardenMeleeAttackExecutor implements EntityControl, IBehaviorExecut
     public void onStop(EntityIntelligent entity) {
         removeRouteTarget(entity);
         removeLookTarget(entity);
-        //重置速度
+        // 重置速度
         entity.setMovementSpeed(0.1f);
         entity.setEnablePitch(false);
     }
@@ -100,7 +102,7 @@ public class WardenMeleeAttackExecutor implements EntityControl, IBehaviorExecut
     public void onInterrupt(EntityIntelligent entity) {
         removeRouteTarget(entity);
         removeLookTarget(entity);
-        //重置速度
+        // 重置速度
         entity.setMovementSpeed(0.1f);
         entity.setEnablePitch(false);
     }

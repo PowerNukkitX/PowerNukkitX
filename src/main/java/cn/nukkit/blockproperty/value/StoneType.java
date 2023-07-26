@@ -18,13 +18,13 @@
 
 package cn.nukkit.blockproperty.value;
 
+import static cn.nukkit.utils.BlockColor.*;
+
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.utils.BlockColor;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-
-import static cn.nukkit.utils.BlockColor.*;
 
 /**
  * @author joserobjr
@@ -41,7 +41,7 @@ public enum StoneType {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     GRANITE("Granite", DIRT_BLOCK_COLOR),
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     GRANITE_SMOOTH("Polished Granite", DIRT_BLOCK_COLOR),
@@ -49,7 +49,7 @@ public enum StoneType {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     DIORITE("Diorite", QUARTZ_BLOCK_COLOR),
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     DIORITE_SMOOTH("Polished Diorite", QUARTZ_BLOCK_COLOR),
@@ -61,21 +61,19 @@ public enum StoneType {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     ANDESITE_SMOOTH("Polished Andesite", STONE_BLOCK_COLOR);
-    
+
     private final String englishName;
     private final BlockColor color;
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public String getEnglishName() {
+    @NotNull public String getEnglishName() {
         return englishName;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public BlockColor getColor() {
+    @NotNull public BlockColor getColor() {
         return color;
     }
 }

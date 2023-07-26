@@ -3,10 +3,9 @@ package cn.nukkit.block;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.value.OxidizationLevel;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 import java.util.Locale;
+import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author joserobjr
@@ -36,7 +35,9 @@ public class BlockStairsCopperCut extends BlockStairsCopperBase {
         OxidizationLevel oxidizationLevel = getOxidizationLevel();
         if (!OxidizationLevel.UNAFFECTED.equals(oxidizationLevel)) {
             String name = oxidizationLevel.name();
-            sb.append(name.charAt(0)).append(name.substring(1).toLowerCase(Locale.ENGLISH)).append(' ');
+            sb.append(name.charAt(0))
+                    .append(name.substring(1).toLowerCase(Locale.ENGLISH))
+                    .append(' ');
         }
         return sb.append("Cut Copper Stairs").toString();
     }
@@ -55,13 +56,13 @@ public class BlockStairsCopperCut extends BlockStairsCopperBase {
         }
         switch (oxidizationLevel) {
             case UNAFFECTED:
-                return waxed? WAXED_CUT_COPPER_STAIRS : CUT_COPPER_STAIRS;
+                return waxed ? WAXED_CUT_COPPER_STAIRS : CUT_COPPER_STAIRS;
             case EXPOSED:
-                return waxed? WAXED_EXPOSED_CUT_COPPER_STAIRS : EXPOSED_CUT_COPPER_STAIRS;
+                return waxed ? WAXED_EXPOSED_CUT_COPPER_STAIRS : EXPOSED_CUT_COPPER_STAIRS;
             case WEATHERED:
-                return waxed? WAXED_WEATHERED_CUT_COPPER_STAIRS : WEATHERED_CUT_COPPER_STAIRS;
+                return waxed ? WAXED_WEATHERED_CUT_COPPER_STAIRS : WEATHERED_CUT_COPPER_STAIRS;
             case OXIDIZED:
-                return waxed? WAXED_OXIDIZED_CUT_COPPER_STAIRS : OXIDIZED_CUT_COPPER_STAIRS;
+                return waxed ? WAXED_OXIDIZED_CUT_COPPER_STAIRS : OXIDIZED_CUT_COPPER_STAIRS;
             default:
                 return getId();
         }
@@ -69,8 +70,7 @@ public class BlockStairsCopperCut extends BlockStairsCopperBase {
 
     @Since("FUTURE")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public OxidizationLevel getOxidizationLevel() {
         return OxidizationLevel.UNAFFECTED;
     }

@@ -9,8 +9,7 @@ import cn.nukkit.item.ItemTool;
  */
 public class BlockEndStone extends BlockSolid {
 
-    public BlockEndStone() {
-    }
+    public BlockEndStone() {}
 
     @Override
     public String getName() {
@@ -47,5 +46,4 @@ public class BlockEndStone extends BlockSolid {
     public boolean canHarvestWithHand() {
         return false;
     }
-
 }

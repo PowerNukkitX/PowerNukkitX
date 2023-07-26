@@ -1,14 +1,14 @@
 package cn.nukkit.level.format.updater;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.DEPRECATED;
+import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
+
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.format.ChunkSection;
-
-import static cn.nukkit.blockproperty.CommonBlockProperties.DEPRECATED;
-import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
 
 /**
  * @author joserobjr
@@ -47,5 +47,4 @@ public class StemStrippedUpdater implements Updater {
         section.setBlockState(x, y, z, state.withData(newStorage));
         return true;
     }
-
 }

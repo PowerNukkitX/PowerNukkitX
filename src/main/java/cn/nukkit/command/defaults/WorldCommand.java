@@ -9,7 +9,6 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.utils.TextFormat;
-
 import java.util.Map;
 
 @PowerNukkitXOnly
@@ -20,21 +19,19 @@ public class WorldCommand extends VanillaCommand {
         super(name, "nukkit.command.world.description");
         this.setPermission("nukkit.command.world");
         this.commandParameters.clear();
-        this.commandParameters.put("tp",
-                new CommandParameter[]{
-                        CommandParameter.newEnum("tp", new String[]{"tp"}),
-                        CommandParameter.newType("world", CommandParamType.STRING)
-                });
-        this.commandParameters.put("list",
-                new CommandParameter[]{
-                        CommandParameter.newEnum("list", new String[]{"list"})
-                });
+        this.commandParameters.put("tp", new CommandParameter[] {
+            CommandParameter.newEnum("tp", new String[] {"tp"}),
+            CommandParameter.newType("world", CommandParamType.STRING)
+        });
+        this.commandParameters.put(
+                "list", new CommandParameter[] {CommandParameter.newEnum("list", new String[] {"list"})});
         this.enableParamTree();
     }
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         switch (result.getKey()) {
             case "list" -> {
                 var strBuilder = new StringBuilder();
@@ -42,7 +39,8 @@ public class WorldCommand extends VanillaCommand {
                     strBuilder.append(level.getName());
                     strBuilder.append(", ");
                 });
-                log.addMessage(TextFormat.WHITE + "%nukkit.command.world.availableLevels", strBuilder.toString()).output();
+                log.addMessage(TextFormat.WHITE + "%nukkit.command.world.availableLevels", strBuilder.toString())
+                        .output();
                 return 1;
             }
             case "tp" -> {
@@ -52,12 +50,14 @@ public class WorldCommand extends VanillaCommand {
                     if (Server.getInstance().loadLevel(levelName)) {
                         level = Server.getInstance().getLevelByName(levelName);
                     } else {
-                        log.addMessage("nukkit.command.world.levelNotFound", levelName).output();
+                        log.addMessage("nukkit.command.world.levelNotFound", levelName)
+                                .output();
                         return 0;
                     }
                 }
                 sender.asEntity().teleport(level.getSafeSpawn());
-                log.addMessage(TextFormat.WHITE + "%nukkit.command.world.successTp", levelName).output();
+                log.addMessage(TextFormat.WHITE + "%nukkit.command.world.successTp", levelName)
+                        .output();
                 return 1;
             }
             default -> {

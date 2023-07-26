@@ -33,19 +33,18 @@ public class ItemPotionLingering extends ProjectileItem {
             name = ItemPotion.buildName(potionId, "Lingering Potion", true);
         }
     }
-    
+
     @Override
     public int getMaxStackSize() {
         return 1;
     }
-    
+
     @Override
     public boolean canBeActivated() {
         return true;
     }
 
     @PowerNukkitOnly
-
     @Override
     public String getProjectileEntityType() {
         return "LingeringPotion";
@@ -58,7 +57,6 @@ public class ItemPotionLingering extends ProjectileItem {
     }
 
     @PowerNukkitOnly
-
     @Override
     protected void correctNBT(CompoundTag nbt) {
         nbt.putInt("PotionId", this.meta);

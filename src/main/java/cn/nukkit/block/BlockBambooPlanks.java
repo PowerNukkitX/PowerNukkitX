@@ -7,8 +7,7 @@ import cn.nukkit.item.ItemTool;
 @PowerNukkitXOnly
 @Since("1.20.0-r2")
 public class BlockBambooPlanks extends BlockSolid {
-    public BlockBambooPlanks() {
-    }
+    public BlockBambooPlanks() {}
 
     public int getId() {
         return BAMBOO_PLANKS;

@@ -27,5 +27,4 @@ public class BlockDoorAcacia extends BlockDoorWood {
     public Item toItem() {
         return new ItemDoorAcacia();
     }
-
 }

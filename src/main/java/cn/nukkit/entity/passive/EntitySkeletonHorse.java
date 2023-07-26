@@ -42,7 +42,7 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntitySmite, En
 
     @Override
     public Item[] getDrops() {
-        return new Item[]{Item.get(Item.BONE)};
+        return new Item[] {Item.get(Item.BONE)};
     }
 
     @PowerNukkitOnly
@@ -50,7 +50,6 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntitySmite, En
     public boolean isUndead() {
         return true;
     }
-
 
     @PowerNukkitOnly
     @Since("1.5.1.0-PN")

@@ -1,13 +1,13 @@
 package cn.nukkit.level.generator.object.end;
 
+import static cn.nukkit.block.BlockID.END_STONE;
+
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.generator.object.BasicGenerator;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
-
-import static cn.nukkit.block.BlockID.END_STONE;
 
 /**
  * @author GoodLucky777
@@ -22,7 +22,11 @@ public class ObjectEndIsland extends BasicGenerator {
             for (int x = NukkitMath.floorFloat(-n); x <= NukkitMath.ceilFloat(n); x++) {
                 for (int z = NukkitMath.floorFloat(-n); z <= NukkitMath.ceilFloat(n); z++) {
                     if ((float) (x * x + z * z) <= (n + 1f) * (n + 1f)) {
-                        level.setBlockStateAt(position.getFloorX() + x, position.getFloorY() + y, position.getFloorZ() + z, STATE_END_STONE);
+                        level.setBlockStateAt(
+                                position.getFloorX() + x,
+                                position.getFloorY() + y,
+                                position.getFloorZ() + z,
+                                STATE_END_STONE);
                     }
                 }
             }

@@ -4,5 +4,4 @@ import java.lang.annotation.Documented;
 
 @PowerNukkitOnly
 @Documented
-public @interface UsedByReflection {
-}
+public @interface UsedByReflection {}

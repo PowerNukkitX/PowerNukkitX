@@ -51,7 +51,7 @@ public class EntityDrowned extends EntityMob implements EntitySwimmable, EntityW
 
     @Override
     public Item[] getDrops() {
-        return new Item[]{Item.get(Item.ROTTEN_FLESH)};
+        return new Item[] {Item.get(Item.ROTTEN_FLESH)};
     }
 
     @PowerNukkitOnly

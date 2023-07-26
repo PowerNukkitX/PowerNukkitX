@@ -9,7 +9,6 @@ import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.node.PlayersNode;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.lang.TranslationContainer;
-
 import java.util.List;
 import java.util.Map;
 
@@ -20,19 +19,20 @@ import java.util.Map;
 public class TellCommand extends VanillaCommand {
 
     public TellCommand(String name) {
-        super(name, "commands.tell.description", "", new String[]{"w", "msg"});
+        super(name, "commands.tell.description", "", new String[] {"w", "msg"});
         this.setPermission("nukkit.command.tell");
         this.commandParameters.clear();
-        this.commandParameters.put("default", new CommandParameter[]{
-                CommandParameter.newType("player", CommandParamType.TARGET, new PlayersNode()),
-                CommandParameter.newType("message", CommandParamType.MESSAGE)
+        this.commandParameters.put("default", new CommandParameter[] {
+            CommandParameter.newType("player", CommandParamType.TARGET, new PlayersNode()),
+            CommandParameter.newType("message", CommandParamType.MESSAGE)
         });
         this.enableParamTree();
     }
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         List<Player> players = list.getResult(0);
         if (players.isEmpty()) {

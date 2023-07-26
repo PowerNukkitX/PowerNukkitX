@@ -1,11 +1,10 @@
 package cn.nukkit.plugin.js.feature;
 
 import cn.nukkit.plugin.js.JSFeature;
+import java.util.*;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.proxy.Proxy;
 import org.graalvm.polyglot.proxy.ProxyExecutable;
-
-import java.util.*;
 
 public class ConvertFeature implements JSFeature {
     @Override

@@ -19,15 +19,14 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.util.internal.PlatformDependent;
-import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
-
 import java.lang.reflect.Constructor;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -48,7 +47,8 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
     public RakNetInterface(Server server) {
         this.server = server;
 
-        InetSocketAddress bindAddress = new InetSocketAddress(Strings.isNullOrEmpty(this.server.getIp()) ? "0.0.0.0" : this.server.getIp(), this.server.getPort());
+        InetSocketAddress bindAddress = new InetSocketAddress(
+                Strings.isNullOrEmpty(this.server.getIp()) ? "0.0.0.0" : this.server.getIp(), this.server.getPort());
 
         this.raknet = new RakNetServer(bindAddress, Runtime.getRuntime().availableProcessors());
         this.raknet.setProtocolVersion(11);
@@ -73,7 +73,8 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
 
                 this.sessions.put(event.getSocketAddress(), session);
 
-                Constructor<? extends Player> constructor = event.getPlayerClass().getConstructor(SourceInterface.class, Long.class, InetSocketAddress.class);
+                Constructor<? extends Player> constructor = event.getPlayerClass()
+                        .getConstructor(SourceInterface.class, Long.class, InetSocketAddress.class);
                 Player player = constructor.newInstance(this, event.getClientId(), event.getSocketAddress());
                 this.server.addPlayer(address, player);
                 session.setPlayer(player);
@@ -157,7 +158,7 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
     @Override
     public void setName(String name) {
         QueryRegenerateEvent info = this.server.getQueryInformation();
-        String[] names = name.split("!@#");  //Split double names within the program
+        String[] names = name.split("!@#"); // Split double names within the program
         String motd = Utils.rtrim(names[0].replace(";", "\\;"), '\\');
         String subMotd = names.length > 1 ? Utils.rtrim(names[1].replace(";", "\\;"), '\\') : "";
         StringJoiner joiner = new StringJoiner(";")

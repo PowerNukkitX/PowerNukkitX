@@ -1,10 +1,10 @@
 package cn.nukkit.utils;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author joserobjr

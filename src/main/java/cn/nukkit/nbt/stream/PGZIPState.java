@@ -14,6 +14,4 @@ public class PGZIPState {
         this.buf = new ByteArrayOutputStream(PGZIPBlock.SIZE);
         this.str = PGZIPOutputStream.newDeflaterOutputStream(buf, def);
     }
-
-
 }

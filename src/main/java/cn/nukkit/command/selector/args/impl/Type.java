@@ -12,12 +12,11 @@ import cn.nukkit.entity.custom.CustomEntity;
 import cn.nukkit.level.Location;
 import cn.nukkit.network.protocol.AddEntityPacket;
 import com.google.common.collect.ImmutableMap;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
+import org.jetbrains.annotations.Nullable;
 
 @PowerNukkitXOnly
 @Since("1.19.60-r1")
@@ -33,7 +32,8 @@ public class Type extends CachedSimpleSelectorArgument {
     }
 
     @Override
-    protected Predicate<Entity> cache(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) {
+    protected Predicate<Entity> cache(
+            SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) {
         final var have = new ArrayList<String>();
         final var dontHave = new ArrayList<String>();
         for (var type : arguments) {
@@ -43,11 +43,11 @@ public class Type extends CachedSimpleSelectorArgument {
                 dontHave.add(type);
             } else have.add(completionPrefix(type));
         }
-        return entity -> have.stream().allMatch(type -> isType(entity, type)) && dontHave.stream().noneMatch(type ->isType(entity, type));
+        return entity -> have.stream().allMatch(type -> isType(entity, type))
+                && dontHave.stream().noneMatch(type -> isType(entity, type));
     }
 
-    @Nullable
-    @Override
+    @Nullable @Override
     public String getDefaultValue(Map<String, List<String>> values, SelectorType selectorType, CommandSender sender) {
         return selectorType == SelectorType.RANDOM_PLAYER ? "minecraft:player" : null;
     }
@@ -65,7 +65,7 @@ public class Type extends CachedSimpleSelectorArgument {
     protected String completionPrefix(String type) {
         var completed = type.startsWith("minecraft:") ? type : "minecraft:" + type;
         if (!ENTITY_TYPE2ID.containsKey(type) && !ENTITY_TYPE2ID.containsKey(completed)) {
-            //是自定义生物，不需要补全
+            // 是自定义生物，不需要补全
             return type;
         }
         return completed;
@@ -73,12 +73,10 @@ public class Type extends CachedSimpleSelectorArgument {
 
     protected boolean isType(Entity entity, String type) {
         if (entity instanceof Player)
-            //player需要特判，因为EntityHuman的getNetworkId()返回-1
+            // player需要特判，因为EntityHuman的getNetworkId()返回-1
             return type.equals("minecraft:player");
         else if (entity instanceof CustomEntity customEntity)
             return customEntity.getDefinition().getStringId().equals(type);
-        else
-            return ENTITY_TYPE2ID.containsKey(type) && entity.getNetworkId() == ENTITY_TYPE2ID.get(type);
-
+        else return ENTITY_TYPE2ID.containsKey(type) && entity.getNetworkId() == ENTITY_TYPE2ID.get(type);
     }
 }

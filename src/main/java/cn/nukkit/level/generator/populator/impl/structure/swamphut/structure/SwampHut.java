@@ -24,7 +24,8 @@ public class SwampHut extends ScatteredStructurePiece {
         this.adjustHorizPos(level);
 
         ScatteredStructureBuilder builder = new ScatteredStructureBuilder(level, this);
-        builder.fill(new BlockVector3(1, 1, 2), new BlockVector3(5, 4, 7), Block.WOODEN_PLANK, 1, Block.AIR, 0); // hut body
+        builder.fill(
+                new BlockVector3(1, 1, 2), new BlockVector3(5, 4, 7), Block.WOODEN_PLANK, 1, Block.AIR, 0); // hut body
         builder.fill(new BlockVector3(1, 1, 1), new BlockVector3(5, 1, 1), Block.WOODEN_PLANK, 1); // hut steps
         builder.fill(new BlockVector3(2, 1, 0), new BlockVector3(4, 1, 0), Block.WOODEN_PLANK, 1); // hut steps
         builder.fill(new BlockVector3(4, 2, 2), new BlockVector3(4, 3, 2), Block.AIR); // hut door
@@ -32,8 +33,10 @@ public class SwampHut extends ScatteredStructurePiece {
         builder.setBlock(new BlockVector3(1, 3, 4), Block.AIR);
 
         builder.setBlock(new BlockVector3(1, 3, 5), Block.FLOWER_POT_BLOCK);
-        builder.setTile(new BlockVector3(1, 3, 5), BlockEntity.FLOWER_POT, new CompoundTag()
-                .putShort("item", Block.RED_MUSHROOM));
+        builder.setTile(
+                new BlockVector3(1, 3, 5),
+                BlockEntity.FLOWER_POT,
+                new CompoundTag().putShort("item", Block.RED_MUSHROOM));
 
         builder.setBlock(new BlockVector3(2, 3, 2), Block.FENCE);
         builder.setBlock(new BlockVector3(3, 3, 7), Block.FENCE);
@@ -61,7 +64,7 @@ public class SwampHut extends ScatteredStructurePiece {
         builder.setBlockDownward(new BlockVector3(1, -1, 7), Block.LOG);
         builder.setBlockDownward(new BlockVector3(5, -1, 7), Block.LOG);
 
-        //TODO: builder.spawnMob(new BlockVector3(2, 2, 5), EntityWitch.NETWORK_ID);
-        //TODO: builder.spawnMob(new BlockVector3(2, 2, 5), EntityCat.NETWORK_ID);
+        // TODO: builder.spawnMob(new BlockVector3(2, 2, 5), EntityWitch.NETWORK_ID);
+        // TODO: builder.spawnMob(new BlockVector3(2, 2, 5), EntityCat.NETWORK_ID);
     }
 }

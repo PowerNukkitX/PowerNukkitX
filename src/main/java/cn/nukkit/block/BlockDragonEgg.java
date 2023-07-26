@@ -7,14 +7,12 @@ import cn.nukkit.event.block.BlockFromToEvent;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.level.Level;
 import cn.nukkit.network.protocol.LevelEventPacket;
-
-import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
+import javax.annotation.Nullable;
 
 public class BlockDragonEgg extends BlockFallable {
 
-    public BlockDragonEgg() {
-    }
+    public BlockDragonEgg() {}
 
     @Override
     public String getName() {
@@ -77,7 +75,8 @@ public class BlockDragonEgg extends BlockFallable {
     public void teleport() {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         for (int i = 0; i < 1000; ++i) {
-            Block to = this.getLevel().getBlock(this.add(random.nextInt(-16, 16), random.nextInt(0, 16), random.nextInt(-16, 16)));
+            Block to = this.getLevel()
+                    .getBlock(this.add(random.nextInt(-16, 16), random.nextInt(0, 16), random.nextInt(-16, 16)));
             if (to.getId() == AIR) {
                 BlockFromToEvent event = new BlockFromToEvent(this, to);
                 this.level.getServer().getPluginManager().callEvent(event);
@@ -89,7 +88,10 @@ public class BlockDragonEgg extends BlockFallable {
                 int diffZ = this.getFloorZ() - to.getFloorZ();
                 LevelEventPacket pk = new LevelEventPacket();
                 pk.evid = LevelEventPacket.EVENT_PARTICLE_DRAGON_EGG_TELEPORT;
-                pk.data = (((((Math.abs(diffX) << 16) | (Math.abs(diffY) << 8)) | Math.abs(diffZ)) | ((diffX < 0 ? 1 : 0) << 24)) | ((diffY < 0 ? 1 : 0) << 25)) | ((diffZ < 0 ? 1 : 0) << 26);
+                pk.data = (((((Math.abs(diffX) << 16) | (Math.abs(diffY) << 8)) | Math.abs(diffZ))
+                                        | ((diffX < 0 ? 1 : 0) << 24))
+                                | ((diffY < 0 ? 1 : 0) << 25))
+                        | ((diffZ < 0 ? 1 : 0) << 26);
                 pk.x = this.getFloorX();
                 pk.y = this.getFloorY();
                 pk.z = this.getFloorZ();

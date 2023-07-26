@@ -5,18 +5,15 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemMelon;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
-
 import java.util.Random;
 
 /**
  * @author Pub4Game
  * @since 2015/12/11
  */
-
 public class BlockMelon extends BlockSolid {
 
-    public BlockMelon() {
-    }
+    public BlockMelon() {}
 
     @Override
     public int getId() {
@@ -48,9 +45,7 @@ public class BlockMelon extends BlockSolid {
             count += random.nextInt(fortune.getLevel() + 1);
         }
 
-        return new Item[]{
-                new ItemMelon(0, Math.min(9, count))
-        };
+        return new Item[] {new ItemMelon(0, Math.min(9, count))};
     }
 
     @Override
@@ -71,7 +66,7 @@ public class BlockMelon extends BlockSolid {
 
     @Override
     @PowerNukkitOnly
-    public  boolean sticksToPiston() {
+    public boolean sticksToPiston() {
         return false;
     }
 }

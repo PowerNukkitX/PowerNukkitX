@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class BlockMudBrickSlab extends BlockSlab{
+public class BlockMudBrickSlab extends BlockSlab {
     public BlockMudBrickSlab() {
         super(MUD_BRICK_DOUBLE_SLAB);
     }
@@ -20,8 +20,7 @@ public class BlockMudBrickSlab extends BlockSlab{
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return BlockSlab.SIMPLE_SLAB_PROPERTIES;
     }

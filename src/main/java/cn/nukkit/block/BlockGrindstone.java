@@ -1,5 +1,8 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.block.BlockBell.ATTACHMENT_TYPE;
+import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
+
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
@@ -15,9 +18,6 @@ import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.block.BlockBell.ATTACHMENT_TYPE;
-import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
-
 @PowerNukkitOnly
 public class BlockGrindstone extends BlockTransparentMeta implements Faceable {
 
@@ -27,10 +27,13 @@ public class BlockGrindstone extends BlockTransparentMeta implements Faceable {
 
     @PowerNukkitOnly
     public static final int TYPE_ATTACHMENT_STANDING = 0;
+
     @PowerNukkitOnly
     public static final int TYPE_ATTACHMENT_HANGING = 1;
+
     @PowerNukkitOnly
     public static final int TYPE_ATTACHMENT_SIDE = 2;
+
     @PowerNukkitOnly
     public static final int TYPE_ATTACHMENT_MULTIPLE = 3;
 
@@ -51,8 +54,7 @@ public class BlockGrindstone extends BlockTransparentMeta implements Faceable {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -155,7 +157,15 @@ public class BlockGrindstone extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         if (block.getId() != AIR && block.canBeReplaced()) {
             face = BlockFace.UP;
         }
@@ -219,7 +229,7 @@ public class BlockGrindstone extends BlockTransparentMeta implements Faceable {
         boolean up = this.isConnectedTo(BlockFace.UP, attachmentType, blockFace);
         boolean down = this.isConnectedTo(BlockFace.DOWN, attachmentType, blockFace);
 
-        double pixels = (2.0/16);
+        double pixels = (2.0 / 16);
 
         double n = north ? 0 : pixels;
         double s = south ? 1 : 1 - pixels;
@@ -228,14 +238,7 @@ public class BlockGrindstone extends BlockTransparentMeta implements Faceable {
         double d = down ? 0 : pixels;
         double u = up ? 1 : 1 - pixels;
 
-        return new SimpleAxisAlignedBB(
-                this.x + w,
-                this.y + d,
-                this.z + n,
-                this.x + e,
-                this.y + u,
-                this.z + s
-        );
+        return new SimpleAxisAlignedBB(this.x + w, this.y + d, this.z + n, this.x + e, this.y + u, this.z + s);
     }
 
     @Override

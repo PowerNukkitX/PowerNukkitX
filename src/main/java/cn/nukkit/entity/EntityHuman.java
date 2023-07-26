@@ -14,9 +14,8 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddPlayerPacket;
 import cn.nukkit.network.protocol.RemoveEntityPacket;
 import cn.nukkit.network.protocol.SetEntityLinkPacket;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.UUID;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -111,8 +110,7 @@ public class EntityHuman extends EntityHumanType {
         return "Human";
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getName() {
         return this.getNameTag();
     }
@@ -131,10 +129,11 @@ public class EntityHuman extends EntityHumanType {
     @Override
     public boolean entityBaseTick(int tickDiff) {
         boolean hasUpdate = super.entityBaseTick(tickDiff);
-        //handle human entity freeze
-        var collidedWithPowderSnow = this.getTickCachedCollisionBlocks().stream().anyMatch(block -> block.getId() == Block.POWDER_SNOW);
+        // handle human entity freeze
+        var collidedWithPowderSnow =
+                this.getTickCachedCollisionBlocks().stream().anyMatch(block -> block.getId() == Block.POWDER_SNOW);
         if (this.getFreezingTicks() < 140 && collidedWithPowderSnow) {
-            if (getFreezingTicks() == 0) {//玩家疾跑进来要设置为非疾跑，统一为默认速度0.1
+            if (getFreezingTicks() == 0) { // 玩家疾跑进来要设置为非疾跑，统一为默认速度0.1
                 this.setSprinting(false);
             }
             this.addFreezingTicks(1);
@@ -145,7 +144,10 @@ public class EntityHuman extends EntityHumanType {
             }
         } else if (this.getFreezingTicks() > 0 && !collidedWithPowderSnow) {
             this.addFreezingTicks(-1);
-            this.setMovementSpeed((float) Math.min(Player.DEFAULT_SPEED, getMovementSpeed() + 3.58e-4));//This magic number is to change the player's 0.05 speed within 140tick
+            this.setMovementSpeed((float) Math.min(
+                    Player.DEFAULT_SPEED,
+                    getMovementSpeed()
+                            + 3.58e-4)); // This magic number is to change the player's 0.05 speed within 140tick
         }
         if (this.getFreezingTicks() == 140 && this.getServer().getTick() % 40 == 0) {
             this.attack(new EntityDamageEvent(this, EntityDamageEvent.DamageCause.FREEZING, getFrostbiteInjury()));
@@ -168,9 +170,16 @@ public class EntityHuman extends EntityHumanType {
             }
 
             if (this instanceof Player)
-                this.server.updatePlayerListData(this.getUniqueId(), this.getId(), ((Player) this).getDisplayName(), this.skin, ((Player) this).getLoginChainData().getXUID(), new Player[]{player});
+                this.server.updatePlayerListData(
+                        this.getUniqueId(),
+                        this.getId(),
+                        ((Player) this).getDisplayName(),
+                        this.skin,
+                        ((Player) this).getLoginChainData().getXUID(),
+                        new Player[] {player});
             else
-                this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getName(), this.skin, new Player[]{player});
+                this.server.updatePlayerListData(
+                        this.getUniqueId(), this.getId(), this.getName(), this.skin, new Player[] {player});
 
             AddPlayerPacket pk = new AddPlayerPacket();
             pk.uuid = this.getUniqueId();

@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
+
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
@@ -10,8 +12,6 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
-
-import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
 
 /**
  * @implNote Faceable since FUTURE
@@ -40,8 +40,7 @@ public class BlockLoom extends BlockSolidMeta implements Faceable {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -83,12 +82,20 @@ public class BlockLoom extends BlockSolidMeta implements Faceable {
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
-        //TODO Loom's inventory
+        // TODO Loom's inventory
         return false;
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         if (player != null) {
             setBlockFace(player.getDirection().getOpposite());
         }

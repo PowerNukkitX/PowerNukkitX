@@ -11,8 +11,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockMonsterEgg extends BlockSolidMeta {
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
-    public static final ArrayBlockProperty<MonsterEggStoneType> MONSTER_EGG_STONE_TYPE = new ArrayBlockProperty<>(
-            "monster_egg_stone_type", true, MonsterEggStoneType.class);
+    public static final ArrayBlockProperty<MonsterEggStoneType> MONSTER_EGG_STONE_TYPE =
+            new ArrayBlockProperty<>("monster_egg_stone_type", true, MonsterEggStoneType.class);
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
@@ -25,13 +25,8 @@ public class BlockMonsterEgg extends BlockSolidMeta {
     public static final int CRACKED_BRICK = 4;
     public static final int CHISELED_BRICK = 5;
 
-    private static final String[] NAMES = new String[]{
-            "Stone",
-            "Cobblestone",
-            "Stone Brick",
-            "Mossy Stone Brick",
-            "Cracked Stone Brick",
-            "Chiseled Stone Brick"
+    private static final String[] NAMES = new String[] {
+        "Stone", "Cobblestone", "Stone Brick", "Mossy Stone Brick", "Cracked Stone Brick", "Chiseled Stone Brick"
     };
 
     public BlockMonsterEgg() {
@@ -49,16 +44,14 @@ public class BlockMonsterEgg extends BlockSolidMeta {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
-    @NotNull
-    public MonsterEggStoneType getMonsterEggStoneType() {
+    @NotNull public MonsterEggStoneType getMonsterEggStoneType() {
         return getPropertyValue(MONSTER_EGG_STONE_TYPE);
     }
 

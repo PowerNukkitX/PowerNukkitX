@@ -1,5 +1,10 @@
 package cn.nukkit.entity.projectile;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
@@ -18,11 +23,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.powernukkit.tests.api.MockEntity;
 import org.powernukkit.tests.api.MockLevel;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * @author joserobjr
@@ -48,17 +48,21 @@ class EntityThrownTridentTest {
 
     @Test
     void backwardIsCreative() {
-        trident = new EntityThrownTrident(level.getChunk(0, 0), Entity.getDefaultNBT(new Vector3(0, 64, 0))
-                .putBoolean("isCreative", true));
+        trident = new EntityThrownTrident(
+                level.getChunk(0, 0),
+                Entity.getDefaultNBT(new Vector3(0, 64, 0)).putBoolean("isCreative", true));
         assertTrue(trident.isCreative());
 
-        trident = new EntityThrownTrident(level.getChunk(0, 0), Entity.getDefaultNBT(new Vector3(0, 64, 0))
-                .putBoolean("isCreative", false));
+        trident = new EntityThrownTrident(
+                level.getChunk(0, 0),
+                Entity.getDefaultNBT(new Vector3(0, 64, 0)).putBoolean("isCreative", false));
         assertFalse(trident.isCreative());
 
-        trident = new EntityThrownTrident(level.getChunk(0, 0), Entity.getDefaultNBT(new Vector3(0, 64, 0))
-                .putBoolean("isCreative", true)
-                .putByte("pickup", EntityProjectile.PICKUP_NONE));
+        trident = new EntityThrownTrident(
+                level.getChunk(0, 0),
+                Entity.getDefaultNBT(new Vector3(0, 64, 0))
+                        .putBoolean("isCreative", true)
+                        .putByte("pickup", EntityProjectile.PICKUP_NONE));
         assertFalse(trident.isCreative());
     }
 

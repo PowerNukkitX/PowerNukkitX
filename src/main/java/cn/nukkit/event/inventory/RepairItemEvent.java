@@ -24,7 +24,8 @@ public class RepairItemEvent extends InventoryEvent implements Cancellable {
     private Player player;
 
     @Since("1.4.0.0-PN")
-    public RepairItemEvent(AnvilInventory inventory, Item oldItem, Item newItem, Item materialItem, int cost, Player player) {
+    public RepairItemEvent(
+            AnvilInventory inventory, Item oldItem, Item newItem, Item materialItem, int cost, Player player) {
         super(inventory);
         this.oldItem = oldItem;
         this.newItem = newItem;

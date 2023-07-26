@@ -7,7 +7,6 @@ import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.utils.TextFormat;
-
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -17,12 +16,11 @@ import java.util.TreeMap;
 public class HelpCommand extends VanillaCommand {
 
     public HelpCommand(String name) {
-        super(name, "commands.help.description", "%commands.help.usage", new String[]{"?"});
+        super(name, "commands.help.description", "%commands.help.usage", new String[] {"?"});
         this.setPermission("nukkit.command.help");
         this.commandParameters.clear();
-        this.commandParameters.put("default", new CommandParameter[]{
-                CommandParameter.newType("page", true, CommandParamType.INT)
-        });
+        this.commandParameters.put(
+                "default", new CommandParameter[] {CommandParameter.newType("page", true, CommandParamType.INT)});
         this.serverSideOnly = true;
     }
 
@@ -77,13 +75,17 @@ public class HelpCommand extends VanillaCommand {
                     commands.put(cmd.getName(), cmd);
                 }
             }
-            int totalPage = commands.size() % pageHeight == 0 ? commands.size() / pageHeight : commands.size() / pageHeight + 1;
+            int totalPage =
+                    commands.size() % pageHeight == 0 ? commands.size() / pageHeight : commands.size() / pageHeight + 1;
             pageNumber = Math.min(pageNumber, totalPage);
             if (pageNumber < 1) {
                 pageNumber = 1;
             }
 
-            sender.sendMessage(new TranslationContainer(TextFormat.DARK_GREEN + "%commands.help.header", String.valueOf(pageNumber), String.valueOf(totalPage)));
+            sender.sendMessage(new TranslationContainer(
+                    TextFormat.DARK_GREEN + "%commands.help.header",
+                    String.valueOf(pageNumber),
+                    String.valueOf(totalPage)));
             int i = 1;
             for (Command command1 : commands.values()) {
                 if (i >= (pageNumber - 1) * pageHeight + 1 && i <= Math.min(commands.size(), pageNumber * pageHeight)) {
@@ -95,7 +97,9 @@ public class HelpCommand extends VanillaCommand {
 
             return true;
         } else {
-            Command cmd = sender.getServer().getCommandMap().getCommand(command.toString().toLowerCase());
+            Command cmd = sender.getServer()
+                    .getCommandMap()
+                    .getCommand(command.toString().toLowerCase());
             if (cmd != null) {
                 if (cmd.testPermissionSilent(sender)) {
                     sender.sendMessage(TextFormat.YELLOW + cmd.getName());
@@ -106,7 +110,8 @@ public class HelpCommand extends VanillaCommand {
                 }
             }
 
-            sender.sendMessage(TextFormat.RED + "No help for " + command.toString().toLowerCase());
+            sender.sendMessage(
+                    TextFormat.RED + "No help for " + command.toString().toLowerCase());
             return false;
         }
     }

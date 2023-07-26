@@ -16,10 +16,9 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.potion.Effect;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -70,7 +69,15 @@ public class BlockLava extends BlockLiquid {
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         boolean ret = this.getLevel().setBlock(this, this, true, false);
         this.getLevel().scheduleUpdate(this, this.tickRate());
 
@@ -93,7 +100,8 @@ public class BlockLava extends BlockLiquid {
 
                     if (block.getId() == AIR) {
                         if (this.isSurroundingBlockFlammable(block)) {
-                            BlockIgniteEvent e = new BlockIgniteEvent(block, this, null, BlockIgniteEvent.BlockIgniteCause.LAVA);
+                            BlockIgniteEvent e =
+                                    new BlockIgniteEvent(block, this, null, BlockIgniteEvent.BlockIgniteCause.LAVA);
                             this.level.getServer().getPluginManager().callEvent(e);
 
                             if (!e.isCancelled()) {
@@ -115,7 +123,8 @@ public class BlockLava extends BlockLiquid {
                     Block block = this.getLevel().getBlock(v);
 
                     if (block.up().getId() == AIR && block.getBurnChance() > 0 && isNetherSpreadNotAllowed(block)) {
-                        BlockIgniteEvent e = new BlockIgniteEvent(block, this, null, BlockIgniteEvent.BlockIgniteCause.LAVA);
+                        BlockIgniteEvent e =
+                                new BlockIgniteEvent(block, this, null, BlockIgniteEvent.BlockIgniteCause.LAVA);
                         this.level.getServer().getPluginManager().callEvent(e);
 
                         if (!e.isCancelled()) {
@@ -139,12 +148,12 @@ public class BlockLava extends BlockLiquid {
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     private boolean isNetherSpreadNotAllowed(Block spreadTarget) {
-        if(this.getLevel().isNether()) {
+        if (this.getLevel().isNether()) {
             final var id = spreadTarget.getId();
-            if(id >= CRIMSON_ROOTS && id <= NETHER_SPROUTS_BLOCK) {
+            if (id >= CRIMSON_ROOTS && id <= NETHER_SPROUTS_BLOCK) {
                 return false;
             }
-            if(id >= STRIPPED_CRIMSON_STEM && id <= WARPED_DOUBLE_SLAB) {
+            if (id >= STRIPPED_CRIMSON_STEM && id <= WARPED_DOUBLE_SLAB) {
                 return false;
             }
             return id < WARPED_HYPHAE || id > STRIPPED_WARPED_HYPHAE;
@@ -185,34 +194,34 @@ public class BlockLava extends BlockLiquid {
     }
 
     @Override
-    protected void checkForHarden(){ 
+    protected void checkForHarden() {
         Block colliding = null;
         Block down = this.getSide(BlockFace.DOWN);
-        for(int side = 1; side < 6; ++side){ //don't check downwards side
+        for (int side = 1; side < 6; ++side) { // don't check downwards side
             Block blockSide = this.getSide(BlockFace.fromIndex(side));
-            if(blockSide instanceof BlockWater || blockSide.getLevelBlockAtLayer(1) instanceof BlockWater){
+            if (blockSide instanceof BlockWater || blockSide.getLevelBlockAtLayer(1) instanceof BlockWater) {
                 colliding = blockSide;
                 break;
             }
-            if(down instanceof BlockSoulSoil) {
+            if (down instanceof BlockSoulSoil) {
                 if (blockSide instanceof BlockBlueIce) {
                     liquidCollide(this, Block.get(BlockID.BASALT));
                     return;
                 }
             }
         }
-        if(colliding != null){
-            if(this.getDamage() == 0){
+        if (colliding != null) {
+            if (this.getDamage() == 0) {
                 this.liquidCollide(colliding, Block.get(BlockID.OBSIDIAN));
-            }else if(this.getDamage() <= 4){
+            } else if (this.getDamage() <= 4) {
                 this.liquidCollide(colliding, Block.get(BlockID.COBBLESTONE));
             }
         }
     }
 
     @Override
-    protected void flowIntoBlock(Block block, int newFlowDecay){
-        if(block instanceof BlockWater){
+    protected void flowIntoBlock(Block block, int newFlowDecay) {
+        if (block instanceof BlockWater) {
             ((BlockLiquid) block).liquidCollide(this, Block.get(BlockID.STONE));
         } else {
             super.flowIntoBlock(block, newFlowDecay);

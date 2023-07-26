@@ -31,5 +31,4 @@ public class BlockOreDiamondDeepslate extends BlockOreDiamond {
     public String getName() {
         return "Deepslate Diamond Ore";
     }
-
 }

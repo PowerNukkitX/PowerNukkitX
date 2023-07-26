@@ -19,42 +19,51 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Hash;
 import it.unimi.dsi.fastutil.longs.Long2LongMap;
 import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Angelic47 (Nukkit Project)
  */
 public class BlockLeaves extends BlockTransparentMeta {
-    @PowerNukkitOnly @Since("1.4.0.0-PN")
-    public static final ArrayBlockProperty<WoodType> OLD_LEAF_TYPE = new ArrayBlockProperty<>("old_leaf_type", true, new WoodType[]{
-            WoodType.OAK, WoodType.SPRUCE, WoodType.BIRCH, WoodType.JUNGLE
-    });
-    
-    @PowerNukkitOnly @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public static final ArrayBlockProperty<WoodType> OLD_LEAF_TYPE = new ArrayBlockProperty<>(
+            "old_leaf_type", true, new WoodType[] {WoodType.OAK, WoodType.SPRUCE, WoodType.BIRCH, WoodType.JUNGLE});
+
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
     public static final BooleanBlockProperty PERSISTENT = new BooleanBlockProperty("persistent_bit", false);
-    
-    @PowerNukkitOnly @Since("1.4.0.0-PN")
+
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
     public static final BooleanBlockProperty UPDATE = new BooleanBlockProperty("update_bit", false);
 
-    @PowerNukkitOnly @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
     public static final BlockProperties OLD_LEAF_PROPERTIES = new BlockProperties(OLD_LEAF_TYPE, PERSISTENT, UPDATE);
-    
-    private static final BlockFace[] VISIT_ORDER = new BlockFace[]{
-            BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.DOWN, BlockFace.UP
+
+    private static final BlockFace[] VISIT_ORDER = new BlockFace[] {
+        BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.DOWN, BlockFace.UP
     };
-    
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", reason = "Magic value. Use the accessors instead")
+
+    @Deprecated
+    @DeprecationDetails(since = "1.4.0.0-PN", reason = "Magic value. Use the accessors instead")
     public static final int OAK = 0;
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", reason = "Magic value. Use the accessors instead")
+
+    @Deprecated
+    @DeprecationDetails(since = "1.4.0.0-PN", reason = "Magic value. Use the accessors instead")
     public static final int SPRUCE = 1;
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", reason = "Magic value. Use the accessors instead")
+
+    @Deprecated
+    @DeprecationDetails(since = "1.4.0.0-PN", reason = "Magic value. Use the accessors instead")
     public static final int BIRCH = 2;
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", reason = "Magic value. Use the accessors instead")
+
+    @Deprecated
+    @DeprecationDetails(since = "1.4.0.0-PN", reason = "Magic value. Use the accessors instead")
     public static final int JUNGLE = 3;
 
     public BlockLeaves() {
@@ -72,8 +81,7 @@ public class BlockLeaves extends BlockTransparentMeta {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return OLD_LEAF_PROPERTIES;
     }
@@ -87,13 +95,15 @@ public class BlockLeaves extends BlockTransparentMeta {
     public int getToolType() {
         return ItemTool.TYPE_HOE;
     }
-    
-    @PowerNukkitOnly @Since("1.4.0.0-PN")
+
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
     public WoodType getType() {
         return getPropertyValue(OLD_LEAF_TYPE);
     }
 
-    @PowerNukkitOnly @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
     public void setType(WoodType type) {
         setPropertyValue(OLD_LEAF_TYPE, type);
     }
@@ -120,7 +130,15 @@ public class BlockLeaves extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
         this.setPersistent(true);
         this.getLevel().setBlock(this, this, true);
         return true;
@@ -129,15 +147,13 @@ public class BlockLeaves extends BlockTransparentMeta {
     @Override
     public Item[] getDrops(Item item) {
         if (item.isShears()) {
-            return new Item[]{
-                    toItem()
-            };
+            return new Item[] {toItem()};
         }
 
         List<Item> drops = new ArrayList<>(1);
         Enchantment fortuneEnchantment = item.getEnchantment(Enchantment.ID_FORTUNE_DIGGING);
-        
-        int fortune = fortuneEnchantment != null? fortuneEnchantment.getLevel() : 0;
+
+        int fortune = fortuneEnchantment != null ? fortuneEnchantment.getLevel() : 0;
         int appleOdds;
         int stickOdds;
         int saplingOdds;
@@ -174,7 +190,7 @@ public class BlockLeaves extends BlockTransparentMeta {
         if (random.nextInt(saplingOdds) == 0) {
             drops.add(getSapling());
         }
-        
+
         return drops.toArray(Item.EMPTY_ARRAY);
     }
 
@@ -199,7 +215,7 @@ public class BlockLeaves extends BlockTransparentMeta {
                 setCheckDecay(true);
                 getLevel().setBlock(this, this, false, false);
             }
-            
+
             // Slowly propagates the need to update instead of peaking down the TPS for huge trees
             for (BlockFace side : BlockFace.values()) {
                 Block other = getSide(side);
@@ -231,13 +247,13 @@ public class BlockLeaves extends BlockTransparentMeta {
         }
         visited.put(hash, distance);
         for (BlockFace face : VISIT_ORDER) {
-            if(findLog(current.getSide(face), distance - 1, visited)) {
+            if (findLog(current.getSide(face), distance - 1, visited)) {
                 return true;
             }
         }
         return false;
     }
-    
+
     public boolean isCheckDecay() {
         return getBooleanValue(UPDATE);
     }
@@ -273,7 +289,6 @@ public class BlockLeaves extends BlockTransparentMeta {
         return true;
     }
 
-
     @Override
     @PowerNukkitOnly
     public boolean breaksWhenMoved() {
@@ -282,7 +297,7 @@ public class BlockLeaves extends BlockTransparentMeta {
 
     @Override
     @PowerNukkitOnly
-    public  boolean sticksToPiston() {
+    public boolean sticksToPiston() {
         return false;
     }
 }

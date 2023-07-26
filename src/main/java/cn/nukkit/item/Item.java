@@ -31,11 +31,6 @@ import com.google.gson.annotations.SerializedName;
 import io.netty.util.internal.EmptyArrays;
 import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
-import lombok.SneakyThrows;
-import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -51,6 +46,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import lombok.SneakyThrows;
+import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -94,8 +93,8 @@ public class Item implements Cloneable, BlockID, ItemID {
                             throw new InternalError(e);
                         }
                     },
-                    (e1, e2) -> e1, LinkedHashMap::new
-            ));
+                    (e1, e2) -> e1,
+                    LinkedHashMap::new));
 
     private static Map<String, Integer> blockIds = Arrays.stream(BlockID.class.getDeclaredFields())
             .filter(field -> field.getModifiers() == (Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL))
@@ -113,8 +112,8 @@ public class Item implements Cloneable, BlockID, ItemID {
                             throw new InternalError(e);
                         }
                     },
-                    (e1, e2) -> e1, LinkedHashMap::new
-            ));
+                    (e1, e2) -> e1,
+                    LinkedHashMap::new));
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
@@ -133,7 +132,11 @@ public class Item implements Cloneable, BlockID, ItemID {
     public int count;
 
     @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", reason = "Unused", replaceWith = "meta or getDamage()")
+    @DeprecationDetails(
+            since = "1.4.0.0-PN",
+            by = "PowerNukkit",
+            reason = "Unused",
+            replaceWith = "meta or getDamage()")
     protected int durability = 0;
 
     protected String name;
@@ -151,7 +154,7 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     public Item(int id, Integer meta, int count, String name) {
-        //this.id = id & 0xffff;
+        // this.id = id & 0xffff;
         this.id = id;
         if (meta != null && meta >= 0) {
             this.meta = meta & 0xffff;
@@ -173,291 +176,290 @@ public class Item implements Cloneable, BlockID, ItemID {
     public static void init() {
         if (list == null) {
             list = new Class[65535];
-            list[IRON_SHOVEL] = ItemShovelIron.class; //256
-            list[IRON_PICKAXE] = ItemPickaxeIron.class; //257
-            list[IRON_AXE] = ItemAxeIron.class; //258
-            list[FLINT_AND_STEEL] = ItemFlintSteel.class; //259
-            list[APPLE] = ItemApple.class; //260
-            list[BOW] = ItemBow.class; //261
-            list[ARROW] = ItemArrow.class; //262
-            list[COAL] = ItemCoal.class; //263
-            list[DIAMOND] = ItemDiamond.class; //264
-            list[IRON_INGOT] = ItemIngotIron.class; //265
-            list[GOLD_INGOT] = ItemIngotGold.class; //266
-            list[IRON_SWORD] = ItemSwordIron.class; //267
-            list[WOODEN_SWORD] = ItemSwordWood.class; //268
-            list[WOODEN_SHOVEL] = ItemShovelWood.class; //269
-            list[WOODEN_PICKAXE] = ItemPickaxeWood.class; //270
-            list[WOODEN_AXE] = ItemAxeWood.class; //271
-            list[STONE_SWORD] = ItemSwordStone.class; //272
-            list[STONE_SHOVEL] = ItemShovelStone.class; //273
-            list[STONE_PICKAXE] = ItemPickaxeStone.class; //274
-            list[STONE_AXE] = ItemAxeStone.class; //275
-            list[DIAMOND_SWORD] = ItemSwordDiamond.class; //276
-            list[DIAMOND_SHOVEL] = ItemShovelDiamond.class; //277
-            list[DIAMOND_PICKAXE] = ItemPickaxeDiamond.class; //278
-            list[DIAMOND_AXE] = ItemAxeDiamond.class; //279
-            list[STICK] = ItemStick.class; //280
-            list[BOWL] = ItemBowl.class; //281
-            list[MUSHROOM_STEW] = ItemMushroomStew.class; //282
-            list[GOLD_SWORD] = ItemSwordGold.class; //283
-            list[GOLD_SHOVEL] = ItemShovelGold.class; //284
-            list[GOLD_PICKAXE] = ItemPickaxeGold.class; //285
-            list[GOLD_AXE] = ItemAxeGold.class; //286
-            list[STRING] = ItemString.class; //287
-            list[FEATHER] = ItemFeather.class; //288
-            list[GUNPOWDER] = ItemGunpowder.class; //289
-            list[WOODEN_HOE] = ItemHoeWood.class; //290
-            list[STONE_HOE] = ItemHoeStone.class; //291
-            list[IRON_HOE] = ItemHoeIron.class; //292
-            list[DIAMOND_HOE] = ItemHoeDiamond.class; //293
-            list[GOLD_HOE] = ItemHoeGold.class; //294
-            list[WHEAT_SEEDS] = ItemSeedsWheat.class; //295
-            list[WHEAT] = ItemWheat.class; //296
-            list[BREAD] = ItemBread.class; //297
-            list[LEATHER_CAP] = ItemHelmetLeather.class; //298
-            list[LEATHER_TUNIC] = ItemChestplateLeather.class; //299
-            list[LEATHER_PANTS] = ItemLeggingsLeather.class; //300
-            list[LEATHER_BOOTS] = ItemBootsLeather.class; //301
-            list[CHAIN_HELMET] = ItemHelmetChain.class; //302
-            list[CHAIN_CHESTPLATE] = ItemChestplateChain.class; //303
-            list[CHAIN_LEGGINGS] = ItemLeggingsChain.class; //304
-            list[CHAIN_BOOTS] = ItemBootsChain.class; //305
-            list[IRON_HELMET] = ItemHelmetIron.class; //306
-            list[IRON_CHESTPLATE] = ItemChestplateIron.class; //307
-            list[IRON_LEGGINGS] = ItemLeggingsIron.class; //308
-            list[IRON_BOOTS] = ItemBootsIron.class; //309
-            list[DIAMOND_HELMET] = ItemHelmetDiamond.class; //310
-            list[DIAMOND_CHESTPLATE] = ItemChestplateDiamond.class; //311
-            list[DIAMOND_LEGGINGS] = ItemLeggingsDiamond.class; //312
-            list[DIAMOND_BOOTS] = ItemBootsDiamond.class; //313
-            list[GOLD_HELMET] = ItemHelmetGold.class; //314
-            list[GOLD_CHESTPLATE] = ItemChestplateGold.class; //315
-            list[GOLD_LEGGINGS] = ItemLeggingsGold.class; //316
-            list[GOLD_BOOTS] = ItemBootsGold.class; //317
-            list[FLINT] = ItemFlint.class; //318
-            list[RAW_PORKCHOP] = ItemPorkchopRaw.class; //319
-            list[COOKED_PORKCHOP] = ItemPorkchopCooked.class; //320
-            list[PAINTING] = ItemPainting.class; //321
-            list[GOLDEN_APPLE] = ItemAppleGold.class; //322
-            list[SIGN] = ItemSign.class; //323
-            list[WOODEN_DOOR] = ItemDoorWood.class; //324
-            list[BUCKET] = ItemBucket.class; //325
+            list[IRON_SHOVEL] = ItemShovelIron.class; // 256
+            list[IRON_PICKAXE] = ItemPickaxeIron.class; // 257
+            list[IRON_AXE] = ItemAxeIron.class; // 258
+            list[FLINT_AND_STEEL] = ItemFlintSteel.class; // 259
+            list[APPLE] = ItemApple.class; // 260
+            list[BOW] = ItemBow.class; // 261
+            list[ARROW] = ItemArrow.class; // 262
+            list[COAL] = ItemCoal.class; // 263
+            list[DIAMOND] = ItemDiamond.class; // 264
+            list[IRON_INGOT] = ItemIngotIron.class; // 265
+            list[GOLD_INGOT] = ItemIngotGold.class; // 266
+            list[IRON_SWORD] = ItemSwordIron.class; // 267
+            list[WOODEN_SWORD] = ItemSwordWood.class; // 268
+            list[WOODEN_SHOVEL] = ItemShovelWood.class; // 269
+            list[WOODEN_PICKAXE] = ItemPickaxeWood.class; // 270
+            list[WOODEN_AXE] = ItemAxeWood.class; // 271
+            list[STONE_SWORD] = ItemSwordStone.class; // 272
+            list[STONE_SHOVEL] = ItemShovelStone.class; // 273
+            list[STONE_PICKAXE] = ItemPickaxeStone.class; // 274
+            list[STONE_AXE] = ItemAxeStone.class; // 275
+            list[DIAMOND_SWORD] = ItemSwordDiamond.class; // 276
+            list[DIAMOND_SHOVEL] = ItemShovelDiamond.class; // 277
+            list[DIAMOND_PICKAXE] = ItemPickaxeDiamond.class; // 278
+            list[DIAMOND_AXE] = ItemAxeDiamond.class; // 279
+            list[STICK] = ItemStick.class; // 280
+            list[BOWL] = ItemBowl.class; // 281
+            list[MUSHROOM_STEW] = ItemMushroomStew.class; // 282
+            list[GOLD_SWORD] = ItemSwordGold.class; // 283
+            list[GOLD_SHOVEL] = ItemShovelGold.class; // 284
+            list[GOLD_PICKAXE] = ItemPickaxeGold.class; // 285
+            list[GOLD_AXE] = ItemAxeGold.class; // 286
+            list[STRING] = ItemString.class; // 287
+            list[FEATHER] = ItemFeather.class; // 288
+            list[GUNPOWDER] = ItemGunpowder.class; // 289
+            list[WOODEN_HOE] = ItemHoeWood.class; // 290
+            list[STONE_HOE] = ItemHoeStone.class; // 291
+            list[IRON_HOE] = ItemHoeIron.class; // 292
+            list[DIAMOND_HOE] = ItemHoeDiamond.class; // 293
+            list[GOLD_HOE] = ItemHoeGold.class; // 294
+            list[WHEAT_SEEDS] = ItemSeedsWheat.class; // 295
+            list[WHEAT] = ItemWheat.class; // 296
+            list[BREAD] = ItemBread.class; // 297
+            list[LEATHER_CAP] = ItemHelmetLeather.class; // 298
+            list[LEATHER_TUNIC] = ItemChestplateLeather.class; // 299
+            list[LEATHER_PANTS] = ItemLeggingsLeather.class; // 300
+            list[LEATHER_BOOTS] = ItemBootsLeather.class; // 301
+            list[CHAIN_HELMET] = ItemHelmetChain.class; // 302
+            list[CHAIN_CHESTPLATE] = ItemChestplateChain.class; // 303
+            list[CHAIN_LEGGINGS] = ItemLeggingsChain.class; // 304
+            list[CHAIN_BOOTS] = ItemBootsChain.class; // 305
+            list[IRON_HELMET] = ItemHelmetIron.class; // 306
+            list[IRON_CHESTPLATE] = ItemChestplateIron.class; // 307
+            list[IRON_LEGGINGS] = ItemLeggingsIron.class; // 308
+            list[IRON_BOOTS] = ItemBootsIron.class; // 309
+            list[DIAMOND_HELMET] = ItemHelmetDiamond.class; // 310
+            list[DIAMOND_CHESTPLATE] = ItemChestplateDiamond.class; // 311
+            list[DIAMOND_LEGGINGS] = ItemLeggingsDiamond.class; // 312
+            list[DIAMOND_BOOTS] = ItemBootsDiamond.class; // 313
+            list[GOLD_HELMET] = ItemHelmetGold.class; // 314
+            list[GOLD_CHESTPLATE] = ItemChestplateGold.class; // 315
+            list[GOLD_LEGGINGS] = ItemLeggingsGold.class; // 316
+            list[GOLD_BOOTS] = ItemBootsGold.class; // 317
+            list[FLINT] = ItemFlint.class; // 318
+            list[RAW_PORKCHOP] = ItemPorkchopRaw.class; // 319
+            list[COOKED_PORKCHOP] = ItemPorkchopCooked.class; // 320
+            list[PAINTING] = ItemPainting.class; // 321
+            list[GOLDEN_APPLE] = ItemAppleGold.class; // 322
+            list[SIGN] = ItemSign.class; // 323
+            list[WOODEN_DOOR] = ItemDoorWood.class; // 324
+            list[BUCKET] = ItemBucket.class; // 325
 
-            list[MINECART] = ItemMinecart.class; //328
-            list[SADDLE] = ItemSaddle.class; //329
-            list[IRON_DOOR] = ItemDoorIron.class; //330
-            list[REDSTONE] = ItemRedstone.class; //331
-            list[SNOWBALL] = ItemSnowball.class; //332
-            list[BOAT] = ItemBoat.class; //333
-            list[LEATHER] = ItemLeather.class; //334
-            list[KELP] = ItemKelp.class; //335
-            list[BRICK] = ItemBrick.class; //336
-            list[CLAY] = ItemClay.class; //337
-            list[SUGARCANE] = ItemSugarcane.class; //338
-            list[PAPER] = ItemPaper.class; //339
-            list[BOOK] = ItemBook.class; //340
-            list[SLIMEBALL] = ItemSlimeball.class; //341
-            list[CHEST_MINECART] = ItemMinecartChest.class; //342
+            list[MINECART] = ItemMinecart.class; // 328
+            list[SADDLE] = ItemSaddle.class; // 329
+            list[IRON_DOOR] = ItemDoorIron.class; // 330
+            list[REDSTONE] = ItemRedstone.class; // 331
+            list[SNOWBALL] = ItemSnowball.class; // 332
+            list[BOAT] = ItemBoat.class; // 333
+            list[LEATHER] = ItemLeather.class; // 334
+            list[KELP] = ItemKelp.class; // 335
+            list[BRICK] = ItemBrick.class; // 336
+            list[CLAY] = ItemClay.class; // 337
+            list[SUGARCANE] = ItemSugarcane.class; // 338
+            list[PAPER] = ItemPaper.class; // 339
+            list[BOOK] = ItemBook.class; // 340
+            list[SLIMEBALL] = ItemSlimeball.class; // 341
+            list[CHEST_MINECART] = ItemMinecartChest.class; // 342
 
-            list[EGG] = ItemEgg.class; //344
-            list[COMPASS] = ItemCompass.class; //345
-            list[FISHING_ROD] = ItemFishingRod.class; //346
-            list[CLOCK] = ItemClock.class; //347
-            list[GLOWSTONE_DUST] = ItemGlowstoneDust.class; //348
-            list[RAW_FISH] = ItemFish.class; //349
-            list[COOKED_FISH] = ItemFishCooked.class; //350
-            list[DYE] = ItemDye.class; //351
-            list[BONE] = ItemBone.class; //352
-            list[SUGAR] = ItemSugar.class; //353
-            list[CAKE] = ItemCake.class; //354
-            list[BED] = ItemBed.class; //355
-            list[REPEATER] = ItemRedstoneRepeater.class; //356
-            list[COOKIE] = ItemCookie.class; //357
-            list[MAP] = ItemMap.class; //358
-            list[SHEARS] = ItemShears.class; //359
-            list[MELON] = ItemMelon.class; //360
-            list[PUMPKIN_SEEDS] = ItemSeedsPumpkin.class; //361
-            list[MELON_SEEDS] = ItemSeedsMelon.class; //362
-            list[RAW_BEEF] = ItemBeefRaw.class; //363
-            list[STEAK] = ItemSteak.class; //364
-            list[RAW_CHICKEN] = ItemChickenRaw.class; //365
-            list[COOKED_CHICKEN] = ItemChickenCooked.class; //366
-            list[ROTTEN_FLESH] = ItemRottenFlesh.class; //367
-            list[ENDER_PEARL] = ItemEnderPearl.class; //368
-            list[BLAZE_ROD] = ItemBlazeRod.class; //369
-            list[GHAST_TEAR] = ItemGhastTear.class; //370
-            list[GOLD_NUGGET] = ItemNuggetGold.class; //371
-            list[NETHER_WART] = ItemNetherWart.class; //372
-            list[POTION] = ItemPotion.class; //373
-            list[GLASS_BOTTLE] = ItemGlassBottle.class; //374
-            list[SPIDER_EYE] = ItemSpiderEye.class; //375
-            list[FERMENTED_SPIDER_EYE] = ItemSpiderEyeFermented.class; //376
-            list[BLAZE_POWDER] = ItemBlazePowder.class; //377
-            list[MAGMA_CREAM] = ItemMagmaCream.class; //378
-            list[BREWING_STAND] = ItemBrewingStand.class; //379
-            list[CAULDRON] = ItemCauldron.class; //380
-            list[ENDER_EYE] = ItemEnderEye.class; //381
-            list[GLISTERING_MELON] = ItemMelonGlistering.class; //382
-            list[SPAWN_EGG] = ItemSpawnEgg.class; //383
-            list[EXPERIENCE_BOTTLE] = ItemExpBottle.class; //384
-            list[FIRE_CHARGE] = ItemFireCharge.class; //385
-            list[BOOK_AND_QUILL] = ItemBookAndQuill.class; //386
-            list[WRITTEN_BOOK] = ItemBookWritten.class; //387
-            list[EMERALD] = ItemEmerald.class; //388
-            list[ITEM_FRAME] = ItemItemFrame.class; //389
-            list[FLOWER_POT] = ItemFlowerPot.class; //390
-            list[CARROT] = ItemCarrot.class; //391
-            list[POTATO] = ItemPotato.class; //392
-            list[BAKED_POTATO] = ItemPotatoBaked.class; //393
-            list[POISONOUS_POTATO] = ItemPotatoPoisonous.class; //394
-            list[EMPTY_MAP] = ItemEmptyMap.class; //395
-            list[GOLDEN_CARROT] = ItemCarrotGolden.class; //396
-            list[SKULL] = ItemSkull.class; //397
-            list[CARROT_ON_A_STICK] = ItemCarrotOnAStick.class; //398
-            list[NETHER_STAR] = ItemNetherStar.class; //399
-            list[PUMPKIN_PIE] = ItemPumpkinPie.class; //400
-            list[FIREWORKS] = ItemFirework.class; //401
-            list[FIREWORKSCHARGE] = ItemFireworkStar.class; //402
-            list[ENCHANTED_BOOK] = ItemBookEnchanted.class; //403
-            list[COMPARATOR] = ItemRedstoneComparator.class; //404
-            list[NETHER_BRICK] = ItemNetherBrick.class; //405
-            list[QUARTZ] = ItemQuartz.class; //406
-            list[TNT_MINECART] = ItemMinecartTNT.class; //407
-            list[HOPPER_MINECART] = ItemMinecartHopper.class; //408
-            list[PRISMARINE_SHARD] = ItemPrismarineShard.class; //409
+            list[EGG] = ItemEgg.class; // 344
+            list[COMPASS] = ItemCompass.class; // 345
+            list[FISHING_ROD] = ItemFishingRod.class; // 346
+            list[CLOCK] = ItemClock.class; // 347
+            list[GLOWSTONE_DUST] = ItemGlowstoneDust.class; // 348
+            list[RAW_FISH] = ItemFish.class; // 349
+            list[COOKED_FISH] = ItemFishCooked.class; // 350
+            list[DYE] = ItemDye.class; // 351
+            list[BONE] = ItemBone.class; // 352
+            list[SUGAR] = ItemSugar.class; // 353
+            list[CAKE] = ItemCake.class; // 354
+            list[BED] = ItemBed.class; // 355
+            list[REPEATER] = ItemRedstoneRepeater.class; // 356
+            list[COOKIE] = ItemCookie.class; // 357
+            list[MAP] = ItemMap.class; // 358
+            list[SHEARS] = ItemShears.class; // 359
+            list[MELON] = ItemMelon.class; // 360
+            list[PUMPKIN_SEEDS] = ItemSeedsPumpkin.class; // 361
+            list[MELON_SEEDS] = ItemSeedsMelon.class; // 362
+            list[RAW_BEEF] = ItemBeefRaw.class; // 363
+            list[STEAK] = ItemSteak.class; // 364
+            list[RAW_CHICKEN] = ItemChickenRaw.class; // 365
+            list[COOKED_CHICKEN] = ItemChickenCooked.class; // 366
+            list[ROTTEN_FLESH] = ItemRottenFlesh.class; // 367
+            list[ENDER_PEARL] = ItemEnderPearl.class; // 368
+            list[BLAZE_ROD] = ItemBlazeRod.class; // 369
+            list[GHAST_TEAR] = ItemGhastTear.class; // 370
+            list[GOLD_NUGGET] = ItemNuggetGold.class; // 371
+            list[NETHER_WART] = ItemNetherWart.class; // 372
+            list[POTION] = ItemPotion.class; // 373
+            list[GLASS_BOTTLE] = ItemGlassBottle.class; // 374
+            list[SPIDER_EYE] = ItemSpiderEye.class; // 375
+            list[FERMENTED_SPIDER_EYE] = ItemSpiderEyeFermented.class; // 376
+            list[BLAZE_POWDER] = ItemBlazePowder.class; // 377
+            list[MAGMA_CREAM] = ItemMagmaCream.class; // 378
+            list[BREWING_STAND] = ItemBrewingStand.class; // 379
+            list[CAULDRON] = ItemCauldron.class; // 380
+            list[ENDER_EYE] = ItemEnderEye.class; // 381
+            list[GLISTERING_MELON] = ItemMelonGlistering.class; // 382
+            list[SPAWN_EGG] = ItemSpawnEgg.class; // 383
+            list[EXPERIENCE_BOTTLE] = ItemExpBottle.class; // 384
+            list[FIRE_CHARGE] = ItemFireCharge.class; // 385
+            list[BOOK_AND_QUILL] = ItemBookAndQuill.class; // 386
+            list[WRITTEN_BOOK] = ItemBookWritten.class; // 387
+            list[EMERALD] = ItemEmerald.class; // 388
+            list[ITEM_FRAME] = ItemItemFrame.class; // 389
+            list[FLOWER_POT] = ItemFlowerPot.class; // 390
+            list[CARROT] = ItemCarrot.class; // 391
+            list[POTATO] = ItemPotato.class; // 392
+            list[BAKED_POTATO] = ItemPotatoBaked.class; // 393
+            list[POISONOUS_POTATO] = ItemPotatoPoisonous.class; // 394
+            list[EMPTY_MAP] = ItemEmptyMap.class; // 395
+            list[GOLDEN_CARROT] = ItemCarrotGolden.class; // 396
+            list[SKULL] = ItemSkull.class; // 397
+            list[CARROT_ON_A_STICK] = ItemCarrotOnAStick.class; // 398
+            list[NETHER_STAR] = ItemNetherStar.class; // 399
+            list[PUMPKIN_PIE] = ItemPumpkinPie.class; // 400
+            list[FIREWORKS] = ItemFirework.class; // 401
+            list[FIREWORKSCHARGE] = ItemFireworkStar.class; // 402
+            list[ENCHANTED_BOOK] = ItemBookEnchanted.class; // 403
+            list[COMPARATOR] = ItemRedstoneComparator.class; // 404
+            list[NETHER_BRICK] = ItemNetherBrick.class; // 405
+            list[QUARTZ] = ItemQuartz.class; // 406
+            list[TNT_MINECART] = ItemMinecartTNT.class; // 407
+            list[HOPPER_MINECART] = ItemMinecartHopper.class; // 408
+            list[PRISMARINE_SHARD] = ItemPrismarineShard.class; // 409
             list[HOPPER] = ItemHopper.class;
-            list[RAW_RABBIT] = ItemRabbitRaw.class; //411
-            list[COOKED_RABBIT] = ItemRabbitCooked.class; //412
-            list[RABBIT_STEW] = ItemRabbitStew.class; //413
-            list[RABBIT_FOOT] = ItemRabbitFoot.class; //414
-            list[RABBIT_HIDE] = ItemRabbitHide.class; //415
-            list[LEATHER_HORSE_ARMOR] = ItemHorseArmorLeather.class; //416
-            list[IRON_HORSE_ARMOR] = ItemHorseArmorIron.class; //417
-            list[GOLD_HORSE_ARMOR] = ItemHorseArmorGold.class; //418
-            list[DIAMOND_HORSE_ARMOR] = ItemHorseArmorDiamond.class; //419
-            list[LEAD] = ItemLead.class; //420
-            list[NAME_TAG] = ItemNameTag.class; //421
-            list[PRISMARINE_CRYSTALS] = ItemPrismarineCrystals.class; //422
-            list[RAW_MUTTON] = ItemMuttonRaw.class; //423
-            list[COOKED_MUTTON] = ItemMuttonCooked.class; //424
-            list[ARMOR_STAND] = ItemArmorStand.class; //425
-            list[END_CRYSTAL] = ItemEndCrystal.class; //426
-            list[SPRUCE_DOOR] = ItemDoorSpruce.class; //427
-            list[BIRCH_DOOR] = ItemDoorBirch.class; //428
-            list[JUNGLE_DOOR] = ItemDoorJungle.class; //429
-            list[ACACIA_DOOR] = ItemDoorAcacia.class; //430
-            list[DARK_OAK_DOOR] = ItemDoorDarkOak.class; //431
-            list[CHORUS_FRUIT] = ItemChorusFruit.class; //432
-            list[POPPED_CHORUS_FRUIT] = ItemChorusFruitPopped.class; //433
-            list[BANNER_PATTERN] = ItemBannerPattern.class; //434
+            list[RAW_RABBIT] = ItemRabbitRaw.class; // 411
+            list[COOKED_RABBIT] = ItemRabbitCooked.class; // 412
+            list[RABBIT_STEW] = ItemRabbitStew.class; // 413
+            list[RABBIT_FOOT] = ItemRabbitFoot.class; // 414
+            list[RABBIT_HIDE] = ItemRabbitHide.class; // 415
+            list[LEATHER_HORSE_ARMOR] = ItemHorseArmorLeather.class; // 416
+            list[IRON_HORSE_ARMOR] = ItemHorseArmorIron.class; // 417
+            list[GOLD_HORSE_ARMOR] = ItemHorseArmorGold.class; // 418
+            list[DIAMOND_HORSE_ARMOR] = ItemHorseArmorDiamond.class; // 419
+            list[LEAD] = ItemLead.class; // 420
+            list[NAME_TAG] = ItemNameTag.class; // 421
+            list[PRISMARINE_CRYSTALS] = ItemPrismarineCrystals.class; // 422
+            list[RAW_MUTTON] = ItemMuttonRaw.class; // 423
+            list[COOKED_MUTTON] = ItemMuttonCooked.class; // 424
+            list[ARMOR_STAND] = ItemArmorStand.class; // 425
+            list[END_CRYSTAL] = ItemEndCrystal.class; // 426
+            list[SPRUCE_DOOR] = ItemDoorSpruce.class; // 427
+            list[BIRCH_DOOR] = ItemDoorBirch.class; // 428
+            list[JUNGLE_DOOR] = ItemDoorJungle.class; // 429
+            list[ACACIA_DOOR] = ItemDoorAcacia.class; // 430
+            list[DARK_OAK_DOOR] = ItemDoorDarkOak.class; // 431
+            list[CHORUS_FRUIT] = ItemChorusFruit.class; // 432
+            list[POPPED_CHORUS_FRUIT] = ItemChorusFruitPopped.class; // 433
+            list[BANNER_PATTERN] = ItemBannerPattern.class; // 434
 
-            list[DRAGON_BREATH] = ItemDragonBreath.class; //437
-            list[SPLASH_POTION] = ItemPotionSplash.class; //438
+            list[DRAGON_BREATH] = ItemDragonBreath.class; // 437
+            list[SPLASH_POTION] = ItemPotionSplash.class; // 438
 
-            list[LINGERING_POTION] = ItemPotionLingering.class; //441
+            list[LINGERING_POTION] = ItemPotionLingering.class; // 441
 
-            list[ELYTRA] = ItemElytra.class; //444
-            list[SHULKER_SHELL] = ItemShulkerShell.class; //445
-            list[BANNER] = ItemBanner.class; //446
+            list[ELYTRA] = ItemElytra.class; // 444
+            list[SHULKER_SHELL] = ItemShulkerShell.class; // 445
+            list[BANNER] = ItemBanner.class; // 446
 
-            list[TOTEM] = ItemTotem.class; //450
+            list[TOTEM] = ItemTotem.class; // 450
 
-            list[IRON_NUGGET] = ItemNuggetIron.class; //452
+            list[IRON_NUGGET] = ItemNuggetIron.class; // 452
 
-            list[TRIDENT] = ItemTrident.class; //455
-            list[BEETROOT] = ItemBeetroot.class; //457
-            list[BEETROOT_SEEDS] = ItemSeedsBeetroot.class; //458
-            list[BEETROOT_SOUP] = ItemBeetrootSoup.class; //459
-            list[RAW_SALMON] = ItemSalmon.class; //460
-            list[CLOWNFISH] = ItemClownfish.class; //461
-            list[PUFFERFISH] = ItemPufferfish.class; //462
-            list[COOKED_SALMON] = ItemSalmonCooked.class; //463
-            list[DRIED_KELP] = ItemDriedKelp.class; //464
-            list[NAUTILUS_SHELL] = ItemNautilusShell.class; //465
-            list[GOLDEN_APPLE_ENCHANTED] = ItemAppleGoldEnchanted.class; //466
-            list[HEART_OF_THE_SEA] = ItemHeartOfTheSea.class; //467
-            list[SCUTE] = ItemScute.class; //468
-            list[TURTLE_SHELL] = ItemTurtleShell.class; //469
-            list[PHANTOM_MEMBRANE] = ItemPhantomMembrane.class; //470
-            list[CROSSBOW] = ItemCrossbow.class; //471
-            list[SPRUCE_SIGN] = ItemSpruceSign.class; //472
-            list[BIRCH_SIGN] = ItemBirchSign.class; //473
-            list[JUNGLE_SIGN] = ItemJungleSign.class; //474
-            list[ACACIA_SIGN] = ItemAcaciaSign.class; //475
-            list[DARKOAK_SIGN] = ItemDarkOakSign.class; //476
-            list[SWEET_BERRIES] = ItemSweetBerries.class; //477
+            list[TRIDENT] = ItemTrident.class; // 455
+            list[BEETROOT] = ItemBeetroot.class; // 457
+            list[BEETROOT_SEEDS] = ItemSeedsBeetroot.class; // 458
+            list[BEETROOT_SOUP] = ItemBeetrootSoup.class; // 459
+            list[RAW_SALMON] = ItemSalmon.class; // 460
+            list[CLOWNFISH] = ItemClownfish.class; // 461
+            list[PUFFERFISH] = ItemPufferfish.class; // 462
+            list[COOKED_SALMON] = ItemSalmonCooked.class; // 463
+            list[DRIED_KELP] = ItemDriedKelp.class; // 464
+            list[NAUTILUS_SHELL] = ItemNautilusShell.class; // 465
+            list[GOLDEN_APPLE_ENCHANTED] = ItemAppleGoldEnchanted.class; // 466
+            list[HEART_OF_THE_SEA] = ItemHeartOfTheSea.class; // 467
+            list[SCUTE] = ItemScute.class; // 468
+            list[TURTLE_SHELL] = ItemTurtleShell.class; // 469
+            list[PHANTOM_MEMBRANE] = ItemPhantomMembrane.class; // 470
+            list[CROSSBOW] = ItemCrossbow.class; // 471
+            list[SPRUCE_SIGN] = ItemSpruceSign.class; // 472
+            list[BIRCH_SIGN] = ItemBirchSign.class; // 473
+            list[JUNGLE_SIGN] = ItemJungleSign.class; // 474
+            list[ACACIA_SIGN] = ItemAcaciaSign.class; // 475
+            list[DARKOAK_SIGN] = ItemDarkOakSign.class; // 476
+            list[SWEET_BERRIES] = ItemSweetBerries.class; // 477
 
-            list[RECORD_13] = ItemRecord13.class; //500
-            list[RECORD_CAT] = ItemRecordCat.class; //501
-            list[RECORD_BLOCKS] = ItemRecordBlocks.class; //502
-            list[RECORD_CHIRP] = ItemRecordChirp.class; //503
-            list[RECORD_FAR] = ItemRecordFar.class; //504
-            list[RECORD_MALL] = ItemRecordMall.class; //505
-            list[RECORD_MELLOHI] = ItemRecordMellohi.class; //506
-            list[RECORD_STAL] = ItemRecordStal.class; //507
-            list[RECORD_STRAD] = ItemRecordStrad.class; //508
-            list[RECORD_WARD] = ItemRecordWard.class; //509
-            list[RECORD_11] = ItemRecord11.class; //510
-            list[RECORD_WAIT] = ItemRecordWait.class; //511
+            list[RECORD_13] = ItemRecord13.class; // 500
+            list[RECORD_CAT] = ItemRecordCat.class; // 501
+            list[RECORD_BLOCKS] = ItemRecordBlocks.class; // 502
+            list[RECORD_CHIRP] = ItemRecordChirp.class; // 503
+            list[RECORD_FAR] = ItemRecordFar.class; // 504
+            list[RECORD_MALL] = ItemRecordMall.class; // 505
+            list[RECORD_MELLOHI] = ItemRecordMellohi.class; // 506
+            list[RECORD_STAL] = ItemRecordStal.class; // 507
+            list[RECORD_STRAD] = ItemRecordStrad.class; // 508
+            list[RECORD_WARD] = ItemRecordWard.class; // 509
+            list[RECORD_11] = ItemRecord11.class; // 510
+            list[RECORD_WAIT] = ItemRecordWait.class; // 511
 
-            list[SHIELD] = ItemShield.class; //513
+            list[SHIELD] = ItemShield.class; // 513
 
-            list[GLOW_ITEM_FRAME] = ItemItemFrameGlow.class; //623
+            list[GLOW_ITEM_FRAME] = ItemItemFrameGlow.class; // 623
 
-            list[RECORD_OTHERSIDE] = ItemRecordOtherside.class; //626
+            list[RECORD_OTHERSIDE] = ItemRecordOtherside.class; // 626
 
-            list[ITEM_MANGROVE_DOOR] = ItemDoorMangrove.class;//633
-            list[MANGROVE_SIGN] = ItemMangroveSign.class;//634
+            list[ITEM_MANGROVE_DOOR] = ItemDoorMangrove.class; // 633
+            list[MANGROVE_SIGN] = ItemMangroveSign.class; // 634
 
-            list[RECORD_5] = ItemRecord5.class;//636
-            list[DISC_FRAGMENT_5] = ItemDiscFragment5.class;//637
+            list[RECORD_5] = ItemRecord5.class; // 636
+            list[DISC_FRAGMENT_5] = ItemDiscFragment5.class; // 637
 
-            list[OAK_CHEST_BOAT] = ItemChestBoatOak.class; //638
-            list[BIRCH_CHEST_BOAT] = ItemChestBoatBirch.class; //639
-            list[JUNGLE_CHEST_BOAT] = ItemChestBoatJungle.class; //640
-            list[SPRUCE_CHEST_BOAT] = ItemChestBoatSpruce.class; //641
-            list[ACACIA_CHEST_BOAT] = ItemChestBoatAcacia.class; //642
-            list[DARK_OAK_CHEST_BOAT] = ItemChestBoatDarkOak.class; //643
-            list[MANGROVE_CHEST_BOAT] = ItemChestBoatMangrove.class; //644
+            list[OAK_CHEST_BOAT] = ItemChestBoatOak.class; // 638
+            list[BIRCH_CHEST_BOAT] = ItemChestBoatBirch.class; // 639
+            list[JUNGLE_CHEST_BOAT] = ItemChestBoatJungle.class; // 640
+            list[SPRUCE_CHEST_BOAT] = ItemChestBoatSpruce.class; // 641
+            list[ACACIA_CHEST_BOAT] = ItemChestBoatAcacia.class; // 642
+            list[DARK_OAK_CHEST_BOAT] = ItemChestBoatDarkOak.class; // 643
+            list[MANGROVE_CHEST_BOAT] = ItemChestBoatMangrove.class; // 644
 
-            list[ECHO_SHARD] = ItemEchoShard.class; //647
+            list[ECHO_SHARD] = ItemEchoShard.class; // 647
 
-            list[GLOW_BERRIES] = ItemGlowBerries.class; //654
+            list[GLOW_BERRIES] = ItemGlowBerries.class; // 654
 
-            list[CAMPFIRE] = ItemCampfire.class; //720
+            list[CAMPFIRE] = ItemCampfire.class; // 720
 
-            list[SUSPICIOUS_STEW] = ItemSuspiciousStew.class; //734
+            list[SUSPICIOUS_STEW] = ItemSuspiciousStew.class; // 734
 
-            list[HONEYCOMB] = ItemHoneycomb.class; //736
-            list[HONEY_BOTTLE] = ItemHoneyBottle.class; //737
+            list[HONEYCOMB] = ItemHoneycomb.class; // 736
+            list[HONEY_BOTTLE] = ItemHoneyBottle.class; // 737
 
-            list[LODESTONECOMPASS] = ItemCompassLodestone.class; //741;
-            list[NETHERITE_INGOT] = ItemIngotNetherite.class; //742
-            list[NETHERITE_SWORD] = ItemSwordNetherite.class; //743
-            list[NETHERITE_SHOVEL] = ItemShovelNetherite.class; //744
-            list[NETHERITE_PICKAXE] = ItemPickaxeNetherite.class; //745
-            list[NETHERITE_AXE] = ItemAxeNetherite.class; //746
-            list[NETHERITE_HOE] = ItemHoeNetherite.class; //747
-            list[NETHERITE_HELMET] = ItemHelmetNetherite.class; //748
-            list[NETHERITE_CHESTPLATE] = ItemChestplateNetherite.class; //749
-            list[NETHERITE_LEGGINGS] = ItemLeggingsNetherite.class; //750
-            list[NETHERITE_BOOTS] = ItemBootsNetherite.class; //751
-            list[NETHERITE_SCRAP] = ItemScrapNetherite.class; //752
-            list[CRIMSON_SIGN] = ItemCrimsonSign.class; //753
-            list[WARPED_SIGN] = ItemWarpedSign.class; //754
-            list[CRIMSON_DOOR] = ItemDoorCrimson.class; //755
-            list[WARPED_DOOR] = ItemDoorWarped.class; //756
-            list[WARPED_FUNGUS_ON_A_STICK] = ItemWarpedFungusOnAStick.class; //757
-            list[CHAIN] = ItemChain.class; //758
-            list[RECORD_PIGSTEP] = ItemRecordPigstep.class; //759
-            list[NETHER_SPROUTS] = ItemNetherSprouts.class; //760
+            list[LODESTONECOMPASS] = ItemCompassLodestone.class; // 741;
+            list[NETHERITE_INGOT] = ItemIngotNetherite.class; // 742
+            list[NETHERITE_SWORD] = ItemSwordNetherite.class; // 743
+            list[NETHERITE_SHOVEL] = ItemShovelNetherite.class; // 744
+            list[NETHERITE_PICKAXE] = ItemPickaxeNetherite.class; // 745
+            list[NETHERITE_AXE] = ItemAxeNetherite.class; // 746
+            list[NETHERITE_HOE] = ItemHoeNetherite.class; // 747
+            list[NETHERITE_HELMET] = ItemHelmetNetherite.class; // 748
+            list[NETHERITE_CHESTPLATE] = ItemChestplateNetherite.class; // 749
+            list[NETHERITE_LEGGINGS] = ItemLeggingsNetherite.class; // 750
+            list[NETHERITE_BOOTS] = ItemBootsNetherite.class; // 751
+            list[NETHERITE_SCRAP] = ItemScrapNetherite.class; // 752
+            list[CRIMSON_SIGN] = ItemCrimsonSign.class; // 753
+            list[WARPED_SIGN] = ItemWarpedSign.class; // 754
+            list[CRIMSON_DOOR] = ItemDoorCrimson.class; // 755
+            list[WARPED_DOOR] = ItemDoorWarped.class; // 756
+            list[WARPED_FUNGUS_ON_A_STICK] = ItemWarpedFungusOnAStick.class; // 757
+            list[CHAIN] = ItemChain.class; // 758
+            list[RECORD_PIGSTEP] = ItemRecordPigstep.class; // 759
+            list[NETHER_SPROUTS] = ItemNetherSprouts.class; // 760
 
-            list[AMETHYST_SHARD] = ItemAmethystShard.class; //771
-            list[SPYGLASS] = ItemSpyglass.class; //772
+            list[AMETHYST_SHARD] = ItemAmethystShard.class; // 771
+            list[SPYGLASS] = ItemSpyglass.class; // 772
 
-            list[SOUL_CAMPFIRE] = ItemCampfireSoul.class; //801
-
+            list[SOUL_CAMPFIRE] = ItemCampfireSoul.class; // 801
 
             for (int i = 0; i < 256; ++i) {
                 if (Block.list[i] != null) {
@@ -502,15 +504,16 @@ public class Item implements Cloneable, BlockID, ItemID {
      * <p>
      * rebuild ItemList
      */
-
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static List<String> rebuildItemList() {
         return itemList = Collections.unmodifiableList(Stream.of(
-                BlockStateRegistry.getPersistenceNames().stream()
-                        .map(name -> name.substring(name.indexOf(':') + 1)),
-                itemIds.keySet().stream()
-        ).flatMap(Function.identity()).distinct().collect(Collectors.toList()));
+                        BlockStateRegistry.getPersistenceNames().stream()
+                                .map(name -> name.substring(name.indexOf(':') + 1)),
+                        itemIds.keySet().stream())
+                .flatMap(Function.identity())
+                .distinct()
+                .collect(Collectors.toList()));
     }
 
     /**
@@ -518,7 +521,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * <p>
      * Get the list of item items and also get the list of reconstructed items
      */
-
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static List<String> getItemList() {
@@ -567,7 +569,9 @@ public class Item implements Cloneable, BlockID, ItemID {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            states.getTags().forEach((k, v) -> strState.append(';').append(k).append('=').append(v.parseValue()));
+            states.getTags()
+                    .forEach(
+                            (k, v) -> strState.append(';').append(k).append('=').append(v.parseValue()));
             String blockStateId = strState.toString();
             try {
                 Integer blockId = BlockStateRegistry.getBlockId(name);
@@ -637,8 +641,11 @@ public class Item implements Cloneable, BlockID, ItemID {
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public static OK<?> registerCustomItem(@NotNull List<Class<? extends CustomItem>> itemClassList) {
-        if (!Server.getInstance().isEnableExperimentMode() || Server.getInstance().getConfig("settings.waterdogpe", false)) {
-            return new OK<>(false, "The server does not have the custom item feature enabled. Unable to register the customItemList!");
+        if (!Server.getInstance().isEnableExperimentMode()
+                || Server.getInstance().getConfig("settings.waterdogpe", false)) {
+            return new OK<>(
+                    false,
+                    "The server does not have the custom item feature enabled. Unable to register the customItemList!");
         }
         for (var clazz : itemClassList) {
             CustomItem customItem;
@@ -655,8 +662,10 @@ public class Item implements Cloneable, BlockID, ItemID {
                         throw new UnsupportedOperationException(e);
                     }
                 };
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                     NoSuchMethodException e) {
+            } catch (InstantiationException
+                    | IllegalAccessException
+                    | InvocationTargetException
+                    | NoSuchMethodException e) {
                 return new OK<>(false, e);
             }
 
@@ -675,7 +684,9 @@ public class Item implements Cloneable, BlockID, ItemID {
             if (customDef.nbt().get("components") instanceof CompoundTag componentTag) {
                 var tagList = componentTag.getList("item_tags", StringTag.class);
                 if (tagList.size() != 0) {
-                    ItemTag.registerItemTag(customItem.getNamespaceId(), tagList.getAll().stream().map(tag -> tag.data).collect(Collectors.toSet()));
+                    ItemTag.registerItemTag(
+                            customItem.getNamespaceId(),
+                            tagList.getAll().stream().map(tag -> tag.data).collect(Collectors.toSet()));
                 }
             }
             RuntimeItems.getRuntimeMapping().registerCustomItem(customItem, supplier);
@@ -725,7 +736,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * <p>
      * Used to get the custom item data sent to the client
      */
-
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public static HashMap<String, Supplier<? extends Item>> getCustomItems() {
@@ -743,7 +753,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * <p>
      * Cancel the Creative of items in the backpack in Creative mode
      */
-
     public static void clearCreativeItems() {
         Item.creative.clear();
     }
@@ -783,7 +792,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * <p>
      * Detect if the item exists in the Creative backpack
      */
-
     public static boolean isCreativeItem(Item item) {
         for (Item aCreative : Item.creative) {
             if (item.equals(aCreative, !item.isTool())) {
@@ -849,7 +857,8 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     @PowerNukkitDifference(
-            info = "Prevents players from getting invalid items by limiting the return to the maximum damage defined in Block.getMaxItemDamage()",
+            info =
+                    "Prevents players from getting invalid items by limiting the return to the maximum damage defined in Block.getMaxItemDamage()",
             since = "1.4.0.0-PN")
     public static Item get(int id, Integer meta, int count, byte[] tags) {
         try {
@@ -881,15 +890,26 @@ public class Item implements Cloneable, BlockID, ItemID {
                         state.validate();
                         item = state.asItemBlock(count);
                     } catch (InvalidBlockPropertyMetaException | InvalidBlockStateException e) {
-                        log.warn("Attempted to get an ItemBlock with invalid block state in memory: {}, trying to repair the block state...", state);
+                        log.warn(
+                                "Attempted to get an ItemBlock with invalid block state in memory: {}, trying to repair the block state...",
+                                state);
                         log.catching(org.apache.logging.log4j.Level.DEBUG, e);
                         Block repaired = state.getBlockRepairing(null, 0, 0, 0);
                         item = repaired.asItemBlock(count);
-                        log.error("Attempted to get an illegal item block {}:{} ({}), the meta was changed to {}",
-                                id, meta, blockId, item.getDamage(), e);
+                        log.error(
+                                "Attempted to get an illegal item block {}:{} ({}), the meta was changed to {}",
+                                id,
+                                meta,
+                                blockId,
+                                item.getDamage(),
+                                e);
                     } catch (UnknownRuntimeIdException e) {
-                        log.warn("Attempted to get an illegal item block {}:{} ({}), the runtime id was unknown and the meta was changed to 0",
-                                id, meta, blockId, e);
+                        log.warn(
+                                "Attempted to get an illegal item block {}:{} ({}), the runtime id was unknown and the meta was changed to 0",
+                                id,
+                                meta,
+                                blockId,
+                                e);
                         item = BlockState.of(blockId).asItemBlock(count);
                     }
                 }
@@ -897,7 +917,8 @@ public class Item implements Cloneable, BlockID, ItemID {
                 item = new Item(id, meta, count);
             } else {
                 if (meta == -1) {
-                    item = ((Item) c.getConstructor(Integer.class, int.class).newInstance(0, count)).createFuzzyCraftingRecipe();
+                    item = ((Item) c.getConstructor(Integer.class, int.class).newInstance(0, count))
+                            .createFuzzyCraftingRecipe();
                 } else {
                     item = ((Item) c.getConstructor(Integer.class, int.class).newInstance(meta, count));
                 }
@@ -909,15 +930,20 @@ public class Item implements Cloneable, BlockID, ItemID {
 
             return item;
         } catch (Exception e) {
-            log.error("Error getting the item {}:{}{}! Returning an unsafe item stack!",
-                    id, meta, id < 0 ? " (" + (255 - id) + ")" : "", e);
+            log.error(
+                    "Error getting the item {}:{}{}! Returning an unsafe item stack!",
+                    id,
+                    meta,
+                    id < 0 ? " (" + (255 - id) + ")" : "",
+                    e);
             return new Item(id, meta, count).setCompoundTag(tags);
         }
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Improve namespaced name handling and allows to get custom blocks by name")
-    @NotNull
-    public static Item fromString(String str) {
+    @PowerNukkitDifference(
+            since = "1.4.0.0-PN",
+            info = "Improve namespaced name handling and allows to get custom blocks by name")
+    @NotNull public static Item fromString(String str) {
         String normalized = str.trim().replace(' ', '_').toLowerCase();
         Matcher matcher = ITEM_STRING_PATTERN.matcher(normalized);
         if (!matcher.matches()) {
@@ -979,7 +1005,9 @@ public class Item implements Cloneable, BlockID, ItemID {
             result = get(id, meta.orElse(0));
         }
         if (result != null) {
-            if (result.isNull() || (result.getBlock() != null && result.getDisplayName().equals(Item.UNKNOWN_STR)) || result instanceof StringItemUnknown) {
+            if (result.isNull()
+                    || (result.getBlock() != null && result.getDisplayName().equals(Item.UNKNOWN_STR))
+                    || result instanceof StringItemUnknown) {
                 log.debug("Get `" + str + "` item from string error!");
                 return Item.AIR_ITEM;
             }
@@ -1019,7 +1047,8 @@ public class Item implements Cloneable, BlockID, ItemID {
         int id = Utils.toInt(data.get("id"));
         if (ignoreNegativeItemId && id < 0) return null;
 
-        return get(id, Utils.toInt(data.getOrDefault("damage", 0)), Utils.toInt(data.getOrDefault("count", 1)), nbtBytes);
+        return get(
+                id, Utils.toInt(data.getOrDefault("damage", 0)), Utils.toInt(data.getOrDefault("count", 1)), nbtBytes);
     }
 
     @PowerNukkitOnly
@@ -1042,15 +1071,16 @@ public class Item implements Cloneable, BlockID, ItemID {
         RuntimeItemMapping mapping = RuntimeItems.getRuntimeMapping();
         int legacyFullId = mapping.getLegacyFullId(networkId);
         int id = RuntimeItems.getId(legacyFullId);
-        OptionalInt meta = RuntimeItems.hasData(legacyFullId) ? OptionalInt.of(RuntimeItems.getData(legacyFullId)) : OptionalInt.empty();
+        OptionalInt meta = RuntimeItems.hasData(legacyFullId)
+                ? OptionalInt.of(RuntimeItems.getData(legacyFullId))
+                : OptionalInt.empty();
         if (data.containsKey("damage")) {
             int jsonMeta = Utils.toInt(data.get("damage"));
             if (jsonMeta != Short.MAX_VALUE) {
                 if (meta.isPresent() && jsonMeta != meta.getAsInt()) {
                     throw new IllegalArgumentException(
-                            "Conflicting damage value for " + mapping.getNamespacedIdByNetworkId(networkId) + ". " +
-                                    "From json: " + jsonMeta + ", from mapping: " + meta.getAsInt()
-                    );
+                            "Conflicting damage value for " + mapping.getNamespacedIdByNetworkId(networkId) + ". "
+                                    + "From json: " + jsonMeta + ", from mapping: " + meta.getAsInt());
                 }
                 meta = OptionalInt.of(jsonMeta);
             } else if (!meta.isPresent()) {
@@ -1095,7 +1125,6 @@ public class Item implements Cloneable, BlockID, ItemID {
 
         CompoundTag tag = this.getNamedTag();
         return tag.contains("BlockEntityTag") && tag.get("BlockEntityTag") instanceof CompoundTag;
-
     }
 
     public Item clearCustomBlockData() {
@@ -1188,7 +1217,8 @@ public class Item implements Cloneable, BlockID, ItemID {
             return 0;
         }
 
-        for (CompoundTag entry : this.getNamedTag().getList("ench", CompoundTag.class).getAll()) {
+        for (CompoundTag entry :
+                this.getNamedTag().getList("ench", CompoundTag.class).getAll()) {
             if (entry.getShort("id") == id) {
                 return entry.getShort("lvl");
             }
@@ -1196,7 +1226,6 @@ public class Item implements Cloneable, BlockID, ItemID {
 
         return 0;
     }
-
 
     /**
      * 通过附魔id来查找对应附魔的等级
@@ -1212,14 +1241,14 @@ public class Item implements Cloneable, BlockID, ItemID {
         if (!this.hasEnchantments()) {
             return 0;
         }
-        for (CompoundTag entry : this.getNamedTag().getList("custom_ench", CompoundTag.class).getAll()) {
+        for (CompoundTag entry :
+                this.getNamedTag().getList("custom_ench", CompoundTag.class).getAll()) {
             if (entry.getString("id").equals(id)) {
                 return entry.getShort("lvl");
             }
         }
         return 0;
     }
-
 
     /**
      * @param id 要查询的附魔标识符
@@ -1231,7 +1260,8 @@ public class Item implements Cloneable, BlockID, ItemID {
             return null;
         }
 
-        for (CompoundTag entry : this.getNamedTag().getList("custom_ench", CompoundTag.class).getAll()) {
+        for (CompoundTag entry :
+                this.getNamedTag().getList("custom_ench", CompoundTag.class).getAll()) {
             if (entry.getString("id").equals(id)) {
                 Enchantment e = Enchantment.getEnchantment(entry.getString("id"));
                 if (e != null) {
@@ -1298,7 +1328,8 @@ public class Item implements Cloneable, BlockID, ItemID {
             return null;
         }
 
-        for (CompoundTag entry : this.getNamedTag().getList("ench", CompoundTag.class).getAll()) {
+        for (CompoundTag entry :
+                this.getNamedTag().getList("ench", CompoundTag.class).getAll()) {
             if (entry.getShort("id") == id) {
                 Enchantment e = Enchantment.getEnchantment(entry.getShort("id"));
                 if (e != null) {
@@ -1340,10 +1371,11 @@ public class Item implements Cloneable, BlockID, ItemID {
                 for (int k = 0; k < ench.size(); k++) {
                     CompoundTag entry = ench.get(k);
                     if (entry.getShort("id") == enchantment.getId()) {
-                        ench.add(k, new CompoundTag()
-                                .putShort("id", enchantment.getId())
-                                .putShort("lvl", enchantment.getLevel())
-                        );
+                        ench.add(
+                                k,
+                                new CompoundTag()
+                                        .putShort("id", enchantment.getId())
+                                        .putShort("lvl", enchantment.getLevel()));
                         found = true;
                         break;
                     }
@@ -1351,17 +1383,19 @@ public class Item implements Cloneable, BlockID, ItemID {
                 if (!found) {
                     ench.add(new CompoundTag()
                             .putShort("id", enchantment.getId())
-                            .putShort("lvl", enchantment.getLevel())
-                    );
+                            .putShort("lvl", enchantment.getLevel()));
                 }
             } else {
                 for (int k = 0; k < custom_ench.size(); k++) {
                     CompoundTag entry = custom_ench.get(k);
                     if (entry.getString("id").equals(enchantment.getIdentifier().toString())) {
-                        custom_ench.add(k, new CompoundTag()
-                                .putString("id", enchantment.getIdentifier().toString())
-                                .putShort("lvl", enchantment.getLevel())
-                        );
+                        custom_ench.add(
+                                k,
+                                new CompoundTag()
+                                        .putString(
+                                                "id",
+                                                enchantment.getIdentifier().toString())
+                                        .putShort("lvl", enchantment.getLevel()));
                         found = true;
                         break;
                     }
@@ -1369,8 +1403,7 @@ public class Item implements Cloneable, BlockID, ItemID {
                 if (!found) {
                     custom_ench.add(new CompoundTag()
                             .putString("id", enchantment.getIdentifier().toString())
-                            .putShort("lvl", enchantment.getLevel())
-                    );
+                            .putShort("lvl", enchantment.getLevel()));
                 }
             }
         }
@@ -1379,16 +1412,15 @@ public class Item implements Cloneable, BlockID, ItemID {
             if (tag.contains("display") && tag.get("display") instanceof CompoundTag) {
                 tag.getCompound("display").putString("Name", customName);
             } else {
-                tag.putCompound("display", new CompoundTag("display")
-                        .putString("Name", customName)
-                );
+                tag.putCompound("display", new CompoundTag("display").putString("Name", customName));
             }
         }
         this.setNamedTag(tag);
     }
 
     private String setCustomEnchantDisplay(ListTag<CompoundTag> custom_ench) {
-        StringJoiner joiner = new StringJoiner("\n", String.valueOf(TextFormat.RESET) + TextFormat.AQUA + this.name + "\n", "");
+        StringJoiner joiner =
+                new StringJoiner("\n", String.valueOf(TextFormat.RESET) + TextFormat.AQUA + this.name + "\n", "");
         for (var ench : custom_ench.getAll()) {
             var enchantment = Enchantment.getEnchantment(ench.getString("id"));
             joiner.add(enchantment.getLore());
@@ -1417,7 +1449,7 @@ public class Item implements Cloneable, BlockID, ItemID {
                 enchantments.add(e);
             }
         }
-        //custom ench
+        // custom ench
         ListTag<CompoundTag> custom_ench = this.getNamedTag().getList("custom_ench", CompoundTag.class);
         for (CompoundTag entry : custom_ench.getAll()) {
             Enchantment e = Enchantment.getEnchantment(entry.getString("id"));
@@ -1478,7 +1510,9 @@ public class Item implements Cloneable, BlockID, ItemID {
         CompoundTag tag = this.getNamedTag();
         if (tag.contains("display")) {
             Tag tag1 = tag.get("display");
-            return tag1 instanceof CompoundTag && ((CompoundTag) tag1).contains("Name") && ((CompoundTag) tag1).get("Name") instanceof StringTag;
+            return tag1 instanceof CompoundTag
+                    && ((CompoundTag) tag1).contains("Name")
+                    && ((CompoundTag) tag1).get("Name") instanceof StringTag;
         }
 
         return false;
@@ -1492,7 +1526,9 @@ public class Item implements Cloneable, BlockID, ItemID {
         CompoundTag tag = this.getNamedTag();
         if (tag.contains("display")) {
             Tag tag1 = tag.get("display");
-            if (tag1 instanceof CompoundTag && ((CompoundTag) tag1).contains("Name") && ((CompoundTag) tag1).get("Name") instanceof StringTag) {
+            if (tag1 instanceof CompoundTag
+                    && ((CompoundTag) tag1).contains("Name")
+                    && ((CompoundTag) tag1).get("Name") instanceof StringTag) {
                 return ((CompoundTag) tag1).getString("Name");
             }
         }
@@ -1508,7 +1544,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * @param name
      * @return
      */
-
     public Item setCustomName(String name) {
         if (name == null || name.equals("")) {
             this.clearCustomName();
@@ -1523,9 +1558,7 @@ public class Item implements Cloneable, BlockID, ItemID {
         if (tag.contains("display") && tag.get("display") instanceof CompoundTag) {
             tag.getCompound("display").putString("Name", name);
         } else {
-            tag.putCompound("display", new CompoundTag("display")
-                    .putString("Name", name)
-            );
+            tag.putCompound("display", new CompoundTag("display").putString("Name", name));
         }
         this.setNamedTag(tag);
         return this;
@@ -1538,7 +1571,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      *
      * @return
      */
-
     public Item clearCustomName() {
         if (!this.hasCompoundTag()) {
             return this;
@@ -1565,7 +1597,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      *
      * @return
      */
-
     public String[] getLore() {
         Tag tag = this.getNamedTagEntry("display");
         ArrayList<String> lines = new ArrayList<>();
@@ -1692,24 +1723,23 @@ public class Item implements Cloneable, BlockID, ItemID {
         return this.count <= 0 || this.id == AIR || this.id == STRING_IDENTIFIED_ITEM && !(this instanceof StringItem);
     }
 
-    @Nullable
-    final public String getName() {
+    @Nullable public final String getName() {
         return this.hasCustomName() ? this.getCustomName() : this.name;
     }
 
     @PowerNukkitXOnly
     @Since("1.20.0-r2")
-    @NotNull
-    final public String getDisplayName() {
-        return this.hasCustomName() ? this.getCustomName() : this.name == null ? StringItem.createItemName(getNamespaceId()) : name;
+    @NotNull public final String getDisplayName() {
+        return this.hasCustomName()
+                ? this.getCustomName()
+                : this.name == null ? StringItem.createItemName(getNamespaceId()) : name;
     }
 
-    final public boolean canBePlaced() {
+    public final boolean canBePlaced() {
         return ((this.block != null) && this.block.canBePlaced());
     }
 
-    @NotNull
-    public Block getBlock() {
+    @NotNull public Block getBlock() {
         if (this.block != null) {
             return this.block.clone();
         } else {
@@ -1771,7 +1801,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * <p>
      * Create a wildcard recipe item,the item can be applied to a recipe without restriction on data(damage/meta) values
      */
-
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public Item createFuzzyCraftingRecipe() {
@@ -1785,7 +1814,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * <p>
      * Define the maximum number of items to be stacked
      */
-
     public int getMaxStackSize() {
         return block == null ? 64 : block.getItemMaxStackSize();
     }
@@ -1795,8 +1823,7 @@ public class Item implements Cloneable, BlockID, ItemID {
      * <p>
      * Get the burn time of a burnable item
      */
-
-    final public Short getFuelTime() {
+    public final Short getFuelTime() {
         if (!Fuel.isFuel(this)) {
             return null;
         }
@@ -1819,7 +1846,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * <p>
      * Define if this item is a tool
      */
-
     public boolean isTool() {
         return false;
     }
@@ -1829,7 +1855,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * <p>
      * Define the maximum durability value of the item
      */
-
     public int getMaxDurability() {
         return -1;
     }
@@ -1839,7 +1864,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * <p>
      * Define the item Tier level
      */
-
     public int getTier() {
         return 0;
     }
@@ -1849,7 +1873,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * <p>
      * Define if the item is a Pickaxe
      */
-
     public boolean isPickaxe() {
         return false;
     }
@@ -1859,7 +1882,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * <p>
      * Define if the item is a Axe
      */
-
     public boolean isAxe() {
         return false;
     }
@@ -1878,7 +1900,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * <p>
      * Define if the item is a Shovel
      */
-
     public boolean isShovel() {
         return false;
     }
@@ -1888,7 +1909,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * <p>
      * Define if the item is a Hoe
      */
-
     public boolean isHoe() {
         return false;
     }
@@ -1961,7 +1981,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * <p>
      * Define the attackdamage of an item
      */
-
     public int getAttackDamage() {
         return 1;
     }
@@ -1971,7 +1990,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * <p>
      * Define the Armour value of an item
      */
-
     public int getArmorPoints() {
         return 0;
     }
@@ -1981,7 +1999,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * <p>
      * Define the Armour Toughness of an item
      */
-
     public int getToughness() {
         return 0;
     }
@@ -1991,7 +2008,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * <p>
      * Define if the item is Unbreakable
      */
-
     public boolean isUnbreakable() {
         return false;
     }
@@ -2014,7 +2030,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * <p>
      * Define if the item can break the shield
      */
-
     @PowerNukkitXOnly
     @Since("1.19.21-r4")
     public boolean canBreakShield() {
@@ -2046,9 +2061,9 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     @Override
-    final public String toString() {
-        return "Item " + this.name +
-                " (" + (this instanceof StringItem ? this.getNamespaceId() : this.id)
+    public final String toString() {
+        return "Item " + this.name + " ("
+                + (this instanceof StringItem ? this.getNamespaceId() : this.id)
                 + ":" + (!this.hasMeta ? "?" : this.meta)
                 + ")x" + this.count
                 + (this.hasCompoundTag() ? " tags:0x" + Binary.bytesToHexString(this.getCompoundTag()) : "");
@@ -2073,7 +2088,8 @@ public class Item implements Cloneable, BlockID, ItemID {
      * @param fz     the fz
      * @return boolean
      */
-    public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
+    public boolean onActivate(
+            Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         return false;
     }
 
@@ -2193,7 +2209,8 @@ public class Item implements Cloneable, BlockID, ItemID {
             return true;
         }
 
-        if (!thisTags.contains("ench") || !otherTags.contains("ench")
+        if (!thisTags.contains("ench")
+                || !otherTags.contains("ench")
                 || !(thisTags.get("ench") instanceof ListTag)
                 || !(otherTags.get("ench") instanceof ListTag)
                 || thisTags.getList("ench").size() != otherTags.getList("ench").size()) {
@@ -2295,7 +2312,6 @@ public class Item implements Cloneable, BlockID, ItemID {
      * <p>
      * Controls what block types can destroy
      */
-
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public void addCanDestroy(Block block) {
@@ -2341,11 +2357,10 @@ public class Item implements Cloneable, BlockID, ItemID {
      * LOCK_IN_SLOT Prevents the item from being removed from the player's inventory, dropped, or crafted with.
      * LOCK_IN_INVENTORY Prevents the item from being moved or removed from its slot in the player's inventory, dropped, or crafted with
      */
-
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public enum ItemLockMode {
-        NONE,//only used in server
+        NONE, // only used in server
         LOCK_IN_SLOT,
         LOCK_IN_INVENTORY
     }
@@ -2428,19 +2443,28 @@ public class Item implements Cloneable, BlockID, ItemID {
             return gson.fromJson(json, ItemJsonComponents.class);
         }
 
-        public static class KeepOnDeath {
-        }
+        public static class KeepOnDeath {}
 
-        private ItemJsonComponents() {
-        }
+        private ItemJsonComponents() {}
 
-        @SerializedName(value = "minecraft:can_place_on", alternate = {"can_place_on"})
+        @SerializedName(
+                value = "minecraft:can_place_on",
+                alternate = {"can_place_on"})
         public CanPlaceOn canPlaceOn;
-        @SerializedName(value = "minecraft:can_destroy", alternate = {"can_destroy"})
+
+        @SerializedName(
+                value = "minecraft:can_destroy",
+                alternate = {"can_destroy"})
         public CanDestory canDestroy;
-        @SerializedName(value = "minecraft:item_lock", alternate = {"item_lock"})
+
+        @SerializedName(
+                value = "minecraft:item_lock",
+                alternate = {"item_lock"})
         public ItemLock itemLock;
-        @SerializedName(value = "minecraft:keep_on_death", alternate = {"keep_on_death"})
+
+        @SerializedName(
+                value = "minecraft:keep_on_death",
+                alternate = {"keep_on_death"})
         public KeepOnDeath keepOnDeath;
     }
 
@@ -2448,16 +2472,24 @@ public class Item implements Cloneable, BlockID, ItemID {
     @Since("1.6.0.0-PNX")
     public void readItemJsonComponents(ItemJsonComponents components) {
         if (components.canPlaceOn != null)
-            this.setCanPlaceOn(Arrays.stream(components.canPlaceOn.blocks).map(str -> Block.get(BlockStateRegistry.getBlockId(str.startsWith("minecraft:") ? str : "minecraft:" + str))).collect(Collectors.toList()).toArray(new Block[0]));
+            this.setCanPlaceOn(Arrays.stream(components.canPlaceOn.blocks)
+                    .map(str -> Block.get(
+                            BlockStateRegistry.getBlockId(str.startsWith("minecraft:") ? str : "minecraft:" + str)))
+                    .collect(Collectors.toList())
+                    .toArray(new Block[0]));
         if (components.canDestroy != null)
-            this.setCanDestroy(Arrays.stream(components.canDestroy.blocks).map(str -> Block.get(BlockStateRegistry.getBlockId(str.startsWith("minecraft:") ? str : "minecraft:" + str))).collect(Collectors.toList()).toArray(new Block[0]));
+            this.setCanDestroy(Arrays.stream(components.canDestroy.blocks)
+                    .map(str -> Block.get(
+                            BlockStateRegistry.getBlockId(str.startsWith("minecraft:") ? str : "minecraft:" + str)))
+                    .collect(Collectors.toList())
+                    .toArray(new Block[0]));
         if (components.itemLock != null)
-            this.setItemLockMode(switch (components.itemLock.mode) {
-                case ItemJsonComponents.ItemLock.LOCK_IN_SLOT -> Item.ItemLockMode.LOCK_IN_SLOT;
-                case ItemJsonComponents.ItemLock.LOCK_IN_INVENTORY -> Item.ItemLockMode.LOCK_IN_INVENTORY;
-                default -> Item.ItemLockMode.NONE;
-            });
-        if (components.keepOnDeath != null)
-            this.setKeepOnDeath(components.keepOnDeath != null);
+            this.setItemLockMode(
+                    switch (components.itemLock.mode) {
+                        case ItemJsonComponents.ItemLock.LOCK_IN_SLOT -> Item.ItemLockMode.LOCK_IN_SLOT;
+                        case ItemJsonComponents.ItemLock.LOCK_IN_INVENTORY -> Item.ItemLockMode.LOCK_IN_INVENTORY;
+                        default -> Item.ItemLockMode.NONE;
+                    });
+        if (components.keepOnDeath != null) this.setKeepOnDeath(components.keepOnDeath != null);
     }
 }

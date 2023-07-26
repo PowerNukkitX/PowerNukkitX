@@ -1,5 +1,7 @@
 package cn.nukkit.level.generator.object.end;
 
+import static cn.nukkit.block.BlockID.*;
+
 import cn.nukkit.block.BlockChorusFlower;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.ChunkManager;
@@ -8,14 +10,13 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
 
-import static cn.nukkit.block.BlockID.*;
-
 /**
  * @author GoodLucky777
  */
 public class ObjectChorusTree extends BasicGenerator {
 
-    private static final BlockState STATE_CHORUS_FLOWER_FULLY_AGED = BlockState.of(CHORUS_FLOWER, BlockChorusFlower.AGE.getMaxValue());
+    private static final BlockState STATE_CHORUS_FLOWER_FULLY_AGED =
+            BlockState.of(CHORUS_FLOWER, BlockChorusFlower.AGE.getMaxValue());
     private static final BlockState STATE_CHORUS_PLANT = BlockState.of(CHORUS_PLANT);
 
     public boolean generate(ChunkManager level, NukkitRandom rand, Vector3 position) {
@@ -40,7 +41,8 @@ public class ObjectChorusTree extends BasicGenerator {
             if (!this.isHorizontalAir(level, position.up(y))) {
                 return;
             }
-            level.setBlockStateAt(position.getFloorX(), position.getFloorY() + y, position.getFloorZ(), STATE_CHORUS_PLANT);
+            level.setBlockStateAt(
+                    position.getFloorX(), position.getFloorY() + y, position.getFloorZ(), STATE_CHORUS_PLANT);
         }
 
         if (age < 4) {
@@ -53,16 +55,24 @@ public class ObjectChorusTree extends BasicGenerator {
             for (int i = 0; i < attempt; i++) {
                 BlockFace face = BlockFace.Plane.HORIZONTAL.random(random);
                 Vector3 check = position.up(height).getSide(face);
-                if (level.getBlockIdAt(check.getFloorX(), check.getFloorY(), check.getFloorZ()) == AIR && level.getBlockIdAt(check.getFloorX(), check.getFloorY() - 1, check.getFloorZ()) == AIR) {
-                    if (Math.abs(check.getFloorX() - position.getFloorX()) < maxSize && Math.abs(check.getFloorZ() - position.getFloorZ()) < maxSize && this.isHorizontalAirExcept(level, check, face.getOpposite())) {
-                        level.setBlockStateAt(check.getFloorX(), check.getFloorY(), check.getFloorZ(), STATE_CHORUS_PLANT);
+                if (level.getBlockIdAt(check.getFloorX(), check.getFloorY(), check.getFloorZ()) == AIR
+                        && level.getBlockIdAt(check.getFloorX(), check.getFloorY() - 1, check.getFloorZ()) == AIR) {
+                    if (Math.abs(check.getFloorX() - position.getFloorX()) < maxSize
+                            && Math.abs(check.getFloorZ() - position.getFloorZ()) < maxSize
+                            && this.isHorizontalAirExcept(level, check, face.getOpposite())) {
+                        level.setBlockStateAt(
+                                check.getFloorX(), check.getFloorY(), check.getFloorZ(), STATE_CHORUS_PLANT);
                         this.growImmediately(level, random, check, maxSize, age + 1);
                     }
                 }
             }
         } else {
             // Death
-            level.setBlockStateAt(position.getFloorX(), position.getFloorY() + height, position.getFloorZ(), STATE_CHORUS_FLOWER_FULLY_AGED);
+            level.setBlockStateAt(
+                    position.getFloorX(),
+                    position.getFloorY() + height,
+                    position.getFloorZ(),
+                    STATE_CHORUS_FLOWER_FULLY_AGED);
         }
     }
 

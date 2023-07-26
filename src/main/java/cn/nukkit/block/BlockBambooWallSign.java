@@ -8,8 +8,7 @@ import cn.nukkit.item.ItemBambooSign;
 @PowerNukkitXOnly
 @Since("1.20.0-r2")
 public class BlockBambooWallSign extends BlockWallSign {
-    public BlockBambooWallSign() {
-    }
+    public BlockBambooWallSign() {}
 
     public int getId() {
         return BAMBOO_WALL_SIGN;

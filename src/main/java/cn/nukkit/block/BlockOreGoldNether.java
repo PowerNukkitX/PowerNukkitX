@@ -8,7 +8,6 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.MinecraftItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.math.NukkitRandom;
-
 import javax.annotation.Nullable;
 
 /**
@@ -75,15 +74,13 @@ public class BlockOreGoldNether extends BlockOreGold {
                 break;
         }
 
-        return new Item[]{ Item.get(ItemID.GOLD_NUGGET, 0, count) };
+        return new Item[] {Item.get(ItemID.GOLD_NUGGET, 0, count)};
     }
 
     @Since("FUTURE")
     @PowerNukkitOnly
-    @Nullable
-    @Override
+    @Nullable @Override
     protected MinecraftItemID getRawMaterial() {
         return MinecraftItemID.GOLD_NUGGET;
     }
-
 }

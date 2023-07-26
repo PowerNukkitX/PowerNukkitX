@@ -29,14 +29,11 @@ public class PlayStatusPacket extends DataPacket {
     public int status;
 
     @Override
-    public void decode() {
-
-    }
+    public void decode() {}
 
     @Override
     public void encode() {
         this.reset();
         this.putInt(this.status);
     }
-
 }

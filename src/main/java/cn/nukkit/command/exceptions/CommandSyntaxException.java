@@ -7,7 +7,5 @@ import cn.nukkit.api.Since;
 @Since("1.6.0.0-PNX")
 public class CommandSyntaxException extends Exception {
 
-    public CommandSyntaxException() {
-
-    }
+    public CommandSyntaxException() {}
 }

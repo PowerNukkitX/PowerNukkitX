@@ -7,7 +7,6 @@ import cn.nukkit.math.NukkitMath;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import it.unimi.dsi.fastutil.io.FastByteArrayInputStream;
-
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
@@ -46,52 +45,27 @@ public class Binary {
         return value;
     }
 
-    //Triad: {0x00,0x00,0x01}<=>1
+    // Triad: {0x00,0x00,0x01}<=>1
     public static int readTriad(byte[] bytes) {
-        return readInt(new byte[]{
-                (byte) 0x00,
-                bytes[0],
-                bytes[1],
-                bytes[2]
-        });
+        return readInt(new byte[] {(byte) 0x00, bytes[0], bytes[1], bytes[2]});
     }
 
     public static byte[] writeTriad(int value) {
-        return new byte[]{
-                (byte) ((value >>> 16) & 0xFF),
-                (byte) ((value >>> 8) & 0xFF),
-                (byte) (value & 0xFF)
-        };
+        return new byte[] {(byte) ((value >>> 16) & 0xFF), (byte) ((value >>> 8) & 0xFF), (byte) (value & 0xFF)};
     }
 
-    //LTriad: {0x01,0x00,0x00}<=>1
+    // LTriad: {0x01,0x00,0x00}<=>1
     public static int readLTriad(byte[] bytes) {
-        return readLInt(new byte[]{
-                bytes[0],
-                bytes[1],
-                bytes[2],
-                (byte) 0x00
-        });
+        return readLInt(new byte[] {bytes[0], bytes[1], bytes[2], (byte) 0x00});
     }
 
     public static byte[] writeLTriad(int value) {
-        return new byte[]{
-                (byte) (value & 0xFF),
-                (byte) ((value >>> 8) & 0xFF),
-                (byte) ((value >>> 16) & 0xFF)
-        };
+        return new byte[] {(byte) (value & 0xFF), (byte) ((value >>> 8) & 0xFF), (byte) ((value >>> 16) & 0xFF)};
     }
 
     public static UUID readUUID(byte[] bytes) {
-        return new UUID(readLLong(bytes), readLLong(new byte[]{
-                bytes[8],
-                bytes[9],
-                bytes[10],
-                bytes[11],
-                bytes[12],
-                bytes[13],
-                bytes[14],
-                bytes[15]
+        return new UUID(readLLong(bytes), readLLong(new byte[] {
+            bytes[8], bytes[9], bytes[10], bytes[11], bytes[12], bytes[13], bytes[14], bytes[15]
         }));
     }
 
@@ -230,10 +204,7 @@ public class Binary {
     }
 
     public static byte[] writeShort(int s) {
-        return new byte[]{
-                (byte) ((s >>> 8) & 0xFF),
-                (byte) (s & 0xFF)
-        };
+        return new byte[] {(byte) ((s >>> 8) & 0xFF), (byte) (s & 0xFF)};
     }
 
     public static int readLShort(byte[] bytes) {
@@ -246,41 +217,26 @@ public class Binary {
 
     public static byte[] writeLShort(int s) {
         s &= 0xffff;
-        return new byte[]{
-                (byte) (s & 0xFF),
-                (byte) ((s >>> 8) & 0xFF)
-        };
+        return new byte[] {(byte) (s & 0xFF), (byte) ((s >>> 8) & 0xFF)};
     }
 
     public static int readInt(byte[] bytes) {
-        return ((bytes[0] & 0xff) << 24) +
-                ((bytes[1] & 0xff) << 16) +
-                ((bytes[2] & 0xff) << 8) +
-                (bytes[3] & 0xff);
+        return ((bytes[0] & 0xff) << 24) + ((bytes[1] & 0xff) << 16) + ((bytes[2] & 0xff) << 8) + (bytes[3] & 0xff);
     }
 
     public static byte[] writeInt(int i) {
-        return new byte[]{
-                (byte) ((i >>> 24) & 0xFF),
-                (byte) ((i >>> 16) & 0xFF),
-                (byte) ((i >>> 8) & 0xFF),
-                (byte) (i & 0xFF)
+        return new byte[] {
+            (byte) ((i >>> 24) & 0xFF), (byte) ((i >>> 16) & 0xFF), (byte) ((i >>> 8) & 0xFF), (byte) (i & 0xFF)
         };
     }
 
     public static int readLInt(byte[] bytes) {
-        return ((bytes[3] & 0xff) << 24) +
-                ((bytes[2] & 0xff) << 16) +
-                ((bytes[1] & 0xff) << 8) +
-                (bytes[0] & 0xff);
+        return ((bytes[3] & 0xff) << 24) + ((bytes[2] & 0xff) << 16) + ((bytes[1] & 0xff) << 8) + (bytes[0] & 0xff);
     }
 
     public static byte[] writeLInt(int i) {
-        return new byte[]{
-                (byte) (i & 0xFF),
-                (byte) ((i >>> 8) & 0xFF),
-                (byte) ((i >>> 16) & 0xFF),
-                (byte) ((i >>> 24) & 0xFF)
+        return new byte[] {
+            (byte) (i & 0xFF), (byte) ((i >>> 8) & 0xFF), (byte) ((i >>> 16) & 0xFF), (byte) ((i >>> 24) & 0xFF)
         };
     }
 
@@ -335,50 +291,50 @@ public class Binary {
     }
 
     public static long readLong(byte[] bytes) {
-        return (((long) bytes[0] << 56) +
-                ((long) (bytes[1] & 0xFF) << 48) +
-                ((long) (bytes[2] & 0xFF) << 40) +
-                ((long) (bytes[3] & 0xFF) << 32) +
-                ((long) (bytes[4] & 0xFF) << 24) +
-                ((bytes[5] & 0xFF) << 16) +
-                ((bytes[6] & 0xFF) << 8) +
-                ((bytes[7] & 0xFF)));
+        return (((long) bytes[0] << 56)
+                + ((long) (bytes[1] & 0xFF) << 48)
+                + ((long) (bytes[2] & 0xFF) << 40)
+                + ((long) (bytes[3] & 0xFF) << 32)
+                + ((long) (bytes[4] & 0xFF) << 24)
+                + ((bytes[5] & 0xFF) << 16)
+                + ((bytes[6] & 0xFF) << 8)
+                + ((bytes[7] & 0xFF)));
     }
 
     public static byte[] writeLong(long l) {
-        return new byte[]{
-                (byte) (l >>> 56),
-                (byte) (l >>> 48),
-                (byte) (l >>> 40),
-                (byte) (l >>> 32),
-                (byte) (l >>> 24),
-                (byte) (l >>> 16),
-                (byte) (l >>> 8),
-                (byte) (l)
+        return new byte[] {
+            (byte) (l >>> 56),
+            (byte) (l >>> 48),
+            (byte) (l >>> 40),
+            (byte) (l >>> 32),
+            (byte) (l >>> 24),
+            (byte) (l >>> 16),
+            (byte) (l >>> 8),
+            (byte) (l)
         };
     }
 
     public static long readLLong(byte[] bytes) {
-        return (((long) bytes[7] << 56) +
-                ((long) (bytes[6] & 0xFF) << 48) +
-                ((long) (bytes[5] & 0xFF) << 40) +
-                ((long) (bytes[4] & 0xFF) << 32) +
-                ((long) (bytes[3] & 0xFF) << 24) +
-                ((bytes[2] & 0xFF) << 16) +
-                ((bytes[1] & 0xFF) << 8) +
-                ((bytes[0] & 0xFF)));
+        return (((long) bytes[7] << 56)
+                + ((long) (bytes[6] & 0xFF) << 48)
+                + ((long) (bytes[5] & 0xFF) << 40)
+                + ((long) (bytes[4] & 0xFF) << 32)
+                + ((long) (bytes[3] & 0xFF) << 24)
+                + ((bytes[2] & 0xFF) << 16)
+                + ((bytes[1] & 0xFF) << 8)
+                + ((bytes[0] & 0xFF)));
     }
 
     public static byte[] writeLLong(long l) {
-        return new byte[]{
-                (byte) (l),
-                (byte) (l >>> 8),
-                (byte) (l >>> 16),
-                (byte) (l >>> 24),
-                (byte) (l >>> 32),
-                (byte) (l >>> 40),
-                (byte) (l >>> 48),
-                (byte) (l >>> 56),
+        return new byte[] {
+            (byte) (l),
+            (byte) (l >>> 8),
+            (byte) (l >>> 16),
+            (byte) (l >>> 24),
+            (byte) (l >>> 32),
+            (byte) (l >>> 40),
+            (byte) (l >>> 48),
+            (byte) (l >>> 56),
         };
     }
 
@@ -511,6 +467,4 @@ public class Binary {
         }
         return appendedBytes;
     }
-
-
 }

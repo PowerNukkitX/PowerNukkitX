@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.math.VectorMath.calculateFace;
+
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
@@ -9,12 +11,9 @@ import cn.nukkit.blockproperty.value.WoodType;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.SimpleAxisAlignedBB;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 import java.util.Optional;
-
-import static cn.nukkit.math.VectorMath.calculateFace;
+import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author xtypr
@@ -25,17 +24,46 @@ public class BlockFence extends BlockTransparentMeta implements BlockConnectable
     @PowerNukkitOnly
     public static final BlockProperties PROPERTIES = new BlockProperties(WoodType.PROPERTY);
 
-    @Deprecated @DeprecationDetails(reason = "Moved to the block property system", since = "1.4.0.0-PN", replaceWith = "getWoodType()")
+    @Deprecated
+    @DeprecationDetails(
+            reason = "Moved to the block property system",
+            since = "1.4.0.0-PN",
+            replaceWith = "getWoodType()")
     public static final int FENCE_OAK = 0;
-    @Deprecated @DeprecationDetails(reason = "Moved to the block property system", since = "1.4.0.0-PN", replaceWith = "getWoodType()")
+
+    @Deprecated
+    @DeprecationDetails(
+            reason = "Moved to the block property system",
+            since = "1.4.0.0-PN",
+            replaceWith = "getWoodType()")
     public static final int FENCE_SPRUCE = 1;
-    @Deprecated @DeprecationDetails(reason = "Moved to the block property system", since = "1.4.0.0-PN", replaceWith = "getWoodType()")
+
+    @Deprecated
+    @DeprecationDetails(
+            reason = "Moved to the block property system",
+            since = "1.4.0.0-PN",
+            replaceWith = "getWoodType()")
     public static final int FENCE_BIRCH = 2;
-    @Deprecated @DeprecationDetails(reason = "Moved to the block property system", since = "1.4.0.0-PN", replaceWith = "getWoodType()")
+
+    @Deprecated
+    @DeprecationDetails(
+            reason = "Moved to the block property system",
+            since = "1.4.0.0-PN",
+            replaceWith = "getWoodType()")
     public static final int FENCE_JUNGLE = 3;
-    @Deprecated @DeprecationDetails(reason = "Moved to the block property system", since = "1.4.0.0-PN", replaceWith = "getWoodType()")
+
+    @Deprecated
+    @DeprecationDetails(
+            reason = "Moved to the block property system",
+            since = "1.4.0.0-PN",
+            replaceWith = "getWoodType()")
     public static final int FENCE_ACACIA = 4;
-    @Deprecated @DeprecationDetails(reason = "Moved to the block property system", since = "1.4.0.0-PN", replaceWith = "getWoodType()")
+
+    @Deprecated
+    @DeprecationDetails(
+            reason = "Moved to the block property system",
+            since = "1.4.0.0-PN",
+            replaceWith = "getWoodType()")
     public static final int FENCE_DARK_OAK = 5;
 
     public BlockFence() {
@@ -53,8 +81,7 @@ public class BlockFence extends BlockTransparentMeta implements BlockConnectable
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -79,7 +106,7 @@ public class BlockFence extends BlockTransparentMeta implements BlockConnectable
     public int getToolType() {
         return ItemTool.TYPE_AXE;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void setWoodType(@Nullable WoodType woodType) {
@@ -107,14 +134,7 @@ public class BlockFence extends BlockTransparentMeta implements BlockConnectable
         double s = south ? 1 : 0.625;
         double w = west ? 0 : 0.375;
         double e = east ? 1 : 0.625;
-        return new SimpleAxisAlignedBB(
-                this.x + w,
-                this.y,
-                this.z + n,
-                this.x + e,
-                this.y + 1.5,
-                this.z + s
-        );
+        return new SimpleAxisAlignedBB(this.x + w, this.y, this.z + n, this.x + e, this.y + 1.5, this.z + s);
     }
 
     @Override
@@ -141,5 +161,4 @@ public class BlockFence extends BlockTransparentMeta implements BlockConnectable
         }
         return block instanceof BlockFenceGate || block.isSolid() && !block.isTransparent();
     }
-
 }

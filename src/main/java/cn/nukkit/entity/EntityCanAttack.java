@@ -12,7 +12,7 @@ import cn.nukkit.api.Since;
 @Since("1.19.30-r1")
 public interface EntityCanAttack {
 
-    float[] EMPTY_FLOAT_ARRAY = new float[]{0.0f, 0.0f, 0.0f};
+    float[] EMPTY_FLOAT_ARRAY = new float[] {0.0f, 0.0f, 0.0f};
 
     /**
      * 得到所有难度下不携带物品能造成的伤害.

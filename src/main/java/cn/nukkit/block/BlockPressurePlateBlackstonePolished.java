@@ -27,5 +27,4 @@ public class BlockPressurePlateBlackstonePolished extends BlockPressurePlateSton
     public String getName() {
         return "Polished Blackstone Pressure Plate";
     }
-
 }

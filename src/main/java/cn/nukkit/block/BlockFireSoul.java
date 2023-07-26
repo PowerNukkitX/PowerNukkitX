@@ -9,13 +9,13 @@ import cn.nukkit.level.Level;
 public class BlockFireSoul extends BlockFire {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public BlockFireSoul(){
+    public BlockFireSoul() {
         this(0);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public BlockFireSoul(int meta){
+    public BlockFireSoul(int meta) {
         super(meta);
     }
 
@@ -34,11 +34,13 @@ public class BlockFireSoul extends BlockFire {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             int downId = down().getId();
             if (downId != Block.SOUL_SAND && downId != Block.SOUL_SOIL) {
-                this.getLevel().setBlock(this, getCurrentState().withBlockId(BlockID.FIRE).getBlock(this));
+                this.getLevel()
+                        .setBlock(
+                                this,
+                                getCurrentState().withBlockId(BlockID.FIRE).getBlock(this));
             }
             return type;
         }
         return 0;
     }
-
 }

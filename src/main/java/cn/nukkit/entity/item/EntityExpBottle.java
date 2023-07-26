@@ -10,7 +10,6 @@ import cn.nukkit.level.particle.Particle;
 import cn.nukkit.level.particle.SpellParticle;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
-
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -100,7 +99,6 @@ public class EntityExpBottle extends EntityProjectile {
     protected void addHitEffect() {
         this.getLevel().addSound(this, Sound.RANDOM_GLASS);
     }
-
 
     @PowerNukkitOnly
     @Since("1.5.1.0-PN")

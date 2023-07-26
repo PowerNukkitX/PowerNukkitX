@@ -26,5 +26,4 @@ public class ItemDoorWarped extends Item {
         super(WARPED_DOOR, 0, count, "Warped Door");
         this.block = Block.get(BlockID.WARPED_DOOR_BLOCK);
     }
-
 }

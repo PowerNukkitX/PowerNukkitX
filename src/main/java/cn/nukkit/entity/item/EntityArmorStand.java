@@ -32,7 +32,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.SetEntityDataPacket;
 import cn.nukkit.potion.Effect;
-
 import java.util.Collection;
 
 @PowerNukkitOnly
@@ -150,7 +149,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
             return true;
         }
 
-        //Pose
+        // Pose
         if (player.isSneaking()) {
             if (this.getPose() >= 12) {
                 this.setPose(0);
@@ -160,7 +159,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
             return false; // Returning true would consume the item
         }
 
-        //Inventory
+        // Inventory
         boolean isArmor;
 
         boolean hasItemInHand = !item.isNull();
@@ -181,7 +180,9 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
             }
         } else {
             double clickHeight = clickedPos.y - this.y;
-            if (clickHeight >= 0.1 && clickHeight < 0.55 && !armorInventory.getBoots().isNull()) {
+            if (clickHeight >= 0.1
+                    && clickHeight < 0.55
+                    && !armorInventory.getBoots().isNull()) {
                 isArmor = true;
                 slot = EntityArmorInventory.SLOT_FEET;
             } else if (clickHeight >= 0.9 && clickHeight < 1.6) {
@@ -197,7 +198,9 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
                 } else {
                     return false;
                 }
-            } else if (clickHeight >= 0.4 && clickHeight < 1.2 && !armorInventory.getLeggings().isNull()) {
+            } else if (clickHeight >= 0.4
+                    && clickHeight < 1.2
+                    && !armorInventory.getLeggings().isNull()) {
                 isArmor = true;
                 slot = EntityArmorInventory.SLOT_LEGS;
             } else if (clickHeight >= 1.6 && !armorInventory.getHelmet().isNull()) {
@@ -297,7 +300,6 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         return false;
     }
 
-
     private int getPose() {
         return this.dataProperties.getInt(Entity.DATA_ARMOR_STAND_POSE_INDEX);
     }
@@ -338,7 +340,9 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
     @Override
     public void spawnToAll() {
         if (this.chunk != null && !this.closed) {
-            Collection<Player> chunkPlayers = this.level.getChunkPlayers(this.chunk.getX(), this.chunk.getZ()).values();
+            Collection<Player> chunkPlayers = this.level
+                    .getChunkPlayers(this.chunk.getX(), this.chunk.getZ())
+                    .values();
             for (Player chunkPlayer : chunkPlayers) {
                 this.spawnTo(chunkPlayer);
             }
@@ -356,7 +360,8 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
     public void kill() {
         super.kill();
         EntityDamageEvent lastDamageCause = this.lastDamageCause;
-        boolean byAttack = lastDamageCause != null && lastDamageCause.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK;
+        boolean byAttack =
+                lastDamageCause != null && lastDamageCause.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK;
 
         Vector3 pos = getPosition();
 
@@ -378,8 +383,14 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
 
         level.addSound(this, Sound.MOB_ARMOR_STAND_BREAK);
 
-        //todo: initiator should be a entity who kill it but not itself
-        level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.getLastDamageCause() instanceof EntityDamageByEntityEvent byEntity ? byEntity.getDamager() : this, this.clone(), VibrationType.ENTITY_DIE));
+        // todo: initiator should be a entity who kill it but not itself
+        level.getVibrationManager()
+                .callVibrationEvent(new VibrationEvent(
+                        this.getLastDamageCause() instanceof EntityDamageByEntityEvent byEntity
+                                ? byEntity.getDamager()
+                                : this,
+                        this.clone(),
+                        VibrationType.ENTITY_DIE));
     }
 
     @Override
@@ -520,7 +531,11 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
             }
         }
 
-        return hasUpdate || !onGround || Math.abs(motionX) > 0.00001 || Math.abs(motionY) > 0.00001 || Math.abs(motionZ) > 0.00001;
+        return hasUpdate
+                || !onGround
+                || Math.abs(motionX) > 0.00001
+                || Math.abs(motionY) > 0.00001
+                || Math.abs(motionZ) > 0.00001;
     }
 
     @Override

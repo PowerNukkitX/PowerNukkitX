@@ -8,22 +8,19 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 
-
 public interface Node extends Comparable<Node> {
 
     /**
      * Life-cycle hook method called after the node has been made the current
      * node
      */
-    default void open() {
-    }
+    default void open() {}
 
     /**
      * Life-cycle hook method called after all the child nodes have been
      * added.
      */
-    default void close() {
-    }
+    default void close() {}
 
     /**
      * @return the input source (usually a filename) from which this Node came from
@@ -55,7 +52,7 @@ public interface Node extends Comparable<Node> {
      */
     Node getParent();
 
-    // The following 9 methods will typically just 
+    // The following 9 methods will typically just
     // delegate straightforwardly to a List object that
     // holds the child nodes
 
@@ -309,10 +306,7 @@ public interface Node extends Comparable<Node> {
         SNBTLexer tokenSource = getTokenSource();
         return tokenSource == null ? 0 : tokenSource.getLineFromOffset(getBeginOffset());
     }
-
-
     ;
-
 
     /**
      * @return the (1-based) line location where this Node ends
@@ -321,10 +315,7 @@ public interface Node extends Comparable<Node> {
         SNBTLexer tokenSource = getTokenSource();
         return tokenSource == null ? 0 : tokenSource.getLineFromOffset(getEndOffset() - 1);
     }
-
-
     ;
-
 
     /**
      * @return the (1-based) column where this Node starts
@@ -333,10 +324,7 @@ public interface Node extends Comparable<Node> {
         SNBTLexer tokenSource = getTokenSource();
         return tokenSource == null ? 0 : tokenSource.getCodePointColumnFromOffset(getBeginOffset());
     }
-
-
     ;
-
 
     /**
      * @return the (1-based) column offset where this Node ends
@@ -499,7 +487,8 @@ public interface Node extends Comparable<Node> {
         if (first == null) return null;
         if (first instanceof Token) {
             Token tok = (Token) first;
-            while (tok.previousCachedToken() != null && tok.previousCachedToken().isUnparsed()) {
+            while (tok.previousCachedToken() != null
+                    && tok.previousCachedToken().isUnparsed()) {
                 tok = tok.previousCachedToken();
             }
             return tok;
@@ -536,8 +525,7 @@ public interface Node extends Comparable<Node> {
      */
     default void copyLocationInfo(Node start, Node end) {
         setTokenSource(start.getTokenSource());
-        if (getTokenSource() == null)
-            setTokenSource(end.getTokenSource());
+        if (getTokenSource() == null) setTokenSource(end.getTokenSource());
         setBeginOffset(start.getBeginOffset());
         setEndOffset(end.getEndOffset());
     }
@@ -582,7 +570,7 @@ public interface Node extends Comparable<Node> {
         return parent;
     }
 
-    static public List<Token> getTokens(Node node) {
+    public static List<Token> getTokens(Node node) {
         List<Token> result = new ArrayList<Token>();
         for (Node child : node.children()) {
             if (child instanceof Token) {
@@ -594,7 +582,7 @@ public interface Node extends Comparable<Node> {
         return result;
     }
 
-    static public List<Token> getRealTokens(Node n) {
+    public static List<Token> getRealTokens(Node n) {
         List<Token> result = new ArrayList<Token>();
         for (Token token : getTokens(n)) {
             if (!token.isUnparsed()) {
@@ -635,7 +623,9 @@ public interface Node extends Comparable<Node> {
         if (this instanceof Token) {
             output = toString().trim();
         } else {
-            output = String.format("<%s (%d, %d)-(%d, %d)>", getClass().getSimpleName(), getBeginLine(), getBeginColumn(), getEndLine(), getEndColumn());
+            output = String.format(
+                    "<%s (%d, %d)-(%d, %d)>",
+                    getClass().getSimpleName(), getBeginLine(), getBeginColumn(), getEndLine(), getEndColumn());
         }
         // String output = (this instanceof Token) ? toString().trim() : getClass().getSimpleName();
         if (output.length() > 0) {
@@ -654,7 +644,7 @@ public interface Node extends Comparable<Node> {
     // NB: This is not thread-safe
     // If the node's children could change out from under you,
     // you could have a problem.
-    default public ListIterator<Node> iterator() {
+    public default ListIterator<Node> iterator() {
         return new ListIterator<Node>() {
             private int current = -1;
             private boolean justModified;
@@ -701,15 +691,12 @@ public interface Node extends Comparable<Node> {
             public void set(Node n) {
                 setChild(current, n);
             }
-
-        }
-                ;
+        };
     }
 
-
-    static abstract public class Visitor {
-        static private Map<Class<? extends Visitor>, Map<Class<? extends Node>, Method>> mapLookup;
-        static private final Method DUMMY_METHOD;
+    public abstract static class Visitor {
+        private static Map<Class<? extends Visitor>, Map<Class<? extends Node>, Method>> mapLookup;
+        private static final Method DUMMY_METHOD;
 
         static {
             try {
@@ -719,7 +706,8 @@ public interface Node extends Comparable<Node> {
                 throw new RuntimeException(e);
             }
             // Never happens anyway.
-            mapLookup = Collections.synchronizedMap(new HashMap<Class<? extends Visitor>, Map<Class<? extends Node>, Method>>());
+            mapLookup = Collections.synchronizedMap(
+                    new HashMap<Class<? extends Visitor>, Map<Class<? extends Node>, Method>>());
         }
 
         private Map<Class<? extends Node>, Method> methodCache;
@@ -743,7 +731,7 @@ public interface Node extends Comparable<Node> {
             return methodCache.get(nodeClass);
         }
 
-        // Find handler method for this node type. If there is none, 
+        // Find handler method for this node type. If there is none,
         // it checks for a handler for any explicitly marked interfaces
         // If necessary, it climbs the class hierarchy to superclasses
         private Method getVisitMethodImpl(Class<?> nodeClass) {
@@ -757,14 +745,15 @@ public interface Node extends Comparable<Node> {
             } catch (NoSuchMethodException e) {
             }
             for (Class<?> interf : nodeClass.getInterfaces()) {
-                if (Node.class.isAssignableFrom(interf) && !Node.class.equals(interf)) try {
-                    Method m = this.getClass().getDeclaredMethod("visit", interf);
-                    if (!Modifier.isPublic(interf.getModifiers()) || !Modifier.isPublic(m.getModifiers())) {
-                        m.setAccessible(true);
+                if (Node.class.isAssignableFrom(interf) && !Node.class.equals(interf))
+                    try {
+                        Method m = this.getClass().getDeclaredMethod("visit", interf);
+                        if (!Modifier.isPublic(interf.getModifiers()) || !Modifier.isPublic(m.getModifiers())) {
+                            m.setAccessible(true);
+                        }
+                        return m;
+                    } catch (NoSuchMethodException e) {
                     }
-                    return m;
-                } catch (NoSuchMethodException e) {
-                }
             }
             return getVisitMethodImpl(nodeClass.getSuperclass());
         }
@@ -779,17 +768,18 @@ public interface Node extends Comparable<Node> {
             Method visitMethod = getVisitMethod(node);
             if (visitMethod == DUMMY_METHOD) {
                 recurse(node);
-            } else try {
-                visitMethod.invoke(this, node);
-            } catch (InvocationTargetException ite) {
-                Throwable cause = ite.getCause();
-                if (cause instanceof RuntimeException) {
-                    throw (RuntimeException) cause;
+            } else
+                try {
+                    visitMethod.invoke(this, node);
+                } catch (InvocationTargetException ite) {
+                    Throwable cause = ite.getCause();
+                    if (cause instanceof RuntimeException) {
+                        throw (RuntimeException) cause;
+                    }
+                    throw new RuntimeException(ite);
+                } catch (IllegalAccessException iae) {
+                    throw new RuntimeException(iae);
                 }
-                throw new RuntimeException(ite);
-            } catch (IllegalAccessException iae) {
-                throw new RuntimeException(iae);
-            }
         }
 
         /**
@@ -802,9 +792,5 @@ public interface Node extends Comparable<Node> {
                 visit(child);
             }
         }
-
     }
-
 }
-
-

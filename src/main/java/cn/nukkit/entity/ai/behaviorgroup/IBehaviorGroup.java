@@ -8,7 +8,6 @@ import cn.nukkit.entity.ai.controller.IController;
 import cn.nukkit.entity.ai.memory.IMemoryStorage;
 import cn.nukkit.entity.ai.route.finder.IRouteFinder;
 import cn.nukkit.entity.ai.sensor.ISensor;
-
 import java.util.Set;
 
 /**
@@ -146,13 +145,11 @@ public interface IBehaviorGroup {
      * <p>
      * When EntityAI.checkDebugOption(BEHAVIOR) == true, this method is called every 1gt to refresh the content related to debug mode
      */
-    default void debugTick(EntityIntelligent entity) {
-    }
+    default void debugTick(EntityIntelligent entity) {}
 
     @Since("1.19.63-r1")
     default void save(EntityIntelligent entity) {
-        //EmptyBehaviorGroup will return null
-        if (getMemoryStorage() != null)
-            getMemoryStorage().encode();
+        // EmptyBehaviorGroup will return null
+        if (getMemoryStorage() != null) getMemoryStorage().encode();
     }
 }

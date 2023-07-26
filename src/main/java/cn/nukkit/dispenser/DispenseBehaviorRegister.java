@@ -7,7 +7,6 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,8 +56,8 @@ public final class DispenseBehaviorRegister {
                 return super.getMotion() * 1.5;
             }
         });
-        //TODO: tipped arrow
-        //TODO: spectral arrow
+        // TODO: tipped arrow
+        // TODO: spectral arrow
         registerBehavior(ItemID.EGG, new ProjectileDispenseBehavior("Egg"));
         registerBehavior(ItemID.SNOWBALL, new ProjectileDispenseBehavior("Snowball"));
         registerBehavior(ItemID.FIRE_CHARGE, new ProjectileDispenseBehavior("Small FireBall") {
@@ -69,11 +68,7 @@ public final class DispenseBehaviorRegister {
 
             @Override
             protected Vector3 initMotion(BlockFace face) {
-                return new Vector3(
-                        face.getXOffset(),
-                        face.getYOffset()/* + 0.1f*/,
-                        face.getZOffset())
-                        .normalize();
+                return new Vector3(face.getXOffset(), face.getYOffset() /* + 0.1f*/, face.getZOffset()).normalize();
             }
 
             @Since("1.19.60-r1")
@@ -104,7 +99,7 @@ public final class DispenseBehaviorRegister {
                 return super.getMotion() * 1.25;
             }
         });
-//        registerBehavior(ItemID.LINGERING_POTION, new ProjectileDispenseBehavior("LingeringPotion")); //TODO
+        //        registerBehavior(ItemID.LINGERING_POTION, new ProjectileDispenseBehavior("LingeringPotion")); //TODO
         registerBehavior(ItemID.TRIDENT, new ProjectileDispenseBehavior("ThrownTrident") {
             @Override
             protected float getAccuracy() {
@@ -128,6 +123,6 @@ public final class DispenseBehaviorRegister {
         registerBehavior(ItemID.CHEST_MINECART, new MinecartDispenseBehavior("MinecartChest"));
         registerBehavior(ItemID.HOPPER_MINECART, new MinecartDispenseBehavior("MinecartHopper"));
         registerBehavior(ItemID.TNT_MINECART, new MinecartDispenseBehavior("MinecartTnt"));
-        //TODO: 命令方块矿车
+        // TODO: 命令方块矿车
     }
 }

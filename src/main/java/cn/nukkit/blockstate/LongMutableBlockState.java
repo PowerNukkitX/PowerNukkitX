@@ -1,5 +1,7 @@
 package cn.nukkit.blockstate;
 
+import static cn.nukkit.blockstate.IMutableBlockState.handleUnsupportedStorageType;
+
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
@@ -11,18 +13,15 @@ import cn.nukkit.blockproperty.exception.InvalidBlockPropertyException;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.utils.Validation;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nonnegative;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-
-import static cn.nukkit.blockstate.IMutableBlockState.handleUnsupportedStorageType;
+import javax.annotation.Nonnegative;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
@@ -34,7 +33,7 @@ public class LongMutableBlockState extends MutableBlockState {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public LongMutableBlockState(int blockId,BlockProperties properties, long state) {
+    public LongMutableBlockState(int blockId, BlockProperties properties, long state) {
         super(blockId, properties);
         this.storage = state;
     }
@@ -84,21 +83,21 @@ public class LongMutableBlockState extends MutableBlockState {
     public void validate() {
         validate(storage);
     }
-    
+
     private void validate(long state) {
         if (state == 0) {
             return;
         }
 
         Validation.checkPositive("state", state);
-        
+
         BlockProperties properties = this.properties;
         int bitLength = NukkitMath.bitLength(state);
         if (bitLength > properties.getBitSize()) {
             throw new InvalidBlockStateException(
                     BlockState.of(getBlockId(), state),
-                    "The state have more data bits than specified in the properties. Bits: " + bitLength + ", Max: " + properties.getBitSize()
-            );
+                    "The state have more data bits than specified in the properties. Bits: " + bitLength + ", Max: "
+                            + properties.getBitSize());
         }
 
         try {
@@ -113,16 +112,21 @@ public class LongMutableBlockState extends MutableBlockState {
 
     @Nonnegative
     @Deprecated
-    @DeprecationDetails(reason = "Can't store all data, exists for backward compatibility reasons", since = "1.4.0.0-PN", replaceWith = "getDataStorage()")
+    @DeprecationDetails(
+            reason = "Can't store all data, exists for backward compatibility reasons",
+            since = "1.4.0.0-PN",
+            replaceWith = "getDataStorage()")
     @Override
     @PowerNukkitOnly
     public int getLegacyDamage() {
         return (int) (storage & Block.DATA_MASK);
     }
 
-    @Unsigned
-    @Deprecated
-    @DeprecationDetails(reason = "Can't store all data, exists for backward compatibility reasons", since = "1.4.0.0-PN", replaceWith = "getDataStorage()")
+    @Unsigned @Deprecated
+    @DeprecationDetails(
+            reason = "Can't store all data, exists for backward compatibility reasons",
+            since = "1.4.0.0-PN",
+            replaceWith = "getDataStorage()")
     @Override
     @PowerNukkitOnly
     public int getBigDamage() {
@@ -133,7 +137,10 @@ public class LongMutableBlockState extends MutableBlockState {
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     @Deprecated
-    @DeprecationDetails(reason = "Can't store all data, exists for backward compatibility reasons", since = "1.4.0.0-PN", replaceWith = "getDataStorage()")
+    @DeprecationDetails(
+            reason = "Can't store all data, exists for backward compatibility reasons",
+            since = "1.4.0.0-PN",
+            replaceWith = "getDataStorage()")
     @Override
     public int getSignedBigDamage() {
         return (int) (storage & Integer.MAX_VALUE);
@@ -142,15 +149,13 @@ public class LongMutableBlockState extends MutableBlockState {
     @Nonnegative
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    @Override
+    @NotNull @Override
     public BigInteger getHugeDamage() {
         return BigInteger.valueOf(storage);
     }
 
     @Nonnegative
-    @NotNull
-    @Override
+    @NotNull @Override
     @PowerNukkitOnly
     public Number getDataStorage() {
         return storage;
@@ -185,8 +190,7 @@ public class LongMutableBlockState extends MutableBlockState {
     }
 
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public Serializable getPropertyValue(String propertyName) {
         return properties.getValue(storage, propertyName);
     }
@@ -204,14 +208,12 @@ public class LongMutableBlockState extends MutableBlockState {
     }
 
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getPersistenceValue(String propertyName) {
         return properties.getPersistenceValue(storage, propertyName);
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     @PowerNukkitOnly
     public BlockState getCurrentState() {
         return BlockState.of(blockId, storage);
@@ -223,14 +225,13 @@ public class LongMutableBlockState extends MutableBlockState {
     public int getExactIntStorage() {
         int bits = getBitSize();
         if (bits > 32) {
-            throw new ArithmeticException(storage+" can't be stored in an 32 bits integer. It has "+bits+" bits");
+            throw new ArithmeticException(storage + " can't be stored in an 32 bits integer. It has " + bits + " bits");
         }
         return (int) storage;
     }
 
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public LongMutableBlockState copy() {
         return new LongMutableBlockState(getBlockId(), properties, storage);
     }

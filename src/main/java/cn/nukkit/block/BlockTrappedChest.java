@@ -10,9 +10,8 @@ import cn.nukkit.math.BlockFace.Plane;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Map;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder only in PowerNukkit")
 public class BlockTrappedChest extends BlockChest {
@@ -36,16 +35,26 @@ public class BlockTrappedChest extends BlockChest {
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         int[] faces = {2, 5, 3, 4};
 
         BlockEntityChest chest = null;
         this.setDamage(faces[player != null ? player.getDirection().getHorizontalIndex() : 0]);
 
         for (BlockFace side : Plane.HORIZONTAL) {
-            if ((this.getDamage() == 4 || this.getDamage() == 5) && (side == BlockFace.WEST || side == BlockFace.EAST)) {
+            if ((this.getDamage() == 4 || this.getDamage() == 5)
+                    && (side == BlockFace.WEST || side == BlockFace.EAST)) {
                 continue;
-            } else if ((this.getDamage() == 3 || this.getDamage() == 2) && (side == BlockFace.NORTH || side == BlockFace.SOUTH)) {
+            } else if ((this.getDamage() == 3 || this.getDamage() == 2)
+                    && (side == BlockFace.NORTH || side == BlockFace.SOUTH)) {
                 continue;
             }
             Block c = this.getSide(side);
@@ -77,7 +86,8 @@ public class BlockTrappedChest extends BlockChest {
             }
         }
 
-        BlockEntityChest blockEntity = (BlockEntityChest) BlockEntity.createBlockEntity(BlockEntity.CHEST, this.getLevel().getChunk((int) (this.x) >> 4, (int) (this.z) >> 4), nbt);
+        BlockEntityChest blockEntity = (BlockEntityChest) BlockEntity.createBlockEntity(
+                BlockEntity.CHEST, this.getLevel().getChunk((int) (this.x) >> 4, (int) (this.z) >> 4), nbt);
 
         if (blockEntity == null) {
             return false;
@@ -98,7 +108,8 @@ public class BlockTrappedChest extends BlockChest {
         BlockEntity blockEntity = this.level.getBlockEntity(this);
 
         if (blockEntity instanceof BlockEntityChest) {
-            playerCount = ((BlockEntityChest) blockEntity).getInventory().getViewers().size();
+            playerCount =
+                    ((BlockEntityChest) blockEntity).getInventory().getViewers().size();
         }
 
         return Math.min(playerCount, 15);

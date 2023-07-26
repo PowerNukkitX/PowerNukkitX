@@ -6,7 +6,6 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandExecutor;
 import cn.nukkit.utils.Config;
-
 import java.io.File;
 import java.io.InputStream;
 
@@ -28,7 +27,7 @@ public interface Plugin extends CommandExecutor {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     Plugin[] EMPTY_ARRAY = new Plugin[0];
-    
+
     /**
      * 在一个Nukkit插件被加载时调用的方法。这个方法会在{@link Plugin#onEnable()}之前调用。<br>
      * Called when a Nukkit plugin is loaded, before {@link Plugin#onEnable()} .
@@ -180,7 +179,6 @@ public interface Plugin extends CommandExecutor {
      * @see cn.nukkit.plugin.Plugin#saveResource(String)
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */
-
     boolean saveResource(String filename, boolean replace);
 
     boolean saveResource(String filename, String outputName, boolean replace);

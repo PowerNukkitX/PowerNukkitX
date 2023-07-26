@@ -9,9 +9,8 @@ import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.particle.WaxOffParticle;
 import cn.nukkit.level.particle.WaxOnParticle;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author joserobjr
@@ -22,8 +21,7 @@ import javax.annotation.Nullable;
 public interface Waxable {
     @PowerNukkitOnly
     @Since("FUTURE")
-    @NotNull
-    Location getLocation();
+    @NotNull Location getLocation();
 
     @PowerNukkitOnly
     @Since("FUTURE")
@@ -38,15 +36,15 @@ public interface Waxable {
             return false;
         }
 
-        Position location = this instanceof Block? (Position) this : getLocation();
+        Position location = this instanceof Block ? (Position) this : getLocation();
         if (player == null || !player.isCreative()) {
             if (waxed) {
                 item.count--;
             } else {
-                item.useOn(this instanceof Block? (Block) this : location.getLevelBlock());
+                item.useOn(this instanceof Block ? (Block) this : location.getLevelBlock());
             }
         }
-        location.getValidLevel().addParticle(waxed? new WaxOnParticle(location) : new WaxOffParticle(location));
+        location.getValidLevel().addParticle(waxed ? new WaxOnParticle(location) : new WaxOffParticle(location));
         return true;
     }
 

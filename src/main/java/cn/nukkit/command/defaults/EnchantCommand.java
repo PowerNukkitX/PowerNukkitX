@@ -13,7 +13,6 @@ import cn.nukkit.inventory.PlayerInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
-
 import java.util.List;
 import java.util.Map;
 
@@ -27,22 +26,23 @@ public class EnchantCommand extends VanillaCommand {
         super(name, "commands.enchant.description", "nukkit.command.enchant.usage");
         this.setPermission("nukkit.command.enchant");
         this.commandParameters.clear();
-        this.commandParameters.put("default", new CommandParameter[]{
-                CommandParameter.newType("player", CommandParamType.TARGET),
-                CommandParameter.newType("enchantmentId", CommandParamType.INT),
-                CommandParameter.newType("level", true, CommandParamType.INT)
+        this.commandParameters.put("default", new CommandParameter[] {
+            CommandParameter.newType("player", CommandParamType.TARGET),
+            CommandParameter.newType("enchantmentId", CommandParamType.INT),
+            CommandParameter.newType("level", true, CommandParamType.INT)
         });
-        this.commandParameters.put("byName", new CommandParameter[]{
-                CommandParameter.newType("player", CommandParamType.TARGET),
-                CommandParameter.newEnum("enchantmentName", CommandEnum.ENUM_ENCHANTMENT),
-                CommandParameter.newType("level", true, CommandParamType.INT)
+        this.commandParameters.put("byName", new CommandParameter[] {
+            CommandParameter.newType("player", CommandParamType.TARGET),
+            CommandParameter.newEnum("enchantmentName", CommandEnum.ENUM_ENCHANTMENT),
+            CommandParameter.newType("level", true, CommandParamType.INT)
         });
         this.enableParamTree();
     }
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         List<Entity> entities = list.getResult(0);
         if (entities.isEmpty()) {
@@ -56,7 +56,8 @@ public class EnchantCommand extends VanillaCommand {
                 int enchant = list.getResult(1);
                 enchantment = Enchantment.getEnchantment(enchant);
                 if (enchantment.getOriginalName().equals("unknown")) {
-                    log.addError("commands.enchant.notFound", String.valueOf(enchant)).output();
+                    log.addError("commands.enchant.notFound", String.valueOf(enchant))
+                            .output();
                     return 0;
                 }
             }
@@ -64,7 +65,8 @@ public class EnchantCommand extends VanillaCommand {
                 String str = list.getResult(1);
                 enchantment = Enchantment.getEnchantment(str);
                 if (enchantment == null) {
-                    log.addError("commands.enchant.notFound", String.valueOf(str)).output();
+                    log.addError("commands.enchant.notFound", String.valueOf(str))
+                            .output();
                     return 0;
                 }
             }

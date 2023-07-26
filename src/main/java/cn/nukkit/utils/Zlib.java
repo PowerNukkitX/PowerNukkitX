@@ -6,10 +6,9 @@ import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.lang.BaseLang;
 import cn.nukkit.network.Network;
 import cn.powernukkitx.libdeflate.Libdeflate;
-import lombok.extern.log4j.Log4j2;
-
 import java.io.IOException;
 import java.util.zip.Deflater;
+import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 public abstract class Zlib {
@@ -24,32 +23,29 @@ public abstract class Zlib {
 
     @PowerNukkitXDifference(info = "Add the LibDeflate Provider", since = "1.19.40-r3")
     public static void setProvider(int providerIndex) {
-        var lang = Server.getInstance() == null ? new BaseLang("eng") : Server.getInstance().getLanguage();
+        var lang = Server.getInstance() == null
+                ? new BaseLang("eng")
+                : Server.getInstance().getLanguage();
         switch (providerIndex) {
             case 0:
-                if (providers[providerIndex] == null)
-                    providers[providerIndex] = new ZlibOriginal();
+                if (providers[providerIndex] == null) providers[providerIndex] = new ZlibOriginal();
                 break;
             case 1:
-                if (providers[providerIndex] == null)
-                    providers[providerIndex] = new ZlibSingleThreadLowMem();
+                if (providers[providerIndex] == null) providers[providerIndex] = new ZlibSingleThreadLowMem();
                 break;
             case 2:
-                if (providers[providerIndex] == null)
-                    providers[providerIndex] = new ZlibThreadLocal();
+                if (providers[providerIndex] == null) providers[providerIndex] = new ZlibThreadLocal();
                 if (Libdeflate.isAvailable())
                     log.info(TextFormat.WHITE + lang.tr("nukkit.zlib.acceleration-can-enable"));
                 break;
             case 3:
                 if (Libdeflate.isAvailable()) {
                     Network.libDeflateAvailable = true;
-                    if (providers[providerIndex] == null)
-                        providers[providerIndex] = new LibDeflateThreadLocal();
+                    if (providers[providerIndex] == null) providers[providerIndex] = new LibDeflateThreadLocal();
                 } else {
                     log.warn(lang.tr("nukkit.zlib.unavailable"));
                     providerIndex = 2;
-                    if (providers[providerIndex] == null)
-                        providers[providerIndex] = new ZlibThreadLocal();
+                    if (providers[providerIndex] == null) providers[providerIndex] = new ZlibThreadLocal();
                 }
                 break;
             default:
@@ -62,7 +58,10 @@ public abstract class Zlib {
             log.warn(lang.tr("nukkit.zlib.acceleration-experimental"));
         }
         provider = providers[providerIndex];
-        log.info(lang.tr("nukkit.zlib.selected") + ": {} ({})", providerIndex, provider.getClass().getCanonicalName());
+        log.info(
+                lang.tr("nukkit.zlib.selected") + ": {} ({})",
+                providerIndex,
+                provider.getClass().getCanonicalName());
     }
 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Throws IOException instead of Exception")

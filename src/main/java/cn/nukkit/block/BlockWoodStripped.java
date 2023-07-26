@@ -21,14 +21,13 @@ public abstract class BlockWoodStripped extends BlockWood {
     public BlockWoodStripped(int meta) {
         super(meta);
     }
-    
+
     @Override
     public abstract int getId();
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PILLAR_PROPERTIES;
     }
@@ -48,8 +47,8 @@ public abstract class BlockWoodStripped extends BlockWood {
     @Override
     public void setWoodType(WoodType woodType) {
         if (!woodType.equals(getWoodType())) {
-            throw new InvalidBlockPropertyValueException(WoodType.PROPERTY, getWoodType(), woodType, 
-                    "Only the current value is supported for this block");
+            throw new InvalidBlockPropertyValueException(
+                    WoodType.PROPERTY, getWoodType(), woodType, "Only the current value is supported for this block");
         }
     }
 

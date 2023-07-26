@@ -17,7 +17,8 @@ public class PopulatorSwampHut extends PopulatorScatteredStructure {
     protected boolean canGenerate(int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
         if (!chunk.isOverWorld()) return false;
         int biome = chunk.getBiomeId(7, chunk.getHighestBlockAt(7, 7), 7);
-        return (biome == EnumBiome.SWAMP.id || biome == EnumBiome.SWAMPLAND_M.id) && super.canGenerate(chunkX, chunkZ, random, chunk);
+        return (biome == EnumBiome.SWAMP.id || biome == EnumBiome.SWAMPLAND_M.id)
+                && super.canGenerate(chunkX, chunkZ, random, chunk);
     }
 
     @Override

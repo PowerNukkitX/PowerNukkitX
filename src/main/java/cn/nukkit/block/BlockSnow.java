@@ -8,8 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class BlockSnow extends BlockSolid {
 
-    public BlockSnow() {
-    }
+    public BlockSnow() {}
 
     @Override
     public String getName() {
@@ -39,14 +38,11 @@ public class BlockSnow extends BlockSolid {
     @Override
     public Item[] getDrops(Item item) {
         if (item.isShovel() && item.getTier() >= ItemTool.TIER_WOODEN) {
-            return new Item[]{
-                    new ItemSnowball(0, 4)
-            };
+            return new Item[] {new ItemSnowball(0, 4)};
         } else {
             return Item.EMPTY_ARRAY;
         }
     }
-
 
     @Override
     public boolean canHarvestWithHand() {

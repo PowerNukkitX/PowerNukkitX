@@ -43,7 +43,9 @@ public record PNXProtoWorld(ServerWorld serverWorld, int centerChunkX, int cente
             if (pnxBlockState.getHandle().getBlockId() == BlockID.BLOCK_KELP) {
                 chunkManager.setBlockAtLayer(x, y, z, 1, BlockID.STILL_WATER);
                 chunkManager.setBlockStateAt(x, y, z, 0, pnxBlockState.getHandle());
-            } else if (ob.getBlockId() == BlockID.WATERLILY || ob.getBlockId() == BlockID.STILL_WATER || ob.getBlockId() == BlockID.FLOWING_WATER) {
+            } else if (ob.getBlockId() == BlockID.WATERLILY
+                    || ob.getBlockId() == BlockID.STILL_WATER
+                    || ob.getBlockId() == BlockID.FLOWING_WATER) {
                 chunkManager.setBlockStateAt(x, y, z, 0, pnxBlockState.getHandle());
                 chunkManager.setBlockStateAt(x, y, z, 1, ob);
             } else chunkManager.setBlockStateAt(x, y, z, pnxBlockState.getHandle());
@@ -53,7 +55,13 @@ public record PNXProtoWorld(ServerWorld serverWorld, int centerChunkX, int cente
     @Override
     public Entity spawnEntity(double v, double v1, double v2, EntityType entityType) {
         String identifier = (String) entityType.getHandle();
-        cn.nukkit.entity.Entity nukkitEntity = cn.nukkit.entity.Entity.createEntity(identifier, new Position(v, v1, v2, ((PNXServerWorld) serverWorld).generatorWrapper().getLevel()));
+        cn.nukkit.entity.Entity nukkitEntity = cn.nukkit.entity.Entity.createEntity(
+                identifier,
+                new Position(
+                        v,
+                        v1,
+                        v2,
+                        ((PNXServerWorld) serverWorld).generatorWrapper().getLevel()));
         return new PNXEntity(nukkitEntity, serverWorld);
     }
 

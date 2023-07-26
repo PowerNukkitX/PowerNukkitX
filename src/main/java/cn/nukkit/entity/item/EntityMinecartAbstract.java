@@ -29,7 +29,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.MinecartType;
 import cn.nukkit.utils.Rail;
 import cn.nukkit.utils.Rail.Orientation;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Objects;
@@ -40,17 +39,17 @@ import java.util.Objects;
  */
 public abstract class EntityMinecartAbstract extends EntityVehicle {
 
-    private static final int[][][] matrix = new int[][][]{
-            {{0, 0, -1}, {0, 0, 1}},
-            {{-1, 0, 0}, {1, 0, 0}},
-            {{-1, -1, 0}, {1, 0, 0}},
-            {{-1, 0, 0}, {1, -1, 0}},
-            {{0, 0, -1}, {0, -1, 1}},
-            {{0, -1, -1}, {0, 0, 1}},
-            {{0, 0, 1}, {1, 0, 0}},
-            {{0, 0, 1}, {-1, 0, 0}},
-            {{0, 0, -1}, {-1, 0, 0}},
-            {{0, 0, -1}, {1, 0, 0}}
+    private static final int[][][] matrix = new int[][][] {
+        {{0, 0, -1}, {0, 0, 1}},
+        {{-1, 0, 0}, {1, 0, 0}},
+        {{-1, -1, 0}, {1, 0, 0}},
+        {{-1, 0, 0}, {1, -1, 0}},
+        {{0, 0, -1}, {0, -1, 1}},
+        {{0, -1, -1}, {0, 0, 1}},
+        {{0, 0, 1}, {1, 0, 0}},
+        {{0, 0, 1}, {-1, 0, 0}},
+        {{0, 0, -1}, {-1, 0, 0}},
+        {{0, 0, -1}, {1, 0, 0}}
     };
     private final boolean devs = false; // Avoid maintained features into production
     private double currentSpeed = 0;
@@ -219,12 +218,12 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
                 }
             }
 
-            //使矿车通知漏斗更新而不是漏斗来检测矿车
-            //通常情况下，矿车的数量远远少于漏斗，所以说此举能大福提高性能
+            // 使矿车通知漏斗更新而不是漏斗来检测矿车
+            // 通常情况下，矿车的数量远远少于漏斗，所以说此举能大福提高性能
             if (this instanceof InventoryHolder holder) {
                 var pickupArea = new SimpleAxisAlignedBB(this.x, this.y - 1, this.z, this.x + 1, this.y, this.z + 1);
                 checkPickupHopper(pickupArea, holder);
-                //漏斗矿车会自行拉取物品!
+                // 漏斗矿车会自行拉取物品!
                 if (!(this instanceof EntityMinecartHopper)) {
                     var pushArea = new SimpleAxisAlignedBB(this.x, this.y, this.z, this.x + 1, this.y + 2, this.z + 1);
                     checkPushHopper(pushArea, holder);
@@ -278,7 +277,9 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         }
     }
 
-    @PowerNukkitDifference(info = "Will not make a smoke particle and will do a proper dismount on the entities", since = "1.3.1.2-PN")
+    @PowerNukkitDifference(
+            info = "Will not make a smoke particle and will do a proper dismount on the entities",
+            since = "1.3.1.2-PN")
     @Override
     public void close() {
         super.close();
@@ -311,7 +312,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
                     && entity.riding == null
                     && blockInside == null) {
                 if (riding == null && devs) {
-                    mountEntity(entity);// TODO: rewrite (weird riding)
+                    mountEntity(entity); // TODO: rewrite (weird riding)
                 }
             }
 
@@ -341,7 +342,11 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
                     double desinityX = mine.x - x;
                     double desinityZ = mine.z - z;
                     Vector3 vector = new Vector3(desinityX, 0, desinityZ).normalize();
-                    Vector3 vec = new Vector3(MathHelper.cos((float) yaw * 0.017453292F), 0, MathHelper.sin((float) yaw * 0.017453292F)).normalize();
+                    Vector3 vec = new Vector3(
+                                    MathHelper.cos((float) yaw * 0.017453292F),
+                                    0,
+                                    MathHelper.sin((float) yaw * 0.017453292F))
+                            .normalize();
                     double desinityXZ = Math.abs(vector.dot(vec));
 
                     if (desinityXZ < 0.800000011920929D) {
@@ -396,8 +401,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         return maxSpeed;
     }
 
-    protected void activate(int x, int y, int z, boolean flag) {
-    }
+    protected void activate(int x, int y, int z, boolean flag) {}
 
     /**
      * 检查邻近的漏斗并通知它输出物品
@@ -562,7 +566,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
             }
         }
 
-        //http://minecraft.gamepedia.com/Powered_Rail#Rail
+        // http://minecraft.gamepedia.com/Powered_Rail#Rail
         if (isSlowed) {
             expectedSpeed = Math.sqrt(motionX * motionX + motionZ * motionZ);
             if (expectedSpeed < 0.03D) {
@@ -614,7 +618,9 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         move(motX, 0, motZ);
         if (facing[0][1] != 0 && MathHelper.floor(x) - dx == facing[0][0] && MathHelper.floor(z) - dz == facing[0][2]) {
             setPosition(new Vector3(x, y + (double) facing[0][1], z));
-        } else if (facing[1][1] != 0 && MathHelper.floor(x) - dx == facing[1][0] && MathHelper.floor(z) - dz == facing[1][2]) {
+        } else if (facing[1][1] != 0
+                && MathHelper.floor(x) - dx == facing[1][0]
+                && MathHelper.floor(z) - dz == facing[1][2]) {
             setPosition(new Vector3(x, y + (double) facing[1][1], z));
         }
 
@@ -664,7 +670,6 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
                 }
             }
         }
-
     }
 
     private void applyDrag() {
@@ -753,9 +758,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
                 setDataProperty(new IntEntityData(DATA_DISPLAY_OFFSET, offSet));
             }
         } else {
-            int display = blockInside == null ? 0
-                    : blockInside.getId()
-                    | blockInside.getDamage() << 16;
+            int display = blockInside == null ? 0 : blockInside.getId() | blockInside.getDamage() << 16;
             if (display == 0) {
                 setDataProperty(new ByteEntityData(DATA_HAS_DISPLAY, 0));
                 return;
@@ -767,14 +770,12 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     }
 
     private void saveEntityData() {
-        boolean hasDisplay = super.getDataPropertyByte(DATA_HAS_DISPLAY) == 1
-                || blockInside != null;
+        boolean hasDisplay = super.getDataPropertyByte(DATA_HAS_DISPLAY) == 1 || blockInside != null;
         int display;
         int offSet;
         namedTag.putBoolean("CustomDisplayTile", hasDisplay);
         if (hasDisplay) {
-            display = blockInside.getId()
-                    | blockInside.getDamage() << 16;
+            display = blockInside.getId() | blockInside.getDamage() << 16;
             offSet = getDataPropertyInt(DATA_DISPLAY_OFFSET);
             namedTag.putInt("DisplayTile", display);
             namedTag.putInt("DisplayOffset", offSet);
@@ -811,8 +812,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         if (block != null) {
             if (block.isNormalBlock()) {
                 blockInside = block;
-                int display = blockInside.getId()
-                        | blockInside.getDamage() << 16;
+                int display = blockInside.getId() | blockInside.getDamage() << 16;
                 setDataProperty(new ByteEntityData(DATA_HAS_DISPLAY, 1));
                 setDataProperty(new IntEntityData(DATA_DISPLAY_ITEM, display));
                 setDisplayBlockOffset(6);

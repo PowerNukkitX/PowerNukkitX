@@ -13,9 +13,8 @@ import cn.nukkit.level.generator.populator.impl.structure.utils.structure.Struct
 import cn.nukkit.level.generator.populator.type.PopulatorStructure;
 import cn.nukkit.level.generator.task.CallbackableChunkGenerationTask;
 import cn.nukkit.math.NukkitRandom;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitXOnly
 @Since("1.19.21-r2")
@@ -25,23 +24,24 @@ public class PopulatorNetherFortress extends PopulatorStructure {
     public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, @NotNull FullChunk chunk) {
         if (!chunk.isNether()) return;
         if (chunk.getBiomeId(7, chunk.getHighestBlockAt(7, 7), 7) == EnumBiome.HELL.id) {
-            //\\ NetherFortressFeature::isFeatureChunk(BiomeSource const &,Random &,ChunkPos const &,uint)
+            // \\ NetherFortressFeature::isFeatureChunk(BiomeSource const &,Random &,ChunkPos const &,uint)
             int gx = chunkX >> 4;
             int gz = chunkZ >> 4;
             long seed = level.getSeed();
             random.setSeed(gx ^ gz << 4 ^ seed);
             random.nextInt();
             if (random.nextBoundedInt(3) == (0x51d8e999 & 3) // salted
-                    && chunkX == (gx << 4) + 4 + random.nextBoundedInt(8) && chunkZ == (gz << 4) + 4 + random.nextBoundedInt(8)) {
+                    && chunkX == (gx << 4) + 4 + random.nextBoundedInt(8)
+                    && chunkZ == (gz << 4) + 4 + random.nextBoundedInt(8)) {
                 random.setSeed(seed);
                 int r1 = random.nextInt();
                 int r2 = random.nextInt();
 
-                //\\ NetherFortressFeature::createStructureStart(Dimension &,BiomeSource &,Random &,ChunkPos const &)
+                // \\ NetherFortressFeature::createStructureStart(Dimension &,BiomeSource &,Random &,ChunkPos const &)
                 NetherFortressStart start = new NetherFortressStart(level, chunkX, chunkZ);
                 start.generatePieces(level, chunkX, chunkZ);
 
-                if (start.isValid()) { //TODO: serialize nbt
+                if (start.isValid()) { // TODO: serialize nbt
                     BoundingBox boundingBox = start.getBoundingBox();
                     for (int cx = boundingBox.x0 >> 4; cx <= boundingBox.x1 >> 4; cx++) {
                         for (int cz = boundingBox.z0 >> 4; cz <= boundingBox.z1 >> 4; cz++) {
@@ -58,9 +58,19 @@ public class PopulatorNetherFortress extends PopulatorStructure {
                             } else {
                                 int f_cx = cx;
                                 int f_cz = cz;
-                                chunk.getProvider().getLevel().getGenerator().handleAsyncStructureGenTask(new CallbackableChunkGenerationTask<>(
-                                        chunk.getProvider().getLevel(), ck, start,
-                                        structure -> structure.postProcess(level, rand, new BoundingBox(x, z, x + 15, z + 15), f_cx, f_cz)));
+                                chunk.getProvider()
+                                        .getLevel()
+                                        .getGenerator()
+                                        .handleAsyncStructureGenTask(new CallbackableChunkGenerationTask<>(
+                                                chunk.getProvider().getLevel(),
+                                                ck,
+                                                start,
+                                                structure -> structure.postProcess(
+                                                        level,
+                                                        rand,
+                                                        new BoundingBox(x, z, x + 15, z + 15),
+                                                        f_cx,
+                                                        f_cz)));
                             }
                         }
                     }
@@ -83,13 +93,15 @@ public class PopulatorNetherFortress extends PopulatorStructure {
 
         @Override
         public void generatePieces(ChunkManager level, int chunkX, int chunkZ) {
-            NetherBridgePieces.StartPiece start = new NetherBridgePieces.StartPiece(this.random, (chunkX << 4) + 2, (chunkZ << 4) + 2);
+            NetherBridgePieces.StartPiece start =
+                    new NetherBridgePieces.StartPiece(this.random, (chunkX << 4) + 2, (chunkZ << 4) + 2);
             this.pieces.add(start);
             start.addChildren(start, this.pieces, this.random);
 
             List<StructurePiece> pendingChildren = start.pendingChildren;
             while (!pendingChildren.isEmpty()) {
-                pendingChildren.remove(this.random.nextBoundedInt(pendingChildren.size()))
+                pendingChildren
+                        .remove(this.random.nextBoundedInt(pendingChildren.size()))
                         .addChildren(start, this.pieces, this.random);
             }
 

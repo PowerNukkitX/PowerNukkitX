@@ -3,18 +3,21 @@ package cn.nukkit.nbt.snbt;
 
 import java.util.*;
 
-
 @SuppressWarnings("serial")
 public class ParseException extends RuntimeException implements SNBTConstants {
     // The token we tripped up on.
     private Token token;
-    //We were expecting one of these token types
+    // We were expecting one of these token types
     private EnumSet<TokenType> expectedTypes;
     private List<SNBTParserImplement.NonTerminalCall> callStack;
     private boolean alreadyAdjusted;
     private SNBTParserImplement parser;
 
-    private void setInfo(SNBTParserImplement parser, Token token, EnumSet<TokenType> expectedTypes, List<SNBTParserImplement.NonTerminalCall> callStack) {
+    private void setInfo(
+            SNBTParserImplement parser,
+            Token token,
+            EnumSet<TokenType> expectedTypes,
+            List<SNBTParserImplement.NonTerminalCall> callStack) {
         this.parser = parser;
         if (token != null && token.getType() != TokenType.EOF && token.getNext() != null) {
             token = token.getNext();
@@ -28,7 +31,11 @@ public class ParseException extends RuntimeException implements SNBTConstants {
         return token != null && token.getType() == TokenType.EOF;
     }
 
-    public ParseException(SNBTParserImplement parser, Token token, EnumSet<TokenType> expectedTypes, List<SNBTParserImplement.NonTerminalCall> callStack) {
+    public ParseException(
+            SNBTParserImplement parser,
+            Token token,
+            EnumSet<TokenType> expectedTypes,
+            List<SNBTParserImplement.NonTerminalCall> callStack) {
         setInfo(parser, token, expectedTypes, callStack);
     }
 
@@ -37,7 +44,10 @@ public class ParseException extends RuntimeException implements SNBTConstants {
         setInfo(parser, parser.lastConsumedToken, null, parser.parsingStack);
     }
 
-    public ParseException(SNBTParserImplement parser, EnumSet<TokenType> expectedTypes, List<SNBTParserImplement.NonTerminalCall> callStack) {
+    public ParseException(
+            SNBTParserImplement parser,
+            EnumSet<TokenType> expectedTypes,
+            List<SNBTParserImplement.NonTerminalCall> callStack) {
         this(parser, parser.lastConsumedToken, expectedTypes, callStack);
     }
 
@@ -62,8 +72,7 @@ public class ParseException extends RuntimeException implements SNBTConstants {
             return msg;
         }
         StringBuilder buf = new StringBuilder();
-        if (msg != null)
-            buf.append(msg);
+        if (msg != null) buf.append(msg);
         buf.append("\nEncountered an error at (or somewhere around) " + token.getLocation());
         if (expectedTypes != null && token != null && expectedTypes.contains(token.getType())) {
             return buf.toString();
@@ -72,17 +81,14 @@ public class ParseException extends RuntimeException implements SNBTConstants {
             buf.append("\nWas expecting one of the following:\n");
             boolean isFirst = true;
             for (TokenType type : expectedTypes) {
-                if (!isFirst)
-                    buf.append(", ");
+                if (!isFirst) buf.append(", ");
                 isFirst = false;
                 buf.append(type);
             }
         }
         String content = token.getImage();
-        if (content == null)
-            content = "";
-        if (content.length() > 32)
-            content = content.substring(0, 32) + "...";
+        if (content == null) content = "";
+        if (content.length() > 32) content = content.substring(0, 32) + "...";
         buf.append("\nFound string \"" + SNBTLexer.addEscapes(content) + "\" of type " + token.getType());
         return buf.toString();
     }
@@ -144,7 +150,4 @@ public class ParseException extends RuntimeException implements SNBTConstants {
         }
         return null;
     }
-
 }
-
-

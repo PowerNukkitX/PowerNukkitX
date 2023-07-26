@@ -19,8 +19,7 @@ import org.jetbrains.annotations.NotNull;
 @Since("FUTURE")
 public class BlockDirtWithRoots extends BlockSolid {
 
-    public BlockDirtWithRoots() {
-    }
+    public BlockDirtWithRoots() {}
 
     @Override
     public int getId() {
@@ -57,7 +56,7 @@ public class BlockDirtWithRoots extends BlockSolid {
             return true;
         }
         if (item.isHoe()) {
-            vector.setY(this.y+1);
+            vector.setY(this.y + 1);
             item.useOn(this);
             this.getLevel().setBlock(this, Block.get(BlockID.DIRT), true);
             this.getLevel().dropItem(vector, new ItemBlock(Block.get(BlockID.HANGING_ROOTS)));
@@ -89,7 +88,6 @@ public class BlockDirtWithRoots extends BlockSolid {
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{new ItemBlock(Block.get(BlockID.DIRT_WITH_ROOTS))};
+        return new Item[] {new ItemBlock(Block.get(BlockID.DIRT_WITH_ROOTS))};
     }
-
 }

@@ -30,14 +30,13 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.DyeColor;
 import com.google.common.collect.Lists;
-
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import javax.annotation.Nullable;
 
 @PowerNukkitXOnly
 @Since("1.19.21-r2")
-public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
+public class VillagePieces { // TODO: mossyStoneSelector (zombie village)
 
     private static final BlockState PLANKS = new BlockState(Block.PLANKS, BlockPlanks.OAK);
     private static final BlockState SPRUCE_PLANKS = new BlockState(Block.PLANKS, BlockPlanks.SPRUCE);
@@ -53,12 +52,15 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
     private static final BlockState COBBLESTONE = new BlockState(Block.COBBLESTONE);
     private static final BlockState SANDSTONE = new BlockState(Block.SANDSTONE);
     private static final BlockState SMOOTH_SANDSTONE = new BlockState(Block.SANDSTONE, BlockSandstone.SMOOTH);
-    private static final BlockState COBBLESTONE_STAIRS__N = new BlockState(Block.COBBLESTONE_STAIRS, WeirdoDirection.NORTH);
+    private static final BlockState COBBLESTONE_STAIRS__N =
+            new BlockState(Block.COBBLESTONE_STAIRS, WeirdoDirection.NORTH);
     private static final BlockState OAK_STAIRS__N = new BlockState(Block.WOOD_STAIRS, WeirdoDirection.NORTH);
     private static final BlockState OAK_STAIRS__S = new BlockState(Block.WOOD_STAIRS, WeirdoDirection.SOUTH);
-    private static final BlockState COBBLESTONE_STAIRS__E = new BlockState(Block.COBBLESTONE_STAIRS, WeirdoDirection.EAST);
+    private static final BlockState COBBLESTONE_STAIRS__E =
+            new BlockState(Block.COBBLESTONE_STAIRS, WeirdoDirection.EAST);
     private static final BlockState OAK_STAIRS__E = new BlockState(Block.WOOD_STAIRS, WeirdoDirection.EAST);
-    private static final BlockState COBBLESTONE_STAIRS__W = new BlockState(Block.COBBLESTONE_STAIRS, WeirdoDirection.WEST);
+    private static final BlockState COBBLESTONE_STAIRS__W =
+            new BlockState(Block.COBBLESTONE_STAIRS, WeirdoDirection.WEST);
     private static final BlockState OAK_STAIRS__W = new BlockState(Block.WOOD_STAIRS, WeirdoDirection.WEST);
     private static final BlockState GRASS = new BlockState(Block.GRASS);
     private static final BlockState GRASS_PATH = new BlockState(Block.GRASS_PATH);
@@ -82,7 +84,7 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
     private static final BlockState POTATOES = new BlockState(Block.POTATO_BLOCK);
     private static final BlockState BEETROOTS = new BlockState(Block.BEETROOT_BLOCK);
     private static final BlockState BLACK_WOOL = new BlockState(Block.WOOL, 15);
-    private static final BlockState BROWN_CARPET = new BlockState(Block.CARPET, DyeColor.BROWN.getWoolData()); //BE
+    private static final BlockState BROWN_CARPET = new BlockState(Block.CARPET, DyeColor.BROWN.getWoolData()); // BE
 
     public static List<PieceWeight> getStructureVillageWeightedPieceList(NukkitRandom random, int size) {
         List<PieceWeight> weights = Lists.newArrayList();
@@ -114,8 +116,18 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
         return success ? total : -1;
     }
 
-    //\\ VillagePiece::findAndCreatePieceFactory(StartPiece *,PieceWeight &,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int,int,int,int)
-    private static VillagePiece findAndCreatePieceFactory(StartPiece start, PieceWeight weight, List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int componentType) {
+    // \\ VillagePiece::findAndCreatePieceFactory(StartPiece *,PieceWeight
+    // &,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int,int,int,int)
+    private static VillagePiece findAndCreatePieceFactory(
+            StartPiece start,
+            PieceWeight weight,
+            List<StructurePiece> pieces,
+            NukkitRandom random,
+            int x,
+            int y,
+            int z,
+            BlockFace orientation,
+            int componentType) {
         Class<? extends VillagePiece> pieceClass = weight.pieceClass;
         if (pieceClass == SimpleHouse.class) {
             return SimpleHouse.createPiece(start, pieces, random, x, y, z, orientation, componentType);
@@ -139,8 +151,17 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
         return null;
     }
 
-    //\\ VillagePiece::generateAndAddPiece(StartPiece *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int,int,int,int)
-    private static VillagePiece generateAndAddPiece(StartPiece start, List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
+    // \\ VillagePiece::generateAndAddPiece(StartPiece
+    // *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int,int,int,int)
+    private static VillagePiece generateAndAddPiece(
+            StartPiece start,
+            List<StructurePiece> pieces,
+            NukkitRandom random,
+            int x,
+            int y,
+            int z,
+            BlockFace orientation,
+            int genDepth) {
         int total = updatePieceWeight(start.availablePieces);
         if (total > 0) {
             for (int i = 0; i < 5; ++i) {
@@ -150,11 +171,13 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
                     target -= weight.weight;
 
                     if (target < 0) {
-                        if (!weight.doPlace(genDepth) || weight == start.previousPiece && start.availablePieces.size() > 1) {
+                        if (!weight.doPlace(genDepth)
+                                || weight == start.previousPiece && start.availablePieces.size() > 1) {
                             break;
                         }
 
-                        VillagePiece piece = findAndCreatePieceFactory(start, weight, pieces, random, x, y, z, orientation, genDepth);
+                        VillagePiece piece = findAndCreatePieceFactory(
+                                start, weight, pieces, random, x, y, z, orientation, genDepth);
                         if (piece != null) {
                             ++weight.placeCount;
                             start.previousPiece = weight;
@@ -177,9 +200,20 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
         return null;
     }
 
-    //\\ VillagePiece::generatePieceFromSmallDoor(StartPiece *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int,int,int,int)
-    private static StructurePiece generatePieceFromSmallDoor(StartPiece start, List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
-        if (genDepth <= 50 && Math.abs(x - start.getBoundingBox().x0) <= 112 && Math.abs(z - start.getBoundingBox().z0) <= 112) {
+    // \\ VillagePiece::generatePieceFromSmallDoor(StartPiece
+    // *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int,int,int,int)
+    private static StructurePiece generatePieceFromSmallDoor(
+            StartPiece start,
+            List<StructurePiece> pieces,
+            NukkitRandom random,
+            int x,
+            int y,
+            int z,
+            BlockFace orientation,
+            int genDepth) {
+        if (genDepth <= 50
+                && Math.abs(x - start.getBoundingBox().x0) <= 112
+                && Math.abs(z - start.getBoundingBox().z0) <= 112) {
             StructurePiece piece = generateAndAddPiece(start, pieces, random, x, y, z, orientation, genDepth + 1);
             if (piece != null) {
                 pieces.add(piece);
@@ -190,9 +224,20 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
         return null;
     }
 
-    //\\ VillagePiece::generateAndAddRoadPiece(StartPiece *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int,int,int,int)
-    private static StructurePiece generateAndAddRoadPiece(StartPiece start, List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
-        if (genDepth <= 3 + start.size && Math.abs(x - start.getBoundingBox().x0) <= 112 && Math.abs(z - start.getBoundingBox().z0) <= 112) {
+    // \\ VillagePiece::generateAndAddRoadPiece(StartPiece
+    // *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int,int,int,int)
+    private static StructurePiece generateAndAddRoadPiece(
+            StartPiece start,
+            List<StructurePiece> pieces,
+            NukkitRandom random,
+            int x,
+            int y,
+            int z,
+            BlockFace orientation,
+            int genDepth) {
+        if (genDepth <= 3 + start.size
+                && Math.abs(x - start.getBoundingBox().x0) <= 112
+                && Math.abs(z - start.getBoundingBox().z0) <= 112) {
             BoundingBox boundingBox = StraightRoad.findPieceBox(start, pieces, random, x, y, z, orientation);
             if (boundingBox != null && boundingBox.y0 > 10) {
                 StructurePiece piece = new StraightRoad(start, genDepth, random, boundingBox, orientation);
@@ -205,7 +250,7 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
     }
 
     public static void init() {
-        //NOOP
+        // NOOP
     }
 
     public static class PieceWeight {
@@ -275,41 +320,73 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
             tag.putBoolean("Zombie", this.isZombieVillage);
         }
 
-        @Nullable
-        protected StructurePiece generateChildLeft(StartPiece start, List<StructurePiece> pieces, NukkitRandom random, int yOffset, int horizontalOffset) {
+        @Nullable protected StructurePiece generateChildLeft(
+                StartPiece start, List<StructurePiece> pieces, NukkitRandom random, int yOffset, int horizontalOffset) {
             BlockFace orientation = this.getOrientation();
             if (orientation != null) {
                 switch (orientation) {
                     case NORTH:
                     case SOUTH:
                     default:
-                        return generatePieceFromSmallDoor(start, pieces, random, this.boundingBox.x0 - 1, this.boundingBox.y0 + yOffset, this.boundingBox.z0 + horizontalOffset, BlockFace.WEST, this.getGenDepth());
+                        return generatePieceFromSmallDoor(
+                                start,
+                                pieces,
+                                random,
+                                this.boundingBox.x0 - 1,
+                                this.boundingBox.y0 + yOffset,
+                                this.boundingBox.z0 + horizontalOffset,
+                                BlockFace.WEST,
+                                this.getGenDepth());
                     case WEST:
                     case EAST:
-                        return generatePieceFromSmallDoor(start, pieces, random, this.boundingBox.x0 + horizontalOffset, this.boundingBox.y0 + yOffset, this.boundingBox.z0 - 1, BlockFace.NORTH, this.getGenDepth());
+                        return generatePieceFromSmallDoor(
+                                start,
+                                pieces,
+                                random,
+                                this.boundingBox.x0 + horizontalOffset,
+                                this.boundingBox.y0 + yOffset,
+                                this.boundingBox.z0 - 1,
+                                BlockFace.NORTH,
+                                this.getGenDepth());
                 }
             }
             return null;
         }
 
-        @Nullable
-        protected StructurePiece generateChildRight(StartPiece start, List<StructurePiece> pieces, NukkitRandom random, int yOffset, int horizontalOffset) {
+        @Nullable protected StructurePiece generateChildRight(
+                StartPiece start, List<StructurePiece> pieces, NukkitRandom random, int yOffset, int horizontalOffset) {
             BlockFace orientation = this.getOrientation();
             if (orientation != null) {
                 switch (orientation) {
                     case NORTH:
                     case SOUTH:
                     default:
-                        return generatePieceFromSmallDoor(start, pieces, random, this.boundingBox.x1 + 1, this.boundingBox.y0 + yOffset, this.boundingBox.z0 + horizontalOffset, BlockFace.EAST, this.getGenDepth());
+                        return generatePieceFromSmallDoor(
+                                start,
+                                pieces,
+                                random,
+                                this.boundingBox.x1 + 1,
+                                this.boundingBox.y0 + yOffset,
+                                this.boundingBox.z0 + horizontalOffset,
+                                BlockFace.EAST,
+                                this.getGenDepth());
                     case WEST:
                     case EAST:
-                        return generatePieceFromSmallDoor(start, pieces, random, this.boundingBox.x0 + horizontalOffset, this.boundingBox.y0 + yOffset, this.boundingBox.z1 + 1, BlockFace.SOUTH, this.getGenDepth());
+                        return generatePieceFromSmallDoor(
+                                start,
+                                pieces,
+                                random,
+                                this.boundingBox.x0 + horizontalOffset,
+                                this.boundingBox.y0 + yOffset,
+                                this.boundingBox.z1 + 1,
+                                BlockFace.SOUTH,
+                                this.getGenDepth());
                 }
             }
             return null;
         }
 
-        //\\ VillagePiece::getAverageGroundHeight(BlockSource *,BoundingBox const &)
+        // \\ VillagePiece::getAverageGroundHeight(BlockSource *,BoundingBox const &)
         protected int getAverageGroundHeight(ChunkManager level, BoundingBox boundingBox) {
             int sum = 0;
             int count = 0;
@@ -344,8 +421,9 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
             return sum / count;
         }
 
-        //\\ VillagePiece::spawnVillagers(BlockSource *,BoundingBox const &,int,int,int,int)
-        protected void spawnVillagers(ChunkManager level, BoundingBox boundingBox, int x, int y, int z, int maxVillagerCount) {
+        // \\ VillagePiece::spawnVillagers(BlockSource *,BoundingBox const &,int,int,int,int)
+        protected void spawnVillagers(
+                ChunkManager level, BoundingBox boundingBox, int x, int y, int z, int maxVillagerCount) {
             if (this.villagerCount < maxVillagerCount) {
                 for (int count = this.villagerCount; count < maxVillagerCount; ++count) {
                     int worldX = this.getWorldX(x + count, z);
@@ -364,13 +442,22 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
 
                         if (this.isZombieVillage) {
                             nbt.putString("id", "ZombieVillager") // ZombieVillagerV1
-                                    .putInt("Profession", this.getVillagerProfession(count, EntityVillagerV1.PROFESSION_FARMER));
+                                    .putInt(
+                                            "Profession",
+                                            this.getVillagerProfession(count, EntityVillagerV1.PROFESSION_FARMER));
                         } else {
                             nbt.putString("id", "Villager") // VillagerV1
-                                    .putInt("Profession", this.getVillagerProfession(count, ThreadLocalRandom.current().nextInt(6)));
+                                    .putInt(
+                                            "Profession",
+                                            this.getVillagerProfession(
+                                                    count,
+                                                    ThreadLocalRandom.current().nextInt(6)));
                         }
 
-                        Server.getInstance().getScheduler().scheduleTask(new ActorSpawnTask(chunk.getProvider().getLevel(), nbt));
+                        Server.getInstance()
+                                .getScheduler()
+                                .scheduleTask(
+                                        new ActorSpawnTask(chunk.getProvider().getLevel(), nbt));
                     }
                 }
             }
@@ -457,34 +544,47 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
             }
         }
 
-        protected void placeDoor(ChunkManager level, BoundingBox boundingBox, NukkitRandom random, int x, int y, int z, BlockFace orientation) {
+        protected void placeDoor(
+                ChunkManager level,
+                BoundingBox boundingBox,
+                NukkitRandom random,
+                int x,
+                int y,
+                int z,
+                BlockFace orientation) {
             if (!this.isZombieVillage) {
                 this.generateDoor(level, boundingBox, random, x, y, z, BlockFace.NORTH, this.getDoorBlock());
             }
         }
 
-        protected void placeTorch(ChunkManager level, BlockFace orientation, int x, int y, int z, BoundingBox boundingBox) {
+        protected void placeTorch(
+                ChunkManager level, BlockFace orientation, int x, int y, int z, BoundingBox boundingBox) {
             if (!this.isZombieVillage) {
                 switch (orientation) {
                     case NORTH:
                     default:
-                        this.placeBlock(level, new BlockState(Block.TORCH, TorchFacingDirection.NORTH), x, y, z, boundingBox);
+                        this.placeBlock(
+                                level, new BlockState(Block.TORCH, TorchFacingDirection.NORTH), x, y, z, boundingBox);
                         break;
                     case SOUTH:
-                        this.placeBlock(level, new BlockState(Block.TORCH, TorchFacingDirection.SOUTH), x, y, z, boundingBox);
+                        this.placeBlock(
+                                level, new BlockState(Block.TORCH, TorchFacingDirection.SOUTH), x, y, z, boundingBox);
                         break;
                     case EAST:
-                        this.placeBlock(level, new BlockState(Block.TORCH, TorchFacingDirection.EAST), x, y, z, boundingBox);
+                        this.placeBlock(
+                                level, new BlockState(Block.TORCH, TorchFacingDirection.EAST), x, y, z, boundingBox);
                         break;
                     case WEST:
-                        this.placeBlock(level, new BlockState(Block.TORCH, TorchFacingDirection.WEST), x, y, z, boundingBox);
+                        this.placeBlock(
+                                level, new BlockState(Block.TORCH, TorchFacingDirection.WEST), x, y, z, boundingBox);
                         break;
                 }
             }
         }
 
         @Override
-        protected void fillColumnDown(ChunkManager level, BlockState block, int x, int y, int z, BoundingBox boundingBox) {
+        protected void fillColumnDown(
+                ChunkManager level, BlockState block, int x, int y, int z, BoundingBox boundingBox) {
             super.fillColumnDown(level, this.getSpecificBlock(block), x, y, z, boundingBox);
         }
 
@@ -513,8 +613,16 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
         public List<StructurePiece> pendingHouses = Lists.newArrayList();
         public List<StructurePiece> pendingRoads = Lists.newArrayList();
 
-        //\\ VillageStart::VillageStart(BiomeSource *,Random &,int,int,int)
-        public StartPiece(ChunkManager level, int genDepth, NukkitRandom random, int x, int z, List<PieceWeight> availablePieces, int size, boolean isNukkitGenerator) {
+        // \\ VillageStart::VillageStart(BiomeSource *,Random &,int,int,int)
+        public StartPiece(
+                ChunkManager level,
+                int genDepth,
+                NukkitRandom random,
+                int x,
+                int z,
+                List<PieceWeight> availablePieces,
+                int size,
+                boolean isNukkitGenerator) {
             super(null, 0, random, x, z);
             this.world = level;
             this.availablePieces = availablePieces;
@@ -575,14 +683,47 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
 
         @Override
         public void addChildren(StructurePiece piece, List<StructurePiece> pieces, NukkitRandom random) {
-            generateAndAddRoadPiece((StartPiece) piece, pieces, random, this.boundingBox.x0 - 1, this.boundingBox.y1 - 4, this.boundingBox.z0 + 1, BlockFace.WEST, this.getGenDepth());
-            generateAndAddRoadPiece((StartPiece) piece, pieces, random, this.boundingBox.x1 + 1, this.boundingBox.y1 - 4, this.boundingBox.z0 + 1, BlockFace.EAST, this.getGenDepth());
-            generateAndAddRoadPiece((StartPiece) piece, pieces, random, this.boundingBox.x0 + 1, this.boundingBox.y1 - 4, this.boundingBox.z0 - 1, BlockFace.NORTH, this.getGenDepth());
-            generateAndAddRoadPiece((StartPiece) piece, pieces, random, this.boundingBox.x0 + 1, this.boundingBox.y1 - 4, this.boundingBox.z1 + 1, BlockFace.SOUTH, this.getGenDepth());
+            generateAndAddRoadPiece(
+                    (StartPiece) piece,
+                    pieces,
+                    random,
+                    this.boundingBox.x0 - 1,
+                    this.boundingBox.y1 - 4,
+                    this.boundingBox.z0 + 1,
+                    BlockFace.WEST,
+                    this.getGenDepth());
+            generateAndAddRoadPiece(
+                    (StartPiece) piece,
+                    pieces,
+                    random,
+                    this.boundingBox.x1 + 1,
+                    this.boundingBox.y1 - 4,
+                    this.boundingBox.z0 + 1,
+                    BlockFace.EAST,
+                    this.getGenDepth());
+            generateAndAddRoadPiece(
+                    (StartPiece) piece,
+                    pieces,
+                    random,
+                    this.boundingBox.x0 + 1,
+                    this.boundingBox.y1 - 4,
+                    this.boundingBox.z0 - 1,
+                    BlockFace.NORTH,
+                    this.getGenDepth());
+            generateAndAddRoadPiece(
+                    (StartPiece) piece,
+                    pieces,
+                    random,
+                    this.boundingBox.x0 + 1,
+                    this.boundingBox.y1 - 4,
+                    this.boundingBox.z1 + 1,
+                    BlockFace.SOUTH,
+                    this.getGenDepth());
         }
 
         @Override
-        public boolean postProcess(ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
+        public boolean postProcess(
+                ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
             if (this.horizPos < 0) {
                 this.horizPos = this.getAverageGroundHeight(level, boundingBox);
 
@@ -628,7 +769,8 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
 
         private final boolean hasTerrace;
 
-        public SimpleHouse(StartPiece start, int genDepth, NukkitRandom random, BoundingBox boundingBox, BlockFace orientation) {
+        public SimpleHouse(
+                StartPiece start, int genDepth, NukkitRandom random, BoundingBox boundingBox, BlockFace orientation) {
             super(start, genDepth);
             this.setOrientation(orientation);
             this.boundingBox = boundingBox;
@@ -640,9 +782,19 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
             this.hasTerrace = tag.getBoolean("Terrace");
         }
 
-        public static SimpleHouse createPiece(StartPiece start, List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
+        public static SimpleHouse createPiece(
+                StartPiece start,
+                List<StructurePiece> pieces,
+                NukkitRandom random,
+                int x,
+                int y,
+                int z,
+                BlockFace orientation,
+                int genDepth) {
             BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, 0, 0, 0, 5, 6, 5, orientation);
-            return StructurePiece.findCollisionPiece(pieces, boundingBox) != null ? null : new SimpleHouse(start, genDepth, random, boundingBox, orientation);
+            return StructurePiece.findCollisionPiece(pieces, boundingBox) != null
+                    ? null
+                    : new SimpleHouse(start, genDepth, random, boundingBox, orientation);
         }
 
         @Override
@@ -657,7 +809,8 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
         }
 
         @Override
-        public boolean postProcess(ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
+        public boolean postProcess(
+                ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
             if (this.horizPos < 0) {
                 this.horizPos = this.getAverageGroundHeight(level, boundingBox);
 
@@ -703,7 +856,8 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
             this.placeBlock(level, planks, 3, 2, 0, boundingBox);
             this.placeBlock(level, planks, 3, 1, 0, boundingBox);
 
-            if (this.getBlock(level, 2, 0, -1, boundingBox).equals(BlockState.AIR) && !this.getBlock(level, 2, -1, -1, boundingBox).equals(BlockState.AIR)) {
+            if (this.getBlock(level, 2, 0, -1, boundingBox).equals(BlockState.AIR)
+                    && !this.getBlock(level, 2, -1, -1, boundingBox).equals(BlockState.AIR)) {
                 this.placeBlock(level, stairsN, 2, 0, -1, boundingBox);
 
                 if (this.getBlock(level, 2, -1, -1, boundingBox).getId() == Block.GRASS_PATH) {
@@ -756,7 +910,8 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
 
     public static class SmallTemple extends VillagePiece {
 
-        public SmallTemple(StartPiece start, int genDepth, NukkitRandom random, BoundingBox boundingBox, BlockFace orientation) {
+        public SmallTemple(
+                StartPiece start, int genDepth, NukkitRandom random, BoundingBox boundingBox, BlockFace orientation) {
             super(start, genDepth);
             this.setOrientation(orientation);
             this.boundingBox = boundingBox;
@@ -766,9 +921,19 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
             super(tag);
         }
 
-        public static SmallTemple createPiece(StartPiece start, List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
+        public static SmallTemple createPiece(
+                StartPiece start,
+                List<StructurePiece> pieces,
+                NukkitRandom random,
+                int x,
+                int y,
+                int z,
+                BlockFace orientation,
+                int genDepth) {
             BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, 0, 0, 0, 5, 12, 9, orientation);
-            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new SmallTemple(start, genDepth, random, boundingBox, orientation) : null;
+            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null
+                    ? new SmallTemple(start, genDepth, random, boundingBox, orientation)
+                    : null;
         }
 
         @Override
@@ -777,7 +942,8 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
         }
 
         @Override
-        public boolean postProcess(ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
+        public boolean postProcess(
+                ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
             if (this.horizPos < 0) {
                 this.horizPos = this.getAverageGroundHeight(level, boundingBox);
 
@@ -848,7 +1014,8 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
             this.placeBlock(level, BlockState.AIR, 2, 2, 0, boundingBox);
             this.placeDoor(level, boundingBox, random, 2, 1, 0, BlockFace.NORTH);
 
-            if (this.getBlock(level, 2, 0, -1, boundingBox).equals(BlockState.AIR) && !this.getBlock(level, 2, -1, -1, boundingBox).equals(BlockState.AIR)) {
+            if (this.getBlock(level, 2, 0, -1, boundingBox).equals(BlockState.AIR)
+                    && !this.getBlock(level, 2, -1, -1, boundingBox).equals(BlockState.AIR)) {
                 this.placeBlock(level, stairsN, 2, 0, -1, boundingBox);
 
                 if (this.getBlock(level, 2, -1, -1, boundingBox).getId() == Block.GRASS_PATH) {
@@ -875,7 +1042,8 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
 
     public static class BookHouse extends VillagePiece {
 
-        public BookHouse(StartPiece start, int genDepth, NukkitRandom random, BoundingBox boundingBox, BlockFace orientation) {
+        public BookHouse(
+                StartPiece start, int genDepth, NukkitRandom random, BoundingBox boundingBox, BlockFace orientation) {
             super(start, genDepth);
             this.setOrientation(orientation);
             this.boundingBox = boundingBox;
@@ -885,9 +1053,19 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
             super(tag);
         }
 
-        public static BookHouse createPiece(StartPiece start, List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
+        public static BookHouse createPiece(
+                StartPiece start,
+                List<StructurePiece> pieces,
+                NukkitRandom random,
+                int x,
+                int y,
+                int z,
+                BlockFace orientation,
+                int genDepth) {
             BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, 0, 0, 0, 9, 9, 6, orientation);
-            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new BookHouse(start, genDepth, random, boundingBox, orientation) : null;
+            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null
+                    ? new BookHouse(start, genDepth, random, boundingBox, orientation)
+                    : null;
         }
 
         @Override
@@ -896,7 +1074,8 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
         }
 
         @Override
-        public boolean postProcess(ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
+        public boolean postProcess(
+                ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
             if (this.horizPos < 0) {
                 this.horizPos = this.getAverageGroundHeight(level, boundingBox);
 
@@ -976,7 +1155,8 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
             this.placeBlock(level, BlockState.AIR, 1, 2, 0, boundingBox);
             this.placeDoor(level, boundingBox, random, 1, 1, 0, BlockFace.NORTH);
 
-            if (this.getBlock(level, 1, 0, -1, boundingBox).equals(BlockState.AIR) && !this.getBlock(level, 1, -1, -1, boundingBox).equals(BlockState.AIR)) {
+            if (this.getBlock(level, 1, 0, -1, boundingBox).equals(BlockState.AIR)
+                    && !this.getBlock(level, 1, -1, -1, boundingBox).equals(BlockState.AIR)) {
                 this.placeBlock(level, cobbleStairsN, 1, 0, -1, boundingBox);
 
                 if (this.getBlock(level, 1, -1, -1, boundingBox).getId() == Block.GRASS_PATH) {
@@ -1006,7 +1186,8 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
         private final boolean hasCompoundRoof;
         private final int tablePos;
 
-        public SmallHut(StartPiece start, int genDepth, NukkitRandom random, BoundingBox boundingBox, BlockFace orientation) {
+        public SmallHut(
+                StartPiece start, int genDepth, NukkitRandom random, BoundingBox boundingBox, BlockFace orientation) {
             super(start, genDepth);
             this.setOrientation(orientation);
             this.boundingBox = boundingBox;
@@ -1020,10 +1201,21 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
             this.tablePos = tag.getInt("T");
         }
 
-        //\\ SmallHut::createPiece(StartPiece *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int,int,int,int)
-        public static SmallHut createPiece(StartPiece start, List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
+        // \\ SmallHut::createPiece(StartPiece
+        // *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int,int,int,int)
+        public static SmallHut createPiece(
+                StartPiece start,
+                List<StructurePiece> pieces,
+                NukkitRandom random,
+                int x,
+                int y,
+                int z,
+                BlockFace orientation,
+                int genDepth) {
             BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, 0, 0, 0, 4, 6, 5, orientation);
-            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new SmallHut(start, genDepth, random, boundingBox, orientation) : null;
+            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null
+                    ? new SmallHut(start, genDepth, random, boundingBox, orientation)
+                    : null;
         }
 
         @Override
@@ -1039,7 +1231,8 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
         }
 
         @Override
-        public boolean postProcess(ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
+        public boolean postProcess(
+                ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
             if (this.horizPos < 0) {
                 this.horizPos = this.getAverageGroundHeight(level, boundingBox);
 
@@ -1096,7 +1289,8 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
             this.placeBlock(level, BlockState.AIR, 1, 2, 0, boundingBox);
             this.placeDoor(level, boundingBox, random, 1, 1, 0, BlockFace.NORTH);
 
-            if (this.getBlock(level, 1, 0, -1, boundingBox).equals(BlockState.AIR) && !this.getBlock(level, 1, -1, -1, boundingBox).equals(BlockState.AIR)) {
+            if (this.getBlock(level, 1, 0, -1, boundingBox).equals(BlockState.AIR)
+                    && !this.getBlock(level, 1, -1, -1, boundingBox).equals(BlockState.AIR)) {
                 this.placeBlock(level, stairsN, 1, 0, -1, boundingBox);
 
                 if (this.getBlock(level, 1, -1, -1, boundingBox).getId() == Block.GRASS_PATH) {
@@ -1118,7 +1312,8 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
 
     public static class PigHouse extends VillagePiece {
 
-        public PigHouse(StartPiece start, int genDepth, NukkitRandom random, BoundingBox boundingBox, BlockFace orientation) {
+        public PigHouse(
+                StartPiece start, int genDepth, NukkitRandom random, BoundingBox boundingBox, BlockFace orientation) {
             super(start, genDepth);
             this.setOrientation(orientation);
             this.boundingBox = boundingBox;
@@ -1128,9 +1323,19 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
             super(tag);
         }
 
-        public static PigHouse createPiece(StartPiece start, List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
+        public static PigHouse createPiece(
+                StartPiece start,
+                List<StructurePiece> pieces,
+                NukkitRandom random,
+                int x,
+                int y,
+                int z,
+                BlockFace orientation,
+                int genDepth) {
             BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, 0, 0, 0, 9, 7, 11, orientation);
-            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new PigHouse(start, genDepth, random, boundingBox, orientation) : null;
+            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null
+                    ? new PigHouse(start, genDepth, random, boundingBox, orientation)
+                    : null;
         }
 
         @Override
@@ -1139,7 +1344,8 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
         }
 
         @Override
-        public boolean postProcess(ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
+        public boolean postProcess(
+                ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
             if (this.horizPos < 0) {
                 this.horizPos = this.getAverageGroundHeight(level, boundingBox);
 
@@ -1212,7 +1418,8 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
             this.placeTorch(level, BlockFace.NORTH, 2, 3, 1, boundingBox);
             this.placeDoor(level, boundingBox, random, 2, 1, 0, BlockFace.NORTH);
 
-            if (this.getBlock(level, 2, 0, -1, boundingBox).equals(BlockState.AIR) && !this.getBlock(level, 2, -1, -1, boundingBox).equals(BlockState.AIR)) {
+            if (this.getBlock(level, 2, 0, -1, boundingBox).equals(BlockState.AIR)
+                    && !this.getBlock(level, 2, -1, -1, boundingBox).equals(BlockState.AIR)) {
                 this.placeBlock(level, stairsN, 2, 0, -1, boundingBox);
 
                 if (this.getBlock(level, 2, -1, -1, boundingBox).getId() == Block.GRASS_PATH) {
@@ -1236,9 +1443,11 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
             return true;
         }
 
-        @Override //\\ PigHouse::getVillagerProfession(int)
+        @Override // \\ PigHouse::getVillagerProfession(int)
         protected int getVillagerProfession(int villagerCount, int profession) {
-            return villagerCount == 0 ? EntityVillagerV1.PROFESSION_BUTCHER : super.getVillagerProfession(villagerCount, profession);
+            return villagerCount == 0
+                    ? EntityVillagerV1.PROFESSION_BUTCHER
+                    : super.getVillagerProfession(villagerCount, profession);
         }
     }
 
@@ -1249,7 +1458,8 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
         private final BlockState cropC;
         private final BlockState cropD;
 
-        public DoubleFarmland(StartPiece start, int genDepth, NukkitRandom random, BoundingBox boundingBox, BlockFace orientation) {
+        public DoubleFarmland(
+                StartPiece start, int genDepth, NukkitRandom random, BoundingBox boundingBox, BlockFace orientation) {
             super(start, genDepth);
             this.setOrientation(orientation);
             this.boundingBox = boundingBox;
@@ -1267,9 +1477,19 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
             this.cropD = new BlockState(tag.getInt("CD"));
         }
 
-        public static DoubleFarmland createPiece(StartPiece start, List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
+        public static DoubleFarmland createPiece(
+                StartPiece start,
+                List<StructurePiece> pieces,
+                NukkitRandom random,
+                int x,
+                int y,
+                int z,
+                BlockFace orientation,
+                int genDepth) {
             BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, 0, 0, 0, 13, 4, 9, orientation);
-            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new DoubleFarmland(start, genDepth, random, boundingBox, orientation) : null;
+            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null
+                    ? new DoubleFarmland(start, genDepth, random, boundingBox, orientation)
+                    : null;
         }
 
         @Override
@@ -1287,7 +1507,8 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
         }
 
         @Override
-        public boolean postProcess(ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
+        public boolean postProcess(
+                ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
             if (this.horizPos < 0) {
                 this.horizPos = this.getAverageGroundHeight(level, boundingBox);
 
@@ -1313,24 +1534,72 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
             this.generateBox(level, boundingBox, 3, 0, 1, 3, 0, 7, WATER, WATER, false);
             this.generateBox(level, boundingBox, 9, 0, 1, 9, 0, 7, WATER, WATER, false);
 
-            if (this.type != PopulatorVillage.Type.COLD) { //BE
+            if (this.type != PopulatorVillage.Type.COLD) { // BE
                 for (int z = 1; z <= 7; ++z) {
                     int maxAgeA = 7;
                     int minAgeA = maxAgeA / 3;
-                    this.placeBlock(level, new BlockState(this.cropA.getId(), Mth.nextInt(random, minAgeA, maxAgeA)), 1, 1, z, boundingBox);
-                    this.placeBlock(level, new BlockState(this.cropA.getId(), Mth.nextInt(random, minAgeA, maxAgeA)), 2, 1, z, boundingBox);
+                    this.placeBlock(
+                            level,
+                            new BlockState(this.cropA.getId(), Mth.nextInt(random, minAgeA, maxAgeA)),
+                            1,
+                            1,
+                            z,
+                            boundingBox);
+                    this.placeBlock(
+                            level,
+                            new BlockState(this.cropA.getId(), Mth.nextInt(random, minAgeA, maxAgeA)),
+                            2,
+                            1,
+                            z,
+                            boundingBox);
                     int maxAgeB = 7;
                     int minAgeB = maxAgeB / 3;
-                    this.placeBlock(level, new BlockState(this.cropB.getId(), Mth.nextInt(random, minAgeB, maxAgeB)), 4, 1, z, boundingBox);
-                    this.placeBlock(level, new BlockState(this.cropB.getId(), Mth.nextInt(random, minAgeB, maxAgeB)), 5, 1, z, boundingBox);
+                    this.placeBlock(
+                            level,
+                            new BlockState(this.cropB.getId(), Mth.nextInt(random, minAgeB, maxAgeB)),
+                            4,
+                            1,
+                            z,
+                            boundingBox);
+                    this.placeBlock(
+                            level,
+                            new BlockState(this.cropB.getId(), Mth.nextInt(random, minAgeB, maxAgeB)),
+                            5,
+                            1,
+                            z,
+                            boundingBox);
                     int maxAgeC = 7;
                     int minAgeC = maxAgeC / 3;
-                    this.placeBlock(level, new BlockState(this.cropC.getId(), Mth.nextInt(random, minAgeC, maxAgeC)), 7, 1, z, boundingBox);
-                    this.placeBlock(level, new BlockState(this.cropC.getId(), Mth.nextInt(random, minAgeC, maxAgeC)), 8, 1, z, boundingBox);
+                    this.placeBlock(
+                            level,
+                            new BlockState(this.cropC.getId(), Mth.nextInt(random, minAgeC, maxAgeC)),
+                            7,
+                            1,
+                            z,
+                            boundingBox);
+                    this.placeBlock(
+                            level,
+                            new BlockState(this.cropC.getId(), Mth.nextInt(random, minAgeC, maxAgeC)),
+                            8,
+                            1,
+                            z,
+                            boundingBox);
                     int maxAgeD = 7;
                     int minAgeD = maxAgeD / 3;
-                    this.placeBlock(level, new BlockState(this.cropD.getId(), Mth.nextInt(random, minAgeD, maxAgeD)), 10, 1, z, boundingBox);
-                    this.placeBlock(level, new BlockState(this.cropD.getId(), Mth.nextInt(random, minAgeD, maxAgeD)), 11, 1, z, boundingBox);
+                    this.placeBlock(
+                            level,
+                            new BlockState(this.cropD.getId(), Mth.nextInt(random, minAgeD, maxAgeD)),
+                            10,
+                            1,
+                            z,
+                            boundingBox);
+                    this.placeBlock(
+                            level,
+                            new BlockState(this.cropD.getId(), Mth.nextInt(random, minAgeD, maxAgeD)),
+                            11,
+                            1,
+                            z,
+                            boundingBox);
                 }
             }
 
@@ -1350,7 +1619,8 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
         private final BlockState cropA;
         private final BlockState cropB;
 
-        public Farmland(StartPiece start, int genDepth, NukkitRandom random, BoundingBox boundingBox, BlockFace orientation) {
+        public Farmland(
+                StartPiece start, int genDepth, NukkitRandom random, BoundingBox boundingBox, BlockFace orientation) {
             super(start, genDepth);
             this.setOrientation(orientation);
             this.boundingBox = boundingBox;
@@ -1364,7 +1634,7 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
             this.cropB = new BlockState(tag.getInt("CB"));
         }
 
-        //\\ Farmland::selectCrops(Random &,StartPiece &)
+        // \\ Farmland::selectCrops(Random &,StartPiece &)
         protected static BlockState selectCrops(NukkitRandom random) {
             switch (random.nextBoundedInt(10)) {
                 case 0:
@@ -1380,9 +1650,19 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
             }
         }
 
-        public static Farmland createPiece(StartPiece start, List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
+        public static Farmland createPiece(
+                StartPiece start,
+                List<StructurePiece> pieces,
+                NukkitRandom random,
+                int x,
+                int y,
+                int z,
+                BlockFace orientation,
+                int genDepth) {
             BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, 0, 0, 0, 7, 4, 9, orientation);
-            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new Farmland(start, genDepth, random, boundingBox, orientation) : null;
+            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null
+                    ? new Farmland(start, genDepth, random, boundingBox, orientation)
+                    : null;
         }
 
         @Override
@@ -1398,7 +1678,8 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
         }
 
         @Override
-        public boolean postProcess(ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
+        public boolean postProcess(
+                ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
             if (this.horizPos < 0) {
                 this.horizPos = this.getAverageGroundHeight(level, boundingBox);
 
@@ -1420,16 +1701,40 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
             this.generateBox(level, boundingBox, 1, 0, 8, 5, 0, 8, log, log, false);
             this.generateBox(level, boundingBox, 3, 0, 1, 3, 0, 7, WATER, WATER, false);
 
-            if (this.type != PopulatorVillage.Type.COLD) { //BE
+            if (this.type != PopulatorVillage.Type.COLD) { // BE
                 for (int z = 1; z <= 7; ++z) {
                     int maxAgeA = 7;
                     int minAgeA = maxAgeA / 3;
-                    this.placeBlock(level, new BlockState(this.cropA.getId(), Mth.nextInt(random, minAgeA, maxAgeA)), 1, 1, z, boundingBox);
-                    this.placeBlock(level, new BlockState(this.cropA.getId(), Mth.nextInt(random, minAgeA, maxAgeA)), 2, 1, z, boundingBox);
+                    this.placeBlock(
+                            level,
+                            new BlockState(this.cropA.getId(), Mth.nextInt(random, minAgeA, maxAgeA)),
+                            1,
+                            1,
+                            z,
+                            boundingBox);
+                    this.placeBlock(
+                            level,
+                            new BlockState(this.cropA.getId(), Mth.nextInt(random, minAgeA, maxAgeA)),
+                            2,
+                            1,
+                            z,
+                            boundingBox);
                     int maxAgeB = 7;
                     int minAgeB = maxAgeB / 3;
-                    this.placeBlock(level, new BlockState(this.cropB.getId(), Mth.nextInt(random, minAgeB, maxAgeB)), 4, 1, z, boundingBox);
-                    this.placeBlock(level, new BlockState(this.cropB.getId(), Mth.nextInt(random, minAgeB, maxAgeB)), 5, 1, z, boundingBox);
+                    this.placeBlock(
+                            level,
+                            new BlockState(this.cropB.getId(), Mth.nextInt(random, minAgeB, maxAgeB)),
+                            4,
+                            1,
+                            z,
+                            boundingBox);
+                    this.placeBlock(
+                            level,
+                            new BlockState(this.cropB.getId(), Mth.nextInt(random, minAgeB, maxAgeB)),
+                            5,
+                            1,
+                            z,
+                            boundingBox);
                 }
             }
 
@@ -1448,7 +1753,8 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
 
         private boolean hasPlacedChest;
 
-        public Smithy(StartPiece start, int genDepth, NukkitRandom random, BoundingBox boundingBox, BlockFace orientation) {
+        public Smithy(
+                StartPiece start, int genDepth, NukkitRandom random, BoundingBox boundingBox, BlockFace orientation) {
             super(start, genDepth);
             this.setOrientation(orientation);
             this.boundingBox = boundingBox;
@@ -1459,9 +1765,19 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
             this.hasPlacedChest = tag.getBoolean("Chest");
         }
 
-        public static Smithy createPiece(StartPiece start, List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
+        public static Smithy createPiece(
+                StartPiece start,
+                List<StructurePiece> pieces,
+                NukkitRandom random,
+                int x,
+                int y,
+                int z,
+                BlockFace orientation,
+                int genDepth) {
             BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, 0, 0, 0, 10, 6, 7, orientation);
-            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new Smithy(start, genDepth, random, boundingBox, orientation) : null;
+            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null
+                    ? new Smithy(start, genDepth, random, boundingBox, orientation)
+                    : null;
         }
 
         @Override
@@ -1476,7 +1792,8 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
         }
 
         @Override
-        public boolean postProcess(ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
+        public boolean postProcess(
+                ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
             if (this.horizPos < 0) {
                 this.horizPos = this.getAverageGroundHeight(level, boundingBox);
 
@@ -1526,16 +1843,22 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
             if (boundingBox.isInside(vec)) {
                 BaseFullChunk chunk = level.getChunk(vec.x >> 4, vec.z >> 4);
                 if (chunk != null) {
-                    Server.getInstance().getScheduler().scheduleTask(new BlockActorSpawnTask(chunk.getProvider().getLevel(),
-                            BlockEntity.getDefaultCompound(vec.asVector3(), BlockEntity.FURNACE)));
+                    Server.getInstance()
+                            .getScheduler()
+                            .scheduleTask(new BlockActorSpawnTask(
+                                    chunk.getProvider().getLevel(),
+                                    BlockEntity.getDefaultCompound(vec.asVector3(), BlockEntity.FURNACE)));
                 }
             }
             vec = vec.up();
             if (boundingBox.isInside(vec)) {
                 BaseFullChunk chunk = level.getChunk(vec.x >> 4, vec.z >> 4);
                 if (chunk != null) {
-                    Server.getInstance().getScheduler().scheduleTask(new BlockActorSpawnTask(chunk.getProvider().getLevel(),
-                            BlockEntity.getDefaultCompound(vec.asVector3(), BlockEntity.FURNACE)));
+                    Server.getInstance()
+                            .getScheduler()
+                            .scheduleTask(new BlockActorSpawnTask(
+                                    chunk.getProvider().getLevel(),
+                                    BlockEntity.getDefaultCompound(vec.asVector3(), BlockEntity.FURNACE)));
                 }
             }
 
@@ -1550,12 +1873,24 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
             this.placeBlock(level, stairsN, 2, 1, 5, boundingBox);
             this.placeBlock(level, stairsW, 1, 1, 4, boundingBox);
 
-            if (!this.hasPlacedChest && boundingBox.isInside(new BlockVector3(this.getWorldX(5, 5), this.getWorldY(1), this.getWorldZ(5, 5)))) {
+            if (!this.hasPlacedChest
+                    && boundingBox.isInside(
+                            new BlockVector3(this.getWorldX(5, 5), this.getWorldY(1), this.getWorldZ(5, 5)))) {
                 this.hasPlacedChest = true;
 
-                //\\ StructureHelpers::createChest(v7, v6, (int *)v4, v5, 5, 1, 5, v197, (__int64)&v204);
+                // \\ StructureHelpers::createChest(v7, v6, (int *)v4, v5, 5, 1, 5, v197, (__int64)&v204);
                 BlockFace orientation = this.getOrientation();
-                this.placeBlock(level, new BlockState(Block.CHEST, (orientation == null ? BlockFace.NORTH : orientation).getOpposite().getIndex()), 5, 1, 5, boundingBox);
+                this.placeBlock(
+                        level,
+                        new BlockState(
+                                Block.CHEST,
+                                (orientation == null ? BlockFace.NORTH : orientation)
+                                        .getOpposite()
+                                        .getIndex()),
+                        5,
+                        1,
+                        5,
+                        boundingBox);
 
                 vec = new BlockVector3(this.getWorldX(5, 5), this.getWorldY(1), this.getWorldZ(5, 5));
                 if (boundingBox.isInside(vec)) {
@@ -1565,13 +1900,17 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
                         ListTag<CompoundTag> itemList = new ListTag<>("Items");
                         VillageBlacksmithChest.get().create(itemList, random);
                         nbt.putList(itemList);
-                        Server.getInstance().getScheduler().scheduleTask(new BlockActorSpawnTask(chunk.getProvider().getLevel(), nbt));
+                        Server.getInstance()
+                                .getScheduler()
+                                .scheduleTask(new BlockActorSpawnTask(
+                                        chunk.getProvider().getLevel(), nbt));
                     }
                 }
             }
 
             for (int x = 6; x <= 8; ++x) {
-                if (this.getBlock(level, x, 0, -1, boundingBox).equals(BlockState.AIR) && !this.getBlock(level, x, -1, -1, boundingBox).equals(BlockState.AIR)) {
+                if (this.getBlock(level, x, 0, -1, boundingBox).equals(BlockState.AIR)
+                        && !this.getBlock(level, x, -1, -1, boundingBox).equals(BlockState.AIR)) {
                     this.placeBlock(level, cobbleStairsN, x, 0, -1, boundingBox);
 
                     if (this.getBlock(level, x, -1, -1, boundingBox).getId() == Block.GRASS_PATH) {
@@ -1599,7 +1938,8 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
 
     public static class TwoRoomHouse extends VillagePiece {
 
-        public TwoRoomHouse(StartPiece start, int genDepth, NukkitRandom random, BoundingBox boundingBox, BlockFace orientation) {
+        public TwoRoomHouse(
+                StartPiece start, int genDepth, NukkitRandom random, BoundingBox boundingBox, BlockFace orientation) {
             super(start, genDepth);
             this.setOrientation(orientation);
             this.boundingBox = boundingBox;
@@ -1609,9 +1949,19 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
             super(tag);
         }
 
-        public static TwoRoomHouse createPiece(StartPiece start, List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
+        public static TwoRoomHouse createPiece(
+                StartPiece start,
+                List<StructurePiece> pieces,
+                NukkitRandom random,
+                int x,
+                int y,
+                int z,
+                BlockFace orientation,
+                int genDepth) {
             BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, 0, 0, 0, 9, 7, 12, orientation);
-            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new TwoRoomHouse(start, genDepth, random, boundingBox, orientation) : null;
+            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null
+                    ? new TwoRoomHouse(start, genDepth, random, boundingBox, orientation)
+                    : null;
         }
 
         @Override
@@ -1620,7 +1970,8 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
         }
 
         @Override
-        public boolean postProcess(ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
+        public boolean postProcess(
+                ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
             if (this.horizPos < 0) {
                 this.horizPos = this.getAverageGroundHeight(level, boundingBox);
 
@@ -1724,7 +2075,8 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
             this.placeDoor(level, boundingBox, random, 2, 1, 0, BlockFace.NORTH);
             this.generateBox(level, boundingBox, 1, 0, -1, 3, 2, -1, BlockState.AIR, BlockState.AIR, false);
 
-            if (this.getBlock(level, 2, 0, -1, boundingBox).equals(BlockState.AIR) && !this.getBlock(level, 2, -1, -1, boundingBox).equals(BlockState.AIR)) {
+            if (this.getBlock(level, 2, 0, -1, boundingBox).equals(BlockState.AIR)
+                    && !this.getBlock(level, 2, -1, -1, boundingBox).equals(BlockState.AIR)) {
                 this.placeBlock(level, stairsN, 2, 0, -1, boundingBox);
 
                 if (this.getBlock(level, 2, -1, -1, boundingBox).getId() == Block.GRASS_PATH) {
@@ -1746,10 +2098,21 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
                 }
             }
 
-            if (this.type == PopulatorVillage.Type.COLD) { //BE
-                //\\ StructureHelpers::createChest(v7, v6, 5, 1, 9, v279, (unsigned __int64)&Dst, v284, v285, v288, v289);
+            if (this.type == PopulatorVillage.Type.COLD) { // BE
+                // \\ StructureHelpers::createChest(v7, v6, 5, 1, 9, v279, (unsigned __int64)&Dst, v284, v285, v288,
+                // v289);
                 BlockFace orientation = this.getOrientation();
-                this.placeBlock(level, new BlockState(Block.CHEST, (orientation == null ? BlockFace.NORTH : orientation).getOpposite().getIndex()), 5, 1, 9, boundingBox);
+                this.placeBlock(
+                        level,
+                        new BlockState(
+                                Block.CHEST,
+                                (orientation == null ? BlockFace.NORTH : orientation)
+                                        .getOpposite()
+                                        .getIndex()),
+                        5,
+                        1,
+                        9,
+                        boundingBox);
 
                 BlockVector3 vec = new BlockVector3(this.getWorldX(5, 9), this.getWorldY(1), this.getWorldZ(5, 9));
                 if (boundingBox.isInside(vec)) {
@@ -1759,7 +2122,10 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
                         ListTag<CompoundTag> itemList = new ListTag<>("Items");
                         VillageTwoRoomHouseChest.get().create(itemList, random);
                         nbt.putList(itemList);
-                        Server.getInstance().getScheduler().scheduleTask(new BlockActorSpawnTask(chunk.getProvider().getLevel(), nbt));
+                        Server.getInstance()
+                                .getScheduler()
+                                .scheduleTask(new BlockActorSpawnTask(
+                                        chunk.getProvider().getLevel(), nbt));
                     }
                 }
             }
@@ -1771,7 +2137,8 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
 
     public static class LightPost extends VillagePiece {
 
-        public LightPost(StartPiece start, int genDepth, NukkitRandom random, BoundingBox boundingBox, BlockFace orientation) {
+        public LightPost(
+                StartPiece start, int genDepth, NukkitRandom random, BoundingBox boundingBox, BlockFace orientation) {
             super(start, genDepth);
             this.setOrientation(orientation);
             this.boundingBox = boundingBox;
@@ -1781,7 +2148,14 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
             super(tag);
         }
 
-        public static BoundingBox findPieceBox(StartPiece start, List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation) {
+        public static BoundingBox findPieceBox(
+                StartPiece start,
+                List<StructurePiece> pieces,
+                NukkitRandom random,
+                int x,
+                int y,
+                int z,
+                BlockFace orientation) {
             BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, 0, 0, 0, 3, 4, 2, orientation);
             return StructurePiece.findCollisionPiece(pieces, boundingBox) != null ? null : boundingBox;
         }
@@ -1792,7 +2166,8 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
         }
 
         @Override
-        public boolean postProcess(ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
+        public boolean postProcess(
+                ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
             if (this.horizPos < 0) {
                 this.horizPos = this.getAverageGroundHeight(level, boundingBox);
 
@@ -1821,7 +2196,8 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
 
         private final int length;
 
-        public StraightRoad(StartPiece start, int genDepth, NukkitRandom random, BoundingBox boundingBox, BlockFace orientation) {
+        public StraightRoad(
+                StartPiece start, int genDepth, NukkitRandom random, BoundingBox boundingBox, BlockFace orientation) {
             super(start, genDepth);
             this.setOrientation(orientation);
             this.boundingBox = boundingBox;
@@ -1833,8 +2209,16 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
             this.length = tag.getInt("Length");
         }
 
-        //\\ StraightRoad::findPieceBox(StartPiece *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int,int,int)
-        public static BoundingBox findPieceBox(StartPiece start, List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation) {
+        // \\ StraightRoad::findPieceBox(StartPiece
+        // *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int,int,int)
+        public static BoundingBox findPieceBox(
+                StartPiece start,
+                List<StructurePiece> pieces,
+                NukkitRandom random,
+                int x,
+                int y,
+                int z,
+                BlockFace orientation) {
             for (int i = 7 * Mth.nextInt(random, 3, 5); i >= 7; i -= 7) {
                 BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, 0, 0, 0, 3, 3, i, orientation);
 
@@ -1858,22 +2242,31 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
         }
 
         @Override
-        //\\ StraightRoad::addChildren(StructurePiece *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &)
+        // \\ StraightRoad::addChildren(StructurePiece
+        // *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &)
         public void addChildren(StructurePiece piece, List<StructurePiece> pieces, NukkitRandom random) {
             boolean success = false;
 
-            for (int offset = random.nextBoundedInt(5); offset < this.length - 8; offset += 2 + random.nextBoundedInt(5)) {
+            for (int offset = random.nextBoundedInt(5);
+                    offset < this.length - 8;
+                    offset += 2 + random.nextBoundedInt(5)) {
                 StructurePiece result = this.generateChildLeft((StartPiece) piece, pieces, random, 0, offset);
                 if (result != null) {
-                    offset += Math.max(result.getBoundingBox().getXSpan(), result.getBoundingBox().getZSpan());
+                    offset += Math.max(
+                            result.getBoundingBox().getXSpan(),
+                            result.getBoundingBox().getZSpan());
                     success = true;
                 }
             }
 
-            for (int offset = random.nextBoundedInt(5); offset < this.length - 8; offset += 2 + random.nextBoundedInt(5)) {
+            for (int offset = random.nextBoundedInt(5);
+                    offset < this.length - 8;
+                    offset += 2 + random.nextBoundedInt(5)) {
                 StructurePiece result = this.generateChildRight((StartPiece) piece, pieces, random, 0, offset);
                 if (result != null) {
-                    offset += Math.max(result.getBoundingBox().getXSpan(), result.getBoundingBox().getZSpan());
+                    offset += Math.max(
+                            result.getBoundingBox().getXSpan(),
+                            result.getBoundingBox().getZSpan());
                     success = true;
                 }
             }
@@ -1884,16 +2277,48 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
                 switch (orientation) {
                     case NORTH:
                     default:
-                        generateAndAddRoadPiece((StartPiece) piece, pieces, random, this.boundingBox.x0 - 1, this.boundingBox.y0, this.boundingBox.z0, BlockFace.WEST, this.getGenDepth());
+                        generateAndAddRoadPiece(
+                                (StartPiece) piece,
+                                pieces,
+                                random,
+                                this.boundingBox.x0 - 1,
+                                this.boundingBox.y0,
+                                this.boundingBox.z0,
+                                BlockFace.WEST,
+                                this.getGenDepth());
                         break;
                     case SOUTH:
-                        generateAndAddRoadPiece((StartPiece) piece, pieces, random, this.boundingBox.x0 - 1, this.boundingBox.y0, this.boundingBox.z1 - 2, BlockFace.WEST, this.getGenDepth());
+                        generateAndAddRoadPiece(
+                                (StartPiece) piece,
+                                pieces,
+                                random,
+                                this.boundingBox.x0 - 1,
+                                this.boundingBox.y0,
+                                this.boundingBox.z1 - 2,
+                                BlockFace.WEST,
+                                this.getGenDepth());
                         break;
                     case WEST:
-                        generateAndAddRoadPiece((StartPiece) piece, pieces, random, this.boundingBox.x0, this.boundingBox.y0, this.boundingBox.z0 - 1, BlockFace.NORTH, this.getGenDepth());
+                        generateAndAddRoadPiece(
+                                (StartPiece) piece,
+                                pieces,
+                                random,
+                                this.boundingBox.x0,
+                                this.boundingBox.y0,
+                                this.boundingBox.z0 - 1,
+                                BlockFace.NORTH,
+                                this.getGenDepth());
                         break;
                     case EAST:
-                        generateAndAddRoadPiece((StartPiece) piece, pieces, random, this.boundingBox.x1 - 2, this.boundingBox.y0, this.boundingBox.z0 - 1, BlockFace.NORTH, this.getGenDepth());
+                        generateAndAddRoadPiece(
+                                (StartPiece) piece,
+                                pieces,
+                                random,
+                                this.boundingBox.x1 - 2,
+                                this.boundingBox.y0,
+                                this.boundingBox.z0 - 1,
+                                BlockFace.NORTH,
+                                this.getGenDepth());
                 }
             }
 
@@ -1901,22 +2326,55 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
                 switch (orientation) {
                     case NORTH:
                     default:
-                        generateAndAddRoadPiece((StartPiece) piece, pieces, random, this.boundingBox.x1 + 1, this.boundingBox.y0, this.boundingBox.z0, BlockFace.EAST, this.getGenDepth());
+                        generateAndAddRoadPiece(
+                                (StartPiece) piece,
+                                pieces,
+                                random,
+                                this.boundingBox.x1 + 1,
+                                this.boundingBox.y0,
+                                this.boundingBox.z0,
+                                BlockFace.EAST,
+                                this.getGenDepth());
                         break;
                     case SOUTH:
-                        generateAndAddRoadPiece((StartPiece) piece, pieces, random, this.boundingBox.x1 + 1, this.boundingBox.y0, this.boundingBox.z1 - 2, BlockFace.EAST, this.getGenDepth());
+                        generateAndAddRoadPiece(
+                                (StartPiece) piece,
+                                pieces,
+                                random,
+                                this.boundingBox.x1 + 1,
+                                this.boundingBox.y0,
+                                this.boundingBox.z1 - 2,
+                                BlockFace.EAST,
+                                this.getGenDepth());
                         break;
                     case WEST:
-                        generateAndAddRoadPiece((StartPiece) piece, pieces, random, this.boundingBox.x0, this.boundingBox.y0, this.boundingBox.z1 + 1, BlockFace.SOUTH, this.getGenDepth());
+                        generateAndAddRoadPiece(
+                                (StartPiece) piece,
+                                pieces,
+                                random,
+                                this.boundingBox.x0,
+                                this.boundingBox.y0,
+                                this.boundingBox.z1 + 1,
+                                BlockFace.SOUTH,
+                                this.getGenDepth());
                         break;
                     case EAST:
-                        generateAndAddRoadPiece((StartPiece) piece, pieces, random, this.boundingBox.x1 - 2, this.boundingBox.y0, this.boundingBox.z1 + 1, BlockFace.SOUTH, this.getGenDepth());
+                        generateAndAddRoadPiece(
+                                (StartPiece) piece,
+                                pieces,
+                                random,
+                                this.boundingBox.x1 - 2,
+                                this.boundingBox.y0,
+                                this.boundingBox.z1 + 1,
+                                BlockFace.SOUTH,
+                                this.getGenDepth());
                 }
             }
         }
 
-        @Override //\\ StraightRoad::postProcess(BlockSource *,Random &,BoundingBox const &)
-        public boolean postProcess(ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
+        @Override // \\ StraightRoad::postProcess(BlockSource *,Random &,BoundingBox const &)
+        public boolean postProcess(
+                ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
             BlockState path = this.getSpecificBlock(GRASS_PATH);
             BlockState planks = this.getSpecificBlock(PLANKS);
             BlockState gravel = this.getSpecificBlock(GRAVEL);
@@ -1952,7 +2410,10 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
                                 level.setBlockAt(vec.x, vec.y, vec.z, path.getId(), path.getMeta());
                                 break;
                             }
-                            if (block == Block.WATER || block == Block.STILL_WATER || block == Block.LAVA || block == Block.STILL_LAVA) {
+                            if (block == Block.WATER
+                                    || block == Block.STILL_WATER
+                                    || block == Block.LAVA
+                                    || block == Block.STILL_LAVA) {
                                 level.setBlockAt(vec.x, vec.y, vec.z, planks.getId(), planks.getMeta());
                                 break;
                             }

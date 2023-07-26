@@ -2,9 +2,8 @@ package cn.nukkit.command.data;
 
 import cn.nukkit.api.Since;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import lombok.Data;
-
 import java.util.List;
+import lombok.Data;
 
 @Since("1.20.10-r1")
 @Data

@@ -4,7 +4,6 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.network.protocol.types.BlockChangeEntry;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-
 import java.util.List;
 
 @PowerNukkitXOnly
@@ -29,9 +28,7 @@ public class UpdateSubChunkBlocksPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-
-    }
+    public void decode() {}
 
     @Override
     public void encode() {
@@ -79,7 +76,11 @@ public class UpdateSubChunkBlocksPacket extends DataPacket {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof UpdateSubChunkBlocksPacket that)) return false;
-        return chunkX == that.chunkX && chunkY == that.chunkY && chunkZ == that.chunkZ && standardBlocks.equals(that.standardBlocks) && extraBlocks.equals(that.extraBlocks);
+        return chunkX == that.chunkX
+                && chunkY == that.chunkY
+                && chunkZ == that.chunkZ
+                && standardBlocks.equals(that.standardBlocks)
+                && extraBlocks.equals(that.extraBlocks);
     }
 
     public int hashCode() {
@@ -94,6 +95,7 @@ public class UpdateSubChunkBlocksPacket extends DataPacket {
     }
 
     public String toString() {
-        return "UpdateSubChunkBlocksPacket(chunkX=" + this.chunkX + ", chunkY=" + this.chunkY + ", chunkZ=" + this.chunkZ + ", standardBlocks=" + this.standardBlocks + ", extraBlocks=" + this.extraBlocks + ")";
+        return "UpdateSubChunkBlocksPacket(chunkX=" + this.chunkX + ", chunkY=" + this.chunkY + ", chunkZ="
+                + this.chunkZ + ", standardBlocks=" + this.standardBlocks + ", extraBlocks=" + this.extraBlocks + ")";
     }
 }

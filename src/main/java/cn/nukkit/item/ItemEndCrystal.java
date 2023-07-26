@@ -14,7 +14,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
-
 import java.util.Random;
 
 public class ItemEndCrystal extends Item {
@@ -37,10 +36,12 @@ public class ItemEndCrystal extends Item {
     }
 
     @Override
-    public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
+    public boolean onActivate(
+            Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         if (!(target instanceof BlockBedrock) && !(target instanceof BlockObsidian)) return false;
         FullChunk chunk = level.getChunk((int) block.getX() >> 4, (int) block.getZ() >> 4);
-        Entity[] entities = level.getNearbyEntities(new SimpleAxisAlignedBB(target.x, target.y, target.z, target.x + 1, target.y + 2, target.z + 1));
+        Entity[] entities = level.getNearbyEntities(
+                new SimpleAxisAlignedBB(target.x, target.y, target.z, target.x + 1, target.y + 2, target.z + 1));
         Block up = target.up();
 
         if (chunk == null || up.getId() != BlockID.AIR || up.up().getId() != BlockID.AIR || entities.length != 0) {

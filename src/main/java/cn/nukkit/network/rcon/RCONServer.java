@@ -1,7 +1,5 @@
 package cn.nukkit.network.rcon;
 
-import lombok.extern.log4j.Log4j2;
-
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.BufferUnderflowException;
@@ -14,6 +12,7 @@ import java.nio.channels.SocketChannel;
 import java.nio.channels.spi.SelectorProvider;
 import java.nio.charset.Charset;
 import java.util.*;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * Thread that performs all RCON network work. A server.
@@ -85,7 +84,8 @@ public class RCONServer extends Thread {
 
                 this.selector.select();
 
-                Iterator<SelectionKey> selectedKeys = this.selector.selectedKeys().iterator();
+                Iterator<SelectionKey> selectedKeys =
+                        this.selector.selectedKeys().iterator();
                 while (selectedKeys.hasNext()) {
                     SelectionKey key = selectedKeys.next();
                     selectedKeys.remove();
@@ -105,7 +105,7 @@ public class RCONServer extends Thread {
                 }
             } catch (BufferUnderflowException exception) {
                 log.trace("Got a possible corrupt packet", exception);
-                //Corrupted packet, ignore
+                // Corrupted packet, ignore
             } catch (Exception exception) {
                 log.error("An exception happened processing the RCON server", exception);
             }

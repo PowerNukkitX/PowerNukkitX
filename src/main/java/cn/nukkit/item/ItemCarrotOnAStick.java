@@ -38,4 +38,3 @@ public class ItemCarrotOnAStick extends ItemTool {
         return true;
     }
 }
-

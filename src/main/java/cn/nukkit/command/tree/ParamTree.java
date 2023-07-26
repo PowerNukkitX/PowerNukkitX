@@ -12,12 +12,11 @@ import cn.nukkit.command.tree.node.*;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.lang.CommandOutputContainer;
 import cn.nukkit.plugin.InternalPlugin;
-
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Nullable;
 
 @PowerNukkitXOnly
 @Since("1.19.60-r1")
@@ -47,12 +46,13 @@ public class ParamTree {
      *
      * @param command the command
      */
-    //todo 优化建树和遍历
+    // todo 优化建树和遍历
     @SuppressWarnings("RedundantLabeledSwitchRuleCodeBlock")
     public ParamTree(Command command) {
         this.command = command;
         final var root = new HashMap<String, ParamList>();
-        for (Map.Entry<String, CommandParameter[]> entry : command.getCommandParameters().entrySet()) {
+        for (Map.Entry<String, CommandParameter[]> entry :
+                command.getCommandParameters().entrySet()) {
             final var paramList = new ParamList(this);
             for (CommandParameter parameter : entry.getValue()) {
                 IParamNode<?> node;
@@ -72,7 +72,7 @@ public class ParamTree {
                         case VALUE -> {
                             node = new DoubleNode();
                         }
-                        case POSITION -> {//(?<=\s|^)([~^]?-?\d+\.?\d*(?=\s|$))
+                        case POSITION -> { // (?<=\s|^)([~^]?-?\d+\.?\d*(?=\s|$))
                             node = new FloatPositionNode();
                         }
                         case BLOCK_POSITION -> {
@@ -118,7 +118,13 @@ public class ParamTree {
                         node = new StringNode();
                     } else node = new EnumNode();
                 }
-                paramList.add(node.init(paramList, parameter.name, parameter.optional, parameter.type, parameter.enumData, parameter.postFix));
+                paramList.add(node.init(
+                        paramList,
+                        parameter.name,
+                        parameter.optional,
+                        parameter.type,
+                        parameter.enumData,
+                        parameter.postFix));
             }
             root.put(entry.getKey(), paramList);
         }
@@ -138,8 +144,7 @@ public class ParamTree {
      * @param sender 命令发送者
      * @param args   命令的参数
      */
-    @Nullable
-    public Map.Entry<String, ParamList> matchAndParse(CommandSender sender, String commandLabel, String[] args) {
+    @Nullable public Map.Entry<String, ParamList> matchAndParse(CommandSender sender, String commandLabel, String[] args) {
         this.args = args;
         this.sender = sender;
         Map.Entry<String, ParamList> result = null;
@@ -151,7 +156,7 @@ public class ParamTree {
             f2:
             for (var node : list) {
                 while (!node.hasResult()) {
-                    if (list.getIndex() >= args.length) {//参数用完
+                    if (list.getIndex() >= args.length) { // 参数用完
                         if (node.isOptional()) break f2;
                         list.getIndexAndIncrement();
                         node.error();
@@ -164,12 +169,12 @@ public class ParamTree {
                 }
             }
             if (list.getError() == Integer.MIN_VALUE) {
-                if (entry.getValue().getIndex() < args.length) {//没用完参数
+                if (entry.getValue().getIndex() < args.length) { // 没用完参数
                     entry.getValue().getIndexAndIncrement();
                     entry.getValue().error();
                     error.add(entry.getValue());
                 } else {
-                    result = Map.entry(entry.getKey(), list);//成功条件 命令链与参数长度相等 命令链必选参数全部有结果
+                    result = Map.entry(entry.getKey(), list); // 成功条件 命令链与参数长度相等 命令链必选参数全部有结果
                     break;
                 }
             } else {
@@ -177,15 +182,24 @@ public class ParamTree {
             }
         }
 
-        if (result == null) {//全部不成功
-            final var list = error.stream().max(Comparator.comparingInt(ParamList::getError)).orElseGet(() -> {
-                var defaultList = new ParamList(this);
-                defaultList.error();
-                return defaultList;
-            });
+        if (result == null) { // 全部不成功
+            final var list = error.stream()
+                    .max(Comparator.comparingInt(ParamList::getError))
+                    .orElseGet(() -> {
+                        var defaultList = new ParamList(this);
+                        defaultList.error();
+                        return defaultList;
+                    });
 
-            final CommandLogger log = new CommandLogger(this.command, sender, commandLabel, args, new CommandOutputContainer(),
-                    command instanceof PluginCommand<?> pluginCommand ? pluginCommand.getPlugin() : InternalPlugin.INSTANCE);
+            final CommandLogger log = new CommandLogger(
+                    this.command,
+                    sender,
+                    commandLabel,
+                    args,
+                    new CommandOutputContainer(),
+                    command instanceof PluginCommand<?> pluginCommand
+                            ? pluginCommand.getPlugin()
+                            : InternalPlugin.INSTANCE);
             if (!list.getMessageContainer().getMessages().isEmpty()) {
                 for (var message : list.getMessageContainer().getMessages()) {
                     log.addMessage(message.getMessageId(), message.getParameters());

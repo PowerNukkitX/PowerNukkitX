@@ -13,22 +13,54 @@ import org.jetbrains.annotations.NotNull;
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
 public enum CompassRoseDirection {
-    @PowerNukkitOnly @Since("1.4.0.0-PN") NORTH(0, -1, BlockFace.NORTH, 0),
-    @PowerNukkitOnly @Since("1.4.0.0-PN") EAST(1, 0, BlockFace.EAST, 90),
-    @PowerNukkitOnly @Since("1.4.0.0-PN") SOUTH(0, 1, BlockFace.SOUTH, 180),
-    @PowerNukkitOnly @Since("1.4.0.0-PN") WEST(-1, 0, BlockFace.WEST, 270),
-    @PowerNukkitOnly @Since("1.4.0.0-PN") NORTH_EAST(NORTH, EAST, BlockFace.NORTH, 45),
-    @PowerNukkitOnly @Since("1.4.0.0-PN") NORTH_WEST(NORTH, WEST, BlockFace.WEST, 315),
-    @PowerNukkitOnly @Since("1.4.0.0-PN") SOUTH_EAST(SOUTH, EAST, BlockFace.EAST, 135),
-    @PowerNukkitOnly @Since("1.4.0.0-PN") SOUTH_WEST(SOUTH, WEST, BlockFace.SOUTH, 225),
-    @PowerNukkitOnly @Since("1.4.0.0-PN") WEST_NORTH_WEST(WEST, NORTH_WEST, BlockFace.WEST, 292.5),
-    @PowerNukkitOnly @Since("1.4.0.0-PN") NORTH_NORTH_WEST(NORTH, NORTH_WEST, BlockFace.NORTH, 337.5),
-    @PowerNukkitOnly @Since("1.4.0.0-PN") NORTH_NORTH_EAST(NORTH, NORTH_EAST, BlockFace.NORTH, 22.5),
-    @PowerNukkitOnly @Since("1.4.0.0-PN") EAST_NORTH_EAST(EAST, NORTH_EAST, BlockFace.EAST, 67.5),
-    @PowerNukkitOnly @Since("1.4.0.0-PN") EAST_SOUTH_EAST(EAST, SOUTH_EAST, BlockFace.EAST, 112.5),
-    @PowerNukkitOnly @Since("1.4.0.0-PN") SOUTH_SOUTH_EAST(SOUTH, SOUTH_EAST, BlockFace.SOUTH, 157.5),
-    @PowerNukkitOnly @Since("1.4.0.0-PN") SOUTH_SOUTH_WEST(SOUTH, SOUTH_WEST, BlockFace.SOUTH, 202.5),
-    @PowerNukkitOnly @Since("1.4.0.0-PN") WEST_SOUTH_WEST(WEST, SOUTH_WEST, BlockFace.WEST, 247.5);
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    NORTH(0, -1, BlockFace.NORTH, 0),
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    EAST(1, 0, BlockFace.EAST, 90),
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    SOUTH(0, 1, BlockFace.SOUTH, 180),
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    WEST(-1, 0, BlockFace.WEST, 270),
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    NORTH_EAST(NORTH, EAST, BlockFace.NORTH, 45),
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    NORTH_WEST(NORTH, WEST, BlockFace.WEST, 315),
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    SOUTH_EAST(SOUTH, EAST, BlockFace.EAST, 135),
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    SOUTH_WEST(SOUTH, WEST, BlockFace.SOUTH, 225),
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    WEST_NORTH_WEST(WEST, NORTH_WEST, BlockFace.WEST, 292.5),
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    NORTH_NORTH_WEST(NORTH, NORTH_WEST, BlockFace.NORTH, 337.5),
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    NORTH_NORTH_EAST(NORTH, NORTH_EAST, BlockFace.NORTH, 22.5),
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    EAST_NORTH_EAST(EAST, NORTH_EAST, BlockFace.EAST, 67.5),
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    EAST_SOUTH_EAST(EAST, SOUTH_EAST, BlockFace.EAST, 112.5),
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    SOUTH_SOUTH_EAST(SOUTH, SOUTH_EAST, BlockFace.SOUTH, 157.5),
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    SOUTH_SOUTH_WEST(SOUTH, SOUTH_WEST, BlockFace.SOUTH, 202.5),
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    WEST_SOUTH_WEST(WEST, SOUTH_WEST, BlockFace.WEST, 247.5);
 
     private final int modX;
     private final int modZ;
@@ -42,7 +74,8 @@ public enum CompassRoseDirection {
         this.yaw = (float) yaw;
     }
 
-    CompassRoseDirection(CompassRoseDirection face1, CompassRoseDirection face2, BlockFace closestBlockFace, double yaw) {
+    CompassRoseDirection(
+            CompassRoseDirection face1, CompassRoseDirection face2, BlockFace closestBlockFace, double yaw) {
         this.modX = face1.getModX() + face2.getModX();
         this.modZ = face1.getModZ() + face2.getModZ();
         this.closestBlockFace = closestBlockFace;
@@ -91,9 +124,9 @@ public enum CompassRoseDirection {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static CompassRoseDirection getClosestFromYaw(double yaw, @NotNull Precision precision) {
-        return CommonBlockProperties.GROUND_SIGN_DIRECTION.getValueForMeta(
-                (int) Math.round(Math.round((yaw + 180.0) * precision.directions / 360.0) * (16.0 / precision.directions)) & 0x0f
-        );
+        return CommonBlockProperties.GROUND_SIGN_DIRECTION.getValueForMeta((int) Math.round(
+                        Math.round((yaw + 180.0) * precision.directions / 360.0) * (16.0 / precision.directions))
+                & 0x0f);
     }
 
     /**
@@ -159,7 +192,7 @@ public enum CompassRoseDirection {
 
             case WEST_SOUTH_WEST:
                 return CompassRoseDirection.EAST_NORTH_EAST;
-            
+
             default:
                 throw new IncompatibleClassChangeError("New values was added to the enum");
         }
@@ -183,17 +216,23 @@ public enum CompassRoseDirection {
         /**
          * North, South, East, West.
          */
-        @PowerNukkitOnly @Since("1.4.0.0-PN") CARDINAL(4),
+        @PowerNukkitOnly
+        @Since("1.4.0.0-PN")
+        CARDINAL(4),
 
         /**
          * N, E, S, W, NE, NW, SE, SW.
          */
-        @PowerNukkitOnly @Since("1.4.0.0-PN") PRIMARY_INTER_CARDINAL(8),
+        @PowerNukkitOnly
+        @Since("1.4.0.0-PN")
+        PRIMARY_INTER_CARDINAL(8),
 
         /**
          * N, E, S, W, NE, NW, SE, SW, WNW, NNW, NNE, ENE, ESE, SSE, SSW, WSW.
          */
-        @PowerNukkitOnly @Since("1.4.0.0-PN") SECONDARY_INTER_CARDINAL(16);
+        @PowerNukkitOnly
+        @Since("1.4.0.0-PN")
+        SECONDARY_INTER_CARDINAL(16);
         protected final int directions;
     }
 }

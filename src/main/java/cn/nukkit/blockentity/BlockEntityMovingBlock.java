@@ -10,7 +10,6 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-
 import javax.annotation.Nullable;
 
 /**
@@ -21,6 +20,7 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
 
     @PowerNukkitOnly
     protected String blockString;
+
     protected Block block;
 
     protected BlockVector3 piston;
@@ -43,22 +43,27 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
         }
 
         if (namedTag.contains("pistonPosX") && namedTag.contains("pistonPosY") && namedTag.contains("pistonPosZ")) {
-            this.piston = new BlockVector3(namedTag.getInt("pistonPosX"), namedTag.getInt("pistonPosY"), namedTag.getInt("pistonPosZ"));
+            this.piston = new BlockVector3(
+                    namedTag.getInt("pistonPosX"), namedTag.getInt("pistonPosY"), namedTag.getInt("pistonPosZ"));
         } else {
             this.piston = new BlockVector3(0, -1, 0);
         }
     }
 
     @PowerNukkitOnly
-    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN", reason = "renamed", replaceWith = "getMovingBlockEntityCompound()")
+    @Deprecated
+    @DeprecationDetails(
+            by = "PowerNukkit",
+            since = "1.4.0.0-PN",
+            reason = "renamed",
+            replaceWith = "getMovingBlockEntityCompound()")
     public CompoundTag getBlockEntity() {
         return getMovingBlockEntityCompound();
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nullable
-    public CompoundTag getMovingBlockEntityCompound() {
+    @Nullable public CompoundTag getMovingBlockEntityCompound() {
         if (this.namedTag.contains("movingEntity")) {
             return this.namedTag.getCompound("movingEntity");
         }
@@ -79,16 +84,15 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
     @PowerNukkitOnly
     public void moveCollidedEntities(BlockEntityPistonArm piston, BlockFace moveDirection) {
         var bb = block.getBoundingBox();
-        if (bb == null)
-            return;
+        if (bb == null) return;
         bb = bb.getOffsetBoundingBox(
-                this.x + (piston.progress * moveDirection.getXOffset()) - moveDirection.getXOffset(),
-                this.y + (piston.progress * moveDirection.getYOffset()) - moveDirection.getYOffset(),
-                this.z + (piston.progress * moveDirection.getZOffset()) - moveDirection.getZOffset()
-                //带动站在移动方块上的实体
-        ).addCoord(0, moveDirection.getAxis().isHorizontal() ? 0.25 : 0, 0);
-        for (Entity entity : this.level.getCollidingEntities(bb))
-            piston.moveEntity(entity, moveDirection);
+                        this.x + (piston.progress * moveDirection.getXOffset()) - moveDirection.getXOffset(),
+                        this.y + (piston.progress * moveDirection.getYOffset()) - moveDirection.getYOffset(),
+                        this.z + (piston.progress * moveDirection.getZOffset()) - moveDirection.getZOffset()
+                        // 带动站在移动方块上的实体
+                        )
+                .addCoord(0, moveDirection.getAxis().isHorizontal() ? 0.25 : 0, 0);
+        for (Entity entity : this.level.getCollidingEntities(bb)) piston.moveEntity(entity, moveDirection);
     }
 
     @Override

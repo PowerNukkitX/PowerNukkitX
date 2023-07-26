@@ -4,7 +4,7 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
 
-//todo: 更改为基于BlockProperty的实现
+// todo: 更改为基于BlockProperty的实现
 @PowerNukkitXOnly
 @Since("1.19.21-r2")
 public enum Rotation {
@@ -34,7 +34,7 @@ public enum Rotation {
                         return 2;
                     case 4:
                         return 1;
-                    // 5 is vertical
+                        // 5 is vertical
                 }
                 break;
 
@@ -116,7 +116,7 @@ public enum Rotation {
                         return 2 | thrown;
                     case 5:
                         return 3 | thrown;
-                    // 0 and 1 are vertical
+                        // 0 and 1 are vertical
                 }
                 break;
             }
@@ -278,9 +278,9 @@ public enum Rotation {
             case BlockID.PISTON:
             case BlockID.STICKY_PISTON:
             case BlockID.PISTON_HEAD_STICKY:
-            case 137: //BlockID.COMMAND_BLOCK
-            case 188: //BlockID.REPEATING_COMMAND_BLOCK
-            case 189: //BlockID.CHAIN_COMMAND_BLOCK
+            case 137: // BlockID.COMMAND_BLOCK
+            case 188: // BlockID.REPEATING_COMMAND_BLOCK
+            case 189: // BlockID.CHAIN_COMMAND_BLOCK
                 final int rest = meta & ~0x7;
                 switch (meta & 0x7) {
                     case 2:
@@ -372,7 +372,6 @@ public enum Rotation {
                         return 0;
                 }
                 break;
-
         }
 
         return meta;
@@ -399,7 +398,7 @@ public enum Rotation {
                         return 3;
                     case 1:
                         return 4;
-                    // 5 is vertical
+                        // 5 is vertical
                 }
                 break;
 
@@ -482,7 +481,7 @@ public enum Rotation {
                         return 5 | thrown;
                     case 2:
                         return 4 | thrown;
-                    // 0 and 1 are vertical
+                        // 0 and 1 are vertical
                 }
                 break;
             }
@@ -641,9 +640,9 @@ public enum Rotation {
             case BlockID.PISTON:
             case BlockID.STICKY_PISTON:
             case BlockID.PISTON_HEAD_STICKY:
-            case 137: //BlockID.COMMAND_BLOCK
-            case 188: //BlockID.REPEATING_COMMAND_BLOCK
-            case 189: //BlockID.CHAIN_COMMAND_BLOCK
+            case 137: // BlockID.COMMAND_BLOCK
+            case 188: // BlockID.REPEATING_COMMAND_BLOCK
+            case 189: // BlockID.CHAIN_COMMAND_BLOCK
                 final int rest = meta & ~0x7;
                 switch (meta & 0x7) {
                     case 5:
@@ -735,7 +734,6 @@ public enum Rotation {
                         return 1;
                 }
                 break;
-
         }
 
         return meta;
@@ -762,7 +760,7 @@ public enum Rotation {
                         return 4;
                     case 4:
                         return 3;
-                    // 5 is vertical
+                        // 5 is vertical
                 }
                 break;
 
@@ -844,7 +842,7 @@ public enum Rotation {
                         return 5 | thrown;
                     case 5:
                         return 4 | thrown;
-                    // 0 and 1 are vertical
+                        // 0 and 1 are vertical
                 }
                 break;
             }
@@ -1005,9 +1003,9 @@ public enum Rotation {
             case BlockID.PISTON:
             case BlockID.STICKY_PISTON:
             case BlockID.PISTON_HEAD_STICKY:
-            case 137: //BlockID.COMMAND_BLOCK
-            case 188: //BlockID.REPEATING_COMMAND_BLOCK
-            case 189: //BlockID.CHAIN_COMMAND_BLOCK
+            case 137: // BlockID.COMMAND_BLOCK
+            case 188: // BlockID.REPEATING_COMMAND_BLOCK
+            case 189: // BlockID.CHAIN_COMMAND_BLOCK
                 final int rest = meta & ~0x7;
                 switch (meta & 0x7) {
                     case 2:
@@ -1099,7 +1097,6 @@ public enum Rotation {
                         return 2;
                 }
                 break;
-
         }
 
         return meta;

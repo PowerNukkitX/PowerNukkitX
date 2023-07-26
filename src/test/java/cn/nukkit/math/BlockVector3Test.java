@@ -1,11 +1,11 @@
 package cn.nukkit.math;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
 
 /**
  * @author joserobjr
@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertNotSame;
 @Since("FUTURE")
 class BlockVector3Test {
     BlockVector3 vector3;
+
     @Test
     void setGet() {
         vector3 = new BlockVector3();

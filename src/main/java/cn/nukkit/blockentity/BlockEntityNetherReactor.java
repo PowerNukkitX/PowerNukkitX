@@ -21,7 +21,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 public class BlockEntityNetherReactor extends BlockEntitySpawnable {
     private NetherReactorState reactorState;
     private int progress;
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public BlockEntityNetherReactor(FullChunk chunk, CompoundTag nbt) {

@@ -13,5 +13,4 @@ package cn.nukkit;
  * @see cn.nukkit.scheduler.AsyncWorker
  * @since Nukkit 1.0 | Nukkit API 1.0.0
  */
-public interface InterruptibleThread {
-}
+public interface InterruptibleThread {}

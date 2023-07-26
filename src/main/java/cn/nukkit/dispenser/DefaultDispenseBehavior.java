@@ -13,7 +13,6 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockFace.Axis;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
-
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -52,16 +51,22 @@ public class DefaultDispenseBehavior implements DispenseBehavior {
         Item clone = item.clone();
         clone.count = 1;
 
-
         Vector3 dropPos = dispensePos.add(face.getXOffset(), face.getYOffset(), face.getZOffset());
-        AxisAlignedBB bb = new SimpleAxisAlignedBB(dropPos.getX() - 0.5, dropPos.getY() - 1, dropPos.getZ() - 0.5, dropPos.getX() + 0.5, dropPos.getY() + 1, dropPos.getZ() + 0.5);
+        AxisAlignedBB bb = new SimpleAxisAlignedBB(
+                dropPos.getX() - 0.5,
+                dropPos.getY() - 1,
+                dropPos.getZ() - 0.5,
+                dropPos.getX() + 0.5,
+                dropPos.getY() + 1,
+                dropPos.getZ() + 0.5);
         for (Entity e : block.level.getNearbyEntities(bb)) {
             if (e instanceof EntityInventoryHolder inventoryHolder && inventoryHolder.canEquipByDispenser()) {
                 EntityArmorInventory armorInventory = inventoryHolder.getArmorInventory();
                 if (clone.isHelmet() && armorInventory.getHelmet().getId() == Item.AIR) {
                     armorInventory.setHelmet(clone);
                     return null;
-                } else if (clone.isChestplate() && armorInventory.getChestplate().getId() == Item.AIR) {
+                } else if (clone.isChestplate()
+                        && armorInventory.getChestplate().getId() == Item.AIR) {
                     armorInventory.setChestplate(clone);
                     return null;
                 } else if (clone.isLeggings() && armorInventory.getLeggings().getId() == Item.AIR) {
@@ -70,7 +75,11 @@ public class DefaultDispenseBehavior implements DispenseBehavior {
                 } else if (clone.isBoots() && armorInventory.getBoots().getId() == Item.AIR) {
                     armorInventory.setBoots(clone);
                     return null;
-                } else if (inventoryHolder.getEquipmentInventory().getItemInHand().getId() == Item.AIR) {
+                } else if (inventoryHolder
+                                .getEquipmentInventory()
+                                .getItemInHand()
+                                .getId()
+                        == Item.AIR) {
                     inventoryHolder.getEquipmentInventory().setItemInHand(clone, true);
                     return null;
                 }
@@ -79,7 +88,8 @@ public class DefaultDispenseBehavior implements DispenseBehavior {
                 if (clone.isHelmet() && armorInventory.getHelmet().getId() == Item.AIR) {
                     armorInventory.setHelmet(clone);
                     return null;
-                } else if (clone.isChestplate() && armorInventory.getChestplate().getId() == Item.AIR) {
+                } else if (clone.isChestplate()
+                        && armorInventory.getChestplate().getId() == Item.AIR) {
                     armorInventory.setChestplate(clone);
                     return null;
                 } else if (clone.isLeggings() && armorInventory.getLeggings().getId() == Item.AIR) {

@@ -9,7 +9,6 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.ByteTag;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntTag;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +18,9 @@ public class BlockEntityBell extends BlockEntitySpawnable {
     private boolean ringing;
     private int direction;
     private int ticks;
-    @PowerNukkitOnly public final List<Player> spawnExceptions = new ArrayList<>(2);
+
+    @PowerNukkitOnly
+    public final List<Player> spawnExceptions = new ArrayList<>(2);
 
     @PowerNukkitOnly
     public BlockEntityBell(FullChunk chunk, CompoundTag nbt) {
@@ -77,7 +78,7 @@ public class BlockEntityBell extends BlockEntitySpawnable {
                 spawnExceptions.clear();
                 return false;
             }
-            //spawnToAll();
+            // spawnToAll();
             ticks++;
             return true;
         } else if (ticks > 0) {
@@ -94,7 +95,9 @@ public class BlockEntityBell extends BlockEntitySpawnable {
             return;
         }
 
-        for (Player player : this.getLevel().getChunkPlayers(this.chunk.getX(), this.chunk.getZ()).values()) {
+        for (Player player : this.getLevel()
+                .getChunkPlayers(this.chunk.getX(), this.chunk.getZ())
+                .values()) {
             if (player.spawned && !spawnExceptions.contains(player)) {
                 this.spawnTo(player);
             }

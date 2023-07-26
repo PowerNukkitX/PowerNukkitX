@@ -2,11 +2,9 @@ package cn.powernukkitx.deflate;
 
 import cn.powernukkitx.libdeflate.CompressionType;
 import cn.powernukkitx.libdeflate.LibdeflateCompressor;
+import java.util.zip.Deflater;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
-
-import java.util.zip.Deflater;
-
 
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.Throughput)
@@ -16,7 +14,8 @@ import java.util.zip.Deflater;
 public class ChunkIOSimulateJMHTest {
     Deflater javaCompressor = new Deflater();
     LibdeflateCompressor libdeflateCompressor = new LibdeflateCompressor(6);
-    ThreadLocal<LibdeflateCompressor> compressorThreadLocal = ThreadLocal.withInitial(() -> new LibdeflateCompressor(6));
+    ThreadLocal<LibdeflateCompressor> compressorThreadLocal =
+            ThreadLocal.withInitial(() -> new LibdeflateCompressor(6));
     byte[] data;
 
     @Setup

@@ -12,7 +12,6 @@ import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.ContainerClosePacket;
 import cn.nukkit.network.protocol.ContainerOpenPacket;
-
 import java.util.Map;
 
 /**
@@ -27,18 +26,23 @@ public abstract class ContainerInventory extends BaseInventory {
         super(holder, type, items);
     }
 
-    public ContainerInventory(InventoryHolder holder, InventoryType type, Map<Integer, Item> items, Integer overrideSize) {
+    public ContainerInventory(
+            InventoryHolder holder, InventoryType type, Map<Integer, Item> items, Integer overrideSize) {
         super(holder, type, items, overrideSize);
     }
 
-    public ContainerInventory(InventoryHolder holder, InventoryType type, Map<Integer, Item> items, Integer overrideSize, String overrideTitle) {
+    public ContainerInventory(
+            InventoryHolder holder,
+            InventoryType type,
+            Map<Integer, Item> items,
+            Integer overrideSize,
+            String overrideTitle) {
         super(holder, type, items, overrideSize, overrideTitle);
     }
 
     @Override
     public void onOpen(Player who) {
-        if (!who.getAdventureSettings().get(AdventureSettings.Type.OPEN_CONTAINERS))
-            return;
+        if (!who.getAdventureSettings().get(AdventureSettings.Type.OPEN_CONTAINERS)) return;
         super.onOpen(who);
         ContainerOpenPacket pk = new ContainerOpenPacket();
         pk.windowId = who.getWindowId(this);
@@ -60,7 +64,10 @@ public abstract class ContainerInventory extends BaseInventory {
         this.sendContents(who);
 
         if (canCauseVibration() && holder instanceof Vector3 vector3) {
-            who.level.getVibrationManager().callVibrationEvent(new VibrationEvent(who, vector3.add(0.5, 0.5, 0.5), VibrationType.CONTAINER_OPEN));
+            who.level
+                    .getVibrationManager()
+                    .callVibrationEvent(
+                            new VibrationEvent(who, vector3.add(0.5, 0.5, 0.5), VibrationType.CONTAINER_OPEN));
         }
     }
 
@@ -72,7 +79,10 @@ public abstract class ContainerInventory extends BaseInventory {
         who.dataPacket(pk);
 
         if (canCauseVibration() && getHolder() instanceof Vector3 vector3) {
-            who.level.getVibrationManager().callVibrationEvent(new VibrationEvent(who, vector3.add(0.5, 0.5, 0.5), VibrationType.CONTAINER_CLOSE));
+            who.level
+                    .getVibrationManager()
+                    .callVibrationEvent(
+                            new VibrationEvent(who, vector3.add(0.5, 0.5, 0.5), VibrationType.CONTAINER_CLOSE));
         }
 
         super.onClose(who);
@@ -99,7 +109,8 @@ public abstract class ContainerInventory extends BaseInventory {
                 Item item = inv.getItem(slot);
 
                 if (item.getId() != 0) {
-                    averageCount += (float) item.getCount() / (float) Math.min(inv.getMaxStackSize(), item.getMaxStackSize());
+                    averageCount +=
+                            (float) item.getCount() / (float) Math.min(inv.getMaxStackSize(), item.getMaxStackSize());
                     ++itemCount;
                 }
             }

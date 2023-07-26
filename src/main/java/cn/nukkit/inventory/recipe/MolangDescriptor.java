@@ -3,7 +3,6 @@ package cn.nukkit.inventory.recipe;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
-
 import java.util.Objects;
 
 @PowerNukkitXOnly
@@ -51,8 +50,7 @@ public class MolangDescriptor implements ItemDescriptor {
         if (!(o instanceof final MolangDescriptor other)) return false;
         final Object this$tagExpression = this.getTagExpression();
         final Object other$tagExpression = other.getTagExpression();
-        if (!Objects.equals(this$tagExpression, other$tagExpression))
-            return false;
+        if (!Objects.equals(this$tagExpression, other$tagExpression)) return false;
         if (this.getMolangVersion() != other.getMolangVersion()) return false;
         return this.getCount() == other.getCount();
     }
@@ -68,6 +66,7 @@ public class MolangDescriptor implements ItemDescriptor {
     }
 
     public String toString() {
-        return "MolangDescriptor(tagExpression=" + this.getTagExpression() + ", molangVersion=" + this.getMolangVersion() + ", count=" + this.getCount() + ")";
+        return "MolangDescriptor(tagExpression=" + this.getTagExpression() + ", molangVersion="
+                + this.getMolangVersion() + ", count=" + this.getCount() + ")";
     }
 }

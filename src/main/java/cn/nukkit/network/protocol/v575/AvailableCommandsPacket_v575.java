@@ -1,5 +1,7 @@
 package cn.nukkit.network.protocol.v575;
 
+import static cn.nukkit.utils.Utils.dynamic;
+
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.command.data.*;
 import cn.nukkit.network.protocol.DataPacket;
@@ -9,17 +11,16 @@ import cn.nukkit.utils.BinaryStream;
 import com.nukkitx.network.util.Preconditions;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import lombok.ToString;
-
 import java.util.*;
 import java.util.function.ObjIntConsumer;
-
-import static cn.nukkit.utils.Utils.dynamic;
+import lombok.ToString;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-@PowerNukkitDifference(since = "1.4.0.0-PN", info = "Made the arg type constants dynamic because they can change in Minecraft updates")
+@PowerNukkitDifference(
+        since = "1.4.0.0-PN",
+        info = "Made the arg type constants dynamic because they can change in Minecraft updates")
 @ToString
 @Deprecated(since = "1.19.80-r1")
 public class AvailableCommandsPacket_v575 extends DataPacket {
@@ -48,20 +49,38 @@ public class AvailableCommandsPacket_v575 extends DataPacket {
 
     public static final int ARG_TYPE_FULL_INTEGER_RANGE = dynamic(23);
 
-    @Deprecated public static final int ARG_TYPE_EQUIPMENT_SLOT = dynamic(37);
-    @Deprecated public static final int ARG_TYPE_STRING = dynamic(39);
-    @Deprecated public static final int ARG_TYPE_BLOCK_POSITION = dynamic(47);
-    @Deprecated public static final int ARG_TYPE_POSITION = dynamic(48);
+    @Deprecated
+    public static final int ARG_TYPE_EQUIPMENT_SLOT = dynamic(37);
 
-    @Deprecated public static final int ARG_TYPE_MESSAGE = dynamic(51);
-    @Deprecated public static final int ARG_TYPE_RAWTEXT = dynamic(53);
-    @Deprecated public static final int ARG_TYPE_JSON = dynamic(57);
-    @Deprecated public static final int ARG_TYPE_BLOCK_STATES = dynamic(67);
-    @Deprecated public static final int ARG_TYPE_COMMAND = dynamic(70);
+    @Deprecated
+    public static final int ARG_TYPE_STRING = dynamic(39);
+
+    @Deprecated
+    public static final int ARG_TYPE_BLOCK_POSITION = dynamic(47);
+
+    @Deprecated
+    public static final int ARG_TYPE_POSITION = dynamic(48);
+
+    @Deprecated
+    public static final int ARG_TYPE_MESSAGE = dynamic(51);
+
+    @Deprecated
+    public static final int ARG_TYPE_RAWTEXT = dynamic(53);
+
+    @Deprecated
+    public static final int ARG_TYPE_JSON = dynamic(57);
+
+    @Deprecated
+    public static final int ARG_TYPE_BLOCK_STATES = dynamic(67);
+
+    @Deprecated
+    public static final int ARG_TYPE_COMMAND = dynamic(70);
 
     public Map<String, CommandDataVersions> commands;
+
     @Deprecated
     public final Map<String, List<String>> softEnums = new HashMap<>();
+
     public final List<CommandEnumConstraintData> constraints = new ObjectArrayList<>();
 
     @Override
@@ -71,7 +90,7 @@ public class AvailableCommandsPacket_v575 extends DataPacket {
 
     @Override
     public void decode() {
-        //non
+        // non
     }
 
     @Override
@@ -90,7 +109,9 @@ public class AvailableCommandsPacket_v575 extends DataPacket {
                 enumsSet.add(data.aliases);
             }
 
-            for (CommandParameter[] overload : data.overloads.values().stream().map(o -> o.input.parameters).toList()) {
+            for (CommandParameter[] overload : data.overloads.values().stream()
+                    .map(o -> o.input.parameters)
+                    .toList()) {
                 for (CommandParameter parameter : overload) {
                     CommandEnum commandEnumData = parameter.enumData;
                     if (commandEnumData != null) {
@@ -160,9 +181,9 @@ public class AvailableCommandsPacket_v575 extends DataPacket {
         // Determine width of enum index
         ObjIntConsumer<BinaryStream> indexWriter;
         int valuesSize = values.size();
-        if (valuesSize < 0x100) {//256
+        if (valuesSize < 0x100) { // 256
             indexWriter = WRITE_BYTE;
-        } else if (valuesSize < 0x10000) {//65536
+        } else if (valuesSize < 0x10000) { // 65536
             indexWriter = WRITE_SHORT;
         } else {
             indexWriter = WRITE_INT;
@@ -181,7 +202,11 @@ public class AvailableCommandsPacket_v575 extends DataPacket {
         }
     }
 
-    private void writeCommand(Map.Entry<String, CommandDataVersions> commandEntry, List<CommandEnum> enums, List<CommandEnum> softEnums, List<String> postFixes) {
+    private void writeCommand(
+            Map.Entry<String, CommandDataVersions> commandEntry,
+            List<CommandEnum> enums,
+            List<CommandEnum> softEnums,
+            List<String> postFixes) {
         var commandData = commandEntry.getValue().versions.get(0);
         this.putString(commandEntry.getKey());
         this.putString(commandData.description);
@@ -205,7 +230,8 @@ public class AvailableCommandsPacket_v575 extends DataPacket {
         }
     }
 
-    private void writeParameter(CommandParameter param, List<CommandEnum> enums, List<CommandEnum> softEnums, List<String> postFixes) {
+    private void writeParameter(
+            CommandParameter param, List<CommandEnum> enums, List<CommandEnum> softEnums, List<String> postFixes) {
         this.putString(param.name);
 
         int index;
@@ -246,5 +272,4 @@ public class AvailableCommandsPacket_v575 extends DataPacket {
             this.putString(value);
         }
     }
-
 }

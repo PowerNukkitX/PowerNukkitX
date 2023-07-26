@@ -8,7 +8,6 @@ import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.passive.EntityAnimal;
 import edu.umd.cs.findbugs.annotations.Nullable;
-
 import java.util.concurrent.ThreadLocalRandom;
 
 @PowerNukkitXOnly
@@ -35,13 +34,12 @@ public class EntityBreedingExecutor<T extends EntityAnimal> implements IBehavior
         if (entityClass.isInstance(uncasted)) {
             T entity = entityClass.cast(uncasted);
             if (shouldFindingSpouse(entity)) {
-                if (!entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE))
-                    return false;
+                if (!entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)) return false;
                 another = getNearestInLove(entity);
                 if (another == null) return true;
                 setSpouse(entity, another);
 
-                //set move speed
+                // set move speed
                 entity.setMovementSpeed(moveSpeed);
                 another.setMovementSpeed(moveSpeed);
 
@@ -92,13 +90,13 @@ public class EntityBreedingExecutor<T extends EntityAnimal> implements IBehavior
 
     protected void clearData(T entity) {
         entity.getMemoryStorage().clear(CoreMemoryTypes.ENTITY_SPOUSE);
-        //clear move target
+        // clear move target
         entity.setMoveTarget(null);
-        //clear look target
+        // clear look target
         entity.setLookTarget(null);
-        //reset move speed
+        // reset move speed
         entity.setMovementSpeed(0.1f);
-        //interrupt in love status
+        // interrupt in love status
         entity.getMemoryStorage().put(CoreMemoryTypes.IS_IN_LOVE, false);
     }
 
@@ -106,30 +104,29 @@ public class EntityBreedingExecutor<T extends EntityAnimal> implements IBehavior
         if (!entity1.isEnablePitch()) entity1.setEnablePitch(true);
         if (!entity2.isEnablePitch()) entity2.setEnablePitch(true);
 
-        //已经挨在一起了就不用更新路径了
-        //If they are already close together, there is no need to update the path
+        // 已经挨在一起了就不用更新路径了
+        // If they are already close together, there is no need to update the path
         if (entity1.getOffsetBoundingBox().intersectsWith(entity2.getOffsetBoundingBox())) return;
 
-        //clone the vec
+        // clone the vec
         var cloned1 = entity1.clone();
         var cloned2 = entity2.clone();
 
-        //update move target
+        // update move target
         entity1.setMoveTarget(cloned2);
         entity2.setMoveTarget(cloned1);
 
-        //update look target
+        // update look target
         entity1.setLookTarget(cloned2);
         entity2.setLookTarget(cloned1);
 
-        //在下一gt立即更新路径
-        //Immediately update the path on the next gt
+        // 在下一gt立即更新路径
+        // Immediately update the path on the next gt
         entity1.getBehaviorGroup().setForceUpdateRoute(true);
         entity2.getBehaviorGroup().setForceUpdateRoute(true);
     }
 
-    @Nullable
-    protected T getNearestInLove(EntityIntelligent entity) {
+    @Nullable protected T getNearestInLove(EntityIntelligent entity) {
         var entities = entity.level.getEntities();
         var maxDistanceSquared = -1d;
         T nearestInLove = null;
@@ -137,7 +134,10 @@ public class EntityBreedingExecutor<T extends EntityAnimal> implements IBehavior
             var newDistance = e.distanceSquared(entity);
             if (!e.equals(entity) && entityClass.isInstance(e)) {
                 T another = (T) e;
-                if (!another.isBaby() && another.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE) && another.getMemoryStorage().isEmpty(CoreMemoryTypes.ENTITY_SPOUSE) && (maxDistanceSquared == -1 || newDistance < maxDistanceSquared)) {
+                if (!another.isBaby()
+                        && another.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
+                        && another.getMemoryStorage().isEmpty(CoreMemoryTypes.ENTITY_SPOUSE)
+                        && (maxDistanceSquared == -1 || newDistance < maxDistanceSquared)) {
                     maxDistanceSquared = newDistance;
                     nearestInLove = another;
                 }
@@ -154,8 +154,9 @@ public class EntityBreedingExecutor<T extends EntityAnimal> implements IBehavior
         var rand = ThreadLocalRandom.current();
         T baby = (T) Entity.createEntity(entity1.getNetworkId(), entity1.getPosition());
         baby.setBaby(true);
-        //防止小屁孩去生baby
-        baby.getMemoryStorage().put(CoreMemoryTypes.LAST_IN_LOVE_TIME, Server.getInstance().getTick());
+        // 防止小屁孩去生baby
+        baby.getMemoryStorage()
+                .put(CoreMemoryTypes.LAST_IN_LOVE_TIME, Server.getInstance().getTick());
         baby.spawnToAll();
     }
 }

@@ -43,11 +43,15 @@ public class BellRingEvent extends BlockEvent implements Cancellable {
 
     @PowerNukkitOnly
     public enum RingCause {
-        @PowerNukkitOnly HUMAN_INTERACTION,
-        @PowerNukkitOnly REDSTONE,
-        @PowerNukkitOnly PROJECTILE,
-        @PowerNukkitOnly DROPPED_ITEM,
-        @PowerNukkitOnly UNKNOWN
+        @PowerNukkitOnly
+        HUMAN_INTERACTION,
+        @PowerNukkitOnly
+        REDSTONE,
+        @PowerNukkitOnly
+        PROJECTILE,
+        @PowerNukkitOnly
+        DROPPED_ITEM,
+        @PowerNukkitOnly
+        UNKNOWN
     }
-
 }

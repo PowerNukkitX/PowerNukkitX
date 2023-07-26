@@ -11,8 +11,7 @@ import cn.nukkit.item.ItemTool;
  */
 public class BlockIcePacked extends BlockIce {
 
-    public BlockIcePacked() {
-    }
+    public BlockIcePacked() {}
 
     @Override
     public int getId() {
@@ -31,17 +30,17 @@ public class BlockIcePacked extends BlockIce {
 
     @Override
     public int onUpdate(int type) {
-        return 0; //not being melted
+        return 0; // not being melted
     }
 
     @Override
     public boolean canHarvestWithHand() {
         return true;
     }
-    
+
     @Override
     public boolean onBreak(Item item) {
-        this.getLevel().setBlock(this, Block.get(BlockID.AIR), true); //no water
+        this.getLevel().setBlock(this, Block.get(BlockID.AIR), true); // no water
         return true;
     }
 

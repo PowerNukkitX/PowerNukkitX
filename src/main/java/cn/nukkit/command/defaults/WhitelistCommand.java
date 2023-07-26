@@ -9,7 +9,6 @@ import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.node.StringNode;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.utils.TextFormat;
-
 import java.util.Map;
 
 /**
@@ -19,36 +18,36 @@ import java.util.Map;
 public class WhitelistCommand extends VanillaCommand {
 
     public WhitelistCommand(String name) {
-        super(name, "nukkit.command.whitelist.description", "nukkit.command.allowlist.usage", new String[]{"allowlist"}); // In Minecraft Bedrock v1.18.10 the whitelist was renamed to allowlist
-        this.setPermission(
-                "nukkit.command.whitelist.reload;" +
-                        "nukkit.command.whitelist.enable;" +
-                        "nukkit.command.whitelist.disable;" +
-                        "nukkit.command.whitelist.list;" +
-                        "nukkit.command.whitelist.add;" +
-                        "nukkit.command.whitelist.remove;" +
-                        //v1.18.10+
-                        "nukkit.command.allowlist.reload;" +
-                        "nukkit.command.allowlist.enable;" +
-                        "nukkit.command.allowlist.disable;" +
-                        "nukkit.command.allowlist.list;" +
-                        "nukkit.command.allowlist.add;" +
-                        "nukkit.command.allowlist.remove"
-        );
+        super(name, "nukkit.command.whitelist.description", "nukkit.command.allowlist.usage", new String[] {"allowlist"
+        }); // In Minecraft Bedrock v1.18.10 the whitelist was renamed to allowlist
+        this.setPermission("nukkit.command.whitelist.reload;" + "nukkit.command.whitelist.enable;"
+                + "nukkit.command.whitelist.disable;"
+                + "nukkit.command.whitelist.list;"
+                + "nukkit.command.whitelist.add;"
+                + "nukkit.command.whitelist.remove;"
+                +
+                // v1.18.10+
+                "nukkit.command.allowlist.reload;"
+                + "nukkit.command.allowlist.enable;"
+                + "nukkit.command.allowlist.disable;"
+                + "nukkit.command.allowlist.list;"
+                + "nukkit.command.allowlist.add;"
+                + "nukkit.command.allowlist.remove");
         this.commandParameters.clear();
-        this.commandParameters.put("1arg", new CommandParameter[]{
-                CommandParameter.newEnum("action", new CommandEnum("AllowlistAction", "on", "off", "list", "reload"))
+        this.commandParameters.put("1arg", new CommandParameter[] {
+            CommandParameter.newEnum("action", new CommandEnum("AllowlistAction", "on", "off", "list", "reload"))
         });
-        this.commandParameters.put("2args", new CommandParameter[]{
-                CommandParameter.newEnum("action", new CommandEnum("AllowlistPlayerAction", "add", "remove")),
-                CommandParameter.newType("player", CommandParamType.TARGET, new StringNode())
+        this.commandParameters.put("2args", new CommandParameter[] {
+            CommandParameter.newEnum("action", new CommandEnum("AllowlistPlayerAction", "add", "remove")),
+            CommandParameter.newType("player", CommandParamType.TARGET, new StringNode())
         });
         this.enableParamTree();
     }
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         switch (result.getKey()) {
             case "1arg" -> {
@@ -75,12 +74,14 @@ public class WhitelistCommand extends VanillaCommand {
                     case "list" -> {
                         StringBuilder re = new StringBuilder();
                         int count = 0;
-                        for (String player : sender.getServer().getWhitelist().getAll().keySet()) {
+                        for (String player :
+                                sender.getServer().getWhitelist().getAll().keySet()) {
                             re.append(player).append(", ");
                             ++count;
                         }
                         log.addSuccess("commands.allowlist.list", String.valueOf(count), String.valueOf(count));
-                        log.addSuccess(re.length() > 0 ? re.substring(0, re.length() - 2) : "").output();
+                        log.addSuccess(re.length() > 0 ? re.substring(0, re.length() - 2) : "")
+                                .output();
                         return 1;
                     }
                 }
@@ -99,7 +100,8 @@ public class WhitelistCommand extends VanillaCommand {
                     }
                     case "remove" -> {
                         sender.getServer().getOfflinePlayer(name).setWhitelisted(false);
-                        log.addSuccess("commands.allowlist.remove.success", name).output(true);
+                        log.addSuccess("commands.allowlist.remove.success", name)
+                                .output(true);
                         return 1;
                     }
                 }
@@ -112,8 +114,10 @@ public class WhitelistCommand extends VanillaCommand {
     }
 
     private boolean badPerm(CommandLogger log, CommandSender sender, String perm) {
-        if (!sender.hasPermission("nukkit.command.whitelist." + perm) && !sender.hasPermission("nukkit.command.allowlist." + perm)) {
-            log.addMessage(TextFormat.RED + "%nukkit.command.generic.permission").output();
+        if (!sender.hasPermission("nukkit.command.whitelist." + perm)
+                && !sender.hasPermission("nukkit.command.allowlist." + perm)) {
+            log.addMessage(TextFormat.RED + "%nukkit.command.generic.permission")
+                    .output();
             return true;
         }
         return false;

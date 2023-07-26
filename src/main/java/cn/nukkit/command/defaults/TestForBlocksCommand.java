@@ -1,5 +1,7 @@
 package cn.nukkit.command.defaults;
 
+import static cn.nukkit.utils.Utils.getLevelBlocks;
+
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
@@ -13,11 +15,8 @@ import cn.nukkit.level.Position;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.SimpleAxisAlignedBB;
-
 import java.util.Locale;
 import java.util.Map;
-
-import static cn.nukkit.utils.Utils.getLevelBlocks;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -27,18 +26,19 @@ public class TestForBlocksCommand extends VanillaCommand {
         super(name, "commands.testforblocks.description");
         this.setPermission("nukkit.command.testforblocks");
         this.getCommandParameters().clear();
-        this.addCommandParameters("default", new CommandParameter[]{
-                CommandParameter.newType("begin", false, CommandParamType.BLOCK_POSITION),
-                CommandParameter.newType("end", false, CommandParamType.BLOCK_POSITION),
-                CommandParameter.newType("destination", false, CommandParamType.BLOCK_POSITION),
-                CommandParameter.newEnum("mode", true, new String[]{"all", "masked"})
+        this.addCommandParameters("default", new CommandParameter[] {
+            CommandParameter.newType("begin", false, CommandParamType.BLOCK_POSITION),
+            CommandParameter.newType("end", false, CommandParamType.BLOCK_POSITION),
+            CommandParameter.newType("destination", false, CommandParamType.BLOCK_POSITION),
+            CommandParameter.newEnum("mode", true, new String[] {"all", "masked"})
         });
         this.enableParamTree();
     }
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         Position begin = list.getResult(0);
         Position end = list.getResult(1);
@@ -50,8 +50,16 @@ public class TestForBlocksCommand extends VanillaCommand {
             mode = TestForBlocksMode.valueOf(str.toUpperCase(Locale.ENGLISH));
         }
 
-        AxisAlignedBB blocksAABB = new SimpleAxisAlignedBB(Math.min(begin.getX(), end.getX()), Math.min(begin.getY(), end.getY()), Math.min(begin.getZ(), end.getZ()), Math.max(begin.getX(), end.getX()), Math.max(begin.getY(), end.getY()), Math.max(begin.getZ(), end.getZ()));
-        int size = NukkitMath.floorDouble((blocksAABB.getMaxX() - blocksAABB.getMinX() + 1) * (blocksAABB.getMaxY() - blocksAABB.getMinY() + 1) * (blocksAABB.getMaxZ() - blocksAABB.getMinZ() + 1));
+        AxisAlignedBB blocksAABB = new SimpleAxisAlignedBB(
+                Math.min(begin.getX(), end.getX()),
+                Math.min(begin.getY(), end.getY()),
+                Math.min(begin.getZ(), end.getZ()),
+                Math.max(begin.getX(), end.getX()),
+                Math.max(begin.getY(), end.getY()),
+                Math.max(begin.getZ(), end.getZ()));
+        int size = NukkitMath.floorDouble((blocksAABB.getMaxX() - blocksAABB.getMinX() + 1)
+                * (blocksAABB.getMaxY() - blocksAABB.getMinY() + 1)
+                * (blocksAABB.getMaxZ() - blocksAABB.getMinZ() + 1));
 
         if (size > 16 * 16 * 256 * 8) {
             log.addError("commands.fill.tooManyBlocks", String.valueOf(size), String.valueOf(16 * 16 * 256 * 8));
@@ -59,18 +67,36 @@ public class TestForBlocksCommand extends VanillaCommand {
             log.output();
         }
 
-        Position to = new Position(destination.getX() + (blocksAABB.getMaxX() - blocksAABB.getMinX()), destination.getY() + (blocksAABB.getMaxY() - blocksAABB.getMinY()), destination.getZ() + (blocksAABB.getMaxZ() - blocksAABB.getMinZ()));
-        AxisAlignedBB destinationAABB = new SimpleAxisAlignedBB(Math.min(destination.getX(), to.getX()), Math.min(destination.getY(), to.getY()), Math.min(destination.getZ(), to.getZ()), Math.max(destination.getX(), to.getX()), Math.max(destination.getY(), to.getY()), Math.max(destination.getZ(), to.getZ()));
+        Position to = new Position(
+                destination.getX() + (blocksAABB.getMaxX() - blocksAABB.getMinX()),
+                destination.getY() + (blocksAABB.getMaxY() - blocksAABB.getMinY()),
+                destination.getZ() + (blocksAABB.getMaxZ() - blocksAABB.getMinZ()));
+        AxisAlignedBB destinationAABB = new SimpleAxisAlignedBB(
+                Math.min(destination.getX(), to.getX()),
+                Math.min(destination.getY(), to.getY()),
+                Math.min(destination.getZ(), to.getZ()),
+                Math.max(destination.getX(), to.getX()),
+                Math.max(destination.getY(), to.getY()),
+                Math.max(destination.getZ(), to.getZ()));
 
-        if (blocksAABB.getMinY() < 0 || blocksAABB.getMaxY() > 255 || destinationAABB.getMinY() < 0 || destinationAABB.getMaxY() > 255) {
+        if (blocksAABB.getMinY() < 0
+                || blocksAABB.getMaxY() > 255
+                || destinationAABB.getMinY() < 0
+                || destinationAABB.getMaxY() > 255) {
             log.addError("commands.testforblock.outOfWorld").output();
             return 0;
         }
 
         Level level = begin.getLevel();
 
-        for (int sourceChunkX = NukkitMath.floorDouble(blocksAABB.getMinX()) >> 4, destinationChunkX = NukkitMath.floorDouble(destinationAABB.getMinX()) >> 4; sourceChunkX <= NukkitMath.floorDouble(blocksAABB.getMaxX()) >> 4; sourceChunkX++, destinationChunkX++) {
-            for (int sourceChunkZ = NukkitMath.floorDouble(blocksAABB.getMinZ()) >> 4, destinationChunkZ = NukkitMath.floorDouble(destinationAABB.getMinZ()) >> 4; sourceChunkZ <= NukkitMath.floorDouble(blocksAABB.getMaxZ()) >> 4; sourceChunkZ++, destinationChunkZ++) {
+        for (int sourceChunkX = NukkitMath.floorDouble(blocksAABB.getMinX()) >> 4,
+                        destinationChunkX = NukkitMath.floorDouble(destinationAABB.getMinX()) >> 4;
+                sourceChunkX <= NukkitMath.floorDouble(blocksAABB.getMaxX()) >> 4;
+                sourceChunkX++, destinationChunkX++) {
+            for (int sourceChunkZ = NukkitMath.floorDouble(blocksAABB.getMinZ()) >> 4,
+                            destinationChunkZ = NukkitMath.floorDouble(destinationAABB.getMinZ()) >> 4;
+                    sourceChunkZ <= NukkitMath.floorDouble(blocksAABB.getMaxZ()) >> 4;
+                    sourceChunkZ++, destinationChunkZ++) {
                 if (level.getChunkIfLoaded(sourceChunkX, sourceChunkZ) == null) {
                     log.addError("commands.testforblock.outOfWorld").output();
                     return 0;

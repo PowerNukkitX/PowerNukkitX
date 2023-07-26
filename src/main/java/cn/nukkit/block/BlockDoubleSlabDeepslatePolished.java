@@ -18,57 +18,55 @@ public class BlockDoubleSlabDeepslatePolished extends BlockDoubleSlabBase {
     public BlockDoubleSlabDeepslatePolished() {
         this(0);
     }
-    
+
     @PowerNukkitOnly
     @Since("FUTURE")
     public BlockDoubleSlabDeepslatePolished(int meta) {
         super(meta);
     }
-    
+
     @Override
     public int getId() {
         return POLISHED_DEEPSLATE_DOUBLE_SLAB;
     }
-    
+
     @Override
     public int getSingleSlabId() {
         return POLISHED_DEEPSLATE_SLAB;
     }
-    
+
     @Override
     public String getSlabName() {
         return "Double Polished Deepslate Slab";
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return BlockSlab.SIMPLE_SLAB_PROPERTIES;
     }
-    
+
     @Override
     public double getHardness() {
         return 3.5;
     }
-    
+
     @Override
     public double getResistance() {
         return 6;
     }
-    
+
     @Override
     public boolean canHarvestWithHand() {
         return false;
     }
-    
+
     @Override
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
-    
+
     @Override
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
-
 }

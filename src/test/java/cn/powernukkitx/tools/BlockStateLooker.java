@@ -23,11 +23,11 @@ public class BlockStateLooker {
         RuntimeItems.init();
         Potion.init();
         Item.init();
-        EnumBiome.values(); //load class, this also registers biomes
+        EnumBiome.values(); // load class, this also registers biomes
         Effect.init();
         Attribute.init();
         DispenseBehaviorRegister.init();
-        GlobalBlockPalette.getOrCreateRuntimeId(0, 0); //Force it to load
+        GlobalBlockPalette.getOrCreateRuntimeId(0, 0); // Force it to load
 
         BlockWood2 blockWood2 = new BlockWood2();
         for (var type : ((ArrayBlockProperty<?>) BlockWood2.NEW_LOG_TYPE).getUniverse()) {

@@ -14,11 +14,10 @@ import cn.nukkit.network.protocol.types.AbilityLayer;
 import cn.nukkit.network.protocol.types.CommandPermission;
 import cn.nukkit.network.protocol.types.PlayerAbility;
 import cn.nukkit.network.protocol.types.PlayerPermission;
+import java.util.*;
+import javax.annotation.Nullable;
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.annotation.Nullable;
-import java.util.*;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -34,9 +33,11 @@ public class AdventureSettings implements Cloneable {
     @PowerNukkitXOnly
     @Since("1.19.50-r3")
     public static final String KEY_ABILITIES = "Abilities";
+
     @PowerNukkitXOnly
     @Since("1.19.50-r3")
     public static final String KEY_PLAYER_PERMISSION = "PlayerPermission";
+
     @PowerNukkitXOnly
     @Since("1.19.50-r3")
     public static final String KEY_COMMAND_PERMISSION = "CommandPermission";
@@ -46,15 +47,18 @@ public class AdventureSettings implements Cloneable {
     private static final Map<PlayerAbility, Type> ability2TypeMap = new HashMap<>();
 
     private final Map<Type, Boolean> values = new EnumMap<>(Type.class);
+
     @Getter
     @PowerNukkitXOnly
     @Since("1.19.50-r3")
     private PlayerPermission playerPermission;
+
     @Getter
     @Setter
     @PowerNukkitXOnly
     @Since("1.19.50-r3")
     private CommandPermission commandPermission;
+
     private Player player;
 
     public AdventureSettings(Player player) {
@@ -93,9 +97,9 @@ public class AdventureSettings implements Cloneable {
             playerPermission = player.isOp() ? PlayerPermission.OPERATOR : PlayerPermission.MEMBER;
         } else readNBT(nbt);
 
-        //离线时被deop
+        // 离线时被deop
         if (playerPermission == PlayerPermission.OPERATOR && !player.isOp()) onOpChange(false);
-        //离线时被op
+        // 离线时被op
         if (playerPermission != PlayerPermission.OPERATOR && player.isOp()) onOpChange(true);
     }
 
@@ -139,20 +143,22 @@ public class AdventureSettings implements Cloneable {
         return value == null ? type.getDefaultValue() : value;
     }
 
-    @PowerNukkitDifference(info = "Players in spectator mode will be flagged as member even if they are OP due to a client-side limitation", since = "1.3.1.2-PN")
+    @PowerNukkitDifference(
+            info =
+                    "Players in spectator mode will be flagged as member even if they are OP due to a client-side limitation",
+            since = "1.3.1.2-PN")
     @PowerNukkitXDifference(info = "updateAdventureSettingsPacket now will be sent to all players")
     public void update() {
-        //向所有玩家发送以使他们能看到彼此的权限
-        //Permission to send to all players so they can see each other
+        // 向所有玩家发送以使他们能看到彼此的权限
+        // Permission to send to all players so they can see each other
         var players = new HashSet<>(player.getServer().getOnlinePlayers().values());
-        //确保会发向自己（eg：玩家进服时在线玩家里没有此玩家）
-        //Make sure it will be sent to yourself (eg: there is no such player among the online players when the player enters the server)
+        // 确保会发向自己（eg：玩家进服时在线玩家里没有此玩家）
+        // Make sure it will be sent to yourself (eg: there is no such player among the online players when the player
+        // enters the server)
         players.add(this.player);
         this.sendAbilities(players);
         this.updateAdventureSettings();
     }
-
-
 
     /**
      * 当玩家OP身份变动时此方法将被调用
@@ -166,12 +172,12 @@ public class AdventureSettings implements Cloneable {
             for (PlayerAbility controllableAbility : RequestPermissionsPacket.CONTROLLABLE_ABILITIES)
                 set(controllableAbility, true);
         }
-        //设置op特有属性
+        // 设置op特有属性
         set(Type.OPERATOR, op);
         set(Type.TELEPORT, op);
 
         commandPermission = op ? CommandPermission.OPERATOR : CommandPermission.NORMAL;
-        //不要覆盖自定义/访客状态
+        // 不要覆盖自定义/访客状态
         if (op && playerPermission != PlayerPermission.OPERATOR) playerPermission = PlayerPermission.OPERATOR;
         if (!op && playerPermission == PlayerPermission.OPERATOR) playerPermission = PlayerPermission.MEMBER;
     }
@@ -274,7 +280,8 @@ public class AdventureSettings implements Cloneable {
         BUILD(PlayerAbility.BUILD, true),
         PRIVILEGED_BUILDER(PlayerAbility.PRIVILEGED_BUILDER, false),
 
-        @Deprecated DEFAULT_LEVEL_PERMISSIONS(null, false);
+        @Deprecated
+        DEFAULT_LEVEL_PERMISSIONS(null, false);
 
         private final PlayerAbility ability;
         private final boolean defaultValue;

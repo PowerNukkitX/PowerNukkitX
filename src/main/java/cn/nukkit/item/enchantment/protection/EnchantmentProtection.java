@@ -25,7 +25,10 @@ public abstract class EnchantmentProtection extends Enchantment {
     protected final TYPE protectionType;
 
     @PowerNukkitOnly("Re-added for backward compatibility")
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit",
+    @Deprecated
+    @DeprecationDetails(
+            since = "1.4.0.0-PN",
+            by = "Cloudburst Nukkit",
             reason = "The signature was changed and it doesn't exists anymore in Cloudburst Nukkit",
             replaceWith = "EnchantmentProtection(int id, String name, Rarity rarity, EnchantmentProtection.TYPE type)")
     protected EnchantmentProtection(int id, String name, int weight, EnchantmentProtection.TYPE type) {
@@ -52,7 +55,8 @@ public abstract class EnchantmentProtection extends Enchantment {
             if (((EnchantmentProtection) enchantment).protectionType == this.protectionType) {
                 return false;
             }
-            return ((EnchantmentProtection) enchantment).protectionType == TYPE.FALL || this.protectionType == TYPE.FALL;
+            return ((EnchantmentProtection) enchantment).protectionType == TYPE.FALL
+                    || this.protectionType == TYPE.FALL;
         }
         return super.checkCompatibility(enchantment);
     }

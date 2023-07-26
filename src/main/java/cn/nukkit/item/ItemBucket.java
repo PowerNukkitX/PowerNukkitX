@@ -21,7 +21,6 @@ import cn.nukkit.math.BlockFace.Plane;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.network.protocol.UpdateBlockPacket;
-
 import javax.annotation.Nullable;
 
 /**
@@ -119,8 +118,7 @@ public class ItemBucket extends Item {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nullable
-    public String getFishEntityId() {
+    @Nullable public String getFishEntityId() {
         if (getId() != BUCKET) {
             return null;
         }
@@ -158,11 +156,11 @@ public class ItemBucket extends Item {
         return getId() == BUCKET ? Block.get(getDamageByTarget(this.meta)) : Block.get(BlockID.AIR);
     }
 
-
     @SuppressWarnings("DuplicatedCode")
     @PowerNukkitDifference(info = "You can't use bucket in adventure mode.", since = "1.4.0.0-PN")
     @Override
-    public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
+    public boolean onActivate(
+            Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         if (player.isAdventure()) {
             return false;
         }
@@ -182,14 +180,21 @@ public class ItemBucket extends Item {
                 }
             }
             if ((target instanceof BlockLiquid || target instanceof BlockPowderSnow) && target.getDamage() == 0) {
-                Item result = target instanceof BlockPowderSnow ? Item.get(BUCKET, 11, 1) :
-                        (target instanceof BlockLavaStill ? Item.get(BUCKET, 10, 1) : Item.get(BUCKET, getDamageByTarget(target.getId()), 1));
+                Item result = target instanceof BlockPowderSnow
+                        ? Item.get(BUCKET, 11, 1)
+                        : (target instanceof BlockLavaStill
+                                ? Item.get(BUCKET, 10, 1)
+                                : Item.get(BUCKET, getDamageByTarget(target.getId()), 1));
                 PlayerBucketFillEvent ev;
-                player.getServer().getPluginManager().callEvent(ev = new PlayerBucketFillEvent(player, block, face, target, this, result));
+                player.getServer()
+                        .getPluginManager()
+                        .callEvent(ev = new PlayerBucketFillEvent(player, block, face, target, this, result));
                 if (!ev.isCancelled()) {
                     player.getLevel().setBlock(target, target.layer, Block.get(BlockID.AIR), true, true);
 
-                    level.getVibrationManager().callVibrationEvent(new VibrationEvent(player, target.add(0.5, 0.5, 0.5), VibrationType.FLUID_PICKUP));
+                    level.getVibrationManager()
+                            .callVibrationEvent(
+                                    new VibrationEvent(player, target.add(0.5, 0.5, 0.5), VibrationType.FLUID_PICKUP));
 
                     // When water is removed ensure any adjacent still water is
                     // replaced with water that can flow.
@@ -265,7 +270,10 @@ public class ItemBucket extends Item {
 
             if (!ev.isCancelled()) {
                 player.getLevel().setBlock(placementBlock, placementBlock.layer, targetBlock, true, true);
-                target.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(player, target.add(0.5, 0.5, 0.5), VibrationType.FLUID_PLACE));
+                target.getLevel()
+                        .getVibrationManager()
+                        .callVibrationEvent(
+                                new VibrationEvent(player, target.add(0.5, 0.5, 0.5), VibrationType.FLUID_PLACE));
                 if (player.isSurvival()) {
                     if (this.getCount() - 1 <= 0) {
                         player.getInventory().setItemInHand(ev.getItem());
@@ -292,7 +300,12 @@ public class ItemBucket extends Item {
                 player.getLevel().addLevelSoundEvent(target, LevelSoundEventPacket.SOUND_FIZZ);
                 player.getLevel().addParticle(new ExplodeParticle(target.add(0.5, 1, 0.5)));
             } else {
-                player.getLevel().sendBlocks(new Player[]{player}, new Block[]{block.getLevelBlockAtLayer(1)}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 1);
+                player.getLevel()
+                        .sendBlocks(
+                                new Player[] {player},
+                                new Block[] {block.getLevelBlockAtLayer(1)},
+                                UpdateBlockPacket.FLAG_ALL_PRIORITY,
+                                1);
                 player.getInventory().sendContents(player);
             }
         } else if (targetBlock instanceof BlockPowderSnow) {
@@ -323,7 +336,10 @@ public class ItemBucket extends Item {
                     }
                 }
 
-                target.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(player, target.add(0.5, 0.5, 0.5), VibrationType.BLOCK_PLACE));
+                target.getLevel()
+                        .getVibrationManager()
+                        .callVibrationEvent(
+                                new VibrationEvent(player, target.add(0.5, 0.5, 0.5), VibrationType.BLOCK_PLACE));
             }
         }
 
@@ -362,19 +378,18 @@ public class ItemBucket extends Item {
         var fishEntityId = getFishEntityId();
         if (fishEntityId != null) {
             var fishEntity = Entity.createEntity(fishEntityId, spawnPos);
-            if (fishEntity != null)
-                fishEntity.spawnToAll();
+            if (fishEntity != null) fishEntity.spawnToAll();
         }
     }
-
-
 
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
         return getId() == BUCKET && this.getDamage() == 1; // Milk
     }
 
-    @PowerNukkitDifference(info = "You can't use milk in spectator mode and milk is now 'drinked' in adventure mode", since = "1.4.0.0-PN")
+    @PowerNukkitDifference(
+            info = "You can't use milk in spectator mode and milk is now 'drinked' in adventure mode",
+            since = "1.4.0.0-PN")
     @Override
     public boolean onUse(Player player, int ticksUsed) {
         if (player.isSpectator() || this.getDamage() != 1) {

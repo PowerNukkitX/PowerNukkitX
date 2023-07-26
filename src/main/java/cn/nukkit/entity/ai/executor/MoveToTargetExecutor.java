@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 @Getter
 public class MoveToTargetExecutor implements EntityControl, IBehaviorExecutor {
 
-    //指示执行器应该从哪个Memory获取目标位置
+    // 指示执行器应该从哪个Memory获取目标位置
     protected MemoryType<? extends Vector3> memory;
     protected float speed;
     protected Vector3 oldTarget;
@@ -28,15 +28,27 @@ public class MoveToTargetExecutor implements EntityControl, IBehaviorExecutor {
         this(memory, speed, false);
     }
 
-    public MoveToTargetExecutor(MemoryType<? extends Vector3> memory, float speed, boolean updateRouteImmediatelyWhenTargetChange) {
+    public MoveToTargetExecutor(
+            MemoryType<? extends Vector3> memory, float speed, boolean updateRouteImmediatelyWhenTargetChange) {
         this(memory, speed, updateRouteImmediatelyWhenTargetChange, -1, -1);
     }
 
-    public MoveToTargetExecutor(MemoryType<? extends Vector3> memory, float speed, boolean updateRouteImmediatelyWhenTargetChange, float maxFollowRange, float minFollowRange) {
+    public MoveToTargetExecutor(
+            MemoryType<? extends Vector3> memory,
+            float speed,
+            boolean updateRouteImmediatelyWhenTargetChange,
+            float maxFollowRange,
+            float minFollowRange) {
         this(memory, speed, updateRouteImmediatelyWhenTargetChange, maxFollowRange, minFollowRange, false);
     }
 
-    public MoveToTargetExecutor(MemoryType<? extends Vector3> memory, float speed, boolean updateRouteImmediatelyWhenTargetChange, float maxFollowRange, float minFollowRange, boolean clearDataWhenLose) {
+    public MoveToTargetExecutor(
+            MemoryType<? extends Vector3> memory,
+            float speed,
+            boolean updateRouteImmediatelyWhenTargetChange,
+            float maxFollowRange,
+            float minFollowRange,
+            boolean clearDataWhenLose) {
         this.memory = memory;
         this.speed = speed;
         this.updateRouteImmediatelyWhenTargetChange = updateRouteImmediatelyWhenTargetChange;
@@ -54,8 +66,9 @@ public class MoveToTargetExecutor implements EntityControl, IBehaviorExecutor {
         if (entity.getBehaviorGroup().getMemoryStorage().isEmpty(memory)) {
             return false;
         }
-        //获取目标位置（这个clone很重要）
-        Vector3 target = entity.getBehaviorGroup().getMemoryStorage().get(memory).clone();
+        // 获取目标位置（这个clone很重要）
+        Vector3 target =
+                entity.getBehaviorGroup().getMemoryStorage().get(memory).clone();
 
         if (target instanceof Position position && !position.level.getName().equals(entity.level.getName()))
             return false;
@@ -67,9 +80,9 @@ public class MoveToTargetExecutor implements EntityControl, IBehaviorExecutor {
             }
         }
 
-        //更新寻路target
+        // 更新寻路target
         setRouteTarget(entity, target);
-        //更新视线target
+        // 更新视线target
         setLookTarget(entity, target);
 
         if (updateRouteImmediatelyWhenTargetChange) {
@@ -81,33 +94,30 @@ public class MoveToTargetExecutor implements EntityControl, IBehaviorExecutor {
             oldTarget = floor;
         }
 
-        if (entity.getMovementSpeed() != speed)
-            entity.setMovementSpeed(speed);
+        if (entity.getMovementSpeed() != speed) entity.setMovementSpeed(speed);
 
         return true;
     }
 
     @Override
     public void onInterrupt(EntityIntelligent entity) {
-        //目标丢失
+        // 目标丢失
         removeRouteTarget(entity);
         removeLookTarget(entity);
-        //重置速度
+        // 重置速度
         entity.setMovementSpeed(0.1f);
         entity.setEnablePitch(false);
-        if (clearDataWhenLose)
-            entity.getBehaviorGroup().getMemoryStorage().clear(memory);
+        if (clearDataWhenLose) entity.getBehaviorGroup().getMemoryStorage().clear(memory);
     }
 
     @Override
     public void onStop(EntityIntelligent entity) {
-        //目标丢失
+        // 目标丢失
         removeRouteTarget(entity);
         removeLookTarget(entity);
-        //重置速度
+        // 重置速度
         entity.setMovementSpeed(0.1f);
         entity.setEnablePitch(false);
-        if (clearDataWhenLose)
-            entity.getBehaviorGroup().getMemoryStorage().clear(memory);
+        if (clearDataWhenLose) entity.getBehaviorGroup().getMemoryStorage().clear(memory);
     }
 }

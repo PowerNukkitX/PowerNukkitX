@@ -3,7 +3,7 @@ package cn.nukkit.network.protocol;
 import lombok.ToString;
 
 @ToString
-public class ToastRequestPacket extends DataPacket{
+public class ToastRequestPacket extends DataPacket {
 
     public String title = "";
     public String content = "";

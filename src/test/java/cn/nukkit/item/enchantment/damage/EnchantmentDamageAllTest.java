@@ -1,5 +1,7 @@
 package cn.nukkit.item.enchantment.damage;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
@@ -8,8 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author joserobjr
@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class EnchantmentDamageAllTest {
     @Mock
     Entity entity;
+
     EnchantmentDamageAll enchant;
 
     @BeforeEach

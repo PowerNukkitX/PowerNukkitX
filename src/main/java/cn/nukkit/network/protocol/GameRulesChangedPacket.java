@@ -18,8 +18,7 @@ public class GameRulesChangedPacket extends DataPacket {
     public GameRules gameRules;
 
     @Override
-    public void decode() {
-    }
+    public void decode() {}
 
     @Override
     public void encode() {

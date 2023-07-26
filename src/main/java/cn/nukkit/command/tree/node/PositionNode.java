@@ -6,7 +6,6 @@ import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.BVector3;
 import cn.nukkit.math.Vector3;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -50,7 +49,7 @@ public abstract class PositionNode extends ParamNode<Position> {
     @Override
     public void fill(String arg) {
         TMP.clear();
-        //check
+        // check
         var matcher = pattern.matcher(arg);
         while (matcher.find()) {
             TMP.add(matcher.group());
@@ -59,7 +58,7 @@ public abstract class PositionNode extends ParamNode<Position> {
         if (str.isEmpty()) this.error();
         else if (str.get().length() != arg.length()) this.error();
         else {
-            //parse
+            // parse
             try {
                 Location loc = this.parent.parent.getSender().getLocation();
                 for (String s : TMP) {
@@ -87,19 +86,28 @@ public abstract class PositionNode extends ParamNode<Position> {
                                 relativeAngleCoordinate = relativeAngleCoordinate.substring(1);
                             switch (index) {
                                 case 0 -> {
-                                    vector3 = BVector3.fromLocation(loc).rotateYaw(-90).setPitch(0).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos();
+                                    vector3 = BVector3.fromLocation(loc)
+                                            .rotateYaw(-90)
+                                            .setPitch(0)
+                                            .setLength(Double.parseDouble(relativeAngleCoordinate))
+                                            .addToPos();
                                     coordinate[0] += vector3.x;
                                     coordinate[1] += vector3.y;
                                     coordinate[2] += vector3.z;
                                 }
                                 case 1 -> {
-                                    vector3 = BVector3.fromLocation(loc).rotatePitch(-90).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos();
+                                    vector3 = BVector3.fromLocation(loc)
+                                            .rotatePitch(-90)
+                                            .setLength(Double.parseDouble(relativeAngleCoordinate))
+                                            .addToPos();
                                     coordinate[0] += vector3.x;
                                     coordinate[1] += vector3.y;
                                     coordinate[2] += vector3.z;
                                 }
                                 case 2 -> {
-                                    vector3 = BVector3.fromLocation(loc).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos();
+                                    vector3 = BVector3.fromLocation(loc)
+                                            .setLength(Double.parseDouble(relativeAngleCoordinate))
+                                            .addToPos();
                                     coordinate[0] += vector3.x;
                                     coordinate[1] += vector3.y;
                                     coordinate[2] += vector3.z;
@@ -136,8 +144,7 @@ public abstract class PositionNode extends ParamNode<Position> {
             case 0 -> this.relative |= 0b0001;
             case 1 -> this.relative |= 0b0010;
             case 2 -> this.relative |= 0b0100;
-            default -> {
-            }
+            default -> {}
         }
     }
 

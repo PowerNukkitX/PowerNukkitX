@@ -102,7 +102,13 @@ public interface IParamNode<T> {
      * @param postFix  the post fix
      * @return the param node
      */
-    default IParamNode<T> init(ParamList parent, String name, boolean optional, CommandParamType type, CommandEnum enumData, String postFix) {
+    default IParamNode<T> init(
+            ParamList parent,
+            String name,
+            boolean optional,
+            CommandParamType type,
+            CommandEnum enumData,
+            String postFix) {
         return this;
     }
 }

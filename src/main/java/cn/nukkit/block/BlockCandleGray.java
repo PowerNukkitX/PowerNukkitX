@@ -4,13 +4,15 @@ package cn.nukkit.block;
  * @author Gabriel8579
  * @since 2021-08-13
  */
-
-
 public class BlockCandleGray extends BlockCandle {
 
-    public BlockCandleGray() { this(0); }
+    public BlockCandleGray() {
+        this(0);
+    }
 
-    public BlockCandleGray(int meta) { super(meta); }
+    public BlockCandleGray(int meta) {
+        super(meta);
+    }
 
     @Override
     public int getId() {

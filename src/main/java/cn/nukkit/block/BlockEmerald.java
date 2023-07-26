@@ -9,8 +9,7 @@ import cn.nukkit.item.ItemTool;
  */
 public class BlockEmerald extends BlockSolid {
 
-    public BlockEmerald() {
-    }
+    public BlockEmerald() {}
 
     @Override
     public String getName() {

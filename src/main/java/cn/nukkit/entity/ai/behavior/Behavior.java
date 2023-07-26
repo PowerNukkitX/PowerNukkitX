@@ -35,7 +35,6 @@ public class Behavior extends AbstractBehavior {
         this(executor, evaluator, priority, weight, 1);
     }
 
-
     public Behavior(IBehaviorExecutor executor, IBehaviorEvaluator evaluator, int priority, int weight, int period) {
         this.executor = executor;
         this.evaluator = evaluator;
@@ -71,6 +70,7 @@ public class Behavior extends AbstractBehavior {
 
     @Override
     public String toString() {
-        return "[" + priority + "] " + executor.getClass().getSimpleName() + " | " + evaluator.getClass().getSimpleName();
+        return "[" + priority + "] " + executor.getClass().getSimpleName() + " | "
+                + evaluator.getClass().getSimpleName();
     }
 }

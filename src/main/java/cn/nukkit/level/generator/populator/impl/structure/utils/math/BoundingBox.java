@@ -7,7 +7,7 @@ import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.tag.IntArrayTag;
 import com.google.common.base.MoreObjects;
 
-//todo: 使用自带的BoundingBox
+// todo: 使用自带的BoundingBox
 @PowerNukkitXOnly
 @Since("1.19.21-r2")
 public class BoundingBox {
@@ -19,9 +19,7 @@ public class BoundingBox {
     public int y1;
     public int z1;
 
-    public BoundingBox() {
-
-    }
+    public BoundingBox() {}
 
     public BoundingBox(int[] array) {
         if (array.length == 6) {
@@ -71,29 +69,80 @@ public class BoundingBox {
     }
 
     public static BoundingBox getUnknownBox() {
-        return new BoundingBox(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
+        return new BoundingBox(
+                Integer.MAX_VALUE,
+                Integer.MAX_VALUE,
+                Integer.MAX_VALUE,
+                Integer.MIN_VALUE,
+                Integer.MIN_VALUE,
+                Integer.MIN_VALUE);
     }
 
-    public static BoundingBox orientBox(int x, int y, int z, int xOffset, int yOffset, int zOffset, int xLength, int yLength, int zLength, BlockFace orientation) {
+    public static BoundingBox orientBox(
+            int x,
+            int y,
+            int z,
+            int xOffset,
+            int yOffset,
+            int zOffset,
+            int xLength,
+            int yLength,
+            int zLength,
+            BlockFace orientation) {
         switch (orientation) {
             case NORTH:
-                return new BoundingBox(x + xOffset, y + yOffset, z - zLength + 1 + zOffset, x + xLength - 1 + xOffset, y + yLength - 1 + yOffset, z + zOffset);
+                return new BoundingBox(
+                        x + xOffset,
+                        y + yOffset,
+                        z - zLength + 1 + zOffset,
+                        x + xLength - 1 + xOffset,
+                        y + yLength - 1 + yOffset,
+                        z + zOffset);
             case WEST:
-                return new BoundingBox(x - zLength + 1 + zOffset, y + yOffset, z + xOffset, x + zOffset, y + yLength - 1 + yOffset, z + xLength - 1 + xOffset);
+                return new BoundingBox(
+                        x - zLength + 1 + zOffset,
+                        y + yOffset,
+                        z + xOffset,
+                        x + zOffset,
+                        y + yLength - 1 + yOffset,
+                        z + xLength - 1 + xOffset);
             case EAST:
-                return new BoundingBox(x + zOffset, y + yOffset, z + xOffset, x + zLength - 1 + zOffset, y + yLength - 1 + yOffset, z + xLength - 1 + xOffset);
+                return new BoundingBox(
+                        x + zOffset,
+                        y + yOffset,
+                        z + xOffset,
+                        x + zLength - 1 + zOffset,
+                        y + yLength - 1 + yOffset,
+                        z + xLength - 1 + xOffset);
             case SOUTH:
             default:
-                return new BoundingBox(x + xOffset, y + yOffset, z + zOffset, x + xLength - 1 + xOffset, y + yLength - 1 + yOffset, z + zLength - 1 + zOffset);
+                return new BoundingBox(
+                        x + xOffset,
+                        y + yOffset,
+                        z + zOffset,
+                        x + xLength - 1 + xOffset,
+                        y + yLength - 1 + yOffset,
+                        z + zLength - 1 + zOffset);
         }
     }
 
     public static BoundingBox createProper(int x0, int y0, int z0, int x1, int y1, int z1) {
-        return new BoundingBox(Math.min(x0, x1), Math.min(y0, y1), Math.min(z0, z1), Math.max(x0, x1), Math.max(y0, y1), Math.max(z0, z1));
+        return new BoundingBox(
+                Math.min(x0, x1),
+                Math.min(y0, y1),
+                Math.min(z0, z1),
+                Math.max(x0, x1),
+                Math.max(y0, y1),
+                Math.max(z0, z1));
     }
 
     public boolean intersects(BoundingBox boundingBox) {
-        return this.x1 >= boundingBox.x0 && this.x0 <= boundingBox.x1 && this.z1 >= boundingBox.z0 && this.z0 <= boundingBox.z1 && this.y1 >= boundingBox.y0 && this.y0 <= boundingBox.y1;
+        return this.x1 >= boundingBox.x0
+                && this.x0 <= boundingBox.x1
+                && this.z1 >= boundingBox.z0
+                && this.z0 <= boundingBox.z1
+                && this.y1 >= boundingBox.y0
+                && this.y0 <= boundingBox.y1;
     }
 
     public boolean intersects(int x0, int z0, int x1, int z1) {
@@ -123,7 +172,12 @@ public class BoundingBox {
     }
 
     public boolean isInside(BlockVector3 vec) {
-        return vec.getX() >= this.x0 && vec.getX() <= this.x1 && vec.getZ() >= this.z0 && vec.getZ() <= this.z1 && vec.getY() >= this.y0 && vec.getY() <= this.y1;
+        return vec.getX() >= this.x0
+                && vec.getX() <= this.x1
+                && vec.getZ() >= this.z0
+                && vec.getZ() <= this.z1
+                && vec.getY() >= this.y0
+                && vec.getY() <= this.y1;
     }
 
     public BlockVector3 getLength() {
@@ -143,7 +197,7 @@ public class BoundingBox {
     }
 
     public IntArrayTag createTag() {
-        return new IntArrayTag("", new int[]{this.x0, this.y0, this.z0, this.x1, this.y1, this.z1});
+        return new IntArrayTag("", new int[] {this.x0, this.y0, this.z0, this.x1, this.y1, this.z1});
     }
 
     @Override

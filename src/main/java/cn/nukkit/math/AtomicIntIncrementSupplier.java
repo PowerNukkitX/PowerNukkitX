@@ -2,7 +2,6 @@ package cn.nukkit.math;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.IntSupplier;
 import java.util.stream.IntStream;
@@ -28,6 +27,6 @@ public final class AtomicIntIncrementSupplier implements IntSupplier {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public IntStream stream() {
-        return IntStream.generate(this); 
+        return IntStream.generate(this);
     }
 }

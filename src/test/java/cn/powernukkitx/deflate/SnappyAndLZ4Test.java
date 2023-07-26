@@ -3,12 +3,11 @@ package cn.powernukkitx.deflate;
 import cn.nukkit.utils.Zlib;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.handler.codec.compression.Snappy;
+import java.io.IOException;
+import java.util.concurrent.ThreadLocalRandom;
 import net.jpountz.lz4.LZ4Factory;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
-
-import java.io.IOException;
-import java.util.concurrent.ThreadLocalRandom;
 
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.Throughput)
@@ -59,6 +58,12 @@ public class SnappyAndLZ4Test {
         var compressor = factory.fastCompressor();
         int maxCompressedLength = compressor.maxCompressedLength(DATA_SIZE);
         byte[] compressed = new byte[maxCompressedLength];
-        blackhole.consume(compressor.compress(this.data[ThreadLocalRandom.current().nextInt(this.data.length)], 0, DATA_SIZE, compressed, 0, maxCompressedLength));
+        blackhole.consume(compressor.compress(
+                this.data[ThreadLocalRandom.current().nextInt(this.data.length)],
+                0,
+                DATA_SIZE,
+                compressed,
+                0,
+                maxCompressedLength));
     }
 }

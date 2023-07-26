@@ -3,16 +3,15 @@ package cn.nukkit.blockproperty.exception;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperty;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.ParametersAreNullableByDefault;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
 @ParametersAreNullableByDefault
 public class InvalidBlockPropertyException extends IllegalArgumentException {
     private static final long serialVersionUID = -6934630506175381230L;
-    
+
     private final BlockProperty<?> property;
 
     @PowerNukkitOnly
@@ -49,8 +48,7 @@ public class InvalidBlockPropertyException extends IllegalArgumentException {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public BlockProperty<?> getProperty() {
+    @NotNull public BlockProperty<?> getProperty() {
         return property;
     }
 }

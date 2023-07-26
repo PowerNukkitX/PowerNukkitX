@@ -19,16 +19,15 @@ import cn.nukkit.network.protocol.InventoryContentPacket;
 import cn.nukkit.network.protocol.InventorySlotPacket;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.*;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class BaseInventory implements Inventory {
 
-    public final static Item AIR_ITEM = new ItemBlock(Block.get(BlockID.AIR), null, 0);
+    public static final Item AIR_ITEM = new ItemBlock(Block.get(BlockID.AIR), null, 0);
 
     protected final InventoryType type;
 
@@ -60,7 +59,12 @@ public abstract class BaseInventory implements Inventory {
         this(holder, type, items, overrideSize, null);
     }
 
-    public BaseInventory(InventoryHolder holder, InventoryType type, Map<Integer, Item> items, Integer overrideSize, String overrideTitle) {
+    public BaseInventory(
+            InventoryHolder holder,
+            InventoryType type,
+            Map<Integer, Item> items,
+            Integer overrideSize,
+            String overrideTitle) {
         this.holder = holder;
 
         this.type = type;
@@ -108,8 +112,7 @@ public abstract class BaseInventory implements Inventory {
         return title;
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public Item getItem(int index) {
         return this.slots.containsKey(index) ? this.slots.get(index).clone() : AIR_ITEM.clone();
     }
@@ -170,7 +173,8 @@ public abstract class BaseInventory implements Inventory {
 
         InventoryHolder holder = this.getHolder();
         if (holder instanceof Entity) {
-            EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent((Entity) holder, this.getItem(index), item, index);
+            EntityInventoryChangeEvent ev =
+                    new EntityInventoryChangeEvent((Entity) holder, this.getItem(index), item, index);
             Server.getInstance().getPluginManager().callEvent(ev);
             if (ev.isCancelled()) {
                 this.sendSlot(index, this.getViewers());
@@ -239,7 +243,9 @@ public abstract class BaseInventory implements Inventory {
         boolean checkDamage = item.hasMeta();
         boolean checkTag = item.getCompoundTag() != null;
         for (Map.Entry<Integer, Item> entry : this.getContents().entrySet()) {
-            if (item.equals(entry.getValue(), checkDamage, checkTag) && (entry.getValue().getCount() == count || (!exact && entry.getValue().getCount() > count))) {
+            if (item.equals(entry.getValue(), checkDamage, checkTag)
+                    && (entry.getValue().getCount() == count
+                            || (!exact && entry.getValue().getCount() > count))) {
                 return entry.getKey();
             }
         }
@@ -269,7 +275,9 @@ public abstract class BaseInventory implements Inventory {
         }
     }
 
-    @PowerNukkitXDifference(info = "Using BaseInventory::getUnclonedItem() to improve performance", since = "1.19.60-r1")
+    @PowerNukkitXDifference(
+            info = "Using BaseInventory::getUnclonedItem() to improve performance",
+            since = "1.19.60-r1")
     @Override
     public boolean canAddItem(Item item) {
         item = item.clone();
@@ -299,22 +307,22 @@ public abstract class BaseInventory implements Inventory {
         List<Item> itemSlots = new ArrayList<>();
         for (Item slot : slots) {
             if (slot.getId() != 0 && slot.getCount() > 0) {
-                //todo: clone only if necessary
+                // todo: clone only if necessary
                 itemSlots.add(slot.clone());
             }
         }
 
-        //使用FastUtils的IntArrayList提高性能
+        // 使用FastUtils的IntArrayList提高性能
         IntList emptySlots = new IntArrayList(this.getSize());
 
         for (int i = 0; i < this.getSize(); ++i) {
-            //获取未克隆Item对象
+            // 获取未克隆Item对象
             Item item = this.getUnclonedItem(i);
             if (item.getId() == Item.AIR || item.getCount() <= 0) {
                 emptySlots.add(i);
             }
 
-            //使用迭代器而不是新建一个ArrayList
+            // 使用迭代器而不是新建一个ArrayList
             for (Iterator<Item> iterator = itemSlots.iterator(); iterator.hasNext(); ) {
                 Item slot = iterator.next();
                 if (slot.equals(item)) {
@@ -323,13 +331,13 @@ public abstract class BaseInventory implements Inventory {
                         int amount = Math.min(maxStackSize - item.getCount(), slot.getCount());
                         amount = Math.min(amount, this.getMaxStackSize());
                         if (amount > 0) {
-                            //在需要clone时再clone
+                            // 在需要clone时再clone
                             item = item.clone();
                             slot.setCount(slot.getCount() - amount);
                             item.setCount(item.getCount() + amount);
                             this.setItem(i, item);
                             if (slot.getCount() <= 0) {
-//                                itemSlots.remove(slot);
+                                //                                itemSlots.remove(slot);
                                 iterator.remove();
                             }
                         }
@@ -386,10 +394,9 @@ public abstract class BaseInventory implements Inventory {
                     item.setCount(item.getCount() - amount);
                     this.setItem(i, item);
                     if (slot.getCount() <= 0) {
-//                        itemSlots.remove(slot);
+                        //                        itemSlots.remove(slot);
                         iterator.remove();
                     }
-
                 }
             }
 
@@ -453,7 +460,7 @@ public abstract class BaseInventory implements Inventory {
 
     @Override
     public boolean open(Player who) {
-        //if (this.viewers.contains(who)) return false;
+        // if (this.viewers.contains(who)) return false;
         InventoryOpenEvent ev = new InventoryOpenEvent(this, who);
         who.getServer().getPluginManager().callEvent(ev);
         if (ev.isCancelled()) {
@@ -497,7 +504,6 @@ public abstract class BaseInventory implements Inventory {
             getViewers().forEach(p -> p.updateTrackingPositions(true));
         }
 
-
         if (this.listeners != null) {
             for (InventoryListener listener : listeners) {
                 listener.onInventoryChanged(this, before, index);
@@ -507,7 +513,7 @@ public abstract class BaseInventory implements Inventory {
 
     @Override
     public void sendContents(Player player) {
-        this.sendContents(new Player[]{player});
+        this.sendContents(new Player[] {player});
     }
 
     @Override
@@ -536,7 +542,10 @@ public abstract class BaseInventory implements Inventory {
         }
 
         for (Item item : this.slots.values()) {
-            if (item == null || item.getId() == 0 || item.getCount() < item.getMaxStackSize() || item.getCount() < this.getMaxStackSize()) {
+            if (item == null
+                    || item.getId() == 0
+                    || item.getCount() < item.getMaxStackSize()
+                    || item.getCount() < this.getMaxStackSize()) {
                 return false;
             }
         }
@@ -590,7 +599,7 @@ public abstract class BaseInventory implements Inventory {
 
     @Override
     public void sendSlot(int index, Player player) {
-        this.sendSlot(index, new Player[]{player});
+        this.sendSlot(index, new Player[] {player});
     }
 
     @Override

@@ -1,8 +1,7 @@
 package cn.nukkit.utils.collection;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.concurrent.atomic.AtomicReference;
+import org.jetbrains.annotations.NotNull;
 
 public final class FreezableByteArray implements ByteArrayWrapper, AutoFreezable {
     private final FreezableArrayManager manager;
@@ -71,7 +70,9 @@ public final class FreezableByteArray implements ByteArrayWrapper, AutoFreezable
 
     @Override
     public void thaw() {
-        while (freezeStatus.get() == FreezeStatus.THAWING || freezeStatus.get() == FreezeStatus.FREEZING || freezeStatus.get() == FreezeStatus.DEEP_FREEZING) {
+        while (freezeStatus.get() == FreezeStatus.THAWING
+                || freezeStatus.get() == FreezeStatus.FREEZING
+                || freezeStatus.get() == FreezeStatus.DEEP_FREEZING) {
             try {
                 //noinspection BusyWait
                 Thread.sleep(0); // Put a safe-point here
@@ -88,7 +89,9 @@ public final class FreezableByteArray implements ByteArrayWrapper, AutoFreezable
 
     @Override
     public byte[] getRawBytes() {
-        while (freezeStatus.get() == FreezeStatus.THAWING || freezeStatus.get() == FreezeStatus.FREEZING || freezeStatus.get() == FreezeStatus.DEEP_FREEZING) {
+        while (freezeStatus.get() == FreezeStatus.THAWING
+                || freezeStatus.get() == FreezeStatus.FREEZING
+                || freezeStatus.get() == FreezeStatus.DEEP_FREEZING) {
             try {
                 //noinspection BusyWait
                 Thread.sleep(0); // Put a safe-point here
@@ -105,7 +108,9 @@ public final class FreezableByteArray implements ByteArrayWrapper, AutoFreezable
 
     @Override
     public void setRawBytes(byte[] bytes) {
-        while (freezeStatus.get() == FreezeStatus.THAWING || freezeStatus.get() == FreezeStatus.FREEZING || freezeStatus.get() == FreezeStatus.DEEP_FREEZING) {
+        while (freezeStatus.get() == FreezeStatus.THAWING
+                || freezeStatus.get() == FreezeStatus.FREEZING
+                || freezeStatus.get() == FreezeStatus.DEEP_FREEZING) {
             try {
                 //noinspection BusyWait
                 Thread.sleep(0); // Put a safe-point here
@@ -119,7 +124,9 @@ public final class FreezableByteArray implements ByteArrayWrapper, AutoFreezable
 
     @Override
     public byte getByte(int index) {
-        while (freezeStatus.get() == FreezeStatus.THAWING || freezeStatus.get() == FreezeStatus.FREEZING || freezeStatus.get() == FreezeStatus.DEEP_FREEZING) {
+        while (freezeStatus.get() == FreezeStatus.THAWING
+                || freezeStatus.get() == FreezeStatus.FREEZING
+                || freezeStatus.get() == FreezeStatus.DEEP_FREEZING) {
             try {
                 //noinspection BusyWait
                 Thread.sleep(0); // Put a safe-point here
@@ -136,7 +143,9 @@ public final class FreezableByteArray implements ByteArrayWrapper, AutoFreezable
 
     @Override
     public void setByte(int index, byte b) {
-        while (freezeStatus.get() == FreezeStatus.THAWING || freezeStatus.get() == FreezeStatus.FREEZING || freezeStatus.get() == FreezeStatus.DEEP_FREEZING) {
+        while (freezeStatus.get() == FreezeStatus.THAWING
+                || freezeStatus.get() == FreezeStatus.FREEZING
+                || freezeStatus.get() == FreezeStatus.DEEP_FREEZING) {
             try {
                 //noinspection BusyWait
                 Thread.sleep(0); // Put a safe-point here

@@ -21,7 +21,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
-
 import java.util.function.Supplier;
 
 public class ShootExecutor implements EntityControl, IBehaviorExecutor {
@@ -41,8 +40,9 @@ public class ShootExecutor implements EntityControl, IBehaviorExecutor {
      * 用来射击的物品
      */
     protected Supplier<Item> item;
-    private int tick1;//control the coolDownTick
-    private int tick2;//control the pullBowTick
+
+    private int tick1; // control the coolDownTick
+    private int tick2; // control the pullBowTick
 
     /**
      * 射击执行器
@@ -55,7 +55,14 @@ public class ShootExecutor implements EntityControl, IBehaviorExecutor {
      * @param coolDownTick      攻击冷却时间(单位tick)<br>Attack cooldown (tick)
      * @param pullBowTick       每次攻击动画用时(单位tick)<br>Attack Animation time(tick)
      */
-    public ShootExecutor(Supplier<Item> item, MemoryType<? extends Entity> memory, float speed, int maxShootDistance, boolean clearDataWhenLose, int coolDownTick, int pullBowTick) {
+    public ShootExecutor(
+            Supplier<Item> item,
+            MemoryType<? extends Entity> memory,
+            float speed,
+            int maxShootDistance,
+            boolean clearDataWhenLose,
+            int coolDownTick,
+            int pullBowTick) {
         this.item = item;
         this.memory = memory;
         this.speed = speed;
@@ -74,16 +81,19 @@ public class ShootExecutor implements EntityControl, IBehaviorExecutor {
         if (entity.getBehaviorGroup().getMemoryStorage().isEmpty(memory)) return false;
         Entity newTarget = entity.getBehaviorGroup().getMemoryStorage().get(memory);
         if (this.target == null) target = newTarget;
-        //some check
+        // some check
         if (!target.isAlive()) return false;
         else if (target instanceof Player player) {
-            if (player.isCreative() || player.isSpectator() || !player.isOnline() || !entity.level.getName().equals(player.level.getName())) {
+            if (player.isCreative()
+                    || player.isSpectator()
+                    || !player.isOnline()
+                    || !entity.level.getName().equals(player.level.getName())) {
                 return false;
             }
         }
 
         if (!this.target.getPosition().equals(newTarget.getPosition())) {
-            //更新目标
+            // 更新目标
             target = newTarget;
         }
 
@@ -91,12 +101,12 @@ public class ShootExecutor implements EntityControl, IBehaviorExecutor {
         Location clone = this.target.clone();
 
         if (entity.distanceSquared(target) > maxShootDistanceSquared) {
-            //更新寻路target
+            // 更新寻路target
             setRouteTarget(entity, clone);
         } else {
             setRouteTarget(entity, null);
         }
-        //更新视线target
+        // 更新视线target
         setLookTarget(entity, clone);
 
         if (tick2 == 0 && tick1 > coolDownTick) {
@@ -124,7 +134,7 @@ public class ShootExecutor implements EntityControl, IBehaviorExecutor {
     public void onStop(EntityIntelligent entity) {
         removeRouteTarget(entity);
         removeLookTarget(entity);
-        //重置速度
+        // 重置速度
         entity.setMovementSpeed(EntityLiving.DEFAULT_SPEED);
         if (clearDataWhenLose) {
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
@@ -138,7 +148,7 @@ public class ShootExecutor implements EntityControl, IBehaviorExecutor {
     public void onInterrupt(EntityIntelligent entity) {
         removeRouteTarget(entity);
         removeLookTarget(entity);
-        //重置速度
+        // 重置速度
         entity.setMovementSpeed(EntityLiving.DEFAULT_SPEED);
         if (clearDataWhenLose) {
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
@@ -164,9 +174,11 @@ public class ShootExecutor implements EntityControl, IBehaviorExecutor {
                         .add(new DoubleTag("", entity.y + entity.getCurrentHeight() / 2 + 0.2f))
                         .add(new DoubleTag("", entity.z)))
                 .putList(new ListTag<DoubleTag>("Motion")
-                        .add(new DoubleTag("", -Math.sin(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI)))
+                        .add(new DoubleTag(
+                                "", -Math.sin(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI)))
                         .add(new DoubleTag("", -Math.sin(entity.pitch / 180 * Math.PI)))
-                        .add(new DoubleTag("", Math.cos(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI))))
+                        .add(new DoubleTag(
+                                "", Math.cos(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI))))
                 .putList(new ListTag<FloatTag>("Rotation")
                         .add(new FloatTag("", (entity.headYaw > 180 ? 360 : 0) - (float) entity.headYaw))
                         .add(new FloatTag("", (float) -entity.pitch)))
@@ -187,7 +199,10 @@ public class ShootExecutor implements EntityControl, IBehaviorExecutor {
         if (entityShootBowEvent.isCancelled()) {
             entityShootBowEvent.getProjectile().kill();
         } else {
-            entityShootBowEvent.getProjectile().setMotion(entityShootBowEvent.getProjectile().getMotion().multiply(entityShootBowEvent.getForce()));
+            entityShootBowEvent
+                    .getProjectile()
+                    .setMotion(
+                            entityShootBowEvent.getProjectile().getMotion().multiply(entityShootBowEvent.getForce()));
             Enchantment infinityEnchant = bow.getEnchantment(Enchantment.ID_BOW_INFINITY);
             boolean infinity = infinityEnchant != null && infinityEnchant.getLevel() > 0;
             EntityProjectile projectile;
@@ -202,7 +217,8 @@ public class ShootExecutor implements EntityControl, IBehaviorExecutor {
             }
 
             if (entityShootBowEvent.getProjectile() != null) {
-                ProjectileLaunchEvent projectev = new ProjectileLaunchEvent(entityShootBowEvent.getProjectile(), entity);
+                ProjectileLaunchEvent projectev =
+                        new ProjectileLaunchEvent(entityShootBowEvent.getProjectile(), entity);
                 Server.getInstance().getPluginManager().callEvent(projectev);
                 if (projectev.isCancelled()) {
                     entityShootBowEvent.getProjectile().kill();

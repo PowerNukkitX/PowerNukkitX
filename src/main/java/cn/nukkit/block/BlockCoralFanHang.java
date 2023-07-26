@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.PERMANENTLY_DEAD;
+
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.ArrayBlockProperty;
@@ -12,21 +14,21 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.PERMANENTLY_DEAD;
-
 @PowerNukkitOnly
 public class BlockCoralFanHang extends BlockCoralFan implements Faceable {
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
-    public static final ArrayBlockProperty<CoralType> HANG1_TYPE = new ArrayBlockProperty<>("coral_hang_type_bit", true,
-            new CoralType[]{CoralType.BLUE, CoralType.PINK}
-    ).ordinal(true);
+    public static final ArrayBlockProperty<CoralType> HANG1_TYPE = new ArrayBlockProperty<>(
+                    "coral_hang_type_bit", true, new CoralType[] {CoralType.BLUE, CoralType.PINK})
+            .ordinal(true);
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
-    public static final ArrayBlockProperty<BlockFace> HANG_DIRECTION = new ArrayBlockProperty<>("coral_direction", false,
-            new BlockFace[]{BlockFace.WEST, BlockFace.EAST, BlockFace.NORTH, BlockFace.SOUTH}
-    ).ordinal(true);
+    public static final ArrayBlockProperty<BlockFace> HANG_DIRECTION = new ArrayBlockProperty<>(
+                    "coral_direction",
+                    false,
+                    new BlockFace[] {BlockFace.WEST, BlockFace.EAST, BlockFace.NORTH, BlockFace.SOUTH})
+            .ordinal(true);
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
@@ -41,7 +43,7 @@ public class BlockCoralFanHang extends BlockCoralFan implements Faceable {
     public BlockCoralFanHang(int meta) {
         super(meta);
     }
-    
+
     @Override
     public int getId() {
         return CORAL_FAN_HANG;
@@ -49,8 +51,7 @@ public class BlockCoralFanHang extends BlockCoralFan implements Faceable {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -71,7 +72,7 @@ public class BlockCoralFanHang extends BlockCoralFan implements Faceable {
     public boolean isDead() {
         return (getDamage() & 0b10) == 0b10;
     }
-    
+
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_RANDOM) {
@@ -90,7 +91,7 @@ public class BlockCoralFanHang extends BlockCoralFan implements Faceable {
             return BlockCoral.TYPE_BRAIN;
         }
     }
-    
+
     @Override
     public BlockFace getBlockFace() {
         int face = getDamage() >> 2 & 0x3;
@@ -112,9 +113,9 @@ public class BlockCoralFanHang extends BlockCoralFan implements Faceable {
     public BlockFace getRootsFace() {
         return getBlockFace().getOpposite();
     }
-    
+
     @Override
     public Item toItem() {
-        return new ItemBlock(isDead()? new BlockCoralFanDead() : new BlockCoralFan(), getType());
+        return new ItemBlock(isDead() ? new BlockCoralFanDead() : new BlockCoralFan(), getType());
     }
 }

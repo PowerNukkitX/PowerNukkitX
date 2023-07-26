@@ -8,15 +8,14 @@ import cn.nukkit.level.Level;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.ClientboundMapItemDataPacket;
 import cn.nukkit.plugin.InternalPlugin;
-import lombok.extern.log4j.Log4j2;
-
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import javax.imageio.ImageIO;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * @author CreeperFace
@@ -69,7 +68,7 @@ public class ItemMap extends Item {
 
     public void setImage(BufferedImage image) {
         try {
-            if (image.getHeight() != 128 || image.getWidth() != 128) { //resize
+            if (image.getHeight() != 128 || image.getWidth() != 128) { // resize
                 this.image = new BufferedImage(128, 128, image.getType());
                 Graphics2D g = this.image.createGraphics();
                 g.drawImage(image, 0, 0, 128, 128, null);
@@ -108,7 +107,7 @@ public class ItemMap extends Item {
         BufferedImage image = this.image != null ? this.image : loadImageFromNBT();
 
         ClientboundMapItemDataPacket pk = new ClientboundMapItemDataPacket();
-        pk.eids = new long[]{getMapId()};
+        pk.eids = new long[] {getMapId()};
         pk.mapId = getMapId();
         pk.update = 2;
         pk.scale = 0;
@@ -138,13 +137,13 @@ public class ItemMap extends Item {
     @PowerNukkitXOnly
     @Since("1.19.80-r3")
     public void renderMap(Level level, int startX, int startZ, int zoom) {
-        if (zoom < 1)
-            throw new IllegalArgumentException("Zoom must be greater than 0");
+        if (zoom < 1) throw new IllegalArgumentException("Zoom must be greater than 0");
         int[] pixels = new int[128 * 128];
         try {
             for (int z = 0; z < 128 * zoom; z += zoom) {
                 for (int x = 0; x < 128 * zoom; x += zoom) {
-                    pixels[(z * 128 + x) / zoom] = level.getMapColorAt(startX + x, startZ + z).getARGB();
+                    pixels[(z * 128 + x) / zoom] =
+                            level.getMapColorAt(startX + x, startZ + z).getARGB();
                 }
             }
             BufferedImage image = new BufferedImage(128, 128, BufferedImage.TYPE_INT_ARGB);

@@ -9,20 +9,20 @@ import cn.nukkit.scoreboard.data.SortOrder;
 import cn.nukkit.scoreboard.displayer.IScoreboardViewer;
 import cn.nukkit.scoreboard.scorer.FakeScorer;
 import cn.nukkit.scoreboard.scorer.IScorer;
-import lombok.Getter;
-import lombok.Setter;
-
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import javax.annotation.Nullable;
+import lombok.Getter;
+import lombok.Setter;
 
 @PowerNukkitXOnly
 @Since("1.19.30-r1")
 @Getter
-public class Scoreboard implements IScoreboard{
+public class Scoreboard implements IScoreboard {
     protected String objectiveName;
     protected String displayName;
     protected String criteriaName;
+
     @Setter
     protected SortOrder sortOrder;
 
@@ -71,7 +71,7 @@ public class Scoreboard implements IScoreboard{
 
     @Override
     public boolean addViewer(IScoreboardViewer viewer, DisplaySlot slot) {
-        boolean added =  this.viewers.get(slot).add(viewer);
+        boolean added = this.viewers.get(slot).add(viewer);
         if (added) viewer.display(this, slot);
         return added;
     }
@@ -89,7 +89,8 @@ public class Scoreboard implements IScoreboard{
     @Override
     public boolean addLine(IScoreboardLine line) {
         if (shouldCallEvent()) {
-            var event = new ScoreboardLineChangeEvent(this, line, line.getScore(), line.getScore(), ScoreboardLineChangeEvent.ActionType.ADD_LINE);
+            var event = new ScoreboardLineChangeEvent(
+                    this, line, line.getScore(), line.getScore(), ScoreboardLineChangeEvent.ActionType.ADD_LINE);
             Server.getInstance().getPluginManager().callEvent(event);
             if (event.isCancelled()) return false;
             line = event.getLine();
@@ -115,7 +116,12 @@ public class Scoreboard implements IScoreboard{
         var removed = lines.get(scorer);
         if (removed == null) return false;
         if (shouldCallEvent()) {
-            var event = new ScoreboardLineChangeEvent(this, removed, removed.getScore(), removed.getScore(), ScoreboardLineChangeEvent.ActionType.REMOVE_LINE);
+            var event = new ScoreboardLineChangeEvent(
+                    this,
+                    removed,
+                    removed.getScore(),
+                    removed.getScore(),
+                    ScoreboardLineChangeEvent.ActionType.REMOVE_LINE);
             Server.getInstance().getPluginManager().callEvent(event);
             if (event.isCancelled()) return false;
         }
@@ -128,7 +134,8 @@ public class Scoreboard implements IScoreboard{
     public boolean removeAllLine(boolean send) {
         if (lines.isEmpty()) return false;
         if (shouldCallEvent()) {
-            var event = new ScoreboardLineChangeEvent(this, null, 0, 0, ScoreboardLineChangeEvent.ActionType.REMOVE_ALL_LINES);
+            var event = new ScoreboardLineChangeEvent(
+                    this, null, 0, 0, ScoreboardLineChangeEvent.ActionType.REMOVE_ALL_LINES);
             Server.getInstance().getPluginManager().callEvent(event);
             if (event.isCancelled()) return false;
         }

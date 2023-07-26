@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
+
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
@@ -10,8 +12,6 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
-
-import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
 
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
@@ -28,8 +28,7 @@ public abstract class BlockLog extends BlockSolidMeta implements IBlockWood {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public abstract BlockProperties getProperties();
 
     @PowerNukkitOnly
@@ -49,7 +48,15 @@ public abstract class BlockLog extends BlockSolidMeta implements IBlockWood {
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         setPillarAxis(face.getAxis());
         getLevel().setBlock(block, this, true, true);
         return true;

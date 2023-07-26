@@ -33,29 +33,31 @@ public class ItemMinecartTNT extends Item {
     }
 
     @Override
-    public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
+    public boolean onActivate(
+            Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         if (Rail.isRailBlock(target)) {
             Rail.Orientation type = ((BlockRail) target).getOrientation();
             double adjacent = 0.0D;
             if (type.isAscending()) {
                 adjacent = 0.5D;
             }
-            EntityMinecartTNT minecart = (EntityMinecartTNT) Entity.createEntity("MinecartTnt",
-                    level.getChunk(target.getFloorX() >> 4, target.getFloorZ() >> 4), new CompoundTag("")
-                    .putList(new ListTag<>("Pos")
-                            .add(new DoubleTag("", target.getX() + 0.5))
-                            .add(new DoubleTag("", target.getY() + 0.0625D + adjacent))
-                            .add(new DoubleTag("", target.getZ() + 0.5)))
-                    .putList(new ListTag<>("Motion")
-                            .add(new DoubleTag("", 0))
-                            .add(new DoubleTag("", 0))
-                            .add(new DoubleTag("", 0)))
-                    .putList(new ListTag<>("Rotation")
-                            .add(new FloatTag("", 0))
-                            .add(new FloatTag("", 0)))
-            );
+            EntityMinecartTNT minecart = (EntityMinecartTNT) Entity.createEntity(
+                    "MinecartTnt",
+                    level.getChunk(target.getFloorX() >> 4, target.getFloorZ() >> 4),
+                    new CompoundTag("")
+                            .putList(new ListTag<>("Pos")
+                                    .add(new DoubleTag("", target.getX() + 0.5))
+                                    .add(new DoubleTag("", target.getY() + 0.0625D + adjacent))
+                                    .add(new DoubleTag("", target.getZ() + 0.5)))
+                            .putList(new ListTag<>("Motion")
+                                    .add(new DoubleTag("", 0))
+                                    .add(new DoubleTag("", 0))
+                                    .add(new DoubleTag("", 0)))
+                            .putList(new ListTag<>("Rotation")
+                                    .add(new FloatTag("", 0))
+                                    .add(new FloatTag("", 0))));
 
-            if(minecart == null) {
+            if (minecart == null) {
                 return false;
             }
 

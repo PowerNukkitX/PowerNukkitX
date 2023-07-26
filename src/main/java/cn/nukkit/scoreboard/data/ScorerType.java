@@ -11,12 +11,12 @@ import cn.nukkit.api.Since;
 @PowerNukkitXOnly
 @Since("1.19.30-r1")
 public enum ScorerType {
-    //未知类型
+    // 未知类型
     INVALID,
-    //玩家
+    // 玩家
     PLAYER,
-    //实体（非玩家）
+    // 实体（非玩家）
     ENTITY,
-    //虚拟的（常用于显示信息）
+    // 虚拟的（常用于显示信息）
     FAKE
 }

@@ -20,7 +20,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.potion.Effect;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -29,10 +28,8 @@ import java.util.concurrent.ThreadLocalRandom;
 @PowerNukkitOnly
 public class BlockEntityConduit extends BlockEntitySpawnable {
     @PowerNukkitOnly
-    public static IntSet VALID_STRUCTURE_BLOCKS = new IntOpenHashSet(new int[]{
-            BlockID.PRISMARINE,
-            BlockID.SEA_LANTERN
-    });
+    public static IntSet VALID_STRUCTURE_BLOCKS =
+            new IntOpenHashSet(new int[] {BlockID.PRISMARINE, BlockID.SEA_LANTERN});
 
     private Entity targetEntity;
     private long target;
@@ -69,7 +66,7 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
     @Override
     public void saveNBT() {
         Entity targetEntity = this.targetEntity;
-        namedTag.putLong("Target", targetEntity != null? targetEntity.getId() : -1);
+        namedTag.putLong("Target", targetEntity != null ? targetEntity.getId() : -1);
         namedTag.putBoolean("Active", active);
         super.saveNBT();
     }
@@ -161,12 +158,10 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
                 .filter(this::canAffect)
                 .filter(p -> conduitPos.distanceSquared(p.x, p.z) <= radiusSquared)
                 .forEach(p -> p.addEffect(Effect.getEffect(Effect.CONDUIT_POWER)
-                                .setDuration(260)
-                                .setVisible(true)
-                                .setAmplifier(0)
-                                .setAmbient(true)
-                    )
-                );
+                        .setDuration(260)
+                        .setVisible(true)
+                        .setAmplifier(0)
+                        .setAmbient(true)));
     }
 
     @PowerNukkitOnly
@@ -187,7 +182,8 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
         }
 
         if (target == null) {
-            Entity[] mobs = Arrays.stream(level.getCollidingEntities(new SimpleAxisAlignedBB(x - radius, y - radius, z - radius, x + 1 + radius, y + 1 + radius, z + 1 + radius)))
+            Entity[] mobs = Arrays.stream(level.getCollidingEntities(new SimpleAxisAlignedBB(
+                            x - radius, y - radius, z - radius, x + 1 + radius, y + 1 + radius, z + 1 + radius)))
                     .filter(this::canAttack)
                     .toArray(Entity[]::new);
             if (mobs.length == 0) {
@@ -219,8 +215,10 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
     @PowerNukkitOnly
     public boolean canAffect(Entity target) {
         return target.isTouchingWater()
-                || target.level.isRaining() && target.level.canBlockSeeSky(target)
-                        && !(Biome.getBiome(target.level.getBiomeId(target.getFloorX(), target.getFloorZ())) instanceof SnowyBiome);
+                || target.level.isRaining()
+                        && target.level.canBlockSeeSky(target)
+                        && !(Biome.getBiome(target.level.getBiomeId(target.getFloorX(), target.getFloorZ()))
+                                instanceof SnowyBiome);
     }
 
     private boolean scanWater() {
@@ -258,8 +256,8 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
                         }
 
                         int blockId = level.getBlockIdAt(x + ix, y, z + iz);
-                        //validBlocks++;
-                        //level.setBlock(x + ix, y, z + iz, new BlockPlanks(), true, true);
+                        // validBlocks++;
+                        // level.setBlock(x + ix, y, z + iz, new BlockPlanks(), true, true);
                         if (VALID_STRUCTURE_BLOCKS.contains(blockId)) {
                             validBlocks++;
                         }
@@ -274,8 +272,8 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
 
                     if (absIY == 2 || Math.abs(ix) == 2) {
                         int blockId = level.getBlockIdAt(x + ix, y + iy, z);
-                        //validBlocks++;
-                        //level.setBlock(x + ix, y + iy, z, new BlockWood(), true, true);
+                        // validBlocks++;
+                        // level.setBlock(x + ix, y + iy, z, new BlockWood(), true, true);
                         if (VALID_STRUCTURE_BLOCKS.contains(blockId)) {
                             validBlocks++;
                         }
@@ -289,8 +287,8 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
 
                     if (absIY == 2 && iz != 0 || Math.abs(iz) == 2) {
                         int blockId = level.getBlockIdAt(x, y + iy, z + iz);
-                        //validBlocks++;
-                        //level.setBlock(x, y + iy, z + iz, new BlockWood(), true, true);
+                        // validBlocks++;
+                        // level.setBlock(x, y + iy, z + iz, new BlockWood(), true, true);
                         if (VALID_STRUCTURE_BLOCKS.contains(blockId)) {
                             validBlocks++;
                         }
@@ -321,8 +319,8 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
                         }
 
                         Block block = level.getBlock(x + ix, y + iy, z + iz);
-                        //validBlocks++;
-                        //level.setBlock(x + ix, y + iy, z + iz, new BlockDiamond(), true, true);
+                        // validBlocks++;
+                        // level.setBlock(x + ix, y + iy, z + iz, new BlockDiamond(), true, true);
                         if (VALID_STRUCTURE_BLOCKS.contains(block.getId())) {
                             validBlocks.add(block);
                         }
@@ -336,7 +334,7 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
 
     @PowerNukkitOnly
     public boolean scanStructure() {
-        if(!scanWater()) {
+        if (!scanWater()) {
             this.validBlocks = 0;
             return false;
         }
@@ -382,7 +380,7 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
                 .putBoolean("Active", this.active)
                 .putBoolean("isMovable", isMovable());
         Entity targetEntity = this.targetEntity;
-        tag.putLong("Target", targetEntity != null? targetEntity.getId() : -1);
+        tag.putLong("Target", targetEntity != null ? targetEntity.getId() : -1);
         return tag;
     }
 }

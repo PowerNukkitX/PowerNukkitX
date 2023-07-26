@@ -6,5 +6,4 @@ package cn.nukkit.inventory;
 public interface InventoryHolder {
 
     Inventory getInventory();
-
 }

@@ -7,18 +7,17 @@ import cn.nukkit.scheduler.FileWriteTask;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.Yaml;
-
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
+import javax.annotation.Nullable;
+import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.Yaml;
 
 /**
  * @author MagicDroidX (Nukkit)
@@ -26,17 +25,17 @@ import java.util.regex.Pattern;
 @Log4j2
 public class Config {
 
-    public static final int DETECT = -1; //Detect by file extension
+    public static final int DETECT = -1; // Detect by file extension
     public static final int PROPERTIES = 0; // .properties
     public static final int CNF = Config.PROPERTIES; // .cnf
     public static final int JSON = 1; // .js, .json
     public static final int YAML = 2; // .yml, .yaml
-    //public static final int EXPORT = 3; // .export, .xport
-    //public static final int SERIALIZED = 4; // .sl
+    // public static final int EXPORT = 3; // .export, .xport
+    // public static final int SERIALIZED = 4; // .sl
     public static final int ENUM = 5; // .txt, .list, .enum
     public static final int ENUMERATION = Config.ENUM;
 
-    //private LinkedHashMap<String, Object> config = new LinkedHashMap<>();
+    // private LinkedHashMap<String, Object> config = new LinkedHashMap<>();
     private ConfigSection config = new ConfigSection();
     private File file;
     private boolean correct = false;
@@ -53,8 +52,8 @@ public class Config {
         format.put("json", Config.JSON);
         format.put("yml", Config.YAML);
         format.put("yaml", Config.YAML);
-        //format.put("sl", Config.SERIALIZED);
-        //format.put("serialize", Config.SERIALIZED);
+        // format.put("sl", Config.SERIALIZED);
+        // format.put("serialize", Config.SERIALIZED);
         format.put("txt", Config.ENUM);
         format.put("list", Config.ENUM);
         format.put("enum", Config.ENUM);
@@ -115,10 +114,9 @@ public class Config {
     public void reload() {
         this.config.clear();
         this.correct = false;
-        //this.load(this.file.toString());
+        // this.load(this.file.toString());
         if (this.file == null) throw new IllegalStateException("Failed to reload Config. File object is undefined.");
         this.load(this.file.toString(), this.type);
-
     }
 
     public boolean load(String file) {
@@ -145,8 +143,10 @@ public class Config {
         } else {
             if (this.type == Config.DETECT) {
                 String extension = "";
-                if (this.file.getName().lastIndexOf(".") != -1 && this.file.getName().lastIndexOf(".") != 0) {
-                    extension = this.file.getName().substring(this.file.getName().lastIndexOf(".") + 1);
+                if (this.file.getName().lastIndexOf(".") != -1
+                        && this.file.getName().lastIndexOf(".") != 0) {
+                    extension =
+                            this.file.getName().substring(this.file.getName().lastIndexOf(".") + 1);
                 }
                 if (format.containsKey(extension)) {
                     this.type = format.get(extension);
@@ -260,7 +260,8 @@ public class Config {
                     content = new StringBuilder(this.writeProperties());
                     break;
                 case Config.JSON:
-                    content = new StringBuilder(new GsonBuilder().setPrettyPrinting().create().toJson(this.config));
+                    content = new StringBuilder(
+                            new GsonBuilder().setPrettyPrinting().create().toJson(this.config));
                     break;
                 case Config.YAML:
                     DumperOptions dumperOptions = new DumperOptions();
@@ -477,7 +478,6 @@ public class Config {
         return this.config.size() - size;
     }
 
-
     private ConfigSection fillDefaults(ConfigSection defaultMap, ConfigSection data) {
         for (String key : defaultMap.keySet()) {
             if (!data.containsKey(key)) {
@@ -498,7 +498,8 @@ public class Config {
     }
 
     private String writeProperties() {
-        StringBuilder content = new StringBuilder("#Properties Config file\r\n#" + new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date()) + "\r\n");
+        StringBuilder content = new StringBuilder("#Properties Config file\r\n#"
+                + new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date()) + "\r\n");
         for (Object o : this.config.entrySet()) {
             Map.Entry entry = (Map.Entry) o;
             Object v = entry.getValue();
@@ -578,8 +579,8 @@ public class Config {
 
     private void parseContentAsJson(String content, Gson gson) {
         try {
-            this.config = new ConfigSection(gson.fromJson(content, new TypeToken<LinkedHashMap<String, Object>>() {
-            }.getType()));
+            this.config = new ConfigSection(
+                    gson.fromJson(content, new TypeToken<LinkedHashMap<String, Object>>() {}.getType()));
         } catch (Exception e) {
             log.warn("Failed to parse the config file {}", file, e);
             throw e;
@@ -595,8 +596,8 @@ public class Config {
                 case Config.JSON:
                     GsonBuilder builder = new GsonBuilder();
                     Gson gson = builder.create();
-                    this.config = new ConfigSection(gson.fromJson(content, new TypeToken<LinkedHashMap<String, Object>>() {
-                    }.getType()));
+                    this.config = new ConfigSection(
+                            gson.fromJson(content, new TypeToken<LinkedHashMap<String, Object>>() {}.getType()));
                     break;
                 case Config.YAML:
                     DumperOptions dumperOptions = new DumperOptions();
@@ -604,7 +605,7 @@ public class Config {
                     Yaml yaml = new Yaml(dumperOptions);
                     this.config = new ConfigSection(yaml.loadAs(content, LinkedHashMap.class));
                     break;
-                // case Config.SERIALIZED
+                    // case Config.SERIALIZED
                 case Config.ENUM:
                     this.parseList(content);
                     break;

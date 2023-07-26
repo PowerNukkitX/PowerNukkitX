@@ -27,5 +27,4 @@ public class BlockWaterStill extends BlockWater {
     public BlockLiquid getBlock(int meta) {
         return (BlockLiquid) Block.get(BlockID.STILL_WATER, meta);
     }
-
 }

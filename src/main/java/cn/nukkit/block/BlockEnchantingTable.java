@@ -13,10 +13,9 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.nbt.tag.Tag;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 import java.util.Map;
+import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author CreeperFace
@@ -40,16 +39,14 @@ public class BlockEnchantingTable extends BlockTransparent implements BlockEntit
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getBlockEntityType() {
         return BlockEntity.ENCHANT_TABLE;
     }
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public Class<? extends BlockEntityEnchantTable> getBlockEntityClass() {
         return BlockEntityEnchantTable.class;
     }
@@ -88,7 +85,7 @@ public class BlockEnchantingTable extends BlockTransparent implements BlockEntit
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Will return the right BB height")
     @Override
     public double getMaxY() {
-        return getY() + 12/16.0;
+        return getY() + 12 / 16.0;
     }
 
     @Override
@@ -98,7 +95,15 @@ public class BlockEnchantingTable extends BlockTransparent implements BlockEntit
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
 
         CompoundTag nbt = new CompoundTag();
 
@@ -112,7 +117,7 @@ public class BlockEnchantingTable extends BlockTransparent implements BlockEntit
                 nbt.put(tag.getKey(), tag.getValue());
             }
         }
-        
+
         return BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt) != null;
     }
 
@@ -123,7 +128,8 @@ public class BlockEnchantingTable extends BlockTransparent implements BlockEntit
         }
 
         BlockEntityEnchantTable enchantTable = getOrCreateBlockEntity();
-        if (enchantTable.namedTag.contains("Lock") && enchantTable.namedTag.get("Lock") instanceof StringTag
+        if (enchantTable.namedTag.contains("Lock")
+                && enchantTable.namedTag.get("Lock") instanceof StringTag
                 && !enchantTable.namedTag.getString("Lock").equals(item.getCustomName())) {
             return false;
         }

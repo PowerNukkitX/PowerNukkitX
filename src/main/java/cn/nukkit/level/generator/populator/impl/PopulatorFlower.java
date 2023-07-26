@@ -6,7 +6,6 @@ import cn.nukkit.level.generator.populator.helper.EnsureCover;
 import cn.nukkit.level.generator.populator.helper.EnsureGrassBelow;
 import cn.nukkit.level.generator.populator.type.PopulatorSurfaceBlock;
 import cn.nukkit.math.NukkitRandom;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;

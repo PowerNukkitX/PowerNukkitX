@@ -7,7 +7,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.generator.populator.impl.structure.utils.loot.RandomizableContainer;
 import com.google.common.collect.Maps;
 
-//\\ ./data/behavior_packs/vanilla/loot_tables/chests/stronghold_crossing.json
+// \\ ./data/behavior_packs/vanilla/loot_tables/chests/stronghold_crossing.json
 @PowerNukkitXOnly
 @Since("1.19.21-r2")
 public class StrongholdCrossingChest extends RandomizableContainer {
@@ -25,7 +25,7 @@ public class StrongholdCrossingChest extends RandomizableContainer {
                 .register(new ItemEntry(Item.BREAD, 0, 3, 75))
                 .register(new ItemEntry(Item.APPLE, 0, 3, 75))
                 .register(new ItemEntry(Item.IRON_PICKAXE, 5))
-                .register(new ItemEntry(Item.ENCHANTED_BOOK, 6)) //TODO: treasure enchant_with_levels 30
+                .register(new ItemEntry(Item.ENCHANTED_BOOK, 6)) // TODO: treasure enchant_with_levels 30
                 .register(new ItemEntry(Item.DYE, 0, 3, 75));
         this.pools.put(pool1.build(), new RollEntry(4, 1, pool1.getTotalWeight()));
     }

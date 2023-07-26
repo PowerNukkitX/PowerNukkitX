@@ -1,8 +1,7 @@
 package cn.nukkit.network.protocol;
 
-import lombok.ToString;
-
 import java.util.List;
+import lombok.ToString;
 
 @ToString
 public class UpdateSoftEnumPacket extends DataPacket {
@@ -17,8 +16,7 @@ public class UpdateSoftEnumPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-    }
+    public void decode() {}
 
     @Override
     public void encode() {

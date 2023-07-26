@@ -11,7 +11,8 @@ public class TickSyncProcessor extends DataPacketProcessor<TickSyncPacket> {
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull TickSyncPacket pk) {
         TickSyncPacket tickSyncPacketToClient = new TickSyncPacket();
         tickSyncPacketToClient.setRequestTimestamp(pk.getRequestTimestamp());
-        tickSyncPacketToClient.setResponseTimestamp(playerHandle.player.getServer().getTick());
+        tickSyncPacketToClient.setResponseTimestamp(
+                playerHandle.player.getServer().getTick());
         playerHandle.player.dataPacketImmediately(tickSyncPacketToClient);
     }
 

@@ -57,7 +57,7 @@ public class BlockStemMelon extends BlockCropsStem implements Faceable {
     public BlockFace getBlockFace() {
         return super.getBlockFace();
     }
-    
+
     @Override
     @PowerNukkitOnly
     @Since("1.3.0.0-PN")

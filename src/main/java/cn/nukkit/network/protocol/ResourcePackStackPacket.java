@@ -2,10 +2,9 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.resourcepacks.ResourcePack;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import java.util.List;
 import lombok.ToString;
 import lombok.Value;
-
-import java.util.List;
 
 @ToString
 public class ResourcePackStackPacket extends DataPacket {
@@ -19,9 +18,7 @@ public class ResourcePackStackPacket extends DataPacket {
     public String gameVersion = "*";
 
     @Override
-    public void decode() {
-
-    }
+    public void decode() {}
 
     @Override
     public void encode() {
@@ -32,14 +29,14 @@ public class ResourcePackStackPacket extends DataPacket {
         for (ResourcePack entry : this.behaviourPackStack) {
             this.putString(entry.getPackId().toString());
             this.putString(entry.getPackVersion());
-            this.putString(""); //TODO: subpack name
+            this.putString(""); // TODO: subpack name
         }
 
         this.putUnsignedVarInt(this.resourcePackStack.length);
         for (ResourcePack entry : this.resourcePackStack) {
             this.putString(entry.getPackId().toString());
             this.putString(entry.getPackVersion());
-            this.putString(""); //TODO: subpack name
+            this.putString(""); // TODO: subpack name
         }
 
         this.putString(this.gameVersion);

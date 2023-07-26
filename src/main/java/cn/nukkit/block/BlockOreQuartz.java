@@ -6,7 +6,6 @@ import cn.nukkit.item.ItemQuartz;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.math.NukkitRandom;
-
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -15,8 +14,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class BlockOreQuartz extends BlockSolid {
 
-    public BlockOreQuartz() {
-    }
+    public BlockOreQuartz() {}
 
     @Override
     public String getName() {
@@ -64,9 +62,7 @@ public class BlockOreQuartz extends BlockSolid {
                 count = i + 1;
             }
 
-            return new Item[]{
-                    new ItemQuartz(0, count)
-            };
+            return new Item[] {new ItemQuartz(0, count)};
         } else {
             return Item.EMPTY_ARRAY;
         }

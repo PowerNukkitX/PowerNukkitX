@@ -18,7 +18,6 @@ import cn.nukkit.entity.ai.route.posevaluator.FlyingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-
 import java.util.Set;
 
 public class EntityAllay extends EntityAnimal implements EntityFlyable {
@@ -30,20 +29,31 @@ public class EntityAllay extends EntityAnimal implements EntityFlyable {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        //todo: remove this test and impl it really
+        // todo: remove this test and impl it really
         return new BehaviorGroup(
                 this.tickSpread,
                 Set.of(),
                 Set.of(
-                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, true), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_PLAYER), 4, 1),
-                        new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100), new ProbabilityEvaluator(4, 10), 1, 1, 100),
-                        new Behavior(new FlatRandomRoamExecutor(0.15f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
-                ),
+                        new Behavior(
+                                new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, true),
+                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
+                                4,
+                                1),
+                        new Behavior(
+                                new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
+                                new ProbabilityEvaluator(4, 10),
+                                1,
+                                1,
+                                100),
+                        new Behavior(
+                                new FlatRandomRoamExecutor(0.15f, 12, 100, false, -1, true, 10),
+                                (entity -> true),
+                                1,
+                                1)),
                 Set.of(new NearestPlayerSensor(50, 0, 20)),
                 Set.of(new SpaceMoveController(), new LookController(true, true), new LiftController()),
                 new SimpleSpaceAStarRouteFinder(new FlyingPosEvaluator(), this),
-                this
-        );
+                this);
     }
 
     @Override

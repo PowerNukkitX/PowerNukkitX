@@ -6,7 +6,6 @@ import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import com.google.common.collect.Lists;
-
 import java.util.Iterator;
 import java.util.List;
 

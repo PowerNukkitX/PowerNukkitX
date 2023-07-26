@@ -4,11 +4,10 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.stream.NBTOutputStream;
-import org.jetbrains.annotations.NotNull;
-
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Objects;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class Tag {
     public static final byte TAG_End = 0;
@@ -53,14 +52,16 @@ public abstract class Tag {
             return false;
         }
         Tag o = (Tag) obj;
-        return getId() == o.getId() && !(name == null && o.name != null || name != null && o.name == null) && !(name != null && !name.equals(o.name));
+        return getId() == o.getId()
+                && !(name == null && o.name != null || name != null && o.name == null)
+                && !(name != null && !name.equals(o.name));
     }
-    
+
     @Override
     public int hashCode() {
         return Objects.hash(getId(), name);
     }
-    
+
     public void print(PrintStream out) {
         print("", out);
     }
@@ -88,8 +89,7 @@ public abstract class Tag {
         return this;
     }
 
-    @NotNull
-    public String getName() {
+    @NotNull public String getName() {
         if (name == null) return "";
         return name;
     }

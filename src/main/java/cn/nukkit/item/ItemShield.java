@@ -42,8 +42,10 @@ public class ItemShield extends ItemTool {
     @Since("1.20.0-r2")
     @PowerNukkitXOnly
     public boolean hasBannerPattern() {
-        return this.hasCompoundTag() && (this.getNamedTag().containsInt("Base") ||
-                this.getNamedTag().containsInt("Type") || this.getNamedTag().containsList("Patterns"));
+        return this.hasCompoundTag()
+                && (this.getNamedTag().containsInt("Base")
+                        || this.getNamedTag().containsInt("Type")
+                        || this.getNamedTag().containsList("Patterns"));
     }
 
     @Since("1.20.0-r2")

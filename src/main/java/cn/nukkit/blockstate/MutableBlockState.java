@@ -1,20 +1,19 @@
 package cn.nukkit.blockstate;
 
+import static cn.nukkit.api.API.Definition.INTERNAL;
+import static cn.nukkit.api.API.Usage.INCUBATING;
+
 import cn.nukkit.api.API;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
+import javax.annotation.Nonnegative;
+import javax.annotation.ParametersAreNonnullByDefault;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nonnegative;
-import javax.annotation.ParametersAreNonnullByDefault;
-
-import static cn.nukkit.api.API.Definition.INTERNAL;
-import static cn.nukkit.api.API.Usage.INCUBATING;
 
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
@@ -56,8 +55,7 @@ public abstract class MutableBlockState implements IMutableBlockState {
     }
 
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public final BlockProperties getProperties() {
         return properties;
     }
@@ -72,14 +70,20 @@ public abstract class MutableBlockState implements IMutableBlockState {
     @PowerNukkitOnly
     @Override
     @Deprecated
-    @DeprecationDetails(reason = "Can't store all data, exists for backward compatibility reasons", since = "1.4.0.0-PN", replaceWith = "the BlockState itself")
+    @DeprecationDetails(
+            reason = "Can't store all data, exists for backward compatibility reasons",
+            since = "1.4.0.0-PN",
+            replaceWith = "the BlockState itself")
     public final int getFullId() {
         return IMutableBlockState.super.getFullId();
     }
 
     @Override
     @Deprecated
-    @DeprecationDetails(reason = "Can't store all data, exists for backward compatibility reasons", since = "1.4.0.0-PN", replaceWith = "the BlockState itself")
+    @DeprecationDetails(
+            reason = "Can't store all data, exists for backward compatibility reasons",
+            since = "1.4.0.0-PN",
+            replaceWith = "the BlockState itself")
     @PowerNukkitOnly
     public final long getBigId() {
         return IMutableBlockState.super.getBigId();
@@ -100,6 +104,5 @@ public abstract class MutableBlockState implements IMutableBlockState {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public abstract MutableBlockState copy();
+    @NotNull public abstract MutableBlockState copy();
 }

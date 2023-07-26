@@ -10,7 +10,6 @@ import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
 
-
 public class SpruceBigTreePopulator extends Populator {
     private final int type;
     private ChunkManager level;
@@ -46,7 +45,8 @@ public class SpruceBigTreePopulator extends Populator {
             if (y == -1) {
                 continue;
             }
-            new ObjectBigSpruceTree(3 / 4f, 4).placeObject(this.level, (int) (v.x = x), (int) (v.y = y), (int) (v.z = z), random);
+            new ObjectBigSpruceTree(3 / 4f, 4)
+                    .placeObject(this.level, (int) (v.x = x), (int) (v.y = y), (int) (v.z = z), random);
         }
     }
 

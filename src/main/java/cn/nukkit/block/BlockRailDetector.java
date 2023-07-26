@@ -12,13 +12,12 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.utils.OptionalBoolean;
 import cn.nukkit.utils.RedstoneComponent;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author CreeperFace (Nukkit Project), larryTheCoder (Minecart and Riding Project)
- * @since 2015/11/22 
+ * @since 2015/11/22
  */
 public class BlockRailDetector extends BlockRail implements RedstoneComponent {
 
@@ -40,8 +39,7 @@ public class BlockRailDetector extends BlockRail implements RedstoneComponent {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return ACTIVABLE_PROPERTIES;
     }
@@ -63,7 +61,9 @@ public class BlockRailDetector extends BlockRail implements RedstoneComponent {
 
     @Override
     public int getComparatorInputOverride() {
-        return findMinecart() instanceof InventoryHolder inventoryHolder ? ContainerInventory.calculateRedstone(inventoryHolder.getInventory()) : 0;
+        return findMinecart() instanceof InventoryHolder inventoryHolder
+                ? ContainerInventory.calculateRedstone(inventoryHolder.getInventory())
+                : 0;
     }
 
     @Override
@@ -90,8 +90,7 @@ public class BlockRailDetector extends BlockRail implements RedstoneComponent {
         else updateState(false);
     }
 
-    @Nullable
-    public EntityMinecartAbstract findMinecart() {
+    @Nullable public EntityMinecartAbstract findMinecart() {
         for (Entity entity : level.getNearbyEntities(new SimpleAxisAlignedBB(
                 getFloorX() + 0.2,
                 getFloorY(),
@@ -99,8 +98,7 @@ public class BlockRailDetector extends BlockRail implements RedstoneComponent {
                 getFloorX() + 0.8,
                 getFloorY() + 0.8,
                 getFloorZ() + 0.8))) {
-            if (entity instanceof EntityMinecartAbstract minecart)
-                return minecart;
+            if (entity instanceof EntityMinecartAbstract minecart) return minecart;
         }
         return null;
     }
@@ -113,9 +111,9 @@ public class BlockRailDetector extends BlockRail implements RedstoneComponent {
             RedstoneComponent.updateAroundRedstone(this.getSide(BlockFace.DOWN));
         }
         if (powered) {
-            //每20gt检查一遍
+            // 每20gt检查一遍
             level.scheduleUpdate(this, 20);
-            //更新比较器输出
+            // 更新比较器输出
             level.updateComparatorOutputLevel(this);
         }
     }

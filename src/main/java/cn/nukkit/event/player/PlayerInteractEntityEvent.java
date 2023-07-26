@@ -13,7 +13,6 @@ import cn.nukkit.math.Vector3;
  */
 public class PlayerInteractEntityEvent extends PlayerEvent implements Cancellable {
 
-
     private static final HandlerList handlers = new HandlerList();
 
     protected final Entity entity;

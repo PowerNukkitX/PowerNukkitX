@@ -19,5 +19,4 @@ public class BlockCommandBlockChain extends BlockCommandBlock {
     public String getName() {
         return "Chain Command Block";
     }
-
 }

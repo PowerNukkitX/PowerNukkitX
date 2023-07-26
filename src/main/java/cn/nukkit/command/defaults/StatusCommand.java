@@ -8,12 +8,6 @@ import cn.nukkit.math.NukkitMath;
 import cn.nukkit.utils.TextFormat;
 import com.sun.jna.platform.win32.COM.WbemcliUtil;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import oshi.SystemInfo;
-import oshi.driver.windows.wmi.Win32ComputerSystem;
-import oshi.hardware.HardwareAbstractionLayer;
-import oshi.hardware.NetworkIF;
-import oshi.util.platform.windows.WmiQueryHandler;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
@@ -23,21 +17,39 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import oshi.SystemInfo;
+import oshi.driver.windows.wmi.Win32ComputerSystem;
+import oshi.hardware.HardwareAbstractionLayer;
+import oshi.hardware.NetworkIF;
+import oshi.util.platform.windows.WmiQueryHandler;
 
 /**
  * @author xtypr
  * @since 2015/11/11
  */
 public final class StatusCommand extends TestCommand implements CoreCommand {
-    private static final String UPTIME_FORMAT = TextFormat.RED + "%d" + TextFormat.GOLD + " days " +
-            TextFormat.RED + "%d" + TextFormat.GOLD + " hours " +
-            TextFormat.RED + "%d" + TextFormat.GOLD + " minutes " +
-            TextFormat.RED + "%d" + TextFormat.GOLD + " seconds";
+    private static final String UPTIME_FORMAT = TextFormat.RED + "%d" + TextFormat.GOLD + " days " + TextFormat.RED
+            + "%d" + TextFormat.GOLD + " hours " + TextFormat.RED
+            + "%d" + TextFormat.GOLD + " minutes " + TextFormat.RED
+            + "%d" + TextFormat.GOLD + " seconds";
     private static final Map<String, String> vmVendor = new HashMap<>(10, 0.99f);
     private static final Map<String, String> vmMac = new HashMap<>(10, 0.99f);
-    private static final String[] vmModelArray = new String[]{"Linux KVM", "Linux lguest", "OpenVZ", "Qemu",
-            "Microsoft Virtual PC", "VMWare", "linux-vserver", "Xen", "FreeBSD Jail", "VirtualBox", "Parallels",
-            "Linux Containers", "LXC", "Bochs"};
+    private static final String[] vmModelArray = new String[] {
+        "Linux KVM",
+        "Linux lguest",
+        "OpenVZ",
+        "Qemu",
+        "Microsoft Virtual PC",
+        "VMWare",
+        "linux-vserver",
+        "Xen",
+        "FreeBSD Jail",
+        "VirtualBox",
+        "Parallels",
+        "Linux Containers",
+        "LXC",
+        "Bochs"
+    };
 
     static {
         vmVendor.put("bhyve", "bhyve");
@@ -69,9 +81,9 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
         super(name, "%nukkit.command.status.description", "%nukkit.command.status.usage");
         this.setPermission("nukkit.command.status");
         this.getCommandParameters().clear();
-        this.addCommandParameters("default", new CommandParameter[]{
-                CommandParameter.newEnum("mode", true, new String[]{"full", "simple"})
-        });
+        this.addCommandParameters(
+                "default",
+                new CommandParameter[] {CommandParameter.newEnum("mode", true, new String[] {"full", "simple"})});
     }
 
     private static String formatKB(double bytes) {
@@ -116,7 +128,8 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
     @SuppressWarnings({"rawtypes", "unchecked"})
     private static String isInVM(HardwareAbstractionLayer hardware) {
         // CPU型号检测
-        String vendor = hardware.getProcessor().getProcessorIdentifier().getVendor().trim();
+        String vendor =
+                hardware.getProcessor().getProcessorIdentifier().getVendor().trim();
         if (vmVendor.containsKey(vendor)) {
             return vmVendor.get(vendor);
         }
@@ -143,23 +156,24 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
             return "Microsoft Hyper-V";
         }
 
-        //内存型号检测
+        // 内存型号检测
         if (hardware.getMemory().getPhysicalMemory().get(0).getManufacturer().equals("QEMU")) {
             return "QEMU";
         }
 
-        //检查Windows系统参数
-        //Wmi虚拟机查询只能在Windows上使用，Linux上不执行这个部分即可
+        // 检查Windows系统参数
+        // Wmi虚拟机查询只能在Windows上使用，Linux上不执行这个部分即可
         if (System.getProperties().getProperty("os.name").toUpperCase().contains("WINDOWS")) {
-            WbemcliUtil.WmiQuery<Win32ComputerSystem.ComputerSystemProperty> computerSystemQuery = new WbemcliUtil.WmiQuery("Win32_ComputerSystem", ComputerSystemEntry.class);
+            WbemcliUtil.WmiQuery<Win32ComputerSystem.ComputerSystemProperty> computerSystemQuery =
+                    new WbemcliUtil.WmiQuery("Win32_ComputerSystem", ComputerSystemEntry.class);
             WbemcliUtil.WmiResult result = WmiQueryHandler.createInstance().queryWMI(computerSystemQuery);
             var tmp = result.getValue(ComputerSystemEntry.HYPERVISORPRESENT, 0);
             if (tmp != null && tmp.toString().equals("true")) {
                 return "Hyper-V";
             }
         }
-        //检查是否在Docker容器中
-        //Docker检查只在非Windows上执行
+        // 检查是否在Docker容器中
+        // Docker检查只在非Windows上执行
         else {
             var file = new File("/.dockerenv");
             if (file.exists()) {
@@ -179,7 +193,6 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
         }
 
         return null;
-
     }
 
     @Override
@@ -192,7 +205,8 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
         var server = sender.getServer();
 
         if (simpleMode) {
-            sender.sendMessage(TextFormat.GREEN + "---- " + TextFormat.WHITE + "Server status" + TextFormat.GREEN + " ----");
+            sender.sendMessage(
+                    TextFormat.GREEN + "---- " + TextFormat.WHITE + "Server status" + TextFormat.GREEN + " ----");
 
             long time = System.currentTimeMillis() - Nukkit.START_TIME;
 
@@ -210,7 +224,6 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
 
             sender.sendMessage(TextFormat.GOLD + "Load: " + tpsColor + server.getTickUsage() + "%");
 
-
             Runtime runtime = Runtime.getRuntime();
             double totalMB = NukkitMath.round(((double) runtime.totalMemory()) / 1024 / 1024, 2);
             double usedMB = NukkitMath.round((double) (runtime.totalMemory() - runtime.freeMemory()) / 1024 / 1024, 2);
@@ -222,37 +235,43 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                 usageColor = TextFormat.GOLD;
             }
 
-            sender.sendMessage(TextFormat.GOLD + "Used VM memory: " + usageColor + usedMB + " MB. (" + NukkitMath.round(usage, 2) + "%)");
+            sender.sendMessage(TextFormat.GOLD + "Used VM memory: " + usageColor + usedMB + " MB. ("
+                    + NukkitMath.round(usage, 2) + "%)");
 
             sender.sendMessage(TextFormat.GOLD + "Total VM memory: " + TextFormat.RED + totalMB + " MB.");
-
 
             TextFormat playerColor = TextFormat.GREEN;
             if (((float) server.getOnlinePlayers().size() / (float) server.getMaxPlayers()) > 0.85) {
                 playerColor = TextFormat.GOLD;
             }
 
-            sender.sendMessage(TextFormat.GOLD + "Players: " + playerColor + server.getOnlinePlayers().size() + TextFormat.GREEN + " online, " +
-                    TextFormat.RED + server.getMaxPlayers() + TextFormat.GREEN + " max. ");
+            sender.sendMessage(TextFormat.GOLD + "Players: " + playerColor
+                    + server.getOnlinePlayers().size() + TextFormat.GREEN + " online, " + TextFormat.RED
+                    + server.getMaxPlayers() + TextFormat.GREEN + " max. ");
 
             for (Level level : server.getLevels().values()) {
-                sender.sendMessage(
-                        TextFormat.GOLD + "World \"" + level.getFolderName() + "\"" + (!Objects.equals(level.getFolderName(), level.getName()) ? " (" + level.getName() + ")" : "") + ": " +
-                                TextFormat.RED + level.getChunks().size() + TextFormat.GREEN + " chunks, " +
-                                TextFormat.RED + level.getEntities().length + TextFormat.GREEN + " entities, " +
-                                TextFormat.RED + level.getBlockEntities().size() + TextFormat.GREEN + " blockEntities." +
-                                " Time " + ((level.getTickRate() > 1 || level.getTickRateTime() > 40) ? TextFormat.RED : TextFormat.YELLOW) + NukkitMath.round(level.getTickRateTime(), 2) + "ms" +
-                                (" [delayOpt " + (level.tickRateOptDelay - 1) + "]") +
-                                (level.getTickRate() > 1 ? " (tick rate " + (19 - level.getTickRate()) + ")" : "")
-                );
+                sender.sendMessage(TextFormat.GOLD + "World \"" + level.getFolderName() + "\""
+                        + (!Objects.equals(level.getFolderName(), level.getName()) ? " (" + level.getName() + ")" : "")
+                        + ": " + TextFormat.RED
+                        + level.getChunks().size() + TextFormat.GREEN + " chunks, " + TextFormat.RED
+                        + level.getEntities().length + TextFormat.GREEN + " entities, " + TextFormat.RED
+                        + level.getBlockEntities().size() + TextFormat.GREEN + " blockEntities." + " Time "
+                        + ((level.getTickRate() > 1 || level.getTickRateTime() > 40)
+                                ? TextFormat.RED
+                                : TextFormat.YELLOW)
+                        + NukkitMath.round(level.getTickRateTime(), 2) + "ms"
+                        + (" [delayOpt " + (level.tickRateOptDelay - 1) + "]")
+                        + (level.getTickRate() > 1 ? " (tick rate " + (19 - level.getTickRate()) + ")" : ""));
             }
         } else {
             // 完整模式
-            sender.sendMessage(TextFormat.GREEN + "---- " + TextFormat.WHITE + "Server status" + TextFormat.GREEN + " ----");
+            sender.sendMessage(
+                    TextFormat.GREEN + "---- " + TextFormat.WHITE + "Server status" + TextFormat.GREEN + " ----");
 
             // PNX服务器信息
             {
-                sender.sendMessage(TextFormat.YELLOW + ">>> " + TextFormat.WHITE + "PNX Server Info" + TextFormat.YELLOW + " <<<" + TextFormat.RESET);
+                sender.sendMessage(TextFormat.YELLOW + ">>> " + TextFormat.WHITE + "PNX Server Info" + TextFormat.YELLOW
+                        + " <<<" + TextFormat.RESET);
                 // 运行时间
                 long time = System.currentTimeMillis() - Nukkit.START_TIME;
                 sender.sendMessage(TextFormat.GOLD + "Uptime: " + formatUptime(time));
@@ -272,19 +291,25 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                 if (((float) server.getOnlinePlayers().size() / (float) server.getMaxPlayers()) > 0.85) {
                     playerColor = TextFormat.GOLD;
                 }
-                sender.sendMessage(TextFormat.GOLD + "Players: " + playerColor + server.getOnlinePlayers().size() + TextFormat.GREEN + " online, " +
-                        TextFormat.RED + server.getMaxPlayers() + TextFormat.GREEN + " max. ");
+                sender.sendMessage(TextFormat.GOLD + "Players: " + playerColor
+                        + server.getOnlinePlayers().size() + TextFormat.GREEN + " online, " + TextFormat.RED
+                        + server.getMaxPlayers() + TextFormat.GREEN + " max. ");
                 // 各个世界的情况
                 for (Level level : server.getLevels().values()) {
-                    sender.sendMessage(
-                            TextFormat.GOLD + "World \"" + level.getFolderName() + "\"" + (!Objects.equals(level.getFolderName(), level.getName()) ? " (" + level.getName() + ")" : "") + ": " +
-                                    TextFormat.RED + level.getChunks().size() + TextFormat.GREEN + " chunks, " +
-                                    TextFormat.RED + level.getEntities().length + TextFormat.GREEN + " entities, " +
-                                    TextFormat.RED + level.getBlockEntities().size() + TextFormat.GREEN + " blockEntities." +
-                                    " Time " + ((level.getTickRate() > 1 || level.getTickRateTime() > 40) ? TextFormat.RED : TextFormat.YELLOW) + NukkitMath.round(level.getTickRateTime(), 2) + "ms" +
-                                    (" [delayOpt " + (level.tickRateOptDelay - 1) + "]") +
-                                    (level.getTickRate() > 1 ? " (tick rate " + (19 - level.getTickRate()) + ")" : "")
-                    );
+                    sender.sendMessage(TextFormat.GOLD + "World \"" + level.getFolderName() + "\""
+                            + (!Objects.equals(level.getFolderName(), level.getName())
+                                    ? " (" + level.getName() + ")"
+                                    : "")
+                            + ": " + TextFormat.RED
+                            + level.getChunks().size() + TextFormat.GREEN + " chunks, " + TextFormat.RED
+                            + level.getEntities().length + TextFormat.GREEN + " entities, " + TextFormat.RED
+                            + level.getBlockEntities().size() + TextFormat.GREEN + " blockEntities." + " Time "
+                            + ((level.getTickRate() > 1 || level.getTickRateTime() > 40)
+                                    ? TextFormat.RED
+                                    : TextFormat.YELLOW)
+                            + NukkitMath.round(level.getTickRateTime(), 2) + "ms"
+                            + (" [delayOpt " + (level.tickRateOptDelay - 1) + "]")
+                            + (level.getTickRate() > 1 ? " (tick rate " + (19 - level.getTickRate()) + ")" : ""));
                 }
                 sender.sendMessage("");
             }
@@ -292,17 +317,21 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
             {
                 var os = systemInfo.getOperatingSystem();
                 var mxBean = ManagementFactory.getRuntimeMXBean();
-                sender.sendMessage(TextFormat.YELLOW + ">>> " + TextFormat.WHITE + "OS & JVM Info" + TextFormat.YELLOW + " <<<" + TextFormat.RESET);
-                sender.sendMessage(TextFormat.GOLD + "OS: " + TextFormat.AQUA + os.getFamily() + " " + os.getManufacturer() + " " +
-                        os.getVersionInfo().getVersion() + " " + os.getVersionInfo().getCodeName() + " " + os.getBitness() + "bit, " +
-                        "build " + os.getVersionInfo().getBuildNumber());
-                sender.sendMessage(TextFormat.GOLD + "JVM: " + TextFormat.AQUA + mxBean.getVmName() + " " + mxBean.getVmVendor() + " " + mxBean.getVmVersion());
+                sender.sendMessage(TextFormat.YELLOW + ">>> " + TextFormat.WHITE + "OS & JVM Info" + TextFormat.YELLOW
+                        + " <<<" + TextFormat.RESET);
+                sender.sendMessage(TextFormat.GOLD + "OS: " + TextFormat.AQUA + os.getFamily() + " "
+                        + os.getManufacturer() + " " + os.getVersionInfo().getVersion()
+                        + " " + os.getVersionInfo().getCodeName() + " " + os.getBitness() + "bit, " + "build "
+                        + os.getVersionInfo().getBuildNumber());
+                sender.sendMessage(TextFormat.GOLD + "JVM: " + TextFormat.AQUA + mxBean.getVmName() + " "
+                        + mxBean.getVmVendor() + " " + mxBean.getVmVersion());
                 try {
                     var vm = isInVM(systemInfo.getHardware());
                     if (vm == null) {
                         sender.sendMessage(TextFormat.GOLD + "Virtual environment: " + TextFormat.GREEN + "no");
                     } else {
-                        sender.sendMessage(TextFormat.GOLD + "Virtual environment: " + TextFormat.YELLOW + "yes (" + vm + ")");
+                        sender.sendMessage(
+                                TextFormat.GOLD + "Virtual environment: " + TextFormat.YELLOW + "yes (" + vm + ")");
                     }
                 } catch (Exception ignore) {
 
@@ -313,9 +342,12 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
             try {
                 var network = server.getNetwork();
                 if (network.getHardWareNetworkInterfaces() != null) {
-                    sender.sendMessage(TextFormat.YELLOW + ">>> " + TextFormat.WHITE + "Network Info" + TextFormat.YELLOW + " <<<" + TextFormat.RESET);
-                    sender.sendMessage(TextFormat.GOLD + "Network upload: " + TextFormat.GREEN + formatKB(network.getUpload()) + "/s");
-                    sender.sendMessage(TextFormat.GOLD + "Network download: " + TextFormat.GREEN + formatKB(network.getDownload()) + "/s");
+                    sender.sendMessage(TextFormat.YELLOW + ">>> " + TextFormat.WHITE + "Network Info"
+                            + TextFormat.YELLOW + " <<<" + TextFormat.RESET);
+                    sender.sendMessage(TextFormat.GOLD + "Network upload: " + TextFormat.GREEN
+                            + formatKB(network.getUpload()) + "/s");
+                    sender.sendMessage(TextFormat.GOLD + "Network download: " + TextFormat.GREEN
+                            + formatKB(network.getDownload()) + "/s");
                     sender.sendMessage(TextFormat.GOLD + "Network hardware list: ");
                     ObjectArrayList<String> list;
                     for (var each : network.getHardWareNetworkInterfaces()) {
@@ -323,7 +355,8 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                         list.addElements(0, each.getIPv4addr());
                         list.addElements(list.size(), each.getIPv6addr());
                         sender.sendMessage(TextFormat.AQUA + "  " + each.getDisplayName());
-                        sender.sendMessage(TextFormat.RESET + "    " + formatKB(each.getSpeed()) + "/s " + TextFormat.GRAY + String.join(", ", list));
+                        sender.sendMessage(TextFormat.RESET + "    " + formatKB(each.getSpeed()) + "/s "
+                                + TextFormat.GRAY + String.join(", ", list));
                     }
                     sender.sendMessage("");
                 }
@@ -333,12 +366,18 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
             // CPU信息
             {
                 var cpu = systemInfo.getHardware().getProcessor();
-                sender.sendMessage(TextFormat.YELLOW + ">>> " + TextFormat.WHITE + "CPU Info" + TextFormat.YELLOW + " <<<" + TextFormat.RESET);
-                sender.sendMessage(TextFormat.GOLD + "CPU: " + TextFormat.AQUA + cpu.getProcessorIdentifier().getName() + TextFormat.GRAY +
-                        " (" + formatFreq(cpu.getMaxFreq()) + " baseline; " + cpu.getPhysicalProcessorCount() + " cores, " + cpu.getLogicalProcessorCount() + " logical cores)");
-                sender.sendMessage(TextFormat.GOLD + "Thread count: " + TextFormat.GREEN + Thread.getAllStackTraces().size());
-                sender.sendMessage(TextFormat.GOLD + "CPU Features: " + TextFormat.RESET + (cpu.getProcessorIdentifier().isCpu64bit() ? "64bit, " : "32bit, ") +
-                        cpu.getProcessorIdentifier().getModel() + ", micro-arch: " + cpu.getProcessorIdentifier().getMicroarchitecture());
+                sender.sendMessage(TextFormat.YELLOW + ">>> " + TextFormat.WHITE + "CPU Info" + TextFormat.YELLOW
+                        + " <<<" + TextFormat.RESET);
+                sender.sendMessage(TextFormat.GOLD + "CPU: " + TextFormat.AQUA
+                        + cpu.getProcessorIdentifier().getName() + TextFormat.GRAY + " (" + formatFreq(cpu.getMaxFreq())
+                        + " baseline; " + cpu.getPhysicalProcessorCount() + " cores, " + cpu.getLogicalProcessorCount()
+                        + " logical cores)");
+                sender.sendMessage(TextFormat.GOLD + "Thread count: " + TextFormat.GREEN
+                        + Thread.getAllStackTraces().size());
+                sender.sendMessage(TextFormat.GOLD + "CPU Features: " + TextFormat.RESET
+                        + (cpu.getProcessorIdentifier().isCpu64bit() ? "64bit, " : "32bit, ")
+                        + cpu.getProcessorIdentifier().getModel() + ", micro-arch: "
+                        + cpu.getProcessorIdentifier().getMicroarchitecture());
                 sender.sendMessage("");
             }
             // 内存信息
@@ -350,11 +389,13 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                 long usedPhysicalMemory = (globalMemory.getTotal() - globalMemory.getAvailable()) / 1000;
                 long allVirtualMemory = virtualMemory.getVirtualMax() / 1000;
                 long usedVirtualMemory = virtualMemory.getVirtualInUse() / 1000;
-                sender.sendMessage(TextFormat.YELLOW + ">>> " + TextFormat.WHITE + "Memory Info" + TextFormat.YELLOW + " <<<" + TextFormat.RESET);
-                //JVM内存
+                sender.sendMessage(TextFormat.YELLOW + ">>> " + TextFormat.WHITE + "Memory Info" + TextFormat.YELLOW
+                        + " <<<" + TextFormat.RESET);
+                // JVM内存
                 var runtime = Runtime.getRuntime();
                 double totalMB = NukkitMath.round(((double) runtime.totalMemory()) / 1024 / 1024, 2);
-                double usedMB = NukkitMath.round((double) (runtime.totalMemory() - runtime.freeMemory()) / 1024 / 1024, 2);
+                double usedMB =
+                        NukkitMath.round((double) (runtime.totalMemory() - runtime.freeMemory()) / 1024 / 1024, 2);
                 double maxMB = NukkitMath.round(((double) runtime.maxMemory()) / 1024 / 1024, 2);
                 double usage = usedMB / maxMB * 100;
                 var usageColor = TextFormat.GREEN;
@@ -362,7 +403,8 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                     usageColor = TextFormat.GOLD;
                 }
                 sender.sendMessage(TextFormat.GOLD + "JVM memory: ");
-                sender.sendMessage(TextFormat.GOLD + "  Used JVM memory: " + usageColor + usedMB + " MB. (" + NukkitMath.round(usage, 2) + "%)");
+                sender.sendMessage(TextFormat.GOLD + "  Used JVM memory: " + usageColor + usedMB + " MB. ("
+                        + NukkitMath.round(usage, 2) + "%)");
                 sender.sendMessage(TextFormat.GOLD + "  Total JVM memory: " + TextFormat.RED + totalMB + " MB.");
                 sender.sendMessage(TextFormat.GOLD + "  Maximum JVM memory: " + TextFormat.RED + maxMB + " MB.");
                 // 操作系统内存
@@ -372,23 +414,28 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                     usageColor = TextFormat.GOLD;
                 }
                 sender.sendMessage(TextFormat.GOLD + "OS memory: ");
-                sender.sendMessage(TextFormat.GOLD + "  Physical memory: " + TextFormat.GREEN + usageColor + formatMB(usedPhysicalMemory) + " / " + formatMB(allPhysicalMemory) + ". (" + NukkitMath.round(usage, 2) + "%)");
+                sender.sendMessage(TextFormat.GOLD + "  Physical memory: " + TextFormat.GREEN + usageColor
+                        + formatMB(usedPhysicalMemory) + " / " + formatMB(allPhysicalMemory) + ". ("
+                        + NukkitMath.round(usage, 2) + "%)");
                 usage = (double) usedVirtualMemory / allVirtualMemory * 100;
                 usageColor = TextFormat.GREEN;
                 if (usage > 85) {
                     usageColor = TextFormat.GOLD;
                 }
-                sender.sendMessage(TextFormat.GOLD + "  Virtual memory: " + TextFormat.GREEN + usageColor + formatMB(usedVirtualMemory) + " / " + formatMB(allVirtualMemory) + ". (" + NukkitMath.round(usage, 2) + "%)");
-                if (physicalMemories.size() > 0)
-                    sender.sendMessage(TextFormat.GOLD + "  Hardware list: ");
+                sender.sendMessage(TextFormat.GOLD + "  Virtual memory: " + TextFormat.GREEN + usageColor
+                        + formatMB(usedVirtualMemory) + " / " + formatMB(allVirtualMemory) + ". ("
+                        + NukkitMath.round(usage, 2) + "%)");
+                if (physicalMemories.size() > 0) sender.sendMessage(TextFormat.GOLD + "  Hardware list: ");
                 for (var each : physicalMemories) {
-                    sender.sendMessage(TextFormat.AQUA + "    " + each.getBankLabel() + " @ " + formatFreq(each.getClockSpeed()) + TextFormat.WHITE + " " + formatMB(each.getCapacity() / 1000));
-                    sender.sendMessage(TextFormat.GRAY + "      " + each.getMemoryType() + ", " + each.getManufacturer());
+                    sender.sendMessage(
+                            TextFormat.AQUA + "    " + each.getBankLabel() + " @ " + formatFreq(each.getClockSpeed())
+                                    + TextFormat.WHITE + " " + formatMB(each.getCapacity() / 1000));
+                    sender.sendMessage(
+                            TextFormat.GRAY + "      " + each.getMemoryType() + ", " + each.getManufacturer());
                 }
                 sender.sendMessage("");
             }
         }
-
 
         return true;
     }

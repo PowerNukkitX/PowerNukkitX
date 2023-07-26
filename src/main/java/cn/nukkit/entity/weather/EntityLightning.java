@@ -19,13 +19,12 @@ import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.IntConsumer;
 import java.util.function.Supplier;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author boybook
@@ -37,7 +36,6 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
     public int state;
     public int liveTime;
     protected boolean isEffect = true;
-
 
     public EntityLightning(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -70,15 +68,18 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
                 fire.y = block.y;
                 fire.z = block.z;
                 fire.level = level;
-//                this.getLevel().setBlock(fire, fire, true); WTF???
+                //                this.getLevel().setBlock(fire, fire, true); WTF???
                 if (fire.isBlockTopFacingSurfaceSolid(fire.down()) || fire.canNeighborBurn()) {
 
-                    BlockIgniteEvent e = new BlockIgniteEvent(block, null, this, BlockIgniteEvent.BlockIgniteCause.LIGHTNING);
+                    BlockIgniteEvent e =
+                            new BlockIgniteEvent(block, null, this, BlockIgniteEvent.BlockIgniteCause.LIGHTNING);
                     getServer().getPluginManager().callEvent(e);
 
                     if (!e.isCancelled()) {
                         level.setBlock(fire, fire, true);
-                        level.scheduleUpdate(fire, fire.tickRate() + ThreadLocalRandom.current().nextInt(10));
+                        level.scheduleUpdate(
+                                fire,
+                                fire.tickRate() + ThreadLocalRandom.current().nextInt(10));
                     }
                 }
             }
@@ -97,7 +98,7 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
 
     @Override
     public boolean attack(EntityDamageEvent source) {
-        //false?
+        // false?
         source.setDamage(0);
         return super.attack(source);
     }
@@ -142,9 +143,12 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
                         if (isVulnerableOxidizable(possibility)) {
                             Position nextPos = randomPos.clone();
                             changes.compute(nextPos, (k, v) -> {
-                                int nextLevel = v == null ?
-                                        ((Oxidizable) possibility).getOxidizationLevel().ordinal() - 1 :
-                                        v.ordinal() - 1;
+                                int nextLevel = v == null
+                                        ? ((Oxidizable) possibility)
+                                                        .getOxidizationLevel()
+                                                        .ordinal()
+                                                - 1
+                                        : v.ordinal() - 1;
                                 return OxidizationLevel.values()[Math.max(0, nextLevel)];
                             });
                             return nextPos;
@@ -172,7 +176,9 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
 
                 for (Map.Entry<Position, OxidizationLevel> entry : changes.entrySet()) {
                     Block current = level.getBlock(entry.getKey());
-                    Block next = ((Oxidizable) current).getStateWithOxidizationLevel(entry.getValue()).getBlock(current);
+                    Block next = ((Oxidizable) current)
+                            .getStateWithOxidizationLevel(entry.getValue())
+                            .getBlock(current);
                     BlockFadeEvent event = new BlockFadeEvent(current, next);
                     getServer().getPluginManager().callEvent(event);
                     if (event.isCancelled()) {
@@ -198,7 +204,8 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
                     Block block = this.getLevelBlock();
 
                     if (block.getId() == Block.AIR || block.getId() == Block.TALL_GRASS) {
-                        BlockIgniteEvent e = new BlockIgniteEvent(block, null, this, BlockIgniteEvent.BlockIgniteCause.LIGHTNING);
+                        BlockIgniteEvent e =
+                                new BlockIgniteEvent(block, null, this, BlockIgniteEvent.BlockIgniteCause.LIGHTNING);
                         getServer().getPluginManager().callEvent(e);
 
                         if (!e.isCancelled()) {
@@ -225,7 +232,6 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
         return true;
     }
 
-
     @PowerNukkitOnly
     @Since("1.5.1.0-PN")
     @Override
@@ -235,7 +241,9 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
 
     @Override
     public void spawnToAll() {
-        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.LIGHTNING_STRIKE));
+        this.level
+                .getVibrationManager()
+                .callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.LIGHTNING_STRIKE));
         super.spawnToAll();
     }
 }

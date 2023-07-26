@@ -4,9 +4,8 @@ import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.data.Skin;
-import lombok.ToString;
-
 import java.util.UUID;
+import lombok.ToString;
 
 /**
  * @author Nukkit Project Team
@@ -23,9 +22,7 @@ public class PlayerListPacket extends DataPacket {
     public Entry[] entries = Entry.EMPTY_ARRAY;
 
     @Override
-    public void decode() {
-
-    }
+    public void decode() {}
 
     @Override
     public void encode() {
@@ -69,12 +66,13 @@ public class PlayerListPacket extends DataPacket {
         public final UUID uuid;
         public long entityId = 0;
         public String name = "";
-        public String xboxUserId = ""; //TODO
-        public String platformChatId = ""; //TODO
+        public String xboxUserId = ""; // TODO
+        public String platformChatId = ""; // TODO
         public int buildPlatform = -1;
         public Skin skin;
         public boolean isTeacher;
         public boolean isHost;
+
         @PowerNukkitXOnly
         @Since("1.19.50-r3")
         public boolean trustedSkin;
@@ -96,5 +94,4 @@ public class PlayerListPacket extends DataPacket {
             this.xboxUserId = xboxUserId == null ? "" : xboxUserId;
         }
     }
-
 }

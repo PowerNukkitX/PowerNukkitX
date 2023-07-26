@@ -7,10 +7,7 @@ public class SetDisplayObjectivePacket extends DataPacket {
 
     public DisplaySlot displaySlot;
 
-    public String
-            objectiveName,
-            displayName,
-            criteriaName;
+    public String objectiveName, displayName, criteriaName;
 
     public SortOrder sortOrder;
 
@@ -21,7 +18,7 @@ public class SetDisplayObjectivePacket extends DataPacket {
 
     @Override
     public void decode() {
-        //only server -> client
+        // only server -> client
     }
 
     @Override
@@ -33,5 +30,4 @@ public class SetDisplayObjectivePacket extends DataPacket {
         this.putString(this.criteriaName);
         this.putVarInt(this.sortOrder.ordinal());
     }
-
 }

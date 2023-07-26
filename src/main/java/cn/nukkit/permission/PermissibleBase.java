@@ -4,7 +4,6 @@ import cn.nukkit.Server;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.utils.PluginException;
 import cn.nukkit.utils.ServerException;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -65,9 +64,13 @@ public class PermissibleBase implements Permissible {
         if (perm != null) {
             String permission = perm.getDefault();
 
-            return Permission.DEFAULT_TRUE.equals(permission) || (this.isOp() && Permission.DEFAULT_OP.equals(permission)) || (!this.isOp() && Permission.DEFAULT_NOT_OP.equals(permission));
+            return Permission.DEFAULT_TRUE.equals(permission)
+                    || (this.isOp() && Permission.DEFAULT_OP.equals(permission))
+                    || (!this.isOp() && Permission.DEFAULT_NOT_OP.equals(permission));
         } else {
-            return Permission.DEFAULT_TRUE.equals(Permission.DEFAULT_PERMISSION) || (this.isOp() && Permission.DEFAULT_OP.equals(Permission.DEFAULT_PERMISSION)) || (!this.isOp() && Permission.DEFAULT_NOT_OP.equals(Permission.DEFAULT_PERMISSION));
+            return Permission.DEFAULT_TRUE.equals(Permission.DEFAULT_PERMISSION)
+                    || (this.isOp() && Permission.DEFAULT_OP.equals(Permission.DEFAULT_PERMISSION))
+                    || (!this.isOp() && Permission.DEFAULT_NOT_OP.equals(Permission.DEFAULT_PERMISSION));
         }
     }
 
@@ -118,13 +121,19 @@ public class PermissibleBase implements Permissible {
     public void recalculatePermissions() {
 
         this.clearPermissions();
-        Map<String, Permission> defaults = Server.getInstance().getPluginManager().getDefaultPermissions(this.isOp());
-        Server.getInstance().getPluginManager().subscribeToDefaultPerms(this.isOp(), this.parent != null ? this.parent : this);
+        Map<String, Permission> defaults =
+                Server.getInstance().getPluginManager().getDefaultPermissions(this.isOp());
+        Server.getInstance()
+                .getPluginManager()
+                .subscribeToDefaultPerms(this.isOp(), this.parent != null ? this.parent : this);
 
         for (Permission perm : defaults.values()) {
             String name = perm.getName();
-            this.permissions.put(name, new PermissionAttachmentInfo(this.parent != null ? this.parent : this, name, null, true));
-            Server.getInstance().getPluginManager().subscribeToPermission(name, this.parent != null ? this.parent : this);
+            this.permissions.put(
+                    name, new PermissionAttachmentInfo(this.parent != null ? this.parent : this, name, null, true));
+            Server.getInstance()
+                    .getPluginManager()
+                    .subscribeToPermission(name, this.parent != null ? this.parent : this);
             this.calculateChildPermissions(perm.getChildren(), false, null);
         }
 
@@ -135,24 +144,34 @@ public class PermissibleBase implements Permissible {
 
     public void clearPermissions() {
         for (String name : this.permissions.keySet()) {
-            Server.getInstance().getPluginManager().unsubscribeFromPermission(name, this.parent != null ? this.parent : this);
+            Server.getInstance()
+                    .getPluginManager()
+                    .unsubscribeFromPermission(name, this.parent != null ? this.parent : this);
         }
 
-
-        Server.getInstance().getPluginManager().unsubscribeFromDefaultPerms(false, this.parent != null ? this.parent : this);
-        Server.getInstance().getPluginManager().unsubscribeFromDefaultPerms(true, this.parent != null ? this.parent : this);
+        Server.getInstance()
+                .getPluginManager()
+                .unsubscribeFromDefaultPerms(false, this.parent != null ? this.parent : this);
+        Server.getInstance()
+                .getPluginManager()
+                .unsubscribeFromDefaultPerms(true, this.parent != null ? this.parent : this);
 
         this.permissions.clear();
     }
 
-    private void calculateChildPermissions(Map<String, Boolean> children, boolean invert, PermissionAttachment attachment) {
+    private void calculateChildPermissions(
+            Map<String, Boolean> children, boolean invert, PermissionAttachment attachment) {
         for (Map.Entry<String, Boolean> entry : children.entrySet()) {
             String name = entry.getKey();
             Permission perm = Server.getInstance().getPluginManager().getPermission(name);
             boolean v = entry.getValue();
             boolean value = (v ^ invert);
-            this.permissions.put(name, new PermissionAttachmentInfo(this.parent != null ? this.parent : this, name, attachment, value));
-            Server.getInstance().getPluginManager().subscribeToPermission(name, this.parent != null ? this.parent : this);
+            this.permissions.put(
+                    name,
+                    new PermissionAttachmentInfo(this.parent != null ? this.parent : this, name, attachment, value));
+            Server.getInstance()
+                    .getPluginManager()
+                    .subscribeToPermission(name, this.parent != null ? this.parent : this);
 
             if (perm != null) {
                 this.calculateChildPermissions(perm.getChildren(), !value, attachment);

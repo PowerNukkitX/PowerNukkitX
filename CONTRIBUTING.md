@@ -41,7 +41,7 @@ Issues, bug reports and feature suggestions are welcomed, though please keep in 
 
   If an issue has already been created, saying that you also experience it without providing any additional details doesn't really help us in any way. To express support for a proposal or indicate that you are also affected by a particular bug, you can use comment reactions instead.
 
-## <a id="Catalogs-Faq#2"></a>💡  I would like to submit a pull request! 
+## <a id="Catalogs-Faq#2"></a>💡  I would like to submit a pull request!
 <!--修改链接-->
 We also welcome pull requests from unaffiliated contributors. The [issue tracker](https://github.com/powernukkitx/powernukkitx/issues) should provide plenty of issues that you can work on; we also mark issues that we think would be good for newcomers with the [`good first issue`](https://github.com/powernukkitx/powernukkitx/issues?q=is%3Aissue+is%3Aopen+label%3Agood%20first%20issue) label.
 
@@ -114,7 +114,7 @@ Here are some key things to note before jumping in:
 ## <a id="Catalogs-Swlang"></a>🌐 Multilingual documentation
 
 ---
-Need to switch languages? 
+Need to switch languages?
 
 [![简体中文](https://img.shields.io/badge/简体中文-Click%20me-purple?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hans/CONTRIBUTING.md)
 [![繁體中文](https://img.shields.io/badge/繁體中文-Click%20me-purple?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/CONTRIBUTING.md)

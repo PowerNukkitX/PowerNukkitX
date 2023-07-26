@@ -8,12 +8,11 @@ import cn.nukkit.nbt.snbt.ast.*;
 import cn.nukkit.nbt.tag.*;
 import com.google.common.primitives.Bytes;
 import com.google.common.primitives.Ints;
-import org.jetbrains.annotations.NotNull;
-
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
+import org.jetbrains.annotations.NotNull;
 
 public class SNBTParser {
     private final cn.nukkit.nbt.snbt.Node root;
@@ -56,9 +55,9 @@ public class SNBTParser {
                 }
             }
             tag = new IntArrayTag("", Ints.toArray(tmp));
-        } else if (node instanceof ListNBT) {//only Value
+        } else if (node instanceof ListNBT) { // only Value
             tag = parseListTag(node);
-        } else if (node instanceof CompoundNBT) {//only KeyValuePair
+        } else if (node instanceof CompoundNBT) { // only KeyValuePair
             tag = parseCompoundNBT(node);
         }
         return tag;
@@ -70,7 +69,7 @@ public class SNBTParser {
             Node child = it.next();
             if (child instanceof KeyValuePair) {
                 var s = child.getFirstToken().getNormalizedText();
-                var key = s.substring(1, s.length() - 1);//only STRING TOKEN
+                var key = s.substring(1, s.length() - 1); // only STRING TOKEN
                 if (child.getChildCount() == 3) {
                     var value = child.getChild(2);
                     if (value.hasChildNodes()) {
@@ -149,4 +148,3 @@ public class SNBTParser {
         };
     }
 }
-

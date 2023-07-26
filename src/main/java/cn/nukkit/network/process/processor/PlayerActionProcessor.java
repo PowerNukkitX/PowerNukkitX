@@ -19,7 +19,10 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull PlayerActionPacket pk) {
         Player player = playerHandle.player;
-        if (!player.spawned || (!player.isAlive() && pk.action != PlayerActionPacket.ACTION_RESPAWN && pk.action != PlayerActionPacket.ACTION_DIMENSION_CHANGE_ACK)) {
+        if (!player.spawned
+                || (!player.isAlive()
+                        && pk.action != PlayerActionPacket.ACTION_RESPAWN
+                        && pk.action != PlayerActionPacket.ACTION_DIMENSION_CHANGE_ACK)) {
             return;
         }
 
@@ -36,9 +39,9 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                 playerHandle.onBlockBreakAbort(pos, face);
                 break;
             case PlayerActionPacket.ACTION_GET_UPDATED_BLOCK:
-                break; //TODO
+                break; // TODO
             case PlayerActionPacket.ACTION_DROP_ITEM:
-                break; //TODO
+                break; // TODO
             case PlayerActionPacket.ACTION_STOP_SLEEPING:
                 player.stopSleep();
                 break;
@@ -90,12 +93,12 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                 }
                 return;
             case PlayerActionPacket.ACTION_CREATIVE_PLAYER_DESTROY_BLOCK:
-                if (player.getServer().getServerAuthoritativeMovement() > 0) break;//ServerAuthorInput not use player
+                if (player.getServer().getServerAuthoritativeMovement() > 0) break; // ServerAuthorInput not use player
                 playerHandle.onBlockBreakComplete(new BlockVector3(pk.x, pk.y, pk.z), face);
                 break;
             case PlayerActionPacket.ACTION_DIMENSION_CHANGE_ACK:
                 player.sendPosition(player, player.yaw, player.pitch, MovePlayerPacket.MODE_NORMAL);
-                break; //TODO
+                break; // TODO
             case PlayerActionPacket.ACTION_START_GLIDE:
                 PlayerToggleGlideEvent playerToggleGlideEvent = new PlayerToggleGlideEvent(player, true);
                 player.getServer().getPluginManager().callEvent(playerToggleGlideEvent);
@@ -143,13 +146,15 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                     break;
                 }
 
-                int riptideLevel = player.getInventory().getItemInHand().getEnchantmentLevel(Enchantment.ID_TRIDENT_RIPTIDE);
+                int riptideLevel =
+                        player.getInventory().getItemInHand().getEnchantmentLevel(Enchantment.ID_TRIDENT_RIPTIDE);
                 if (riptideLevel < 1) {
                     player.sendPosition(player, player.yaw, player.pitch, MovePlayerPacket.MODE_RESET);
                     break;
                 }
 
-                if (!(player.isTouchingWater() || (player.getLevel().isRaining() && player.getLevel().canBlockSeeSky(player)))) {
+                if (!(player.isTouchingWater()
+                        || (player.getLevel().isRaining() && player.getLevel().canBlockSeeSky(player)))) {
                     player.sendPosition(player, player.yaw, player.pitch, MovePlayerPacket.MODE_RESET);
                     break;
                 }

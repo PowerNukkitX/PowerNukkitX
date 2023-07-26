@@ -13,16 +13,13 @@ public class UpdateBlockSyncedPacket extends DataPacket {
     public long actorUniqueId;
     public BlockSyncType updateType;
 
-
     @Override
     public byte pid() {
         return NETWORK_ID;
     }
 
     @Override
-    public void decode() {
-
-    }
+    public void decode() {}
 
     @Override
     public void encode() {

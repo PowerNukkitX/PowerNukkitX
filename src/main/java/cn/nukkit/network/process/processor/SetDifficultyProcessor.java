@@ -18,8 +18,13 @@ public class SetDifficultyProcessor extends DataPacketProcessor<SetDifficultyPac
         playerHandle.player.getServer().setDifficulty(pk.difficulty);
         SetDifficultyPacket difficultyPacket = new SetDifficultyPacket();
         difficultyPacket.difficulty = playerHandle.player.getServer().getDifficulty();
-        Server.broadcastPacket(playerHandle.player.getServer().getOnlinePlayers().values(), difficultyPacket);
-        Command.broadcastCommandMessage(playerHandle.player, new TranslationContainer("commands.difficulty.success", String.valueOf(playerHandle.player.getServer().getDifficulty())));
+        Server.broadcastPacket(
+                playerHandle.player.getServer().getOnlinePlayers().values(), difficultyPacket);
+        Command.broadcastCommandMessage(
+                playerHandle.player,
+                new TranslationContainer(
+                        "commands.difficulty.success",
+                        String.valueOf(playerHandle.player.getServer().getDifficulty())));
     }
 
     @Override

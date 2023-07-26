@@ -17,7 +17,7 @@ public class PopulatorBedrock extends Populator {
             for (int z = 0; z < 16; z++) {
                 chunk.setBlockId(x, 0, z, BEDROCK);
                 for (int i = 1; i < 5; i++) {
-                    if (random.nextBoundedInt(i) == 0) { //decreasing amount
+                    if (random.nextBoundedInt(i) == 0) { // decreasing amount
                         chunk.setBlockId(x, i, z, BEDROCK);
                     }
                 }

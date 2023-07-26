@@ -23,5 +23,4 @@ public class BlockStairsBirch extends BlockStairsWood {
     public String getName() {
         return "Birch Wood Stairs";
     }
-
 }

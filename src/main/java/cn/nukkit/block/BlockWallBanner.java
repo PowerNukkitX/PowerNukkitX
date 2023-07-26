@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
+
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
@@ -9,8 +11,6 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.CompassRoseDirection;
 import org.jetbrains.annotations.NotNull;
-
-import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
 
 /**
  * @author PetteriM1
@@ -37,8 +37,7 @@ public class BlockWallBanner extends BlockBanner {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }

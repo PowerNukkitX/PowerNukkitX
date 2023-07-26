@@ -17,9 +17,8 @@ import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector2;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.concurrent.ThreadLocalRandom;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 public class BlockSeaPickle extends BlockFlowable {
@@ -52,8 +51,7 @@ public class BlockSeaPickle extends BlockFlowable {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -109,7 +107,15 @@ public class BlockSeaPickle extends BlockFlowable {
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         if (target.getId() == SEA_PICKLE && (target.getDamage() & 0b11) < 3) {
             target.setDamage(target.getDamage() + 1);
             this.getLevel().setBlock(target, target, true, true);
@@ -150,7 +156,7 @@ public class BlockSeaPickle extends BlockFlowable {
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
 
-        //Bone meal
+        // Bone meal
         if (item.isFertilizer() && down().getId() == CORAL_BLOCK && !isDead()) {
             BlockSeaPickle block = (BlockSeaPickle) clone();
             block.setDamage(3);
@@ -170,12 +176,17 @@ public class BlockSeaPickle extends BlockFlowable {
             }
 
             ThreadLocalRandom random = ThreadLocalRandom.current();
-            Block[] blocksAround = this.getLevel().getCollisionBlocks(new SimpleAxisAlignedBB(x - 2, y - 2, z - 2, x + 3, y, z + 3));
+            Block[] blocksAround =
+                    this.getLevel().getCollisionBlocks(new SimpleAxisAlignedBB(x - 2, y - 2, z - 2, x + 3, y, z + 3));
             for (Block blockNearby : blocksAround) {
                 if (blockNearby.getId() == CORAL_BLOCK) {
                     Block up = blockNearby.up();
-                    if (up instanceof BlockWater && (up.getDamage() == 0 || up.getDamage() == 8) && random.nextInt(6) == 0 && new Vector2(up.x, up.z).distance(new Vector2(this.x, this.z)) <= 2) {
-                        BlockSpreadEvent blockSpreadEvent = new BlockSpreadEvent(up, this, new BlockSeaPickle(random.nextInt(3)));
+                    if (up instanceof BlockWater
+                            && (up.getDamage() == 0 || up.getDamage() == 8)
+                            && random.nextInt(6) == 0
+                            && new Vector2(up.x, up.z).distance(new Vector2(this.x, this.z)) <= 2) {
+                        BlockSpreadEvent blockSpreadEvent =
+                                new BlockSpreadEvent(up, this, new BlockSeaPickle(random.nextInt(3)));
                         if (!blockSpreadEvent.isCancelled()) {
                             this.getLevel().setBlock(up, 1, new BlockWater(), true, false);
                             this.getLevel().setBlock(up, blockSpreadEvent.getNewState(), true, true);
@@ -210,6 +221,6 @@ public class BlockSeaPickle extends BlockFlowable {
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{ new ItemBlock(new BlockSeaPickle(), 0, (getDamage() & 0x3) + 1) };
+        return new Item[] {new ItemBlock(new BlockSeaPickle(), 0, (getDamage() & 0x3) + 1)};
     }
 }

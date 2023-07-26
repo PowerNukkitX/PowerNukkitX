@@ -35,5 +35,4 @@ public class BlockStemCrimson extends BlockStem {
     public BlockState getStrippedState() {
         return getCurrentState().withBlockId(STRIPPED_CRIMSON_STEM);
     }
-
 }

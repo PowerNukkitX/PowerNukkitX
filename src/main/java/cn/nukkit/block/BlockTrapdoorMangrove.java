@@ -26,5 +26,4 @@ public class BlockTrapdoorMangrove extends BlockTrapdoor {
     public String getName() {
         return "Mangrove Trapdoor";
     }
-
 }

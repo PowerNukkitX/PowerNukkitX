@@ -4,8 +4,6 @@ package cn.nukkit.block;
  * @author Gabriel8579
  * @since 2021-08-13
  */
-
-
 public class BlockCandleWhite extends BlockCandle {
 
     public BlockCandleWhite() {
@@ -25,5 +23,4 @@ public class BlockCandleWhite extends BlockCandle {
     protected Block toCakeForm() {
         return new BlockCandleCakeWhite();
     }
-
 }

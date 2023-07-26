@@ -35,5 +35,4 @@ public class WildcardIntNode extends ParamNode<Integer> {
             }
         }
     }
-
 }

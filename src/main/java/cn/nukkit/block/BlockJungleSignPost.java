@@ -7,8 +7,7 @@ import cn.nukkit.item.ItemJungleSign;
 @PowerNukkitOnly
 public class BlockJungleSignPost extends BlockSignPost {
     @PowerNukkitOnly
-    public BlockJungleSignPost() {
-    }
+    public BlockJungleSignPost() {}
 
     @PowerNukkitOnly
     public BlockJungleSignPost(int meta) {
@@ -35,5 +34,4 @@ public class BlockJungleSignPost extends BlockSignPost {
     public Item toItem() {
         return new ItemJungleSign();
     }
-
 }

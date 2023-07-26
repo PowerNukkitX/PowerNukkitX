@@ -1,10 +1,10 @@
 package cn.nukkit.blockproperty.value;
 
+import static io.sentry.util.StringUtils.capitalize;
+
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import lombok.RequiredArgsConstructor;
-
-import static io.sentry.util.StringUtils.capitalize;
 
 /**
  * @author joserobjr
@@ -36,8 +36,7 @@ public enum DoublePlantType {
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
-    PAEONIA("Peony", false)
-    ;
+    PAEONIA("Peony", false);
     private final String englishName;
     private final boolean replaceable;
 

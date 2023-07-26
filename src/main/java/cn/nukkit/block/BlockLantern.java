@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 public class BlockLantern extends BlockFlowable {
-    @Deprecated(since = "1.20.0-r2",forRemoval = true)
+    @Deprecated(since = "1.20.0-r2", forRemoval = true)
     @DeprecationDetails(since = "1.20.0-r2", reason = "replace to CommonBlockProperties")
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -43,8 +43,7 @@ public class BlockLantern extends BlockFlowable {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -87,12 +86,21 @@ public class BlockLantern extends BlockFlowable {
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         if (this.getLevelBlock() instanceof BlockLiquid || this.getLevelBlockAtLayer(1) instanceof BlockLiquid) {
             return false;
         }
 
-        boolean hanging = face != BlockFace.UP && isBlockAboveValid() && (!isBlockUnderValid() || face == BlockFace.DOWN);
+        boolean hanging =
+                face != BlockFace.UP && isBlockAboveValid() && (!isBlockUnderValid() || face == BlockFace.DOWN);
         if (!isBlockUnderValid() && !hanging) {
             return false;
         }
@@ -188,7 +196,6 @@ public class BlockLantern extends BlockFlowable {
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
-
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")

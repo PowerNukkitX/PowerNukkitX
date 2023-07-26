@@ -9,9 +9,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 @Since("1.4.0.0-PN")
 @PowerNukkitOnly
@@ -24,14 +23,21 @@ public abstract class BlockFungus extends BlockFlowable implements BlockFlowerPo
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return CommonBlockProperties.EMPTY_PROPERTIES;
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         if (!isValidSupport(down())) {
             return false;
         }
@@ -44,7 +50,7 @@ public abstract class BlockFungus extends BlockFlowable implements BlockFlowerPo
             level.useBreakOn(this);
             return type;
         }
-        
+
         return 0;
     }
 
@@ -65,13 +71,13 @@ public abstract class BlockFungus extends BlockFlowable implements BlockFlowerPo
             level.useBreakOn(this);
             return true;
         }
-        
+
         if (!canGrowOn(down)) {
             return true;
         }
 
         grow(player);
-        
+
         return true;
     }
 

@@ -10,10 +10,9 @@ import cn.nukkit.item.StringItem;
 import cn.nukkit.item.food.Food;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.plugin.Plugin;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 import java.util.Map;
+import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author lt_name
@@ -38,7 +37,9 @@ public abstract class ItemCustomEdible extends ItemEdible implements CustomItem 
 
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
-        if (player.getFoodData().getLevel() < player.getFoodData().getMaxLevel() || player.isCreative() || canAlwaysEat()) {
+        if (player.getFoodData().getLevel() < player.getFoodData().getMaxLevel()
+                || player.isCreative()
+                || canAlwaysEat()) {
             return true;
         }
         player.getFoodData().sendFoodLevel();

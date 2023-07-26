@@ -26,7 +26,7 @@ public abstract class Event {
     protected String eventName = null;
     private boolean isCancelled = false;
 
-    final public String getEventName() {
+    public final String getEventName() {
         return eventName == null ? getClass().getName() : eventName;
     }
 

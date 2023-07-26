@@ -6,7 +6,6 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.NukkitRandom;
-
 import java.util.ArrayList;
 
 public class WarpedTwistingVinesPopulator extends Populator {
@@ -37,11 +36,17 @@ public class WarpedTwistingVinesPopulator extends Populator {
         for (; y < 128; ++y) {
             int b = this.level.getBlockIdAt(x, y, z);
             int higherBlockID = this.level.getBlockIdAt(x, y + 1, z);
-            if (b == 0 && (
-                    higherBlockID == NETHERRACK || higherBlockID == WARPED_NYLIUM || higherBlockID == WARPED_WART_BLOCK ||
-                            higherBlockID == STILL_LAVA || higherBlockID == FLOWING_LAVA ||
-                            higherBlockID == WARPED_FUNGUS || higherBlockID == WARPED_ROOTS ||
-                            higherBlockID == QUARTZ_ORE || higherBlockID == NETHER_GOLD_ORE || higherBlockID == ANCIENT_DERBRIS)) {
+            if (b == 0
+                    && (higherBlockID == NETHERRACK
+                            || higherBlockID == WARPED_NYLIUM
+                            || higherBlockID == WARPED_WART_BLOCK
+                            || higherBlockID == STILL_LAVA
+                            || higherBlockID == FLOWING_LAVA
+                            || higherBlockID == WARPED_FUNGUS
+                            || higherBlockID == WARPED_ROOTS
+                            || higherBlockID == QUARTZ_ORE
+                            || higherBlockID == NETHER_GOLD_ORE
+                            || higherBlockID == ANCIENT_DERBRIS)) {
                 break;
             }
         }

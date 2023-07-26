@@ -7,9 +7,8 @@ import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.value.StructureVoidType;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author good777LUCKY
@@ -19,7 +18,8 @@ import javax.annotation.Nullable;
 public class BlockStructureVoid extends BlockSolid {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final ArrayBlockProperty<StructureVoidType> STRUCTURE_VOID_TYPE = new ArrayBlockProperty<>("structure_void_type", false, StructureVoidType.class);
+    public static final ArrayBlockProperty<StructureVoidType> STRUCTURE_VOID_TYPE =
+            new ArrayBlockProperty<>("structure_void_type", false, StructureVoidType.class);
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -30,12 +30,12 @@ public class BlockStructureVoid extends BlockSolid {
     public BlockStructureVoid() {
         // Does Nothing
     }
-    
+
     @Override
     public int getId() {
         return STRUCTURE_VOID;
     }
-    
+
     @Override
     public String getName() {
         return "Structure Void";
@@ -43,16 +43,14 @@ public class BlockStructureVoid extends BlockSolid {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    public StructureVoidType getType() {
+    @NotNull public StructureVoidType getType() {
         return getPropertyValue(STRUCTURE_VOID_TYPE);
     }
 
@@ -66,12 +64,12 @@ public class BlockStructureVoid extends BlockSolid {
     public double getHardness() {
         return 0;
     }
-    
+
     @Override
     public double getResistance() {
         return 0;
     }
-    
+
     @Override
     public boolean canPassThrough() {
         return true;
@@ -88,21 +86,20 @@ public class BlockStructureVoid extends BlockSolid {
     public boolean isBreakable(Item item) {
         return false;
     }
-    
+
     @Override
     public boolean canHarvestWithHand() {
         return false;
     }
-    
+
     @Override
     public boolean canBePushed() {
         return false;
     }
-    
+
     @Override
     @PowerNukkitOnly
-    public  boolean canBePulled() {
+    public boolean canBePulled() {
         return false;
     }
-
 }

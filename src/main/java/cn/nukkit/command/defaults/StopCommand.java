@@ -5,7 +5,6 @@ import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
-
 import java.util.Map;
 
 /**
@@ -23,7 +22,8 @@ public class StopCommand extends VanillaCommand {
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         log.addSuccess("commands.stop.start").output(true);
         sender.getServer().shutdown();
         return 1;

@@ -27,7 +27,7 @@ import cn.nukkit.network.protocol.NPCRequestPacket;
 @Since("1.4.0.0-PN")
 @PowerNukkitOnly
 public class EntityNPCEntity extends EntityLiving implements EntityNPC, EntityInteractable {
-    //todo: Implement automatic steering of NPC entities
+    // todo: Implement automatic steering of NPC entities
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
@@ -90,7 +90,10 @@ public class EntityNPCEntity extends EntityLiving implements EntityNPC, EntityIn
         this.setNameTagVisible(true);
         this.setNameTagAlwaysVisible(true);
         this.setVariant(this.namedTag.getInt("Variant"));
-        this.dialog = new FormWindowDialog(this.namedTag.getString(KEY_DIALOG_TITLE).isEmpty() ? "NPC" : this.namedTag.getString(KEY_DIALOG_TITLE), this.namedTag.getString(KEY_DIALOG_CONTENT), this);
+        this.dialog = new FormWindowDialog(
+                this.namedTag.getString(KEY_DIALOG_TITLE).isEmpty() ? "NPC" : this.namedTag.getString(KEY_DIALOG_TITLE),
+                this.namedTag.getString(KEY_DIALOG_CONTENT),
+                this);
         this.setNameTag(this.dialog.getTitle());
         if (!this.namedTag.getString(KEY_DIALOG_SKINDATA).isEmpty())
             this.dialog.setSkinData(this.namedTag.getString(KEY_DIALOG_SKINDATA));
@@ -158,8 +161,8 @@ public class EntityNPCEntity extends EntityLiving implements EntityNPC, EntityIn
     @Since("1.6.0.0-PNX")
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
-        //对于创造模式玩家，NPC发送过去的dialog的sceneName必须为空，否则客户端会不允许修改对话框内容
-        //另外的，我们不需要记录发送给创造模式玩家的对话框，首先因为我们无法清除，其次没有必要
+        // 对于创造模式玩家，NPC发送过去的dialog的sceneName必须为空，否则客户端会不允许修改对话框内容
+        // 另外的，我们不需要记录发送给创造模式玩家的对话框，首先因为我们无法清除，其次没有必要
         player.showDialogWindow(this.dialog, !player.isCreative());
         return true;
     }
@@ -168,7 +171,9 @@ public class EntityNPCEntity extends EntityLiving implements EntityNPC, EntityIn
     @Since("1.6.0.0-PNX")
     @Override
     public boolean attack(EntityDamageEvent source) {
-        if (source instanceof EntityDamageByEntityEvent event && event.getDamager() instanceof Player damager && damager.isCreative()) {
+        if (source instanceof EntityDamageByEntityEvent event
+                && event.getDamager() instanceof Player damager
+                && damager.isCreative()) {
             this.kill();
         }
         return false;

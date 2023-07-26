@@ -15,5 +15,4 @@ public class ObjectCrimsonTree extends ObjectNetherTree {
     public int getLeafBlock() {
         return Block.BLOCK_NETHER_WART_BLOCK;
     }
-
 }

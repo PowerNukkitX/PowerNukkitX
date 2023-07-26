@@ -13,8 +13,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 @Since("1.20.0-r2")
 public record Rot(float x, float y) implements SerializableData {
     public CompoundTag serialize() {
-        return new CompoundTag("rot")
-                .putFloat("x", x)
-                .putFloat("y", y);
+        return new CompoundTag("rot").putFloat("x", x).putFloat("y", y);
     }
 }

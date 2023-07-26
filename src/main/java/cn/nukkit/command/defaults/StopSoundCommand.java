@@ -11,7 +11,6 @@ import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.node.PlayersNode;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.network.protocol.StopSoundPacket;
-
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -24,16 +23,17 @@ public class StopSoundCommand extends VanillaCommand {
         super(name, "commands.stopsound.description");
         this.setPermission("nukkit.command.stopsound");
         this.getCommandParameters().clear();
-        this.addCommandParameters("default", new CommandParameter[]{
-                CommandParameter.newType("player", false, CommandParamType.TARGET, new PlayersNode()),
-                CommandParameter.newType("sound", true, CommandParamType.STRING)
+        this.addCommandParameters("default", new CommandParameter[] {
+            CommandParameter.newType("player", false, CommandParamType.TARGET, new PlayersNode()),
+            CommandParameter.newType("sound", true, CommandParamType.STRING)
         });
         this.enableParamTree();
     }
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         List<Player> targets = list.getResult(0);
         if (targets.isEmpty()) {

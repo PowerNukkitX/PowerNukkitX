@@ -11,8 +11,10 @@ import org.apache.logging.log4j.Logger;
 @PowerNukkitOnly("Only for internal use")
 @Since("1.4.0.0-PN")
 final class Loggers {
-    private Loggers(){ throw new UnsupportedOperationException(); }
-    
+    private Loggers() {
+        throw new UnsupportedOperationException();
+    }
+
     static final Logger logIBlockState = LogManager.getLogger(IBlockState.class);
     static final Logger logIMutableBlockState = LogManager.getLogger(IMutableBlockState.class);
 }

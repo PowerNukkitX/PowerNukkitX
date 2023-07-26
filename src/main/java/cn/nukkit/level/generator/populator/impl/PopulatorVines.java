@@ -7,7 +7,6 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.generator.populator.type.PopulatorCount;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitRandom;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -55,6 +54,7 @@ public class PopulatorVines extends PopulatorCount {
 
     @Override
     protected void populateCount(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
-        generateVines(level, (chunkX << 4) + random.nextBoundedInt(16), (chunkZ << 4) + random.nextBoundedInt(16), random);
+        generateVines(
+                level, (chunkX << 4) + random.nextBoundedInt(16), (chunkZ << 4) + random.nextBoundedInt(16), random);
     }
 }

@@ -8,5 +8,4 @@ import cn.nukkit.api.Since;
  */
 @PowerNukkitXOnly
 @Since("1.19.60-r1")
-public interface EntityWalkable {
-}
+public interface EntityWalkable {}

@@ -11,16 +11,17 @@ public class PGZIPBlock implements Callable<byte[]> {
      * This ThreadLocal avoids the recycling of a lot of memory, causing lumpy performance.
      */
     protected final ThreadLocal<PGZIPState> STATE;
+
     public static final int SIZE = 64 * 1024;
     // private final int index;
     protected final byte[] in = new byte[SIZE];
     protected int in_length = 0;
 
     /*
-     public Block(@Nonnegative int index) {
-     this.index = index;
-     }
-     */
+    public Block(@Nonnegative int index) {
+    this.index = index;
+    }
+    */
     // Only on worker thread
     @Override
     public byte[] call() throws Exception {

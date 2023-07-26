@@ -35,8 +35,7 @@ public class BlockCobweb extends BlockFlowable {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return CommonBlockProperties.EMPTY_PROPERTIES;
     }
@@ -70,13 +69,9 @@ public class BlockCobweb extends BlockFlowable {
     @Override
     public Item[] getDrops(Item item) {
         if (item.isShears()) {
-            return new Item[]{
-                    this.toItem()
-            };
+            return new Item[] {this.toItem()};
         } else if (item.isSword()) {
-            return new Item[]{
-                    new ItemString()
-            };
+            return new Item[] {new ItemString()};
         } else {
             return Item.EMPTY_ARRAY;
         }
@@ -92,5 +87,4 @@ public class BlockCobweb extends BlockFlowable {
     public boolean diffusesSkyLight() {
         return true;
     }
-
 }

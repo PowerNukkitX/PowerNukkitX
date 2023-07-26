@@ -9,5 +9,4 @@ public abstract class BlockTransparent extends Block {
     public boolean isTransparent() {
         return true;
     }
-
 }

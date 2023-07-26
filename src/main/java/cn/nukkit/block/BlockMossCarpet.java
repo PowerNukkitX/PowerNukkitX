@@ -27,7 +27,7 @@ public class BlockMossCarpet extends BlockCarpet {
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{toItem()};
+        return new Item[] {toItem()};
     }
 
     @Override
@@ -36,8 +36,7 @@ public class BlockMossCarpet extends BlockCarpet {
     }
 
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }

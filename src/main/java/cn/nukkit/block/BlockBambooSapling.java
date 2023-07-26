@@ -11,9 +11,8 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.MathHelper;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.concurrent.ThreadLocalRandom;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 public class BlockBambooSapling extends BlockFlowable {
@@ -39,8 +38,7 @@ public class BlockBambooSapling extends BlockFlowable {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -67,7 +65,10 @@ public class BlockBambooSapling extends BlockFlowable {
             return type;
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {
             Block up = up();
-            if (getAge() == 0 && up.getId() == AIR && level.getFullLight(up) >= BlockCrops.MINIMUM_LIGHT_LEVEL && ThreadLocalRandom.current().nextInt(3) == 0) {
+            if (getAge() == 0
+                    && up.getId() == AIR
+                    && level.getFullLight(up) >= BlockCrops.MINIMUM_LIGHT_LEVEL
+                    && ThreadLocalRandom.current().nextInt(3) == 0) {
                 BlockBamboo newState = new BlockBamboo();
                 newState.setLeafSize(BlockBamboo.LEAF_SIZE_SMALL);
                 BlockGrowEvent blockGrowEvent = new BlockGrowEvent(up, newState);
@@ -87,7 +88,15 @@ public class BlockBambooSapling extends BlockFlowable {
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         if (isSupportInvalid()) {
             return false;
         }
@@ -99,7 +108,6 @@ public class BlockBambooSapling extends BlockFlowable {
         this.level.setBlock(this, this, true, true);
         return true;
     }
-
 
     @Override
     public boolean canBeActivated() {
@@ -189,5 +197,4 @@ public class BlockBambooSapling extends BlockFlowable {
     public double getMaxY() {
         return y + 0.875;
     }
-
 }

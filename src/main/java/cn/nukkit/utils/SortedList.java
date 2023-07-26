@@ -2,7 +2,6 @@ package cn.nukkit.utils;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.Array;
@@ -62,7 +61,7 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
         boolean treeAltered = false;
         if (object != null) {
             // 将值包装在节点中并添加它到树上
-            add(new Node(object)); //这将确保modcount自增
+            add(new Node(object)); // 这将确保modcount自增
             treeAltered = true;
         }
         return treeAltered;
@@ -225,9 +224,7 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
     @SuppressWarnings("unchecked")
     @Override
     public boolean contains(Object obj) {
-        return obj != null
-                && !isEmpty()
-                && findFirstNodeWithValue((T) obj) != null;
+        return obj != null && !isEmpty() && findFirstNodeWithValue((T) obj) != null;
     }
 
     /**
@@ -243,8 +240,7 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
         while (current != null) {
             int comparison = comparator.compare(current.value, value);
             if (comparison == 0) {
-                while (current.leftChild != null
-                        && comparator.compare(current.leftChild.value, value) == 0) {
+                while (current.leftChild != null && comparator.compare(current.leftChild.value, value) == 0) {
                     current = current.leftChild;
                 }
                 break;
@@ -355,7 +351,8 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
             if (totalSmallerElements > index) {
                 current = current.leftChild;
                 totalSmallerElements--;
-                totalSmallerElements -= (Objects.requireNonNull(current).rightChild == null) ? 0 : current.rightChild.sizeOfSubTree();
+                totalSmallerElements -=
+                        (Objects.requireNonNull(current).rightChild == null) ? 0 : current.rightChild.sizeOfSubTree();
             } else {
                 totalSmallerElements++;
                 current = current.rightChild;
@@ -434,11 +431,11 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
         return maxBalanceFactor;
     }
 
-    //从startNode开始执行二叉树的再平衡，并向上递归树。..
+    // 从startNode开始执行二叉树的再平衡，并向上递归树。..
     private void rebalanceTree(Node startNode) {
         Node current = startNode;
         while (current != null) {
-            //获取此时左右子树之间的差异。
+            // 获取此时左右子树之间的差异。
             int balanceFactor = current.getBalanceFactor();
 
             if (balanceFactor == -2) {
@@ -498,7 +495,8 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
         // 如果是叶节点，则删除该节点，并更新树中的子节点数和高度。
         private void detachFromParentIfLeaf() {
             if (!isLeaf() || parent == null) {
-                throw new RuntimeException("Call made to detachFromParentIfLeaf, but this is not a leaf node with a parent!");
+                throw new RuntimeException(
+                        "Call made to detachFromParentIfLeaf, but this is not a leaf node with a parent!");
             }
             if (isLeftChildOfParent()) {
                 parent.setLeftChild(null);
@@ -519,7 +517,8 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
         // 将此节点在树上向上移动一个槽口，更新值并重新平衡树。
         private void contractParent() {
             if (parent == null || parent.hasTwoChildren()) {
-                throw new RuntimeException("Can not call contractParent on root node or when the parent has two children!");
+                throw new RuntimeException(
+                        "Can not call contractParent on root node or when the parent has two children!");
             }
             Node grandParent = getGrandParent();
             if (grandParent != null) {
@@ -654,7 +653,7 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
 
         // 将子节点设置为左/右，仅当给定节点为null或叶，且当前子节点相同时才应如此
         private void setChild(boolean isLeft, Node leaf) {
-            //perform the update..
+            // perform the update..
             if (leaf != null) {
                 leaf.parent = this;
             }
@@ -680,11 +679,11 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
 
         @Override
         public String toString() {
-            return "[Node: value: " + value +
-                    ", leftChild value: " + ((leftChild == null) ? "null" : leftChild.value) +
-                    ", rightChild value: " + ((rightChild == null) ? "null" : rightChild.value) +
-                    ", height: " + height +
-                    ", numChildren: " + numChildren + "]\n";
+            return "[Node: value: " + value + ", leftChild value: "
+                    + ((leftChild == null) ? "null" : leftChild.value) + ", rightChild value: "
+                    + ((rightChild == null) ? "null" : rightChild.value) + ", height: "
+                    + height + ", numChildren: "
+                    + numChildren + "]\n";
         }
 
         // 使用当前节点作为轴左旋。
@@ -792,9 +791,7 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
          * <p>
          * 这个实现是空的，留给子类使用（虽然我觉得没人会用）。
          */
-        protected void updateAdditionalCachedValues() {
-
-        }
+        protected void updateAdditionalCachedValues() {}
 
         // 将此节点中的值替换为其他节点中的值。
         // 应该只在需要删除并且只有一个值时调用。
@@ -803,20 +800,22 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
         }
 
         private int getBalanceFactor() {
-            return ((leftChild == null) ? 0 : leftChild.height + 1) -
-                    ((rightChild == null) ? 0 : rightChild.height + 1);
+            return ((leftChild == null) ? 0 : leftChild.height + 1)
+                    - ((rightChild == null) ? 0 : rightChild.height + 1);
         }
 
         private void setLeftChild(Node leaf) {
             if ((leaf != null && !leaf.isLeaf()) || (leftChild != null && !leftChild.isLeaf())) {
-                throw new RuntimeException("setLeftChild should only be called with null or a leaf node, to replace a likewise child node.");
+                throw new RuntimeException(
+                        "setLeftChild should only be called with null or a leaf node, to replace a likewise child node.");
             }
             setChild(true, leaf);
         }
 
         private void setRightChild(Node leaf) {
             if ((leaf != null && !leaf.isLeaf()) || (rightChild != null && !rightChild.isLeaf())) {
-                throw new RuntimeException("setRightChild should only be called with null or a leaf node, to replace a likewise child node.");
+                throw new RuntimeException(
+                        "setRightChild should only be called with null or a leaf node, to replace a likewise child node.");
             }
             setChild(false, leaf);
         }

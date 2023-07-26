@@ -9,7 +9,6 @@ import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Level;
-
 import java.util.Map;
 
 /**
@@ -21,16 +20,17 @@ public class WeatherCommand extends VanillaCommand {
         super(name, "commands.weather.description", "commands.weather.usage");
         this.setPermission("nukkit.command.weather");
         this.commandParameters.clear();
-        this.commandParameters.put("default", new CommandParameter[]{
-                CommandParameter.newEnum("type", new CommandEnum("WeatherType", "clear", "rain", "thunder")),
-                CommandParameter.newType("duration", true, CommandParamType.INT)
+        this.commandParameters.put("default", new CommandParameter[] {
+            CommandParameter.newEnum("type", new CommandEnum("WeatherType", "clear", "rain", "thunder")),
+            CommandParameter.newType("duration", true, CommandParamType.INT)
         });
         this.enableParamTree();
     }
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         String weather = list.getResult(0);
         Level level = sender.getPosition().level;
@@ -63,7 +63,8 @@ public class WeatherCommand extends VanillaCommand {
                 return 1;
             }
             default -> {
-                sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
+                sender.sendMessage(
+                        new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
                 return 0;
             }
         }

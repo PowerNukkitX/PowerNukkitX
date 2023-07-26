@@ -83,8 +83,7 @@ public interface CommandSender extends Permissible {
      * @see cn.nukkit.plugin.PluginDescription
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */
-    @NotNull
-    String getName();
+    @NotNull String getName();
 
     /**
      * @return 发送者是否为玩家<br>whether the sender is an player
@@ -132,25 +131,21 @@ public interface CommandSender extends Permissible {
         return null;
     }
 
-
     /**
      * @return 返回发送者的Position<br>return the sender's position.
      */
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    @NotNull
-    default Position getPosition() {
+    @NotNull default Position getPosition() {
         return new Position(0, 0, 0, Server.getInstance().getDefaultLevel());
     }
-
 
     /**
      * @return 返回发送者克隆过的Location<br>return the sender's location.
      */
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    @NotNull
-    default Location getLocation() {
+    @NotNull default Location getLocation() {
         return new Location(0, 0, 0, Server.getInstance().getDefaultLevel());
     }
 }

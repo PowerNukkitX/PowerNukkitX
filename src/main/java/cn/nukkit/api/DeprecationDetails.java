@@ -7,8 +7,14 @@ import java.lang.annotation.*;
  */
 @PowerNukkitOnly
 @Retention(RetentionPolicy.CLASS)
-@Target({ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.TYPE,
-        ElementType.FIELD, ElementType.PACKAGE})
+@Target({
+    ElementType.CONSTRUCTOR,
+    ElementType.METHOD,
+    ElementType.ANNOTATION_TYPE,
+    ElementType.TYPE,
+    ElementType.FIELD,
+    ElementType.PACKAGE
+})
 @Documented
 public @interface DeprecationDetails {
     /**

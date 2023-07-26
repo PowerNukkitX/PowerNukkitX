@@ -8,7 +8,6 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.entity.Entity;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -22,26 +21,27 @@ public class TagCommand extends VanillaCommand {
         super(name, "commands.tag.description");
         this.setPermission("nukkit.command.tag");
         this.commandParameters.clear();
-        this.commandParameters.put("add", new CommandParameter[]{
-                CommandParameter.newType("targets", CommandParamType.TARGET),
-                CommandParameter.newEnum("add", new String[]{"add"}),
-                CommandParameter.newType("name", CommandParamType.STRING)
+        this.commandParameters.put("add", new CommandParameter[] {
+            CommandParameter.newType("targets", CommandParamType.TARGET),
+            CommandParameter.newEnum("add", new String[] {"add"}),
+            CommandParameter.newType("name", CommandParamType.STRING)
         });
-        this.commandParameters.put("remove", new CommandParameter[]{
-                CommandParameter.newType("targets", CommandParamType.TARGET),
-                CommandParameter.newEnum("remove", new String[]{"remove"}),
-                CommandParameter.newType("name", CommandParamType.STRING)}
-        );
-        this.commandParameters.put("list", new CommandParameter[]{
-                CommandParameter.newType("targets", CommandParamType.TARGET),
-                CommandParameter.newEnum("list", new String[]{"list"}),
+        this.commandParameters.put("remove", new CommandParameter[] {
+            CommandParameter.newType("targets", CommandParamType.TARGET),
+            CommandParameter.newEnum("remove", new String[] {"remove"}),
+            CommandParameter.newType("name", CommandParamType.STRING)
+        });
+        this.commandParameters.put("list", new CommandParameter[] {
+            CommandParameter.newType("targets", CommandParamType.TARGET),
+            CommandParameter.newEnum("list", new String[] {"list"}),
         });
         this.enableParamTree();
     }
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         List<Entity> entities = list.getResult(0);
         if (entities.isEmpty()) {
@@ -53,8 +53,7 @@ public class TagCommand extends VanillaCommand {
                 String tag = list.getResult(2);
                 int success_count = 0;
                 for (Entity entity : entities) {
-                    if (entity.containTag(tag))
-                        continue;
+                    if (entity.containTag(tag)) continue;
                     entity.addTag(tag);
                     success_count++;
                 }
@@ -63,7 +62,10 @@ public class TagCommand extends VanillaCommand {
                     return 0;
                 }
                 if (entities.size() == 1) {
-                    log.addSuccess("commands.tag.add.success.single", tag, entities.get(0).getName());
+                    log.addSuccess(
+                            "commands.tag.add.success.single",
+                            tag,
+                            entities.get(0).getName());
                 } else {
                     log.addSuccess("commands.tag.add.success.multiple", tag, String.valueOf(entities.size()));
                 }
@@ -74,8 +76,7 @@ public class TagCommand extends VanillaCommand {
                 String tag = list.getResult(2);
                 int success_count = 0;
                 for (Entity entity : entities) {
-                    if (!entity.containTag(tag))
-                        continue;
+                    if (!entity.containTag(tag)) continue;
                     entity.removeTag(tag);
                     success_count++;
                 }
@@ -84,7 +85,10 @@ public class TagCommand extends VanillaCommand {
                     return 0;
                 }
                 if (entities.size() == 1) {
-                    log.addSuccess("commands.tag.remove.success.single", tag, entities.get(0).getName());
+                    log.addSuccess(
+                            "commands.tag.remove.success.single",
+                            tag,
+                            entities.get(0).getName());
                 } else {
                     log.addSuccess("commands.tag.remove.success.multiple", tag, String.valueOf(entities.size()));
                 }
@@ -101,7 +105,9 @@ public class TagCommand extends VanillaCommand {
 
                 if (tagStr.isEmpty()) {
                     if (entities.size() == 1) {
-                        log.addError("commands.tag.list.single.empty", entities.get(0).getName());
+                        log.addError(
+                                "commands.tag.list.single.empty",
+                                entities.get(0).getName());
                     } else {
                         log.addError("commands.tag.list.multiple.empty", String.valueOf(entities.size()));
                     }
@@ -109,9 +115,17 @@ public class TagCommand extends VanillaCommand {
                     return 0;
                 } else {
                     if (entities.size() == 1) {
-                        log.addSuccess("commands.tag.list.single.success", entities.get(0).getName(), String.valueOf(tagCount), tagStr);
+                        log.addSuccess(
+                                "commands.tag.list.single.success",
+                                entities.get(0).getName(),
+                                String.valueOf(tagCount),
+                                tagStr);
                     } else {
-                        log.addSuccess("commands.tag.list.multiple.success", String.valueOf(entities.size()), String.valueOf(tagCount), tagStr);
+                        log.addSuccess(
+                                "commands.tag.list.multiple.success",
+                                String.valueOf(entities.size()),
+                                String.valueOf(tagCount),
+                                tagStr);
                     }
                     log.output();
                     return 1;

@@ -15,16 +15,16 @@ public class SetEntityLinkPacket extends DataPacket {
     public static final byte TYPE_RIDE = 1;
     public static final byte TYPE_PASSENGER = 2;
 
-    public long vehicleUniqueId; //from
-    public long riderUniqueId; //to
+    public long vehicleUniqueId; // from
+    public long riderUniqueId; // to
     public byte type;
     public byte immediate;
-    @Since("1.3.0.0-PN") public boolean riderInitiated = false;
+
+    @Since("1.3.0.0-PN")
+    public boolean riderInitiated = false;
 
     @Override
-    public void decode() {
-
-    }
+    public void decode() {}
 
     @Override
     public void encode() {

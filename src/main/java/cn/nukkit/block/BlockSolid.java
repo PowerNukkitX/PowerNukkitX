@@ -9,8 +9,7 @@ import cn.nukkit.math.BlockFace;
  */
 public abstract class BlockSolid extends Block {
 
-    protected BlockSolid() {
-    }
+    protected BlockSolid() {}
 
     @Override
     public boolean isSolid() {
@@ -23,5 +22,4 @@ public abstract class BlockSolid extends Block {
     public boolean isSolid(BlockFace side) {
         return true;
     }
-
 }

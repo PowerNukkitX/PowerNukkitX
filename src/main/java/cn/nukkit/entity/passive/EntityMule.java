@@ -20,7 +20,7 @@ public class EntityMule extends EntityAnimal implements EntityWalkable {
 
     @Override
     public Item[] getDrops() {
-        return new Item[]{Item.get(Item.LEATHER)};
+        return new Item[] {Item.get(Item.LEATHER)};
     }
 
     @Override
@@ -49,7 +49,6 @@ public class EntityMule extends EntityAnimal implements EntityWalkable {
         this.setMaxHealth(15);
         super.initEntity();
     }
-
 
     @PowerNukkitOnly
     @Since("1.5.1.0-PN")

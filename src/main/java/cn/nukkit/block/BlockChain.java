@@ -1,5 +1,6 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
@@ -9,16 +10,13 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemChain;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
-
-import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
 public class BlockChain extends BlockTransparent {
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public BlockChain() {
@@ -37,8 +35,7 @@ public class BlockChain extends BlockTransparent {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return BlockLog.PILLAR_PROPERTIES;
     }
@@ -56,7 +53,15 @@ public class BlockChain extends BlockTransparent {
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
         setPillarAxis(face.getAxis());
         return super.place(item, block, target, face, fx, fy, fz, player);
     }
@@ -84,22 +89,22 @@ public class BlockChain extends BlockTransparent {
 
     @Override
     public double getMinX() {
-        return x + 7/16.0;
+        return x + 7 / 16.0;
     }
 
     @Override
     public double getMaxX() {
-        return x + 9/16.0;
+        return x + 9 / 16.0;
     }
 
     @Override
     public double getMinZ() {
-        return z + 7/16.0;
+        return z + 7 / 16.0;
     }
 
     @Override
     public double getMaxZ() {
-        return z + 9/16.0;
+        return z + 9 / 16.0;
     }
 
     @Override
@@ -118,5 +123,4 @@ public class BlockChain extends BlockTransparent {
     public boolean canHarvestWithHand() {
         return false;
     }
-    
 }

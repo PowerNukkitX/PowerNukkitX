@@ -49,8 +49,7 @@ public class BlockScaffolding extends BlockFallableMeta {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -90,7 +89,15 @@ public class BlockScaffolding extends BlockFallableMeta {
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         if (block instanceof BlockLava) {
             return false;
         }
@@ -222,7 +229,7 @@ public class BlockScaffolding extends BlockFallableMeta {
 
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
-        return new SimpleAxisAlignedBB(x, y + (2.0/16), z, x + 1, y + 1, z + 1);
+        return new SimpleAxisAlignedBB(x, y + (2.0 / 16), z, x + 1, y + 1, z + 1);
     }
 
     @Override
@@ -247,7 +254,7 @@ public class BlockScaffolding extends BlockFallableMeta {
 
     @Override
     public double getMinY() {
-        return this.y + (14.0/16);
+        return this.y + (14.0 / 16);
     }
 
     @Override

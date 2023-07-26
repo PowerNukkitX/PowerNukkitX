@@ -1,7 +1,6 @@
 package cn.nukkit.network;
 
 import io.netty.buffer.ByteBuf;
-
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 

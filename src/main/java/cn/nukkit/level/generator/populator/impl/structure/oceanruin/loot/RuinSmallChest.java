@@ -27,8 +27,8 @@ public class RuinSmallChest extends RandomizableContainer {
         PoolBuilder pool2 = new PoolBuilder()
                 .register(new ItemEntry(Item.LEATHER_TUNIC, 1))
                 .register(new ItemEntry(Item.GOLD_HELMET, 1))
-                .register(new ItemEntry(Item.FISHING_ROD, 5)) //TODO: enchant_randomly
-                .register(new ItemEntry(Item.MAP, 5)); //TODO: exploration_map buried treasure
+                .register(new ItemEntry(Item.FISHING_ROD, 5)) // TODO: enchant_randomly
+                .register(new ItemEntry(Item.MAP, 5)); // TODO: exploration_map buried treasure
         this.pools.put(pool2.build(), new RollEntry(1, pool2.getTotalWeight()));
     }
 

@@ -2,18 +2,14 @@ package cn.nukkit.entity.projectile;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockSignPost;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.ProjectileHitEvent;
 import cn.nukkit.level.MovingObjectPosition;
 import cn.nukkit.level.format.FullChunk;
-import cn.nukkit.level.generator.populator.impl.structure.utils.block.state.Direction;
 import cn.nukkit.math.BVector3;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.CompassRoseDirection;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.function.Predicate;
@@ -35,13 +31,13 @@ public abstract class SlenderProjectile extends EntityProjectile {
         super(chunk, nbt, shootingEntity);
     }
 
-    //对于SlenderProjectile你不应该把Width设置太大,如果没必要请使用默认值.
+    // 对于SlenderProjectile你不应该把Width设置太大,如果没必要请使用默认值.
     @Override
     public float getWidth() {
         return 0.1f;
     }
 
-    //对于SlenderProjectile你不应该把Height设置太大,如果没必要请使用默认值.
+    // 对于SlenderProjectile你不应该把Height设置太大,如果没必要请使用默认值.
     @Override
     public float getHeight() {
         return 0.1f;
@@ -72,26 +68,30 @@ public abstract class SlenderProjectile extends EntityProjectile {
         Entity collisionEntity = null;
         Block collisionBlock = null;
         for (int i = 0; i < SPLIT_NUMBER; ++i) {
-            var collisionBlocks = this.level.getCollisionBlocks(currentAABB.offset(dirVector.x, dirVector.y, dirVector.z));
+            var collisionBlocks =
+                    this.level.getCollisionBlocks(currentAABB.offset(dirVector.x, dirVector.y, dirVector.z));
             var collisionEntities = this.getLevel().fastCollidingEntities(currentAABB, this);
             if (collisionBlocks.length != 0) {
                 currentAABB.offset(-dirVector.x, -dirVector.y, -dirVector.z);
-                collisionBlock = Arrays.stream(collisionBlocks).min(Comparator.comparingDouble(projectile::distanceSquared)).get();
+                collisionBlock = Arrays.stream(collisionBlocks)
+                        .min(Comparator.comparingDouble(projectile::distanceSquared))
+                        .get();
                 break;
             }
             collisionEntity = collisionEntities.stream()
-                    .filter(Predicate.not(entity -> (entity == shootEntity && ticks < 5) ||
-                            (entity instanceof Player && ((Player) entity).getGamemode() == Player.SPECTATOR)))
+                    .filter(Predicate.not(entity -> (entity == shootEntity && ticks < 5)
+                            || (entity instanceof Player && ((Player) entity).getGamemode() == Player.SPECTATOR)))
                     .min(Comparator.comparingDouble(o -> o.distanceSquared(projectile)))
                     .orElse(null);
             if (collisionEntity != null) {
                 break;
             }
         }
-        Vector3 centerPoint1 = new Vector3((currentAABB.getMinX() + currentAABB.getMaxX()) / 2,
+        Vector3 centerPoint1 = new Vector3(
+                (currentAABB.getMinX() + currentAABB.getMaxX()) / 2,
                 (currentAABB.getMinY() + currentAABB.getMaxY()) / 2,
                 (currentAABB.getMinZ() + currentAABB.getMaxZ()) / 2);
-        //collide with entity
+        // collide with entity
         if (collisionEntity != null) {
             MovingObjectPosition movingObject = new MovingObjectPosition();
             movingObject.typeOfHit = 1;
@@ -101,7 +101,8 @@ public abstract class SlenderProjectile extends EntityProjectile {
             return true;
         }
 
-        Vector3 centerPoint2 = new Vector3((this.boundingBox.getMinX() + this.boundingBox.getMaxX()) / 2,
+        Vector3 centerPoint2 = new Vector3(
+                (this.boundingBox.getMinX() + this.boundingBox.getMaxX()) / 2,
                 (this.boundingBox.getMinY() + this.boundingBox.getMaxY()) / 2,
                 (this.boundingBox.getMinZ() + this.boundingBox.getMaxZ()) / 2);
         Vector3 diff = centerPoint1.subtract(centerPoint2);
@@ -157,7 +158,7 @@ public abstract class SlenderProjectile extends EntityProjectile {
             this.motionZ = 0;
         }
 
-        //collide with block
+        // collide with block
         if (this.isCollided && !this.hadCollision) {
             this.hadCollision = true;
             this.motionX = 0;
@@ -165,19 +166,27 @@ public abstract class SlenderProjectile extends EntityProjectile {
             this.motionZ = 0;
             BVector3 bVector3 = BVector3.fromPos(new Vector3(dx, dy, dz));
             BlockFace blockFace = BlockFace.fromHorizontalAngle(bVector3.getYaw());
-            Block block = level.getBlock(this.getFloorX(), this.getFloorY(), this.getFloorZ()).getSide(blockFace);
+            Block block = level.getBlock(this.getFloorX(), this.getFloorY(), this.getFloorZ())
+                    .getSide(blockFace);
             if (block.getId() == 0) {
                 blockFace = BlockFace.DOWN;
-                block = level.getBlock(this.getFloorX(), this.getFloorY(), this.getFloorZ()).down();
+                block = level.getBlock(this.getFloorX(), this.getFloorY(), this.getFloorZ())
+                        .down();
             }
             if (block.getId() == 0) {
                 blockFace = BlockFace.UP;
-                block = level.getBlock(this.getFloorX(), this.getFloorY(), this.getFloorZ()).up();
+                block = level.getBlock(this.getFloorX(), this.getFloorY(), this.getFloorZ())
+                        .up();
             }
             if (block.getId() == 0 && collisionBlock != null) {
                 block = collisionBlock;
             }
-            this.server.getPluginManager().callEvent(new ProjectileHitEvent(this, lastHitBlock = MovingObjectPosition.fromBlock(block.getFloorX(), block.getFloorY(), block.getFloorZ(), blockFace, this)));
+            this.server
+                    .getPluginManager()
+                    .callEvent(new ProjectileHitEvent(
+                            this,
+                            lastHitBlock = MovingObjectPosition.fromBlock(
+                                    block.getFloorX(), block.getFloorY(), block.getFloorZ(), blockFace, this)));
             onCollideWithBlock(getPosition(), getMotion());
             addHitEffect();
         }
@@ -190,7 +199,11 @@ public abstract class SlenderProjectile extends EntityProjectile {
             return false;
         }
         if (this.isCollided && this.hadCollision) {
-            if (lastHitBlock != null && lastHitBlock.typeOfHit == 0 && level.getBlock(lastHitBlock.blockX, lastHitBlock.blockY, lastHitBlock.blockZ).getId() == 0) {
+            if (lastHitBlock != null
+                    && lastHitBlock.typeOfHit == 0
+                    && level.getBlock(lastHitBlock.blockX, lastHitBlock.blockY, lastHitBlock.blockZ)
+                                    .getId()
+                            == 0) {
                 this.motionY -= this.getGravity();
                 updateRotation();
                 this.move(this.motionX, this.motionY, this.motionZ);
@@ -210,7 +223,10 @@ public abstract class SlenderProjectile extends EntityProjectile {
             if (!this.isCollided) {
                 updateMotion();
             }
-            if (!this.hadCollision || Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionY) > 0.00001 || Math.abs(this.motionZ) > 0.00001) {
+            if (!this.hadCollision
+                    || Math.abs(this.motionX) > 0.00001
+                    || Math.abs(this.motionY) > 0.00001
+                    || Math.abs(this.motionZ) > 0.00001) {
                 updateRotation();
                 hasUpdate = true;
             }

@@ -38,8 +38,7 @@ public class BlockRailActivator extends BlockRail implements RedstoneComponent {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return ACTIVABLE_PROPERTIES;
     }
@@ -47,7 +46,9 @@ public class BlockRailActivator extends BlockRail implements RedstoneComponent {
     @PowerNukkitDifference(info = "Using new method for checking if powered", since = "1.4.0.0-PN")
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_REDSTONE || type == Level.BLOCK_UPDATE_SCHEDULED) {
+        if (type == Level.BLOCK_UPDATE_NORMAL
+                || type == Level.BLOCK_UPDATE_REDSTONE
+                || type == Level.BLOCK_UPDATE_SCHEDULED) {
             if (super.onUpdate(type) == Level.BLOCK_UPDATE_NORMAL) {
                 return 0; // Already broken
             }
@@ -56,9 +57,8 @@ public class BlockRailActivator extends BlockRail implements RedstoneComponent {
                 return 0;
             }
             boolean wasPowered = isActive();
-            boolean isPowered = this.isGettingPower()
-                    || checkSurrounding(this, true, 0)
-                    || checkSurrounding(this, false, 0);
+            boolean isPowered =
+                    this.isGettingPower() || checkSurrounding(this, true, 0) || checkSurrounding(this, false, 0);
 
             // Avoid Block mistake
             if (wasPowered != isPowered) {
@@ -175,13 +175,13 @@ public class BlockRailActivator extends BlockRail implements RedstoneComponent {
         Rail.Orientation base = ((BlockRailActivator) block).getOrientation();
 
         return (state != Rail.Orientation.STRAIGHT_EAST_WEST
-                || base != Rail.Orientation.STRAIGHT_NORTH_SOUTH
-                && base != Rail.Orientation.ASCENDING_NORTH
-                && base != Rail.Orientation.ASCENDING_SOUTH)
+                        || base != Rail.Orientation.STRAIGHT_NORTH_SOUTH
+                                && base != Rail.Orientation.ASCENDING_NORTH
+                                && base != Rail.Orientation.ASCENDING_SOUTH)
                 && (state != Rail.Orientation.STRAIGHT_NORTH_SOUTH
-                || base != Rail.Orientation.STRAIGHT_EAST_WEST
-                && base != Rail.Orientation.ASCENDING_EAST
-                && base != Rail.Orientation.ASCENDING_WEST)
+                        || base != Rail.Orientation.STRAIGHT_EAST_WEST
+                                && base != Rail.Orientation.ASCENDING_EAST
+                                && base != Rail.Orientation.ASCENDING_WEST)
                 && (block.isGettingPower() || checkSurrounding(pos, relative, power + 1));
     }
 
@@ -203,6 +203,7 @@ public class BlockRailActivator extends BlockRail implements RedstoneComponent {
     public void setRailActive(boolean active) {
         setBooleanValue(ACTIVE, active);
     }
+
     @Override
     public double getHardness() {
         return 0.5;

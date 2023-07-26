@@ -7,9 +7,6 @@ import cn.nukkit.event.plugin.PluginDisableEvent;
 import cn.nukkit.event.plugin.PluginEnableEvent;
 import cn.nukkit.utils.PluginException;
 import cn.nukkit.utils.Utils;
-import lombok.Getter;
-import lombok.extern.log4j.Log4j2;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,6 +15,8 @@ import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
+import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * @author Nukkit Team.
@@ -44,11 +43,13 @@ public class JavaPluginLoader implements PluginLoader {
             log.info(this.server.getLanguage().tr("nukkit.plugin.load", description.getFullName()));
             File dataFolder = new File(file.getParentFile(), description.getName());
             if (dataFolder.exists() && !dataFolder.isDirectory()) {
-                throw new IllegalStateException("Projected dataFolder '" + dataFolder.toString() + "' for " + description.getName() + " exists and is not a directory");
+                throw new IllegalStateException("Projected dataFolder '" + dataFolder.toString() + "' for "
+                        + description.getName() + " exists and is not a directory");
             }
 
             String className = description.getMain();
-            PluginClassLoader classLoader = new PluginClassLoader(this, this.getClass().getClassLoader(), file);
+            PluginClassLoader classLoader =
+                    new PluginClassLoader(this, this.getClass().getClassLoader(), file);
             this.classLoaders.put(description.getName(), classLoader);
             PluginBase plugin;
             try {
@@ -66,9 +67,16 @@ public class JavaPluginLoader implements PluginLoader {
 
                     return plugin;
                 } catch (ClassCastException e) {
-                    throw new PluginException("Error whilst initializing main class `" + description.getMain() + "'", e);
+                    throw new PluginException(
+                            "Error whilst initializing main class `" + description.getMain() + "'", e);
                 } catch (InstantiationException | IllegalAccessException e) {
-                    log.error("An exception happened while initializing the plgin {}, {}, {}, {}", file, className, description.getName(), description.getVersion(), e);
+                    log.error(
+                            "An exception happened while initializing the plgin {}, {}, {}, {}",
+                            file,
+                            className,
+                            description.getName(),
+                            description.getVersion(),
+                            e);
                 }
 
             } catch (ClassNotFoundException e) {
@@ -109,7 +117,7 @@ public class JavaPluginLoader implements PluginLoader {
 
     @Override
     public Pattern[] getPluginFilters() {
-        return new Pattern[]{Pattern.compile("^.+\\.jar$")};
+        return new Pattern[] {Pattern.compile("^.+\\.jar$")};
     }
 
     private void initPlugin(PluginBase plugin, PluginDescription description, File dataFolder, File file) {
@@ -120,7 +128,9 @@ public class JavaPluginLoader implements PluginLoader {
     @Override
     public void enablePlugin(Plugin plugin) {
         if (plugin instanceof PluginBase && !plugin.isEnabled()) {
-            log.info(this.server.getLanguage().tr("nukkit.plugin.enable", plugin.getDescription().getFullName()));
+            log.info(this.server
+                    .getLanguage()
+                    .tr("nukkit.plugin.enable", plugin.getDescription().getFullName()));
 
             ((PluginBase) plugin).setEnabled(true);
 
@@ -129,7 +139,9 @@ public class JavaPluginLoader implements PluginLoader {
     }
 
     @PowerNukkitDifference(info = "Made impossible to disable special the PowerNukkitPlugin", since = "1.3.0.0-PN")
-    @PowerNukkitDifference(info = "Made impossible to disable special the PowerNukkitX Internal Plugin", since = "1.19.60-r1")
+    @PowerNukkitDifference(
+            info = "Made impossible to disable special the PowerNukkitX Internal Plugin",
+            since = "1.19.60-r1")
     @Override
     public void disablePlugin(Plugin plugin) {
         if (plugin instanceof PluginBase && plugin.isEnabled()) {
@@ -137,7 +149,9 @@ public class JavaPluginLoader implements PluginLoader {
                 throw new UnsupportedOperationException("The PowerNukkitX Internal Plugin cannot be disabled");
             }
 
-            log.info(this.server.getLanguage().tr("nukkit.plugin.disable", plugin.getDescription().getFullName()));
+            log.info(this.server
+                    .getLanguage()
+                    .tr("nukkit.plugin.disable", plugin.getDescription().getFullName()));
 
             this.server.getServiceManager().cancel(plugin);
 
@@ -158,7 +172,7 @@ public class JavaPluginLoader implements PluginLoader {
                 try {
                     cachedClass = loader.findClass(name, false);
                 } catch (ClassNotFoundException e) {
-                    //ignore
+                    // ignore
                 }
                 if (cachedClass != null) {
                     return cachedClass;

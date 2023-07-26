@@ -15,36 +15,52 @@ public class ItemDye extends Item {
 
     @Deprecated
     public static final int WHITE = DyeColor.WHITE.getItemDyeMeta();
+
     @Deprecated
     public static final int ORANGE = DyeColor.ORANGE.getItemDyeMeta();
+
     @Deprecated
     public static final int MAGENTA = DyeColor.MAGENTA.getItemDyeMeta();
+
     @Deprecated
     public static final int LIGHT_BLUE = DyeColor.LIGHT_BLUE.getItemDyeMeta();
+
     @Deprecated
     public static final int YELLOW = DyeColor.YELLOW.getItemDyeMeta();
+
     @Deprecated
     public static final int LIME = DyeColor.LIME.getItemDyeMeta();
+
     @Deprecated
     public static final int PINK = DyeColor.PINK.getItemDyeMeta();
+
     @Deprecated
     public static final int GRAY = DyeColor.GRAY.getItemDyeMeta();
+
     @Deprecated
     public static final int LIGHT_GRAY = DyeColor.LIGHT_GRAY.getItemDyeMeta();
+
     @Deprecated
     public static final int CYAN = DyeColor.CYAN.getItemDyeMeta();
+
     @Deprecated
     public static final int PURPLE = DyeColor.PURPLE.getItemDyeMeta();
+
     @Deprecated
     public static final int BLUE = DyeColor.BLUE.getItemDyeMeta();
+
     @Deprecated
     public static final int BROWN = DyeColor.BROWN.getItemDyeMeta();
+
     @Deprecated
     public static final int GREEN = DyeColor.GREEN.getItemDyeMeta();
+
     @Deprecated
     public static final int RED = DyeColor.RED.getItemDyeMeta();
+
     @Deprecated
     public static final int BLACK = DyeColor.BLACK.getItemDyeMeta();
+
     @Deprecated
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
@@ -67,7 +83,13 @@ public class ItemDye extends Item {
     }
 
     public ItemDye(Integer meta, int amount) {
-        super(DYE, meta, amount, meta <= 15 ? DyeColor.getByDyeData(meta).getDyeName() : DyeColor.getByDyeData(meta).getName() + " Dye");
+        super(
+                DYE,
+                meta,
+                amount,
+                meta <= 15
+                        ? DyeColor.getByDyeData(meta).getDyeName()
+                        : DyeColor.getByDyeData(meta).getName() + " Dye");
 
         if (this.meta == DyeColor.BROWN.getDyeData()) {
             this.block = Block.get(BlockID.COCOA);

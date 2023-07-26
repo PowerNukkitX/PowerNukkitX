@@ -4,9 +4,8 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.ai.route.data.Node;
 import cn.nukkit.math.Vector3;
-
-import javax.annotation.Nullable;
 import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * 此接口抽象了一个寻路器
@@ -91,8 +90,7 @@ public interface IRouteFinder {
      *
      * @return 下一个节点
      */
-    @Nullable
-    Node next();
+    @Nullable Node next();
 
     /**
      * @return 当前索引所在位置是否有节点 {@link Node}

@@ -21,23 +21,23 @@ public class SetEntityDataPacket extends DataPacket {
 
     public long eid;
     public EntityMetadata metadata;
+
     @PowerNukkitXOnly
     @Since("1.19.40-r1")
-    public PropertySyncData syncedProperties = new PropertySyncData(new int[]{}, new float[]{});
+    public PropertySyncData syncedProperties = new PropertySyncData(new int[] {}, new float[] {});
+
     @Since("1.4.0.0-PN")
     public long frame;
 
     @Override
-    public void decode() {
-
-    }
+    public void decode() {}
 
     @Override
     public void encode() {
         this.reset();
         this.putEntityRuntimeId(this.eid);
         this.put(Binary.writeMetadata(this.metadata));
-        //syncedProperties
+        // syncedProperties
         this.putUnsignedVarInt(this.syncedProperties.intProperties().length);
         for (int i = 0, len = this.syncedProperties.intProperties().length; i < len; ++i) {
             this.putUnsignedVarInt(i);

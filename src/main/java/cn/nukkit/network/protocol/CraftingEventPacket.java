@@ -5,10 +5,9 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.utils.BinaryStream;
+import java.util.UUID;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-
-import java.util.UUID;
 
 /**
  * @author Nukkit Project Team
@@ -42,7 +41,7 @@ public class CraftingEventPacket extends DataPacket {
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "The name don't match the packet content")
     public static final int TYPE_SHULKER_BOX = 5;
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final int TYPE_INVENTORY = 0;
@@ -86,5 +85,4 @@ public class CraftingEventPacket extends DataPacket {
     public byte pid() {
         return NETWORK_ID;
     }
-
 }

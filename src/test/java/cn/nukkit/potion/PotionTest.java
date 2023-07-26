@@ -1,12 +1,12 @@
 package cn.nukkit.potion;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author joserobjr
@@ -25,7 +25,10 @@ class PotionTest {
         assertEquals("Awkward Potion", Potion.getPotion(Potion.AWKWARD).getName());
         assertEquals("Potion", new Potion(100000).getName());
         assertEquals("Potion", new Potion(100000).getName());
-        assertEquals("Potion of the Turtle Master II", Potion.getPotion(Potion.TURTLE_MASTER_II).getName());
-        assertEquals("Potion of Slowness IV", Potion.getPotion(Potion.SLOWNESS_IV).getName());
+        assertEquals(
+                "Potion of the Turtle Master II",
+                Potion.getPotion(Potion.TURTLE_MASTER_II).getName());
+        assertEquals(
+                "Potion of Slowness IV", Potion.getPotion(Potion.SLOWNESS_IV).getName());
     }
 }

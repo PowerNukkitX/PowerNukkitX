@@ -12,8 +12,7 @@ import org.jetbrains.annotations.NotNull;
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public final class PNXAdapter {
-    @NotNull
-    public static PNXItemDelegate adapt(cn.nukkit.item.Item pnxItem) {
+    @NotNull public static PNXItemDelegate adapt(cn.nukkit.item.Item pnxItem) {
         return new PNXItemDelegate(pnxItem);
     }
 

@@ -7,8 +7,7 @@ import cn.nukkit.item.ItemTool;
 @PowerNukkitXOnly
 @Since("1.20.0-r2")
 public class BlockPlanksCherry extends BlockSolid {
-    public BlockPlanksCherry() {
-    }
+    public BlockPlanksCherry() {}
 
     @Override
     public int getId() {
@@ -44,5 +43,4 @@ public class BlockPlanksCherry extends BlockSolid {
     public int getToolType() {
         return ItemTool.TYPE_AXE;
     }
-
 }

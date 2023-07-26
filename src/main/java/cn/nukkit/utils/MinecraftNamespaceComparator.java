@@ -2,13 +2,11 @@ package cn.nukkit.utils;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.item.Item;
-
 import java.nio.charset.StandardCharsets;
 
 public class MinecraftNamespaceComparator {
     private static final long FNV1_64_INIT = 0xcbf29ce484222325L;
     private static final long FNV1_PRIME_64 = 1099511628211L;
-
 
     public static int compareBlocks(Block blockA, Block blockB) {
         return compare(blockA.getPersistenceName(), blockB.getPersistenceName());

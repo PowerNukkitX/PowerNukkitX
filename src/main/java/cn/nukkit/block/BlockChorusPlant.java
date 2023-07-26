@@ -7,10 +7,9 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
+import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 public class BlockChorusPlant extends BlockTransparent {
 
@@ -44,8 +43,10 @@ public class BlockChorusPlant extends BlockTransparent {
     }
 
     private boolean isPositionValid() {
-        // (a chorus plant with at least one other chorus plant horizontally adjacent) breaks unless (at least one of the vertically adjacent blocks is air)
-        // (a chorus plant) breaks unless (the block below is (chorus plant or end stone)) or (any horizontally adjacent block is a (chorus plant above (chorus plant or end stone_))
+        // (a chorus plant with at least one other chorus plant horizontally adjacent) breaks unless (at least one of
+        // the vertically adjacent blocks is air)
+        // (a chorus plant) breaks unless (the block below is (chorus plant or end stone)) or (any horizontally adjacent
+        // block is a (chorus plant above (chorus plant or end stone_))
         boolean horizontal = false;
         boolean horizontalSupported = false;
         Block down = down();
@@ -69,7 +70,7 @@ public class BlockChorusPlant extends BlockTransparent {
         if (horizontal && horizontalSupported) {
             return true;
         }
-        
+
         return down.getId() == CHORUS_PLANT || down.getId() == END_STONE;
     }
 
@@ -84,12 +85,20 @@ public class BlockChorusPlant extends BlockTransparent {
             level.useBreakOn(this, null, null, true);
             return type;
         }
-        
+
         return 0;
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
         if (!isPositionValid()) {
             return false;
         }
@@ -98,7 +107,9 @@ public class BlockChorusPlant extends BlockTransparent {
 
     @Override
     public Item[] getDrops(Item item) {
-        return ThreadLocalRandom.current().nextBoolean() ? new Item[]{ Item.get(ItemID.CHORUS_FRUIT, 0, 1) } : Item.EMPTY_ARRAY;
+        return ThreadLocalRandom.current().nextBoolean()
+                ? new Item[] {Item.get(ItemID.CHORUS_FRUIT, 0, 1)}
+                : Item.EMPTY_ARRAY;
     }
 
     @Override
@@ -109,8 +120,7 @@ public class BlockChorusPlant extends BlockTransparent {
 
     @Override
     @PowerNukkitOnly
-    public  boolean sticksToPiston() {
+    public boolean sticksToPiston() {
         return false;
     }
-
 }

@@ -32,7 +32,8 @@ public class SimpleAxisAlignedBB implements AxisAlignedBB {
 
     @Override
     public String toString() {
-        return "AxisAlignedBB(" + this.getMinX() + ", " + this.getMinY() + ", " + this.getMinZ() + ", " + this.getMaxX() + ", " + this.getMaxY() + ", " + this.getMaxZ() + ")";
+        return "AxisAlignedBB(" + this.getMinX() + ", " + this.getMinY() + ", " + this.getMinZ() + ", " + this.getMaxX()
+                + ", " + this.getMaxY() + ", " + this.getMaxZ() + ")";
     }
 
     @Override

@@ -1,12 +1,10 @@
 package cn.powernukkitx.collection;
 
 import cn.nukkit.utils.collection.nb.Int2ObjectNonBlockingMap;
-import cn.nukkit.utils.collection.nb.Int2ObjectNonBlockingMap;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.IntStream;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class Int2ObjectNonBlockingMapTest {
     @Test
@@ -36,7 +34,9 @@ public class Int2ObjectNonBlockingMapTest {
         Assertions.assertEquals(10000, map.size());
         IntStream.rangeClosed(1, 10000).parallel().forEach(i -> map.put(i, String.valueOf(i + 1)));
         Assertions.assertEquals(10000, map.size());
-        IntStream.rangeClosed(1, 10000).parallel().forEach(i -> Assertions.assertEquals(String.valueOf(i + 1), map.get(i)));
+        IntStream.rangeClosed(1, 10000)
+                .parallel()
+                .forEach(i -> Assertions.assertEquals(String.valueOf(i + 1), map.get(i)));
     }
 
     @Test

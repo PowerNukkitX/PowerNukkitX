@@ -11,7 +11,6 @@ import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.command.utils.RawText;
 import cn.nukkit.utils.TextFormat;
-
 import java.util.List;
 import java.util.Map;
 
@@ -23,32 +22,33 @@ public class TitlerawCommand extends VanillaCommand {
         super(name, "commands.titleraw.description");
         this.setPermission("nukkit.command.titleraw");
         this.commandParameters.clear();
-        this.commandParameters.put("clear", new CommandParameter[]{
-                CommandParameter.newType("player", CommandParamType.TARGET),
-                CommandParameter.newEnum("clear", new CommandEnum("TitleClear", "clear"))
+        this.commandParameters.put("clear", new CommandParameter[] {
+            CommandParameter.newType("player", CommandParamType.TARGET),
+            CommandParameter.newEnum("clear", new CommandEnum("TitleClear", "clear"))
         });
-        this.commandParameters.put("reset", new CommandParameter[]{
-                CommandParameter.newType("player", CommandParamType.TARGET),
-                CommandParameter.newEnum("reset", new CommandEnum("TitleReset", "reset"))
+        this.commandParameters.put("reset", new CommandParameter[] {
+            CommandParameter.newType("player", CommandParamType.TARGET),
+            CommandParameter.newEnum("reset", new CommandEnum("TitleReset", "reset"))
         });
-        this.commandParameters.put("set", new CommandParameter[]{
-                CommandParameter.newType("player", CommandParamType.TARGET),
-                CommandParameter.newEnum("titleLocation", new CommandEnum("TitleSet", "title", "subtitle", "actionbar")),
-                CommandParameter.newType("titleJson", CommandParamType.RAWTEXT)
+        this.commandParameters.put("set", new CommandParameter[] {
+            CommandParameter.newType("player", CommandParamType.TARGET),
+            CommandParameter.newEnum("titleLocation", new CommandEnum("TitleSet", "title", "subtitle", "actionbar")),
+            CommandParameter.newType("titleJson", CommandParamType.RAWTEXT)
         });
-        this.commandParameters.put("times", new CommandParameter[]{
-                CommandParameter.newType("player", CommandParamType.TARGET),
-                CommandParameter.newEnum("times", new CommandEnum("TitleTimes", "times")),
-                CommandParameter.newType("fadeIn", CommandParamType.INT),
-                CommandParameter.newType("stay", CommandParamType.INT),
-                CommandParameter.newType("fadeOut", CommandParamType.INT)
+        this.commandParameters.put("times", new CommandParameter[] {
+            CommandParameter.newType("player", CommandParamType.TARGET),
+            CommandParameter.newEnum("times", new CommandEnum("TitleTimes", "times")),
+            CommandParameter.newType("fadeIn", CommandParamType.INT),
+            CommandParameter.newType("stay", CommandParamType.INT),
+            CommandParameter.newType("fadeOut", CommandParamType.INT)
         });
         this.enableParamTree();
     }
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         List<Player> players = list.getResult(0);
         if (players.isEmpty()) {
@@ -110,7 +110,12 @@ public class TitlerawCommand extends VanillaCommand {
                 int stay = list.getResult(3);
                 int fadeOut = list.getResult(4);
                 for (var player : players) {
-                    log.addMessage(TextFormat.WHITE + "%nukkit.command.title.times.success", String.valueOf(fadeIn), String.valueOf(stay), String.valueOf(fadeOut), player.getName());
+                    log.addMessage(
+                            TextFormat.WHITE + "%nukkit.command.title.times.success",
+                            String.valueOf(fadeIn),
+                            String.valueOf(stay),
+                            String.valueOf(fadeOut),
+                            player.getName());
                 }
                 log.output();
                 return 1;

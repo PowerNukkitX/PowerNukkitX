@@ -7,15 +7,14 @@ import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class BlockMangroveLeaves extends BlockLeaves{
+public class BlockMangroveLeaves extends BlockLeaves {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(PERSISTENT, UPDATE);
 
@@ -32,9 +31,7 @@ public class BlockMangroveLeaves extends BlockLeaves{
     @Override
     public Item[] getDrops(Item item) {
         if (item.isShears()) {
-            return new Item[]{
-                    toItem()
-            };
+            return new Item[] {toItem()};
         }
 
         List<Item> drops = new ArrayList<>(1);
@@ -70,14 +67,13 @@ public class BlockMangroveLeaves extends BlockLeaves{
 
     @Override
     public boolean onActivate(@NotNull Item item) {
-        //todo: 实现红树树叶催化
+        // todo: 实现红树树叶催化
         return true;
     }
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }

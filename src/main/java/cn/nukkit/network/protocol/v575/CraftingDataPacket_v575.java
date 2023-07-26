@@ -8,12 +8,11 @@ import cn.nukkit.inventory.recipe.ItemDescriptor;
 import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
-import lombok.ToString;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
+import lombok.ToString;
 
 /**
  * @author Nukkit Project Team
@@ -95,9 +94,7 @@ public class CraftingDataPacket_v575 extends DataPacket {
     }
 
     @Override
-    public void decode() {
-
-    }
+    public void decode() {}
 
     @Override
     public void encode() {
@@ -170,7 +167,14 @@ public class CraftingDataPacket_v575 extends DataPacket {
                     this.putVarInt(shaped.getPriority());
                     this.putUnsignedVarInt(recipeNetworkId++);
                 }
-                case FURNACE, FURNACE_DATA, SMOKER, SMOKER_DATA, BLAST_FURNACE, BLAST_FURNACE_DATA, CAMPFIRE, CAMPFIRE_DATA -> {
+                case FURNACE,
+                        FURNACE_DATA,
+                        SMOKER,
+                        SMOKER_DATA,
+                        BLAST_FURNACE,
+                        BLAST_FURNACE_DATA,
+                        CAMPFIRE,
+                        CAMPFIRE_DATA -> {
                     SmeltingRecipe smelting = (SmeltingRecipe) recipe;
                     Item input = smelting.getInput();
                     this.putVarInt(input.getId());
@@ -218,5 +222,4 @@ public class CraftingDataPacket_v575 extends DataPacket {
     public byte pid() {
         return NETWORK_ID;
     }
-
 }

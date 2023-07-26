@@ -25,13 +25,15 @@ public final class BitArray4096 {
         int bitIndexStart = index * bitsPerEntry;
         int longIndexStart = bitIndexStart >> 6;
         int localBitIndexStart = bitIndexStart & 63;
-        this.data[longIndexStart] = this.data[longIndexStart] & ~((long) maxEntryValue << localBitIndexStart) | ((long) value) << localBitIndexStart;
+        this.data[longIndexStart] = this.data[longIndexStart] & ~((long) maxEntryValue << localBitIndexStart)
+                | ((long) value) << localBitIndexStart;
 
         if (localBitIndexStart > maxSeqLocIndex) {
             int longIndexEnd = longIndexStart + 1;
             int localShiftStart = 64 - localBitIndexStart;
             int localShiftEnd = bitsPerEntry - localShiftStart;
-            this.data[longIndexEnd] = this.data[longIndexEnd] >>> localShiftEnd << localShiftEnd | (((long) value) >> localShiftStart);
+            this.data[longIndexEnd] =
+                    this.data[longIndexEnd] >>> localShiftEnd << localShiftEnd | (((long) value) >> localShiftStart);
         }
     }
 
@@ -46,7 +48,9 @@ public final class BitArray4096 {
             return (int) (this.data[longIndexStart] >>> localBitIndexStart & maxEntryValue);
         } else {
             int localShift = 64 - localBitIndexStart;
-            return (int) ((this.data[longIndexStart] >>> localBitIndexStart | this.data[longIndexStart + 1] << localShift) & maxEntryValue);
+            return (int)
+                    ((this.data[longIndexStart] >>> localBitIndexStart | this.data[longIndexStart + 1] << localShift)
+                            & maxEntryValue);
         }
     }
 

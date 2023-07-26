@@ -8,36 +8,35 @@ import cn.nukkit.network.protocol.types.PlayerAbility;
 import cn.nukkit.network.protocol.types.PlayerPermission;
 import cn.nukkit.utils.BinaryStream;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import lombok.ToString;
-
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Set;
+import lombok.ToString;
 
 @Since("1.19.30-r1")
 @PowerNukkitXOnly
 @ToString
 public class UpdateAbilitiesPacket extends DataPacket {
     public static final PlayerAbility[] VALID_FLAGS = {
-            PlayerAbility.BUILD,
-            PlayerAbility.MINE,
-            PlayerAbility.DOORS_AND_SWITCHES,
-            PlayerAbility.OPEN_CONTAINERS,
-            PlayerAbility.ATTACK_PLAYERS,
-            PlayerAbility.ATTACK_MOBS,
-            PlayerAbility.OPERATOR_COMMANDS,
-            PlayerAbility.TELEPORT,
-            PlayerAbility.INVULNERABLE,
-            PlayerAbility.FLYING,
-            PlayerAbility.MAY_FLY,
-            PlayerAbility.INSTABUILD,
-            PlayerAbility.LIGHTNING,
-            PlayerAbility.FLY_SPEED,
-            PlayerAbility.WALK_SPEED,
-            PlayerAbility.MUTED,
-            PlayerAbility.WORLD_BUILDER,
-            PlayerAbility.NO_CLIP,
-            PlayerAbility.PRIVILEGED_BUILDER
+        PlayerAbility.BUILD,
+        PlayerAbility.MINE,
+        PlayerAbility.DOORS_AND_SWITCHES,
+        PlayerAbility.OPEN_CONTAINERS,
+        PlayerAbility.ATTACK_PLAYERS,
+        PlayerAbility.ATTACK_MOBS,
+        PlayerAbility.OPERATOR_COMMANDS,
+        PlayerAbility.TELEPORT,
+        PlayerAbility.INVULNERABLE,
+        PlayerAbility.FLYING,
+        PlayerAbility.MAY_FLY,
+        PlayerAbility.INSTABUILD,
+        PlayerAbility.LIGHTNING,
+        PlayerAbility.FLY_SPEED,
+        PlayerAbility.WALK_SPEED,
+        PlayerAbility.MUTED,
+        PlayerAbility.WORLD_BUILDER,
+        PlayerAbility.NO_CLIP,
+        PlayerAbility.PRIVILEGED_BUILDER
     };
     public static final EnumMap<PlayerAbility, Integer> FLAGS_TO_BITS = new EnumMap<>(PlayerAbility.class);
 

@@ -6,8 +6,7 @@ import cn.nukkit.api.Since;
 @PowerNukkitXOnly
 @Since("1.20.0-r2")
 public class BlockAcaciaHangingSign extends BlockHangingSign {
-    public BlockAcaciaHangingSign() {
-    }
+    public BlockAcaciaHangingSign() {}
 
     public int getId() {
         return ACACIA_HANGING_SIGN;

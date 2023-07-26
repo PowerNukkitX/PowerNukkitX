@@ -20,10 +20,9 @@ package cn.nukkit.utils;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import lombok.experimental.UtilityClass;
-
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import lombok.experimental.UtilityClass;
 
 /**
  * @author joserobjr

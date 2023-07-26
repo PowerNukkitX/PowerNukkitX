@@ -28,8 +28,7 @@ public class MinecartDispenseBehavior extends DefaultDispenseBehavior {
             target.z += 0.5;
         } else return super.dispense(block, face, item);
         Entity minecart = Entity.createEntity(this.getEntityType(), target);
-        if (minecart != null)
-            minecart.spawnToAll();
+        if (minecart != null) minecart.spawnToAll();
         return null;
     }
 

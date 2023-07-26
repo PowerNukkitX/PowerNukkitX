@@ -15,5 +15,4 @@ public class PopulatorMineshaft extends Populator {
         // TODO Implement
 
     }
-
 }

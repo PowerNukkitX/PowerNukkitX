@@ -28,7 +28,9 @@ public class CraftingTransferMaterialAction extends InventoryAction {
             } else if (this.targetItem.isNull()) {
                 ((CraftingTransaction) transaction).setExtraOutput(this.sourceItem);
             } else {
-                throw new RuntimeException("Invalid " + getClass().getName() + ", either source or target item must be air, got source: " + this.sourceItem + ", target: " + this.targetItem);
+                throw new RuntimeException(
+                        "Invalid " + getClass().getName() + ", either source or target item must be air, got source: "
+                                + this.sourceItem + ", target: " + this.targetItem);
             }
         } else {
             throw new RuntimeException(getClass().getName() + " can only be added to CraftingTransactions");
@@ -46,12 +48,8 @@ public class CraftingTransferMaterialAction extends InventoryAction {
     }
 
     @Override
-    public void onExecuteSuccess(Player $source) {
-
-    }
+    public void onExecuteSuccess(Player $source) {}
 
     @Override
-    public void onExecuteFail(Player source) {
-
-    }
+    public void onExecuteFail(Player source) {}
 }

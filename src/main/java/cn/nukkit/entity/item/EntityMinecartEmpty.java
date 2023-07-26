@@ -53,7 +53,8 @@ public class EntityMinecartEmpty extends EntityMinecartAbstract {
 
     @Override
     protected void activate(int x, int y, int z, boolean flag) {
-        if (flag && this.getHealth() > 15
+        if (flag
+                && this.getHealth() > 15
                 && this.attack(new EntityDamageByBlockEvent(this.level.getBlock(x, y, z), this, DamageCause.CONTACT, 1))
                 && !this.passengers.isEmpty()) {
             this.dismountEntity(this.getPassenger());
@@ -65,8 +66,12 @@ public class EntityMinecartEmpty extends EntityMinecartAbstract {
         boolean update = super.onUpdate(currentTick);
 
         if (this.passengers.isEmpty()) {
-            for (Entity entity : this.level.getCollidingEntities(this.boundingBox.grow(0.20000000298023224, 0.0D, 0.20000000298023224), this)) {
-                if (entity.riding != null || !(entity instanceof EntityLiving) || entity instanceof Player || entity instanceof EntitySwimmable) {
+            for (Entity entity : this.level.getCollidingEntities(
+                    this.boundingBox.grow(0.20000000298023224, 0.0D, 0.20000000298023224), this)) {
+                if (entity.riding != null
+                        || !(entity instanceof EntityLiving)
+                        || entity instanceof Player
+                        || entity instanceof EntitySwimmable) {
                     continue;
                 }
 

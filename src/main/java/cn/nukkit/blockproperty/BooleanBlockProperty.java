@@ -5,16 +5,15 @@ import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.exception.InvalidBlockPropertyMetaException;
 import cn.nukkit.blockproperty.exception.InvalidBlockPropertyPersistenceValueException;
 import com.google.common.base.Preconditions;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 import java.math.BigInteger;
+import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
 public final class BooleanBlockProperty extends BlockProperty<Boolean> {
     private static final long serialVersionUID = 8249827149092664486L;
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public BooleanBlockProperty(String name, boolean exportedToItem, String persistenceName) {
@@ -59,26 +58,24 @@ public final class BooleanBlockProperty extends BlockProperty<Boolean> {
     @Since("1.4.0.0-PN")
     public int setValue(int currentMeta, int bitOffset, boolean newValue) {
         int mask = 1 << bitOffset;
-        return newValue? (currentMeta | mask) : (currentMeta & ~mask);
+        return newValue ? (currentMeta | mask) : (currentMeta & ~mask);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public long setValue(long currentMeta, int bitOffset, boolean newValue) {
         long mask = 1L << bitOffset;
-        return newValue? (currentMeta | mask) : (currentMeta & ~mask);
+        return newValue ? (currentMeta | mask) : (currentMeta & ~mask);
     }
 
-    @NotNull
-    @PowerNukkitOnly
+    @NotNull @PowerNukkitOnly
     @Override
     public Boolean getValue(int currentMeta, int bitOffset) {
         return getBooleanValue(currentMeta, bitOffset);
     }
 
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public Boolean getValue(long currentBigMeta, int bitOffset) {
         return getBooleanValue(currentBigMeta, bitOffset);
     }
@@ -107,7 +104,7 @@ public final class BooleanBlockProperty extends BlockProperty<Boolean> {
     @PowerNukkitOnly
     @Override
     public int getIntValue(int currentMeta, int bitOffset) {
-        return getBooleanValue(currentMeta, bitOffset)? 1 : 0;
+        return getBooleanValue(currentMeta, bitOffset) ? 1 : 0;
     }
 
     /**
@@ -125,14 +122,13 @@ public final class BooleanBlockProperty extends BlockProperty<Boolean> {
     @PowerNukkitOnly
     @Override
     public int getMetaForValue(@Nullable Boolean value) {
-        return Boolean.TRUE.equals(value)? 1 : 0;
+        return Boolean.TRUE.equals(value) ? 1 : 0;
     }
 
     /**
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
      */
-    @NotNull
-    @PowerNukkitOnly
+    @NotNull @PowerNukkitOnly
     @Override
     public Boolean getValueForMeta(int meta) {
         return getBooleanValueForMeta(meta);
@@ -156,8 +152,7 @@ public final class BooleanBlockProperty extends BlockProperty<Boolean> {
     @Override
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public Boolean getDefaultValue() {
+    @NotNull public Boolean getDefaultValue() {
         return Boolean.FALSE;
     }
 
@@ -175,8 +170,7 @@ public final class BooleanBlockProperty extends BlockProperty<Boolean> {
     }
 
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public Class<Boolean> getValueClass() {
         return Boolean.class;
     }
@@ -202,7 +196,8 @@ public final class BooleanBlockProperty extends BlockProperty<Boolean> {
         } else if ("0".equals(persistenceValue)) {
             return 0;
         } else {
-            throw new InvalidBlockPropertyPersistenceValueException(this, null, persistenceValue, "Only 1 or 0 was expected");
+            throw new InvalidBlockPropertyPersistenceValueException(
+                    this, null, persistenceValue, "Only 1 or 0 was expected");
         }
     }
 }

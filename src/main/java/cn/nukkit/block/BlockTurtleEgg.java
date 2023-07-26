@@ -31,34 +31,40 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.*;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
+import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 public class BlockTurtleEgg extends BlockFlowable {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final BlockProperty<Integer> EGG_COUNT = new ArrayBlockProperty<>("turtle_egg_count", false,
-            new Integer[]{1,2,3,4}, 2, "turtle_egg_count", false,
-            new String[]{"one_egg", "two_egg", "three_egg", "four_egg"});
-    
+    public static final BlockProperty<Integer> EGG_COUNT = new ArrayBlockProperty<>(
+            "turtle_egg_count", false, new Integer[] {1, 2, 3, 4}, 2, "turtle_egg_count", false, new String[] {
+                "one_egg", "two_egg", "three_egg", "four_egg"
+            });
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final ArrayBlockProperty<CrackState> CRACK_STATE = new ArrayBlockProperty<>("cracked_state", false, CrackState.class);
+    public static final ArrayBlockProperty<CrackState> CRACK_STATE =
+            new ArrayBlockProperty<>("cracked_state", false, CrackState.class);
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(EGG_COUNT, CRACK_STATE);
-    
-    @PowerNukkitOnly @Deprecated 
+
+    @PowerNukkitOnly
+    @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "New property system", replaceWith = "CrackState.NO_CRACKS")
     public static final int CRACK_STATE_NO_CRACKS = 0;
-    @PowerNukkitOnly @Deprecated
+
+    @PowerNukkitOnly
+    @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "New property system", replaceWith = "CrackState.CRACKED")
     public static final int CRACK_STATE_CRACKED = 1;
-    @PowerNukkitOnly @Deprecated
+
+    @PowerNukkitOnly
+    @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "New property system", replaceWith = "CrackState.MAX_CRACKED")
     public static final int CRACK_STATE_MAX_CRACKED = 2;
 
@@ -79,17 +85,16 @@ public class BlockTurtleEgg extends BlockFlowable {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
-    
+
     @Override
     public String getName() {
         return "Turtle Egg";
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public CrackState getCracks() {
@@ -149,14 +154,9 @@ public class BlockTurtleEgg extends BlockFlowable {
             if (eggCount >= 4) {
                 return false;
             }
-            Block newState = getCurrentState().withProperty(EGG_COUNT, eggCount + 1).getBlock(this);
-            BlockPlaceEvent placeEvent = new BlockPlaceEvent(
-                    player,
-                    newState,
-                    this,
-                    down(),
-                    item
-            );
+            Block newState =
+                    getCurrentState().withProperty(EGG_COUNT, eggCount + 1).getBlock(this);
+            BlockPlaceEvent placeEvent = new BlockPlaceEvent(player, newState, this, down(), item);
             if (placeEvent.isCancelled()) {
                 return false;
             }
@@ -164,9 +164,7 @@ public class BlockTurtleEgg extends BlockFlowable {
                 return false;
             }
             Block placeBlock = placeEvent.getBlock();
-            this.level.addLevelSoundEvent(this,
-                    LevelSoundEventPacket.SOUND_PLACE,
-                    placeBlock.getRuntimeId());
+            this.level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_PLACE, placeBlock.getRuntimeId());
             item.setCount(item.getCount() - 1);
 
             if (down().getId() == SAND) {
@@ -186,27 +184,27 @@ public class BlockTurtleEgg extends BlockFlowable {
 
     @Override
     public double getMinX() {
-        return x + (3.0/16);
+        return x + (3.0 / 16);
     }
 
     @Override
     public double getMinZ() {
-        return z + (3.0/16);
+        return z + (3.0 / 16);
     }
 
     @Override
     public double getMaxX() {
-        return x + (12.0/16);
+        return x + (12.0 / 16);
     }
 
     @Override
     public double getMaxZ() {
-        return z + (12.0/16);
+        return z + (12.0 / 16);
     }
 
     @Override
     public double getMaxY() {
-        return y + (7.0/16);
+        return y + (7.0 / 16);
     }
 
     @Override
@@ -255,7 +253,7 @@ public class BlockTurtleEgg extends BlockFlowable {
     @PowerNukkitDifference(info = "Using new method to play sounds", since = "1.4.0.0-PN")
     public void hatch(int eggs, Block newState) {
         TurtleEggHatchEvent turtleEggHatchEvent = new TurtleEggHatchEvent(this, eggs, newState);
-        //TODO Cancelled by default because EntityTurtle doesn't have AI yet, remove it when AI is added
+        // TODO Cancelled by default because EntityTurtle doesn't have AI yet, remove it when AI is added
         turtleEggHatchEvent.setCancelled(true);
         this.level.getServer().getPluginManager().callEvent(turtleEggHatchEvent);
         int eggsHatching = turtleEggHatchEvent.getEggsHatching();
@@ -268,18 +266,12 @@ public class BlockTurtleEgg extends BlockFlowable {
                 this.level.addSound(this, Sound.BLOCK_TURTLE_EGG_CRACK);
 
                 CreatureSpawnEvent creatureSpawnEvent = new CreatureSpawnEvent(
-                        EntityTurtle.NETWORK_ID,
-                        add(0.3 + i * 0.2,
-                                0,
-                                0.3
-                        ),
-                        CreatureSpawnEvent.SpawnReason.TURTLE_EGG);
+                        EntityTurtle.NETWORK_ID, add(0.3 + i * 0.2, 0, 0.3), CreatureSpawnEvent.SpawnReason.TURTLE_EGG);
                 this.level.getServer().getPluginManager().callEvent(creatureSpawnEvent);
 
                 if (!creatureSpawnEvent.isCancelled()) {
                     EntityTurtle turtle = (EntityTurtle) Entity.createEntity(
-                            creatureSpawnEvent.getEntityNetworkId(),
-                            creatureSpawnEvent.getPosition());
+                            creatureSpawnEvent.getEntityNetworkId(), creatureSpawnEvent.getPosition());
                     if (turtle != null) {
                         turtle.setBreedingAge(-24000);
                         turtle.setHomePos(new Vector3(x, y, z));
@@ -348,7 +340,15 @@ public class BlockTurtleEgg extends BlockFlowable {
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         if (!isValidSupport(block.down(1, 0))) {
             return false;
         }
@@ -398,5 +398,4 @@ public class BlockTurtleEgg extends BlockFlowable {
     public BlockTurtleEgg clone() {
         return (BlockTurtleEgg) super.clone();
     }
-
 }

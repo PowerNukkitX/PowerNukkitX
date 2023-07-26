@@ -5,7 +5,6 @@ import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.format.FullChunk;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
-
 import java.util.HashSet;
 
 /**
@@ -33,8 +32,7 @@ public final class PopulatorHelpers implements BlockID {
         nonOceanSolidBlocks.add(BlockState.of(BLUE_ICE));
     }
 
-    private PopulatorHelpers() {
-    }
+    private PopulatorHelpers() {}
 
     public static boolean canGrassStay(int x, int y, int z, FullChunk chunk) {
         return EnsureCover.ensureCover(x, y, z, chunk) && EnsureGrassBelow.ensureGrassBelow(x, y, z, chunk);

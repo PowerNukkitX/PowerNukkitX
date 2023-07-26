@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.REDSTONE_SIGNAL;
+
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
@@ -24,8 +26,6 @@ import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.RedstoneComponent;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.REDSTONE_SIGNAL;
-
 /**
  * @author Snake1999
  * @since 2016/1/11
@@ -41,8 +41,7 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -138,7 +137,15 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
     @PowerNukkitDifference(info = "Allow to be placed on top of the walls", since = "1.3.0.0-PN")
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed support logic")
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         if (!isSupportValid(down(), BlockFace.UP)) {
             return false;
         }
@@ -149,7 +156,8 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
 
     @Override
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
-        return new SimpleAxisAlignedBB(this.x + 0.125, this.y, this.z + 0.125, this.x + 0.875, this.y + 0.25, this.z + 0.875D);
+        return new SimpleAxisAlignedBB(
+                this.x + 0.125, this.y, this.z + 0.125, this.x + 0.875, this.y + 0.25, this.z + 0.875D);
     }
 
     @Override
@@ -233,11 +241,17 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
     }
 
     protected void playOnSound() {
-        this.level.addLevelSoundEvent(this.add(0.5, 0.1, 0.5), LevelSoundEventPacket.SOUND_POWER_ON, GlobalBlockPalette.getOrCreateRuntimeId(this.getId(), this.getDamage()));
+        this.level.addLevelSoundEvent(
+                this.add(0.5, 0.1, 0.5),
+                LevelSoundEventPacket.SOUND_POWER_ON,
+                GlobalBlockPalette.getOrCreateRuntimeId(this.getId(), this.getDamage()));
     }
 
     protected void playOffSound() {
-        this.level.addLevelSoundEvent(this.add(0.5, 0.1, 0.5), LevelSoundEventPacket.SOUND_POWER_OFF, GlobalBlockPalette.getOrCreateRuntimeId(this.getId(), this.getDamage()));
+        this.level.addLevelSoundEvent(
+                this.add(0.5, 0.1, 0.5),
+                LevelSoundEventPacket.SOUND_POWER_OFF,
+                GlobalBlockPalette.getOrCreateRuntimeId(this.getId(), this.getDamage()));
     }
 
     protected abstract int computeRedstoneStrength();

@@ -12,5 +12,4 @@ public interface DispenseBehavior {
 
     @PowerNukkitOnly
     Item dispense(BlockDispenser block, BlockFace face, Item item);
-
 }

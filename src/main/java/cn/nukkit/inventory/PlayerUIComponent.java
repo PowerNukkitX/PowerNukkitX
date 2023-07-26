@@ -4,17 +4,19 @@ import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
+import org.jetbrains.annotations.NotNull;
 
 public class PlayerUIComponent extends BaseInventory {
 
-    @Since("1.4.0.0-PN") public static final int CREATED_ITEM_OUTPUT_UI_SLOT = 50;
+    @Since("1.4.0.0-PN")
+    public static final int CREATED_ITEM_OUTPUT_UI_SLOT = 50;
 
-    @PowerNukkitOnly protected final PlayerUIInventory playerUI;
+    @PowerNukkitOnly
+    protected final PlayerUIInventory playerUI;
+
     private final int offset;
     private final int size;
 
@@ -40,14 +42,12 @@ public class PlayerUIComponent extends BaseInventory {
         throw new UnsupportedOperationException();
     }
 
-
     @Override
     public String getTitle() {
         throw new UnsupportedOperationException();
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public Item getItem(int index) {
         return this.playerUI.getItem(index + this.offset);
     }
@@ -79,7 +79,6 @@ public class PlayerUIComponent extends BaseInventory {
         return contents;
     }
 
-
     @Override
     public void sendContents(Player... players) {
         this.playerUI.sendContents(players);
@@ -101,9 +100,7 @@ public class PlayerUIComponent extends BaseInventory {
     }
 
     @Override
-    public void onOpen(Player who) {
-        
-    }
+    public void onOpen(Player who) {}
 
     @Override
     public boolean open(Player who) {
@@ -111,14 +108,10 @@ public class PlayerUIComponent extends BaseInventory {
     }
 
     @Override
-    public void close(Player who) {
-
-    }
+    public void close(Player who) {}
 
     @Override
-    public void onClose(Player who) {
-
-    }
+    public void onClose(Player who) {}
 
     @Override
     public void onSlotChange(int index, Item before, boolean send) {

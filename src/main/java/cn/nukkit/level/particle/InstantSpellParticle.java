@@ -19,13 +19,12 @@ public class InstantSpellParticle extends SpellParticle {
     }
 
     public InstantSpellParticle(Vector3 pos, BlockColor blockColor) {
-        //alpha is ignored
+        // alpha is ignored
         this(pos, blockColor.getRed(), blockColor.getGreen(), blockColor.getBlue());
     }
 
     public InstantSpellParticle(Vector3 pos, int r, int g, int b) {
-        //this 0x01 is the only difference between instant spell and non-instant one
+        // this 0x01 is the only difference between instant spell and non-instant one
         super(pos, r, g, b, 0x01);
     }
-
 }

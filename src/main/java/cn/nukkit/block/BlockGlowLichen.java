@@ -4,17 +4,16 @@ import cn.nukkit.Player;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 import java.util.*;
+import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Gabriel8579
  * @since 2021-06-13
  */
 @Since("FUTURE")
-public class BlockGlowLichen extends BlockLichen{
+public class BlockGlowLichen extends BlockLichen {
     @Override
     public String getName() {
         return "Glow Lichen";
@@ -54,15 +53,17 @@ public class BlockGlowLichen extends BlockLichen{
             newLichen = Block.get(GLOW_LICHEN);
         }
 
-        newLichen.setPropertyValue(MULTI_FACE_DIRECTION_BITS, newLichen.getPropertyValue(MULTI_FACE_DIRECTION_BITS) | (0b000001 << candidates.get(random).getDUSWNEIndex()));
+        newLichen.setPropertyValue(
+                MULTI_FACE_DIRECTION_BITS,
+                newLichen.getPropertyValue(MULTI_FACE_DIRECTION_BITS)
+                        | (0b000001 << candidates.get(random).getDUSWNEIndex()));
 
         getLevel().setBlock(random, newLichen, true, true);
 
         return true;
     }
 
-    @NotNull
-    private Map<Block, BlockFace> getCandidates() {
+    @NotNull private Map<Block, BlockFace> getCandidates() {
         Map<Block, BlockFace> candidates = new HashMap<>();
         for (BlockFace side : BlockFace.values()) {
             Block support = this.getSide(side);
@@ -81,7 +82,6 @@ public class BlockGlowLichen extends BlockLichen{
                     if (shouldAddSupportNeighborOppositeSide(side, supportNeighborOppositeSide)) {
                         candidates.put(supportNeighborOppositeSide, side);
                     }
-
                 }
 
             } else {
@@ -103,7 +103,8 @@ public class BlockGlowLichen extends BlockLichen{
         return 7;
     }
 
-    private boolean isSupportNeighborAdded(@NotNull Map<Block, BlockFace> candidates, @NotNull BlockFace side, @NotNull Block supportNeighbor) {
+    private boolean isSupportNeighborAdded(
+            @NotNull Map<Block, BlockFace> candidates, @NotNull BlockFace side, @NotNull Block supportNeighbor) {
         // Air is a valid candidate!
         if (supportNeighbor.getId() == BlockID.AIR) {
             candidates.put(supportNeighbor, side);
@@ -113,13 +114,14 @@ public class BlockGlowLichen extends BlockLichen{
         return supportNeighbor.isSolid(side);
     }
 
-    private boolean shouldAddSupportNeighborOppositeSide(@NotNull BlockFace side, @NotNull Block supportNeighborOppositeSide) {
-        if (supportNeighborOppositeSide.getId() == BlockID.AIR || supportNeighborOppositeSide.getId() == BlockID.GLOW_LICHEN) {
-            return supportNeighborOppositeSide.getId() != BlockID.GLOW_LICHEN ||
-                    (!((BlockGlowLichen) supportNeighborOppositeSide).isGrowthToSide(side) &&
-                            supportNeighborOppositeSide.getSide(side).getId() != BlockID.AIR);
+    private boolean shouldAddSupportNeighborOppositeSide(
+            @NotNull BlockFace side, @NotNull Block supportNeighborOppositeSide) {
+        if (supportNeighborOppositeSide.getId() == BlockID.AIR
+                || supportNeighborOppositeSide.getId() == BlockID.GLOW_LICHEN) {
+            return supportNeighborOppositeSide.getId() != BlockID.GLOW_LICHEN
+                    || (!((BlockGlowLichen) supportNeighborOppositeSide).isGrowthToSide(side)
+                            && supportNeighborOppositeSide.getSide(side).getId() != BlockID.AIR);
         }
         return false;
     }
-
 }

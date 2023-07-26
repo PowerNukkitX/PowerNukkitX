@@ -8,7 +8,7 @@ import lombok.ToString;
 @Deprecated(since = "1.20.10-r1")
 @ToString
 public class ScriptCustomEventPacket extends DataPacket {
-    
+
     public String eventName;
     public byte[] eventData;
 

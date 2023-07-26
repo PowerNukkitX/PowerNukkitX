@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
+
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.ArrayBlockProperty;
@@ -8,17 +10,14 @@ import cn.nukkit.blockproperty.BlockProperty;
 import cn.nukkit.blockproperty.value.WoodType;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
-
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 public class BlockWood2 extends BlockWood {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final BlockProperty<WoodType> NEW_LOG_TYPE = new ArrayBlockProperty<>("new_log_type", true, new WoodType[]{
-            WoodType.ACACIA, WoodType.DARK_OAK
-    }, 2);
+    public static final BlockProperty<WoodType> NEW_LOG_TYPE =
+            new ArrayBlockProperty<>("new_log_type", true, new WoodType[] {WoodType.ACACIA, WoodType.DARK_OAK}, 2);
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -42,8 +41,7 @@ public class BlockWood2 extends BlockWood {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }

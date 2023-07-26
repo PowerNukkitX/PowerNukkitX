@@ -4,16 +4,15 @@ import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
-import lombok.Getter;
-
 import java.util.concurrent.ThreadLocalRandom;
+import lombok.Getter;
 
 @PowerNukkitXOnly
 @Since("1.19.21-r4")
 @Getter
 public class RandomTimeRangeEvaluator implements IBehaviorEvaluator {
 
-    protected int minTime;//gt
+    protected int minTime; // gt
     protected int maxTime;
     protected int nextTargetTime = -1;
 
@@ -38,6 +37,7 @@ public class RandomTimeRangeEvaluator implements IBehaviorEvaluator {
     }
 
     protected void updateNextTargetTime() {
-        this.nextTargetTime = Server.getInstance().getTick() + ThreadLocalRandom.current().nextInt(minTime, maxTime + 1);
+        this.nextTargetTime =
+                Server.getInstance().getTick() + ThreadLocalRandom.current().nextInt(minTime, maxTime + 1);
     }
 }

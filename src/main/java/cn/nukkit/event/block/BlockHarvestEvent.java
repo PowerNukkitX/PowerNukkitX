@@ -45,5 +45,4 @@ public class BlockHarvestEvent extends BlockEvent implements Cancellable {
     public static HandlerList getHandlers() {
         return handlers;
     }
-
 }

@@ -2,9 +2,8 @@ package cn.nukkit.entity.ai.evaluator;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Set;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * 一个抽象类代表着这个评估器会评估多个行为;

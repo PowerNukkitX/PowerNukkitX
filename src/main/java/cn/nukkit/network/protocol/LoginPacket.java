@@ -10,11 +10,9 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
-import lombok.ToString;
-
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-
+import lombok.ToString;
 
 /**
  * @since on 15-10-13
@@ -55,18 +53,16 @@ public class LoginPacket extends DataPacket {
     }
 
     @Override
-    public void encode() {
-
-    }
+    public void encode() {}
 
     public int getProtocol() {
         return protocol;
     }
 
     private void decodeChainData() {
-        Map<String, List<String>> map = GSON.fromJson(new String(this.get(getLInt()), StandardCharsets.UTF_8),
-                new TypeToken<Map<String, List<String>>>() {
-                }.getType());
+        Map<String, List<String>> map = GSON.fromJson(
+                new String(this.get(getLInt()), StandardCharsets.UTF_8),
+                new TypeToken<Map<String, List<String>>>() {}.getType());
         if (map.isEmpty() || !map.containsKey("chain") || map.get("chain").isEmpty()) return;
         List<String> chains = map.get("chain");
         for (String c : chains) {
@@ -77,15 +73,18 @@ public class LoginPacket extends DataPacket {
                     this.issueUnixTime = chainMap.get("iat").getAsLong() * 1000;
                 }
                 JsonObject extra = chainMap.get("extraData").getAsJsonObject();
-                if (extra.has("displayName")) this.username = extra.get("displayName").getAsString();
-                if (extra.has("identity")) this.clientUUID = UUID.fromString(extra.get("identity").getAsString());
+                if (extra.has("displayName"))
+                    this.username = extra.get("displayName").getAsString();
+                if (extra.has("identity"))
+                    this.clientUUID = UUID.fromString(extra.get("identity").getAsString());
             }
         }
     }
 
     private void decodeSkinData() {
         JsonObject skinToken = decodeToken(new String(this.get(this.getLInt())));
-        if (skinToken.has("ClientRandomId")) this.clientId = skinToken.get("ClientRandomId").getAsLong();
+        if (skinToken.has("ClientRandomId"))
+            this.clientId = skinToken.get("ClientRandomId").getAsLong();
 
         skin = new Skin();
 
@@ -98,15 +97,15 @@ public class LoginPacket extends DataPacket {
         }
 
         if (skinToken.has("SkinId")) {
-            //这边获取到的"SkinId"是FullId
-            //FullId = SkinId + CapeId
-            //而Skin对象中的skinId不是FullId,我们需要减掉CapeId
+            // 这边获取到的"SkinId"是FullId
+            // FullId = SkinId + CapeId
+            // 而Skin对象中的skinId不是FullId,我们需要减掉CapeId
             var fullSkinId = skinToken.get("SkinId").getAsString();
             skin.setFullSkinId(fullSkinId);
             if (skin.getCapeId() != null)
-                skin.setSkinId(fullSkinId.substring(0, fullSkinId.length() - skin.getCapeId().length()));
-            else
-                skin.setSkinId(fullSkinId);
+                skin.setSkinId(fullSkinId.substring(
+                        0, fullSkinId.length() - skin.getCapeId().length()));
+            else skin.setSkinId(fullSkinId);
         }
 
         skin.setSkinData(getImage(skinToken, "Skin"));
@@ -125,15 +124,23 @@ public class LoginPacket extends DataPacket {
         }
 
         if (skinToken.has("SkinResourcePatch")) {
-            skin.setSkinResourcePatch(new String(Base64.getDecoder().decode(skinToken.get("SkinResourcePatch").getAsString()), StandardCharsets.UTF_8));
+            skin.setSkinResourcePatch(new String(
+                    Base64.getDecoder()
+                            .decode(skinToken.get("SkinResourcePatch").getAsString()),
+                    StandardCharsets.UTF_8));
         }
 
         if (skinToken.has("SkinGeometryData")) {
-            skin.setGeometryData(new String(Base64.getDecoder().decode(skinToken.get("SkinGeometryData").getAsString()), StandardCharsets.UTF_8));
+            skin.setGeometryData(new String(
+                    Base64.getDecoder().decode(skinToken.get("SkinGeometryData").getAsString()),
+                    StandardCharsets.UTF_8));
         }
 
         if (skinToken.has("SkinAnimationData")) {
-            skin.setAnimationData(new String(Base64.getDecoder().decode(skinToken.get("SkinAnimationData").getAsString()), StandardCharsets.UTF_8));
+            skin.setAnimationData(new String(
+                    Base64.getDecoder()
+                            .decode(skinToken.get("SkinAnimationData").getAsString()),
+                    StandardCharsets.UTF_8));
         }
 
         if (skinToken.has("AnimatedImageData")) {
@@ -166,7 +173,8 @@ public class LoginPacket extends DataPacket {
     private JsonObject decodeToken(String token) {
         String[] base = token.split("\\.");
         if (base.length < 2) return null;
-        return new Gson().fromJson(new String(Base64.getDecoder().decode(base[1]), StandardCharsets.UTF_8), JsonObject.class);
+        return new Gson()
+                .fromJson(new String(Base64.getDecoder().decode(base[1]), StandardCharsets.UTF_8), JsonObject.class);
     }
 
     private static SkinAnimation getAnimation(JsonObject element) {
@@ -181,7 +189,8 @@ public class LoginPacket extends DataPacket {
 
     private static SerializedImage getImage(JsonObject token, String name) {
         if (token.has(name + "Data")) {
-            byte[] skinImage = Base64.getDecoder().decode(token.get(name + "Data").getAsString());
+            byte[] skinImage =
+                    Base64.getDecoder().decode(token.get(name + "Data").getAsString());
             if (token.has(name + "ImageHeight") && token.has(name + "ImageWidth")) {
                 int width = token.get(name + "ImageWidth").getAsInt();
                 int height = token.get(name + "ImageHeight").getAsInt();

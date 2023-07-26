@@ -5,13 +5,12 @@ import cn.nukkit.math.Vector3f;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.types.*;
-import lombok.Getter;
-import lombok.ToString;
-
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
+import lombok.Getter;
+import lombok.ToString;
 
 @ToString
 @Getter
@@ -80,7 +79,8 @@ public class PlayerAuthInputPacket_v568 extends DataPacket {
                     case CRACK_BLOCK:
                     case PREDICT_DESTROY_BLOCK:
                     case CONTINUE_DESTROY_BLOCK:
-                        this.blockActionData.put(type, new PlayerBlockActionData(type, this.getSignedBlockPosition(), this.getVarInt()));
+                        this.blockActionData.put(
+                                type, new PlayerBlockActionData(type, this.getSignedBlockPosition(), this.getVarInt()));
                         break;
                     default:
                         this.blockActionData.put(type, new PlayerBlockActionData(type, null, -1));

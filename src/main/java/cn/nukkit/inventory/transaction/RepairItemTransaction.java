@@ -21,7 +21,6 @@ import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.network.protocol.types.NetworkInventoryAction;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -46,7 +45,9 @@ public class RepairItemTransaction extends InventoryTransaction {
             return false;
         }
         AnvilInventory anvilInventory = (AnvilInventory) inventory;
-        return this.inputItem != null && this.outputItem != null && this.inputItem.equals(anvilInventory.getInputSlot(), true, true)
+        return this.inputItem != null
+                && this.outputItem != null
+                && this.inputItem.equals(anvilInventory.getInputSlot(), true, true)
                 && (!this.hasMaterial() || this.materialItem.equals(anvilInventory.getMaterialSlot(), true, true))
                 && this.checkRecipeValid();
     }
@@ -61,10 +62,15 @@ public class RepairItemTransaction extends InventoryTransaction {
         AnvilInventory inventory = (AnvilInventory) getSource().getWindowById(Player.ANVIL_WINDOW_ID);
 
         if (inventory.getCost() != this.cost && !this.source.isCreative()) {
-            this.source.getServer().getLogger().debug("Got unexpected cost " + inventory.getCost() + " from " + this.source.getName() + "(expected " + this.cost + ")");
+            this.source
+                    .getServer()
+                    .getLogger()
+                    .debug("Got unexpected cost " + inventory.getCost() + " from " + this.source.getName()
+                            + "(expected " + this.cost + ")");
         }
 
-        RepairItemEvent event = new RepairItemEvent(inventory, this.inputItem, this.outputItem, this.materialItem, this.cost, this.source);
+        RepairItemEvent event = new RepairItemEvent(
+                inventory, this.inputItem, this.outputItem, this.materialItem, this.cost, this.source);
         this.source.getServer().getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             this.source.removeAllWindows(false);
@@ -84,7 +90,10 @@ public class RepairItemTransaction extends InventoryTransaction {
         Block block = this.source.level.getBlock(holder.getFloorX(), holder.getFloorY(), holder.getFloorZ());
         if (block.getId() == Block.ANVIL) {
             int oldDamage = block.getDamage() >= 8 ? 2 : block.getDamage() >= 4 ? 1 : 0;
-            int newDamage = !this.source.isCreative() && ThreadLocalRandom.current().nextInt(100) < 12 ? oldDamage + 1 : oldDamage;
+            int newDamage =
+                    !this.source.isCreative() && ThreadLocalRandom.current().nextInt(100) < 12
+                            ? oldDamage + 1
+                            : oldDamage;
 
             AnvilDamageEvent ev = new AnvilDamageEvent(block, oldDamage, newDamage, DamageCause.USE, this.source);
             ev.setCancelled(oldDamage == newDamage);
@@ -92,7 +101,8 @@ public class RepairItemTransaction extends InventoryTransaction {
             if (!ev.isCancelled()) {
                 BlockState newState = ev.getNewBlockState();
                 if (newState.getBlockId() == BlockID.AIR
-                        || newState.getBlockId() == BlockID.ANVIL && newState.getPropertyValue(BlockAnvil.DAMAGE).equals(AnvilDamage.BROKEN)) {
+                        || newState.getBlockId() == BlockID.ANVIL
+                                && newState.getPropertyValue(BlockAnvil.DAMAGE).equals(AnvilDamage.BROKEN)) {
                     this.source.level.setBlock(block, Block.get(Block.AIR), true);
                     this.source.level.addLevelEvent(block, LevelEventPacket.EVENT_SOUND_ANVIL_BREAK);
                 } else {
@@ -159,13 +169,20 @@ public class RepairItemTransaction extends InventoryTransaction {
                     return false;
                 }
             } else {
-                boolean consumeEnchantedBook = this.materialItem.getId() == Item.ENCHANTED_BOOK && this.materialItem.hasEnchantments();
-                if (!consumeEnchantedBook && (this.inputItem.getMaxDurability() == -1 || this.inputItem.getId() != this.materialItem.getId())) {
+                boolean consumeEnchantedBook =
+                        this.materialItem.getId() == Item.ENCHANTED_BOOK && this.materialItem.hasEnchantments();
+                if (!consumeEnchantedBook
+                        && (this.inputItem.getMaxDurability() == -1
+                                || this.inputItem.getId() != this.materialItem.getId())) {
                     return false;
                 }
 
                 if (!consumeEnchantedBook && this.inputItem.getMaxDurability() != -1) {
-                    int damage = this.inputItem.getDamage() - this.inputItem.getMaxDurability() + this.materialItem.getDamage() - this.inputItem.getMaxDurability() * 12 / 100 + 1;
+                    int damage = this.inputItem.getDamage()
+                            - this.inputItem.getMaxDurability()
+                            + this.materialItem.getDamage()
+                            - this.inputItem.getMaxDurability() * 12 / 100
+                            + 1;
                     if (damage < 0) {
                         damage = 0;
                     }
@@ -190,11 +207,14 @@ public class RepairItemTransaction extends InventoryTransaction {
                     Enchantment enchantment = this.inputItem.getEnchantment(materialEnchantment.getId());
                     int inputLevel = enchantment != null ? enchantment.getLevel() : 0;
                     int materialLevel = materialEnchantment.getLevel();
-                    int outputLevel = inputLevel == materialLevel ? materialLevel + 1 : Math.max(materialLevel, inputLevel);
+                    int outputLevel =
+                            inputLevel == materialLevel ? materialLevel + 1 : Math.max(materialLevel, inputLevel);
 
-                    boolean canEnchant = materialEnchantment.canEnchant(this.inputItem) || this.inputItem.getId() == Item.ENCHANTED_BOOK;
+                    boolean canEnchant = materialEnchantment.canEnchant(this.inputItem)
+                            || this.inputItem.getId() == Item.ENCHANTED_BOOK;
                     for (Enchantment inputEnchantment : this.inputItem.getEnchantments()) {
-                        if (inputEnchantment.getId() != materialEnchantment.getId() && !materialEnchantment.isCompatibleWith(inputEnchantment)) {
+                        if (inputEnchantment.getId() != materialEnchantment.getId()
+                                && !materialEnchantment.isCompatibleWith(inputEnchantment)) {
                             canEnchant = false;
                             cost++;
                         }
@@ -238,7 +258,8 @@ public class RepairItemTransaction extends InventoryTransaction {
                 }
 
                 Enchantment[] outputEnchantments = this.outputItem.getEnchantments();
-                if (hasIncompatibleEnchantments && !hasCompatibleEnchantments || enchantments.size() != outputEnchantments.length) {
+                if (hasIncompatibleEnchantments && !hasCompatibleEnchantments
+                        || enchantments.size() != outputEnchantments.length) {
                     return false;
                 }
 
@@ -263,7 +284,10 @@ public class RepairItemTransaction extends InventoryTransaction {
         if (renameCost == cost && renameCost > 0 && this.cost >= 40) {
             this.cost = 39;
         }
-        if (baseRepairCost < 0 || cost < 0 || cost == 0 && !this.isMapRecipe() || this.cost > 39 && !this.source.isCreative()) {
+        if (baseRepairCost < 0
+                || cost < 0
+                || cost == 0 && !this.isMapRecipe()
+                || this.cost > 39 && !this.source.isCreative()) {
             return false;
         }
 
@@ -277,7 +301,11 @@ public class RepairItemTransaction extends InventoryTransaction {
             }
         }
         if (this.outputItem.getRepairCost() != nextBaseRepairCost) {
-            this.source.getServer().getLogger().debug("Got unexpected base cost " + this.outputItem.getRepairCost() + " from " + this.source.getName() + "(expected " + nextBaseRepairCost + ")");
+            this.source
+                    .getServer()
+                    .getLogger()
+                    .debug("Got unexpected base cost " + this.outputItem.getRepairCost() + " from "
+                            + this.source.getName() + "(expected " + nextBaseRepairCost + ")");
             return false;
         }
 
@@ -289,21 +317,31 @@ public class RepairItemTransaction extends InventoryTransaction {
     }
 
     private boolean isMapRecipe() {
-        return this.hasMaterial() && (this.inputItem.getId() == Item.MAP || this.inputItem.getId() == Item.EMPTY_MAP)
-                && (this.materialItem.getId() == Item.EMPTY_MAP || this.materialItem.getId() == Item.PAPER || this.materialItem.getId() == Item.COMPASS);
+        return this.hasMaterial()
+                && (this.inputItem.getId() == Item.MAP || this.inputItem.getId() == Item.EMPTY_MAP)
+                && (this.materialItem.getId() == Item.EMPTY_MAP
+                        || this.materialItem.getId() == Item.PAPER
+                        || this.materialItem.getId() == Item.COMPASS);
     }
 
     private boolean matchMapRecipe() {
         if (this.inputItem.getId() == Item.EMPTY_MAP) {
-            return this.inputItem.getDamage() != 2 && this.materialItem.getId() == Item.COMPASS // locator
-                    && this.outputItem.getId() == Item.EMPTY_MAP && this.outputItem.getDamage() == 2 && this.outputItem.getCount() == 1;
+            return this.inputItem.getDamage() != 2
+                    && this.materialItem.getId() == Item.COMPASS // locator
+                    && this.outputItem.getId() == Item.EMPTY_MAP
+                    && this.outputItem.getDamage() == 2
+                    && this.outputItem.getCount() == 1;
         } else if (this.inputItem.getId() == Item.MAP && this.outputItem.getDamage() == this.inputItem.getDamage()) {
             if (this.materialItem.getId() == Item.COMPASS) { // locator
-                return this.inputItem.getDamage() != 2 && this.outputItem.getId() == Item.MAP && this.outputItem.getCount() == 1;
+                return this.inputItem.getDamage() != 2
+                        && this.outputItem.getId() == Item.MAP
+                        && this.outputItem.getCount() == 1;
             } else if (this.materialItem.getId() == Item.EMPTY_MAP) { // clone
                 return this.outputItem.getId() == Item.MAP && this.outputItem.getCount() == 2;
             } else if (this.materialItem.getId() == Item.PAPER && this.materialItem.getCount() >= 8) { // zoom out
-                return this.inputItem.getDamage() < 3 && this.outputItem.getId() == Item.MAP && this.outputItem.getCount() == 1;
+                return this.inputItem.getDamage() < 3
+                        && this.outputItem.getId() == Item.MAP
+                        && this.outputItem.getCount() == 1;
             }
         }
         return false;

@@ -97,7 +97,6 @@ public class EntityPrimedTNT extends Entity implements EntityExplosive {
         this.getLevel().addSound(this, Sound.RANDOM_FUSE);
     }
 
-
     @Override
     public boolean canCollideWith(Entity entity) {
         return false;
@@ -153,14 +152,16 @@ public class EntityPrimedTNT extends Entity implements EntityExplosive {
             fuse -= tickDiff;
 
             if (fuse <= 0) {
-                if (this.level.getGameRules().getBoolean(GameRule.TNT_EXPLODES))
-                    explode();
+                if (this.level.getGameRules().getBoolean(GameRule.TNT_EXPLODES)) explode();
                 kill();
             }
-
         }
 
-        return hasUpdate || fuse >= 0 || Math.abs(motionX) > 0.00001 || Math.abs(motionY) > 0.00001 || Math.abs(motionZ) > 0.00001;
+        return hasUpdate
+                || fuse >= 0
+                || Math.abs(motionX) > 0.00001
+                || Math.abs(motionY) > 0.00001
+                || Math.abs(motionZ) > 0.00001;
     }
 
     @Override
@@ -176,13 +177,14 @@ public class EntityPrimedTNT extends Entity implements EntityExplosive {
             explosion.explodeA();
         }
         explosion.explodeB();
-        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.EXPLODE));
+        this.level
+                .getVibrationManager()
+                .callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.EXPLODE));
     }
 
     public Entity getSource() {
         return source;
     }
-
 
     @PowerNukkitOnly
     @Since("1.5.1.0-PN")

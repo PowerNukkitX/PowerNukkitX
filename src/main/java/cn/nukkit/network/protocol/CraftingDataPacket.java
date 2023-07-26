@@ -6,12 +6,11 @@ import cn.nukkit.inventory.*;
 import cn.nukkit.inventory.recipe.DefaultDescriptor;
 import cn.nukkit.inventory.recipe.ItemDescriptor;
 import cn.nukkit.item.Item;
-import lombok.ToString;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
+import lombok.ToString;
 
 /**
  * @author Nukkit Project Team
@@ -92,9 +91,7 @@ public class CraftingDataPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-
-    }
+    public void decode() {}
 
     @Override
     public void encode() {
@@ -139,7 +136,7 @@ public class CraftingDataPacket extends DataPacket {
                 case SMITHING_TRANSFORM -> {
                     SmithingRecipe smithing = (SmithingRecipe) recipe;
                     this.putString(smithing.getRecipeId());
-                    //todo 1.19.80还没有模板，下个版本再加入
+                    // todo 1.19.80还没有模板，下个版本再加入
                     this.putRecipeIngredient(new DefaultDescriptor(Item.AIR_ITEM));
                     this.putRecipeIngredient(new DefaultDescriptor(smithing.getEquipment()));
                     this.putRecipeIngredient(new DefaultDescriptor(smithing.getIngredient()));
@@ -169,7 +166,14 @@ public class CraftingDataPacket extends DataPacket {
                     this.putVarInt(shaped.getPriority());
                     this.putUnsignedVarInt(recipeNetworkId++);
                 }
-                case FURNACE, FURNACE_DATA, SMOKER, SMOKER_DATA, BLAST_FURNACE, BLAST_FURNACE_DATA, CAMPFIRE, CAMPFIRE_DATA -> {
+                case FURNACE,
+                        FURNACE_DATA,
+                        SMOKER,
+                        SMOKER_DATA,
+                        BLAST_FURNACE,
+                        BLAST_FURNACE_DATA,
+                        CAMPFIRE,
+                        CAMPFIRE_DATA -> {
                     SmeltingRecipe smelting = (SmeltingRecipe) recipe;
                     Item input = smelting.getInput();
                     this.putVarInt(input.getId());
@@ -189,7 +193,7 @@ public class CraftingDataPacket extends DataPacket {
                     this.putUnsignedVarInt(recipeNetworkId++);
                 }
                 case SMITHING_TRIM -> {
-                    //todo
+                    // todo
                 }
             }
         }
@@ -220,5 +224,4 @@ public class CraftingDataPacket extends DataPacket {
     public byte pid() {
         return NETWORK_ID;
     }
-
 }

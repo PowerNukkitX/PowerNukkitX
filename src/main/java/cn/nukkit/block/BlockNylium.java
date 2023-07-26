@@ -9,9 +9,8 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.generator.object.ObjectNyliumVegetation;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.NukkitRandom;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
@@ -55,7 +54,7 @@ public abstract class BlockNylium extends BlockSolid {
         grow();
 
         level.addParticle(new BoneMealParticle(up));
-        
+
         return true;
     }
 
@@ -79,7 +78,7 @@ public abstract class BlockNylium extends BlockSolid {
     @Override
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
-            return new Item[]{ Item.get(NETHERRACK) };
+            return new Item[] {Item.get(NETHERRACK)};
         }
         return Item.EMPTY_ARRAY;
     }

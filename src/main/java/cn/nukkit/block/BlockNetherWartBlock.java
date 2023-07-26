@@ -37,5 +37,4 @@ public class BlockNetherWartBlock extends BlockSolid {
     public int getToolType() {
         return ItemTool.TYPE_HOE;
     }
-
 }

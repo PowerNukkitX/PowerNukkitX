@@ -53,15 +53,15 @@ public class PerlinD extends NoiseD {
         y -= floorY;
         z -= floorZ;
 
-        //Fade curves
-        //fX = fade(x);
-        //fY = fade(y);
-        //fZ = fade(z);
+        // Fade curves
+        // fX = fade(x);
+        // fY = fade(y);
+        // fZ = fade(z);
         double fX = x * x * x * (x * (x * 6 - 15) + 10);
         double fY = y * y * y * (y * (y * 6 - 15) + 10);
         double fZ = z * z * z * (z * (z * 6 - 15) + 10);
 
-        //Cube corners
+        // Cube corners
         int A = this.perm[X] + Y;
         int B = this.perm[X + 1] + Y;
 
@@ -86,6 +86,5 @@ public class PerlinD extends NoiseD {
         double xLerp21 = AA2 + fX * (BA2 - AA2);
 
         return zLerp1 + fZ * (xLerp21 + fY * (AB2 + fX * (BB2 - AB2) - xLerp21) - zLerp1);
-
     }
 }

@@ -18,5 +18,4 @@ public class CommandArgRules {
     public String getValue() {
         return value;
     }
-
 }

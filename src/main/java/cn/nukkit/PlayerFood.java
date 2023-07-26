@@ -131,7 +131,8 @@ public class PlayerFood {
 
     public void sendFoodLevel(int foodLevel) {
         if (this.getPlayer().spawned) {
-            this.getPlayer().setAttribute(Attribute.getAttribute(Attribute.MAX_HUNGER).setValue(foodLevel));
+            this.getPlayer()
+                    .setAttribute(Attribute.getAttribute(Attribute.MAX_HUNGER).setValue(foodLevel));
         }
     }
 
@@ -143,7 +144,8 @@ public class PlayerFood {
                 this.foodTickTimer += tickDiff;
                 if (this.foodTickTimer >= 80) {
                     if (this.getPlayer().getHealth() < this.getPlayer().getMaxHealth()) {
-                        EntityRegainHealthEvent ev = new EntityRegainHealthEvent(this.getPlayer(), 1, EntityRegainHealthEvent.CAUSE_EATING);
+                        EntityRegainHealthEvent ev =
+                                new EntityRegainHealthEvent(this.getPlayer(), 1, EntityRegainHealthEvent.CAUSE_EATING);
                         this.getPlayer().heal(ev);
                         this.updateFoodExpLevel(6);
                     }
@@ -166,7 +168,8 @@ public class PlayerFood {
                 }
             }
             if (this.getPlayer().hasEffect(Effect.HUNGER)) {
-                this.updateFoodExpLevel(0.1 * (this.getPlayer().getEffect(Effect.HUNGER).getAmplifier() + 1));
+                this.updateFoodExpLevel(
+                        0.1 * (this.getPlayer().getEffect(Effect.HUNGER).getAmplifier() + 1));
             }
         }
     }

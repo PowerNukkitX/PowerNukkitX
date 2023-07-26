@@ -17,5 +17,4 @@ public class ItemBlazeRod extends Item {
     public ItemBlazeRod(Integer meta, int count) {
         super(BLAZE_ROD, meta, count, "Blaze Rod");
     }
-
 }

@@ -2,9 +2,8 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
-import lombok.ToString;
-
 import java.util.UUID;
+import lombok.ToString;
 
 @Since("1.4.0.0-PN")
 @ToString

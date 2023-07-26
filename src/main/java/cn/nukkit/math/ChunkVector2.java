@@ -186,5 +186,4 @@ public class ChunkVector2 {
     public String toString() {
         return "MutableChunkVector(x=" + this.x + ",z=" + this.z + ")";
     }
-
 }

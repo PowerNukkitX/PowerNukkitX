@@ -13,7 +13,7 @@ import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class BlockFrogSpawn extends BlockFlowable{
+public class BlockFrogSpawn extends BlockFlowable {
 
     @Override
     public String getName() {
@@ -27,17 +27,23 @@ public class BlockFrogSpawn extends BlockFlowable{
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return CommonBlockProperties.EMPTY_PROPERTIES;
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        if (supportable(block)){
-            if (block.getId() == Block.AIR)
-                return super.place(item, block, target, face, fx, fy, fz, player);
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
+        if (supportable(block)) {
+            if (block.getId() == Block.AIR) return super.place(item, block, target, face, fx, fy, fz, player);
         }
         return false;
     }
@@ -50,11 +56,10 @@ public class BlockFrogSpawn extends BlockFlowable{
 
     @Override
     public void onEntityCollide(Entity entity) {
-        if (entity instanceof EntityFallingBlock)
-            this.onBreak(null);
+        if (entity instanceof EntityFallingBlock) this.onBreak(null);
     }
 
-    public boolean supportable(Position pos){
+    public boolean supportable(Position pos) {
         Block under = pos.getSide(BlockFace.DOWN).getLevelBlock();
         return under.getId() == FLOWING_WATER
                 || under.getId() == STILL_WATER

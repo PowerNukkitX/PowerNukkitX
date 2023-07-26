@@ -3,14 +3,12 @@ package cn.nukkit.block;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.MinecraftItemID;
-
 import javax.annotation.Nullable;
 
 /**
  * @author LoboMetalurgico
  * @since 11/06/2021
  */
-
 @PowerNukkitOnly
 @Since("FUTURE")
 public class BlockOreCopper extends BlockOre {
@@ -32,8 +30,7 @@ public class BlockOreCopper extends BlockOre {
 
     @Since("FUTURE")
     @PowerNukkitOnly
-    @Nullable
-    @Override
+    @Nullable @Override
     protected MinecraftItemID getRawMaterial() {
         return MinecraftItemID.RAW_COPPER;
     }

@@ -17,7 +17,7 @@ public class BlockBedrock extends BlockSolidMeta {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BooleanBlockProperty INFINIBURN = new BooleanBlockProperty("infiniburn_bit", true);
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(INFINIBURN);
@@ -39,12 +39,11 @@ public class BlockBedrock extends BlockSolidMeta {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean getBurnIndefinitely() {
@@ -84,7 +83,7 @@ public class BlockBedrock extends BlockSolidMeta {
 
     @Override
     @PowerNukkitOnly
-    public  boolean canBePulled() {
+    public boolean canBePulled() {
         return false;
     }
 

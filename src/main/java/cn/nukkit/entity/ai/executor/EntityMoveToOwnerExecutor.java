@@ -8,9 +8,8 @@ import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.EntityOwnable;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.math.Vector3;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.concurrent.ThreadLocalRandom;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * 实体移动到主人身边.(只对实现了接口 {@link cn.nukkit.entity.EntityOwnable EntityOwnable} 的实体有效)
@@ -41,21 +40,20 @@ public class EntityMoveToOwnerExecutor implements EntityControl, IBehaviorExecut
             var player = entity.getServer().getPlayer(entityOwnable.getOwnerName());
             if (player == null) return false;
 
-            //获取目的地位置（这个clone很重要）
+            // 获取目的地位置（这个clone很重要）
             var target = player.clone();
             if (target.distanceSquared(entity) <= 9) return false;
 
-            //不允许跨世界
-            if (!target.level.getName().equals(entity.level.getName()))
-                return false;
+            // 不允许跨世界
+            if (!target.level.getName().equals(entity.level.getName())) return false;
 
             if (entity.getPosition().floor().equals(oldTarget)) return false;
 
             var distanceSquared = entity.distanceSquared(player);
             if (distanceSquared <= maxFollowRangeSquared) {
-                //更新寻路target
+                // 更新寻路target
                 setRouteTarget(entity, target);
-                //更新视线target
+                // 更新视线target
                 setLookTarget(entity, target);
 
                 if (entity.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_FEEDING_PLAYER)) {
@@ -71,14 +69,13 @@ public class EntityMoveToOwnerExecutor implements EntityControl, IBehaviorExecut
                     oldTarget = floor;
                 }
 
-                if (entity.getMovementSpeed() != speed)
-                    entity.setMovementSpeed(speed);
+                if (entity.getMovementSpeed() != speed) entity.setMovementSpeed(speed);
 
                 return true;
             } else {
                 var targetVector = randomVector3(player, 4);
                 if (targetVector == null || targetVector.distanceSquared(player) > maxFollowRangeSquared)
-                    return true;//继续寻找
+                    return true; // 继续寻找
                 else return !entity.teleport(targetVector);
             }
         }
@@ -87,10 +84,10 @@ public class EntityMoveToOwnerExecutor implements EntityControl, IBehaviorExecut
 
     @Override
     public void onInterrupt(EntityIntelligent entity) {
-        //目标丢失
+        // 目标丢失
         removeRouteTarget(entity);
         removeLookTarget(entity);
-        //重置速度
+        // 重置速度
         entity.setMovementSpeed(1.2f);
         entity.setEnablePitch(false);
         if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_FEEDING_PLAYER)) {
@@ -101,10 +98,10 @@ public class EntityMoveToOwnerExecutor implements EntityControl, IBehaviorExecut
 
     @Override
     public void onStop(EntityIntelligent entity) {
-        //目标丢失
+        // 目标丢失
         removeRouteTarget(entity);
         removeLookTarget(entity);
-        //重置速度
+        // 重置速度
         entity.setMovementSpeed(1.2f);
         entity.setEnablePitch(false);
         if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_FEEDING_PLAYER)) {

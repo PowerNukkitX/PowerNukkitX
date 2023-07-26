@@ -9,8 +9,7 @@ import cn.nukkit.item.ItemTool;
 public class BlockNetheriteBlock extends BlockSolid {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public BlockNetheriteBlock() {
-    }
+    public BlockNetheriteBlock() {}
 
     @Override
     public int getId() {
@@ -29,7 +28,8 @@ public class BlockNetheriteBlock extends BlockSolid {
 
     @Override
     public double getHardness() {
-        return 35; // TODO Should be 50, but the break time is glitchy (same with obsidian but less noticeable because of the texture)
+        return 35; // TODO Should be 50, but the break time is glitchy (same with obsidian but less noticeable because
+        // of the texture)
     }
 
     @Override

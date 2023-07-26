@@ -1,14 +1,13 @@
 package cn.nukkit.utils;
 
+import static cn.nukkit.math.BlockFace.*;
+import static cn.nukkit.utils.Rail.Orientation.State.*;
+
 import cn.nukkit.api.API;
 import cn.nukkit.block.Block;
 import cn.nukkit.math.BlockFace;
-
 import java.util.*;
 import java.util.stream.Stream;
-
-import static cn.nukkit.math.BlockFace.*;
-import static cn.nukkit.utils.Rail.Orientation.State.*;
 
 /**
  * INTERNAL helper class of railway
@@ -84,7 +83,8 @@ public final class Rail {
         }
 
         public static Orientation curved(BlockFace f1, BlockFace f2) {
-            for (Orientation o : new Orientation[]{CURVED_SOUTH_EAST, CURVED_SOUTH_WEST, CURVED_NORTH_WEST, CURVED_NORTH_EAST}) {
+            for (Orientation o :
+                    new Orientation[] {CURVED_SOUTH_EAST, CURVED_SOUTH_WEST, CURVED_NORTH_WEST, CURVED_NORTH_EAST}) {
                 if (o.connectingDirections.contains(f1) && o.connectingDirections.contains(f2)) {
                     return o;
                 }
@@ -93,7 +93,14 @@ public final class Rail {
         }
 
         public static Orientation straightOrCurved(BlockFace f1, BlockFace f2) {
-            for (Orientation o : new Orientation[]{STRAIGHT_NORTH_SOUTH, STRAIGHT_EAST_WEST, CURVED_SOUTH_EAST, CURVED_SOUTH_WEST, CURVED_NORTH_WEST, CURVED_NORTH_EAST}) {
+            for (Orientation o : new Orientation[] {
+                STRAIGHT_NORTH_SOUTH,
+                STRAIGHT_EAST_WEST,
+                CURVED_SOUTH_EAST,
+                CURVED_SOUTH_WEST,
+                CURVED_NORTH_WEST,
+                CURVED_NORTH_EAST
+            }) {
                 if (o.connectingDirections.contains(f1) && o.connectingDirections.contains(f2)) {
                     return o;
                 }
@@ -122,7 +129,9 @@ public final class Rail {
         }
 
         public enum State {
-            STRAIGHT, ASCENDING, CURVED
+            STRAIGHT,
+            ASCENDING,
+            CURVED
         }
 
         public boolean isStraight() {
@@ -157,6 +166,6 @@ public final class Rail {
     }
 
     private Rail() {
-        //no instance
+        // no instance
     }
 }

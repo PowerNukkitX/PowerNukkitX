@@ -9,7 +9,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-
 import java.util.List;
 import java.util.Map;
 
@@ -30,13 +29,20 @@ public class RandomizableContainer {
         CompoundTag[] tags = new CompoundTag[this.size];
 
         this.pools.forEach((pool, roll) -> {
-            for (int i = roll.getMin() == -1 ? roll.getMax() : random.nextRange(roll.getMin(), roll.getMax()); i > 0; --i) {
+            for (int i = roll.getMin() == -1 ? roll.getMax() : random.nextRange(roll.getMin(), roll.getMax());
+                    i > 0;
+                    --i) {
                 int result = random.nextBoundedInt(roll.getTotalWeight());
                 for (ItemEntry entry : pool) {
                     result -= entry.getWeight();
                     if (result < 0) {
                         int index = random.nextBoundedInt(tags.length);
-                        tags[index] = NBTIO.putItemHelper(Item.get(entry.getId(), entry.getMeta(), random.nextRange(entry.getMinCount(), entry.getMaxCount())), index);
+                        tags[index] = NBTIO.putItemHelper(
+                                Item.get(
+                                        entry.getId(),
+                                        entry.getMeta(),
+                                        random.nextRange(entry.getMinCount(), entry.getMaxCount())),
+                                index);
                         break;
                     }
                 }

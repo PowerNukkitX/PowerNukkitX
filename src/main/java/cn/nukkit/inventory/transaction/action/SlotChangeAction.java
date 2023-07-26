@@ -5,7 +5,6 @@ import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.transaction.InventoryTransaction;
 import cn.nukkit.item.Item;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -94,11 +93,10 @@ public class SlotChangeAction extends InventoryAction {
 
     @Override
     public String toString() {
-        return "SlotChangeAction{" +
-                "inventory=" + inventory +
-                ", inventorySlot=" + inventorySlot +
-                ", sourceItem=" + sourceItem +
-                ", targetItem=" + targetItem +
-                '}';
+        return "SlotChangeAction{" + "inventory="
+                + inventory + ", inventorySlot="
+                + inventorySlot + ", sourceItem="
+                + sourceItem + ", targetItem="
+                + targetItem + '}';
     }
 }

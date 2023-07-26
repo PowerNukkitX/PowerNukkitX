@@ -2,7 +2,6 @@ package cn.nukkit.level.util;
 
 import cn.nukkit.math.MathHelper;
 import com.google.common.base.Preconditions;
-
 import java.util.Arrays;
 
 public class PaddedBitArray implements BitArray {
@@ -28,20 +27,24 @@ public class PaddedBitArray implements BitArray {
         this.words = words;
         int expectedWordsLength = MathHelper.ceil((float) size / version.entriesPerWord);
         if (words.length != expectedWordsLength) {
-            throw new IllegalArgumentException("Invalid length given for storage, got: " + words.length +
-                    " but expected: " + expectedWordsLength);
+            throw new IllegalArgumentException(
+                    "Invalid length given for storage, got: " + words.length + " but expected: " + expectedWordsLength);
         }
     }
 
     @Override
     public void set(int index, int value) {
         Preconditions.checkElementIndex(index, this.size);
-        Preconditions.checkArgument(value >= 0 && value <= this.version.maxEntryValue,
-                "Max value: %s. Received value", this.version.maxEntryValue, value);
+        Preconditions.checkArgument(
+                value >= 0 && value <= this.version.maxEntryValue,
+                "Max value: %s. Received value",
+                this.version.maxEntryValue,
+                value);
         int arrayIndex = index / this.version.entriesPerWord;
         int offset = (index % this.version.entriesPerWord) * this.version.bits;
 
-        this.words[arrayIndex] = this.words[arrayIndex] & ~(this.version.maxEntryValue << offset) | (value & this.version.maxEntryValue) << offset;
+        this.words[arrayIndex] = this.words[arrayIndex] & ~(this.version.maxEntryValue << offset)
+                | (value & this.version.maxEntryValue) << offset;
     }
 
     @Override

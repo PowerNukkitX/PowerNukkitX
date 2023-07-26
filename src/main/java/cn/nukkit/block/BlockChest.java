@@ -20,10 +20,9 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.Faceable;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 import java.util.Map;
+import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Angelic47 (Nukkit Project)
@@ -45,16 +44,14 @@ public class BlockChest extends BlockTransparentMeta implements Faceable, BlockE
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public Class<? extends BlockEntityChest> getBlockEntityClass() {
         return BlockEntityChest.class;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getBlockEntityType() {
         return BlockEntity.CHEST;
     }
@@ -71,8 +68,7 @@ public class BlockChest extends BlockTransparentMeta implements Faceable, BlockE
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -133,9 +129,16 @@ public class BlockChest extends BlockTransparentMeta implements Faceable, BlockE
         return this.z + 0.9375;
     }
 
-
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
         int[] faces = {2, 5, 3, 4};
         this.setDamage(faces[player != null ? player.getDirection().getHorizontalIndex() : 0]);
 
@@ -170,12 +173,10 @@ public class BlockChest extends BlockTransparentMeta implements Faceable, BlockE
     @Since("1.19.60-r1")
     protected boolean tryPair() {
         BlockEntityChest blockEntity = getBlockEntity();
-        if (blockEntity == null)
-            return false;
+        if (blockEntity == null) return false;
 
         BlockEntityChest chest = findPair();
-        if (chest == null)
-            return false;
+        if (chest == null) return false;
 
         chest.pairWith(blockEntity);
         blockEntity.pairWith(chest);
@@ -186,8 +187,7 @@ public class BlockChest extends BlockTransparentMeta implements Faceable, BlockE
      * 寻找附近的可配对箱子
      * @return 找到的可配对箱子。若没找到，则为null
      */
-    @Nullable
-    @PowerNukkitXOnly
+    @Nullable @PowerNukkitXOnly
     @Since("1.19.60-r1")
     protected BlockEntityChest findPair() {
         for (int side = 2; side <= 5; ++side) {
@@ -199,7 +199,8 @@ public class BlockChest extends BlockTransparentMeta implements Faceable, BlockE
             Block c = this.getSide(BlockFace.fromIndex(side));
             if (c instanceof BlockChest && c.getDamage() == this.getDamage()) {
                 BlockEntity blockEntity = this.getLevel().getBlockEntity(c);
-                if (blockEntity instanceof BlockEntityChest blockEntityChest && !((BlockEntityChest) blockEntity).isPaired()) {
+                if (blockEntity instanceof BlockEntityChest blockEntityChest
+                        && !((BlockEntityChest) blockEntity).isPaired()) {
                     return blockEntityChest;
                 }
             }
@@ -213,8 +214,7 @@ public class BlockChest extends BlockTransparentMeta implements Faceable, BlockE
         if (!super.cloneTo(pos)) return false;
         else {
             var blockEntity = this.getBlockEntity();
-            if (blockEntity != null && blockEntity.isPaired())
-                ((BlockChest) pos.getLevelBlock()).tryPair();
+            if (blockEntity != null && blockEntity.isPaired()) ((BlockChest) pos.getLevelBlock()).tryPair();
             return true;
         }
     }
@@ -242,7 +242,8 @@ public class BlockChest extends BlockTransparentMeta implements Faceable, BlockE
         }
 
         BlockEntityChest chest = getOrCreateBlockEntity();
-        if (chest.namedTag.contains("Lock") && chest.namedTag.get("Lock") instanceof StringTag 
+        if (chest.namedTag.contains("Lock")
+                && chest.namedTag.get("Lock") instanceof StringTag
                 && !chest.namedTag.getString("Lock").equals(item.getCustomName())) {
             return false;
         }

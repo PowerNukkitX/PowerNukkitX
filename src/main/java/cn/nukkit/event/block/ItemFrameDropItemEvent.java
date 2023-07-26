@@ -6,9 +6,8 @@ import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.BlockEntityItemFrame;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.item.Item;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * ItemFrameUseEvent的子事件，仅代表物品展示框掉落物品的事件
@@ -22,22 +21,23 @@ import javax.annotation.Nullable;
 @DeprecationDetails(since = "1.19.60-r1", reason = "use ItemFrameUseEvent")
 public class ItemFrameDropItemEvent extends ItemFrameUseEvent implements Cancellable {
 
-    public ItemFrameDropItemEvent(@Nullable Player player, @NotNull Block block, @NotNull BlockEntityItemFrame itemFrame, @NotNull Item item) {
+    public ItemFrameDropItemEvent(
+            @Nullable Player player,
+            @NotNull Block block,
+            @NotNull BlockEntityItemFrame itemFrame,
+            @NotNull Item item) {
         super(player, block, itemFrame, item, Action.DROP);
     }
 
-    @Nullable
-    public Player getPlayer() {
+    @Nullable public Player getPlayer() {
         return player;
     }
 
-    @NotNull
-    public BlockEntityItemFrame getItemFrame() {
+    @NotNull public BlockEntityItemFrame getItemFrame() {
         return itemFrame;
     }
 
-    @NotNull
-    public Item getItem() {
+    @NotNull public Item getItem() {
         return item;
     }
 }

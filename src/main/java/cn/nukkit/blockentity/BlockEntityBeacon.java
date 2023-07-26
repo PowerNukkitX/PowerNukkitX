@@ -11,7 +11,6 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.potion.Effect;
-
 import java.util.Map;
 
 /**
@@ -74,17 +73,17 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
     @PowerNukkitDifference(info = "Using new method to play sounds", since = "1.4.0.0-PN")
     @Override
     public boolean onUpdate() {
-        //Only apply effects every 4 secs
+        // Only apply effects every 4 secs
         if (currentTick++ % 80 != 0) {
             return true;
         }
 
         int oldPowerLevel = this.getPowerLevel();
-        //Get the power level based on the pyramid
+        // Get the power level based on the pyramid
         setPowerLevel(calculatePowerLevel());
         int newPowerLevel = this.getPowerLevel();
 
-        //Skip beacons that do not have a pyramid or sky access
+        // Skip beacons that do not have a pyramid or sky access
         if (newPowerLevel < 1 || !hasSkyAccess()) {
             if (oldPowerLevel > 0) {
                 this.getLevel().addSound(this, Sound.BEACON_DEACTIVATE);
@@ -96,10 +95,10 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
             this.getLevel().addSound(this, Sound.BEACON_AMBIENT);
         }
 
-        //Get all players in game
+        // Get all players in game
         Map<Long, Player> players = this.level.getPlayers();
 
-        //Calculate vars for beacon power
+        // Calculate vars for beacon power
         int range = 10 + getPowerLevel() * 10;
         int duration = 9 + getPowerLevel() * 2;
 
@@ -107,38 +106,38 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
             return true;
         }
 
-        for(Map.Entry<Long, Player> entry : players.entrySet()) {
+        for (Map.Entry<Long, Player> entry : players.entrySet()) {
             Player p = entry.getValue();
 
-            //If the player is in range
+            // If the player is in range
             if (p.distance(this) < range) {
                 Effect e;
 
                 if (getPrimaryPower() != 0) {
-                    //Apply the primary power
+                    // Apply the primary power
                     e = Effect.getEffect(getPrimaryPower());
 
-                    //Set duration
+                    // Set duration
                     e.setDuration(duration * 20);
 
-                    //If secondary is selected as the primary too, apply 2 amplification
+                    // If secondary is selected as the primary too, apply 2 amplification
                     if (getPowerLevel() == POWER_LEVEL_MAX && getSecondaryPower() == getPrimaryPower()) {
                         e.setAmplifier(1);
                     }
 
-                    //Add the effect
+                    // Add the effect
                     p.addEffect(e);
                 }
 
-                //If we have a secondary power as regen, apply it
+                // If we have a secondary power as regen, apply it
                 if (getPowerLevel() == POWER_LEVEL_MAX && getSecondaryPower() == Effect.REGENERATION) {
-                    //Get the regen effect
+                    // Get the regen effect
                     e = Effect.getEffect(Effect.REGENERATION);
 
-                    //Set duration
+                    // Set duration
                     e.setDuration(duration * 20);
 
-                    //Add effect
+                    // Add effect
                     p.addEffect(e);
                 }
             }
@@ -154,11 +153,11 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
         int tileY = getFloorY();
         int tileZ = getFloorZ();
 
-        //Check every block from our y coord to the top of the world
+        // Check every block from our y coord to the top of the world
         for (int y = tileY + 1; y <= 255; y++) {
             int testBlockId = level.getBlockIdAt(tileX, y, tileZ);
             if (!Block.isTransparent(testBlockId)) {
-                //There is no sky access
+                // There is no sky access
                 return false;
             }
         }
@@ -171,24 +170,21 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
         int tileY = getFloorY();
         int tileZ = getFloorZ();
 
-        //The power level that we're testing for
+        // The power level that we're testing for
         for (int powerLevel = 1; powerLevel <= POWER_LEVEL_MAX; powerLevel++) {
-            int queryY = tileY - powerLevel; //Layer below the beacon block
+            int queryY = tileY - powerLevel; // Layer below the beacon block
 
             for (int queryX = tileX - powerLevel; queryX <= tileX + powerLevel; queryX++) {
                 for (int queryZ = tileZ - powerLevel; queryZ <= tileZ + powerLevel; queryZ++) {
 
                     int testBlockId = level.getBlockIdAt(queryX, queryY, queryZ);
-                    if (
-                            testBlockId != Block.IRON_BLOCK &&
-                                    testBlockId != Block.GOLD_BLOCK &&
-                                    testBlockId != Block.EMERALD_BLOCK &&
-                                    testBlockId != Block.DIAMOND_BLOCK &&
-                                    testBlockId != Block.NETHERITE_BLOCK
-                    ) {
+                    if (testBlockId != Block.IRON_BLOCK
+                            && testBlockId != Block.GOLD_BLOCK
+                            && testBlockId != Block.EMERALD_BLOCK
+                            && testBlockId != Block.DIAMOND_BLOCK
+                            && testBlockId != Block.NETHERITE_BLOCK) {
                         return powerLevel - 1;
                     }
-
                 }
             }
         }
@@ -257,15 +253,15 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
 
         this.getLevel().addSound(this, Sound.BEACON_POWER);
 
-        BeaconInventory inv = (BeaconInventory)player.getWindowById(Player.BEACON_WINDOW_ID);
+        BeaconInventory inv = (BeaconInventory) player.getWindowById(Player.BEACON_WINDOW_ID);
 
         inv.setItem(0, new ItemBlock(Block.get(BlockID.AIR), 0, 0));
         return true;
     }
 
     private static boolean isPrimaryAllowed(int primary, int powerLevel) {
-        return ((primary == Effect.SPEED || primary == Effect.HASTE) && powerLevel >= 1) ||
-                ((primary == Effect.DAMAGE_RESISTANCE || primary == Effect.JUMP) && powerLevel >= 2) ||
-                (primary == Effect.STRENGTH && powerLevel >= 3);
+        return ((primary == Effect.SPEED || primary == Effect.HASTE) && powerLevel >= 1)
+                || ((primary == Effect.DAMAGE_RESISTANCE || primary == Effect.JUMP) && powerLevel >= 2)
+                || (primary == Effect.STRENGTH && powerLevel >= 3);
     }
 }

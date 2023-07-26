@@ -8,12 +8,11 @@ import cn.nukkit.api.Since;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.UpdateSoftEnumPacket;
-import lombok.Builder;
-import lombok.Getter;
-
-import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.TreeMap;
+import javax.annotation.Nullable;
+import lombok.Builder;
+import lombok.Getter;
 
 /**
  * @author daoge_cmd
@@ -31,8 +30,7 @@ public final class CameraPreset {
         return PRESETS;
     }
 
-    @Nullable
-    public static CameraPreset getPreset(String identifier) {
+    @Nullable public static CameraPreset getPreset(String identifier) {
         return getPresets().get(identifier);
     }
 
@@ -44,7 +42,7 @@ public final class CameraPreset {
             CommandEnum.CAMERA_PRESETS.updateSoftEnum(UpdateSoftEnumPacket.Type.ADD, preset.getIdentifier());
         }
         int id = 0;
-        //重新分配id
+        // 重新分配id
         for (var preset : presets) {
             preset.id = id++;
         }
@@ -57,17 +55,15 @@ public final class CameraPreset {
     public static final CameraPreset THIRD_PERSON_FRONT;
 
     static {
-        FIRST_PERSON = CameraPreset.builder()
-                .identifier("minecraft:first_person")
-                .build();
+        FIRST_PERSON =
+                CameraPreset.builder().identifier("minecraft:first_person").build();
         FREE = CameraPreset.builder()
                 .identifier("minecraft:free")
                 .pos(new Pos(0, 0, 0))
                 .rot(new Rot(0, 0))
                 .build();
-        THIRD_PERSON = CameraPreset.builder()
-                .identifier("minecraft:third_person")
-                .build();
+        THIRD_PERSON =
+                CameraPreset.builder().identifier("minecraft:third_person").build();
         THIRD_PERSON_FRONT = CameraPreset.builder()
                 .identifier("minecraft:third_person_front")
                 .build();
@@ -77,14 +73,15 @@ public final class CameraPreset {
 
     @Getter
     private final String identifier;
+
     @Getter
     private final String inheritFrom;
+
     @Getter
-    @Nullable
-    private final Pos pos;
+    @Nullable private final Pos pos;
+
     @Getter
-    @Nullable
-    private final Rot rot;
+    @Nullable private final Rot rot;
 
     @Getter
     private int id;
@@ -105,17 +102,12 @@ public final class CameraPreset {
     @DoNotModify
     public CompoundTag serialize() {
         if (cache == null) {
-            cache = new CompoundTag()
-                    .putString("identifier", identifier)
-                    .putString("inherit_from", inheritFrom);
+            cache = new CompoundTag().putString("identifier", identifier).putString("inherit_from", inheritFrom);
             if (pos != null) {
-                cache.putFloat("pos_x", pos.x())
-                        .putFloat("pos_y", pos.y())
-                        .putFloat("pos_z", pos.z());
+                cache.putFloat("pos_x", pos.x()).putFloat("pos_y", pos.y()).putFloat("pos_z", pos.z());
             }
             if (rot != null) {
-                cache.putFloat("rot_x", rot.x())
-                        .putFloat("rot_y", rot.y());
+                cache.putFloat("rot_x", rot.x()).putFloat("rot_y", rot.y());
             }
         }
         return cache;

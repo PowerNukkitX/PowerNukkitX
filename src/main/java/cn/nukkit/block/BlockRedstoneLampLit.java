@@ -13,8 +13,7 @@ import cn.nukkit.utils.RedstoneComponent;
 @PowerNukkitDifference(info = "Implements RedstoneComponent.", since = "1.4.0.0-PN")
 public class BlockRedstoneLampLit extends BlockRedstoneLamp implements RedstoneComponent {
 
-    public BlockRedstoneLampLit() {
-    }
+    public BlockRedstoneLampLit() {}
 
     @Override
     public String getName() {
@@ -36,8 +35,9 @@ public class BlockRedstoneLampLit extends BlockRedstoneLamp implements RedstoneC
         return new ItemBlock(Block.get(BlockID.REDSTONE_LAMP));
     }
 
-    @PowerNukkitDifference(info = "Redstone Event on scheduled update part + use #isGettingPower() method" +
-            " + trigger observer.", since = "1.4.0.0-PN")
+    @PowerNukkitDifference(
+            info = "Redstone Event on scheduled update part + use #isGettingPower() method" + " + trigger observer.",
+            since = "1.4.0.0-PN")
     @Override
     public int onUpdate(int type) {
         if (!this.level.getServer().isRedstoneEnabled()) {

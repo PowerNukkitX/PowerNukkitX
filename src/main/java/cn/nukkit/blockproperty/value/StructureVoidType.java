@@ -8,11 +8,11 @@ import cn.nukkit.api.Since;
  */
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
-public enum  StructureVoidType {
+public enum StructureVoidType {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     VOID,
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     AIR

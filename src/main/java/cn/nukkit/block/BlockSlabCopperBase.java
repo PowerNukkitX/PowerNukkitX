@@ -8,9 +8,8 @@ import cn.nukkit.blockproperty.value.OxidizationLevel;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author joserobjr
@@ -35,8 +34,7 @@ public abstract class BlockSlabCopperBase extends BlockSlab implements Waxable, 
 
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player) {
-        return Waxable.super.onActivate(item, player)
-                || Oxidizable.super.onActivate(item, player);
+        return Waxable.super.onActivate(item, player) || Oxidizable.super.onActivate(item, player);
     }
 
     @Override
@@ -51,8 +49,7 @@ public abstract class BlockSlabCopperBase extends BlockSlab implements Waxable, 
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return SIMPLE_SLAB_PROPERTIES;
     }
@@ -98,7 +95,12 @@ public abstract class BlockSlabCopperBase extends BlockSlab implements Waxable, 
         if (getOxidizationLevel().equals(oxidizationLevel)) {
             return true;
         }
-        return getValidLevel().setBlock(this, getCurrentState().withBlockId(getCopperId(isWaxed(), oxidizationLevel)).getBlock());
+        return getValidLevel()
+                .setBlock(
+                        this,
+                        getCurrentState()
+                                .withBlockId(getCopperId(isWaxed(), oxidizationLevel))
+                                .getBlock());
     }
 
     @Since("FUTURE")
@@ -108,7 +110,12 @@ public abstract class BlockSlabCopperBase extends BlockSlab implements Waxable, 
         if (isWaxed() == waxed) {
             return true;
         }
-        return getValidLevel().setBlock(this, getCurrentState().withBlockId(getCopperId(waxed, getOxidizationLevel())).getBlock());
+        return getValidLevel()
+                .setBlock(
+                        this,
+                        getCurrentState()
+                                .withBlockId(getCopperId(waxed, getOxidizationLevel()))
+                                .getBlock());
     }
 
     @Since("FUTURE")

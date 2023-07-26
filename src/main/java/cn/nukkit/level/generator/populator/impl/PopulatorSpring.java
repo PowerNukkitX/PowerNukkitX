@@ -7,7 +7,6 @@ import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
-
 import java.util.List;
 
 /**
@@ -39,11 +38,13 @@ public class PopulatorSpring extends Populator {
             int z = sourceZ + random.nextBoundedInt(16);
             int y = NukkitMath.randomRange(random, minHeight, maxHeight);
 
-            if (!(level.getBlockStateAt(x, y, z).equals(BlockState.AIR) || surroundState.contains(level.getBlockStateAt(x, y, z)))) {
+            if (!(level.getBlockStateAt(x, y, z).equals(BlockState.AIR)
+                    || surroundState.contains(level.getBlockStateAt(x, y, z)))) {
                 continue;
             }
 
-            if (!(surroundState.contains(level.getBlockStateAt(x, y - 1, z)) || surroundState.contains(level.getBlockStateAt(x, y + 1, z)))) {
+            if (!(surroundState.contains(level.getBlockStateAt(x, y - 1, z))
+                    || surroundState.contains(level.getBlockStateAt(x, y + 1, z)))) {
                 continue;
             }
 
@@ -68,7 +69,10 @@ public class PopulatorSpring extends Populator {
             }
 
             level.setBlockStateAt(x, y, z, state);
-            level.getChunk(chunkX, chunkZ).getProvider().getLevel().scheduleUpdate(state.getBlock(), new Vector3(x, y, z), 1, 0, false);
+            level.getChunk(chunkX, chunkZ)
+                    .getProvider()
+                    .getLevel()
+                    .scheduleUpdate(state.getBlock(), new Vector3(x, y, z), 1, 0, false);
         }
     }
 }

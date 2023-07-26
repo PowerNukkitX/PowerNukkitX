@@ -11,9 +11,8 @@ import cn.nukkit.level.GlobalBlockPalette;
 import cn.nukkit.level.biome.EnumBiome;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.potion.Potion;
-import org.openjdk.jmh.annotations.*;
-
 import java.util.concurrent.TimeUnit;
+import org.openjdk.jmh.annotations.*;
 
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.Throughput)
@@ -36,20 +35,25 @@ public class ComputeBlockStateHashTest {
         RuntimeItems.init();
         Potion.init();
         Item.init();
-        EnumBiome.values(); //load class, this also registers biomes
+        EnumBiome.values(); // load class, this also registers biomes
         Effect.init();
         Attribute.init();
         DispenseBehaviorRegister.init();
-        GlobalBlockPalette.getOrCreateRuntimeId(0, 0); //Force it to load
+        GlobalBlockPalette.getOrCreateRuntimeId(0, 0); // Force it to load
 
         block1 = BlockState.of("minecraft:acacia_fence").getBlock();
-        block2 = BlockState.of("minecraft:birch_pressure_plate;redstone_signal=2").getBlock();
-        block3 = BlockState.of("minecraft:acacia_button;button_pressed_bit=0;facing_direction=1").getBlock();
-        block4 = BlockState.of("minecraft:birch_trapdoor;open_bit=0;upside_down_bit=1;direction=2").getBlock();
-        block5 = BlockState.of("minecraft:acacia_door;open_bit=0;upper_block_bit=0;door_hinge_bit=1;direction=1").getBlock();
-        block6 = BlockState.of("minecraft:cobblestone_wall;wall_connection_type_east=tall;wall_post_bit=1;wall_connection_type_south=none;wall_connection_type_west=short;wall_connection_type_north=short;wall_block_type=cobblestone").getBlock();
+        block2 = BlockState.of("minecraft:birch_pressure_plate;redstone_signal=2")
+                .getBlock();
+        block3 = BlockState.of("minecraft:acacia_button;button_pressed_bit=0;facing_direction=1")
+                .getBlock();
+        block4 = BlockState.of("minecraft:birch_trapdoor;open_bit=0;upside_down_bit=1;direction=2")
+                .getBlock();
+        block5 = BlockState.of("minecraft:acacia_door;open_bit=0;upper_block_bit=0;door_hinge_bit=1;direction=1")
+                .getBlock();
+        block6 = BlockState.of(
+                        "minecraft:cobblestone_wall;wall_connection_type_east=tall;wall_post_bit=1;wall_connection_type_south=none;wall_connection_type_west=short;wall_connection_type_north=short;wall_block_type=cobblestone")
+                .getBlock();
     }
-
 
     @Benchmark
     public void test1() {

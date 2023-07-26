@@ -22,12 +22,11 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Angelic47 (Nukkit Project)
@@ -35,7 +34,8 @@ import java.util.concurrent.ThreadLocalRandom;
 public class BlockSapling extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final BlockProperty<WoodType> SAPLING_TYPE = new ArrayBlockProperty<>("sapling_type", true, WoodType.class);
+    public static final BlockProperty<WoodType> SAPLING_TYPE =
+            new ArrayBlockProperty<>("sapling_type", true, WoodType.class);
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -46,38 +46,59 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
     public static final BlockProperties PROPERTIES = new BlockProperties(SAPLING_TYPE, AGED);
 
     @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", replaceWith = "WoodType.OAK", by = "PowerNukkit",
+    @DeprecationDetails(
+            since = "1.4.0.0-PN",
+            replaceWith = "WoodType.OAK",
+            by = "PowerNukkit",
             reason = "Use the new BlockProperty system instead")
     public static final int OAK = 0;
 
     @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", replaceWith = "WoodType.SPRUCE", by = "PowerNukkit",
+    @DeprecationDetails(
+            since = "1.4.0.0-PN",
+            replaceWith = "WoodType.SPRUCE",
+            by = "PowerNukkit",
             reason = "Use the new BlockProperty system instead")
     public static final int SPRUCE = 1;
 
     @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", replaceWith = "WoodType.BIRCH", by = "PowerNukkit",
+    @DeprecationDetails(
+            since = "1.4.0.0-PN",
+            replaceWith = "WoodType.BIRCH",
+            by = "PowerNukkit",
             reason = "Use the new BlockProperty system instead")
     public static final int BIRCH = 2;
 
     @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN",
-            by = "PowerNukkit", replaceWith = "ObjectTree.growTree(ChunkManager level, int x, int y, int z, NukkitRandom random, WoodType.BIRCH, true)",
+    @DeprecationDetails(
+            since = "1.4.0.0-PN",
+            by = "PowerNukkit",
+            replaceWith =
+                    "ObjectTree.growTree(ChunkManager level, int x, int y, int z, NukkitRandom random, WoodType.BIRCH, true)",
             reason = "Shouldn't even be here")
     public static final int BIRCH_TALL = 8 | BIRCH;
 
     @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", replaceWith = "WoodType.JUNGLE", by = "PowerNukkit",
+    @DeprecationDetails(
+            since = "1.4.0.0-PN",
+            replaceWith = "WoodType.JUNGLE",
+            by = "PowerNukkit",
             reason = "Use the new BlockProperty system instead")
     public static final int JUNGLE = 3;
 
     @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", replaceWith = "WoodType.ACACIA", by = "PowerNukkit",
+    @DeprecationDetails(
+            since = "1.4.0.0-PN",
+            replaceWith = "WoodType.ACACIA",
+            by = "PowerNukkit",
             reason = "Use the new BlockProperty system instead")
     public static final int ACACIA = 4;
 
     @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", replaceWith = "WoodType.DARK_OAK", by = "PowerNukkit",
+    @DeprecationDetails(
+            since = "1.4.0.0-PN",
+            replaceWith = "WoodType.DARK_OAK",
+            by = "PowerNukkit",
             reason = "Use the new BlockProperty system instead")
     public static final int DARK_OAK = 5;
 
@@ -96,8 +117,7 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -132,7 +152,15 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         if (BlockFlower.isSupportValid(down())) {
             this.getLevel().setBlock(block, this, true, true);
             return true;
@@ -173,8 +201,9 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
                 this.getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
-        } else if (type == Level.BLOCK_UPDATE_RANDOM) { //Growth
-            if (ThreadLocalRandom.current().nextInt(1, 8) == 1 && getLevel().getFullLight(add(0, 1, 0)) >= BlockCrops.MINIMUM_LIGHT_LEVEL) {
+        } else if (type == Level.BLOCK_UPDATE_RANDOM) { // Growth
+            if (ThreadLocalRandom.current().nextInt(1, 8) == 1
+                    && getLevel().getFullLight(add(0, 1, 0)) >= BlockCrops.MINIMUM_LIGHT_LEVEL) {
                 if (isAged()) {
                     this.grow();
                 } else {
@@ -200,7 +229,11 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
                 Vector2 vector2;
                 if ((vector2 = this.findSaplings(WoodType.JUNGLE)) != null) {
                     vector3 = this.add(vector2.getFloorX(), 0, vector2.getFloorY());
-                    generator = new ObjectJungleBigTree(10, 20, Block.get(BlockID.WOOD, BlockWood.JUNGLE), Block.get(BlockID.LEAVES, BlockLeaves.JUNGLE));
+                    generator = new ObjectJungleBigTree(
+                            10,
+                            20,
+                            Block.get(BlockID.WOOD, BlockWood.JUNGLE),
+                            Block.get(BlockID.LEAVES, BlockLeaves.JUNGLE));
                     bigTree = true;
                 }
 
@@ -235,7 +268,8 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
                             if (!this.ensureGrowable(level, rand, position, object.getTreeHeight())) {
                                 return false;
                             }
-                            object.placeObject(level, position.getFloorX(), position.getFloorY(), position.getFloorZ(), rand);
+                            object.placeObject(
+                                    level, position.getFloorX(), position.getFloorY(), position.getFloorZ(), rand);
                             return true;
                         }
                     };
@@ -247,7 +281,14 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
                 }
             default:
                 ListChunkManager chunkManager = new ListChunkManager(this.level);
-                ObjectTree.growTree(chunkManager, this.getFloorX(), this.getFloorY(), this.getFloorZ(), new NukkitRandom(), getWoodType(), false);
+                ObjectTree.growTree(
+                        chunkManager,
+                        this.getFloorX(),
+                        this.getFloorY(),
+                        this.getFloorZ(),
+                        new NukkitRandom(),
+                        getWoodType(),
+                        false);
                 StructureGrowEvent ev = new StructureGrowEvent(this, chunkManager.getBlocks());
                 this.level.getServer().getPluginManager().callEvent(ev);
                 if (ev.isCancelled()) {
@@ -298,23 +339,23 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
     private Vector2 findSaplings(WoodType type) {
         List<List<Vector2>> validVectorsList = new ArrayList<>();
         validVectorsList.add(Arrays.asList(new Vector2(0, 0), new Vector2(1, 0), new Vector2(0, 1), new Vector2(1, 1)));
-        validVectorsList.add(Arrays.asList(new Vector2(0, 0), new Vector2(-1, 0), new Vector2(0, -1), new Vector2(-1, -1)));
-        validVectorsList.add(Arrays.asList(new Vector2(0, 0), new Vector2(1, 0), new Vector2(0, -1), new Vector2(1, -1)));
-        validVectorsList.add(Arrays.asList(new Vector2(0, 0), new Vector2(-1, 0), new Vector2(0, 1), new Vector2(-1, 1)));
+        validVectorsList.add(
+                Arrays.asList(new Vector2(0, 0), new Vector2(-1, 0), new Vector2(0, -1), new Vector2(-1, -1)));
+        validVectorsList.add(
+                Arrays.asList(new Vector2(0, 0), new Vector2(1, 0), new Vector2(0, -1), new Vector2(1, -1)));
+        validVectorsList.add(
+                Arrays.asList(new Vector2(0, 0), new Vector2(-1, 0), new Vector2(0, 1), new Vector2(-1, 1)));
         for (List<Vector2> validVectors : validVectorsList) {
             boolean correct = true;
             for (Vector2 vector2 : validVectors) {
-                if (!this.isSameType(this.add(vector2.x, 0, vector2.y), type))
-                    correct = false;
+                if (!this.isSameType(this.add(vector2.x, 0, vector2.y), type)) correct = false;
             }
             if (correct) {
                 int lowestX = 0;
                 int lowestZ = 0;
                 for (Vector2 vector2 : validVectors) {
-                    if (vector2.getFloorX() < lowestX)
-                        lowestX = vector2.getFloorX();
-                    if (vector2.getFloorY() < lowestZ)
-                        lowestZ = vector2.getFloorY();
+                    if (vector2.getFloorX() < lowestX) lowestX = vector2.getFloorX();
+                    if (vector2.getFloorY() < lowestZ) lowestZ = vector2.getFloorY();
                 }
                 return new Vector2(lowestX, lowestZ);
             }
@@ -323,7 +364,10 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
     }
 
     @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", reason = "Checking magic value directly is depreacated",
+    @DeprecationDetails(
+            since = "1.4.0.0-PN",
+            by = "PowerNukkit",
+            reason = "Checking magic value directly is depreacated",
             replaceWith = "isSameType(Vector3,WoodType)")
     public boolean isSameType(Vector3 pos, int type) {
         Block block = this.level.getBlock(pos);
@@ -336,5 +380,4 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
         Block block = this.level.getBlock(pos);
         return block.getId() == this.getId() && ((BlockSapling) block).getWoodType() == type;
     }
-
 }

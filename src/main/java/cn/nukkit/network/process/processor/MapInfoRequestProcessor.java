@@ -29,7 +29,7 @@ public class MapInfoRequestProcessor extends DataPacketProcessor<MapInfoRequestP
             var item1 = entry.getValue();
             if (checkMapItemValid(item1, pk)) {
                 mapItem = item1;
-                index = entry.getKey();                    
+                index = entry.getKey();
                 offhand = true;
             }
         }
@@ -65,11 +65,12 @@ public class MapInfoRequestProcessor extends DataPacketProcessor<MapInfoRequestP
 
                 final int finalIndex = index;
                 final boolean finalOffhand = offhand;
-                //TODO: 并行计算
+                // TODO: 并行计算
                 Server.getInstance().getScheduler().scheduleAsyncTask(InternalPlugin.INSTANCE, new AsyncTask() {
                     @Override
                     public void onRun() {
-                        map.renderMap(player.getLevel(), (player.getFloorX() / 128) << 7, (player.getFloorZ() / 128) << 7, 1);
+                        map.renderMap(
+                                player.getLevel(), (player.getFloorX() / 128) << 7, (player.getFloorZ() / 128) << 7, 1);
                         if (finalOffhand) {
                             if (checkMapItemValid(player.getOffhandInventory().getUnclonedItem(finalIndex), pk))
                                 player.getOffhandInventory().setItem(finalIndex, map);

@@ -17,12 +17,12 @@ public class BlockCarvedPumpkin extends BlockPumpkin {
     public int getId() {
         return CARVED_PUMPKIN;
     }
-    
+
     @Override
     public String getName() {
         return "Carved Pumpkin";
     }
-    
+
     @Override
     public boolean canBeActivated() {
         return false;

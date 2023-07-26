@@ -18,18 +18,17 @@
 
 package cn.nukkit.inventory;
 
+import static cn.nukkit.inventory.Recipe.matchItemList;
+
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
-import lombok.ToString;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-
-import static cn.nukkit.inventory.Recipe.matchItemList;
+import lombok.ToString;
 
 /**
  * @author joserobjr
@@ -39,17 +38,17 @@ import static cn.nukkit.inventory.Recipe.matchItemList;
 @Since("1.4.0.0-PN")
 @ToString
 public class SmithingRecipe extends ShapelessRecipe {
-    //被锻造的物品
+    // 被锻造的物品
     private final Item base;
-    //锻造模板
+    // 锻造模板
     private final Item template;
-    //锻造所用的材料
+    // 锻造所用的材料
     private final Item addition;
-    //输出结果
+    // 输出结果
     private final Item result;
     private final List<Item> ingredientsAggregate;
 
-    //todo 不知道锻造台是否支持item_tag以及其他类型的配方输入,当前的配方文件中不存在,等待未来检查
+    // todo 不知道锻造台是否支持item_tag以及其他类型的配方输入,当前的配方文件中不存在,等待未来检查
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public SmithingRecipe(String recipeId, int priority, Collection<Item> ingredients, Item result) {
@@ -61,9 +60,10 @@ public class SmithingRecipe extends ShapelessRecipe {
 
         ArrayList<Item> aggregation = new ArrayList<>(2);
 
-        for (Item item : new Item[]{base, addition}) {
+        for (Item item : new Item[] {base, addition}) {
             if (item.getCount() < 1) {
-                throw new IllegalArgumentException("Recipe Ingredient amount was not 1 (value: " + item.getCount() + ")");
+                throw new IllegalArgumentException(
+                        "Recipe Ingredient amount was not 1 (value: " + item.getCount() + ")");
             }
             boolean found = false;
             for (Item existingIngredient : aggregation) {
@@ -156,23 +156,20 @@ public class SmithingRecipe extends ShapelessRecipe {
     public boolean matchItems(List<Item> inputList, int multiplier) {
         List<Item> haveInputs = new ArrayList<>();
         for (Item item : inputList) {
-            if (item.isNull())
-                continue;
+            if (item.isNull()) continue;
             haveInputs.add(item.clone());
         }
         List<Item> needInputs = new ArrayList<>();
         if (multiplier != 1) {
             for (Item item : ingredientsAggregate) {
-                if (item.isNull())
-                    continue;
+                if (item.isNull()) continue;
                 Item itemClone = item.clone();
                 itemClone.setCount(itemClone.getCount() * multiplier);
                 needInputs.add(itemClone);
             }
         } else {
             for (Item item : ingredientsAggregate) {
-                if (item.isNull())
-                    continue;
+                if (item.isNull()) continue;
                 needInputs.add(item.clone());
             }
         }

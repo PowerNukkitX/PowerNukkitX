@@ -5,9 +5,8 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.MinecraftItemID;
-
-import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
+import javax.annotation.Nullable;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -37,8 +36,7 @@ public class BlockOreCoal extends BlockOre {
 
     @Since("FUTURE")
     @PowerNukkitOnly
-    @Nullable
-    @Override
+    @Nullable @Override
     protected MinecraftItemID getRawMaterial() {
         return MinecraftItemID.COAL;
     }
@@ -47,5 +45,4 @@ public class BlockOreCoal extends BlockOre {
     public int getDropExp() {
         return ThreadLocalRandom.current().nextInt(3);
     }
-
 }

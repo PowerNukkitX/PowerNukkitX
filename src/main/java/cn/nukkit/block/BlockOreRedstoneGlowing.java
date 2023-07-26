@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.item.Item;
 
-//和pm源码有点出入，这里参考了wiki
+// 和pm源码有点出入，这里参考了wiki
 
 /**
  * @author xtypr
@@ -12,8 +12,7 @@ import cn.nukkit.item.Item;
 @PowerNukkitDifference(since = "FUTURE", info = "Implements IBlockOreRedstoneGlowing only in PowerNukkit")
 public class BlockOreRedstoneGlowing extends BlockOreRedstone implements IBlockOreRedstoneGlowing {
 
-    public BlockOreRedstoneGlowing() {
-    }
+    public BlockOreRedstoneGlowing() {}
 
     @Override
     public String getName() {

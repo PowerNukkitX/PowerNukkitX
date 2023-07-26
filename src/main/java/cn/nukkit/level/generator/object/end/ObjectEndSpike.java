@@ -1,13 +1,13 @@
 package cn.nukkit.level.generator.object.end;
 
+import static cn.nukkit.block.BlockID.*;
+import static java.lang.Math.abs;
+
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.generator.object.BasicGenerator;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
-
-import static cn.nukkit.block.BlockID.*;
-import static java.lang.Math.abs;
 
 /**
  * @author Mojang AB
@@ -50,24 +50,21 @@ public class ObjectEndSpike extends BasicGenerator {
                     double d0 = position.getX() - x, d2 = position.getZ() - z;
                     if (d0 * d0 + d2 * d2 <= this.radius * this.radius + 1 && y < height)
                         level.setBlockStateAt(x, y, z, STATE_OBSIDIAN);
-                    else if (y > 65)
-                        level.setBlockStateAt(x, y, z, STATE_AIR);
-
+                    else if (y > 65) level.setBlockStateAt(x, y, z, STATE_AIR);
                 }
         if (hasIronBars) {
             for (int a = -2; a <= 2; ++a)
                 for (int b = -2; b <= 2; ++b) {
-                    level.setBlockStateAt(a + position.getFloorX(), height + 3, b + position.getFloorZ(),
-                            STATE_IRON_BARS);
+                    level.setBlockStateAt(
+                            a + position.getFloorX(), height + 3, b + position.getFloorZ(), STATE_IRON_BARS);
                     if (abs(a) == 2 || abs(b) == 2) {
-                        level.setBlockStateAt(a + position.getFloorX(), height, b + position.getFloorZ(),
-                                STATE_IRON_BARS);
-                        level.setBlockStateAt(a + position.getFloorX(), height + 1, b + position.getFloorZ(),
-                                STATE_IRON_BARS);
-                        level.setBlockStateAt(a + position.getFloorX(), height + 2, b + position.getFloorZ(),
-                                STATE_IRON_BARS);
+                        level.setBlockStateAt(
+                                a + position.getFloorX(), height, b + position.getFloorZ(), STATE_IRON_BARS);
+                        level.setBlockStateAt(
+                                a + position.getFloorX(), height + 1, b + position.getFloorZ(), STATE_IRON_BARS);
+                        level.setBlockStateAt(
+                                a + position.getFloorX(), height + 2, b + position.getFloorZ(), STATE_IRON_BARS);
                     }
-
                 }
         }
         level.setBlockStateAt(position.getFloorX(), height, position.getFloorZ(), STATE_BEDROCK_INFINIBURN);

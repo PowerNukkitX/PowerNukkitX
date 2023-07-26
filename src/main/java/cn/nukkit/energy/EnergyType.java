@@ -12,8 +12,7 @@ public interface EnergyType {
     /**
      * @return The name of this energy type.
      */
-    @NotNull
-    String getName();
+    @NotNull String getName();
 
     /**
      * When converting from this energy type to another energy type, the amount of energy is converted firstly to

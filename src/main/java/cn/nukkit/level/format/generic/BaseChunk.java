@@ -15,9 +15,6 @@ import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.updater.ChunkUpdater;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.utils.ChunkException;
-import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
-
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteBuffer;
@@ -28,6 +25,8 @@ import java.util.List;
 import java.util.function.BiPredicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -88,7 +87,9 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
         return sections[sectionY].getBlockChanges();
     }
 
-    @PowerNukkitDifference(info = "using BlockEntity.close() instead of removeBlockEntity() to solve the bug of incomplete cleanup", since = "1.6.0.0-PNX")
+    @PowerNukkitDifference(
+            info = "using BlockEntity.close() instead of removeBlockEntity() to solve the bug of incomplete cleanup",
+            since = "1.6.0.0-PNX")
     private void removeInvalidTile(int x, int y, int z) {
         BlockEntity entity = getTile(x, y, z);
         if (entity != null) {
@@ -98,14 +99,14 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
                 }
             } catch (Exception e) {
                 try {
-                    log.warn("Block entity validation of {} at {}, {} {} {} failed, removing as invalid.",
+                    log.warn(
+                            "Block entity validation of {} at {}, {} {} {} failed, removing as invalid.",
                             entity.getClass().getName(),
                             getProvider().getLevel().getName(),
                             entity.x,
                             entity.y,
                             entity.z,
-                            e
-                    );
+                            e);
                 } catch (Exception e2) {
                     e.addSuppressed(e2);
                     log.warn("Block entity validation failed", e);
@@ -117,15 +118,16 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
-    public Stream<Block> scanBlocks(BlockVector3 min, BlockVector3 max, BiPredicate<BlockVector3, BlockState> condition) {
+    @NotNull @Override
+    public Stream<Block> scanBlocks(
+            BlockVector3 min, BlockVector3 max, BiPredicate<BlockVector3, BlockState> condition) {
         int offsetX = getX() << 4;
         int offsetZ = getZ() << 4;
         return IntStream.rangeClosed(min.getChunkSectionY(isOverWorld()), max.getChunkSectionY(isOverWorld()))
                 .filter(sectionY -> sectionY >= 0 && sectionY < sections.length)
                 .mapToObj(sectionY -> sections[sectionY])
-                .filter(section -> !section.isEmpty()).parallel()
+                .filter(section -> !section.isEmpty())
+                .parallel()
                 .map(section -> section.scanBlocks(getProvider(), offsetX, offsetZ, min, max, condition))
                 .flatMap(Collection::stream);
     }
@@ -253,8 +255,11 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
     protected void createChunkSection(int sectionY) {
         try {
             var oldCs = sections[sectionY];
-            var newCs = (ChunkSection) this.providerClass.getMethod("createChunkSection", int.class).invoke(this.providerClass, sectionY);
-            if (oldCs instanceof ChunkSection3DBiome chunkSection3DBiome && newCs instanceof ChunkSection3DBiome newChunkSection3DBiome) {
+            var newCs = (ChunkSection) this.providerClass
+                    .getMethod("createChunkSection", int.class)
+                    .invoke(this.providerClass, sectionY);
+            if (oldCs instanceof ChunkSection3DBiome chunkSection3DBiome
+                    && newCs instanceof ChunkSection3DBiome newChunkSection3DBiome) {
                 newChunkSection3DBiome.set3DBiomeDataArray(chunkSection3DBiome.get3DBiomeDataArray());
             }
             this.setInternalSection(sectionY, newCs);
@@ -419,7 +424,9 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
     @SuppressWarnings("removal")
     @Override
     @Deprecated(since = "1.20.0-r2", forRemoval = true)
-    @DeprecationDetails(since = "1.20.0-r2", reason = "HeightMapArray is now a short[], Use getNewHeightMapArray() instead")
+    @DeprecationDetails(
+            since = "1.20.0-r2",
+            reason = "HeightMapArray is now a short[], Use getNewHeightMapArray() instead")
     public byte[] getHeightMapArray() {
         var heightMap = new byte[256];
         for (int i = 0; i < 256; i++) {
@@ -484,8 +491,7 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
         return true;
     }
 
-    @NotNull
-    @PowerNukkitOnly
+    @NotNull @PowerNukkitOnly
     @Override
     public List<Block> findBorders(int x, int z) {
         List<Block> borders = null;

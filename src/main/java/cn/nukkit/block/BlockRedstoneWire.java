@@ -16,11 +16,10 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockFace.Plane;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.RedstoneComponent;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Angelic47 (Nukkit Project)
@@ -55,15 +54,22 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Removed unneeded replaceable check")
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         if (!canBePlacedOn(block.down())) {
             return false;
         }
@@ -137,10 +143,12 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
 
             strength = this.getMaxCurrentStrength(v, strength);
 
-            if (this.getMaxCurrentStrength(v.up(), strength) > strength && !this.level.getBlock(pos.up()).isNormalBlock()) {
+            if (this.getMaxCurrentStrength(v.up(), strength) > strength
+                    && !this.level.getBlock(pos.up()).isNormalBlock()) {
                 strength = this.getMaxCurrentStrength(v.up(), strength);
             }
-            if (this.getMaxCurrentStrength(v.down(), strength) > strength && !this.level.getBlock(v).isNormalBlock()) {
+            if (this.getMaxCurrentStrength(v.down(), strength) > strength
+                    && !this.level.getBlock(v).isNormalBlock()) {
                 strength = this.getMaxCurrentStrength(v.down(), strength);
             }
         }
@@ -274,7 +282,9 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
 
                 if (side.getAxis().isHorizontal() && faces.isEmpty()) {
                     return power;
-                } else if (faces.contains(side) && !faces.contains(side.rotateYCCW()) && !faces.contains(side.rotateY())) {
+                } else if (faces.contains(side)
+                        && !faces.contains(side.rotateYCCW())
+                        && !faces.contains(side.rotateY())) {
                     return power;
                 } else {
                     return 0;
@@ -289,7 +299,8 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
         Block block = this.level.getBlock(v);
         boolean flag = block.isNormalBlock();
         boolean flag1 = this.level.getBlock(pos.up()).isNormalBlock();
-        return !flag1 && flag && canConnectUpwardsTo(this.level, v.up()) || (canConnectTo(block, side) || !flag && canConnectUpwardsTo(this.level, block.down()));
+        return !flag1 && flag && canConnectUpwardsTo(this.level, v.up())
+                || (canConnectTo(block, side) || !flag && canConnectUpwardsTo(this.level, block.down()));
     }
 
     protected static boolean canConnectUpwardsTo(Level level, Vector3 pos) {

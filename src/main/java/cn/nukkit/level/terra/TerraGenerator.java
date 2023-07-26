@@ -16,15 +16,12 @@ import com.dfsek.terra.api.block.state.BlockState;
 import com.dfsek.terra.api.config.ConfigPack;
 import com.dfsek.terra.api.world.biome.generation.BiomeProvider;
 import com.dfsek.terra.api.world.chunk.generation.ChunkGenerator;
-import com.dfsek.terra.api.world.chunk.generation.stage.GenerationStage;
 import com.dfsek.terra.api.world.chunk.generation.util.GeneratorWrapper;
 import com.dfsek.terra.api.world.info.WorldProperties;
-import lombok.Getter;
-
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Terra生成器平台实现类<br/>
@@ -41,8 +38,10 @@ import java.util.Map;
 @Since("1.6.0.0-PNX")
 public class TerraGenerator implements GeneratorWrapper {
     private final BiomeProvider biomeProvider;
+
     @Getter
     private final ConfigPack configPack;
+
     private final BlockState air;
     private final WorldProperties worldProperties;
     private final ChunkGenerator chunkGenerator;
@@ -62,7 +61,8 @@ public class TerraGenerator implements GeneratorWrapper {
             if (opts.length >= 1) {
                 packName = opts[0];
                 if (opts.length == 2) {
-                    this.dimensionData = DimensionEnum.valueOf(opts[1].toUpperCase()).getDimensionData();
+                    this.dimensionData =
+                            DimensionEnum.valueOf(opts[1].toUpperCase()).getDimensionData();
                 }
             }
         }
@@ -124,11 +124,20 @@ public class TerraGenerator implements GeneratorWrapper {
     }
 
     private static ConfigPack createConfigPack() {
-        return PNXPlatform.getInstance().getConfigRegistry().getByID("default").orElseGet(() -> PNXPlatform.getInstance().getConfigRegistry().getByID("PNXChunkGeneratorWrapper:default").orElseThrow());
+        return PNXPlatform.getInstance()
+                .getConfigRegistry()
+                .getByID("default")
+                .orElseGet(() -> PNXPlatform.getInstance()
+                        .getConfigRegistry()
+                        .getByID("PNXChunkGeneratorWrapper:default")
+                        .orElseThrow());
     }
 
     private static ConfigPack createConfigPack(final String packName) {
-        return PNXPlatform.getInstance().getConfigRegistry().getByID(packName).orElseGet(() -> PNXPlatform.getInstance().getConfigRegistry().getByID("PNXChunkGeneratorWrapper:" + packName).orElseThrow());
+        return PNXPlatform.getInstance().getConfigRegistry().getByID(packName).orElseGet(() -> PNXPlatform.getInstance()
+                .getConfigRegistry()
+                .getByID("PNXChunkGeneratorWrapper:" + packName)
+                .orElseThrow());
     }
 
     private static ChunkGenerator createGenerator() {
@@ -153,7 +162,10 @@ public class TerraGenerator implements GeneratorWrapper {
         for (int x = 0; x < 16; x++) {
             for (int y = minHeight; y < maxHeight; y++) {
                 for (int z = 0; z < 16; z++) {
-                    chunk.setBiome(x, y, z, (Biome) biomeProvider.getBiome(chunkX * 16 + x, y, chunkZ * 16 + z, chunkManager.getSeed()).getPlatformBiome().getHandle());
+                    chunk.setBiome(x, y, z, (Biome) biomeProvider
+                            .getBiome(chunkX * 16 + x, y, chunkZ * 16 + z, chunkManager.getSeed())
+                            .getPlatformBiome()
+                            .getHandle());
                 }
             }
         }
@@ -166,10 +178,10 @@ public class TerraGenerator implements GeneratorWrapper {
                 generationStage.populate(tmp);
             }
         } catch (ConcurrentModificationException e) {
-            //TODO: 未知原因的 ConcurrentModificationException
-            //Ignore
+            // TODO: 未知原因的 ConcurrentModificationException
+            // Ignore
         } catch (Exception e) {
-            //TODO: 未知原因的 ConcurrentModificationException
+            // TODO: 未知原因的 ConcurrentModificationException
             e.printStackTrace();
         }
         // 在装饰区块的时候就计算好天光避免重复计算导致内存泄露
@@ -204,5 +216,7 @@ public class TerraGenerator implements GeneratorWrapper {
         return dimensionData;
     }
 
-    public Level getLevel() {return level; }
+    public Level getLevel() {
+        return level;
+    }
 }

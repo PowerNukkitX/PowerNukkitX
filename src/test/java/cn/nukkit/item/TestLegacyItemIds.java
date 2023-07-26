@@ -13,11 +13,10 @@ import cn.nukkit.potion.Potion;
 import cn.nukkit.utils.Identifier;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.junit.jupiter.api.Test;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import org.junit.jupiter.api.Test;
 
 public class TestLegacyItemIds {
     static Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -30,11 +29,11 @@ public class TestLegacyItemIds {
         RuntimeItems.init();
         Potion.init();
         Item.init();
-        EnumBiome.values(); //load class, this also registers biomes
+        EnumBiome.values(); // load class, this also registers biomes
         Effect.init();
         Attribute.init();
         DispenseBehaviorRegister.init();
-        GlobalBlockPalette.getOrCreateRuntimeId(0, 0); //Force it to load
+        GlobalBlockPalette.getOrCreateRuntimeId(0, 0); // Force it to load
 
         itemBlock.add(BlockID.GLOW_FRAME);
         itemBlock.add(BlockID.SOUL_CAMPFIRE_BLOCK);
@@ -66,7 +65,8 @@ public class TestLegacyItemIds {
     }
 
     @Test
-    void testLegacyItemIds() throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
+    void testLegacyItemIds()
+            throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
         init();
         TreeMap<Integer, String> legacyIds = new TreeMap<>(Integer::compare);
         Map<String, Integer> errors = new LinkedHashMap<>();
@@ -77,7 +77,11 @@ public class TestLegacyItemIds {
                 Block block = declaredConstructor.newInstance();
 
                 if (block instanceof BlockDoor || itemBlock.contains(block.getId())) {
-                    legacyIds.put(block.getItemId(), Identifier.DEFAULT_NAMESPACE + ":" + "item." + Identifier.tryParse(block.getPersistenceName()).getPath());
+                    legacyIds.put(
+                            block.getItemId(),
+                            Identifier.DEFAULT_NAMESPACE + ":" + "item."
+                                    + Identifier.tryParse(block.getPersistenceName())
+                                            .getPath());
                 } else {
                     legacyIds.put(block.getItemId(), block.getPersistenceName());
                 }
@@ -88,7 +92,8 @@ public class TestLegacyItemIds {
                 if (c.getSimpleName().startsWith("Block")) {
                     continue;
                 }
-                Constructor<? extends Item> declaredConstructor = (Constructor<? extends Item>) c.getDeclaredConstructor(null);
+                Constructor<? extends Item> declaredConstructor =
+                        (Constructor<? extends Item>) c.getDeclaredConstructor(null);
                 declaredConstructor.setAccessible(true);
                 Item item = declaredConstructor.newInstance();
                 try {
@@ -99,7 +104,8 @@ public class TestLegacyItemIds {
             }
         }
         if (!errors.isEmpty()) {
-            throw new RuntimeException("Legacy Item Ids are incomplete! The Missing item list:\n" + gson.toJson(errors));
+            throw new RuntimeException(
+                    "Legacy Item Ids are incomplete! The Missing item list:\n" + gson.toJson(errors));
         }
         LinkedHashMap<String, Integer> result = new LinkedHashMap<>();
         for (var entry : legacyIds.entrySet()) {

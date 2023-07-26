@@ -12,7 +12,6 @@ import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
-
 import java.util.List;
 import java.util.Map;
 
@@ -24,26 +23,27 @@ public class ExecuteCommandOld extends VanillaCommand {
         super(name, "old execute command", "commands.execute.usage");
         this.setPermission("nukkit.command.executeold");
         this.commandParameters.clear();
-        this.commandParameters.put("default", new CommandParameter[]{
-                CommandParameter.newType("origin", CommandParamType.TARGET),
-                CommandParameter.newType("position", CommandParamType.POSITION),
-                CommandParameter.newType("command", CommandParamType.COMMAND)
+        this.commandParameters.put("default", new CommandParameter[] {
+            CommandParameter.newType("origin", CommandParamType.TARGET),
+            CommandParameter.newType("position", CommandParamType.POSITION),
+            CommandParameter.newType("command", CommandParamType.COMMAND)
         });
-        this.commandParameters.put("detect", new CommandParameter[]{
-                CommandParameter.newType("origin", CommandParamType.TARGET),
-                CommandParameter.newType("position", CommandParamType.POSITION),
-                CommandParameter.newEnum("detect", new String[]{"detect"}),
-                CommandParameter.newType("detectPos", CommandParamType.POSITION),
-                CommandParameter.newType("block", CommandParamType.INT),
-                CommandParameter.newType("data", CommandParamType.INT),
-                CommandParameter.newType("command", CommandParamType.COMMAND)
+        this.commandParameters.put("detect", new CommandParameter[] {
+            CommandParameter.newType("origin", CommandParamType.TARGET),
+            CommandParameter.newType("position", CommandParamType.POSITION),
+            CommandParameter.newEnum("detect", new String[] {"detect"}),
+            CommandParameter.newType("detectPos", CommandParamType.POSITION),
+            CommandParameter.newType("block", CommandParamType.INT),
+            CommandParameter.newType("data", CommandParamType.INT),
+            CommandParameter.newType("command", CommandParamType.COMMAND)
         });
         this.enableParamTree();
     }
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         int num = 0;
         var list = result.getValue();
         List<Entity> entities = list.getResult(0);
@@ -56,7 +56,8 @@ public class ExecuteCommandOld extends VanillaCommand {
                 String command = list.getResult(2);
                 for (Entity entity : entities) {
                     Position pos = ((PositionNode) list.get(1)).get(entity);
-                    ExecutorCommandSender executeSender = new ExecutorCommandSender(sender, entity, Location.fromObject(pos));
+                    ExecutorCommandSender executeSender =
+                            new ExecutorCommandSender(sender, entity, Location.fromObject(pos));
                     int n = executeSender.getServer().executeCommand(executeSender, command);
                     if (n == 0) {
                         log.addError("commands.execute.failed", command, entity.getName());
@@ -70,8 +71,10 @@ public class ExecuteCommandOld extends VanillaCommand {
                 for (Entity entity : entities) {
                     Position pos = ((PositionNode) list.get(1)).get(entity);
                     Position detect = ((PositionNode) list.get(3)).get(pos);
-                    if (detect.getLevelBlock().getId() == blockid && detect.getLevelBlock().getDamage() == meta) {
-                        ExecutorCommandSender executeSender = new ExecutorCommandSender(sender, entity, Location.fromObject(pos));
+                    if (detect.getLevelBlock().getId() == blockid
+                            && detect.getLevelBlock().getDamage() == meta) {
+                        ExecutorCommandSender executeSender =
+                                new ExecutorCommandSender(sender, entity, Location.fromObject(pos));
                         int n = executeSender.getServer().executeCommand(executeSender, command);
                         if (n == 0) {
                             log.addError("commands.execute.failed", command, entity.getName());

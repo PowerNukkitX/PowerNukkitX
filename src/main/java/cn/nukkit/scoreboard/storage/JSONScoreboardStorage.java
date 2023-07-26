@@ -13,13 +13,12 @@ import cn.nukkit.scoreboard.scorer.FakeScorer;
 import cn.nukkit.scoreboard.scorer.IScorer;
 import cn.nukkit.scoreboard.scorer.PlayerScorer;
 import cn.nukkit.utils.Config;
-import lombok.Getter;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import lombok.Getter;
 
 @PowerNukkitXOnly
 @Since("1.19.30-r1")
@@ -55,7 +54,9 @@ public class JSONScoreboardStorage implements IScoreboardStorage {
     @Override
     public void saveDisplay(Map<DisplaySlot, IScoreboard> display) {
         for (Map.Entry<DisplaySlot, IScoreboard> entry : display.entrySet()) {
-            json.set("display." + entry.getKey().name(), entry.getValue() != null ? entry.getValue().getObjectiveName() : null);
+            json.set(
+                    "display." + entry.getKey().name(),
+                    entry.getValue() != null ? entry.getValue().getObjectiveName() : null);
         }
         json.save();
     }
@@ -72,7 +73,9 @@ public class JSONScoreboardStorage implements IScoreboardStorage {
 
     @Override
     public IScoreboard readScoreboard(String name) {
-        return json.get("scoreboard." + name) == null ? null : deserializeFromMap((Map<String, Object>) json.get("scoreboard." + name));
+        return json.get("scoreboard." + name) == null
+                ? null
+                : deserializeFromMap((Map<String, Object>) json.get("scoreboard." + name));
     }
 
     @Override
@@ -114,12 +117,16 @@ public class JSONScoreboardStorage implements IScoreboardStorage {
             Map<String, Object> line = new HashMap<>();
             line.put("score", e.getScore());
             line.put("scorerType", e.getScorer().getScorerType().name());
-            line.put("name", switch (e.getScorer().getScorerType()) {
-                case PLAYER -> ((PlayerScorer) e.getScorer()).getUuid().toString();
-                case ENTITY -> ((EntityScorer) e.getScorer()).getEntityUuid().toString();
-                case FAKE -> ((FakeScorer) e.getScorer()).getFakeName();
-                default -> null;
-            });
+            line.put(
+                    "name",
+                    switch (e.getScorer().getScorerType()) {
+                        case PLAYER -> ((PlayerScorer) e.getScorer()).getUuid().toString();
+                        case ENTITY -> ((EntityScorer) e.getScorer())
+                                .getEntityUuid()
+                                .toString();
+                        case FAKE -> ((FakeScorer) e.getScorer()).getFakeName();
+                        default -> null;
+                    });
             lines.add(line);
         }
         map.put("lines", lines);

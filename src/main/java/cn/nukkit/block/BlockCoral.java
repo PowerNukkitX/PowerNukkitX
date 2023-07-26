@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.PERMANENTLY_DEAD;
+
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
@@ -11,27 +13,34 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.concurrent.ThreadLocalRandom;
-
-import static cn.nukkit.blockproperty.CommonBlockProperties.PERMANENTLY_DEAD;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 public class BlockCoral extends BlockFlowable {
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
-    public static final ArrayBlockProperty<CoralType> COLOR = new ArrayBlockProperty<>("coral_color", true, CoralType.class);
+    public static final ArrayBlockProperty<CoralType> COLOR =
+            new ArrayBlockProperty<>("coral_color", true, CoralType.class);
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(COLOR, PERMANENTLY_DEAD);
 
-    @PowerNukkitOnly public static final int TYPE_TUBE = 0;
-    @PowerNukkitOnly public static final int TYPE_BRAIN = 1;
-    @PowerNukkitOnly public static final int TYPE_BUBBLE = 2;
-    @PowerNukkitOnly public static final int TYPE_FIRE = 3;
-    @PowerNukkitOnly public static final int TYPE_HORN = 4;
+    @PowerNukkitOnly
+    public static final int TYPE_TUBE = 0;
+
+    @PowerNukkitOnly
+    public static final int TYPE_BRAIN = 1;
+
+    @PowerNukkitOnly
+    public static final int TYPE_BUBBLE = 2;
+
+    @PowerNukkitOnly
+    public static final int TYPE_FIRE = 3;
+
+    @PowerNukkitOnly
+    public static final int TYPE_HORN = 4;
 
     @PowerNukkitOnly
     public BlockCoral() {
@@ -42,7 +51,7 @@ public class BlockCoral extends BlockFlowable {
     public BlockCoral(int meta) {
         super(meta);
     }
-    
+
     @Override
     public int getId() {
         return CORAL;
@@ -50,8 +59,7 @@ public class BlockCoral extends BlockFlowable {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -69,13 +77,13 @@ public class BlockCoral extends BlockFlowable {
             setDamage(getDamage() ^ 0x8);
         }
     }
-    
+
     @PowerNukkitOnly
     @Override
     public int getWaterloggingLevel() {
         return 2;
     }
-    
+
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
@@ -83,11 +91,14 @@ public class BlockCoral extends BlockFlowable {
             if (!down.isSolid()) {
                 this.getLevel().useBreakOn(this);
             } else if (!isDead()) {
-                this.getLevel().scheduleUpdate(this, 60 + ThreadLocalRandom.current().nextInt(40));
+                this.getLevel()
+                        .scheduleUpdate(this, 60 + ThreadLocalRandom.current().nextInt(40));
             }
             return type;
         } else if (type == Level.BLOCK_UPDATE_SCHEDULED) {
-            if (!isDead() && !(getLevelBlockAtLayer(1) instanceof BlockWater)  && !(getLevelBlockAtLayer(1) instanceof BlockIceFrosted)) {
+            if (!isDead()
+                    && !(getLevelBlockAtLayer(1) instanceof BlockWater)
+                    && !(getLevelBlockAtLayer(1) instanceof BlockIceFrosted)) {
                 BlockFadeEvent event = new BlockFadeEvent(this, new BlockCoral(getDamage() | 0x8));
                 if (!event.isCancelled()) {
                     setDead(true);
@@ -100,38 +111,47 @@ public class BlockCoral extends BlockFlowable {
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         Block down = down();
         Block layer1 = block.getLevelBlockAtLayer(1);
         boolean hasWater = layer1 instanceof BlockWater;
         int waterDamage;
-        if (layer1.getId() != Block.AIR && (!hasWater || ((waterDamage = layer1.getDamage()) != 0) && waterDamage != 8)) {
+        if (layer1.getId() != Block.AIR
+                && (!hasWater || ((waterDamage = layer1.getDamage()) != 0) && waterDamage != 8)) {
             return false;
         }
 
         if (hasWater && layer1.getDamage() == 8) {
             this.getLevel().setBlock(this, 1, new BlockWater(), true, false);
         }
-        
+
         if (down.isSolid()) {
             this.getLevel().setBlock(this, 0, this, true, true);
             return true;
         }
         return false;
     }
-    
+
     @Override
     public String getName() {
         String[] names = new String[] {
-                "Tube Coral",
-                "Brain Coral",
-                "Bubble Coral",
-                "Fire Coral",
-                "Horn Coral",
-                // Invalid
-                "Tube Coral",
-                "Tube Coral",
-                "Tube Coral"
+            "Tube Coral",
+            "Brain Coral",
+            "Bubble Coral",
+            "Fire Coral",
+            "Horn Coral",
+            // Invalid
+            "Tube Coral",
+            "Tube Coral",
+            "Tube Coral"
         };
         String name = names[getDamage() & 0x7];
         if (isDead()) {
@@ -145,7 +165,7 @@ public class BlockCoral extends BlockFlowable {
     public boolean canSilkTouch() {
         return true;
     }
-    
+
     @Override
     public Item[] getDrops(Item item) {
         if (item.getEnchantment(Enchantment.ID_SILK_TOUCH) != null) {

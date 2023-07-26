@@ -11,19 +11,31 @@ import org.jetbrains.annotations.NotNull;
 public class BlockSlabStone3 extends BlockSlab {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(
-            StoneSlab3Type.PROPERTY,
-            TOP_SLOT_PROPERTY
-    );
-    
-    @PowerNukkitOnly public static final int END_STONE_BRICKS = 0;
-    @PowerNukkitOnly public static final int SMOOTH_RED_SANDSTONE = 1;
-    @PowerNukkitOnly public static final int POLISHED_ANDESITE = 2;
-    @PowerNukkitOnly public static final int ANDESITE = 3;
-    @PowerNukkitOnly public static final int DIORITE = 4;
-    @PowerNukkitOnly public static final int POLISHED_DIORITE = 5;
-    @PowerNukkitOnly public static final int GRANITE = 6;
-    @PowerNukkitOnly public static final int POLISHED_GRANITE = 7;
+    public static final BlockProperties PROPERTIES = new BlockProperties(StoneSlab3Type.PROPERTY, TOP_SLOT_PROPERTY);
+
+    @PowerNukkitOnly
+    public static final int END_STONE_BRICKS = 0;
+
+    @PowerNukkitOnly
+    public static final int SMOOTH_RED_SANDSTONE = 1;
+
+    @PowerNukkitOnly
+    public static final int POLISHED_ANDESITE = 2;
+
+    @PowerNukkitOnly
+    public static final int ANDESITE = 3;
+
+    @PowerNukkitOnly
+    public static final int DIORITE = 4;
+
+    @PowerNukkitOnly
+    public static final int POLISHED_DIORITE = 5;
+
+    @PowerNukkitOnly
+    public static final int GRANITE = 6;
+
+    @PowerNukkitOnly
+    public static final int POLISHED_GRANITE = 7;
 
     @PowerNukkitOnly
     public BlockSlabStone3() {
@@ -42,8 +54,7 @@ public class BlockSlabStone3 extends BlockSlab {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -66,13 +77,11 @@ public class BlockSlabStone3 extends BlockSlab {
         setPropertyValue(StoneSlab3Type.PROPERTY, type);
     }
 
-
     @PowerNukkitOnly
     @Override
     public boolean isSameType(BlockSlab slab) {
         return slab.getId() == getId() && getSlabType().equals(slab.getPropertyValue(StoneSlab3Type.PROPERTY));
     }
-
 
     @Override
     @PowerNukkitOnly

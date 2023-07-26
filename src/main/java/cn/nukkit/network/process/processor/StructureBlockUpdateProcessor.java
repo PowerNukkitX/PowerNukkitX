@@ -15,9 +15,8 @@ public class StructureBlockUpdateProcessor extends DataPacketProcessor<Structure
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull StructureBlockUpdatePacket pk) {
         if (playerHandle.player.isOp() && playerHandle.player.isCreative()) {
-            BlockEntity blockEntity = playerHandle.player.level.getBlockEntity(new Vector3(pk.blockPosition.x,
-                    pk.blockPosition.y,
-                    pk.blockPosition.z));
+            BlockEntity blockEntity = playerHandle.player.level.getBlockEntity(
+                    new Vector3(pk.blockPosition.x, pk.blockPosition.y, pk.blockPosition.z));
             if (blockEntity instanceof BlockEntityStructBlock structBlock) {
                 Block sBlock = structBlock.getLevelBlock();
                 sBlock.setPropertyValue(BlockStructure.STRUCTURE_BLOCK_TYPE, pk.editorData.getType());

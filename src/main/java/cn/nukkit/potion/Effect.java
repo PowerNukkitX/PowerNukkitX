@@ -28,43 +28,62 @@ public class Effect implements Cloneable {
     public static final int MINING_FATIGUE = 4;
     public static final int STRENGTH = 5;
 
-    @Since("1.4.0.0-PN") public static final int INSTANT_HEALTH = 6;
-    @Deprecated @DeprecationDetails(
-            by = "PowerNukkit", since = "1.4.0.0-PN", 
+    @Since("1.4.0.0-PN")
+    public static final int INSTANT_HEALTH = 6;
+
+    @Deprecated
+    @DeprecationDetails(
+            by = "PowerNukkit",
+            since = "1.4.0.0-PN",
             reason = "Was renamed to INSTANT_HEALTH in game, can be removed anytime by Cloudburst Nukkit",
             replaceWith = "INSTANT_HEALTH")
     public static final int HEALING = INSTANT_HEALTH;
 
-    @Since("1.4.0.0-PN") public static final int INSTANT_DAMAGE = 7;
-    @Deprecated @DeprecationDetails(
-            by = "PowerNukkit", since = "1.4.0.0-PN",
+    @Since("1.4.0.0-PN")
+    public static final int INSTANT_DAMAGE = 7;
+
+    @Deprecated
+    @DeprecationDetails(
+            by = "PowerNukkit",
+            since = "1.4.0.0-PN",
             reason = "Was renamed to INSTANT_DAMAGE in game, can be removed anytime by Cloudburst Nukkit",
             replaceWith = "INSTANT_DAMAGE")
     public static final int HARMING = INSTANT_DAMAGE;
 
+    @Since("1.4.0.0-PN")
+    public static final int JUMP_BOOST = 8;
 
-    @Since("1.4.0.0-PN") public static final int JUMP_BOOST = 8;
-    @Deprecated @DeprecationDetails(
-            by = "PowerNukkit", since = "1.4.0.0-PN",
+    @Deprecated
+    @DeprecationDetails(
+            by = "PowerNukkit",
+            since = "1.4.0.0-PN",
             reason = "Was renamed to JUMP_BOOST in game, can be removed anytime by Cloudburst Nukkit",
             replaceWith = "JUMP_BOOST")
     public static final int JUMP = JUMP_BOOST;
 
-
     public static final int NAUSEA = 9;
-    @Deprecated @DeprecationDetails(
-            by = "PowerNukkit", since = "1.4.0.0-PN",
+
+    @Deprecated
+    @DeprecationDetails(
+            by = "PowerNukkit",
+            since = "1.4.0.0-PN",
             reason = "Was renamed to NAUSEA in game, can be removed anytime by Cloudburst Nukkit",
             replaceWith = "NAUSEA")
     public static final int CONFUSION = 9;
-    
+
     public static final int REGENERATION = 10;
-    @Since("1.4.0.0-PN") public static final int RESISTANCE = 11;
-    @Deprecated @DeprecationDetails(
-            by = "PowerNukkit", since = "1.4.0.0-PN",
+
+    @Since("1.4.0.0-PN")
+    public static final int RESISTANCE = 11;
+
+    @Deprecated
+    @DeprecationDetails(
+            by = "PowerNukkit",
+            since = "1.4.0.0-PN",
             reason = "Was renamed to JUMP_BOOST in game, can be removed anytime by Cloudburst Nukkit",
             replaceWith = "JUMP_BOOST")
     public static final int DAMAGE_RESISTANCE = RESISTANCE;
+
     public static final int FIRE_RESISTANCE = 12;
     public static final int WATER_BREATHING = 13;
     public static final int INVISIBILITY = 14;
@@ -84,13 +103,22 @@ public class Effect implements Cloneable {
      * @deprecated Typo. Use {@link #CONDUIT_POWER} instead.
      */
     @Deprecated
-    @DeprecationDetails(by = "PowerNukkit and removed by Cloudburst", since = "TBD",
-            reason = "Typo", replaceWith = "CONDUIT_POWER")
+    @DeprecationDetails(
+            by = "PowerNukkit and removed by Cloudburst",
+            since = "TBD",
+            reason = "Typo",
+            replaceWith = "CONDUIT_POWER")
     @PowerNukkitOnly("Was removed from Cloudburst Nukkit, kept on PowerNukkit for backward compatibility")
     public static final int COUNDIT_POWER = CONDUIT_POWER;
+
     public static final int SLOW_FALLING = 27;
-    @Since("1.4.0.0-PN") public static final int BAD_OMEN = 28;
-    @Since("1.4.0.0-PN") public static final int VILLAGE_HERO = 29;
+
+    @Since("1.4.0.0-PN")
+    public static final int BAD_OMEN = 28;
+
+    @Since("1.4.0.0-PN")
+    public static final int VILLAGE_HERO = 29;
+
     public static final int DARKNESS = 30;
 
     protected static Effect[] effects;
@@ -129,7 +157,8 @@ public class Effect implements Cloneable {
         effects[Effect.CONDUIT_POWER] = new Effect(Effect.CONDUIT_POWER, "%potion.conduitPower", 29, 194, 209);
         effects[Effect.SLOW_FALLING] = new Effect(Effect.SLOW_FALLING, "%potion.slowFalling", 206, 255, 255);
         effects[Effect.BAD_OMEN] = new Effect(Effect.BAD_OMEN, "%effect.badOmen", 11, 97, 56, true);
-        effects[Effect.VILLAGE_HERO] = new Effect(Effect.VILLAGE_HERO, "%effect.villageHero", 68, 255, 68).setVisible(false);
+        effects[Effect.VILLAGE_HERO] =
+                new Effect(Effect.VILLAGE_HERO, "%effect.villageHero", 68, 255, 68).setVisible(false);
         effects[Effect.DARKNESS] = new Effect(Effect.DARKNESS, "%effect.darkness", 41, 39, 33, true).setVisible(false);
     }
 
@@ -229,18 +258,18 @@ public class Effect implements Cloneable {
     public boolean canTick() {
         int interval;
         switch (this.id) {
-            case Effect.POISON: //POISON
+            case Effect.POISON: // POISON
             case Effect.FATAL_POISON:
                 if ((interval = (25 >> this.amplifier)) > 0) {
                     return (this.duration % interval) == 0;
                 }
                 return true;
-            case Effect.WITHER: //WITHER
+            case Effect.WITHER: // WITHER
                 if ((interval = (50 >> this.amplifier)) > 0) {
                     return (this.duration % interval) == 0;
                 }
                 return true;
-            case Effect.REGENERATION: //REGENERATION
+            case Effect.REGENERATION: // REGENERATION
                 if ((interval = (40 >> this.amplifier)) > 0) {
                     return (this.duration % interval) == 0;
                 }
@@ -251,16 +280,16 @@ public class Effect implements Cloneable {
 
     public void applyEffect(Entity entity) {
         switch (this.id) {
-            case Effect.POISON: //POISON
+            case Effect.POISON: // POISON
             case Effect.FATAL_POISON:
                 if (entity.getHealth() > 1 || this.id == FATAL_POISON) {
                     entity.attack(new EntityDamageEvent(entity, DamageCause.MAGIC, 1));
                 }
                 break;
-            case Effect.WITHER: //WITHER
+            case Effect.WITHER: // WITHER
                 entity.attack(new EntityDamageEvent(entity, DamageCause.MAGIC, 1));
                 break;
-            case Effect.REGENERATION: //REGENERATION
+            case Effect.REGENERATION: // REGENERATION
                 if (entity.getHealth() < entity.getMaxHealth()) {
                     entity.heal(new EntityRegainHealthEvent(entity, 1, EntityRegainHealthEvent.CAUSE_MAGIC));
                 }
@@ -269,7 +298,7 @@ public class Effect implements Cloneable {
     }
 
     public int[] getColor() {
-        return new int[]{this.color >> 16, (this.color >> 8) & 0xff, this.color & 0xff};
+        return new int[] {this.color >> 16, (this.color >> 8) & 0xff, this.color & 0xff};
     }
 
     public void setColor(int r, int g, int b) {
@@ -313,17 +342,19 @@ public class Effect implements Cloneable {
                 }
                 player.setMovementSpeed(player.getMovementSpeed() * (1 - 0.15f * (this.amplifier + 1)));
             }
-        }else if (entity instanceof EntityLiving entityLiving) {
+        } else if (entity instanceof EntityLiving entityLiving) {
             if (this.id == Effect.SPEED && (oldEffect == null || oldEffect.amplifier != this.amplifier)) {
                 if (oldEffect != null) {
-                    entityLiving.setMovementSpeed(entityLiving.getMovementSpeed() / (1 + 0.2f * (oldEffect.amplifier + 1)));
+                    entityLiving.setMovementSpeed(
+                            entityLiving.getMovementSpeed() / (1 + 0.2f * (oldEffect.amplifier + 1)));
                 }
                 entityLiving.setMovementSpeed(entityLiving.getMovementSpeed() * (1 + 0.2f * (this.amplifier + 1)));
             }
 
             if (this.id == Effect.SLOWNESS && (oldEffect == null || oldEffect.amplifier != this.amplifier)) {
                 if (oldEffect != null) {
-                    entityLiving.setMovementSpeed(entityLiving.getMovementSpeed() / (1 - 0.15f * (oldEffect.amplifier + 1)));
+                    entityLiving.setMovementSpeed(
+                            entityLiving.getMovementSpeed() / (1 - 0.15f * (oldEffect.amplifier + 1)));
                 }
                 entityLiving.setMovementSpeed(entityLiving.getMovementSpeed() * (1 - 0.15f * (this.amplifier + 1)));
             }

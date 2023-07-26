@@ -1,6 +1,5 @@
 package cn.nukkit.command.utils;
 
-
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
@@ -20,7 +19,6 @@ import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.TextFormat;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -28,19 +26,25 @@ import java.util.StringJoiner;
 
 @PowerNukkitXOnly
 @Since("1.19.60-r1")
-public record CommandLogger(Command command,
-                            CommandSender sender,
-                            String commandLabel,
-                            String[] args,
-                            CommandOutputContainer outputContainer,
-                            Plugin plugin) {
+public record CommandLogger(
+        Command command,
+        CommandSender sender,
+        String commandLabel,
+        String[] args,
+        CommandOutputContainer outputContainer,
+        Plugin plugin) {
     private static final byte SYNTAX_ERROR_LENGTH_LIMIT = 23;
 
     public CommandLogger(Command command, CommandSender sender, String commandLabel, String[] args) {
         this(command, sender, commandLabel, args, new CommandOutputContainer());
     }
 
-    public CommandLogger(Command command, CommandSender sender, String commandLabel, String[] args, CommandOutputContainer outputContainer) {
+    public CommandLogger(
+            Command command,
+            CommandSender sender,
+            String commandLabel,
+            String[] args,
+            CommandOutputContainer outputContainer) {
         this(command, sender, commandLabel, args, outputContainer, InternalPlugin.INSTANCE);
     }
 
@@ -132,14 +136,18 @@ public record CommandLogger(Command command,
                 } else {
                     text = i18n.tr(Server.getInstance().getLanguageCode(), key, params);
                 }
-                this.outputContainer.getMessages().add(new CommandOutputMessage(text, CommandOutputContainer.EMPTY_STRING));
+                this.outputContainer
+                        .getMessages()
+                        .add(new CommandOutputMessage(text, CommandOutputContainer.EMPTY_STRING));
                 return this;
             }
         }
-        this.outputContainer.getMessages().add(new CommandOutputMessage(Server.getInstance().getLanguage().tr(key, params), CommandOutputContainer.EMPTY_STRING));
+        this.outputContainer
+                .getMessages()
+                .add(new CommandOutputMessage(
+                        Server.getInstance().getLanguage().tr(key, params), CommandOutputContainer.EMPTY_STRING));
         return this;
     }
-
 
     /**
      * 添加一条默认的命令格式错误信息,会提示命令发送者在指定索引处发生错误
@@ -294,11 +302,11 @@ public record CommandLogger(Command command,
 
         if (errorIndex == -1) {
             var result = join1.toString();
-            return new String[]{result.substring(Math.max(0, result.length() - SYNTAX_ERROR_LENGTH_LIMIT)), " ", " "};
+            return new String[] {result.substring(Math.max(0, result.length() - SYNTAX_ERROR_LENGTH_LIMIT)), " ", " "};
         } else if (errorIndex == args.length) {
             Arrays.stream(args).forEach(join1::add);
             var result = join1.toString();
-            return new String[]{result.substring(Math.max(0, result.length() - SYNTAX_ERROR_LENGTH_LIMIT)), "", ""};
+            return new String[] {result.substring(Math.max(0, result.length() - SYNTAX_ERROR_LENGTH_LIMIT)), "", ""};
         }
 
         for (int i = 0; i < errorIndex; ++i) {
@@ -311,10 +319,14 @@ public record CommandLogger(Command command,
 
         var end = args[errorIndex] + join2;
         if (end.length() >= SYNTAX_ERROR_LENGTH_LIMIT) {
-            return new String[]{"", args[errorIndex], join2.toString()};
+            return new String[] {"", args[errorIndex], join2.toString()};
         } else {
             var result = join1.toString();
-            return new String[]{result.substring(Math.max(0, join1.length() + end.length() - SYNTAX_ERROR_LENGTH_LIMIT)), args[errorIndex], join2.toString()};
+            return new String[] {
+                result.substring(Math.max(0, join1.length() + end.length() - SYNTAX_ERROR_LENGTH_LIMIT)),
+                args[errorIndex],
+                join2.toString()
+            };
         }
     }
 
@@ -324,7 +336,9 @@ public record CommandLogger(Command command,
         if (target instanceof ICommandBlock) return;
         TranslationContainer message = broadcastMessage(key, value, target);
 
-        Set<Permissible> users = target.getServer().getPluginManager().getPermissionSubscriptions(Server.BROADCAST_CHANNEL_ADMINISTRATIVE);
+        Set<Permissible> users = target.getServer()
+                .getPluginManager()
+                .getPermissionSubscriptions(Server.BROADCAST_CHANNEL_ADMINISTRATIVE);
         users.remove(target);
         for (Permissible user : users) {
             if (user instanceof CommandSender commandSender) {
@@ -335,7 +349,9 @@ public record CommandLogger(Command command,
 
     private TranslationContainer broadcastMessage(String key, String[] value, CommandSender target) {
         var message = new TranslationContainer(TextFormat.clean(key), value);
-        String resultStr = "[" + target.getName() + ": " + (!message.getText().equals(target.getServer().getLanguage().get(message.getText())) ? "%" : "") + message.getText() + "]";
+        String resultStr = "[" + target.getName() + ": "
+                + (!message.getText().equals(target.getServer().getLanguage().get(message.getText())) ? "%" : "")
+                + message.getText() + "]";
         String coloredStr = TextFormat.GRAY + "" + TextFormat.ITALIC + resultStr;
         message.setText(coloredStr);
         return message;

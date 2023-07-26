@@ -12,9 +12,8 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -51,8 +50,7 @@ public class BlockCandleCake extends BlockTransparentMeta {
 
     @Since("1.6.0.0-PNX")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -109,7 +107,15 @@ public class BlockCandleCake extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
         if (down().getId() != Block.AIR) {
             getLevel().setBlock(block, this, true, true);
             return true;
@@ -135,7 +141,7 @@ public class BlockCandleCake extends BlockTransparentMeta {
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{toCandleForm().toItem()};
+        return new Item[] {toCandleForm().toItem()};
     }
 
     @Override
@@ -156,7 +162,8 @@ public class BlockCandleCake extends BlockTransparentMeta {
             getLevel().addSound(this, Sound.FIRE_IGNITE);
             getLevel().setBlock(this, this, true, true);
             return true;
-        } else if (player != null && (player.getFoodData().getLevel() < player.getFoodData().getMaxLevel() || player.isCreative())) {
+        } else if (player != null
+                && (player.getFoodData().getLevel() < player.getFoodData().getMaxLevel() || player.isCreative())) {
             final Block cake = new BlockCake();
             this.getLevel().setBlock(this, cake, true, true);
             this.getLevel().dropItem(this.add(0.5, 0.5, 0.5), getDrops(null)[0]);

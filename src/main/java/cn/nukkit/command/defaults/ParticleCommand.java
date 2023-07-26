@@ -10,7 +10,6 @@ import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.level.ParticleEffect;
 import cn.nukkit.level.Position;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,17 +27,18 @@ public class ParticleCommand extends VanillaCommand {
         for (ParticleEffect particle : ParticleEffect.values()) {
             particles.add(particle.getIdentifier());
         }
-        this.commandParameters.put("default", new CommandParameter[]{
-                CommandParameter.newEnum("effect", new CommandEnum("particle", particles, true)),
-                CommandParameter.newType("position", CommandParamType.POSITION),
-                CommandParameter.newType("count", true, CommandParamType.INT)
+        this.commandParameters.put("default", new CommandParameter[] {
+            CommandParameter.newEnum("effect", new CommandEnum("particle", particles, true)),
+            CommandParameter.newType("position", CommandParamType.POSITION),
+            CommandParameter.newType("count", true, CommandParamType.INT)
         });
         this.enableParamTree();
     }
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         String name = result.getValue().getResult(0);
         Position position = result.getValue().getResult(1);
         int count = 1;
@@ -48,7 +48,8 @@ public class ParticleCommand extends VanillaCommand {
             return 0;
         }
         for (int i = 0; i < count; i++) {
-            position.level.addParticleEffect(position.asVector3f(), name, -1, position.level.getDimension(), (Player[]) null);
+            position.level.addParticleEffect(
+                    position.asVector3f(), name, -1, position.level.getDimension(), (Player[]) null);
         }
         log.addSuccess("commands.particle.success", name, String.valueOf(count));
         return 1;

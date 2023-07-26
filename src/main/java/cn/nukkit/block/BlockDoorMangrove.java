@@ -7,7 +7,7 @@ import cn.nukkit.item.ItemDoorMangrove;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class BlockDoorMangrove extends BlockDoorWood{
+public class BlockDoorMangrove extends BlockDoorWood {
     public BlockDoorMangrove() {
         this(0);
     }

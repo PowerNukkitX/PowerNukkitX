@@ -20,9 +20,8 @@ import org.jetbrains.annotations.NotNull;
  */
 public class BlockNetherPortal extends BlockFlowable implements Faceable {
 
-    private static final ArrayBlockProperty<String> PORTAL_AXIS = new ArrayBlockProperty<>("portal_axis", false,
-            new String[]{"unknown", "x", "z"}
-    );
+    private static final ArrayBlockProperty<String> PORTAL_AXIS =
+            new ArrayBlockProperty<>("portal_axis", false, new String[] {"unknown", "x", "z"});
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
@@ -53,8 +52,7 @@ public class BlockNetherPortal extends BlockFlowable implements Faceable {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -125,16 +123,17 @@ public class BlockNetherPortal extends BlockFlowable implements Faceable {
     }
 
     public static void spawnPortal(Position pos) {
-        Level lvl = pos.level; //TODO: This will generate part of the time, seems to be only when the chunk is populated
+        Level lvl =
+                pos.level; // TODO: This will generate part of the time, seems to be only when the chunk is populated
         int x = pos.getFloorX();
         int y = pos.getFloorY();
         int z = pos.getFloorZ();
-        
+
         Block air = Block.get(AIR);
         Block obsidian = Block.get(OBSIDIAN);
         Block netherPortal = Block.get(NETHER_PORTAL);
         for (int xx = -1; xx < 4; xx++) {
-            for (int yy = 1; yy < 4; yy++)  {
+            for (int yy = 1; yy < 4; yy++) {
                 for (int zz = -1; zz < 3; zz++) {
                     lvl.setBlock(x + xx, y + yy, z + zz, air, false, true);
                 }
@@ -154,7 +153,7 @@ public class BlockNetherPortal extends BlockFlowable implements Faceable {
         lvl.setBlock(x + 1, y, z, obsidian, false, true);
         lvl.setBlock(x + 2, y, z, obsidian, false, true);
         z--;
-        
+
         for (int i = 0; i < 3; i++) {
             y++;
             lvl.setBlock(x, y, z, obsidian, false, true);

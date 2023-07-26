@@ -10,8 +10,7 @@ import cn.nukkit.math.BlockFace;
  */
 public class BlockSlime extends BlockTransparent {
 
-    public BlockSlime() {
-    }
+    public BlockSlime() {}
 
     @Override
     public double getHardness() {

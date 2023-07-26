@@ -16,9 +16,8 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.LevelEventPacket;
-
-import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
+import javax.annotation.Nullable;
 
 /**
  * @author Pub4Game
@@ -120,8 +119,7 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
             if (item instanceof ItemBlock itemBlock) {
                 itemTag.putCompound("Block", NBTIO.putBlockHelper(itemBlock.getBlock()));
             }
-            tag.putCompound("Item", itemTag)
-                    .putByte("ItemRotation", this.getItemRotation());
+            tag.putCompound("Item", itemTag).putByte("ItemRotation", this.getItemRotation());
         }
         return tag;
     }
@@ -146,8 +144,7 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nullable
-    public EntityItem dropItemAndGetEntity(@Nullable Player player) {
+    @Nullable public EntityItem dropItemAndGetEntity(@Nullable Player player) {
         Level level = getValidLevel();
         Item drop = getItem();
         if (drop.isNull()) {

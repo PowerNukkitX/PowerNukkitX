@@ -13,9 +13,8 @@ public class TpsCommand extends Command implements CoreCommand {
         super(name, "get server tps");
         this.setPermission("nukkit.tps.status");
         this.getCommandParameters().clear();
-        this.addCommandParameters("default", new CommandParameter[]{
-                CommandParameter.newType("count", true, CommandParamType.INT)
-        });
+        this.addCommandParameters(
+                "default", new CommandParameter[] {CommandParameter.newType("count", true, CommandParamType.INT)});
     }
 
     @Override

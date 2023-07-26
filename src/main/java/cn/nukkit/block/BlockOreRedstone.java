@@ -10,10 +10,9 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.MinecraftItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
-
-import javax.annotation.Nullable;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+import javax.annotation.Nullable;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -50,9 +49,7 @@ public class BlockOreRedstone extends BlockOre {
                 count += new Random().nextInt(fortune.getLevel() + 1);
             }
 
-            return new Item[]{
-                    new ItemRedstone(0, count)
-            };
+            return new Item[] {new ItemRedstone(0, count)};
         } else {
             return Item.EMPTY_ARRAY;
         }
@@ -60,7 +57,7 @@ public class BlockOreRedstone extends BlockOre {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_TOUCH) { //type == Level.BLOCK_UPDATE_NORMAL ||
+        if (type == Level.BLOCK_UPDATE_TOUCH) { // type == Level.BLOCK_UPDATE_NORMAL ||
             this.getLevel().setBlock(this, getLitState().getBlock(), false, true);
 
             return Level.BLOCK_UPDATE_WEAK;
@@ -71,8 +68,7 @@ public class BlockOreRedstone extends BlockOre {
 
     @Since("FUTURE")
     @PowerNukkitOnly
-    @Nullable
-    @Override
+    @Nullable @Override
     protected MinecraftItemID getRawMaterial() {
         return MinecraftItemID.REDSTONE;
     }

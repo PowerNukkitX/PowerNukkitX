@@ -4,15 +4,14 @@ import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import io.netty.util.internal.EmptyArrays;
-import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
-
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
+import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -39,9 +38,8 @@ public class BaseLang {
      */
     protected Map<String, String> fallbackLang = new HashMap<>();
 
-    //用于提取字符串中%后带有[a-zA-Z0-9_.-]这些字符的字符串的模式
+    // 用于提取字符串中%后带有[a-zA-Z0-9_.-]这些字符的字符串的模式
     private final Pattern split = Pattern.compile("%[A-Za-z0-9_.-]+");
-
 
     public BaseLang(String lang) {
         this(lang, null);
@@ -58,9 +56,11 @@ public class BaseLang {
         if (path == null) {
             path = "language/";
             try {
-                this.lang = this.loadLang(this.getClass().getModule().getResourceAsStream(path + this.langName + "/lang.ini"));
+                this.lang = this.loadLang(
+                        this.getClass().getModule().getResourceAsStream(path + this.langName + "/lang.ini"));
                 if (useFallback)
-                    this.fallbackLang = this.loadLang(this.getClass().getModule().getResourceAsStream(path + fallback + "/lang.ini"));
+                    this.fallbackLang = this.loadLang(
+                            this.getClass().getModule().getResourceAsStream(path + fallback + "/lang.ini"));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -313,7 +313,7 @@ public class BaseLang {
     @Deprecated
     @DeprecationDetails(since = "1.19.60-r1", reason = "old", replaceWith = "BaseLang#tr(String,Object...)")
     public String translateString(String str, String param, String onlyPrefix) {
-        return this.tr(str, new String[]{param}, onlyPrefix, true);
+        return this.tr(str, new String[] {param}, onlyPrefix, true);
     }
 
     @Deprecated
@@ -348,8 +348,10 @@ public class BaseLang {
                 int ord = c;
                 if ((ord >= 0x30 && ord <= 0x39) // 0-9
                         || (ord >= 0x41 && ord <= 0x5a) // A-Z
-                        || (ord >= 0x61 && ord <= 0x7a) || // a-z
-                        c == '.' || c == '-') {
+                        || (ord >= 0x61 && ord <= 0x7a)
+                        || // a-z
+                        c == '.'
+                        || c == '-') {
                     replaceString += String.valueOf(c);
                 } else {
                     String t = this.internalGet(replaceString.substring(1));

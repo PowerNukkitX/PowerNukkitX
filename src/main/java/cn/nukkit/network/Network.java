@@ -14,13 +14,6 @@ import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import oshi.SystemInfo;
-import oshi.hardware.NetworkIF;
-
-import javax.annotation.Nonnegative;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -30,6 +23,12 @@ import java.util.*;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
+import javax.annotation.Nonnegative;
+import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import oshi.SystemInfo;
+import oshi.hardware.NetworkIF;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -39,25 +38,30 @@ public class Network {
 
     private static final ThreadLocal<Inflater> INFLATER_RAW = ThreadLocal.withInitial(() -> new Inflater(true));
     private static final ThreadLocal<Deflater> DEFLATER_RAW = ThreadLocal.withInitial(() -> new Deflater(7, true));
+
     @PowerNukkitXOnly
     @Since("1.19.40-r3")
-    private static final ThreadLocal<LibdeflateCompressor> PNX_DEFLATER_RAW = ThreadLocal.withInitial(() -> new PNXLibDeflater(7));
+    private static final ThreadLocal<LibdeflateCompressor> PNX_DEFLATER_RAW =
+            ThreadLocal.withInitial(() -> new PNXLibDeflater(7));
+
     @PowerNukkitXOnly
     @Since("1.19.40-r3")
     private static final int BUFFER_LEN = 2 * 1024 * 1024;
+
     private static final ThreadLocal<byte[]> BUFFER = ThreadLocal.withInitial(() -> new byte[BUFFER_LEN]);
+
     @PowerNukkitXOnly
     @Since("1.19.40-r3")
     public static boolean libDeflateAvailable = false;
 
     public static final byte CHANNEL_NONE = 0;
-    public static final byte CHANNEL_PRIORITY = 1; //Priority channel, only to be used when it matters
-    public static final byte CHANNEL_WORLD_CHUNKS = 2; //Chunk sending
-    public static final byte CHANNEL_MOVEMENT = 3; //Movement sending
-    public static final byte CHANNEL_BLOCKS = 4; //Block updates or explosions
-    public static final byte CHANNEL_WORLD_EVENTS = 5; //Entity, level or blockentity entity events
-    public static final byte CHANNEL_ENTITY_SPAWNING = 6; //Entity spawn/despawn channel
-    public static final byte CHANNEL_TEXT = 7; //Chat and other text stuff
+    public static final byte CHANNEL_PRIORITY = 1; // Priority channel, only to be used when it matters
+    public static final byte CHANNEL_WORLD_CHUNKS = 2; // Chunk sending
+    public static final byte CHANNEL_MOVEMENT = 3; // Movement sending
+    public static final byte CHANNEL_BLOCKS = 4; // Block updates or explosions
+    public static final byte CHANNEL_WORLD_EVENTS = 5; // Entity, level or blockentity entity events
+    public static final byte CHANNEL_ENTITY_SPAWNING = 6; // Entity spawn/despawn channel
+    public static final byte CHANNEL_TEXT = 7; // Chat and other text stuff
     public static final byte CHANNEL_END = 31;
 
     private final Int2ObjectOpenHashMap<Class<? extends DataPacket>> packetPool = new Int2ObjectOpenHashMap<>(256);
@@ -73,8 +77,7 @@ public class Network {
     private String name;
     private String subName;
 
-    @Nullable
-    @PowerNukkitXOnly
+    @Nullable @PowerNukkitXOnly
     @Since("1.19.20-r3")
     private final List<NetworkIF> hardWareNetworkInterfaces;
 
@@ -93,9 +96,7 @@ public class Network {
         }
     }
 
-    record NetWorkStatisticData(long upload, long download) {
-
-    }
+    record NetWorkStatisticData(long upload, long download) {}
 
     @Since("1.3.0.0-PN")
     public static byte[] inflateRaw(byte[] data) throws IOException, DataFormatException {
@@ -110,7 +111,8 @@ public class Network {
             while (!inflater.finished()) {
                 int i = inflater.inflate(buf);
                 if (i == 0) {
-                    throw new IOException("Could not decompress the data. Needs input: " + inflater.needsInput() + ", Needs Dictionary: " + inflater.needsDictionary());
+                    throw new IOException("Could not decompress the data. Needs input: " + inflater.needsInput()
+                            + ", Needs Dictionary: " + inflater.needsDictionary());
                 }
                 bos.write(buf, 0, i);
             }
@@ -126,7 +128,9 @@ public class Network {
         if (libDeflateAvailable) {
             var deflater = level == 7 ? PNX_DEFLATER_RAW.get() : new LibdeflateCompressor(level);
             try {
-                byte[] buffer = deflater.getCompressBound(data.length, CompressionType.DEFLATE) < BUFFER_LEN ? BUFFER.get() : new byte[data.length];
+                byte[] buffer = deflater.getCompressBound(data.length, CompressionType.DEFLATE) < BUFFER_LEN
+                        ? BUFFER.get()
+                        : new byte[data.length];
                 int size = deflater.compress(data, buffer, CompressionType.DEFLATE);
                 return Arrays.copyOf(buffer, size);
             } finally {
@@ -166,7 +170,9 @@ public class Network {
                     bos.write(data, 0, data.length);
                 }
                 var data = bos.toByteArray();
-                byte[] buffer = deflater.getCompressBound(data.length, CompressionType.DEFLATE) < BUFFER_LEN ? BUFFER.get() : new byte[data.length];
+                byte[] buffer = deflater.getCompressBound(data.length, CompressionType.DEFLATE) < BUFFER_LEN
+                        ? BUFFER.get()
+                        : new byte[data.length];
                 int size = deflater.compress(data, buffer, CompressionType.DEFLATE);
                 return Arrays.copyOf(buffer, size);
             } finally {
@@ -201,9 +207,7 @@ public class Network {
     }
 
     @Deprecated(since = "1.6.0.0-PNX")
-    public void addStatistics(double upload, double download) {
-
-    }
+    public void addStatistics(double upload, double download) {}
 
     public double getUpload() {
         return netWorkStatisticDataList.get(1).upload - netWorkStatisticDataList.get(0).upload;
@@ -238,7 +242,14 @@ public class Network {
             try {
                 interfaz.process();
             } catch (Exception e) {
-                log.fatal(this.server.getLanguage().tr("nukkit.server.networkError", interfaz.getClass().getName(), Utils.getExceptionMessage(e)), e);
+                log.fatal(
+                        this.server
+                                .getLanguage()
+                                .tr(
+                                        "nukkit.server.networkError",
+                                        interfaz.getClass().getName(),
+                                        Utils.getExceptionMessage(e)),
+                        e);
                 interfaz.emergencyShutdown();
                 this.unregisterInterface(interfaz);
             }
@@ -304,8 +315,7 @@ public class Network {
         return server;
     }
 
-    @Nullable
-    public List<NetworkIF> getHardWareNetworkInterfaces() {
+    @Nullable public List<NetworkIF> getHardWareNetworkInterfaces() {
         return hardWareNetworkInterfaces;
     }
 
@@ -320,14 +330,16 @@ public class Network {
 
     @PowerNukkitOnly
     @Since("FUTURE")
-    public List<DataPacket> unpackBatchedPackets(BatchPacket packet, CompressionProvider compression) throws ProtocolException {
+    public List<DataPacket> unpackBatchedPackets(BatchPacket packet, CompressionProvider compression)
+            throws ProtocolException {
         List<DataPacket> packets = new ObjectArrayList<>();
         processBatch(packet.payload, packets, compression);
         return packets;
     }
 
     @Since("1.4.0.0-PN")
-    public void processBatch(byte[] payload, Collection<DataPacket> packets, CompressionProvider compression) throws ProtocolException {
+    public void processBatch(byte[] payload, Collection<DataPacket> packets, CompressionProvider compression)
+            throws ProtocolException {
         byte[] data;
         try {
             data = compression.decompress(payload);
@@ -364,7 +376,8 @@ public class Network {
                             log.trace("Dumping Packet\n{}", ByteBufUtil.prettyHexDump(Unpooled.wrappedBuffer(buf)));
                         }
                         log.error("Unable to decode packet", e);
-                        throw new IllegalStateException("Unable to decode " + pk.getClass().getSimpleName());
+                        throw new IllegalStateException(
+                                "Unable to decode " + pk.getClass().getSimpleName());
                     }
 
                     packets.add(pk);
@@ -391,18 +404,22 @@ public class Network {
                 player.handleDataPacket(p);
             } catch (Exception e) {
                 if (log.isWarnEnabled()) {
-                    log.warn("Error whilst processing the packet {}:{} for {} (full data: {})",
-                            p.packetId(), p.getClass().getSimpleName(),
-                            player.getName(), p.toString(),
-                            e
-                    );
+                    log.warn(
+                            "Error whilst processing the packet {}:{} for {} (full data: {})",
+                            p.packetId(),
+                            p.getClass().getSimpleName(),
+                            player.getName(),
+                            p.toString(),
+                            e);
                 }
             }
         });
     }
 
     @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit",
+    @DeprecationDetails(
+            since = "1.4.0.0-PN",
+            by = "Cloudburst Nukkit",
             reason = "Changed the id to int without backward compatibility",
             replaceWith = "getPacket(int id)")
     @PowerNukkitOnly
@@ -535,13 +552,16 @@ public class Network {
         this.registerPacket(ProtocolInfo.UPDATE_BLOCK_PACKET, UpdateBlockPacket.class);
         this.registerPacket(ProtocolInfo.UPDATE_TRADE_PACKET, UpdateTradePacket.class);
         this.registerPacket(ProtocolInfo.MOVE_ENTITY_DELTA_PACKET, MoveEntityDeltaPacket.class);
-        this.registerPacket(ProtocolInfo.SET_LOCAL_PLAYER_AS_INITIALIZED_PACKET, SetLocalPlayerAsInitializedPacket.class);
+        this.registerPacket(
+                ProtocolInfo.SET_LOCAL_PLAYER_AS_INITIALIZED_PACKET, SetLocalPlayerAsInitializedPacket.class);
         this.registerPacket(ProtocolInfo.NETWORK_STACK_LATENCY_PACKET, NetworkStackLatencyPacket.class);
         this.registerPacket(ProtocolInfo.UPDATE_SOFT_ENUM_PACKET, UpdateSoftEnumPacket.class);
-        this.registerPacket(ProtocolInfo.NETWORK_CHUNK_PUBLISHER_UPDATE_PACKET, NetworkChunkPublisherUpdatePacket.class);
+        this.registerPacket(
+                ProtocolInfo.NETWORK_CHUNK_PUBLISHER_UPDATE_PACKET, NetworkChunkPublisherUpdatePacket.class);
         this.registerPacket(ProtocolInfo.AVAILABLE_ENTITY_IDENTIFIERS_PACKET, AvailableEntityIdentifiersPacket.class);
         this.registerPacket(ProtocolInfo.LEVEL_SOUND_EVENT_PACKET_V2, LevelSoundEventPacket.class);
-//        this.registerPacket(ProtocolInfo.SCRIPT_CUSTOM_EVENT_PACKET, ScriptCustomEventPacket.class); // deprecated since 1.20.10
+        //        this.registerPacket(ProtocolInfo.SCRIPT_CUSTOM_EVENT_PACKET, ScriptCustomEventPacket.class); //
+        // deprecated since 1.20.10
         this.registerPacket(ProtocolInfo.SPAWN_PARTICLE_EFFECT_PACKET, SpawnParticleEffectPacket.class);
         this.registerPacket(ProtocolInfo.BIOME_DEFINITION_LIST_PACKET, BiomeDefinitionListPacket.class);
         this.registerPacket(ProtocolInfo.LEVEL_SOUND_EVENT_PACKET, LevelSoundEventPacket.class);
@@ -563,8 +583,10 @@ public class Network {
         this.registerPacket(ProtocolInfo.PACKET_VIOLATION_WARNING_PACKET, PacketViolationWarningPacket.class);
         this.registerPacket(ProtocolInfo.PLAYER_ARMOR_DAMAGE_PACKET, PlayerArmorDamagePacket.class);
         this.registerPacket(ProtocolInfo.PLAYER_ENCHANT_OPTIONS_PACKET, PlayerEnchantOptionsPacket.class);
-        this.registerPacket(ProtocolInfo.POS_TRACKING_CLIENT_REQUEST_PACKET, PositionTrackingDBClientRequestPacket.class);
-        this.registerPacket(ProtocolInfo.POS_TRACKING_SERVER_BROADCAST_PACKET, PositionTrackingDBServerBroadcastPacket.class);
+        this.registerPacket(
+                ProtocolInfo.POS_TRACKING_CLIENT_REQUEST_PACKET, PositionTrackingDBClientRequestPacket.class);
+        this.registerPacket(
+                ProtocolInfo.POS_TRACKING_SERVER_BROADCAST_PACKET, PositionTrackingDBServerBroadcastPacket.class);
         this.registerPacket(ProtocolInfo.UPDATE_PLAYER_GAME_TYPE_PACKET, UpdatePlayerGameTypePacket.class);
         this.registerPacket(ProtocolInfo.FILTER_TEXT_PACKET, FilterTextPacket.class);
         this.registerPacket(ProtocolInfo.TOAST_REQUEST_PACKET, ToastRequestPacket.class);
@@ -581,7 +603,7 @@ public class Network {
         this.registerPacket(ProtocolInfo.PLAYER_START_ITEM_COOL_DOWN_PACKET, PlayerStartItemCoolDownPacket.class);
         this.registerPacket(ProtocolInfo.CODE_BUILDER_SOURCE_PACKET, CodeBuilderSourcePacket.class);
         this.registerPacket(ProtocolInfo.UPDATE_SUB_CHUNK_BLOCKS_PACKET, UpdateSubChunkBlocksPacket.class);
-        //powernukkitx only
+        // powernukkitx only
         this.registerPacket(ProtocolInfo.REQUEST_PERMISSIONS_PACKET, RequestPermissionsPacket.class);
         this.registerPacket(ProtocolInfo.COMMAND_BLOCK_UPDATE_PACKET, CommandBlockUpdatePacket.class);
         this.registerPacket(ProtocolInfo.SET_SCORE_PACKET, SetScorePacket.class);
@@ -609,10 +631,13 @@ public class Network {
         this.registerPacket(ProtocolInfo.SET_DEFAULT_GAME_TYPE_PACKET, SetDefaultGameTypePacket.class);
         this.registerPacket(ProtocolInfo.STRUCTURE_BLOCK_UPDATE_PACKET, StructureBlockUpdatePacket.class);
         // new packet id system
-        this.registerPacketNew(ProtocolInfo.toNewProtocolID(ProtocolInfo.CAMERA_PRESETS_PACKET), CameraPresetsPacket.class);
-        this.registerPacketNew(ProtocolInfo.toNewProtocolID(ProtocolInfo.UNLOCKED_RECIPES_PACKET), UnlockedRecipesPacket.class);
+        this.registerPacketNew(
+                ProtocolInfo.toNewProtocolID(ProtocolInfo.CAMERA_PRESETS_PACKET), CameraPresetsPacket.class);
+        this.registerPacketNew(
+                ProtocolInfo.toNewProtocolID(ProtocolInfo.UNLOCKED_RECIPES_PACKET), UnlockedRecipesPacket.class);
         this.registerPacketNew(ProtocolInfo.CAMERA_INSTRUCTION_PACKET, CameraInstructionPacket.class);
-        this.registerPacketNew(ProtocolInfo.COMPRESSED_BIOME_DEFINITIONS_LIST, CompressedBiomeDefinitionListPacket.class);
+        this.registerPacketNew(
+                ProtocolInfo.COMPRESSED_BIOME_DEFINITIONS_LIST, CompressedBiomeDefinitionListPacket.class);
         this.registerPacketNew(ProtocolInfo.TRIM_DATA, TrimDataPacket.class);
         this.registerPacketNew(ProtocolInfo.OPEN_SIGN, OpenSignPacket.class);
         this.registerPacketNew(ProtocolInfo.AGENT_ANIMATION, AgentAnimationPacket.class);

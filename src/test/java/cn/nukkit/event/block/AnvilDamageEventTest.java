@@ -1,5 +1,7 @@
 package cn.nukkit.event.block;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAnvil;
@@ -8,16 +10,13 @@ import cn.nukkit.blockproperty.value.AnvilDamage;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.inventory.transaction.CraftingTransaction;
 import cn.nukkit.level.Level;
+import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.powernukkit.tests.api.MockLevel;
 import org.powernukkit.tests.api.MockPlayer;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
-
-import java.util.Collections;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author joserobjr
@@ -47,8 +46,7 @@ class AnvilDamageEventTest {
                 BlockState.of(BlockID.ANVIL).withProperty(BlockAnvil.DAMAGE, AnvilDamage.SLIGHTLY_DAMAGED),
                 player,
                 fakeTransaction,
-                AnvilDamageEvent.DamageCause.USE
-        );
+                AnvilDamageEvent.DamageCause.USE);
     }
 
     @Test
@@ -58,13 +56,7 @@ class AnvilDamageEventTest {
         Block result = block.clone();
         result.setPropertyValue(BlockAnvil.DAMAGE, AnvilDamage.VERY_DAMAGED);
         BlockState after = result.getCurrentState();
-        event = new AnvilDamageEvent(
-                block,
-                result,
-                player,
-                fakeTransaction,
-                AnvilDamageEvent.DamageCause.USE
-        );
+        event = new AnvilDamageEvent(block, result, player, fakeTransaction, AnvilDamageEvent.DamageCause.USE);
         assertEquals(before, event.getOldBlockState());
         assertEquals(after, event.getNewBlockState());
     }
@@ -78,12 +70,7 @@ class AnvilDamageEventTest {
         result.setPropertyValue(BlockAnvil.DAMAGE, AnvilDamage.VERY_DAMAGED);
         BlockState after = result.getCurrentState();
         event = new AnvilDamageEvent(
-                block,
-                before.getLegacyDamage(),
-                after.getLegacyDamage(),
-                AnvilDamageEvent.DamageCause.USE,
-                player
-        );
+                block, before.getLegacyDamage(), after.getLegacyDamage(), AnvilDamageEvent.DamageCause.USE, player);
         assertEquals(before, event.getOldBlockState());
         assertEquals(after, event.getNewBlockState());
     }
@@ -116,12 +103,16 @@ class AnvilDamageEventTest {
 
     @Test
     void getOldBlockState() {
-        assertEquals(BlockState.of(BlockID.ANVIL).withProperty(BlockAnvil.DAMAGE, AnvilDamage.UNDAMAGED), event.getOldBlockState());
+        assertEquals(
+                BlockState.of(BlockID.ANVIL).withProperty(BlockAnvil.DAMAGE, AnvilDamage.UNDAMAGED),
+                event.getOldBlockState());
     }
 
     @Test
     void getNewBlockState() {
-        assertEquals(BlockState.of(BlockID.ANVIL).withProperty(BlockAnvil.DAMAGE, AnvilDamage.SLIGHTLY_DAMAGED), event.getNewBlockState());
+        assertEquals(
+                BlockState.of(BlockID.ANVIL).withProperty(BlockAnvil.DAMAGE, AnvilDamage.SLIGHTLY_DAMAGED),
+                event.getNewBlockState());
     }
 
     @Test
@@ -155,7 +146,8 @@ class AnvilDamageEventTest {
     void setNewState() {
         BlockState anvil = BlockState.of(BlockID.ANVIL);
         assertEquals(anvil.withProperty(BlockAnvil.DAMAGE, AnvilDamage.SLIGHTLY_DAMAGED), event.getNewBlockState());
-        event.setNewState(anvil.withProperty(BlockAnvil.DAMAGE, AnvilDamage.VERY_DAMAGED).getBlock(level, 0, 2, 0));
+        event.setNewState(
+                anvil.withProperty(BlockAnvil.DAMAGE, AnvilDamage.VERY_DAMAGED).getBlock(level, 0, 2, 0));
         assertEquals(anvil.withProperty(BlockAnvil.DAMAGE, AnvilDamage.VERY_DAMAGED), event.getNewBlockState());
     }
 
@@ -174,7 +166,8 @@ class AnvilDamageEventTest {
     void nonAnvil() {
         level.setBlockStateAt(1, 2, 3, BlockState.of(BlockID.STONE));
         Block block = level.getBlock(1, 2, 3);
-        event = new AnvilDamageEvent(block, BlockState.of(BlockID.GLASS), null, null, AnvilDamageEvent.DamageCause.FALL);
+        event = new AnvilDamageEvent(
+                block, BlockState.of(BlockID.GLASS), null, null, AnvilDamageEvent.DamageCause.FALL);
         assertEquals(0, event.getOldDamage());
         assertEquals(0, event.getNewDamage());
         assertNull(event.getOldAnvilDamage());

@@ -8,8 +8,7 @@ import cn.nukkit.api.Since;
 public class UnknownRuntimeIdException extends IllegalStateException {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public UnknownRuntimeIdException() {
-    }
+    public UnknownRuntimeIdException() {}
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")

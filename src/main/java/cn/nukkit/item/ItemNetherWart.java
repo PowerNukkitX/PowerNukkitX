@@ -24,7 +24,7 @@ public class ItemNetherWart extends Item {
 
     @Override
     public void setDamage(Integer meta) {
-        block.setDataStorageFromInt(meta != null? meta : 0);
+        block.setDataStorageFromInt(meta != null ? meta : 0);
         super.setDamage(meta);
     }
 }

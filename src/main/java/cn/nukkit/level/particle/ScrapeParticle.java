@@ -28,6 +28,6 @@ public class ScrapeParticle extends GenericParticle {
         pk.z = (float) this.z;
         pk.data = this.data;
 
-        return new DataPacket[]{pk};
+        return new DataPacket[] {pk};
     }
 }

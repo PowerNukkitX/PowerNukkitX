@@ -1,11 +1,11 @@
 package cn.nukkit.network.protocol;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author joserobjr
@@ -138,7 +138,8 @@ class MoveEntityDeltaPacketTest {
 
     @Test
     void xyz() {
-        packet.flags = MoveEntityDeltaPacket.FLAG_HAS_X | MoveEntityDeltaPacket.FLAG_HAS_Y | MoveEntityDeltaPacket.FLAG_HAS_Z;
+        packet.flags =
+                MoveEntityDeltaPacket.FLAG_HAS_X | MoveEntityDeltaPacket.FLAG_HAS_Y | MoveEntityDeltaPacket.FLAG_HAS_Z;
         packet = encodeDecode();
         assertEquals(1f, packet.x);
         assertEquals(2f, packet.y);

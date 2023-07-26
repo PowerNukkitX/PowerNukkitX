@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
+
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
@@ -8,8 +10,6 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
-
-import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
 
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
@@ -21,7 +21,9 @@ public class BlockBasalt extends BlockSolidMeta {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public BlockBasalt() { this(0); }
+    public BlockBasalt() {
+        this(0);
+    }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -41,8 +43,7 @@ public class BlockBasalt extends BlockSolidMeta {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -81,10 +82,17 @@ public class BlockBasalt extends BlockSolidMeta {
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         setPillarAxis(face.getAxis());
         getLevel().setBlock(block, this, true, true);
         return true;
     }
-
 }

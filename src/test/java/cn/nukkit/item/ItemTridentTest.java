@@ -1,5 +1,9 @@
 package cn.nukkit.item;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
+
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
@@ -13,19 +17,14 @@ import cn.nukkit.event.entity.ProjectileLaunchEvent;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
 import cn.nukkit.plugin.PluginManager;
+import java.util.Arrays;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.powernukkit.tests.api.MockLevel;
 import org.powernukkit.tests.api.MockPlayer;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
-
-import java.util.Arrays;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
 
 /**
  * @author joserobjr
@@ -62,7 +61,10 @@ class ItemTridentTest {
         assertTrue(player.isCreative());
 
         assertTrue(item.onRelease(player, 20));
-        Optional<EntityThrownTrident> optTrident = Arrays.stream(level.getEntities()).filter(EntityThrownTrident.class::isInstance).map(EntityThrownTrident.class::cast).findFirst();
+        Optional<EntityThrownTrident> optTrident = Arrays.stream(level.getEntities())
+                .filter(EntityThrownTrident.class::isInstance)
+                .map(EntityThrownTrident.class::cast)
+                .findFirst();
         assertTrue(optTrident.isPresent());
         assertTrue(optTrident.get().isCreative());
     }
@@ -71,11 +73,16 @@ class ItemTridentTest {
     void onReleaseCancelBow() {
         PluginManager pluginManager = Server.getInstance().getPluginManager();
         doAnswer(call -> {
-            ((Event)call.getArgument(0)).setCancelled();
-            return null;
-        }).when(pluginManager).callEvent(any(EntityShootBowEvent.class));
+                    ((Event) call.getArgument(0)).setCancelled();
+                    return null;
+                })
+                .when(pluginManager)
+                .callEvent(any(EntityShootBowEvent.class));
         assertTrue(item.onRelease(player, 20));
-        Optional<EntityThrownTrident> optTrident = Arrays.stream(level.getEntities()).filter(EntityThrownTrident.class::isInstance).map(EntityThrownTrident.class::cast).findFirst();
+        Optional<EntityThrownTrident> optTrident = Arrays.stream(level.getEntities())
+                .filter(EntityThrownTrident.class::isInstance)
+                .map(EntityThrownTrident.class::cast)
+                .findFirst();
         assertFalse(optTrident.isPresent());
     }
 
@@ -83,11 +90,16 @@ class ItemTridentTest {
     void onReleaseCancelProjectLaunch() {
         PluginManager pluginManager = Server.getInstance().getPluginManager();
         doAnswer(call -> {
-            ((Event)call.getArgument(0)).setCancelled();
-            return null;
-        }).when(pluginManager).callEvent(any(ProjectileLaunchEvent.class));
+                    ((Event) call.getArgument(0)).setCancelled();
+                    return null;
+                })
+                .when(pluginManager)
+                .callEvent(any(ProjectileLaunchEvent.class));
         assertTrue(item.onRelease(player, 20));
-        Optional<EntityThrownTrident> optTrident = Arrays.stream(level.getEntities()).filter(EntityThrownTrident.class::isInstance).map(EntityThrownTrident.class::cast).findFirst();
+        Optional<EntityThrownTrident> optTrident = Arrays.stream(level.getEntities())
+                .filter(EntityThrownTrident.class::isInstance)
+                .map(EntityThrownTrident.class::cast)
+                .findFirst();
         assertFalse(optTrident.isPresent());
     }
 }

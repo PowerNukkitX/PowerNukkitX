@@ -24,7 +24,7 @@ public class SpellParticle extends Particle {
     }
 
     public SpellParticle(Vector3 pos, BlockColor blockColor) {
-        //alpha is ignored
+        // alpha is ignored
         this(pos, blockColor.getRed(), blockColor.getGreen(), blockColor.getBlue());
     }
 
@@ -45,6 +45,6 @@ public class SpellParticle extends Particle {
         pk.z = (float) this.z;
         pk.data = this.data;
 
-        return new DataPacket[]{pk};
+        return new DataPacket[] {pk};
     }
 }

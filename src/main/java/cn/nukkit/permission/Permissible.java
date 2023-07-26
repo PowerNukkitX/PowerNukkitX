@@ -1,7 +1,6 @@
 package cn.nukkit.permission;
 
 import cn.nukkit.plugin.Plugin;
-
 import java.util.Map;
 
 /**
@@ -28,5 +27,4 @@ public interface Permissible extends ServerOperator {
     void recalculatePermissions();
 
     Map<String, PermissionAttachmentInfo> getEffectivePermissions();
-
 }

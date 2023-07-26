@@ -13,13 +13,13 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-
 import java.util.HashSet;
 
 /**
  * @author PetteriM1
  */
-public class BlockEntityShulkerBox extends BlockEntitySpawnable implements InventoryHolder, BlockEntityContainer, BlockEntityNameable {
+public class BlockEntityShulkerBox extends BlockEntitySpawnable
+        implements InventoryHolder, BlockEntityContainer, BlockEntityNameable {
 
     protected ShulkerBoxInventory inventory;
 
@@ -147,8 +147,7 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Inven
 
     @Override
     public CompoundTag getSpawnCompound() {
-        CompoundTag c = getDefaultCompound(this, SHULKER_BOX)
-                .putByte("facing", this.namedTag.getByte("facing"));
+        CompoundTag c = getDefaultCompound(this, SHULKER_BOX).putByte("facing", this.namedTag.getByte("facing"));
 
         if (this.hasName()) {
             c.put("CustomName", this.namedTag.get("CustomName"));

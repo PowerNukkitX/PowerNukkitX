@@ -1,5 +1,7 @@
 package cn.nukkit.command.selector;
 
+import static cn.nukkit.command.selector.SelectorType.*;
+
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -14,8 +16,6 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import lombok.Getter;
-
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
@@ -23,8 +23,7 @@ import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import static cn.nukkit.command.selector.SelectorType.*;
+import lombok.Getter;
 
 /**
  * 目标选择器API<p/>
@@ -42,13 +41,21 @@ public class EntitySelectorAPI {
 
     @Getter
     private static final Pattern ENTITY_SELECTOR = Pattern.compile("^@([aeprs]|initiator)(?:\\[(.*)])?$");
+
     @Getter
     private static final String ARGUMENT_JOINER = "=";
     /**
      * 对目标选择器文本的预解析缓存
      */
-    private static final Cache<String, Map<String, List<String>>> ARGS_CACHE = Caffeine.newBuilder().maximumSize(65535).expireAfterAccess(1, TimeUnit.MINUTES).build();
-    private static final Cache<String, Boolean> MATCHES_CACHE = Caffeine.newBuilder().maximumSize(65535).expireAfterAccess(1, TimeUnit.MINUTES).build();
+    private static final Cache<String, Map<String, List<String>>> ARGS_CACHE = Caffeine.newBuilder()
+            .maximumSize(65535)
+            .expireAfterAccess(1, TimeUnit.MINUTES)
+            .build();
+
+    private static final Cache<String, Boolean> MATCHES_CACHE = Caffeine.newBuilder()
+            .maximumSize(65535)
+            .expireAfterAccess(1, TimeUnit.MINUTES)
+            .build();
 
     Map<String, ISelectorArgument> registry;
     List<ISelectorArgument> orderedArgs;
@@ -89,81 +96,89 @@ public class EntitySelectorAPI {
      */
     public List<Entity> matchEntities(CommandSender sender, String token) throws SelectorSyntaxException {
         var cachedMatches = MATCHES_CACHE.getIfPresent(token);
-        //先从缓存确认不是非法选择器
+        // 先从缓存确认不是非法选择器
         if (cachedMatches != null && !cachedMatches)
             throw new SelectorSyntaxException("Malformed entity selector token");
         Matcher matcher = ENTITY_SELECTOR.matcher(token);
-        //非法目标选择器文本
+        // 非法目标选择器文本
         if (!matcher.matches()) {
-            //记录非法选择器到缓存
+            // 记录非法选择器到缓存
             MATCHES_CACHE.put(token, false);
             throw new SelectorSyntaxException("Malformed entity selector token");
         }
-        //查询是否存在预解析结果。若不存在则解析
+        // 查询是否存在预解析结果。若不存在则解析
         Map<String, List<String>> arguments = ARGS_CACHE.getIfPresent(token);
         if (arguments == null) {
             arguments = parseArgumentMap(matcher.group(2));
             ARGS_CACHE.put(token, arguments);
         }
-        //获取克隆过的执行者位置信息
+        // 获取克隆过的执行者位置信息
         var senderLocation = sender.getLocation();
-        //获取选择器类型
+        // 获取选择器类型
         var selectorType = parseSelectorType(matcher.group(1));
-        //根据选择器类型先确定实体检测范围
+        // 根据选择器类型先确定实体检测范围
         List<Entity> entities;
         if (selectorType != SELF) {
             entities = Lists.newArrayList(senderLocation.level.getEntities());
         } else {
-            if (sender.isEntity())
-                entities = Lists.newArrayList(sender.asEntity());
-            //没有符合条件的实体
+            if (sender.isEntity()) entities = Lists.newArrayList(sender.asEntity());
+            // 没有符合条件的实体
             else return Lists.newArrayList();
         }
-        //若是NPC触发选择器，则只处理触发NPC对话的玩家
+        // 若是NPC触发选择器，则只处理触发NPC对话的玩家
         if (selectorType == NPC_INITIATOR) {
-            if (sender instanceof NPCCommandSender npc)
-                entities = Lists.newArrayList(npc.getInitiator());
-            else
-                return Lists.newArrayList();
+            if (sender instanceof NPCCommandSender npc) entities = Lists.newArrayList(npc.getInitiator());
+            else return Lists.newArrayList();
         }
-        //对于确定的玩家类型选择器，排除掉不是玩家的实体
+        // 对于确定的玩家类型选择器，排除掉不是玩家的实体
         switch (selectorType) {
-            case ALL_PLAYERS, NEAREST_PLAYER ->
-                entities.removeIf(e -> !(e instanceof Player));
+            case ALL_PLAYERS, NEAREST_PLAYER -> entities.removeIf(e -> !(e instanceof Player));
             default -> {}
         }
-        //没符合条件的实体了，return
+        // 没符合条件的实体了，return
         if (entities.isEmpty()) return entities;
-        //参照坐标
+        // 参照坐标
         for (var arg : orderedArgs) {
             try {
                 if (!arg.isFilter()) {
                     Predicate<Entity> predicate;
                     if (arguments.containsKey(arg.getKeyName()))
-                        predicate = arg.getPredicate(selectorType, sender, senderLocation, arguments.get(arg.getKeyName()).toArray(new String[0]));
+                        predicate = arg.getPredicate(
+                                selectorType,
+                                sender,
+                                senderLocation,
+                                arguments.get(arg.getKeyName()).toArray(new String[0]));
                     else if (arg.getDefaultValue(arguments, selectorType, sender) != null)
-                        predicate = arg.getPredicate(selectorType, sender, senderLocation, arg.getDefaultValue(arguments, selectorType, sender));
+                        predicate = arg.getPredicate(
+                                selectorType,
+                                sender,
+                                senderLocation,
+                                arg.getDefaultValue(arguments, selectorType, sender));
                     else continue;
-                    if (predicate == null)
-                        continue;
+                    if (predicate == null) continue;
                     entities.removeIf(entity -> !predicate.test(entity));
                 } else {
                     if (arguments.containsKey(arg.getKeyName()))
-                        entities = arg.getFilter(selectorType, sender, senderLocation, arguments.get(arg.getKeyName()).toArray(new String[0])).apply(entities);
+                        entities = arg.getFilter(
+                                        selectorType,
+                                        sender,
+                                        senderLocation,
+                                        arguments.get(arg.getKeyName()).toArray(new String[0]))
+                                .apply(entities);
                     else continue;
                 }
             } catch (Throwable t) {
                 throw new SelectorSyntaxException("Error while parsing selector argument: " + arg.getKeyName(), t);
             }
-            //没符合条件的实体了，return
+            // 没符合条件的实体了，return
             if (entities.isEmpty()) return entities;
         }
-        //随机选择一个
+        // 随机选择一个
         if (selectorType == RANDOM_PLAYER && !entities.isEmpty()) {
             var index = ThreadLocalRandom.current().nextInt(entities.size()) + 1;
             Entity currentEntity = null;
             int i = 1;
-            for (var localCurrent : entities){
+            for (var localCurrent : entities) {
                 if (i == index) {
                     currentEntity = localCurrent;
                     break;
@@ -172,7 +187,7 @@ public class EntitySelectorAPI {
             }
             return Lists.newArrayList(currentEntity);
         }
-        //选择最近玩家
+        // 选择最近玩家
         if (selectorType == NEAREST_PLAYER && entities.size() != 1) {
             Entity nearest = null;
             double min = Double.MAX_VALUE;
@@ -256,8 +271,7 @@ public class EntitySelectorAPI {
             }
         }
 
-        if (start < inputArguments.length())
-            result.add(inputArguments.substring(start));
+        if (start < inputArguments.length()) result.add(inputArguments.substring(start));
 
         return result.stream().filter(s -> !s.isEmpty()).collect(Collectors.toList());
     }

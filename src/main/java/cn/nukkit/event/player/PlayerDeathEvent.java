@@ -45,9 +45,9 @@ public class PlayerDeathEvent extends EntityDeathEvent implements Cancellable {
     @PowerNukkitXOnly
     @Since("1.19.21-r4")
     public TranslationContainer getTranslationDeathMessage() {
-        return this.deathMessage instanceof TranslationContainer ?
-                (TranslationContainer) this.deathMessage :
-                new TranslationContainer(this.deathMessage.getText());
+        return this.deathMessage instanceof TranslationContainer
+                ? (TranslationContainer) this.deathMessage
+                : new TranslationContainer(this.deathMessage.getText());
     }
 
     @PowerNukkitXOnly
@@ -57,7 +57,10 @@ public class PlayerDeathEvent extends EntityDeathEvent implements Cancellable {
     }
 
     @Deprecated
-    @DeprecationDetails(since = "1.19.21-r4", reason = "moved to TranslationContainer", replaceWith = "setDeathMessage(TranslationContainer deathMessage)")
+    @DeprecationDetails(
+            since = "1.19.21-r4",
+            reason = "moved to TranslationContainer",
+            replaceWith = "setDeathMessage(TranslationContainer deathMessage)")
     public void setDeathMessage(TextContainer deathMessage) {
         this.deathMessage = deathMessage;
     }

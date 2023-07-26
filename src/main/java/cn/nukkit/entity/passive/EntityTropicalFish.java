@@ -9,7 +9,6 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Utils;
-
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -107,9 +106,9 @@ public class EntityTropicalFish extends EntityFish {
     @Override
     public Item[] getDrops() {
         if (Utils.rand(0, 3) == 1) {
-            return new Item[]{Item.get(Item.CLOWNFISH), Item.get(Item.BONE, 0, Utils.rand(1, 2))};
+            return new Item[] {Item.get(Item.CLOWNFISH), Item.get(Item.BONE, 0, Utils.rand(1, 2))};
         }
-        return new Item[]{Item.get(Item.CLOWNFISH)};
+        return new Item[] {Item.get(Item.CLOWNFISH)};
     }
 
     public int getColor() {
@@ -121,5 +120,4 @@ public class EntityTropicalFish extends EntityFish {
         this.setDataProperty(new ByteEntityData(DATA_COLOUR, color));
         this.namedTag.putByte("Color", this.color);
     }
-
 }

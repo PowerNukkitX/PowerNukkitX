@@ -18,9 +18,8 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.nbt.tag.Tag;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Map;
+import org.jetbrains.annotations.NotNull;
 
 public class BlockBrewingStand extends BlockTransparentMeta implements BlockEntityHolder<BlockEntityBrewingStand> {
     @PowerNukkitOnly
@@ -85,8 +84,7 @@ public class BlockBrewingStand extends BlockTransparentMeta implements BlockEnti
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -98,7 +96,15 @@ public class BlockBrewingStand extends BlockTransparentMeta implements BlockEnti
 
     @PowerNukkitDifference(info = "Remove placement restrictions, they don't exists in vanilla", since = "1.3.1.2-PN")
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         getLevel().setBlock(block, this, true, true);
 
         CompoundTag nbt = new CompoundTag()
@@ -119,7 +125,8 @@ public class BlockBrewingStand extends BlockTransparentMeta implements BlockEnti
             }
         }
 
-        BlockEntityBrewingStand brewing = (BlockEntityBrewingStand) BlockEntity.createBlockEntity(BlockEntity.BREWING_STAND, getLevel().getChunk((int) this.x >> 4, (int) this.z >> 4), nbt);
+        BlockEntityBrewingStand brewing = (BlockEntityBrewingStand) BlockEntity.createBlockEntity(
+                BlockEntity.BREWING_STAND, getLevel().getChunk((int) this.x >> 4, (int) this.z >> 4), nbt);
         return brewing != null;
     }
 
@@ -137,7 +144,10 @@ public class BlockBrewingStand extends BlockTransparentMeta implements BlockEnti
                         .putInt("x", (int) this.x)
                         .putInt("y", (int) this.y)
                         .putInt("z", (int) this.z);
-                brewing = (BlockEntityBrewingStand) BlockEntity.createBlockEntity(BlockEntity.BREWING_STAND, this.getLevel().getChunk((int) (this.x) >> 4, (int) (this.z) >> 4), nbt);
+                brewing = (BlockEntityBrewingStand) BlockEntity.createBlockEntity(
+                        BlockEntity.BREWING_STAND,
+                        this.getLevel().getChunk((int) (this.x) >> 4, (int) (this.z) >> 4),
+                        nbt);
                 if (brewing == null) {
                     return false;
                 }
@@ -219,16 +229,14 @@ public class BlockBrewingStand extends BlockTransparentMeta implements BlockEnti
 
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
-    @NotNull
-    @Override
+    @NotNull @Override
     public Class<? extends BlockEntityBrewingStand> getBlockEntityClass() {
         return BlockEntityBrewingStand.class;
     }
 
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getBlockEntityType() {
         return BlockEntity.BREWING_STAND;
     }

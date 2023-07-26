@@ -1,5 +1,8 @@
 package cn.nukkit.entity.item;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
@@ -27,9 +30,6 @@ import org.powernukkit.tests.api.MockEntity;
 import org.powernukkit.tests.api.MockLevel;
 import org.powernukkit.tests.api.MockPlayer;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 /**
  * @author joserobjr
@@ -86,8 +86,9 @@ class EntityFishingHookTest {
 
     @Test
     void overAgedFishingHook() {
-        fishingHook = new EntityFishingHook(level.getChunk(0, 0), Entity.getDefaultNBT(new Vector3(0, 64, 0))
-                .putShort("Age", 1));
+        fishingHook = new EntityFishingHook(
+                level.getChunk(0, 0),
+                Entity.getDefaultNBT(new Vector3(0, 64, 0)).putShort("Age", 1));
         assertTrue(fishingHook.closed);
     }
 
@@ -165,7 +166,8 @@ class EntityFishingHookTest {
     @Test
     void checkLureLv2() {
         fishingHook.rod = Item.get(ItemID.FISHING_ROD);
-        fishingHook.rod.addEnchantment(Enchantment.getEnchantment(Enchantment.ID_LURE).setLevel(2));
+        fishingHook.rod.addEnchantment(
+                Enchantment.getEnchantment(Enchantment.ID_LURE).setLevel(2));
         assertEquals(120, fishingHook.waitChance);
         fishingHook.checkLure();
         assertEquals(120 - 50, fishingHook.waitChance);
@@ -187,6 +189,7 @@ class EntityFishingHookTest {
 
     static class CollidedFishingHook extends EntityFishingHook {
         final boolean inWater;
+
         public CollidedFishingHook(FullChunk chunk, CompoundTag nbt, boolean inWater) {
             super(chunk, nbt);
             this.inWater = inWater;

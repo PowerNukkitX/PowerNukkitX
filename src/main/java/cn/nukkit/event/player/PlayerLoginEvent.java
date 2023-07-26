@@ -13,7 +13,6 @@ public class PlayerLoginEvent extends PlayerEvent implements Cancellable {
 
     protected String kickMessage;
 
-
     public PlayerLoginEvent(Player player, String kickMessage) {
         this.player = player;
         this.kickMessage = kickMessage;

@@ -29,14 +29,17 @@ import lombok.ToString;
 @Since("1.4.0.0-PN")
 @ToString
 public class FilterTextPacket extends DataPacket {
-    @Since("1.4.0.0-PN") public static final byte NETWORK_ID = ProtocolInfo.FILTER_TEXT_PACKET;
-    
-    @Since("1.4.0.0-PN") public String text;
-    @Since("1.4.0.0-PN") public boolean fromServer;
+    @Since("1.4.0.0-PN")
+    public static final byte NETWORK_ID = ProtocolInfo.FILTER_TEXT_PACKET;
 
     @Since("1.4.0.0-PN")
-    public FilterTextPacket() {
-    }
+    public String text;
+
+    @Since("1.4.0.0-PN")
+    public boolean fromServer;
+
+    @Since("1.4.0.0-PN")
+    public FilterTextPacket() {}
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")

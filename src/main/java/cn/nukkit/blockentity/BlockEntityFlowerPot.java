@@ -19,7 +19,7 @@ public class BlockEntityFlowerPot extends BlockEntitySpawnable {
     @Override
     public void loadNBT() {
         super.loadNBT();
-        //转换旧形式
+        // 转换旧形式
         if (namedTag.contains("item")) {
             var data = 0;
             if (namedTag.contains("data")) data = namedTag.getInt("data");
@@ -45,9 +45,7 @@ public class BlockEntityFlowerPot extends BlockEntitySpawnable {
                 .putInt("y", (int) this.y)
                 .putInt("z", (int) this.z);
 
-        if (namedTag.containsCompound("PlantBlock"))
-            tag.putCompound("PlantBlock", namedTag.getCompound("PlantBlock"));
+        if (namedTag.containsCompound("PlantBlock")) tag.putCompound("PlantBlock", namedTag.getCompound("PlantBlock"));
         return tag;
     }
-
 }

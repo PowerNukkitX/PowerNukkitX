@@ -8,8 +8,14 @@ import java.lang.annotation.*;
  * without PowerNukkitX's patches and features.
  */
 @Retention(RetentionPolicy.CLASS)
-@Target({ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.TYPE,
-        ElementType.FIELD, ElementType.PACKAGE})
+@Target({
+    ElementType.CONSTRUCTOR,
+    ElementType.METHOD,
+    ElementType.ANNOTATION_TYPE,
+    ElementType.TYPE,
+    ElementType.FIELD,
+    ElementType.PACKAGE
+})
 @PowerNukkitXOnly
 @Since("1.19.20-r3")
 @Inherited
@@ -33,8 +39,14 @@ public @interface PowerNukkitXDifference {
     Class<?> insteadOf() default Void.class;
 
     @Retention(RetentionPolicy.CLASS)
-    @Target({ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.TYPE,
-            ElementType.FIELD, ElementType.PACKAGE})
+    @Target({
+        ElementType.CONSTRUCTOR,
+        ElementType.METHOD,
+        ElementType.ANNOTATION_TYPE,
+        ElementType.TYPE,
+        ElementType.FIELD,
+        ElementType.PACKAGE
+    })
     @PowerNukkitXOnly
     @Since("1.19.20-r3")
     @Inherited

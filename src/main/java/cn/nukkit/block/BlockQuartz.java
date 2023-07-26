@@ -1,5 +1,8 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.CHISEL_TYPE;
+import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
+
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
@@ -9,9 +12,6 @@ import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
-
-import static cn.nukkit.blockproperty.CommonBlockProperties.CHISEL_TYPE;
-import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -26,7 +26,6 @@ public class BlockQuartz extends BlockSolidMeta {
     public static final int QUARTZ_CHISELED = 1;
     public static final int QUARTZ_PILLAR = 2;
     public static final int QUARTZ_PILLAR2 = 3;
-
 
     public BlockQuartz() {
         this(0);
@@ -43,8 +42,7 @@ public class BlockQuartz extends BlockSolidMeta {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -61,27 +59,23 @@ public class BlockQuartz extends BlockSolidMeta {
 
     @Override
     public String getName() {
-        String[] names = new String[]{
-                "Quartz Block",
-                "Chiseled Quartz Block",
-                "Quartz Pillar",
-                "Quartz Pillar"
-        };
+        String[] names = new String[] {"Quartz Block", "Chiseled Quartz Block", "Quartz Pillar", "Quartz Pillar"};
 
         return names[this.getDamage() & 0x03];
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         if (this.getDamage() != QUARTZ_NORMAL) {
-            short[] faces = new short[]{
-                    0,
-                    0,
-                    0b1000,
-                    0b1000,
-                    0b0100,
-                    0b0100
-            };
+            short[] faces = new short[] {0, 0, 0b1000, 0b1000, 0b0100, 0b0100};
 
             this.setDamage(((this.getDamage() & 0x03) | faces[face.getIndex()]));
         }

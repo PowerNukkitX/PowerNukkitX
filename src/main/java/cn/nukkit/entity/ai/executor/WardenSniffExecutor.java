@@ -12,7 +12,7 @@ import cn.nukkit.level.Sound;
 @Since("1.19.21-r4")
 public class WardenSniffExecutor implements IBehaviorExecutor {
     protected int angerAddition;
-    protected int duration;//gt
+    protected int duration; // gt
     protected int endTime;
 
     public WardenSniffExecutor(int duration, int angerAddition) {

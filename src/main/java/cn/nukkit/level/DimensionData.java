@@ -1,8 +1,7 @@
 package cn.nukkit.level;
 
-import org.jetbrains.annotations.Nullable;
-
 import java.util.Objects;
+import org.jetbrains.annotations.Nullable;
 
 public class DimensionData {
     private final String dimensionName;
@@ -17,18 +16,24 @@ public class DimensionData {
     }
 
     public DimensionData(int dimensionId, int minHeight, int maxHeight, @Nullable Integer chunkSectionCount) {
-        this(switch (dimensionId) {
-            case 1 -> "minecraft:nether";
-            case 2 -> "minecraft:the_end";
-            default -> "minecraft:overworld";
-        }, dimensionId, minHeight, maxHeight, chunkSectionCount);
+        this(
+                switch (dimensionId) {
+                    case 1 -> "minecraft:nether";
+                    case 2 -> "minecraft:the_end";
+                    default -> "minecraft:overworld";
+                },
+                dimensionId,
+                minHeight,
+                maxHeight,
+                chunkSectionCount);
     }
 
     public DimensionData(String dimensionName, int dimensionId, int minHeight, int maxHeight) {
         this(dimensionName, dimensionId, minHeight, maxHeight, null);
     }
 
-    public DimensionData(String dimensionName, int dimensionId, int minHeight, int maxHeight, @Nullable Integer chunkSectionCount) {
+    public DimensionData(
+            String dimensionName, int dimensionId, int minHeight, int maxHeight, @Nullable Integer chunkSectionCount) {
         this.dimensionName = dimensionName;
         this.dimensionId = dimensionId;
         this.minHeight = minHeight;
@@ -40,7 +45,8 @@ public class DimensionData {
         }
         this.height = height;
 
-        this.chunkSectionCount = Objects.requireNonNullElseGet(chunkSectionCount, () -> this.height >> 4 + ((this.height & 15) == 0 ? 0 : 1));
+        this.chunkSectionCount = Objects.requireNonNullElseGet(
+                chunkSectionCount, () -> this.height >> 4 + ((this.height & 15) == 0 ? 0 : 1));
     }
 
     public String getDimensionName() {
@@ -71,10 +77,17 @@ public class DimensionData {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof DimensionData that)) return false;
-        return dimensionId == that.dimensionId && minHeight == that.minHeight && maxHeight == that.maxHeight && height == that.height && chunkSectionCount == that.chunkSectionCount && dimensionName.equals(that.dimensionName);
+        return dimensionId == that.dimensionId
+                && minHeight == that.minHeight
+                && maxHeight == that.maxHeight
+                && height == that.height
+                && chunkSectionCount == that.chunkSectionCount
+                && dimensionName.equals(that.dimensionName);
     }
 
     public String toString() {
-        return "DimensionData(dimensionName=" + this.getDimensionName() + ", dimensionId=" + this.getDimensionId() + ", minHeight=" + this.getMinHeight() + ", maxHeight=" + this.getMaxHeight() + ", height=" + this.getHeight() + ", chunkSectionCount=" + this.getChunkSectionCount() + ")";
+        return "DimensionData(dimensionName=" + this.getDimensionName() + ", dimensionId=" + this.getDimensionId()
+                + ", minHeight=" + this.getMinHeight() + ", maxHeight=" + this.getMaxHeight() + ", height="
+                + this.getHeight() + ", chunkSectionCount=" + this.getChunkSectionCount() + ")";
     }
 }

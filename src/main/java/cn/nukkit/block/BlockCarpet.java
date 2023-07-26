@@ -38,8 +38,7 @@ public class BlockCarpet extends BlockFlowable {
         return CARPET;
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     @PowerNukkitOnly
     public BlockProperties getProperties() {
         return PROPERTIES;
@@ -94,7 +93,15 @@ public class BlockCarpet extends BlockFlowable {
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         Block down = this.down();
         if (down.getId() != Item.AIR) {
             this.getLevel().setBlock(block, this, true, true);
@@ -125,5 +132,4 @@ public class BlockCarpet extends BlockFlowable {
     public void setDyeColor(@NotNull DyeColor color) {
         setPropertyValue(CommonBlockProperties.COLOR, color);
     }
-
 }

@@ -13,7 +13,6 @@ import cn.nukkit.level.generator.populator.impl.structure.village.structure.Vill
 import cn.nukkit.level.generator.populator.type.PopulatorStructure;
 import cn.nukkit.level.generator.task.CallbackableChunkGenerationTask;
 import cn.nukkit.math.NukkitRandom;
-
 import java.util.List;
 
 @PowerNukkitXOnly
@@ -31,22 +30,31 @@ public class PopulatorVillage extends PopulatorStructure {
     @Override
     public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
         random = new NukkitRandom(0xdeadbeef ^ ((long) chunkX << 8) ^ chunkZ ^ level.getSeed());
-        //\\ VillageFeature::isFeatureChunk(BiomeSource const &,Random &,ChunkPos const &,uint)
+        // \\ VillageFeature::isFeatureChunk(BiomeSource const &,Random &,ChunkPos const &,uint)
         int biome = chunk.getBiomeId(7, chunk.getHighestBlockAt(7, 7), 7);
         if (!chunk.isOverWorld()) return;
-        if (biome == EnumBiome.PLAINS.id || biome == EnumBiome.DESERT.id || biome == EnumBiome.SAVANNA.id || biome == EnumBiome.TAIGA.id
-                || biome == EnumBiome.COLD_TAIGA.id || biome == EnumBiome.ICE_PLAINS.id) {
+        if (biome == EnumBiome.PLAINS.id
+                || biome == EnumBiome.DESERT.id
+                || biome == EnumBiome.SAVANNA.id
+                || biome == EnumBiome.TAIGA.id
+                || biome == EnumBiome.COLD_TAIGA.id
+                || biome == EnumBiome.ICE_PLAINS.id) {
             long seed = level.getSeed();
             int cX = (chunkX < 0 ? chunkX - (SPACING - 1) : chunkX) / SPACING;
             int cZ = (chunkZ < 0 ? chunkZ - (SPACING - 1) : chunkZ) / SPACING;
             random.setSeed(cX * 0x4f9939f508L + cZ * 0x1ef1565bd5L + seed + 0x9e7f70);
 
-            if (chunkX == cX * SPACING + random.nextBoundedInt(SPACING - SEPARATION) && chunkZ == cZ * SPACING + random.nextBoundedInt(SPACING - SEPARATION)) {
-                //\\ VillageFeature::createStructureStart(Dimension &,Random &,ChunkPos const &)
-                VillageStart start = new VillageStart(level, chunkX, chunkZ, chunk.getProvider().getGenerator().equals("normal"));
+            if (chunkX == cX * SPACING + random.nextBoundedInt(SPACING - SEPARATION)
+                    && chunkZ == cZ * SPACING + random.nextBoundedInt(SPACING - SEPARATION)) {
+                // \\ VillageFeature::createStructureStart(Dimension &,Random &,ChunkPos const &)
+                VillageStart start = new VillageStart(
+                        level,
+                        chunkX,
+                        chunkZ,
+                        chunk.getProvider().getGenerator().equals("normal"));
                 start.generatePieces(level, chunkX, chunkZ);
 
-                if (start.isValid()) { //TODO: serialize nbt
+                if (start.isValid()) { // TODO: serialize nbt
                     random.setSeed(seed);
                     int r1 = random.nextInt();
                     int r2 = random.nextInt();
@@ -67,9 +75,19 @@ public class PopulatorVillage extends PopulatorStructure {
                             } else {
                                 int f_cx = cx;
                                 int f_cz = cz;
-                                chunk.getProvider().getLevel().getGenerator().handleAsyncStructureGenTask(new CallbackableChunkGenerationTask<>(
-                                        chunk.getProvider().getLevel(), ck, start,
-                                        structure -> structure.postProcess(level, rand, new BoundingBox(x, z, x + 15, z + 15), f_cx, f_cz)));
+                                chunk.getProvider()
+                                        .getLevel()
+                                        .getGenerator()
+                                        .handleAsyncStructureGenTask(new CallbackableChunkGenerationTask<>(
+                                                chunk.getProvider().getLevel(),
+                                                ck,
+                                                start,
+                                                structure -> structure.postProcess(
+                                                        level,
+                                                        rand,
+                                                        new BoundingBox(x, z, x + 15, z + 15),
+                                                        f_cx,
+                                                        f_cz)));
                             }
                         }
                     }
@@ -89,7 +107,7 @@ public class PopulatorVillage extends PopulatorStructure {
         DESERT,
         SAVANNA,
         TAIGA,
-        COLD; //BE
+        COLD; // BE
 
         public static Type byId(int id) {
             Type[] values = values();
@@ -112,7 +130,15 @@ public class PopulatorVillage extends PopulatorStructure {
 
         @Override
         public void generatePieces(ChunkManager level, int chunkX, int chunkZ) {
-            VillagePieces.StartPiece start = new VillagePieces.StartPiece(level, 0, this.random, (chunkX << 4) + 2, (chunkZ << 4) + 2, VillagePieces.getStructureVillageWeightedPieceList(this.random, SIZE), SIZE, isNukkitGenerator);
+            VillagePieces.StartPiece start = new VillagePieces.StartPiece(
+                    level,
+                    0,
+                    this.random,
+                    (chunkX << 4) + 2,
+                    (chunkZ << 4) + 2,
+                    VillagePieces.getStructureVillageWeightedPieceList(this.random, SIZE),
+                    SIZE,
+                    isNukkitGenerator);
             this.pieces.add(start);
             start.addChildren(start, this.pieces, this.random);
 
@@ -120,10 +146,12 @@ public class PopulatorVillage extends PopulatorStructure {
             List<StructurePiece> pendingHouses = start.pendingHouses;
             while (!pendingRoads.isEmpty() || !pendingHouses.isEmpty()) {
                 if (pendingRoads.isEmpty()) {
-                    pendingHouses.remove(this.random.nextBoundedInt(pendingHouses.size()))
+                    pendingHouses
+                            .remove(this.random.nextBoundedInt(pendingHouses.size()))
                             .addChildren(start, this.pieces, this.random);
                 } else {
-                    pendingRoads.remove(this.random.nextBoundedInt(pendingRoads.size()))
+                    pendingRoads
+                            .remove(this.random.nextBoundedInt(pendingRoads.size()))
                             .addChildren(start, this.pieces, this.random);
                 }
             }

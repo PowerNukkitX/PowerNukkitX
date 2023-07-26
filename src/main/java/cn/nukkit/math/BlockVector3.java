@@ -16,8 +16,7 @@ public class BlockVector3 implements Cloneable {
         this.z = z;
     }
 
-    public BlockVector3() {
-    }
+    public BlockVector3() {}
 
     public BlockVector3 setComponents(int x, int y, int z) {
         this.x = x;
@@ -146,7 +145,10 @@ public class BlockVector3 implements Cloneable {
     }
 
     public BlockVector3 getSide(BlockFace face, int step) {
-        return new BlockVector3(this.getX() + face.getXOffset() * step, this.getY() + face.getYOffset() * step, this.getZ() + face.getZOffset() * step);
+        return new BlockVector3(
+                this.getX() + face.getXOffset() * step,
+                this.getY() + face.getYOffset() * step,
+                this.getZ() + face.getZOffset() * step);
     }
 
     public BlockVector3 up() {
@@ -268,9 +270,7 @@ public class BlockVector3 implements Cloneable {
         if (!(o instanceof BlockVector3)) return false;
         BlockVector3 that = (BlockVector3) o;
 
-        return this.x == that.x &&
-                this.y == that.y &&
-                this.z == that.z;
+        return this.x == that.x && this.y == that.y && this.z == that.z;
     }
 
     @Override

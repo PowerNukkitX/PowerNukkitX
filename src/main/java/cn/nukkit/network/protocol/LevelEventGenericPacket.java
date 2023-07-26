@@ -3,7 +3,6 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import io.netty.handler.codec.EncoderException;
-
 import java.io.IOException;
 import java.nio.ByteOrder;
 
@@ -19,8 +18,7 @@ public class LevelEventGenericPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-    }
+    public void decode() {}
 
     @Override
     public void encode() {

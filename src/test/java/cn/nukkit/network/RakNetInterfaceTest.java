@@ -1,21 +1,20 @@
 package cn.nukkit.network;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.Mockito.when;
+
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.ResourcePackChunkRequestPacket;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.powernukkit.tests.api.MockPlayer;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
-
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(PowerNukkitExtension.class)
 class RakNetInterfaceTest {

@@ -9,8 +9,7 @@ import cn.nukkit.api.Since;
 @PowerNukkitXOnly
 @Since("1.19.63-r2")
 public final class NumberConversions {
-    private NumberConversions() {
-    }
+    private NumberConversions() {}
 
     public static int floor(double num) {
         final int floor = (int) num;

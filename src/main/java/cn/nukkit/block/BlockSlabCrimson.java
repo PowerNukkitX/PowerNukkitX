@@ -28,7 +28,7 @@ public class BlockSlabCrimson extends BlockSlab {
     public String getSlabName() {
         return "Crimson";
     }
-    
+
     @Override
     public int getId() {
         return CRIMSON_SLAB;
@@ -36,8 +36,7 @@ public class BlockSlabCrimson extends BlockSlab {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return SIMPLE_SLAB_PROPERTIES;
     }
@@ -55,9 +54,7 @@ public class BlockSlabCrimson extends BlockSlab {
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{
-                toItem()
-        };
+        return new Item[] {toItem()};
     }
 
     @Override
@@ -74,5 +71,4 @@ public class BlockSlabCrimson extends BlockSlab {
     public int getBurnAbility() {
         return 0;
     }
-
 }

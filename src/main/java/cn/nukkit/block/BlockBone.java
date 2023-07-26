@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.DEPRECATED;
+
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
@@ -11,38 +13,20 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.DEPRECATED;
-
 /**
  * @author CreeperFace
  */
 public class BlockBone extends BlockSolidMeta implements Faceable {
-    private static final ArrayBlockProperty<String> SPECIAL_PILLAR_AXIS = new ArrayBlockProperty<>("pillar_axis", false,
-        new String[] {
-                "y",
-                "unused1",
-                "unused2",
-                "unused3",
-                "x",
-                "unused5",
-                "unused6",
-                "unused7",
-                "z",
-        }
-    );
+    private static final ArrayBlockProperty<String> SPECIAL_PILLAR_AXIS =
+            new ArrayBlockProperty<>("pillar_axis", false, new String[] {
+                "y", "unused1", "unused2", "unused3", "x", "unused5", "unused6", "unused7", "z",
+            });
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(SPECIAL_PILLAR_AXIS, DEPRECATED);
 
-    private static final int[] FACES = {
-            0,
-            0,
-            0b1000,
-            0b1000,
-            0b0100,
-            0b0100
-    };
+    private static final int[] FACES = {0, 0, 0b1000, 0b1000, 0b0100, 0b0100};
 
     public BlockBone() {
         this(0);
@@ -59,8 +43,7 @@ public class BlockBone extends BlockSolidMeta implements Faceable {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -98,10 +81,17 @@ public class BlockBone extends BlockSolidMeta implements Faceable {
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         this.setDamage(((this.getDamage() & 0x3) | FACES[face.getIndex()]));
         this.getLevel().setBlock(block, this, true);
         return true;
     }
-
 }

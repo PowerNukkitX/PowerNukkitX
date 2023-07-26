@@ -50,14 +50,18 @@ public interface IScoreboardLine {
      * @param addition 增加量
      * @return 是否成功（事件被撤回就会false）
      */
-    default boolean addScore(int addition) {return setScore(getScore() + addition);}
+    default boolean addScore(int addition) {
+        return setScore(getScore() + addition);
+    }
 
     /**
      * 减少分数
      * @param reduction 减少量
      * @return 是否成功（事件被撤回就会false）
      */
-    default boolean removeScore(int reduction) {return setScore(getScore() - reduction);}
+    default boolean removeScore(int reduction) {
+        return setScore(getScore() - reduction);
+    }
 
     /**
      * 内部方法

@@ -24,7 +24,6 @@ import cn.nukkit.block.Block;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.level.Position;
-
 import java.util.Set;
 
 /**
@@ -54,7 +53,7 @@ public class BlockExplodeEvent extends BlockEvent implements Cancellable {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     protected Set<Block> ignitions;
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     protected double yield;
@@ -65,7 +64,8 @@ public class BlockExplodeEvent extends BlockEvent implements Cancellable {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public BlockExplodeEvent(Block block, Position position, Set<Block> blocks, Set<Block> ignitions, double yield, double fireChance) {
+    public BlockExplodeEvent(
+            Block block, Position position, Set<Block> blocks, Set<Block> ignitions, double yield, double fireChance) {
         super(block);
         this.position = position;
         this.blocks = blocks;

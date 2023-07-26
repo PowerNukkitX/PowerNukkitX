@@ -1,9 +1,8 @@
 package cn.nukkit.network.protocol.types;
 
-import lombok.ToString;
-
 import java.util.OptionalLong;
 import java.util.UUID;
+import lombok.ToString;
 
 /**
  * @author SupremeMortal (Nukkit project)
@@ -13,7 +12,7 @@ public final class CommandOriginData {
     public final Origin type;
     public final UUID uuid;
     public final String requestId;
-    private final Long varlong;//event
+    private final Long varlong; // event
 
     public CommandOriginData(Origin type, UUID uuid, String requestId, Long varlong) {
         this.type = type;

@@ -5,12 +5,11 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.event.plugin.PluginDisableEvent;
 import cn.nukkit.event.plugin.PluginEnableEvent;
-import lombok.extern.log4j.Log4j2;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.regex.Pattern;
+import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @PowerNukkitXOnly
@@ -30,10 +29,11 @@ public class JSPluginLoader implements PluginLoader {
 
     @Override
     public Plugin loadPlugin(File file) throws Exception {
-        if(!file.exists() || !file.isDirectory()) {
+        if (!file.exists() || !file.isDirectory()) {
             return null;
         }
-        var pluginDescription = new PluginDescription(Files.readString(file.toPath().resolve("plugin.yml")));
+        var pluginDescription =
+                new PluginDescription(Files.readString(file.toPath().resolve("plugin.yml")));
         log.info(this.server.getLanguage().tr("nukkit.plugin.load", pluginDescription.getFullName()));
         var jsPlugin = new CommonJSPlugin();
         jsPlugin.init(this, file, pluginDescription);
@@ -58,13 +58,15 @@ public class JSPluginLoader implements PluginLoader {
 
     @Override
     public Pattern[] getPluginFilters() {
-        return new Pattern[]{Pattern.compile("^@.+$")};
+        return new Pattern[] {Pattern.compile("^@.+$")};
     }
 
     @Override
     public void enablePlugin(Plugin plugin) {
         if (plugin instanceof CommonJSPlugin jsPlugin && !plugin.isEnabled()) {
-            log.info(this.server.getLanguage().tr("nukkit.plugin.enable", plugin.getDescription().getFullName()));
+            log.info(this.server
+                    .getLanguage()
+                    .tr("nukkit.plugin.enable", plugin.getDescription().getFullName()));
             jsPlugin.onEnable();
             this.server.getPluginManager().callEvent(new PluginEnableEvent(plugin));
         }
@@ -73,7 +75,9 @@ public class JSPluginLoader implements PluginLoader {
     @Override
     public void disablePlugin(Plugin plugin) {
         if (plugin instanceof CommonJSPlugin jsPlugin && plugin.isEnabled()) {
-            log.info(this.server.getLanguage().tr("nukkit.plugin.disable", plugin.getDescription().getFullName()));
+            log.info(this.server
+                    .getLanguage()
+                    .tr("nukkit.plugin.disable", plugin.getDescription().getFullName()));
             this.server.getServiceManager().cancel(plugin);
             this.server.getPluginManager().callEvent(new PluginDisableEvent(plugin));
             jsPlugin.onDisable();

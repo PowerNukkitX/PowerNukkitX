@@ -134,12 +134,10 @@ public class PopulatorLava extends Populator {
     private int calculateFlowCost(int xx, int yy, int zz, int accumulatedCost, int previousDirection) {
         int cost = 1000;
         for (int j = 0; j < 4; ++j) {
-            if (
-                    (j == 0 && previousDirection == 1) ||
-                            (j == 1 && previousDirection == 0) ||
-                            (j == 2 && previousDirection == 3) ||
-                            (j == 3 && previousDirection == 2)
-            ) {
+            if ((j == 0 && previousDirection == 1)
+                    || (j == 1 && previousDirection == 0)
+                    || (j == 2 && previousDirection == 3)
+                    || (j == 3 && previousDirection == 2)) {
                 int x = xx;
                 int y = yy;
                 int z = zz;
@@ -215,7 +213,6 @@ public class PopulatorLava extends Populator {
         }
         return (decay >= 0 && blockDecay >= decay) ? decay : blockDecay;
     }
-
 
     private int getHighestWorkableBlock(FullChunk chunk, int x, int z) {
         int y;

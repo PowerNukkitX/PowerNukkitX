@@ -20,7 +20,6 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.MinecartType;
-
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -97,7 +96,8 @@ public class EntityMinecartTNT extends EntityMinecartAbstract implements EntityE
             root = 5.0D;
         }
 
-        EntityExplosionPrimeEvent event = new EntityExplosionPrimeEvent(this, (4.0D + ThreadLocalRandom.current().nextDouble() * 1.5D * root));
+        EntityExplosionPrimeEvent event = new EntityExplosionPrimeEvent(
+                this, (4.0D + ThreadLocalRandom.current().nextDouble() * 1.5D * root));
         server.getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             return;

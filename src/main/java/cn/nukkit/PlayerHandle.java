@@ -24,13 +24,12 @@ import cn.nukkit.utils.LoginChainData;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.google.common.collect.BiMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
-import org.jetbrains.annotations.NotNull;
-
 import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A PlayerHandle is used to access a player's protected data.
@@ -48,7 +47,6 @@ public final class PlayerHandle {
     public NetworkPlayerSession getNetworkSession() {
         return player.networkSession;
     }
-
 
     public void sendPlayStatus(int status) {
         player.sendPlayStatus(status);
@@ -75,7 +73,6 @@ public final class PlayerHandle {
     public void onBlock(Entity entity, EntityDamageEvent e, boolean animate) {
         player.onBlock(entity, e, animate);
     }
-
 
     public long getBreakingBlockTime() {
         return player.breakingBlockTime;
@@ -575,7 +572,9 @@ public final class PlayerHandle {
         player.lastBlockAction = actionData;
     }
 
-    @PowerNukkitXDifference(since = "1.19.60-r1", info = "Auto-break custom blocks if client doesn't send the break data-pack.")
+    @PowerNukkitXDifference(
+            since = "1.19.60-r1",
+            info = "Auto-break custom blocks if client doesn't send the break data-pack.")
     public void onBlockBreakContinue(Vector3 pos, BlockFace face) {
         player.onBlockBreakContinue(pos, face);
     }

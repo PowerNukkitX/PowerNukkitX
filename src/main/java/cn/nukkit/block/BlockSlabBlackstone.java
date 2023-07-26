@@ -29,8 +29,7 @@ public class BlockSlabBlackstone extends BlockSlab {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return SIMPLE_SLAB_PROPERTIES;
     }
@@ -60,9 +59,7 @@ public class BlockSlabBlackstone extends BlockSlab {
     @Override
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
-            return new Item[]{
-                    toItem()
-            };
+            return new Item[] {toItem()};
         } else {
             return Item.EMPTY_ARRAY;
         }

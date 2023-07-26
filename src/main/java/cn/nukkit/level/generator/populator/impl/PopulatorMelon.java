@@ -15,9 +15,13 @@ public class PopulatorMelon extends PopulatorSurfaceBlock {
     @Override
     protected boolean canStay(int x, int y, int z, FullChunk chunk) {
         final int id = chunk.getBiomeId(x, y);
-        return (id == EnumBiome.JUNGLE.id || id == EnumBiome.JUNGLE_EDGE.id || id == EnumBiome.JUNGLE_HILLS.id || id == EnumBiome.JUNGLE_EDGE_M.id
-                || id == EnumBiome.JUNGLE_M.id)
-                && EnsureCover.ensureCover(x, y, z, chunk) && EnsureGrassBelow.ensureGrassBelow(x, y, z, chunk);
+        return (id == EnumBiome.JUNGLE.id
+                        || id == EnumBiome.JUNGLE_EDGE.id
+                        || id == EnumBiome.JUNGLE_HILLS.id
+                        || id == EnumBiome.JUNGLE_EDGE_M.id
+                        || id == EnumBiome.JUNGLE_M.id)
+                && EnsureCover.ensureCover(x, y, z, chunk)
+                && EnsureGrassBelow.ensureGrassBelow(x, y, z, chunk);
     }
 
     @Override

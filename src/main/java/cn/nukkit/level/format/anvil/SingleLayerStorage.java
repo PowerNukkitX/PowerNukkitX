@@ -25,11 +25,10 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.format.anvil.util.BlockStorage;
 import cn.nukkit.level.format.anvil.util.ImmutableBlockStorage;
 import cn.nukkit.utils.BinaryStream;
-import lombok.SneakyThrows;
-
-import javax.annotation.Nullable;
 import java.util.function.Consumer;
 import java.util.function.IntSupplier;
+import javax.annotation.Nullable;
+import lombok.SneakyThrows;
 
 /**
  * @author joserobjr
@@ -108,8 +107,7 @@ public final class SingleLayerStorage extends LayerStorage {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nullable
-    @Override
+    @Nullable @Override
     public BlockStorage getStorageOrNull(int layer) {
         if (layer != 0) {
             return null;

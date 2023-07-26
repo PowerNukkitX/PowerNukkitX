@@ -4,10 +4,9 @@ import cn.nukkit.api.ImmutableCollection;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.generator.populator.type.Populator;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Collections;
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 public class ChunkPrePopulateEvent extends ChunkEvent {
     private static final HandlerList handlers = new HandlerList();
@@ -16,21 +15,20 @@ public class ChunkPrePopulateEvent extends ChunkEvent {
         return handlers;
     }
 
-    @NotNull
-    @ImmutableCollection
+    @NotNull @ImmutableCollection
     private List<Populator> terrainPopulators;
-    @NotNull
-    @ImmutableCollection
+
+    @NotNull @ImmutableCollection
     private List<Populator> biomePopulators;
 
-    public ChunkPrePopulateEvent(FullChunk chunk, @NotNull List<Populator> terrainPopulators, @NotNull List<Populator> biomePopulators) {
+    public ChunkPrePopulateEvent(
+            FullChunk chunk, @NotNull List<Populator> terrainPopulators, @NotNull List<Populator> biomePopulators) {
         super(chunk);
         this.terrainPopulators = Collections.unmodifiableList(terrainPopulators);
         this.biomePopulators = Collections.unmodifiableList(biomePopulators);
     }
 
-    @NotNull
-    @ImmutableCollection
+    @NotNull @ImmutableCollection
     public List<Populator> getTerrainPopulators() {
         return terrainPopulators;
     }
@@ -39,8 +37,7 @@ public class ChunkPrePopulateEvent extends ChunkEvent {
         this.terrainPopulators = terrainPopulators;
     }
 
-    @NotNull
-    @ImmutableCollection
+    @NotNull @ImmutableCollection
     public List<Populator> getBiomePopulators() {
         return biomePopulators;
     }

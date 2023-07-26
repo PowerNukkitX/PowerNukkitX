@@ -37,10 +37,8 @@ public class BlockSlabCopperCutOxidized extends BlockSlabCopperCut {
 
     @Since("FUTURE")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public OxidizationLevel getOxidizationLevel() {
         return OxidizationLevel.OXIDIZED;
     }
-
 }

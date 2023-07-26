@@ -6,12 +6,11 @@
  */
 package cn.nukkit.utils.collection;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.lang.ref.Reference;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.function.Consumer;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * <p>

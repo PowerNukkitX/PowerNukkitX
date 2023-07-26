@@ -25,12 +25,11 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.format.anvil.util.BlockStorage;
 import cn.nukkit.level.format.anvil.util.ImmutableBlockStorage;
 import cn.nukkit.utils.BinaryStream;
-import lombok.SneakyThrows;
-
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.function.IntSupplier;
+import javax.annotation.Nullable;
+import lombok.SneakyThrows;
 
 /**
  * @author joserobjr
@@ -133,7 +132,8 @@ public final class MultiLayerStorage extends LayerStorage {
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     @Override
-    public BlockStorage getOrSetStorage(@Nullable Consumer<LayerStorage> setLayerStorage, IntSupplier contentVersion, int layer) {
+    public BlockStorage getOrSetStorage(
+            @Nullable Consumer<LayerStorage> setLayerStorage, IntSupplier contentVersion, int layer) {
         int oldLen = storages.length;
         if (layer >= oldLen) {
             if (layer > 1) {
@@ -166,8 +166,7 @@ public final class MultiLayerStorage extends LayerStorage {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nullable
-    @Override
+    @Nullable @Override
     public BlockStorage getStorageOrNull(int layer) {
         if (layer >= storages.length) {
             return null;

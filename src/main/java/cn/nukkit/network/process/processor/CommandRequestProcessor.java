@@ -14,14 +14,18 @@ public class CommandRequestProcessor extends DataPacketProcessor<CommandRequestP
         if (!playerHandle.player.spawned || !playerHandle.player.isAlive()) {
             return;
         }
-        //?? why set craftType
+        // ?? why set craftType
         playerHandle.player.craftingType = Player.CRAFTING_SMALL;
-        PlayerCommandPreprocessEvent playerCommandPreprocessEvent = new PlayerCommandPreprocessEvent(playerHandle.player, pk.command);
+        PlayerCommandPreprocessEvent playerCommandPreprocessEvent =
+                new PlayerCommandPreprocessEvent(playerHandle.player, pk.command);
         playerHandle.player.getServer().getPluginManager().callEvent(playerCommandPreprocessEvent);
         if (playerCommandPreprocessEvent.isCancelled()) {
             return;
         }
-        playerHandle.player.getServer().executeCommand(playerCommandPreprocessEvent.getPlayer(), playerCommandPreprocessEvent.getMessage());
+        playerHandle
+                .player
+                .getServer()
+                .executeCommand(playerCommandPreprocessEvent.getPlayer(), playerCommandPreprocessEvent.getMessage());
     }
 
     @Override

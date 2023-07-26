@@ -8,10 +8,9 @@ import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.math.NukkitRandom;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -72,7 +71,9 @@ public abstract class Biome implements BlockID {
     }
 
     @Deprecated
-    @DeprecationDetails(since = "1.19.50-r3", reason = "populators will be modified by plugins in event calls.",
+    @DeprecationDetails(
+            since = "1.19.50-r3",
+            reason = "populators will be modified by plugins in event calls.",
             replaceWith = "populateChunk(ChunkManager, List<Populator>, int, int, NukkitRandom)")
     public void populateChunk(@NotNull ChunkManager level, int chunkX, int chunkZ, NukkitRandom random) {
         FullChunk chunk = level.getChunk(chunkX, chunkZ);
@@ -81,7 +82,12 @@ public abstract class Biome implements BlockID {
         }
     }
 
-    public void populateChunk(@NotNull ChunkManager level, @NotNull List<Populator> usedPopulators, int chunkX, int chunkZ, NukkitRandom random) {
+    public void populateChunk(
+            @NotNull ChunkManager level,
+            @NotNull List<Populator> usedPopulators,
+            int chunkX,
+            int chunkZ,
+            NukkitRandom random) {
         FullChunk chunk = level.getChunk(chunkX, chunkZ);
         for (Populator populator : usedPopulators) {
             populator.populate(level, chunkX, chunkZ, random, chunk);
@@ -128,7 +134,7 @@ public abstract class Biome implements BlockID {
         return hashCode() == obj.hashCode();
     }
 
-    //whether or not water should freeze into ice on generation
+    // whether or not water should freeze into ice on generation
     public boolean isFreezing() {
         return false;
     }

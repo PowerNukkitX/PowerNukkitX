@@ -7,7 +7,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-
 import javax.annotation.Nullable;
 
 /**
@@ -29,7 +28,10 @@ public class MovingObjectPosition {
      * Bottom = 0, Top = 1, East = 2, West = 3, North = 4, South = 5.
      */
     @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", reason = "Magic numbers and not encapsulated", replaceWith = "getFaceHit(), setFaceHit(BlockFace)")
+    @DeprecationDetails(
+            since = "1.4.0.0-PN",
+            reason = "Magic numbers and not encapsulated",
+            replaceWith = "getFaceHit(), setFaceHit(BlockFace)")
     public int sideHit;
 
     public Vector3 hitVector;
@@ -51,7 +53,10 @@ public class MovingObjectPosition {
 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed: sideHit not being filled")
     @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", reason = "Magic number in side param", replaceWith = "fromBlock(int,int,int,BlockFace,Vector3)")
+    @DeprecationDetails(
+            since = "1.4.0.0-PN",
+            reason = "Magic number in side param",
+            replaceWith = "fromBlock(int,int,int,BlockFace,Vector3)")
     public static MovingObjectPosition fromBlock(int x, int y, int z, int side, Vector3 hitVector) {
         MovingObjectPosition objectPosition = new MovingObjectPosition();
         objectPosition.typeOfHit = 0;
@@ -73,8 +78,7 @@ public class MovingObjectPosition {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nullable
-    @SuppressWarnings("java:S1874")
+    @Nullable @SuppressWarnings("java:S1874")
     public BlockFace getFaceHit() {
         switch (sideHit) {
             case 0:
@@ -129,14 +133,13 @@ public class MovingObjectPosition {
 
     @Override
     public String toString() {
-        return "MovingObjectPosition{" +
-                "typeOfHit=" + typeOfHit +
-                ", blockX=" + blockX +
-                ", blockY=" + blockY +
-                ", blockZ=" + blockZ +
-                ", sideHit=" + sideHit +
-                ", hitVector=" + hitVector +
-                ", entityHit=" + entityHit +
-                '}';
+        return "MovingObjectPosition{" + "typeOfHit="
+                + typeOfHit + ", blockX="
+                + blockX + ", blockY="
+                + blockY + ", blockZ="
+                + blockZ + ", sideHit="
+                + sideHit + ", hitVector="
+                + hitVector + ", entityHit="
+                + entityHit + '}';
     }
 }

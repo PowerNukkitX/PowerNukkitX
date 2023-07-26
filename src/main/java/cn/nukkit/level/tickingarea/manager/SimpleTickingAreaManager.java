@@ -3,11 +3,10 @@ package cn.nukkit.level.tickingarea.manager;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.tickingarea.TickingArea;
 import cn.nukkit.level.tickingarea.storage.TickingAreaStorage;
-
-import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.Nullable;
 
 public class SimpleTickingAreaManager extends TickingAreaManager {
 
@@ -37,8 +36,7 @@ public class SimpleTickingAreaManager extends TickingAreaManager {
     }
 
     @Override
-    @Nullable
-    public TickingArea getTickingArea(String name) {
+    @Nullable public TickingArea getTickingArea(String name) {
         return areaMap.get(name);
     }
 
@@ -53,11 +51,11 @@ public class SimpleTickingAreaManager extends TickingAreaManager {
     }
 
     @Override
-    @Nullable
-    public TickingArea getTickingAreaByChunk(String levelName, TickingArea.ChunkPos chunkPos) {
+    @Nullable public TickingArea getTickingAreaByChunk(String levelName, TickingArea.ChunkPos chunkPos) {
         TickingArea matchedArea = null;
         for (var area : areaMap.values()) {
-            boolean matched = area.getLevelName().equals(levelName) && area.getChunks().stream().anyMatch(pos -> pos.equals(chunkPos));
+            boolean matched = area.getLevelName().equals(levelName)
+                    && area.getChunks().stream().anyMatch(pos -> pos.equals(chunkPos));
             if (matched) {
                 matchedArea = area;
                 break;
@@ -73,7 +71,6 @@ public class SimpleTickingAreaManager extends TickingAreaManager {
 
     @Override
     public void loadAllTickingArea() {
-        for (TickingArea area : areaMap.values())
-            if (!area.loadAllChunk()) removeTickingArea(area.getName());
+        for (TickingArea area : areaMap.values()) if (!area.loadAllChunk()) removeTickingArea(area.getName());
     }
 }

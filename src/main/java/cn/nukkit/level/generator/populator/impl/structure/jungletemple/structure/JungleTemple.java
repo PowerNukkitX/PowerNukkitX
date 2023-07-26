@@ -13,7 +13,6 @@ import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-
 import java.util.Map;
 
 @PowerNukkitXOnly
@@ -90,8 +89,10 @@ public class JungleTemple extends ScatteredStructurePiece {
         builder.fillWithRandomBlock(new BlockVector3(9, 8, 0), new BlockVector3(9, 9, 0), random, stones);
         builder.fillWithRandomBlock(new BlockVector3(5, 10, 0), new BlockVector3(6, 10, 0), random, stones);
         for (int i = 0; i < 6; i++) {
-            builder.fillWithRandomBlock(new BlockVector3(11, 8, 2 + (i << 1)), new BlockVector3(11, 9, 2 + (i << 1)), random, stones);
-            builder.fillWithRandomBlock(new BlockVector3(0, 8, 2 + (i << 1)), new BlockVector3(0, 9, 2 + (i << 1)), random, stones);
+            builder.fillWithRandomBlock(
+                    new BlockVector3(11, 8, 2 + (i << 1)), new BlockVector3(11, 9, 2 + (i << 1)), random, stones);
+            builder.fillWithRandomBlock(
+                    new BlockVector3(0, 8, 2 + (i << 1)), new BlockVector3(0, 9, 2 + (i << 1)), random, stones);
         }
         builder.setBlockWithRandomBlock(new BlockVector3(11, 10, 5), random, stones);
         builder.setBlockWithRandomBlock(new BlockVector3(11, 10, 9), random, stones);
@@ -117,10 +118,12 @@ public class JungleTemple extends ScatteredStructurePiece {
 
         // 1st floor inside
         for (int i = 0; i < 6; i++) {
-            builder.fillWithRandomBlock(new BlockVector3(1, 3, 2 + (i << 1)), new BlockVector3(3, 3, 2 + (i << 1)), random, stones);
+            builder.fillWithRandomBlock(
+                    new BlockVector3(1, 3, 2 + (i << 1)), new BlockVector3(3, 3, 2 + (i << 1)), random, stones);
         }
         for (int i = 0; i < 7; i++) {
-            builder.fillWithRandomBlock(new BlockVector3(1, 1, 1 + (i << 1)), new BlockVector3(1, 2, 1 + (i << 1)), random, stones);
+            builder.fillWithRandomBlock(
+                    new BlockVector3(1, 1, 1 + (i << 1)), new BlockVector3(1, 2, 1 + (i << 1)), random, stones);
         }
         builder.setBlockWithRandomBlock(new BlockVector3(2, 2, 1), random, stones);
         builder.setBlock(new BlockVector3(3, 1, 1), Block.MOSSY_STONE);
@@ -159,9 +162,9 @@ public class JungleTemple extends ScatteredStructurePiece {
         builder.fill(new BlockVector3(8, 2, 11), new BlockVector3(10, 2, 11), Block.STONE_BRICK, 3);
         builder.fill(new BlockVector3(8, 2, 12), new BlockVector3(10, 2, 12), Block.LEVER, 3); // N
         builder.setBlock(new BlockVector3(3, 2, 1), Block.DISPENSER, 3); // N
-        //TODO: tile
+        // TODO: tile
         builder.setBlock(new BlockVector3(9, 2, 3), Block.DISPENSER, 4); // E
-        //TODO: tile
+        // TODO: tile
         builder.setBlock(new BlockVector3(3, 2, 2), Block.VINE, 4); // NESW
         builder.fill(new BlockVector3(8, 2, 3), new BlockVector3(8, 3, 3), Block.VINE, 8); // NESW
         builder.fill(new BlockVector3(2, 1, 8), new BlockVector3(3, 1, 8), Block.TRIP_WIRE);
@@ -176,9 +179,9 @@ public class JungleTemple extends ScatteredStructurePiece {
         builder.setBlock(new BlockVector3(9, 1, 5), Block.REDSTONE_WIRE);
         builder.setBlock(new BlockVector3(9, 2, 4), Block.REDSTONE_WIRE);
         builder.fill(new BlockVector3(10, 2, 8), new BlockVector3(10, 3, 8), Block.STICKY_PISTON, 5); // E
-        //TODO: tile
+        // TODO: tile
         builder.setBlock(new BlockVector3(9, 2, 8), Block.STICKY_PISTON, 1); // U
-        //TODO: tile
+        // TODO: tile
         builder.setBlock(new BlockVector3(10, 3, 9), Block.REDSTONE_WIRE);
         builder.fill(new BlockVector3(8, 2, 9), new BlockVector3(8, 2, 10), Block.REDSTONE_WIRE);
         builder.setBlock(new BlockVector3(10, 2, 10), Block.UNPOWERED_REPEATER, 4); // N
@@ -193,7 +196,8 @@ public class JungleTemple extends ScatteredStructurePiece {
 
         // 2nd floor inside
         for (int i = 0; i < 4; i++) {
-            builder.fill(new BlockVector3(5, 4 - i, 6 + i), new BlockVector3(6, 4 - i, 6 + i), Block.STONE_STAIRS, 3); // S
+            builder.fill(
+                    new BlockVector3(5, 4 - i, 6 + i), new BlockVector3(6, 4 - i, 6 + i), Block.STONE_STAIRS, 3); // S
         }
         builder.fillWithRandomBlock(new BlockVector3(4, 5, 10), new BlockVector3(7, 6, 10), random, stones);
         builder.setBlockWithRandomBlock(new BlockVector3(4, 5, 9), random, stones);

@@ -19,7 +19,7 @@ public class BlockDoubleSlabWarped extends BlockDoubleSlabBase {
     public int getId() {
         return WARPED_DOUBLE_SLAB;
     }
-    
+
     @PowerNukkitOnly
     @Override
     public String getSlabName() {
@@ -32,7 +32,7 @@ public class BlockDoubleSlabWarped extends BlockDoubleSlabBase {
         return WARPED_SLAB;
     }
 
-    //TODO Adjust or remove this when merging https://github.com/PowerNukkit/PowerNukkit/pull/370
+    // TODO Adjust or remove this when merging https://github.com/PowerNukkit/PowerNukkit/pull/370
     @Override
     @PowerNukkitOnly
     protected boolean isCorrectTool(Item item) {
@@ -48,7 +48,7 @@ public class BlockDoubleSlabWarped extends BlockDoubleSlabBase {
     public double getResistance() {
         return 3;
     }
-    
+
     @Override
     public int getToolType() {
         return ItemTool.TYPE_AXE;
@@ -58,10 +58,9 @@ public class BlockDoubleSlabWarped extends BlockDoubleSlabBase {
     public int getBurnChance() {
         return 0;
     }
-    
+
     @Override
     public int getBurnAbility() {
         return 0;
     }
-
 }

@@ -12,7 +12,6 @@ import cn.nukkit.math.Vector3;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -81,9 +80,8 @@ public class PopulatorEndObsidianPillar extends Populator {
 
     public static class ObsidianPillar {
 
-        private static final LoadingCache<Long, ObsidianPillar[]> CACHE = CacheBuilder.newBuilder()
-                .expireAfterWrite(5L, TimeUnit.MINUTES)
-                .build(new ObsidianPillarCacheLoader());
+        private static final LoadingCache<Long, ObsidianPillar[]> CACHE =
+                CacheBuilder.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).build(new ObsidianPillarCacheLoader());
         private final int centerX;
         private final int centerZ;
         private final int radius;
@@ -132,9 +130,12 @@ public class PopulatorEndObsidianPillar extends Populator {
 
                 for (int i = 0; i < 10; ++i) {
                     int pillar = pillars.get(i);
-                    obsidianPillars[i] = new ObsidianPillar((int) (42d * Math.cos(2d * (-Math.PI + (Math.PI / 10d) * i))),
+                    obsidianPillars[i] = new ObsidianPillar(
+                            (int) (42d * Math.cos(2d * (-Math.PI + (Math.PI / 10d) * i))),
                             (int) (42d * Math.sin(2d * (-Math.PI + (Math.PI / 10d) * i))),
-                            2 + pillar / 3, 76 + pillar * 3, pillar == 1 || pillar == 2);
+                            2 + pillar / 3,
+                            76 + pillar * 3,
+                            pillar == 1 || pillar == 2);
                 }
 
                 return obsidianPillars;

@@ -28,7 +28,7 @@ public class DesertPyramidChest extends RandomizableContainer {
                 .register(new ItemEntry(Item.IRON_HORSE_ARMOR, 15))
                 .register(new ItemEntry(Item.GOLD_HORSE_ARMOR, 10))
                 .register(new ItemEntry(Item.DIAMOND_HORSE_ARMOR, 5))
-                .register(new ItemEntry(Item.ENCHANTED_BOOK, 20)) //TODO: ench nbt
+                .register(new ItemEntry(Item.ENCHANTED_BOOK, 20)) // TODO: ench nbt
                 .register(new ItemEntry(Item.GOLDEN_APPLE, 20))
                 .register(new ItemEntry(Item.GOLDEN_APPLE_ENCHANTED, 2))
                 .register(new ItemEntry(Item.AIR, 15));

@@ -21,12 +21,12 @@ public abstract class TestCommand extends Command {
     }
 
     public TestCommand(String name, String description, String usageMessage) {
-        this(name, description, usageMessage, new String[]{});
+        this(name, description, usageMessage, new String[] {});
     }
 
     public TestCommand(String name, String description, String usageMessage, String[] aliases) {
         super(name, description, usageMessage, aliases);
-        //标记为测试命令（客户端显示为蓝色）
+        // 标记为测试命令（客户端显示为蓝色）
         this.commandData.flags.add(CommandData.Flag.TEST_USAGE);
     }
 }

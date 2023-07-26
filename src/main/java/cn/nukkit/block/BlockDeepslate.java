@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
+
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -9,13 +11,10 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.MinecraftItemID;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
-
 /**
  * @author LoboMetalurgico
  * @since 08/06/2021
  */
-
 @PowerNukkitOnly
 @Since("FUTURE")
 public class BlockDeepslate extends BlockSolid {
@@ -72,7 +71,7 @@ public class BlockDeepslate extends BlockSolid {
             return Item.EMPTY_ARRAY;
         }
 
-        return new Item[]{MinecraftItemID.COBBLED_DEEPSLATE.get(1)};
+        return new Item[] {MinecraftItemID.COBBLED_DEEPSLATE.get(1)};
     }
 
     @Override
@@ -82,8 +81,7 @@ public class BlockDeepslate extends BlockSolid {
 
     @Since("1.6.0.0-PNX")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }

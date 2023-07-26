@@ -1,4 +1,3 @@
-
 package cn.nukkit.item;
 
 import cn.nukkit.item.customitem.CustomItemDefinition;
@@ -20,7 +19,7 @@ public class TestCustomItem extends ItemCustom {
 
     public TestCustomItem(String id, String name) {
         super(id, name);
-        __callJS__("constructor", new Object[]{id, name});
+        __callJS__("constructor", new Object[] {id, name});
     }
 
     public static void __initJSConstructor__(String delegateName, Object[] args) {
@@ -34,7 +33,7 @@ public class TestCustomItem extends ItemCustom {
                     cons[i] = tmp.getArrayElement(i);
                 }
             } else {
-                cons = new Value[]{tmp};
+                cons = new Value[] {tmp};
             }
         }
     }
@@ -53,7 +52,7 @@ public class TestCustomItem extends ItemCustom {
 
     @Override
     public CustomItemDefinition getDefinition() {
-        return __callJS__("getDefinition", new Object[]{}).as(CustomItemDefinition.class);
+        return __callJS__("getDefinition", new Object[] {}).as(CustomItemDefinition.class);
     }
 
     public int getMeta() {

@@ -17,19 +17,16 @@ import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.concurrent.ThreadLocalRandom;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author LoboMetalurgico
  * @since 13/06/2021
  */
-
 @PowerNukkitOnly
 @Since("FUTURE")
 public class BlockAzalea extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
-
 
     public static final BlockProperties PROPERTIES = CommonBlockProperties.EMPTY_PROPERTIES;
 
@@ -38,17 +35,14 @@ public class BlockAzalea extends BlockFlowable implements BlockFlowerPot.FlowerP
         this(0);
     }
 
-
     @PowerNukkitOnly
     public BlockAzalea(int meta) {
         super(meta);
     }
 
-
     @PowerNukkitOnly
     @Since("FUTURE")
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -89,7 +83,6 @@ public class BlockAzalea extends BlockFlowable implements BlockFlowerPot.FlowerP
         return true;
     }
 
-
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
         if (item.isFertilizer()) { // BoneMeal
@@ -115,8 +108,9 @@ public class BlockAzalea extends BlockFlowable implements BlockFlowerPot.FlowerP
                 this.getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
-        } else if (type == Level.BLOCK_UPDATE_RANDOM) { //Growth
-            if (ThreadLocalRandom.current().nextInt(1, 8) == 1 && getLevel().getFullLight(add(0, 1, 0)) >= BlockCrops.MINIMUM_LIGHT_LEVEL) {
+        } else if (type == Level.BLOCK_UPDATE_RANDOM) { // Growth
+            if (ThreadLocalRandom.current().nextInt(1, 8) == 1
+                    && getLevel().getFullLight(add(0, 1, 0)) >= BlockCrops.MINIMUM_LIGHT_LEVEL) {
                 if (aged) {
                     this.grow();
                 } else {
@@ -131,7 +125,15 @@ public class BlockAzalea extends BlockFlowable implements BlockFlowerPot.FlowerP
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         if (BlockFlower.isSupportValid(down())) {
             this.getLevel().setBlock(block, this, true, true);
             return true;
@@ -157,7 +159,7 @@ public class BlockAzalea extends BlockFlowable implements BlockFlowerPot.FlowerP
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{toItem()};
+        return new Item[] {toItem()};
     }
 
     @Override

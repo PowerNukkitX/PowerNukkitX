@@ -52,5 +52,4 @@ public class BlockStairsRedSandstone extends BlockStairs {
     public boolean canHarvestWithHand() {
         return false;
     }
-
 }

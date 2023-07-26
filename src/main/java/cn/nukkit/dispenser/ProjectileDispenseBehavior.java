@@ -32,7 +32,8 @@ public class ProjectileDispenseBehavior extends DefaultDispenseBehavior {
         CompoundTag nbt = Entity.getDefaultNBT(dispensePos);
         this.correctNBT(nbt);
 
-        Entity projectile = Entity.createEntity(getEntityType(), source.level.getChunk(dispensePos.getChunkX(), dispensePos.getChunkZ()), nbt);
+        Entity projectile = Entity.createEntity(
+                getEntityType(), source.level.getChunk(dispensePos.getChunkX(), dispensePos.getChunkZ()), nbt);
 
         if (!(projectile instanceof EntityProjectile)) {
             return super.dispense(source, face, item);
@@ -62,8 +63,7 @@ public class ProjectileDispenseBehavior extends DefaultDispenseBehavior {
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
     protected Vector3 initMotion(BlockFace face) {
-        return new Vector3(face.getXOffset(), face.getYOffset() + 0.1f, face.getZOffset())
-                .normalize();
+        return new Vector3(face.getXOffset(), face.getYOffset() + 0.1f, face.getZOffset()).normalize();
     }
 
     @PowerNukkitOnly
@@ -85,7 +85,5 @@ public class ProjectileDispenseBehavior extends DefaultDispenseBehavior {
      *
      * @param nbt tag
      */
-    protected void correctNBT(CompoundTag nbt) {
-
-    }
+    protected void correctNBT(CompoundTag nbt) {}
 }

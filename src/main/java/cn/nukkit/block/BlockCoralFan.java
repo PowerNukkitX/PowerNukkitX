@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.block.BlockCoral.COLOR;
+
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
@@ -11,11 +13,8 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Faceable;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.concurrent.ThreadLocalRandom;
-
-import static cn.nukkit.block.BlockCoral.COLOR;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 public class BlockCoralFan extends BlockFlowable implements Faceable {
@@ -36,7 +35,7 @@ public class BlockCoralFan extends BlockFlowable implements Faceable {
     public BlockCoralFan(int meta) {
         super(meta);
     }
-    
+
     @Override
     public int getId() {
         return CORAL_FAN;
@@ -44,8 +43,7 @@ public class BlockCoralFan extends BlockFlowable implements Faceable {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -53,11 +51,7 @@ public class BlockCoralFan extends BlockFlowable implements Faceable {
     @Override
     public String getName() {
         String[] names = new String[] {
-                "Tube Coral Fan",
-                "Brain Coral Fan",
-                "Bubble Coral Fan",
-                "Fire Coral Fan",
-                "Horn Coral Fan"
+            "Tube Coral Fan", "Brain Coral Fan", "Bubble Coral Fan", "Fire Coral Fan", "Horn Coral Fan"
         };
         return names[getType()];
     }
@@ -77,7 +71,7 @@ public class BlockCoralFan extends BlockFlowable implements Faceable {
     public int getType() {
         return getDamage() & 0x7;
     }
-    
+
     @Override
     public BlockFace getBlockFace() {
         return BlockFace.fromHorizontalIndex(((getDamage() & 0x8) >> 3) + 1);
@@ -87,7 +81,7 @@ public class BlockCoralFan extends BlockFlowable implements Faceable {
     public BlockFace getRootsFace() {
         return BlockFace.DOWN;
     }
-    
+
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
@@ -95,7 +89,8 @@ public class BlockCoralFan extends BlockFlowable implements Faceable {
             if (!side.isSolid() || side.getId() == MAGMA || side.getId() == SOUL_SAND) {
                 this.getLevel().useBreakOn(this);
             } else {
-                this.getLevel().scheduleUpdate(this, 60 + ThreadLocalRandom.current().nextInt(40));
+                this.getLevel()
+                        .scheduleUpdate(this, 60 + ThreadLocalRandom.current().nextInt(40));
             }
             return type;
         } else if (type == Level.BLOCK_UPDATE_SCHEDULED) {
@@ -105,7 +100,9 @@ public class BlockCoralFan extends BlockFlowable implements Faceable {
                 return type;
             }
 
-            if (!isDead() && !(getLevelBlockAtLayer(1) instanceof BlockWater) && !(getLevelBlockAtLayer(1) instanceof BlockIceFrosted)) {
+            if (!isDead()
+                    && !(getLevelBlockAtLayer(1) instanceof BlockWater)
+                    && !(getLevelBlockAtLayer(1) instanceof BlockIceFrosted)) {
                 BlockFadeEvent event = new BlockFadeEvent(this, new BlockCoralFanDead(getDamage()));
                 if (!event.isCancelled()) {
                     this.getLevel().setBlock(this, event.getNewState(), true, true);
@@ -125,7 +122,15 @@ public class BlockCoralFan extends BlockFlowable implements Faceable {
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         if (face == BlockFace.DOWN) {
             return false;
         }
@@ -135,7 +140,7 @@ public class BlockCoralFan extends BlockFlowable implements Faceable {
         if (layer1.getId() != Block.AIR && (!hasWater || layer1.getDamage() != 0 && layer1.getDamage() != 8)) {
             return false;
         }
-        
+
         if (hasWater && layer1.getDamage() == 8) {
             this.getLevel().setBlock(this, 1, new BlockWater(), true, false);
         }
@@ -143,19 +148,25 @@ public class BlockCoralFan extends BlockFlowable implements Faceable {
         if (!target.isSolid() || target.getId() == MAGMA || target.getId() == SOUL_SAND) {
             return false;
         }
-        
+
         if (face == BlockFace.UP) {
             double rotation = player.yaw % 360;
             if (rotation < 0) {
                 rotation += 360.0;
             }
-            int axisBit = rotation >= 0 && rotation < 12 || (342 <= rotation && rotation < 360)? 0x0 : 0x8;
+            int axisBit = rotation >= 0 && rotation < 12 || (342 <= rotation && rotation < 360) ? 0x0 : 0x8;
             setDamage(getDamage() & 0x7 | axisBit);
-            this.getLevel().setBlock(this, 0, hasWater? new BlockCoralFan(getDamage()) : new BlockCoralFanDead(getDamage()), true, true);
+            this.getLevel()
+                    .setBlock(
+                            this,
+                            0,
+                            hasWater ? new BlockCoralFan(getDamage()) : new BlockCoralFanDead(getDamage()),
+                            true,
+                            true);
         } else {
             int type = getType();
             int typeBit = type % 2;
-            int deadBit = isDead()? 0x1 : 0;
+            int deadBit = isDead() ? 0x1 : 0;
             int faceBit;
             switch (face) {
                 case WEST:
@@ -193,17 +204,17 @@ public class BlockCoralFan extends BlockFlowable implements Faceable {
 
         return true;
     }
-    
+
     @Override
     public boolean canSilkTouch() {
         return true;
     }
-    
+
     @Override
     public Item toItem() {
         return Item.get(getItemId(), getDamage() ^ 0x8);
     }
-    
+
     @Override
     public Item[] getDrops(Item item) {
         if (item.getEnchantment(Enchantment.ID_SILK_TOUCH) != null) {

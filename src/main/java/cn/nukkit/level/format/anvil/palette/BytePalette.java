@@ -1,7 +1,6 @@
 package cn.nukkit.level.format.anvil.palette;
 
 import io.netty.util.internal.EmptyArrays;
-
 import java.util.Arrays;
 
 /**
@@ -25,7 +24,7 @@ public class BytePalette {
     private byte[] insert(byte val) {
         lastIndex = Byte.MIN_VALUE;
         if (keys.length == 0) {
-            return new byte[]{val};
+            return new byte[] {val};
         } else if (val < keys[0]) {
             byte[] s = new byte[keys.length + 1];
             System.arraycopy(keys, 0, s, 1, keys.length);
@@ -82,13 +81,10 @@ public class BytePalette {
             int mid = (low + high) >>> 1;
             byte midVal = keys[mid];
 
-            if (midVal < key)
-                low = mid + 1;
-            else if (midVal > key)
-                high = mid - 1;
-            else
-                return mid; // key found
+            if (midVal < key) low = mid + 1;
+            else if (midVal > key) high = mid - 1;
+            else return mid; // key found
         }
-        return -(low + 1);  // key not found.
+        return -(low + 1); // key not found.
     }
 }

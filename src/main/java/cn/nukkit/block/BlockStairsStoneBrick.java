@@ -46,5 +46,4 @@ public class BlockStairsStoneBrick extends BlockStairs {
     public String getName() {
         return "Stone Brick Stairs";
     }
-
 }

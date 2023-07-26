@@ -17,7 +17,8 @@ public class PopulatorDesertWell extends PopulatorStructure {
     public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
         if (!chunk.isOverWorld()) return;
         int biome = chunk.getBiomeId(7, chunk.getHighestBlockAt(7, 7), 7);
-        if ((biome == EnumBiome.DESERT.id || biome == EnumBiome.DESERT_HILLS.id || biome == EnumBiome.DESERT_M.id) && random.nextBoundedInt(500) == 0) {
+        if ((biome == EnumBiome.DESERT.id || biome == EnumBiome.DESERT_HILLS.id || biome == EnumBiome.DESERT_M.id)
+                && random.nextBoundedInt(500) == 0) {
             int x = (chunkX << 4) + random.nextBoundedInt(16);
             int z = (chunkZ << 4) + random.nextBoundedInt(16);
             int y = this.getHighestWorkableBlock(level, x, z, chunk);
@@ -32,7 +33,8 @@ public class PopulatorDesertWell extends PopulatorStructure {
 
             for (int dx = -2; dx <= 2; ++dx) {
                 for (int dz = -2; dz <= 2; ++dz) {
-                    if (level.getBlockIdAt(x + dx, y - 1, z + dz) == AIR && level.getBlockIdAt(x + dx, y - 2, z + dz) == AIR) {
+                    if (level.getBlockIdAt(x + dx, y - 1, z + dz) == AIR
+                            && level.getBlockIdAt(x + dx, y - 2, z + dz) == AIR) {
                         return;
                     }
                 }

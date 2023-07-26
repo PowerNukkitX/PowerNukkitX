@@ -46,8 +46,7 @@ public class BlockLadder extends BlockTransparentMeta implements Faceable {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -166,13 +165,22 @@ public class BlockLadder extends BlockTransparentMeta implements Faceable {
     @PowerNukkitXDifference(since = "1.19.50-r1", info = "Fixed issue#790")
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed support logic")
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         if (target instanceof BlockLadder) {
             var opposite = face.getOpposite();
             var oppositeB = this.getLevel().getBlock(target.add(face.getUnitVector()));
-            var targetBlock = this.getLevel().getBlock(target.add(face.getUnitVector().multiply(2)));
+            var targetBlock =
+                    this.getLevel().getBlock(target.add(face.getUnitVector().multiply(2)));
             if (isSupportValid(targetBlock, opposite)) {
-                //不设置damage是因为level#useItemOn中有逻辑设置
+                // 不设置damage是因为level#useItemOn中有逻辑设置
                 this.getLevel().setBlock(oppositeB, this, true, false);
                 return true;
             }
@@ -180,7 +188,7 @@ public class BlockLadder extends BlockTransparentMeta implements Faceable {
         if (face.getHorizontalIndex() == -1 || !isSupportValid(target, face)) {
             return false;
         }
-        //不设置damage是因为level#useItemOn中有逻辑设置
+        // 不设置damage是因为level#useItemOn中有逻辑设置
         this.getLevel().setBlock(block, this, true, true);
         return true;
     }
@@ -203,12 +211,9 @@ public class BlockLadder extends BlockTransparentMeta implements Faceable {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             int[] faces = {
-                    0, //never use
-                    1, //never use
-                    3,
-                    2,
-                    5,
-                    4
+                0, // never use
+                1, // never use
+                3, 2, 5, 4
             };
             BlockFace face = BlockFace.fromIndex(faces[this.getDamage()]);
             if (!isSupportValid(this.getSide(face), face.getOpposite())) {
@@ -226,9 +231,7 @@ public class BlockLadder extends BlockTransparentMeta implements Faceable {
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{
-                Item.get(Item.LADDER, 0, 1)
-        };
+        return new Item[] {Item.get(Item.LADDER, 0, 1)};
     }
 
     @Override

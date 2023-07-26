@@ -13,11 +13,11 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-
 import java.util.HashSet;
 
 @PowerNukkitOnly
-public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable implements InventoryHolder, BlockEntityContainer {
+public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
+        implements InventoryHolder, BlockEntityContainer {
     @PowerNukkitOnly
     protected ContainerInventory inventory;
 
@@ -107,7 +107,8 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
             // If it is less than i, then it is a new item, so we are going to add it at the end of the list
             (this.namedTag.getList("Items", CompoundTag.class)).add(d);
         } else {
-            // If it is more than i, then it is an update on a inventorySlot, so we are going to overwrite the item in the list
+            // If it is more than i, then it is an update on a inventorySlot, so we are going to overwrite the item in
+            // the list
             (this.namedTag.getList("Items", CompoundTag.class)).add(i, d);
         }
     }

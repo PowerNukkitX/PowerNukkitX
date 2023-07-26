@@ -4,7 +4,6 @@ import cn.nukkit.level.GlobalBlockPalette;
 import cn.nukkit.utils.BinaryStream;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-
 import java.util.function.IntConsumer;
 
 public class PalettedBlockStorage {
@@ -59,7 +58,8 @@ public class PalettedBlockStorage {
             int id = this.idFor(runtimeId);
             this.bitArray.set(index, id);
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Unable to set block runtime ID: " + runtimeId + ", palette: " + palette, e);
+            throw new IllegalArgumentException(
+                    "Unable to set block runtime ID: " + runtimeId + ", palette: " + palette, e);
         }
     }
 

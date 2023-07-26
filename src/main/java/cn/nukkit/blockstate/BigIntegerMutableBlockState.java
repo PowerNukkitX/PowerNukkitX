@@ -1,5 +1,9 @@
 package cn.nukkit.blockstate;
 
+import static cn.nukkit.api.API.Definition.INTERNAL;
+import static cn.nukkit.api.API.Usage.INCUBATING;
+import static cn.nukkit.blockstate.IMutableBlockState.handleUnsupportedStorageType;
+
 import cn.nukkit.api.*;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockproperty.BlockProperties;
@@ -9,13 +13,6 @@ import cn.nukkit.blockproperty.exception.InvalidBlockPropertyMetaException;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.utils.Validation;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nonnegative;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -23,18 +20,20 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Set;
-
-import static cn.nukkit.api.API.Definition.INTERNAL;
-import static cn.nukkit.api.API.Usage.INCUBATING;
-import static cn.nukkit.blockstate.IMutableBlockState.handleUnsupportedStorageType;
+import javax.annotation.Nonnegative;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import org.jetbrains.annotations.NotNull;
 
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 @ParametersAreNonnullByDefault
 @PowerNukkitOnly
 public class BigIntegerMutableBlockState extends MutableBlockState {
-    private static final Set<Class<?>> LONG_COMPATIBLE_CLASSES = new HashSet<>(Arrays.asList(
-            Long.class, Integer.class, Short.class, Byte.class));
+    private static final Set<Class<?>> LONG_COMPATIBLE_CLASSES =
+            new HashSet<>(Arrays.asList(Long.class, Integer.class, Short.class, Byte.class));
     private BigInteger storage;
 
     @PowerNukkitOnly
@@ -94,7 +93,7 @@ public class BigIntegerMutableBlockState extends MutableBlockState {
     public void validate() {
         validate(storage);
     }
-    
+
     private void validate(BigInteger state) {
         if (BigInteger.ZERO.equals(state)) {
             return;
@@ -105,10 +104,10 @@ public class BigIntegerMutableBlockState extends MutableBlockState {
         if (bitLength > properties.getBitSize()) {
             throw new InvalidBlockStateException(
                     BlockState.of(getBlockId(), state),
-                    "The state have more data bits than specified in the properties. Bits: " + bitLength + ", Max: " + properties.getBitSize()
-            );
+                    "The state have more data bits than specified in the properties. Bits: " + bitLength + ", Max: "
+                            + properties.getBitSize());
         }
-        
+
         try {
             for (String name : properties.getNames()) {
                 BlockProperty<?> property = properties.getBlockProperty(name);
@@ -121,16 +120,21 @@ public class BigIntegerMutableBlockState extends MutableBlockState {
 
     @Nonnegative
     @Deprecated
-    @DeprecationDetails(reason = "Can't store all data, exists for backward compatibility reasons", since = "1.4.0.0-PN", replaceWith = "getDataStorage()")
+    @DeprecationDetails(
+            reason = "Can't store all data, exists for backward compatibility reasons",
+            since = "1.4.0.0-PN",
+            replaceWith = "getDataStorage()")
     @Override
     @PowerNukkitOnly
     public int getLegacyDamage() {
         return storage.and(BigInteger.valueOf(Block.DATA_MASK)).intValue();
     }
 
-    @Unsigned
-    @Deprecated
-    @DeprecationDetails(reason = "Can't store all data, exists for backward compatibility reasons", since = "1.4.0.0-PN", replaceWith = "getDataStorage()")
+    @Unsigned @Deprecated
+    @DeprecationDetails(
+            reason = "Can't store all data, exists for backward compatibility reasons",
+            since = "1.4.0.0-PN",
+            replaceWith = "getDataStorage()")
     @Override
     @PowerNukkitOnly
     public int getBigDamage() {
@@ -141,7 +145,10 @@ public class BigIntegerMutableBlockState extends MutableBlockState {
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     @Deprecated
-    @DeprecationDetails(reason = "Can't store all data, exists for backward compatibility reasons", since = "1.4.0.0-PN", replaceWith = "getDataStorage()")
+    @DeprecationDetails(
+            reason = "Can't store all data, exists for backward compatibility reasons",
+            since = "1.4.0.0-PN",
+            replaceWith = "getDataStorage()")
     @Override
     public int getSignedBigDamage() {
         return storage.and(BigInteger.valueOf(Integer.MAX_VALUE)).intValue();
@@ -150,16 +157,14 @@ public class BigIntegerMutableBlockState extends MutableBlockState {
     @Nonnegative
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    @Override
+    @NotNull @Override
     public BigInteger getHugeDamage() {
         return storage;
     }
 
     @PowerNukkitOnly
     @Nonnegative
-    @NotNull
-    @Override
+    @NotNull @Override
     public Number getDataStorage() {
         return getHugeDamage();
     }
@@ -192,8 +197,7 @@ public class BigIntegerMutableBlockState extends MutableBlockState {
         storage = properties.setValue(storage, propertyName, value);
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     @PowerNukkitOnly
     public Serializable getPropertyValue(String propertyName) {
         return properties.getValue(storage, propertyName);
@@ -215,16 +219,14 @@ public class BigIntegerMutableBlockState extends MutableBlockState {
      * @throws NoSuchElementException If the property is not registered
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
      */
-    @NotNull
-    @Override
+    @NotNull @Override
     @PowerNukkitOnly
     public String getPersistenceValue(String propertyName) {
         return properties.getPersistenceValue(storage, propertyName);
     }
 
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockState getCurrentState() {
         return BlockState.of(blockId, storage);
     }
@@ -237,8 +239,7 @@ public class BigIntegerMutableBlockState extends MutableBlockState {
     }
 
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BigIntegerMutableBlockState copy() {
         return new BigIntegerMutableBlockState(getBlockId(), properties, storage);
     }

@@ -14,7 +14,6 @@ import cn.nukkit.math.VectorMath;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.LevelEventGenericPacket;
 import cn.nukkit.network.protocol.LevelEventPacket;
-
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -37,16 +36,25 @@ public class SimpleVibrationManager implements VibrationManager {
             return;
         }
         for (var listener : listeners) {
-            if (!listener.getListenerVector().equals(event.source()) && listener.getListenerVector().distanceSquared(event.source()) <= Math.pow(listener.getListenRange(), 2) && canVibrationArrive(level, event.source(), listener.getListenerVector()) && listener.onVibrationOccur(event)) {
+            if (!listener.getListenerVector().equals(event.source())
+                    && listener.getListenerVector().distanceSquared(event.source())
+                            <= Math.pow(listener.getListenRange(), 2)
+                    && canVibrationArrive(level, event.source(), listener.getListenerVector())
+                    && listener.onVibrationOccur(event)) {
                 this.createVibration(listener, event);
-                Server.getInstance().getScheduler().scheduleDelayedTask(() -> {
-                    VibrationArriveEvent vibrationArrivePluginEvent = new VibrationArriveEvent(event, listener);
-                    this.level.getServer().getPluginManager().callEvent(vibrationArrivePluginEvent);
-                    if (vibrationArrivePluginEvent.isCancelled()) {
-                        return;
-                    }
-                    listener.onVibrationArrive(event);
-                }, (int) event.source().distance(listener.getListenerVector()));
+                Server.getInstance()
+                        .getScheduler()
+                        .scheduleDelayedTask(
+                                () -> {
+                                    VibrationArriveEvent vibrationArrivePluginEvent =
+                                            new VibrationArriveEvent(event, listener);
+                                    this.level.getServer().getPluginManager().callEvent(vibrationArrivePluginEvent);
+                                    if (vibrationArrivePluginEvent.isCancelled()) {
+                                        return;
+                                    }
+                                    listener.onVibrationArrive(event);
+                                },
+                                (int) event.source().distance(listener.getListenerVector()));
             }
         }
     }
@@ -67,12 +75,14 @@ public class SimpleVibrationManager implements VibrationManager {
         var tag = new CompoundTag()
                 .putCompound("origin", createVec3fTag(sourcePos))
                 .putFloat("speed", 20.0f)
-                .putCompound("target", listener.isEntity() ? createEntityTargetTag(listener.asEntity()) : createVec3fTag(listenerPos))
+                .putCompound(
+                        "target",
+                        listener.isEntity() ? createEntityTargetTag(listener.asEntity()) : createVec3fTag(listenerPos))
                 .putFloat("timeToLive", (float) (listenerPos.distance(sourcePos) / 20.0));
         LevelEventGenericPacket packet = new LevelEventGenericPacket();
         packet.eventId = LevelEventPacket.EVENT_PARTICLE_VIBRATION_SIGNAL;
         packet.tag = tag;
-        //todo: 只对在视野范围内的玩家发包
+        // todo: 只对在视野范围内的玩家发包
         Server.broadcastPacket(level.getPlayers().values(), packet);
     }
 
@@ -88,12 +98,11 @@ public class SimpleVibrationManager implements VibrationManager {
         return new CompoundTag()
                 .putString("type", "actor")
                 .putLong("uniqueID", entity.getId())
-                .putInt("attachPos", 3);//todo: check the use of this value :)
+                .putInt("attachPos", 3); // todo: check the use of this value :)
     }
 
     protected boolean canVibrationArrive(Level level, Vector3 from, Vector3 to) {
-        return !VectorMath.getPassByVector3(from, to)
-                .stream()
+        return !VectorMath.getPassByVector3(from, to).stream()
                 .anyMatch(vec -> level.getTickCachedBlock(vec).getId() == BlockID.WOOL);
     }
 }

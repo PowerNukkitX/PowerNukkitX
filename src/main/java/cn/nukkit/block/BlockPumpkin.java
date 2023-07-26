@@ -18,16 +18,15 @@ import org.jetbrains.annotations.NotNull;
  * @since 2015/12/8
  */
 public class BlockPumpkin extends BlockSolidMeta implements Faceable {
-    public static final ArrayBlockProperty<BlockFace> CARDINAL_DIRECTION = new ArrayBlockProperty<>("minecraft:cardinal_direction", false, new BlockFace[]{
-            BlockFace.SOUTH, BlockFace.WEST,
-            BlockFace.NORTH, BlockFace.EAST,
-    });
+    public static final ArrayBlockProperty<BlockFace> CARDINAL_DIRECTION =
+            new ArrayBlockProperty<>("minecraft:cardinal_direction", false, new BlockFace[] {
+                BlockFace.SOUTH, BlockFace.WEST,
+                BlockFace.NORTH, BlockFace.EAST,
+            });
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(
-            CARDINAL_DIRECTION
-    );
+    public static final BlockProperties PROPERTIES = new BlockProperties(CARDINAL_DIRECTION);
 
     public BlockPumpkin() {
         this(0);
@@ -48,8 +47,7 @@ public class BlockPumpkin extends BlockSolidMeta implements Faceable {
     }
 
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -91,14 +89,24 @@ public class BlockPumpkin extends BlockSolidMeta implements Faceable {
             }
             item.useOn(this);
             this.level.setBlock(this, carvedPumpkin, true, true);
-            this.getLevel().dropItem(add(0.5, 0.5, 0.5), Item.get(ItemID.PUMPKIN_SEEDS)); // TODO: Get correct drop item position
+            this.getLevel()
+                    .dropItem(
+                            add(0.5, 0.5, 0.5), Item.get(ItemID.PUMPKIN_SEEDS)); // TODO: Get correct drop item position
             return true;
         }
         return false;
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         if (player == null) {
             setBlockFace(BlockFace.SOUTH);
         } else {

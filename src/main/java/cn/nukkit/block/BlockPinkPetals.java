@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
@@ -34,18 +33,26 @@ public class BlockPinkPetals extends BlockFlowable {
         return BlockID.PINK_PETALS;
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        if (!isSupportValid(block.down()))
-            return false;
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
+        if (!isSupportValid(block.down())) return false;
         if (player != null)
-            setPropertyValue(CommonBlockProperties.DIRECTION, player.getHorizontalFacing().getOpposite());
+            setPropertyValue(
+                    CommonBlockProperties.DIRECTION,
+                    player.getHorizontalFacing().getOpposite());
         return this.getLevel().setBlock(this, this);
     }
 

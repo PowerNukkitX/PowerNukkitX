@@ -16,17 +16,19 @@ import org.jetbrains.annotations.NotNull;
 public class BlockLeaves2 extends BlockLeaves {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final ArrayBlockProperty<WoodType> NEW_LEAF_TYPE = new ArrayBlockProperty<>("new_leaf_type", true, new WoodType[]{
-            WoodType.ACACIA, WoodType.DARK_OAK
-    }, 2);
+    public static final ArrayBlockProperty<WoodType> NEW_LEAF_TYPE =
+            new ArrayBlockProperty<>("new_leaf_type", true, new WoodType[] {WoodType.ACACIA, WoodType.DARK_OAK}, 2);
 
-    @PowerNukkitOnly @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
     public static final BlockProperties NEW_LEAF_PROPERTIES = new BlockProperties(NEW_LEAF_TYPE, PERSISTENT, UPDATE);
 
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", reason = "Magic value. Use the accessors instead")
+    @Deprecated
+    @DeprecationDetails(since = "1.4.0.0-PN", reason = "Magic value. Use the accessors instead")
     public static final int ACACIA = 0;
 
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", reason = "Magic value. Use the accessors instead")
+    @Deprecated
+    @DeprecationDetails(since = "1.4.0.0-PN", reason = "Magic value. Use the accessors instead")
     public static final int DARK_OAK = 1;
 
     public BlockLeaves2() {
@@ -39,8 +41,7 @@ public class BlockLeaves2 extends BlockLeaves {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return NEW_LEAF_PROPERTIES;
     }

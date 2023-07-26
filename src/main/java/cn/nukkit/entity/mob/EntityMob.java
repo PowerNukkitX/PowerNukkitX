@@ -23,15 +23,13 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.Utils;
-import lombok.Getter;
-
 import java.util.Collection;
 import java.util.concurrent.ThreadLocalRandom;
+import lombok.Getter;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-
 public abstract class EntityMob extends EntityIntelligent implements EntityInventoryHolder, EntityCanAttack {
 
     private static final String TAG_MAINHAND = "Mainhand";
@@ -43,8 +41,10 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
      * The damage that can be caused by the entity's empty hand at different difficulties.
      */
     protected float[] diffHandDamage;
+
     @Getter
     private EntityEquipmentInventory equipmentInventory;
+
     @Getter
     private EntityArmorInventory armorInventory;
 
@@ -77,7 +77,7 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
 
     @Override
     public boolean onUpdate(int currentTick) {
-        //怪物不能在和平模式下生存
+        // 怪物不能在和平模式下生存
         if (this.getServer().getDifficulty() == 0) {
             this.close();
             return true;
@@ -86,7 +86,9 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
 
     public void spawnToAll() {
         if (this.chunk != null && !this.closed) {
-            Collection<Player> chunkPlayers = this.level.getChunkPlayers(this.chunk.getX(), this.chunk.getZ()).values();
+            Collection<Player> chunkPlayers = this.level
+                    .getChunkPlayers(this.chunk.getX(), this.chunk.getZ())
+                    .values();
             for (Player chunkPlayer : chunkPlayers) {
                 this.spawnTo(chunkPlayer);
             }
@@ -121,31 +123,46 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
             return false;
         }
 
-        if (source instanceof EntityDamageByEntityEvent entityDamageByEntityEvent && !(entityDamageByEntityEvent.getDamager() instanceof EntityCreeper)) {
-            //更新仇恨目标
+        if (source instanceof EntityDamageByEntityEvent entityDamageByEntityEvent
+                && !(entityDamageByEntityEvent.getDamager() instanceof EntityCreeper)) {
+            // 更新仇恨目标
             getMemoryStorage().put(CoreMemoryTypes.ATTACK_TARGET, entityDamageByEntityEvent.getDamager());
         }
 
-        if (source.getCause() != EntityDamageEvent.DamageCause.VOID && source.getCause() != EntityDamageEvent.DamageCause.CUSTOM && source.getCause() != EntityDamageEvent.DamageCause.MAGIC && source.getCause() != EntityDamageEvent.DamageCause.HUNGER) {
+        if (source.getCause() != EntityDamageEvent.DamageCause.VOID
+                && source.getCause() != EntityDamageEvent.DamageCause.CUSTOM
+                && source.getCause() != EntityDamageEvent.DamageCause.MAGIC
+                && source.getCause() != EntityDamageEvent.DamageCause.HUNGER) {
             int armorPoints = 0;
             int epf = 0;
-//            int toughness = 0;
+            //            int toughness = 0;
 
             var armorInventory = this.getArmorInventory();
             for (Item armor : armorInventory.getContents().values()) {
                 armorPoints += armor.getArmorPoints();
                 epf += calculateEnchantmentProtectionFactor(armor, source);
-                //toughness += armor.getToughness();
+                // toughness += armor.getToughness();
             }
 
             if (source.canBeReducedByArmor()) {
-                source.setDamage(-source.getFinalDamage() * armorPoints * 0.04f, EntityDamageEvent.DamageModifier.ARMOR);
+                source.setDamage(
+                        -source.getFinalDamage() * armorPoints * 0.04f, EntityDamageEvent.DamageModifier.ARMOR);
             }
 
-            source.setDamage(-source.getFinalDamage() * Math.min(NukkitMath.ceilFloat(Math.min(epf, 25) * ((float) ThreadLocalRandom.current().nextInt(50, 100) / 100)), 20) * 0.04f,
+            source.setDamage(
+                    -source.getFinalDamage()
+                            * Math.min(
+                                    NukkitMath.ceilFloat(Math.min(epf, 25)
+                                            * ((float) ThreadLocalRandom.current()
+                                                            .nextInt(50, 100)
+                                                    / 100)),
+                                    20)
+                            * 0.04f,
                     EntityDamageEvent.DamageModifier.ARMOR_ENCHANTMENTS);
 
-            source.setDamage(-Math.min(this.getAbsorption(), source.getFinalDamage()), EntityDamageEvent.DamageModifier.ABSORPTION);
+            source.setDamage(
+                    -Math.min(this.getAbsorption(), source.getFinalDamage()),
+                    EntityDamageEvent.DamageModifier.ABSORPTION);
         }
 
         if (super.attack(source)) {

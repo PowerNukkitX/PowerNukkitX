@@ -59,8 +59,7 @@ public class BlockPowderSnow extends BlockTransparentMeta {
 
     @Since("1.6.0.0-PNX")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return CommonBlockProperties.EMPTY_PROPERTIES;
     }

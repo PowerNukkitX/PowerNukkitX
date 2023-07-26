@@ -48,6 +48,6 @@ public class EntityParrot extends EntityAnimal implements EntityFlyable {
 
     @Override
     public Item[] getDrops() {
-        return new Item[]{Item.get(Item.FEATHER)};
+        return new Item[] {Item.get(Item.FEATHER)};
     }
 }

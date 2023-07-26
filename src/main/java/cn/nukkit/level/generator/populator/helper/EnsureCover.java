@@ -1,8 +1,8 @@
 package cn.nukkit.level.generator.populator.helper;
 
-import cn.nukkit.level.format.FullChunk;
-
 import static cn.nukkit.block.BlockID.*;
+
+import cn.nukkit.level.format.FullChunk;
 
 /**
  * @author DaPorkchop_

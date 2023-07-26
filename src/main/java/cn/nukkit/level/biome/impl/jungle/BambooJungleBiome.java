@@ -18,7 +18,7 @@ public class BambooJungleBiome extends JungleBiome {
         jungleBigTrees.setBaseAmount(-1);
         jungleBigTrees.setRandomAmount(2);
         this.addPopulator(jungleBigTrees);
-        
+
         /*PopulatorVines vines = new PopulatorVines();
         vines.setBaseAmount(7);
         vines.setRandomAmount(4);

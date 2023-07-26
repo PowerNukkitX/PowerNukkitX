@@ -5,7 +5,6 @@ import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.plugin.Plugin;
-
 import java.util.Map;
 
 /**
@@ -33,7 +32,8 @@ public class PluginCommand<T extends Plugin> extends Command implements PluginId
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         if (!this.owningPlugin.isEnabled()) {
             return 0;
         }

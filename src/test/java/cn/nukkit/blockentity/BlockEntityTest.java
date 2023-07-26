@@ -18,6 +18,10 @@
 
 package cn.nukkit.blockentity;
 
+import static cn.nukkit.block.BlockID.*;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.when;
+
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
@@ -34,10 +38,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.powernukkit.tests.api.MockLevel;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
-
-import static cn.nukkit.block.BlockID.*;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.when;
 
 /**
  * @author joserobjr
@@ -58,35 +58,37 @@ class BlockEntityTest {
         Server server = level.getServer();
         when(server.isRedstoneEnabled()).thenReturn(true);
         when(level.isChunkLoaded(anyInt(), anyInt())).thenReturn(true);
-        
-        Vector3 pos = new Vector3(0,64, 0);
+
+        Vector3 pos = new Vector3(0, 64, 0);
         level.setBlock(pos, Block.get(STONE));
         level.setBlock(pos.getSide(BlockFace.EAST), Block.get(STONE));
         level.setBlock(pos.getSide(BlockFace.EAST, 2), Block.get(STONE));
         level.setBlock(pos.getSide(BlockFace.EAST, 3), Block.get(STONE));
-        
+
         pos.y++;
         level.setBlock(pos, Block.get(REDSTONE_WIRE));
-        level.setBlock(pos.getSide(BlockFace.EAST), BlockState.of(UNPOWERED_COMPARATOR)
-                .withProperty(CommonBlockProperties.DIRECTION, BlockFace.EAST)
-                .getBlock());
+        level.setBlock(
+                pos.getSide(BlockFace.EAST),
+                BlockState.of(UNPOWERED_COMPARATOR)
+                        .withProperty(CommonBlockProperties.DIRECTION, BlockFace.EAST)
+                        .getBlock());
         level.setBlock(pos.getSide(BlockFace.EAST, 2), Block.get(CHEST));
         level.setBlock(pos.getSide(BlockFace.EAST, 3), Block.get(CHEST));
-        
+
         BlockChest chest1 = (BlockChest) level.getBlock(pos.getSide(BlockFace.EAST, 2));
         BlockChest chest2 = (BlockChest) level.getBlock(pos.getSide(BlockFace.EAST, 3));
 
         BlockEntityChest chest1Entity = chest1.getOrCreateBlockEntity();
         BlockEntityChest chest2Entity = chest2.getOrCreateBlockEntity();
-        
+
         ChestInventory chest1Inventory = chest1Entity.getRealInventory();
         int size = chest1Inventory.getSize();
         for (int i = 0; i < size; i++) {
-            chest1Inventory.setItem(i, Item.getBlock(STONE,0,64));
+            chest1Inventory.setItem(i, Item.getBlock(STONE, 0, 64));
         }
-        
+
         chest1Entity.pairWith(chest2Entity);
-        
+
         chest2Entity.checkPairing();
     }
 }

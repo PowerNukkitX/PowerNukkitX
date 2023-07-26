@@ -7,10 +7,9 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
+import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Pub4Game
@@ -18,8 +17,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class BlockNetherrack extends BlockSolid {
 
-    public BlockNetherrack() {
-    }
+    public BlockNetherrack() {}
 
     @Override
     public int getId() {
@@ -65,7 +63,7 @@ public class BlockNetherrack extends BlockSolid {
                 options.add(id);
             }
         }
-        
+
         int nylium;
         int size = options.size();
         if (size == 0) {
@@ -75,7 +73,7 @@ public class BlockNetherrack extends BlockSolid {
         } else {
             nylium = options.getInt(ThreadLocalRandom.current().nextInt(size));
         }
-        
+
         if (level.setBlock(this, Block.get(nylium), true)) {
             if (player == null || !player.isCreative()) {
                 item.count--;
@@ -95,5 +93,4 @@ public class BlockNetherrack extends BlockSolid {
     public boolean canHarvestWithHand() {
         return false;
     }
-
 }

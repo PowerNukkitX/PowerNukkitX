@@ -18,23 +18,23 @@
 
 package cn.nukkit.utils.collection;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author joserobjr
  * @since 2020-10-05
  */
 class ConvertingSetWrapperTest {
-    
+
     private final Set<String> proxy = new HashSet<>();
-    private final ConvertingSetWrapper<Integer, String> set = new ConvertingSetWrapper<>(proxy, Object::toString, Integer::parseInt);
+    private final ConvertingSetWrapper<Integer, String> set =
+            new ConvertingSetWrapper<>(proxy, Object::toString, Integer::parseInt);
 
     @BeforeEach
     void setUp() {
@@ -75,8 +75,8 @@ class ConvertingSetWrapperTest {
         assertFalse(set.contains(5));
         proxy.add("5");
         assertTrue(set.contains(5));
-        
-        assertThrows(ClassCastException.class, ()-> set.contains("5"));
+
+        assertThrows(ClassCastException.class, () -> set.contains("5"));
     }
 
     @Test
@@ -93,8 +93,8 @@ class ConvertingSetWrapperTest {
         assertTrue(set.remove(4));
         assertFalse(proxy.contains("4"));
         assertFalse(set.remove(4));
-        
-        assertThrows(ClassCastException.class, ()-> set.remove("4"));
+
+        assertThrows(ClassCastException.class, () -> set.remove("4"));
     }
 
     @Test

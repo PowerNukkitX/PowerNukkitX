@@ -5,7 +5,6 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -33,4 +32,3 @@ public class DoubleFakeBlock extends SingleFakeBlock {
                 .putInt("pairz", position.getFloorZ());
     }
 }
-

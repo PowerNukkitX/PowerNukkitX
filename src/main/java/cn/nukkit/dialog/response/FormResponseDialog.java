@@ -14,7 +14,7 @@ public class FormResponseDialog {
 
     private long entityRuntimeId;
     private String data;
-    private ElementDialogButton clickedButton;//can be null
+    private ElementDialogButton clickedButton; // can be null
     private String sceneName;
     private NPCRequestPacket.RequestType requestType;
     private int skinType;
@@ -24,7 +24,7 @@ public class FormResponseDialog {
         this.data = packet.getData();
         try {
             this.clickedButton = dialog.getButtons().get(packet.getSkinType());
-        }catch (IndexOutOfBoundsException e){
+        } catch (IndexOutOfBoundsException e) {
             this.clickedButton = null;
         }
         this.sceneName = packet.getSceneName();

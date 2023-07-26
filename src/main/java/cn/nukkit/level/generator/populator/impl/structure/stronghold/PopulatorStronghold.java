@@ -15,7 +15,6 @@ import cn.nukkit.level.generator.populator.type.PopulatorStructure;
 import cn.nukkit.level.generator.task.CallbackableChunkGenerationTask;
 import cn.nukkit.math.NukkitRandom;
 import com.google.common.collect.Lists;
-
 import java.util.List;
 
 @PowerNukkitXOnly
@@ -34,7 +33,7 @@ public class PopulatorStronghold extends PopulatorStructure {
         VALID_BIOMES[EnumBiome.FOREST.id] = true;
         VALID_BIOMES[EnumBiome.TAIGA.id] = true;
         VALID_BIOMES[EnumBiome.ICE_PLAINS.id] = true;
-        VALID_BIOMES[13] = true; //SNOWY_MOUNTAINS
+        VALID_BIOMES[13] = true; // SNOWY_MOUNTAINS
         VALID_BIOMES[EnumBiome.MUSHROOM_ISLAND.id] = true;
         VALID_BIOMES[EnumBiome.MUSHROOM_ISLAND_SHORE.id] = true;
         VALID_BIOMES[EnumBiome.DESERT_HILLS.id] = true;
@@ -71,34 +70,34 @@ public class PopulatorStronghold extends PopulatorStructure {
         VALID_BIOMES[EnumBiome.ROOFED_FOREST_M.id] = true;
         VALID_BIOMES[EnumBiome.COLD_TAIGA_M.id] = true;
         VALID_BIOMES[EnumBiome.MEGA_SPRUCE_TAIGA.id] = true;
-        VALID_BIOMES[161] = true; //GIANT_SPRUCE_TAIGA_HILLS
+        VALID_BIOMES[161] = true; // GIANT_SPRUCE_TAIGA_HILLS
         VALID_BIOMES[EnumBiome.EXTREME_HILLS_PLUS_M.id] = true;
         VALID_BIOMES[EnumBiome.SAVANNA_M.id] = true;
         VALID_BIOMES[EnumBiome.SAVANNA_PLATEAU_M.id] = true;
         VALID_BIOMES[EnumBiome.MESA_BRYCE.id] = true;
         VALID_BIOMES[EnumBiome.MESA_PLATEAU_F_M.id] = true;
         VALID_BIOMES[EnumBiome.MESA_PLATEAU_M.id] = true;
-        VALID_BIOMES[EnumBiome.BAMBOO_JUNGLE.id] = true; //BAMBOO_JUNGLE
-        VALID_BIOMES[EnumBiome.BAMBOO_JUNGLE_HILLS.id] = true; //BAMBOO_JUNGLE_HILLS
+        VALID_BIOMES[EnumBiome.BAMBOO_JUNGLE.id] = true; // BAMBOO_JUNGLE
+        VALID_BIOMES[EnumBiome.BAMBOO_JUNGLE_HILLS.id] = true; // BAMBOO_JUNGLE_HILLS
 
         StrongholdPieces.init();
     }
 
     private final List<StrongholdStart> discoveredStarts = Lists.newArrayList();
 
-    private final Object lock = new Object(); //\\ (char *)this + 456
+    private final Object lock = new Object(); // \\ (char *)this + 456
     protected boolean isSpotSelected = false;
     protected long[] strongholdPos = new long[COUNT];
 
     @Override
     public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
-        //\\ StrongholdFeature::isFeatureChunk(BiomeSource const &,Random &,ChunkPos const &,uint)
+        // \\ StrongholdFeature::isFeatureChunk(BiomeSource const &,Random &,ChunkPos const &,uint)
         if (!chunk.isOverWorld()) return;
         if (VALID_BIOMES[chunk.getBiomeId(7, chunk.getHighestBlockAt(7, 7), 7)]) {
-            //\\ StrongholdFeature *v28 = (StrongholdFeature *)((char *)this + 456); // [rsp+60h] [rbp+8h]
-            synchronized (this.lock) { //\\ _Mtx_lock((char *)this + 456);
+            // \\ StrongholdFeature *v28 = (StrongholdFeature *)((char *)this + 456); // [rsp+60h] [rbp+8h]
+            synchronized (this.lock) { // \\ _Mtx_lock((char *)this + 456);
                 if (!this.isSpotSelected) {
-                    //\\ StrongholdFeature::generatePositions(Random &,BiomeSource const &,uint)
+                    // \\ StrongholdFeature::generatePositions(Random &,BiomeSource const &,uint)
                     int count = 0;
                     for (StructureStart start : this.discoveredStarts) {
                         if (count < COUNT) {
@@ -115,13 +114,15 @@ public class PopulatorStronghold extends PopulatorStructure {
                         int nextCount = 0;
 
                         for (int i = 0; i < COUNT; ++i) {
-                            double radius = (double) (4 * DISTANCE + DISTANCE * nextCount * 6) + (rand.nextDouble() - 0.5) * (double) DISTANCE * 2.5;
+                            double radius = (double) (4 * DISTANCE + DISTANCE * nextCount * 6)
+                                    + (rand.nextDouble() - 0.5) * (double) DISTANCE * 2.5;
                             int cx = (int) Math.round(Math.cos(angle) * radius);
                             int cz = (int) Math.round(Math.sin(angle) * radius);
 
                             if (i >= count) {
                                 this.strongholdPos[i] = Level.chunkHash(cx, cz);
-//                                Server.getInstance().getLogger().info("Stronghold found at " + cx * 16 + "," + cz * 16);
+                                //                                Server.getInstance().getLogger().info("Stronghold
+                                // found at " + cx * 16 + "," + cz * 16);
                             }
 
                             angle += Math.PI * 2.0 / (double) spread;
@@ -138,16 +139,16 @@ public class PopulatorStronghold extends PopulatorStructure {
 
                     this.isSpotSelected = true;
                 }
-            } //\\ _Mtx_unlock((char *)this + 456)
+            } // \\ _Mtx_unlock((char *)this + 456)
 
             long hash = Level.chunkHash(chunkX, chunkZ);
             for (long chunkPos : strongholdPos) {
                 if (hash == chunkPos) {
-                    //\\ StrongholdFeature::createStructureStart(Dimension &,BiomeSource &,Random &,ChunkPos const &)
+                    // \\ StrongholdFeature::createStructureStart(Dimension &,BiomeSource &,Random &,ChunkPos const &)
                     StrongholdStart start = new StrongholdStart(level, chunkX, chunkZ);
                     start.generatePieces(level, chunkX, chunkZ);
 
-                    if (start.isValid()) { //TODO: serialize nbt
+                    if (start.isValid()) { // TODO: serialize nbt
                         long seed = level.getSeed();
                         random.setSeed(seed);
                         int r1 = random.nextInt();
@@ -169,9 +170,19 @@ public class PopulatorStronghold extends PopulatorStructure {
                                 } else {
                                     int f_cx = cx;
                                     int f_cz = cz;
-                                    chunk.getProvider().getLevel().getGenerator().handleAsyncStructureGenTask(new CallbackableChunkGenerationTask<>(
-                                            chunk.getProvider().getLevel(), ck, start,
-                                            structure -> structure.postProcess(level, rand, new BoundingBox(x, z, x + 15, z + 15), f_cx, f_cz)));
+                                    chunk.getProvider()
+                                            .getLevel()
+                                            .getGenerator()
+                                            .handleAsyncStructureGenTask(new CallbackableChunkGenerationTask<>(
+                                                    chunk.getProvider().getLevel(),
+                                                    ck,
+                                                    start,
+                                                    structure -> structure.postProcess(
+                                                            level,
+                                                            rand,
+                                                            new BoundingBox(x, z, x + 15, z + 15),
+                                                            f_cx,
+                                                            f_cz)));
                                 }
                             }
                         }
@@ -206,7 +217,9 @@ public class PopulatorStronghold extends PopulatorStructure {
                     this.pieces.clear();
                     this.boundingBox = BoundingBox.getUnknownBox();
                     this.random.setSeed(seed + count++);
-                    this.random.setSeed((long) chunkX * this.random.nextInt() ^ (long) chunkZ * this.random.nextInt() ^ level.getSeed());
+                    this.random.setSeed((long) chunkX * this.random.nextInt()
+                            ^ (long) chunkZ * this.random.nextInt()
+                            ^ level.getSeed());
                     StrongholdPieces.resetPieces();
 
                     start = new StrongholdPieces.StartPiece(this.random, (chunkX << 4) + 2, (chunkZ << 4) + 2);
@@ -227,7 +240,7 @@ public class PopulatorStronghold extends PopulatorStructure {
             }
         }
 
-        @Override //\\ StrongholdStart::getType(void) // 5
+        @Override // \\ StrongholdStart::getType(void) // 5
         public String getType() {
             return "Stronghold";
         }

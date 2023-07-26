@@ -13,14 +13,13 @@ import cn.nukkit.nbt.tag.StringTag;
 @Since("1.19.31-r1")
 public record Permutation(Component component, String condition, String[] blockTags) implements NBTData {
     public Permutation(Component component, String condition) {
-        this(component, condition, new String[]{});
+        this(component, condition, new String[] {});
     }
 
     @Override
     public CompoundTag toCompoundTag() {
-        CompoundTag result = new CompoundTag()
-                .putCompound(component.toCompoundTag())
-                .putString("condition", condition);
+        CompoundTag result =
+                new CompoundTag().putCompound(component.toCompoundTag()).putString("condition", condition);
         ListTag<StringTag> stringTagListTag = new ListTag<>();
         for (String s : blockTags) {
             stringTagListTag.add(new StringTag("", s));

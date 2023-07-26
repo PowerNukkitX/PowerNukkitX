@@ -28,7 +28,6 @@ import cn.nukkit.inventory.transaction.action.GrindstoneItemAction;
 import cn.nukkit.inventory.transaction.action.InventoryAction;
 import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.types.NetworkInventoryAction;
-
 import java.util.List;
 
 /**
@@ -74,8 +73,9 @@ public class GrindstoneTransaction extends InventoryTransaction {
             return false;
         }
         GrindstoneInventory grindstoneInventory = (GrindstoneInventory) inventory;
-        if (outputItem == null || outputItem.isNull() ||
-                ((firstItem == null || firstItem.isNull()) && (secondItem == null || secondItem.isNull()))) {
+        if (outputItem == null
+                || outputItem.isNull()
+                || ((firstItem == null || firstItem.isNull()) && (secondItem == null || secondItem.isNull()))) {
             return false;
         }
 
@@ -100,8 +100,8 @@ public class GrindstoneTransaction extends InventoryTransaction {
         GrindstoneInventory inventory = (GrindstoneInventory) getSource().getWindowById(Player.GRINDSTONE_WINDOW_ID);
         int exp = inventory.getResultExperience();
         Item air = Item.get(0);
-        Item first = firstItem != null? firstItem : air;
-        Item second = secondItem != null? secondItem : air;
+        Item first = firstItem != null ? firstItem : air;
+        Item second = secondItem != null ? secondItem : air;
         GrindstoneEvent event = new GrindstoneEvent(inventory, first, outputItem, second, exp, source);
         this.source.getServer().getPluginManager().callEvent(event);
         if (event.isCancelled()) {
@@ -123,24 +123,24 @@ public class GrindstoneTransaction extends InventoryTransaction {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public Item getFirstItem() {
-        return firstItem == null? null : firstItem.clone();
+        return firstItem == null ? null : firstItem.clone();
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public Item getSecondItem() {
-        return secondItem == null? null : secondItem.clone();
+        return secondItem == null ? null : secondItem.clone();
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public Item getOutputItem() {
-        return outputItem == null? null : outputItem.clone();
+        return outputItem == null ? null : outputItem.clone();
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static boolean checkForItemPart(List<InventoryAction> actions) {
-        return actions.stream().anyMatch(it-> it instanceof GrindstoneItemAction);
+        return actions.stream().anyMatch(it -> it instanceof GrindstoneItemAction);
     }
 }

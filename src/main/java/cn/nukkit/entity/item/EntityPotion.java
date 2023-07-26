@@ -132,7 +132,8 @@ public class EntityPotion extends EntityProjectile {
         this.getLevel().addParticle(particle);
         this.getLevel().addSound(this, Sound.RANDOM_GLASS);
 
-        Entity[] entities = this.getLevel().getNearbyEntities(this.getBoundingBox().grow(4.125, 2.125, 4.125));
+        Entity[] entities =
+                this.getLevel().getNearbyEntities(this.getBoundingBox().grow(4.125, 2.125, 4.125));
         for (Entity anEntity : entities) {
             double distance = anEntity.distanceSquared(this);
             if (distance < 16) {
@@ -159,7 +160,6 @@ public class EntityPotion extends EntityProjectile {
         }
         return hasUpdate;
     }
-
 
     @PowerNukkitOnly
     @Since("1.5.1.0-PN")

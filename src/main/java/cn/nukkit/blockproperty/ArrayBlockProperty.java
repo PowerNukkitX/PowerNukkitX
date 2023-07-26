@@ -7,15 +7,14 @@ import cn.nukkit.blockproperty.exception.InvalidBlockPropertyPersistenceValueExc
 import cn.nukkit.blockproperty.exception.InvalidBlockPropertyValueException;
 import cn.nukkit.math.NukkitMath;
 import com.google.common.base.Preconditions;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
@@ -23,24 +22,22 @@ import java.util.Set;
 public final class ArrayBlockProperty<E extends Serializable> extends BlockProperty<E> {
     private static final long serialVersionUID = 507174531989068430L;
 
-    @NotNull
-    private final E[] universe;
+    @NotNull private final E[] universe;
 
     /**
      * Nullable when {@link #ordinal} is {@code true.
      */
     private final String[] persistenceNames;
-    
+
     private final Class<E> eClass;
-    
+
     private final boolean ordinal;
-    
+
     private static <E> E[] checkUniverseLength(E[] universe) {
         Preconditions.checkNotNull(universe, "universe can't be null");
         Preconditions.checkArgument(universe.length > 0, "The universe can't be empty");
         return universe;
     }
-
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -50,19 +47,41 @@ public final class ArrayBlockProperty<E extends Serializable> extends BlockPrope
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public ArrayBlockProperty(String name, boolean exportedToItem, E[] universe, int bitSize, String persistenceName, boolean ordinal) {
-        this(name, exportedToItem, universe, bitSize, persistenceName,ordinal, ordinal? null : 
-                Arrays.stream(universe).map(Objects::toString).map(String::toLowerCase).toArray(String[]::new));
+    public ArrayBlockProperty(
+            String name, boolean exportedToItem, E[] universe, int bitSize, String persistenceName, boolean ordinal) {
+        this(
+                name,
+                exportedToItem,
+                universe,
+                bitSize,
+                persistenceName,
+                ordinal,
+                ordinal
+                        ? null
+                        : Arrays.stream(universe)
+                                .map(Objects::toString)
+                                .map(String::toLowerCase)
+                                .toArray(String[]::new));
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public ArrayBlockProperty(String name, boolean exportedToItem, E[] universe, int bitSize, String persistenceName, boolean ordinal, @Nullable String[] persistenceNames) {
+    public ArrayBlockProperty(
+            String name,
+            boolean exportedToItem,
+            E[] universe,
+            int bitSize,
+            String persistenceName,
+            boolean ordinal,
+            @Nullable String[] persistenceNames) {
         super(name, exportedToItem, bitSize, persistenceName);
         checkUniverseLength(universe);
         if (!ordinal) {
-            Preconditions.checkArgument(persistenceNames != null, "persistenceNames can't be null when ordinal is false");
-            Preconditions.checkArgument(persistenceNames.length == universe.length, "persistenceNames and universe must have the same length when ordinal is false");
+            Preconditions.checkArgument(
+                    persistenceNames != null, "persistenceNames can't be null when ordinal is false");
+            Preconditions.checkArgument(
+                    persistenceNames.length == universe.length,
+                    "persistenceNames and universe must have the same length when ordinal is false");
             this.persistenceNames = persistenceNames.clone();
         } else {
             this.persistenceNames = null;
@@ -80,7 +99,9 @@ public final class ArrayBlockProperty<E extends Serializable> extends BlockPrope
             if (!ordinal) {
                 String elementName = this.persistenceNames[i];
                 Preconditions.checkNotNull(elementName, "The persistenceNames can not contain null values");
-                Preconditions.checkArgument(persistenceNamesCheck.add(elementName), "The persistenceNames can not have duplicated elements");
+                Preconditions.checkArgument(
+                        persistenceNamesCheck.add(elementName),
+                        "The persistenceNames can not have duplicated elements");
             }
         }
     }
@@ -107,14 +128,22 @@ public final class ArrayBlockProperty<E extends Serializable> extends BlockPrope
     @PowerNukkitOnly
     @Override
     public ArrayBlockProperty<E> copy() {
-        return new ArrayBlockProperty<>(getName(), isExportedToItem(), universe, getBitSize(), getPersistenceName(), isOrdinal(), persistenceNames);
+        return new ArrayBlockProperty<>(
+                getName(),
+                isExportedToItem(),
+                universe,
+                getBitSize(),
+                getPersistenceName(),
+                isOrdinal(),
+                persistenceNames);
     }
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     @Override
     public ArrayBlockProperty<E> exportingToItems(boolean exportedToItem) {
-        return new ArrayBlockProperty<>(getName(), exportedToItem, universe, getBitSize(), getPersistenceName(), isOrdinal(), persistenceNames);
+        return new ArrayBlockProperty<>(
+                getName(), exportedToItem, universe, getBitSize(), getPersistenceName(), isOrdinal(), persistenceNames);
     }
 
     @Since("1.4.0.0-PN")
@@ -123,7 +152,8 @@ public final class ArrayBlockProperty<E extends Serializable> extends BlockPrope
         if (ordinal == this.ordinal) {
             return this;
         }
-        return new ArrayBlockProperty<>(getName(), isExportedToItem(), universe, getBitSize(), getPersistenceName(), ordinal);
+        return new ArrayBlockProperty<>(
+                getName(), isExportedToItem(), universe, getBitSize(), getPersistenceName(), ordinal);
     }
 
     @PowerNukkitOnly
@@ -140,8 +170,7 @@ public final class ArrayBlockProperty<E extends Serializable> extends BlockPrope
         throw new InvalidBlockPropertyValueException(this, null, value, "Element is not part of this property");
     }
 
-    @NotNull
-    @PowerNukkitOnly
+    @NotNull @PowerNukkitOnly
     @Override
     public E getValueForMeta(int meta) {
         return universe[meta];
@@ -158,8 +187,7 @@ public final class ArrayBlockProperty<E extends Serializable> extends BlockPrope
         return meta;
     }
 
-    @NotNull
-    @PowerNukkitOnly
+    @NotNull @PowerNukkitOnly
     @Override
     public String getPersistenceValueForMeta(int meta) {
         try {
@@ -182,9 +210,9 @@ public final class ArrayBlockProperty<E extends Serializable> extends BlockPrope
             try {
                 meta = Integer.parseInt(persistenceValue);
                 validateMetaDirectly(meta);
-            } catch (IndexOutOfBoundsException|IllegalArgumentException e) {
-                throw new InvalidBlockPropertyPersistenceValueException(this, null, persistenceValue, 
-                        "Expected a number from 0 to " + (universe.length - 1), e);
+            } catch (IndexOutOfBoundsException | IllegalArgumentException e) {
+                throw new InvalidBlockPropertyPersistenceValueException(
+                        this, null, persistenceValue, "Expected a number from 0 to " + (universe.length - 1), e);
             }
             return meta;
         }
@@ -194,9 +222,7 @@ public final class ArrayBlockProperty<E extends Serializable> extends BlockPrope
             }
         }
         throw new InvalidBlockPropertyPersistenceValueException(
-                this, null, persistenceValue,
-                "The value does not exists in this property."
-        );
+                this, null, persistenceValue, "The value does not exists in this property.");
     }
 
     @PowerNukkitOnly
@@ -207,7 +233,7 @@ public final class ArrayBlockProperty<E extends Serializable> extends BlockPrope
                 return;
             }
         }
-        throw new IllegalArgumentException(value+" is not valid for this property");
+        throw new IllegalArgumentException(value + " is not valid for this property");
     }
 
     @PowerNukkitOnly
@@ -217,15 +243,13 @@ public final class ArrayBlockProperty<E extends Serializable> extends BlockPrope
     }
 
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public Class<E> getValueClass() {
         return eClass;
     }
 
     @PowerNukkitOnly
-    @NotNull
-    public E[] getUniverse() {
+    @NotNull public E[] getUniverse() {
         return universe.clone();
     }
 
@@ -237,8 +261,7 @@ public final class ArrayBlockProperty<E extends Serializable> extends BlockPrope
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public E getDefaultValue() {
         return universe[0];
     }

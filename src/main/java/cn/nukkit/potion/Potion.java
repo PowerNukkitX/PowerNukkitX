@@ -14,11 +14,10 @@ import cn.nukkit.event.potion.PotionApplyEvent;
 import cn.nukkit.utils.Identifier;
 import cn.nukkit.utils.InvalidIdentifierException;
 import cn.nukkit.utils.ServerException;
-import lombok.EqualsAndHashCode;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.LinkedHashMap;
 import java.util.Map;
+import lombok.EqualsAndHashCode;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -70,13 +69,19 @@ public class Potion implements Cloneable {
     public static final int TURTLE_MASTER_II = 39;
     public static final int SLOW_FALLING = 40;
     public static final int SLOW_FALLING_LONG = 41;
+
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     public static final int SLOWNESS_IV = 42;
+
     @Since("1.4.0.0-PN")
     @Deprecated
-    @DeprecationDetails(since = "FUTURE", by = "PowerNukkit", reason =
-            "Incorrect name, there is vanilla potion with slowness long 2, the result of potion with slowness 1 + glowstone is slowness 4", replaceWith = "SLOWNESS_IV")
+    @DeprecationDetails(
+            since = "FUTURE",
+            by = "PowerNukkit",
+            reason =
+                    "Incorrect name, there is vanilla potion with slowness long 2, the result of potion with slowness 1 + glowstone is slowness 4",
+            replaceWith = "SLOWNESS_IV")
     public static final int SLOWNESS_LONG_II = SLOWNESS_IV;
 
     protected static Potion[] potions;
@@ -227,15 +232,23 @@ public class Potion implements Cloneable {
         switch (this.getId()) {
             case INSTANT_HEALTH, INSTANT_HEALTH_II -> {
                 if (entity.isUndead())
-                    entity.attack(new EntityDamageEvent(entity, DamageCause.MAGIC, (float) (health * (double) (6 << (applyEffect.getAmplifier() + 1)))));
+                    entity.attack(new EntityDamageEvent(entity, DamageCause.MAGIC, (float)
+                            (health * (double) (6 << (applyEffect.getAmplifier() + 1)))));
                 else
-                    entity.heal(new EntityRegainHealthEvent(entity, (float) (health * (double) (4 << (applyEffect.getAmplifier() + 1))), EntityRegainHealthEvent.CAUSE_MAGIC));
+                    entity.heal(new EntityRegainHealthEvent(
+                            entity,
+                            (float) (health * (double) (4 << (applyEffect.getAmplifier() + 1))),
+                            EntityRegainHealthEvent.CAUSE_MAGIC));
             }
             case HARMING, HARMING_II -> {
                 if (entity.isUndead())
-                    entity.heal(new EntityRegainHealthEvent(entity, (float) (health * (double) (4 << (applyEffect.getAmplifier() + 1))), EntityRegainHealthEvent.CAUSE_MAGIC));
+                    entity.heal(new EntityRegainHealthEvent(
+                            entity,
+                            (float) (health * (double) (4 << (applyEffect.getAmplifier() + 1))),
+                            EntityRegainHealthEvent.CAUSE_MAGIC));
                 else
-                    entity.attack(new EntityDamageEvent(entity, DamageCause.MAGIC, (float) (health * (double) (6 << (applyEffect.getAmplifier() + 1)))));
+                    entity.attack(new EntityDamageEvent(entity, DamageCause.MAGIC, (float)
+                            (health * (double) (6 << (applyEffect.getAmplifier() + 1)))));
             }
             default -> {
                 int duration = (int) ((isSplash() ? health : 1) * (double) applyEffect.getDuration() + 0.5);
@@ -294,8 +307,16 @@ public class Potion implements Cloneable {
     public static int getLevel(int potionType) {
         return switch (potionType) {
             case SLOWNESS_IV -> 4;
-            case MUNDANE_II, LEAPING_II, SPEED_II, INSTANT_HEALTH_II, HARMING_II, POISON_II, REGENERATION_II, STRENGTH_II, WITHER_II, TURTLE_MASTER_II ->
-                    2;
+            case MUNDANE_II,
+                    LEAPING_II,
+                    SPEED_II,
+                    INSTANT_HEALTH_II,
+                    HARMING_II,
+                    POISON_II,
+                    REGENERATION_II,
+                    STRENGTH_II,
+                    WITHER_II,
+                    TURTLE_MASTER_II -> 2;
             default -> 1;
         };
     }
@@ -311,8 +332,13 @@ public class Potion implements Cloneable {
         if (isSplash) {
             return switch (potionType) {
                 case NIGHT_VISION, STRENGTH, WATER_BREATHING, SPEED, FIRE_RESISTANCE, LEAPING, INVISIBLE -> 135;
-                case NIGHT_VISION_LONG, STRENGTH_LONG, WATER_BREATHING_LONG, SPEED_LONG, FIRE_RESISTANCE_LONG, LEAPING_LONG, INVISIBLE_LONG ->
-                        360;
+                case NIGHT_VISION_LONG,
+                        STRENGTH_LONG,
+                        WATER_BREATHING_LONG,
+                        SPEED_LONG,
+                        FIRE_RESISTANCE_LONG,
+                        LEAPING_LONG,
+                        INVISIBLE_LONG -> 360;
                 case LEAPING_II, WEAKNESS, STRENGTH_II, SLOWNESS, SPEED_II -> 67;
                 case SLOWNESS_LONG, WEAKNESS_LONG -> 180;
                 case POISON, REGENERATION -> 33;
@@ -325,8 +351,13 @@ public class Potion implements Cloneable {
         } else {
             return switch (potionType) {
                 case NIGHT_VISION, STRENGTH, WATER_BREATHING, SPEED, FIRE_RESISTANCE, LEAPING, INVISIBLE -> 180;
-                case NIGHT_VISION_LONG, STRENGTH_LONG, WATER_BREATHING_LONG, SPEED_LONG, FIRE_RESISTANCE_LONG, LEAPING_LONG, INVISIBLE_LONG ->
-                        480;
+                case NIGHT_VISION_LONG,
+                        STRENGTH_LONG,
+                        WATER_BREATHING_LONG,
+                        SPEED_LONG,
+                        FIRE_RESISTANCE_LONG,
+                        LEAPING_LONG,
+                        INVISIBLE_LONG -> 480;
                 case LEAPING_II, WEAKNESS, STRENGTH_II, SLOWNESS -> 90;
                 case SLOWNESS_LONG, WEAKNESS_LONG -> 240;
                 case POISON, REGENERATION -> 45;
@@ -342,8 +373,7 @@ public class Potion implements Cloneable {
 
     @PowerNukkitOnly
     @Since("FUTURE")
-    @NotNull
-    public String getPotionTypeName() {
+    @NotNull public String getPotionTypeName() {
         return switch (getId()) {
             case WATER -> "Water";
             case MUNDANE, MUNDANE_II -> "Mundane";
@@ -370,8 +400,7 @@ public class Potion implements Cloneable {
     }
 
     @PowerNukkitOnly
-    @NotNull
-    public String getName() {
+    @NotNull public String getName() {
         String name = getPotionTypeName();
         StringBuilder finalName = new StringBuilder(255).append("Potion");
         if (!name.isEmpty()) {
@@ -394,8 +423,7 @@ public class Potion implements Cloneable {
     }
 
     @PowerNukkitOnly
-    @NotNull
-    public String getRomanLevel() {
+    @NotNull public String getRomanLevel() {
         int currentLevel = getLevel();
         if (currentLevel == 0) {
             return "0";
@@ -413,10 +441,8 @@ public class Potion implements Cloneable {
 
     private static void appendRoman(StringBuilder sb, int num) {
         int times;
-        String[] romans = new String[]{"I", "IV", "V", "IX", "X", "XL", "L",
-                "XC", "C", "CD", "D", "CM", "M"};
-        int[] ints = new int[]{1, 4, 5, 9, 10, 40, 50, 90, 100, 400, 500,
-                900, 1000};
+        String[] romans = new String[] {"I", "IV", "V", "IX", "X", "XL", "L", "XC", "C", "CD", "D", "CM", "M"};
+        int[] ints = new int[] {1, 4, 5, 9, 10, 40, 50, 90, 100, 400, 500, 900, 1000};
         for (int i = ints.length - 1; i >= 0; i--) {
             times = num / ints[i];
             num %= ints[i];

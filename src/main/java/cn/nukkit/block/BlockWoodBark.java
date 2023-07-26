@@ -1,13 +1,13 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
+
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BooleanBlockProperty;
 import cn.nukkit.blockproperty.value.WoodType;
 import org.jetbrains.annotations.NotNull;
-
-import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
 
 @PowerNukkitOnly
 public class BlockWoodBark extends BlockWood {
@@ -17,11 +17,8 @@ public class BlockWoodBark extends BlockWood {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(
-            WoodType.PROPERTY,
-            new BooleanBlockProperty(STRIPPED_BIT, true),
-            PILLAR_AXIS
-    );
+    public static final BlockProperties PROPERTIES =
+            new BlockProperties(WoodType.PROPERTY, new BooleanBlockProperty(STRIPPED_BIT, true), PILLAR_AXIS);
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -34,7 +31,7 @@ public class BlockWoodBark extends BlockWood {
     public BlockWoodBark(int meta) {
         super(meta);
     }
-    
+
     @Override
     public int getId() {
         return WOOD_BARK;
@@ -42,15 +39,14 @@ public class BlockWoodBark extends BlockWood {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
     @Override
     public String getName() {
-        return (isStripped()? "Stripped ": "") + getWoodType().getEnglishName() + " Wood";
+        return (isStripped() ? "Stripped " : "") + getWoodType().getEnglishName() + " Wood";
     }
 
     @PowerNukkitOnly

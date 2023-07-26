@@ -18,18 +18,17 @@
 
 package cn.nukkit.level.format.anvil.util;
 
+import static cn.nukkit.api.API.Definition.INTERNAL;
+import static cn.nukkit.api.API.Usage.BLEEDING;
+
 import cn.nukkit.api.API;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.util.PalettedBlockStorage;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 import java.util.BitSet;
-
-import static cn.nukkit.api.API.Definition.INTERNAL;
-import static cn.nukkit.api.API.Usage.BLEEDING;
+import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author joserobjr
@@ -58,21 +57,16 @@ public final class ImmutableBlockStorage extends BlockStorage {
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     @Override
-    public void delayPaletteUpdates() {
-
-    }
+    public void delayPaletteUpdates() {}
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     @Override
-    public void recheckBlocks() {
-
-    }
+    public void recheckBlocks() {}
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public ImmutableBlockStorage immutableCopy() {
         return this;
     }

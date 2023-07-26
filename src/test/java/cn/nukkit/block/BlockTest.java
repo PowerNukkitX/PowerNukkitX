@@ -18,6 +18,9 @@
 
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
@@ -27,19 +30,15 @@ import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.blockstate.BlockStateRepair;
 import cn.nukkit.blockstate.MutableBlockState;
 import cn.nukkit.math.BlockFace;
+import java.lang.reflect.Field;
+import java.math.BigInteger;
+import java.util.function.Consumer;
 import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
-
-import java.lang.reflect.Field;
-import java.math.BigInteger;
-import java.util.function.Consumer;
-
-import static cn.nukkit.blockproperty.CommonBlockProperties.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author joserobjr
@@ -49,6 +48,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class BlockTest {
     @SuppressWarnings("deprecation")
     private static final int TEST_BLOCK_ID = Block.list.length - 2;
+
     private static final Field MUTABLE_STATE;
     private static UnsignedIntBlockProperty HUGE = new UnsignedIntBlockProperty("huge", false, 0xFFFFFFFF);
 
@@ -512,8 +512,7 @@ class BlockTest {
 
         @Since("1.4.0.0-PN")
         @PowerNukkitOnly
-        @NotNull
-        @Override
+        @NotNull @Override
         public BlockProperties getProperties() {
             return PROPERTIES;
         }

@@ -10,7 +10,6 @@ import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.node.PlayersNode;
 import cn.nukkit.command.tree.node.XpLevelNode;
 import cn.nukkit.command.utils.CommandLogger;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -24,20 +23,21 @@ public class XpCommand extends Command {
         super(name, "commands.xp.description");
         this.setPermission("nukkit.command.xp");
         this.commandParameters.clear();
-        this.commandParameters.put("default", new CommandParameter[]{
-                CommandParameter.newType("amount", CommandParamType.INT),
-                CommandParameter.newType("player", true, CommandParamType.TARGET, new PlayersNode())
+        this.commandParameters.put("default", new CommandParameter[] {
+            CommandParameter.newType("amount", CommandParamType.INT),
+            CommandParameter.newType("player", true, CommandParamType.TARGET, new PlayersNode())
         });
-        this.commandParameters.put("level", new CommandParameter[]{
-                CommandParameter.newType("level", CommandParamType.STRING, new XpLevelNode()),
-                CommandParameter.newType("player", true, CommandParamType.TARGET, new PlayersNode())
+        this.commandParameters.put("level", new CommandParameter[] {
+            CommandParameter.newType("level", CommandParamType.STRING, new XpLevelNode()),
+            CommandParameter.newType("player", true, CommandParamType.TARGET, new PlayersNode())
         });
         this.enableParamTree();
     }
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         //  "/xp <amount> [player]"  for adding exp
         //  "/xp <amount>L [player]" for adding exp level
         var list = result.getValue();

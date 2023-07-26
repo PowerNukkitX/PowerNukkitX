@@ -4,7 +4,6 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.math.Vector3;
-
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -50,7 +49,13 @@ public class BlockUpdateEntry implements Comparable<BlockUpdateEntry> {
 
     @Override
     public int compareTo(BlockUpdateEntry entry) {
-        return this.delay < entry.delay ? -1 : (this.delay > entry.delay ? 1 : (this.priority != entry.priority ? this.priority - entry.priority : Long.compare(this.id, entry.id)));
+        return this.delay < entry.delay
+                ? -1
+                : (this.delay > entry.delay
+                        ? 1
+                        : (this.priority != entry.priority
+                                ? this.priority - entry.priority
+                                : Long.compare(this.id, entry.id)));
     }
 
     @Override
@@ -64,7 +69,9 @@ public class BlockUpdateEntry implements Comparable<BlockUpdateEntry> {
             }
             return false;
         } else {
-            return block.layer == entry.block.layer && this.pos.equals(entry.pos) && Block.equals(this.block, entry.block, false);
+            return block.layer == entry.block.layer
+                    && this.pos.equals(entry.pos)
+                    && Block.equals(this.block, entry.block, false);
         }
     }
 

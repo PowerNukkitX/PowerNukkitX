@@ -6,7 +6,6 @@ import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
-
 import java.util.Map;
 
 /**
@@ -15,7 +14,7 @@ import java.util.Map;
 public class SeedCommand extends VanillaCommand {
 
     public SeedCommand(String name) {
-        super(name, "Show the level's seed");//no translation in client
+        super(name, "Show the level's seed"); // no translation in client
         this.setPermission("nukkit.command.seed");
         this.commandParameters.clear();
         this.commandParameters.put("default", CommandParameter.EMPTY_ARRAY);
@@ -24,7 +23,8 @@ public class SeedCommand extends VanillaCommand {
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         long seed;
         if (sender instanceof Player) {
             seed = ((Player) sender).getLevel().getSeed();

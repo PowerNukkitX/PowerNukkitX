@@ -1,9 +1,8 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.math.Vector3f;
-import lombok.ToString;
-
 import java.util.Optional;
+import lombok.ToString;
 
 @ToString
 public class SpawnParticleEffectPacket extends DataPacket {
@@ -24,8 +23,7 @@ public class SpawnParticleEffectPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-    }
+    public void decode() {}
 
     @Override
     public void encode() {

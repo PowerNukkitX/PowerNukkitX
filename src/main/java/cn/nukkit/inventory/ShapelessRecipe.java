@@ -1,5 +1,7 @@
 package cn.nukkit.inventory;
 
+import static cn.nukkit.inventory.Recipe.matchItemList;
+
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -8,10 +10,7 @@ import cn.nukkit.inventory.recipe.ItemDescriptor;
 import cn.nukkit.inventory.recipe.ItemDescriptorType;
 import cn.nukkit.inventory.recipe.ItemTagDescriptor;
 import cn.nukkit.item.Item;
-
 import java.util.*;
-
-import static cn.nukkit.inventory.Recipe.matchItemList;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -20,16 +19,20 @@ public class ShapelessRecipe implements CraftingRecipe {
     @Deprecated
     @DeprecationDetails(since = "1.19.50-r2", reason = "new ingredients format", replaceWith = "newIngredients")
     private final List<Item> ingredients = null;
+
     private String recipeId;
     private final Item output;
     private long least, most;
     private final List<Item> ingredientsAggregate;
+
     @PowerNukkitXOnly
     @Since("1.19.50-r2")
     private final List<String> needTags;
+
     @PowerNukkitXOnly
     @Since("1.19.50-r2")
     private final List<ItemDescriptor> newIngredients;
+
     private final int priority;
 
     public ShapelessRecipe(Item result, Collection<Item> ingredients) {
@@ -37,7 +40,13 @@ public class ShapelessRecipe implements CraftingRecipe {
     }
 
     public ShapelessRecipe(String recipeId, int priority, Item result, Collection<Item> ingredients) {
-        this(recipeId, priority, result, ingredients.stream().map(item -> (ItemDescriptor) new DefaultDescriptor(item)).toList());
+        this(
+                recipeId,
+                priority,
+                result,
+                ingredients.stream()
+                        .map(item -> (ItemDescriptor) new DefaultDescriptor(item))
+                        .toList());
     }
 
     @PowerNukkitXOnly
@@ -59,7 +68,8 @@ public class ShapelessRecipe implements CraftingRecipe {
                 case DEFAULT -> {
                     var item = itemDescriptor.toItem();
                     if (item.getCount() < 1) {
-                        throw new IllegalArgumentException("Recipe '" + recipeId + "' Ingredient amount was not 1 (value: " + item.getCount() + ")");
+                        throw new IllegalArgumentException("Recipe '" + recipeId
+                                + "' Ingredient amount was not 1 (value: " + item.getCount() + ")");
                     }
                     boolean found = false;
                     for (Item existingIngredient : this.ingredientsAggregate) {
@@ -69,15 +79,13 @@ public class ShapelessRecipe implements CraftingRecipe {
                             break;
                         }
                     }
-                    if (!found)
-                        this.ingredientsAggregate.add(item.clone());
+                    if (!found) this.ingredientsAggregate.add(item.clone());
                     this.ingredientsAggregate.sort(CraftingManager.recipeComparator);
                 }
                 case ITEM_TAG -> {
                     this.needTags.add(((ItemTagDescriptor) itemDescriptor).getItemTag());
                 }
-                default -> {
-                }
+                default -> {}
             }
         }
     }
@@ -108,8 +116,7 @@ public class ShapelessRecipe implements CraftingRecipe {
     }
 
     public List<Item> getIngredientList() {
-        return this.newIngredients
-                .stream()
+        return this.newIngredients.stream()
                 .filter(itemDescriptor -> itemDescriptor.getType().equals(ItemDescriptorType.DEFAULT))
                 .map(ItemDescriptor::toItem)
                 .toList();
@@ -153,23 +160,20 @@ public class ShapelessRecipe implements CraftingRecipe {
     public boolean matchItems(List<Item> inputList, List<Item> extraOutputList, int multiplier) {
         List<Item> haveInputs = new ArrayList<>();
         for (Item item : inputList) {
-            if (item.isNull())
-                continue;
+            if (item.isNull()) continue;
             haveInputs.add(item.clone());
         }
         List<Item> needInputs = new ArrayList<>();
         if (multiplier != 1) {
             for (Item item : ingredientsAggregate) {
-                if (item.isNull())
-                    continue;
+                if (item.isNull()) continue;
                 Item itemClone = item.clone();
                 itemClone.setCount(itemClone.getCount() * multiplier);
                 needInputs.add(itemClone);
             }
         } else {
             for (Item item : ingredientsAggregate) {
-                if (item.isNull())
-                    continue;
+                if (item.isNull()) continue;
                 needInputs.add(item.clone());
             }
         }
@@ -187,24 +191,21 @@ public class ShapelessRecipe implements CraftingRecipe {
 
         List<Item> haveOutputs = new ArrayList<>();
         for (Item item : extraOutputList) {
-            if (item.isNull())
-                continue;
+            if (item.isNull()) continue;
             haveOutputs.add(item.clone());
         }
         haveOutputs.sort(CraftingManager.recipeComparator);
         List<Item> needOutputs = new ArrayList<>();
         if (multiplier != 1) {
             for (Item item : getExtraResults()) {
-                if (item.isNull())
-                    continue;
+                if (item.isNull()) continue;
                 Item itemClone = item.clone();
                 itemClone.setCount(itemClone.getCount() * multiplier);
                 needOutputs.add(itemClone);
             }
         } else {
             for (Item item : getExtraResults()) {
-                if (item.isNull())
-                    continue;
+                if (item.isNull()) continue;
                 needOutputs.add(item.clone());
             }
         }

@@ -33,17 +33,20 @@ public class BoatDispenseBehavior extends DefaultDispenseBehavior {
             return super.dispense(block, face, item);
         }
 
-        spawnBoatEntity(block.level, target.getLocation().add(face.getXOffset() * 0.75, face.getYOffset() * 0.75, face.getZOffset() * 0.75).setYaw(face.getHorizontalAngle()), item);
+        spawnBoatEntity(
+                block.level,
+                target.getLocation()
+                        .add(face.getXOffset() * 0.75, face.getYOffset() * 0.75, face.getZOffset() * 0.75)
+                        .setYaw(face.getHorizontalAngle()),
+                item);
 
         return null;
     }
 
     protected void spawnBoatEntity(Level level, Vector3 pos, Item item) {
-        EntityBoat boat = new EntityBoat(level.getChunk(pos.getChunkX(), pos.getChunkZ()),
-                Entity.getDefaultNBT(pos)
-                        .putInt("Variant", item.getDamage())
-        );
+        EntityBoat boat = new EntityBoat(
+                level.getChunk(pos.getChunkX(), pos.getChunkZ()),
+                Entity.getDefaultNBT(pos).putInt("Variant", item.getDamage()));
         boat.spawnToAll();
     }
-
 }

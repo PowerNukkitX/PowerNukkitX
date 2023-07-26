@@ -16,9 +16,8 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Nukkit Project Team
@@ -43,8 +42,7 @@ public class BlockCactus extends BlockTransparentMeta implements BlockFlowerPot.
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -150,14 +148,25 @@ public class BlockCactus extends BlockTransparentMeta implements BlockFlowerPot.
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
         Block down = this.down();
         if (down.getId() == SAND || down.getId() == CACTUS) {
             Block block0 = north();
             Block block1 = south();
             Block block2 = west();
             Block block3 = east();
-            if (block0.canBeFlowedInto() && block1.canBeFlowedInto() && block2.canBeFlowedInto() && block3.canBeFlowedInto()) {
+            if (block0.canBeFlowedInto()
+                    && block1.canBeFlowedInto()
+                    && block2.canBeFlowedInto()
+                    && block3.canBeFlowedInto()) {
                 this.getLevel().setBlock(this, this, true);
 
                 return true;
@@ -173,9 +182,7 @@ public class BlockCactus extends BlockTransparentMeta implements BlockFlowerPot.
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{
-                Item.getBlock(BlockID.CACTUS, 0, 1)
-        };
+        return new Item[] {Item.getBlock(BlockID.CACTUS, 0, 1)};
     }
 
     @Override
@@ -186,7 +193,7 @@ public class BlockCactus extends BlockTransparentMeta implements BlockFlowerPot.
 
     @Override
     @PowerNukkitOnly
-    public  boolean sticksToPiston() {
+    public boolean sticksToPiston() {
         return false;
     }
 }

@@ -15,7 +15,6 @@ import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.DyeColor;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +30,7 @@ public class ItemFirework extends Item {
     public ItemFirework(Integer meta) {
         this(meta, 1);
     }
-    
+
     @PowerNukkitDifference(info = "Will not add compound tag automatically")
     public ItemFirework(Integer meta, int count) {
         super(FIREWORKS, meta, count, "Firework Rocket");
@@ -43,7 +42,8 @@ public class ItemFirework extends Item {
     }
 
     @Override
-    public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
+    public boolean onActivate(
+            Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         if (player.isAdventure()) {
             return false;
         }
@@ -97,7 +97,8 @@ public class ItemFirework extends Item {
             fds[i] = (byte) fades.get(i).getDyeData();
         }
 
-        ListTag<CompoundTag> explosions = this.getNamedTag().getCompound("Fireworks").getList("Explosions", CompoundTag.class);
+        ListTag<CompoundTag> explosions =
+                this.getNamedTag().getCompound("Fireworks").getList("Explosions", CompoundTag.class);
         CompoundTag tag = new CompoundTag()
                 .putByteArray("FireworkColor", clrs)
                 .putByteArray("FireworkFade", fds)
@@ -127,7 +128,8 @@ public class ItemFirework extends Item {
                         .add(new FloatTag("", 0)))
                 .putCompound("FireworkItem", NBTIO.putItemHelper(this));
 
-        EntityFirework entity = (EntityFirework) Entity.createEntity("Firework", level.getChunk(pos.getFloorX() >> 4, pos.getFloorZ() >> 4), nbt);
+        EntityFirework entity = (EntityFirework)
+                Entity.createEntity("Firework", level.getChunk(pos.getFloorX() >> 4, pos.getFloorZ() >> 4), nbt);
         if (entity != null) {
             entity.spawnToAll();
         }

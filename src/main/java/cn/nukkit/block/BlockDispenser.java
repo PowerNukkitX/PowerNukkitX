@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
+
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
@@ -29,14 +31,11 @@ import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
-
-import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author CreeperFace
@@ -44,7 +43,8 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
  */
 @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder only in PowerNukkit")
 @PowerNukkitDifference(info = "Implements RedstoneComponent.", since = "1.4.0.0-PN")
-public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent, Faceable, BlockEntityHolder<BlockEntityEjectable> {
+public class BlockDispenser extends BlockSolidMeta
+        implements RedstoneComponent, Faceable, BlockEntityHolder<BlockEntityEjectable> {
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
@@ -79,16 +79,14 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getBlockEntityType() {
         return BlockEntity.DISPENSER;
     }
@@ -105,8 +103,7 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public Class<? extends BlockEntityEjectable> getBlockEntityClass() {
         return BlockEntityDispenser.class;
     }
@@ -165,7 +162,15 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
 
     @PowerNukkitDifference(info = "BlockData is implemented.", since = "1.4.0.0-PN")
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         if (player != null) {
             if (Math.abs(player.x - this.x) < 2 && Math.abs(player.z - this.z) < 2) {
                 double y = player.y + player.getEyeHeight();
@@ -194,11 +199,13 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
                 nbt.put(tag.getKey(), tag.getValue());
             }
         }
-        
+
         return BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt) != null;
     }
 
-    @PowerNukkitDifference(info = "Disables the triggered state, when the block is no longer powered + use #isGettingPower() method.", since = "1.4.0.0-PN")
+    @PowerNukkitDifference(
+            info = "Disables the triggered state, when the block is no longer powered + use #isGettingPower() method.",
+            since = "1.4.0.0-PN")
     @Override
     public int onUpdate(int type) {
         if (!this.level.getServer().isRedstoneEnabled()) {
@@ -320,10 +327,7 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
     public Vector3 getDispensePosition() {
         BlockFace facing = getBlockFace();
         return this.add(
-                0.5 + 0.7 * facing.getXOffset(),
-                0.5 + 0.7 * facing.getYOffset(),
-                0.5 + 0.7 * facing.getZOffset()
-        );
+                0.5 + 0.7 * facing.getXOffset(), 0.5 + 0.7 * facing.getYOffset(), 0.5 + 0.7 * facing.getZOffset());
     }
 
     @Override

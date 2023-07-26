@@ -4,7 +4,6 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
-
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 
@@ -15,7 +14,8 @@ public class ConditionalProbabilityEvaluator extends ProbabilityEvaluator {
     int probability2;
     Function<Entity, Boolean> condition;
 
-    public ConditionalProbabilityEvaluator(int probability1, int probability2, Function<Entity, Boolean> condition, int total) {
+    public ConditionalProbabilityEvaluator(
+            int probability1, int probability2, Function<Entity, Boolean> condition, int total) {
         super(probability1, total);
         this.condition = condition;
         this.probability2 = probability2;

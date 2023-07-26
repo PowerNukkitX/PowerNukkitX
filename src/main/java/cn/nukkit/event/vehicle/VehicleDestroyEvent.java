@@ -17,7 +17,6 @@ public class VehicleDestroyEvent extends VehicleEvent implements Cancellable {
      *
      * @param vehicle the destroyed vehicle
      */
-
     @PowerNukkitOnly
     public VehicleDestroyEvent(final Entity vehicle) {
         super(vehicle);

@@ -13,8 +13,7 @@ public abstract class IterableThreadLocal<T> extends ThreadLocal<T> implements I
     private ThreadLocal<T> flag;
     private ConcurrentLinkedDeque<T> allValues = new ConcurrentLinkedDeque<>();
 
-    public IterableThreadLocal() {
-    }
+    public IterableThreadLocal() {}
 
     @Override
     protected final T initialValue() {

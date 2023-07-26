@@ -7,8 +7,7 @@ import cn.nukkit.item.ItemBirchSign;
 @PowerNukkitOnly
 public class BlockBirchSignPost extends BlockSignPost {
     @PowerNukkitOnly
-    public BlockBirchSignPost() {
-    }
+    public BlockBirchSignPost() {}
 
     @PowerNukkitOnly
     public BlockBirchSignPost(int meta) {
@@ -35,5 +34,4 @@ public class BlockBirchSignPost extends BlockSignPost {
     public Item toItem() {
         return new ItemBirchSign();
     }
-
 }

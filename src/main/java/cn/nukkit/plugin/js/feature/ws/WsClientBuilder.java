@@ -1,12 +1,6 @@
 package cn.nukkit.plugin.js.feature.ws;
 
 import cn.nukkit.plugin.js.JSConcurrentManager;
-import org.graalvm.polyglot.Context;
-import org.graalvm.polyglot.Value;
-import org.graalvm.polyglot.proxy.ProxyArray;
-import org.graalvm.polyglot.proxy.ProxyExecutable;
-import org.graalvm.polyglot.proxy.ProxyObject;
-
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.WebSocket;
@@ -14,6 +8,11 @@ import java.nio.ByteBuffer;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
+import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.Value;
+import org.graalvm.polyglot.proxy.ProxyArray;
+import org.graalvm.polyglot.proxy.ProxyExecutable;
+import org.graalvm.polyglot.proxy.ProxyObject;
 
 public class WsClientBuilder implements ProxyObject {
     protected final Context sourceContext;
@@ -29,7 +28,19 @@ public class WsClientBuilder implements ProxyObject {
     protected Value onPongHandler;
     protected Value onTextHandler;
 
-    public static List<String> memberKeys = List.of("reset", "setURI", "onOpen", "onError", "onBinary", "onClose", "onPing", "onPong", "onText", "addHeader", "setTimeout", "buildAsync");
+    public static List<String> memberKeys = List.of(
+            "reset",
+            "setURI",
+            "onOpen",
+            "onError",
+            "onBinary",
+            "onClose",
+            "onPing",
+            "onPong",
+            "onText",
+            "addHeader",
+            "setTimeout",
+            "buildAsync");
 
     public WsClientBuilder(Context sourceContext) {
         this.sourceContext = sourceContext;
@@ -90,8 +101,8 @@ public class WsClientBuilder implements ProxyObject {
                 webSocketBuilder.connectTimeout(Duration.ofMillis(arguments[0].asLong()));
                 return this;
             };
-            case "buildAsync" -> (ProxyExecutable) arguments -> JSConcurrentManager.wrapPromise(sourceContext, webSocketBuilder.buildAsync(uri,
-                    new WebSocket.Listener() {
+            case "buildAsync" -> (ProxyExecutable) arguments -> JSConcurrentManager.wrapPromise(
+                    sourceContext, webSocketBuilder.buildAsync(uri, new WebSocket.Listener() {
                         @Override
                         public void onOpen(WebSocket webSocket) {
                             if (onOpenHandler.canExecute()) {
@@ -192,5 +203,4 @@ public class WsClientBuilder implements ProxyObject {
     public void putMember(String key, Value value) {
         throw new UnsupportedOperationException();
     }
-
 }

@@ -10,8 +10,7 @@ import cn.nukkit.item.ItemTool;
  */
 public class BlockMobSpawner extends BlockSolid {
 
-    public BlockMobSpawner() {
-    }
+    public BlockMobSpawner() {}
 
     @Override
     public String getName() {
@@ -62,7 +61,7 @@ public class BlockMobSpawner extends BlockSolid {
 
     @Override
     @PowerNukkitOnly
-    public  boolean canBePulled() {
+    public boolean canBePulled() {
         return false;
     }
 
@@ -70,5 +69,4 @@ public class BlockMobSpawner extends BlockSolid {
     public boolean canHarvestWithHand() {
         return false;
     }
-
 }

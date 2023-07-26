@@ -18,6 +18,8 @@
 
 package cn.nukkit.entity;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import cn.nukkit.Player;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.blockstate.BlockState;
@@ -30,8 +32,6 @@ import org.mockito.Mock;
 import org.powernukkit.tests.api.MockLevel;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 /**
  * @author joserobjr
  * @since 2021-06-29
@@ -40,10 +40,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class EntityPlayerTest {
     @Mock
     SourceInterface sourceInterface;
-    
+
     @MockLevel
     Level level;
-    
+
     Player testedPlayer;
 
     @BeforeEach

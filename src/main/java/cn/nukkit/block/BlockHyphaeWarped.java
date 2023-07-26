@@ -35,5 +35,4 @@ public class BlockHyphaeWarped extends BlockStem {
     public BlockState getStrippedState() {
         return getCurrentState().withBlockId(STRIPPED_WARPED_HYPHAE);
     }
-
 }

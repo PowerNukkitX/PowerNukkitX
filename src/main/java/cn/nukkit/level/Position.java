@@ -12,10 +12,9 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.positiontracking.NamedPosition;
 import cn.nukkit.utils.LevelException;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 import java.util.Set;
+import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -95,7 +94,8 @@ public class Position extends NamedPosition {
 
     @Override
     public String toString() {
-        return "Position(level=" + (this.isValid() ? this.getLevel().getName() : "null") + ",x=" + this.x + ",y=" + this.y + ",z=" + this.z + ")";
+        return "Position(level=" + (this.isValid() ? this.getLevel().getName() : "null") + ",x=" + this.x + ",y="
+                + this.y + ",z=" + this.z + ")";
     }
 
     @Override
@@ -116,30 +116,26 @@ public class Position extends NamedPosition {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nullable
-    public BlockEntity getLevelBlockEntity() {
+    @Nullable public BlockEntity getLevelBlockEntity() {
         return getValidLevel().getBlockEntity(this);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nullable
-    public final <T extends BlockEntity> T getTypedBlockEntity(@NotNull Class<T> type) {
+    @Nullable public final <T extends BlockEntity> T getTypedBlockEntity(@NotNull Class<T> type) {
         BlockEntity blockEntity = getValidLevel().getBlockEntity(this);
         return type.isInstance(blockEntity) ? type.cast(blockEntity) : null;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public BlockState getLevelBlockState() {
+    @NotNull public BlockState getLevelBlockState() {
         return getLevelBlockState(0);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public BlockState getLevelBlockState(int layer) {
+    @NotNull public BlockState getLevelBlockState(int layer) {
         return getValidLevel().getBlockStateAt(getFloorX(), getFloorY(), getFloorZ(), layer);
     }
 
@@ -152,7 +148,6 @@ public class Position extends NamedPosition {
     public Block getLevelBlock(int layer) {
         return getValidLevel().getBlock(this, layer);
     }
-
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
@@ -183,24 +178,20 @@ public class Position extends NamedPosition {
         return getValidLevel().getTickCachedBlock(this, layer);
     }
 
-    @NotNull
-    public Location getLocation() {
+    @NotNull public Location getLocation() {
         return new Location(this.x, this.y, this.z, 0, 0, getValidLevel());
     }
 
-
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getLevelName() {
         return getValidLevel().getName();
     }
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    public final Level getValidLevel() {
+    @NotNull public final Level getValidLevel() {
         Level level = this.level;
         if (level == null) {
             throw new LevelException("Undefined Level reference");
@@ -288,8 +279,7 @@ public class Position extends NamedPosition {
         return (Position) super.clone();
     }
 
-    @Nullable
-    public FullChunk getChunk() {
+    @Nullable public FullChunk getChunk() {
         return isValid() ? level.getChunk(getChunkX(), getChunkZ()) : null;
     }
 }

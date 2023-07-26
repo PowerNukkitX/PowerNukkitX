@@ -45,7 +45,9 @@ public abstract class ScatteredStructurePiece {
      * @param size the size as a width-height-depth vector
      */
     public ScatteredStructurePiece(BlockVector3 pos, BlockVector3 size) {
-        this.boundingBox = new StructureBoundingBox(new BlockVector3(pos.x, pos.y, pos.z), new BlockVector3(pos.x + size.x - 1, pos.y + size.y - 1, pos.z + size.z - 1));
+        this.boundingBox = new StructureBoundingBox(
+                new BlockVector3(pos.x, pos.y, pos.z),
+                new BlockVector3(pos.x + size.x - 1, pos.y + size.y - 1, pos.z + size.z - 1));
     }
 
     public StructureBoundingBox getBoundingBox() {

@@ -24,8 +24,7 @@ public class BlockBookshelf extends BlockSolidMeta {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return CommonBlockProperties.EMPTY_PROPERTIES;
     }
@@ -67,9 +66,7 @@ public class BlockBookshelf extends BlockSolidMeta {
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{
-                Item.get(ItemID.BOOK, 0, 3)
-        };
+        return new Item[] {Item.get(ItemID.BOOK, 0, 3)};
     }
 
     @Override

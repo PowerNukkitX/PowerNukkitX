@@ -8,7 +8,6 @@ import lombok.AllArgsConstructor;
  * @author LoboMetalurgico
  * @since 09/06/2021
  */
-
 @PowerNukkitOnly
 @Since("1.5.0.0-PN")
 @AllArgsConstructor

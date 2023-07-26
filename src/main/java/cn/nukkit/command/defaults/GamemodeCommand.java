@@ -11,7 +11,6 @@ import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.node.PlayersNode;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.utils.TextFormat;
-
 import java.util.List;
 import java.util.Map;
 
@@ -22,28 +21,27 @@ import java.util.Map;
 public class GamemodeCommand extends VanillaCommand {
 
     public GamemodeCommand(String name) {
-        super(name, "commands.gamemode.description", "",
-                new String[]{"gm"});
-        this.setPermission("nukkit.command.gamemode.survival;" +
-                "nukkit.command.gamemode.creative;" +
-                "nukkit.command.gamemode.adventure;" +
-                "nukkit.command.gamemode.spectator;" +
-                "nukkit.command.gamemode.other");
+        super(name, "commands.gamemode.description", "", new String[] {"gm"});
+        this.setPermission("nukkit.command.gamemode.survival;" + "nukkit.command.gamemode.creative;"
+                + "nukkit.command.gamemode.adventure;"
+                + "nukkit.command.gamemode.spectator;"
+                + "nukkit.command.gamemode.other");
         this.commandParameters.clear();
-        this.commandParameters.put("default", new CommandParameter[]{
-                CommandParameter.newType("gameMode", CommandParamType.INT),
-                CommandParameter.newType("player", true, CommandParamType.TARGET, new PlayersNode())
+        this.commandParameters.put("default", new CommandParameter[] {
+            CommandParameter.newType("gameMode", CommandParamType.INT),
+            CommandParameter.newType("player", true, CommandParamType.TARGET, new PlayersNode())
         });
-        this.commandParameters.put("byString", new CommandParameter[]{
-                CommandParameter.newEnum("gameMode", CommandEnum.ENUM_GAMEMODE),
-                CommandParameter.newType("player", true, CommandParamType.TARGET, new PlayersNode())
+        this.commandParameters.put("byString", new CommandParameter[] {
+            CommandParameter.newEnum("gameMode", CommandEnum.ENUM_GAMEMODE),
+            CommandParameter.newType("player", true, CommandParamType.TARGET, new PlayersNode())
         });
         this.enableParamTree();
     }
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         int gameMode = -1;
         List<Player> players;
@@ -55,14 +53,16 @@ public class GamemodeCommand extends VanillaCommand {
             }
         }
         if (gameMode < 0 || gameMode > 3) {
-            log.addError("commands.gamemode.fail.invalid", String.valueOf(gameMode)).output();
+            log.addError("commands.gamemode.fail.invalid", String.valueOf(gameMode))
+                    .output();
             return 0;
         }
         if (list.hasResult(1)) {
             if (sender.hasPermission("nukkit.command.gamemode.other")) {
                 players = list.getResult(1);
             } else {
-                log.addMessage(TextFormat.RED + "%nukkit.command.generic.permission").output();
+                log.addMessage(TextFormat.RED + "%nukkit.command.generic.permission")
+                        .output();
                 return 0;
             }
         } else {
@@ -74,11 +74,12 @@ public class GamemodeCommand extends VanillaCommand {
             return 0;
         }
 
-        if ((gameMode == 0 && !sender.hasPermission("nukkit.command.gamemode.survival")) ||
-                (gameMode == 1 && !sender.hasPermission("nukkit.command.gamemode.creative")) ||
-                (gameMode == 2 && !sender.hasPermission("nukkit.command.gamemode.adventure")) ||
-                (gameMode == 3 && !sender.hasPermission("nukkit.command.gamemode.spectator"))) {
-            log.addMessage(TextFormat.RED + "%nukkit.command.generic.permission").output();
+        if ((gameMode == 0 && !sender.hasPermission("nukkit.command.gamemode.survival"))
+                || (gameMode == 1 && !sender.hasPermission("nukkit.command.gamemode.creative"))
+                || (gameMode == 2 && !sender.hasPermission("nukkit.command.gamemode.adventure"))
+                || (gameMode == 3 && !sender.hasPermission("nukkit.command.gamemode.spectator"))) {
+            log.addMessage(TextFormat.RED + "%nukkit.command.generic.permission")
+                    .output();
             return 0;
         }
 

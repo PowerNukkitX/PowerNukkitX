@@ -14,12 +14,11 @@ import cn.nukkit.permission.Permission;
 import cn.nukkit.permission.PermissionAttachment;
 import cn.nukkit.permission.PermissionAttachmentInfo;
 import cn.nukkit.plugin.Plugin;
+import java.util.Map;
+import javax.annotation.Nullable;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
-import java.util.Map;
-
-//used for executing commands in place of an entity
+// used for executing commands in place of an entity
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public class ExecutorCommandSender implements CommandSender {
@@ -28,7 +27,8 @@ public class ExecutorCommandSender implements CommandSender {
     private final Entity entity;
     private final Location executeLocation;
 
-    public ExecutorCommandSender(@NotNull CommandSender executor, @Nullable Entity entity, @Nullable Location executeLocation) {
+    public ExecutorCommandSender(
+            @NotNull CommandSender executor, @Nullable Entity entity, @Nullable Location executeLocation) {
         if (executor instanceof ExecutorCommandSender executorCommandSender) {
             this.executor = executorCommandSender.getExecutor();
         } else {
@@ -59,8 +59,7 @@ public class ExecutorCommandSender implements CommandSender {
         return executor.getServer();
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getName() {
         return entity.getName();
     }
@@ -85,16 +84,14 @@ public class ExecutorCommandSender implements CommandSender {
         return isPlayer() ? (Player) this.entity : null;
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public Position getPosition() {
         return (executeLocation == null ? entity : executeLocation).clone();
     }
 
     @Since("1.6.0.0-PNX")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public Location getLocation() {
         return (executeLocation == null ? entity : executeLocation).clone();
     }

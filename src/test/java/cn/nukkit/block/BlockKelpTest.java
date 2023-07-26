@@ -1,5 +1,10 @@
 package cn.nukkit.block;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.when;
+
 import cn.nukkit.Player;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.item.Item;
@@ -12,21 +17,16 @@ import org.mockito.Mock;
 import org.powernukkit.tests.api.MockServer;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.when;
-
 /**
  * @author joserobjr
  */
 @ExtendWith(PowerNukkitExtension.class)
 @MockServer(callsRealMethods = false)
 class BlockKelpTest {
-    
+
     @Mock
     Level level;
-    
+
     @Mock
     Player player;
 
@@ -35,14 +35,14 @@ class BlockKelpTest {
         BlockKelp kelp = new BlockKelp();
         kelp.position(new Position(2, 3, 4, level));
         Item boneMeal = MinecraftItemID.BONE_MEAL.get(5);
-        
+
         when(level.getBlock(eq(2), eq(3), eq(4))).thenReturn(kelp);
         when(level.getBlockStateAt(eq(2), eq(4), eq(4))).thenReturn(BlockState.of(BlockID.FLOWING_WATER));
         when(level.getBlock(eq(2), eq(4), eq(4), eq(0)))
                 .thenReturn(BlockState.of(BlockID.FLOWING_WATER).getBlock(level, 2, 4, 4));
-        
+
         assertTrue(kelp.onActivate(boneMeal, player));
-        
+
         assertEquals(4, boneMeal.getCount());
     }
 }

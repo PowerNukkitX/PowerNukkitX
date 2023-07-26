@@ -9,7 +9,6 @@ import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.node.IPlayersNode;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.utils.TextFormat;
-
 import java.util.List;
 import java.util.Map;
 
@@ -23,15 +22,16 @@ public class OpCommand extends VanillaCommand {
         super(name, "commands.op.description");
         this.setPermission("nukkit.command.op.give");
         this.commandParameters.clear();
-        this.commandParameters.put("default", new CommandParameter[]{
-                CommandParameter.newType("player", CommandParamType.TARGET, new IPlayersNode())
+        this.commandParameters.put("default", new CommandParameter[] {
+            CommandParameter.newType("player", CommandParamType.TARGET, new IPlayersNode())
         });
         this.enableParamTree();
     }
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         List<IPlayer> IPlayers = result.getValue().getResult(0);
         if (IPlayers.isEmpty()) {
             log.addNoTargetMatch().output();

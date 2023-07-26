@@ -11,7 +11,6 @@ import cn.nukkit.command.tree.node.RemainStringNode;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,18 +25,19 @@ public class GiveCommand extends VanillaCommand {
         super(name, "commands.give.description");
         this.setPermission("nukkit.command.give");
         this.commandParameters.clear();
-        this.commandParameters.put("default", new CommandParameter[]{
-                CommandParameter.newType("player", CommandParamType.TARGET, new PlayersNode()),
-                ITEM_NAME.get(false),
-                CommandParameter.newType("amount", true, CommandParamType.INT),
-                CommandParameter.newType("data", true, CommandParamType.INT),
-                CommandParameter.newType("components", true, CommandParamType.JSON, new RemainStringNode())
+        this.commandParameters.put("default", new CommandParameter[] {
+            CommandParameter.newType("player", CommandParamType.TARGET, new PlayersNode()),
+            ITEM_NAME.get(false),
+            CommandParameter.newType("amount", true, CommandParamType.INT),
+            CommandParameter.newType("data", true, CommandParamType.INT),
+            CommandParameter.newType("components", true, CommandParamType.JSON, new RemainStringNode())
         });
         this.enableParamTree();
     }
 
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         List<Player> players = list.getResult(0);
 
@@ -98,12 +98,21 @@ public class GiveCommand extends VanillaCommand {
             for (Item drop : drops) {
                 player.dropItem(drop);
             }
-            log.outputObjectWhisper(player, "commands.give.successRecipient", item.getDisplayName() + " (" + item.getNamespaceId() + (item.getDamage() != 0 ? ":" + item.getDamage() : "") + ")",
+            log.outputObjectWhisper(
+                    player,
+                    "commands.give.successRecipient",
+                    item.getDisplayName() + " (" + item.getNamespaceId()
+                            + (item.getDamage() != 0 ? ":" + item.getDamage() : "") + ")",
                     String.valueOf(item.getCount()));
         }
-        log.addSuccess("commands.give.success", item.getDisplayName() + " (" + item.getNamespaceId() + (item.getDamage() != 0 ? ":" + item.getDamage() : "") + ")",
-                String.valueOf(item.getCount()),
-                players.stream().map(Player::getName).collect(Collectors.joining(","))).successCount(players.size()).output(true);
+        log.addSuccess(
+                        "commands.give.success",
+                        item.getDisplayName() + " (" + item.getNamespaceId()
+                                + (item.getDamage() != 0 ? ":" + item.getDamage() : "") + ")",
+                        String.valueOf(item.getCount()),
+                        players.stream().map(Player::getName).collect(Collectors.joining(",")))
+                .successCount(players.size())
+                .output(true);
         return players.size();
     }
 }

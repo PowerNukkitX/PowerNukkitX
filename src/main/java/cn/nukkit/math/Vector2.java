@@ -134,5 +134,4 @@ public class Vector2 {
     public String toString() {
         return "Vector2(x=" + this.x + ",y=" + this.y + ")";
     }
-
 }

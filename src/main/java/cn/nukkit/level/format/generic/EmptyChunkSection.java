@@ -16,13 +16,12 @@ import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.ChunkException;
 import cn.nukkit.utils.collection.ByteArrayWrapper;
 import cn.nukkit.utils.collection.FreezableArrayManager;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiPredicate;
+import javax.annotation.ParametersAreNonnullByDefault;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -31,22 +30,29 @@ import java.util.function.BiPredicate;
 public class EmptyChunkSection implements ChunkSection, ChunkSection3DBiome {
     @SuppressWarnings("java:S2386")
     public static final EmptyChunkSection[] EMPTY = new EmptyChunkSection[16];
+
     @SuppressWarnings("java:S2386")
     public static final EmptyChunkSection[] EMPTY24 = new EmptyChunkSection[24];
+
     public static final byte[] EMPTY_SKY_LIGHT_ARR = new byte[2048]; // Filled with 0xFF
+
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     public static final byte[] EMPTY_ID_ARRAY = new byte[4096];
+
     @PowerNukkitXOnly
     @Since("1.19.20-r3")
     public static final byte[] EMPTY_BIOME_ARRAY = new byte[4096];
+
     private static final String MODIFICATION_ERROR_MESSAGE = "Tried to modify an empty Chunk";
     private static final String BIOME_TAG_NAME = "Biomes";
     private static final byte[] EMPTY_2KB = new byte[2048];
     public static final byte[] EMPTY_LIGHT_ARR = EMPTY_2KB;
+
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     public static final byte[] EMPTY_DATA_ARRAY = EMPTY_2KB;
+
     private static final byte[] EMPTY_CHUNK_DATA;
 
     static {
@@ -110,8 +116,7 @@ public class EmptyChunkSection implements ChunkSection, ChunkSection3DBiome {
     }
 
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockState getBlockState(int x, int y, int z, int layer) {
         return BlockState.AIR;
     }
@@ -124,15 +129,13 @@ public class EmptyChunkSection implements ChunkSection, ChunkSection3DBiome {
     }
 
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public Block getAndSetBlock(int x, int y, int z, int layer, Block block) {
         if (block.getId() != 0) throw new ChunkException(MODIFICATION_ERROR_MESSAGE);
         return Block.get(0);
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public Block getAndSetBlock(int x, int y, int z, Block block) {
         if (block.getId() != 0) throw new ChunkException(MODIFICATION_ERROR_MESSAGE);
         return Block.get(0);
@@ -140,8 +143,7 @@ public class EmptyChunkSection implements ChunkSection, ChunkSection3DBiome {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockState getAndSetBlockState(int x, int y, int z, int layer, BlockState state) {
         if (!BlockState.AIR.equals(state)) throw new ChunkException(MODIFICATION_ERROR_MESSAGE);
         return BlockState.AIR;
@@ -291,9 +293,7 @@ public class EmptyChunkSection implements ChunkSection, ChunkSection3DBiome {
 
     @Since("1.19.60-r1")
     @Override
-    public void addBlockChange() {
-
-    }
+    public void addBlockChange() {}
 
     @PowerNukkitOnly
     @Override
@@ -302,8 +302,7 @@ public class EmptyChunkSection implements ChunkSection, ChunkSection3DBiome {
     }
 
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public CompoundTag toNBT() {
         var s = new CompoundTag();
         s.putInt("Y", getY());
@@ -312,8 +311,7 @@ public class EmptyChunkSection implements ChunkSection, ChunkSection3DBiome {
         return s;
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public EmptyChunkSection copy() {
         return new EmptyChunkSection(this.y, this.biomeId.getRawBytes());
     }
@@ -343,7 +341,13 @@ public class EmptyChunkSection implements ChunkSection, ChunkSection3DBiome {
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     @Override
-    public List<Block> scanBlocks(LevelProvider provider, int offsetX, int offsetZ, BlockVector3 min, BlockVector3 max, BiPredicate<BlockVector3, BlockState> condition) {
+    public List<Block> scanBlocks(
+            LevelProvider provider,
+            int offsetX,
+            int offsetZ,
+            BlockVector3 min,
+            BlockVector3 max,
+            BiPredicate<BlockVector3, BlockState> condition) {
         return Collections.emptyList();
     }
 

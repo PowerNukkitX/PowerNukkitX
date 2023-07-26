@@ -12,7 +12,7 @@ public abstract class BlockFlowable extends BlockTransparentMeta {
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    protected BlockFlowable(){
+    protected BlockFlowable() {
         super();
     }
 
@@ -53,7 +53,7 @@ public abstract class BlockFlowable extends BlockTransparentMeta {
 
     @Override
     @PowerNukkitOnly
-    public  boolean sticksToPiston() {
+    public boolean sticksToPiston() {
         return false;
     }
 

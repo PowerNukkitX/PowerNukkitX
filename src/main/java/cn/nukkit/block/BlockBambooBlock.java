@@ -18,8 +18,7 @@ public class BlockBambooBlock extends BlockLog {
         super(meta);
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PILLAR_PROPERTIES;
     }

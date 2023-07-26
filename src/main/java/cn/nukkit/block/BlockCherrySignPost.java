@@ -9,8 +9,7 @@ import cn.nukkit.item.ItemCherrySign;
 @PowerNukkitXOnly
 @Since("1.20.0-r2")
 public class BlockCherrySignPost extends BlockSignPost {
-    public BlockCherrySignPost() {
-    }
+    public BlockCherrySignPost() {}
 
     public BlockCherrySignPost(int meta) {
         super(meta);

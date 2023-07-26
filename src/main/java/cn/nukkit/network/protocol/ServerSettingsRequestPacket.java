@@ -11,12 +11,8 @@ public class ServerSettingsRequestPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-
-    }
+    public void decode() {}
 
     @Override
-    public void encode() {
-
-    }
+    public void encode() {}
 }

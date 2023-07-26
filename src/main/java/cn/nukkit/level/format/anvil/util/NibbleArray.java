@@ -1,6 +1,5 @@
 package cn.nukkit.level.format.anvil.util;
 
-
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.level.format.generic.EmptyChunkSection;
@@ -54,7 +53,10 @@ public class NibbleArray implements Cloneable {
 
     public void copyFrom(byte[] bytes) {
         Preconditions.checkNotNull(bytes, "bytes");
-        Preconditions.checkArgument(bytes.length == data.length, "length of provided byte array is %s but expected %s", bytes.length,
+        Preconditions.checkArgument(
+                bytes.length == data.length,
+                "length of provided byte array is %s but expected %s",
+                bytes.length,
                 data.length);
         System.arraycopy(bytes, 0, data, 0, data.length);
     }

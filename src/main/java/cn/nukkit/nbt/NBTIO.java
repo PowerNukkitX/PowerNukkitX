@@ -20,9 +20,6 @@ import cn.nukkit.nbt.stream.PGZIPOutputStream;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.ThreadCache;
-import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
-
 import java.io.*;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
@@ -33,6 +30,8 @@ import java.util.TreeMap;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPInputStream;
+import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A Named Binary Tag library for Nukkit Project
@@ -49,9 +48,8 @@ public class NBTIO {
     }
 
     public static CompoundTag putItemHelper(Item item, Integer slot) {
-        CompoundTag tag = new CompoundTag((String) null)
-                .putByte("Count", item.getCount())
-                .putShort("Damage", item.getDamage());
+        CompoundTag tag =
+                new CompoundTag((String) null).putByte("Count", item.getCount()).putShort("Damage", item.getDamage());
         int id = item.getId();
         if (id == ItemID.STRING_IDENTIFIED_ITEM || Block.ID_TO_CUSTOM_BLOCK.containsKey(255 - id)) {
             tag.putString("Name", item.getNamespaceId());
@@ -116,7 +114,8 @@ public class NBTIO {
     @PowerNukkitXOnly
     @Since("1.19.80-r3")
     public static CompoundTag putBlockHelper(Block block, String nbtName) {
-        String[] states = BlockStateRegistry.getKnownBlockStateIdByRuntimeId(block.getRuntimeId()).split(";");
+        String[] states = BlockStateRegistry.getKnownBlockStateIdByRuntimeId(block.getRuntimeId())
+                .split(";");
         CompoundTag result = new CompoundTag(nbtName).putString("name", states[0]);
         var nbt = new CompoundTag("", new TreeMap<>());
         if (block instanceof CustomBlock) {
@@ -131,9 +130,15 @@ public class NBTIO {
                 } else if (property instanceof ArrayBlockProperty<?> arrayBlockProperty) {
                     if (arrayBlockProperty.isOrdinal()) {
                         if (property.getBitSize() > 1) {
-                            nbt.putInt(str, Integer.parseInt(block.getCurrentState().getPersistenceValue(str)));
+                            nbt.putInt(
+                                    str,
+                                    Integer.parseInt(block.getCurrentState().getPersistenceValue(str)));
                         } else {
-                            nbt.putBoolean(str, !block.getCurrentState().getPersistenceValue(str).equals("0"));
+                            nbt.putBoolean(
+                                    str,
+                                    !block.getCurrentState()
+                                            .getPersistenceValue(str)
+                                            .equals("0"));
                         }
                     } else {
                         nbt.putString(str, block.getCurrentState().getPersistenceValue(str));
@@ -159,12 +164,12 @@ public class NBTIO {
 
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
-    @NotNull
-    public static Block getBlockHelper(@NotNull CompoundTag block) {
+    @NotNull public static Block getBlockHelper(@NotNull CompoundTag block) {
         if (!block.containsString("name")) return Block.get(0);
         StringBuilder state = new StringBuilder(block.getString("name"));
         CompoundTag states = block.getCompound("states");
-        states.getTags().forEach((k, v) -> state.append(';').append(k).append('=').append(v.parseValue()));
+        states.getTags()
+                .forEach((k, v) -> state.append(';').append(k).append('=').append(v.parseValue()));
         var blockStateId = state.toString();
         try {
             var blockState = BlockState.of(blockStateId);
@@ -192,9 +197,8 @@ public class NBTIO {
         return BlockState.AIR.getBlock();
     }
 
-
     private static Item fixWoolItem(int id, int damage, int count) {
-        //TODO 回退之前的方块更新方案，现在有更好的解决方式，下个版本移除这段代码
+        // TODO 回退之前的方块更新方案，现在有更好的解决方式，下个版本移除这段代码
         if (damage == 0) {
             switch (id) {
                 case -552 -> {
@@ -300,7 +304,7 @@ public class NBTIO {
 
     public static CompoundTag readCompressed(InputStream inputStream, ByteOrder endianness) throws IOException {
         try (InputStream gzip = new GZIPInputStream(inputStream);
-             InputStream buffered = new BufferedInputStream(gzip)) {
+                InputStream buffered = new BufferedInputStream(gzip)) {
             return read(buffered, endianness);
         }
     }
@@ -311,8 +315,8 @@ public class NBTIO {
 
     public static CompoundTag readCompressed(byte[] data, ByteOrder endianness) throws IOException {
         try (InputStream bytes = new ByteArrayInputStream(data);
-             InputStream gzip = new GZIPInputStream(bytes);
-             InputStream buffered = new BufferedInputStream(gzip)) {
+                InputStream gzip = new GZIPInputStream(bytes);
+                InputStream buffered = new BufferedInputStream(gzip)) {
             return read(buffered, endianness, true);
         }
     }
@@ -323,7 +327,7 @@ public class NBTIO {
 
     public static CompoundTag readNetworkCompressed(InputStream inputStream, ByteOrder endianness) throws IOException {
         try (InputStream gzip = new GZIPInputStream(inputStream);
-             InputStream buffered = new BufferedInputStream(gzip)) {
+                InputStream buffered = new BufferedInputStream(gzip)) {
             return read(buffered, endianness);
         }
     }
@@ -334,8 +338,8 @@ public class NBTIO {
 
     public static CompoundTag readNetworkCompressed(byte[] data, ByteOrder endianness) throws IOException {
         try (InputStream bytes = new ByteArrayInputStream(data);
-             InputStream gzip = new GZIPInputStream(bytes);
-             InputStream buffered = new BufferedInputStream(gzip)) {
+                InputStream gzip = new GZIPInputStream(bytes);
+                InputStream buffered = new BufferedInputStream(gzip)) {
             return read(buffered, endianness, true);
         }
     }
@@ -396,7 +400,8 @@ public class NBTIO {
         write(tag, outputStream, endianness, false);
     }
 
-    public static void write(CompoundTag tag, OutputStream outputStream, ByteOrder endianness, boolean network) throws IOException {
+    public static void write(CompoundTag tag, OutputStream outputStream, ByteOrder endianness, boolean network)
+            throws IOException {
         Tag.writeNamedTag(tag, new NBTOutputStream(outputStream, endianness, network));
     }
 
@@ -422,7 +427,8 @@ public class NBTIO {
         writeGZIPCompressed(tag, outputStream, ByteOrder.BIG_ENDIAN);
     }
 
-    public static void writeGZIPCompressed(CompoundTag tag, OutputStream outputStream, ByteOrder endianness) throws IOException {
+    public static void writeGZIPCompressed(CompoundTag tag, OutputStream outputStream, ByteOrder endianness)
+            throws IOException {
         PGZIPOutputStream gzip = new PGZIPOutputStream(outputStream);
         write(tag, gzip, endianness);
         gzip.finish();
@@ -442,7 +448,8 @@ public class NBTIO {
         writeNetworkGZIPCompressed(tag, outputStream, ByteOrder.BIG_ENDIAN);
     }
 
-    public static void writeNetworkGZIPCompressed(CompoundTag tag, OutputStream outputStream, ByteOrder endianness) throws IOException {
+    public static void writeNetworkGZIPCompressed(CompoundTag tag, OutputStream outputStream, ByteOrder endianness)
+            throws IOException {
         PGZIPOutputStream gzip = new PGZIPOutputStream(outputStream);
         write(tag, gzip, endianness, true);
         gzip.finish();
@@ -452,7 +459,8 @@ public class NBTIO {
         writeZLIBCompressed(tag, outputStream, ByteOrder.BIG_ENDIAN);
     }
 
-    public static void writeZLIBCompressed(CompoundTag tag, OutputStream outputStream, ByteOrder endianness) throws IOException {
+    public static void writeZLIBCompressed(CompoundTag tag, OutputStream outputStream, ByteOrder endianness)
+            throws IOException {
         writeZLIBCompressed(tag, outputStream, Deflater.DEFAULT_COMPRESSION, endianness);
     }
 
@@ -460,7 +468,8 @@ public class NBTIO {
         writeZLIBCompressed(tag, outputStream, level, ByteOrder.BIG_ENDIAN);
     }
 
-    public static void writeZLIBCompressed(CompoundTag tag, OutputStream outputStream, int level, ByteOrder endianness) throws IOException {
+    public static void writeZLIBCompressed(CompoundTag tag, OutputStream outputStream, int level, ByteOrder endianness)
+            throws IOException {
         DeflaterOutputStream out = new DeflaterOutputStream(outputStream, new Deflater(level));
         write(tag, out, endianness);
         out.finish();
@@ -472,7 +481,8 @@ public class NBTIO {
             tmpFile.delete();
         }
         write(tag, tmpFile);
-        Files.move(tmpFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+        Files.move(
+                tmpFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
     }
 
     /**
@@ -480,7 +490,6 @@ public class NBTIO {
      * only used for LevelEventGenericPacket
      * which do not write/read tag id and name
      */
-
     @PowerNukkitXOnly
     @Since("1.19.21-r3")
     public static byte[] writeValue(CompoundTag tag) throws IOException {
@@ -511,7 +520,8 @@ public class NBTIO {
 
     @PowerNukkitXOnly
     @Since("1.19.21-r3")
-    public static CompoundTag readCompoundValue(InputStream inputStream, ByteOrder endianness, boolean network) throws IOException {
+    public static CompoundTag readCompoundValue(InputStream inputStream, ByteOrder endianness, boolean network)
+            throws IOException {
         return Tag.readCompoundValue(new NBTInputStream(inputStream, endianness, network));
     }
 }

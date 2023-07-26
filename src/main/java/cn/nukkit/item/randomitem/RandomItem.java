@@ -32,5 +32,4 @@ public final class RandomItem {
         if (child.size() == 0) return selector.select();
         return selectFrom(Selector.selectRandom(child));
     }
-
 }

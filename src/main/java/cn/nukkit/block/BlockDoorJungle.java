@@ -27,5 +27,4 @@ public class BlockDoorJungle extends BlockDoorWood {
     public Item toItem() {
         return new ItemDoorJungle();
     }
-
 }

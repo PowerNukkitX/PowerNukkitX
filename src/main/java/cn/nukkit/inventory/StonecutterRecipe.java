@@ -2,9 +2,8 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.Item;
-import lombok.ToString;
-
 import java.util.UUID;
+import lombok.ToString;
 
 @PowerNukkitOnly
 @ToString
@@ -14,7 +13,7 @@ public class StonecutterRecipe implements Recipe {
 
     private final Item output;
 
-    private long least,most;
+    private long least, most;
 
     private final Item ingredient;
 
@@ -31,7 +30,8 @@ public class StonecutterRecipe implements Recipe {
         this.priority = priority;
         this.output = result.clone();
         if (ingredient.getCount() < 1) {
-            throw new IllegalArgumentException("Recipe '" + recipeId + "' Ingredient amount was not 1 (value: " + ingredient.getCount() + ")");
+            throw new IllegalArgumentException(
+                    "Recipe '" + recipeId + "' Ingredient amount was not 1 (value: " + ingredient.getCount() + ")");
         }
         this.ingredient = ingredient.clone();
     }

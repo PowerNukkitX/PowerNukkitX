@@ -35,7 +35,6 @@ public class EntityPanda extends EntityAnimal implements EntityWalkable {
         super.initEntity();
     }
 
-
     @PowerNukkitOnly
     @Since("1.5.1.0-PN")
     @Override

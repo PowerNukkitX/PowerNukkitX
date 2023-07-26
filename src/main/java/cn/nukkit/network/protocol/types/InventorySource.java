@@ -1,6 +1,5 @@
 package cn.nukkit.network.protocol.types;
 
-
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.AccessLevel;
@@ -11,9 +10,11 @@ import org.jetbrains.annotations.NotNull;
 @Value
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class InventorySource {
-    private static final InventorySource CREATIVE_SOURCE = new InventorySource(Type.CREATIVE, ContainerIds.NONE, Flag.NONE);
+    private static final InventorySource CREATIVE_SOURCE =
+            new InventorySource(Type.CREATIVE, ContainerIds.NONE, Flag.NONE);
     private static final InventorySource GLOBAL_SOURCE = new InventorySource(Type.GLOBAL, ContainerIds.NONE, Flag.NONE);
-    private static final InventorySource INVALID_SOURCE = new InventorySource(Type.INVALID, ContainerIds.NONE, Flag.NONE);
+    private static final InventorySource INVALID_SOURCE =
+            new InventorySource(Type.INVALID, ContainerIds.NONE, Flag.NONE);
     private final Type type;
     private final int containerId;
     private final Flag flag;

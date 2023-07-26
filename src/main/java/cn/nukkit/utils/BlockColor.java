@@ -3,7 +3,6 @@ package cn.nukkit.utils;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-
 import java.awt.*;
 
 /**
@@ -28,9 +27,11 @@ public class BlockColor {
     public static final BlockColor DIRT_BLOCK_COLOR = new BlockColor(0x97, 0x6d, 0x4d);
     public static final BlockColor STONE_BLOCK_COLOR = new BlockColor(0x70, 0x70, 0x70);
     public static final BlockColor WATER_BLOCK_COLOR = new BlockColor(64, 64, 160);
+
     @PowerNukkitXOnly
     @Since("1.19.80-r3")
     public static final BlockColor FLOWING_WATER_BLOCK_COLOR = new BlockColor(30, 90, 245, 0);
+
     public static final BlockColor LAVA_BLOCK_COLOR = TNT_BLOCK_COLOR;
     public static final BlockColor WOOD_BLOCK_COLOR = new BlockColor(0x8f, 0x77, 0x48);
     public static final BlockColor QUARTZ_BLOCK_COLOR = new BlockColor(0xff, 0xfc, 0xf5);
@@ -78,48 +79,63 @@ public class BlockColor {
     public static final BlockColor GREEN_TERRACOTA_BLOCK_COLOR = new BlockColor(0x4c, 0x52, 0x2a);
     public static final BlockColor RED_TERRACOTA_BLOCK_COLOR = new BlockColor(0x8e, 0x3c, 0x2e);
     public static final BlockColor BLACK_TERRACOTA_BLOCK_COLOR = new BlockColor(0x25, 0x16, 0x10);
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockColor CRIMSON_NYLIUM_BLOCK_COLOR = new BlockColor(0xBD, 0x30, 0x31);
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockColor CRIMSON_STEM_BLOCK_COLOR = new BlockColor(0x94, 0x3F, 0x61);
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockColor CRIMSON_HYPHAE_BLOCK_COLOR = new BlockColor(0x5C, 0x19, 0x1D);
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockColor WARPED_NYLIUM_BLOCK_COLOR = new BlockColor(0x16, 0x7E, 0x86);
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockColor WARPED_STEM_BLOCK_COLOR = new BlockColor(0x3A, 0x8E, 0x8C);
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockColor WARPED_HYPHAE_BLOCK_COLOR = new BlockColor(0x56, 0x2C, 0x3E);
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockColor WARPED_WART_BLOCK_COLOR = new BlockColor(0x14, 0xB4, 0x85);
+
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
     public static final BlockColor SCULK_BLOCK_COLOR = new BlockColor(0x0d, 0x12, 0x17);
+
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public static final BlockColor DEEPSLATE_GRAY = new BlockColor(0x64, 0x64, 0x64);
+
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
     public static final BlockColor RAW_IRON_BLOCK_COLOR = new BlockColor(0xd8, 0xaf, 0x93);
+
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public static final BlockColor LICHEN_GREEN = new BlockColor(0x7F, 0xA7, 0x96);
+
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public static final BlockColor BROWNISH_RED = new BlockColor(0x8E, 0x2F, 0x2F);
+
     @PowerNukkitXOnly
     @Since("1.19.80-r3")
     public static final BlockColor SMALL_AMETHYST_BUD_COLOR = new BlockColor(153, 90, 205);
+
     @PowerNukkitXOnly
     @Since("1.19.80-r3")
     public static final BlockColor CORAL_FAN_COLOR = new BlockColor(146, 188, 88, 0);
+
     @PowerNukkitXOnly
     @Since("1.19.80-r3")
     public static final BlockColor REPEATING_COMMAND_BLOCK_COLOR = new BlockColor(153, 90, 205);
@@ -157,8 +173,10 @@ public class BlockColor {
             return false;
         }
         BlockColor other = (BlockColor) obj;
-        return this.red == other.red && this.green == other.green &&
-                this.blue == other.blue && this.alpha == other.alpha;
+        return this.red == other.red
+                && this.green == other.green
+                && this.blue == other.blue
+                && this.alpha == other.alpha;
     }
 
     @Override

@@ -13,16 +13,13 @@ public class CreatePhotoPacket extends DataPacket {
     public String photoName;
     public String photoItemName;
 
-
     @Override
     public byte pid() {
         return NETWORK_ID;
     }
 
     @Override
-    public void decode() {
-
-    }
+    public void decode() {}
 
     @Override
     public void encode() {

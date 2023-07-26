@@ -16,13 +16,12 @@ import cn.nukkit.entity.ai.sensor.ISensor;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.generic.BaseChunk;
 import cn.nukkit.math.Vector3;
+import java.util.*;
+import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * 标准行为组实现
@@ -36,8 +35,7 @@ public class BehaviorGroup implements IBehaviorGroup {
     /**
      * 决定多少gt更新一次路径
      */
-    protected static int ROUTE_UPDATE_CYCLE = 16;//gt
-
+    protected static int ROUTE_UPDATE_CYCLE = 16; // gt
 
     /**
      * 不会被其他行为覆盖的"核心“行为
@@ -98,19 +96,20 @@ public class BehaviorGroup implements IBehaviorGroup {
     /**
      * 记录距离上次路径更新过去的gt数
      */
-    protected int currentRouteUpdateTick;//gt
+    protected int currentRouteUpdateTick; // gt
 
     protected boolean forceUpdateRoute = false;
 
     @Builder
-    public BehaviorGroup(int startRouteUpdateTick,
-                         Set<IBehavior> coreBehaviors,
-                         Set<IBehavior> behaviors,
-                         Set<ISensor> sensors,
-                         Set<IController> controllers,
-                         SimpleRouteFinder routeFinder,
-                         EntityIntelligent entity) {
-        //此参数用于错开各个实体路径更新的时间，避免在1gt内提交过多路径更新任务
+    public BehaviorGroup(
+            int startRouteUpdateTick,
+            Set<IBehavior> coreBehaviors,
+            Set<IBehavior> behaviors,
+            Set<ISensor> sensors,
+            Set<IController> controllers,
+            SimpleRouteFinder routeFinder,
+            EntityIntelligent entity) {
+        // 此参数用于错开各个实体路径更新的时间，避免在1gt内提交过多路径更新任务
         this.currentRouteUpdateTick = startRouteUpdateTick;
         this.coreBehaviors = coreBehaviors;
         this.behaviors = behaviors;
@@ -154,9 +153,9 @@ public class BehaviorGroup implements IBehaviorGroup {
     @Override
     public void collectSensorData(EntityIntelligent entity) {
         sensorPeriodTimer.forEach((sensor, tick) -> {
-            //刷新gt数
+            // 刷新gt数
             sensorPeriodTimer.put(sensor, ++tick);
-            //没到周期就不评估
+            // 没到周期就不评估
             if (sensorPeriodTimer.get(sensor) < sensor.getPeriod()) return;
             sensorPeriodTimer.put(sensor, 0);
             sensor.sense(entity);
@@ -166,12 +165,12 @@ public class BehaviorGroup implements IBehaviorGroup {
     @Override
     public void evaluateCoreBehaviors(EntityIntelligent entity) {
         coreBehaviorPeriodTimer.forEach((coreBehavior, tick) -> {
-            //若已经在运行了，就不需要评估了
+            // 若已经在运行了，就不需要评估了
             if (runningCoreBehaviors.contains(coreBehavior)) return;
             int nextTick = ++tick;
-            //刷新gt数
+            // 刷新gt数
             coreBehaviorPeriodTimer.put(coreBehavior, nextTick);
-            //没到周期就不评估
+            // 没到周期就不评估
             if (nextTick < coreBehavior.getPeriod()) return;
             coreBehaviorPeriodTimer.put(coreBehavior, 0);
             if (coreBehavior.evaluate(entity)) {
@@ -189,18 +188,18 @@ public class BehaviorGroup implements IBehaviorGroup {
      */
     @Override
     public void evaluateBehaviors(EntityIntelligent entity) {
-        //存储评估成功的行为（未过滤优先级）
+        // 存储评估成功的行为（未过滤优先级）
         var evalSucceed = new HashSet<IBehavior>(behaviors.size());
         int highestPriority = Integer.MIN_VALUE;
         for (Map.Entry<IBehavior, Integer> entry : behaviorPeriodTimer.entrySet()) {
             IBehavior behavior = entry.getKey();
-            //若已经在运行了，就不需要评估了
+            // 若已经在运行了，就不需要评估了
             if (runningBehaviors.contains(behavior)) continue;
             int tick = entry.getValue();
             int nextTick = ++tick;
-            //刷新gt数
+            // 刷新gt数
             behaviorPeriodTimer.put(behavior, nextTick);
-            //没到周期就不评估
+            // 没到周期就不评估
             if (nextTick < behavior.getPeriod()) continue;
             behaviorPeriodTimer.put(behavior, 0);
             if (behavior.evaluate(entity)) {
@@ -213,19 +212,20 @@ public class BehaviorGroup implements IBehaviorGroup {
                 evalSucceed.add(behavior);
             }
         }
-        //如果没有评估结果，则返回空
+        // 如果没有评估结果，则返回空
         if (evalSucceed.isEmpty()) return;
-        var first = runningBehaviors.isEmpty() ? null : runningBehaviors.iterator().next();
+        var first =
+                runningBehaviors.isEmpty() ? null : runningBehaviors.iterator().next();
         var runningBehaviorPriority = first != null ? first.getPriority() : Integer.MIN_VALUE;
-        //如果result的优先级低于当前运行的行为，则不执行
+        // 如果result的优先级低于当前运行的行为，则不执行
         if (highestPriority < runningBehaviorPriority) {
-            //do nothing
+            // do nothing
         } else if (highestPriority > runningBehaviorPriority) {
-            //如果result的优先级比当前运行的行为的优先级高，则替换当前运行的所有行为
+            // 如果result的优先级比当前运行的行为的优先级高，则替换当前运行的所有行为
             interruptAllRunningBehaviors(entity);
             addToRunningBehaviors(entity, evalSucceed);
         } else {
-            //如果result的优先级和当前运行的行为的优先级一样，则添加result的行为
+            // 如果result的优先级和当前运行的行为的优先级一样，则添加result的行为
             addToRunningBehaviors(entity, evalSucceed);
         }
     }
@@ -240,34 +240,48 @@ public class BehaviorGroup implements IBehaviorGroup {
     @Override
     public void updateRoute(EntityIntelligent entity) {
         currentRouteUpdateTick++;
-        boolean reachUpdateCycle = currentRouteUpdateTick >= calcActiveDelay(entity, ROUTE_UPDATE_CYCLE + (entity.level.tickRateOptDelay << 1));
+        boolean reachUpdateCycle = currentRouteUpdateTick
+                >= calcActiveDelay(entity, ROUTE_UPDATE_CYCLE + (entity.level.tickRateOptDelay << 1));
         if (reachUpdateCycle) currentRouteUpdateTick = 0;
         Vector3 target = entity.getMoveTarget();
         if (target == null) {
-            //没有路径目标，则清除路径信息
+            // 没有路径目标，则清除路径信息
             entity.setMoveDirectionStart(null);
             entity.setMoveDirectionEnd(null);
             return;
         }
-        //到达更新周期时，开始重新计算新路径
+        // 到达更新周期时，开始重新计算新路径
         if (isForceUpdateRoute() || (reachUpdateCycle && shouldUpdateRoute(entity))) {
-            //若有路径目标，则计算新路径
+            // 若有路径目标，则计算新路径
             boolean reSubmit = false;
             //         第一次计算                       上一次计算已完成                                         超时，重新提交任务
-            if (routeFindingTask == null || routeFindingTask.getFinished() || (reSubmit = (!routeFindingTask.getStarted() && Server.getInstance().getNextTick() - routeFindingTask.getStartTime() > 8))) {
+            if (routeFindingTask == null
+                    || routeFindingTask.getFinished()
+                    || (reSubmit = (!routeFindingTask.getStarted()
+                            && Server.getInstance().getNextTick() - routeFindingTask.getStartTime() > 8))) {
                 if (reSubmit) routeFindingTask.cancel(true);
-                //clone防止寻路器潜在的修改
-                RouteFindingManager.getInstance().submit(routeFindingTask = new RouteFindingManager.RouteFindingTask(routeFinder, task -> {
-                    updateMoveDirection(entity);
-                    entity.setShouldUpdateMoveDirection(false);
-                    setForceUpdateRoute(false);
-                    //写入section变更记录
-                    cacheSectionBlockChange(entity.level, calPassByChunkSections(this.routeFinder.getRoute().stream().map(Node::getVector3).toList(), entity.level));
-                }).setStart(entity.clone()).setTarget(target));
+                // clone防止寻路器潜在的修改
+                RouteFindingManager.getInstance()
+                        .submit(
+                                routeFindingTask = new RouteFindingManager.RouteFindingTask(routeFinder, task -> {
+                                            updateMoveDirection(entity);
+                                            entity.setShouldUpdateMoveDirection(false);
+                                            setForceUpdateRoute(false);
+                                            // 写入section变更记录
+                                            cacheSectionBlockChange(
+                                                    entity.level,
+                                                    calPassByChunkSections(
+                                                            this.routeFinder.getRoute().stream()
+                                                                    .map(Node::getVector3)
+                                                                    .toList(),
+                                                            entity.level));
+                                        })
+                                        .setStart(entity.clone())
+                                        .setTarget(target));
             }
         }
         if (routeFindingTask != null && routeFindingTask.getFinished() && !hasNewUnCalMoveTarget(entity)) {
-            //若不能再移动了，且没有正在计算的寻路任务，则清除路径信息
+            // 若不能再移动了，且没有正在计算的寻路任务，则清除路径信息
             var reachableTarget = routeFinder.getReachableTarget();
             if (reachableTarget != null && entity.floor().equals(reachableTarget.floor())) {
                 entity.setMoveTarget(null);
@@ -278,7 +292,7 @@ public class BehaviorGroup implements IBehaviorGroup {
         }
         if (entity.isShouldUpdateMoveDirection()) {
             if (routeFinder.hasNext()) {
-                //若有新的移动方向，则更新
+                // 若有新的移动方向，则更新
                 updateMoveDirection(entity);
                 entity.setShouldUpdateMoveDirection(false);
             }
@@ -292,14 +306,16 @@ public class BehaviorGroup implements IBehaviorGroup {
      */
     @Since("1.19.60-r1")
     protected boolean shouldUpdateRoute(EntityIntelligent entity) {
-        //此优化只针对处于非active区块的实体
+        // 此优化只针对处于非active区块的实体
         if (entity.isActive()) return true;
-        //终点发生变化或第一次计算，需要重算
-        if (this.routeFinder.getTarget() == null || hasNewUnCalMoveTarget(entity))
-            return true;
-        Set<ChunkSectionVector> passByChunkSections = calPassByChunkSections(this.routeFinder.getRoute().stream().map(Node::getVector3).toList(), entity.level);
-        long total = passByChunkSections.stream().mapToLong(vector3 -> getSectionBlockChange(entity.level, vector3)).sum();
-        //Section发生变化，需要重算
+        // 终点发生变化或第一次计算，需要重算
+        if (this.routeFinder.getTarget() == null || hasNewUnCalMoveTarget(entity)) return true;
+        Set<ChunkSectionVector> passByChunkSections = calPassByChunkSections(
+                this.routeFinder.getRoute().stream().map(Node::getVector3).toList(), entity.level);
+        long total = passByChunkSections.stream()
+                .mapToLong(vector3 -> getSectionBlockChange(entity.level, vector3))
+                .sum();
+        // Section发生变化，需要重算
         return blockChangeCache != total;
     }
 
@@ -318,7 +334,9 @@ public class BehaviorGroup implements IBehaviorGroup {
      */
     @Since("1.19.60-r1")
     protected void cacheSectionBlockChange(Level level, Set<ChunkSectionVector> vecs) {
-        this.blockChangeCache = vecs.stream().mapToLong(vector3 -> getSectionBlockChange(level, vector3)).sum();
+        this.blockChangeCache = vecs.stream()
+                .mapToLong(vector3 -> getSectionBlockChange(level, vector3))
+                .sum();
     }
 
     /**
@@ -327,7 +345,7 @@ public class BehaviorGroup implements IBehaviorGroup {
     @Since("1.19.60-r1")
     protected long getSectionBlockChange(Level level, ChunkSectionVector vector) {
         var chunk = level.getChunk(vector.chunkX, vector.chunkZ);
-        //TODO: 此处强转未经检查，可能在未来导致兼容性问题
+        // TODO: 此处强转未经检查，可能在未来导致兼容性问题
         return ((BaseChunk) chunk).getSectionBlockChanges(vector.sectionY);
     }
 
@@ -338,7 +356,10 @@ public class BehaviorGroup implements IBehaviorGroup {
      */
     @Since("1.19.60-r1")
     protected Set<ChunkSectionVector> calPassByChunkSections(Collection<Vector3> nodes, Level level) {
-        return nodes.stream().map(vector3 -> new ChunkSectionVector(vector3.getChunkX(), ((int) vector3.y - level.getMinHeight()) >> 4, vector3.getChunkZ())).collect(Collectors.toSet());
+        return nodes.stream()
+                .map(vector3 -> new ChunkSectionVector(
+                        vector3.getChunkX(), ((int) vector3.y - level.getMinHeight()) >> 4, vector3.getChunkZ()))
+                .collect(Collectors.toSet());
     }
 
     @Override

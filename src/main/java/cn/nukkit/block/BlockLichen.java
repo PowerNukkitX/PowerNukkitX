@@ -12,18 +12,18 @@ import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitRandom;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public abstract class BlockLichen extends BlockTransparent {
 
-    public static final IntBlockProperty MULTI_FACE_DIRECTION_BITS = new IntBlockProperty("multi_face_direction_bits", false, 63, 0, 6);
+    public static final IntBlockProperty MULTI_FACE_DIRECTION_BITS =
+            new IntBlockProperty("multi_face_direction_bits", false, 63, 0, 6);
     public static final NukkitRandom RANDOM = new NukkitRandom();
 
     @PowerNukkitOnly
@@ -32,8 +32,7 @@ public abstract class BlockLichen extends BlockTransparent {
 
     @Since("FUTURE")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -45,7 +44,9 @@ public abstract class BlockLichen extends BlockTransparent {
 
     public void witherAtSide(BlockFace side) {
         if (isGrowthToSide(side)) {
-            setPropertyValue(MULTI_FACE_DIRECTION_BITS, getPropertyValue(MULTI_FACE_DIRECTION_BITS) ^ (0b000001 << side.getDUSWNEIndex()));
+            setPropertyValue(
+                    MULTI_FACE_DIRECTION_BITS,
+                    getPropertyValue(MULTI_FACE_DIRECTION_BITS) ^ (0b000001 << side.getDUSWNEIndex()));
             getLevel().setBlock(this, this, true, true);
         }
     }
@@ -56,13 +57,23 @@ public abstract class BlockLichen extends BlockTransparent {
 
     public void growToSide(BlockFace side) {
         if (!isGrowthToSide(side)) {
-            setPropertyValue(MULTI_FACE_DIRECTION_BITS, getPropertyValue(MULTI_FACE_DIRECTION_BITS) | (0b000001 << side.getDUSWNEIndex()));
+            setPropertyValue(
+                    MULTI_FACE_DIRECTION_BITS,
+                    getPropertyValue(MULTI_FACE_DIRECTION_BITS) | (0b000001 << side.getDUSWNEIndex()));
             getLevel().setBlock(this, this, true, true);
         }
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
 
         if (!target.isSolid() && target instanceof BlockLichen) {
             return false;
@@ -73,13 +84,14 @@ public abstract class BlockLichen extends BlockTransparent {
             currentMeta = block.getPropertyValue(MULTI_FACE_DIRECTION_BITS);
         }
 
-        setPropertyValue(MULTI_FACE_DIRECTION_BITS, currentMeta | (0b000001 << face.getOpposite().getDUSWNEIndex()));
+        setPropertyValue(
+                MULTI_FACE_DIRECTION_BITS,
+                currentMeta | (0b000001 << face.getOpposite().getDUSWNEIndex()));
 
         if (getPropertyValue(MULTI_FACE_DIRECTION_BITS) == currentMeta) {
             BlockFace[] sides = BlockFace.values();
-            Stream<BlockFace> faceStream = Arrays.stream(sides).filter(side ->
-                    block.getSide(side).isSolid(side) && !isGrowthToSide(side)
-            );
+            Stream<BlockFace> faceStream =
+                    Arrays.stream(sides).filter(side -> block.getSide(side).isSolid(side) && !isGrowthToSide(side));
             Optional<BlockFace> optionalFace = faceStream.findFirst();
             if (optionalFace.isPresent()) {
                 growToSide(optionalFace.get());
@@ -186,7 +198,10 @@ public abstract class BlockLichen extends BlockTransparent {
         return false;
     }
 
-    @PowerNukkitDifference(info = "Prevents players from getting invalid items by limiting the return to the maximum damage defined in getMaxItemDamage()", since = "1.4.0.0-PN")
+    @PowerNukkitDifference(
+            info =
+                    "Prevents players from getting invalid items by limiting the return to the maximum damage defined in getMaxItemDamage()",
+            since = "1.4.0.0-PN")
     @Override
     public Item toItem() {
         return new ItemBlock(this);

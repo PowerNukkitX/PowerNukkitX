@@ -5,9 +5,8 @@ import cn.nukkit.Server;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
-
-import javax.annotation.Nullable;
 import java.util.Random;
+import javax.annotation.Nullable;
 
 public class EntityElytraFirework extends EntityFirework {
     private static final Random RANDOM = new Random();
@@ -59,8 +58,11 @@ public class EntityElytraFirework extends EntityFirework {
                         this.kill();
                     }
                 }
-                return hasUpdate || !this.onGround || Math.abs(this.motionX) > 1.0E-5D || Math.abs(this.motionY) > 1.0E-5D || Math.abs(this.motionZ) > 1.0E-5D;
-
+                return hasUpdate
+                        || !this.onGround
+                        || Math.abs(this.motionX) > 1.0E-5D
+                        || Math.abs(this.motionY) > 1.0E-5D
+                        || Math.abs(this.motionZ) > 1.0E-5D;
             }
         }
     }

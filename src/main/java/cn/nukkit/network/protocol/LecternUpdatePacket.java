@@ -27,6 +27,5 @@ public class LecternUpdatePacket extends DataPacket {
     }
 
     @Override
-    public void encode() {
-    }
+    public void encode() {}
 }

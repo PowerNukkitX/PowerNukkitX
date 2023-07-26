@@ -7,17 +7,16 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.NukkitRandom;
-
 import java.util.ArrayList;
 
 public class BasaltDeltaPillarPopulator extends Populator {
     private ChunkManager level;
 
-    //Clumped together
-    //Fairly high, maybe 6 blocks max?
-    //They can be sort of ordered, so an empty square basically
-    //Lots of lava
-    //Less of magma
+    // Clumped together
+    // Fairly high, maybe 6 blocks max?
+    // They can be sort of ordered, so an empty square basically
+    // Lots of lava
+    // Less of magma
 
     @Override
     public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {

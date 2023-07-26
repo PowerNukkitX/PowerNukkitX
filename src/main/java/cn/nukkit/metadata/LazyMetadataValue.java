@@ -4,7 +4,6 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.plugin.Plugin;
 import com.dfsek.terra.lib.commons.lang3.Validate;
-
 import java.lang.ref.SoftReference;
 import java.util.concurrent.Callable;
 

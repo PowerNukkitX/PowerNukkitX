@@ -16,8 +16,7 @@ public class ShipwreckMapChest extends RandomizableContainer {
     private ShipwreckMapChest() {
         super(Maps.newHashMap(), InventoryType.CHEST.getDefaultSize());
 
-        PoolBuilder pool1 = new PoolBuilder()
-                .register(new ItemEntry(Item.MAP, 1)); // 395 exploration_map
+        PoolBuilder pool1 = new PoolBuilder().register(new ItemEntry(Item.MAP, 1)); // 395 exploration_map
         this.pools.put(pool1.build(), new RollEntry(1, pool1.getTotalWeight()));
 
         PoolBuilder pool2 = new PoolBuilder()

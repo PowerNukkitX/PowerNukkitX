@@ -42,8 +42,7 @@ public class BlockTerracottaStained extends BlockSolidMeta {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -73,5 +72,4 @@ public class BlockTerracottaStained extends BlockSolidMeta {
     public DyeColor getDyeColor() {
         return DyeColor.getByWoolData(getDamage());
     }
-
 }

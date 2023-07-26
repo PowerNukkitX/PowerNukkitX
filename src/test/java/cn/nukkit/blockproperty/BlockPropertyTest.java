@@ -1,13 +1,12 @@
 package cn.nukkit.blockproperty;
 
-import cn.nukkit.blockproperty.exception.InvalidBlockPropertyMetaException;
-import cn.nukkit.math.BlockFace;
-import org.junit.jupiter.api.Test;
-
-import java.math.BigInteger;
-
 import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
 import static org.junit.jupiter.api.Assertions.*;
+
+import cn.nukkit.blockproperty.exception.InvalidBlockPropertyMetaException;
+import cn.nukkit.math.BlockFace;
+import java.math.BigInteger;
+import org.junit.jupiter.api.Test;
 
 class BlockPropertyTest {
     BlockProperty<BlockFace> direction = FACING_DIRECTION;

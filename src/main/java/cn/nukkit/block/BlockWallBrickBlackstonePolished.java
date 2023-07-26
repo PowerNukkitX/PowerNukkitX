@@ -8,8 +8,7 @@ import cn.nukkit.api.Since;
 public class BlockWallBrickBlackstonePolished extends BlockWallBlackstonePolished {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public BlockWallBrickBlackstonePolished() {
-    }
+    public BlockWallBrickBlackstonePolished() {}
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")

@@ -9,7 +9,6 @@ import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.GameRules;
-
 import java.util.*;
 
 public class GameruleCommand extends VanillaCommand {
@@ -38,27 +37,27 @@ public class GameruleCommand extends VanillaCommand {
         });
         this.commandParameters.put("default", CommandParameter.EMPTY_ARRAY);
         if (!boolGameRules.isEmpty()) {
-            this.commandParameters.put("boolGameRules", new CommandParameter[]{
-                    CommandParameter.newEnum("rule", new CommandEnum("BoolGameRule", boolGameRules)),
-                    CommandParameter.newEnum("value", true, CommandEnum.ENUM_BOOLEAN)
+            this.commandParameters.put("boolGameRules", new CommandParameter[] {
+                CommandParameter.newEnum("rule", new CommandEnum("BoolGameRule", boolGameRules)),
+                CommandParameter.newEnum("value", true, CommandEnum.ENUM_BOOLEAN)
             });
         }
         if (!intGameRules.isEmpty()) {
-            this.commandParameters.put("intGameRules", new CommandParameter[]{
-                    CommandParameter.newEnum("rule", new CommandEnum("IntGameRule", intGameRules)),
-                    CommandParameter.newType("value", true, CommandParamType.INT)
+            this.commandParameters.put("intGameRules", new CommandParameter[] {
+                CommandParameter.newEnum("rule", new CommandEnum("IntGameRule", intGameRules)),
+                CommandParameter.newType("value", true, CommandParamType.INT)
             });
         }
         if (!floatGameRules.isEmpty()) {
-            this.commandParameters.put("floatGameRules", new CommandParameter[]{
-                    CommandParameter.newEnum("rule", new CommandEnum("FloatGameRule", floatGameRules)),
-                    CommandParameter.newType("value", true, CommandParamType.FLOAT)
+            this.commandParameters.put("floatGameRules", new CommandParameter[] {
+                CommandParameter.newEnum("rule", new CommandEnum("FloatGameRule", floatGameRules)),
+                CommandParameter.newType("value", true, CommandParamType.FLOAT)
             });
         }
         if (!unknownGameRules.isEmpty()) {
-            this.commandParameters.put("unknownGameRules", new CommandParameter[]{
-                    CommandParameter.newEnum("rule", new CommandEnum("UnknownGameRule", unknownGameRules)),
-                    CommandParameter.newType("value", true, CommandParamType.STRING)
+            this.commandParameters.put("unknownGameRules", new CommandParameter[] {
+                CommandParameter.newEnum("rule", new CommandEnum("UnknownGameRule", unknownGameRules)),
+                CommandParameter.newType("value", true, CommandParamType.STRING)
             });
         }
         this.enableParamTree();
@@ -66,7 +65,8 @@ public class GameruleCommand extends VanillaCommand {
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         GameRules rules = sender.getPosition().level.getGameRules();
         var list = result.getValue();
         String ruleStr = list.getResult(0);
@@ -83,7 +83,8 @@ public class GameruleCommand extends VanillaCommand {
                 log.addSyntaxErrors(0).output();
                 return 0;
             }
-            log.addSuccess(gameRule.get().getName().toLowerCase() + " = " + rules.getString(gameRule.get())).output();
+            log.addSuccess(gameRule.get().getName().toLowerCase() + " = " + rules.getString(gameRule.get()))
+                    .output();
             return 1;
         }
 
@@ -111,7 +112,8 @@ public class GameruleCommand extends VanillaCommand {
             }
         }
         var str = list.getResult(1);
-        log.addSuccess("commands.gamerule.success", optionalRule.get().getName().toLowerCase(), str.toString()).output();
+        log.addSuccess("commands.gamerule.success", optionalRule.get().getName().toLowerCase(), str.toString())
+                .output();
         return 1;
     }
 }

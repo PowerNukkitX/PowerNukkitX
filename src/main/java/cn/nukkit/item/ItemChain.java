@@ -27,5 +27,4 @@ public class ItemChain extends Item {
         super(CHAIN, meta, count, "Chain");
         this.block = Block.get(BlockID.CHAIN_BLOCK);
     }
-    
 }

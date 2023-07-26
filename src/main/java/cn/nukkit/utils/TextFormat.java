@@ -4,7 +4,6 @@ import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import com.google.common.collect.Maps;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -153,7 +152,8 @@ public enum TextFormat {
      * Makes a line appear through the text.
      */
     @Deprecated
-    @DeprecationDetails(since = "1.19.80-r3",
+    @DeprecationDetails(
+            since = "1.19.80-r3",
             reason = "Code STRIKETHROUGH has been replaced by MATERIAL_REDSTONE in Minecraft version 1.19.81",
             replaceWith = "TextFormat.MATERIAL_REDSTONE")
     STRIKETHROUGH('m', 0x12, true),
@@ -161,7 +161,8 @@ public enum TextFormat {
      * Makes the text appear underlined.
      */
     @Deprecated
-    @DeprecationDetails(since = "1.19.80-r3",
+    @DeprecationDetails(
+            since = "1.19.80-r3",
             reason = "Code UNDERLINE has been replaced by MATERIAL_COPPER in Minecraft version 1.19.81",
             replaceWith = "TextFormat.MATERIAL_COPPER")
     UNDERLINE('n', 0x13, true),
@@ -181,8 +182,8 @@ public enum TextFormat {
     public static final char ESCAPE = '\u00A7';
 
     private static final Pattern CLEAN_PATTERN = Pattern.compile("(?i)" + ESCAPE + "[0-9A-LO-U]");
-    private final static Map<Integer, TextFormat> BY_ID = Maps.newTreeMap();
-    private final static Map<Character, TextFormat> BY_CHAR = new HashMap<>();
+    private static final Map<Integer, TextFormat> BY_ID = Maps.newTreeMap();
+    private static final Map<Character, TextFormat> BY_CHAR = new HashMap<>();
 
     static {
         for (TextFormat color : values()) {
@@ -204,7 +205,7 @@ public enum TextFormat {
         this.code = code;
         this.intCode = intCode;
         this.isFormat = isFormat;
-        this.toString = new String(new char[]{ESCAPE, code});
+        this.toString = new String(new char[] {ESCAPE, code});
     }
 
     /**
@@ -269,7 +270,8 @@ public enum TextFormat {
     public static String colorize(char altFormatChar, String textToTranslate) {
         char[] b = textToTranslate.toCharArray();
         for (int i = 0; i < b.length - 1; i++) {
-            if (b[i] == altFormatChar && "0123456789AaBbCcDdEeFfGgHhIiJjMmNnPpQqSsTtUuKkLlOoRr".indexOf(b[i + 1]) > -1) {
+            if (b[i] == altFormatChar
+                    && "0123456789AaBbCcDdEeFfGgHhIiJjMmNnPpQqSsTtUuKkLlOoRr".indexOf(b[i + 1]) > -1) {
                 b[i] = TextFormat.ESCAPE;
                 b[i + 1] = Character.toLowerCase(b[i + 1]);
             }

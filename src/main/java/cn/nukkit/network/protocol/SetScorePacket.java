@@ -1,7 +1,6 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.scoreboard.data.ScorerType;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +15,7 @@ public class SetScorePacket extends DataPacket {
 
     @Override
     public void decode() {
-        //only server -> client
+        // only server -> client
     }
 
     @Override

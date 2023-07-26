@@ -37,7 +37,6 @@ public class PopulationTask extends AsyncTask {
         }
     }
 
-
     @Override
     public void onRun() {
         syncGen(0);
@@ -86,14 +85,20 @@ public class PopulationTask extends AsyncTask {
                         if (ck == centerChunk) continue;
                         if (ck == null) {
                             try {
-                                this.chunks[index] = (BaseFullChunk) centerChunk.getClass().getMethod("getEmptyChunk", int.class, int.class, DimensionData.class).invoke(null, centerChunk.getX() + x, centerChunk.getZ() + z, level.getDimensionData());
+                                this.chunks[index] = (BaseFullChunk) centerChunk
+                                        .getClass()
+                                        .getMethod("getEmptyChunk", int.class, int.class, DimensionData.class)
+                                        .invoke(
+                                                null,
+                                                centerChunk.getX() + x,
+                                                centerChunk.getZ() + z,
+                                                level.getDimensionData());
                             } catch (Exception e) {
                                 throw new RuntimeException(e);
                             }
                         } else {
                             this.chunks[index] = ck;
                         }
-
                     }
                 }
 
@@ -130,7 +135,6 @@ public class PopulationTask extends AsyncTask {
                                 chunks[index] = newChunk;
                             }
                         }
-
                     }
                 }
                 this.state = true;
@@ -161,8 +165,8 @@ public class PopulationTask extends AsyncTask {
 
             level.generateChunkCallback(centerChunk.getX(), centerChunk.getZ(), centerChunk, isPopulated);
 
-            //需要在全部地形生成完毕后再尝试生成结构
-            //todo: 不应该写在这里，往前放更合理，但是会有NPE:(
+            // 需要在全部地形生成完毕后再尝试生成结构
+            // todo: 不应该写在这里，往前放更合理，但是会有NPE:(
             var generator = level.getGenerator();
             if (generator.shouldGenerateStructures()) {
                 generator.populateStructure(centerChunk.getX(), centerChunk.getZ());

@@ -6,8 +6,7 @@ import cn.nukkit.api.Since;
 @PowerNukkitXOnly
 @Since("1.20.0-r2")
 public class BlockBambooFenceGate extends BlockFenceGate {
-    public BlockBambooFenceGate() {
-    }
+    public BlockBambooFenceGate() {}
 
     public int getId() {
         return BAMBOO_FENCE_GATE;

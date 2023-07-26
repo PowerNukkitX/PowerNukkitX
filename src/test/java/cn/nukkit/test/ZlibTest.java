@@ -1,13 +1,11 @@
 package cn.nukkit.test;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+
 import cn.nukkit.utils.Zlib;
+import java.util.concurrent.ThreadLocalRandom;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
-
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 @DisplayName("Zlib")
 class ZlibTest {
@@ -30,5 +28,4 @@ class ZlibTest {
         }
         return data;
     }
-
 }

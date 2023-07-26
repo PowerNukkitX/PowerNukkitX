@@ -9,12 +9,11 @@ import cn.nukkit.event.inventory.InventoryOpenEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.ContainerOpenPacket;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitXOnly
 @Since("1.19.60-r1")
@@ -36,9 +35,7 @@ public class StructBlockInventory implements Inventory {
     }
 
     @Override
-    public void setMaxStackSize(int size) {
-
-    }
+    public void setMaxStackSize(int size) {}
 
     @Override
     public String getName() {
@@ -50,8 +47,7 @@ public class StructBlockInventory implements Inventory {
         return this.getName();
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public Item getItem(int index) {
         return Item.get(Item.AIR);
     }
@@ -82,39 +78,25 @@ public class StructBlockInventory implements Inventory {
     }
 
     @Override
-    public void setContents(Map<Integer, Item> items) {
-
-    }
+    public void setContents(Map<Integer, Item> items) {}
 
     @Override
-    public void sendContents(Player player) {
-
-    }
+    public void sendContents(Player player) {}
 
     @Override
-    public void sendContents(Player... players) {
-
-    }
+    public void sendContents(Player... players) {}
 
     @Override
-    public void sendContents(Collection<Player> players) {
-
-    }
+    public void sendContents(Collection<Player> players) {}
 
     @Override
-    public void sendSlot(int index, Player player) {
-
-    }
+    public void sendSlot(int index, Player player) {}
 
     @Override
-    public void sendSlot(int index, Player... players) {
-
-    }
+    public void sendSlot(int index, Player... players) {}
 
     @Override
-    public void sendSlot(int index, Collection<Player> players) {
-
-    }
+    public void sendSlot(int index, Collection<Player> players) {}
 
     @Override
     public boolean contains(Item item) {
@@ -137,14 +119,10 @@ public class StructBlockInventory implements Inventory {
     }
 
     @Override
-    public void decreaseCount(int slot) {
-
-    }
+    public void decreaseCount(int slot) {}
 
     @Override
-    public void remove(Item item) {
-
-    }
+    public void remove(Item item) {}
 
     @Override
     public boolean clear(int index, boolean send) {
@@ -152,9 +130,7 @@ public class StructBlockInventory implements Inventory {
     }
 
     @Override
-    public void clearAll() {
-
-    }
+    public void clearAll() {}
 
     @Override
     public boolean isFull() {
@@ -219,20 +195,16 @@ public class StructBlockInventory implements Inventory {
     }
 
     @Override
-    public void onClose(Player who) {
-    }
+    public void onClose(Player who) {}
 
     @Override
-    public void onSlotChange(int index, Item before, boolean send) {
-    }
+    public void onSlotChange(int index, Item before, boolean send) {}
 
     @Deprecated
     @Override
-    public void addListener(InventoryListener listener) {
-    }
+    public void addListener(InventoryListener listener) {}
 
     @Deprecated
     @Override
-    public void removeListener(InventoryListener listener) {
-    }
+    public void removeListener(InventoryListener listener) {}
 }

@@ -11,9 +11,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemNetherWart;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Random;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Leonidius20
@@ -38,7 +37,15 @@ public class BlockNetherWart extends BlockFlowable {
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         Block down = this.down();
         if (down.getId() == SOUL_SAND) {
             this.getLevel().setBlock(block, this, true, true);
@@ -88,8 +95,7 @@ public class BlockNetherWart extends BlockFlowable {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -97,13 +103,9 @@ public class BlockNetherWart extends BlockFlowable {
     @Override
     public Item[] getDrops(Item item) {
         if (this.getDamage() == 0x03) {
-            return new Item[]{
-                    new ItemNetherWart(0, 2 + (int) (Math.random() * ((4 - 2) + 1)))
-            };
+            return new Item[] {new ItemNetherWart(0, 2 + (int) (Math.random() * ((4 - 2) + 1)))};
         } else {
-            return new Item[]{
-                    new ItemNetherWart()
-            };
+            return new Item[] {new ItemNetherWart()};
         }
     }
 
@@ -112,5 +114,3 @@ public class BlockNetherWart extends BlockFlowable {
         return new ItemNetherWart();
     }
 }
-
-

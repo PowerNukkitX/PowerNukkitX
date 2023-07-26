@@ -4,7 +4,6 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.inventory.recipe.ItemDescriptor;
 import cn.nukkit.item.Item;
-
 import java.util.Collection;
 import java.util.List;
 

@@ -75,16 +75,18 @@ public class EntitySmallFireBall extends EntityProjectile {
         ProjectileHitEvent projectileHitEvent = new ProjectileHitEvent(this, MovingObjectPosition.fromEntity(entity));
         this.server.getPluginManager().callEvent(projectileHitEvent);
         if (projectileHitEvent.isCancelled()) return;
-        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.PROJECTILE_LAND));
+        this.level
+                .getVibrationManager()
+                .callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.PROJECTILE_LAND));
         var damage = this.getResultDamage(entity);
-        EntityDamageEvent ev = new EntityDamageByEntityEvent(this, entity, EntityDamageEvent.DamageCause.PROJECTILE, damage);
+        EntityDamageEvent ev =
+                new EntityDamageByEntityEvent(this, entity, EntityDamageEvent.DamageCause.PROJECTILE, damage);
         if (entity.attack(ev)) {
             addHitEffect();
             this.hadCollision = true;
             EntityCombustByEntityEvent event = new EntityCombustByEntityEvent(this, entity, 5);
             this.server.getPluginManager().callEvent(event);
-            if (!event.isCancelled())
-                entity.setOnFire(event.getDuration());
+            if (!event.isCancelled()) entity.setOnFire(event.getDuration());
         }
         afterCollisionWithEntity(entity);
         this.close();
@@ -94,7 +96,9 @@ public class EntitySmallFireBall extends EntityProjectile {
     @PowerNukkitOnly
     @Override
     protected void onCollideWithBlock(Position position, Vector3 motion) {
-        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.PROJECTILE_LAND));
+        this.level
+                .getVibrationManager()
+                .callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.PROJECTILE_LAND));
         var affect = false;
         for (Block collisionBlock : level.getCollisionBlocks(getBoundingBox().grow(0.1, 0.1, 0.1)))
             affect = onCollideWithBlock(position, motion, collisionBlock);
@@ -106,7 +110,8 @@ public class EntitySmallFireBall extends EntityProjectile {
             fire.level = level;
 
             if (fire.isBlockTopFacingSurfaceSolid(fire.down()) || fire.canNeighborBurn()) {
-                BlockIgniteEvent e = new BlockIgniteEvent(this.getLevelBlock(), null, null, BlockIgniteEvent.BlockIgniteCause.FIREBALL);
+                BlockIgniteEvent e = new BlockIgniteEvent(
+                        this.getLevelBlock(), null, null, BlockIgniteEvent.BlockIgniteCause.FIREBALL);
                 level.getServer().getPluginManager().callEvent(e);
                 if (!e.isCancelled()) {
                     level.setBlock(fire, fire, true);

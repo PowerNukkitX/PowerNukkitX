@@ -18,13 +18,13 @@
 
 package cn.nukkit.network.protocol;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import lombok.val;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author joserobjr
@@ -38,12 +38,12 @@ class RemoveVolumeEntityPacketTest {
         val packet = new RemoveVolumeEntityPacket();
         packet.setId(1L);
         packet.encode();
-        
+
         val packet2 = new RemoveVolumeEntityPacket();
         packet2.setBuffer(packet.getBuffer());
         packet2.getUnsignedVarInt();
         packet2.decode();
-        
+
         assertEquals(1L, packet2.getId());
         assertTrue(packet2.feof());
     }

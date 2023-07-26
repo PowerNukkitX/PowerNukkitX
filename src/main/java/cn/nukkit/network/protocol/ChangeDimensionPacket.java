@@ -20,9 +20,7 @@ public class ChangeDimensionPacket extends DataPacket {
     public boolean respawn;
 
     @Override
-    public void decode() {
-
-    }
+    public void decode() {}
 
     @Override
     public void encode() {

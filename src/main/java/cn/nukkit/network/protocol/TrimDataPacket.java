@@ -4,11 +4,10 @@ import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.network.protocol.types.TrimMaterial;
 import cn.nukkit.network.protocol.types.TrimPattern;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-
-import java.util.List;
 
 @Data
 @EqualsAndHashCode(doNotUseGetters = true, callSuper = false)
@@ -24,7 +23,9 @@ public class TrimDataPacket extends DataPacket {
     }
 
     @Deprecated(since = "1.19.70")
-    @DeprecationDetails(since = "1.19.70-r1", reason = "pid could be more than 255, so it should be an int",
+    @DeprecationDetails(
+            since = "1.19.70-r1",
+            reason = "pid could be more than 255, so it should be an int",
             replaceWith = "packetId()")
     @Override
     public byte pid() {

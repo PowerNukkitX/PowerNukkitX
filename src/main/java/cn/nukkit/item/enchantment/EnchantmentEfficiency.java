@@ -39,5 +39,4 @@ public class EnchantmentEfficiency extends Enchantment {
         }
         return super.isItemAcceptable(item);
     }
-
 }

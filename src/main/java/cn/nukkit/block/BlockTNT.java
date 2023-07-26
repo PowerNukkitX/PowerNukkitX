@@ -22,9 +22,8 @@ import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.RedstoneComponent;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author xtypr
@@ -45,8 +44,7 @@ public class BlockTNT extends BlockSolid implements RedstoneComponent {
     @Since("1.5.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(EXPLODE_ON_BREAK, ALLOW_UNDERWATER);
 
-    public BlockTNT() {
-    }
+    public BlockTNT() {}
 
     @Override
     public String getName() {
@@ -60,8 +58,7 @@ public class BlockTNT extends BlockSolid implements RedstoneComponent {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -116,15 +113,16 @@ public class BlockTNT extends BlockSolid implements RedstoneComponent {
                         .add(new FloatTag("", 0))
                         .add(new FloatTag("", 0)))
                 .putShort("Fuse", fuse);
-        Entity tnt = Entity.createEntity("PrimedTnt",
-                this.getLevel().getChunk(this.getFloorX() >> 4, this.getFloorZ() >> 4),
-                nbt, source
-        );
-        if(tnt == null) {
+        Entity tnt = Entity.createEntity(
+                "PrimedTnt", this.getLevel().getChunk(this.getFloorX() >> 4, this.getFloorZ() >> 4), nbt, source);
+        if (tnt == null) {
             return;
         }
         tnt.spawnToAll();
-        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(source != null ? source : this, this.add(0.5, 0.5, 0.5), VibrationType.PRIME_FUSE));
+        this.level
+                .getVibrationManager()
+                .callVibrationEvent(new VibrationEvent(
+                        source != null ? source : this, this.add(0.5, 0.5, 0.5), VibrationType.PRIME_FUSE));
     }
 
     @Override
@@ -169,5 +167,4 @@ public class BlockTNT extends BlockSolid implements RedstoneComponent {
         }
         return false;
     }
-
 }

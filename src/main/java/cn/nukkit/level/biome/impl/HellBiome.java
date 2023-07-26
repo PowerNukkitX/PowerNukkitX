@@ -9,8 +9,7 @@ import cn.nukkit.level.biome.Biome;
 @PowerNukkitDifference(info = "新版下界不再使用此群系", since = "1.6.0.0")
 public class HellBiome extends Biome {
 
-    public HellBiome() {
-    }
+    public HellBiome() {}
 
     @Override
     public String getName() {

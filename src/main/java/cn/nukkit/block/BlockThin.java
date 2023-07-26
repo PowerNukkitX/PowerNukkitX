@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.math.VectorMath.calculateFace;
+
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
@@ -7,8 +9,6 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.utils.LevelException;
-
-import static cn.nukkit.math.VectorMath.calculateFace;
 
 /**
  * @author xtypr
@@ -18,8 +18,7 @@ import static cn.nukkit.math.VectorMath.calculateFace;
 @PowerNukkitDifference(info = "Made it implement BlockConnectable")
 public abstract class BlockThin extends BlockTransparent implements BlockConnectable {
 
-    protected BlockThin() {
-    }
+    protected BlockThin() {}
 
     @Override
     public boolean isSolid() {
@@ -53,16 +52,9 @@ public abstract class BlockThin extends BlockTransparent implements BlockConnect
             n = north ? onNW : offNW;
             s = south ? onSE : offSE;
         } catch (LevelException ignore) {
-            //null sucks
+            // null sucks
         }
-        return new SimpleAxisAlignedBB(
-                this.x + w,
-                this.y,
-                this.z + n,
-                this.x + e,
-                this.y + 1,
-                this.z + s
-        );
+        return new SimpleAxisAlignedBB(this.x + w, this.y, this.z + n, this.x + e, this.y + 1, this.z + s);
     }
 
     @PowerNukkitDifference(info = "Fixed connection logic for BE 1.16.0", since = "1.3.0.0-PN")

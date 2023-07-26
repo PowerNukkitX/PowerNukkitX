@@ -54,9 +54,9 @@ public class AdventureSettingsPacket extends DataPacket {
 
     public long playerPermission = Player.PERMISSION_MEMBER;
 
-    public long customFlags; //...
+    public long customFlags; // ...
 
-    public long entityUniqueId; //This is a little-endian long, NOT a var-long. (WTF Mojang)
+    public long entityUniqueId; // This is a little-endian long, NOT a var-long. (WTF Mojang)
 
     @Override
     public void decode() {

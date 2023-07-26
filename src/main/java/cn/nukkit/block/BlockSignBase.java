@@ -81,16 +81,21 @@ public abstract class BlockSignBase extends BlockTransparentMeta implements Face
             level.addLevelSoundEvent(this.add(0.5, 0.5, 0.5), LevelSoundEventPacket.SOUND_WAXED_SIGN_INTERACT_FAIL);
             return;
         }
-        boolean front = switch (getSignDirection()) {
-            case EAST -> face == BlockFace.EAST;
-            case SOUTH -> face == BlockFace.SOUTH;
-            case WEST -> face == BlockFace.WEST;
-            case NORTH -> face == BlockFace.NORTH;
-            case NORTH_EAST, NORTH_NORTH_EAST, EAST_NORTH_EAST -> face == BlockFace.EAST || face == BlockFace.NORTH;
-            case NORTH_WEST, NORTH_NORTH_WEST, WEST_NORTH_WEST -> face == BlockFace.WEST || face == BlockFace.NORTH;
-            case SOUTH_EAST, SOUTH_SOUTH_EAST, EAST_SOUTH_EAST -> face == BlockFace.EAST || face == BlockFace.SOUTH;
-            case SOUTH_WEST, SOUTH_SOUTH_WEST, WEST_SOUTH_WEST -> face == BlockFace.WEST || face == BlockFace.SOUTH;
-        };
+        boolean front =
+                switch (getSignDirection()) {
+                    case EAST -> face == BlockFace.EAST;
+                    case SOUTH -> face == BlockFace.SOUTH;
+                    case WEST -> face == BlockFace.WEST;
+                    case NORTH -> face == BlockFace.NORTH;
+                    case NORTH_EAST, NORTH_NORTH_EAST, EAST_NORTH_EAST -> face == BlockFace.EAST
+                            || face == BlockFace.NORTH;
+                    case NORTH_WEST, NORTH_NORTH_WEST, WEST_NORTH_WEST -> face == BlockFace.WEST
+                            || face == BlockFace.NORTH;
+                    case SOUTH_EAST, SOUTH_SOUTH_EAST, EAST_SOUTH_EAST -> face == BlockFace.EAST
+                            || face == BlockFace.SOUTH;
+                    case SOUTH_WEST, SOUTH_SOUTH_WEST, WEST_SOUTH_WEST -> face == BlockFace.WEST
+                            || face == BlockFace.SOUTH;
+                };
         if (item.getId() == Item.DYE) {
             BlockColor color = DyeColor.getByDyeData(item.getDamage()).getSignColor();
             if (color.equals(sign.getColor(front)) || sign.isEmpty(front)) {
@@ -163,7 +168,9 @@ public abstract class BlockSignBase extends BlockTransparentMeta implements Face
         setPropertyValue(CommonBlockProperties.GROUND_SIGN_DIRECTION, direction);
     }
 
-    @PowerNukkitDifference(info = "Was returning the wrong face, it now return the closest face, or the left face if even", since = "1.4.0.0-PN")
+    @PowerNukkitDifference(
+            info = "Was returning the wrong face, it now return the closest face, or the left face if even",
+            since = "1.4.0.0-PN")
     @Override
     public BlockFace getBlockFace() {
         return getSignDirection().getClosestBlockFace();

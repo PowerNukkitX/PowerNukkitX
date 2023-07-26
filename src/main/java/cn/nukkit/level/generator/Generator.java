@@ -14,7 +14,6 @@ import cn.nukkit.level.generator.task.ChunkPopulationTask;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.scheduler.AsyncTask;
-
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,8 +52,10 @@ public abstract class Generator implements BlockID {
                 for (Class<? extends PopulatorStructure> cz : PopulatorStructure.getPopulators()) {
                     structurePopulators.add(cz.getConstructor().newInstance());
                 }
-            } catch (InstantiationException | NoSuchMethodException | InvocationTargetException |
-                     IllegalAccessException e) {
+            } catch (InstantiationException
+                    | NoSuchMethodException
+                    | InvocationTargetException
+                    | IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -207,7 +208,6 @@ public abstract class Generator implements BlockID {
 
     public abstract void populateChunk(int chunkX, int chunkZ);
 
-
     /**
      * 在指定区块上尝试生成结构
      *
@@ -217,12 +217,11 @@ public abstract class Generator implements BlockID {
     @PowerNukkitXOnly
     @Since("1.19.21-r2")
     public void populateStructure(int chunkX, int chunkZ) {
-        //这里不能使用chunkManager而是使用level
-        //因为在这个方法调用时，区块地形生成工作已完成，chunkManager(实际为PopChunkManager)内所有区块已清空
+        // 这里不能使用chunkManager而是使用level
+        // 因为在这个方法调用时，区块地形生成工作已完成，chunkManager(实际为PopChunkManager)内所有区块已清空
         var chunk = level.getChunk(chunkX, chunkZ);
         for (PopulatorStructure populator : structurePopulators) {
-            if (populator.isAsync())
-                handleAsyncStructureGenTask(new ChunkPopulationTask(level, chunk, populator));
+            if (populator.isAsync()) handleAsyncStructureGenTask(new ChunkPopulationTask(level, chunk, populator));
             else populator.populate(level, chunkX, chunkZ, random, chunk);
         }
     }
@@ -253,7 +252,7 @@ public abstract class Generator implements BlockID {
     @PowerNukkitXOnly
     @Since("1.19.50-r2")
     public void handleAsyncChunkPopTask(AsyncTask task) {
-        //这个判断是防止单元测试报错
+        // 这个判断是防止单元测试报错
         if (Server.getInstance().computeThreadPool != null)
             Server.getInstance().computeThreadPool.submit(task);
     }
@@ -267,7 +266,7 @@ public abstract class Generator implements BlockID {
     @PowerNukkitXOnly
     @Since("1.19.50-r2")
     public void handleAsyncStructureGenTask(AsyncTask task) {
-        //这个判断是防止单元测试报错
+        // 这个判断是防止单元测试报错
         if (Server.getInstance().computeThreadPool != null)
             Server.getInstance().computeThreadPool.submit(task);
     }

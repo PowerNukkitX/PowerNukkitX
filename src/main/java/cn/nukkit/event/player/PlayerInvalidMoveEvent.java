@@ -9,7 +9,6 @@ import cn.nukkit.event.HandlerList;
  *
  * @author WilliamGao
  */
-
 public class PlayerInvalidMoveEvent extends PlayerEvent implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();
@@ -37,5 +36,4 @@ public class PlayerInvalidMoveEvent extends PlayerEvent implements Cancellable {
     public void setRevert(boolean revert) {
         this.revert = revert;
     }
-
 }

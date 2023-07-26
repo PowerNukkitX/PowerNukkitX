@@ -18,6 +18,4 @@ public class RedstoneUpdateEvent extends BlockUpdateEvent {
     public RedstoneUpdateEvent(Block source) {
         super(source);
     }
-
 }
-

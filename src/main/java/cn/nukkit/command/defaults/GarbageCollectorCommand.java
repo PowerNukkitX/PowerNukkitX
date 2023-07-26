@@ -45,11 +45,13 @@ public class GarbageCollectorCommand extends TestCommand implements CoreCommand 
 
         long freedMemory = usedMemory - (runtime.totalMemory() - runtime.freeMemory());
 
-        sender.sendMessage(TextFormat.GREEN + "---- " + TextFormat.WHITE + "Garbage collection result" + TextFormat.GREEN + " ----");
+        sender.sendMessage(TextFormat.GREEN + "---- " + TextFormat.WHITE + "Garbage collection result"
+                + TextFormat.GREEN + " ----");
         sender.sendMessage(TextFormat.GOLD + "Chunks: " + TextFormat.RED + chunksCollected);
         sender.sendMessage(TextFormat.GOLD + "Entities: " + TextFormat.RED + entitiesCollected);
         sender.sendMessage(TextFormat.GOLD + "Block Entities: " + TextFormat.RED + tilesCollected);
-        sender.sendMessage(TextFormat.GOLD + "Memory freed: " + TextFormat.RED + NukkitMath.round((freedMemory / 1024d / 1024d), 2) + " MB");
+        sender.sendMessage(TextFormat.GOLD + "Memory freed: " + TextFormat.RED
+                + NukkitMath.round((freedMemory / 1024d / 1024d), 2) + " MB");
         return true;
     }
 }

@@ -7,7 +7,6 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.NukkitRandom;
-
 import java.util.ArrayList;
 
 public class BasaltDeltaMagmaPopulator extends Populator {
@@ -38,18 +37,16 @@ public class BasaltDeltaMagmaPopulator extends Populator {
             int b2 = this.level.getBlockIdAt(x - 1, y, z);
             int b3 = this.level.getBlockIdAt(x, y, z + 1);
             int b4 = this.level.getBlockIdAt(x, y, z - 1);
-            if ((b == Block.BASALT || b == Block.BLACKSTONE) &&
-                    this.level.getBlockIdAt(x, y + 1, z) == 0 && (
-                    b1 == BlockID.STILL_LAVA ||
-                            b2 == BlockID.STILL_LAVA ||
-                            b3 == BlockID.STILL_LAVA ||
-                            b4 == BlockID.STILL_LAVA ||
-                            b1 == BlockID.FLOWING_LAVA ||
-                            b2 == BlockID.FLOWING_LAVA ||
-                            b3 == BlockID.FLOWING_LAVA ||
-                            b4 == BlockID.FLOWING_LAVA
-            )
-            ) {
+            if ((b == Block.BASALT || b == Block.BLACKSTONE)
+                    && this.level.getBlockIdAt(x, y + 1, z) == 0
+                    && (b1 == BlockID.STILL_LAVA
+                            || b2 == BlockID.STILL_LAVA
+                            || b3 == BlockID.STILL_LAVA
+                            || b4 == BlockID.STILL_LAVA
+                            || b1 == BlockID.FLOWING_LAVA
+                            || b2 == BlockID.FLOWING_LAVA
+                            || b3 == BlockID.FLOWING_LAVA
+                            || b4 == BlockID.FLOWING_LAVA)) {
                 blockYs.add(y);
             }
         }

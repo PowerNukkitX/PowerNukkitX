@@ -7,9 +7,7 @@ import cn.nukkit.item.ItemTool;
 public class BlockHoneycombBlock extends BlockSolid {
 
     @PowerNukkitOnly
-    public BlockHoneycombBlock() {
-
-    }
+    public BlockHoneycombBlock() {}
 
     @Override
     public double getHardness() {
@@ -40,5 +38,4 @@ public class BlockHoneycombBlock extends BlockSolid {
     public String getName() {
         return "Honeycomb Block";
     }
-
 }

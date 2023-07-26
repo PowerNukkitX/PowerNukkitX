@@ -16,7 +16,11 @@ public class EmoteProcessor extends DataPacketProcessor<EmotePacket> {
             return;
         }
         if (pk.runtimeId != playerHandle.player.getId()) {
-            log.warn("{} sent EmotePacket with invalid entity id: {} != {}", playerHandle.getUsername(), pk.runtimeId, playerHandle.player.getId());
+            log.warn(
+                    "{} sent EmotePacket with invalid entity id: {} != {}",
+                    playerHandle.getUsername(),
+                    pk.runtimeId,
+                    playerHandle.player.getId());
             return;
         }
         for (Player viewer : playerHandle.player.getViewers().values()) {

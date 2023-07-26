@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.block.BlockBigDripleaf.Tilt.*;
+
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
@@ -20,11 +22,8 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.Faceable;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
-
-import static cn.nukkit.block.BlockBigDripleaf.Tilt.*;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -32,7 +31,8 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public static final BlockProperty<Tilt> TILT = new ArrayBlockProperty<>("big_dripleaf_tilt", false, new Tilt[]{Tilt.NONE, PARTIAL_TILT, Tilt.FULL_TILT, Tilt.UNSTABLE});
+    public static final BlockProperty<Tilt> TILT = new ArrayBlockProperty<>(
+            "big_dripleaf_tilt", false, new Tilt[] {Tilt.NONE, PARTIAL_TILT, Tilt.FULL_TILT, Tilt.UNSTABLE});
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
@@ -58,8 +58,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
 
     @Since("1.6.0.0-PNX")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -133,11 +132,18 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
         Block below = block.down();
         int id = below.getId();
-        if (!isValidSupportBlock(id))
-            return false;
+        if (!isValidSupportBlock(id)) return false;
 
         if (id == BIG_DRIPLEAF) {
             var b = new BlockBigDripleaf();
@@ -152,8 +158,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
             setHead(true);
         }
 
-        if (block instanceof BlockWater)
-            level.setBlock(this, 1, block, true, false);
+        if (block instanceof BlockWater) level.setBlock(this, 1, block, true, false);
         return super.place(item, block, target, face, fx, fy, fz, player);
     }
 
@@ -162,21 +167,16 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
         if (item.isFertilizer()) {
             Block head = this;
             Block up;
-            while ((up = head.up()).getId() == BIG_DRIPLEAF)
-                head = up;
-            if (head.getFloorY() + 1 >= level.getMaxHeight())
-                return false;
+            while ((up = head.up()).getId() == BIG_DRIPLEAF) head = up;
+            if (head.getFloorY() + 1 >= level.getMaxHeight()) return false;
             Block above = head.up();
-            if (!(above.getId() == AIR) && !(above instanceof BlockWater))
-                return false;
-            if (player != null && !player.isCreative())
-                item.count--;
+            if (!(above.getId() == AIR) && !(above instanceof BlockWater)) return false;
+            if (player != null && !player.isCreative()) item.count--;
             level.addParticle(new BoneMealParticle(this));
             var aboveDownBlock = new BlockBigDripleaf();
             aboveDownBlock.setBlockFace(this.getBlockFace());
             level.setBlock(above.getSideVec(BlockFace.DOWN), aboveDownBlock, true, false);
-            if (above instanceof BlockWater)
-                level.setBlock(above, 1, above, true, false);
+            if (above instanceof BlockWater) level.setBlock(above, 1, above, true, false);
             var aboveBock = new BlockBigDripleaf();
             aboveBock.setBlockFace(this.getBlockFace());
             aboveBock.setHead(true);
@@ -233,15 +233,11 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
         }
 
         if (type == Level.BLOCK_UPDATE_REDSTONE) {
-            if (!isHead())
-                return 0;
+            if (!isHead()) return 0;
             var tilt = getTilt();
-            if (tilt == NONE)
-                return 0;
-            if (!level.isBlockPowered(this))
-                return 0;
-            if (tilt != UNSTABLE)
-                level.addSound(this, Sound.TILT_UP_BIG_DRIPLEAF);
+            if (tilt == NONE) return 0;
+            if (!level.isBlockPowered(this)) return 0;
+            if (tilt != UNSTABLE) level.addSound(this, Sound.TILT_UP_BIG_DRIPLEAF);
             setTilt(NONE);
             level.setBlock(this, this, true, false);
 
@@ -265,7 +261,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{new BlockSmallDripleaf().toItem()};
+        return new Item[] {new BlockSmallDripleaf().toItem()};
     }
 
     @Since("1.4.0.0-PN")
@@ -284,20 +280,20 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
         if (!isHead()) {
-            //杆没有碰撞箱
-//            var face = this.getBlockFace().getOpposite();
+            // 杆没有碰撞箱
+            //            var face = this.getBlockFace().getOpposite();
             return /*new SimpleAxisAlignedBB(
-                    0.3125,
-                    0,
-                    0.3125,
-                    0.6875,
-                    1,
-                    0.6875)
-                    .offset(
-                            this.x + face.getXOffset() * 0.1875,
-                            this.y,
-                            this.z + face.getZOffset() * 0.1875
-                    );*/null;
+                   0.3125,
+                   0,
+                   0.3125,
+                   0.6875,
+                   1,
+                   0.6875)
+                   .offset(
+                           this.x + face.getXOffset() * 0.1875,
+                           this.y,
+                           this.z + face.getZOffset() * 0.1875
+                   );*/ null;
         } else {
             return new SimpleAxisAlignedBB(
                     this.x,
@@ -305,17 +301,15 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
                     this.z,
                     this.x + 1,
                     this.y + (getTilt() == PARTIAL_TILT ? 0.8125 : 0.9375),
-                    this.z + 1
-            );
+                    this.z + 1);
         }
     }
 
     @Override
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
         var bb = getBoundingBox();
-        //使方块碰撞检测箱的maxY向上取整，使当实体站在方块上面的时候可以触发碰撞
-        if (isHead())
-            bb.setMaxY(Math.ceil(bb.getMaxY()));
+        // 使方块碰撞检测箱的maxY向上取整，使当实体站在方块上面的时候可以触发碰撞
+        if (isHead()) bb.setMaxY(Math.ceil(bb.getMaxY()));
         return bb;
     }
 
@@ -331,12 +325,19 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
     }
 
     private boolean isValidSupportBlock(int id) {
-        return id == BIG_DRIPLEAF || id == GRASS || id == DIRT || id == MYCELIUM || id == PODZOL || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == CLAY_BLOCK;
+        return id == BIG_DRIPLEAF
+                || id == GRASS
+                || id == DIRT
+                || id == MYCELIUM
+                || id == PODZOL
+                || id == FARMLAND
+                || id == DIRT_WITH_ROOTS
+                || id == MOSS_BLOCK
+                || id == CLAY_BLOCK;
     }
 
     private boolean setTiltAndScheduleTick(Tilt tilt) {
-        if (!setTilt(tilt))
-            return false;
+        if (!setTilt(tilt)) return false;
         level.setBlock(this, this, true, false);
 
         switch (tilt) {

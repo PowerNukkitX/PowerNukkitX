@@ -11,7 +11,10 @@ import lombok.EqualsAndHashCode;
 @Since("1.3.0.0-PN")
 @EqualsAndHashCode(callSuper = true)
 @Deprecated
-@DeprecationDetails(since = "1.4.0.0-PN", reason = "Moved to a class with more details and unlimited data bits", replaceWith = "InvalidBlockPropertyMetaException")
+@DeprecationDetails(
+        since = "1.4.0.0-PN",
+        reason = "Moved to a class with more details and unlimited data bits",
+        replaceWith = "InvalidBlockPropertyMetaException")
 public class InvalidBlockDamageException extends InvalidBlockPropertyMetaException {
     private final int blockId;
     private final int damage;
@@ -20,9 +23,12 @@ public class InvalidBlockDamageException extends InvalidBlockPropertyMetaExcepti
     @PowerNukkitOnly
     @Since("1.3.0.0-PN")
     public InvalidBlockDamageException(int blockId, int damage, int before) {
-        super(BlockUnknown.UNKNOWN,
-                before, damage,
-                "Invalid block-meta combination. New: " + blockId + ":" + damage + ", Before: " + blockId + ":" + before);
+        super(
+                BlockUnknown.UNKNOWN,
+                before,
+                damage,
+                "Invalid block-meta combination. New: " + blockId + ":" + damage + ", Before: " + blockId + ":"
+                        + before);
         this.blockId = blockId;
         this.damage = damage;
         this.before = before;

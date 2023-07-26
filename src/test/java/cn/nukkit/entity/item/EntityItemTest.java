@@ -18,6 +18,8 @@
 
 package cn.nukkit.entity.item;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import cn.nukkit.block.BlockID;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.entity.Entity;
@@ -31,8 +33,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.powernukkit.tests.api.MockLevel;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 /**
  * @author joserobjr
  * @since 2021-06-29
@@ -41,6 +41,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class EntityItemTest {
     @MockLevel
     Level level;
+
     EntityItem entityItem;
 
     @BeforeEach

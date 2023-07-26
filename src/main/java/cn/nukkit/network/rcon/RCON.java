@@ -4,9 +4,8 @@ import cn.nukkit.Server;
 import cn.nukkit.command.RemoteConsoleCommandSender;
 import cn.nukkit.event.server.RemoteServerCommandEvent;
 import cn.nukkit.utils.TextFormat;
-import lombok.extern.log4j.Log4j2;
-
 import java.io.IOException;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * Implementation of Source RCON protocol.
@@ -35,7 +34,8 @@ public class RCON {
             throw new IllegalArgumentException("nukkit.server.rcon.startupError", e);
         }
 
-        log.info(this.server.getLanguage().tr("nukkit.server.rcon.running", new String[]{address, String.valueOf(port)}));
+        log.info(this.server.getLanguage().tr("nukkit.server.rcon.running", new String[] {address, String.valueOf(port)
+        }));
     }
 
     public void check() {

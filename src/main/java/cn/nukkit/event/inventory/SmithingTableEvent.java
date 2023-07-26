@@ -49,7 +49,12 @@ public class SmithingTableEvent extends InventoryEvent implements Cancellable {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public SmithingTableEvent(SmithingInventory inventory, @NotNull Item equipmentItem, @NotNull Item resultItem, @NotNull Item ingredientItem, @NotNull Player player) {
+    public SmithingTableEvent(
+            SmithingInventory inventory,
+            @NotNull Item equipmentItem,
+            @NotNull Item resultItem,
+            @NotNull Item ingredientItem,
+            @NotNull Player player) {
         super(inventory);
         this.equipmentItem = equipmentItem;
         this.resultItem = resultItem;
@@ -59,29 +64,25 @@ public class SmithingTableEvent extends InventoryEvent implements Cancellable {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public Item getEquipmentItem() {
+    @NotNull public Item getEquipmentItem() {
         return this.equipmentItem;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public Item getResultItem() {
+    @NotNull public Item getResultItem() {
         return this.resultItem;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public Item getIngredientItem() {
+    @NotNull public Item getIngredientItem() {
         return this.ingredientItem;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public Player getPlayer() {
+    @NotNull public Player getPlayer() {
         return this.player;
     }
 }

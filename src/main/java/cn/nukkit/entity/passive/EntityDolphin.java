@@ -48,6 +48,6 @@ public class EntityDolphin extends EntityAnimal implements EntitySwimmable {
 
     @Override
     public Item[] getDrops() {
-        return new Item[]{Item.get(Item.RAW_FISH)};
+        return new Item[] {Item.get(Item.RAW_FISH)};
     }
 }

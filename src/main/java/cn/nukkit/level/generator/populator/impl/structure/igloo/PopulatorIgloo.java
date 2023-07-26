@@ -24,7 +24,6 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.Utils;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.function.Consumer;
@@ -33,11 +32,15 @@ import java.util.function.Consumer;
 @Since("1.19.21-r2")
 public class PopulatorIgloo extends PopulatorStructure {
 
-    protected static final ReadableStructureTemplate IGLOO = new ReadOnlyLegacyStructureTemplate().load(loadNBT("structures/igloo/igloo_top_no_trapdoor.nbt"));
-    protected static final ReadableStructureTemplate IGLOO_WITH_TRAPDOOR = new ReadOnlyLegacyStructureTemplate().load(loadNBT("structures/igloo/igloo_top_trapdoor.nbt"));
+    protected static final ReadableStructureTemplate IGLOO =
+            new ReadOnlyLegacyStructureTemplate().load(loadNBT("structures/igloo/igloo_top_no_trapdoor.nbt"));
+    protected static final ReadableStructureTemplate IGLOO_WITH_TRAPDOOR =
+            new ReadOnlyLegacyStructureTemplate().load(loadNBT("structures/igloo/igloo_top_trapdoor.nbt"));
 
-    protected static final ReadableStructureTemplate LADDER = new ReadOnlyLegacyStructureTemplate().load(loadNBT("structures/igloo/igloo_middle.nbt"));
-    protected static final ReadableStructureTemplate LABORATORY = new ReadOnlyLegacyStructureTemplate().load(loadNBT("structures/igloo/igloo_bottom.nbt"));
+    protected static final ReadableStructureTemplate LADDER =
+            new ReadOnlyLegacyStructureTemplate().load(loadNBT("structures/igloo/igloo_middle.nbt"));
+    protected static final ReadableStructureTemplate LABORATORY =
+            new ReadOnlyLegacyStructureTemplate().load(loadNBT("structures/igloo/igloo_bottom.nbt"));
 
     protected static final StructurePlaceSettings SETTINGS_LADDER = new StructurePlaceSettings().setIgnoreAir(true);
 
@@ -52,18 +55,41 @@ public class PopulatorIgloo extends PopulatorStructure {
                         ListTag<CompoundTag> itemList = new ListTag<>("Items");
                         IglooChest.get().create(itemList, random);
 
-                        Server.getInstance().getScheduler().scheduleDelayedTask(new LootSpawnTask(chunk.getProvider().getLevel(),
-                                new BlockVector3(nbt.getInt("x"), nbt.getInt("y") - 1, nbt.getInt("z")), itemList), 2);
+                        Server.getInstance()
+                                .getScheduler()
+                                .scheduleDelayedTask(
+                                        new LootSpawnTask(
+                                                chunk.getProvider().getLevel(),
+                                                new BlockVector3(nbt.getInt("x"), nbt.getInt("y") - 1, nbt.getInt("z")),
+                                                itemList),
+                                        2);
                         break;
                     case "Villager":
-                        Server.getInstance().getScheduler().scheduleDelayedTask(new ActorSpawnTask(chunk.getProvider().getLevel(),
-                                Entity.getDefaultNBT(new Vector3(nbt.getInt("x") + 0.5, nbt.getInt("y"), nbt.getInt("z") + 0.5))
-                                        .putString("id", String.valueOf(EntityVillager.NETWORK_ID))), 2);
+                        Server.getInstance()
+                                .getScheduler()
+                                .scheduleDelayedTask(
+                                        new ActorSpawnTask(
+                                                chunk.getProvider().getLevel(),
+                                                Entity.getDefaultNBT(new Vector3(
+                                                                nbt.getInt("x") + 0.5,
+                                                                nbt.getInt("y"),
+                                                                nbt.getInt("z") + 0.5))
+                                                        .putString("id", String.valueOf(EntityVillager.NETWORK_ID))),
+                                        2);
                         break;
                     case "Zombie Villager":
-                        Server.getInstance().getScheduler().scheduleDelayedTask(new ActorSpawnTask(chunk.getProvider().getLevel(),
-                                Entity.getDefaultNBT(new Vector3(nbt.getInt("x") + 0.5, nbt.getInt("y"), nbt.getInt("z") + 0.5))
-                                        .putString("id", String.valueOf(EntityZombieVillager.NETWORK_ID))), 2);
+                        Server.getInstance()
+                                .getScheduler()
+                                .scheduleDelayedTask(
+                                        new ActorSpawnTask(
+                                                chunk.getProvider().getLevel(),
+                                                Entity.getDefaultNBT(new Vector3(
+                                                                nbt.getInt("x") + 0.5,
+                                                                nbt.getInt("y"),
+                                                                nbt.getInt("z") + 0.5))
+                                                        .putString(
+                                                                "id", String.valueOf(EntityZombieVillager.NETWORK_ID))),
+                                        2);
                         break;
                 }
             }
@@ -83,8 +109,12 @@ public class PopulatorIgloo extends PopulatorStructure {
         if (!chunk.isOverWorld()) return;
         int biome = chunk.getBiomeId(7, chunk.getHighestBlockAt(7, 7), 7);
         if ((biome == EnumBiome.ICE_PLAINS.id || biome == EnumBiome.COLD_TAIGA.id)
-                && chunkX == (((chunkX < 0 ? (chunkX - SPACING + 1) : chunkX) / SPACING) * SPACING) + random.nextBoundedInt(SPACING - SEPARATION)
-                && chunkZ == (((chunkZ < 0 ? (chunkZ - SPACING + 1) : chunkZ) / SPACING) * SPACING) + random.nextBoundedInt(SPACING - SEPARATION)) {
+                && chunkX
+                        == (((chunkX < 0 ? (chunkX - SPACING + 1) : chunkX) / SPACING) * SPACING)
+                                + random.nextBoundedInt(SPACING - SEPARATION)
+                && chunkZ
+                        == (((chunkZ < 0 ? (chunkZ - SPACING + 1) : chunkZ) / SPACING) * SPACING)
+                                + random.nextBoundedInt(SPACING - SEPARATION)) {
             ReadableStructureTemplate template;
             boolean hasLaboratory = random.nextBoolean();
 
@@ -132,8 +162,11 @@ public class PopulatorIgloo extends PopulatorStructure {
                 vec.z -= 6;
                 vec.y -= template.getSize().getY();
 
-                template.placeInChunk(chunk, random, vec, new StructurePlaceSettings()
-                        .setBlockActorProcessor(getBlockActorProcessor(chunk, random)));
+                template.placeInChunk(
+                        chunk,
+                        random,
+                        vec,
+                        new StructurePlaceSettings().setBlockActorProcessor(getBlockActorProcessor(chunk, random)));
             }
         }
     }

@@ -7,9 +7,8 @@ import cn.nukkit.entity.data.EntityMetadata;
 import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.types.PropertySyncData;
 import cn.nukkit.utils.Binary;
-import lombok.ToString;
-
 import java.util.UUID;
+import lombok.ToString;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -39,35 +38,34 @@ public class AddPlayerPacket extends DataPacket {
     public Item item;
     public int gameType = Server.getInstance().getGamemode();
     public EntityMetadata metadata = new EntityMetadata();
+
     @PowerNukkitXOnly
     @Since("1.19.40-r1")
-    public PropertySyncData syncedProperties = new PropertySyncData(new int[]{}, new float[]{});
-    //public EntityLink links = new EntityLink[0];
+    public PropertySyncData syncedProperties = new PropertySyncData(new int[] {}, new float[] {});
+    // public EntityLink links = new EntityLink[0];
     public String deviceId = "";
     public int buildPlatform = -1;
 
     @Override
-    public void decode() {
-
-    }
+    public void decode() {}
 
     @Override
     public void encode() {
         this.reset();
         this.putUUID(this.uuid);
         this.putString(this.username);
-//        this.putEntityUniqueId(this.entityUniqueId);
+        //        this.putEntityUniqueId(this.entityUniqueId);
         this.putEntityRuntimeId(this.entityRuntimeId);
         this.putString(this.platformChatId);
         this.putVector3f(this.x, this.y, this.z);
         this.putVector3f(this.speedX, this.speedY, this.speedZ);
         this.putLFloat(this.pitch);
-        this.putLFloat(this.yaw); //TODO headrot
+        this.putLFloat(this.yaw); // TODO headrot
         this.putLFloat(this.yaw);
         this.putSlot(this.item);
         this.putVarInt(this.gameType);
         this.put(Binary.writeMetadata(this.metadata));
-        //syncedProperties
+        // syncedProperties
         this.putUnsignedVarInt(this.syncedProperties.intProperties().length);
         for (int i = 0, len = this.syncedProperties.intProperties().length; i < len; ++i) {
             this.putUnsignedVarInt(i);
@@ -78,11 +76,11 @@ public class AddPlayerPacket extends DataPacket {
             this.putUnsignedVarInt(i);
             this.putLFloat(this.syncedProperties.floatProperties()[i]);
         }
-//        this.putUnsignedVarInt(0); //TODO: Adventure settings
-//        this.putUnsignedVarInt(0);
-//        this.putUnsignedVarInt(0);
-//        this.putUnsignedVarInt(0);
-//        this.putUnsignedVarInt(0);
+        //        this.putUnsignedVarInt(0); //TODO: Adventure settings
+        //        this.putUnsignedVarInt(0);
+        //        this.putUnsignedVarInt(0);
+        //        this.putUnsignedVarInt(0);
+        //        this.putUnsignedVarInt(0);
         this.putLLong(entityUniqueId);
         this.putUnsignedVarInt(0); // playerPermission
         this.putUnsignedVarInt(0); // commandPermission
@@ -92,7 +90,7 @@ public class AddPlayerPacket extends DataPacket {
         this.putLInt(63); // abilityValues - survival abilities
         this.putLFloat(0.1f); // flySpeed
         this.putLFloat(0.05f); // walkSpeed
-        this.putUnsignedVarInt(0); //TODO: Entity links
+        this.putUnsignedVarInt(0); // TODO: Entity links
         this.putString(deviceId);
         this.putLInt(buildPlatform);
     }

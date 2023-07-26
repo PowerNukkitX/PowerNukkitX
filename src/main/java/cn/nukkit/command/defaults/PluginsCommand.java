@@ -8,7 +8,6 @@ import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.utils.TextFormat;
-
 import java.util.Map;
 
 /**
@@ -18,11 +17,7 @@ import java.util.Map;
 public class PluginsCommand extends Command implements CoreCommand {
 
     public PluginsCommand(String name) {
-        super(name,
-                "%nukkit.command.plugins.description",
-                "%nukkit.command.plugins.usage",
-                new String[]{"pl"}
-        );
+        super(name, "%nukkit.command.plugins.description", "%nukkit.command.plugins.usage", new String[] {"pl"});
         this.setPermission("nukkit.command.plugins");
         this.commandParameters.clear();
         this.commandParameters.put("default", CommandParameter.EMPTY_ARRAY);
@@ -31,7 +26,8 @@ public class PluginsCommand extends Command implements CoreCommand {
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         this.sendPluginList(sender, log);
         return 1;
     }
@@ -46,6 +42,7 @@ public class PluginsCommand extends Command implements CoreCommand {
             list.append(plugin.isEnabled() ? TextFormat.GREEN : TextFormat.RED);
             list.append(plugin.getDescription().getFullName());
         }
-        log.addMessage("nukkit.command.plugins.success", String.valueOf(plugins.size()), list.toString()).output();
+        log.addMessage("nukkit.command.plugins.success", String.valueOf(plugins.size()), list.toString())
+                .output();
     }
 }

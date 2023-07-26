@@ -15,11 +15,10 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Angelic47 (Nukkit Project)
@@ -28,7 +27,8 @@ public class BlockTallGrass extends BlockFlowable implements BlockFlowerPot.Flow
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
-    public static final ArrayBlockProperty<TallGrassType> TALL_GRASS_TYPE = new ArrayBlockProperty<>("tall_grass_type", true, TallGrassType.class);
+    public static final ArrayBlockProperty<TallGrassType> TALL_GRASS_TYPE =
+            new ArrayBlockProperty<>("tall_grass_type", true, TallGrassType.class);
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
@@ -49,20 +49,14 @@ public class BlockTallGrass extends BlockFlowable implements BlockFlowerPot.Flow
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
     @Override
     public String getName() {
-        String[] names = new String[]{
-                "Grass",
-                "Grass",
-                "Fern",
-                "Fern"
-        };
+        String[] names = new String[] {"Grass", "Grass", "Fern", "Fern"};
         return names[this.getDamage() & 0x03];
     }
 
@@ -87,14 +81,22 @@ public class BlockTallGrass extends BlockFlowable implements BlockFlowerPot.Flow
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         if (BlockSweetBerryBush.isSupportValid(down())) {
             this.getLevel().setBlock(block, this, true);
             return true;
         }
         return false;
     }
-    
+
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Will break on block update if the supporting block is invalid")
     @Override
     public int onUpdate(int type) {
@@ -163,11 +165,11 @@ public class BlockTallGrass extends BlockFlowable implements BlockFlowerPot.Flow
         ThreadLocalRandom random = ThreadLocalRandom.current();
         if (random.nextInt(8) == 0) {
             Enchantment fortune = item.getEnchantment(Enchantment.ID_FORTUNE_DIGGING);
-            int fortuneLevel = fortune != null? fortune.getLevel() : 0;
-            int amount = fortuneLevel == 0? 1 : 1 + random.nextInt(fortuneLevel * 2);
+            int fortuneLevel = fortune != null ? fortune.getLevel() : 0;
+            int amount = fortuneLevel == 0 ? 1 : 1 + random.nextInt(fortuneLevel * 2);
             drops.add(Item.get(ItemID.WHEAT_SEEDS, 0, amount));
         }
-        
+
         return drops.toArray(Item.EMPTY_ARRAY);
     }
 

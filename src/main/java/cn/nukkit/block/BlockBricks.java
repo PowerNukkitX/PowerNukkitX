@@ -8,8 +8,7 @@ import cn.nukkit.item.ItemTool;
  */
 public class BlockBricks extends BlockSolid {
 
-    public BlockBricks() {
-    }
+    public BlockBricks() {}
 
     @Override
     public String getName() {

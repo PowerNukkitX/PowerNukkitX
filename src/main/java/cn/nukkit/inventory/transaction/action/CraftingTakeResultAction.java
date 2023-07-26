@@ -36,12 +36,8 @@ public class CraftingTakeResultAction extends InventoryAction {
     }
 
     @Override
-    public void onExecuteSuccess(Player $source) {
-
-    }
+    public void onExecuteSuccess(Player $source) {}
 
     @Override
-    public void onExecuteFail(Player source) {
-
-    }
+    public void onExecuteFail(Player source) {}
 }

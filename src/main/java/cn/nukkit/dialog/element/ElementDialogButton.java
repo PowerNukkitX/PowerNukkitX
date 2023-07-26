@@ -3,7 +3,6 @@ package cn.nukkit.dialog.element;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.dialog.window.Dialog;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,14 +18,15 @@ public class ElementDialogButton {
 
     protected transient Dialog nextDialog = null;
 
-    public static class CmdLine{
-        public CmdLine(String cmd_line, int cmd_ver){
+    public static class CmdLine {
+        public CmdLine(String cmd_line, int cmd_ver) {
             this.cmd_line = cmd_line;
             this.cmd_ver = cmd_ver;
         }
+
         public String cmd_line;
         public int cmd_ver;
-        public static transient final int CMD_VER = 19;
+        public static final transient int CMD_VER = 19;
     }
 
     private int mode;
@@ -37,15 +37,15 @@ public class ElementDialogButton {
         this(name, text, null);
     }
 
-    public ElementDialogButton(String name, String text,Dialog nextDialog){
+    public ElementDialogButton(String name, String text, Dialog nextDialog) {
         this(name, text, nextDialog, Mode.BUTTON_MODE);
     }
 
-    public ElementDialogButton(String name, String text,Dialog nextDialog, Mode mode) {
+    public ElementDialogButton(String name, String text, Dialog nextDialog, Mode mode) {
         this(name, text, nextDialog, mode, 1);
     }
 
-    public ElementDialogButton(String name, String text,Dialog nextDialog, Mode mode, int type) {
+    public ElementDialogButton(String name, String text, Dialog nextDialog, Mode mode, int type) {
         this.button_name = name;
         this.text = text;
         this.nextDialog = nextDialog;
@@ -54,11 +54,11 @@ public class ElementDialogButton {
         this.type = type;
     }
 
-    public List<CmdLine> updateButtonData(){
+    public List<CmdLine> updateButtonData() {
         List<CmdLine> list = new ArrayList<>();
         String[] split = text.split("\n");
         for (String str : split) {
-            list.add(new CmdLine(str,CmdLine.CMD_VER));
+            list.add(new CmdLine(str, CmdLine.CMD_VER));
         }
         return list;
     }
@@ -80,8 +80,8 @@ public class ElementDialogButton {
     }
 
     public List<CmdLine> getData() {
-        //data will not be updated by the client
-        //so we should update data with text content whenever we need it
+        // data will not be updated by the client
+        // so we should update data with text content whenever we need it
         data = updateButtonData();
         return data;
     }

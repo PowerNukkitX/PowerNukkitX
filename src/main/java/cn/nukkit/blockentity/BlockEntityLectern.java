@@ -111,12 +111,12 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
 
     @PowerNukkitOnly
     public void setLeftPage(int newLeftPage) {
-        setRawPage((newLeftPage - 1) /2);
+        setRawPage((newLeftPage - 1) / 2);
     }
 
     @PowerNukkitOnly
     public void setRightPage(int newRightPage) {
-        setLeftPage(newRightPage -1);
+        setLeftPage(newRightPage - 1);
     }
 
     @PowerNukkitOnly

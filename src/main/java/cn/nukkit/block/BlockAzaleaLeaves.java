@@ -19,7 +19,6 @@ public class BlockAzaleaLeaves extends BlockLeaves {
         super(meta);
     }
 
-
     @Override
     public int getId() {
         return AZALEA_LEAVES;
@@ -44,8 +43,7 @@ public class BlockAzaleaLeaves extends BlockLeaves {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }

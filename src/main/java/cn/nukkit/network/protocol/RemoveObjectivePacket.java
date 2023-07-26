@@ -16,7 +16,7 @@ public class RemoveObjectivePacket extends DataPacket {
 
     @Override
     public void decode() {
-        //only server -> client
+        // only server -> client
     }
 
     @Override

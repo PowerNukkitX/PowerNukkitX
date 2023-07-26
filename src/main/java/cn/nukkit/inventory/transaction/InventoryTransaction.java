@@ -12,7 +12,6 @@ import cn.nukkit.inventory.transaction.action.SlotChangeAction;
 import cn.nukkit.inventory.transaction.action.TakeLevelAction;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
-
 import java.util.*;
 
 /**
@@ -79,21 +78,42 @@ public class InventoryTransaction {
                 InventoryAction existingAction = iterator.next();
                 if (existingAction instanceof SlotChangeAction) {
                     SlotChangeAction existingSlotChangeAction = (SlotChangeAction) existingAction;
-                    if (!existingSlotChangeAction.getInventory().equals(slotChangeAction.getInventory()))
-                        continue;
+                    if (!existingSlotChangeAction.getInventory().equals(slotChangeAction.getInventory())) continue;
                     Item existingSource = existingSlotChangeAction.getSourceItem();
                     Item existingTarget = existingSlotChangeAction.getTargetItem();
                     if (existingSlotChangeAction.getSlot() == slotChangeAction.getSlot()
-                            && slotChangeAction.getSourceItem().equals(existingTarget, existingTarget.hasMeta(), existingTarget.hasCompoundTag())) {
-                        iterator.set(new SlotChangeAction(existingSlotChangeAction.getInventory(), existingSlotChangeAction.getSlot(), existingSlotChangeAction.getSourceItem(), slotChangeAction.getTargetItem()));
+                            && slotChangeAction
+                                    .getSourceItem()
+                                    .equals(
+                                            existingTarget,
+                                            existingTarget.hasMeta(),
+                                            existingTarget.hasCompoundTag())) {
+                        iterator.set(new SlotChangeAction(
+                                existingSlotChangeAction.getInventory(),
+                                existingSlotChangeAction.getSlot(),
+                                existingSlotChangeAction.getSourceItem(),
+                                slotChangeAction.getTargetItem()));
                         action.onAddToTransaction(this);
                         return;
                     } else if (existingSlotChangeAction.getSlot() == slotChangeAction.getSlot()
-                            && slotChangeAction.getSourceItem().equals(existingSource, existingSource.hasMeta(), existingSource.hasCompoundTag())
-                            && slotChangeAction.getTargetItem().equals(existingTarget, existingTarget.hasMeta(), existingTarget.hasCompoundTag())) {
-                        existingSource.setCount(existingSource.getCount() + slotChangeAction.getSourceItem().getCount());
-                        existingTarget.setCount(existingTarget.getCount() + slotChangeAction.getTargetItem().getCount());
-                        iterator.set(new SlotChangeAction(existingSlotChangeAction.getInventory(), existingSlotChangeAction.getSlot(), existingSource, existingTarget));
+                            && slotChangeAction
+                                    .getSourceItem()
+                                    .equals(existingSource, existingSource.hasMeta(), existingSource.hasCompoundTag())
+                            && slotChangeAction
+                                    .getTargetItem()
+                                    .equals(
+                                            existingTarget,
+                                            existingTarget.hasMeta(),
+                                            existingTarget.hasCompoundTag())) {
+                        existingSource.setCount(existingSource.getCount()
+                                + slotChangeAction.getSourceItem().getCount());
+                        existingTarget.setCount(existingTarget.getCount()
+                                + slotChangeAction.getTargetItem().getCount());
+                        iterator.set(new SlotChangeAction(
+                                existingSlotChangeAction.getInventory(),
+                                existingSlotChangeAction.getSlot(),
+                                existingSource,
+                                existingTarget));
                         return;
                     }
                 }
@@ -163,7 +183,10 @@ public class InventoryTransaction {
     public boolean canExecute() {
         List<Item> haveItems = new ArrayList<>();
         List<Item> needItems = new ArrayList<>();
-        return matchItems(needItems, haveItems) && this.actions.size() > 0 && haveItems.size() == 0 && needItems.size() == 0;
+        return matchItems(needItems, haveItems)
+                && this.actions.size() > 0
+                && haveItems.size() == 0
+                && needItems.size() == 0;
     }
 
     protected boolean callExecuteEvent() {
@@ -196,7 +219,8 @@ public class InventoryTransaction {
                 from = to;
             }
 
-            InventoryClickEvent ev2 = new InventoryClickEvent(who, from.getInventory(), from.getSlot(), from.getSourceItem(), from.getTargetItem());
+            InventoryClickEvent ev2 = new InventoryClickEvent(
+                    who, from.getInventory(), from.getSlot(), from.getSourceItem(), from.getTargetItem());
             this.source.getServer().getPluginManager().callEvent(ev2);
 
             if (ev2.isCancelled()) {
@@ -213,7 +237,6 @@ public class InventoryTransaction {
             this.sendInventories();
             return false;
         }
-
 
         if (!callExecuteEvent()) {
             this.sendInventories();
@@ -232,7 +255,8 @@ public class InventoryTransaction {
                     if (player.isSurvival()) {
                         int slot = slotChangeAction.getSlot();
                         if (slot == 36 || slot == 37 || slot == 38 || slot == 39) {
-                            if (action.getSourceItem().hasEnchantment(Enchantment.ID_BINDING_CURSE) && action.getSourceItem().applyEnchantments()) {
+                            if (action.getSourceItem().hasEnchantment(Enchantment.ID_BINDING_CURSE)
+                                    && action.getSourceItem().applyEnchantments()) {
                                 this.sendInventories();
                                 return false;
                             }
@@ -250,8 +274,9 @@ public class InventoryTransaction {
             }
         }
         // hack implement to fix issue#692
-        if (send && source.getLoginChainData().getDeviceOS() == 7 && this.inventories.stream().anyMatch(i -> i instanceof PlayerInventory))
-            this.sendInventories();
+        if (send
+                && source.getLoginChainData().getDeviceOS() == 7
+                && this.inventories.stream().anyMatch(i -> i instanceof PlayerInventory)) this.sendInventories();
 
         this.hasExecuted = true;
         return true;

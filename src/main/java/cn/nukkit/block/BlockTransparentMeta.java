@@ -17,5 +17,4 @@ public abstract class BlockTransparentMeta extends BlockMeta {
     public boolean isTransparent() {
         return true;
     }
-
 }

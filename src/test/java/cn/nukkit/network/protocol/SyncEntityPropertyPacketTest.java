@@ -18,14 +18,14 @@
 
 package cn.nukkit.network.protocol;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.nbt.tag.CompoundTag;
 import lombok.val;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author joserobjr
@@ -39,12 +39,12 @@ class SyncEntityPropertyPacketTest {
         val packet = new SyncEntityPropertyPacket();
         packet.setData(new CompoundTag("A"));
         packet.encode();
-        
+
         val packet2 = new SyncEntityPropertyPacket();
         packet2.setBuffer(packet.getBuffer());
         packet2.getUnsignedVarInt();
         packet2.decode();
-        
+
         assertEquals(new CompoundTag("A"), packet2.getData());
         assertTrue(packet2.feof());
     }

@@ -30,8 +30,7 @@ public class BlockDoubleSlabRedSandstone extends BlockDoubleSlabBase {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return BlockSlabRedSandstone.PROPERTIES;
     }
@@ -80,9 +79,9 @@ public class BlockDoubleSlabRedSandstone extends BlockDoubleSlabBase {
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
+
     @Override
     public boolean canHarvestWithHand() {
         return false;
     }
-
 }

@@ -30,5 +30,4 @@ public class BlockBricksRedNether extends BlockNetherBrick {
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
-
 }

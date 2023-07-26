@@ -11,10 +11,9 @@ import cn.nukkit.level.particle.GenericParticle;
 import cn.nukkit.level.particle.Particle;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.DataPacket;
-
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
+import javax.annotation.Nullable;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -112,7 +111,8 @@ public class EntitySnowball extends EntityProjectile {
         int chunkX = (int) x >> 4;
         int chunkZ = (int) z >> 4;
         Level level = this.level;
-        level.getServer().batchPackets(level.getChunkPlayers(chunkX, chunkZ).values().toArray(Player.EMPTY_ARRAY), allPackets);
+        level.getServer()
+                .batchPackets(level.getChunkPlayers(chunkX, chunkZ).values().toArray(Player.EMPTY_ARRAY), allPackets);
     }
 
     @PowerNukkitOnly

@@ -11,7 +11,6 @@ import cn.nukkit.inventory.DoubleChestInventory;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-
 import java.util.HashSet;
 
 /**
@@ -83,7 +82,7 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer implements B
             if (pair.doubleInventory != null) {
                 this.doubleInventory = pair.doubleInventory;
             } else if (this.doubleInventory == null) {
-                if ((pair.x + ((int) pair.z << 15)) > (this.x + ((int) this.z << 15))) { //Order them correctly
+                if ((pair.x + ((int) pair.z << 15)) > (this.x + ((int) this.z << 15))) { // Order them correctly
                     this.doubleInventory = new DoubleChestInventory(pair, this);
                 } else {
                     this.doubleInventory = new DoubleChestInventory(this, pair);
@@ -104,7 +103,9 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer implements B
 
     public BlockEntityChest getPair() {
         if (this.isPaired()) {
-            BlockEntity blockEntity = this.getLevel().getBlockEntityIfLoaded(new Vector3(this.namedTag.getInt("pairx"), this.y, this.namedTag.getInt("pairz")));
+            BlockEntity blockEntity = this.getLevel()
+                    .getBlockEntityIfLoaded(
+                            new Vector3(this.namedTag.getInt("pairx"), this.y, this.namedTag.getInt("pairz")));
             if (blockEntity instanceof BlockEntityChest) {
                 return (BlockEntityChest) blockEntity;
             }
@@ -114,7 +115,9 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer implements B
     }
 
     public boolean pairWith(BlockEntityChest chest) {
-        if (this.isPaired() || chest.isPaired() || this.getBlock().getId() != chest.getBlock().getId()) {
+        if (this.isPaired()
+                || chest.isPaired()
+                || this.getBlock().getId() != chest.getBlock().getId()) {
             return false;
         }
 

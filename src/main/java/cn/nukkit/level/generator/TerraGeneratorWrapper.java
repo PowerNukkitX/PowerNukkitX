@@ -10,7 +10,6 @@ import cn.nukkit.level.terra.TerraGenerator;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-
 import java.util.List;
 import java.util.Map;
 
@@ -25,12 +24,11 @@ import java.util.Map;
 @PowerNukkitXOnly
 public class TerraGeneratorWrapper extends Generator {
 
-    //所有terra实例
+    // 所有terra实例
     protected static final Map<Integer, TerraGenerator> generators = new Int2ObjectOpenHashMap<>();
-    //共享的Terra实例
+    // 共享的Terra实例
     protected volatile TerraGenerator terra;
     protected final Map<String, Object> option;
-
 
     public TerraGeneratorWrapper(Map<String, Object> option) {
         this.option = option;
@@ -67,8 +65,10 @@ public class TerraGeneratorWrapper extends Generator {
             var event = new ChunkPrePopulateEvent(chunk, List.of(), List.of());
             Server.getInstance().getPluginManager().callEvent(event);
             this.terra.populateChunk(chunkX, chunkZ, getChunkManager());
-            for (var populator : event.getTerrainPopulators()) populator.populate(level, chunkX, chunkX, nukkitRandom, chunk);
-            for (var populator : event.getBiomePopulators()) populator.populate(level, chunkX, chunkX, nukkitRandom, chunk);
+            for (var populator : event.getTerrainPopulators())
+                populator.populate(level, chunkX, chunkX, nukkitRandom, chunk);
+            for (var populator : event.getBiomePopulators())
+                populator.populate(level, chunkX, chunkX, nukkitRandom, chunk);
         } else {
             this.terra.populateChunk(chunkX, chunkZ, getChunkManager());
         }

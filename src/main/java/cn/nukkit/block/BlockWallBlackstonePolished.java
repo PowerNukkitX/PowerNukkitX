@@ -55,5 +55,4 @@ public class BlockWallBlackstonePolished extends BlockWallBase {
     public double getResistance() {
         return 6.0;
     }
-
 }

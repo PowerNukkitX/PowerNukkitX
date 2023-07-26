@@ -24,8 +24,7 @@ public class BlockDoubleSlabCrimson extends BlockDoubleSlabBase {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return BlockSlab.SIMPLE_SLAB_PROPERTIES;
     }
@@ -42,7 +41,7 @@ public class BlockDoubleSlabCrimson extends BlockDoubleSlabBase {
         return CRIMSON_SLAB;
     }
 
-    //TODO Adjust or remove this when merging https://github.com/PowerNukkit/PowerNukkit/pull/370
+    // TODO Adjust or remove this when merging https://github.com/PowerNukkit/PowerNukkit/pull/370
     @PowerNukkitOnly
     @Override
     protected boolean isCorrectTool(Item item) {
@@ -58,7 +57,7 @@ public class BlockDoubleSlabCrimson extends BlockDoubleSlabBase {
     public double getResistance() {
         return 3;
     }
-    
+
     @Override
     public int getToolType() {
         return ItemTool.TYPE_AXE;
@@ -68,10 +67,9 @@ public class BlockDoubleSlabCrimson extends BlockDoubleSlabBase {
     public int getBurnChance() {
         return 0;
     }
-    
+
     @Override
     public int getBurnAbility() {
         return 0;
     }
-
 }

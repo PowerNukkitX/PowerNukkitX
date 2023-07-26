@@ -24,9 +24,7 @@ public class LevelChunkPacket extends DataPacket {
     public byte[] data;
 
     @Override
-    public void decode() {
-
-    }
+    public void decode() {}
 
     @Override
     public void encode() {

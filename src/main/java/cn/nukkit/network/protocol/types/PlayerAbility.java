@@ -2,7 +2,6 @@ package cn.nukkit.network.protocol.types;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -32,8 +31,9 @@ public enum PlayerAbility {
 
     public static final List<PlayerAbility> VALUES = Arrays.asList(values());
 
-    //用于RequestPermissionsPacket的特征位
+    // 用于RequestPermissionsPacket的特征位
     public final int bit;
+
     PlayerAbility() {
         this(0);
     }

@@ -23,7 +23,8 @@ public class ObjectSwampTree extends TreeGenerator {
 
     @Override
     public boolean generate(ChunkManager worldIn, NukkitRandom rand, Vector3 vectorPosition) {
-        BlockVector3 position = new BlockVector3(vectorPosition.getFloorX(), vectorPosition.getFloorY(), vectorPosition.getFloorZ());
+        BlockVector3 position =
+                new BlockVector3(vectorPosition.getFloorX(), vectorPosition.getFloorY(), vectorPosition.getFloorZ());
 
         int i = rand.nextBoundedInt(4) + 5;
         boolean flag = true;
@@ -75,7 +76,9 @@ public class ObjectSwampTree extends TreeGenerator {
                             for (int i4 = position.getZ() - l2; i4 <= position.getZ() + l2; ++i4) {
                                 int j1 = i4 - position.getZ();
 
-                                if (Math.abs(k3) != l2 || Math.abs(j1) != l2 || rand.nextBoundedInt(2) != 0 && j2 != 0) {
+                                if (Math.abs(k3) != l2
+                                        || Math.abs(j1) != l2
+                                        || rand.nextBoundedInt(2) != 0 && j2 != 0) {
                                     BlockVector3 blockpos = new BlockVector3(j3, k1, i4);
                                     int id = worldIn.getBlockIdAt(blockpos.x, blockpos.y, blockpos.z);
 
@@ -91,7 +94,10 @@ public class ObjectSwampTree extends TreeGenerator {
                         BlockVector3 up = position.up(l1);
                         int id = worldIn.getBlockIdAt(up.x, up.y, up.z);
 
-                        if (id == Block.AIR || id == Block.LEAVES || id == Block.FLOWING_WATER || id == Block.STILL_WATER) {
+                        if (id == Block.AIR
+                                || id == Block.LEAVES
+                                || id == Block.FLOWING_WATER
+                                || id == Block.STILL_WATER) {
                             this.setBlockAndNotifyAdequately(worldIn, up, this.metaWood);
                         }
                     }
@@ -111,19 +117,27 @@ public class ObjectSwampTree extends TreeGenerator {
                                     BlockVector3 blockpos4 = pos2.north();
                                     BlockVector3 blockpos1 = pos2.south();
 
-                                    if (rand.nextBoundedInt(4) == 0 && worldIn.getBlockIdAt(blockpos2.x, blockpos2.y, blockpos2.z) == Block.AIR) {
+                                    if (rand.nextBoundedInt(4) == 0
+                                            && worldIn.getBlockIdAt(blockpos2.x, blockpos2.y, blockpos2.z)
+                                                    == Block.AIR) {
                                         this.addHangingVine(worldIn, blockpos2, 8);
                                     }
 
-                                    if (rand.nextBoundedInt(4) == 0 && worldIn.getBlockIdAt(blockpos3.x, blockpos3.y, blockpos3.z) == Block.AIR) {
+                                    if (rand.nextBoundedInt(4) == 0
+                                            && worldIn.getBlockIdAt(blockpos3.x, blockpos3.y, blockpos3.z)
+                                                    == Block.AIR) {
                                         this.addHangingVine(worldIn, blockpos3, 2);
                                     }
 
-                                    if (rand.nextBoundedInt(4) == 0 && worldIn.getBlockIdAt(blockpos4.x, blockpos4.y, blockpos4.z) == Block.AIR) {
+                                    if (rand.nextBoundedInt(4) == 0
+                                            && worldIn.getBlockIdAt(blockpos4.x, blockpos4.y, blockpos4.z)
+                                                    == Block.AIR) {
                                         this.addHangingVine(worldIn, blockpos4, 1);
                                     }
 
-                                    if (rand.nextBoundedInt(4) == 0 && worldIn.getBlockIdAt(blockpos1.x, blockpos1.y, blockpos1.z) == Block.AIR) {
+                                    if (rand.nextBoundedInt(4) == 0
+                                            && worldIn.getBlockIdAt(blockpos1.x, blockpos1.y, blockpos1.z)
+                                                    == Block.AIR) {
                                         this.addHangingVine(worldIn, blockpos1, 4);
                                     }
                                 }

@@ -43,7 +43,10 @@ public class ChestInventory extends ContainerInventory {
             Level level = this.getHolder().getLevel();
             if (level != null) {
                 level.addSound(this.getHolder().add(0.5, 0.5, 0.5), Sound.RANDOM_CHESTOPEN);
-                level.addChunkPacket((int) this.getHolder().getX() >> 4, (int) this.getHolder().getZ() >> 4, pk);
+                level.addChunkPacket(
+                        (int) this.getHolder().getX() >> 4,
+                        (int) this.getHolder().getZ() >> 4,
+                        pk);
             }
         }
         try {
@@ -54,7 +57,8 @@ public class ChestInventory extends ContainerInventory {
                     RedstoneComponent.updateAllAroundRedstone(this.getHolder());
                 }
             }
-        } catch (LevelException ignored) {}
+        } catch (LevelException ignored) {
+        }
     }
 
     @PowerNukkitDifference(info = "Using new method to play sounds", since = "1.4.0.0-PN")
@@ -71,7 +75,10 @@ public class ChestInventory extends ContainerInventory {
             Level level = this.getHolder().getLevel();
             if (level != null) {
                 level.addSound(this.getHolder().add(0.5, 0.5, 0.5), Sound.RANDOM_CHESTCLOSED);
-                level.addChunkPacket((int) this.getHolder().getX() >> 4, (int) this.getHolder().getZ() >> 4, pk);
+                level.addChunkPacket(
+                        (int) this.getHolder().getX() >> 4,
+                        (int) this.getHolder().getZ() >> 4,
+                        pk);
             }
         }
         super.onClose(who);
@@ -84,7 +91,8 @@ public class ChestInventory extends ContainerInventory {
                     RedstoneComponent.updateAllAroundRedstone(this.getHolder());
                 }
             }
-        } catch (LevelException ignored) {}
+        } catch (LevelException ignored) {
+        }
     }
 
     public void setDoubleInventory(DoubleChestInventory doubleInventory) {

@@ -10,7 +10,6 @@ import cn.nukkit.level.Location;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.collect.Sets;
-
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -31,7 +30,9 @@ public abstract class CachedFilterSelectorArgument implements ISelectorArgument 
     }
 
     @Override
-    public Function<List<Entity>, List<Entity>> getFilter(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) throws SelectorSyntaxException {
+    public Function<List<Entity>, List<Entity>> getFilter(
+            SelectorType selectorType, CommandSender sender, Location basePos, String... arguments)
+            throws SelectorSyntaxException {
         var value = cache.getIfPresent(Sets.newHashSet(arguments));
         if (value == null) {
             value = cache(selectorType, sender, basePos, arguments);
@@ -48,7 +49,9 @@ public abstract class CachedFilterSelectorArgument implements ISelectorArgument 
     /**
      * 当未在缓存中找到解析结果时，则调用此方法对参数进行解析
      */
-    protected abstract Function<List<Entity>, List<Entity>> cache(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) throws SelectorSyntaxException;
+    protected abstract Function<List<Entity>, List<Entity>> cache(
+            SelectorType selectorType, CommandSender sender, Location basePos, String... arguments)
+            throws SelectorSyntaxException;
 
     /**
      * 初始化缓存时调用此方法<p/>
@@ -56,6 +59,9 @@ public abstract class CachedFilterSelectorArgument implements ISelectorArgument 
      * @return {@code Cache<Set<String>, Function<List<Entity>, List<Entity>>>}
      */
     protected Cache<Set<String>, Function<List<Entity>, List<Entity>>> provideCacheService() {
-        return Caffeine.newBuilder().maximumSize(65535).expireAfterAccess(1, TimeUnit.MINUTES).build();
+        return Caffeine.newBuilder()
+                .maximumSize(65535)
+                .expireAfterAccess(1, TimeUnit.MINUTES)
+                .build();
     }
 }

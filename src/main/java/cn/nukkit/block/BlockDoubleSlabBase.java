@@ -18,17 +18,16 @@ public abstract class BlockDoubleSlabBase extends BlockSolidMeta {
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public BlockDoubleSlabBase(){}
+    public BlockDoubleSlabBase() {}
 
     @Override
     public String getName() {
-        return "Double "+getSlabName()+" Slab";
+        return "Double " + getSlabName() + " Slab";
     }
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return BlockSlab.SIMPLE_SLAB_PROPERTIES;
     }
@@ -57,7 +56,7 @@ public abstract class BlockDoubleSlabBase extends BlockSolidMeta {
         if (isCorrectTool(item)) {
             Item slab = toItem();
             slab.setCount(2);
-            return new Item[]{ slab };
+            return new Item[] {slab};
         } else {
             return Item.EMPTY_ARRAY;
         }

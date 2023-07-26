@@ -4,20 +4,19 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.nbt.tag.CompoundTag;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.HashMap;
 import java.util.Map;
+import org.jetbrains.annotations.NotNull;
 
 public record BannerPattern(@NotNull cn.nukkit.utils.BannerPattern.Type type, @NotNull DyeColor color) {
 
-    @NotNull
-    public static BannerPattern fromCompoundTag(@NotNull CompoundTag compoundTag) {
-        return new BannerPattern(Type.getByName(compoundTag.contains("Pattern") ? compoundTag.getString("Pattern") : ""), compoundTag.contains("Color") ? DyeColor.getByDyeData(compoundTag.getInt("Color")) : DyeColor.BLACK);
+    @NotNull public static BannerPattern fromCompoundTag(@NotNull CompoundTag compoundTag) {
+        return new BannerPattern(
+                Type.getByName(compoundTag.contains("Pattern") ? compoundTag.getString("Pattern") : ""),
+                compoundTag.contains("Color") ? DyeColor.getByDyeData(compoundTag.getInt("Color")) : DyeColor.BLACK);
     }
 
     public enum Type {
-
         PATTERN_BOTTOM_STRIPE("bs"),
         PATTERN_TOP_STRIPE("ts"),
         PATTERN_LEFT_STRIPE("ls"),
@@ -56,10 +55,14 @@ public record BannerPattern(@NotNull cn.nukkit.utils.BannerPattern.Type type, @N
         PATTERN_SKULL("sku"),
         PATTERN_FLOWER("flo"),
         PATTERN_MOJANG("moj"),
-        @Since("1.20.0-r2") @PowerNukkitXOnly PATTERN_GLOBE("glb"),
-        @Since("1.4.0.0-PN") @PowerNukkitOnly PATTERN_SNOUT("pig");
+        @Since("1.20.0-r2")
+        @PowerNukkitXOnly
+        PATTERN_GLOBE("glb"),
+        @Since("1.4.0.0-PN")
+        @PowerNukkitOnly
+        PATTERN_SNOUT("pig");
 
-        private final static Map<String, Type> BY_NAME = new HashMap<>();
+        private static final Map<String, Type> BY_NAME = new HashMap<>();
 
         private final String name;
 
@@ -80,7 +83,5 @@ public record BannerPattern(@NotNull cn.nukkit.utils.BannerPattern.Type type, @N
         public static Type getByName(String name) {
             return BY_NAME.get(name);
         }
-
     }
-
 }

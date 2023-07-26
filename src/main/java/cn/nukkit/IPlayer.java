@@ -2,7 +2,6 @@ package cn.nukkit;
 
 import cn.nukkit.metadata.Metadatable;
 import cn.nukkit.permission.ServerOperator;
-
 import java.util.UUID;
 
 /**
@@ -138,5 +137,4 @@ public interface IPlayer extends ServerOperator, Metadatable {
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */
     boolean hasPlayedBefore();
-
 }

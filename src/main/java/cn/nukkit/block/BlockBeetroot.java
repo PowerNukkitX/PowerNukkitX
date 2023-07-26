@@ -4,7 +4,6 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemSeedsBeetroot;
 import cn.nukkit.item.enchantment.Enchantment;
-
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -38,9 +37,9 @@ public class BlockBeetroot extends BlockCrops {
     @Override
     public Item[] getDrops(Item item) {
         if (!isFullyGrown()) {
-            return new Item[]{Item.get(ItemID.BEETROOT_SEEDS)};
+            return new Item[] {Item.get(ItemID.BEETROOT_SEEDS)};
         }
-        
+
         int seeds = 1;
         int attempts = 3 + Math.min(0, item.getEnchantmentLevel(Enchantment.ID_FORTUNE_DIGGING));
         ThreadLocalRandom random = ThreadLocalRandom.current();
@@ -50,9 +49,6 @@ public class BlockBeetroot extends BlockCrops {
             }
         }
 
-        return new Item[]{
-                Item.get(ItemID.BEETROOT),
-                Item.get(ItemID.BEETROOT_SEEDS, 0, seeds)
-        };
+        return new Item[] {Item.get(ItemID.BEETROOT), Item.get(ItemID.BEETROOT_SEEDS, 0, seeds)};
     }
 }

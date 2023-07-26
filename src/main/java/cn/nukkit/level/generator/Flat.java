@@ -12,13 +12,12 @@ import cn.nukkit.level.generator.populator.impl.PopulatorOre;
 import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
-import lombok.extern.log4j.Log4j2;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -45,15 +44,15 @@ public class Flat extends Generator {
         this.options = options;
 
         if (this.options.containsKey("decoration")) {
-            PopulatorOre ores = new PopulatorOre(BlockID.STONE, new OreType[]{
-                    new OreType(Block.get(BlockID.COAL_ORE), 20, 16, 0, 128),
-                    new OreType(Block.get(BlockID.IRON_ORE), 20, 8, 0, 64),
-                    new OreType(Block.get(BlockID.REDSTONE_ORE), 8, 7, 0, 16),
-                    new OreType(Block.get(BlockID.LAPIS_ORE), 1, 6, 0, 32),
-                    new OreType(Block.get(BlockID.GOLD_ORE), 2, 8, 0, 32),
-                    new OreType(Block.get(BlockID.DIAMOND_ORE), 1, 7, 0, 16),
-                    new OreType(Block.get(BlockID.DIRT), 20, 32, 0, 128),
-                    new OreType(Block.get(BlockID.GRAVEL), 20, 16, 0, 128),
+            PopulatorOre ores = new PopulatorOre(BlockID.STONE, new OreType[] {
+                new OreType(Block.get(BlockID.COAL_ORE), 20, 16, 0, 128),
+                new OreType(Block.get(BlockID.IRON_ORE), 20, 8, 0, 64),
+                new OreType(Block.get(BlockID.REDSTONE_ORE), 8, 7, 0, 16),
+                new OreType(Block.get(BlockID.LAPIS_ORE), 1, 6, 0, 32),
+                new OreType(Block.get(BlockID.GOLD_ORE), 2, 8, 0, 32),
+                new OreType(Block.get(BlockID.DIAMOND_ORE), 1, 7, 0, 16),
+                new OreType(Block.get(BlockID.DIRT), 20, 32, 0, 128),
+                new OreType(Block.get(BlockID.GRAVEL), 20, 16, 0, 128),
             });
             this.populators.add(ores);
         }
@@ -97,17 +96,17 @@ public class Flat extends Generator {
             for (String block : blocks.split(",")) {
                 int id, meta = 0, cnt = 1;
                 if (Pattern.matches("^[0-9]{1,3}x[0-9]{1,4}$", block)) {
-                    //AxB
+                    // AxB
                     String[] s = block.split("x");
                     cnt = Integer.parseInt(s[0]);
                     id = Integer.parseInt(s[1]);
                 } else if (Pattern.matches("^[0-9]{1,3}:[0-9]{1,4}$", block)) {
-                    //A:B
+                    // A:B
                     String[] s = block.split(":");
                     id = Integer.parseInt(s[0]);
                     meta = Integer.parseInt(s[1]);
                 } else if (Pattern.matches("^[0-9]{1,4}$", block)) {
-                    //A
+                    // A
                     id = Integer.parseInt(block);
                 } else {
                     continue;
@@ -118,12 +117,12 @@ public class Flat extends Generator {
                     y = 0xFF;
                 }
                 for (; cY < y; ++cY) {
-                    this.structure[cY] = new int[]{id, meta};
+                    this.structure[cY] = new int[] {id, meta};
                 }
             }
             this.floorLevel = y;
             for (; y <= 0xFF; ++y) {
-                this.structure[y] = new int[]{0, 0};
+                this.structure[y] = new int[] {0, 0};
             }
             for (String option : options.split(",")) {
                 if (Pattern.matches("^[0-9a-z_]+$", option)) {

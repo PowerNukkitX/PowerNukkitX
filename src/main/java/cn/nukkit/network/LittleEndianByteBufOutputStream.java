@@ -3,10 +3,9 @@ package cn.nukkit.network;
 import cn.nukkit.api.Since;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
-import org.jetbrains.annotations.NotNull;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import org.jetbrains.annotations.NotNull;
 
 @Since("1.4.0.0-PN")
 public class LittleEndianByteBufOutputStream extends ByteBufOutputStream {

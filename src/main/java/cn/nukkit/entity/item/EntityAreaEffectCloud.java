@@ -17,7 +17,6 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.potion.InstantEffect;
 import cn.nukkit.potion.Potion;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,18 +25,25 @@ public class EntityAreaEffectCloud extends Entity {
 
     @PowerNukkitOnly
     public static final int NETWORK_ID = 95;
+
     @PowerNukkitOnly
     public List<Effect> cloudEffects;
+
     @PowerNukkitOnly
     protected int reapplicationDelay;
+
     @PowerNukkitOnly
     protected int durationOnUse;
+
     @PowerNukkitOnly
     protected float initialRadius;
+
     @PowerNukkitOnly
     protected float radiusOnUse;
+
     @PowerNukkitOnly
     protected int nextApply;
+
     private int lastAge;
 
     @PowerNukkitOnly
@@ -248,7 +254,8 @@ public class EntityAreaEffectCloud extends Entity {
         this.setDataProperty(new IntEntityData(DATA_PICKUP_COUNT, 0), false);
 
         cloudEffects = new ArrayList<>(1);
-        for (CompoundTag effectTag : namedTag.getList("mobEffects", CompoundTag.class).getAll()) {
+        for (CompoundTag effectTag :
+                namedTag.getList("mobEffects", CompoundTag.class).getAll()) {
             Effect effect = Effect.getEffect(effectTag.getByte("Id"))
                     .setAmbient(effectTag.getBoolean("Ambient"))
                     .setAmplifier(effectTag.getByte("Amplifier"))
@@ -320,14 +327,14 @@ public class EntityAreaEffectCloud extends Entity {
         super.saveNBT();
         ListTag<CompoundTag> effectsTag = new ListTag<>("mobEffects");
         for (Effect effect : cloudEffects) {
-            effectsTag.add(new CompoundTag().putByte("Id", effect.getId())
+            effectsTag.add(new CompoundTag()
+                    .putByte("Id", effect.getId())
                     .putBoolean("Ambient", effect.isAmbient())
                     .putByte("Amplifier", effect.getAmplifier())
                     .putBoolean("DisplayOnScreenTextureAnimation", effect.isVisible())
-                    .putInt("Duration", effect.getDuration())
-            );
+                    .putInt("Duration", effect.getDuration()));
         }
-        //TODO Do we really need to save the entity data to nbt or is it already saved somewhere?
+        // TODO Do we really need to save the entity data to nbt or is it already saved somewhere?
         namedTag.putList(effectsTag);
         namedTag.putInt("ParticleColor", getPotionColor());
         namedTag.putShort("PotionId", getPotionId());
@@ -381,9 +388,14 @@ public class EntityAreaEffectCloud extends Entity {
                                 if (collidingEntity.isUndead()) damage = !damage; // invert effect if undead
 
                                 if (damage)
-                                    collidingEntity.attack(new EntityDamageByEntityEvent(this, collidingEntity, EntityDamageEvent.DamageCause.MAGIC, (float) (0.5 * (double) (6 << (effect.getAmplifier() + 1)))));
+                                    collidingEntity.attack(new EntityDamageByEntityEvent(
+                                            this, collidingEntity, EntityDamageEvent.DamageCause.MAGIC, (float)
+                                                    (0.5 * (double) (6 << (effect.getAmplifier() + 1)))));
                                 else
-                                    collidingEntity.heal(new EntityRegainHealthEvent(collidingEntity, (float) (0.5 * (double) (4 << (effect.getAmplifier() + 1))), EntityRegainHealthEvent.CAUSE_MAGIC));
+                                    collidingEntity.heal(new EntityRegainHealthEvent(
+                                            collidingEntity,
+                                            (float) (0.5 * (double) (4 << (effect.getAmplifier() + 1))),
+                                            EntityRegainHealthEvent.CAUSE_MAGIC));
 
                                 continue;
                             }

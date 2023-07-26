@@ -4,9 +4,8 @@ import cn.nukkit.network.protocol.types.CommandOriginData;
 import cn.nukkit.network.protocol.types.CommandOutputMessage;
 import cn.nukkit.network.protocol.types.CommandOutputType;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import lombok.ToString;
-
 import java.util.List;
+import lombok.ToString;
 
 @ToString
 public class CommandOutputPacket extends DataPacket {
@@ -18,7 +17,6 @@ public class CommandOutputPacket extends DataPacket {
     public int successCount;
     public String data;
 
-
     @Override
     public byte pid() {
         return NETWORK_ID;
@@ -26,7 +24,7 @@ public class CommandOutputPacket extends DataPacket {
 
     @Override
     public void decode() {
-        //non
+        // non
     }
 
     @Override
@@ -34,9 +32,10 @@ public class CommandOutputPacket extends DataPacket {
         this.reset();
         putUnsignedVarInt(this.commandOriginData.type.ordinal());
         putUUID(this.commandOriginData.uuid);
-        putString(this.commandOriginData.requestId);// unknown
-        if (this.commandOriginData.type == CommandOriginData.Origin.DEV_CONSOLE || this.commandOriginData.type == CommandOriginData.Origin.TEST) {
-            putVarLong(this.commandOriginData.getVarLong().orElse(-1));// unknown
+        putString(this.commandOriginData.requestId); // unknown
+        if (this.commandOriginData.type == CommandOriginData.Origin.DEV_CONSOLE
+                || this.commandOriginData.type == CommandOriginData.Origin.TEST) {
+            putVarLong(this.commandOriginData.getVarLong().orElse(-1)); // unknown
         }
 
         putByte((byte) this.type.ordinal());
@@ -52,7 +51,7 @@ public class CommandOutputPacket extends DataPacket {
             }
         }
         if (this.type == CommandOutputType.DATA_SET) {
-            putString(this.data);// unknown
+            putString(this.data); // unknown
         }
     }
 }

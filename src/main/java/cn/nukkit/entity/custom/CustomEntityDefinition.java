@@ -1,10 +1,8 @@
 package cn.nukkit.entity.custom;
 
-
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.nbt.tag.CompoundTag;
-
 import java.util.concurrent.atomic.AtomicInteger;
 
 @PowerNukkitXOnly
@@ -32,8 +30,7 @@ public record CustomEntityDefinition(CompoundTag nbt) {
 
         private final CompoundTag nbt = new CompoundTag();
 
-        private Builder() {
-        }
+        private Builder() {}
 
         public Builder identifier(String identifier) {
             this.nbt.putString("id", identifier);
@@ -78,7 +75,4 @@ public record CustomEntityDefinition(CompoundTag nbt) {
             return new CustomEntityDefinition(this.nbt);
         }
     }
-
-
 }
-

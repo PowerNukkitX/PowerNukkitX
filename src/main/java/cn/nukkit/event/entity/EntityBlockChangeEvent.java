@@ -31,5 +31,4 @@ public class EntityBlockChangeEvent extends EntityEvent implements Cancellable {
     public Block getTo() {
         return to;
     }
-
 }

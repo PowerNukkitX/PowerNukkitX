@@ -11,14 +11,12 @@ import org.jetbrains.annotations.NotNull;
  * @author LoboMetalurgico
  * @since 13/06/2021
  */
-
 @PowerNukkitOnly
 @Since("FUTURE")
 public class BlockRootsHanging extends BlockRoots {
     @PowerNukkitOnly
     @Since("FUTURE")
-    public BlockRootsHanging() {
-    }
+    public BlockRootsHanging() {}
 
     @Override
     public String getName() {
@@ -31,7 +29,15 @@ public class BlockRootsHanging extends BlockRoots {
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         return isSupportValid() && super.place(item, block, target, face, fx, fy, fz, player);
     }
 

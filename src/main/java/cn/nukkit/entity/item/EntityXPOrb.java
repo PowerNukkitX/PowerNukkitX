@@ -9,7 +9,6 @@ import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-
 import java.util.List;
 
 /**
@@ -23,7 +22,9 @@ public class EntityXPOrb extends Entity {
     /**
      * Split sizes used for dropping experience orbs.
      */
-    public static final int[] ORB_SPLIT_SIZES = {2477, 1237, 617, 307, 149, 73, 37, 17, 7, 3, 1}; //This is indexed biggest to smallest so that we can return as soon as we found the biggest value.
+    public static final int[] ORB_SPLIT_SIZES = {2477, 1237, 617, 307, 149, 73, 37, 17, 7, 3, 1
+    }; // This is indexed biggest to smallest so that we can return as soon as we found the biggest value.
+
     public Player closestPlayer = null;
     private int age;
     private int pickupDelay;
@@ -123,16 +124,17 @@ public class EntityXPOrb extends Entity {
 
         this.dataProperties.putInt(DATA_EXPERIENCE_VALUE, this.exp);
 
-        //call event item spawn event
+        // call event item spawn event
     }
 
     @Override
     public boolean attack(EntityDamageEvent source) {
-        return (source.getCause() == DamageCause.VOID ||
-                source.getCause() == DamageCause.FIRE_TICK ||
-                (source.getCause() == DamageCause.ENTITY_EXPLOSION ||
-                        source.getCause() == DamageCause.BLOCK_EXPLOSION) &&
-                        !this.isInsideOfWater()) && super.attack(source);
+        return (source.getCause() == DamageCause.VOID
+                        || source.getCause() == DamageCause.FIRE_TICK
+                        || (source.getCause() == DamageCause.ENTITY_EXPLOSION
+                                        || source.getCause() == DamageCause.BLOCK_EXPLOSION)
+                                && !this.isInsideOfWater())
+                && super.attack(source);
     }
 
     @Override
@@ -150,20 +152,20 @@ public class EntityXPOrb extends Entity {
         boolean hasUpdate = entityBaseTick(tickDiff);
         if (this.isAlive()) {
 
-            if (this.pickupDelay > 0 && this.pickupDelay < 32767) { //Infinite delay
+            if (this.pickupDelay > 0 && this.pickupDelay < 32767) { // Infinite delay
                 this.pickupDelay -= tickDiff;
                 if (this.pickupDelay < 0) {
                     this.pickupDelay = 0;
                 }
-            }/* else { // Done in Player#checkNearEntities
-                for (Entity entity : this.level.getCollidingEntities(this.boundingBox, this)) {
-                    if (entity instanceof Player) {
-                        if (((Player) entity).pickupEntity(this, false)) {
-                            return true;
-                        }
-                    }
-                }
-            }*/
+            } /* else { // Done in Player#checkNearEntities
+                  for (Entity entity : this.level.getCollidingEntities(this.boundingBox, this)) {
+                      if (entity instanceof Player) {
+                          if (((Player) entity).pickupEntity(this, false)) {
+                              return true;
+                          }
+                      }
+                  }
+              }*/
 
             this.motionY -= this.getGravity();
 
@@ -185,7 +187,10 @@ public class EntityXPOrb extends Entity {
                 }
             }
 
-            if (this.closestPlayer != null && (this.closestPlayer.isSpectator() || !this.closestPlayer.spawned || !this.closestPlayer.isAlive())) {
+            if (this.closestPlayer != null
+                    && (this.closestPlayer.isSpectator()
+                            || !this.closestPlayer.spawned
+                            || !this.closestPlayer.isAlive())) {
                 this.closestPlayer = null;
             }
 
@@ -209,7 +214,12 @@ public class EntityXPOrb extends Entity {
             double friction = 1d - this.getDrag();
 
             if (this.onGround && (Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionZ) > 0.00001)) {
-                friction = this.getLevel().getBlock(this.temporalVector.setComponents((int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z))).getFrictionFactor() * friction;
+                friction = this.getLevel()
+                                .getBlock(this.temporalVector.setComponents(
+                                        (int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int)
+                                                Math.floor(this.z)))
+                                .getFrictionFactor()
+                        * friction;
             }
 
             this.motionX *= friction;
@@ -226,10 +236,13 @@ public class EntityXPOrb extends Entity {
                 this.kill();
                 hasUpdate = true;
             }
-
         }
 
-        return hasUpdate || !this.onGround || Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionY) > 0.00001 || Math.abs(this.motionZ) > 0.00001;
+        return hasUpdate
+                || !this.onGround
+                || Math.abs(this.motionX) > 0.00001
+                || Math.abs(this.motionY) > 0.00001
+                || Math.abs(this.motionZ) > 0.00001;
     }
 
     @Override

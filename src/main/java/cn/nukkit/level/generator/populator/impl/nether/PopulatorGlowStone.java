@@ -26,7 +26,11 @@ public class PopulatorGlowStone extends Populator {
                     int spawnY = y - random.nextBoundedInt(5);
                     int spawnZ = z + random.nextBoundedInt(8) - random.nextBoundedInt(8);
                     if (cyclesNum % 128 == 0 && cyclesNum != 0) {
-                        level.setBlockAt(x + random.nextRange(-3, 3), y - random.nextBoundedInt(4), z + random.nextRange(-3, 3), GLOWSTONE);
+                        level.setBlockAt(
+                                x + random.nextRange(-3, 3),
+                                y - random.nextBoundedInt(4),
+                                z + random.nextRange(-3, 3),
+                                GLOWSTONE);
                         count--;
                     }
                     if (checkAroundBlock(spawnX, spawnY, spawnZ, level)) {
@@ -41,7 +45,7 @@ public class PopulatorGlowStone extends Populator {
 
     private int getHighestWorkableBlock(FullChunk chunk, int x, int z) {
         int y;
-        //start scanning a bit lower down to allow space for placing on top
+        // start scanning a bit lower down to allow space for placing on top
         for (y = 125; y >= 0; y--) {
             int b = chunk.getBlockId(x, y, z);
             if (b == Block.AIR) {

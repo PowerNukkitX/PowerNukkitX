@@ -1,6 +1,5 @@
 package cn.nukkit.scoreboard.manager;
 
-
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
@@ -15,15 +14,14 @@ import cn.nukkit.scoreboard.scoreboard.IScoreboard;
 import cn.nukkit.scoreboard.scorer.EntityScorer;
 import cn.nukkit.scoreboard.scorer.PlayerScorer;
 import cn.nukkit.scoreboard.storage.IScoreboardStorage;
+import java.util.*;
 import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.*;
 
 @PowerNukkitXOnly
 @Since("1.19.30-r1")
 @Getter
-public class ScoreboardManager implements IScoreboardManager{
+public class ScoreboardManager implements IScoreboardManager {
 
     protected Map<String, IScoreboard> scoreboards = new HashMap<>();
     protected Map<DisplaySlot, IScoreboard> display = new HashMap<>();
@@ -61,15 +59,15 @@ public class ScoreboardManager implements IScoreboardManager{
         if (event.isCancelled()) {
             return false;
         }
-       scoreboards.remove(objectiveName);
-       CommandEnum.SCOREBOARD_OBJECTIVES.updateSoftEnum(UpdateSoftEnumPacket.Type.REMOVE, objectiveName);
-       viewers.forEach(viewer -> viewer.removeScoreboard(removed));
-       display.forEach((slot, scoreboard) -> {
-           if (scoreboard != null && scoreboard.getObjectiveName().equals(objectiveName)) {
+        scoreboards.remove(objectiveName);
+        CommandEnum.SCOREBOARD_OBJECTIVES.updateSoftEnum(UpdateSoftEnumPacket.Type.REMOVE, objectiveName);
+        viewers.forEach(viewer -> viewer.removeScoreboard(removed));
+        display.forEach((slot, scoreboard) -> {
+            if (scoreboard != null && scoreboard.getObjectiveName().equals(objectiveName)) {
                 display.put(slot, null);
-           }
-       });
-       return true;
+            }
+        });
+        return true;
     }
 
     @Override
@@ -101,19 +99,21 @@ public class ScoreboardManager implements IScoreboardManager{
 
     @Override
     public boolean addViewer(IScoreboardViewer viewer) {
-        var added =  this.viewers.add(viewer);
-        if (added) this.display.forEach((slot, scoreboard) -> {
-            if (scoreboard != null) scoreboard.addViewer(viewer, slot);
-        });
+        var added = this.viewers.add(viewer);
+        if (added)
+            this.display.forEach((slot, scoreboard) -> {
+                if (scoreboard != null) scoreboard.addViewer(viewer, slot);
+            });
         return added;
     }
 
     @Override
     public boolean removeViewer(IScoreboardViewer viewer) {
         var removed = viewers.remove(viewer);
-        if (removed) this.display.forEach((slot, scoreboard) -> {
-            if (scoreboard != null) scoreboard.removeViewer(viewer, slot);
-        });
+        if (removed)
+            this.display.forEach((slot, scoreboard) -> {
+                if (scoreboard != null) scoreboard.removeViewer(viewer, slot);
+            });
         return removed;
     }
 
@@ -123,7 +123,6 @@ public class ScoreboardManager implements IScoreboardManager{
      * 我们在玩家下线时，删除其他在线玩家显示槽位中的“玩家离线”
      * 并在其重新连接上服务器时加回去
      */
-
     @Override
     public void onPlayerJoin(Player player) {
         addViewer(player);
@@ -164,7 +163,7 @@ public class ScoreboardManager implements IScoreboardManager{
 
     @Override
     public void read() {
-        //新建一个列表避免迭代冲突
+        // 新建一个列表避免迭代冲突
         new ArrayList<>(this.scoreboards.values()).forEach(this::removeScoreboard);
         this.display.forEach((slot, scoreboard) -> setDisplay(slot, null));
 

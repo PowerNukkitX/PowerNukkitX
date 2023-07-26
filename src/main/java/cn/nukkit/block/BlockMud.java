@@ -4,8 +4,7 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.ItemTool;
 
 public class BlockMud extends BlockSolid {
-    public BlockMud() {
-    }
+    public BlockMud() {}
 
     @Override
     public String getName() {
@@ -37,5 +36,4 @@ public class BlockMud extends BlockSolid {
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
-
 }

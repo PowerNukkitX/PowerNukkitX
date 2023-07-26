@@ -1,4 +1,3 @@
-
 package cn.nukkit.lang;
 
 import cn.nukkit.Server;
@@ -7,8 +6,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.plugin.PluginBase;
 import io.netty.util.internal.EmptyArrays;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import lombok.extern.log4j.Log4j2;
-
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -16,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
+import lombok.extern.log4j.Log4j2;
 
 @PowerNukkitXOnly
 @Since("1.19.60-r1")
@@ -25,6 +23,7 @@ public class PluginI18n {
      * 插件多语言的默认备选语言
      */
     private LangCode fallback;
+
     private final Pattern split = Pattern.compile("%[A-Za-z0-9_.-]+");
     private final String pluginName;
     private final Map<LangCode, Map<String, String>> MULTI_LANGUAGE;
@@ -34,7 +33,6 @@ public class PluginI18n {
         this.MULTI_LANGUAGE = new HashMap<>();
         this.fallback = LangCode.en_US;
     }
-
 
     /**
      * 翻译一个文本key，key从语言文件中查询
@@ -48,7 +46,6 @@ public class PluginI18n {
     public String tr(LangCode lang, String key) {
         return tr(lang, key, EmptyArrays.EMPTY_STRINGS);
     }
-
 
     /**
      * 翻译一个文本key，key从语言文件中查询，并且按照给定参数填充其中参数
@@ -67,7 +64,6 @@ public class PluginI18n {
         }
         return baseText;
     }
-
 
     /**
      * 翻译一个文本key，key从语言文件中查询，并且按照给定参数填充其中参数
@@ -106,7 +102,6 @@ public class PluginI18n {
         return baseText;
     }
 
-
     /**
      * 获取指定id对应的多语言文本，若不存在则返回null
      * <p>
@@ -126,7 +121,6 @@ public class PluginI18n {
             return Server.getInstance().getLanguage().internalGet(id);
         }
     }
-
 
     /**
      * 获取指定id对应的多语言文本，若不存在则返回id本身
@@ -171,7 +165,8 @@ public class PluginI18n {
                 throw new FileNotFoundException();
             }
             try (FileInputStream stream = new FileInputStream(file)) {
-                this.MULTI_LANGUAGE.put(langName, parseLang(new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))));
+                this.MULTI_LANGUAGE.put(
+                        langName, parseLang(new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))));
             }
         } catch (IOException e) {
             log.fatal("Failed to load language at {}", path, e);
@@ -186,7 +181,8 @@ public class PluginI18n {
      */
     public void addLang(LangCode langName, InputStream stream) {
         try {
-            this.MULTI_LANGUAGE.put(langName, parseLang(new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))));
+            this.MULTI_LANGUAGE.put(
+                    langName, parseLang(new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))));
         } catch (IOException e) {
             log.error("Failed to parse the language input stream", e);
         }
@@ -316,7 +312,9 @@ public class PluginI18n {
             String key = t[0];
             String value = t[1];
             if (value.length() > 1 && value.charAt(0) == '"' && value.charAt(value.length() - 1) == '"') {
-                value = value.substring(1, value.length() - 1).replace("\\\"", "\"").replace("\\\\", "\\");
+                value = value.substring(1, value.length() - 1)
+                        .replace("\\\"", "\"")
+                        .replace("\\\\", "\\");
             }
             if (value.isEmpty()) {
                 continue;
@@ -325,4 +323,3 @@ public class PluginI18n {
         }
     }
 }
-

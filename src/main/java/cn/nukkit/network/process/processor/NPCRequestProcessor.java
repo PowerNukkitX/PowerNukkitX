@@ -17,8 +17,9 @@ public class NPCRequestProcessor extends DataPacketProcessor<NPCRequestPacket> {
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull NPCRequestPacket pk) {
         Player player = playerHandle.player;
-        //若sceneName字段为空，则为玩家在编辑NPC，我们并不需要记录对话框，直接通过entityRuntimeId获取实体即可
-        if (pk.getSceneName().isEmpty() && player.level.getEntity(pk.getRequestedEntityRuntimeId()) instanceof EntityNPCEntity npcEntity) {
+        // 若sceneName字段为空，则为玩家在编辑NPC，我们并不需要记录对话框，直接通过entityRuntimeId获取实体即可
+        if (pk.getSceneName().isEmpty()
+                && player.level.getEntity(pk.getRequestedEntityRuntimeId()) instanceof EntityNPCEntity npcEntity) {
             FormWindowDialog dialog = npcEntity.getDialog();
 
             FormResponseDialog response = new FormResponseDialog(pk, dialog);
@@ -31,7 +32,7 @@ public class NPCRequestProcessor extends DataPacketProcessor<NPCRequestPacket> {
             return;
         }
         if (playerHandle.getDialogWindows().getIfPresent(pk.getSceneName()) != null) {
-            //remove the window from the map only if the requestType is EXECUTE_CLOSING_COMMANDS
+            // remove the window from the map only if the requestType is EXECUTE_CLOSING_COMMANDS
             FormWindowDialog dialog;
             if (pk.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_CLOSING_COMMANDS) {
                 dialog = playerHandle.getDialogWindows().getIfPresent(pk.getSceneName());
@@ -48,15 +49,18 @@ public class NPCRequestProcessor extends DataPacketProcessor<NPCRequestPacket> {
             PlayerDialogRespondedEvent event = new PlayerDialogRespondedEvent(player, dialog, response);
             player.getServer().getPluginManager().callEvent(event);
 
-            //close dialog after clicked button (otherwise the client will not be able to close the window)
-            if (response.getClickedButton() != null && pk.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_ACTION) {
+            // close dialog after clicked button (otherwise the client will not be able to close the window)
+            if (response.getClickedButton() != null
+                    && pk.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_ACTION) {
                 NPCDialoguePacket closeWindowPacket = new NPCDialoguePacket();
                 closeWindowPacket.setRuntimeEntityId(pk.getRequestedEntityRuntimeId());
                 closeWindowPacket.setSceneName(response.getSceneName());
                 closeWindowPacket.setAction(NPCDialoguePacket.NPCDialogAction.CLOSE);
                 player.dataPacket(closeWindowPacket);
             }
-            if (response.getClickedButton() != null && response.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_ACTION && response.getClickedButton().getNextDialog() != null) {
+            if (response.getClickedButton() != null
+                    && response.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_ACTION
+                    && response.getClickedButton().getNextDialog() != null) {
                 response.getClickedButton().getNextDialog().send(player);
             }
         }

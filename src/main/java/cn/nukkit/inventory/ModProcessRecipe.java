@@ -5,28 +5,24 @@ import cn.nukkit.api.Since;
 import cn.nukkit.energy.EnergyType;
 import cn.nukkit.inventory.recipe.ItemDescriptor;
 import cn.nukkit.item.Item;
+import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 
 @PowerNukkitXOnly
 @Since("1.19.50-r3")
 public interface ModProcessRecipe extends Recipe {
     String getCategory();
 
-    @NotNull
-    List<ItemDescriptor> getIngredients();
+    @NotNull List<ItemDescriptor> getIngredients();
 
-    @NotNull
-    List<Item> getExtraResults();
+    @NotNull List<Item> getExtraResults();
 
     default String getRecipeId() {
         return CraftingManager.getShapelessItemDescriptorHash(getIngredients()).toString();
     }
 
-    @Nullable
-    default EnergyType getEnergyType() {
+    @Nullable default EnergyType getEnergyType() {
         return null;
     }
 
@@ -43,8 +39,7 @@ public interface ModProcessRecipe extends Recipe {
         return RecipeType.MOD_PROCESS;
     }
 
-    @NotNull
-    default List<Item> getAllResults() {
+    @NotNull default List<Item> getAllResults() {
         var mainResult = getResult();
         var extraResults = getExtraResults().toArray(Item.EMPTY_ARRAY);
         var results = new Item[extraResults.length + (mainResult == null || mainResult.isNull() ? 0 : 1)];

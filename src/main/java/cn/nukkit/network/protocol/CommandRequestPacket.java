@@ -1,9 +1,8 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.protocol.types.CommandOriginData;
-import lombok.ToString;
-
 import java.util.UUID;
+import lombok.ToString;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -53,7 +52,5 @@ public class CommandRequestPacket extends DataPacket {
     }
 
     @Override
-    public void encode() {
-    }
-
+    public void encode() {}
 }

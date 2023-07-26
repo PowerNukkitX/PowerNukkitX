@@ -8,7 +8,6 @@ import cn.nukkit.command.exceptions.SelectorSyntaxException;
 import cn.nukkit.command.selector.EntitySelectorAPI;
 import cn.nukkit.entity.Entity;
 import com.google.common.collect.Lists;
-
 import java.util.List;
 
 /**
@@ -20,7 +19,7 @@ import java.util.List;
 @Since("1.19.60-r1")
 public class EntitiesNode extends TargetNode<Entity> {
 
-    //todo 支持uuid 或者 xuid
+    // todo 支持uuid 或者 xuid
     @Override
     public void fill(String arg) {
         List<Entity> entities;

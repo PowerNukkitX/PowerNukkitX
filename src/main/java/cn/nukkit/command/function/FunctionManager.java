@@ -3,8 +3,6 @@ package cn.nukkit.command.function;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.data.CommandEnum;
-import lombok.Getter;
-
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -13,6 +11,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -44,7 +43,12 @@ public class FunctionManager {
                 @Override
                 public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
                     if (path.toString().endsWith(".mcfunction")) {
-                        functions.put(path.toString().replace(rootPath + "\\", "").replaceAll("\\\\", "/").replace(".mcfunction", ""), Function.fromPath(path));
+                        functions.put(
+                                path.toString()
+                                        .replace(rootPath + "\\", "")
+                                        .replaceAll("\\\\", "/")
+                                        .replace(".mcfunction", ""),
+                                Function.fromPath(path));
                     }
                     return FileVisitResult.CONTINUE;
                 }

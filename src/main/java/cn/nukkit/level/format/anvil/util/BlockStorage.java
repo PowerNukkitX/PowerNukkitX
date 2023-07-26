@@ -1,5 +1,8 @@
 package cn.nukkit.level.format.anvil.util;
 
+import static cn.nukkit.api.API.Definition.INTERNAL;
+import static cn.nukkit.api.API.Usage.BLEEDING;
+
 import cn.nukkit.api.*;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
@@ -13,17 +16,13 @@ import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.functional.BlockPositionDataConsumer;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.IntSet;
-import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
-
+import java.util.Arrays;
+import java.util.BitSet;
 import javax.annotation.Nonnegative;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Arrays;
-import java.util.BitSet;
-
-import static cn.nukkit.api.API.Definition.INTERNAL;
-import static cn.nukkit.api.API.Usage.BLEEDING;
+import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
 
 @ParametersAreNonnullByDefault
 @Log4j2
@@ -31,8 +30,10 @@ public class BlockStorage {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockStorage[] EMPTY_ARRAY = new BlockStorage[0];
+
     @PowerNukkitOnly
     public static final int SECTION_SIZE = 4096;
+
     private static final byte FLAG_HAS_ID = 0b00_0001;
     private static final byte FLAG_HAS_ID_EXTRA = 0b00_0010;
     private static final byte FLAG_HAS_DATA_EXTRA = 0b00_0100;
@@ -43,7 +44,8 @@ public class BlockStorage {
     private static final byte FLAG_ENABLE_DATA_EXTRA = FLAG_HAS_ID | FLAG_HAS_DATA_EXTRA;
     private static final byte FLAG_ENABLE_DATA_BIG = FLAG_ENABLE_DATA_EXTRA | FLAG_HAS_DATA_BIG;
     private static final byte FLAG_ENABLE_DATA_HUGE = FLAG_ENABLE_DATA_BIG | FLAG_HAS_DATA_HUGE;
-    private static final byte FLAG_EVERYTHING_ENABLED = FLAG_ENABLE_DATA_HUGE | FLAG_ENABLE_ID_EXTRA | FLAG_PALETTE_UPDATED;
+    private static final byte FLAG_EVERYTHING_ENABLED =
+            FLAG_ENABLE_DATA_HUGE | FLAG_ENABLE_ID_EXTRA | FLAG_PALETTE_UPDATED;
     private static final int BLOCK_ID_MASK = 0x00FF;
     private static final int BLOCK_ID_EXTRA_MASK = 0xFF00;
     private static final int BLOCK_ID_FULL = BLOCK_ID_MASK | BLOCK_ID_EXTRA_MASK;
@@ -56,8 +58,9 @@ public class BlockStorage {
     private final PalettedBlockStorage palette;
     private final BlockState[] states;
     private byte flags = FLAG_PALETTE_UPDATED;
-    @Nullable
-    private BitSet denyStates = null;
+
+    @Nullable private BitSet denyStates = null;
+
     @PowerNukkitXOnly
     @Since("1.19.21-r1")
     private boolean needReObfuscate = true;
@@ -158,7 +161,10 @@ public class BlockStorage {
     }
 
     @Deprecated
-    @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.3.0.0-PN", replaceWith = "getAndSetFullBlock")
+    @DeprecationDetails(
+            reason = "The meta is limited to 32 bits",
+            since = "1.3.0.0-PN",
+            replaceWith = "getAndSetFullBlock")
     public int getAndSetFullBlock(int x, int y, int z, int value) {
         return getAndSetFullBlock(getIndex(x, y, z), value);
     }
@@ -217,7 +223,8 @@ public class BlockStorage {
         updateFlags(index, previous, state);
         if (getFlag(FLAG_PALETTE_UPDATED)) {
             int runtimeId = state.getRuntimeId();
-            if (runtimeId == BlockStateRegistry.getFallbackRuntimeId() && !state.equals(BlockStateRegistry.getFallbackBlockState())) {
+            if (runtimeId == BlockStateRegistry.getFallbackRuntimeId()
+                    && !state.equals(BlockStateRegistry.getFallbackBlockState())) {
                 delayPaletteUpdates();
             } else {
                 palette.setBlock(index, runtimeId);
@@ -291,8 +298,8 @@ public class BlockStorage {
         }
         index = (index & ~0xF) << 1;
         for (int y = 0; y <= 0xF; y++) {
-            denyStates.set(index++);    // Deny
-            denyStates.set(index++);    // Allow
+            denyStates.set(index++); // Deny
+            denyStates.set(index++); // Allow
             // Both deny and allow means border
         }
     }
@@ -305,7 +312,7 @@ public class BlockStorage {
         index <<= 1;
         boolean first = true;
         for (; y <= 0xF; y++, index += 2, first = false) {
-            if (denyStates.get(index + 1)) { //Allow
+            if (denyStates.get(index + 1)) { // Allow
                 if (first) { // Replacing an allow block with a deny block
                     if (denyStates.get(index)) { // If the XZ pos have a border, the border takes priority
                         return;
@@ -331,7 +338,7 @@ public class BlockStorage {
         index <<= 1;
         boolean first = true;
         for (; y <= 0xF; y++, index += 2, first = false) {
-            if (denyStates.get(index)) { //Deny
+            if (denyStates.get(index)) { // Deny
                 if (first) { // Replacing a deny block with an allow block
                     if (denyStates.get(index + 1)) { // If the XZ pos have a border, the border takes priority
                         return;
@@ -390,7 +397,9 @@ public class BlockStorage {
         // Clear the border flags
         boolean removeDeny = true;
         boolean removeAllow = true;
-        for (int blockIndex = bottomIndex, flagIndex = blockIndex << 1; blockIndex < topIndex; blockIndex++, flagIndex += 2) {
+        for (int blockIndex = bottomIndex, flagIndex = blockIndex << 1;
+                blockIndex < topIndex;
+                blockIndex++, flagIndex += 2) {
             switch (states[blockIndex].getBlockId()) {
                 case BlockID.ALLOW:
                     removeDeny = true;
@@ -447,8 +456,7 @@ public class BlockStorage {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public ImmutableBlockStorage immutableCopy() {
+    @NotNull public ImmutableBlockStorage immutableCopy() {
         return new ImmutableBlockStorage(states, flags, palette, denyStates);
     }
 
@@ -507,12 +515,12 @@ public class BlockStorage {
     }
 
     protected final boolean canBeObfuscated(IntSet transparentBlockSet, int x, int y, int z) {
-        return !transparentBlockSet.contains(states[getIndex(x + 1, y, z)].getRuntimeId()) &&
-                !transparentBlockSet.contains(states[getIndex(x - 1, y, z)].getRuntimeId()) &&
-                !transparentBlockSet.contains(states[getIndex(x, y + 1, z)].getRuntimeId()) &&
-                !transparentBlockSet.contains(states[getIndex(x, y - 1, z)].getRuntimeId()) &&
-                !transparentBlockSet.contains(states[getIndex(x, y, z + 1)].getRuntimeId()) &&
-                !transparentBlockSet.contains(states[getIndex(x, y, z - 1)].getRuntimeId());
+        return !transparentBlockSet.contains(states[getIndex(x + 1, y, z)].getRuntimeId())
+                && !transparentBlockSet.contains(states[getIndex(x - 1, y, z)].getRuntimeId())
+                && !transparentBlockSet.contains(states[getIndex(x, y + 1, z)].getRuntimeId())
+                && !transparentBlockSet.contains(states[getIndex(x, y - 1, z)].getRuntimeId())
+                && !transparentBlockSet.contains(states[getIndex(x, y, z + 1)].getRuntimeId())
+                && !transparentBlockSet.contains(states[getIndex(x, y, z - 1)].getRuntimeId());
     }
 
     @PowerNukkitXOnly
@@ -535,7 +543,9 @@ public class BlockStorage {
                         rid = tmp;
                     } else {
                         var tmp2 = fakeBlockMap.get(rid);
-                        if (tmp2 != null && (nukkitRandom.nextSignedInt() & XAndDenominator) == 0 && canBeObfuscated(transparentBlockSet, x, y, z)) {
+                        if (tmp2 != null
+                                && (nukkitRandom.nextSignedInt() & XAndDenominator) == 0
+                                && canBeObfuscated(transparentBlockSet, x, y, z)) {
                             rid = tmp2.getInt(nukkitRandom.nextRange(0, tmp2.size() - 1));
                         }
                     }
@@ -559,7 +569,7 @@ public class BlockStorage {
     public void iterateStates(BlockPositionDataConsumer<BlockState> consumer) {
         for (int i = 0; i < states.length; i++) {
             // XZY = Bedrock format
-            //int index = (x << 8) + (z << 4) + y; // XZY = Bedrock format
+            // int index = (x << 8) + (z << 4) + y; // XZY = Bedrock format
             int x = (i >> 8) & 0xF;
             int z = (i >> 4) & 0xF;
             int y = i & 0xF;

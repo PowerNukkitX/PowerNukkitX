@@ -1,9 +1,8 @@
 package cn.nukkit.plugin.js;
 
-import org.graalvm.polyglot.Context;
-
 import java.util.Collection;
 import java.util.Map;
+import org.graalvm.polyglot.Context;
 
 public interface JSFeature {
     String getName();
@@ -16,7 +15,5 @@ public interface JSFeature {
         return false;
     }
 
-    default void injectIntoContext(Context context) {
-
-    }
+    default void injectIntoContext(Context context) {}
 }

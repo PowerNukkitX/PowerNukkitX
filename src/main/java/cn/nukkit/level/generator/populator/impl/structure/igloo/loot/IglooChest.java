@@ -26,8 +26,7 @@ public class IglooChest extends RandomizableContainer {
                 .register(new ItemEntry(Item.WHEAT, 0, 3, 2, 10));
         this.pools.put(pool1.build(), new RollEntry(8, 2, pool1.getTotalWeight()));
 
-        PoolBuilder pool2 = new PoolBuilder()
-                .register(new ItemEntry(Item.GOLDEN_APPLE, 1));
+        PoolBuilder pool2 = new PoolBuilder().register(new ItemEntry(Item.GOLDEN_APPLE, 1));
         this.pools.put(pool2.build(), new RollEntry(1, pool2.getTotalWeight()));
     }
 

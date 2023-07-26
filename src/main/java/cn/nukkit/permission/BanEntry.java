@@ -2,14 +2,13 @@ package cn.nukkit.permission;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import lombok.extern.log4j.Log4j2;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -75,7 +74,9 @@ public class BanEntry {
         map.put("name", getName());
         map.put("creationDate", new SimpleDateFormat(format).format(getCreationDate()));
         map.put("source", this.getSource());
-        map.put("expireDate", getExpirationDate() != null ? new SimpleDateFormat(format).format(getExpirationDate()) : "Forever");
+        map.put(
+                "expireDate",
+                getExpirationDate() != null ? new SimpleDateFormat(format).format(getExpirationDate()) : "Forever");
         map.put("reason", this.getReason());
         return map;
     }
@@ -84,7 +85,10 @@ public class BanEntry {
         BanEntry banEntry = new BanEntry(map.get("name"));
         try {
             banEntry.setCreationDate(new SimpleDateFormat(format).parse(map.get("creationDate")));
-            banEntry.setExpirationDate(!map.get("expireDate").equals("Forever") ? new SimpleDateFormat(format).parse(map.get("expireDate")) : null);
+            banEntry.setExpirationDate(
+                    !map.get("expireDate").equals("Forever")
+                            ? new SimpleDateFormat(format).parse(map.get("expireDate"))
+                            : null);
         } catch (ParseException e) {
             log.error("An exception happed while loading the ban list.", e);
         }
@@ -98,12 +102,14 @@ public class BanEntry {
     }
 
     public static BanEntry fromString(String str) {
-        Map<String, String> map = new Gson().fromJson(str, new TypeToken<TreeMap<String, String>>() {
-        }.getType());
+        Map<String, String> map = new Gson().fromJson(str, new TypeToken<TreeMap<String, String>>() {}.getType());
         BanEntry banEntry = new BanEntry(map.get("name"));
         try {
             banEntry.setCreationDate(new SimpleDateFormat(format).parse(map.get("creationDate")));
-            banEntry.setExpirationDate(!map.get("expireDate").equals("Forever") ? new SimpleDateFormat(format).parse(map.get("expireDate")) : null);
+            banEntry.setExpirationDate(
+                    !map.get("expireDate").equals("Forever")
+                            ? new SimpleDateFormat(format).parse(map.get("expireDate"))
+                            : null);
         } catch (ParseException e) {
             log.error("An exception happened while loading a ban entry from the string {}", str, e);
         }
@@ -111,5 +117,4 @@ public class BanEntry {
         banEntry.setReason(map.get("reason"));
         return banEntry;
     }
-
 }

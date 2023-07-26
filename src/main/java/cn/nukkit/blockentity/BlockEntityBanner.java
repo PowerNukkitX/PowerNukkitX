@@ -61,19 +61,22 @@ public class BlockEntityBanner extends BlockEntitySpawnable {
 
     public void addPattern(BannerPattern pattern) {
         ListTag<CompoundTag> patterns = this.namedTag.getList("Patterns", CompoundTag.class);
-        patterns.add(new CompoundTag("").
-                putInt("Color", pattern.color().getDyeData() & 0x0f).
-                putString("Pattern", pattern.type().getName()));
+        patterns.add(new CompoundTag("")
+                .putInt("Color", pattern.color().getDyeData() & 0x0f)
+                .putString("Pattern", pattern.type().getName()));
         this.namedTag.putList(patterns);
     }
 
     public BannerPattern getPattern(int index) {
-        return BannerPattern.fromCompoundTag(this.namedTag.getList("Patterns").size() > index && index >= 0 ? this.namedTag.getList("Patterns", CompoundTag.class).get(index) : new CompoundTag());
+        return BannerPattern.fromCompoundTag(
+                this.namedTag.getList("Patterns").size() > index && index >= 0
+                        ? this.namedTag.getList("Patterns", CompoundTag.class).get(index)
+                        : new CompoundTag());
     }
 
     public void removePattern(int index) {
         ListTag<CompoundTag> patterns = this.namedTag.getList("Patterns", CompoundTag.class);
-        if(patterns.size() > index && index >= 0) {
+        if (patterns.size() > index && index >= 0) {
             patterns.remove(index);
         }
     }
@@ -94,6 +97,4 @@ public class BlockEntityBanner extends BlockEntitySpawnable {
     public DyeColor getDyeColor() {
         return DyeColor.getByWoolData(color);
     }
-
-
 }

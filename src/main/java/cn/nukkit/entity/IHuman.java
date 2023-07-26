@@ -13,7 +13,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.utils.*;
-
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
@@ -72,13 +71,15 @@ public interface IHuman extends InventoryHolder {
                     newSkin.setGeometryName(skinTag.getString("GeometryName"));
                 }
                 if (skinTag.contains("SkinResourcePatch")) {
-                    newSkin.setSkinResourcePatch(new String(skinTag.getByteArray("SkinResourcePatch"), StandardCharsets.UTF_8));
+                    newSkin.setSkinResourcePatch(
+                            new String(skinTag.getByteArray("SkinResourcePatch"), StandardCharsets.UTF_8));
                 }
                 if (skinTag.contains("GeometryData")) {
                     newSkin.setGeometryData(new String(skinTag.getByteArray("GeometryData"), StandardCharsets.UTF_8));
                 }
                 if (skinTag.contains("SkinAnimationData")) {
-                    newSkin.setAnimationData(new String(skinTag.getByteArray("SkinAnimationData"), StandardCharsets.UTF_8));
+                    newSkin.setAnimationData(
+                            new String(skinTag.getByteArray("SkinAnimationData"), StandardCharsets.UTF_8));
                 } else if (skinTag.contains("AnimationData")) { // backwards compatible
                     newSkin.setAnimationData(new String(skinTag.getByteArray("AnimationData"), StandardCharsets.UTF_8));
                 }
@@ -100,7 +101,9 @@ public interface IHuman extends InventoryHolder {
                         int width = animationTag.getInt("ImageWidth");
                         int height = animationTag.getInt("ImageHeight");
                         int expression = animationTag.getInt("AnimationExpression");
-                        newSkin.getAnimations().add(new SkinAnimation(new SerializedImage(width, height, image), type, frames, expression));
+                        newSkin.getAnimations()
+                                .add(new SkinAnimation(
+                                        new SerializedImage(width, height, image), type, frames, expression));
                     }
                 }
                 if (skinTag.contains("ArmSize")) {
@@ -112,23 +115,24 @@ public interface IHuman extends InventoryHolder {
                 if (skinTag.contains("PersonaPieces")) {
                     ListTag<CompoundTag> pieces = skinTag.getList("PersonaPieces", CompoundTag.class);
                     for (CompoundTag piece : pieces.getAll()) {
-                        newSkin.getPersonaPieces().add(new PersonaPiece(
-                                piece.getString("PieceId"),
-                                piece.getString("PieceType"),
-                                piece.getString("PackId"),
-                                piece.getBoolean("IsDefault"),
-                                piece.getString("ProductId")
-                        ));
+                        newSkin.getPersonaPieces()
+                                .add(new PersonaPiece(
+                                        piece.getString("PieceId"),
+                                        piece.getString("PieceType"),
+                                        piece.getString("PackId"),
+                                        piece.getBoolean("IsDefault"),
+                                        piece.getString("ProductId")));
                     }
                 }
                 if (skinTag.contains("PieceTintColors")) {
                     ListTag<CompoundTag> tintColors = skinTag.getList("PieceTintColors", CompoundTag.class);
                     for (CompoundTag tintColor : tintColors.getAll()) {
-                        newSkin.getTintColors().add(new PersonaPieceTint(
-                                tintColor.getString("PieceType"),
-                                tintColor.getList("Colors", StringTag.class).getAll().stream()
-                                        .map(stringTag -> stringTag.data).collect(Collectors.toList())
-                        ));
+                        newSkin.getTintColors()
+                                .add(new PersonaPieceTint(
+                                        tintColor.getString("PieceType"),
+                                        tintColor.getList("Colors", StringTag.class).getAll().stream()
+                                                .map(stringTag -> stringTag.data)
+                                                .collect(Collectors.toList())));
                     }
                 }
                 if (skinTag.contains("IsTrustedSkin")) {
@@ -140,29 +144,35 @@ public interface IHuman extends InventoryHolder {
             if (this.getSkin() == null) {
                 this.setSkin(new Skin());
             }
-            this.setUniqueId(Utils.dataToUUID(String.valueOf(human.getId()).getBytes(StandardCharsets.UTF_8),
-                    this.getSkin().getSkinData().data, human.getNameTag().getBytes(StandardCharsets.UTF_8)));
+            this.setUniqueId(Utils.dataToUUID(
+                    String.valueOf(human.getId()).getBytes(StandardCharsets.UTF_8),
+                    this.getSkin().getSkinData().data,
+                    human.getNameTag().getBytes(StandardCharsets.UTF_8)));
         }
 
         if (isIntelligentHuman) {
             EntityIntelligentHuman entityIntelligentHuman = (EntityIntelligentHuman) this;
-            this.setInventories(new Inventory[]{
-                    new FakeHumanInventory(entityIntelligentHuman),
-                    new FakeHumanOffhandInventory(entityIntelligentHuman),
-                    new FakeHumanEnderChestInventory(entityIntelligentHuman)
+            this.setInventories(new Inventory[] {
+                new FakeHumanInventory(entityIntelligentHuman),
+                new FakeHumanOffhandInventory(entityIntelligentHuman),
+                new FakeHumanEnderChestInventory(entityIntelligentHuman)
             });
             if (human.namedTag.containsNumber("SelectedInventorySlot")) {
-                entityIntelligentHuman.getInventory().setHeldItemSlot(NukkitMath.clamp(human.namedTag.getInt("SelectedInventorySlot"), 0, 8));
+                entityIntelligentHuman
+                        .getInventory()
+                        .setHeldItemSlot(NukkitMath.clamp(human.namedTag.getInt("SelectedInventorySlot"), 0, 8));
             }
         } else {
             EntityHumanType entityHumanType = (EntityHumanType) this;
-            this.setInventories(new Inventory[]{
-                    new PlayerInventory(entityHumanType),
-                    new PlayerOffhandInventory(entityHumanType),
-                    new PlayerEnderChestInventory(entityHumanType)
+            this.setInventories(new Inventory[] {
+                new PlayerInventory(entityHumanType),
+                new PlayerOffhandInventory(entityHumanType),
+                new PlayerEnderChestInventory(entityHumanType)
             });
             if (human.namedTag.containsNumber("SelectedInventorySlot")) {
-                entityHumanType.getInventory().setHeldItemSlot(NukkitMath.clamp(human.namedTag.getInt("SelectedInventorySlot"), 0, 8));
+                entityHumanType
+                        .getInventory()
+                        .setHeldItemSlot(NukkitMath.clamp(human.namedTag.getInt("SelectedInventorySlot"), 0, 8));
             }
         }
 
@@ -171,8 +181,8 @@ public interface IHuman extends InventoryHolder {
             ListTag<CompoundTag> inventoryList = human.namedTag.getList("Inventory", CompoundTag.class);
             for (CompoundTag item : inventoryList.getAll()) {
                 int slot = item.getByte("Slot");
-                if (slot >= 0 && slot < 9) { //hotbar
-                    //Old hotbar saving stuff, remove it (useless now)
+                if (slot >= 0 && slot < 9) { // hotbar
+                    // Old hotbar saving stuff, remove it (useless now)
                     inventoryList.remove(item);
                 } else if (slot >= 100 && slot < 104) {
                     inventory.setItem(inventory.getSize() + slot - 100, NBTIO.getItemHelper(item));
@@ -186,7 +196,9 @@ public interface IHuman extends InventoryHolder {
         if (human.namedTag.contains("EnderItems") && human.namedTag.get("EnderItems") instanceof ListTag) {
             ListTag<CompoundTag> inventoryList = human.namedTag.getList("EnderItems", CompoundTag.class);
             for (CompoundTag item : inventoryList.getAll()) {
-                ((EntityHumanType) human).getEnderChestInventory().setItem(item.getByte("Slot"), NBTIO.getItemHelper(item));
+                ((EntityHumanType) human)
+                        .getEnderChestInventory()
+                        .setItem(item.getByte("Slot"), NBTIO.getItemHelper(item));
             }
         }
     }
@@ -194,7 +206,7 @@ public interface IHuman extends InventoryHolder {
     default void saveHumanEntity(Entity human) {
         boolean isIntelligentHuman = this instanceof EntityIntelligentHuman;
 
-        //EntityHumanType
+        // EntityHumanType
         ListTag<CompoundTag> inventoryTag = null;
         if (this.getInventory() != null) {
             inventoryTag = new ListTag<>("Inventory");
@@ -206,8 +218,7 @@ public interface IHuman extends InventoryHolder {
                         .putShort("Damage", 0)
                         .putByte("Slot", slot)
                         .putByte("TrueSlot", -1)
-                        .putShort("id", 0)
-                );
+                        .putShort("id", 0));
             }
 
             int slotCount = Player.SURVIVAL_SLOTS + 9;
@@ -223,9 +234,11 @@ public interface IHuman extends InventoryHolder {
                 }
             }
             if (isIntelligentHuman) {
-                human.namedTag.putInt("SelectedInventorySlot", ((FakeHumanInventory) this.getInventory()).getHeldItemIndex());
+                human.namedTag.putInt(
+                        "SelectedInventorySlot", ((FakeHumanInventory) this.getInventory()).getHeldItemIndex());
             } else {
-                human.namedTag.putInt("SelectedInventorySlot", ((PlayerInventory) this.getInventory()).getHeldItemIndex());
+                human.namedTag.putInt(
+                        "SelectedInventorySlot", ((PlayerInventory) this.getInventory()).getHeldItemIndex());
             }
         }
 
@@ -250,7 +263,7 @@ public interface IHuman extends InventoryHolder {
             }
         }
 
-        //EntityHuman
+        // EntityHuman
         var skin = getSkin();
         if (skin != null) {
             CompoundTag skinTag = new CompoundTag()
@@ -262,7 +275,8 @@ public interface IHuman extends InventoryHolder {
                     .putByteArray("CapeData", skin.getCapeData().data)
                     .putInt("CapeImageWidth", skin.getCapeData().width)
                     .putInt("CapeImageHeight", skin.getCapeData().height)
-                    .putByteArray("SkinResourcePatch", skin.getSkinResourcePatch().getBytes(StandardCharsets.UTF_8))
+                    .putByteArray(
+                            "SkinResourcePatch", skin.getSkinResourcePatch().getBytes(StandardCharsets.UTF_8))
                     .putByteArray("GeometryData", skin.getGeometryData().getBytes(StandardCharsets.UTF_8))
                     .putByteArray("SkinAnimationData", skin.getAnimationData().getBytes(StandardCharsets.UTF_8))
                     .putBoolean("PremiumSkin", skin.isPremium())
@@ -291,7 +305,8 @@ public interface IHuman extends InventoryHolder {
             if (!personaPieces.isEmpty()) {
                 ListTag<CompoundTag> piecesTag = new ListTag<>("PersonaPieces");
                 for (PersonaPiece piece : personaPieces) {
-                    piecesTag.add(new CompoundTag().putString("PieceId", piece.id)
+                    piecesTag.add(new CompoundTag()
+                            .putString("PieceId", piece.id)
                             .putString("PieceType", piece.type)
                             .putString("PackId", piece.packId)
                             .putBoolean("IsDefault", piece.isDefault)
@@ -304,7 +319,8 @@ public interface IHuman extends InventoryHolder {
                 ListTag<CompoundTag> tintsTag = new ListTag<>("PieceTintColors");
                 for (PersonaPieceTint tint : tints) {
                     ListTag<StringTag> colors = new ListTag<>("Colors");
-                    colors.setAll(tint.colors.stream().map(s -> new StringTag("", s)).collect(Collectors.toList()));
+                    colors.setAll(
+                            tint.colors.stream().map(s -> new StringTag("", s)).collect(Collectors.toList()));
                     tintsTag.add(new CompoundTag()
                             .putString("PieceType", tint.pieceType)
                             .putList(colors));

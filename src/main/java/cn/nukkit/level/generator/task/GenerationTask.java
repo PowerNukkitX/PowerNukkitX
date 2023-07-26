@@ -15,7 +15,6 @@ public class GenerationTask extends AsyncTask {
     public boolean state;
     private BaseFullChunk chunk;
 
-
     public GenerationTask(Level level, BaseFullChunk chunk) {
         this.state = true;
         this.chunk = chunk;
@@ -60,7 +59,6 @@ public class GenerationTask extends AsyncTask {
                 manager.cleanChunks(level.getSeed());
             }
         }
-
     }
 
     @Override

@@ -1,5 +1,8 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.OPEN;
+import static cn.nukkit.blockproperty.CommonBlockProperties.UPPER_BLOCK;
+
 import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
 import cn.nukkit.api.DeprecationDetails;
@@ -26,14 +29,10 @@ import cn.nukkit.math.BlockFace.AxisDirection;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-
-import static cn.nukkit.blockproperty.CommonBlockProperties.OPEN;
-import static cn.nukkit.blockproperty.CommonBlockProperties.UPPER_BLOCK;
+import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -54,24 +53,36 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final BlockProperty<BlockFace> DOOR_DIRECTION = new ArrayBlockProperty<>("direction", false, new BlockFace[]{
-            BlockFace.EAST, BlockFace.SOUTH,
-            BlockFace.WEST, BlockFace.NORTH
-    }).ordinal(true);
+    public static final BlockProperty<BlockFace> DOOR_DIRECTION = new ArrayBlockProperty<>(
+                    "direction", false, new BlockFace[] {
+                        BlockFace.EAST, BlockFace.SOUTH,
+                        BlockFace.WEST, BlockFace.NORTH
+                    })
+            .ordinal(true);
 
     @PowerNukkitOnly
-    protected static final BlockProperties PROPERTIES = new BlockProperties(DOOR_DIRECTION, OPEN, UPPER_BLOCK, DOOR_HINGE);
+    protected static final BlockProperties PROPERTIES =
+            new BlockProperties(DOOR_DIRECTION, OPEN, UPPER_BLOCK, DOOR_HINGE);
 
     @Deprecated
-    @DeprecationDetails(reason = "Use the accessors or properties instead", since = "1.4.0.0-PN", replaceWith = "CommonBlockProperties.OPEN")
+    @DeprecationDetails(
+            reason = "Use the accessors or properties instead",
+            since = "1.4.0.0-PN",
+            replaceWith = "CommonBlockProperties.OPEN")
     public static final int DOOR_OPEN_BIT = PROPERTIES.getOffset(OPEN.getName());
 
     @Deprecated
-    @DeprecationDetails(reason = "Use the accessors or properties instead", since = "1.4.0.0-PN", replaceWith = "UPPER_BLOCK")
+    @DeprecationDetails(
+            reason = "Use the accessors or properties instead",
+            since = "1.4.0.0-PN",
+            replaceWith = "UPPER_BLOCK")
     public static final int DOOR_TOP_BIT = PROPERTIES.getOffset(UPPER_BLOCK.getName());
 
     @Deprecated
-    @DeprecationDetails(reason = "Use the accessors or properties instead", since = "1.4.0.0-PN", replaceWith = "DOOR_HINGE")
+    @DeprecationDetails(
+            reason = "Use the accessors or properties instead",
+            since = "1.4.0.0-PN",
+            replaceWith = "DOOR_HINGE")
     public static final int DOOR_HINGE_BIT = PROPERTIES.getOffset(DOOR_HINGE.getName());
 
     @Deprecated
@@ -84,8 +95,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -114,7 +124,10 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
     }
 
     @Deprecated
-    @DeprecationDetails(reason = "Limited amount of state data", since = "1.4.0.0-PN", replaceWith = "getCurrentState()")
+    @DeprecationDetails(
+            reason = "Limited amount of state data",
+            since = "1.4.0.0-PN",
+            replaceWith = "getCurrentState()")
     public int getFullDamage() {
         return getSignedBigDamage();
     }
@@ -140,8 +153,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
                     this.z,
                     this.x + 1 + pos.getXOffset() - (THICKNESS * pos.getXOffset()),
                     this.y + 1,
-                    this.z + 1 + pos.getZOffset() - (THICKNESS * pos.getZOffset())
-            );
+                    this.z + 1 + pos.getZOffset() - (THICKNESS * pos.getZOffset()));
         } else {
             return new SimpleAxisAlignedBB(
                     this.x + pos.getXOffset() - (THICKNESS * pos.getXOffset()),
@@ -149,8 +161,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
                     this.z + pos.getZOffset() - (THICKNESS * pos.getZOffset()),
                     this.x + 1,
                     this.y + 1,
-                    this.z + 1
-            );
+                    this.z + 1);
         }
     }
 
@@ -195,7 +206,9 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
     private void onRedstoneUpdate() {
         if ((this.isOpen() != this.isGettingPower()) && !this.getManualOverride()) {
             if (this.isOpen() != this.isGettingPower()) {
-                level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, this.isOpen() ? 15 : 0, this.isOpen() ? 0 : 15));
+                level.getServer()
+                        .getPluginManager()
+                        .callEvent(new BlockRedstoneEvent(this, this.isOpen() ? 15 : 0, this.isOpen() ? 0 : 15));
 
                 this.setOpen(null, this.isGettingPower());
             }
@@ -271,7 +284,15 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed support logic")
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
         if (this.y > this.level.getMaxHeight() - 2 || face != BlockFace.UP) {
             return false;
         }
@@ -287,13 +308,13 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
 
         Block left = this.getSide(direction.rotateYCCW());
         Block right = this.getSide(direction.rotateY());
-        if (left.getId() == this.getId() || (!right.isTransparent() && left.isTransparent())) { //Door hinge
+        if (left.getId() == this.getId() || (!right.isTransparent() && left.isTransparent())) { // Door hinge
             setRightHinged(true);
         }
 
         setTop(false);
 
-        level.setBlock(block, this, true, false); //Bottom
+        level.setBlock(block, this, true, false); // Bottom
 
         if (blockUp instanceof BlockLiquid && ((BlockLiquid) blockUp).usesWaterLogging()) {
             level.setBlock(blockUp, 1, blockUp, true, false);
@@ -302,7 +323,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
         BlockDoor doorTop = (BlockDoor) clone();
         doorTop.y++;
         doorTop.setTop(true);
-        level.setBlock(doorTop, doorTop, true, true); //Top
+        level.setBlock(doorTop, doorTop, true, true); // Top
 
         level.updateAround(block);
 
@@ -369,13 +390,15 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
 
     @PowerNukkitDifference(info = "Just call the #setOpen() method.", since = "1.4.0.0-PN")
     public boolean toggle(Player player) {
-        if (!player.getAdventureSettings().get(AdventureSettings.Type.DOORS_AND_SWITCHED))
-            return false;
+        if (!player.getAdventureSettings().get(AdventureSettings.Type.DOORS_AND_SWITCHED)) return false;
         return this.setOpen(player, !this.isOpen());
     }
 
-    @PowerNukkitDifference(info = "Using direct values, instead of toggling (fixes a redstone bug, that the door won't open). " +
-            "Also adding possibility to detect, whether a player or redstone recently opened/closed the door.", since = "1.4.0.0-PN")
+    @PowerNukkitDifference(
+            info =
+                    "Using direct values, instead of toggling (fixes a redstone bug, that the door won't open). "
+                            + "Also adding possibility to detect, whether a player or redstone recently opened/closed the door.",
+            since = "1.4.0.0-PN")
     @PowerNukkitOnly
     public boolean setOpen(@Nullable Player player, boolean open) {
         if (open == this.isOpen()) {
@@ -414,7 +437,9 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
         playOpenCloseSound();
 
         var source = this.clone().add(0.5, 0.5, 0.5);
-        VibrationEvent vibrationEvent = open ? new VibrationEvent(player != null ? player : this, source, VibrationType.BLOCK_OPEN) : new VibrationEvent(player != null ? player : this, source, VibrationType.BLOCK_CLOSE);
+        VibrationEvent vibrationEvent = open
+                ? new VibrationEvent(player != null ? player : this, source, VibrationType.BLOCK_OPEN)
+                : new VibrationEvent(player != null ? player : this, source, VibrationType.BLOCK_CLOSE);
         this.level.getVibrationManager().callVibrationEvent(vibrationEvent);
         return true;
     }

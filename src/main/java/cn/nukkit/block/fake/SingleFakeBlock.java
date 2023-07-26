@@ -9,7 +9,6 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.BlockEntityDataPacket;
 import cn.nukkit.network.protocol.UpdateBlockPacket;
-
 import java.io.IOException;
 import java.nio.ByteOrder;
 import java.util.List;
@@ -53,7 +52,8 @@ public class SingleFakeBlock implements FakeBlock {
             blockEntityDataPacket.y = position.getFloorY();
             blockEntityDataPacket.z = position.getFloorZ();
             try {
-                blockEntityDataPacket.namedTag = NBTIO.write(this.getBlockEntityDataAt(position, titleName), ByteOrder.LITTLE_ENDIAN, true);
+                blockEntityDataPacket.namedTag =
+                        NBTIO.write(this.getBlockEntityDataAt(position, titleName), ByteOrder.LITTLE_ENDIAN, true);
             } catch (IOException exception) {
                 exception.printStackTrace();
             }
@@ -66,7 +66,8 @@ public class SingleFakeBlock implements FakeBlock {
     public void remove(Player player) {
         this.lastPositions.forEach(position -> {
             UpdateBlockPacket packet = new UpdateBlockPacket();
-            packet.blockRuntimeId = BlockStateRegistry.getRuntimeId(player.getLevel().getBlock(position).getCurrentState());
+            packet.blockRuntimeId = BlockStateRegistry.getRuntimeId(
+                    player.getLevel().getBlock(position).getCurrentState());
             packet.flags = UpdateBlockPacket.FLAG_NETWORK;
             packet.x = position.getFloorX();
             packet.y = position.getFloorY();
@@ -76,8 +77,6 @@ public class SingleFakeBlock implements FakeBlock {
     }
 
     protected CompoundTag getBlockEntityDataAt(Vector3 position, String title) {
-        return new CompoundTag()
-                .putString("id", tileId)
-                .putString("CustomName", title);
+        return new CompoundTag().putString("id", tileId).putString("CustomName", title);
     }
 }

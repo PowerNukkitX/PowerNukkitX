@@ -13,7 +13,6 @@ import cn.nukkit.entity.data.IntEntityData;
 import cn.nukkit.entity.data.LongEntityData;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.math.Vector3;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -55,7 +54,8 @@ public interface CoreMemoryTypes {
      * <p>
      * Whether the entity needs to update the memory of the path
      */
-    MemoryType<Boolean> SHOULD_UPDATE_MOVE_DIRECTION = new MemoryType<>("minecraft:should_update_move_direction", false);
+    MemoryType<Boolean> SHOULD_UPDATE_MOVE_DIRECTION =
+            new MemoryType<>("minecraft:should_update_move_direction", false);
     /**
      * 实体是否开启pitch
      * <p>
@@ -71,9 +71,9 @@ public interface CoreMemoryTypes {
      * 控制实体是否开启下潜控制器的记忆
      */
     MemoryType<Boolean> ENABLE_DIVE_FORCE = new MemoryType<>("minecraft:enable_dive_force", true);
-    //以下这两个暂时未使用到
-    //MemoryType<Boolean> ENABLE_YAW = new MemoryType<>("minecraft:enable_yaw", true);
-    //MemoryType<Boolean> ENABLE_HEAD_YAW = new MemoryType<>("minecraft:enable_head_yaw", true);
+    // 以下这两个暂时未使用到
+    // MemoryType<Boolean> ENABLE_YAW = new MemoryType<>("minecraft:enable_yaw", true);
+    // MemoryType<Boolean> ENABLE_HEAD_YAW = new MemoryType<>("minecraft:enable_head_yaw", true);
     // endregion
     /**
      * 实体被攻击产生的攻击事件
@@ -94,7 +94,8 @@ public interface CoreMemoryTypes {
     /**
      * 实体从生成的服务器tick
      */
-    MemoryType<Integer> ENTITY_SPAWN_TIME = new MemoryType<>("minecraft:entity_spawn_time", () -> Server.getInstance().getTick());
+    MemoryType<Integer> ENTITY_SPAWN_TIME = new MemoryType<>(
+            "minecraft:entity_spawn_time", () -> Server.getInstance().getTick());
     /**
      * 目前仅在creeper中使用，控制苦力怕是否应该爆炸
      */
@@ -116,7 +117,8 @@ public interface CoreMemoryTypes {
      * <p>
      * 目前仅在Chicken中使用
      */
-    MemoryType<Integer> LAST_EGG_SPAWN_TIME = new MemoryType<>("minecraft:last_egg_spawn_time", () -> Server.getInstance().getTick());
+    MemoryType<Integer> LAST_EGG_SPAWN_TIME = new MemoryType<>(
+            "minecraft:last_egg_spawn_time", () -> Server.getInstance().getTick());
     /**
      * 最近符合条件的攻击目标
      * <p>
@@ -158,7 +160,8 @@ public interface CoreMemoryTypes {
     /**
      * 目前仅在warden中使用
      */
-    MemoryType<Map<Entity, Integer>> WARDEN_ANGER_VALUE = new MemoryType<>("minecraft:warden_anger_value", new HashMap<>());
+    MemoryType<Map<Entity, Integer>> WARDEN_ANGER_VALUE =
+            new MemoryType<>("minecraft:warden_anger_value", new HashMap<>());
     /**
      * 最近的骷髅目标
      */
@@ -176,86 +179,73 @@ public interface CoreMemoryTypes {
      */
     MemoryType<Boolean> IS_ANGRY = new MemoryType<>("minecraft:is_angry", false)
             .withCodec(new BooleanMemoryCodec("Angry")
-                    .onInit((data, entity) -> entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_ANGRY, data))
-            );
+                    .onInit((data, entity) -> entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_ANGRY, data)));
     /**
      * 代表实体是否坐着的状态 和{@link Entity#DATA_FLAG_SITTING}绑定
      * <p>
      * 目前仅在wolf中使用
      */
     MemoryType<Boolean> IS_SITTING = new MemoryType<>("minecraft:is_sitting", false)
-            .withCodec(new BooleanMemoryCodec("Sitting")
-                    .onInit((data, entity) -> {
-                        entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_SITTING, data);
-                    })
-            );
+            .withCodec(new BooleanMemoryCodec("Sitting").onInit((data, entity) -> {
+                entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_SITTING, data);
+            }));
     /**
      * 代表实体主人 和{@link Entity#DATA_FLAG_TAMED} {@link Entity#DATA_OWNER_EID}绑定
      * <p>
      * 目前仅在wolf中使用
      */
     MemoryType<String> OWNER_NAME = new MemoryType<String>("minecraft:owner_name")
-            .withCodec(new StringMemoryCodec("OwnerName")
-                    .onInit((data, entity) -> {
-                        if (data == null) {
-                            entity.setDataProperty(new LongEntityData(Entity.DATA_OWNER_EID, 0L));
-                            entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_TAMED, false);
-                        } else {
-                            entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_TAMED, true);
-                            var owner = entity.getServer().getPlayerExact(data);
-                            if (owner != null && owner.isOnline()) {
-                                entity.setDataProperty(new LongEntityData(Entity.DATA_OWNER_EID, owner.getId()));
-                            }
-                        }
-                    })
-            );
+            .withCodec(new StringMemoryCodec("OwnerName").onInit((data, entity) -> {
+                if (data == null) {
+                    entity.setDataProperty(new LongEntityData(Entity.DATA_OWNER_EID, 0L));
+                    entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_TAMED, false);
+                } else {
+                    entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_TAMED, true);
+                    var owner = entity.getServer().getPlayerExact(data);
+                    if (owner != null && owner.isOnline()) {
+                        entity.setDataProperty(new LongEntityData(Entity.DATA_OWNER_EID, owner.getId()));
+                    }
+                }
+            }));
     /**
      * 代表骑着某个实体的实体
      */
     MemoryType<String> RIDER_NAME = new MemoryType<String>("minecraft:rider_name")
-            .withCodec(new StringMemoryCodec("RiderName")
-                    .onInit((data, entity) -> {
-                        if (data == null) {
-                            entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_WASD_CONTROLLED, false);
-                        } else {
-                            entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_WASD_CONTROLLED);
-                        }
-                    })
-            );
+            .withCodec(new StringMemoryCodec("RiderName").onInit((data, entity) -> {
+                if (data == null) {
+                    entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_WASD_CONTROLLED, false);
+                } else {
+                    entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_WASD_CONTROLLED);
+                }
+            }));
     /**
      * 代表实体的变种,和{@link Entity#DATA_VARIANT}绑定
      */
     MemoryType<Integer> VARIANT = new MemoryType<Integer>("minecraft:variant")
-            .withCodec(new NumberMemoryCodec<Integer>("Variant")
-                    .onInit((data, entity) -> {
-                        if (data != null) {
-                            entity.setDataProperty(new IntEntityData(Entity.DATA_VARIANT, data));
-                        }
-                    })
-            );
+            .withCodec(new NumberMemoryCodec<Integer>("Variant").onInit((data, entity) -> {
+                if (data != null) {
+                    entity.setDataProperty(new IntEntityData(Entity.DATA_VARIANT, data));
+                }
+            }));
     /**
      * 代表实体的次要变种,和{@link Entity#DATA_MARK_VARIANT}绑定
      */
     MemoryType<Integer> MARK_VARIANT = new MemoryType<Integer>("minecraft:mark_variant")
-            .withCodec(new NumberMemoryCodec<Integer>("MarkVariant")
-                    .onInit((data, entity) -> {
-                        if (data != null) {
-                            entity.setDataProperty(new IntEntityData(Entity.DATA_MARK_VARIANT, data));
-                        }
-                    })
-            );
+            .withCodec(new NumberMemoryCodec<Integer>("MarkVariant").onInit((data, entity) -> {
+                if (data != null) {
+                    entity.setDataProperty(new IntEntityData(Entity.DATA_MARK_VARIANT, data));
+                }
+            }));
     /**
      * 代表实体的颜色，和{@link Entity#DATA_COLOUR}绑定
      * <p>
      * 例如狼的项圈
      */
     MemoryType<Byte> COLOUR = new MemoryType<Byte>("minecraft:colour")
-            .withCodec(new NumberMemoryCodec<Byte>("Color")
-                    .onInit((data, entity) -> {
-                        if (data != null) {
-                            entity.setDataProperty(new ByteEntityData(Entity.DATA_COLOUR, data));
-                        }
-                    })
-            );
+            .withCodec(new NumberMemoryCodec<Byte>("Color").onInit((data, entity) -> {
+                if (data != null) {
+                    entity.setDataProperty(new ByteEntityData(Entity.DATA_COLOUR, data));
+                }
+            }));
     // endregion
 }

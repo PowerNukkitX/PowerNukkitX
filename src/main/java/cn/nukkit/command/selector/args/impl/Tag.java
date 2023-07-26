@@ -8,7 +8,6 @@ import cn.nukkit.command.selector.SelectorType;
 import cn.nukkit.command.selector.args.CachedSimpleSelectorArgument;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Location;
-
 import java.util.ArrayList;
 import java.util.function.Predicate;
 
@@ -16,7 +15,8 @@ import java.util.function.Predicate;
 @Since("1.19.60-r1")
 public class Tag extends CachedSimpleSelectorArgument {
     @Override
-    protected Predicate<Entity> cache(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) {
+    protected Predicate<Entity> cache(
+            SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) {
         final var have = new ArrayList<String>();
         final var dontHave = new ArrayList<String>();
         for (var tag : arguments) {
@@ -26,7 +26,8 @@ public class Tag extends CachedSimpleSelectorArgument {
                 dontHave.add(tag);
             } else have.add(tag);
         }
-        return entity -> have.stream().allMatch(entity::containTag) && dontHave.stream().noneMatch(entity::containTag);
+        return entity ->
+                have.stream().allMatch(entity::containTag) && dontHave.stream().noneMatch(entity::containTag);
     }
 
     @Override

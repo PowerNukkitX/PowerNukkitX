@@ -3,20 +3,19 @@ package cn.nukkit.plugin.js;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.plugin.CommonJSPlugin;
-import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
-
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitXOnly
 @Since("1.19.20-r2")
 public class JSClassLoader extends URLClassLoader {
-    public final static Map<String, Class<?>> javaClassCache = new ConcurrentHashMap<>();
+    public static final Map<String, Class<?>> javaClassCache = new ConcurrentHashMap<>();
 
     static {
         javaClassCache.put("int", int.class);

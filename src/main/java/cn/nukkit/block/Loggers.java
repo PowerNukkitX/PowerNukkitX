@@ -30,7 +30,9 @@ import org.apache.logging.log4j.Logger;
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
 final class Loggers {
-    private Loggers(){ throw new UnsupportedOperationException(); }
+    private Loggers() {
+        throw new UnsupportedOperationException();
+    }
 
     static final Logger logBlocKEntityHolder = LogManager.getLogger(BlockEntityHolder.class);
 }

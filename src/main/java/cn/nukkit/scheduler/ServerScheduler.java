@@ -4,14 +4,13 @@ import cn.nukkit.Server;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.utils.PluginException;
 import cn.nukkit.utils.Utils;
-import lombok.extern.log4j.Log4j2;
-
 import java.util.ArrayDeque;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * @author Nukkit Project Team
@@ -122,7 +121,7 @@ public class ServerScheduler {
     }
 
     public void increaseAsyncTaskPoolSize(int newSize) {
-        throw new UnsupportedOperationException("Cannot increase a working pool size."); //wtf?
+        throw new UnsupportedOperationException("Cannot increase a working pool size."); // wtf?
     }
 
     /**
@@ -255,7 +254,8 @@ public class ServerScheduler {
      * @param asynchronous 是否异步执行<br>Whether it executes asynchronously
      * @return the task handler
      */
-    public TaskHandler scheduleDelayedRepeatingTask(Plugin plugin, Runnable task, int delay, int period, boolean asynchronous) {
+    public TaskHandler scheduleDelayedRepeatingTask(
+            Plugin plugin, Runnable task, int delay, int period, boolean asynchronous) {
         return addTask(plugin, task, delay, period, asynchronous);
     }
 
@@ -305,7 +305,12 @@ public class ServerScheduler {
     }
 
     private TaskHandler addTask(Task task, int delay, int period, boolean asynchronous) {
-        return addTask(task instanceof PluginTask ? ((PluginTask<?>) task).getOwner() : null, task, delay, period, asynchronous);
+        return addTask(
+                task instanceof PluginTask ? ((PluginTask<?>) task).getOwner() : null,
+                task,
+                delay,
+                period,
+                asynchronous);
     }
 
     private TaskHandler addTask(Plugin plugin, Runnable task, int delay, int period, boolean asynchronous) {
@@ -339,7 +344,8 @@ public class ServerScheduler {
             ArrayDeque<TaskHandler> queue = Utils.getOrCreate(queueMap, ArrayDeque.class, tick);
             queue.add(task);
         }
-        if (currentTick - this.currentTick > queueMap.size()) { // A large number of ticks have passed since the last execution
+        if (currentTick - this.currentTick
+                > queueMap.size()) { // A large number of ticks have passed since the last execution
             for (Map.Entry<Integer, ArrayDeque<TaskHandler>> entry : queueMap.entrySet()) {
                 int tick = entry.getKey();
                 if (tick <= currentTick) {

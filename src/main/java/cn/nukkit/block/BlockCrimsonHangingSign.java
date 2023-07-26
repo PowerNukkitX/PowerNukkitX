@@ -6,8 +6,7 @@ import cn.nukkit.api.Since;
 @PowerNukkitXOnly
 @Since("1.20.0-r2")
 public class BlockCrimsonHangingSign extends BlockHangingSign {
-    public BlockCrimsonHangingSign() {
-    }
+    public BlockCrimsonHangingSign() {}
 
     public int getId() {
         return CRIMSON_HANGING_SIGN;

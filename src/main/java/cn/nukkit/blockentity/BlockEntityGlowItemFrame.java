@@ -47,8 +47,7 @@ public class BlockEntityGlowItemFrame extends BlockEntityItemFrame {
             if (item instanceof ItemBlock itemBlock) {
                 itemTag.putCompound("Block", NBTIO.putBlockHelper(itemBlock.getBlock()));
             }
-            tag.putCompound("Item", itemTag)
-                    .putByte("ItemRotation", this.getItemRotation());
+            tag.putCompound("Item", itemTag).putByte("ItemRotation", this.getItemRotation());
         }
         return tag;
     }

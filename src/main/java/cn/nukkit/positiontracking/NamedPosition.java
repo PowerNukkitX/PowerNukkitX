@@ -13,8 +13,7 @@ import org.jetbrains.annotations.NotNull;
 public abstract class NamedPosition extends Vector3 {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public NamedPosition() {
-    }
+    public NamedPosition() {}
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -36,12 +35,14 @@ public abstract class NamedPosition extends Vector3 {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public abstract String getLevelName();
+    @NotNull public abstract String getLevelName();
 
     @PowerNukkitOnly
     public boolean matchesNamedPosition(NamedPosition position) {
-        return x == position.x && y == position.y && z == position.z && getLevelName().equals(position.getLevelName());
+        return x == position.x
+                && y == position.y
+                && z == position.z
+                && getLevelName().equals(position.getLevelName());
     }
 
     @Override

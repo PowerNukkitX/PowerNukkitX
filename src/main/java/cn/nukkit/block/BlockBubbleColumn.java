@@ -16,10 +16,9 @@ import cn.nukkit.level.particle.BubbleParticle;
 import cn.nukkit.level.particle.SplashParticle;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
+import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 public class BlockBubbleColumn extends BlockTransparentMeta {
@@ -49,8 +48,7 @@ public class BlockBubbleColumn extends BlockTransparentMeta {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -75,12 +73,12 @@ public class BlockBubbleColumn extends BlockTransparentMeta {
     public boolean canBeFlowedInto() {
         return true;
     }
-    
+
     @Override
     public Item[] getDrops(Item item) {
         return Item.EMPTY_ARRAY;
     }
-    
+
     @Override
     public Item toItem() {
         return new ItemBlock(new BlockAir());
@@ -90,7 +88,7 @@ public class BlockBubbleColumn extends BlockTransparentMeta {
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
         return this;
     }
-    
+
     @Override
     public boolean isBreakable(Item item) {
         return false;
@@ -135,18 +133,21 @@ public class BlockBubbleColumn extends BlockTransparentMeta {
                 if (getDamage() == 1) {
                     entity.motionY = Math.max(-0.9, entity.motionY - 0.03);
                 } else {
-                    if (entity instanceof EntityPhysical entityPhysical && entity.motionY < -entityPhysical.getGravity() * 8) {
+                    if (entity instanceof EntityPhysical entityPhysical
+                            && entity.motionY < -entityPhysical.getGravity() * 8) {
                         entity.motionY = -entityPhysical.getGravity() * 2;
                     }
                     entity.motionY = Math.min(1.8, entity.motionY + 0.1);
                 }
-                
+
                 ThreadLocalRandom random = ThreadLocalRandom.current();
-                for(int i = 0; i < 2; ++i) {
-                    level.addParticle(new SplashParticle(add(random.nextFloat(), random.nextFloat() + 1, random.nextFloat())));
-                    level.addParticle(new BubbleParticle(add(random.nextFloat(), random.nextFloat() + 1, random.nextFloat())));
+                for (int i = 0; i < 2; ++i) {
+                    level.addParticle(
+                            new SplashParticle(add(random.nextFloat(), random.nextFloat() + 1, random.nextFloat())));
+                    level.addParticle(
+                            new BubbleParticle(add(random.nextFloat(), random.nextFloat() + 1, random.nextFloat())));
                 }
-                
+
             } else {
                 if (getDamage() == 1) {
                     entity.motionY = Math.max(-0.3, entity.motionY - 0.3);
@@ -160,7 +161,15 @@ public class BlockBubbleColumn extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
         if (down().getId() == MAGMA) {
             setDamage(1);
         }
@@ -168,7 +177,7 @@ public class BlockBubbleColumn extends BlockTransparentMeta {
         this.getLevel().setBlock(this, this, true, true);
         return true;
     }
-    
+
     @Override
     public double getHardness() {
         return 100;
@@ -245,5 +254,4 @@ public class BlockBubbleColumn extends BlockTransparentMeta {
             this.getLevel().setBlock(this, 0, event.getNewState(), true, true);
         }
     }
-
 }

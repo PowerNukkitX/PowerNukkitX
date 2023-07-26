@@ -22,17 +22,29 @@ public class SetTitlePacket extends DataPacket {
     public static final int TYPE_ACTION_BAR = 4;
     public static final int TYPE_ANIMATION_TIMES = 5;
 
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final int TYPE_TITLE_JSON = 6;
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final int TYPE_SUBTITLE_JSON = 7;
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final int TYPE_ACTIONBAR_JSON = 8;
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final int TYPE_TITLE_JSON = 6;
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final int TYPE_SUBTITLE_JSON = 7;
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final int TYPE_ACTIONBAR_JSON = 8;
 
     public int type;
     public String text = "";
     public int fadeInTime = 0;
     public int stayTime = 0;
     public int fadeOutTime = 0;
-    @Since("FUTURE") public String xuid = "";
-    @Since("FUTURE") public String platformOnlineId = "";
+
+    @Since("FUTURE")
+    public String xuid = "";
+
+    @Since("FUTURE")
+    public String platformOnlineId = "";
 
     @Override
     public byte pid() {
@@ -64,13 +76,12 @@ public class SetTitlePacket extends DataPacket {
 
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
-    @NotNull
-    public TitleAction getTitleAction() {
+    @NotNull public TitleAction getTitleAction() {
         int currentType = this.type;
         if (currentType >= 0 && currentType < TITLE_ACTIONS.length) {
             return TITLE_ACTIONS[currentType];
         }
-        throw new UnsupportedOperationException("Bad type: "+currentType);
+        throw new UnsupportedOperationException("Bad type: " + currentType);
     }
 
     @PowerNukkitOnly
@@ -81,8 +92,7 @@ public class SetTitlePacket extends DataPacket {
 
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
-    @NotNull
-    public String getText() {
+    @NotNull public String getText() {
         return text;
     }
 
@@ -155,14 +165,32 @@ public class SetTitlePacket extends DataPacket {
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
     public enum TitleAction {
-        @PowerNukkitOnly @Since("1.5.2.0-PN") CLEAR,
-        @PowerNukkitOnly @Since("1.5.2.0-PN") RESET,
-        @PowerNukkitOnly @Since("1.5.2.0-PN") SET_TITLE_MESSAGE,
-        @PowerNukkitOnly @Since("1.5.2.0-PN") SET_SUBTITLE_MESSAGE,
-        @PowerNukkitOnly @Since("1.5.2.0-PN") SET_ACTION_BAR_MESSAGE,
-        @PowerNukkitOnly @Since("1.5.2.0-PN") SET_ANIMATION_TIMES,
-        @PowerNukkitOnly @Since("1.5.2.0-PN") SET_TITLE_JSON,
-        @PowerNukkitOnly @Since("1.5.2.0-PN") SET_SUBTITLE_JSON,
-        @PowerNukkitOnly @Since("1.5.2.0-PN") SET_ACTIONBAR_JSON,
+        @PowerNukkitOnly
+        @Since("1.5.2.0-PN")
+        CLEAR,
+        @PowerNukkitOnly
+        @Since("1.5.2.0-PN")
+        RESET,
+        @PowerNukkitOnly
+        @Since("1.5.2.0-PN")
+        SET_TITLE_MESSAGE,
+        @PowerNukkitOnly
+        @Since("1.5.2.0-PN")
+        SET_SUBTITLE_MESSAGE,
+        @PowerNukkitOnly
+        @Since("1.5.2.0-PN")
+        SET_ACTION_BAR_MESSAGE,
+        @PowerNukkitOnly
+        @Since("1.5.2.0-PN")
+        SET_ANIMATION_TIMES,
+        @PowerNukkitOnly
+        @Since("1.5.2.0-PN")
+        SET_TITLE_JSON,
+        @PowerNukkitOnly
+        @Since("1.5.2.0-PN")
+        SET_SUBTITLE_JSON,
+        @PowerNukkitOnly
+        @Since("1.5.2.0-PN")
+        SET_ACTIONBAR_JSON,
     }
 }

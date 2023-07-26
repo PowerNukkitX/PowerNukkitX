@@ -12,11 +12,10 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -36,8 +35,7 @@ public class BlockCaveVines extends BlockTransparentMeta {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -76,7 +74,7 @@ public class BlockCaveVines extends BlockTransparentMeta {
             return type;
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {
             Random random = ThreadLocalRandom.current();
-            //random mature,The feature that I added.
+            // random mature,The feature that I added.
             if (random.nextInt(4) == 0) {
                 int growth = getGrowth();
                 if (growth + 4 < getMaxGrowth()) {
@@ -104,7 +102,7 @@ public class BlockCaveVines extends BlockTransparentMeta {
                     }
                 }
             }
-            //random grow feature,according to wiki in https://minecraft.fandom.com/wiki/Glow_Berries#Growth
+            // random grow feature,according to wiki in https://minecraft.fandom.com/wiki/Glow_Berries#Growth
             if (down().getId() == AIR && random.nextInt(10) == 0) {
                 BlockCaveVines block;
                 if (this.up() instanceof BlockCaveVines && !(this.down() instanceof BlockCaveVines)) {

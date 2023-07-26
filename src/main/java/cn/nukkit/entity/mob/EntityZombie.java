@@ -22,7 +22,6 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
-
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -44,7 +43,8 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
                 this.tickSpread,
                 Set.of(),
                 Set.of(
-                        new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 40, true, 30),
+                        new Behavior(
+                                new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 40, true, 30),
                                 entity -> {
                                     if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.ATTACK_TARGET)) {
                                         return false;
@@ -55,23 +55,31 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
                                         }
                                         return true;
                                     }
-                                }, 3, 1),
-                        new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 40, false, 30),
+                                },
+                                3,
+                                1),
+                        new Behavior(
+                                new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 40, false, 30),
                                 entity -> {
                                     if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_PLAYER)) {
                                         return false;
                                     } else {
-                                        Player player = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
+                                        Player player =
+                                                entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
                                         return player.isSurvival() || player.isAdventure();
                                     }
-                                }, 2, 1),
-                        new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
-                ),
+                                },
+                                2,
+                                1),
+                        new Behavior(
+                                new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10),
+                                (entity -> true),
+                                1,
+                                1)),
                 Set.of(new NearestPlayerSensor(40, 0, 20)),
                 Set.of(new WalkController(), new LookController(true, true)),
                 new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
-                this
-        );
+                this);
     }
 
     @Override
@@ -82,7 +90,7 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
     @Override
     protected void initEntity() {
         this.setMaxHealth(20);
-        this.diffHandDamage = new float[]{2.5f, 3f, 4.5f};
+        this.diffHandDamage = new float[] {2.5f, 3f, 4.5f};
         super.initEntity();
     }
 
@@ -118,7 +126,7 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
     @PowerNukkitXOnly
     @Override
     public boolean onUpdate(int currentTick) {
-        //husk not burn
+        // husk not burn
         if (this instanceof EntityHusk) {
             return super.onUpdate(currentTick);
         }
@@ -134,15 +142,16 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
 
     @Override
     public Item[] getDrops() {
-        //使用dorps判断概率,在0.83%概率下会给土豆或者马铃薯以及铁锭任意一个物品
+        // 使用dorps判断概率,在0.83%概率下会给土豆或者马铃薯以及铁锭任意一个物品
         float drops = ThreadLocalRandom.current().nextFloat(100);
         if (drops < 0.83) {
             return switch (Utils.rand(0, 2)) {
-                case 0 -> new Item[]{Item.get(Item.IRON_INGOT, 0, 1), Item.get(Item.ROTTEN_FLESH, 0, Utils.rand(0, 2))};
-                case 1 -> new Item[]{Item.get(Item.CARROT, 0, 1), Item.get(Item.ROTTEN_FLESH, 0, Utils.rand(0, 2))};
-                default -> new Item[]{Item.get(Item.POTATO, 0, 1), Item.get(Item.ROTTEN_FLESH, 0, Utils.rand(0, 2))};
+                case 0 -> new Item[] {Item.get(Item.IRON_INGOT, 0, 1), Item.get(Item.ROTTEN_FLESH, 0, Utils.rand(0, 2))
+                };
+                case 1 -> new Item[] {Item.get(Item.CARROT, 0, 1), Item.get(Item.ROTTEN_FLESH, 0, Utils.rand(0, 2))};
+                default -> new Item[] {Item.get(Item.POTATO, 0, 1), Item.get(Item.ROTTEN_FLESH, 0, Utils.rand(0, 2))};
             };
         }
-        return new Item[]{Item.get(Item.ROTTEN_FLESH, 0, Utils.rand(0, 2))};
+        return new Item[] {Item.get(Item.ROTTEN_FLESH, 0, Utils.rand(0, 2))};
     }
 }

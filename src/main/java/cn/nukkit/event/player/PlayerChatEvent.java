@@ -6,7 +6,6 @@ import cn.nukkit.command.CommandSender;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.permission.Permissible;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -32,7 +31,9 @@ public class PlayerChatEvent extends PlayerMessageEvent implements Cancellable {
         this.format = format;
 
         if (recipients == null) {
-            for (Permissible permissible : Server.getInstance().getPluginManager().getPermissionSubscriptions(Server.BROADCAST_CHANNEL_USERS)) {
+            for (Permissible permissible : Server.getInstance()
+                    .getPluginManager()
+                    .getPermissionSubscriptions(Server.BROADCAST_CHANNEL_USERS)) {
                 if (permissible instanceof CommandSender) {
                     this.recipients.add((CommandSender) permissible);
                 }

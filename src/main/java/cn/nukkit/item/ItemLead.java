@@ -19,6 +19,6 @@ public class ItemLead extends Item {
     public ItemLead(Integer meta, int count) {
         super(LEAD, meta, count, "Lead");
     }
-    
+
     // TODO: Add Functionality
 }

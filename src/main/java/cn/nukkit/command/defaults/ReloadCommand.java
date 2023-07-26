@@ -7,7 +7,6 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.utils.TextFormat;
-
 import java.util.Map;
 
 /**
@@ -20,46 +19,55 @@ public class ReloadCommand extends VanillaCommand {
         this.setPermission("nukkit.command.reload");
         this.commandParameters.clear();
         this.commandParameters.put("default", CommandParameter.EMPTY_ARRAY);
-        this.commandParameters.put("function", new CommandParameter[]{
-                CommandParameter.newEnum("function", false, new String[]{"function"})
-        });
-        this.commandParameters.put("plugin", new CommandParameter[]{
-                CommandParameter.newEnum("plugin", new String[]{"plugin"}),
-                CommandParameter.newType("plugin", CommandParamType.STRING)
+        this.commandParameters.put(
+                "function",
+                new CommandParameter[] {CommandParameter.newEnum("function", false, new String[] {"function"})});
+        this.commandParameters.put("plugin", new CommandParameter[] {
+            CommandParameter.newEnum("plugin", new String[] {"plugin"}),
+            CommandParameter.newType("plugin", CommandParamType.STRING)
         });
         this.enableParamTree();
     }
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         switch (result.getKey()) {
             case "default" -> {
-                log.addMessage(TextFormat.YELLOW + "%nukkit.command.reload.reloading" + TextFormat.WHITE).output(true);
+                log.addMessage(TextFormat.YELLOW + "%nukkit.command.reload.reloading" + TextFormat.WHITE)
+                        .output(true);
                 sender.getServer().reload();
-                log.addMessage(TextFormat.YELLOW + "%nukkit.command.reload.reloaded" + TextFormat.WHITE).output(true);
+                log.addMessage(TextFormat.YELLOW + "%nukkit.command.reload.reloaded" + TextFormat.WHITE)
+                        .output(true);
                 return 1;
             }
             case "function" -> {
-                log.addMessage(TextFormat.YELLOW + "%nukkit.command.reload.reloading" + TextFormat.WHITE).output(true);
+                log.addMessage(TextFormat.YELLOW + "%nukkit.command.reload.reloading" + TextFormat.WHITE)
+                        .output(true);
                 sender.getServer().getFunctionManager().reload();
-                log.addMessage(TextFormat.YELLOW + "%nukkit.command.reload.reloaded" + TextFormat.WHITE).output(true);
+                log.addMessage(TextFormat.YELLOW + "%nukkit.command.reload.reloaded" + TextFormat.WHITE)
+                        .output(true);
                 return 1;
             }
             case "plugin" -> {
-                log.addMessage(TextFormat.YELLOW + "%nukkit.command.reload.reloading" + TextFormat.WHITE).output(true);
+                log.addMessage(TextFormat.YELLOW + "%nukkit.command.reload.reloading" + TextFormat.WHITE)
+                        .output(true);
                 var pluginManager = sender.getServer().getPluginManager();
                 String str = list.getResult(1);
                 var plugin = pluginManager.getPlugin(str);
-                //todo: 多语言
-                log.addSuccess("Reloading plugin §a" + plugin.getDescription().getName()).output(true);
+                // todo: 多语言
+                log.addSuccess("Reloading plugin §a" + plugin.getDescription().getName())
+                        .output(true);
                 pluginManager.disablePlugin(plugin);
                 pluginManager.getPlugins().remove(plugin.getDescription().getName());
                 plugin = pluginManager.loadPlugin(plugin.getFile());
                 pluginManager.enablePlugin(plugin);
-                log.addSuccess("Plugin §a" + plugin.getDescription().getName() + " §freloaded!").output(true);
-                log.addSuccess(TextFormat.YELLOW + "%nukkit.command.reload.reloaded" + TextFormat.WHITE).output(true);
+                log.addSuccess("Plugin §a" + plugin.getDescription().getName() + " §freloaded!")
+                        .output(true);
+                log.addSuccess(TextFormat.YELLOW + "%nukkit.command.reload.reloaded" + TextFormat.WHITE)
+                        .output(true);
                 return 1;
             }
             default -> {

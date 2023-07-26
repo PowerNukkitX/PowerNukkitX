@@ -8,7 +8,6 @@ import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import com.google.common.collect.Lists;
-
 import java.util.List;
 
 @PowerNukkitXOnly
@@ -27,7 +26,8 @@ public abstract class StructureStart {
         this.chunkX = chunkX;
         this.chunkZ = chunkZ;
         this.random = new NukkitRandom(level.getSeed());
-        this.random.setSeed((long) chunkX * this.random.nextInt() ^ (long) chunkZ * this.random.nextInt() ^ level.getSeed());
+        this.random.setSeed(
+                (long) chunkX * this.random.nextInt() ^ (long) chunkZ * this.random.nextInt() ^ level.getSeed());
         this.boundingBox = BoundingBox.getUnknownBox();
     }
 
@@ -43,7 +43,8 @@ public abstract class StructureStart {
 
     public void postProcess(ChunkManager level, NukkitRandom random, BoundingBox boundingBox, int chunkX, int chunkZ) {
         synchronized (this.pieces) {
-            this.pieces.removeIf(piece -> piece.getBoundingBox().intersects(boundingBox) && !piece.postProcess(level, random, boundingBox, chunkX, chunkZ));
+            this.pieces.removeIf(piece -> piece.getBoundingBox().intersects(boundingBox)
+                    && !piece.postProcess(level, random, boundingBox, chunkX, chunkZ));
             this.calculateBoundingBox();
         }
     }

@@ -26,7 +26,6 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.Utils;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.function.Consumer;
@@ -35,16 +34,18 @@ import java.util.function.Consumer;
 @Since("1.19.21-r2")
 public class PopulatorPillagerOutpost extends PopulatorStructure {
 
-    protected static final ReadableStructureTemplate WATCHTOWER = new ReadOnlyLegacyStructureTemplate().load(loadNBT("structures/pillageroutpost/watchtower.nbt"));
-    protected static final ReadableStructureTemplate WATCHTOWER_OVERGROWN = new ReadOnlyLegacyStructureTemplate().load(loadNBT("structures/pillageroutpost/watchtower_overgrown.nbt"));
+    protected static final ReadableStructureTemplate WATCHTOWER =
+            new ReadOnlyLegacyStructureTemplate().load(loadNBT("structures/pillageroutpost/watchtower.nbt"));
+    protected static final ReadableStructureTemplate WATCHTOWER_OVERGROWN =
+            new ReadOnlyLegacyStructureTemplate().load(loadNBT("structures/pillageroutpost/watchtower_overgrown.nbt"));
 
-    protected static final ReadableStructureTemplate[] FEATURES = new ReadableStructureTemplate[]{
-            new ReadOnlyLegacyStructureTemplate().load(loadNBT("structures/pillageroutpost/feature_cage1.nbt")),
-            new ReadOnlyLegacyStructureTemplate().load(loadNBT("structures/pillageroutpost/feature_cage2.nbt")),
-            new ReadOnlyLegacyStructureTemplate().load(loadNBT("structures/pillageroutpost/feature_logs.nbt")),
-            new ReadOnlyLegacyStructureTemplate().load(loadNBT("structures/pillageroutpost/feature_tent1.nbt")),
-            new ReadOnlyLegacyStructureTemplate().load(loadNBT("structures/pillageroutpost/feature_tent2.nbt")),
-            new ReadOnlyLegacyStructureTemplate().load(loadNBT("structures/pillageroutpost/feature_targets.nbt"))
+    protected static final ReadableStructureTemplate[] FEATURES = new ReadableStructureTemplate[] {
+        new ReadOnlyLegacyStructureTemplate().load(loadNBT("structures/pillageroutpost/feature_cage1.nbt")),
+        new ReadOnlyLegacyStructureTemplate().load(loadNBT("structures/pillageroutpost/feature_cage2.nbt")),
+        new ReadOnlyLegacyStructureTemplate().load(loadNBT("structures/pillageroutpost/feature_logs.nbt")),
+        new ReadOnlyLegacyStructureTemplate().load(loadNBT("structures/pillageroutpost/feature_tent1.nbt")),
+        new ReadOnlyLegacyStructureTemplate().load(loadNBT("structures/pillageroutpost/feature_tent2.nbt")),
+        new ReadOnlyLegacyStructureTemplate().load(loadNBT("structures/pillageroutpost/feature_targets.nbt"))
     };
 
     protected static final int SPACING = 32;
@@ -82,24 +83,54 @@ public class PopulatorPillagerOutpost extends PopulatorStructure {
                         ListTag<CompoundTag> itemList = new ListTag<>("Items");
                         PillagerOutpostChest.get().create(itemList, random);
 
-                        Server.getInstance().getScheduler().scheduleDelayedTask(new LootSpawnTask(chunk.getProvider().getLevel(),
-                                new BlockVector3(nbt.getInt("x"), nbt.getInt("y") - 1, nbt.getInt("z")), itemList), 2);
+                        Server.getInstance()
+                                .getScheduler()
+                                .scheduleDelayedTask(
+                                        new LootSpawnTask(
+                                                chunk.getProvider().getLevel(),
+                                                new BlockVector3(nbt.getInt("x"), nbt.getInt("y") - 1, nbt.getInt("z")),
+                                                itemList),
+                                        2);
                         break;
                     case "pillager":
-                        Server.getInstance().getScheduler().scheduleDelayedTask(new ActorSpawnTask(chunk.getProvider().getLevel(),
-                                Entity.getDefaultNBT(new Vector3(nbt.getInt("x") + 0.5, nbt.getInt("y"), nbt.getInt("z") + 0.5))
-                                        .putString("id", String.valueOf(EntityPillager.NETWORK_ID))), 2);
+                        Server.getInstance()
+                                .getScheduler()
+                                .scheduleDelayedTask(
+                                        new ActorSpawnTask(
+                                                chunk.getProvider().getLevel(),
+                                                Entity.getDefaultNBT(new Vector3(
+                                                                nbt.getInt("x") + 0.5,
+                                                                nbt.getInt("y"),
+                                                                nbt.getInt("z") + 0.5))
+                                                        .putString("id", String.valueOf(EntityPillager.NETWORK_ID))),
+                                        2);
                         break;
                     case "captain":
-                        Server.getInstance().getScheduler().scheduleDelayedTask(new ActorSpawnTask(chunk.getProvider().getLevel(),
-                                Entity.getDefaultNBT(new Vector3(nbt.getInt("x") + 0.5, nbt.getInt("y"), nbt.getInt("z") + 0.5))
-                                        .putString("id", String.valueOf(EntityPillager.NETWORK_ID))
-                                        .putBoolean("PatrolLeader", true)), 2);
+                        Server.getInstance()
+                                .getScheduler()
+                                .scheduleDelayedTask(
+                                        new ActorSpawnTask(
+                                                chunk.getProvider().getLevel(),
+                                                Entity.getDefaultNBT(new Vector3(
+                                                                nbt.getInt("x") + 0.5,
+                                                                nbt.getInt("y"),
+                                                                nbt.getInt("z") + 0.5))
+                                                        .putString("id", String.valueOf(EntityPillager.NETWORK_ID))
+                                                        .putBoolean("PatrolLeader", true)),
+                                        2);
                         break;
                     case "cage":
-                        Server.getInstance().getScheduler().scheduleDelayedTask(new ActorSpawnTask(chunk.getProvider().getLevel(),
-                                Entity.getDefaultNBT(new Vector3(nbt.getInt("x") + 0.5, nbt.getInt("y"), nbt.getInt("z") + 0.5))
-                                        .putString("id", String.valueOf(EntityIronGolem.NETWORK_ID))), 2);
+                        Server.getInstance()
+                                .getScheduler()
+                                .scheduleDelayedTask(
+                                        new ActorSpawnTask(
+                                                chunk.getProvider().getLevel(),
+                                                Entity.getDefaultNBT(new Vector3(
+                                                                nbt.getInt("x") + 0.5,
+                                                                nbt.getInt("y"),
+                                                                nbt.getInt("z") + 0.5))
+                                                        .putString("id", String.valueOf(EntityIronGolem.NETWORK_ID))),
+                                        2);
                         break;
                 }
             }
@@ -107,7 +138,8 @@ public class PopulatorPillagerOutpost extends PopulatorStructure {
     }
 
     private static CompoundTag loadNBT(String path) {
-        try (InputStream inputStream = PopulatorPillagerOutpost.class.getModule().getResourceAsStream(path)) {
+        try (InputStream inputStream =
+                PopulatorPillagerOutpost.class.getModule().getResourceAsStream(path)) {
             return NBTIO.readCompressed(inputStream);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -118,13 +150,21 @@ public class PopulatorPillagerOutpost extends PopulatorStructure {
     public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
         if (!chunk.isOverWorld()) return;
         int biome = chunk.getBiomeId(7, chunk.getHighestBlockAt(7, 7), 7);
-        if ((biome == EnumBiome.PLAINS.id || biome == EnumBiome.DESERT.id || biome == EnumBiome.TAIGA.id || biome == EnumBiome.ICE_PLAINS.id || biome == EnumBiome.SAVANNA.id)
-                && chunkX == (((chunkX < 0 ? (chunkX - SPACING + 1) : chunkX) / SPACING) * SPACING) + random.nextBoundedInt(SPACING - SEPARATION)
-                && chunkZ == (((chunkZ < 0 ? (chunkZ - SPACING + 1) : chunkZ) / SPACING) * SPACING) + random.nextBoundedInt(SPACING - SEPARATION)) {
+        if ((biome == EnumBiome.PLAINS.id
+                        || biome == EnumBiome.DESERT.id
+                        || biome == EnumBiome.TAIGA.id
+                        || biome == EnumBiome.ICE_PLAINS.id
+                        || biome == EnumBiome.SAVANNA.id)
+                && chunkX
+                        == (((chunkX < 0 ? (chunkX - SPACING + 1) : chunkX) / SPACING) * SPACING)
+                                + random.nextBoundedInt(SPACING - SEPARATION)
+                && chunkZ
+                        == (((chunkZ < 0 ? (chunkZ - SPACING + 1) : chunkZ) / SPACING) * SPACING)
+                                + random.nextBoundedInt(SPACING - SEPARATION)) {
             random.setSeed(((chunkX >> 4) ^ (chunkZ >> 4) << 4) ^ level.getSeed());
             random.nextInt();
 
-            if (random.nextBoundedInt(5) == (0x77f73e3a & 3)) { //salted
+            if (random.nextBoundedInt(5) == (0x77f73e3a & 3)) { // salted
                 ReadableStructureTemplate template = WATCHTOWER;
                 int y = chunk.getHighestBlockAt(0, 0);
 
@@ -134,12 +174,19 @@ public class PopulatorPillagerOutpost extends PopulatorStructure {
                 }
 
                 BlockVector3 vec = new BlockVector3(chunkX << 4, y, chunkZ << 4);
-                template.placeInChunk(chunk, random, vec, new StructurePlaceSettings()
-                        .setBlockActorProcessor(getBlockActorProcessor(chunk, random)));
-                WATCHTOWER_OVERGROWN.placeInChunk(chunk, random, vec, new StructurePlaceSettings()
-                        .setIntegrity(5)
-                        .setIgnoreAir(true)
-                        .setBlockActorProcessor(getBlockActorProcessor(chunk, random)));
+                template.placeInChunk(
+                        chunk,
+                        random,
+                        vec,
+                        new StructurePlaceSettings().setBlockActorProcessor(getBlockActorProcessor(chunk, random)));
+                WATCHTOWER_OVERGROWN.placeInChunk(
+                        chunk,
+                        random,
+                        vec,
+                        new StructurePlaceSettings()
+                                .setIntegrity(5)
+                                .setIgnoreAir(true)
+                                .setBlockActorProcessor(getBlockActorProcessor(chunk, random)));
 
                 BlockVector3 size = template.getSize();
                 fillBase(level.getChunk(chunkX, chunkZ), y, 0, 0, size.getX(), size.getZ());
@@ -165,9 +212,14 @@ public class PopulatorPillagerOutpost extends PopulatorStructure {
         int seed = random.nextInt();
 
         if (!chunk.isGenerated()) {
-            chunk.getProvider().getLevel().getGenerator().handleAsyncStructureGenTask(new CallbackableChunkGenerationTask<>(
-                    chunk.getProvider().getLevel(), chunk, this,
-                    populator -> populator.placeFeature(template, chunk, seed)));
+            chunk.getProvider()
+                    .getLevel()
+                    .getGenerator()
+                    .handleAsyncStructureGenTask(new CallbackableChunkGenerationTask<>(
+                            chunk.getProvider().getLevel(),
+                            chunk,
+                            this,
+                            populator -> populator.placeFeature(template, chunk, seed)));
         } else {
             this.placeFeature(template, chunk, seed);
         }
@@ -181,8 +233,11 @@ public class PopulatorPillagerOutpost extends PopulatorStructure {
         int z = random.nextBoundedInt(16 - size.getZ());
         int y = chunk.getHighestBlockAt(x, z);
 
-        template.placeInChunk(chunk, random, new BlockVector3((chunk.getX() << 4) + x, y, (chunk.getZ() << 4) + z), new StructurePlaceSettings()
-                .setBlockActorProcessor(getBlockActorProcessor(chunk, random)));
+        template.placeInChunk(
+                chunk,
+                random,
+                new BlockVector3((chunk.getX() << 4) + x, y, (chunk.getZ() << 4) + z),
+                new StructurePlaceSettings().setBlockActorProcessor(getBlockActorProcessor(chunk, random)));
         fillBase(chunk, y, x, z, size.getX(), size.getZ());
     }
 

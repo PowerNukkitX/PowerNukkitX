@@ -7,7 +7,6 @@ import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.plugin.PluginDescription;
 import cn.nukkit.utils.Binary;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -18,7 +17,7 @@ import java.util.Map;
  * @author MagicDroidX (Nukkit Project)
  */
 public class QueryRegenerateEvent extends ServerEvent {
-    //alot todo
+    // alot todo
 
     private static final HandlerList handlers = new HandlerList();
 
@@ -58,8 +57,10 @@ public class QueryRegenerateEvent extends ServerEvent {
         this.players = server.getOnlinePlayers().values().toArray(Player.EMPTY_ARRAY);
         this.gameType = (server.getGamemode() & 0x01) == 0 ? "SMP" : "CMP";
         this.version = server.getVersion();
-        this.server_engine = server.getName() + " " + server.getNukkitVersion() + " ("+server.getGitCommit()+")";
-        this.map = server.getDefaultLevel() == null ? "unknown" : server.getDefaultLevel().getName();
+        this.server_engine = server.getName() + " " + server.getNukkitVersion() + " (" + server.getGitCommit() + ")";
+        this.map = server.getDefaultLevel() == null
+                ? "unknown"
+                : server.getDefaultLevel().getName();
         this.numPlayers = this.players.length;
         this.maxPlayers = server.getMaxPlayers();
         this.whitelist = server.hasWhitelist() ? "on" : "off";
@@ -148,7 +149,17 @@ public class QueryRegenerateEvent extends ServerEvent {
                 plist.append(":");
                 for (Plugin p : this.plugins) {
                     PluginDescription d = p.getDescription();
-                    plist.append(" ").append(d.getName().replace(";", "").replace(":", "").replace(" ", "_")).append(" ").append(d.getVersion().replace(";", "").replace(":", "").replace(" ", "_")).append(";");
+                    plist.append(" ")
+                            .append(d.getName()
+                                    .replace(";", "")
+                                    .replace(":", "")
+                                    .replace(" ", "_"))
+                            .append(" ")
+                            .append(d.getVersion()
+                                    .replace(";", "")
+                                    .replace(":", "")
+                                    .replace(" ", "_"))
+                            .append(";");
                 }
                 plist = new StringBuilder(plist.substring(0, plist.length() - 2));
             }
@@ -179,9 +190,9 @@ public class QueryRegenerateEvent extends ServerEvent {
                 query.write((byte) 0x00);
             }
 
-            query.write(new byte[]{0x00, 0x01});
+            query.write(new byte[] {0x00, 0x01});
             query.write("player_".getBytes());
-            query.write(new byte[]{0x00, 0x00});
+            query.write(new byte[] {0x00, 0x00});
 
             for (Player player : this.players) {
                 query.write(player.getName().getBytes(StandardCharsets.UTF_8));
@@ -217,5 +228,4 @@ public class QueryRegenerateEvent extends ServerEvent {
         }
         return query.toByteArray();
     }
-
 }

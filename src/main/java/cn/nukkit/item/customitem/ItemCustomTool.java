@@ -5,9 +5,8 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.*;
 import cn.nukkit.nbt.tag.CompoundTag;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author lt_name
@@ -56,6 +55,8 @@ public abstract class ItemCustomTool extends ItemTool implements ItemDurable, Cu
         if (nbt == null || !nbt.getCompound("components").contains("minecraft:digger")) return null;
         return nbt.getCompound("components")
                 .getCompound("minecraft:digger")
-                .getList("destroy_speeds", CompoundTag.class).get(0).getInt("speed");
+                .getList("destroy_speeds", CompoundTag.class)
+                .get(0)
+                .getInt("speed");
     }
 }

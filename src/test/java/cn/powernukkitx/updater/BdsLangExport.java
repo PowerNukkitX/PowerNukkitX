@@ -30,7 +30,8 @@ public class BdsLangExport {
                         line = line.replaceAll("\\$.", "").transform(s -> {
                             AtomicInteger ds = new AtomicInteger();
                             s = pattern.matcher(s).replaceAll(matchResult -> {
-                                int number = Integer.parseInt(String.valueOf(matchResult.group().charAt(1)));
+                                int number = Integer.parseInt(
+                                        String.valueOf(matchResult.group().charAt(1)));
                                 ds.getAndIncrement();
                                 return "{%" + (number - 1) + "}";
                             });
@@ -40,10 +41,16 @@ public class BdsLangExport {
                                 if (array[i] == '%' && array[i - 1] != '{') {
                                     char c = array[i + 1];
                                     if (c == 's' || c == 'd') {
-                                        builder.append('{').append('%').append(ds.getAndIncrement()).append('}');
+                                        builder.append('{')
+                                                .append('%')
+                                                .append(ds.getAndIncrement())
+                                                .append('}');
                                         i += 2;
                                     } else if (c == '.') {
-                                        builder.append('{').append('%').append(ds.getAndIncrement()).append('}');
+                                        builder.append('{')
+                                                .append('%')
+                                                .append(ds.getAndIncrement())
+                                                .append('}');
                                         i += 4;
                                     } else {
                                         i++;

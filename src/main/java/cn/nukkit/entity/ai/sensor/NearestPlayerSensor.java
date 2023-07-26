@@ -7,7 +7,7 @@ import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import lombok.Getter;
 
-//存储最近的玩家的Memory
+// 存储最近的玩家的Memory
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 @Getter
@@ -34,7 +34,7 @@ public class NearestPlayerSensor implements ISensor {
         Player player = null;
         double rangeSquared = this.range * this.range;
         double minRangeSquared = this.minRange * this.minRange;
-        //寻找范围内最近的玩家
+        // 寻找范围内最近的玩家
         for (Player p : entity.getLevel().getPlayers().values()) {
             if (entity.distanceSquared(p) <= rangeSquared && entity.distanceSquared(p) >= minRangeSquared) {
                 if (player == null) {

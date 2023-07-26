@@ -10,7 +10,7 @@ public class FoodEffectiveInBow extends FoodEffective {
     public FoodEffectiveInBow(int restoreFood, float restoreSaturation) {
         super(restoreFood, restoreSaturation);
     }
-    
+
     @Override
     protected boolean onEatenBy(Player player) {
         super.onEatenBy(player);

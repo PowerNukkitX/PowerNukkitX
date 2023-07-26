@@ -24,5 +24,4 @@ public class EnchantmentBowKnockback extends EnchantmentBow {
     public int getMaxLevel() {
         return 2;
     }
-
 }

@@ -20,7 +20,9 @@ public class PopulatorDoublePlant extends PopulatorSurfaceBlock {
 
     @Override
     protected boolean canStay(int x, int y, int z, FullChunk chunk) {
-        return EnsureCover.ensureCover(x, y, z, chunk) && EnsureCover.ensureCover(x, y + 1, z, chunk) && EnsureGrassBelow.ensureGrassBelow(x, y, z, chunk);
+        return EnsureCover.ensureCover(x, y, z, chunk)
+                && EnsureCover.ensureCover(x, y + 1, z, chunk)
+                && EnsureGrassBelow.ensureGrassBelow(x, y, z, chunk);
     }
 
     @Override

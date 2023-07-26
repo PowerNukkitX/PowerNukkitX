@@ -20,5 +20,4 @@ public class FoodInBowl extends Food {
         player.getInventory().addItem(new ItemBowl());
         return true;
     }
-
 }

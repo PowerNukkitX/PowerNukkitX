@@ -21,9 +21,7 @@ public class BlockEventPacket extends DataPacket {
     public int case2;
 
     @Override
-    public void decode() {
-
-    }
+    public void decode() {}
 
     @Override
     public void encode() {

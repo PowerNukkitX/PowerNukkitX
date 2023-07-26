@@ -9,7 +9,6 @@ import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.math.Vector3;
-
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
@@ -24,12 +23,12 @@ public class SpreadPlayersCommand extends VanillaCommand {
         super(name, "commands.spreadplayers.description");
         this.setPermission("nukkit.command.spreadplayers");
         this.getCommandParameters().clear();
-        this.addCommandParameters("default", new CommandParameter[]{
-                CommandParameter.newType("x", false, CommandParamType.VALUE),
-                CommandParameter.newType("z", false, CommandParamType.VALUE),
-                CommandParameter.newType("spreadDistance", false, CommandParamType.FLOAT),
-                CommandParameter.newType("maxRange", false, CommandParamType.FLOAT),
-                CommandParameter.newType("victim", false, CommandParamType.TARGET)
+        this.addCommandParameters("default", new CommandParameter[] {
+            CommandParameter.newType("x", false, CommandParamType.VALUE),
+            CommandParameter.newType("z", false, CommandParamType.VALUE),
+            CommandParameter.newType("spreadDistance", false, CommandParamType.FLOAT),
+            CommandParameter.newType("maxRange", false, CommandParamType.FLOAT),
+            CommandParameter.newType("victim", false, CommandParamType.TARGET)
         });
         this.random = ThreadLocalRandom.current();
         this.enableParamTree();
@@ -37,7 +36,8 @@ public class SpreadPlayersCommand extends VanillaCommand {
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         double x = list.getResult(0);
         double z = list.getResult(1);
@@ -61,8 +61,12 @@ public class SpreadPlayersCommand extends VanillaCommand {
             vec3.y = target.getLevel().getHighestBlockAt(vec3.getFloorX(), vec3.getFloorZ()) + 1;
             target.teleport(vec3);
         }
-        log.addSuccess("commands.spreadplayers.success.players",
-                String.valueOf(targets.size()), String.valueOf(Math.floor(x)), String.valueOf(Math.floor(z))).output();
+        log.addSuccess(
+                        "commands.spreadplayers.success.players",
+                        String.valueOf(targets.size()),
+                        String.valueOf(Math.floor(x)),
+                        String.valueOf(Math.floor(z)))
+                .output();
         return 1;
     }
 

@@ -1,16 +1,16 @@
 package cn.powernukkitx.deflate;
 
+import java.util.concurrent.ThreadLocalRandom;
 import net.jpountz.lz4.LZ4Factory;
 import org.junit.jupiter.api.Test;
 
-import java.util.concurrent.ThreadLocalRandom;
-
 public class LZ4SizeTest {
     LZ4Factory factory = LZ4Factory.fastestInstance();
+
     @Test
     public void test() {
         byte[] data = new byte[4096];
-        for (int i=1024;i<4096;i++) {
+        for (int i = 1024; i < 4096; i++) {
             data[i] = (byte) ThreadLocalRandom.current().nextInt(1);
         }
         var a = factory.fastCompressor().compress(data);

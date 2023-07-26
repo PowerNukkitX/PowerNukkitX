@@ -17,7 +17,10 @@ import cn.nukkit.item.Item;
  * @since Nukkit 1.0 | Nukkit API 1.0.0
  */
 @Deprecated(since = "1.19.50-r3", forRemoval = true)
-@DeprecationDetails(since = "1.19.50-r3", reason = "No usage at all & Confuse devs.", replaceWith = "cn.nukkit.inventory.InventoryHolder")
+@DeprecationDetails(
+        since = "1.19.50-r3",
+        reason = "No usage at all & Confuse devs.",
+        replaceWith = "cn.nukkit.inventory.InventoryHolder")
 public interface BlockEntityContainer {
 
     /**

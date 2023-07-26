@@ -18,9 +18,8 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.network.protocol.BlockEventPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.RedstoneComponent;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Snake1999
@@ -51,16 +50,14 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public Class<? extends BlockEntityMusic> getBlockEntityClass() {
         return BlockEntityMusic.class;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getBlockEntityType() {
         return BlockEntity.MUSIC;
     }
@@ -81,7 +78,15 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
         return BlockEntityHolder.setBlockAndCreateEntity(this) != null;
     }
 
@@ -263,11 +268,15 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
     public void emitSound(@Nullable Player player) {
         if (this.up().getId() != AIR) return;
 
-        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(player != null ? player : this, this.add(0.5, 0.5, 0.5).clone(), VibrationType.BLOCK_CHANGE));
+        this.level
+                .getVibrationManager()
+                .callVibrationEvent(new VibrationEvent(
+                        player != null ? player : this, this.add(0.5, 0.5, 0.5).clone(), VibrationType.BLOCK_CHANGE));
 
         Instrument instrument = this.getInstrument();
 
-        this.level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_NOTE, instrument.ordinal() << 8 | this.getStrength());
+        this.level.addLevelSoundEvent(
+                this, LevelSoundEventPacket.SOUND_NOTE, instrument.ordinal() << 8 | this.getStrength());
 
         BlockEventPacket pk = new BlockEventPacket();
         pk.x = this.getFloorX();
@@ -293,8 +302,7 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
             // before the "real" BlockEntity is set. That means, if we'd use the other method here,
             // it would create two BlockEntities.
             BlockEntityMusic music = getBlockEntity();
-            if (music == null)
-                return 0;
+            if (music == null) return 0;
 
             if (this.isGettingPower()) {
                 if (!music.isPowered()) {
@@ -336,5 +344,4 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
             return sound;
         }
     }
-
 }

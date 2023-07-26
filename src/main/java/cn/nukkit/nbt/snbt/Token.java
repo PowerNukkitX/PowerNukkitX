@@ -4,12 +4,10 @@ package cn.nukkit.nbt.snbt;
 import cn.nukkit.nbt.snbt.ast.Delimiter;
 import cn.nukkit.nbt.snbt.ast.Literal;
 import cn.nukkit.nbt.snbt.ast.WHITESPACE;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-
 
 public class Token implements SNBTConstants, Node {
     private TokenType type;
@@ -223,8 +221,7 @@ public class Token implements SNBTConstants, Node {
         return flm == null ? null : flm.getText(getBeginOffset(), getEndOffset());
     }
 
-    protected Token() {
-    }
+    protected Token() {}
 
     public Token(TokenType type, SNBTLexer tokenSource, int beginOffset, int endOffset) {
         this.type = type;
@@ -241,8 +238,7 @@ public class Token implements SNBTConstants, Node {
         this.unparsed = unparsed;
     }
 
-    public void clearChildren() {
-    }
+    public void clearChildren() {}
 
     public String getNormalizedText() {
         if (getType() == TokenType.EOF) {
@@ -271,9 +267,7 @@ public class Token implements SNBTConstants, Node {
                 if (previous == null) throw new java.util.NoSuchElementException("No previous token!");
                 return currentPoint = previous;
             }
-
-        }
-                ;
+        };
     }
 
     /**
@@ -306,9 +300,7 @@ public class Token implements SNBTConstants, Node {
                 if (next == null) throw new java.util.NoSuchElementException("No next token!");
                 return currentPoint = next;
             }
-
-        }
-                ;
+        };
     }
 
     /**
@@ -417,7 +409,4 @@ public class Token implements SNBTConstants, Node {
     public final List<Node> children() {
         return Collections.emptyList();
     }
-
 }
-
-

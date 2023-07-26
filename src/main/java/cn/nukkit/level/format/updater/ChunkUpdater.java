@@ -91,15 +91,14 @@ public class ChunkUpdater {
     }
 
     private boolean upgradeSnowLayersFromV9toV10(Level level, BaseChunk chunk, boolean updated, ChunkSection section) {
-        updated |= walk(chunk, section, new GroupedUpdaters(
-                new NewLeafUpdater(section),
-                new SnowLayerUpdater(level, section)
-        ));
+        updated |= walk(
+                chunk, section, new GroupedUpdaters(new NewLeafUpdater(section), new SnowLayerUpdater(level, section)));
         section.setContentVersion(10);
         return updated;
     }
 
-    private boolean updateBeehiveFromV5or6or7toV8(BaseChunk chunk, boolean updated, ChunkSection section, boolean updateDirection) {
+    private boolean updateBeehiveFromV5or6or7toV8(
+            BaseChunk chunk, boolean updated, ChunkSection section, boolean updateDirection) {
         if (walk(chunk, section, new BeehiveUpdater(section, updateDirection))) {
             updated = true;
         }
@@ -107,20 +106,27 @@ public class ChunkUpdater {
         return updated;
     }
 
-    private boolean updateToV8FromV0toV5(Level level, BaseChunk chunk, boolean updated, ChunkSection section, int contentVersion) {
+    private boolean updateToV8FromV0toV5(
+            Level level, BaseChunk chunk, boolean updated, ChunkSection section, int contentVersion) {
         WallUpdater wallUpdater = new WallUpdater(level, section);
-        boolean sectionUpdated = walk(chunk, section, new GroupedUpdaters(
-                new StemStrippedUpdater(section),
-                new MesaBiomeUpdater(section),
-                new NewLeafUpdater(section),
-                new BeehiveUpdater(section, true),
-                wallUpdater,
-                contentVersion < 1 ? new StemUpdater(level, section, BlockID.MELON_STEM, BlockID.MELON_BLOCK) : null,
-                contentVersion < 1 ? new StemUpdater(level, section, BlockID.PUMPKIN_STEM, BlockID.PUMPKIN) : null,
-                contentVersion < 5 ? new OldWoodBarkUpdater(section, BlockID.LOG, 0b000) : null,
-                contentVersion < 5 ? new OldWoodBarkUpdater(section, BlockID.LOG2, 0b100) : null,
-                contentVersion < 5 ? new DoorUpdater(chunk, section) : null
-        ));
+        boolean sectionUpdated = walk(
+                chunk,
+                section,
+                new GroupedUpdaters(
+                        new StemStrippedUpdater(section),
+                        new MesaBiomeUpdater(section),
+                        new NewLeafUpdater(section),
+                        new BeehiveUpdater(section, true),
+                        wallUpdater,
+                        contentVersion < 1
+                                ? new StemUpdater(level, section, BlockID.MELON_STEM, BlockID.MELON_BLOCK)
+                                : null,
+                        contentVersion < 1
+                                ? new StemUpdater(level, section, BlockID.PUMPKIN_STEM, BlockID.PUMPKIN)
+                                : null,
+                        contentVersion < 5 ? new OldWoodBarkUpdater(section, BlockID.LOG, 0b000) : null,
+                        contentVersion < 5 ? new OldWoodBarkUpdater(section, BlockID.LOG2, 0b100) : null,
+                        contentVersion < 5 ? new DoorUpdater(chunk, section) : null));
 
         updated = updated || sectionUpdated;
 
@@ -130,7 +136,12 @@ public class ChunkUpdater {
                 int x = chunk.getX() << 4 | 0x6;
                 int y = section.getY() << 4 | 0x6;
                 int z = chunk.getZ() << 4 | 0x6;
-                log.error("The chunk section at x:{}, y:{}, z:{} failed to complete the backward compatibility update 1 after {} attempts", x, y, z, attempts);
+                log.error(
+                        "The chunk section at x:{}, y:{}, z:{} failed to complete the backward compatibility update 1 after {} attempts",
+                        x,
+                        y,
+                        z,
+                        attempts);
                 break;
             }
             sectionUpdated = walk(chunk, section, wallUpdater);

@@ -36,14 +36,14 @@ public enum EnumLevel {
             if (!Server.getInstance().isLevelLoaded("nether")) {
                 Server.getInstance().loadLevel("nether");
             }
-
         }
 
         NETHER.level = Server.getInstance().getLevelByName("nether");
 
         if (NETHER.level == null) {
             // Nether is not found or disabled
-            log.warn("No level called \"nether\" found or nether is disabled in server properties! Nether functionality will be disabled.");
+            log.warn(
+                    "No level called \"nether\" found or nether is disabled in server properties! Nether functionality will be disabled.");
         }
 
         // The End
@@ -60,7 +60,10 @@ public enum EnumLevel {
         THE_END.level = Server.getInstance().getLevelByName("the_end");
 
         if (THE_END.level == null) {
-            Server.getInstance().getLogger().alert("No level called \"the_end\" found or the end is disabled in server properties! The End functionality will be disabled.");
+            Server.getInstance()
+                    .getLogger()
+                    .alert(
+                            "No level called \"the_end\" found or the end is disabled in server properties! The End functionality will be disabled.");
         }
     }
 
@@ -79,9 +82,17 @@ public enum EnumLevel {
             return null;
         } else {
             if (current.level == OVERWORLD.level || current.level.getDimension() == Level.DIMENSION_OVERWORLD) {
-                return new Position(current.getFloorX() >> 3, NukkitMath.clamp(current.getFloorY(), 70, 118), current.getFloorZ() >> 3, NETHER.level);
+                return new Position(
+                        current.getFloorX() >> 3,
+                        NukkitMath.clamp(current.getFloorY(), 70, 118),
+                        current.getFloorZ() >> 3,
+                        NETHER.level);
             } else if (current.level == NETHER.level || current.level.getDimension() == Level.DIMENSION_NETHER) {
-                return new Position(current.getFloorX() << 3, NukkitMath.clamp(current.getFloorY(), 70, 246), current.getFloorZ() << 3, OVERWORLD.level);
+                return new Position(
+                        current.getFloorX() << 3,
+                        NukkitMath.clamp(current.getFloorY(), 70, 246),
+                        current.getFloorZ() << 3,
+                        OVERWORLD.level);
             } else {
                 throw new IllegalArgumentException("Neither overworld nor nether given!");
             }

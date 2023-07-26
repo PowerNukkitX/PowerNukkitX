@@ -7,7 +7,9 @@ import cn.nukkit.blockstate.BlockState;
  * @author CreeperFace
  * @since 10.4.2017
  */
-@PowerNukkitDifference(info = "Extends BlockRedstoneRepeater instead of BlockRedstoneDiode only in PowerNukkit", since = "1.4.0.0-PN")
+@PowerNukkitDifference(
+        info = "Extends BlockRedstoneRepeater instead of BlockRedstoneDiode only in PowerNukkit",
+        since = "1.4.0.0-PN")
 public class BlockRedstoneRepeaterPowered extends BlockRedstoneRepeater {
 
     public BlockRedstoneRepeaterPowered() {
@@ -32,7 +34,8 @@ public class BlockRedstoneRepeaterPowered extends BlockRedstoneRepeater {
 
     @Override
     protected Block getUnpowered() {
-        return BlockState.of(BlockID.UNPOWERED_REPEATER, getCurrentState().getDataStorage()).getBlock();
+        return BlockState.of(BlockID.UNPOWERED_REPEATER, getCurrentState().getDataStorage())
+                .getBlock();
     }
 
     @Override

@@ -17,8 +17,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class BlockGrassPath extends BlockGrass {
 
-    public BlockGrassPath() {
-    }
+    public BlockGrassPath() {}
 
     @Override
     public int getId() {
@@ -39,7 +38,7 @@ public class BlockGrassPath extends BlockGrass {
     public double getMaxY() {
         return this.y + 1;
     }
-    
+
     @Override
     public double getHardness() {
         return 0.65;
@@ -61,7 +60,7 @@ public class BlockGrassPath extends BlockGrass {
             if (this.up().isSolid()) {
                 this.level.setBlock(this, Block.get(BlockID.DIRT), false, true);
             }
-            
+
             return Level.BLOCK_UPDATE_NORMAL;
         }
         return 0;

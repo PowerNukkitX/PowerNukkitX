@@ -10,15 +10,14 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongList;
-import org.graalvm.polyglot.Context;
-import org.graalvm.polyglot.Value;
-import org.graalvm.polyglot.proxy.ProxyArray;
-import org.graalvm.polyglot.proxy.ProxyExecutable;
-
 import java.util.Map;
 import java.util.Timer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.Value;
+import org.graalvm.polyglot.proxy.ProxyArray;
+import org.graalvm.polyglot.proxy.ProxyExecutable;
 
 public final class JSIInitiator {
     private static final Value NULL = Value.asValue(null);
@@ -62,7 +61,8 @@ public final class JSIInitiator {
         global.putMember("setInterval", (ProxyExecutable) arguments -> {
             var len = arguments.length;
             if (len == 0) {
-                throw new IllegalArgumentException("Failed to execute 'setInterval': 1 argument required, but only 0 present.");
+                throw new IllegalArgumentException(
+                        "Failed to execute 'setInterval': 1 argument required, but only 0 present.");
             }
             var args = new Object[Math.max(0, len - 2)];
             if (args.length != 0) {
@@ -87,11 +87,12 @@ public final class JSIInitiator {
         global.putMember("setTimeout", (ProxyExecutable) arguments -> {
             var len = arguments.length;
             if (len == 0) {
-                throw new IllegalArgumentException("Failed to execute 'setTimeout': 1 argument required, but only 0 present.");
+                throw new IllegalArgumentException(
+                        "Failed to execute 'setTimeout': 1 argument required, but only 0 present.");
             }
             var args = new Object[Math.max(0, len - 2)];
             if (args.length != 0) {
-                System.arraycopy(arguments, 2 , args, 0, len - 2);
+                System.arraycopy(arguments, 2, args, 0, len - 2);
             }
             var id = globalTimerId.getAndIncrement();
             var task = new JSTimerTask(id, context, arguments[0], args);

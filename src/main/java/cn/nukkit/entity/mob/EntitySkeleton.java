@@ -21,7 +21,6 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-
 import java.util.Set;
 
 /**
@@ -68,7 +67,7 @@ public class EntitySkeleton extends EntityMob implements EntityWalkable, EntityS
 
     @Override
     public Item[] getDrops() {
-        return new Item[]{Item.get(Item.BONE, Item.ARROW)};
+        return new Item[] {Item.get(Item.BONE, Item.ARROW)};
     }
 
     @PowerNukkitOnly
@@ -96,7 +95,9 @@ public class EntitySkeleton extends EntityMob implements EntityWalkable, EntityS
                 this.tickSpread,
                 Set.of(),
                 Set.of(
-                        new Behavior(new ShootExecutor(this::getItemInHand, CoreMemoryTypes.ATTACK_TARGET, 0.3f, 15, true, 30, 20),
+                        new Behavior(
+                                new ShootExecutor(
+                                        this::getItemInHand, CoreMemoryTypes.ATTACK_TARGET, 0.3f, 15, true, 30, 20),
                                 entity -> {
                                     if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.ATTACK_TARGET)) {
                                         return false;
@@ -107,22 +108,31 @@ public class EntitySkeleton extends EntityMob implements EntityWalkable, EntityS
                                         }
                                         return true;
                                     }
-                                }, 3, 1),
-                        new Behavior(new ShootExecutor(this::getItemInHand, CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 15, true, 30, 20),
+                                },
+                                3,
+                                1),
+                        new Behavior(
+                                new ShootExecutor(
+                                        this::getItemInHand, CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 15, true, 30, 20),
                                 entity -> {
                                     if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_PLAYER)) {
                                         return false;
                                     } else {
-                                        Player player = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
+                                        Player player =
+                                                entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
                                         return player.isSurvival() || player.isAdventure();
                                     }
-                                }, 2, 1),
-                        new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
-                ),
+                                },
+                                2,
+                                1),
+                        new Behavior(
+                                new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10),
+                                (entity -> true),
+                                1,
+                                1)),
                 Set.of(new NearestPlayerSensor(16, 0, 20)),
                 Set.of(new WalkController(), new LookController(true, true)),
                 new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
-                this
-        );
+                this);
     }
 }

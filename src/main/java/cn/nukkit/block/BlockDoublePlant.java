@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.UPPER_BLOCK;
+
 import cn.nukkit.Player;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitDifference;
@@ -13,11 +15,8 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.concurrent.ThreadLocalRandom;
-
-import static cn.nukkit.blockproperty.CommonBlockProperties.UPPER_BLOCK;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author xtypr
@@ -26,33 +25,66 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.UPPER_BLOCK;
 public class BlockDoublePlant extends BlockFlowable {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final ArrayBlockProperty<DoublePlantType> DOUBLE_PLANT_TYPE = new ArrayBlockProperty<>(
-            "double_plant_type", true, DoublePlantType.class
-    );
+    public static final ArrayBlockProperty<DoublePlantType> DOUBLE_PLANT_TYPE =
+            new ArrayBlockProperty<>("double_plant_type", true, DoublePlantType.class);
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(DOUBLE_PLANT_TYPE, UPPER_BLOCK);
 
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", replaceWith = "DoublePlantType.SUNFLOWER",
-        reason = "Magic values may change in future without backward compatibility.")
+    @Deprecated
+    @DeprecationDetails(
+            since = "1.4.0.0-PN",
+            by = "PowerNukkit",
+            replaceWith = "DoublePlantType.SUNFLOWER",
+            reason = "Magic values may change in future without backward compatibility.")
     public static final int SUNFLOWER = 0;
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", replaceWith = "DoublePlantType.LILAC",
+
+    @Deprecated
+    @DeprecationDetails(
+            since = "1.4.0.0-PN",
+            by = "PowerNukkit",
+            replaceWith = "DoublePlantType.LILAC",
             reason = "Magic values may change in future without backward compatibility.")
     public static final int LILAC = 1;
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", replaceWith = "DoublePlantType.TALL_GRASS",
+
+    @Deprecated
+    @DeprecationDetails(
+            since = "1.4.0.0-PN",
+            by = "PowerNukkit",
+            replaceWith = "DoublePlantType.TALL_GRASS",
             reason = "Magic values may change in future without backward compatibility.")
     public static final int TALL_GRASS = 2;
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", replaceWith = "DoublePlantType.LARGE_FERN",
+
+    @Deprecated
+    @DeprecationDetails(
+            since = "1.4.0.0-PN",
+            by = "PowerNukkit",
+            replaceWith = "DoublePlantType.LARGE_FERN",
             reason = "Magic values may change in future without backward compatibility.")
     public static final int LARGE_FERN = 3;
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", replaceWith = "DoublePlantType.ROSE_BUSH",
+
+    @Deprecated
+    @DeprecationDetails(
+            since = "1.4.0.0-PN",
+            by = "PowerNukkit",
+            replaceWith = "DoublePlantType.ROSE_BUSH",
             reason = "Magic values may change in future without backward compatibility.")
     public static final int ROSE_BUSH = 4;
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", replaceWith = "DoublePlantType.PEONY",
+
+    @Deprecated
+    @DeprecationDetails(
+            since = "1.4.0.0-PN",
+            by = "PowerNukkit",
+            replaceWith = "DoublePlantType.PEONY",
             reason = "Magic values may change in future without backward compatibility.")
     public static final int PEONY = 5;
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", replaceWith = "CommonBlockProperties.UPPER_BLOCK",
+
+    @Deprecated
+    @DeprecationDetails(
+            since = "1.4.0.0-PN",
+            by = "PowerNukkit",
+            replaceWith = "CommonBlockProperties.UPPER_BLOCK",
             reason = "Magic values may change in future without backward compatibility.")
     public static final int TOP_HALF_BITMASK = 0x8;
 
@@ -71,16 +103,14 @@ public class BlockDoublePlant extends BlockFlowable {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public DoublePlantType getDoublePlantType() {
+    @NotNull public DoublePlantType getDoublePlantType() {
         return getPropertyValue(DOUBLE_PLANT_TYPE);
     }
 
@@ -112,7 +142,9 @@ public class BlockDoublePlant extends BlockFlowable {
         return getDoublePlantType().getEnglishName();
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Bottom part will break if the supporting block is invalid on normal update")
+    @PowerNukkitDifference(
+            since = "1.4.0.0-PN",
+            info = "Bottom part will break if the supporting block is invalid on normal update")
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
@@ -134,12 +166,24 @@ public class BlockDoublePlant extends BlockFlowable {
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         Block up = up();
 
         if (up.getId() == AIR && isSupportValid(down())) {
             setTopHalf(false);
-            this.getLevel().setBlock(block, this, true, false); // If we update the bottom half, it will drop the item because there isn't a flower block above
+            this.getLevel()
+                    .setBlock(
+                            block, this, true,
+                            false); // If we update the bottom half, it will drop the item because there isn't a flower
+            // block above
 
             setTopHalf(true);
             this.getLevel().setBlock(up, this, true, true);
@@ -180,7 +224,7 @@ public class BlockDoublePlant extends BlockFlowable {
 
     @Override
     public Item[] getDrops(Item item) {
-        if (isTopHalf()){
+        if (isTopHalf()) {
             return Item.EMPTY_ARRAY;
         }
 
@@ -189,29 +233,22 @@ public class BlockDoublePlant extends BlockFlowable {
             case FERN:
                 boolean dropSeeds = ThreadLocalRandom.current().nextInt(10) == 0;
                 if (item.isShears()) {
-                    //todo enchantment
+                    // todo enchantment
                     if (dropSeeds) {
-                        return new Item[]{
-                                Item.get(ItemID.WHEAT_SEEDS),
-                                toItem()
-                        };
+                        return new Item[] {Item.get(ItemID.WHEAT_SEEDS), toItem()};
                     } else {
-                        return new Item[]{
-                                toItem()
-                        };
+                        return new Item[] {toItem()};
                     }
                 }
 
                 if (dropSeeds) {
-                    return new Item[]{
-                            Item.get(ItemID.WHEAT_SEEDS)
-                    };
+                    return new Item[] {Item.get(ItemID.WHEAT_SEEDS)};
                 } else {
                     return Item.EMPTY_ARRAY;
                 }
         }
 
-        return new Item[]{toItem()};
+        return new Item[] {toItem()};
     }
 
     @Override
@@ -221,7 +258,7 @@ public class BlockDoublePlant extends BlockFlowable {
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
-        if (item.isFertilizer()) { //Bone meal
+        if (item.isFertilizer()) { // Bone meal
             switch (getDoublePlantType()) {
                 case SUNFLOWER:
                 case SYRINGA:

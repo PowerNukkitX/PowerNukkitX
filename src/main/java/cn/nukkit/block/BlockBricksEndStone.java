@@ -5,8 +5,7 @@ import cn.nukkit.item.ItemTool;
 
 public class BlockBricksEndStone extends BlockSolid {
 
-    public BlockBricksEndStone() {
-    }
+    public BlockBricksEndStone() {}
 
     @Override
     public String getName() {
@@ -38,5 +37,4 @@ public class BlockBricksEndStone extends BlockSolid {
     public double getResistance() {
         return 4;
     }
-
 }

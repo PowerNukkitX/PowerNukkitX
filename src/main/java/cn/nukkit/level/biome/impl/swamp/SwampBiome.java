@@ -6,7 +6,6 @@ import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.biome.type.GrassyBiome;
 import cn.nukkit.level.generator.populator.impl.*;
 import cn.nukkit.level.generator.populator.impl.tree.SwampTreePopulator;
-
 import java.util.Arrays;
 
 /**
@@ -17,7 +16,8 @@ public class SwampBiome extends GrassyBiome {
     public SwampBiome() {
         super();
 
-        PopulatorDisk populatorDiskClay = new PopulatorDisk(1.0, BlockState.of(CLAY_BLOCK), 1, 2, 1, Arrays.asList(BlockState.of(DIRT), BlockState.of(CLAY_BLOCK)));
+        PopulatorDisk populatorDiskClay = new PopulatorDisk(
+                1.0, BlockState.of(CLAY_BLOCK), 1, 2, 1, Arrays.asList(BlockState.of(DIRT), BlockState.of(CLAY_BLOCK)));
         populatorDiskClay.setBaseAmount(1);
         addPopulator(populatorDiskClay);
 

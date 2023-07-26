@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
+
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -8,17 +10,13 @@ import cn.nukkit.blockproperty.BooleanBlockProperty;
 import cn.nukkit.blockstate.BlockState;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
-
 @Since("1.20.0-r2")
 @PowerNukkitXOnly
 public class BlockWoodCherry extends BlockLog {
     public static final String STRIPPED_BIT = "stripped_bit";
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(
-            new BooleanBlockProperty(STRIPPED_BIT, true),
-            PILLAR_AXIS
-    );
+    public static final BlockProperties PROPERTIES =
+            new BlockProperties(new BooleanBlockProperty(STRIPPED_BIT, true), PILLAR_AXIS);
 
     public BlockWoodCherry() {
         super(0);
@@ -35,8 +33,7 @@ public class BlockWoodCherry extends BlockLog {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }

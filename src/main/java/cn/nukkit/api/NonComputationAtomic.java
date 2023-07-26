@@ -8,8 +8,13 @@ import java.lang.annotation.*;
 @Since("1.20.10-r1")
 @PowerNukkitXOnly
 @Retention(RetentionPolicy.CLASS)
-@Target({ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.TYPE,
-        ElementType.FIELD, ElementType.PACKAGE})
+@Target({
+    ElementType.CONSTRUCTOR,
+    ElementType.METHOD,
+    ElementType.ANNOTATION_TYPE,
+    ElementType.TYPE,
+    ElementType.FIELD,
+    ElementType.PACKAGE
+})
 @Documented
-public @interface NonComputationAtomic {
-}
+public @interface NonComputationAtomic {}

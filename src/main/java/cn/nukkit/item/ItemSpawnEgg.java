@@ -16,15 +16,14 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
-
-import javax.annotation.Nullable;
 import java.util.Random;
+import javax.annotation.Nullable;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 public class ItemSpawnEgg extends Item {
-    
+
     public ItemSpawnEgg() {
         this(0, 1);
     }
@@ -67,7 +66,8 @@ public class ItemSpawnEgg extends Item {
     }
 
     @Override
-    public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
+    public boolean onActivate(
+            Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         if (player.isAdventure()) {
             return false;
         }
@@ -81,7 +81,11 @@ public class ItemSpawnEgg extends Item {
         CompoundTag nbt = new CompoundTag()
                 .putList(new ListTag<DoubleTag>("Pos")
                         .add(new DoubleTag("", block.getX() + 0.5))
-                        .add(new DoubleTag("", target.getBoundingBox() == null ? block.getY() : target.getBoundingBox().getMaxY() + 0.0001f))
+                        .add(new DoubleTag(
+                                "",
+                                target.getBoundingBox() == null
+                                        ? block.getY()
+                                        : target.getBoundingBox().getMaxY() + 0.0001f))
                         .add(new DoubleTag("", block.getZ() + 0.5)))
                 .putList(new ListTag<DoubleTag>("Motion")
                         .add(new DoubleTag("", 0))
@@ -111,7 +115,8 @@ public class ItemSpawnEgg extends Item {
             }
             entity.spawnToAll();
 
-            level.getVibrationManager().callVibrationEvent(new VibrationEvent(player, entity.clone(), VibrationType.ENTITY_PLACE));
+            level.getVibrationManager()
+                    .callVibrationEvent(new VibrationEvent(player, entity.clone(), VibrationType.ENTITY_PLACE));
 
             return true;
         }
@@ -127,8 +132,7 @@ public class ItemSpawnEgg extends Item {
 
     @PowerNukkitOnly
     @Since("1.19.21-r1")
-    @Nullable
-    public String getEntityName() {
+    @Nullable public String getEntityName() {
         String saveId = Entity.getSaveId(getEntityNetworkId());
         if (saveId == null) {
             return null;

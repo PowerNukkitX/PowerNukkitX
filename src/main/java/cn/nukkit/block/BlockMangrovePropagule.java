@@ -12,18 +12,17 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.concurrent.ThreadLocalRandom;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public class BlockMangrovePropagule extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
 
-    public static final BooleanBlockProperty HANGING = new BooleanBlockProperty("hanging",false);
-    public static final IntBlockProperty PROPAGULE_STAGE = new IntBlockProperty("propagule_stage",false,4,0);
+    public static final BooleanBlockProperty HANGING = new BooleanBlockProperty("hanging", false);
+    public static final IntBlockProperty PROPAGULE_STAGE = new IntBlockProperty("propagule_stage", false, 4, 0);
 
-    public static final BlockProperties PROPERTIES = new BlockProperties(HANGING,PROPAGULE_STAGE);
+    public static final BlockProperties PROPERTIES = new BlockProperties(HANGING, PROPAGULE_STAGE);
 
     @Override
     public String getName() {
@@ -37,15 +36,22 @@ public class BlockMangrovePropagule extends BlockFlowable implements BlockFlower
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        //todo: 实现红树树苗放置逻辑
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
+        // todo: 实现红树树苗放置逻辑
         if (BlockFlower.isSupportValid(down())) {
             this.getLevel().setBlock(block, this, true, true);
             return true;
@@ -86,14 +92,14 @@ public class BlockMangrovePropagule extends BlockFlowable implements BlockFlower
                 this.getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
-        } else if (type == Level.BLOCK_UPDATE_RANDOM) { //Growth
+        } else if (type == Level.BLOCK_UPDATE_RANDOM) { // Growth
             this.grow();
         }
         return Level.BLOCK_UPDATE_NORMAL;
     }
 
-    public void grow(){
-        //todo: 红树树苗催化
-    };
-
+    public void grow() {
+        // todo: 红树树苗催化
+    }
+    ;
 }

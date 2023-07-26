@@ -36,7 +36,6 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
     private BlockVector3 size;
     private BlockVector3 offset;
 
-
     public BlockEntityStructBlock(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -120,13 +119,23 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
         } else {
             this.structureName = "";
         }
-        if (this.namedTag.contains(TAG_X_STRUCTURE_OFFSET) && this.namedTag.contains(TAG_Y_STRUCTURE_OFFSET) && this.namedTag.contains(TAG_Z_STRUCTURE_OFFSET)) {
-            this.offset = new BlockVector3(this.namedTag.getInt(TAG_X_STRUCTURE_OFFSET), this.namedTag.getInt(TAG_Y_STRUCTURE_OFFSET), this.namedTag.getInt(TAG_Z_STRUCTURE_OFFSET));
+        if (this.namedTag.contains(TAG_X_STRUCTURE_OFFSET)
+                && this.namedTag.contains(TAG_Y_STRUCTURE_OFFSET)
+                && this.namedTag.contains(TAG_Z_STRUCTURE_OFFSET)) {
+            this.offset = new BlockVector3(
+                    this.namedTag.getInt(TAG_X_STRUCTURE_OFFSET),
+                    this.namedTag.getInt(TAG_Y_STRUCTURE_OFFSET),
+                    this.namedTag.getInt(TAG_Z_STRUCTURE_OFFSET));
         } else {
             this.offset = new BlockVector3(0, -1, 0);
         }
-        if (this.namedTag.contains(TAG_X_STRUCTURE_SIZE) && this.namedTag.contains(TAG_Y_STRUCTURE_SIZE) && this.namedTag.contains(TAG_Z_STRUCTURE_SIZE)) {
-            this.size = new BlockVector3(this.namedTag.getInt(TAG_X_STRUCTURE_SIZE), this.namedTag.getInt(TAG_Y_STRUCTURE_SIZE), this.namedTag.getInt(TAG_Z_STRUCTURE_SIZE));
+        if (this.namedTag.contains(TAG_X_STRUCTURE_SIZE)
+                && this.namedTag.contains(TAG_Y_STRUCTURE_SIZE)
+                && this.namedTag.contains(TAG_Z_STRUCTURE_SIZE)) {
+            this.size = new BlockVector3(
+                    this.namedTag.getInt(TAG_X_STRUCTURE_SIZE),
+                    this.namedTag.getInt(TAG_Y_STRUCTURE_SIZE),
+                    this.namedTag.getInt(TAG_Z_STRUCTURE_SIZE));
         } else {
             this.size = new BlockVector3(5, 5, 5);
         }
@@ -161,7 +170,8 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag.putByte(TAG_ANIMATION_MODE, this.animationMode.ordinal())
+        this.namedTag
+                .putByte(TAG_ANIMATION_MODE, this.animationMode.ordinal())
                 .putFloat(TAG_ANIMATION_SECONDS, this.animationSeconds)
                 .putInt(TAG_DATA, this.data.ordinal())
                 .putString(TAG_DATA_FIELD, this.dataField)

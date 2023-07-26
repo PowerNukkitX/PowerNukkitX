@@ -7,11 +7,10 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.InventorySlotPacket;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -51,8 +50,7 @@ public interface Inventory {
      * @param index the index
      * @return the item
      */
-    @NotNull
-    Item getItem(int index);
+    @NotNull Item getItem(int index);
 
     /**
      * 获取该库存指定索引处的未克隆的物品<p/>
@@ -65,7 +63,7 @@ public interface Inventory {
     @Since("1.19.60-r1")
     @DoNotModify
     default Item getUnclonedItem(int index) {
-        //你需要覆写它来实现
+        // 你需要覆写它来实现
         return getItem(index);
     }
 

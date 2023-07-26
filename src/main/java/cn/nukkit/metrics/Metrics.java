@@ -6,9 +6,6 @@ import cn.nukkit.utils.MainLogger;
 import com.nimbusds.jose.shaded.json.JSONArray;
 import com.nimbusds.jose.shaded.json.JSONObject;
 import io.netty.util.internal.EmptyArrays;
-import lombok.extern.log4j.Log4j2;
-
-import javax.net.ssl.HttpsURLConnection;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -21,6 +18,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPOutputStream;
+import javax.net.ssl.HttpsURLConnection;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * bStats collects some data for plugin authors.
@@ -32,9 +31,11 @@ import java.util.zip.GZIPOutputStream;
 public class Metrics {
     @Since("1.4.0.0-PN")
     public static final int B_STATS_VERSION = 1;
+
     private static final String VALUES = "values";
 
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1, t -> new Thread(t, "metrics#scheduler"));
+    private final ScheduledExecutorService scheduler =
+            Executors.newScheduledThreadPool(1, t -> new Thread(t, "metrics#scheduler"));
 
     // The url to which the data is sent
     private static final String URL = "https://bStats.org/submitData/server-implementation";
@@ -60,7 +61,8 @@ public class Metrics {
      * @param logger            The server main logger, ignored by PowerNukkit.
      */
     @Since("1.4.0.0-PN")
-    public Metrics(String name, String serverUUID, boolean logFailedRequests, @SuppressWarnings("unused") MainLogger logger) {
+    public Metrics(
+            String name, String serverUUID, boolean logFailedRequests, @SuppressWarnings("unused") MainLogger logger) {
         this(name, serverUUID, logFailedRequests);
     }
 
@@ -269,7 +271,6 @@ public class Metrics {
         @SuppressWarnings("java:S112")
         @Since("1.4.0.0-PN")
         protected abstract JSONObject getChartData() throws Exception;
-
     }
 
     /**
@@ -389,7 +390,8 @@ public class Metrics {
             for (Map.Entry<String, Map<String, Integer>> entryValues : map.entrySet()) {
                 JSONObject value = new JSONObject();
                 boolean allSkipped = true;
-                for (Map.Entry<String, Integer> valueEntry : map.get(entryValues.getKey()).entrySet()) {
+                for (Map.Entry<String, Integer> valueEntry :
+                        map.get(entryValues.getKey()).entrySet()) {
                     value.put(valueEntry.getKey(), valueEntry.getValue());
                     allSkipped = false;
                 }
@@ -438,7 +440,6 @@ public class Metrics {
             data.put("value", value);
             return data;
         }
-
     }
 
     /**
@@ -465,7 +466,6 @@ public class Metrics {
         protected JSONObject getChartData() throws Exception {
             return createAdvancedChartData(callable);
         }
-
     }
 
     /**
@@ -505,7 +505,6 @@ public class Metrics {
             data.put(VALUES, values);
             return data;
         }
-
     }
 
     /**
@@ -556,11 +555,9 @@ public class Metrics {
             data.put(VALUES, values);
             return data;
         }
-
     }
 
     public void close() {
         this.scheduler.shutdownNow();
     }
 }
-

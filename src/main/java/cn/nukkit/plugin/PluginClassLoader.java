@@ -18,14 +18,13 @@ public class PluginClassLoader extends URLClassLoader {
     private final Map<String, Class> classes = new HashMap<>();
 
     public PluginClassLoader(JavaPluginLoader loader, ClassLoader parent, File file) throws MalformedURLException {
-        super(new URL[]{file.toURI().toURL()}, parent);
+        super(new URL[] {file.toURI().toURL()}, parent);
         this.loader = loader;
     }
 
     @Override
     protected Class<?> findClass(String name) throws ClassNotFoundException {
         return this.findClass(name, true);
-
     }
 
     protected Class<?> findClass(String name, boolean checkGlobal) throws ClassNotFoundException {
@@ -56,5 +55,4 @@ public class PluginClassLoader extends URLClassLoader {
     Set<String> getClasses() {
         return classes.keySet();
     }
-
 }

@@ -8,9 +8,8 @@ import cn.nukkit.item.ItemEmerald;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.MinecraftItemID;
 import cn.nukkit.item.enchantment.Enchantment;
-
-import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
+import javax.annotation.Nullable;
 
 /**
  * @author xtypr
@@ -40,8 +39,7 @@ public class BlockOreEmerald extends BlockOre {
 
     @Since("FUTURE")
     @PowerNukkitOnly
-    @Nullable
-    @Override
+    @Nullable @Override
     protected MinecraftItemID getRawMaterial() {
         return MinecraftItemID.EMERALD;
     }
@@ -61,9 +59,7 @@ public class BlockOreEmerald extends BlockOre {
                 count = i + 1;
             }
 
-            return new Item[]{
-                    new ItemEmerald(0, count)
-            };
+            return new Item[] {new ItemEmerald(0, count)};
         } else {
             return Item.EMPTY_ARRAY;
         }

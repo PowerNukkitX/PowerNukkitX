@@ -15,7 +15,6 @@ import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.LevelEventGenericPacket;
 import cn.nukkit.network.protocol.LevelEventPacket;
-
 import java.util.EnumMap;
 import java.util.Map;
 
@@ -35,29 +34,29 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor {
     @Override
     public boolean execute(EntityIntelligent entity) {
         currentTick++;
-        if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.ATTACK_TARGET))
-            return false;
+        if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.ATTACK_TARGET)) return false;
         if (currentTick == this.chargingTime) {
             var target = entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET);
 
             if (!target.isAlive()) return false;
 
-            //particle
+            // particle
             sendAttackParticle(entity, entity.add(0, 1.5), target.add(0, target.getHeight() / 2));
 
-            //sound
+            // sound
             entity.level.addSound(entity, Sound.MOB_WARDEN_SONIC_BOOM);
-//            LevelSoundEventPacketV2 pk = new LevelSoundEventPacketV2();
-//            pk.sound = LevelSoundEventPacket.SOUND_SONIC_BOOM;
-//            pk.entityIdentifier = "minecraft:warden";
-//            pk.x = (float) entity.x;
-//            pk.y = (float) entity.y;
-//            pk.z = (float) entity.z;
-//
-//            Server.broadcastPacket(entity.getViewers().values(), pk);
+            //            LevelSoundEventPacketV2 pk = new LevelSoundEventPacketV2();
+            //            pk.sound = LevelSoundEventPacket.SOUND_SONIC_BOOM;
+            //            pk.entityIdentifier = "minecraft:warden";
+            //            pk.x = (float) entity.x;
+            //            pk.y = (float) entity.y;
+            //            pk.z = (float) entity.z;
+            //
+            //            Server.broadcastPacket(entity.getViewers().values(), pk);
 
-            //attack
-            Map<EntityDamageEvent.DamageModifier, Float> damages = new EnumMap<>(EntityDamageEvent.DamageModifier.class);
+            // attack
+            Map<EntityDamageEvent.DamageModifier, Float> damages =
+                    new EnumMap<>(EntityDamageEvent.DamageModifier.class);
 
             float damage = 0;
             if (entity instanceof EntityCanAttack entityCanAttack) {
@@ -65,7 +64,8 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor {
             }
             damages.put(EntityDamageEvent.DamageModifier.BASE, damage);
 
-            EntityDamageByEntityEvent ev = new EntityDamageByEntityEvent(entity, target, EntityDamageEvent.DamageCause.MAGIC, damages, 0.6f, null);
+            EntityDamageByEntityEvent ev = new EntityDamageByEntityEvent(
+                    entity, target, EntityDamageEvent.DamageCause.MAGIC, damages, 0.6f, null);
 
             entity.level.addSound(target, Sound.MOB_WARDEN_ATTACK);
             target.attack(ev);
@@ -74,7 +74,7 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor {
             return false;
         } else {
             var target = entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET);
-            //更新视线target
+            // 更新视线target
             entity.setLookTarget(target.clone());
             entity.setMoveTarget(target.clone());
             return true;
@@ -95,14 +95,14 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor {
         entity.setDataFlag(Entity.DATA_FLAGS_EXTENDED, Entity.DATA_FLAG_SONIC_BOOM, true);
 
         entity.level.addSound(entity, Sound.MOB_WARDEN_SONIC_CHARGE);
-//        LevelSoundEventPacketV2 pk = new LevelSoundEventPacketV2();
-//        pk.sound = LevelSoundEventPacket.SOUND_SONIC_CHARGE;
-//        pk.entityIdentifier = "minecraft:warden";
-//        pk.x = (float) entity.x;
-//        pk.y = (float) entity.y;
-//        pk.z = (float) entity.z;
-//
-//        Server.broadcastPacket(entity.getViewers().values(), pk);
+        //        LevelSoundEventPacketV2 pk = new LevelSoundEventPacketV2();
+        //        pk.sound = LevelSoundEventPacket.SOUND_SONIC_CHARGE;
+        //        pk.entityIdentifier = "minecraft:warden";
+        //        pk.x = (float) entity.x;
+        //        pk.y = (float) entity.y;
+        //        pk.z = (float) entity.z;
+        //
+        //        Server.broadcastPacket(entity.getViewers().values(), pk);
     }
 
     @Override
@@ -119,15 +119,13 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor {
         for (int i = 1; i <= (length + 4); i++) {
             var pk = new LevelEventGenericPacket();
             pk.eventId = LevelEventPacket.EVENT_PARTICLE_SONIC_EXPLOSION;
-            pk.tag = createVec3fTag(from.add(relativeVector.multiply(i / length)).asVector3f());
+            pk.tag =
+                    createVec3fTag(from.add(relativeVector.multiply(i / length)).asVector3f());
             Server.broadcastPacket(entity.getViewers().values(), pk);
         }
     }
 
     protected CompoundTag createVec3fTag(Vector3f vec3f) {
-        return new CompoundTag()
-                .putFloat("x", vec3f.x)
-                .putFloat("y", vec3f.y)
-                .putFloat("z", vec3f.z);
+        return new CompoundTag().putFloat("x", vec3f.x).putFloat("y", vec3f.y).putFloat("z", vec3f.z);
     }
 }

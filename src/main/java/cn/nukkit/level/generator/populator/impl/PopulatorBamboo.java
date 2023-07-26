@@ -44,7 +44,10 @@ public class PopulatorBamboo extends PopulatorCount {
     private double podzolProbability = 0.6;
 
     private boolean canStay(int x, int y, int z, FullChunk chunk) {
-        return EnsureCover.ensureCover(x, y, z, chunk) && (EnsureGrassBelow.ensureGrassBelow(x, y, z, chunk) || EnsureBelow.ensureBelow(x, y, z, DIRT, chunk) || EnsureBelow.ensureBelow(x, y, z, PODZOL, chunk));
+        return EnsureCover.ensureCover(x, y, z, chunk)
+                && (EnsureGrassBelow.ensureGrassBelow(x, y, z, chunk)
+                        || EnsureBelow.ensureBelow(x, y, z, DIRT, chunk)
+                        || EnsureBelow.ensureBelow(x, y, z, PODZOL, chunk));
     }
 
     private void generateBamboo(ChunkManager level, int x, int y, int z, NukkitRandom random) {
@@ -54,15 +57,30 @@ public class PopulatorBamboo extends PopulatorCount {
             if (i > (height - 3) && height >= 3) {
                 if (i > (height - 2)) {
                     if (i == (height - 1)) {
-                        level.setBlockStateAt(x, y + i, z, BlockState.of(BLOCK_BAMBOO_LEAF_LARGE_AGED.getId(), BLOCK_BAMBOO_LEAF_LARGE_AGED.getDamage()));
+                        level.setBlockStateAt(
+                                x,
+                                y + i,
+                                z,
+                                BlockState.of(
+                                        BLOCK_BAMBOO_LEAF_LARGE_AGED.getId(),
+                                        BLOCK_BAMBOO_LEAF_LARGE_AGED.getDamage()));
                     } else {
-                        level.setBlockStateAt(x, y + i, z, BlockState.of(BLOCK_BAMBOO_LEAF_LARGE.getId(), BLOCK_BAMBOO_LEAF_LARGE.getDamage()));
+                        level.setBlockStateAt(
+                                x,
+                                y + i,
+                                z,
+                                BlockState.of(BLOCK_BAMBOO_LEAF_LARGE.getId(), BLOCK_BAMBOO_LEAF_LARGE.getDamage()));
                     }
                 } else {
-                    level.setBlockStateAt(x, y + i, z, BlockState.of(BLOCK_BAMBOO_LEAF_SMALL.getId(), BLOCK_BAMBOO_LEAF_SMALL.getDamage()));
+                    level.setBlockStateAt(
+                            x,
+                            y + i,
+                            z,
+                            BlockState.of(BLOCK_BAMBOO_LEAF_SMALL.getId(), BLOCK_BAMBOO_LEAF_SMALL.getDamage()));
                 }
             } else {
-                level.setBlockStateAt(x, y + i, z, BlockState.of(BLOCK_BAMBOO_DEFAULT.getId(), BLOCK_BAMBOO_DEFAULT.getDamage()));
+                level.setBlockStateAt(
+                        x, y + i, z, BlockState.of(BLOCK_BAMBOO_DEFAULT.getId(), BLOCK_BAMBOO_DEFAULT.getDamage()));
             }
         }
     }

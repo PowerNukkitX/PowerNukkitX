@@ -17,11 +17,10 @@ import cn.nukkit.math.BlockFace.Axis;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.RedstoneComponent;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author joserobjr
@@ -48,16 +47,14 @@ public class BlockTarget extends BlockTransparent implements RedstoneComponent, 
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public Class<? extends BlockEntityTarget> getBlockEntityClass() {
         return BlockEntityTarget.class;
     }
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getBlockEntityType() {
         return BlockEntity.TARGET;
     }
@@ -70,7 +67,7 @@ public class BlockTarget extends BlockTransparent implements RedstoneComponent, 
     @Override
     public int getWeakPower(BlockFace face) {
         BlockEntityTarget target = getBlockEntity();
-        return target == null? 0 : target.getActivePower();
+        return target == null ? 0 : target.getActivePower();
     }
 
     @PowerNukkitOnly
@@ -86,7 +83,7 @@ public class BlockTarget extends BlockTransparent implements RedstoneComponent, 
         if (power <= 0 || ticks <= 0) {
             return deactivatePower();
         }
-        
+
         if (!level.getServer().isRedstoneEnabled()) {
             return false;
         }
@@ -132,7 +129,9 @@ public class BlockTarget extends BlockTransparent implements RedstoneComponent, 
     @Override
     public boolean onProjectileHit(@NotNull Entity projectile, @NotNull Position position, @NotNull Vector3 motion) {
         int ticks = 8;
-        if (projectile instanceof EntityArrow || projectile instanceof EntityThrownTrident || projectile instanceof EntitySmallFireBall) {
+        if (projectile instanceof EntityArrow
+                || projectile instanceof EntityThrownTrident
+                || projectile instanceof EntitySmallFireBall) {
             ticks = 20;
         }
 
@@ -146,13 +145,13 @@ public class BlockTarget extends BlockTransparent implements RedstoneComponent, 
             return false;
         }
 
-        Vector3 hitVector = intercept.hitVector.subtract(x*2, y*2, z*2);
+        Vector3 hitVector = intercept.hitVector.subtract(x * 2, y * 2, z * 2);
         List<Axis> axes = new ArrayList<>(Arrays.asList(Axis.values()));
         axes.remove(faceHit.getAxis());
-        
-        double[] coords = new double[] { hitVector.getAxis(axes.get(0)), hitVector.getAxis(axes.get(1)) };
 
-        for (int i = 0; i < 2 ; i++) {
+        double[] coords = new double[] {hitVector.getAxis(axes.get(0)), hitVector.getAxis(axes.get(1))};
+
+        for (int i = 0; i < 2; i++) {
             if (coords[i] == 0.5) {
                 coords[i] = 1;
             } else if (coords[i] <= 0 || coords[i] >= 1) {
@@ -193,5 +192,4 @@ public class BlockTarget extends BlockTransparent implements RedstoneComponent, 
     public int getBurnChance() {
         return 0;
     }
-
 }

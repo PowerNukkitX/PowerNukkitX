@@ -23,7 +23,6 @@ public class BlockSlabBlackstonePolished extends BlockSlab {
         super(meta, POLISHED_BLACKSTONE_DOUBLE_SLAB);
     }
 
-
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     protected BlockSlabBlackstonePolished(int meta, int doubleSlab) {
@@ -37,8 +36,7 @@ public class BlockSlabBlackstonePolished extends BlockSlab {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return SIMPLE_SLAB_PROPERTIES;
     }
@@ -68,7 +66,7 @@ public class BlockSlabBlackstonePolished extends BlockSlab {
     @Override
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
-            return new Item[]{ toItem() };
+            return new Item[] {toItem()};
         }
         return Item.EMPTY_ARRAY;
     }
@@ -82,5 +80,4 @@ public class BlockSlabBlackstonePolished extends BlockSlab {
     public double getResistance() {
         return 6.0;
     }
-
 }

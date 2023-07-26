@@ -19,7 +19,7 @@ public class DeepOceanBiome extends OceanBiome {
         populatorSeagrass.setBaseAmount(24);
         this.addPopulator(populatorSeagrass);
 
-        //TODO: Add Ocean Monuments
+        // TODO: Add Ocean Monuments
 
         this.setBaseHeight(-1.8f);
         this.setHeightVariation(0.1f);

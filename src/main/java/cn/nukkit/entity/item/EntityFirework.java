@@ -24,7 +24,6 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.DyeColor;
-
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -39,7 +38,9 @@ public class EntityFirework extends Entity {
     private Item firework;
     private boolean hadCollision;
 
-    @PowerNukkitDifference(info = "Will default to a black-creeper-face if the firework data is missing", since = "1.3.1.2-PN")
+    @PowerNukkitDifference(
+            info = "Will default to a black-creeper-face if the firework data is missing",
+            since = "1.3.1.2-PN")
     public EntityFirework(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
 
@@ -64,16 +65,17 @@ public class EntityFirework extends Entity {
             }
 
             CompoundTag ex = new CompoundTag()
-                    .putByteArray("FireworkColor", new byte[]{(byte) DyeColor.BLACK.getDyeData()})
-                    .putByteArray("FireworkFade", new byte[]{})
+                    .putByteArray("FireworkColor", new byte[] {(byte) DyeColor.BLACK.getDyeData()})
+                    .putByteArray("FireworkFade", new byte[] {})
                     .putBoolean("FireworkFlicker", false)
                     .putBoolean("FireworkTrail", false)
                     .putByte("FireworkType", ItemFirework.FireworkExplosion.ExplosionType.CREEPER_SHAPED.ordinal());
 
-            tag.putCompound("Fireworks", new CompoundTag("Fireworks")
-                    .putList(new ListTag<CompoundTag>("Explosions").add(ex))
-                    .putByte("Flight", 1)
-            );
+            tag.putCompound(
+                    "Fireworks",
+                    new CompoundTag("Fireworks")
+                            .putList(new ListTag<CompoundTag>("Explosions").add(ex))
+                            .putByte("Flight", 1));
 
             firework.setNamedTag(tag);
         }
@@ -113,10 +115,11 @@ public class EntityFirework extends Entity {
             Vector3 motion = getMotion();
             this.move(this.motionX, this.motionY, this.motionZ);
 
-            if (this.isCollided && !this.hadCollision) { //collide with block
+            if (this.isCollided && !this.hadCollision) { // collide with block
                 this.hadCollision = true;
 
-                for (Block collisionBlock : level.getCollisionBlocks(getBoundingBox().grow(0.1, 0.1, 0.1))) {
+                for (Block collisionBlock :
+                        level.getCollisionBlocks(getBoundingBox().grow(0.1, 0.1, 0.1))) {
                     collisionBlock.onProjectileHit(this, position, motion);
                 }
 
@@ -126,12 +129,10 @@ public class EntityFirework extends Entity {
 
             this.updateMovement();
 
-
             float f = (float) Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
             this.yaw = (float) (Math.atan2(this.motionX, this.motionZ) * (180D / Math.PI));
 
             this.pitch = (float) (Math.atan2(this.motionY, f) * (180D / Math.PI));
-
 
             if (this.fireworkAge == 0) {
                 this.getLevel().addSound(this, Sound.FIREWORK_LAUNCH);
@@ -155,15 +156,19 @@ public class EntityFirework extends Entity {
             }
         }
 
-        return hasUpdate || !this.onGround || Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionY) > 0.00001 || Math.abs(this.motionZ) > 0.00001;
+        return hasUpdate
+                || !this.onGround
+                || Math.abs(this.motionX) > 0.00001
+                || Math.abs(this.motionY) > 0.00001
+                || Math.abs(this.motionZ) > 0.00001;
     }
 
     @Override
     public boolean attack(EntityDamageEvent source) {
-        return (source.getCause() == DamageCause.VOID ||
-                source.getCause() == DamageCause.FIRE_TICK ||
-                source.getCause() == DamageCause.ENTITY_EXPLOSION ||
-                source.getCause() == DamageCause.BLOCK_EXPLOSION)
+        return (source.getCause() == DamageCause.VOID
+                        || source.getCause() == DamageCause.FIRE_TICK
+                        || source.getCause() == DamageCause.ENTITY_EXPLOSION
+                        || source.getCause() == DamageCause.BLOCK_EXPLOSION)
                 && super.attack(source);
     }
 
@@ -181,7 +186,6 @@ public class EntityFirework extends Entity {
     public float getHeight() {
         return 0.25f;
     }
-
 
     @PowerNukkitOnly
     @Since("1.5.1.0-PN")

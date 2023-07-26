@@ -4,8 +4,6 @@ package cn.nukkit.block;
  * @author Gabriel8579
  * @since 2021-08-13
  */
-
-
 public class BlockCandleOrange extends BlockCandle {
 
     public BlockCandleOrange() {

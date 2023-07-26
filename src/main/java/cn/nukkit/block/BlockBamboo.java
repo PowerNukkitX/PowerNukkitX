@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.block.BlockSapling.AGED;
+
 import cn.nukkit.Player;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
@@ -17,26 +19,22 @@ import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.MathHelper;
 import cn.nukkit.network.protocol.AnimatePacket;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
-
-import static cn.nukkit.block.BlockSapling.AGED;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 public class BlockBamboo extends BlockTransparentMeta implements BlockFlowerPot.FlowerPotBlock {
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
-    public static final ArrayBlockProperty<BambooStalkThickness> STALK_THICKNESS = new ArrayBlockProperty<>(
-            "bamboo_stalk_thickness", false, BambooStalkThickness.class
-    );
+    public static final ArrayBlockProperty<BambooStalkThickness> STALK_THICKNESS =
+            new ArrayBlockProperty<>("bamboo_stalk_thickness", false, BambooStalkThickness.class);
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
-    public static final ArrayBlockProperty<BambooLeafSize> LEAF_SIZE = new ArrayBlockProperty<>(
-            "bamboo_leaf_size", false, BambooLeafSize.class);
+    public static final ArrayBlockProperty<BambooLeafSize> LEAF_SIZE =
+            new ArrayBlockProperty<>("bamboo_leaf_size", false, BambooLeafSize.class);
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
@@ -63,8 +61,7 @@ public class BlockBamboo extends BlockTransparentMeta implements BlockFlowerPot.
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -85,7 +82,10 @@ public class BlockBamboo extends BlockTransparentMeta implements BlockFlowerPot.
             level.useBreakOn(this, null, null, true);
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {
             Block up = up();
-            if (getAge() == 0 && up.getId() == AIR && level.getFullLight(up) >= BlockCrops.MINIMUM_LIGHT_LEVEL && ThreadLocalRandom.current().nextInt(3) == 0) {
+            if (getAge() == 0
+                    && up.getId() == AIR
+                    && level.getFullLight(up) >= BlockCrops.MINIMUM_LIGHT_LEVEL
+                    && ThreadLocalRandom.current().nextInt(3) == 0) {
                 grow(up);
             }
             return type;
@@ -121,7 +121,7 @@ public class BlockBamboo extends BlockTransparentMeta implements BlockFlowerPot.
         int count = 0;
         Optional<Block> opt;
         Block down = this;
-        while ((opt = down.down().firstInLayers(b-> b.getId() == BAMBOO)).isPresent()) {
+        while ((opt = down.down().firstInLayers(b -> b.getId() == BAMBOO)).isPresent()) {
             down = opt.get();
             if (++count >= 16) {
                 break;
@@ -131,7 +131,15 @@ public class BlockBamboo extends BlockTransparentMeta implements BlockFlowerPot.
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         Block down = down();
         int downId = down.getId();
         if (downId != BAMBOO && downId != BAMBOO_SAPLING) {
@@ -153,7 +161,8 @@ public class BlockBamboo extends BlockTransparentMeta implements BlockFlowerPot.
                 this.getLevel().addChunkPacket(player.getChunkX(), player.getChunkZ(), animatePacket);
             }
             setLeafSize(LEAF_SIZE_SMALL);
-        } if (down instanceof BlockBamboo) {
+        }
+        if (down instanceof BlockBamboo) {
             BlockBamboo bambooDown = (BlockBamboo) down;
             canGrow = bambooDown.getAge() == 0;
             boolean thick = bambooDown.isThick();
@@ -209,8 +218,10 @@ public class BlockBamboo extends BlockTransparentMeta implements BlockFlowerPot.
             return false;
         }
 
-        int height = canGrow? countHeight() : 0;
-        if (!canGrow || height >= 15 || height >= 11 && ThreadLocalRandom.current().nextFloat() < 0.25F) {
+        int height = canGrow ? countHeight() : 0;
+        if (!canGrow
+                || height >= 15
+                || height >= 11 && ThreadLocalRandom.current().nextFloat() < 0.25F) {
             setAge(1);
         }
 
@@ -220,7 +231,7 @@ public class BlockBamboo extends BlockTransparentMeta implements BlockFlowerPot.
 
     @Override
     public boolean onBreak(Item item) {
-        Optional<Block> down = down().firstInLayers(b-> b instanceof BlockBamboo);
+        Optional<Block> down = down().firstInLayers(b -> b instanceof BlockBamboo);
         if (down.isPresent()) {
             BlockBamboo bambooDown = (BlockBamboo) down.get();
             int height = bambooDown.countHeight();
@@ -239,7 +250,13 @@ public class BlockBamboo extends BlockTransparentMeta implements BlockFlowerPot.
 
     private boolean isSupportInvalid() {
         int downId = down().getId();
-        return downId != BAMBOO && downId != DIRT && downId != GRASS && downId != SAND && downId != GRAVEL && downId != PODZOL && downId != BAMBOO_SAPLING;
+        return downId != BAMBOO
+                && downId != DIRT
+                && downId != GRASS
+                && downId != SAND
+                && downId != GRAVEL
+                && downId != PODZOL
+                && downId != BAMBOO_SAPLING;
     }
 
     @Override
@@ -264,7 +281,7 @@ public class BlockBamboo extends BlockTransparentMeta implements BlockFlowerPot.
 
     @PowerNukkitOnly
     public void setThick(boolean thick) {
-        setBambooStalkThickness(thick? BambooStalkThickness.THICK : BambooStalkThickness.THIN);
+        setBambooStalkThickness(thick ? BambooStalkThickness.THICK : BambooStalkThickness.THIN);
     }
 
     @PowerNukkitOnly
@@ -286,7 +303,11 @@ public class BlockBamboo extends BlockTransparentMeta implements BlockFlowerPot.
 
     @PowerNukkitOnly
     @Deprecated
-    @DeprecationDetails(by = "PowerNukkit", since = "1.5.0.0-PN", replaceWith = "getBambooLeafSize", reason = "magic values")
+    @DeprecationDetails(
+            by = "PowerNukkit",
+            since = "1.5.0.0-PN",
+            replaceWith = "getBambooLeafSize",
+            reason = "magic values")
     public int getLeafSize() {
         return getBambooLeafSize().ordinal();
     }
@@ -298,7 +319,11 @@ public class BlockBamboo extends BlockTransparentMeta implements BlockFlowerPot.
     }
 
     @Deprecated
-    @DeprecationDetails(by = "PowerNukkit", since = "1.5.0.0-PN", replaceWith = "getBambooLeafSize", reason = "magic values")
+    @DeprecationDetails(
+            by = "PowerNukkit",
+            since = "1.5.0.0-PN",
+            replaceWith = "getBambooLeafSize",
+            reason = "magic values")
     @PowerNukkitOnly
     public void setLeafSize(int leafSize) {
         leafSize = MathHelper.clamp(leafSize, LEAF_SIZE_NONE, LEAF_SIZE_LARGE) & 0b11;
@@ -335,14 +360,14 @@ public class BlockBamboo extends BlockTransparentMeta implements BlockFlowerPot.
                 }
             }
 
-            //15格以上需要嫁接（放置竹子）
+            // 15格以上需要嫁接（放置竹子）
             if (count >= 15) {
                 return false;
             }
 
             boolean success = false;
 
-            Block block = this.up(top - (int)y + 1);
+            Block block = this.up(top - (int) y + 1);
             if (block.getId() == BlockID.AIR) {
                 success = grow(block);
             }
@@ -361,7 +386,7 @@ public class BlockBamboo extends BlockTransparentMeta implements BlockFlowerPot.
 
     @PowerNukkitOnly
     public int getAge() {
-        return getBooleanValue(AGED)? 1 : 0;
+        return getBooleanValue(AGED) ? 1 : 0;
     }
 
     @PowerNukkitOnly

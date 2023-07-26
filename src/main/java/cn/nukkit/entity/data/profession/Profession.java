@@ -3,7 +3,6 @@ package cn.nukkit.entity.data.profession;
 import cn.nukkit.api.PowerNukkitXInternal;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
-
 import java.util.HashMap;
 
 public abstract class Profession {

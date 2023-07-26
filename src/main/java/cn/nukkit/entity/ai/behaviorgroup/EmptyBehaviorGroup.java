@@ -8,7 +8,6 @@ import cn.nukkit.entity.ai.controller.IController;
 import cn.nukkit.entity.ai.memory.IMemoryStorage;
 import cn.nukkit.entity.ai.route.finder.IRouteFinder;
 import cn.nukkit.entity.ai.sensor.ISensor;
-
 import java.util.Collections;
 import java.util.Set;
 
@@ -19,34 +18,22 @@ import java.util.Set;
 @Since("1.6.0.0-PNX")
 public class EmptyBehaviorGroup implements IBehaviorGroup {
     @Override
-    public void evaluateBehaviors(EntityIntelligent entity) {
-
-    }
+    public void evaluateBehaviors(EntityIntelligent entity) {}
 
     @Override
-    public void evaluateCoreBehaviors(EntityIntelligent entity) {
-
-    }
+    public void evaluateCoreBehaviors(EntityIntelligent entity) {}
 
     @Override
-    public void collectSensorData(EntityIntelligent entity) {
-
-    }
+    public void collectSensorData(EntityIntelligent entity) {}
 
     @Override
-    public void tickRunningBehaviors(EntityIntelligent entity) {
-
-    }
+    public void tickRunningBehaviors(EntityIntelligent entity) {}
 
     @Override
-    public void tickRunningCoreBehaviors(EntityIntelligent entity) {
-
-    }
+    public void tickRunningCoreBehaviors(EntityIntelligent entity) {}
 
     @Override
-    public void applyController(EntityIntelligent entity) {
-
-    }
+    public void applyController(EntityIntelligent entity) {}
 
     @Override
     public Set<IBehavior> getBehaviors() {
@@ -84,9 +71,7 @@ public class EmptyBehaviorGroup implements IBehaviorGroup {
     }
 
     @Override
-    public void updateRoute(EntityIntelligent entity) {
-
-    }
+    public void updateRoute(EntityIntelligent entity) {}
 
     @Override
     public IMemoryStorage getMemoryStorage() {
@@ -99,7 +84,5 @@ public class EmptyBehaviorGroup implements IBehaviorGroup {
     }
 
     @Override
-    public void setForceUpdateRoute(boolean forceUpdateRoute) {
-
-    }
+    public void setForceUpdateRoute(boolean forceUpdateRoute) {}
 }

@@ -16,20 +16,21 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.CompassRoseDirection;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
+import javax.annotation.Nullable;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 
 @Log4j2
 @PowerNukkitXOnly
 @Since("1.20.0-r2")
 public abstract class BlockHangingSign extends BlockSignBase implements BlockEntityHolder<BlockEntityHangingSign> {
-    public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.FACING_DIRECTION, CommonBlockProperties.GROUND_SIGN_DIRECTION,
-            CommonBlockProperties.ATTACHED, CommonBlockProperties.HANGING);
+    public static final BlockProperties PROPERTIES = new BlockProperties(
+            CommonBlockProperties.FACING_DIRECTION,
+            CommonBlockProperties.GROUND_SIGN_DIRECTION,
+            CommonBlockProperties.ATTACHED,
+            CommonBlockProperties.HANGING);
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -42,23 +43,21 @@ public abstract class BlockHangingSign extends BlockSignBase implements BlockEnt
         super(meta);
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public Class<? extends BlockEntityHangingSign> getBlockEntityClass() {
         return BlockEntityHangingSign.class;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getBlockEntityType() {
         return BlockEntity.HANGING_SIGN;
     }
 
     @Override
     public AxisAlignedBB getBoundingBox() {
-        return null;//01 23 45
+        return null; // 01 23 45
     }
 
     @Override
@@ -102,7 +101,15 @@ public abstract class BlockHangingSign extends BlockSignBase implements BlockEnt
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
         if (player != null && !player.isSneaking() && target instanceof BlockSignBase) {
             return false;
         }
@@ -125,9 +132,11 @@ public abstract class BlockHangingSign extends BlockSignBase implements BlockEnt
         if (face == BlockFace.DOWN) {
             this.setPropertyValue(CommonBlockProperties.HANGING, true);
             CompassRoseDirection direction = CommonBlockProperties.GROUND_SIGN_DIRECTION.getValueForMeta(
-                    (int) Math.floor((((player != null ? player.yaw : 0) + 180) * 16 / 360) + 0.5) & 0x0f
-            );
-            if ((player != null && player.isSneaking()) || target instanceof BlockThin || target instanceof BlockChain || target instanceof BlockHangingSign) {
+                    (int) Math.floor((((player != null ? player.yaw : 0) + 180) * 16 / 360) + 0.5) & 0x0f);
+            if ((player != null && player.isSneaking())
+                    || target instanceof BlockThin
+                    || target instanceof BlockChain
+                    || target instanceof BlockHangingSign) {
                 this.setPropertyValue(CommonBlockProperties.ATTACHED, true);
                 this.setPropertyValue(CommonBlockProperties.GROUND_SIGN_DIRECTION, direction);
                 getLevel().setBlock(block, this, true);
@@ -159,8 +168,7 @@ public abstract class BlockHangingSign extends BlockSignBase implements BlockEnt
         }
     }
 
-    @Nullable
-    private BlockFace checkGroundBlock() {
+    @Nullable private BlockFace checkGroundBlock() {
         if (getSide(BlockFace.NORTH, 1).canBePlaced()) return BlockFace.NORTH;
         if (getSide(BlockFace.SOUTH, 1).canBePlaced()) return BlockFace.SOUTH;
         if (getSide(BlockFace.WEST, 1).canBePlaced()) return BlockFace.WEST;

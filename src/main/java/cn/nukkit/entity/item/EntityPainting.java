@@ -18,7 +18,6 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddPaintingPacket;
 import cn.nukkit.network.protocol.DataPacket;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,7 +28,7 @@ public class EntityPainting extends EntityHanging {
 
     public static final int NETWORK_ID = 83;
 
-    public final static Motive[] motives = Motive.values();
+    public static final Motive[] motives = Motive.values();
     private Motive motive;
 
     private float width;
@@ -89,8 +88,7 @@ public class EntityPainting extends EntityHanging {
                     this.z - size.z,
                     this.x + size.x,
                     this.y + size.y,
-                    this.z + size.z
-            );
+                    this.z + size.z);
         } else {
             this.width = 0;
             this.height = 0;
@@ -118,7 +116,9 @@ public class EntityPainting extends EntityHanging {
         if (super.attack(source)) {
             if (source instanceof EntityDamageByEntityEvent) {
                 Entity damager = ((EntityDamageByEntityEvent) source).getDamager();
-                if (damager instanceof Player && (((Player) damager).isAdventure() || ((Player) damager).isSurvival()) && this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
+                if (damager instanceof Player
+                        && (((Player) damager).isAdventure() || ((Player) damager).isSurvival())
+                        && this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
                     this.level.dropItem(this, new ItemPainting());
                 }
             }
@@ -159,7 +159,6 @@ public class EntityPainting extends EntityHanging {
     public String getOriginalName() {
         return "Painting";
     }
-
 
     public enum Motive {
         KEBAB("Kebab", 1, 1),

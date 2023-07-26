@@ -10,9 +10,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author PikyCZ
@@ -32,34 +31,40 @@ public class BlockEndGateway extends BlockSolid implements BlockEntityHolder<Blo
     public int getId() {
         return END_GATEWAY;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    @Override
+    @NotNull @Override
     public Class<? extends BlockEntityEndGateway> getBlockEntityClass() {
         return BlockEntityEndGateway.class;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getBlockEntityType() {
         return BlockEntity.END_GATEWAY;
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
         return BlockEntityHolder.setBlockAndCreateEntity(this) != null;
     }
-    
+
     @Override
     public boolean canPassThrough() {
         if (this.getLevel() == null) {
             return false;
         }
-        
+
         if (this.getLevel().getDimension() != Level.DIMENSION_THE_END) {
             return false;
         } else {
@@ -96,36 +101,36 @@ public class BlockEndGateway extends BlockSolid implements BlockEntityHolder<Blo
     public Item toItem() {
         return new ItemBlock(Block.get(BlockID.AIR));
     }
-    
+
     @Override
     public boolean canBePushed() {
         return false;
     }
-    
+
     @Override
     public boolean canBePulled() {
         return false;
     }
-    
+
     @Override
     public void onEntityCollide(Entity entity) {
         if (this.getLevel() == null) {
             return;
         }
-        
+
         if (this.getLevel().getDimension() != Level.DIMENSION_THE_END) {
             return;
         }
-        
+
         if (entity == null) {
             return;
         }
-        
+
         BlockEntityEndGateway endGateway = getOrCreateBlockEntity();
         if (endGateway == null) {
             return;
         }
-        
+
         if (!endGateway.isTeleportCooldown()) {
             endGateway.teleportEntity(entity);
         }

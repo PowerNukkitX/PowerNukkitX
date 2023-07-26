@@ -14,7 +14,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -45,7 +44,8 @@ public class ItemPainting extends Item {
     }
 
     @Override
-    public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
+    public boolean onActivate(
+            Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         if (player.isAdventure()) {
             return false;
         }
@@ -61,10 +61,12 @@ public class ItemPainting extends Item {
             boolean valid = true;
             for (int x = 0; x < motive.width && valid; x++) {
                 for (int z = 0; z < motive.height && valid; z++) {
-                    if (target.getSide(BlockFace.fromIndex(RIGHT[face.getIndex() - 2]), x).isTransparent() ||
-                            target.up(z).isTransparent() ||
-                            block.getSide(BlockFace.fromIndex(RIGHT[face.getIndex() - 2]), x).isSolid() ||
-                            block.up(z).isSolid()) {
+                    if (target.getSide(BlockFace.fromIndex(RIGHT[face.getIndex() - 2]), x)
+                                    .isTransparent()
+                            || target.up(z).isTransparent()
+                            || block.getSide(BlockFace.fromIndex(RIGHT[face.getIndex() - 2]), x)
+                                    .isSolid()
+                            || block.up(z).isSolid()) {
                         valid = false;
                     }
                 }
@@ -75,7 +77,8 @@ public class ItemPainting extends Item {
             }
         }
         int direction = DIRECTION[face.getIndex() - 2];
-        EntityPainting.Motive motive = validMotives.get(ThreadLocalRandom.current().nextInt(validMotives.size()));
+        EntityPainting.Motive motive =
+                validMotives.get(ThreadLocalRandom.current().nextInt(validMotives.size()));
 
         Vector3 position = new Vector3(target.x + 0.5, target.y + 0.5, target.z + 0.5);
         double widthOffset = offset(motive.width);
@@ -129,7 +132,8 @@ public class ItemPainting extends Item {
 
         entity.spawnToAll();
 
-        level.getVibrationManager().callVibrationEvent(new VibrationEvent(player, position.clone(), VibrationType.ENTITY_PLACE));
+        level.getVibrationManager()
+                .callVibrationEvent(new VibrationEvent(player, position.clone(), VibrationType.ENTITY_PLACE));
 
         return true;
     }

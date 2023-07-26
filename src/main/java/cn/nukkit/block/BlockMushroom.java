@@ -14,9 +14,8 @@ import cn.nukkit.level.generator.object.mushroom.BigMushroom;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitRandom;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.concurrent.ThreadLocalRandom;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class BlockMushroom extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
 
@@ -30,8 +29,7 @@ public abstract class BlockMushroom extends BlockFlowable implements BlockFlower
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return CommonBlockProperties.EMPTY_PROPERTIES;
     }
@@ -49,7 +47,15 @@ public abstract class BlockMushroom extends BlockFlowable implements BlockFlower
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         if (canStay()) {
             getLevel().setBlock(block, this, true, true);
             return true;
@@ -91,8 +97,9 @@ public abstract class BlockMushroom extends BlockFlowable implements BlockFlower
             if (ev.isCancelled()) {
                 return false;
             }
-            for(Block block : ev.getBlockList()) {
-                this.level.setBlockAt(block.getFloorX(), block.getFloorY(), block.getFloorZ(), block.getId(), block.getDamage());
+            for (Block block : ev.getBlockList()) {
+                this.level.setBlockAt(
+                        block.getFloorX(), block.getFloorY(), block.getFloorZ(), block.getId(), block.getDamage());
             }
             return true;
         } else {
@@ -103,7 +110,10 @@ public abstract class BlockMushroom extends BlockFlowable implements BlockFlower
 
     public boolean canStay() {
         Block block = this.down();
-        return block.getId() == MYCELIUM || block.getId() == PODZOL || block instanceof BlockNylium || (!block.isTransparent() && this.level.getFullLight(this) < 13);
+        return block.getId() == MYCELIUM
+                || block.getId() == PODZOL
+                || block instanceof BlockNylium
+                || (!block.isTransparent() && this.level.getFullLight(this) < 13);
     }
 
     @Override

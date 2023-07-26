@@ -47,5 +47,4 @@ public class PlayerExperienceChangeEvent extends PlayerEvent implements Cancella
     public void setNewExperienceLevel(int level) {
         this.newExpLevel = level;
     }
-
 }

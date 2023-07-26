@@ -8,7 +8,6 @@ import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.utils.TextFormat;
-
 import java.util.Map;
 
 /**
@@ -21,23 +20,24 @@ public class MeCommand extends VanillaCommand {
         super(name, "commands.me.description", "nukkit.command.me.usage");
         this.setPermission("nukkit.command.me");
         this.commandParameters.clear();
-        this.commandParameters.put("message", new CommandParameter[]{
-                CommandParameter.newType("message", CommandParamType.MESSAGE)
-        });
+        this.commandParameters.put(
+                "message", new CommandParameter[] {CommandParameter.newType("message", CommandParamType.MESSAGE)});
         this.commandParameters.put("default", CommandParameter.EMPTY_ARRAY);
         this.enableParamTree();
     }
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         String name = sender.getName();
         String message = "";
         if (result.getKey().equals("message")) {
             message = result.getValue().getResult(0);
         }
 
-        broadcastCommandMessage(sender, new TranslationContainer("chat.type.emote", name, TextFormat.WHITE + message), true);
+        broadcastCommandMessage(
+                sender, new TranslationContainer("chat.type.emote", name, TextFormat.WHITE + message), true);
         return 1;
     }
 }

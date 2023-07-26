@@ -5,9 +5,8 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.positiontracking.NamedPosition;
-
-import javax.annotation.Nullable;
 import java.io.IOException;
+import javax.annotation.Nullable;
 
 /**
  * @author joserobjr
@@ -47,11 +46,10 @@ public class ItemCompassLodestone extends Item {
         }
         setTrackingHandle(Server.getInstance().getPositionTrackingService().addOrReusePosition(position));
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nullable
-    public NamedPosition getTrackingPosition() throws IOException {
+    @Nullable public NamedPosition getTrackingPosition() throws IOException {
         int trackingHandle = getTrackingHandle();
         if (trackingHandle == 0) {
             return null;
@@ -62,7 +60,7 @@ public class ItemCompassLodestone extends Item {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public int getTrackingHandle() {
-        return hasCompoundTag()? getNamedTag().getInt("trackingHandle") : 0;
+        return hasCompoundTag() ? getNamedTag().getInt("trackingHandle") : 0;
     }
 
     @PowerNukkitOnly

@@ -6,9 +6,8 @@ import cn.nukkit.api.Since;
 import cn.nukkit.item.ItemArmor;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.StringItem;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author lt_name

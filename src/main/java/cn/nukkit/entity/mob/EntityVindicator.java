@@ -49,7 +49,7 @@ public class EntityVindicator extends EntityMob implements EntityWalkable {
 
     @Override
     public Item[] getDrops() {
-        return new Item[]{Item.get(Item.IRON_AXE)};
+        return new Item[] {Item.get(Item.IRON_AXE)};
     }
 
     @PowerNukkitOnly

@@ -8,8 +8,8 @@ import cn.nukkit.nbt.tag.ListTag;
 
 @PowerNukkitXOnly
 @Since("1.19.60-r1")
-public record SelectionBox(double originX, double originY, double originZ, double sizeX, double sizeY,
-                           double sizeZ) implements NBTData {
+public record SelectionBox(double originX, double originY, double originZ, double sizeX, double sizeY, double sizeZ)
+        implements NBTData {
     public CompoundTag toCompoundTag() {
         return new CompoundTag("minecraft:selection_box")
                 .putBoolean("enabled", true)

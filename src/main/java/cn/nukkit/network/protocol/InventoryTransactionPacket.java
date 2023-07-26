@@ -8,15 +8,14 @@ import cn.nukkit.inventory.transaction.data.UseItemOnEntityData;
 import cn.nukkit.network.protocol.types.LegacySetItemSlotData;
 import cn.nukkit.network.protocol.types.NetworkInventoryAction;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import lombok.ToString;
-
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.List;
+import lombok.ToString;
 
 @ToString()
 public class InventoryTransactionPacket extends DataPacket {
-    //InventoryTransactionType 0-5
+    // InventoryTransactionType 0-5
     public static final int TYPE_NORMAL = 0;
     public static final int TYPE_MISMATCH = 1;
     public static final int TYPE_USE_ITEM = 2;
@@ -27,12 +26,11 @@ public class InventoryTransactionPacket extends DataPacket {
     public static final int USE_ITEM_ACTION_CLICK_AIR = 1;
     public static final int USE_ITEM_ACTION_BREAK_BLOCK = 2;
 
-    public static final int RELEASE_ITEM_ACTION_RELEASE = 0; //bow shoot
-    public static final int RELEASE_ITEM_ACTION_CONSUME = 1; //eat food, drink potion
+    public static final int RELEASE_ITEM_ACTION_RELEASE = 0; // bow shoot
+    public static final int RELEASE_ITEM_ACTION_CONSUME = 1; // eat food, drink potion
 
     public static final int USE_ITEM_ON_ENTITY_ACTION_INTERACT = 0;
     public static final int USE_ITEM_ON_ENTITY_ACTION_ATTACK = 1;
-
 
     public static final int ACTION_MAGIC_SLOT_DROP_ITEM = 0;
     public static final int ACTION_MAGIC_SLOT_PICKUP_ITEM = 1;
@@ -53,10 +51,13 @@ public class InventoryTransactionPacket extends DataPacket {
      * determine whether we're doing a crafting or enchanting transaction.
      */
     public boolean isCraftingPart = false;
+
     @Since("1.3.1.0-PN")
     public boolean isEnchantingPart = false;
+
     @Since("1.4.0.0-PN")
     public boolean isRepairItemPart = false;
+
     @Since("1.19.21-r1")
     public boolean isTradeItemPart = false;
 
@@ -71,7 +72,7 @@ public class InventoryTransactionPacket extends DataPacket {
         this.putVarInt(this.legacyRequestId);
         this.putUnsignedVarInt(this.transactionType);
 
-        //slots array
+        // slots array
         if (legacyRequestId != 0) {
             this.putUnsignedVarInt(this.legacySlots.size());
             for (var slot : legacySlots) {
@@ -135,7 +136,7 @@ public class InventoryTransactionPacket extends DataPacket {
                 this.legacySlots.add(new LegacySetItemSlotData(containerId, slots));
             }
         }
-        //InventoryTransactionType
+        // InventoryTransactionType
         this.transactionType = (int) this.getUnsignedVarInt();
 
         int length = (int) this.getUnsignedVarInt();
@@ -148,7 +149,7 @@ public class InventoryTransactionPacket extends DataPacket {
         switch (this.transactionType) {
             case TYPE_NORMAL:
             case TYPE_MISMATCH:
-                //Regular ComplexInventoryTransaction doesn't read any extra data
+                // Regular ComplexInventoryTransaction doesn't read any extra data
                 break;
             case TYPE_USE_ITEM:
                 UseItemData itemData = new UseItemData();

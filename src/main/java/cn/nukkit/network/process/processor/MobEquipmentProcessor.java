@@ -40,7 +40,6 @@ public class MobEquipmentProcessor extends DataPacketProcessor<MobEquipmentPacke
         }
 
         player.setDataFlag(Player.DATA_FLAGS, Player.DATA_FLAG_ACTION, false);
-
     }
 
     @Override

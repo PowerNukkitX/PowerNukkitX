@@ -13,7 +13,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 @Since("1.3.1.0-PN")
 public class EntityStrider extends EntityAnimal implements EntityWalkable {
 
-    public final static int NETWORK_ID = 125;
+    public static final int NETWORK_ID = 125;
 
     public EntityStrider(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);

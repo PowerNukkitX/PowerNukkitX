@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
+
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
@@ -16,15 +18,14 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
-
-//special thanks to wode
+// special thanks to wode
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class BlockCommandBlock  extends BlockSolidMeta implements Faceable, BlockEntityHolder<BlockEntityCommandBlock>{
+public class BlockCommandBlock extends BlockSolidMeta implements Faceable, BlockEntityHolder<BlockEntityCommandBlock> {
 
     public static final BooleanBlockProperty CONDITIONAL_BIT = new BooleanBlockProperty("conditional_bit", false);
-    public static final BlockProperties PROPERTIES = new BlockProperties(CONDITIONAL_BIT, CommonBlockProperties.FACING_DIRECTION);
+    public static final BlockProperties PROPERTIES =
+            new BlockProperties(CONDITIONAL_BIT, CommonBlockProperties.FACING_DIRECTION);
 
     public BlockCommandBlock() {
         this(0);
@@ -34,8 +35,7 @@ public class BlockCommandBlock  extends BlockSolidMeta implements Faceable, Bloc
         super(meta);
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -81,10 +81,10 @@ public class BlockCommandBlock  extends BlockSolidMeta implements Faceable, Bloc
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
         if (player != null) {
-            if (!player.isCreative())
-                return false;
+            if (!player.isCreative()) return false;
             if (Math.abs(player.getFloorX() - this.x) < 2 && Math.abs(player.getFloorZ() - this.z) < 2) {
                 double y = player.y + player.getEyeHeight();
                 if (y - this.y > 2) {
@@ -92,10 +92,12 @@ public class BlockCommandBlock  extends BlockSolidMeta implements Faceable, Bloc
                 } else if (this.y - y > 0) {
                     this.setPropertyValue(FACING_DIRECTION, BlockFace.DOWN);
                 } else {
-                    this.setPropertyValue(FACING_DIRECTION, player.getHorizontalFacing().getOpposite());
+                    this.setPropertyValue(
+                            FACING_DIRECTION, player.getHorizontalFacing().getOpposite());
                 }
             } else {
-                this.setPropertyValue(FACING_DIRECTION, player.getHorizontalFacing().getOpposite());
+                this.setPropertyValue(
+                        FACING_DIRECTION, player.getHorizontalFacing().getOpposite());
             }
         } else {
             this.setPropertyValue(FACING_DIRECTION, BlockFace.DOWN);
@@ -122,8 +124,7 @@ public class BlockCommandBlock  extends BlockSolidMeta implements Faceable, Bloc
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_REDSTONE) {
             BlockEntityCommandBlock tile = this.getBlockEntity();
-            if (tile == null)
-                return super.onUpdate(type);
+            if (tile == null) return super.onUpdate(type);
             if (this.isGettingPower()) {
                 if (!tile.isPowered()) {
                     tile.setPowered();
@@ -148,16 +149,14 @@ public class BlockCommandBlock  extends BlockSolidMeta implements Faceable, Bloc
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public Class<? extends BlockEntityCommandBlock> getBlockEntityClass() {
         return BlockEntityCommandBlock.class;
     }
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getBlockEntityType() {
         return BlockEntity.COMMAND_BLOCK;
     }

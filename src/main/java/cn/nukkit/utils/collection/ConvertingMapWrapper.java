@@ -20,7 +20,6 @@ package cn.nukkit.utils.collection;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-
 import java.util.AbstractMap;
 import java.util.Map;
 import java.util.Objects;
@@ -42,7 +41,11 @@ public class ConvertingMapWrapper<K, V1, V2> extends AbstractMap<K, V1> {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public ConvertingMapWrapper(Map<K, V2> proxied, Function<V1, V2> converter, Function<V2, V1> reverseConverter, boolean convertReturnedNulls) {
+    public ConvertingMapWrapper(
+            Map<K, V2> proxied,
+            Function<V1, V2> converter,
+            Function<V2, V1> reverseConverter,
+            boolean convertReturnedNulls) {
         this.proxied = proxied;
         this.converter = converter;
         this.reverseConverter = reverseConverter;
@@ -50,8 +53,7 @@ public class ConvertingMapWrapper<K, V1, V2> extends AbstractMap<K, V1> {
         entrySet = new ConvertingSetWrapper<>(
                 proxied.entrySet(),
                 entry -> new EntryWrapper<>(entry, reverseConverter, converter),
-                entry -> new EntryWrapper<>(entry, converter, reverseConverter)
-        );
+                entry -> new EntryWrapper<>(entry, converter, reverseConverter));
     }
 
     @PowerNukkitOnly
@@ -59,7 +61,6 @@ public class ConvertingMapWrapper<K, V1, V2> extends AbstractMap<K, V1> {
     public ConvertingMapWrapper(Map<K, V2> proxied, Function<V1, V2> converter, Function<V2, V1> reverseConverter) {
         this(proxied, converter, reverseConverter, false);
     }
-
 
     @Override
     public Set<Entry<K, V1>> entrySet() {
@@ -137,7 +138,8 @@ public class ConvertingMapWrapper<K, V1, V2> extends AbstractMap<K, V1> {
         private final Function<E2, E1> entryReverseConverter;
         private final Map.Entry<K, E2> entryProxied;
 
-        public EntryWrapper(Entry<K, E2> entryProxied, Function<E1, E2> entryConverter, Function<E2, E1> entryReverseConverter) {
+        public EntryWrapper(
+                Entry<K, E2> entryProxied, Function<E1, E2> entryConverter, Function<E2, E1> entryReverseConverter) {
             this.entryConverter = entryConverter;
             this.entryReverseConverter = entryReverseConverter;
             this.entryProxied = entryProxied;

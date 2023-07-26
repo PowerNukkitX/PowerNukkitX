@@ -9,7 +9,6 @@ import cn.nukkit.event.HandlerList;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.EventException;
 import com.google.common.collect.ImmutableMap;
-
 import java.util.EnumMap;
 import java.util.Map;
 
@@ -55,7 +54,11 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
         }
 
         if (entity.hasEffect(Effect.RESISTANCE)) {
-            this.setDamage((float) -(this.getDamage(DamageModifier.BASE) * 0.20 * (entity.getEffect(Effect.RESISTANCE).getAmplifier() + 1)), DamageModifier.RESISTANCE);
+            this.setDamage(
+                    (float) -(this.getDamage(DamageModifier.BASE)
+                            * 0.20
+                            * (entity.getEffect(Effect.RESISTANCE).getAmplifier() + 1)),
+                    DamageModifier.RESISTANCE);
         }
     }
 

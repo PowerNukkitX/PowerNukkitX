@@ -20,7 +20,6 @@ import cn.nukkit.math.MathHelper;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
-
 import java.util.*;
 
 /**
@@ -144,7 +143,8 @@ public class TheEnd extends Generator {
         this.populators.add(new PopulatorChorusTree(this));
         this.populators.add(new PopulatorEndGateway(this));
 
-        PopulatorEndObsidianPillar.ObsidianPillar[] obsidianPillars = PopulatorEndObsidianPillar.ObsidianPillar.getObsidianPillars(this.level.getSeed());
+        PopulatorEndObsidianPillar.ObsidianPillar[] obsidianPillars =
+                PopulatorEndObsidianPillar.ObsidianPillar.getObsidianPillars(this.level.getSeed());
         for (PopulatorEndObsidianPillar.ObsidianPillar obsidianPillar : obsidianPillars) {
             PopulatorEndObsidianPillar populator = new PopulatorEndObsidianPillar(obsidianPillar);
             this.populators.add(populator);
@@ -169,13 +169,39 @@ public class TheEnd extends Generator {
         int densityX = chunkX << 1;
         int densityZ = chunkZ << 1;
 
-        this.detailNoise = this.detailNoiseOctaves.generateNoiseOctaves(this.detailNoise, densityX, 0, densityZ, 3, 33,
-                3, (coordinateScale * 2) / detailNoiseScaleX, 4.277575000000001,
+        this.detailNoise = this.detailNoiseOctaves.generateNoiseOctaves(
+                this.detailNoise,
+                densityX,
+                0,
+                densityZ,
+                3,
+                33,
+                3,
+                (coordinateScale * 2) / detailNoiseScaleX,
+                4.277575000000001,
                 (coordinateScale * 2) / detailNoiseScaleZ);
-        this.roughnessNoise = this.roughnessNoiseOctaves.generateNoiseOctaves(this.roughnessNoise, densityX, 0,
-                densityZ, 3, 33, 3, coordinateScale * 2, coordinateScale, coordinateScale * 2);
-        this.roughnessNoise2 = this.roughnessNoiseOctaves2.generateNoiseOctaves(this.roughnessNoise2, densityX, 0,
-                densityZ, 3, 33, 3, coordinateScale * 2, coordinateScale, coordinateScale * 2);
+        this.roughnessNoise = this.roughnessNoiseOctaves.generateNoiseOctaves(
+                this.roughnessNoise,
+                densityX,
+                0,
+                densityZ,
+                3,
+                33,
+                3,
+                coordinateScale * 2,
+                coordinateScale,
+                coordinateScale * 2);
+        this.roughnessNoise2 = this.roughnessNoiseOctaves2.generateNoiseOctaves(
+                this.roughnessNoise2,
+                densityX,
+                0,
+                densityZ,
+                3,
+                33,
+                3,
+                coordinateScale * 2,
+                coordinateScale,
+                coordinateScale * 2);
 
         int index = 0;
 
@@ -280,8 +306,9 @@ public class TheEnd extends Generator {
                         && this.islandNoise.getValue((double) x2, (double) z2) < (double) -0.9f) {
                     x1 = (float) (x - i * 2);
                     z1 = (float) (z - j * 2);
-                    float islandHeight2 = 100f - MathHelper.sqrt((x1 * x1) + (z1 * z1))
-                            * ((Math.abs((float) x2) * 3439f + Math.abs((float) z2) * 147f) % 13f + 9f);
+                    float islandHeight2 = 100f
+                            - MathHelper.sqrt((x1 * x1) + (z1 * z1))
+                                    * ((Math.abs((float) x2) * 3439f + Math.abs((float) z2) * 147f) % 13f + 9f);
                     islandHeight2 = NukkitMath.clamp(islandHeight2, -100f, 80f);
                     islandHeight1 = Math.max(islandHeight1, islandHeight2);
                 }

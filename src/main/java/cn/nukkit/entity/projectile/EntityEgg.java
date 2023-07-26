@@ -7,7 +7,6 @@ import cn.nukkit.item.ItemEgg;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.particle.ItemBreakParticle;
 import cn.nukkit.nbt.tag.CompoundTag;
-
 import java.util.concurrent.ThreadLocalRandom;
 
 /**

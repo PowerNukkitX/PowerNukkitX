@@ -21,17 +21,16 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import lombok.SneakyThrows;
-import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.function.Supplier;
+import javax.annotation.Nullable;
+import lombok.SneakyThrows;
+import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * 这个类用于将旧版本物品以id:damage形式转换到新版本物品无damage值(0)的形式，以及提供{@link cn.nukkit.network.protocol.StartGamePacket StartGamePacket}中item Palette的作用<p>
@@ -40,23 +39,29 @@ import java.util.function.Supplier;
 @Log4j2
 public class RuntimeItemMapping {
     private final Int2ObjectMap<LegacyEntry> runtime2Legacy = new Int2ObjectOpenHashMap<>();
-    private final Int2ObjectMap<RuntimeEntry> legacy2Runtime = new Int2ObjectOpenHashMap<>();//legacyFullID to Runtime
+    private final Int2ObjectMap<RuntimeEntry> legacy2Runtime = new Int2ObjectOpenHashMap<>(); // legacyFullID to Runtime
     private final Map<String, LegacyEntry> identifier2Legacy = new HashMap<>();
+
     @PowerNukkitXOnly
     @Since("1.19.70-r2")
     private final List<RuntimeEntry> itemPaletteEntries = new ArrayList<>();
+
     @PowerNukkitXOnly
     @Since("1.19.70-r2")
     private final Int2ObjectMap<String> runtimeId2Name = new Int2ObjectOpenHashMap<>();
+
     @PowerNukkitXOnly
     @Since("1.19.70-r2")
     private final Object2IntMap<String> name2RuntimeId = new Object2IntOpenHashMap<>();
+
     @PowerNukkitXOnly
     @Since("1.19.70-r2")
     private final Map<String, Supplier<Item>> namespacedIdItem = new HashMap<>();
+
     @PowerNukkitXOnly
     @Since("1.19.80-r1")
     private static final BiMap<String, String> blockMappings = HashBiMap.create();
+
     private byte[] itemPalette;
 
     public RuntimeItemMapping(Map<String, MappingEntry> mappings) {
@@ -64,7 +69,8 @@ public class RuntimeItemMapping {
             if (stream == null) {
                 throw new AssertionError("Unable to load runtime_item_states.json");
             }
-            JsonArray runtimeItems = JsonParser.parseReader(new InputStreamReader(stream)).getAsJsonArray();
+            JsonArray runtimeItems =
+                    JsonParser.parseReader(new InputStreamReader(stream)).getAsJsonArray();
 
             for (JsonElement element : runtimeItems) {
                 if (!element.isJsonObject()) {
@@ -100,7 +106,8 @@ public class RuntimeItemMapping {
                 this.runtime2Legacy.put(runtimeId, legacyEntry);
                 this.identifier2Legacy.put(identifier, legacyEntry);
                 if (legacy2Runtime.containsKey(fullId)) {
-                    int old = RuntimeItems.getLegacyIdFromLegacyString(legacy2Runtime.get(fullId).identifier());
+                    int old = RuntimeItems.getLegacyIdFromLegacyString(
+                            legacy2Runtime.get(fullId).identifier());
                     int now = RuntimeItems.getLegacyIdFromLegacyString(runtimeEntry.identifier());
                     if (old != -1 && now == -1) {
                         legacy2Runtime.put(fullId, runtimeEntry);
@@ -116,12 +123,12 @@ public class RuntimeItemMapping {
             throw new RuntimeException(e);
         }
 
-
         try (InputStream stream = Server.class.getClassLoader().getResourceAsStream("block_mappings.json")) {
             if (stream == null) {
                 throw new AssertionError("Unable to load block_mappings.json");
             }
-            JsonObject itemMapping = JsonParser.parseReader(new InputStreamReader(stream)).getAsJsonObject();
+            JsonObject itemMapping =
+                    JsonParser.parseReader(new InputStreamReader(stream)).getAsJsonObject();
             for (String legacyID : itemMapping.keySet()) {
                 JsonObject convertData = itemMapping.getAsJsonObject(legacyID);
                 int id = Integer.parseInt(legacyID);
@@ -206,12 +213,7 @@ public class RuntimeItemMapping {
     @Since("1.6.0.0-PNX")
     public void registerCustomItem(CustomItem customItem, Supplier<Item> constructor) {
         var runtimeId = CustomItemDefinition.getRuntimeId(customItem.getNamespaceId());
-        RuntimeEntry entry = new RuntimeEntry(
-                customItem.getNamespaceId(),
-                runtimeId,
-                false,
-                true
-        );
+        RuntimeEntry entry = new RuntimeEntry(customItem.getNamespaceId(), runtimeId, false, true);
         this.itemPaletteEntries.add(entry);
         this.runtimeId2Name.put(runtimeId, customItem.getNamespaceId());
         this.name2RuntimeId.put(customItem.getNamespaceId(), runtimeId);
@@ -232,13 +234,12 @@ public class RuntimeItemMapping {
     @Since("1.6.0.0-PNX")
     public void registerCustomBlock(List<CustomBlock> blocks) {
         for (var block : blocks) {
-            int id = 255 - block.getId();//方块物品id等于 255-方块id(即-750开始递减)
+            int id = 255 - block.getId(); // 方块物品id等于 255-方块id(即-750开始递减)
             RuntimeEntry entry = new RuntimeEntry(
-                    block.getNamespaceId(),//方块命名空间也是方块物品命名空间
+                    block.getNamespaceId(), // 方块命名空间也是方块物品命名空间
                     id,
                     false,
-                    true
-            );
+                    true);
             LegacyEntry legacyEntry = new LegacyEntry(id, false, 0);
             this.itemPaletteEntries.add(entry);
             this.namespacedIdItem.put(block.getNamespaceId(), block::toItem);
@@ -338,8 +339,7 @@ public class RuntimeItemMapping {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Nullable
-    public String getNamespacedIdByNetworkId(int networkId) {
+    @Nullable public String getNamespacedIdByNetworkId(int networkId) {
         return runtimeId2Name.get(networkId);
     }
 
@@ -351,8 +351,7 @@ public class RuntimeItemMapping {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public OptionalInt getNetworkIdByNamespaceId(@NotNull String namespaceId) {
+    @NotNull public OptionalInt getNetworkIdByNamespaceId(@NotNull String namespaceId) {
         int id = name2RuntimeId.getOrDefault(namespaceId, -1);
         if (id == -1) return OptionalInt.empty();
         return OptionalInt.of(id);
@@ -368,8 +367,7 @@ public class RuntimeItemMapping {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public Item getItemByNamespaceId(@NotNull String namespaceId, int amount) {
+    @NotNull public Item getItemByNamespaceId(@NotNull String namespaceId, int amount) {
         Supplier<Item> constructor = this.namespacedIdItem.get(namespaceId.toLowerCase(Locale.ENGLISH));
         if (constructor != null) {
             try {
@@ -377,16 +375,19 @@ public class RuntimeItemMapping {
                 item.setCount(amount);
                 return item;
             } catch (Exception e) {
-                log.warn("Could not create a new instance of {} using the namespaced id {}", constructor, namespaceId, e);
+                log.warn(
+                        "Could not create a new instance of {} using the namespaced id {}",
+                        constructor,
+                        namespaceId,
+                        e);
             }
         }
 
         int legacyFullId;
         try {
-            legacyFullId = getLegacyFullId(
-                    getNetworkIdByNamespaceId(namespaceId)
-                            .orElseThrow(() -> new IllegalArgumentException("The network id of \"" + namespaceId + "\" is unknown"))
-            );
+            legacyFullId = getLegacyFullId(getNetworkIdByNamespaceId(namespaceId)
+                    .orElseThrow(() ->
+                            new IllegalArgumentException("The network id of \"" + namespaceId + "\" is unknown")));
         } catch (IllegalArgumentException e) {
             log.debug("Found an unknown item {}", namespaceId, e);
             Item item = new StringItemUnknown(namespaceId);
@@ -402,7 +403,6 @@ public class RuntimeItemMapping {
         return Item.get(id, data, amount);
     }
 
-
     @SneakyThrows
     @PowerNukkitXOnly
     @Since("1.19.70-r2")
@@ -413,7 +413,8 @@ public class RuntimeItemMapping {
     }
 
     @PowerNukkitOnly
-    public void registerNamespacedIdItem(@NotNull String namespacedId, @NotNull Constructor<? extends Item> constructor) {
+    public void registerNamespacedIdItem(
+            @NotNull String namespacedId, @NotNull Constructor<? extends Item> constructor) {
         Preconditions.checkNotNull(namespacedId, "namespacedId is null");
         Preconditions.checkNotNull(constructor, "constructor is null");
         this.namespacedIdItem.put(namespacedId.toLowerCase(Locale.ENGLISH), itemSupplier(constructor));
@@ -434,8 +435,7 @@ public class RuntimeItemMapping {
         return blockMappings;
     }
 
-    @NotNull
-    private static Supplier<Item> itemSupplier(@NotNull Constructor<? extends Item> constructor) {
+    @NotNull private static Supplier<Item> itemSupplier(@NotNull Constructor<? extends Item> constructor) {
         return () -> {
             try {
                 return constructor.newInstance();
@@ -447,8 +447,7 @@ public class RuntimeItemMapping {
 
     @Since("1.19.60-r1")
     @PowerNukkitXOnly
-    @NotNull
-    private static Supplier<Item> stringItemSupplier(@NotNull Constructor<? extends StringItem> constructor) {
+    @NotNull private static Supplier<Item> stringItemSupplier(@NotNull Constructor<? extends StringItem> constructor) {
         return () -> {
             try {
                 return (Item) constructor.newInstance();
@@ -473,6 +472,5 @@ public class RuntimeItemMapping {
      *
      * @param hasDamage 如果为false代表这个runtime物品没有对应的legacy item映射
      */
-    public record RuntimeEntry(String identifier, int runtimeId, boolean hasDamage, boolean isComponent) {
-    }
+    public record RuntimeEntry(String identifier, int runtimeId, boolean hasDamage, boolean isComponent) {}
 }

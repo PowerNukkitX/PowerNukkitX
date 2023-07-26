@@ -10,14 +10,15 @@ import cn.nukkit.command.selector.SelectorType;
 import cn.nukkit.command.selector.args.CachedSimpleSelectorArgument;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Location;
-
 import java.util.function.Predicate;
 
 @PowerNukkitXOnly
 @Since("1.19.60-r1")
 public class M extends CachedSimpleSelectorArgument {
     @Override
-    protected Predicate<Entity> cache(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) throws SelectorSyntaxException {
+    protected Predicate<Entity> cache(
+            SelectorType selectorType, CommandSender sender, Location basePos, String... arguments)
+            throws SelectorSyntaxException {
         ParseUtils.singleArgument(arguments, getKeyName());
         var gmStr = arguments[0];
         boolean reversed = ParseUtils.checkReversed(gmStr);

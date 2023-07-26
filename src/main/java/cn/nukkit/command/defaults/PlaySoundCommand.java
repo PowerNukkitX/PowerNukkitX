@@ -14,7 +14,6 @@ import cn.nukkit.level.Position;
 import cn.nukkit.level.Sound;
 import cn.nukkit.network.protocol.PlaySoundPacket;
 import com.google.common.collect.Lists;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -27,20 +26,27 @@ public class PlaySoundCommand extends VanillaCommand {
         super(name, "commands.playsound.description");
         this.setPermission("nukkit.command.playsound");
         this.getCommandParameters().clear();
-        this.addCommandParameters("default", new CommandParameter[]{
-                CommandParameter.newEnum("sound", false, new CommandEnum("sound", Arrays.stream(Sound.values()).map(Sound::getSound).toList(), true)),
-                CommandParameter.newType("player", true, CommandParamType.TARGET, new PlayersNode()),
-                CommandParameter.newType("position", true, CommandParamType.POSITION),
-                CommandParameter.newType("volume", true, CommandParamType.FLOAT),
-                CommandParameter.newType("pitch", true, CommandParamType.FLOAT),
-                CommandParameter.newType("minimumVolume", true, CommandParamType.FLOAT)
+        this.addCommandParameters("default", new CommandParameter[] {
+            CommandParameter.newEnum(
+                    "sound",
+                    false,
+                    new CommandEnum(
+                            "sound",
+                            Arrays.stream(Sound.values()).map(Sound::getSound).toList(),
+                            true)),
+            CommandParameter.newType("player", true, CommandParamType.TARGET, new PlayersNode()),
+            CommandParameter.newType("position", true, CommandParamType.POSITION),
+            CommandParameter.newType("volume", true, CommandParamType.FLOAT),
+            CommandParameter.newType("pitch", true, CommandParamType.FLOAT),
+            CommandParameter.newType("minimumVolume", true, CommandParamType.FLOAT)
         });
         this.enableParamTree();
     }
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         String sound = list.getResult(0);
         List<Player> targets = null;
@@ -99,7 +105,9 @@ public class PlaySoundCommand extends VanillaCommand {
 
             successes.add(name);
         }
-        log.addSuccess("commands.playsound.success", sound, String.join(", ", successes)).successCount(successes.size()).output();
+        log.addSuccess("commands.playsound.success", sound, String.join(", ", successes))
+                .successCount(successes.size())
+                .output();
         return successes.size();
     }
 }

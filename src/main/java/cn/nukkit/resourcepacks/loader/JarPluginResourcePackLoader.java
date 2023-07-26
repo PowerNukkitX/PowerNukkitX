@@ -6,11 +6,10 @@ import cn.nukkit.api.Since;
 import cn.nukkit.resourcepacks.JarPluginResourcePack;
 import cn.nukkit.resourcepacks.ResourcePack;
 import com.google.common.io.Files;
-import lombok.extern.log4j.Log4j2;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @PowerNukkitXOnly

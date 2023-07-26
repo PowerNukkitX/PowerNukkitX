@@ -1,7 +1,6 @@
 package cn.nukkit.permission;
 
 import cn.nukkit.Server;
-
 import java.util.*;
 
 /**
@@ -9,10 +8,10 @@ import java.util.*;
  */
 public class Permission {
 
-    public final static String DEFAULT_OP = "op";
-    public final static String DEFAULT_NOT_OP = "notop";
-    public final static String DEFAULT_TRUE = "true";
-    public final static String DEFAULT_FALSE = "false";
+    public static final String DEFAULT_OP = "op";
+    public static final String DEFAULT_NOT_OP = "notop";
+    public static final String DEFAULT_TRUE = "true";
+    public static final String DEFAULT_FALSE = "false";
 
     public static final String DEFAULT_PERMISSION = DEFAULT_OP;
 
@@ -153,7 +152,8 @@ public class Permission {
         return loadPermission(name, data, defaultValue, new ArrayList<>());
     }
 
-    public static Permission loadPermission(String name, Map<String, Object> data, String defaultValue, List<Permission> output) {
+    public static Permission loadPermission(
+            String name, Map<String, Object> data, String defaultValue, List<Permission> output) {
         String desc = null;
         Map<String, Boolean> children = new HashMap<>();
         if (data.containsKey("default")) {
@@ -189,5 +189,4 @@ public class Permission {
 
         return new Permission(name, desc, defaultValue, children);
     }
-
 }

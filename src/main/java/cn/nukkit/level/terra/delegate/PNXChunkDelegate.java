@@ -23,8 +23,7 @@ public record PNXChunkDelegate(ServerWorld world, BaseFullChunk chunk) implement
     }
 
     @Override
-    public @NotNull
-    BlockState getBlock(int i, int i1, int i2) {
+    public @NotNull BlockState getBlock(int i, int i1, int i2) {
         return PNXAdapter.adapt(chunk.getBlockState(i, i1, i2));
     }
 

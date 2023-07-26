@@ -4,7 +4,6 @@ import cn.nukkit.event.player.PlayerJoinEvent;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.plugin.MethodEventExecutor;
 import lombok.SneakyThrows;
-import org.junit.jupiter.api.Test;
 
 public class EventCallTest implements Listener {
     TextContainer blackHole;
@@ -14,7 +13,7 @@ public class EventCallTest implements Listener {
     }
 
     @SneakyThrows
-    //@Test
+    // @Test
     public void testReflect() {
         var methodEventExecutor = new MethodEventExecutor(this.getClass().getMethod("handle", PlayerJoinEvent.class));
         var event = new PlayerJoinEvent(null, "???");
@@ -27,9 +26,11 @@ public class EventCallTest implements Listener {
     }
 
     @SneakyThrows
-    //@Test
+    // @Test
     public void testASM() {
-        var methodEventExecutor = MethodEventExecutor.compile(Thread.currentThread().getContextClassLoader(), this.getClass(),
+        var methodEventExecutor = MethodEventExecutor.compile(
+                Thread.currentThread().getContextClassLoader(),
+                this.getClass(),
                 this.getClass().getMethod("handle", PlayerJoinEvent.class));
         var event = new PlayerJoinEvent(null, "???");
         var start = System.currentTimeMillis();

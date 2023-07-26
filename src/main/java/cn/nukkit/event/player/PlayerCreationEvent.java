@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.event.Event;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.network.SourceInterface;
-
 import java.net.InetSocketAddress;
 
 /**
@@ -28,7 +27,12 @@ public class PlayerCreationEvent extends Event {
 
     private Class<? extends Player> playerClass;
 
-    public PlayerCreationEvent(SourceInterface interfaz, Class<? extends Player> baseClass, Class<? extends Player> playerClass, Long clientId, InetSocketAddress socketAddress) {
+    public PlayerCreationEvent(
+            SourceInterface interfaz,
+            Class<? extends Player> baseClass,
+            Class<? extends Player> playerClass,
+            Long clientId,
+            InetSocketAddress socketAddress) {
         this.interfaz = interfaz;
         this.clientId = clientId;
         this.socketAddress = socketAddress;

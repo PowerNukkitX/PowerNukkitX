@@ -5,7 +5,6 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.network.CompressionProvider;
 import cn.nukkit.network.protocol.DataPacket;
-
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 
@@ -26,7 +25,5 @@ public interface NetworkPlayerSession {
 
     CompressionProvider getCompression();
 
-    default void setEncryption(SecretKey agreedKey, Cipher encryptionCipher, Cipher decryptionCipher) {
-
-    }
+    default void setEncryption(SecretKey agreedKey, Cipher encryptionCipher, Cipher decryptionCipher) {}
 }

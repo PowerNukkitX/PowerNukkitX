@@ -9,8 +9,7 @@ import cn.nukkit.item.Item;
  */
 public class BlockGlassPane extends BlockThin {
 
-    public BlockGlassPane() {
-    }
+    public BlockGlassPane() {}
 
     @Override
     public String getName() {

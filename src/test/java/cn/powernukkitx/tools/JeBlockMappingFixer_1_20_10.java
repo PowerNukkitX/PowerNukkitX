@@ -2,10 +2,9 @@ package cn.powernukkitx.tools;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
-import lombok.SneakyThrows;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
+import lombok.SneakyThrows;
 
 /**
  * PowerNukkitX Project 2023/7/14
@@ -17,6 +16,7 @@ import java.nio.file.Path;
 public class JeBlockMappingFixer_1_20_10 {
 
     static Path MAPPING = Path.of("src/main/resources/jeMappings/jeBlocksMapping.json");
+
     @SneakyThrows
     public static void main(String[] args) {
         var global = JsonParser.parseReader(Files.newBufferedReader(MAPPING)).getAsJsonObject();

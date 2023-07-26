@@ -1,8 +1,6 @@
 package cn.nukkit.utils;
 
 import cn.nukkit.plugin.Plugin;
-import lombok.extern.log4j.Log4j2;
-
 import java.io.File;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -13,6 +11,7 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * SimpleConfig for Nukkit
@@ -41,11 +40,12 @@ public abstract class SimpleConfig {
     }
 
     public boolean save(boolean async) {
-        if (configFile.exists()) try {
-            configFile.createNewFile();
-        } catch (Exception e) {
-            return false;
-        }
+        if (configFile.exists())
+            try {
+                configFile.createNewFile();
+            } catch (Exception e) {
+                return false;
+            }
         Config cfg = new Config(configFile, Config.YAML);
         for (Field field : this.getClass().getDeclaredFields()) {
             if (skipSave(field)) continue;
@@ -81,8 +81,7 @@ public abstract class SimpleConfig {
                     field.set(this, cfg.getDouble(path, field.getDouble(this)));
                 else if (field.getType() == String.class)
                     field.set(this, cfg.getString(path, (String) field.get(this)));
-                else if (field.getType() == ConfigSection.class)
-                    field.set(this, cfg.getSection(path));
+                else if (field.getType() == ConfigSection.class) field.set(this, cfg.getSection(path));
                 else if (field.getType() == List.class) {
                     Type genericFieldType = field.getGenericType();
                     if (genericFieldType instanceof ParameterizedType) {
@@ -98,7 +97,8 @@ public abstract class SimpleConfig {
                         else if (fieldArgClass == String.class) field.set(this, cfg.getStringList(path));
                     } else field.set(this, cfg.getList(path)); // Hell knows what's kind of List was found :)
                 } else
-                    throw new IllegalStateException("SimpleConfig did not supports class: " + field.getType().getName() + " for config field " + configFile.getName());
+                    throw new IllegalStateException("SimpleConfig did not supports class: "
+                            + field.getType().getName() + " for config field " + configFile.getName());
             } catch (Exception e) {
                 log.error("An error occurred while loading the config {}", configFile, e);
                 return false;

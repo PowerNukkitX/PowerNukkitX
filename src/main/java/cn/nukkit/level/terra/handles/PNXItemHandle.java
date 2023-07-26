@@ -7,7 +7,6 @@ import cn.nukkit.level.terra.delegate.PNXEnchantmentDelegate;
 import com.dfsek.terra.api.handle.ItemHandle;
 import com.dfsek.terra.api.inventory.Item;
 import com.dfsek.terra.api.inventory.item.Enchantment;
-
 import java.util.Set;
 import java.util.stream.Collectors;
 

@@ -4,16 +4,14 @@ import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 public class BlockCartographyTable extends BlockSolid {
 
     @PowerNukkitOnly
-    public BlockCartographyTable() {
-    }
+    public BlockCartographyTable() {}
 
     @Override
     public int getId() {
@@ -49,7 +47,7 @@ public class BlockCartographyTable extends BlockSolid {
     public boolean canHarvestWithHand() {
         return true;
     }
-    
+
     @Override
     public boolean canBeActivated() {
         return true;
@@ -57,9 +55,9 @@ public class BlockCartographyTable extends BlockSolid {
 
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player) {
-        //if (player != null) {
+        // if (player != null) {
         //    player.craftingType = Player.CRAFTING_CARTOGRAPHY;
-        //}
+        // }
         return false;
     }
 }

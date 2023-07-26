@@ -7,8 +7,7 @@ import cn.nukkit.item.ItemTool;
 public class BlockFletchingTable extends BlockSolid {
 
     @PowerNukkitOnly
-    public BlockFletchingTable() {
-    }
+    public BlockFletchingTable() {}
 
     @Override
     public int getId() {

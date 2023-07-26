@@ -19,9 +19,8 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import lombok.Getter;
-
 import java.util.Objects;
+import lombok.Getter;
 
 /**
  * {@code EntityIntelligent}抽象了一个具有行为组{@link IBehaviorGroup}（也就是具有AI）的实体
@@ -113,7 +112,8 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
         var storage = getMemoryStorage();
         if (storage != null) {
             storage.put(CoreMemoryTypes.BE_ATTACKED_EVENT, source);
-            storage.put(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, Server.getInstance().getTick());
+            storage.put(
+                    CoreMemoryTypes.LAST_BE_ATTACKED_TIME, Server.getInstance().getTick());
         }
         return result;
     }
@@ -126,7 +126,7 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
             if (player.isOp() && item.getId() == ItemID.STICK) {
                 var strBuilder = new StringBuilder();
 
-                //Build memory information
+                // Build memory information
                 strBuilder.append("§eMemory:§f\n");
                 var all = getMemoryStorage().getAll();
                 all.forEach((memory, value) -> {

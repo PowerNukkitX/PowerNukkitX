@@ -16,7 +16,9 @@ import cn.nukkit.item.enchantment.EnchantmentType;
 public abstract class EnchantmentBow extends Enchantment {
     @PowerNukkitOnly("Re-added for backward compatibility")
     @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit",
+    @DeprecationDetails(
+            since = "1.4.0.0-PN",
+            by = "Cloudburst Nukkit",
             reason = "The signature was changed and it doesn't exists anymore in Cloudburst Nukkit",
             replaceWith = "EnchantmentBow(int id, String name, Rarity rarity)")
     protected EnchantmentBow(int id, String name, int weight) {
@@ -37,7 +39,5 @@ public abstract class EnchantmentBow extends Enchantment {
      */
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
-    public void onBowShoot(EntityLiving user, EntityProjectile projectile, ItemBow bow) {
-
-    }
+    public void onBowShoot(EntityLiving user, EntityProjectile projectile, ItemBow bow) {}
 }

@@ -9,11 +9,15 @@ import cn.nukkit.utils.DyeColor;
 @Since("1.19.80-r3")
 public interface EntityColor extends EntityComponent {
     default void setColor(DyeColor color) {
-        getMemoryStorage().put(CoreMemoryTypes.COLOUR, Integer.valueOf(color.getWoolData()).byteValue());
+        getMemoryStorage()
+                .put(
+                        CoreMemoryTypes.COLOUR,
+                        Integer.valueOf(color.getWoolData()).byteValue());
     }
 
     default DyeColor getColor() {
-        return DyeColor.getByWoolData(getMemoryStorage().get(CoreMemoryTypes.COLOUR).intValue());
+        return DyeColor.getByWoolData(
+                getMemoryStorage().get(CoreMemoryTypes.COLOUR).intValue());
     }
 
     default boolean hasColor() {

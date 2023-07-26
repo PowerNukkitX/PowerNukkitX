@@ -5,8 +5,6 @@ import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import com.google.gson.JsonParser;
-import lombok.extern.log4j.Log4j2;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -16,21 +14,24 @@ import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 public class ZippedResourcePack extends AbstractResourcePack {
     protected File file;
+
     @PowerNukkitXOnly
     @Since("1.19.62-r1")
     protected ByteBuffer byteBuffer;
+
     protected byte[] sha256;
     protected String encryptionKey = "";
 
     @PowerNukkitDifference(info = "Accepts resource packs with subfolder structure", since = "1.4.0.0-PN")
     public ZippedResourcePack(File file) {
         if (!file.exists()) {
-            throw new IllegalArgumentException(Server.getInstance().getLanguage()
-                    .tr("nukkit.resources.zip.not-found", file.getName()));
+            throw new IllegalArgumentException(
+                    Server.getInstance().getLanguage().tr("nukkit.resources.zip.not-found", file.getName()));
         }
 
         this.file = file;
@@ -58,8 +59,8 @@ public class ZippedResourcePack extends AbstractResourcePack {
                                 Server.getInstance().getLanguage().tr("nukkit.resources.zip.no-manifest")));
             }
 
-            this.manifest = JsonParser
-                    .parseReader(new InputStreamReader(zip.getInputStream(entry), StandardCharsets.UTF_8))
+            this.manifest = JsonParser.parseReader(
+                            new InputStreamReader(zip.getInputStream(entry), StandardCharsets.UTF_8))
                     .getAsJsonObject();
             File parentFolder = this.file.getParentFile();
             if (parentFolder == null || !parentFolder.isDirectory()) {
@@ -72,7 +73,7 @@ public class ZippedResourcePack extends AbstractResourcePack {
             }
 
             var bytes = Files.readAllBytes(file.toPath());
-            //使用java nio bytebuffer以获得更好性能
+            // 使用java nio bytebuffer以获得更好性能
             byteBuffer = ByteBuffer.allocateDirect(bytes.length);
             byteBuffer.put(bytes);
             byteBuffer.flip();
@@ -81,8 +82,8 @@ public class ZippedResourcePack extends AbstractResourcePack {
         }
 
         if (!this.verifyManifest()) {
-            throw new IllegalArgumentException(Server.getInstance().getLanguage()
-                    .tr("nukkit.resources.zip.invalid-manifest"));
+            throw new IllegalArgumentException(
+                    Server.getInstance().getLanguage().tr("nukkit.resources.zip.invalid-manifest"));
         }
     }
 
@@ -95,10 +96,15 @@ public class ZippedResourcePack extends AbstractResourcePack {
             chunk = new byte[this.getPackSize() - off];
         }
 
-        try{
+        try {
             byteBuffer.get(off, chunk);
         } catch (Exception e) {
-            log.error("An error occurred while processing the resource pack {} at offset:{} and length:{}", getPackName(), off, len, e);
+            log.error(
+                    "An error occurred while processing the resource pack {} at offset:{} and length:{}",
+                    getPackName(),
+                    off,
+                    len,
+                    e);
         }
 
         return chunk;

@@ -14,12 +14,11 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BlockForceFieldParticle;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.VectorMath;
+import java.util.*;
+import javax.annotation.Nullable;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
-import java.util.*;
 
 /**
  * 标准A*寻路实现
@@ -30,11 +29,11 @@ import java.util.*;
 @Setter
 public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
 
-    //这些常量是为了避免开方运算而设置的
-    //直接移动成本
-    protected final static int DIRECT_MOVE_COST = 10;
-    //倾斜移动成本
-    protected final static int OBLIQUE_MOVE_COST = 14;
+    // 这些常量是为了避免开方运算而设置的
+    // 直接移动成本
+    protected static final int DIRECT_MOVE_COST = 10;
+    // 倾斜移动成本
+    protected static final int OBLIQUE_MOVE_COST = 14;
 
     protected final PriorityQueue<Node> openList = new PriorityQueue<>();
 
@@ -58,7 +57,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
 
     protected boolean enableFloydSmooth = true;
 
-    //寻路最大深度
+    // 寻路最大深度
     protected int currentSearchDepth = 100;
 
     protected int maxSearchDepth = 100;
@@ -89,30 +88,30 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
 
     @Override
     public boolean search() {
-        //init status
+        // init status
         this.finished = false;
         this.searching = true;
         this.interrupt = false;
         var currentReachable = true;
-        //若实体未处于active状态，则关闭路径平滑
+        // 若实体未处于active状态，则关闭路径平滑
         this.setEnableFloydSmooth(this.entity.isActive());
-        //清空openList和closeList
+        // 清空openList和closeList
         openList.clear();
         closeList.clear();
         closeHashSet.clear();
-        //重置寻路深度
+        // 重置寻路深度
         currentSearchDepth = maxSearchDepth;
 
-        //将起点放置到closeList中，以开始寻路
-        //起点没有父节点，且我们不需要计算他的代价
+        // 将起点放置到closeList中，以开始寻路
+        // 起点没有父节点，且我们不需要计算他的代价
         Node currentNode = new Node(start, null, 0, 0);
         var tmpNode = new Node(start, null, 0, 0);
         closeList.add(tmpNode);
         closeHashSet.add(tmpNode.getVector3());
 
-        //若当前寻路点没有到达终点
+        // 若当前寻路点没有到达终点
         while (!isPositionOverlap(currentNode.getVector3(), target)) {
-            //检查是否被中断了
+            // 检查是否被中断了
             if (this.isInterrupt()) {
                 currentSearchDepth = 0;
                 this.searching = false;
@@ -120,9 +119,9 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
                 this.reachable = false;
                 return false;
             }
-            //将当前节点周围的有效节点放入openList中
+            // 将当前节点周围的有效节点放入openList中
             putNeighborNodeIntoOpen(currentNode);
-            //若未超出寻路深度，则获取代价最小的一个node并将其设置为currentNode
+            // 若未超出寻路深度，则获取代价最小的一个node并将其设置为currentNode
             if (openList.peek() != null && currentSearchDepth-- > 0) {
                 closeList.add(currentNode = openList.poll());
                 closeHashSet.add(currentNode.getVector3());
@@ -134,32 +133,34 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
             }
         }
 
-        //因为在前面是否到达终点的检查中我们只粗略检查了坐标的floor值
-        //所以说这里我们还需要将其精确指向到终点
+        // 因为在前面是否到达终点的检查中我们只粗略检查了坐标的floor值
+        // 所以说这里我们还需要将其精确指向到终点
         Node targetNode = currentNode;
         if (!currentNode.getVector3().equals(target)) {
             targetNode = new Node(target, currentNode, 0, 0);
         }
 
-        //如果无法到达，则取最接近终点的一个Node作为尾节点
+        // 如果无法到达，则取最接近终点的一个Node作为尾节点
         Node reachableNode = null;
-        reachableTarget = currentReachable ? target : (reachableNode = getNearestNodeFromCloseList(target)).getVector3();
+        reachableTarget =
+                currentReachable ? target : (reachableNode = getNearestNodeFromCloseList(target)).getVector3();
         List<Node> findingPath = currentReachable ? getPathRoute(targetNode) : getPathRoute(reachableNode);
-        //使用floyd平滑路径
-        if (enableFloydSmooth)
-            findingPath = floydSmooth(findingPath);
+        // 使用floyd平滑路径
+        if (enableFloydSmooth) findingPath = floydSmooth(findingPath);
 
-        //清空上次的寻路结果
+        // 清空上次的寻路结果
         this.resetNodes();
-        //重置Node指针
+        // 重置Node指针
         this.setNodeIndex(0);
 
-        //写入结果
+        // 写入结果
         this.addNode(findingPath);
 
         if (EntityAI.checkDebugOption(EntityAI.DebugOption.ROUTE)) {
             if (System.currentTimeMillis() - lastRouteParticleSpawn > EntityAI.getRouteParticleSpawnInterval()) {
-                findingPath.forEach(node -> this.entity.level.addParticle(new BlockForceFieldParticle(node.getVector3()), Server.getInstance().getOnlinePlayers().values().toArray(Player.EMPTY_ARRAY)));
+                findingPath.forEach(node -> this.entity.level.addParticle(
+                        new BlockForceFieldParticle(node.getVector3()),
+                        Server.getInstance().getOnlinePlayers().values().toArray(Player.EMPTY_ARRAY)));
                 lastRouteParticleSpawn = System.currentTimeMillis();
             }
         }
@@ -179,7 +180,8 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
      * @return cost
      */
     protected int getBlockMoveCostAt(@NotNull Level level, Vector3 pos) {
-        return level.getTickCachedBlock(pos).getWalkThroughExtraCost() + level.getTickCachedBlock(pos.add(0, -1, 0)).getWalkThroughExtraCost();
+        return level.getTickCachedBlock(pos).getWalkThroughExtraCost()
+                + level.getTickCachedBlock(pos.add(0, -1, 0)).getWalkThroughExtraCost();
     }
 
     /**
@@ -190,7 +192,10 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
     protected void putNeighborNodeIntoOpen(@NotNull Node node) {
         boolean N, E, S, W;
 
-        Vector3 vector3 = new Vector3(node.getVector3().getFloorX() + 0.5, node.getVector3().getY(), node.getVector3().getFloorZ() + 0.5);
+        Vector3 vector3 = new Vector3(
+                node.getVector3().getFloorX() + 0.5,
+                node.getVector3().getY(),
+                node.getVector3().getFloorZ() + 0.5);
 
         double offsetY;
 
@@ -280,9 +285,12 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
             }
         }
 
-        //我们不允许实体在上下坡的时候斜着走，因为这容易导致实体卡脚（原版也是这个逻辑）
-        //接触水的时候就不需要这么判断了
-        if (N && E && (((offsetY = getAvailableHorizontalOffset(vector3.add(1, 0, -1))) == 0) || (offsetY != -384 && entity.isTouchingWater()))) {
+        // 我们不允许实体在上下坡的时候斜着走，因为这容易导致实体卡脚（原版也是这个逻辑）
+        // 接触水的时候就不需要这么判断了
+        if (N
+                && E
+                && (((offsetY = getAvailableHorizontalOffset(vector3.add(1, 0, -1))) == 0)
+                        || (offsetY != -384 && entity.isTouchingWater()))) {
             Vector3 vec = vector3.add(1, offsetY, -1);
             if (!existInCloseList(vec)) {
                 var cost = getBlockMoveCostAt(entity.level, vec) + OBLIQUE_MOVE_COST + node.getG();
@@ -299,7 +307,10 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
             }
         }
 
-        if (E && S && (((offsetY = getAvailableHorizontalOffset(vector3.add(1, 0, 1))) == 0) || (offsetY != -384 && entity.isTouchingWater()))) {
+        if (E
+                && S
+                && (((offsetY = getAvailableHorizontalOffset(vector3.add(1, 0, 1))) == 0)
+                        || (offsetY != -384 && entity.isTouchingWater()))) {
             Vector3 vec = vector3.add(1, offsetY, 1);
             if (!existInCloseList(vec)) {
                 var cost = getBlockMoveCostAt(entity.level, vec) + OBLIQUE_MOVE_COST + node.getG();
@@ -316,7 +327,10 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
             }
         }
 
-        if (W && S && (((offsetY = getAvailableHorizontalOffset(vector3.add(-1, 0, 1))) == 0) || (offsetY != -384 && entity.isTouchingWater()))) {
+        if (W
+                && S
+                && (((offsetY = getAvailableHorizontalOffset(vector3.add(-1, 0, 1))) == 0)
+                        || (offsetY != -384 && entity.isTouchingWater()))) {
             Vector3 vec = vector3.add(-1, offsetY, 1);
             if (!existInCloseList(vec)) {
                 var cost = getBlockMoveCostAt(entity.level, vec) + OBLIQUE_MOVE_COST + node.getG();
@@ -333,7 +347,10 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
             }
         }
 
-        if (W && N && (((offsetY = getAvailableHorizontalOffset(vector3.add(-1, 0, -1))) == 0) || (offsetY != -384 && entity.isTouchingWater()))) {
+        if (W
+                && N
+                && (((offsetY = getAvailableHorizontalOffset(vector3.add(-1, 0, -1))) == 0)
+                        || (offsetY != -384 && entity.isTouchingWater()))) {
             Vector3 vec = vector3.add(-1, offsetY, -1);
             if (!existInCloseList(vec)) {
                 var cost = getBlockMoveCostAt(entity.level, vec) + OBLIQUE_MOVE_COST + node.getG();
@@ -378,17 +395,18 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
         return closeHashSet.contains(vector2);
     }
 
-
     /**
      * 计算当前点到终点的代价H
      * 默认使用对角线+直线距离
      */
     protected int calH(Vector3 start, Vector3 target) {
-        //使用DIRECT_MOVE_COST和OBLIQUE_MOVE_COST计算代价
-        //计算对角线距离
+        // 使用DIRECT_MOVE_COST和OBLIQUE_MOVE_COST计算代价
+        // 计算对角线距离
         int obliqueCost = (int) (Math.abs(Math.min(target.x - start.x, target.z - start.z)) * OBLIQUE_MOVE_COST);
-        //计算剩余直线距离
-        int directCost = (int) ((Math.abs(Math.max(target.x - start.x, target.z - start.z)) - Math.abs(Math.min(target.x - start.x, target.z - start.z))) * DIRECT_MOVE_COST);
+        // 计算剩余直线距离
+        int directCost = (int) ((Math.abs(Math.max(target.x - start.x, target.z - start.z))
+                        - Math.abs(Math.min(target.x - start.x, target.z - start.z)))
+                * DIRECT_MOVE_COST);
         return obliqueCost + directCost + (int) (Math.abs(target.y - start.y) * DIRECT_MOVE_COST);
     }
 
@@ -399,15 +417,13 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
         if (limit > 0) {
             for (int y = vector3.getFloorY(); y >= vector3.getFloorY() - limit; y--) {
                 Block block = this.entity.level.getTickCachedBlock(vector3.getFloorX(), y, vector3.getFloorZ(), false);
-                if (evalStandingBlock(block))
-                    return block;
+                if (evalStandingBlock(block)) return block;
             }
             return null;
         }
         for (int y = vector3.getFloorY(); y >= -64; y--) {
             Block block = this.entity.level.getTickCachedBlock(vector3.getFloorX(), y, vector3.getFloorZ(), false);
-            if (evalStandingBlock(block))
-                return block;
+            if (evalStandingBlock(block)) return block;
         }
         return null;
     }
@@ -447,9 +463,8 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
      */
     protected boolean hasBarrier(Vector3 pos1, Vector3 pos2) {
         if (pos1.equals(pos2)) return false;
-        return VectorMath.getPassByVector3(pos1, pos2).stream().anyMatch(
-                (pos) -> !evalStandingBlock(this.entity.level.getTickCachedBlock(pos.add(0, -1)))
-        );
+        return VectorMath.getPassByVector3(pos1, pos2).stream()
+                .anyMatch((pos) -> !evalStandingBlock(this.entity.level.getTickCachedBlock(pos.add(0, -1))));
     }
 
     /**
@@ -485,8 +500,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
      */
     protected List<Node> getPathRoute(@Nullable Node end) {
         List<Node> nodes = new ArrayList<>();
-        if (end == null)
-            end = closeList.get(closeList.size() - 1);
+        if (end == null) end = closeList.get(closeList.size() - 1);
         nodes.add(end);
         if (end.getParent() != null) {
             while (!end.getParent().getVector3().equals(start)) {
@@ -497,7 +511,6 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
         }
         Collections.reverse(nodes);
         return nodes;
-
     }
 
     /**

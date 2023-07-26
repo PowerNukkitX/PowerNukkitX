@@ -35,5 +35,4 @@ public class BlockCherryWallSign extends BlockWallSign {
     public Item toItem() {
         return new ItemCherrySign();
     }
-
 }

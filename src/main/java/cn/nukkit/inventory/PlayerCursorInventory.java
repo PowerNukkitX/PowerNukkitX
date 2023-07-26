@@ -22,7 +22,7 @@ public class PlayerCursorInventory extends PlayerUIComponent {
     public Player getHolder() {
         return playerUI.getHolder();
     }
-    
+
     @Override
     public InventoryType getType() {
         return InventoryType.CURSOR;

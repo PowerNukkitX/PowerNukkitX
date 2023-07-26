@@ -22,9 +22,6 @@ import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.BlockUpdateEntry;
 import cn.nukkit.utils.ChunkException;
 import cn.nukkit.utils.Zlib;
-import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.Nullable;
-
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -32,6 +29,8 @@ import java.io.UncheckedIOException;
 import java.lang.reflect.Constructor;
 import java.nio.ByteOrder;
 import java.util.*;
+import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -42,6 +41,7 @@ public class Chunk extends BaseChunk {
     protected long inhabitedTime;
     protected boolean terrainPopulated;
     protected boolean terrainGenerated;
+
     @PowerNukkitXOnly
     @Since("1.19.20-r4")
     protected DimensionData dimensionData = null;
@@ -150,7 +150,6 @@ public class Chunk extends BaseChunk {
                         }
                     }
                 }
-
             }
         }
 
@@ -199,7 +198,8 @@ public class Chunk extends BaseChunk {
                         String name = ((StringTag) tag).data;
 
                         @SuppressWarnings("unchecked")
-                        Class<? extends Block> clazz = (Class<? extends Block>) Class.forName("cn.nukkit.block." + name);
+                        Class<? extends Block> clazz =
+                                (Class<? extends Block>) Class.forName("cn.nukkit.block." + name);
 
                         Constructor constructor = clazz.getDeclaredConstructor();
                         constructor.setAccessible(true);
@@ -218,7 +218,9 @@ public class Chunk extends BaseChunk {
                 block.z = entryNBT.getInt("z");
                 block.layer = 0;
 
-                this.provider.getLevel().scheduleUpdate(block, block, entryNBT.getInt("t"), entryNBT.getInt("p"), false);
+                this.provider
+                        .getLevel()
+                        .scheduleUpdate(block, block, entryNBT.getInt("t"), entryNBT.getInt("p"), false);
             }
         }
 
@@ -226,7 +228,7 @@ public class Chunk extends BaseChunk {
         this.terrainPopulated = nbt.getBoolean("TerrainPopulated");
         this.terrainGenerated = nbt.getBoolean("TerrainGenerated");
         if (nbt.contains("isNew384World")) {
-            nbt.remove("isNew384World");//todo 临时移除无用字段，后续版本移除
+            nbt.remove("isNew384World"); // todo 临时移除无用字段，后续版本移除
         }
     }
 
@@ -266,29 +268,25 @@ public class Chunk extends BaseChunk {
         }
     }
 
-    @Nullable
-    @UsedByReflection
+    @Nullable @UsedByReflection
     public static Chunk getEmptyChunk(int chunkX, int chunkZ) {
         return getEmptyChunk(chunkX, chunkZ, (LevelProvider) null);
     }
 
     @PowerNukkitXOnly
     @Since("1.19.20-r4")
-    @Nullable
-    @UsedByReflection
+    @Nullable @UsedByReflection
     public static Chunk getEmptyChunk(int chunkX, int chunkZ, DimensionData dimensionData) {
         return getEmptyChunk(chunkX, chunkZ, null, dimensionData);
     }
 
-    @Nullable
-    public static Chunk getEmptyChunk(int chunkX, int chunkZ, LevelProvider provider) {
+    @Nullable public static Chunk getEmptyChunk(int chunkX, int chunkZ, LevelProvider provider) {
         return getEmptyChunk(chunkX, chunkZ, provider, null);
     }
 
     @PowerNukkitXOnly
     @Since("1.19.20-r4")
-    @Nullable
-    public static Chunk getEmptyChunk(int chunkX, int chunkZ, LevelProvider provider, DimensionData dimensionData) {
+    @Nullable public static Chunk getEmptyChunk(int chunkX, int chunkZ, LevelProvider provider, DimensionData dimensionData) {
         try {
             Chunk chunk;
             if (provider != null) {
@@ -303,7 +301,7 @@ public class Chunk extends BaseChunk {
             chunk.inhabitedTime = 0;
             chunk.terrainGenerated = false;
             chunk.terrainPopulated = false;
-//            chunk.lightPopulated = false;
+            //            chunk.lightPopulated = false;
             return chunk;
         } catch (Exception e) {
             e.printStackTrace();
@@ -512,11 +510,10 @@ public class Chunk extends BaseChunk {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-
     }
 
     @Override
-    @PowerNukkitXDifference(since= "1.20.10-r1", info = "Do not save entities which marked as not savable with chunk.")
+    @PowerNukkitXDifference(since = "1.20.10-r1", info = "Do not save entities which marked as not savable with chunk.")
     public byte[] toBinary() {
         CompoundTag nbt = this.getNBT().copy();
         nbt.remove("BiomeColors");

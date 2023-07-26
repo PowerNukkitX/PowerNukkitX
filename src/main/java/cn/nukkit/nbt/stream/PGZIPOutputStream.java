@@ -4,7 +4,6 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InterruptedIOException;
@@ -23,15 +22,15 @@ import java.util.zip.DeflaterOutputStream;
  */
 public class PGZIPOutputStream extends FilterOutputStream {
 
-    private static final ExecutorService EXECUTOR = Executors.newCachedThreadPool(t -> new Thread(t, "PGZIPOutputStream#EXECUTOR"));
+    private static final ExecutorService EXECUTOR =
+            Executors.newCachedThreadPool(t -> new Thread(t, "PGZIPOutputStream#EXECUTOR"));
 
     public static ExecutorService getSharedThreadPool() {
         return EXECUTOR;
     }
 
-
     // private static final Logger LOG = LoggerFactory.getLogger(PGZIPOutputStream.class);
-    private final static int GZIP_MAGIC = 0x8b1f;
+    private static final int GZIP_MAGIC = 0x8b1f;
 
     // todo: remove after block guessing is implemented
     // array list that contains the block sizes
@@ -63,7 +62,7 @@ public class PGZIPOutputStream extends FilterOutputStream {
     private final int nthreads;
     private final CRC32 crc = new CRC32();
     private final BlockingQueue<Future<byte[]>> emitQueue;
-    private PGZIPBlock block = new PGZIPBlock(this/* 0 */);
+    private PGZIPBlock block = new PGZIPBlock(this /* 0 */);
     /**
      * Used as a sentinel for 'closed'.
      */
@@ -105,14 +104,17 @@ public class PGZIPOutputStream extends FilterOutputStream {
      * @see http://www.gzip.org/zlib/rfc-gzip.html#file-format
      */
     private void writeHeader() throws IOException {
-        out.write(new byte[]{
-                (byte) GZIP_MAGIC, // ID1: Magic number (little-endian short)
-                (byte) (GZIP_MAGIC >> 8), // ID2: Magic number (little-endian short)
-                Deflater.DEFLATED, // CM: Compression method
-                0, // FLG: Flags (byte)
-                0, 0, 0, 0, // MTIME: Modification time (int)
-                0, // XFL: Extra flags
-                3 // OS: Operating system (3 = Linux)
+        out.write(new byte[] {
+            (byte) GZIP_MAGIC, // ID1: Magic number (little-endian short)
+            (byte) (GZIP_MAGIC >> 8), // ID2: Magic number (little-endian short)
+            Deflater.DEFLATED, // CM: Compression method
+            0, // FLG: Flags (byte)
+            0,
+            0,
+            0,
+            0, // MTIME: Modification time (int)
+            0, // XFL: Extra flags
+            3 // OS: Operating system (3 = Linux)
         });
     }
 
@@ -140,7 +142,7 @@ public class PGZIPOutputStream extends FilterOutputStream {
             int capacity = block.in.length - block.in_length;
             if (len >= capacity) {
                 System.arraycopy(b, off, block.in, block.in_length, capacity);
-                block.in_length += capacity;   // == block.in.length
+                block.in_length += capacity; // == block.in.length
                 off += capacity;
                 len -= capacity;
                 submit();
@@ -158,7 +160,7 @@ public class PGZIPOutputStream extends FilterOutputStream {
     private void submit() throws IOException {
         emitUntil(nthreads - 1);
         emitQueue.add(executor.submit(block));
-        block = new PGZIPBlock(this/* block.index + 1 */);
+        block = new PGZIPBlock(this /* block.index + 1 */);
     }
 
     // Emit If Available - submit always
@@ -169,14 +171,12 @@ public class PGZIPOutputStream extends FilterOutputStream {
         for (; ; ) {
             Future<byte[]> future = emitQueue.peek();
             // LOG.info("Peeked future " + future);
-            if (future == null)
-                return;
-            if (!future.isDone())
-                return;
+            if (future == null) return;
+            if (!future.isDone()) return;
             // It's an ordered queue. This MUST be the same element as above.
             emitQueue.remove();
             byte[] toWrite = future.get();
-            blockSizes.add(toWrite.length);  // todo: remove after block guessing is implemented
+            blockSizes.add(toWrite.length); // todo: remove after block guessing is implemented
             out.write(toWrite);
         }
     }
@@ -191,8 +191,8 @@ public class PGZIPOutputStream extends FilterOutputStream {
             while (emitQueue.size() > taskCountAllowed) {
                 // LOG.info("Waiting for taskCount=" + emitQueue.size() + " -> " + taskCountAllowed);
                 Future<byte[]> future = emitQueue.remove(); // Valid because emitQueue.size() > 0
-                byte[] toWrite = future.get();  // Blocks until this task is done.
-                blockSizes.add(toWrite.length);  // todo: remove after block guessing is implemented
+                byte[] toWrite = future.get(); // Blocks until this task is done.
+                blockSizes.add(toWrite.length); // todo: remove after block guessing is implemented
                 out.write(toWrite);
             }
             // We may have achieved more opportunistically available blocks
@@ -209,12 +209,11 @@ public class PGZIPOutputStream extends FilterOutputStream {
     @Override
     public void flush() throws IOException {
         // LOG.info("Flush: " + block);
-        if (block.in_length > 0)
-            submit();
+        if (block.in_length > 0) submit();
         emitUntil(0);
         super.flush();
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void finish() throws IOException {

@@ -34,10 +34,9 @@ import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.utils.TextFormat;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 import java.util.Objects;
+import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author joserobjr
@@ -72,8 +71,7 @@ public class BlockRespawnAnchor extends BlockMeta {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -238,9 +236,8 @@ public class BlockRespawnAnchor extends BlockMeta {
     @Override
     public Item[] getDrops(Item item) {
         if (canHarvest(item)) {
-            return new Item[]{Item.getBlock(getId())};
+            return new Item[] {Item.getBlock(getId())};
         }
         return Item.EMPTY_ARRAY;
     }
-
 }

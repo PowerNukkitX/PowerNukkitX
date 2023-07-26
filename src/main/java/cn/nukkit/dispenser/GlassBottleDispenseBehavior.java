@@ -15,8 +15,7 @@ public class GlassBottleDispenseBehavior extends DefaultDispenseBehavior {
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
         Block target = block.getSide(face);
-        if (target instanceof BlockWater && target.getDamage() == 0)
-            return Item.get(Item.POTION);
+        if (target instanceof BlockWater && target.getDamage() == 0) return Item.get(Item.POTION);
         return super.dispense(block, face, item);
     }
 }

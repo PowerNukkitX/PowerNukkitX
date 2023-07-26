@@ -4,14 +4,13 @@ import cn.nukkit.block.BlockAttributesTest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
-import lombok.SneakyThrows;
-
 import java.io.BufferedInputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Objects;
+import lombok.SneakyThrows;
 
 /**
  * Author: daoge_cmd <br>
@@ -25,7 +24,8 @@ public class BlockAttributeFileCutter {
 
     @SneakyThrows
     public static void main(String[] args) {
-        var reader = new InputStreamReader(new BufferedInputStream(Objects.requireNonNull(BlockAttributesTest.class.getClassLoader().getResourceAsStream(BLOCK_ATTRIBUTES_REFERENCE_FILE_PATH))));
+        var reader = new InputStreamReader(new BufferedInputStream(Objects.requireNonNull(
+                BlockAttributesTest.class.getClassLoader().getResourceAsStream(BLOCK_ATTRIBUTES_REFERENCE_FILE_PATH))));
         var parser = JsonParser.parseReader(reader);
         var ext = new HashMap<Long, Color>();
         for (var jsonElement : parser.getAsJsonArray()) {
@@ -39,11 +39,9 @@ public class BlockAttributeFileCutter {
             ext.put(hash, new Color(r, g, b, a));
         }
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        if (!Files.exists(OUTPUT))
-            Files.createFile(OUTPUT);
+        if (!Files.exists(OUTPUT)) Files.createFile(OUTPUT);
         Files.writeString(OUTPUT, gson.toJson(ext));
     }
 
-    record Color(int r, int g, int b, int a) {
-    }
+    record Color(int r, int g, int b, int a) {}
 }

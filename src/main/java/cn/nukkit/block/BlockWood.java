@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
+
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXDifference;
@@ -13,8 +15,6 @@ import cn.nukkit.blockstate.IBlockState;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
-
 /**
  * @author MagicDroidX (Nukkit Project)
  */
@@ -22,19 +22,17 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
 public class BlockWood extends BlockLog {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final BlockProperty<WoodType> OLD_LOG_TYPE = new ArrayBlockProperty<>("old_log_type", true, new WoodType[]{
-            WoodType.OAK, WoodType.SPRUCE, WoodType.BIRCH, WoodType.JUNGLE
-    });
+    public static final BlockProperty<WoodType> OLD_LOG_TYPE = new ArrayBlockProperty<>(
+            "old_log_type", true, new WoodType[] {WoodType.OAK, WoodType.SPRUCE, WoodType.BIRCH, WoodType.JUNGLE});
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(OLD_LOG_TYPE, PILLAR_AXIS);
-    
+
     public static final int OAK = 0;
     public static final int SPRUCE = 1;
     public static final int BIRCH = 2;
     public static final int JUNGLE = 3;
-
 
     public BlockWood() {
         this(0);
@@ -51,8 +49,7 @@ public class BlockWood extends BlockLog {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -72,13 +69,13 @@ public class BlockWood extends BlockLog {
     public WoodType getWoodType() {
         return getPropertyValue(OLD_LOG_TYPE);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void setWoodType(WoodType woodType) {
         setPropertyValue(OLD_LOG_TYPE, woodType);
     }
-    
+
     @Override
     public String getName() {
         return getWoodType().getEnglishName() + " Log";
@@ -86,8 +83,7 @@ public class BlockWood extends BlockLog {
 
     @Since("1.5.1.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public Block forState(@NotNull IBlockState state) throws InvalidBlockStateException {
         int id = getId();
         if (id != LOG && id != LOG2) {
@@ -101,8 +97,9 @@ public class BlockWood extends BlockLog {
 
         int exactInt = state.getExactIntStorage();
         if ((exactInt & 0b1100) == 0b1100) {
-            int increment = state.getBlockId() == BlockID.LOG? 0b000 : 0b100;
-            return BlockState.of(BlockID.WOOD_BARK, (exactInt & 0b11) + increment).getBlock(this, layer);
+            int increment = state.getBlockId() == BlockID.LOG ? 0b000 : 0b100;
+            return BlockState.of(BlockID.WOOD_BARK, (exactInt & 0b11) + increment)
+                    .getBlock(this, layer);
         }
 
         return super.forState(state);
@@ -122,15 +119,15 @@ public class BlockWood extends BlockLog {
     @Override
     @PowerNukkitXDifference(since = "1.20.0-r2", info = "make public")
     public BlockState getStrippedState() {
-        int strippedId = switch (getWoodType()) {
-            case OAK -> STRIPPED_OAK_LOG;
-            case SPRUCE -> STRIPPED_SPRUCE_LOG;
-            case BIRCH -> STRIPPED_BIRCH_LOG;
-            case JUNGLE -> STRIPPED_JUNGLE_LOG;
-            case ACACIA -> STRIPPED_ACACIA_LOG;
-            case DARK_OAK -> STRIPPED_DARK_OAK_LOG;
-        };
+        int strippedId =
+                switch (getWoodType()) {
+                    case OAK -> STRIPPED_OAK_LOG;
+                    case SPRUCE -> STRIPPED_SPRUCE_LOG;
+                    case BIRCH -> STRIPPED_BIRCH_LOG;
+                    case JUNGLE -> STRIPPED_JUNGLE_LOG;
+                    case ACACIA -> STRIPPED_ACACIA_LOG;
+                    case DARK_OAK -> STRIPPED_DARK_OAK_LOG;
+                };
         return BlockState.of(strippedId).withProperty(PILLAR_AXIS, getPillarAxis());
     }
-
 }

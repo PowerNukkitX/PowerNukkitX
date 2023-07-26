@@ -8,7 +8,6 @@ import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.permission.BanEntry;
 import cn.nukkit.permission.BanList;
 import cn.nukkit.utils.TextFormat;
-
 import java.util.Iterator;
 import java.util.Map;
 
@@ -21,14 +20,15 @@ public class BanListCommand extends VanillaCommand {
         super(name, "list all the banned players or IPs");
         this.setPermission("nukkit.command.ban.list");
         this.commandParameters.clear();
-        this.commandParameters.put("default", new CommandParameter[]{
-                CommandParameter.newEnum("type", true, new CommandEnum("BanListType", "ips", "players"))
+        this.commandParameters.put("default", new CommandParameter[] {
+            CommandParameter.newEnum("type", true, new CommandEnum("BanListType", "ips", "players"))
         });
         this.enableParamTree();
     }
 
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var paramList = result.getValue();
         BanList list;
         boolean ips = false;

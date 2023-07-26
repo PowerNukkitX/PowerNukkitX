@@ -6,7 +6,6 @@ import cn.nukkit.command.utils.RawText;
 import cn.nukkit.network.protocol.types.CommandOutputMessage;
 import com.google.gson.JsonSyntaxException;
 
-
 /**
  * 解析为{@link RawText}值
  * <p>
@@ -31,17 +30,22 @@ public class RawTextNode extends ParamNode<RawText> {
                 return;
             }
             if (index == arg.length() + 1) {
-                this.error(new CommandOutputMessage("JSON parsing error:"),
-                        new CommandOutputMessage(arg.substring(0, arg.length() - 1) + "" + arg.substring(arg.length() - 1) + "§f<<"));
+                this.error(
+                        new CommandOutputMessage("JSON parsing error:"),
+                        new CommandOutputMessage(
+                                arg.substring(0, arg.length() - 1) + "" + arg.substring(arg.length() - 1) + "§f<<"));
                 return;
             } else if (index == 1) {
-                this.error(new CommandOutputMessage("JSON parsing error:"),
+                this.error(
+                        new CommandOutputMessage("JSON parsing error:"),
                         new CommandOutputMessage("§f>>§c" + arg.charAt(0) + arg.substring(1)));
                 return;
             }
             index -= 2;
-            this.error(new CommandOutputMessage("JSON parsing error:"),
-                    new CommandOutputMessage(arg.substring(0, index) + "§f<<§c" + arg.charAt(index) + arg.substring(index + 1, arg.length() - 1)));
+            this.error(
+                    new CommandOutputMessage("JSON parsing error:"),
+                    new CommandOutputMessage(arg.substring(0, index) + "§f<<§c" + arg.charAt(index)
+                            + arg.substring(index + 1, arg.length() - 1)));
         }
     }
 }

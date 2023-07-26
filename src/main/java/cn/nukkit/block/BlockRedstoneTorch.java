@@ -39,7 +39,15 @@ public class BlockRedstoneTorch extends BlockTorch implements RedstoneComponent 
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         if (!super.place(item, block, target, face, fx, fy, fz, player)) {
             return false;
         }
@@ -114,7 +122,8 @@ public class BlockRedstoneTorch extends BlockTorch implements RedstoneComponent 
         return false;
     }
 
-    @PowerNukkitDifference(info = "Check if the side block is piston and if piston is getting power.",
+    @PowerNukkitDifference(
+            info = "Check if the side block is piston and if piston is getting power.",
             since = "1.4.0.0-PN")
     protected boolean isPoweredFromSide() {
         BlockFace face = getBlockFace().getOpposite();
@@ -134,5 +143,4 @@ public class BlockRedstoneTorch extends BlockTorch implements RedstoneComponent 
     public boolean isPowerSource() {
         return true;
     }
-
 }

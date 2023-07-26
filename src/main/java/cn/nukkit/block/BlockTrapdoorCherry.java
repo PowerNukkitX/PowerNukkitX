@@ -23,5 +23,4 @@ public class BlockTrapdoorCherry extends BlockTrapdoor {
     public String getName() {
         return "Cherry Trapdoor";
     }
-
 }

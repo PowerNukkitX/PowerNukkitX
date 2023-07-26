@@ -47,7 +47,9 @@ public abstract class ItemEdible extends Item {
         }
 
         Food food = Food.getByRelative(this);
-        int eatingtick = food.getEatingTickSupplier() == null ? food.getEatingTick() : food.getEatingTickSupplier().getAsInt();
+        int eatingtick = food.getEatingTickSupplier() == null
+                ? food.getEatingTick()
+                : food.getEatingTickSupplier().getAsInt();
         if (food == null || ticksUsed < eatingtick) {
             return false;
         }
@@ -71,7 +73,10 @@ public abstract class ItemEdible extends Item {
             }
         }
 
-        player.level.getVibrationManager().callVibrationEvent(new VibrationEvent(player, player.add(0, player.getEyeHeight()), VibrationType.EAT));
+        player.level
+                .getVibrationManager()
+                .callVibrationEvent(
+                        new VibrationEvent(player, player.add(0, player.getEyeHeight()), VibrationType.EAT));
 
         return true;
     }

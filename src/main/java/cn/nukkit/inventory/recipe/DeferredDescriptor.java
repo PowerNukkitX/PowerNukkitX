@@ -3,7 +3,6 @@ package cn.nukkit.inventory.recipe;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
-
 import java.util.Objects;
 
 @PowerNukkitXOnly
@@ -67,6 +66,7 @@ public class DeferredDescriptor implements ItemDescriptor {
     }
 
     public String toString() {
-        return "DeferredDescriptor(fullName=" + this.getFullName() + ", auxValue=" + this.getAuxValue() + ", count=" + this.getCount() + ")";
+        return "DeferredDescriptor(fullName=" + this.getFullName() + ", auxValue=" + this.getAuxValue() + ", count="
+                + this.getCount() + ")";
     }
 }

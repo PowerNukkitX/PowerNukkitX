@@ -10,24 +10,33 @@ import cn.nukkit.blockproperty.value.PrismarineBlockType;
 import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
-
 public class BlockPrismarine extends BlockSolidMeta {
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
-    public static final BlockProperty<PrismarineBlockType> PRISMARINE_BLOCK_TYPE = new ArrayBlockProperty<>("prismarine_block_type", true, PrismarineBlockType.class);
+    public static final BlockProperty<PrismarineBlockType> PRISMARINE_BLOCK_TYPE =
+            new ArrayBlockProperty<>("prismarine_block_type", true, PrismarineBlockType.class);
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(PRISMARINE_BLOCK_TYPE);
 
     @Deprecated
-    @DeprecationDetails(since = "1.5.0.0-PN", replaceWith = "getPrismarineBlockType()", reason = "Use the BlockProperty API instead")
+    @DeprecationDetails(
+            since = "1.5.0.0-PN",
+            replaceWith = "getPrismarineBlockType()",
+            reason = "Use the BlockProperty API instead")
     public static final int NORMAL = 0;
 
-    @DeprecationDetails(since = "1.5.0.0-PN", replaceWith = "getPrismarineBlockType()", reason = "Use the BlockProperty API instead")
+    @DeprecationDetails(
+            since = "1.5.0.0-PN",
+            replaceWith = "getPrismarineBlockType()",
+            reason = "Use the BlockProperty API instead")
     public static final int DARK = 1;
 
-    @DeprecationDetails(since = "1.5.0.0-PN", replaceWith = "getPrismarineBlockType()", reason = "Use the BlockProperty API instead")
+    @DeprecationDetails(
+            since = "1.5.0.0-PN",
+            replaceWith = "getPrismarineBlockType()",
+            reason = "Use the BlockProperty API instead")
     public static final int BRICKS = 2;
 
     public BlockPrismarine() {
@@ -45,8 +54,7 @@ public class BlockPrismarine extends BlockSolidMeta {
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -93,5 +101,4 @@ public class BlockPrismarine extends BlockSolidMeta {
     public boolean canHarvestWithHand() {
         return false;
     }
-
 }

@@ -4,17 +4,15 @@ import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.network.protocol.ContainerOpenPacket;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author xtypr
  * @since 2015/12/5
  */
 public class BlockCraftingTable extends BlockSolid {
-    public BlockCraftingTable() {
-    }
+    public BlockCraftingTable() {}
 
     @Override
     public String getName() {
@@ -62,5 +60,4 @@ public class BlockCraftingTable extends BlockSolid {
         }
         return true;
     }
-
 }

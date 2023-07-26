@@ -8,9 +8,8 @@ import cn.nukkit.network.protocol.SetScorePacket;
 import cn.nukkit.scoreboard.data.ScorerType;
 import cn.nukkit.scoreboard.scoreboard.IScoreboard;
 import cn.nukkit.scoreboard.scoreboard.IScoreboardLine;
-import lombok.Getter;
-
 import java.util.UUID;
+import lombok.Getter;
 
 @PowerNukkitXOnly
 @Since("1.19.30-r1")
@@ -33,7 +32,9 @@ public class PlayerScorer implements IScorer {
 
     public Player getPlayer() {
         if (uuid == null) return null;
-        return Server.getInstance().getPlayer(uuid).isPresent() ? Server.getInstance().getPlayer(uuid).get() : null;
+        return Server.getInstance().getPlayer(uuid).isPresent()
+                ? Server.getInstance().getPlayer(uuid).get()
+                : null;
     }
 
     public boolean isOnline() {
@@ -60,12 +61,21 @@ public class PlayerScorer implements IScorer {
 
     @Override
     public String getName() {
-        return Server.getInstance().getOnlinePlayers().get(uuid) == null ? String.valueOf(uuid.getMostSignificantBits()) : Server.getInstance().getOnlinePlayers().get(uuid).getName();
+        return Server.getInstance().getOnlinePlayers().get(uuid) == null
+                ? String.valueOf(uuid.getMostSignificantBits())
+                : Server.getInstance().getOnlinePlayers().get(uuid).getName();
     }
 
     @Override
     public SetScorePacket.ScoreInfo toNetworkInfo(IScoreboard scoreboard, IScoreboardLine line) {
         if (uuid == null) return null;
-        return Server.getInstance().getPlayer(uuid).isPresent() ? new SetScorePacket.ScoreInfo(line.getLineId(), scoreboard.getObjectiveName(), line.getScore(), ScorerType.PLAYER, Server.getInstance().getPlayer(uuid).get().getId()) : null;
+        return Server.getInstance().getPlayer(uuid).isPresent()
+                ? new SetScorePacket.ScoreInfo(
+                        line.getLineId(),
+                        scoreboard.getObjectiveName(),
+                        line.getScore(),
+                        ScorerType.PLAYER,
+                        Server.getInstance().getPlayer(uuid).get().getId())
+                : null;
     }
 }

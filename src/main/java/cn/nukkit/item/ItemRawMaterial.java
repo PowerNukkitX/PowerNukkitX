@@ -1,9 +1,8 @@
 package cn.nukkit.item;
 
 import cn.nukkit.api.PowerNukkitOnly;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author joserobjr

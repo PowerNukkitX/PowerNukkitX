@@ -3,10 +3,9 @@ package cn.nukkit.blockstate.exception;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockstate.BlockState;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNullableByDefault;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author joserobjr
@@ -17,8 +16,7 @@ import javax.annotation.ParametersAreNullableByDefault;
 public class InvalidBlockStateException extends IllegalStateException {
     private static final long serialVersionUID = 643372054081065905L;
 
-    @NotNull
-    private final BlockState state;
+    @NotNull private final BlockState state;
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -65,8 +63,7 @@ public class InvalidBlockStateException extends IllegalStateException {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public BlockState getState() {
+    @NotNull public BlockState getState() {
         return state;
     }
 }

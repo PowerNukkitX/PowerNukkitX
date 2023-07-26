@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 
@@ -34,7 +33,7 @@ public class BlockStairsCrimson extends BlockStairsWood {
     public int getBurnChance() {
         return 0;
     }
-    
+
     @Override
     public int getBurnAbility() {
         return 0;

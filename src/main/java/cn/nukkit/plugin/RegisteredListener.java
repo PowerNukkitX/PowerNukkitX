@@ -26,7 +26,8 @@ public class RegisteredListener {
 
     private final boolean ignoreCancelled;
 
-    public RegisteredListener(Listener listener, EventExecutor executor, EventPriority priority, Plugin plugin, boolean ignoreCancelled) {
+    public RegisteredListener(
+            Listener listener, EventExecutor executor, EventPriority priority, Plugin plugin, boolean ignoreCancelled) {
         this.listener = listener;
         this.priority = priority;
         this.plugin = plugin;

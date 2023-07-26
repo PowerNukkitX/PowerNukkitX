@@ -18,8 +18,12 @@ public abstract class ObjectTree {
     }
 
     @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", reason = "Magic value in type",
-            replaceWith = "growTree(ChunkManager level, int x, int y, int z, NukkitRandom random, WoodType type, boolean tall)")
+    @DeprecationDetails(
+            since = "1.4.0.0-PN",
+            by = "PowerNukkit",
+            reason = "Magic value in type",
+            replaceWith =
+                    "growTree(ChunkManager level, int x, int y, int z, NukkitRandom random, WoodType type, boolean tall)")
     public static void growTree(ChunkManager level, int x, int y, int z, NukkitRandom random, int type) {
         WoodType woodType;
         boolean tall = false;
@@ -48,7 +52,8 @@ public abstract class ObjectTree {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static void growTree(ChunkManager level, int x, int y, int z, NukkitRandom random, WoodType type, boolean tall) {
+    public static void growTree(
+            ChunkManager level, int x, int y, int z, NukkitRandom random, WoodType type, boolean tall) {
         ObjectTree tree;
         switch (type) {
             case SPRUCE:
@@ -67,7 +72,7 @@ public abstract class ObjectTree {
             case OAK:
             default:
                 tree = new ObjectOakTree();
-                //todo: more complex treeeeeeeeeeeeeeeee
+                // todo: more complex treeeeeeeeeeeeeeeee
                 break;
         }
 

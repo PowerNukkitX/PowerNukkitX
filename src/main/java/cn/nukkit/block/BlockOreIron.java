@@ -4,7 +4,6 @@ import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.MinecraftItemID;
-
 import javax.annotation.Nullable;
 
 /**
@@ -29,8 +28,7 @@ public class BlockOreIron extends BlockOre {
 
     @Since("FUTURE")
     @PowerNukkitOnly
-    @Nullable
-    @Override
+    @Nullable @Override
     protected MinecraftItemID getRawMaterial() {
         return MinecraftItemID.RAW_IRON;
     }

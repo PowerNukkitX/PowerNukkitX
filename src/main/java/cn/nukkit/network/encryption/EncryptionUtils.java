@@ -10,13 +10,6 @@ import com.nimbusds.jose.crypto.ECDSAVerifier;
 import com.nimbusds.jose.jwk.Curve;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-
-import javax.crypto.Cipher;
-import javax.crypto.KeyAgreement;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 import java.net.URI;
 import java.security.*;
 import java.security.interfaces.ECPrivateKey;
@@ -26,6 +19,12 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
 import java.util.Base64;
+import javax.crypto.Cipher;
+import javax.crypto.KeyAgreement;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 
 @PowerNukkitXOnly
 public final class EncryptionUtils {
@@ -43,7 +42,8 @@ public final class EncryptionUtils {
         // DO NOT REMOVE THIS
         // Since Java 8u231, secp384r1 is deprecated and will throw an exception.
         String namedGroups = System.getProperty("jdk.tls.namedGroups");
-        System.setProperty("jdk.tls.namedGroups", namedGroups == null || namedGroups.isEmpty() ? "secp384r1" : ", secp384r1");
+        System.setProperty(
+                "jdk.tls.namedGroups", namedGroups == null || namedGroups.isEmpty() ? "secp384r1" : ", secp384r1");
 
         try {
             KEY_PAIR_GEN = KeyPairGenerator.getInstance("EC");
@@ -61,7 +61,8 @@ public final class EncryptionUtils {
     }
 
     public static ECPublicKey generateKey(String b64) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        return (ECPublicKey)KeyFactory.getInstance("EC").generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(b64)));
+        return (ECPublicKey) KeyFactory.getInstance("EC")
+                .generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(b64)));
     }
 
     public static KeyPair createKeyPair() {
@@ -76,7 +77,8 @@ public final class EncryptionUtils {
         return jws.verify(new ECDSAVerifier(key));
     }
 
-    public static SecretKey getSecretKey(PrivateKey localPrivateKey, PublicKey remotePublicKey, byte[] token) throws InvalidKeyException {
+    public static SecretKey getSecretKey(PrivateKey localPrivateKey, PublicKey remotePublicKey, byte[] token)
+            throws InvalidKeyException {
         byte[] sharedSecret = getEcdhSecret(localPrivateKey, remotePublicKey);
 
         MessageDigest digest;
@@ -92,7 +94,8 @@ public final class EncryptionUtils {
         return new SecretKeySpec(secretKeyBytes, "AES");
     }
 
-    private static byte[] getEcdhSecret(PrivateKey localPrivateKey, PublicKey remotePublicKey) throws InvalidKeyException {
+    private static byte[] getEcdhSecret(PrivateKey localPrivateKey, PublicKey remotePublicKey)
+            throws InvalidKeyException {
         KeyAgreement agreement;
         try {
             agreement = KeyAgreement.getInstance("ECDH");
@@ -106,10 +109,14 @@ public final class EncryptionUtils {
     }
 
     public static JWSObject createHandshakeJwt(KeyPair serverKeyPair, byte[] token) throws JOSEException {
-        URI x5u = URI.create(Base64.getEncoder().encodeToString(serverKeyPair.getPublic().getEncoded()));
+        URI x5u = URI.create(
+                Base64.getEncoder().encodeToString(serverKeyPair.getPublic().getEncoded()));
 
-        JWTClaimsSet claimsSet = new JWTClaimsSet.Builder().claim("salt", Base64.getEncoder().encodeToString(token)).build();
-        SignedJWT jwt = new SignedJWT(new JWSHeader.Builder(JWSAlgorithm.ES384).x509CertURL(x5u).build(), claimsSet);
+        JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
+                .claim("salt", Base64.getEncoder().encodeToString(token))
+                .build();
+        SignedJWT jwt = new SignedJWT(
+                new JWSHeader.Builder(JWSAlgorithm.ES384).x509CertURL(x5u).build(), claimsSet);
 
         signJwt(jwt, (ECPrivateKey) serverKeyPair.getPrivate());
 
@@ -146,7 +153,10 @@ public final class EncryptionUtils {
             Cipher cipher = Cipher.getInstance(transformation);
             cipher.init(encrypt ? Cipher.ENCRYPT_MODE : Cipher.DECRYPT_MODE, key, new IvParameterSpec(iv));
             return cipher;
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException e) {
+        } catch (NoSuchAlgorithmException
+                | NoSuchPaddingException
+                | InvalidKeyException
+                | InvalidAlgorithmParameterException e) {
             throw new AssertionError("Unable to initialize required encryption", e);
         }
     }

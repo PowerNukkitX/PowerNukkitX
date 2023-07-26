@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
+
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
@@ -17,11 +19,8 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Faceable;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.List;
-
-import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 public class BlockBeehive extends BlockSolidMeta implements Faceable, BlockEntityHolder<BlockEntityBeehive> {
@@ -45,8 +44,7 @@ public class BlockBeehive extends BlockSolidMeta implements Faceable, BlockEntit
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -58,16 +56,14 @@ public class BlockBeehive extends BlockSolidMeta implements Faceable, BlockEntit
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getBlockEntityType() {
         return BlockEntity.BEEHIVE;
     }
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public Class<? extends BlockEntityBeehive> getBlockEntityClass() {
         return BlockEntityBeehive.class;
     }
@@ -98,7 +94,15 @@ public class BlockBeehive extends BlockSolidMeta implements Faceable, BlockEntit
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         if (player == null) {
             setBlockFace(BlockFace.SOUTH);
         } else {
@@ -107,17 +111,18 @@ public class BlockBeehive extends BlockSolidMeta implements Faceable, BlockEntit
 
         int honeyLevel = item.hasCustomBlockData() ? item.getCustomBlockData().getByte("HoneyLevel") : 0;
         setHoneyLevel(honeyLevel);
-        BlockEntityBeehive beehive = BlockEntityHolder.setBlockAndCreateEntity(this, true, true, item.getCustomBlockData());
+        BlockEntityBeehive beehive =
+                BlockEntityHolder.setBlockAndCreateEntity(this, true, true, item.getCustomBlockData());
         if (beehive == null) {
             return false;
         }
-        
+
         if (beehive.namedTag.getByte("ShouldSpawnBees") > 0) {
             List<BlockFace> validSpawnFaces = beehive.scanValidSpawnFaces(true);
             for (BlockEntityBeehive.Occupant occupant : beehive.getOccupants()) {
                 beehive.spawnOccupant(occupant, validSpawnFaces);
             }
-    
+
             beehive.namedTag.putByte("ShouldSpawnBees", 0);
         }
         return true;
@@ -132,12 +137,13 @@ public class BlockBeehive extends BlockSolidMeta implements Faceable, BlockEntit
             for (int i = 0; i < 3; ++i) {
                 level.dropItem(this, Item.get(ItemID.HONEYCOMB));
             }
-            level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.add(0.5, 0.5, 0.5), VibrationType.SHEAR));
+            level.getVibrationManager()
+                    .callVibrationEvent(new VibrationEvent(this, this.add(0.5, 0.5, 0.5), VibrationType.SHEAR));
             return true;
         }
         return false;
     }
-    
+
     @Override
     public boolean canBeActivated() {
         return true;
@@ -163,7 +169,7 @@ public class BlockBeehive extends BlockSolidMeta implements Faceable, BlockEntit
             beehive.angerBees(player);
         }
     }
-    
+
     @Override
     public Item toItem() {
         Item item = Item.get(getItemId(), 0, 1);
@@ -180,7 +186,7 @@ public class BlockBeehive extends BlockSolidMeta implements Faceable, BlockEntit
         }
         return item;
     }
-    
+
     @Override
     public boolean canSilkTouch() {
         return true;
@@ -210,17 +216,17 @@ public class BlockBeehive extends BlockSolidMeta implements Faceable, BlockEntit
     public boolean canHarvestWithHand() {
         return true;
     }
-    
+
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{ Item.getBlock(BlockID.BEEHIVE) };
+        return new Item[] {Item.getBlock(BlockID.BEEHIVE)};
     }
-    
+
     @Override
     public BlockFace getBlockFace() {
         return getPropertyValue(DIRECTION);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.3.0.0-PN")
     @Override
@@ -247,12 +253,12 @@ public class BlockBeehive extends BlockSolidMeta implements Faceable, BlockEntit
     public boolean isFull() {
         return getPropertyValue(HONEY_LEVEL) == HONEY_LEVEL.getMaxValue();
     }
-    
+
     @Override
     public boolean hasComparatorInputOverride() {
         return true;
     }
-    
+
     @Override
     public int getComparatorInputOverride() {
         return getHoneyLevel();

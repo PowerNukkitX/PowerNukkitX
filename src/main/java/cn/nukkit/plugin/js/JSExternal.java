@@ -11,8 +11,9 @@ public abstract class JSExternal {
     private boolean alive = true;
 
     protected final void checkAlive() {
-        if(!alive) {
-            throw new ReferenceNotAliveException("Reference targeting " + value.getMetaQualifiedName() + " has already be disposed.");
+        if (!alive) {
+            throw new ReferenceNotAliveException(
+                    "Reference targeting " + value.getMetaQualifiedName() + " has already be disposed.");
         }
     }
 

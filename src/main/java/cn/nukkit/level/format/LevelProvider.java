@@ -10,7 +10,6 @@ import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.generator.Generator;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.scheduler.AsyncTask;
-
 import java.util.Map;
 
 /**
@@ -102,9 +101,7 @@ public interface LevelProvider {
 
     void doGarbageCollection();
 
-    default void doGarbageCollection(long time) {
-
-    }
+    default void doGarbageCollection(long time) {}
 
     Level getLevel();
 
@@ -140,7 +137,8 @@ public interface LevelProvider {
                 case "normal":
                 case "terra": {
                     if (getGeneratorOptions().containsKey("preset")) {
-                        var opts = getGeneratorOptions().get("preset").toString().split(":");
+                        var opts =
+                                getGeneratorOptions().get("preset").toString().split(":");
                         if (opts.length == 2) {
                             return DimensionEnum.valueOf(opts[1].toUpperCase()).ordinal();
                         }
@@ -162,19 +160,19 @@ public interface LevelProvider {
     }
 
     @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")//todo: have problem in async environment (nullpointer)
+    @Since("1.6.0.0-PNX") // todo: have problem in async environment (nullpointer)
     default boolean isOverWorld() {
         return getDimension() == 0;
     }
 
     @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")//todo: have problem in async environment (nullpointer)
+    @Since("1.6.0.0-PNX") // todo: have problem in async environment (nullpointer)
     default boolean isNether() {
         return getDimension() == 1;
     }
 
     @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")//todo: have problem in async environment (nullpointer)
+    @Since("1.6.0.0-PNX") // todo: have problem in async environment (nullpointer)
     default boolean isTheEnd() {
         return getDimension() == 2;
     }

@@ -24,5 +24,4 @@ public class EntityEffectRemoveEvent extends EntityEvent implements Cancellable 
     public Effect getRemoveEffect() {
         return removeEffect;
     }
-
 }

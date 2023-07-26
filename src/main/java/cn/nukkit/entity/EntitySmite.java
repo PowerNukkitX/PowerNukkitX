@@ -13,11 +13,15 @@ import cn.nukkit.potion.Effect;
  */
 public interface EntitySmite {
     default void burn(Entity entity) {
-        if (entity.getLevel().getDimension() == Level.DIMENSION_OVERWORLD && entity.getLevel().isDaytime()
-                && (!entity.hasEffect(Effect.FIRE_RESISTANCE) || (entity instanceof EntityInventoryHolder entityInventoryHolder && entityInventoryHolder.getHelmet().isNull()))
-                && !entity.isInsideOfWater() && !entity.isUnderBlock() && !entity.isOnFire()) {
+        if (entity.getLevel().getDimension() == Level.DIMENSION_OVERWORLD
+                && entity.getLevel().isDaytime()
+                && (!entity.hasEffect(Effect.FIRE_RESISTANCE)
+                        || (entity instanceof EntityInventoryHolder entityInventoryHolder
+                                && entityInventoryHolder.getHelmet().isNull()))
+                && !entity.isInsideOfWater()
+                && !entity.isUnderBlock()
+                && !entity.isOnFire()) {
             entity.setOnFire(1);
         }
-
     }
 }

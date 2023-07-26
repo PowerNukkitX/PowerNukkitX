@@ -3,10 +3,9 @@ package cn.nukkit.jemapping;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
+import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.Map;
 
 @PowerNukkitXOnly
 @Since("1.19.40-r3")

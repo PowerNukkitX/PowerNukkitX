@@ -5,7 +5,7 @@ import cn.nukkit.api.Since;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class BlockMudBrickStairs extends BlockStairs{
+public class BlockMudBrickStairs extends BlockStairs {
 
     @Override
     public String getName() {

@@ -17,7 +17,6 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.potion.Effect;
-
 import java.util.EnumMap;
 import java.util.Map;
 
@@ -61,8 +60,13 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
     @Since("1.19.63-r2")
     protected Effect[] effects;
 
-    public MeleeAttackExecutor(MemoryType<? extends Entity> memory, float speed, int maxSenseRange, boolean clearDataWhenLose, int coolDown) {
-        this(memory, speed, maxSenseRange, clearDataWhenLose, coolDown, new Effect[]{});
+    public MeleeAttackExecutor(
+            MemoryType<? extends Entity> memory,
+            float speed,
+            int maxSenseRange,
+            boolean clearDataWhenLose,
+            int coolDown) {
+        this(memory, speed, maxSenseRange, clearDataWhenLose, coolDown, new Effect[] {});
     }
 
     /**
@@ -75,7 +79,13 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
      * @param coolDown          攻击冷却时间(单位tick)<br>Attack cooldown (in tick)
      * @param effects           给予目标药水效果<br>Give the target potion effect
      */
-    public MeleeAttackExecutor(MemoryType<? extends Entity> memory, float speed, int maxSenseRange, boolean clearDataWhenLose, int coolDown, Effect... effects) {
+    public MeleeAttackExecutor(
+            MemoryType<? extends Entity> memory,
+            float speed,
+            int maxSenseRange,
+            boolean clearDataWhenLose,
+            int coolDown,
+            Effect... effects) {
         this.memory = memory;
         this.speed = speed;
         this.maxSenseRangeSquared = maxSenseRange * maxSenseRange;
@@ -84,14 +94,13 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
         this.effects = effects;
     }
 
-
     @Override
     public boolean execute(EntityIntelligent entity) {
         attackTick++;
         if (entity.getBehaviorGroup().getMemoryStorage().isEmpty(memory)) return false;
         Entity newTarget = entity.getBehaviorGroup().getMemoryStorage().get(memory);
 
-        //first is null
+        // first is null
         if (this.target == null) {
             this.target = newTarget;
         }
@@ -99,15 +108,18 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
             this.lookTarget = target.clone();
         }
 
-        //some check
+        // some check
         if (!target.isAlive()) return false;
         else if (target instanceof Player player) {
-            if (player.isCreative() || player.isSpectator() || !player.isOnline() || !entity.level.getName().equals(player.level.getName())) {
+            if (player.isCreative()
+                    || player.isSpectator()
+                    || !player.isOnline()
+                    || !entity.level.getName().equals(player.level.getName())) {
                 return false;
             }
         }
 
-        //update target and look target
+        // update target and look target
         if (!this.target.getPosition().equals(newTarget.getPosition())) {
             target = newTarget;
         }
@@ -115,24 +127,26 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
             lookTarget = newTarget.getLocation();
         }
 
-        //set some motion control
+        // set some motion control
         if (!entity.isEnablePitch()) entity.setEnablePitch(true);
         if (entity.getMovementSpeed() != speed) entity.setMovementSpeed(speed);
-        //set target and look target
+        // set target and look target
         setRouteTarget(entity, this.target.clone());
         setLookTarget(entity, this.lookTarget.clone());
 
         var floor = target.floor();
-        if (oldTarget == null || !oldTarget.equals(floor)) entity.getBehaviorGroup().setForceUpdateRoute(true);
+        if (oldTarget == null || !oldTarget.equals(floor))
+            entity.getBehaviorGroup().setForceUpdateRoute(true);
         oldTarget = floor;
 
-        //attack logic
+        // attack logic
         if (entity.distanceSquared(target) <= 2.5 && attackTick > coolDown) {
             Item item = entity instanceof EntityInventoryHolder holder ? holder.getItemInHand() : Item.AIR_ITEM;
 
             float defaultDamage = 0;
             if (entity instanceof EntityCanAttack entityCanAttack) {
-                defaultDamage = entityCanAttack.getDiffHandDamage(entity.getServer().getDifficulty());
+                defaultDamage =
+                        entityCanAttack.getDiffHandDamage(entity.getServer().getDifficulty());
             }
             float itemDamage = item.getAttackDamage() + defaultDamage;
 
@@ -154,7 +168,13 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
                 }
             }
 
-            EntityDamageByEntityEvent ev = new EntityDamageByEntityEvent(entity, target, EntityDamageEvent.DamageCause.ENTITY_ATTACK, damage, knockBack, item.applyEnchantments() ? enchantments : null);
+            EntityDamageByEntityEvent ev = new EntityDamageByEntityEvent(
+                    entity,
+                    target,
+                    EntityDamageEvent.DamageCause.ENTITY_ATTACK,
+                    damage,
+                    knockBack,
+                    item.applyEnchantments() ? enchantments : null);
 
             ev.setBreakShield(item.canBreakShield());
 
@@ -178,7 +198,7 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
     public void onStop(EntityIntelligent entity) {
         removeRouteTarget(entity);
         removeLookTarget(entity);
-        //重置速度
+        // 重置速度
         entity.setMovementSpeed(EntityLiving.DEFAULT_SPEED);
         if (clearDataWhenLose) {
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
@@ -192,7 +212,7 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
     public void onInterrupt(EntityIntelligent entity) {
         removeRouteTarget(entity);
         removeLookTarget(entity);
-        //重置速度
+        // 重置速度
         entity.setMovementSpeed(EntityLiving.DEFAULT_SPEED);
         if (clearDataWhenLose) {
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);

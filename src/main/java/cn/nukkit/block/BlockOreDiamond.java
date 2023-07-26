@@ -8,16 +8,14 @@ import cn.nukkit.item.ItemDiamond;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.MinecraftItemID;
 import cn.nukkit.item.enchantment.Enchantment;
-
-import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
+import javax.annotation.Nullable;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 @PowerNukkitDifference(since = "FUTURE", info = "Extends BlockOre instead of BlockSolid only in PowerNukkit")
 public class BlockOreDiamond extends BlockOre {
-
 
     public BlockOreDiamond() {
         // Does nothing
@@ -41,8 +39,7 @@ public class BlockOreDiamond extends BlockOre {
 
     @Since("FUTURE")
     @PowerNukkitOnly
-    @Nullable
-    @Override
+    @Nullable @Override
     protected MinecraftItemID getRawMaterial() {
         return MinecraftItemID.DIAMOND;
     }
@@ -62,9 +59,7 @@ public class BlockOreDiamond extends BlockOre {
                 count = i + 1;
             }
 
-            return new Item[]{
-                    new ItemDiamond(0, count)
-            };
+            return new Item[] {new ItemDiamond(0, count)};
         } else {
             return Item.EMPTY_ARRAY;
         }

@@ -20,6 +20,7 @@ public abstract class HugeTreesGenerator extends TreeGenerator {
      * Sets the metadata for the leaves used in huge trees
      */
     protected final Block leavesMetadata;
+
     protected int extraRandomHeight;
 
     public HugeTreesGenerator(int baseHeightIn, int extraRandomHeightIn, Block woodMetadataIn, Block leavesMetadataIn) {
@@ -61,7 +62,10 @@ public abstract class HugeTreesGenerator extends TreeGenerator {
                 for (int k = -j; k <= j && flag; ++k) {
                     for (int l = -j; l <= j && flag; ++l) {
                         Vector3 blockPos = leavesPos.add(k, i, l);
-                        if (leavesPos.getY() + i < 0 || leavesPos.getY() + i >= 256 || !this.canGrowInto(worldIn.getBlockIdAt((int) blockPos.x, (int) blockPos.y, (int) blockPos.z))) {
+                        if (leavesPos.getY() + i < 0
+                                || leavesPos.getY() + i >= 256
+                                || !this.canGrowInto(
+                                        worldIn.getBlockIdAt((int) blockPos.x, (int) blockPos.y, (int) blockPos.z))) {
                             flag = false;
                         }
                     }
@@ -144,4 +148,3 @@ public abstract class HugeTreesGenerator extends TreeGenerator {
         }
     }
 }
-

@@ -4,13 +4,15 @@ package cn.nukkit.block;
  * @author Gabriel8579
  * @since 2021-08-13
  */
-
-
 public class BlockCandleGreen extends BlockCandle {
 
-    public BlockCandleGreen() { this(0); }
+    public BlockCandleGreen() {
+        this(0);
+    }
 
-    public BlockCandleGreen(int meta) { super(meta); }
+    public BlockCandleGreen(int meta) {
+        super(meta);
+    }
 
     @Override
     public int getId() {

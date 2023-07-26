@@ -39,28 +39,27 @@ public class EntityPotionLingering extends EntityPotion {
         super.splash(collidedWith);
         saveNBT();
         ListTag<?> pos = (ListTag<?>) namedTag.getList("Pos", CompoundTag.class).copy();
-        EntityAreaEffectCloud entity = (EntityAreaEffectCloud) Entity.createEntity("AreaEffectCloud", getChunk(),
-                new CompoundTag().putList(pos)
+        EntityAreaEffectCloud entity = (EntityAreaEffectCloud) Entity.createEntity(
+                "AreaEffectCloud",
+                getChunk(),
+                new CompoundTag()
+                        .putList(pos)
                         .putList(new ListTag<>("Rotation")
                                 .add(new FloatTag("", 0))
-                                .add(new FloatTag("", 0))
-                        )
+                                .add(new FloatTag("", 0)))
                         .putList(new ListTag<>("Motion")
                                 .add(new DoubleTag("", 0))
                                 .add(new DoubleTag("", 0))
-                                .add(new DoubleTag("", 0))
-                        )
-                        .putShort("PotionId", potionId)
-        );
+                                .add(new DoubleTag("", 0)))
+                        .putShort("PotionId", potionId));
 
         Effect effect = Potion.getEffect(potionId, true);
 
         if (effect != null && entity != null) {
-            entity.cloudEffects.add(effect/*.setDuration(1)*/.setVisible(false).setAmbient(false));
+            entity.cloudEffects.add(effect /*.setDuration(1)*/.setVisible(false).setAmbient(false));
             entity.spawnToAll();
         }
     }
-
 
     @PowerNukkitOnly
     @Since("1.5.1.0-PN")

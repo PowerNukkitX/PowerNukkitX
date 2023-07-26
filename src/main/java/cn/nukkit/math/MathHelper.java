@@ -1,19 +1,16 @@
 package cn.nukkit.math;
 
 import cn.nukkit.api.PowerNukkitOnly;
-
 import java.util.Random;
 
 public class MathHelper {
     private static final float[] a = new float[65536];
 
     static {
-        for (int i = 0; i < 65536; i++)
-            a[i] = (float) Math.sin(i * 3.141592653589793D * 2.0D / 65536.0D);
+        for (int i = 0; i < 65536; i++) a[i] = (float) Math.sin(i * 3.141592653589793D * 2.0D / 65536.0D);
     }
 
-    private MathHelper() {
-    }
+    private MathHelper() {}
 
     public static float sqrt(float paramFloat) {
         return (float) Math.sqrt(paramFloat);

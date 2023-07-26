@@ -25,7 +25,8 @@ public class BlockShroomlight extends BlockTransparent {
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_HANDS_ONLY; //TODO Should be hoe, fix at https://github.com/PowerNukkit/PowerNukkit/pull/367
+        return ItemTool
+                .TYPE_HANDS_ONLY; // TODO Should be hoe, fix at https://github.com/PowerNukkit/PowerNukkit/pull/367
     }
 
     @Override
@@ -42,5 +43,4 @@ public class BlockShroomlight extends BlockTransparent {
     public int getLightLevel() {
         return 15;
     }
-
 }

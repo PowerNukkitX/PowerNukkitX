@@ -1,5 +1,8 @@
 package cn.nukkit.network.protocol;
 
+import static cn.nukkit.utils.Utils.dynamic;
+import static com.nukkitx.network.util.Preconditions.checkArgument;
+
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.command.data.*;
 import cn.nukkit.network.protocol.types.CommandEnumConstraintData;
@@ -8,18 +11,16 @@ import cn.nukkit.utils.SequencedHashSet;
 import com.nukkitx.network.util.Preconditions;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import lombok.ToString;
-
 import java.util.*;
 import java.util.function.ObjIntConsumer;
-
-import static cn.nukkit.utils.Utils.dynamic;
-import static com.nukkitx.network.util.Preconditions.checkArgument;
+import lombok.ToString;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-@PowerNukkitDifference(since = "1.4.0.0-PN", info = "Made the arg type constants dynamic because they can change in Minecraft updates")
+@PowerNukkitDifference(
+        since = "1.4.0.0-PN",
+        info = "Made the arg type constants dynamic because they can change in Minecraft updates")
 @ToString
 public class AvailableCommandsPacket extends DataPacket {
 
@@ -59,8 +60,10 @@ public class AvailableCommandsPacket extends DataPacket {
     public static final int ARG_TYPE_COMMAND = dynamic(75);
 
     public Map<String, CommandDataVersions> commands;
+
     @Deprecated
     public final Map<String, List<String>> softEnums = new HashMap<>();
+
     public final List<CommandEnumConstraintData> constraints = new ObjectArrayList<>();
 
     @Override
@@ -70,7 +73,7 @@ public class AvailableCommandsPacket extends DataPacket {
 
     @Override
     public void decode() {
-        //non
+        // non
     }
 
     @Override
@@ -108,7 +111,9 @@ public class AvailableCommandsPacket extends DataPacket {
                 }
             }
 
-            for (CommandParameter[] overload : data.overloads.values().stream().map(o -> o.input.parameters).toList()) {
+            for (CommandParameter[] overload : data.overloads.values().stream()
+                    .map(o -> o.input.parameters)
+                    .toList()) {
                 for (CommandParameter parameter : overload) {
                     CommandEnum commandEnumData = parameter.enumData;
                     if (commandEnumData != null) {
@@ -200,9 +205,9 @@ public class AvailableCommandsPacket extends DataPacket {
         // Determine width of enum index
         ObjIntConsumer<BinaryStream> indexWriter;
         int valuesSize = values.size();
-        if (valuesSize < 0x100) {//256
+        if (valuesSize < 0x100) { // 256
             indexWriter = WRITE_BYTE;
-        } else if (valuesSize < 0x10000) {//65536
+        } else if (valuesSize < 0x10000) { // 65536
             indexWriter = WRITE_SHORT;
         } else {
             indexWriter = WRITE_INT;
@@ -221,7 +226,12 @@ public class AvailableCommandsPacket extends DataPacket {
         }
     }
 
-    private void writeCommand(Map.Entry<String, CommandDataVersions> commandEntry, List<CommandEnum> enums, List<CommandEnum> softEnums, List<String> postFixes, List<ChainedSubCommandData> subCommands) {
+    private void writeCommand(
+            Map.Entry<String, CommandDataVersions> commandEntry,
+            List<CommandEnum> enums,
+            List<CommandEnum> softEnums,
+            List<String> postFixes,
+            List<ChainedSubCommandData> subCommands) {
         var commandData = commandEntry.getValue().versions.get(0);
         this.putString(commandEntry.getKey());
         this.putString(commandData.description);
@@ -253,7 +263,8 @@ public class AvailableCommandsPacket extends DataPacket {
         }
     }
 
-    private void writeParameter(CommandParameter param, List<CommandEnum> enums, List<CommandEnum> softEnums, List<String> postFixes) {
+    private void writeParameter(
+            CommandParameter param, List<CommandEnum> enums, List<CommandEnum> softEnums, List<String> postFixes) {
         this.putString(param.name);
 
         int index;
@@ -294,5 +305,4 @@ public class AvailableCommandsPacket extends DataPacket {
             this.putString(value);
         }
     }
-
 }

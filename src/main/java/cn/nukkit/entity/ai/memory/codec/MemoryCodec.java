@@ -4,11 +4,10 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.nbt.tag.CompoundTag;
-import lombok.Getter;
-
-import javax.annotation.Nullable;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import javax.annotation.Nullable;
+import lombok.Getter;
 
 @PowerNukkitXOnly
 @Since("1.19.63-r1")
@@ -16,13 +15,10 @@ import java.util.function.Function;
 public class MemoryCodec<Data> implements IMemoryCodec<Data> {
     private final Function<CompoundTag, Data> decoder;
     private final BiConsumer<Data, CompoundTag> encoder;
-    @Nullable
-    private BiConsumer<Data, EntityIntelligent> onInit = null;
 
-    public MemoryCodec(
-            Function<CompoundTag, Data> decoder,
-            BiConsumer<Data, CompoundTag> encoder
-    ) {
+    @Nullable private BiConsumer<Data, EntityIntelligent> onInit = null;
+
+    public MemoryCodec(Function<CompoundTag, Data> decoder, BiConsumer<Data, CompoundTag> encoder) {
         this.decoder = decoder;
         this.encoder = encoder;
     }

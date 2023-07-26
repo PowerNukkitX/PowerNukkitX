@@ -12,7 +12,6 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.potion.InstantEffect;
-
 import java.util.List;
 import java.util.Map;
 
@@ -25,23 +24,24 @@ public class EffectCommand extends Command {
         super(name, "commands.effect.description", "nukkit.command.effect.usage");
         this.setPermission("nukkit.command.effect");
         this.commandParameters.clear();
-        this.commandParameters.put("default", new CommandParameter[]{
-                CommandParameter.newType("player", CommandParamType.TARGET),
-                CommandParameter.newEnum("effect", CommandEnum.ENUM_EFFECT),
-                CommandParameter.newType("seconds", true, CommandParamType.INT),
-                CommandParameter.newType("amplifier", true, CommandParamType.INT),
-                CommandParameter.newEnum("hideParticle", true, CommandEnum.ENUM_BOOLEAN)
+        this.commandParameters.put("default", new CommandParameter[] {
+            CommandParameter.newType("player", CommandParamType.TARGET),
+            CommandParameter.newEnum("effect", CommandEnum.ENUM_EFFECT),
+            CommandParameter.newType("seconds", true, CommandParamType.INT),
+            CommandParameter.newType("amplifier", true, CommandParamType.INT),
+            CommandParameter.newEnum("hideParticle", true, CommandEnum.ENUM_BOOLEAN)
         });
-        this.commandParameters.put("clear", new CommandParameter[]{
-                CommandParameter.newType("player", CommandParamType.TARGET),
-                CommandParameter.newEnum("clear", new CommandEnum("ClearEffects", "clear"))
+        this.commandParameters.put("clear", new CommandParameter[] {
+            CommandParameter.newType("player", CommandParamType.TARGET),
+            CommandParameter.newEnum("clear", new CommandEnum("ClearEffects", "clear"))
         });
         this.enableParamTree();
     }
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         List<Entity> entities = list.getResult(0);
         entities = entities.stream().filter(e -> !(e instanceof EntityItem)).toList();
@@ -91,15 +91,22 @@ public class EffectCommand extends Command {
                 for (Entity entity : entities) {
                     if (duration == 0) {
                         if (!entity.hasEffect(effect.getId())) {
-                            log.addError("commands.effect.failure.notActive", effect.getName(), entity.getName()).output();
+                            log.addError("commands.effect.failure.notActive", effect.getName(), entity.getName())
+                                    .output();
                             continue;
                         }
                         entity.removeEffect(effect.getId());
-                        log.addSuccess("commands.effect.success.removed", effect.getName(), entity.getName()).output();
+                        log.addSuccess("commands.effect.success.removed", effect.getName(), entity.getName())
+                                .output();
                     } else {
                         effect.setDuration(duration).setAmplifier(amplification);
                         entity.addEffect(effect.clone());
-                        log.addSuccess("%commands.effect.success", effect.getName(), String.valueOf(effect.getAmplifier()), entity.getName(), String.valueOf(effect.getDuration() / 20))
+                        log.addSuccess(
+                                        "%commands.effect.success",
+                                        effect.getName(),
+                                        String.valueOf(effect.getAmplifier()),
+                                        entity.getName(),
+                                        String.valueOf(effect.getDuration() / 20))
                                 .output(true);
                     }
                     success++;

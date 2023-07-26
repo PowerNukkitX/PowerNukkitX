@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.OPEN;
+
 import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
@@ -17,11 +19,8 @@ import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
-
-import static cn.nukkit.blockproperty.CommonBlockProperties.OPEN;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Nukkit Project Team
@@ -30,10 +29,11 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.OPEN;
 public class BlockLever extends BlockFlowable implements RedstoneComponent, Faceable {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final ArrayBlockProperty<LeverOrientation> LEVER_DIRECTION = new ArrayBlockProperty<>("lever_direction", false,
-            LeverOrientation.values(), 3, "lever_direction", false, new String[]{
-                    "down_east_west", "east", "west", "south", "north", "up_north_south", "up_east_west", "down_north_south"
-    });
+    public static final ArrayBlockProperty<LeverOrientation> LEVER_DIRECTION = new ArrayBlockProperty<>(
+            "lever_direction", false, LeverOrientation.values(), 3, "lever_direction", false, new String[] {
+                "down_east_west", "east", "west", "south", "north", "up_north_south", "up_east_west", "down_north_south"
+            });
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(LEVER_DIRECTION, OPEN);
@@ -58,8 +58,7 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -93,7 +92,7 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
     public void setPowerOn(boolean powerOn) {
         setBooleanValue(OPEN, powerOn);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-P`N")
     public LeverOrientation getLeverOrientation() {
@@ -108,19 +107,27 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
-        if (!player.getAdventureSettings().get(AdventureSettings.Type.DOORS_AND_SWITCHED))
-            return false;
-        this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, isPowerOn() ? 15 : 0, isPowerOn() ? 0 : 15));
+        if (!player.getAdventureSettings().get(AdventureSettings.Type.DOORS_AND_SWITCHED)) return false;
+        this.level
+                .getServer()
+                .getPluginManager()
+                .callEvent(new BlockRedstoneEvent(this, isPowerOn() ? 15 : 0, isPowerOn() ? 0 : 15));
         toggleBooleanProperty(OPEN);
         var pos = this.add(0.5, 0.5, 0.5);
         if (isPowerOn()) {
-            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(player != null ? player : this, pos, VibrationType.BLOCK_ACTIVATE));
+            this.level
+                    .getVibrationManager()
+                    .callVibrationEvent(
+                            new VibrationEvent(player != null ? player : this, pos, VibrationType.BLOCK_ACTIVATE));
         } else {
-            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(player != null ? player : this, pos, VibrationType.BLOCK_DEACTIVATE));
+            this.level
+                    .getVibrationManager()
+                    .callVibrationEvent(
+                            new VibrationEvent(player != null ? player : this, pos, VibrationType.BLOCK_DEACTIVATE));
         }
 
         this.getLevel().setBlock(this, this, false, true);
-        this.getLevel().addSound(this, Sound.RANDOM_CLICK, 0.8f, isPowerOn() ? 0.58f : 0.5f );
+        this.getLevel().addSound(this, Sound.RANDOM_CLICK, 0.8f, isPowerOn() ? 0.58f : 0.5f);
 
         LeverOrientation orientation = getLeverOrientation();
         BlockFace face = orientation.getFacing();
@@ -132,7 +139,7 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
         return true;
     }
 
-    @PowerNukkitDifference(info = "Now, can be placed on solid blocks", since= "1.4.0.0-PN")
+    @PowerNukkitDifference(info = "Now, can be placed on solid blocks", since = "1.4.0.0-PN")
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
@@ -146,9 +153,19 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
     }
 
     @PowerNukkitDifference(info = "Allows to be placed on walls", since = "1.3.0.0-PN")
-    @PowerNukkitDifference(info = "Now, can be placed on solid blocks and always returns false if the placement fails", since = "1.4.0.0-PN")
+    @PowerNukkitDifference(
+            info = "Now, can be placed on solid blocks and always returns false if the placement fails",
+            since = "1.4.0.0-PN")
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         if (target.canBeReplaced()) {
             target = target.down();
             face = BlockFace.UP;
@@ -176,11 +193,11 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
                 return true;
             default:
         }
-        
+
         if (face == BlockFace.DOWN) {
             return support.isSolid(BlockFace.DOWN) && (support.isFullBlock() || !support.isTransparent());
         }
-        
+
         if (support.isSolid(face)) {
             return true;
         }
@@ -188,7 +205,7 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
         if (support instanceof BlockWallBase || support instanceof BlockFence) {
             return face == BlockFace.UP;
         }
-        
+
         return false;
     }
 
@@ -277,7 +294,8 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
                             return DOWN_Z;
 
                         default:
-                            throw new IllegalArgumentException("Invalid entityFacing " + playerDirection + " for facing " + clickedSide);
+                            throw new IllegalArgumentException(
+                                    "Invalid entityFacing " + playerDirection + " for facing " + clickedSide);
                     }
 
                 case UP:
@@ -289,7 +307,8 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
                             return UP_Z;
 
                         default:
-                            throw new IllegalArgumentException("Invalid entityFacing " + playerDirection + " for facing " + clickedSide);
+                            throw new IllegalArgumentException(
+                                    "Invalid entityFacing " + playerDirection + " for facing " + clickedSide);
                     }
 
                 case NORTH:

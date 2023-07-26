@@ -14,10 +14,10 @@ import cn.nukkit.nbt.tag.CompoundTag;
 @Since("1.20.0-r2")
 public class BlockSuspiciousSand extends BlockFallableMeta {
     public static final IntBlockProperty BRUSHED_PROGRESS = new IntBlockProperty("brushed_progress", false, 3);
-    public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.HANGING, BRUSHED_PROGRESS);
+    public static final BlockProperties PROPERTIES =
+            new BlockProperties(CommonBlockProperties.HANGING, BRUSHED_PROGRESS);
 
-    public BlockSuspiciousSand() {
-    }
+    public BlockSuspiciousSand() {}
 
     @Override
     public BlockProperties getProperties() {
@@ -51,6 +51,6 @@ public class BlockSuspiciousSand extends BlockFallableMeta {
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{Item.AIR_ITEM};
+        return new Item[] {Item.AIR_ITEM};
     }
 }

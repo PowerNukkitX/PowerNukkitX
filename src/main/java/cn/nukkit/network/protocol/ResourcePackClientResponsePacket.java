@@ -1,8 +1,7 @@
 package cn.nukkit.network.protocol;
 
-import lombok.ToString;
-
 import java.util.UUID;
+import lombok.ToString;
 
 @ToString
 public class ResourcePackClientResponsePacket extends DataPacket {

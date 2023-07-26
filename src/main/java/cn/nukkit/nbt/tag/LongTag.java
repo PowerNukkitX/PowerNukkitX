@@ -4,7 +4,6 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.stream.NBTOutputStream;
-
 import java.io.IOException;
 
 public class LongTag extends NumberTag<Long> {
@@ -84,5 +83,4 @@ public class LongTag extends NumberTag<Long> {
         }
         return false;
     }
-
 }

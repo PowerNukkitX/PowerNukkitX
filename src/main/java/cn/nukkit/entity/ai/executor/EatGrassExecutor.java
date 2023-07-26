@@ -42,8 +42,7 @@ public class EatGrassExecutor implements IBehaviorExecutor {
                     sheep.growWool();
                     return false;
                 }
-                if (sheep.isBaby())
-                    sheep.setBaby(false);
+                if (sheep.isBaby()) sheep.setBaby(false);
             }
             return false;
         }

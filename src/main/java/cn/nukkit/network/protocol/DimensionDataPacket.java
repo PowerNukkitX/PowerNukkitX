@@ -2,9 +2,7 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.level.DimensionData;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-
 import java.util.List;
-
 
 public class DimensionDataPacket extends DataPacket {
     private final List<DimensionData> definitions = new ObjectArrayList<>();
@@ -15,11 +13,8 @@ public class DimensionDataPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-    }
+    public void decode() {}
 
     @Override
-    public void encode() {
-
-    }
+    public void encode() {}
 }

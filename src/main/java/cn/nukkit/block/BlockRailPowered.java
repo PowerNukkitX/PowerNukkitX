@@ -34,8 +34,7 @@ public class BlockRailPowered extends BlockRail implements RedstoneComponent {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return ACTIVABLE_PROPERTIES;
     }
@@ -49,10 +48,12 @@ public class BlockRailPowered extends BlockRail implements RedstoneComponent {
     @PowerNukkitDifference(info = "Using new method for checking if powered", since = "1.4.0.0-PN")
     public int onUpdate(int type) {
         // Warning: I din't recommended this on slow networks server or slow client
-        //          Network below 86Kb/s. This will became unresponsive to clients 
-        //          When updating the block state. Espicially on the world with many rails. 
+        //          Network below 86Kb/s. This will became unresponsive to clients
+        //          When updating the block state. Espicially on the world with many rails.
         //          Trust me, I tested this on my server.
-        if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_REDSTONE || type == Level.BLOCK_UPDATE_SCHEDULED) {
+        if (type == Level.BLOCK_UPDATE_NORMAL
+                || type == Level.BLOCK_UPDATE_REDSTONE
+                || type == Level.BLOCK_UPDATE_SCHEDULED) {
             if (super.onUpdate(type) == Level.BLOCK_UPDATE_NORMAL) {
                 return 0; // Already broken
             }
@@ -61,9 +62,8 @@ public class BlockRailPowered extends BlockRail implements RedstoneComponent {
                 return 0;
             }
             boolean wasPowered = isActive();
-            boolean isPowered = this.isGettingPower()
-                    || checkSurrounding(this, true, 0)
-                    || checkSurrounding(this, false, 0);
+            boolean isPowered =
+                    this.isGettingPower() || checkSurrounding(this, true, 0) || checkSurrounding(this, false, 0);
 
             // Avoid Block mistake
             if (wasPowered != isPowered) {
@@ -196,15 +196,14 @@ public class BlockRailPowered extends BlockRail implements RedstoneComponent {
         // Possible way how to know when the rail is activated is rail were directly powered
         // OR recheck the surrounding... Which will returns here =w=
         return (state != Rail.Orientation.STRAIGHT_EAST_WEST
-                || base != Rail.Orientation.STRAIGHT_NORTH_SOUTH
-                && base != Rail.Orientation.ASCENDING_NORTH
-                && base != Rail.Orientation.ASCENDING_SOUTH)
+                        || base != Rail.Orientation.STRAIGHT_NORTH_SOUTH
+                                && base != Rail.Orientation.ASCENDING_NORTH
+                                && base != Rail.Orientation.ASCENDING_SOUTH)
                 && (state != Rail.Orientation.STRAIGHT_NORTH_SOUTH
-                || base != Rail.Orientation.STRAIGHT_EAST_WEST
-                && base != Rail.Orientation.ASCENDING_EAST
-                && base != Rail.Orientation.ASCENDING_WEST)
+                        || base != Rail.Orientation.STRAIGHT_EAST_WEST
+                                && base != Rail.Orientation.ASCENDING_EAST
+                                && base != Rail.Orientation.ASCENDING_WEST)
                 && (block.isGettingPower() || checkSurrounding(pos, relative, power + 1));
-
     }
 
     @Override

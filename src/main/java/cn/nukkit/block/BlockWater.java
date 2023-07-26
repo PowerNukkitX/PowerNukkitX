@@ -14,7 +14,6 @@ import org.jetbrains.annotations.NotNull;
  */
 public class BlockWater extends BlockLiquid {
 
-
     public BlockWater() {
         this(0);
     }
@@ -34,7 +33,15 @@ public class BlockWater extends BlockLiquid {
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         boolean ret = this.getLevel().setBlock(this, this, true, false);
         this.getLevel().scheduleUpdate(this, this.tickRate());
 
@@ -48,12 +55,12 @@ public class BlockWater extends BlockLiquid {
         if (!update) {
             return;
         }
-        
+
         int newId = newBlock.getId();
         if (newId == FLOWING_WATER || newId == STILL_WATER) {
             return;
         }
-        
+
         Block up = up(1, 0);
         for (BlockFace diagonalFace : BlockFace.Plane.HORIZONTAL) {
             Block diagonal = up.getSide(diagonalFace);

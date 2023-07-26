@@ -1,7 +1,6 @@
 package cn.nukkit.metadata;
 
 import cn.nukkit.plugin.Plugin;
-
 import java.lang.ref.WeakReference;
 
 /**
@@ -22,5 +21,4 @@ public abstract class MetadataValue {
     public abstract Object value();
 
     public abstract void invalidate();
-
 }

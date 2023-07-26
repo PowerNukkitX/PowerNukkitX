@@ -14,7 +14,6 @@ import cn.nukkit.plugin.PluginDescription;
 import cn.nukkit.utils.TextFormat;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -41,79 +40,123 @@ public class VersionCommand extends Command implements CoreCommand {
     private JsonArray listVersionCache = null;
 
     {
-        Server.getInstance().getScheduler().scheduleRepeatingTask(() -> {
-            try {
-                for (Query query : queryQueue.toArray(new Query[queryQueue.size()])) {
-                    if (query.jsonArrayFuture.isDone()) {
-                        JsonArray cores = query.jsonArrayFuture.get();
-                        String localCommitInfo = Server.getInstance().getGitCommit();
-                        localCommitInfo = localCommitInfo.substring(4);
-                        int versionMissed = -1;
-                        query.sender.sendMessage("####################");
-                        var matched = false;
-                        for (int i = 0, len = cores.size(); i < len; i++) {
-                            var entry = cores.get(i).getAsJsonObject();
-                            var remoteCommitInfo = entry.get("name").getAsString().split("-")[1];
-                            matched = remoteCommitInfo.equals(localCommitInfo);
+        Server.getInstance()
+                .getScheduler()
+                .scheduleRepeatingTask(
+                        () -> {
+                            try {
+                                for (Query query : queryQueue.toArray(new Query[queryQueue.size()])) {
+                                    if (query.jsonArrayFuture.isDone()) {
+                                        JsonArray cores = query.jsonArrayFuture.get();
+                                        String localCommitInfo =
+                                                Server.getInstance().getGitCommit();
+                                        localCommitInfo = localCommitInfo.substring(4);
+                                        int versionMissed = -1;
+                                        query.sender.sendMessage("####################");
+                                        var matched = false;
+                                        for (int i = 0, len = cores.size(); i < len; i++) {
+                                            var entry = cores.get(i).getAsJsonObject();
+                                            var remoteCommitInfo = entry.get("name")
+                                                    .getAsString()
+                                                    .split("-")[1];
+                                            matched = remoteCommitInfo.equals(localCommitInfo);
 
-                            var infoBuilder = new StringBuilder();
-                            infoBuilder.append("[").append(i + 1).append("] ");
-                            if (i == 0)
-                                infoBuilder.append("Name: §e").append(entry.get("name").getAsString()).append("§f, Time: §e").append(utcToLocal(entry.get("lastModified").getAsString())).append(" §e(LATEST)").append(matched ? " §b(CURRENT)" : "");
-                            else if (matched)
-                                infoBuilder.append("Name: §b").append(entry.get("name").getAsString()).append("§f, Time: §b").append(utcToLocal(entry.get("lastModified").getAsString())).append(" §b(CURRENT)");
-                            else
-                                infoBuilder.append("Name: §a").append(entry.get("name").getAsString()).append("§f, Time: §a").append(utcToLocal(entry.get("lastModified").getAsString()));
-                            //打印相关信息
-                            query.sender.sendMessage(infoBuilder.toString());
+                                            var infoBuilder = new StringBuilder();
+                                            infoBuilder
+                                                    .append("[")
+                                                    .append(i + 1)
+                                                    .append("] ");
+                                            if (i == 0)
+                                                infoBuilder
+                                                        .append("Name: §e")
+                                                        .append(entry.get("name")
+                                                                .getAsString())
+                                                        .append("§f, Time: §e")
+                                                        .append(utcToLocal(entry.get("lastModified")
+                                                                .getAsString()))
+                                                        .append(" §e(LATEST)")
+                                                        .append(matched ? " §b(CURRENT)" : "");
+                                            else if (matched)
+                                                infoBuilder
+                                                        .append("Name: §b")
+                                                        .append(entry.get("name")
+                                                                .getAsString())
+                                                        .append("§f, Time: §b")
+                                                        .append(utcToLocal(entry.get("lastModified")
+                                                                .getAsString()))
+                                                        .append(" §b(CURRENT)");
+                                            else
+                                                infoBuilder
+                                                        .append("Name: §a")
+                                                        .append(entry.get("name")
+                                                                .getAsString())
+                                                        .append("§f, Time: §a")
+                                                        .append(utcToLocal(entry.get("lastModified")
+                                                                .getAsString()));
+                                            // 打印相关信息
+                                            query.sender.sendMessage(infoBuilder.toString());
 
-                            if (matched) {
-                                versionMissed = i;
-                                break;
+                                            if (matched) {
+                                                versionMissed = i;
+                                                break;
+                                            }
+                                        }
+                                        // too old
+                                        if (!matched) {
+                                            query.sender.sendMessage("....................");
+                                            var localInfoBuilder = new StringBuilder();
+                                            localInfoBuilder
+                                                    .append("[???] ")
+                                                    .append("Name: §c")
+                                                    .append(localCommitInfo)
+                                                    .append("§f, Time: §c???")
+                                                    .append(" §c(CURRENT)");
+                                            query.sender.sendMessage(localInfoBuilder.toString());
+                                        }
+                                        query.sender.sendMessage("####################");
+                                        if (versionMissed == 0)
+                                            query.sender.sendMessage(
+                                                    "§aYou are using the latest version of PowerNukkitX!");
+                                        else if (versionMissed > 0) {
+                                            query.sender.sendMessage(
+                                                    "§cYou are using an outdated version of PowerNukkitX!, §f"
+                                                            + versionMissed + " §aversions behind!");
+                                        } else {
+                                            query.sender.sendMessage(
+                                                    "§cCouldn't match your version number: §f" + localCommitInfo
+                                                            + "§c, maybe you are using a custom build or your version is too old!");
+                                        }
+                                        if (versionMissed != 0) {
+                                            query.sender.sendMessage("Download the latest version at §a"
+                                                    + cores.get(0)
+                                                            .getAsJsonObject()
+                                                            .get("url")
+                                                            .getAsString());
+                                            query.sender.sendMessage(
+                                                    "You can enter command §a \"pnx server update\"§f to automatically update your server if you are using PNX-CLI");
+                                            query.sender.sendMessage("Download PNX-CLI at: §a"
+                                                    + "https://github.com/PowerNukkitX/PNX-CLI/releases");
+                                        }
+                                        queryQueue.remove(query);
+                                    }
+                                }
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            } catch (ExecutionException e) {
+                                e.printStackTrace();
                             }
-                        }
-                        //too old
-                        if (!matched) {
-                            query.sender.sendMessage("....................");
-                            var localInfoBuilder = new StringBuilder();
-                            localInfoBuilder.append("[???] ").append("Name: §c").append(localCommitInfo).append("§f, Time: §c???").append(" §c(CURRENT)");
-                            query.sender.sendMessage(localInfoBuilder.toString());
-                        }
-                        query.sender.sendMessage("####################");
-                        if (versionMissed == 0)
-                            query.sender.sendMessage("§aYou are using the latest version of PowerNukkitX!");
-                        else if (versionMissed > 0) {
-                            query.sender.sendMessage("§cYou are using an outdated version of PowerNukkitX!, §f" + versionMissed + " §aversions behind!");
-                        } else {
-                            query.sender.sendMessage("§cCouldn't match your version number: §f" + localCommitInfo + "§c, maybe you are using a custom build or your version is too old!");
-                        }
-                        if (versionMissed != 0) {
-                            query.sender.sendMessage("Download the latest version at §a" + cores.get(0).getAsJsonObject().get("url").getAsString());
-                            query.sender.sendMessage("You can enter command §a \"pnx server update\"§f to automatically update your server if you are using PNX-CLI");
-                            query.sender.sendMessage("Download PNX-CLI at: §a" + "https://github.com/PowerNukkitX/PNX-CLI/releases");
-                        }
-                        queryQueue.remove(query);
-                    }
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
-        }, 15);
+                        },
+                        15);
     }
 
     public VersionCommand(String name) {
-        super(name,
-                "%nukkit.command.version.description",
-                "%nukkit.command.version.usage",
-                new String[]{"ver", "about"}
-        );
+        super(name, "%nukkit.command.version.description", "%nukkit.command.version.usage", new String[] {"ver", "about"
+        });
         this.setPermission("nukkit.command.version");
         this.commandParameters.clear();
-        this.commandParameters.put("default", new CommandParameter[]{
-                CommandParameter.newType("pluginName", true, CommandParamType.STRING)
-        });
+        this.commandParameters.put(
+                "default",
+                new CommandParameter[] {CommandParameter.newType("pluginName", true, CommandParamType.STRING)});
     }
 
     @Override
@@ -122,8 +165,11 @@ public class VersionCommand extends Command implements CoreCommand {
             return true;
         }
         if (args.length == 0) {
-            sender.sendMessage(new TranslationContainer("nukkit.server.info.extended", sender.getServer().getName(),
-                    sender.getServer().getNukkitVersion() + " (" + sender.getServer().getGitCommit() + ")",
+            sender.sendMessage(new TranslationContainer(
+                    "nukkit.server.info.extended",
+                    sender.getServer().getName(),
+                    sender.getServer().getNukkitVersion() + " ("
+                            + sender.getServer().getGitCommit() + ")",
                     sender.getServer().getCodename(),
                     sender.getServer().getApiVersion(),
                     sender.getServer().getVersion(),
@@ -150,7 +196,8 @@ public class VersionCommand extends Command implements CoreCommand {
 
             if (found[0]) {
                 PluginDescription desc = exactPlugin[0].getDescription();
-                sender.sendMessage(TextFormat.DARK_GREEN + desc.getName() + TextFormat.WHITE + " version " + TextFormat.DARK_GREEN + desc.getVersion());
+                sender.sendMessage(TextFormat.DARK_GREEN + desc.getName() + TextFormat.WHITE + " version "
+                        + TextFormat.DARK_GREEN + desc.getVersion());
                 if (desc.getDescription() != null) {
                     sender.sendMessage(desc.getDescription());
                 }
@@ -177,16 +224,20 @@ public class VersionCommand extends Command implements CoreCommand {
     private CompletableFuture<JsonArray> listVersion() {
         return CompletableFuture.supplyAsync(() -> {
             if (this.listVersionCache != null) {
-                if (Server.getInstance().getTick() - this.lastUpdateTick < 7200) {//20 * 60 * 60 一小时
+                if (Server.getInstance().getTick() - this.lastUpdateTick < 7200) { // 20 * 60 * 60 一小时
                     return this.listVersionCache;
                 }
             }
             var client = HttpClient.newHttpClient();
-            var builder = HttpRequest.newBuilder(URI.create("https://api.powernukkitx.cn/get-core-manifest?max=100")).GET();
-            builder.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.71 Safari/537.36");
+            var builder = HttpRequest.newBuilder(URI.create("https://api.powernukkitx.cn/get-core-manifest?max=100"))
+                    .GET();
+            builder.setHeader(
+                    "User-Agent",
+                    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.71 Safari/537.36");
             var request = builder.build();
             try {
-                var result = JsonParser.parseString(client.send(request, HttpResponse.BodyHandlers.ofString()).body());
+                var result = JsonParser.parseString(client.send(request, HttpResponse.BodyHandlers.ofString())
+                        .body());
                 if (result.isJsonArray()) {
                     this.lastUpdateTick = Server.getInstance().getTick();
                     this.listVersionCache = result.getAsJsonArray();
@@ -212,6 +263,5 @@ public class VersionCommand extends Command implements CoreCommand {
         return df.format(utcDate);
     }
 
-    private record Query(CommandSender sender, CompletableFuture<JsonArray> jsonArrayFuture) {
-    }
+    private record Query(CommandSender sender, CompletableFuture<JsonArray> jsonArrayFuture) {}
 }

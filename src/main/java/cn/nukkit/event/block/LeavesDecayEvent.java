@@ -18,5 +18,4 @@ public class LeavesDecayEvent extends BlockEvent implements Cancellable {
     public LeavesDecayEvent(Block block) {
         super(block);
     }
-
 }

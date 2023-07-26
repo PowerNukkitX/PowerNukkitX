@@ -7,9 +7,8 @@ import cn.nukkit.network.protocol.SetScorePacket;
 import cn.nukkit.scoreboard.data.ScorerType;
 import cn.nukkit.scoreboard.scoreboard.IScoreboard;
 import cn.nukkit.scoreboard.scoreboard.IScoreboardLine;
-import lombok.Getter;
-
 import java.util.UUID;
+import lombok.Getter;
 
 @PowerNukkitXOnly
 @Since("1.19.30-r1")
@@ -51,6 +50,11 @@ public class EntityScorer implements IScorer {
 
     @Override
     public SetScorePacket.ScoreInfo toNetworkInfo(IScoreboard scoreboard, IScoreboardLine line) {
-        return new SetScorePacket.ScoreInfo(line.getLineId(), scoreboard.getObjectiveName(), line.getScore(), ScorerType.ENTITY, entityUuid.getMostSignificantBits());
+        return new SetScorePacket.ScoreInfo(
+                line.getLineId(),
+                scoreboard.getObjectiveName(),
+                line.getScore(),
+                ScorerType.ENTITY,
+                entityUuid.getMostSignificantBits());
     }
 }

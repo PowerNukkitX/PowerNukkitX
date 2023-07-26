@@ -7,10 +7,9 @@ import cn.nukkit.item.Item;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
@@ -60,7 +59,7 @@ public class BlockBorder extends BlockWallBase {
 
     @Override
     @PowerNukkitOnly
-    public  boolean canBePulled() {
+    public boolean canBePulled() {
         return false;
     }
 
@@ -70,7 +69,15 @@ public class BlockBorder extends BlockWallBase {
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
         if (player != null && (!player.isCreative() || !player.isOp())) {
             return false;
         }
@@ -80,7 +87,8 @@ public class BlockBorder extends BlockWallBase {
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     @Override
-    public boolean isBreakable(Vector3 vector, int layer, BlockFace face, Item item, @Nullable Player player, boolean setBlockDestroy) {
+    public boolean isBreakable(
+            Vector3 vector, int layer, BlockFace face, Item item, @Nullable Player player, boolean setBlockDestroy) {
         if (player != null && (!player.isCreative() || !player.isOp())) {
             return false;
         }
@@ -99,5 +107,4 @@ public class BlockBorder extends BlockWallBase {
         aabb.setMaxY(Double.MAX_VALUE);
         return aabb;
     }
-
 }

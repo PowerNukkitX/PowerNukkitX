@@ -1,16 +1,15 @@
 package cn.nukkit.console;
 
 import cn.nukkit.Server;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
 import org.jline.reader.Candidate;
 import org.jline.reader.Completer;
 import org.jline.reader.LineReader;
 import org.jline.reader.ParsedLine;
-
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.function.Consumer;
 
 @RequiredArgsConstructor
 public class NukkitConsoleCompleter implements Completer {

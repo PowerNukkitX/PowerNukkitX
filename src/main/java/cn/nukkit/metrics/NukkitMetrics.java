@@ -1,5 +1,8 @@
 package cn.nukkit.metrics;
 
+import static cn.nukkit.utils.NukkitCollectors.countingInt;
+import static java.util.stream.Collectors.groupingBy;
+
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.DeprecationDetails;
@@ -8,9 +11,6 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.LoginChainData;
-import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -21,14 +21,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static cn.nukkit.utils.NukkitCollectors.countingInt;
-import static java.util.stream.Collectors.groupingBy;
+import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
 
 @Since("1.4.0.0-PN")
 @Log4j2
 public class NukkitMetrics {
-    private static final AtomicReference<Map<Server, NukkitMetrics>> metricsStarted = new AtomicReference<>(Collections.emptyMap());
+    private static final AtomicReference<Map<Server, NukkitMetrics>> metricsStarted =
+            new AtomicReference<>(Collections.emptyMap());
 
     private final Server server;
 
@@ -46,9 +46,12 @@ public class NukkitMetrics {
      */
     @SuppressWarnings({"DeprecatedIsStillUsed", "java:S1133"})
     @Deprecated
-    @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN", replaceWith = "NukkitMetrics.startNow(Server)",
-            reason = "The original cloudburst nukkit constructor implementation behaves like a stateful static method " +
-                    "and don't comply with Java standards. Use the static method startNow(server) instead.")
+    @DeprecationDetails(
+            by = "PowerNukkit",
+            since = "1.4.0.0-PN",
+            replaceWith = "NukkitMetrics.startNow(Server)",
+            reason = "The original cloudburst nukkit constructor implementation behaves like a stateful static method "
+                    + "and don't comply with Java standards. Use the static method startNow(server) instead.")
     @Since("1.4.0.0-PN")
     public NukkitMetrics(Server server) {
         this(server, true);
@@ -128,8 +131,7 @@ public class NukkitMetrics {
         }
     }
 
-    @NotNull
-    private static NukkitMetrics createMetrics(@NotNull final Server server) {
+    @NotNull private static NukkitMetrics createMetrics(@NotNull final Server server) {
         NukkitMetrics nukkitMetrics = new NukkitMetrics(server, false);
         if (!nukkitMetrics.enabled) {
             return nukkitMetrics;
@@ -138,19 +140,23 @@ public class NukkitMetrics {
         final Metrics metrics = new Metrics("PowerNukkitX", nukkitMetrics.serverUUID, nukkitMetrics.logFailedRequests);
         nukkitMetrics.metrics = metrics;
 
-        metrics.addCustomChart(new Metrics.SingleLineChart("players", () -> server.getOnlinePlayers().size()));
+        metrics.addCustomChart(new Metrics.SingleLineChart(
+                "players", () -> server.getOnlinePlayers().size()));
         metrics.addCustomChart(new Metrics.SimplePie("minecraft_version", server::getVersion));
         metrics.addCustomChart(new Metrics.SimplePie("pnx_version", server::getBStatsNukkitVersion));
-        metrics.addCustomChart(new Metrics.SimplePie("xbox_auth", () -> server.getPropertyBoolean("xbox-auth") ? "Required" : "Not required"));
+        metrics.addCustomChart(new Metrics.SimplePie(
+                "xbox_auth", () -> server.getPropertyBoolean("xbox-auth") ? "Required" : "Not required"));
 
-        metrics.addCustomChart(new Metrics.AdvancedPie("player_platform_pie", () -> server.getOnlinePlayers().values().stream()
-                .map(Player::getLoginChainData)
-                .map(LoginChainData::getDeviceOS)
-                .collect(groupingBy(nukkitMetrics::mapDeviceOSToString, countingInt()))));
+        metrics.addCustomChart(
+                new Metrics.AdvancedPie("player_platform_pie", () -> server.getOnlinePlayers().values().stream()
+                        .map(Player::getLoginChainData)
+                        .map(LoginChainData::getDeviceOS)
+                        .collect(groupingBy(nukkitMetrics::mapDeviceOSToString, countingInt()))));
 
-        metrics.addCustomChart(new Metrics.AdvancedPie("player_game_version_pie", () -> server.getOnlinePlayers().values().stream()
-                .map(Player::getLoginChainData)
-                .collect(groupingBy(LoginChainData::getGameVersion, countingInt()))));
+        metrics.addCustomChart(
+                new Metrics.AdvancedPie("player_game_version_pie", () -> server.getOnlinePlayers().values().stream()
+                        .map(Player::getLoginChainData)
+                        .collect(groupingBy(LoginChainData::getGameVersion, countingInt()))));
 
         metrics.addCustomChart(new Metrics.DrilldownPie("java_version_pie", new JavaVersionRetriever()));
 
@@ -206,7 +212,8 @@ public class NukkitMetrics {
 
         File configFile = new File(bStatsFolder, "config.yml");
         if (!configFile.exists()) {
-            writeFile(configFile,
+            writeFile(
+                    configFile,
                     "# bStats collects some data for plugin authors like how many servers are using their plugins.",
                     "# To honor their work, you should not disable it.",
                     "# This has nearly no effect on the server performance!",

@@ -11,11 +11,11 @@ public class ItemEmptyMap extends Item {
     public ItemEmptyMap() {
         this(0, 1);
     }
-    
+
     public ItemEmptyMap(Integer meta) {
         this(meta, 1);
     }
-    
+
     public ItemEmptyMap(Integer meta, int count) {
         super(EMPTY_MAP, meta, count, "Empty Map");
         updateName();
@@ -36,7 +36,8 @@ public class ItemEmptyMap extends Item {
     }
 
     @Override
-    public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
+    public boolean onActivate(
+            Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         if (!player.isCreative()) {
             this.count--;
         }

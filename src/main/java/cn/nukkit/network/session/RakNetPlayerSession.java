@@ -25,11 +25,6 @@ import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.Unpooled;
 import io.netty.util.internal.PlatformDependent;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import lombok.extern.log4j.Log4j2;
-import org.apache.logging.log4j.message.FormattedMessage;
-
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
 import java.net.ProtocolException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -39,6 +34,10 @@ import java.util.Queue;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.message.FormattedMessage;
 
 @Since("1.19.30-r1")
 @PowerNukkitXOnly
@@ -118,8 +117,7 @@ public class RakNetPlayerSession implements NetworkPlayerSession, RakNetSessionL
     }
 
     @Override
-    public void onSessionChangeState(RakNetState rakNetState) {
-    }
+    public void onSessionChangeState(RakNetState rakNetState) {}
 
     @Override
     public void onDisconnect(DisconnectReason reason) {
@@ -183,7 +181,8 @@ public class RakNetPlayerSession implements NetworkPlayerSession, RakNetSessionL
             if (Server.getInstance().isEnableSnappy()) {
                 payload = SnappyCompression.compress(batched.getBuffer());
             } else {
-                payload = Network.deflateRaw(batched.getBuffer(), server.getNetwork().getServer().networkCompressionLevel);
+                payload = Network.deflateRaw(
+                        batched.getBuffer(), server.getNetwork().getServer().networkCompressionLevel);
             }
             ByteBuf byteBuf = ByteBufAllocator.DEFAULT.ioBuffer(1 + payload.length + 8);
             byteBuf.writeByte(0xfe);
@@ -192,7 +191,8 @@ public class RakNetPlayerSession implements NetworkPlayerSession, RakNetSessionL
                     ByteBuf originalByteBuf = Unpooled.wrappedBuffer(payload);
                     ByteBuffer trailer = ByteBuffer.wrap(this.generateTrailer(originalByteBuf));
                     ByteBuffer outBuffer = byteBuf.internalNioBuffer(1, originalByteBuf.readableBytes() + 8);
-                    ByteBuffer inBuffer = originalByteBuf.internalNioBuffer(originalByteBuf.readerIndex(), originalByteBuf.readableBytes());
+                    ByteBuffer inBuffer = originalByteBuf.internalNioBuffer(
+                            originalByteBuf.readerIndex(), originalByteBuf.readableBytes());
                     this.encryptionCipher.update(inBuffer, outBuffer);
                     this.encryptionCipher.update(trailer, outBuffer);
                     byteBuf.writerIndex(byteBuf.writerIndex() + originalByteBuf.readableBytes() + 8);
@@ -239,8 +239,10 @@ public class RakNetPlayerSession implements NetworkPlayerSession, RakNetSessionL
             try {
                 this.player.handleDataPacket(packet);
             } catch (Exception e) {
-                log.error(new FormattedMessage("An error occurred whilst handling {} for {}",
-                        new Object[]{packet.getClass().getSimpleName(), this.player.getName()}, e));
+                log.error(new FormattedMessage(
+                        "An error occurred whilst handling {} for {}",
+                        new Object[] {packet.getClass().getSimpleName(), this.player.getName()},
+                        e));
             }
         }
     }
@@ -271,7 +273,8 @@ public class RakNetPlayerSession implements NetworkPlayerSession, RakNetSessionL
                 ByteBuf originalByteBuf = Unpooled.wrappedBuffer(payload);
                 ByteBuffer trailer = ByteBuffer.wrap(this.generateTrailer(originalByteBuf));
                 ByteBuffer outBuffer = byteBuf.internalNioBuffer(1, originalByteBuf.readableBytes() + 8);
-                ByteBuffer inBuffer = originalByteBuf.internalNioBuffer(originalByteBuf.readerIndex(), originalByteBuf.readableBytes());
+                ByteBuffer inBuffer = originalByteBuf.internalNioBuffer(
+                        originalByteBuf.readerIndex(), originalByteBuf.readableBytes());
                 this.encryptionCipher.update(inBuffer, outBuffer);
                 this.encryptionCipher.update(trailer, outBuffer);
                 byteBuf.writerIndex(byteBuf.writerIndex() + originalByteBuf.readableBytes() + 8);
@@ -326,7 +329,8 @@ public class RakNetPlayerSession implements NetworkPlayerSession, RakNetSessionL
             if (Server.getInstance().isEnableSnappy()) {
                 payload = SnappyCompression.compress(batched.getBuffer());
             } else {
-                payload = Network.deflateRaw(batched.getBuffer(), server.getNetwork().getServer().networkCompressionLevel);
+                payload = Network.deflateRaw(
+                        batched.getBuffer(), server.getNetwork().getServer().networkCompressionLevel);
             }
             ByteBuf byteBuf = ByteBufAllocator.DEFAULT.ioBuffer(1 + payload.length + 8);
             byteBuf.writeByte(0xfe);
@@ -335,7 +339,8 @@ public class RakNetPlayerSession implements NetworkPlayerSession, RakNetSessionL
                     ByteBuf originalByteBuf = Unpooled.wrappedBuffer(payload);
                     ByteBuffer trailer = ByteBuffer.wrap(this.generateTrailer(originalByteBuf));
                     ByteBuffer outBuffer = byteBuf.internalNioBuffer(1, originalByteBuf.readableBytes() + 8);
-                    ByteBuffer inBuffer = originalByteBuf.internalNioBuffer(originalByteBuf.readerIndex(), originalByteBuf.readableBytes());
+                    ByteBuffer inBuffer = originalByteBuf.internalNioBuffer(
+                            originalByteBuf.readerIndex(), originalByteBuf.readableBytes());
                     this.encryptionCipher.update(inBuffer, outBuffer);
                     this.encryptionCipher.update(trailer, outBuffer);
                     byteBuf.writerIndex(byteBuf.writerIndex() + originalByteBuf.readableBytes() + 8);

@@ -8,10 +8,9 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import lombok.extern.log4j.Log4j2;
-
 import java.util.HashMap;
 import java.util.Map;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -41,7 +40,7 @@ public class EntityMetadata {
 
     public EntityMetadata put(EntityData<?> data) {
         this.map.put(data.getId(), data);
-        //log.info("Updated entity data {}", this::toString);
+        // log.info("Updated entity data {}", this::toString);
         return this;
     }
 
@@ -70,7 +69,8 @@ public class EntityMetadata {
     }
 
     public CompoundTag getNBT(int id) {
-        return (CompoundTag) this.getOrDefault(id, new NBTEntityData(id, new CompoundTag())).getData();
+        return (CompoundTag)
+                this.getOrDefault(id, new NBTEntityData(id, new CompoundTag())).getData();
     }
 
     public String getString(int id) {
@@ -78,11 +78,13 @@ public class EntityMetadata {
     }
 
     public Vector3 getPosition(int id) {
-        return (Vector3) this.getOrDefault(id, new IntPositionEntityData(id, new Vector3())).getData();
+        return (Vector3) this.getOrDefault(id, new IntPositionEntityData(id, new Vector3()))
+                .getData();
     }
 
     public Vector3f getFloatPosition(int id) {
-        return (Vector3f) this.getOrDefault(id, new Vector3fEntityData(id, new Vector3f())).getData();
+        return (Vector3f) this.getOrDefault(id, new Vector3fEntityData(id, new Vector3f()))
+                .getData();
     }
 
     public EntityMetadata putByte(int id, int value) {

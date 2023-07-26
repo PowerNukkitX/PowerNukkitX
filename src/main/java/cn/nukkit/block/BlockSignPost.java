@@ -1,5 +1,8 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
+import static cn.nukkit.math.CompassRoseDirection.*;
+
 import cn.nukkit.Player;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitDifference;
@@ -20,13 +23,9 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.CompassRoseDirection;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
+import javax.annotation.Nullable;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
-
-import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
-import static cn.nukkit.math.CompassRoseDirection.*;
 
 /**
  * @author Nukkit Project Team
@@ -38,12 +37,14 @@ public class BlockSignPost extends BlockSignBase implements BlockEntityHolder<Bl
     @DeprecationDetails(since = "1.20.0-r2", reason = "replace to CommonBlockProperties")
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final BlockProperty<CompassRoseDirection> GROUND_SIGN_DIRECTION = new ArrayBlockProperty<>("ground_sign_direction", false, new CompassRoseDirection[]{
-            SOUTH, SOUTH_SOUTH_WEST, SOUTH_WEST, WEST_SOUTH_WEST,
-            WEST, WEST_NORTH_WEST, NORTH_WEST, NORTH_NORTH_WEST,
-            NORTH, NORTH_NORTH_EAST, NORTH_EAST, EAST_NORTH_EAST,
-            EAST, EAST_SOUTH_EAST, SOUTH_EAST, SOUTH_SOUTH_EAST
-    }).ordinal(true);
+    public static final BlockProperty<CompassRoseDirection> GROUND_SIGN_DIRECTION = new ArrayBlockProperty<>(
+                    "ground_sign_direction", false, new CompassRoseDirection[] {
+                        SOUTH, SOUTH_SOUTH_WEST, SOUTH_WEST, WEST_SOUTH_WEST,
+                        WEST, WEST_NORTH_WEST, NORTH_WEST, NORTH_NORTH_WEST,
+                        NORTH, NORTH_NORTH_EAST, NORTH_EAST, EAST_NORTH_EAST,
+                        EAST, EAST_SOUTH_EAST, SOUTH_EAST, SOUTH_SOUTH_EAST
+                    })
+            .ordinal(true);
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -64,24 +65,21 @@ public class BlockSignPost extends BlockSignBase implements BlockEntityHolder<Bl
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public Class<? extends BlockEntitySign> getBlockEntityClass() {
         return BlockEntitySign.class;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getBlockEntityType() {
         return BlockEntity.SIGN;
     }
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -123,7 +121,15 @@ public class BlockSignPost extends BlockSignBase implements BlockEntityHolder<Bl
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
         if (face == BlockFace.DOWN) {
             return false;
         }
@@ -138,10 +144,10 @@ public class BlockSignPost extends BlockSignBase implements BlockEntityHolder<Bl
 
         if (face == BlockFace.UP) {
             CompassRoseDirection direction = CommonBlockProperties.GROUND_SIGN_DIRECTION.getValueForMeta(
-                    (int) Math.floor((((player != null ? player.yaw : 0) + 180) * 16 / 360) + 0.5) & 0x0f
-            );
+                    (int) Math.floor((((player != null ? player.yaw : 0) + 180) * 16 / 360) + 0.5) & 0x0f);
 
-            BlockState post = BlockState.of(getPostId()).withProperty(CommonBlockProperties.GROUND_SIGN_DIRECTION, direction);
+            BlockState post =
+                    BlockState.of(getPostId()).withProperty(CommonBlockProperties.GROUND_SIGN_DIRECTION, direction);
             getLevel().setBlock(block, post.getBlock(block), true);
         } else {
             BlockState wall = BlockState.of(getWallId()).withProperty(FACING_DIRECTION, face);

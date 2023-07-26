@@ -7,20 +7,19 @@ import cn.nukkit.command.exceptions.SelectorSyntaxException;
 import cn.nukkit.command.selector.SelectorType;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Location;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * 此接口描述了一个选择器参数<p/>
  */
 @PowerNukkitXOnly
 @Since("1.19.60-r1")
-public interface ISelectorArgument extends Comparable<ISelectorArgument>{
+public interface ISelectorArgument extends Comparable<ISelectorArgument> {
     /**
      * 根据给定的参数表返回特定的{@code List<Predicate<Entity>>}
      * @param arguments 参数列表
@@ -32,8 +31,9 @@ public interface ISelectorArgument extends Comparable<ISelectorArgument>{
      * @return {@code Predicate<Entity>}
      * @throws SelectorSyntaxException 当解析出错
      */
-    @Nullable
-    default Predicate<Entity> getPredicate(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) throws SelectorSyntaxException {
+    @Nullable default Predicate<Entity> getPredicate(
+            SelectorType selectorType, CommandSender sender, Location basePos, String... arguments)
+            throws SelectorSyntaxException {
         return null;
     }
 
@@ -49,7 +49,9 @@ public interface ISelectorArgument extends Comparable<ISelectorArgument>{
      * @return 实体过滤器
      * @throws SelectorSyntaxException 当解析出错
      */
-    default Function<List<Entity>, List<Entity>> getFilter(SelectorType selectorType, CommandSender sender, Location basePos, String... arguments) throws SelectorSyntaxException {
+    default Function<List<Entity>, List<Entity>> getFilter(
+            SelectorType selectorType, CommandSender sender, Location basePos, String... arguments)
+            throws SelectorSyntaxException {
         return null;
     }
 
@@ -85,8 +87,7 @@ public interface ISelectorArgument extends Comparable<ISelectorArgument>{
      * @param sender 命令执行者
      * @return 此参数的默认值
      */
-    @Nullable
-    default String getDefaultValue(Map<String, List<String>> values, SelectorType selectorType, CommandSender sender) {
+    @Nullable default String getDefaultValue(Map<String, List<String>> values, SelectorType selectorType, CommandSender sender) {
         return null;
     }
 

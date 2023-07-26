@@ -4,7 +4,6 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.stream.NBTOutputStream;
-
 import java.io.IOException;
 
 public class IntTag extends NumberTag<Integer> {
@@ -84,5 +83,4 @@ public class IntTag extends NumberTag<Integer> {
         }
         return false;
     }
-
 }

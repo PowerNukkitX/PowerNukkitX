@@ -1,11 +1,9 @@
 package cn.nukkit.entity;
 
-
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.ServerException;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,6 +39,7 @@ public class Attribute implements Cloneable {
      * SATURATION
      */
     public static final int SATURATION = 1;
+
     public static final int EXHAUSTION = 2;
     public static final int KNOCKBACK_RESISTANCE = 3;
     public static final int MAX_HEALTH = 4;
@@ -82,7 +81,13 @@ public class Attribute implements Cloneable {
         addAttribute(MOVEMENT_SPEED, "minecraft:movement", 0.00f, 340282346638528859811704183484516925440.00f, 0.10f);
         addAttribute(FOLLOW_RANGE, "minecraft:follow_range", 0.00f, 2048.00f, 16.00f, false);
         addAttribute(MAX_HUNGER, "minecraft:player.hunger", 0.00f, 20.00f, 20.00f);
-        addAttribute(ATTACK_DAMAGE, "minecraft:attack_damage", 0.00f, 340282346638528859811704183484516925440.00f, 1.00f, false);
+        addAttribute(
+                ATTACK_DAMAGE,
+                "minecraft:attack_damage",
+                0.00f,
+                340282346638528859811704183484516925440.00f,
+                1.00f,
+                false);
         addAttribute(EXPERIENCE_LEVEL, "minecraft:player.level", 0.00f, 24791.00f, 0.00f);
         addAttribute(EXPERIENCE, "minecraft:player.experience", 0.00f, 1.00f, 0.00f);
         addAttribute(LUCK, "minecraft:luck", -1024, 1024, 0);
@@ -93,9 +98,11 @@ public class Attribute implements Cloneable {
         return addAttribute(id, name, minValue, maxValue, defaultValue, true);
     }
 
-    public static Attribute addAttribute(int id, String name, float minValue, float maxValue, float defaultValue, boolean shouldSend) {
+    public static Attribute addAttribute(
+            int id, String name, float minValue, float maxValue, float defaultValue, boolean shouldSend) {
         if (minValue > maxValue || defaultValue > maxValue || defaultValue < minValue) {
-            throw new IllegalArgumentException("Invalid ranges: min value: " + minValue + ", max value: " + maxValue + ", defaultValue: " + defaultValue);
+            throw new IllegalArgumentException("Invalid ranges: min value: " + minValue + ", max value: " + maxValue
+                    + ", defaultValue: " + defaultValue);
         }
         return attributes.put(id, new Attribute(id, name, minValue, maxValue, defaultValue, shouldSend));
     }
@@ -122,7 +129,8 @@ public class Attribute implements Cloneable {
      * @return the compound tag
      */
     public static CompoundTag toNBT(Attribute attribute) {
-        return new CompoundTag().putString("Name", attribute.getName())
+        return new CompoundTag()
+                .putString("Name", attribute.getName())
                 .putFloat("Base", attribute.getDefaultValue())
                 .putFloat("Current", attribute.getValue())
                 .putFloat("DefaultMax", attribute.getMaxValue())
@@ -279,11 +287,10 @@ public class Attribute implements Cloneable {
 
     @Override
     public String toString() {
-        return name + "{" +
-                "min=" + minValue +
-                ", max=" + maxValue +
-                ", def=" + defaultValue +
-                ", val=" + currentValue +
-                '}';
+        return name + "{" + "min="
+                + minValue + ", max="
+                + maxValue + ", def="
+                + defaultValue + ", val="
+                + currentValue + '}';
     }
 }

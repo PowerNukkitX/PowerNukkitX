@@ -6,7 +6,6 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.MemoryType;
 import cn.nukkit.utils.SortedList;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -51,7 +50,12 @@ public class NearestTargetEntitySensor<T extends Entity> implements ISensor {
      * @param memories          保存结果的记忆类型<br>Memory class type for saving results
      */
     @SafeVarargs
-    public NearestTargetEntitySensor(double minRange, double maxRange, int period, List<MemoryType<Entity>> memories, Function<T, Boolean>... allTargetFunction) {
+    public NearestTargetEntitySensor(
+            double minRange,
+            double maxRange,
+            int period,
+            List<MemoryType<Entity>> memories,
+            Function<T, Boolean>... allTargetFunction) {
         this.minRange = minRange;
         this.maxRange = maxRange;
         this.period = period;
@@ -59,8 +63,7 @@ public class NearestTargetEntitySensor<T extends Entity> implements ISensor {
         else {
             if (memories.size() >= 1 && allTargetFunction.length == memories.size()) {
                 this.allTargetFunction = allTargetFunction;
-            } else
-                throw new IllegalArgumentException("All Target Function must correspond to memories one by one");
+            } else throw new IllegalArgumentException("All Target Function must correspond to memories one by one");
         }
         this.memories = memories;
     }
@@ -75,10 +78,13 @@ public class NearestTargetEntitySensor<T extends Entity> implements ISensor {
             var current = entity.getMemoryStorage().get(currentMemory);
             if (current != null && current.isAlive()) return;
 
-            //寻找范围内最近的实体
-            var entities = Collections.synchronizedList(new SortedList<>(Comparator.comparingDouble((Entity e) -> e.distanceSquared(entity))));
+            // 寻找范围内最近的实体
+            var entities = Collections.synchronizedList(
+                    new SortedList<>(Comparator.comparingDouble((Entity e) -> e.distanceSquared(entity))));
             for (Entity p : entity.getLevel().getEntities()) {
-                if (entity.distanceSquared(p) <= maxRangeSquared && entity.distanceSquared(p) >= minRangeSquared && !p.equals(entity)) {
+                if (entity.distanceSquared(p) <= maxRangeSquared
+                        && entity.distanceSquared(p) >= minRangeSquared
+                        && !p.equals(entity)) {
                     entities.add(p);
                 }
             }
@@ -96,7 +102,9 @@ public class NearestTargetEntitySensor<T extends Entity> implements ISensor {
             }
 
             for (Entity p : entity.getLevel().getEntities()) {
-                if (entity.distanceSquared(p) <= maxRangeSquared && entity.distanceSquared(p) >= minRangeSquared && !p.equals(entity)) {
+                if (entity.distanceSquared(p) <= maxRangeSquared
+                        && entity.distanceSquared(p) >= minRangeSquared
+                        && !p.equals(entity)) {
                     int i = 0;
                     for (var targetFunction : allTargetFunction) {
                         if (targetFunction.apply((T) p)) {
@@ -114,11 +122,12 @@ public class NearestTargetEntitySensor<T extends Entity> implements ISensor {
 
                 if (sortEntities.get(i).isEmpty()) {
                     entity.getMemoryStorage().clear(currentMemory);
-                } else entity.getMemoryStorage().put(currentMemory, sortEntities.get(i).get(0));
+                } else
+                    entity.getMemoryStorage()
+                            .put(currentMemory, sortEntities.get(i).get(0));
             }
         }
     }
-
 
     @Override
     public int getPeriod() {

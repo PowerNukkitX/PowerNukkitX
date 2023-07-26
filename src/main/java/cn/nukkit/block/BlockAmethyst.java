@@ -11,7 +11,6 @@ import org.jetbrains.annotations.NotNull;
  * @author LoboMetalurgico
  * @since 08/06/2021
  */
-
 @PowerNukkitOnly
 @Since("FUTURE")
 public class BlockAmethyst extends BlockSolid {
@@ -21,13 +20,11 @@ public class BlockAmethyst extends BlockSolid {
 
     @PowerNukkitOnly
     @Since("FUTURE")
-    public BlockAmethyst() {
-    }
+    public BlockAmethyst() {}
 
     @PowerNukkitOnly
     @Since("FUTURE")
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -73,5 +70,4 @@ public class BlockAmethyst extends BlockSolid {
     public boolean isLavaResistant() {
         return true;
     }
-
 }

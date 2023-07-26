@@ -42,12 +42,19 @@ public class BookEditProcessor extends DataPacketProcessor<BookEditPacket> {
                 success = ((ItemBookAndQuill) newBook).swapPages(pk.pageNumber, pk.secondaryPageNumber);
                 break;
             case SIGN_BOOK:
-                if (pk.title == null || pk.author == null || pk.xuid == null || pk.title.length() > 64 || pk.author.length() > 64 || pk.xuid.length() > 64) {
-                    log.debug(playerHandle.getUsername() + ": Invalid BookEditPacket action SIGN_BOOK: title/author/xuid is too long");
+                if (pk.title == null
+                        || pk.author == null
+                        || pk.xuid == null
+                        || pk.title.length() > 64
+                        || pk.author.length() > 64
+                        || pk.xuid.length() > 64) {
+                    log.debug(playerHandle.getUsername()
+                            + ": Invalid BookEditPacket action SIGN_BOOK: title/author/xuid is too long");
                     return;
                 }
                 newBook = Item.get(Item.WRITTEN_BOOK, 0, 1, oldBook.getCompoundTag());
-                success = ((ItemBookWritten) newBook).signBook(pk.title, pk.author, pk.xuid, ItemBookWritten.GENERATION_ORIGINAL);
+                success = ((ItemBookWritten) newBook)
+                        .signBook(pk.title, pk.author, pk.xuid, ItemBookWritten.GENERATION_ORIGINAL);
                 break;
             default:
                 return;

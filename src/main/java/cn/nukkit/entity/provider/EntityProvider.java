@@ -5,9 +5,8 @@ import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * 实体创建的时候会被调用
@@ -19,9 +18,7 @@ public interface EntityProvider<T extends Entity> {
 
     int getNetworkId();
 
-    @NotNull
-    String getName();
+    @NotNull String getName();
 
-    @NotNull
-    String getSimpleName();
+    @NotNull String getSimpleName();
 }

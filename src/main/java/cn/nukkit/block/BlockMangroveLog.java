@@ -48,8 +48,7 @@ public class BlockMangroveLog extends BlockLog {
         return MANGROVE_LOG;
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PILLAR_PROPERTIES;
     }

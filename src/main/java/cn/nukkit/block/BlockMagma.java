@@ -14,9 +14,7 @@ import cn.nukkit.potion.Effect;
 
 public class BlockMagma extends BlockSolid {
 
-    public BlockMagma(){
-
-    }
+    public BlockMagma() {}
 
     @Override
     public int getId() {
@@ -51,9 +49,7 @@ public class BlockMagma extends BlockSolid {
     @Override
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
-            return new Item[]{
-                    toItem()
-            };
+            return new Item[] {toItem()};
         } else {
             return Item.EMPTY_ARRAY;
         }
@@ -67,7 +63,10 @@ public class BlockMagma extends BlockSolid {
 
         if (entity instanceof Player p) {
             if (p.getInventory().getBoots().getEnchantment(Enchantment.ID_FROST_WALKER) != null
-                    || p.isCreative() || p.isSpectator() || p.isSneaking() || !p.level.gameRules.getBoolean(GameRule.FIRE_DAMAGE)) {
+                    || p.isCreative()
+                    || p.isSpectator()
+                    || p.isSneaking()
+                    || !p.level.gameRules.getBoolean(GameRule.FIRE_DAMAGE)) {
                 return;
             }
         }
@@ -96,5 +95,4 @@ public class BlockMagma extends BlockSolid {
     public boolean canHarvestWithHand() {
         return false;
     }
-
 }

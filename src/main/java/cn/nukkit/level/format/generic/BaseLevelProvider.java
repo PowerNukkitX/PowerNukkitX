@@ -23,9 +23,6 @@ import com.google.common.collect.ImmutableMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
-import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.Nullable;
-
 import java.io.*;
 import java.lang.ref.WeakReference;
 import java.nio.ByteOrder;
@@ -34,6 +31,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicReference;
+import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -43,15 +42,18 @@ public abstract class BaseLevelProvider implements LevelProvider {
     protected final String path;
     protected final AtomicReference<BaseRegionLoader> lastRegion = new AtomicReference<>();
     protected final Long2ObjectMap<BaseRegionLoader> regions = new Long2ObjectOpenHashMap<>();
+
     @PowerNukkitXDifference(since = "1.19.20-r3", info = "同步开销甚至远大于装拆箱开销")
     protected final ConcurrentMap<Long, BaseFullChunk> chunks = new ConcurrentHashMap<>();
+
     @PowerNukkitXDifference(since = "1.19.20-r3", info = "允许多线程彻底地并发获取区块")
     private final ThreadLocal<WeakReference<BaseFullChunk>> lastChunk = new ThreadLocal<>();
+
     protected Level level;
     protected CompoundTag levelData;
-    //protected final Long2ObjectMap<BaseFullChunk> chunks = new Long2ObjectOpenHashMap<>();
+    // protected final Long2ObjectMap<BaseFullChunk> chunks = new Long2ObjectOpenHashMap<>();
     private Vector3 spawn;
-    //private final AtomicReference<BaseFullChunk> lastChunk = new AtomicReference<>();
+    // private final AtomicReference<BaseFullChunk> lastChunk = new AtomicReference<>();
 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed resource leak")
     public BaseLevelProvider(Level level, String path) throws IOException {
@@ -64,19 +66,25 @@ public abstract class BaseLevelProvider implements LevelProvider {
 
         CompoundTag levelData;
         File levelDatFile = new File(getPath(), "level.dat");
-        try (FileInputStream fos = new FileInputStream(levelDatFile); BufferedInputStream input = new BufferedInputStream(fos)) {
+        try (FileInputStream fos = new FileInputStream(levelDatFile);
+                BufferedInputStream input = new BufferedInputStream(fos)) {
             levelData = NBTIO.readCompressed(input, ByteOrder.BIG_ENDIAN);
         } catch (Exception e) {
-            log.fatal("Failed to load the level.dat file at {}, attempting to load level.dat_old instead!", levelDatFile.getAbsolutePath(), e);
+            log.fatal(
+                    "Failed to load the level.dat file at {}, attempting to load level.dat_old instead!",
+                    levelDatFile.getAbsolutePath(),
+                    e);
             try {
                 File old = new File(getPath(), "level.dat_old");
                 if (!old.isFile()) {
                     log.fatal("The file {} does not exists!", old.getAbsolutePath());
-                    FileNotFoundException ex = new FileNotFoundException("The file " + old.getAbsolutePath() + " does not exists!");
+                    FileNotFoundException ex =
+                            new FileNotFoundException("The file " + old.getAbsolutePath() + " does not exists!");
                     ex.addSuppressed(e);
                     throw ex;
                 }
-                try (FileInputStream fos = new FileInputStream(old); BufferedInputStream input = new BufferedInputStream(fos)) {
+                try (FileInputStream fos = new FileInputStream(old);
+                        BufferedInputStream input = new BufferedInputStream(fos)) {
                     levelData = NBTIO.readCompressed(input, ByteOrder.BIG_ENDIAN);
                 } catch (Exception e2) {
                     log.fatal("Failed to load the level.dat_old file at {}", levelDatFile.getAbsolutePath());
@@ -84,7 +92,9 @@ public abstract class BaseLevelProvider implements LevelProvider {
                     throw e2;
                 }
             } catch (Exception e2) {
-                LevelException ex = new LevelException("Could not load the level.dat and the level.dat_old files. You might need to restore them from a backup!", e);
+                LevelException ex = new LevelException(
+                        "Could not load the level.dat and the level.dat_old files. You might need to restore them from a backup!",
+                        e);
                 ex.addSuppressed(e2);
                 throw ex;
             }
@@ -97,7 +107,9 @@ public abstract class BaseLevelProvider implements LevelProvider {
         }
 
         if (!this.levelData.contains("generatorName")) {
-            this.levelData.putString("generatorName", Generator.getGenerator("DEFAULT").getSimpleName().toLowerCase());
+            this.levelData.putString(
+                    "generatorName",
+                    Generator.getGenerator("DEFAULT").getSimpleName().toLowerCase());
         }
 
         if (!this.levelData.contains("generatorOptions")) {
@@ -106,7 +118,8 @@ public abstract class BaseLevelProvider implements LevelProvider {
 
         this.levelData.putList(new ListTag<>("ServerBrand").add(new StringTag("", Nukkit.CODENAME)));
 
-        this.spawn = new Vector3(this.levelData.getInt("SpawnX"), this.levelData.getInt("SpawnY"), this.levelData.getInt("SpawnZ"));
+        this.spawn = new Vector3(
+                this.levelData.getInt("SpawnX"), this.levelData.getInt("SpawnY"), this.levelData.getInt("SpawnZ"));
     }
 
     @PowerNukkitOnly
@@ -288,8 +301,7 @@ public abstract class BaseLevelProvider implements LevelProvider {
         GameRules rules = GameRules.getDefault();
 
         try {
-            if (this.levelData.contains("GameRules"))
-                rules.readNBT(this.levelData.getCompound("GameRules"));
+            if (this.levelData.contains("GameRules")) rules.readNBT(this.levelData.getCompound("GameRules"));
         } catch (Throwable ignore) {
             log.warn("Failed to load game rules for level: " + getName() + ", fall back to the default");
             rules = GameRules.getDefault();
@@ -324,7 +336,6 @@ public abstract class BaseLevelProvider implements LevelProvider {
                     lastRegion.set(null);
                     iter.remove();
                 }
-
             }
         }
     }
@@ -349,7 +360,8 @@ public abstract class BaseLevelProvider implements LevelProvider {
         File levelDataFile = new File(getPath(), "level.dat");
         try {
             Utils.safeWrite(levelDataFile, file -> {
-                try (FileOutputStream fos = new FileOutputStream(file); BufferedOutputStream out = new BufferedOutputStream(fos)) {
+                try (FileOutputStream fos = new FileOutputStream(file);
+                        BufferedOutputStream out = new BufferedOutputStream(fos)) {
                     NBTIO.writeGZIPCompressed(new CompoundTag().putCompound("Data", this.levelData), out);
                 } catch (IOException e) {
                     throw new UncheckedIOException(e);
@@ -404,8 +416,7 @@ public abstract class BaseLevelProvider implements LevelProvider {
         return this.getChunk(chunkX, chunkZ, false);
     }
 
-    @Nullable
-    protected final BaseFullChunk getThreadLastChunk() {
+    @Nullable protected final BaseFullChunk getThreadLastChunk() {
         var ref = lastChunk.get();
         if (ref == null) {
             return null;
@@ -493,7 +504,9 @@ public abstract class BaseLevelProvider implements LevelProvider {
     @Override
     public boolean isChunkGenerated(int chunkX, int chunkZ) {
         BaseRegionLoader region = this.getRegion(chunkX >> 5, chunkZ >> 5);
-        return region != null && region.chunkExists(chunkX - region.getX() * 32, chunkZ - region.getZ() * 32) && this.getChunk(chunkX - region.getX() * 32, chunkZ - region.getZ() * 32, true).isGenerated();
+        return region != null
+                && region.chunkExists(chunkX - region.getX() * 32, chunkZ - region.getZ() * 32)
+                && this.getChunk(chunkX - region.getX() * 32, chunkZ - region.getZ() * 32, true)
+                        .isGenerated();
     }
-
 }

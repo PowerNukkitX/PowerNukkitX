@@ -46,5 +46,4 @@ public class BlockOreRedstoneDeepslate extends BlockOreRedstone {
     public BlockState getUnlitState() {
         return BlockState.of(DEEPSLATE_REDSTONE_ORE);
     }
-
 }

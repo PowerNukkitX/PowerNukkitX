@@ -86,7 +86,6 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
         return new LinkedHashMap<>(this);
     }
 
-
     /**
      * Get new instance of config section
      *
@@ -172,7 +171,7 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
         return this.get(key, new ConfigSection());
     }
 
-    //@formatter:off
+    // @formatter:off
 
     /**
      * Get all ConfigSections in root path.
@@ -193,7 +192,7 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      *
      * @return
      */
-    //@formatter:on
+    // @formatter:on
     public ConfigSection getSections() {
         return getSections(null);
     }
@@ -209,8 +208,7 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
         ConfigSection parent = key == null || key.isEmpty() ? this.getAll() : getSection(key);
         if (parent == null) return sections;
         parent.forEach((key1, value) -> {
-            if (value instanceof ConfigSection)
-                sections.put(key1, value);
+            if (value instanceof ConfigSection) sections.put(key1, value);
         });
         return sections;
     }
@@ -448,7 +446,7 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
                 try {
                     result.add(Integer.valueOf((String) object));
                 } catch (Exception ex) {
-                    //ignore
+                    // ignore
                 }
             } else if (object instanceof Character) {
                 result.add((int) (Character) object);
@@ -504,7 +502,7 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
                 try {
                     result.add(Double.valueOf((String) object));
                 } catch (Exception ex) {
-                    //ignore
+                    // ignore
                 }
             } else if (object instanceof Character) {
                 result.add((double) (Character) object);
@@ -534,7 +532,7 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
                 try {
                     result.add(Float.valueOf((String) object));
                 } catch (Exception ex) {
-                    //ignore
+                    // ignore
                 }
             } else if (object instanceof Character) {
                 result.add((float) (Character) object);
@@ -564,7 +562,7 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
                 try {
                     result.add(Long.valueOf((String) object));
                 } catch (Exception ex) {
-                    //ignore
+                    // ignore
                 }
             } else if (object instanceof Character) {
                 result.add((long) (Character) object);
@@ -597,7 +595,7 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
                 try {
                     result.add(Byte.valueOf((String) object));
                 } catch (Exception ex) {
-                    //ignore
+                    // ignore
                 }
             } else if (object instanceof Character) {
                 result.add((byte) ((Character) object).charValue());
@@ -663,7 +661,7 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
                 try {
                     result.add(Short.valueOf((String) object));
                 } catch (Exception ex) {
-                    //ignore
+                    // ignore
                 }
             } else if (object instanceof Character) {
                 result.add((short) ((Character) object).charValue());
@@ -752,8 +750,7 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
         this.forEach((key, value) -> {
             keys.add(key);
             if (value instanceof ConfigSection) {
-                if (child)
-                    ((ConfigSection) value).getKeys(true).forEach(childKey -> keys.add(key + "." + childKey));
+                if (child) ((ConfigSection) value).getKeys(true).forEach(childKey -> keys.add(key + "." + childKey));
             }
         });
         return keys;

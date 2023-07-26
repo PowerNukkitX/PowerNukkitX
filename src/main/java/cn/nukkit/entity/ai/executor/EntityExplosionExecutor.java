@@ -1,5 +1,8 @@
 package cn.nukkit.entity.ai.executor;
 
+import static cn.nukkit.entity.Entity.DATA_FLAGS;
+import static cn.nukkit.entity.Entity.DATA_FLAG_IGNITED;
+
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -15,9 +18,6 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.level.particle.HugeExplodeSeedParticle;
 import org.jetbrains.annotations.Nullable;
 
-import static cn.nukkit.entity.Entity.DATA_FLAGS;
-import static cn.nukkit.entity.Entity.DATA_FLAG_IGNITED;
-
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public class EntityExplosionExecutor implements IBehaviorExecutor {
@@ -25,8 +25,8 @@ public class EntityExplosionExecutor implements IBehaviorExecutor {
     protected int explodeTime;
     protected int explodeForce;
     protected int currentTick = 0;
-    @Nullable
-    protected MemoryType<Boolean> flagMemory;
+
+    @Nullable protected MemoryType<Boolean> flagMemory;
 
     public EntityExplosionExecutor(int explodeTime, int explodeForce) {
         this(explodeTime, explodeForce, null);
@@ -40,7 +40,7 @@ public class EntityExplosionExecutor implements IBehaviorExecutor {
 
     @Override
     public boolean execute(EntityIntelligent entity) {
-        //check flag
+        // check flag
         if (flagMemory != null && entity.getMemoryStorage().compareDataTo(flagMemory, false)) {
             return false;
         }
@@ -70,7 +70,11 @@ public class EntityExplosionExecutor implements IBehaviorExecutor {
     }
 
     protected void explode(EntityIntelligent entity) {
-        EntityExplosionPrimeEvent ev = new EntityExplosionPrimeEvent(entity, entity instanceof EntityCreeper creeper ? creeper.isPowered() ? explodeForce * 2 : explodeForce : explodeForce);
+        EntityExplosionPrimeEvent ev = new EntityExplosionPrimeEvent(
+                entity,
+                entity instanceof EntityCreeper creeper
+                        ? creeper.isPowered() ? explodeForce * 2 : explodeForce
+                        : explodeForce);
 
         if (!entity.level.gameRules.getBoolean(GameRule.MOB_GRIEFING)) {
             ev.setBlockBreaking(false);

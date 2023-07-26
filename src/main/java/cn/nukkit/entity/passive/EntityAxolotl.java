@@ -32,7 +32,6 @@ public class EntityAxolotl extends EntityAnimal implements EntitySwimmable {
         super.initEntity();
     }
 
-
     @Override
     public String getOriginalName() {
         return "Axolotl";

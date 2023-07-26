@@ -1,7 +1,6 @@
 package cn.nukkit.network.protocol.types;
 
 public enum InputMode {
-
     UNDEFINED(0),
     MOUSE(1),
     TOUCH(2),

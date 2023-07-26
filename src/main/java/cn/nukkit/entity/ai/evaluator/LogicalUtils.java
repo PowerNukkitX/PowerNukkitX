@@ -2,9 +2,8 @@ package cn.nukkit.entity.ai.evaluator;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Set;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * 提供部分实用方法封装
@@ -30,6 +29,4 @@ public interface LogicalUtils {
     default IBehaviorEvaluator all(@NotNull IBehaviorEvaluator... evaluators) {
         return new AllMatchEvaluator(evaluators);
     }
-
-
 }

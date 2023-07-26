@@ -15,12 +15,11 @@ import cn.nukkit.level.Position;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.OptionalBoolean;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.concurrent.ThreadLocalRandom;
+import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Implements the main logic of all nether vines.
@@ -34,8 +33,7 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public BlockVinesNether() {
-    }
+    public BlockVinesNether() {}
 
     /**
      * Creates a nether vine from a meta compatible with {@link #getProperties()}.
@@ -54,8 +52,7 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public abstract BlockFace getGrowthDirection();
+    @NotNull public abstract BlockFace getGrowthDirection();
 
     /**
      * The current age of this block.
@@ -82,8 +79,8 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
     public abstract int getMaxVineAge();
 
     /**
-     * Changes the current vine age to a random new random age. 
-     * 
+     * Changes the current vine age to a random new random age.
+     *
      * @param pseudorandom If the the randomization should be pseudorandom.
      */
     @PowerNukkitOnly
@@ -93,20 +90,28 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
             setVineAge(ThreadLocalRandom.current().nextInt(getMaxVineAge()));
             return;
         }
-        
+
         double chance = 1.0D;
         int age;
 
         ThreadLocalRandom random = ThreadLocalRandom.current();
-        for(age = 0; random.nextDouble() < chance; ++age) {
+        for (age = 0; random.nextDouble() < chance; ++age) {
             chance *= 0.826D;
         }
-        
+
         setVineAge(age);
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
         Block support = getSide(getGrowthDirection().getOpposite());
         if (!isSupportValid(support)) {
             return false;
@@ -117,7 +122,7 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
         } else {
             randomizeVineAge(true);
         }
-        
+
         return super.place(item, block, target, face, fx, fy, fz, player);
     }
 
@@ -126,7 +131,8 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
         switch (type) {
             case Level.BLOCK_UPDATE_RANDOM:
                 int maxVineAge = getMaxVineAge();
-                if (getVineAge() < maxVineAge && ThreadLocalRandom.current().nextInt(10) == 0 
+                if (getVineAge() < maxVineAge
+                        && ThreadLocalRandom.current().nextInt(10) == 0
                         && findVineAge(true).orElse(maxVineAge) < maxVineAge) {
                     grow();
                 }
@@ -168,7 +174,7 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
         if (ev.isCancelled()) {
             return false;
         }
-        
+
         if (level.setBlock(pos, growing)) {
             increaseRootAge();
             return true;
@@ -177,10 +183,10 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
     }
 
     /**
-     * Grow a random amount of vines. 
+     * Grow a random amount of vines.
      * Calls {@link BlockGrowEvent} passing the positioned new state and the source block for each new vine being added
      * to the world, if one of the events gets cancelled the growth gets interrupted.
-     * @return How many vines grew 
+     * @return How many vines grew
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -217,7 +223,7 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
 
             grew++;
         }
-        
+
         if (grew > 0) {
             increaseRootAge();
         }
@@ -232,10 +238,9 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public OptionalInt findVineAge(boolean base) {
+    @NotNull public OptionalInt findVineAge(boolean base) {
         return findVineBlock(base)
-                .map(vine-> OptionalInt.of(vine.getVineAge()))
+                .map(vine -> OptionalInt.of(vine.getVineAge()))
                 .orElse(OptionalInt.empty());
     }
 
@@ -247,8 +252,7 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public Optional<BlockVinesNether> findVineBlock(boolean base) {
+    @NotNull public Optional<BlockVinesNether> findVineBlock(boolean base) {
         return findVine(base)
                 .map(Position::getLevelBlock)
                 .filter(BlockVinesNether.class::isInstance)
@@ -262,8 +266,7 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public Optional<Position> findVine(boolean base) {
+    @NotNull public Optional<Position> findVine(boolean base) {
         BlockFace supportFace = getGrowthDirection();
         if (base) {
             supportFace = supportFace.getOpposite();
@@ -271,7 +274,7 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
         Position result = getLocation();
         int id = getId();
         int limit = 256;
-        while (--limit > 0){
+        while (--limit > 0) {
             Position next = result.getSide(supportFace);
             if (next.getLevelBlockState().getBlockId() == id) {
                 result = next;
@@ -279,8 +282,8 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
                 break;
             }
         }
-        
-        return limit == -1? Optional.empty() : Optional.of(result);
+
+        return limit == -1 ? Optional.empty() : Optional.of(result);
     }
 
     /**
@@ -288,18 +291,17 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
      * @return <ul>
      *     <li>{@code EMPTY} if the base could not be reached or have an invalid instance type
      *     <li>{@code TRUE} if the base was changed successfully
-     *     <li>{@code FALSE} if the base was already in the max age or the block change was refused 
+     *     <li>{@code FALSE} if the base was already in the max age or the block change was refused
      *     </ul>
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    public OptionalBoolean increaseRootAge() {
+    @NotNull public OptionalBoolean increaseRootAge() {
         Block base = findVine(true).map(Position::getLevelBlock).orElse(null);
         if (!(base instanceof BlockVinesNether)) {
             return OptionalBoolean.EMPTY;
         }
-        
+
         BlockVinesNether baseVine = (BlockVinesNether) base;
         int vineAge = baseVine.getVineAge();
         if (vineAge < baseVine.getMaxVineAge()) {
@@ -308,7 +310,7 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
                 return OptionalBoolean.TRUE;
             }
         }
-        
+
         return OptionalBoolean.FALSE;
     }
 
@@ -324,29 +326,29 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
         if (player != null && !player.isCreative()) {
             item.count--;
         }
-        
+
         return true;
     }
 
     @Override
     public Item[] getDrops(Item item) {
-        // They have a 33% (3/9) chance to drop a single weeping vine when broken, 
-        // increased to 55% (5/9) with Fortune I, 
-        // 77% (7/9) with Fortune II, 
-        // and 100% with Fortune III. 
-        // 
+        // They have a 33% (3/9) chance to drop a single weeping vine when broken,
+        // increased to 55% (5/9) with Fortune I,
+        // 77% (7/9) with Fortune II,
+        // and 100% with Fortune III.
+        //
         // They always drop a single weeping vine when broken with shears or a tool enchanted with Silk Touch.
 
         int enchantmentLevel;
         if (item.isShears() || (enchantmentLevel = item.getEnchantmentLevel(Enchantment.ID_FORTUNE_DIGGING)) >= 3) {
-            return new Item[]{ toItem() };
+            return new Item[] {toItem()};
         }
-        
+
         int chance = 3 + enchantmentLevel * 2;
         if (ThreadLocalRandom.current().nextInt(9) < chance) {
-            return new Item[]{ toItem() };
+            return new Item[] {toItem()};
         }
-        
+
         return Item.EMPTY_ARRAY;
     }
 
@@ -399,27 +401,27 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
 
     @Override
     public double getMinX() {
-        return x+ (4/16.0);
+        return x + (4 / 16.0);
     }
 
     @Override
     public double getMinZ() {
-        return z+ (4/16.0);
+        return z + (4 / 16.0);
     }
 
     @Override
     public double getMaxX() {
-        return x+ (12/16.0);
+        return x + (12 / 16.0);
     }
 
     @Override
     public double getMaxZ() {
-        return z+ (12/16.0);
+        return z + (12 / 16.0);
     }
 
     @Override
     public double getMaxY() {
-        return y+ (15/16.0);
+        return y + (15 / 16.0);
     }
 
     @Override
@@ -429,7 +431,7 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
 
     @Override
     @PowerNukkitOnly
-    public  boolean sticksToPiston() {
+    public boolean sticksToPiston() {
         return false;
     }
 
@@ -448,6 +450,7 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
     public boolean canSilkTouch() {
         return true;
     }
+
     @Override
     public BlockVinesNether clone() {
         return (BlockVinesNether) super.clone();

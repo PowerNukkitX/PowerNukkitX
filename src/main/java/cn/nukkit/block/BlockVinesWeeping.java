@@ -20,8 +20,7 @@ public class BlockVinesWeeping extends BlockVinesNether {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final IntBlockProperty WEEPING_VINES_AGE = new IntBlockProperty(
-            "weeping_vines_age", false, 25);
+    public static final IntBlockProperty WEEPING_VINES_AGE = new IntBlockProperty("weeping_vines_age", false, 25);
 
     /**
      * Holds the {@code weeping_vines} block property definitions.
@@ -35,8 +34,7 @@ public class BlockVinesWeeping extends BlockVinesNether {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public BlockVinesWeeping() {
-    }
+    public BlockVinesWeeping() {}
 
     /**
      * Creates a {@code weeping_vine} from a meta compatible with {@link #getProperties()}.
@@ -50,8 +48,7 @@ public class BlockVinesWeeping extends BlockVinesNether {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -66,8 +63,7 @@ public class BlockVinesWeeping extends BlockVinesNether {
         return "Weeping Vines";
     }
 
-    @NotNull
-    @Since("1.4.0.0-PN")
+    @NotNull @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     @Override
     public BlockFace getGrowthDirection() {
@@ -94,5 +90,4 @@ public class BlockVinesWeeping extends BlockVinesNether {
     public int getMaxVineAge() {
         return WEEPING_VINES_AGE.getMaxValue();
     }
-
 }

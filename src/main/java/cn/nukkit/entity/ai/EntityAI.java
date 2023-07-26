@@ -2,7 +2,6 @@ package cn.nukkit.entity.ai;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -12,11 +11,13 @@ import java.util.Set;
 @PowerNukkitXOnly
 @Since("1.19.50-r1")
 public final class EntityAI {
-    private static long routeParticleSpawnInterval = 500;//ms
+    private static long routeParticleSpawnInterval = 500; // ms
 
     private static final Set<DebugOption> debugOptions = EnumSet.noneOf(DebugOption.class);
 
-    private EntityAI() {/*不能实例化*/}
+    private EntityAI() {
+        /*不能实例化*/
+    }
 
     public static void setDebugOption(DebugOption option, boolean open) {
         if (open) debugOptions.add(option);

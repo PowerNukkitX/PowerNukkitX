@@ -25,10 +25,6 @@ import io.netty.buffer.AbstractByteBufAllocator;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.util.internal.EmptyArrays;
-import lombok.SneakyThrows;
-import lombok.extern.log4j.Log4j2;
-import lombok.val;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.lang.reflect.Array;
@@ -38,6 +34,9 @@ import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import lombok.SneakyThrows;
+import lombok.extern.log4j.Log4j2;
+import lombok.val;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -227,7 +226,7 @@ public class BinaryStream {
     }
 
     public void putByte(byte b) {
-        this.put(new byte[]{b});
+        this.put(new byte[] {b});
     }
 
     /**
@@ -421,12 +420,12 @@ public class BinaryStream {
             }
         }
 
-        //instance item
+        // instance item
         if (getBoolean()) { // hasNetId
             getVarInt(); // netId
         }
 
-        int blockRuntimeId = getVarInt();//blockDefinition
+        int blockRuntimeId = getVarInt(); // blockDefinition
         if (id != null && id <= 255 && id != FALLBACK_ID) {
             BlockState blockStateByRuntimeId = BlockStateRegistry.getBlockStateByRuntimeId(blockRuntimeId);
             if (blockStateByRuntimeId != null) {
@@ -570,17 +569,19 @@ public class BinaryStream {
         if (tag == null) {
             tag = new CompoundTag();
         }
-        tag.putCompound("PowerNukkitUnknown", new CompoundTag()
-                .putInt("OriginalItemId", item.getId())
-                .putInt("OriginalMeta", item.getDamage())
-                .putBoolean("HasCustomName", item.hasCustomName())
-                .putBoolean("HasDisplayTag", tag.contains("display"))
-                .putBoolean("HasCompound", hasCompound)
-                .putString("OriginalCustomName", item.getCustomName()));
+        tag.putCompound(
+                "PowerNukkitUnknown",
+                new CompoundTag()
+                        .putInt("OriginalItemId", item.getId())
+                        .putInt("OriginalMeta", item.getDamage())
+                        .putBoolean("HasCustomName", item.hasCustomName())
+                        .putBoolean("HasDisplayTag", tag.contains("display"))
+                        .putBoolean("HasCompound", hasCompound)
+                        .putString("OriginalCustomName", item.getCustomName()));
 
         fallback.setNamedTag(tag);
-        String suffix = "" + TextFormat.RESET + TextFormat.GRAY + TextFormat.ITALIC +
-                " (" + item.getId() + ":" + item.getDamage() + ")";
+        String suffix = "" + TextFormat.RESET + TextFormat.GRAY + TextFormat.ITALIC + " (" + item.getId() + ":"
+                + item.getDamage() + ")";
         if (fallback.hasCustomName()) {
             fallback.setCustomName(fallback.getCustomName() + suffix);
         } else {
@@ -609,27 +610,30 @@ public class BinaryStream {
             item = createFakeUnknownItem(item);
             networkId = RuntimeItems.getRuntimeMapping().getNetworkId(item);
         }
-        putVarInt(networkId);//write runtimeId
-        putLShort(item.getCount());//write item count
+        putVarInt(networkId); // write runtimeId
+        putLShort(item.getCount()); // write item count
 
         int legacyData = 0;
         if (item.getId() > 256) { // Not a block
-            //不是item_mappings.json中的物品才会写入damage值，因为item_mappings.json的作用是将旧的物品id:damage转换到最新的无damage值的物品
-            if (item instanceof ItemDurable || !RuntimeItems.getRuntimeMapping().toRuntime(item.getId(), item.getDamage()).hasDamage()) {
+            // 不是item_mappings.json中的物品才会写入damage值，因为item_mappings.json的作用是将旧的物品id:damage转换到最新的无damage值的物品
+            if (item instanceof ItemDurable
+                    || !RuntimeItems.getRuntimeMapping()
+                            .toRuntime(item.getId(), item.getDamage())
+                            .hasDamage()) {
                 legacyData = item.getDamage();
             }
         } else if (item instanceof StringItem) {
             legacyData = item.getDamage();
         }
 
-        putUnsignedVarInt(legacyData);//write damage value
+        putUnsignedVarInt(legacyData); // write damage value
 
         if (!instanceItem) {
             putBoolean(true); // hasNetId
             putVarInt(0); // netId
         }
 
-        Block block = item.getBlockUnsafe();//write blockDefinition
+        Block block = item.getBlockUnsafe(); // write blockDefinition
         int blockRuntimeId = block == null ? 0 : block.getRuntimeId();
         putVarInt(blockRuntimeId);
 
@@ -663,20 +667,20 @@ public class BinaryStream {
                 userDataBuf.writeShortLE(0);
             }
 
-            List<String> canPlaceOn = extractStringList(item, "CanPlaceOn");//write canPlace
+            List<String> canPlaceOn = extractStringList(item, "CanPlaceOn"); // write canPlace
             stream.writeInt(canPlaceOn.size());
             for (String string : canPlaceOn) {
                 stream.writeUTF(string);
             }
 
-            List<String> canDestroy = extractStringList(item, "CanDestroy");//write canBreak
+            List<String> canDestroy = extractStringList(item, "CanDestroy"); // write canBreak
             stream.writeInt(canDestroy.size());
             for (String string : canDestroy) {
                 stream.writeUTF(string);
             }
 
             if (item.getId() == ItemID.SHIELD) {
-                stream.writeLong(0);//BlockingTicks
+                stream.writeLong(0); // BlockingTicks
             }
 
             byte[] bytes = new byte[userDataBuf.readableBytes()];
@@ -711,7 +715,10 @@ public class BinaryStream {
     }
 
     @Deprecated
-    @DeprecationDetails(since = "1.19.50-r2", reason = "Support more types of recipe input", replaceWith = "putRecipeIngredient(ItemDescriptor itemDescriptor)")
+    @DeprecationDetails(
+            since = "1.19.50-r2",
+            reason = "Support more types of recipe input",
+            replaceWith = "putRecipeIngredient(ItemDescriptor itemDescriptor)")
     public void putRecipeIngredient(Item ingredient) {
         if (ingredient == null || ingredient.getId() == 0) {
             this.putBoolean(false); // isValid? - false
@@ -722,7 +729,9 @@ public class BinaryStream {
 
         int networkId = RuntimeItems.getRuntimeMapping().getNetworkId(ingredient);
         int damage = ingredient.hasMeta() ? ingredient.getDamage() : 0x7fff;
-        if (RuntimeItems.getRuntimeMapping().toRuntime(ingredient.getId(), ingredient.getDamage()).hasDamage()) {
+        if (RuntimeItems.getRuntimeMapping()
+                .toRuntime(ingredient.getId(), ingredient.getDamage())
+                .hasDamage()) {
             damage = 0;
         }
 
@@ -746,7 +755,9 @@ public class BinaryStream {
                 }
                 int networkId = RuntimeItems.getRuntimeMapping().getNetworkId(ingredient);
                 int damage = ingredient.hasMeta() ? ingredient.getDamage() : 0x7fff;
-                if (RuntimeItems.getRuntimeMapping().toRuntime(ingredient.getId(), ingredient.getDamage()).hasDamage()) {
+                if (RuntimeItems.getRuntimeMapping()
+                        .toRuntime(ingredient.getId(), ingredient.getDamage())
+                        .hasDamage()) {
                     damage = 0;
                 }
                 this.putLShort(networkId);
@@ -766,8 +777,8 @@ public class BinaryStream {
                 this.putString(deferredDescriptor.getFullName());
                 this.putLShort(deferredDescriptor.getAuxValue());
             }
-            /*case INVALID -> {
-            }*/
+                /*case INVALID -> {
+                }*/
         }
 
         this.putVarInt(itemDescriptor.getCount());
@@ -962,13 +973,7 @@ public class BinaryStream {
     }
 
     public EntityLink getEntityLink() {
-        return new EntityLink(
-                getEntityUniqueId(),
-                getEntityUniqueId(),
-                (byte) getByte(),
-                getBoolean(),
-                getBoolean()
-        );
+        return new EntityLink(getEntityUniqueId(), getEntityUniqueId(), (byte) getByte(), getBoolean(), getBoolean());
     }
 
     @PowerNukkitOnly
@@ -1064,8 +1069,6 @@ public class BinaryStream {
         if (minCapacity < 0) { // overflow
             throw new OutOfMemoryError();
         }
-        return (minCapacity > MAX_ARRAY_SIZE) ?
-                Integer.MAX_VALUE :
-                MAX_ARRAY_SIZE;
+        return (minCapacity > MAX_ARRAY_SIZE) ? Integer.MAX_VALUE : MAX_ARRAY_SIZE;
     }
 }

@@ -28,7 +28,8 @@ public record PNXServerWorld(TerraGenerator generatorWrapper, ChunkManager manag
     @Override
     public Entity spawnEntity(double v, double v1, double v2, EntityType entityType) {
         String identifier = (String) entityType.getHandle();
-        cn.nukkit.entity.Entity nukkitEntity = cn.nukkit.entity.Entity.createEntity(identifier, new Position(v, v1, v2, generatorWrapper.getLevel()));
+        cn.nukkit.entity.Entity nukkitEntity =
+                cn.nukkit.entity.Entity.createEntity(identifier, new Position(v, v1, v2, generatorWrapper.getLevel()));
         return new PNXEntity(nukkitEntity, this);
     }
 

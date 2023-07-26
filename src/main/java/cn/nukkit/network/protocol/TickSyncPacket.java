@@ -17,22 +17,22 @@ public class TickSyncPacket extends DataPacket {
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
     public static final byte NETWORK_ID = ProtocolInfo.TICK_SYNC_PACKET;
-    
+
     private long requestTimestamp;
-    
+
     private long responseTimestamp;
-    
+
     @Override
     public byte pid() {
         return NETWORK_ID;
     }
-    
+
     @Override
     public void decode() {
         this.requestTimestamp = this.getLLong();
         this.responseTimestamp = this.getLLong();
     }
-    
+
     @Override
     public void encode() {
         this.reset();

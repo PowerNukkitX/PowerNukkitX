@@ -6,7 +6,13 @@ import cn.nukkit.api.Since;
 @PowerNukkitOnly
 @Since("1.5.0.0-PN")
 public enum SeaGrassType {
-    @PowerNukkitOnly @Since("1.5.0.0-PN") DEFAULT,
-    @PowerNukkitOnly @Since("1.5.0.0-PN") DOUBLE_TOP,
-    @PowerNukkitOnly @Since("1.5.0.0-PN") DOUBLE_BOT
+    @PowerNukkitOnly
+    @Since("1.5.0.0-PN")
+    DEFAULT,
+    @PowerNukkitOnly
+    @Since("1.5.0.0-PN")
+    DOUBLE_TOP,
+    @PowerNukkitOnly
+    @Since("1.5.0.0-PN")
+    DOUBLE_BOT
 }

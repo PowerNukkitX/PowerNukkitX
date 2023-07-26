@@ -10,7 +10,6 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.PlaySoundPacket;
 import cn.nukkit.network.protocol.StopSoundPacket;
-
 import java.util.Objects;
 
 /**
@@ -63,7 +62,7 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
         }
     }
 
-    //TODO: Transfer the stop sound to the new sound method
+    // TODO: Transfer the stop sound to the new sound method
     public void stop() {
         if (this.recordItem instanceof ItemRecord itemRecord) {
             StopSoundPacket packet = new StopSoundPacket();
@@ -89,8 +88,7 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
 
     @Override
     public CompoundTag getSpawnCompound() {
-        return getDefaultCompound(this, JUKEBOX)
-                .putCompound("RecordItem", NBTIO.putItemHelper(this.recordItem));
+        return getDefaultCompound(this, JUKEBOX).putCompound("RecordItem", NBTIO.putItemHelper(this.recordItem));
     }
 
     @Override

@@ -12,7 +12,6 @@ import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.level.GlobalBlockPalette;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
-
 import java.util.Map;
 import java.util.NoSuchElementException;
 
@@ -24,17 +23,18 @@ public class TestForBlockCommand extends VanillaCommand {
         super(name, "commands.testforblock.description");
         this.setPermission("nukkit.command.testforblock");
         this.getCommandParameters().clear();
-        this.addCommandParameters("default", new CommandParameter[]{
-                CommandParameter.newType("position", false, CommandParamType.BLOCK_POSITION),
-                CommandParameter.newEnum("tileName", false, CommandEnum.ENUM_BLOCK),
-                CommandParameter.newType("dataValue", true, CommandParamType.INT)
+        this.addCommandParameters("default", new CommandParameter[] {
+            CommandParameter.newType("position", false, CommandParamType.BLOCK_POSITION),
+            CommandParameter.newEnum("tileName", false, CommandEnum.ENUM_BLOCK),
+            CommandParameter.newType("dataValue", true, CommandParamType.INT)
         });
         this.enableParamTree();
     }
 
     @Since("1.19.60-r1")
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+    public int execute(
+            CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         Position position = list.getResult(0);
         Block tileName = list.getResult(1);
@@ -62,10 +62,21 @@ public class TestForBlockCommand extends VanillaCommand {
         int meta = block.getDamage();
 
         if (id == tileId && meta == dataValue) {
-            log.addSuccess("commands.testforblock.success", String.valueOf(position.getFloorX()), String.valueOf(position.getFloorY()), String.valueOf(position.getFloorZ())).output();
+            log.addSuccess(
+                            "commands.testforblock.success",
+                            String.valueOf(position.getFloorX()),
+                            String.valueOf(position.getFloorY()),
+                            String.valueOf(position.getFloorZ()))
+                    .output();
             return 1;
         } else {
-            log.addError("commands.testforblock.failed.tile", String.valueOf(position.getFloorX()), String.valueOf(position.getFloorY()), String.valueOf(position.getFloorZ()), String.valueOf(id), String.valueOf(tileId))
+            log.addError(
+                            "commands.testforblock.failed.tile",
+                            String.valueOf(position.getFloorX()),
+                            String.valueOf(position.getFloorY()),
+                            String.valueOf(position.getFloorZ()),
+                            String.valueOf(id),
+                            String.valueOf(tileId))
                     .output();
             return 0;
         }

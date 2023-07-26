@@ -7,7 +7,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.generator.populator.impl.structure.utils.loot.RandomizableContainer;
 import com.google.common.collect.Maps;
 
-//\\ ./data/behavior_packs/vanilla/loot_tables/chests/abandoned_mineshaft.json
+// \\ ./data/behavior_packs/vanilla/loot_tables/chests/abandoned_mineshaft.json
 
 @PowerNukkitXOnly
 @Since("1.19.21-r2")
@@ -22,7 +22,7 @@ public class MineshaftChest extends RandomizableContainer {
                 .register(new ItemEntry(Item.GOLDEN_APPLE, 20))
                 .register(new ItemEntry(Item.GOLDEN_APPLE_ENCHANTED, 1))
                 .register(new ItemEntry(Item.NAME_TAG, 30))
-                .register(new ItemEntry(Item.ENCHANTED_BOOK, 10)) //TODO: enchant_randomly
+                .register(new ItemEntry(Item.ENCHANTED_BOOK, 10)) // TODO: enchant_randomly
                 .register(new ItemEntry(Item.IRON_PICKAXE, 5))
                 .register(new ItemEntry(Item.AIR, 5));
         this.pools.put(pool1.build(), new RollEntry(1, pool1.getTotalWeight()));

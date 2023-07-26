@@ -1,12 +1,12 @@
 package cn.nukkit.api;
 
+import static cn.nukkit.api.API.Definition.UNIVERSAL;
+import static cn.nukkit.api.API.Usage.BLEEDING;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import static cn.nukkit.api.API.Definition.UNIVERSAL;
-import static cn.nukkit.api.API.Usage.BLEEDING;
 
 /**
  * Describes an API element.

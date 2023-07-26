@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.GROUND_SIGN_DIRECTION;
+
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
@@ -20,12 +22,9 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Faceable;
+import javax.annotation.Nullable;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
-
-import static cn.nukkit.blockproperty.CommonBlockProperties.GROUND_SIGN_DIRECTION;
 
 /**
  * @author PetteriM1
@@ -48,24 +47,21 @@ public class BlockBanner extends BlockTransparentMeta implements Faceable, Block
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return BlockSignPost.PROPERTIES;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @NotNull
-    @Override
+    @NotNull @Override
     public String getBlockEntityType() {
         return BlockEntity.BANNER;
     }
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public Class<? extends BlockEntityBanner> getBlockEntityClass() {
         return BlockEntityBanner.class;
     }
@@ -107,7 +103,15 @@ public class BlockBanner extends BlockTransparentMeta implements Faceable, Block
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            @Nullable Player player) {
         if (face == BlockFace.DOWN) {
             return false;
         }
@@ -117,8 +121,7 @@ public class BlockBanner extends BlockTransparentMeta implements Faceable, Block
 
         if (face == BlockFace.UP) {
             CompassRoseDirection direction = GROUND_SIGN_DIRECTION.getValueForMeta(
-                    (int) Math.floor((((player != null ? player.yaw : 0) + 180) * 16 / 360) + 0.5) & 0x0f
-            );
+                    (int) Math.floor((((player != null ? player.yaw : 0) + 180) * 16 / 360) + 0.5) & 0x0f);
             setDirection(direction);
             if (!this.getLevel().setBlock(block, this, true)) {
                 return false;
@@ -131,8 +134,8 @@ public class BlockBanner extends BlockTransparentMeta implements Faceable, Block
             }
         }
 
-        CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.BANNER)
-                .putInt("Base", item.getDamage() & 0xf);
+        CompoundTag nbt =
+                BlockEntity.getDefaultCompound(this, BlockEntity.BANNER).putInt("Base", item.getDamage() & 0xf);
 
         Tag type = item.getNamedTagEntry("Type");
         if (type instanceof IntTag) {
@@ -175,13 +178,11 @@ public class BlockBanner extends BlockTransparentMeta implements Faceable, Block
             item.setDamage(banner.getBaseColor() & 0xf);
             int type = banner.namedTag.getInt("Type");
             if (type > 0) {
-                item.setNamedTag((item.hasCompoundTag() ? item.getNamedTag() : new CompoundTag())
-                        .putInt("Type", type));
+                item.setNamedTag((item.hasCompoundTag() ? item.getNamedTag() : new CompoundTag()).putInt("Type", type));
             }
             ListTag<CompoundTag> patterns = banner.namedTag.getList("Patterns", CompoundTag.class);
             if (patterns.size() > 0) {
-                item.setNamedTag((item.hasCompoundTag() ? item.getNamedTag() : new CompoundTag())
-                        .putList(patterns));
+                item.setNamedTag((item.hasCompoundTag() ? item.getNamedTag() : new CompoundTag()).putList(patterns));
             }
         }
         return item;
@@ -199,7 +200,9 @@ public class BlockBanner extends BlockTransparentMeta implements Faceable, Block
         setPropertyValue(GROUND_SIGN_DIRECTION, direction);
     }
 
-    @PowerNukkitDifference(info = "Was returning the wrong face, it now return the closest face, or the left face if even", since = "1.4.0.0-PN")
+    @PowerNukkitDifference(
+            info = "Was returning the wrong face, it now return the closest face, or the left face if even",
+            since = "1.4.0.0-PN")
     @Override
     public BlockFace getBlockFace() {
         return getDirection().getClosestBlockFace();

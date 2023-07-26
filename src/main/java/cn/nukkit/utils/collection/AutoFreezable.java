@@ -38,6 +38,11 @@ public interface AutoFreezable {
     void thaw();
 
     enum FreezeStatus {
-        NONE, FREEZING, FREEZE, DEEP_FREEZING, DEEP_FREEZE, THAWING
+        NONE,
+        FREEZING,
+        FREEZE,
+        DEEP_FREEZING,
+        DEEP_FREEZE,
+        THAWING
     }
 }

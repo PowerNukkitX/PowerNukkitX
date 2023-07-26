@@ -18,12 +18,12 @@ public class BlockHyphaeCrimson extends BlockStem {
     public BlockHyphaeCrimson(int meta) {
         super(meta);
     }
-    
+
     @Override
     public int getId() {
         return CRIMSON_HYPHAE;
     }
-    
+
     @Override
     public String getName() {
         return "Crimson Hyphae";
@@ -39,5 +39,4 @@ public class BlockHyphaeCrimson extends BlockStem {
     public double getHardness() {
         return 0.3;
     }
-
 }

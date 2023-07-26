@@ -7,10 +7,9 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.item.StringItem;
 import it.unimi.dsi.fastutil.objects.Object2IntAVLTreeMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Map;
 import java.util.TreeMap;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author MagicDroidX (Nukkit Project)

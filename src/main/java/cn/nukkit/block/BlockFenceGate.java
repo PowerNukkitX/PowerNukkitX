@@ -1,5 +1,8 @@
 package cn.nukkit.block;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
+import static cn.nukkit.blockproperty.CommonBlockProperties.OPEN;
+
 import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
@@ -19,14 +22,10 @@ import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-
-import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
-import static cn.nukkit.blockproperty.CommonBlockProperties.OPEN;
+import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author xtypr
@@ -63,8 +62,7 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
@@ -147,10 +145,20 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
         return this.z + offMaxZ[getOffsetIndex()];
     }
 
-    @PowerNukkitDifference(info = "InWall property is now properly set, returns false if setBlock fails", since = "1.4.0.0-PN")
+    @PowerNukkitDifference(
+            info = "InWall property is now properly set, returns false if setBlock fails",
+            since = "1.4.0.0-PN")
     @PowerNukkitDifference(info = "Open door if redstone signal is detected.", since = "1.4.0.0-PN")
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
         BlockFace direction = player.getDirection();
         setBlockFace(direction);
 
@@ -166,7 +174,7 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
         if (level.getServer().isRedstoneEnabled() && !this.isOpen() && this.isGettingPower()) {
             this.setOpen(null, true);
         }
-        
+
         return true;
     }
 
@@ -177,8 +185,7 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
 
     @PowerNukkitDifference(info = "Just call the #setOpen() method.", since = "1.4.0.0-PN")
     public boolean toggle(Player player) {
-        if (!player.getAdventureSettings().get(AdventureSettings.Type.DOORS_AND_SWITCHED))
-            return false;
+        if (!player.getAdventureSettings().get(AdventureSettings.Type.DOORS_AND_SWITCHED)) return false;
         return this.setOpen(player, !this.isOpen());
     }
 
@@ -200,9 +207,8 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
 
         BlockFace direction;
 
-
         BlockFace originDirection = getBlockFace();
-        
+
         if (player != null) {
             double yaw = player.yaw;
             double rotation = (yaw - 90) % 360;
@@ -231,7 +237,7 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
                 direction = BlockFace.WEST;
             }
         }
-        
+
         setBlockFace(direction);
         toggleBooleanProperty(OPEN);
         this.level.setBlock(this, this, false, false);
@@ -243,7 +249,9 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
         playOpenCloseSound();
 
         var source = this.clone().add(0.5, 0.5, 0.5);
-        VibrationEvent vibrationEvent = open ? new VibrationEvent(player != null ? player : this, source, VibrationType.BLOCK_OPEN) : new VibrationEvent(player != null ? player : this, source, VibrationType.BLOCK_CLOSE);
+        VibrationEvent vibrationEvent = open
+                ? new VibrationEvent(player != null ? player : this, source, VibrationType.BLOCK_OPEN)
+                : new VibrationEvent(player != null ? player : this, source, VibrationType.BLOCK_CLOSE);
         this.level.getVibrationManager().callVibrationEvent(vibrationEvent);
         return true;
     }
@@ -273,7 +281,7 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
     public boolean isOpen() {
         return getBooleanValue(OPEN);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void setOpen(boolean open) {
@@ -285,7 +293,8 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             BlockFace face = getBlockFace();
-            boolean touchingWall = getSide(face.rotateY()) instanceof BlockWallBase || getSide(face.rotateYCCW()) instanceof BlockWallBase;
+            boolean touchingWall = getSide(face.rotateY()) instanceof BlockWallBase
+                    || getSide(face.rotateYCCW()) instanceof BlockWallBase;
             if (touchingWall != isInWall()) {
                 this.setInWall(touchingWall);
                 level.setBlock(this, this, true);
@@ -303,7 +312,9 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
     private void onRedstoneUpdate() {
         if ((this.isOpen() != this.isGettingPower()) && !this.getManualOverride()) {
             if (this.isOpen() != this.isGettingPower()) {
-                level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, this.isOpen() ? 15 : 0, this.isOpen() ? 0 : 15));
+                level.getServer()
+                        .getPluginManager()
+                        .callEvent(new BlockRedstoneEvent(this, this.isOpen() ? 15 : 0, this.isOpen() ? 0 : 15));
 
                 this.setOpen(null, this.isGettingPower());
             }
@@ -339,18 +350,18 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
     public boolean isInWall() {
         return getBooleanValue(IN_WALL);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void setInWall(boolean inWall) {
         setBooleanValue(IN_WALL, inWall);
     }
-    
+
     @Override
     public BlockFace getBlockFace() {
         return getPropertyValue(DIRECTION);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Override

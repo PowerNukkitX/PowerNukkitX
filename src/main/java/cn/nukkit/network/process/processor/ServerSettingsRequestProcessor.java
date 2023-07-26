@@ -6,14 +6,14 @@ import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.ServerSettingsRequestPacket;
 import cn.nukkit.network.protocol.ServerSettingsResponsePacket;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.HashMap;
+import org.jetbrains.annotations.NotNull;
 
 public class ServerSettingsRequestProcessor extends DataPacketProcessor<ServerSettingsRequestPacket> {
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull ServerSettingsRequestPacket pk) {
-        PlayerServerSettingsRequestEvent settingsRequestEvent = new PlayerServerSettingsRequestEvent(playerHandle.player, new HashMap<>(playerHandle.getServerSettings()));
+        PlayerServerSettingsRequestEvent settingsRequestEvent = new PlayerServerSettingsRequestEvent(
+                playerHandle.player, new HashMap<>(playerHandle.getServerSettings()));
         playerHandle.player.getServer().getPluginManager().callEvent(settingsRequestEvent);
 
         if (!settingsRequestEvent.isCancelled()) {

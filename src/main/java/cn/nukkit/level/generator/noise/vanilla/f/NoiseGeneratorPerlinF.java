@@ -27,11 +27,37 @@ public class NoiseGeneratorPerlinF {
         return d0;
     }
 
-    public float[] getRegion(float[] p_151599_1_, float p_151599_2_, float p_151599_4_, int p_151599_6_, int p_151599_7_, float p_151599_8_, float p_151599_10_, float p_151599_12_) {
-        return this.getRegion(p_151599_1_, p_151599_2_, p_151599_4_, p_151599_6_, p_151599_7_, p_151599_8_, p_151599_10_, p_151599_12_, 0.5f);
+    public float[] getRegion(
+            float[] p_151599_1_,
+            float p_151599_2_,
+            float p_151599_4_,
+            int p_151599_6_,
+            int p_151599_7_,
+            float p_151599_8_,
+            float p_151599_10_,
+            float p_151599_12_) {
+        return this.getRegion(
+                p_151599_1_,
+                p_151599_2_,
+                p_151599_4_,
+                p_151599_6_,
+                p_151599_7_,
+                p_151599_8_,
+                p_151599_10_,
+                p_151599_12_,
+                0.5f);
     }
 
-    public float[] getRegion(float[] p_151600_1_, float p_151600_2_, float p_151600_4_, int p_151600_6_, int p_151600_7_, float p_151600_8_, float p_151600_10_, float p_151600_12_, float p_151600_14_) {
+    public float[] getRegion(
+            float[] p_151600_1_,
+            float p_151600_2_,
+            float p_151600_4_,
+            int p_151600_6_,
+            int p_151600_7_,
+            float p_151600_8_,
+            float p_151600_10_,
+            float p_151600_12_,
+            float p_151600_14_) {
         if (p_151600_1_ != null && p_151600_1_.length >= p_151600_6_ * p_151600_7_) {
             for (int i = 0; i < p_151600_1_.length; ++i) {
                 p_151600_1_[i] = 0.0f;
@@ -44,7 +70,15 @@ public class NoiseGeneratorPerlinF {
         float d0 = 1.0f;
 
         for (int j = 0; j < this.levels; ++j) {
-            this.noiseLevels[j].add(p_151600_1_, p_151600_2_, p_151600_4_, p_151600_6_, p_151600_7_, p_151600_8_ * d0 * d1, p_151600_10_ * d0 * d1, 0.55f / d1);
+            this.noiseLevels[j].add(
+                    p_151600_1_,
+                    p_151600_2_,
+                    p_151600_4_,
+                    p_151600_6_,
+                    p_151600_7_,
+                    p_151600_8_ * d0 * d1,
+                    p_151600_10_ * d0 * d1,
+                    0.55f / d1);
             d0 *= p_151600_12_;
             d1 *= p_151600_14_;
         }

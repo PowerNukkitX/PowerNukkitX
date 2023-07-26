@@ -1,6 +1,9 @@
 package cn.nukkit.entity.item;
 
-import cn.nukkit.Server;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockFallable;
@@ -8,7 +11,6 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.passive.EntityPig;
-import cn.nukkit.event.entity.EntityDamageByBlockEvent;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.SimpleAxisAlignedBB;
@@ -19,10 +21,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.powernukkit.tests.api.MockLevel;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 /**
  * @author joserobjr
@@ -68,14 +66,15 @@ class EntityFallingBlockTest {
 
     @Test
     void sandFall() {
-        Entity pig = Entity.createEntity(EntityPig.NETWORK_ID, level.getChunk(0, 0), Entity.getDefaultNBT(new Vector3(0, 64, 0)));
+        Entity pig = Entity.createEntity(
+                EntityPig.NETWORK_ID, level.getChunk(0, 0), Entity.getDefaultNBT(new Vector3(0, 64, 0)));
         assertNotNull(pig);
         fallingBlock.highestPosition = 255;
         fallingBlock.lastY = 255;
         fallingBlock.setPosition(new Vector3(0, 65, 0));
         fallingBlock.setMotion(new Vector3(0, -1, 0));
-        lenient().doReturn(new Entity[]{pig}).when(level).getCollidingEntities(any(), same(fallingBlock));
-        doReturn(new AxisAlignedBB[]{new SimpleAxisAlignedBB(0, 63, 0, 1, 64, 1)})
+        lenient().doReturn(new Entity[] {pig}).when(level).getCollidingEntities(any(), same(fallingBlock));
+        doReturn(new AxisAlignedBB[] {new SimpleAxisAlignedBB(0, 63, 0, 1, 64, 1)})
                 .when(fallingBlock.getLevel())
                 .getCollisionCubes(same(fallingBlock), any(), eq(false));
         fallingBlock.onUpdate(fallingBlock.lastUpdate + 1);
@@ -84,6 +83,7 @@ class EntityFallingBlockTest {
 
     static class TestBlock extends BlockFallable {
         private final int id;
+
         public TestBlock(int id, int x, int y, int z, Level level) {
             this.id = id;
             this.x = x;

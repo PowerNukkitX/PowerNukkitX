@@ -1,11 +1,10 @@
 package cn.nukkit.utils;
 
 import cn.nukkit.Server;
-import lombok.extern.log4j.Log4j2;
-
 import java.lang.management.ManagementFactory;
 import java.lang.management.MonitorInfo;
 import java.lang.management.ThreadInfo;
+import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 public class Watchdog extends Thread {
@@ -33,12 +32,18 @@ public class Watchdog extends Thread {
 
     private void checkFinalizer() {
         if (forcedFinalizer != null && forcedFinalizer.isAlive()) {
-            StringBuilder sb = new StringBuilder("--------- The finalizer thread didn't complete in time! ---------").append('\n')
-                    .append("This detection means that the finalizer thread may be stuck and").append('\n')
-                    .append("RAM memory might be leaking!").append('\n')
-                    .append(" - https://github.com/PowerNukkitX/PowerNukkitX/issues/new").append('\n')
-                    .append("---------------- ForcedFinalizer ----------------").append('\n');
-            dumpThread(ManagementFactory.getThreadMXBean().getThreadInfo(forcedFinalizer.getId(), Integer.MAX_VALUE), sb);
+            StringBuilder sb = new StringBuilder("--------- The finalizer thread didn't complete in time! ---------")
+                    .append('\n')
+                    .append("This detection means that the finalizer thread may be stuck and")
+                    .append('\n')
+                    .append("RAM memory might be leaking!")
+                    .append('\n')
+                    .append(" - https://github.com/PowerNukkitX/PowerNukkitX/issues/new")
+                    .append('\n')
+                    .append("---------------- ForcedFinalizer ----------------")
+                    .append('\n');
+            dumpThread(
+                    ManagementFactory.getThreadMXBean().getThreadInfo(forcedFinalizer.getId(), Integer.MAX_VALUE), sb);
             sb.append("-------------------------------------------------");
             log.fatal(sb.toString());
             warnedAboutFinalizer = true;
@@ -74,20 +79,31 @@ public class Watchdog extends Thread {
                     responding = true;
                 } else if (responding && now - server.getBusyingTime() < 60) {
                     StringBuilder builder = new StringBuilder(
-                            "--------- Server stopped responding --------- (" + Math.round(diff / 1000d) + "s)").append('\n')
-                            .append("Please report this to PowerNukkitX:").append('\n')
-                            .append(" - https://github.com/PowerNukkitX/PowerNukkitX/issues/new").append('\n')
-                            .append("---------------- Main thread ----------------").append('\n');
+                                    "--------- Server stopped responding --------- (" + Math.round(diff / 1000d) + "s)")
+                            .append('\n')
+                            .append("Please report this to PowerNukkitX:")
+                            .append('\n')
+                            .append(" - https://github.com/PowerNukkitX/PowerNukkitX/issues/new")
+                            .append('\n')
+                            .append("---------------- Main thread ----------------")
+                            .append('\n');
 
-                    dumpThread(ManagementFactory.getThreadMXBean().getThreadInfo(this.server.getPrimaryThread().getId(), Integer.MAX_VALUE), builder);
+                    dumpThread(
+                            ManagementFactory.getThreadMXBean()
+                                    .getThreadInfo(
+                                            this.server.getPrimaryThread().getId(), Integer.MAX_VALUE),
+                            builder);
 
-                    builder.append("---------------- All threads ----------------").append('\n');
+                    builder.append("---------------- All threads ----------------")
+                            .append('\n');
                     ThreadInfo[] threads = ManagementFactory.getThreadMXBean().dumpAllThreads(true, true);
                     for (int i = 0; i < threads.length; i++) {
-                        if (i != 0) builder.append("------------------------------").append('\n');
+                        if (i != 0)
+                            builder.append("------------------------------").append('\n');
                         dumpThread(threads[i], builder);
                     }
-                    builder.append("---------------------------------------------").append('\n');
+                    builder.append("---------------------------------------------")
+                            .append('\n');
                     log.fatal(builder.toString());
                     responding = false;
                     this.server.forceShutdown();
@@ -96,7 +112,9 @@ public class Watchdog extends Thread {
             try {
                 sleep(Math.max(time / 4, 1000));
             } catch (InterruptedException interruption) {
-                log.fatal("The Watchdog Thread has been interrupted and is no longer monitoring the server state", interruption);
+                log.fatal(
+                        "The Watchdog Thread has been interrupted and is no longer monitoring the server state",
+                        interruption);
                 running = false;
                 return;
             }
@@ -110,12 +128,22 @@ public class Watchdog extends Thread {
             return;
         }
         builder.append("Current Thread: ").append(thread.getThreadName()).append('\n');
-        builder.append("\tPID: ").append(thread.getThreadId()).append(" | Suspended: ").append(thread.isSuspended()).append(" | Native: ").append(thread.isInNative()).append(" | State: ").append(thread.getThreadState()).append('\n');
+        builder.append("\tPID: ")
+                .append(thread.getThreadId())
+                .append(" | Suspended: ")
+                .append(thread.isSuspended())
+                .append(" | Native: ")
+                .append(thread.isInNative())
+                .append(" | State: ")
+                .append(thread.getThreadState())
+                .append('\n');
         // Monitors
         if (thread.getLockedMonitors().length != 0) {
             builder.append("\tThread is waiting on monitor(s):").append('\n');
             for (MonitorInfo monitor : thread.getLockedMonitors()) {
-                builder.append("\t\tLocked on:").append(monitor.getLockedStackFrame()).append('\n');
+                builder.append("\t\tLocked on:")
+                        .append(monitor.getLockedStackFrame())
+                        .append('\n');
             }
         }
 

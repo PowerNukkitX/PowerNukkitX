@@ -79,5 +79,4 @@ public class BlockAir extends BlockTransparent {
     public boolean canHarvestWithHand() {
         return false;
     }
-
 }

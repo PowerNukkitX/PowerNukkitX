@@ -7,10 +7,9 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockFallableMeta;
 import cn.nukkit.block.BlockMeta;
 import cn.nukkit.item.Item;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 import java.util.Locale;
+import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * 继承这个类实现自定义方块,重写{@link Block}中的方法控制方块属性
@@ -63,8 +62,7 @@ public interface CustomBlock {
      * <p>
      * {@code @Override} this method to set the namespace ID of the custom block
      */
-    @NotNull
-    String getNamespaceId();
+    @NotNull String getNamespaceId();
 
     /**
      * 一般不需要被覆写,继承父类会提供
@@ -149,7 +147,8 @@ public interface CustomBlock {
         double breakTime = block.calculateBreakTime(item, player);
         var comp = this.getDefinition().nbt().getCompound("components");
         if (comp.containsCompound("minecraft:destructible_by_mining")) {
-            var clientBreakTime = comp.getCompound("minecraft:destructible_by_mining").getFloat("value");
+            var clientBreakTime =
+                    comp.getCompound("minecraft:destructible_by_mining").getFloat("value");
             if (player != null) {
                 if (player.getServer().getTick() - player.getLastInAirTick() < 5) {
                     clientBreakTime *= 6;

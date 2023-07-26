@@ -1,7 +1,6 @@
 package cn.nukkit.utils;
 
 import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
-
 import java.io.IOException;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
@@ -38,7 +37,7 @@ public final class ZlibThreadLocal implements ZlibProvider {
             // https://bugs.java.com/bugdatabase/view_bug.do?bug_id=6293787
             deflater.reset();
         }
-        //Deflater::end is called the time when the process exits.
+        // Deflater::end is called the time when the process exits.
         return bos.toByteArray();
     }
 
@@ -60,7 +59,7 @@ public final class ZlibThreadLocal implements ZlibProvider {
         } finally {
             deflater.reset();
         }
-        //Deflater::end is called the time when the process exits.
+        // Deflater::end is called the time when the process exits.
         return bos.toByteArray();
     }
 

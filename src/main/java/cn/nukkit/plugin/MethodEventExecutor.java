@@ -1,11 +1,10 @@
 package cn.nukkit.plugin;
 
+import static org.objectweb.asm.Opcodes.*;
+
 import cn.nukkit.event.Event;
 import cn.nukkit.event.Listener;
 import cn.nukkit.utils.EventException;
-import lombok.extern.log4j.Log4j2;
-import org.objectweb.asm.*;
-
 import java.lang.ref.WeakReference;
 import java.lang.reflect.InaccessibleObjectException;
 import java.lang.reflect.InvocationTargetException;
@@ -13,8 +12,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import static org.objectweb.asm.Opcodes.*;
+import lombok.extern.log4j.Log4j2;
+import org.objectweb.asm.*;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -45,7 +44,8 @@ public class MethodEventExecutor implements EventExecutor {
             throw new EventException(ex.getCause() != null ? ex.getCause() : ex);
         } catch (ClassCastException ex) {
             log.debug("Ignoring a ClassCastException", ex);
-            // We are going to ignore ClassCastException because EntityDamageEvent can't be cast to EntityDamageByEntityEvent
+            // We are going to ignore ClassCastException because EntityDamageEvent can't be cast to
+            // EntityDamageByEntityEvent
         } catch (Throwable t) {
             throw new EventException(t);
         }
@@ -59,7 +59,8 @@ public class MethodEventExecutor implements EventExecutor {
         return compile(listenerClass.getClassLoader(), listenerClass, method);
     }
 
-    public static EventExecutor compile(ClassLoader classLoader, Class<? extends Listener> listenerClass, Method method) {
+    public static EventExecutor compile(
+            ClassLoader classLoader, Class<? extends Listener> listenerClass, Method method) {
         if (!Modifier.isPublic(method.getModifiers())) {
             return null;
         }
@@ -72,10 +73,13 @@ public class MethodEventExecutor implements EventExecutor {
         ClassWriter classWriter = new ClassWriter(0);
         FieldVisitor fieldVisitor;
         MethodVisitor methodVisitor;
-        classWriter.visit(V17, ACC_PUBLIC | ACC_SUPER, internalName, null, "java/lang/Object", new String[]{"cn/nukkit/plugin/EventExecutor", "cn/nukkit/plugin/CompiledExecutor"});
+        classWriter.visit(V17, ACC_PUBLIC | ACC_SUPER, internalName, null, "java/lang/Object", new String[] {
+            "cn/nukkit/plugin/EventExecutor", "cn/nukkit/plugin/CompiledExecutor"
+        });
         classWriter.visitSource("EventHandler@" + method.getDeclaringClass().getName() + "#" + method.getName(), null);
         {
-            fieldVisitor = classWriter.visitField(ACC_PRIVATE | ACC_FINAL, "originMethod", "Ljava/lang/reflect/Method;", null, null);
+            fieldVisitor = classWriter.visitField(
+                    ACC_PRIVATE | ACC_FINAL, "originMethod", "Ljava/lang/reflect/Method;", null, null);
             fieldVisitor.visitEnd();
         }
         {
@@ -104,7 +108,10 @@ public class MethodEventExecutor implements EventExecutor {
             methodVisitor.visitEnd();
         }
         {
-            methodVisitor = classWriter.visitMethod(ACC_PUBLIC, "execute", "(Lcn/nukkit/event/Listener;Lcn/nukkit/event/Event;)V", null, new String[]{"cn/nukkit/utils/EventException"});
+            methodVisitor = classWriter.visitMethod(
+                    ACC_PUBLIC, "execute", "(Lcn/nukkit/event/Listener;Lcn/nukkit/event/Event;)V", null, new String[] {
+                        "cn/nukkit/utils/EventException"
+                    });
             methodVisitor.visitCode();
             var label0 = new Label();
             methodVisitor.visitLabel(label0);
@@ -118,7 +125,12 @@ public class MethodEventExecutor implements EventExecutor {
             methodVisitor.visitTypeInsn(CHECKCAST, listenerType.getInternalName());
             methodVisitor.visitVarInsn(ALOAD, 2);
             methodVisitor.visitTypeInsn(CHECKCAST, eventType.getInternalName());
-            methodVisitor.visitMethodInsn(INVOKEVIRTUAL, listenerType.getInternalName(), method.getName(), "(" + eventType.getDescriptor() + ")V", false);
+            methodVisitor.visitMethodInsn(
+                    INVOKEVIRTUAL,
+                    listenerType.getInternalName(),
+                    method.getName(),
+                    "(" + eventType.getDescriptor() + ")V",
+                    false);
             methodVisitor.visitLabel(label1);
             methodVisitor.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
             methodVisitor.visitInsn(RETURN);
@@ -131,7 +143,8 @@ public class MethodEventExecutor implements EventExecutor {
             methodVisitor.visitEnd();
         }
         {
-            methodVisitor = classWriter.visitMethod(ACC_PUBLIC, "getOriginMethod", "()Ljava/lang/reflect/Method;", null, null);
+            methodVisitor =
+                    classWriter.visitMethod(ACC_PUBLIC, "getOriginMethod", "()Ljava/lang/reflect/Method;", null, null);
             methodVisitor.visitCode();
             var label0 = new Label();
             methodVisitor.visitLabel(label0);
@@ -149,14 +162,20 @@ public class MethodEventExecutor implements EventExecutor {
         try {
             var clazz = loadClass(classLoader, classWriter.toByteArray());
             return (EventExecutor) clazz.getConstructor(Method.class).newInstance(method);
-        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException | InstantiationException e) {
+        } catch (ClassNotFoundException
+                | NoSuchMethodException
+                | InvocationTargetException
+                | IllegalAccessException
+                | InstantiationException e) {
             return null;
         }
     }
 
     private static WeakReference<Method> defineClassMethodRef = new WeakReference<>(null);
 
-    private static Class<?> loadClass(ClassLoader loader, byte[] b) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InaccessibleObjectException {
+    private static Class<?> loadClass(ClassLoader loader, byte[] b)
+            throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException,
+                    InaccessibleObjectException {
         Class<?> clazz;
         java.lang.reflect.Method method;
         if (defineClassMethodRef.get() == null) {
@@ -168,8 +187,7 @@ public class MethodEventExecutor implements EventExecutor {
         }
         Objects.requireNonNull(method).setAccessible(true);
         try {
-            var args =
-                    new Object[]{"cn.nukkit.plugin.PNXMethodEventExecutor$" + compileTime.get(), b, 0, b.length};
+            var args = new Object[] {"cn.nukkit.plugin.PNXMethodEventExecutor$" + compileTime.get(), b, 0, b.length};
             clazz = (Class<?>) method.invoke(loader, args);
         } finally {
             method.setAccessible(false);

@@ -37,8 +37,7 @@ public class BlockSlabWarped extends BlockSlab {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return SIMPLE_SLAB_PROPERTIES;
     }
@@ -56,9 +55,7 @@ public class BlockSlabWarped extends BlockSlab {
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{
-                toItem()
-        };
+        return new Item[] {toItem()};
     }
 
     @Override
@@ -70,7 +67,7 @@ public class BlockSlabWarped extends BlockSlab {
     public Item toItem() {
         return new ItemBlock(this);
     }
-    
+
     @Override
     public int getBurnChance() {
         return 0;
@@ -80,5 +77,4 @@ public class BlockSlabWarped extends BlockSlab {
     public int getBurnAbility() {
         return 0;
     }
-
 }

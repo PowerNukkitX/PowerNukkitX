@@ -5,7 +5,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.stream.NBTOutputStream;
 import cn.nukkit.utils.Binary;
-
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -56,7 +55,8 @@ public class ByteArrayTag extends Tag {
 
     @Override
     public String toString() {
-        return "ByteArrayTag " + this.getName() + " (data: 0x" + Binary.bytesToHexString(data, true) + " [" + data.length + " bytes])";
+        return "ByteArrayTag " + this.getName() + " (data: 0x" + Binary.bytesToHexString(data, true) + " ["
+                + data.length + " bytes])";
     }
 
     @Override
@@ -83,7 +83,8 @@ public class ByteArrayTag extends Tag {
     public boolean equals(Object obj) {
         if (super.equals(obj)) {
             ByteArrayTag byteArrayTag = (ByteArrayTag) obj;
-            return ((data == null && byteArrayTag.data == null) || (data != null && Arrays.equals(data, byteArrayTag.data)));
+            return ((data == null && byteArrayTag.data == null)
+                    || (data != null && Arrays.equals(data, byteArrayTag.data)));
         }
         return false;
     }

@@ -31,8 +31,7 @@ public class BlockDoubleSlabWood extends BlockDoubleSlabBase {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return BlockSlabWood.PROPERTIES;
     }
@@ -81,11 +80,10 @@ public class BlockDoubleSlabWood extends BlockDoubleSlabBase {
         return WOOD_SLAB;
     }
 
-    //TODO Adjust or remove this when merging https://github.com/PowerNukkit/PowerNukkit/pull/370
+    // TODO Adjust or remove this when merging https://github.com/PowerNukkit/PowerNukkit/pull/370
     @Override
     @PowerNukkitOnly
     protected boolean isCorrectTool(Item item) {
         return true;
     }
-
 }

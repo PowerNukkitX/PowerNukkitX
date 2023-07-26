@@ -18,6 +18,9 @@
 
 package cn.nukkit.entity;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.lenient;
+
 import cn.nukkit.block.BlockID;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.entity.item.EntityItem;
@@ -39,6 +42,8 @@ import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.potion.Effect;
+import java.util.*;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,12 +54,6 @@ import org.mockito.Mock;
 import org.powernukkit.tests.api.MockLevel;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
 
-import java.util.*;
-import java.util.stream.Stream;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.lenient;
-
 /**
  * @author joserobjr
  * @since 2021-06-26
@@ -63,10 +62,10 @@ import static org.mockito.Mockito.lenient;
 class EntityTest {
     @MockLevel
     Level level;
-    
+
     @Mock
     FullChunk chunk;
-    
+
     Entity entity;
 
     @BeforeEach
@@ -81,13 +80,18 @@ class EntityTest {
         Entity attacker = createEntity(EntityZombiePigman.NETWORK_ID);
         Map<EntityDamageEvent.DamageModifier, Float> modifiers = new EnumMap<>(EntityDamageEvent.DamageModifier.class);
         modifiers.put(EntityDamageEvent.DamageModifier.BASE, 10_000f);
-        Enchantment enchantment = Enchantment.getEnchantment(Enchantment.ID_FIRE_ASPECT).setLevel(2);
-        EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(attacker, entity, EntityDamageEvent.DamageCause.CONTACT, modifiers, 0.3f,
-                new Enchantment[]{enchantment});
+        Enchantment enchantment =
+                Enchantment.getEnchantment(Enchantment.ID_FIRE_ASPECT).setLevel(2);
+        EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(
+                attacker, entity, EntityDamageEvent.DamageCause.CONTACT, modifiers, 0.3f, new Enchantment[] {enchantment
+                });
         entity.attack(event);
         assertFalse(entity.isAlive());
         assertTrue(entity.isOnFire());
-        Optional<EntityItem> drop = Arrays.stream(level.getEntities()).filter(EntityItem.class::isInstance).map(EntityItem.class::cast).findFirst();
+        Optional<EntityItem> drop = Arrays.stream(level.getEntities())
+                .filter(EntityItem.class::isInstance)
+                .map(EntityItem.class::cast)
+                .findFirst();
         assertTrue(drop.isPresent());
         assertEquals(ItemID.COOKED_PORKCHOP, drop.get().getItem().getId());
     }
@@ -96,7 +100,8 @@ class EntityTest {
     void checkObstruction() {
         level.setBlockStateAt(1, 1, 3, BlockState.of(BlockID.GRASS));
         level.setBlockStateAt(1, 2, 3, BlockState.of(BlockID.DOOR_BLOCK));
-        EntityObstructionTest entity = new EntityObstructionTest(level.getChunk(0, 0), Entity.getDefaultNBT(new Vector3(1, 2, 3)));
+        EntityObstructionTest entity =
+                new EntityObstructionTest(level.getChunk(0, 0), Entity.getDefaultNBT(new Vector3(1, 2, 3)));
         assertFalse(entity.checkObstruction(1, 2, 3));
         level.setBlockStateAt(1, 2, 3, BlockState.of(BlockID.STONE));
         assertTrue(entity.checkObstruction(1, 2, 3));
@@ -181,13 +186,13 @@ class EntityTest {
             System.err.println("Null when creating " + id);
             return;
         }
-        assertNotNull(entity, ()-> "Entity " + Entity.getSaveId(id));
+        assertNotNull(entity, () -> "Entity " + Entity.getSaveId(id));
         assertNotNull(entity.getOriginalName(), "Static Name");
         String staticName = entity.getOriginalName();
         assertEquals(staticName, entity.getName());
         assertTrue(!entity.hasCustomName() || entity instanceof EntityNPCEntity, "Should not have custom");
         assertEquals(entity.getName(), entity.getVisibleName());
-        
+
         if (entity instanceof EntityNameable) {
             EntityNameable nameable = (EntityNameable) entity;
             nameable.setNameTag("Customized");
@@ -196,7 +201,7 @@ class EntityTest {
             assertEquals(staticName, entity.getOriginalName(), "Static name should not change");
             assertEquals("Customized", entity.getName());
             assertNotEquals(entity.getName(), entity.getOriginalName());
-            
+
             nameable.setNameTag(" ");
             assertTrue(entity.hasCustomName());
             assertNotNull(entity.getOriginalName());
