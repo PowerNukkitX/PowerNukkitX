@@ -1,0 +1,118 @@
+plugins {
+    id 'java'
+    id 'com.diffplug.spotless' version '6.19.0'
+    id "com.github.johnrengelman.shadow" version "7.0.0"
+}
+
+group = 'ru.mc_positron'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    maven { url "https://repo.opencollab.dev/maven-releases/" }
+    maven { url "https://repo.opencollab.dev/maven-snapshots/" }
+    maven { url "https://repo1.maven.org/maven2/" }
+    maven { url "https://jitpack.io/" }
+}
+
+dependencies {
+    implementation 'org.apache.logging.log4j:log4j-api:2.20.0'
+    implementation 'org.apache.logging.log4j:log4j-core:2.20.0'
+    implementation 'org.apache.logging.log4j:log4j-slf4j-impl:2.20.0'
+    implementation 'org.apache.logging.log4j:log4j-slf4j18-impl:2.17.1'
+    implementation 'io.sentry:sentry:4.3.0'
+    implementation 'io.sentry:sentry-log4j2:4.3.0'
+    implementation 'net.minecrell:terminalconsoleappender:1.1.1'
+    implementation 'org.jline:jline-terminal:3.21.0'
+    implementation 'org.jline:jline-terminal-jna:3.21.0'
+    implementation 'org.jline:jline-reader:3.21.0'
+
+    implementation 'cn.powernukkitx.PowerNukkitX-Network:raknet:1.6.28-PNX.5'
+    implementation 'com.nukkitx:natives:1.0.3'
+    implementation 'it.unimi.dsi:fastutil-core:8.5.4'
+    implementation 'it.unimi.dsi:fastutil-extra:8.5.4'
+    implementation 'org.powernukkit:version-library:1.0.0'
+    implementation 'com.google.guava:guava:30.1.1-jre'
+    implementation 'com.google.code.gson:gson:2.8.9'
+    implementation 'org.yaml:snakeyaml:1.32'
+    implementation 'org.powernukkit.bedrock.leveldb:bedrock-leveldb:0.11.0-PN'
+    implementation 'com.nimbusds:nimbus-jose-jwt:9.13'
+    implementation 'net.sf.jopt-simple:jopt-simple:5.0.4'
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
+    implementation 'com.github.spotbugs:spotbugs-annotations:4.5.2'
+    implementation 'com.intellij:annotations:12.0'
+    implementation 'org.graalvm.sdk:graal-sdk:23.0.0'
+    implementation 'org.graalvm.js:js-scriptengine:23.0.0'
+    implementation 'cn.powernukkitx:Terra-Binary:6.3.0-BETA-CONFIG-1.3.3'
+    implementation 'org.ow2.asm:asm:9.3'
+    implementation 'com.github.oshi:oshi-core:5.8.7'
+    implementation 'cn.powernukkitx:libdeflate-java:0.0.2-PNX'
+    implementation 'org.lz4:lz4-java:1.8.0'
+    implementation 'org.xerial.snappy:snappy-java:1.1.10.1'
+    implementation 'org.jetbrains:annotations:24.0.1'
+
+    compileOnly 'org.projectlombok:lombok:1.18.26'
+    annotationProcessor 'org.projectlombok:lombok:1.18.26'
+
+    testImplementation 'fr.inria.gforge.spoon:spoon-core:9.1.0'
+    testImplementation 'commons-io:commons-io:2.11.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.7.2'
+    testImplementation 'org.mockito:mockito-junit-jupiter:3.11.2'
+    testImplementation 'org.mockito:mockito-inline:3.11.2'
+    testImplementation 'org.assertj:assertj-core:3.17.1'
+    testImplementation 'cn.powernukkitx:PowerNukkitX-JUnit5-Framework:0.0.4.1'
+    testImplementation 'org.openjdk.jmh:jmh-core:1.35'
+    testImplementation 'org.openjdk.jmh:jmh-generator-annprocess:1.35'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+tasks {
+    java {
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    compileJava {
+        options.encoding = "UTF-8"
+    }
+
+    compileTestJava {
+        options.encoding = "UTF-8"
+    }
+
+    shadowJar {
+        archiveFileName.set("MCPositron.jar")
+        manifest {
+            attributes (
+                    "Main-Class": "cn.nukkit.Nukkit",
+                    "Multi-Release": true
+            )
+        }
+        mergeServiceFiles()
+    }
+
+    assemble {
+        dependsOn("shadowJar")
+    }
+}
+
+spotless {
+    format 'misc', {
+        target '*.gradle', '*.md', '.gitignore'
+        trimTrailingWhitespace()
+        indentWithSpaces(4)
+        endWithNewline()
+    }
+
+    java {
+        palantirJavaFormat()
+        formatAnnotations()
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+}

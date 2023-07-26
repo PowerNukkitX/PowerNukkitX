@@ -686,11 +686,6 @@ public class Server {
         this.baseLangCode = mapInternalLang(langName);
 
         var isShaded = StartArgUtils.isShaded();
-        // 检测启动参数
-        if (!StartArgUtils.isValidStart() || (JarStart.isUsingJavaJar() && !isShaded)) {
-            log.fatal(getLanguage().tr("nukkit.start.invalid"));
-            return;
-        }
 
         // 检测非法使用shaded包启动
         if (!this.properties.getBoolean("allow-shaded", false) && isShaded) {
