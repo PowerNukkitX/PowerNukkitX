@@ -1,13 +1,11 @@
 package cn.nukkit.command.tree.node;
 
 import cn.nukkit.IPlayer;
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.exceptions.SelectorSyntaxException;
 import cn.nukkit.command.selector.EntitySelectorAPI;
 import cn.nukkit.entity.Entity;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,10 +37,7 @@ public class IPlayersNode extends ParamNode<List<IPlayer>> {
             if (!result.isEmpty()) this.value = result;
             else error("commands.generic.noTargetMatch");
         } else {
-            IPlayer player = Server.getInstance().getOfflinePlayer(arg);
-            if (player != null) {
-                this.value = Collections.singletonList(player);
-            } else error("commands.generic.player.notFound");
+            error("commands.generic.player.notFound");
         }
     }
 }

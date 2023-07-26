@@ -94,12 +94,12 @@ public class WhitelistCommand extends VanillaCommand {
                 }
                 switch (action.toLowerCase()) {
                     case "add" -> {
-                        sender.getServer().getOfflinePlayer(name).setWhitelisted(true);
+                        sender.getServer().addWhitelist(this.getName().toLowerCase());
                         log.addSuccess("commands.allowlist.add.success", name).output(true);
                         return 1;
                     }
                     case "remove" -> {
-                        sender.getServer().getOfflinePlayer(name).setWhitelisted(false);
+                        sender.getServer().removeWhitelist(this.getName().toLowerCase());
                         log.addSuccess("commands.allowlist.remove.success", name)
                                 .output(true);
                         return 1;
