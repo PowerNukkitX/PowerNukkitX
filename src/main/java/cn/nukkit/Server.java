@@ -2167,15 +2167,6 @@ public class Server {
         nameLookup.put(nameBytes, buffer.array());
     }
 
-    public IPlayer getOfflinePlayer(final String name) {
-        IPlayer result = this.getPlayerExact(name.toLowerCase());
-        if (result != null) {
-            return result;
-        }
-
-        return lookupName(name).map(uuid -> new OfflinePlayer(this, uuid)).orElse(new OfflinePlayer(this, name));
-    }
-
     /**
      * 从指定的UUID得到一个玩家实例,可以是在线玩家也可以是离线玩家.
      * <p>
@@ -2184,15 +2175,6 @@ public class Server {
      * @param uuid uuid
      * @return 玩家<br>player
      */
-    public IPlayer getOfflinePlayer(UUID uuid) {
-        Preconditions.checkNotNull(uuid, "uuid");
-        Optional<Player> onlinePlayer = getPlayer(uuid);
-        if (onlinePlayer.isPresent()) {
-            return onlinePlayer.get();
-        }
-
-        return new OfflinePlayer(this, uuid);
-    }
 
     /**
      * create为false
