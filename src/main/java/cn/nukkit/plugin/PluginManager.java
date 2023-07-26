@@ -181,7 +181,6 @@ public class PluginManager {
                 loaders = this.fileAssociations;
             }
 
-
             for (final PluginLoader loader : loaders.values()) {
                 for (File file : dictionary.listFiles((dir, name) -> {
                     for (Pattern pattern : loader.getPluginFilters()) {
