@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer
+
 plugins {
     id 'java'
     id 'com.diffplug.spotless' version '6.19.0'
@@ -16,9 +18,9 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.apache.logging.log4j:log4j-api:2.20.0'
-    implementation 'org.apache.logging.log4j:log4j-core:2.20.0'
-    implementation 'org.apache.logging.log4j:log4j-slf4j-impl:2.20.0'
+    implementation 'org.apache.logging.log4j:log4j-api:2.17.1'
+    implementation 'org.apache.logging.log4j:log4j-core:2.17.1'
+    implementation 'org.apache.logging.log4j:log4j-slf4j-impl:2.17.1'
     implementation 'org.apache.logging.log4j:log4j-slf4j18-impl:2.17.1'
     implementation 'io.sentry:sentry:4.3.0'
     implementation 'io.sentry:sentry-log4j2:4.3.0'
@@ -92,6 +94,7 @@ tasks {
                     "Multi-Release": true
             )
         }
+        transform(Log4j2PluginsCacheFileTransformer)
         mergeServiceFiles()
     }
 
