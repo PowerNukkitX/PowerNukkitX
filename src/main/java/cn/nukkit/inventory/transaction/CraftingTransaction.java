@@ -232,43 +232,6 @@ public class CraftingTransaction extends InventoryTransaction {
 
     @Override
     public boolean execute() {
-        if (super.execute()) {
-            switch (this.primaryOutput.getId()) {
-                case Item.CRAFTING_TABLE:
-                    source.awardAchievement("buildWorkBench");
-                    break;
-                case Item.WOODEN_PICKAXE:
-                    source.awardAchievement("buildPickaxe");
-                    break;
-                case Item.FURNACE:
-                    source.awardAchievement("buildFurnace");
-                    break;
-                case Item.WOODEN_HOE:
-                    source.awardAchievement("buildHoe");
-                    break;
-                case Item.BREAD:
-                    source.awardAchievement("makeBread");
-                    break;
-                case Item.CAKE:
-                    source.awardAchievement("bakeCake");
-                    break;
-                case Item.STONE_PICKAXE:
-                case Item.GOLDEN_PICKAXE:
-                case Item.IRON_PICKAXE:
-                case Item.DIAMOND_PICKAXE:
-                    source.awardAchievement("buildBetterPickaxe");
-                    break;
-                case Item.WOODEN_SWORD:
-                    source.awardAchievement("buildSword");
-                    break;
-                case Item.DIAMOND:
-                    source.awardAchievement("diamond");
-                    break;
-            }
-
-            return true;
-        }
-
         return false;
     }
 
