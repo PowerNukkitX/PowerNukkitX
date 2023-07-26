@@ -116,26 +116,15 @@ public class VersionCommand extends Command implements CoreCommand {
                                         query.sender.sendMessage("####################");
                                         if (versionMissed == 0)
                                             query.sender.sendMessage(
-                                                    "§aYou are using the latest version of PowerNukkitX!");
+                                                    "§aYou are using the latest version of MCPositron!");
                                         else if (versionMissed > 0) {
                                             query.sender.sendMessage(
-                                                    "§cYou are using an outdated version of PowerNukkitX!, §f"
+                                                    "§cYou are using an outdated version of MCPositron!, §f"
                                                             + versionMissed + " §aversions behind!");
                                         } else {
                                             query.sender.sendMessage(
                                                     "§cCouldn't match your version number: §f" + localCommitInfo
                                                             + "§c, maybe you are using a custom build or your version is too old!");
-                                        }
-                                        if (versionMissed != 0) {
-                                            query.sender.sendMessage("Download the latest version at §a"
-                                                    + cores.get(0)
-                                                            .getAsJsonObject()
-                                                            .get("url")
-                                                            .getAsString());
-                                            query.sender.sendMessage(
-                                                    "You can enter command §a \"pnx server update\"§f to automatically update your server if you are using PNX-CLI");
-                                            query.sender.sendMessage("Download PNX-CLI at: §a"
-                                                    + "https://github.com/PowerNukkitX/PNX-CLI/releases");
                                         }
                                         queryQueue.remove(query);
                                     }
@@ -170,7 +159,6 @@ public class VersionCommand extends Command implements CoreCommand {
                     sender.getServer().getName(),
                     sender.getServer().getNukkitVersion() + " ("
                             + sender.getServer().getGitCommit() + ")",
-                    sender.getServer().getCodename(),
                     sender.getServer().getApiVersion(),
                     sender.getServer().getVersion(),
                     String.valueOf(ProtocolInfo.CURRENT_PROTOCOL)));
