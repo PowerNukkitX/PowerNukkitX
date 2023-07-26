@@ -5,7 +5,6 @@ import static cn.nukkit.utils.Utils.dynamic;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.nbt.stream.PGZIPOutputStream;
 import cn.nukkit.network.protocol.ProtocolInfo;
-import cn.nukkit.plugin.js.JSIInitiator;
 import cn.nukkit.utils.ServerKiller;
 import com.google.common.base.Preconditions;
 import io.netty.util.ResourceLeakDetector;
@@ -71,7 +70,6 @@ public class Nukkit {
     public static boolean shortTitle = requiresShortTitle();
     public static int DEBUG = 1;
     public static int CHROME_DEBUG_PORT = -1;
-    public static List<String> JS_DEBUG_LIST = new LinkedList<>();
 
     public static void main(String[] args) {
         AtomicBoolean disableSentry = new AtomicBoolean(false);
@@ -124,10 +122,6 @@ public class Nukkit {
                         "chrome-debug", "Debug javascript using chrome dev tool with specific port.")
                 .withRequiredArg()
                 .ofType(Integer.class);
-        OptionSpec<String> jsDebugPortSpec = parser.accepts(
-                        "js-debug", "Debug javascript using chrome dev tool with specific port.")
-                .withRequiredArg()
-                .ofType(String.class);
 
         // Parse arguments
         OptionSet options = parser.parse(args);
@@ -165,11 +159,6 @@ public class Nukkit {
             CHROME_DEBUG_PORT = options.valueOf(chromeDebugPortSpec);
         }
 
-        if (options.has(jsDebugPortSpec)) {
-            JS_DEBUG_LIST =
-                    Arrays.stream(options.valueOf(jsDebugPortSpec).split(",")).toList();
-        }
-
         try {
             if (TITLE) {
                 System.out.print((char) 0x1b + "]0;Nukkit is starting up..." + (char) 0x07);
@@ -184,8 +173,6 @@ public class Nukkit {
         }
         log.info("Stopping other threads");
 
-        // 停止JS定时器
-        JSIInitiator.jsTimer.cancel();
         // 强制关闭PGZIPOutputStream中的线程池
         PGZIPOutputStream.getSharedThreadPool().shutdownNow();
         for (Thread thread : java.lang.Thread.getAllStackTraces().keySet()) {

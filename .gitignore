@@ -254,3 +254,18 @@ __pycache__
 
 .vscode
 .vscode/*
+.gradle/8.0/checksums/checksums.lock
+.gradle/8.0/dependencies-accessors/dependencies-accessors.lock
+.gradle/8.0/executionHistory/executionHistory.bin
+.gradle/8.0/dependencies-accessors/gc.properties
+.gradle/8.0/fileChanges/last-build.bin
+.gradle/8.0/executionHistory/executionHistory.lock
+.gradle/8.0/fileHashes/fileHashes.bin
+.gradle/8.0/fileHashes/fileHashes.lock
+.gradle/8.0/fileHashes/resourceHashesCache.bin
+.gradle/buildOutputCleanup/buildOutputCleanup.lock
+.gradle/8.0/gc.properties
+.gradle/buildOutputCleanup/cache.properties
+.gradle/buildOutputCleanup/outputFiles.bin
+.gradle/file-system.probe
+.gradle/vcs-1/gc.properties
