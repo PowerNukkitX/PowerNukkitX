@@ -1,6 +1,5 @@
 package cn.nukkit.level.format.generic;
 
-import cn.nukkit.Nukkit;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
@@ -116,7 +115,7 @@ public abstract class BaseLevelProvider implements LevelProvider {
             this.levelData.putString("generatorOptions", "");
         }
 
-        this.levelData.putList(new ListTag<>("ServerBrand").add(new StringTag("", Nukkit.CODENAME)));
+        this.levelData.putList(new ListTag<>("ServerBrand").add(new StringTag("", "MCPositron")));
 
         this.spawn = new Vector3(
                 this.levelData.getInt("SpawnX"), this.levelData.getInt("SpawnY"), this.levelData.getInt("SpawnZ"));

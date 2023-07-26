@@ -47,13 +47,12 @@ import org.apache.logging.log4j.core.config.LoggerConfig;
 public class Nukkit {
 
     public static final Properties GIT_INFO = getGitInfo();
-    public static final String VERSION = getVersion();
+    public static final String VERSION = "indev";
 
     @PowerNukkitOnly
     public static final String GIT_COMMIT = getGitCommit();
 
     public static final String API_VERSION = dynamic("1.0.14");
-    public static final String CODENAME = dynamic("PowerNukkitX");
 
     @Deprecated
     public static final String MINECRAFT_VERSION = ProtocolInfo.MINECRAFT_VERSION;
@@ -216,30 +215,6 @@ public class Nukkit {
             return null;
         }
         return properties;
-    }
-
-    private static String getVersion() {
-        InputStream resourceAsStream = null;
-        try {
-            resourceAsStream = Nukkit.class.getModule().getResourceAsStream("VERSION.txt");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        if (resourceAsStream == null) {
-            return "Unknown-PNX-SNAPSHOT";
-        }
-        try (InputStream is = resourceAsStream;
-                InputStreamReader reader = new InputStreamReader(is);
-                BufferedReader buffered = new BufferedReader(reader)) {
-            String line = buffered.readLine().trim();
-            if ("${project.version}".equalsIgnoreCase(line)) {
-                return "Unknown-PNX-SNAPSHOT";
-            } else {
-                return line;
-            }
-        } catch (IOException e) {
-            return "Unknown-PNX-SNAPSHOT";
-        }
     }
 
     private static String getGitCommit() {
