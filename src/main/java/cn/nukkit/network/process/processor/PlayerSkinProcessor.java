@@ -1,12 +1,12 @@
 package cn.nukkit.network.process.processor;
 
-import cn.nukkit.player.Player;
-import cn.nukkit.player.PlayerHandle;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.event.player.PlayerChangeSkinEvent;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.PlayerSkinPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
+import cn.nukkit.player.Player;
+import cn.nukkit.player.PlayerHandle;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;

@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
@@ -12,6 +11,7 @@ import cn.nukkit.blockproperty.exception.InvalidBlockPropertyValueException;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.player.Player;
 import cn.nukkit.utils.Faceable;
 import javax.annotation.Nullable;
 import lombok.RequiredArgsConstructor;

@@ -1,10 +1,10 @@
 package cn.nukkit.network.process.processor;
 
-import cn.nukkit.player.PlayerHandle;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.RequestPermissionsPacket;
 import cn.nukkit.network.protocol.types.PlayerAbility;
+import cn.nukkit.player.PlayerHandle;
 import org.jetbrains.annotations.NotNull;
 
 public class RequestPermissionsProcessor extends DataPacketProcessor<RequestPermissionsPacket> {

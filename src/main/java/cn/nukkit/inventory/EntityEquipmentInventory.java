@@ -1,12 +1,12 @@
 package cn.nukkit.inventory;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.MobEquipmentPacket;
+import cn.nukkit.player.Player;
 import java.util.HashSet;
 import java.util.Set;
 

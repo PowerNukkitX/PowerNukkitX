@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
@@ -13,6 +12,7 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.nbt.tag.Tag;
+import cn.nukkit.player.Player;
 import java.util.Map;
 import javax.annotation.Nullable;
 import org.jetbrains.annotations.NotNull;

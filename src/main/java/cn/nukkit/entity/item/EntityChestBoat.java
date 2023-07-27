@@ -2,7 +2,6 @@ package cn.nukkit.entity.item;
 
 import static cn.nukkit.network.protocol.SetEntityLinkPacket.TYPE_PASSENGER;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.inventory.ChestBoatInventory;
@@ -18,6 +17,7 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.AddEntityPacket;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.types.EntityLink;
+import cn.nukkit.player.Player;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")

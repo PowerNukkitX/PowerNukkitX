@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import static cn.nukkit.block.BlockSapling.AGED;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
@@ -19,6 +18,7 @@ import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.MathHelper;
 import cn.nukkit.network.protocol.AnimatePacket;
+import cn.nukkit.player.Player;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import org.jetbrains.annotations.NotNull;

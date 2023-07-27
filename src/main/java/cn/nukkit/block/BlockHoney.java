@@ -2,8 +2,6 @@ package cn.nukkit.block;
 
 import static cn.nukkit.potion.Effect.getEffect;
 
-import cn.nukkit.AdventureSettings;
-import cn.nukkit.player.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
@@ -12,6 +10,8 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.player.AdventureSettings;
+import cn.nukkit.player.Player;
 import cn.nukkit.potion.Effect;
 import java.util.Random;
 

@@ -1,10 +1,10 @@
 package cn.nukkit.block;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
+import cn.nukkit.player.Player;
 import org.jetbrains.annotations.NotNull;
 
 /**

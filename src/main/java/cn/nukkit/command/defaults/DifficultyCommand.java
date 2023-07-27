@@ -58,7 +58,9 @@ public class DifficultyCommand extends VanillaCommand {
             SetDifficultyPacket pk = new SetDifficultyPacket();
             pk.difficulty = sender.getServer().getDifficulty();
             Server.broadcastPacket(
-                    new ArrayList<>(sender.getServer().getOnlinePlayers().values()), pk);
+                    new ArrayList<>(
+                            sender.getServer().playerManager.getOnlinePlayers().values()),
+                    pk);
             log.addSuccess("commands.difficulty.success", String.valueOf(difficulty))
                     .output(true);
             return 1;

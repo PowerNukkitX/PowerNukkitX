@@ -1,6 +1,5 @@
 package cn.nukkit.entity;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -21,6 +20,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddPlayerPacket;
 import cn.nukkit.network.protocol.RemoveEntityPacket;
 import cn.nukkit.network.protocol.SetEntityLinkPacket;
+import cn.nukkit.player.Player;
 import cn.nukkit.utils.Utils;
 import java.util.ArrayList;
 import java.util.List;
@@ -359,7 +359,7 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
                 throw new IllegalStateException(this.getClass().getSimpleName() + " must have a valid skin set");
             }
 
-            this.server.updatePlayerListData(
+            this.server.playerManager.updatePlayerListData(
                     this.getUniqueId(), this.getId(), this.getName(), this.skin, new Player[] {player});
 
             AddPlayerPacket pk = new AddPlayerPacket();
@@ -391,7 +391,7 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
 
                 player.dataPacket(pkk);
             }
-            this.server.removePlayerListData(this.getUniqueId(), player);
+            this.server.playerManager.removePlayerListData(this.getUniqueId(), player);
         }
     }
 

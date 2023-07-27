@@ -1,6 +1,5 @@
 package cn.nukkit.entity.ai.executor;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -16,6 +15,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.EntityEventPacket;
+import cn.nukkit.player.Player;
 import cn.nukkit.potion.Effect;
 import java.util.EnumMap;
 import java.util.Map;

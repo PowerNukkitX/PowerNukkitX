@@ -1,6 +1,5 @@
 package cn.nukkit.command.defaults;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
@@ -11,6 +10,7 @@ import cn.nukkit.command.tree.node.PlayersNode;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.command.utils.RawText;
 import cn.nukkit.lang.TranslationContainer;
+import cn.nukkit.player.Player;
 import cn.nukkit.utils.TextFormat;
 import com.google.gson.JsonSyntaxException;
 import java.util.List;

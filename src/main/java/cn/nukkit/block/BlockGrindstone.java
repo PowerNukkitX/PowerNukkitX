@@ -3,7 +3,6 @@ package cn.nukkit.block;
 import static cn.nukkit.block.BlockBell.ATTACHMENT_TYPE;
 import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
@@ -15,6 +14,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
+import cn.nukkit.player.Player;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 

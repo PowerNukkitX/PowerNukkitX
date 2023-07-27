@@ -1,11 +1,11 @@
 package cn.nukkit.command.tree.node;
 
-import cn.nukkit.player.IPlayer;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.exceptions.SelectorSyntaxException;
 import cn.nukkit.command.selector.EntitySelectorAPI;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.player.IPlayer;
 import java.util.List;
 import java.util.stream.Collectors;
 

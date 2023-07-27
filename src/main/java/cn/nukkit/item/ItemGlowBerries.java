@@ -1,6 +1,5 @@
 package cn.nukkit.item;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
@@ -8,6 +7,7 @@ import cn.nukkit.block.BlockCaveVines;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.player.Player;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**

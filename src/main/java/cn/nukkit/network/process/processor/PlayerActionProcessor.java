@@ -1,7 +1,5 @@
 package cn.nukkit.network.process.processor;
 
-import cn.nukkit.player.Player;
-import cn.nukkit.player.PlayerHandle;
 import cn.nukkit.event.player.*;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
@@ -13,6 +11,8 @@ import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.MovePlayerPacket;
 import cn.nukkit.network.protocol.PlayerActionPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
+import cn.nukkit.player.Player;
+import cn.nukkit.player.PlayerHandle;
 import org.jetbrains.annotations.NotNull;
 
 public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacket> {

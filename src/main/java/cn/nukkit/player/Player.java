@@ -2,8 +2,6 @@ package cn.nukkit.player;
 
 import static cn.nukkit.utils.Utils.dynamic;
 
-import cn.nukkit.AdventureSettings;
-import cn.nukkit.AdventureSettings.Type;
 import cn.nukkit.Server;
 import cn.nukkit.api.*;
 import cn.nukkit.block.*;
@@ -66,6 +64,7 @@ import cn.nukkit.permission.PermissibleBase;
 import cn.nukkit.permission.Permission;
 import cn.nukkit.permission.PermissionAttachment;
 import cn.nukkit.permission.PermissionAttachmentInfo;
+import cn.nukkit.player.AdventureSettings.Type;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.positiontracking.PositionTrackingService;
 import cn.nukkit.potion.Effect;
@@ -1447,7 +1446,8 @@ public class Player extends EntityHuman
         }
 
         Player oldPlayer = null;
-        for (Player p : new ArrayList<>(this.server.getOnlinePlayers().values())) {
+        for (Player p :
+                new ArrayList<>(this.server.playerManager.getOnlinePlayers().values())) {
             if (p != this && p.getName() != null && p.getName().equalsIgnoreCase(this.getName())
                     || this.getUniqueId().equals(p.getUniqueId())) {
                 oldPlayer = p;
@@ -1463,13 +1463,13 @@ public class Player extends EntityHuman
             File legacyDataFile = new File(server.getDataPath() + "players/" + this.username.toLowerCase() + ".dat");
             File dataFile = new File(server.getDataPath() + "players/" + this.uuid.toString() + ".dat");
             if (legacyDataFile.exists() && !dataFile.exists()) {
-                nbt = this.server.getOfflinePlayerData(this.username, false);
+                nbt = this.server.playerManager.getOfflinePlayerData(this.username, false);
 
                 if (!legacyDataFile.delete()) {
                     log.warn("Could not delete legacy player data for {}", this.username);
                 }
             } else {
-                nbt = this.server.getOfflinePlayerData(this.uuid, true);
+                nbt = this.server.playerManager.getOfflinePlayerData(this.uuid, true);
             }
         }
 
@@ -1480,7 +1480,7 @@ public class Player extends EntityHuman
 
         if (loginChainData.isXboxAuthed() && server.getPropertyBoolean("xbox-auth")
                 || !server.getPropertyBoolean("xbox-auth")) {
-            server.updateName(this.uuid, this.username);
+            server.playerManager.updateName(this.uuid, this.username);
         }
 
         this.playedBefore = (nbt.getLong("lastPlayed") - nbt.getLong("firstPlayed")) > 1;
@@ -1529,11 +1529,11 @@ public class Player extends EntityHuman
         nbt.putLong("UUIDMost", uuid.getMostSignificantBits());
 
         if (this.server.getAutoSave()) {
-            this.server.saveOfflinePlayerData(this.uuid, nbt, true);
+            this.server.playerManager.saveOfflinePlayerData(String.valueOf(this.uuid), nbt, true);
         }
 
         this.sendPlayStatus(PlayStatusPacket.LOGIN_SUCCESS);
-        this.server.onPlayerLogin(this);
+        this.server.playerManager.onPlayerLogin(this);
 
         ListTag<DoubleTag> posList = nbt.getList("Pos", DoubleTag.class);
 
@@ -1691,7 +1691,7 @@ public class Player extends EntityHuman
         this.dataPacket(new AvailableEntityIdentifiersPacket());
         this.inventory.sendCreativeContents();
         // 发送玩家权限列表
-        server.getOnlinePlayers().values().forEach(player -> {
+        server.playerManager.getOnlinePlayers().values().forEach(player -> {
             if (player != this) {
                 player.adventureSettings.sendAbilities(Collections.singleton(this));
             }
@@ -1722,8 +1722,8 @@ public class Player extends EntityHuman
             this.setRemoveFormat(false);
         }
 
-        this.server.addOnlinePlayer(this);
-        this.server.onPlayerCompleteLoginSequence(this);
+        this.server.playerManager.addOnlinePlayer(this);
+        this.server.playerManager.onPlayerCompleteLoginSequence(this);
     }
 
     /**
@@ -2550,7 +2550,7 @@ public class Player extends EntityHuman
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
         if (this.spawned) {
-            this.server.updatePlayerListData(
+            this.server.playerManager.updatePlayerListData(
                     this.getUniqueId(),
                     this.getId(),
                     this.getDisplayName(),
@@ -2570,7 +2570,8 @@ public class Player extends EntityHuman
             skinPacket.skin = this.getSkin();
             skinPacket.newSkinName = this.getSkin().getSkinId();
             skinPacket.oldSkinName = "";
-            Server.broadcastPacket(Server.getInstance().getOnlinePlayers().values(), skinPacket);
+            Server.broadcastPacket(
+                    Server.getInstance().playerManager.getOnlinePlayers().values(), skinPacket);
         }
     }
 
@@ -3121,8 +3122,8 @@ public class Player extends EntityHuman
             var networkGamemode = toNetworkGamemode(gamemode);
             pk.gameType = GameType.from(networkGamemode);
             pk.entityId = this.getId();
-            var players =
-                    Sets.newHashSet(Server.getInstance().getOnlinePlayers().values());
+            var players = Sets.newHashSet(
+                    Server.getInstance().playerManager.getOnlinePlayers().values());
             // 不向自身发送UpdatePlayerGameTypePacket，我们将使用SetPlayerGameTypePacket
             players.remove(this);
             // 我们需要给所有玩家发送此包，来使玩家客户端能正确渲染玩家实体
@@ -4200,7 +4201,8 @@ public class Player extends EntityHuman
                 this.save();
             }
 
-            for (Player player : new ArrayList<>(this.server.getOnlinePlayers().values())) {
+            for (Player player :
+                    new ArrayList<>(this.server.playerManager.getOnlinePlayers().values())) {
                 if (!player.canSee(this)) {
                     player.showPlayer(this);
                 }
@@ -4228,7 +4230,7 @@ public class Player extends EntityHuman
             this.interfaz.close(this, notify ? reason : "");
 
             if (this.loggedIn) {
-                this.server.removeOnlinePlayer(this);
+                this.server.playerManager.removeOnlinePlayer(this);
             }
 
             this.loggedIn = false;
@@ -4274,7 +4276,7 @@ public class Player extends EntityHuman
 
         this.chunk = null;
 
-        this.server.removePlayer(this);
+        this.server.playerManager.removePlayer(this);
     }
 
     public void save() {
@@ -4364,7 +4366,7 @@ public class Player extends EntityHuman
             this.namedTag.putInt("TimeSinceRest", this.timeSinceRest);
 
             if (!this.username.isEmpty() && this.namedTag != null) {
-                this.server.saveOfflinePlayerData(this.uuid, this.namedTag, async);
+                this.server.playerManager.saveOfflinePlayerData(String.valueOf(this.uuid), this.namedTag, async);
             }
         }
     }

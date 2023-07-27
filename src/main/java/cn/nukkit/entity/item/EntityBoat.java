@@ -2,7 +2,6 @@ package cn.nukkit.entity.item;
 
 import static cn.nukkit.network.protocol.SetEntityLinkPacket.TYPE_PASSENGER;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.api.*;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockWater;
@@ -31,6 +30,7 @@ import cn.nukkit.network.protocol.AnimatePacket;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.SetEntityLinkPacket;
 import cn.nukkit.network.protocol.types.EntityLink;
+import cn.nukkit.player.Player;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;

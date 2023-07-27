@@ -1,6 +1,5 @@
 package cn.nukkit.command.defaults;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
@@ -11,6 +10,7 @@ import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.event.player.PlayerKickEvent;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.player.Player;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -52,7 +52,7 @@ public class BanIpCommand extends VanillaCommand {
             case "default" -> {
                 String value = list.getResult(0);
                 if (list.hasResult(1)) reason = list.getResult(1);
-                Player player = sender.getServer().getPlayer(value);
+                Player player = sender.getServer().playerManager.getPlayer(value);
                 if (player != null) {
                     this.processIPBan(player.getAddress(), sender, reason);
                     log.addSuccess("commands.banip.success.players", player.getAddress(), player.getName())
@@ -101,8 +101,8 @@ public class BanIpCommand extends VanillaCommand {
     private void processIPBan(String ip, CommandSender sender, String reason) {
         sender.getServer().getIPBans().addBan(ip, reason, null, sender.getName());
 
-        for (Player player :
-                new ArrayList<>(sender.getServer().getOnlinePlayers().values())) {
+        for (Player player : new ArrayList<>(
+                sender.getServer().playerManager.getOnlinePlayers().values())) {
             if (player.getAddress().equals(ip)) {
                 player.kick(PlayerKickEvent.Reason.IP_BANNED, !reason.isEmpty() ? reason : "IP banned");
             }

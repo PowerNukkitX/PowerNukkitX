@@ -1,6 +1,5 @@
 package cn.nukkit.inventory.transaction;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.api.Since;
 import cn.nukkit.event.inventory.EnchantItemEvent;
@@ -11,6 +10,7 @@ import cn.nukkit.inventory.transaction.action.InventoryAction;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDye;
 import cn.nukkit.network.protocol.types.NetworkInventoryAction;
+import cn.nukkit.player.Player;
 import java.util.List;
 
 @Since("1.3.1.0-PN")

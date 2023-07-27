@@ -1,6 +1,5 @@
 package cn.nukkit.command.defaults;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
@@ -16,6 +15,7 @@ import cn.nukkit.inventory.EntityInventoryHolder;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Position;
+import cn.nukkit.player.Player;
 import java.util.List;
 import java.util.Map;
 

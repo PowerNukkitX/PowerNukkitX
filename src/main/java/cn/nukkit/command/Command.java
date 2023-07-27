@@ -1,6 +1,5 @@
 package cn.nukkit.command;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.*;
 import cn.nukkit.blockentity.ICommandBlock;
@@ -14,6 +13,7 @@ import cn.nukkit.lang.TextContainer;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.permission.Permissible;
+import cn.nukkit.player.Player;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.TextFormat;

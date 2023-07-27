@@ -1,6 +1,5 @@
 package cn.nukkit.command.defaults;
 
-import cn.nukkit.player.IPlayer;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
@@ -8,6 +7,7 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.node.IPlayersNode;
 import cn.nukkit.command.utils.CommandLogger;
+import cn.nukkit.player.IPlayer;
 import cn.nukkit.utils.TextFormat;
 import java.util.List;
 import java.util.Map;

@@ -193,7 +193,8 @@ public class CommandEnum {
         pk.name = this.getName();
         pk.values = Arrays.stream(value).toList();
         pk.type = mode;
-        Server.broadcastPacket(Server.getInstance().getOnlinePlayers().values(), pk);
+        Server.broadcastPacket(
+                Server.getInstance().playerManager.getOnlinePlayers().values(), pk);
     }
 
     @PowerNukkitXOnly
@@ -204,6 +205,7 @@ public class CommandEnum {
         pk.name = this.getName();
         pk.values = this.getValues();
         pk.type = UpdateSoftEnumPacket.Type.SET;
-        Server.broadcastPacket(Server.getInstance().getOnlinePlayers().values(), pk);
+        Server.broadcastPacket(
+                Server.getInstance().playerManager.getOnlinePlayers().values(), pk);
     }
 }

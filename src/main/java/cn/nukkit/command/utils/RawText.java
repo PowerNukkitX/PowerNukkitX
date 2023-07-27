@@ -1,12 +1,12 @@
 package cn.nukkit.command.utils;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.selector.EntitySelectorAPI;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.player.Player;
 import cn.nukkit.scoreboard.scorer.EntityScorer;
 import cn.nukkit.scoreboard.scorer.FakeScorer;
 import cn.nukkit.scoreboard.scorer.IScorer;
@@ -85,8 +85,8 @@ public class RawText {
                     .toList();
             if (scorers.isEmpty()) return null;
             scorer = scorers.get(0);
-        } else if (Server.getInstance().getPlayer(name_str) != null) {
-            scorer = new PlayerScorer(Server.getInstance().getPlayer(name_str));
+        } else if (Server.getInstance().playerManager.getPlayer(name_str) != null) {
+            scorer = new PlayerScorer(Server.getInstance().playerManager.getPlayer(name_str));
         } else {
             scorer = new FakeScorer(name_str);
         }

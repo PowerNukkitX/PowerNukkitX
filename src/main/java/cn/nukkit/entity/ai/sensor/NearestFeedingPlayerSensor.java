@@ -1,11 +1,11 @@
 package cn.nukkit.entity.ai.sensor;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.passive.EntityAnimal;
+import cn.nukkit.player.Player;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")

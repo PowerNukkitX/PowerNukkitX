@@ -1,6 +1,5 @@
 package cn.nukkit.command;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -10,6 +9,7 @@ import cn.nukkit.lang.TextContainer;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.permission.Permissible;
+import cn.nukkit.player.Player;
 import org.jetbrains.annotations.NotNull;
 
 /**

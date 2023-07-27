@@ -1,13 +1,13 @@
 package cn.nukkit.network.process.processor;
 
-import cn.nukkit.player.Player;
-import cn.nukkit.player.PlayerHandle;
 import cn.nukkit.Server;
 import cn.nukkit.entity.item.EntityBoat;
 import cn.nukkit.event.player.PlayerAnimationEvent;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.AnimatePacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
+import cn.nukkit.player.Player;
+import cn.nukkit.player.PlayerHandle;
 import org.jetbrains.annotations.NotNull;
 
 public class AnimateProcessor extends DataPacketProcessor<AnimatePacket> {

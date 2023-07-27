@@ -1,6 +1,5 @@
 package cn.nukkit.entity.projectile;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
@@ -29,6 +28,7 @@ import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.AddEntityPacket;
+import cn.nukkit.player.Player;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 

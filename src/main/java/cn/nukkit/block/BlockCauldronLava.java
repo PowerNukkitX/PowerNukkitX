@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
@@ -17,6 +16,7 @@ import cn.nukkit.item.ItemBucket;
 import cn.nukkit.item.MinecraftItemID;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.AxisAlignedBB;
+import cn.nukkit.player.Player;
 import cn.nukkit.potion.Effect;
 import org.jetbrains.annotations.NotNull;
 

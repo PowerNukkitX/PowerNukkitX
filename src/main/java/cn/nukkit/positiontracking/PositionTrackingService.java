@@ -1,6 +1,5 @@
 package cn.nukkit.positiontracking;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
@@ -10,6 +9,7 @@ import cn.nukkit.item.ItemCompassLodestone;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.PositionTrackingDBServerBroadcastPacket;
+import cn.nukkit.player.Player;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.MapMaker;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -249,7 +249,7 @@ public class PositionTrackingService implements Closeable {
 
         toRemove.forEach((player, list) -> list.forEach((IntConsumer) handler -> stopTracking(player, handler)));
 
-        Server.getInstance().getOnlinePlayers().values().forEach(this::detectNeededUpdates);
+        Server.getInstance().playerManager.getOnlinePlayers().values().forEach(this::detectNeededUpdates);
     }
 
     private Iterable<Inventory> inventories(Player player) {
@@ -480,7 +480,7 @@ public class PositionTrackingService implements Closeable {
 
     private void handlerEnabled(int trackingHandler) throws IOException {
         Server server = Server.getInstance();
-        for (Player player : server.getOnlinePlayers().values()) {
+        for (Player player : server.playerManager.getOnlinePlayers().values()) {
             if (hasTrackingDevice(player, trackingHandler) && !isTracking(player, trackingHandler, false)) {
                 startTracking(player, trackingHandler, false);
             }

@@ -1,12 +1,12 @@
 package cn.nukkit.network.process.processor;
 
-import cn.nukkit.player.Player;
-import cn.nukkit.player.PlayerHandle;
 import cn.nukkit.event.inventory.PlayerTypingAnvilInventoryEvent;
 import cn.nukkit.inventory.AnvilInventory;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.FilterTextPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
+import cn.nukkit.player.Player;
+import cn.nukkit.player.PlayerHandle;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 

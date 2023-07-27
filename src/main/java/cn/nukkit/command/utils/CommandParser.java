@@ -1,6 +1,5 @@
 package cn.nukkit.command.utils;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitXOnly;
@@ -17,6 +16,7 @@ import cn.nukkit.level.Position;
 import cn.nukkit.math.BVector3;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.player.Player;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import java.util.Collections;
@@ -425,7 +425,7 @@ public class CommandParser {
             if (EntitySelectorAPI.getAPI().checkValid(arg)) {
                 return EntitySelectorAPI.getAPI().matchEntities(this.sender, arg);
             } else {
-                Player player = Server.getInstance().getPlayer(arg);
+                Player player = Server.getInstance().playerManager.getPlayer(arg);
                 return player == null ? Collections.emptyList() : Collections.singletonList(player);
             }
         } catch (Exception e) {

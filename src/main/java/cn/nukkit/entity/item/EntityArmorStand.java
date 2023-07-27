@@ -1,6 +1,5 @@
 package cn.nukkit.entity.item;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
@@ -31,6 +30,7 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.SetEntityDataPacket;
+import cn.nukkit.player.Player;
 import cn.nukkit.potion.Effect;
 import java.util.Collection;
 
@@ -309,7 +309,11 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         SetEntityDataPacket setEntityDataPacket = new SetEntityDataPacket();
         setEntityDataPacket.eid = this.getId();
         setEntityDataPacket.metadata = this.getDataProperties();
-        Server.getInstance().getOnlinePlayers().values().forEach(all -> all.dataPacket(setEntityDataPacket));
+        Server.getInstance()
+                .playerManager
+                .getOnlinePlayers()
+                .values()
+                .forEach(all -> all.dataPacket(setEntityDataPacket));
     }
 
     @Override

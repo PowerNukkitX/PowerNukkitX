@@ -1,11 +1,11 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.network.protocol.types.PlayerAbility;
 import cn.nukkit.network.protocol.types.PlayerPermission;
+import cn.nukkit.player.Player;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -55,7 +55,8 @@ public class RequestPermissionsPacket extends DataPacket {
     }
 
     public Player getTargetPlayer() {
-        for (Player player : Server.getInstance().getOnlinePlayers().values()) {
+        for (Player player :
+                Server.getInstance().playerManager.getOnlinePlayers().values()) {
             if (player.getId() == this.uniqueEntityId) return player;
         }
         return null;

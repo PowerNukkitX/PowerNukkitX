@@ -1,6 +1,5 @@
 package cn.nukkit.entity.ai.memory;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -13,6 +12,7 @@ import cn.nukkit.entity.data.IntEntityData;
 import cn.nukkit.entity.data.LongEntityData;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.player.Player;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -201,7 +201,7 @@ public interface CoreMemoryTypes {
                     entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_TAMED, false);
                 } else {
                     entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_TAMED, true);
-                    var owner = entity.getServer().getPlayerExact(data);
+                    var owner = entity.getServer().playerManager.getPlayerExact(data);
                     if (owner != null && owner.isOnline()) {
                         entity.setDataProperty(new LongEntityData(Entity.DATA_OWNER_EID, owner.getId()));
                     }

@@ -1,12 +1,12 @@
 package cn.nukkit.inventory;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.api.DoNotModify;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.InventorySlotPacket;
+import cn.nukkit.player.Player;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;

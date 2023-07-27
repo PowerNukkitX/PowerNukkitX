@@ -1,6 +1,5 @@
 package cn.nukkit.item;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBedrock;
 import cn.nukkit.block.BlockID;
@@ -14,6 +13,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.player.Player;
 import java.util.Random;
 
 public class ItemEndCrystal extends Item {

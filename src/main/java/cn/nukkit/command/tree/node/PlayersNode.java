@@ -1,12 +1,12 @@
 package cn.nukkit.command.tree.node;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.exceptions.SelectorSyntaxException;
 import cn.nukkit.command.selector.EntitySelectorAPI;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.player.Player;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,7 +39,8 @@ public class PlayersNode extends TargetNode<Player> {
                     .collect(Collectors.toList());
             this.value = result;
         } else {
-            this.value = Collections.singletonList(Server.getInstance().getPlayer(arg));
+            this.value =
+                    Collections.singletonList(Server.getInstance().playerManager.getPlayer(arg));
         }
     }
 }

@@ -1,6 +1,5 @@
 package cn.nukkit.item;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -8,6 +7,7 @@ import cn.nukkit.event.player.PlayerItemConsumeEvent;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.player.Player;
 import cn.nukkit.potion.Potion;
 import cn.nukkit.utils.ServerException;
 import java.util.Objects;

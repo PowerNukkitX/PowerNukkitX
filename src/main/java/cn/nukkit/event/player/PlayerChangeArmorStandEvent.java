@@ -1,12 +1,12 @@
 package cn.nukkit.event.player;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
+import cn.nukkit.player.Player;
 
 @PowerNukkitXOnly
 @Since("1.19.31-r1")

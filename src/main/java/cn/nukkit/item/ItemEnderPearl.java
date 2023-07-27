@@ -1,9 +1,9 @@
 package cn.nukkit.item;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.projectile.EntityEnderPearl;
+import cn.nukkit.player.Player;
 
 public class ItemEnderPearl extends ProjectileItem {
 

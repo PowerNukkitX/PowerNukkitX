@@ -1,6 +1,5 @@
 package cn.nukkit.entity.ai.route.finder.impl;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -14,6 +13,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BlockForceFieldParticle;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.VectorMath;
+import cn.nukkit.player.Player;
 import java.util.*;
 import javax.annotation.Nullable;
 import lombok.Getter;
@@ -160,7 +160,11 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
             if (System.currentTimeMillis() - lastRouteParticleSpawn > EntityAI.getRouteParticleSpawnInterval()) {
                 findingPath.forEach(node -> this.entity.level.addParticle(
                         new BlockForceFieldParticle(node.getVector3()),
-                        Server.getInstance().getOnlinePlayers().values().toArray(Player.EMPTY_ARRAY)));
+                        Server.getInstance()
+                                .playerManager
+                                .getOnlinePlayers()
+                                .values()
+                                .toArray(Player.EMPTY_ARRAY)));
                 lastRouteParticleSpawn = System.currentTimeMillis();
             }
         }

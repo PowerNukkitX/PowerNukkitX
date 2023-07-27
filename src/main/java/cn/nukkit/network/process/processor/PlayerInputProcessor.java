@@ -1,10 +1,10 @@
 package cn.nukkit.network.process.processor;
 
-import cn.nukkit.player.PlayerHandle;
 import cn.nukkit.entity.item.EntityMinecartAbstract;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.PlayerInputPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
+import cn.nukkit.player.PlayerHandle;
 import org.jetbrains.annotations.NotNull;
 
 public class PlayerInputProcessor extends DataPacketProcessor<PlayerInputPacket> {

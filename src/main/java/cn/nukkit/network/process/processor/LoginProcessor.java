@@ -1,6 +1,5 @@
 package cn.nukkit.network.process.processor;
 
-import cn.nukkit.player.PlayerHandle;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -16,6 +15,7 @@ import cn.nukkit.network.protocol.LoginPacket;
 import cn.nukkit.network.protocol.PlayStatusPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.ServerToClientHandshakePacket;
+import cn.nukkit.player.PlayerHandle;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.utils.Binary;
@@ -72,7 +72,7 @@ public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
         }
 
         // Verify the number of server player
-        if (server.getOnlinePlayers().size() >= server.getMaxPlayers()
+        if (server.playerManager.getOnlinePlayers().size() >= server.getMaxPlayers()
                 && playerHandle.player.kick(
                         PlayerKickEvent.Reason.SERVER_FULL, "disconnectionScreen.serverFull", false)) {
             return;

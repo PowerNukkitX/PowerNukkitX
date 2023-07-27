@@ -1,6 +1,5 @@
 package cn.nukkit.entity;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.data.IntPositionEntityData;
@@ -12,6 +11,7 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
+import cn.nukkit.player.Player;
 import cn.nukkit.utils.*;
 import java.nio.charset.StandardCharsets;
 import java.util.List;

@@ -1,6 +1,5 @@
 package cn.nukkit.command.defaults;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -14,6 +13,7 @@ import cn.nukkit.command.selector.EntitySelectorAPI;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.node.WildcardIntNode;
 import cn.nukkit.command.utils.CommandLogger;
+import cn.nukkit.player.Player;
 import cn.nukkit.scoreboard.data.DisplaySlot;
 import cn.nukkit.scoreboard.data.SortOrder;
 import cn.nukkit.scoreboard.manager.IScoreboardManager;
@@ -688,8 +688,8 @@ public class ScoreboardCommand extends VanillaCommand {
             scorers = EntitySelectorAPI.getAPI().matchEntities(sender, wildcardTargetStr).stream()
                     .map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t))
                     .collect(Collectors.toSet());
-        } else if (Server.getInstance().getPlayer(wildcardTargetStr) != null) {
-            scorers.add(new PlayerScorer(Server.getInstance().getPlayer(wildcardTargetStr)));
+        } else if (Server.getInstance().playerManager.getPlayer(wildcardTargetStr) != null) {
+            scorers.add(new PlayerScorer(Server.getInstance().playerManager.getPlayer(wildcardTargetStr)));
         } else {
             scorers.add(new FakeScorer(wildcardTargetStr));
         }

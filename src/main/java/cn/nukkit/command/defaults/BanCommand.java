@@ -1,12 +1,12 @@
 package cn.nukkit.command.defaults;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.event.player.PlayerKickEvent;
+import cn.nukkit.player.Player;
 import java.util.Map;
 
 /**
@@ -33,7 +33,7 @@ public class BanCommand extends VanillaCommand {
         String reason = list.getResult(1);
         sender.getServer().getNameBans().addBan(name, reason, null, sender.getName());
 
-        Player player = sender.getServer().getPlayerExact(name);
+        Player player = sender.getServer().playerManager.getPlayerExact(name);
         if (player != null) {
             player.kick(
                     PlayerKickEvent.Reason.NAME_BANNED,

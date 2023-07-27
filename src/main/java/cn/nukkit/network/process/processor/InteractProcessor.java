@@ -1,7 +1,5 @@
 package cn.nukkit.network.process.processor;
 
-import cn.nukkit.player.Player;
-import cn.nukkit.player.PlayerHandle;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityRideable;
 import cn.nukkit.entity.custom.CustomEntity;
@@ -15,6 +13,8 @@ import cn.nukkit.event.player.PlayerMouseOverEntityEvent;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.InteractPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
+import cn.nukkit.player.Player;
+import cn.nukkit.player.PlayerHandle;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 

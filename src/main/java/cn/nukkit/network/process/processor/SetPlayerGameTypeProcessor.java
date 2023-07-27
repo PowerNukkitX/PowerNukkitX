@@ -1,12 +1,12 @@
 package cn.nukkit.network.process.processor;
 
-import cn.nukkit.player.PlayerHandle;
 import cn.nukkit.Server;
 import cn.nukkit.command.Command;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.SetPlayerGameTypePacket;
+import cn.nukkit.player.PlayerHandle;
 import org.jetbrains.annotations.NotNull;
 
 public class SetPlayerGameTypeProcessor extends DataPacketProcessor<SetPlayerGameTypePacket> {

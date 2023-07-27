@@ -18,7 +18,6 @@
 
 package cn.nukkit.inventory.transaction;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.event.inventory.GrindstoneEvent;
@@ -28,6 +27,7 @@ import cn.nukkit.inventory.transaction.action.GrindstoneItemAction;
 import cn.nukkit.inventory.transaction.action.InventoryAction;
 import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.types.NetworkInventoryAction;
+import cn.nukkit.player.Player;
 import java.util.List;
 
 /**

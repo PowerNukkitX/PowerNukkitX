@@ -1,6 +1,5 @@
 package cn.nukkit.inventory;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntityStructBlock;
@@ -9,6 +8,7 @@ import cn.nukkit.event.inventory.InventoryOpenEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.ContainerOpenPacket;
+import cn.nukkit.player.Player;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;

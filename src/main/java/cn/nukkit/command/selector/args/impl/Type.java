@@ -1,6 +1,5 @@
 package cn.nukkit.command.selector.args.impl;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
@@ -11,6 +10,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.custom.CustomEntity;
 import cn.nukkit.level.Location;
 import cn.nukkit.network.protocol.AddEntityPacket;
+import cn.nukkit.player.Player;
 import com.google.common.collect.ImmutableMap;
 import java.util.ArrayList;
 import java.util.List;

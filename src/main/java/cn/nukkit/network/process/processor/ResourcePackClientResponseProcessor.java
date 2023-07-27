@@ -1,12 +1,12 @@
 package cn.nukkit.network.process.processor;
 
-import cn.nukkit.player.Player;
-import cn.nukkit.player.PlayerHandle;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.ResourcePackClientResponsePacket;
 import cn.nukkit.network.protocol.ResourcePackDataInfoPacket;
 import cn.nukkit.network.protocol.ResourcePackStackPacket;
+import cn.nukkit.player.Player;
+import cn.nukkit.player.PlayerHandle;
 import cn.nukkit.resourcepacks.ResourcePack;
 import org.jetbrains.annotations.NotNull;
 import org.powernukkit.version.Version;

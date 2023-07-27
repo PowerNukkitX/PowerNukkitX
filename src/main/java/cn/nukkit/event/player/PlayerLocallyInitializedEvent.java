@@ -1,8 +1,8 @@
 package cn.nukkit.event.player;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.api.Since;
 import cn.nukkit.event.HandlerList;
+import cn.nukkit.player.Player;
 
 /**
  * @author Extollite (Nukkit Project)

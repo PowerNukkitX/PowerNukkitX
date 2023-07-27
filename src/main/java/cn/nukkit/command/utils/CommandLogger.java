@@ -1,6 +1,5 @@
 package cn.nukkit.command.utils;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -15,6 +14,7 @@ import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.network.protocol.types.CommandOutputMessage;
 import cn.nukkit.permission.Permissible;
+import cn.nukkit.player.Player;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.plugin.PluginBase;

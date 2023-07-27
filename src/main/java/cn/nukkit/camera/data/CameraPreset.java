@@ -1,6 +1,5 @@
 package cn.nukkit.camera.data;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.DoNotModify;
 import cn.nukkit.api.PowerNukkitXOnly;
@@ -8,6 +7,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.UpdateSoftEnumPacket;
+import cn.nukkit.player.Player;
 import java.util.Map;
 import java.util.TreeMap;
 import javax.annotation.Nullable;
@@ -46,7 +46,7 @@ public final class CameraPreset {
         for (var preset : presets) {
             preset.id = id++;
         }
-        Server.getInstance().getOnlinePlayers().values().forEach(Player::sendCameraPresets);
+        Server.getInstance().playerManager.getOnlinePlayers().values().forEach(Player::sendCameraPresets);
     }
 
     public static final CameraPreset FIRST_PERSON;

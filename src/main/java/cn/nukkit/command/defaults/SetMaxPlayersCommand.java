@@ -31,8 +31,8 @@ public class SetMaxPlayersCommand extends VanillaCommand {
         int maxPlayers = result.getValue().getResult(0);
         boolean lowerBound = false;
 
-        if (maxPlayers < Server.getInstance().getOnlinePlayers().size()) {
-            maxPlayers = Server.getInstance().getOnlinePlayers().size();
+        if (maxPlayers < Server.getInstance().playerManager.getOnlinePlayers().size()) {
+            maxPlayers = Server.getInstance().playerManager.getOnlinePlayers().size();
             lowerBound = true;
         }
 

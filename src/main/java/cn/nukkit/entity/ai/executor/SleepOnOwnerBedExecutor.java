@@ -1,11 +1,11 @@
 package cn.nukkit.entity.ai.executor;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.EntityOwnable;
+import cn.nukkit.player.Player;
 
 /**
  * 使有主人的生物在主人睡觉时睡到主人床上<br/>

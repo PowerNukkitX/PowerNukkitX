@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.value.OxidizationLevel;
@@ -11,6 +10,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.particle.ScrapeParticle;
+import cn.nukkit.player.Player;
 import java.util.concurrent.ThreadLocalRandom;
 import javax.annotation.Nullable;
 import org.jetbrains.annotations.NotNull;

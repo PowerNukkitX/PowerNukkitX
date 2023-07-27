@@ -1,8 +1,8 @@
 package cn.nukkit.entity;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
+import cn.nukkit.player.Player;
 import javax.annotation.Nullable;
 
 /**
@@ -25,7 +25,7 @@ public interface EntityOwnable extends EntityComponent {
         else {
             var ownerName = getOwnerName();
             if (ownerName == null) return null;
-            owner = asEntity().getServer().getPlayerExact(ownerName);
+            owner = asEntity().getServer().playerManager.getPlayerExact(ownerName);
         }
         return owner;
     }

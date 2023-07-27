@@ -18,7 +18,6 @@
 
 package cn.nukkit.inventory.transaction;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.event.inventory.SmithingTableEvent;
@@ -29,6 +28,7 @@ import cn.nukkit.inventory.transaction.action.InventoryAction;
 import cn.nukkit.inventory.transaction.action.SmithingItemAction;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
+import cn.nukkit.player.Player;
 import java.util.List;
 
 /**

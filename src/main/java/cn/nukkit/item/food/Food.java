@@ -1,10 +1,10 @@
 package cn.nukkit.item.food;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.api.*;
 import cn.nukkit.block.Block;
 import cn.nukkit.event.player.PlayerEatFoodEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.player.Player;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.potion.Effect;
 import java.util.*;

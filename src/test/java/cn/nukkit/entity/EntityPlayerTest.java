@@ -20,11 +20,11 @@ package cn.nukkit.entity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.Level;
 import cn.nukkit.network.SourceInterface;
+import cn.nukkit.player.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

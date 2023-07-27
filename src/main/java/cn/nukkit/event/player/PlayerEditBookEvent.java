@@ -1,10 +1,10 @@
 package cn.nukkit.event.player;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.BookEditPacket;
+import cn.nukkit.player.Player;
 
 public class PlayerEditBookEvent extends PlayerEvent implements Cancellable {
 

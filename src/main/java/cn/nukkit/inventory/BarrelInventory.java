@@ -1,12 +1,12 @@
 package cn.nukkit.inventory;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBarrel;
 import cn.nukkit.blockentity.BlockEntityBarrel;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
+import cn.nukkit.player.Player;
 
 @PowerNukkitOnly
 public class BarrelInventory extends ContainerInventory {

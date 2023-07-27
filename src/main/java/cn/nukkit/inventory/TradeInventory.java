@@ -1,12 +1,12 @@
 package cn.nukkit.inventory;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.passive.EntityVillager;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.UpdateTradePacket;
+import cn.nukkit.player.Player;
 
 @PowerNukkitXOnly
 @Since("1.19.21-r1")

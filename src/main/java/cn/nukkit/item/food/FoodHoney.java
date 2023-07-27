@@ -1,8 +1,8 @@
 package cn.nukkit.item.food;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.ItemGlassBottle;
+import cn.nukkit.player.Player;
 import cn.nukkit.potion.Effect;
 
 @PowerNukkitOnly

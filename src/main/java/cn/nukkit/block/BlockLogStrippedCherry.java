@@ -1,12 +1,12 @@
 package cn.nukkit.block;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.item.Item;
+import cn.nukkit.player.Player;
 import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitXOnly

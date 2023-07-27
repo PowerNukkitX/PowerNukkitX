@@ -1,9 +1,9 @@
 package cn.nukkit.event.player;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
+import cn.nukkit.player.Player;
 
 /**
  * @author MagicDroidX (Nukkit Project)

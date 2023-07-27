@@ -3,7 +3,6 @@ package cn.nukkit.item;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import cn.nukkit.player.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
@@ -11,6 +10,7 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.item.EntityBoat;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.player.Player;
 import java.util.Arrays;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
