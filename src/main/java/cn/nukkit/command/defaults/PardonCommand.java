@@ -1,6 +1,6 @@
 package cn.nukkit.command.defaults;
 
-import cn.nukkit.IPlayer;
+import cn.nukkit.player.IPlayer;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;

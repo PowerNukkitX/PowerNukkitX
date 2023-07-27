@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
 
-import cn.nukkit.Player;
+import cn.nukkit.player.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;

@@ -3,7 +3,7 @@ package cn.nukkit.metrics;
 import static cn.nukkit.utils.NukkitCollectors.countingInt;
 import static java.util.stream.Collectors.groupingBy;
 
-import cn.nukkit.Player;
+import cn.nukkit.player.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;

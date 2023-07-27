@@ -1,7 +1,7 @@
 package cn.nukkit.network.process.processor;
 
-import cn.nukkit.Player;
-import cn.nukkit.PlayerHandle;
+import cn.nukkit.player.Player;
+import cn.nukkit.player.PlayerHandle;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.CraftingEventPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;

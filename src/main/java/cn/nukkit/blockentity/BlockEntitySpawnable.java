@@ -1,6 +1,6 @@
 package cn.nukkit.blockentity;
 
-import cn.nukkit.Player;
+import cn.nukkit.player.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.NBTIO;

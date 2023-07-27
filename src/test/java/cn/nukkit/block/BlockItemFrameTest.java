@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import cn.nukkit.Player;
+import cn.nukkit.player.Player;
 import cn.nukkit.blockproperty.value.TallGrassType;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.item.Item;

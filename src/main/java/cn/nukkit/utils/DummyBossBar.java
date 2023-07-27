@@ -1,6 +1,6 @@
 package cn.nukkit.utils;
 
-import cn.nukkit.Player;
+import cn.nukkit.player.Player;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.Entity;

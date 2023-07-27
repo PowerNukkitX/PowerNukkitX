@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
 
 import cn.nukkit.AdventureSettings;
-import cn.nukkit.Player;
+import cn.nukkit.player.Player;
 import cn.nukkit.api.*;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BooleanBlockProperty;

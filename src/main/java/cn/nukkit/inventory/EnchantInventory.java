@@ -1,6 +1,6 @@
 package cn.nukkit.inventory;
 
-import cn.nukkit.Player;
+import cn.nukkit.player.Player;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Position;

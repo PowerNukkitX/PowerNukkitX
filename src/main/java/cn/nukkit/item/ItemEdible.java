@@ -1,6 +1,6 @@
 package cn.nukkit.item;
 
-import cn.nukkit.Player;
+import cn.nukkit.player.Player;
 import cn.nukkit.event.player.PlayerItemConsumeEvent;
 import cn.nukkit.item.food.Food;
 import cn.nukkit.level.Sound;

@@ -62,6 +62,7 @@ import cn.nukkit.permission.BanEntry;
 import cn.nukkit.permission.BanList;
 import cn.nukkit.permission.DefaultPermissions;
 import cn.nukkit.permission.Permissible;
+import cn.nukkit.player.Player;
 import cn.nukkit.plugin.*;
 import cn.nukkit.plugin.service.NKServiceManager;
 import cn.nukkit.plugin.service.ServiceManager;
@@ -2156,7 +2157,7 @@ public class Server {
      * @param uuid uuid
      * @param name 名字
      */
-    void updateName(UUID uuid, String name) {
+    public void updateName(UUID uuid, String name) {
         byte[] nameBytes = name.toLowerCase().getBytes(StandardCharsets.UTF_8);
 
         ByteBuffer buffer = ByteBuffer.allocate(16);

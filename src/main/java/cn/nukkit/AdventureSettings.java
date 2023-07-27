@@ -16,6 +16,8 @@ import cn.nukkit.network.protocol.types.PlayerAbility;
 import cn.nukkit.network.protocol.types.PlayerPermission;
 import java.util.*;
 import javax.annotation.Nullable;
+
+import cn.nukkit.player.Player;
 import lombok.Getter;
 import lombok.Setter;
 

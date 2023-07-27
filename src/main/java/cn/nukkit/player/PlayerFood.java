@@ -1,5 +1,6 @@
-package cn.nukkit;
+package cn.nukkit.player;
 
+import cn.nukkit.Server;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;

@@ -18,7 +18,7 @@
 
 package cn.nukkit.inventory;
 
-import cn.nukkit.Player;
+import cn.nukkit.player.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;

@@ -1,6 +1,6 @@
 package cn.nukkit.command;
 
-import cn.nukkit.Player;
+import cn.nukkit.player.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.*;
 import cn.nukkit.blockentity.ICommandBlock;

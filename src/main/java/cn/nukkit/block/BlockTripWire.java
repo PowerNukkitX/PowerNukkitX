@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import static cn.nukkit.blockproperty.CommonBlockProperties.POWERED;
 
-import cn.nukkit.Player;
+import cn.nukkit.player.Player;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;

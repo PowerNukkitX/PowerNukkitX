@@ -20,7 +20,7 @@ package cn.nukkit.entity;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import cn.nukkit.Player;
+import cn.nukkit.player.Player;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.Level;

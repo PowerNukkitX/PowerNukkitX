@@ -1,6 +1,6 @@
 package cn.nukkit.entity;
 
-import cn.nukkit.Player;
+import cn.nukkit.player.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.api.Since;

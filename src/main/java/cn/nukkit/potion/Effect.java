@@ -1,6 +1,6 @@
 package cn.nukkit.potion;
 
-import cn.nukkit.Player;
+import cn.nukkit.player.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;

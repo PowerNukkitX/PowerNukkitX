@@ -1,6 +1,6 @@
 package cn.nukkit.camera.data;
 
-import cn.nukkit.Player;
+import cn.nukkit.player.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.DoNotModify;
 import cn.nukkit.api.PowerNukkitXOnly;

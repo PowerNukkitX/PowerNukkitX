@@ -4,7 +4,7 @@ import static cn.nukkit.network.protocol.SetEntityLinkPacket.*;
 import static cn.nukkit.utils.Utils.dynamic;
 
 import cn.nukkit.AdventureSettings;
-import cn.nukkit.Player;
+import cn.nukkit.player.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.*;
 import cn.nukkit.block.*;

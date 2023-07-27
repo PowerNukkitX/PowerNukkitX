@@ -2,7 +2,7 @@ package cn.nukkit.entity.item;
 
 import static cn.nukkit.network.protocol.SetEntityLinkPacket.TYPE_PASSENGER;
 
-import cn.nukkit.Player;
+import cn.nukkit.player.Player;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.inventory.ChestBoatInventory;

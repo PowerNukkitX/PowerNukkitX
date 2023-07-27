@@ -1,6 +1,6 @@
 package cn.nukkit.network.process;
 
-import cn.nukkit.PlayerHandle;
+import cn.nukkit.player.PlayerHandle;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.network.protocol.DataPacket;

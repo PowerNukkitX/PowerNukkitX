@@ -1,8 +1,8 @@
 package cn.nukkit.network.process.processor;
 
 import cn.nukkit.AdventureSettings;
-import cn.nukkit.Player;
-import cn.nukkit.PlayerHandle;
+import cn.nukkit.player.Player;
+import cn.nukkit.player.PlayerHandle;
 import cn.nukkit.event.player.PlayerKickEvent;
 import cn.nukkit.event.player.PlayerToggleFlightEvent;
 import cn.nukkit.network.process.DataPacketProcessor;

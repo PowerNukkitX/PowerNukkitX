@@ -1,6 +1,6 @@
 package cn.nukkit.inventory;
 
-import cn.nukkit.Player;
+import cn.nukkit.player.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.block.BlockTrappedChest;
 import cn.nukkit.blockentity.BlockEntityChest;

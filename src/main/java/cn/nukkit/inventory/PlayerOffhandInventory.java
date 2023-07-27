@@ -1,6 +1,6 @@
 package cn.nukkit.inventory;
 
-import cn.nukkit.Player;
+import cn.nukkit.player.Player;
 import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.EntityHumanType;
 import cn.nukkit.item.Item;

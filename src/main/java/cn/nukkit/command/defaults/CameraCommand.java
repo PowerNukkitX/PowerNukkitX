@@ -1,6 +1,6 @@
 package cn.nukkit.command.defaults;
 
-import cn.nukkit.Player;
+import cn.nukkit.player.Player;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.camera.data.*;

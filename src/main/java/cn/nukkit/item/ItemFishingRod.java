@@ -1,6 +1,6 @@
 package cn.nukkit.item;
 
-import cn.nukkit.Player;
+import cn.nukkit.player.Player;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.Vector3;

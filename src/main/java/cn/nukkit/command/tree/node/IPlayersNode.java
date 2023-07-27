@@ -1,6 +1,6 @@
 package cn.nukkit.command.tree.node;
 
-import cn.nukkit.IPlayer;
+import cn.nukkit.player.IPlayer;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.exceptions.SelectorSyntaxException;

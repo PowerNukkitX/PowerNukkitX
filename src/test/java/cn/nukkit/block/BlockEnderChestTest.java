@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
-import cn.nukkit.Player;
+import cn.nukkit.player.Player;
 import cn.nukkit.blockentity.BlockEntityEnderChest;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;

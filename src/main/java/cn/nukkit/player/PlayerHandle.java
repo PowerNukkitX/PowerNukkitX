@@ -1,4 +1,4 @@
-package cn.nukkit;
+package cn.nukkit.player;
 
 import cn.nukkit.api.*;
 import cn.nukkit.block.Block;

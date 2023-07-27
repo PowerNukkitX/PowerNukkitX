@@ -1,8 +1,10 @@
-package cn.nukkit;
+package cn.nukkit.player;
 
 import static cn.nukkit.utils.Utils.dynamic;
 
+import cn.nukkit.AdventureSettings;
 import cn.nukkit.AdventureSettings.Type;
+import cn.nukkit.Server;
 import cn.nukkit.api.*;
 import cn.nukkit.block.*;
 import cn.nukkit.block.customblock.CustomBlock;

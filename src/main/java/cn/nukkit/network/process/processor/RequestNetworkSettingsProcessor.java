@@ -1,6 +1,6 @@
 package cn.nukkit.network.process.processor;
 
-import cn.nukkit.PlayerHandle;
+import cn.nukkit.player.PlayerHandle;
 import cn.nukkit.Server;
 import cn.nukkit.network.CompressionProvider;
 import cn.nukkit.network.process.DataPacketProcessor;

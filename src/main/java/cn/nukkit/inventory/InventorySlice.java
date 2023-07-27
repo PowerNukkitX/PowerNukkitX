@@ -2,7 +2,7 @@ package cn.nukkit.inventory;
 
 import static cn.nukkit.inventory.BaseInventory.AIR_ITEM;
 
-import cn.nukkit.Player;
+import cn.nukkit.player.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;

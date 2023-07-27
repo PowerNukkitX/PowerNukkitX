@@ -1,7 +1,7 @@
 package cn.nukkit.network.process.processor;
 
-import cn.nukkit.Player;
-import cn.nukkit.PlayerHandle;
+import cn.nukkit.player.Player;
+import cn.nukkit.player.PlayerHandle;
 import cn.nukkit.dialog.handler.FormDialogHandler;
 import cn.nukkit.dialog.response.FormResponseDialog;
 import cn.nukkit.dialog.window.FormWindowDialog;

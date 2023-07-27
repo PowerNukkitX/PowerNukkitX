@@ -24,6 +24,7 @@ import cn.nukkit.network.SourceInterface;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.InventorySource;
 import cn.nukkit.network.protocol.types.NetworkInventoryAction;
+import cn.nukkit.player.Player;
 import cn.nukkit.plugin.PluginManager;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;

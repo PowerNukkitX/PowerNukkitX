@@ -2,7 +2,7 @@ package cn.nukkit.command.selector;
 
 import static cn.nukkit.command.selector.SelectorType.*;
 
-import cn.nukkit.Player;
+import cn.nukkit.player.Player;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;

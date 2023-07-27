@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import static cn.nukkit.math.BlockFace.*;
 import static cn.nukkit.utils.Rail.Orientation.*;
 
-import cn.nukkit.Player;
+import cn.nukkit.player.Player;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;

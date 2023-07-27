@@ -2,7 +2,7 @@ package cn.nukkit.command.defaults;
 
 import static cn.nukkit.utils.Utils.getLevelBlocks;
 
-import cn.nukkit.Player;
+import cn.nukkit.player.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;

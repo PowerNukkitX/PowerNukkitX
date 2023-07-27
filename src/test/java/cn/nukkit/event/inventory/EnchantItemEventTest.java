@@ -2,7 +2,7 @@ package cn.nukkit.event.inventory;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import cn.nukkit.Player;
+import cn.nukkit.player.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.inventory.EnchantInventory;

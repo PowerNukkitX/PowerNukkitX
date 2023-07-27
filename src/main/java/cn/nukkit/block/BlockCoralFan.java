@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import static cn.nukkit.block.BlockCoral.COLOR;
 
-import cn.nukkit.Player;
+import cn.nukkit.player.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;

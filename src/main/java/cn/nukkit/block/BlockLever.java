@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import static cn.nukkit.blockproperty.CommonBlockProperties.OPEN;
 
 import cn.nukkit.AdventureSettings;
-import cn.nukkit.Player;
+import cn.nukkit.player.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;

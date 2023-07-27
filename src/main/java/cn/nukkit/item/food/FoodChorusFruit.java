@@ -1,6 +1,6 @@
 package cn.nukkit.item.food;
 
-import cn.nukkit.Player;
+import cn.nukkit.player.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockLiquid;
 import cn.nukkit.event.player.PlayerTeleportEvent;

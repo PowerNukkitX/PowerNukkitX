@@ -2,7 +2,7 @@ package cn.nukkit.item;
 
 import static cn.nukkit.utils.Utils.dynamic;
 
-import cn.nukkit.Player;
+import cn.nukkit.player.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.Since;
 import cn.nukkit.level.Sound;

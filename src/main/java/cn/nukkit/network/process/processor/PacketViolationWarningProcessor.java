@@ -1,6 +1,6 @@
 package cn.nukkit.network.process.processor;
 
-import cn.nukkit.PlayerHandle;
+import cn.nukkit.player.PlayerHandle;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.PacketViolationWarningPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;

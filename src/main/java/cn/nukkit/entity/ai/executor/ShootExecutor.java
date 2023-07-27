@@ -1,6 +1,6 @@
 package cn.nukkit.entity.ai.executor;
 
-import cn.nukkit.Player;
+import cn.nukkit.player.Player;
 import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;

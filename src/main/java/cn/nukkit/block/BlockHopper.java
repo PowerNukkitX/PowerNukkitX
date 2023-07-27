@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
 import static cn.nukkit.blockproperty.CommonBlockProperties.TOGGLE;
 
-import cn.nukkit.Player;
+import cn.nukkit.player.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.*;
 import cn.nukkit.blockentity.BlockEntity;

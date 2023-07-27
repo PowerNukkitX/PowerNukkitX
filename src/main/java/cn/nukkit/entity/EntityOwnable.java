@@ -1,6 +1,6 @@
 package cn.nukkit.entity;
 
-import cn.nukkit.Player;
+import cn.nukkit.player.Player;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import javax.annotation.Nullable;
