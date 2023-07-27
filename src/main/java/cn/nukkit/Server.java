@@ -777,7 +777,6 @@ public class Server {
         }
 
         this.entityMetadata = new EntityMetadataStore();
-        playerManager.playerMetadata = new PlayerMetadataStore();
         this.levelMetadata = new LevelMetadataStore();
 
         this.operators = new Config(this.dataPath + "ops.txt", Config.ENUM);
@@ -787,7 +786,7 @@ public class Server {
         this.banByIP = new BanList(this.dataPath + "banned-ips.json");
         this.banByIP.load();
 
-        playerManager.maxPlayers = this.getPropertyInt("max-players", 20);
+        playerManager.setMaxPlayers(this.getPropertyInt("max-players", 20));
         this.setAutoSave(this.getPropertyBoolean("auto-save", true));
 
         if (this.getPropertyBoolean("hardcore", false) && this.getDifficulty() < 3) {
@@ -862,9 +861,9 @@ public class Server {
 
         // Convert legacy data before plugins get the chance to mess with it.
         try {
-            playerManager.nameLookup = Iq80DBFactory.factory.open(
+            playerManager.setNameLookup(Iq80DBFactory.factory.open(
                     new File(dataPath, "players"),
-                    new Options().createIfMissing(true).compressionType(CompressionType.ZLIB_RAW));
+                    new Options().createIfMissing(true).compressionType(CompressionType.ZLIB_RAW)));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -1031,7 +1030,7 @@ public class Server {
 
         log.info("Reloading properties...");
         this.properties.reload();
-        playerManager.maxPlayers = this.getPropertyInt("max-players", 20);
+        playerManager.setMaxPlayers(this.getPropertyInt("max-players", 20));
 
         if (this.getPropertyBoolean("hardcore", false) && this.getDifficulty() < 3) {
             this.setPropertyInt("difficulty", difficulty = 3);
@@ -1091,7 +1090,7 @@ public class Server {
                 this.rcon.close();
             }
 
-            for (Player player : new ArrayList<>(playerManager.players.values())) {
+            for (Player player : new ArrayList<>(playerManager.getPlayers().values())) {
                 player.close(player.getLeaveMessage(), this.getConfig("settings.shutdown-message", "Server closed"));
             }
 
@@ -1129,8 +1128,8 @@ public class Server {
                 this.network.unregisterInterface(interfaz);
             }
 
-            if (playerManager.nameLookup != null) {
-                playerManager.nameLookup.close();
+            if (playerManager.getNameLookup() != null) {
+                playerManager.getNameLookup().close();
             }
             // close watchdog and metrics
             if (this.watchdog != null) {
@@ -1231,7 +1230,7 @@ public class Server {
 
     private void checkTickUpdates(int currentTick, long tickTime) {
         if (this.alwaysTickPlayers) {
-            for (Player p : new ArrayList<>(playerManager.players.values())) {
+            for (Player p : new ArrayList<>(playerManager.getPlayers().values())) {
                 p.onUpdate(currentTick);
             }
         }
@@ -1291,7 +1290,7 @@ public class Server {
 
     public void doAutoSave() {
         if (this.getAutoSave()) {
-            for (Player player : new ArrayList<>(playerManager.players.values())) {
+            for (Player player : new ArrayList<>(playerManager.getPlayers().values())) {
                 if (player.isOnline()) {
                     player.save(true);
                 } else if (!player.isConnected()) {
@@ -1336,7 +1335,7 @@ public class Server {
 
         this.checkTickUpdates(this.tickCounter, tickTime);
 
-        for (Player player : new ArrayList<>(playerManager.players.values())) {
+        for (Player player : new ArrayList<>(playerManager.getPlayers().values())) {
             player.checkNetwork();
         }
 
@@ -1466,7 +1465,7 @@ public class Server {
         String title = (char) 0x1b + "]0;" + this.getName() + " "
                 + this.getNukkitVersion()
                 + " | " + this.getGitCommit()
-                + " | Online " + playerManager.players.size() + "/" + this.getMaxPlayers()
+                + " | Online " + playerManager.getPlayers().size() + "/" + this.getMaxPlayers()
                 + " | Memory " + usage;
         if (!Nukkit.shortTitle) {
             title += " | U " + NukkitMath.round((this.network.getUpload() / 1024 * 1000), 2) + " D "
@@ -1859,8 +1858,8 @@ public class Server {
         pk.payload = data;
 
         for (InetSocketAddress i : targets) {
-            if (playerManager.players.containsKey(i)) {
-                playerManager.players.get(i).dataPacket(pk);
+            if (playerManager.getPlayers().containsKey(i)) {
+                playerManager.getPlayers().get(i).dataPacket(pk);
             }
         }
     }
@@ -2017,7 +2016,7 @@ public class Server {
     }
 
     public PlayerMetadataStore getPlayerMetadata() {
-        return playerManager.playerMetadata;
+        return playerManager.getPlayerMetadata();
     }
 
     public LevelMetadataStore getLevelMetadata() {
@@ -2469,11 +2468,11 @@ public class Server {
     // region configs - 配置相关
 
     public int getMaxPlayers() {
-        return playerManager.maxPlayers;
+        return playerManager.getMaxPlayers();
     }
 
     public void setMaxPlayers(int maxPlayers) {
-        playerManager.maxPlayers = maxPlayers;
+        playerManager.setMaxPlayers(maxPlayers);
     }
 
     /**

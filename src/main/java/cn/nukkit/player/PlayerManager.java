@@ -23,6 +23,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.iq80.leveldb.DB;
 
@@ -34,12 +36,21 @@ public class PlayerManager {
         this.server = server;
     }
 
-    public int maxPlayers;
-    public DB nameLookup;
-    public PlayerMetadataStore playerMetadata;
+    @Getter
+    @Setter
+    private int maxPlayers;
+
+    @Getter
+    @Setter
+    private DB nameLookup;
+
+    @Getter
+    private PlayerMetadataStore playerMetadata = new PlayerMetadataStore();
+
     private final Set<UUID> uniquePlayers = new HashSet<>();
 
-    public final Map<InetSocketAddress, Player> players = new HashMap<>();
+    @Getter
+    private final Map<InetSocketAddress, Player> players = new HashMap<>();
 
     private final Map<UUID, Player> playerList = new HashMap<>();
     public PlayerDataSerializer playerDataSerializer;
