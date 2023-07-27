@@ -27,6 +27,7 @@ import cn.nukkit.item.enchantment.trident.EnchantmentTridentImpaling;
 import cn.nukkit.item.enchantment.trident.EnchantmentTridentLoyalty;
 import cn.nukkit.item.enchantment.trident.EnchantmentTridentRiptide;
 import cn.nukkit.math.NukkitMath;
+import cn.nukkit.player.Player;
 import cn.nukkit.utils.Identifier;
 import cn.nukkit.utils.OK;
 import cn.nukkit.utils.TextFormat;
@@ -845,7 +846,7 @@ public abstract class Enchantment implements Cloneable {
      * <p>
      * 覆写该方法提供当实体使用附魔武器攻击所增益的攻击力
      * <p>
-     * 目前只生效于{@link cn.nukkit.Player Player} 和 使用了{@link cn.nukkit.entity.ai.executor.MeleeAttackExecutor MeleeAttackExecutor}行为的实体
+     * 目前只生效于{@link Player Player} 和 使用了{@link cn.nukkit.entity.ai.executor.MeleeAttackExecutor MeleeAttackExecutor}行为的实体
      *
      * @param entity 攻击的目标实体
      * @return the damage value

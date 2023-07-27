@@ -1,7 +1,7 @@
 package cn.nukkit.event.player;
 
-import cn.nukkit.Player;
 import cn.nukkit.event.HandlerList;
+import cn.nukkit.player.Player;
 
 public class PlayerJumpEvent extends PlayerEvent {
     private static final HandlerList handlers = new HandlerList();

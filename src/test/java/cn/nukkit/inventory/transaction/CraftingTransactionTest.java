@@ -3,7 +3,6 @@ package cn.nukkit.inventory.transaction;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
-import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
@@ -14,6 +13,7 @@ import cn.nukkit.inventory.ShapelessRecipe;
 import cn.nukkit.inventory.transaction.action.InventoryAction;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
+import cn.nukkit.player.Player;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;

@@ -1,11 +1,11 @@
 package cn.nukkit.event.block;
 
-import cn.nukkit.Player;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.BlockEntityItemFrame;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.item.Item;
+import cn.nukkit.player.Player;
 import javax.annotation.Nullable;
 import org.jetbrains.annotations.NotNull;
 

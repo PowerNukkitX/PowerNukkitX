@@ -1,14 +1,14 @@
 package cn.nukkit.network.process.processor;
 
-import cn.nukkit.AdventureSettings;
-import cn.nukkit.Player;
-import cn.nukkit.PlayerHandle;
 import cn.nukkit.event.player.PlayerKickEvent;
 import cn.nukkit.event.player.PlayerToggleFlightEvent;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.RequestAbilityPacket;
 import cn.nukkit.network.protocol.types.PlayerAbility;
+import cn.nukkit.player.AdventureSettings;
+import cn.nukkit.player.Player;
+import cn.nukkit.player.PlayerHandle;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 

@@ -1,7 +1,7 @@
 package cn.nukkit.item.food;
 
-import cn.nukkit.Player;
 import cn.nukkit.item.ItemBowl;
+import cn.nukkit.player.Player;
 
 /**
  * @author Snake1999

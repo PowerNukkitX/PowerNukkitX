@@ -37,7 +37,7 @@ public class EntityMoveToOwnerExecutor implements EntityControl, IBehaviorExecut
         if (!entity.isEnablePitch()) entity.setEnablePitch(true);
 
         if (entity instanceof EntityOwnable entityOwnable) {
-            var player = entity.getServer().getPlayer(entityOwnable.getOwnerName());
+            var player = entity.getServer().playerManager.getPlayer(entityOwnable.getOwnerName());
             if (player == null) return false;
 
             // 获取目的地位置（这个clone很重要）

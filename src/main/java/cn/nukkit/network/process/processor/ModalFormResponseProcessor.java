@@ -1,7 +1,5 @@
 package cn.nukkit.network.process.processor;
 
-import cn.nukkit.Player;
-import cn.nukkit.PlayerHandle;
 import cn.nukkit.event.player.PlayerFormRespondedEvent;
 import cn.nukkit.event.player.PlayerSettingsRespondedEvent;
 import cn.nukkit.form.handler.FormResponseHandler;
@@ -10,6 +8,8 @@ import cn.nukkit.form.window.FormWindowCustom;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.ModalFormResponsePacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
+import cn.nukkit.player.Player;
+import cn.nukkit.player.PlayerHandle;
 import org.jetbrains.annotations.NotNull;
 
 public class ModalFormResponseProcessor extends DataPacketProcessor<ModalFormResponsePacket> {

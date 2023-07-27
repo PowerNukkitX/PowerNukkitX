@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import static cn.nukkit.potion.Effect.getEffect;
 
-import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
@@ -23,6 +22,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.player.Player;
 import cn.nukkit.potion.Effect;
 import java.util.Random;
 import javax.annotation.Nullable;

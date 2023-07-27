@@ -1,9 +1,9 @@
 package cn.nukkit.block.fake;
 
-import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.player.Player;
 import java.util.Collections;
 import java.util.List;
 

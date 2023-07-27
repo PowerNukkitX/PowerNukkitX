@@ -1,11 +1,11 @@
 package cn.nukkit.event.inventory;
 
-import cn.nukkit.Player;
 import cn.nukkit.api.Since;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.inventory.EnchantInventory;
 import cn.nukkit.item.Item;
+import cn.nukkit.player.Player;
 
 @Since("1.3.1.0-PN")
 public class EnchantItemEvent extends InventoryEvent implements Cancellable {

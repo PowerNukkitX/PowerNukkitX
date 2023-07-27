@@ -1,12 +1,12 @@
 package cn.nukkit.command.defaults;
 
-import cn.nukkit.Player;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.lang.TranslationContainer;
+import cn.nukkit.player.Player;
 import java.util.Map;
 
 /**
@@ -29,7 +29,7 @@ public class ListCommand extends VanillaCommand {
             CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         StringBuilder online = new StringBuilder();
         int onlineCount = 0;
-        for (Player player : sender.getServer().getOnlinePlayers().values()) {
+        for (Player player : sender.getServer().playerManager.getOnlinePlayers().values()) {
             if (player.isOnline() && (!(sender instanceof Player) || ((Player) sender).canSee(player))) {
                 online.append(player.getDisplayName()).append(", ");
                 ++onlineCount;

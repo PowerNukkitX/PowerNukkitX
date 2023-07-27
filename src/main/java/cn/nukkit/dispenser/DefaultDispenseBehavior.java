@@ -1,6 +1,5 @@
 package cn.nukkit.dispenser;
 
-import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.BlockDispenser;
 import cn.nukkit.entity.Entity;
@@ -13,6 +12,7 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockFace.Axis;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.player.Player;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 

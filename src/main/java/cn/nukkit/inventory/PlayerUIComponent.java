@@ -1,9 +1,9 @@
 package cn.nukkit.inventory;
 
-import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
+import cn.nukkit.player.Player;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;

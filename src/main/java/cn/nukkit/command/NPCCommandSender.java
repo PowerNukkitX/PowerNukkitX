@@ -1,6 +1,5 @@
 package cn.nukkit.command;
 
-import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
@@ -15,6 +14,7 @@ import cn.nukkit.permission.PermissibleBase;
 import cn.nukkit.permission.Permission;
 import cn.nukkit.permission.PermissionAttachment;
 import cn.nukkit.permission.PermissionAttachmentInfo;
+import cn.nukkit.player.Player;
 import cn.nukkit.plugin.Plugin;
 import java.util.Map;
 import org.jetbrains.annotations.NotNull;

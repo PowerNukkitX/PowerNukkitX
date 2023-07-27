@@ -1,6 +1,5 @@
 package cn.nukkit.command.defaults;
 
-import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
@@ -13,6 +12,7 @@ import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.Sound;
 import cn.nukkit.network.protocol.PlaySoundPacket;
+import cn.nukkit.player.Player;
 import com.google.common.collect.Lists;
 import java.util.Arrays;
 import java.util.List;

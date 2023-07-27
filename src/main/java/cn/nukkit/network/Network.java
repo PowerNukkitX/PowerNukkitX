@@ -1,11 +1,11 @@
 package cn.nukkit.network;
 
-import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.*;
 import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
 import cn.nukkit.network.process.DataPacketManager;
 import cn.nukkit.network.protocol.*;
+import cn.nukkit.player.Player;
 import cn.nukkit.utils.*;
 import cn.powernukkitx.libdeflate.CompressionType;
 import cn.powernukkitx.libdeflate.LibdeflateCompressor;

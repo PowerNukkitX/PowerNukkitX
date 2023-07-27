@@ -1,6 +1,5 @@
 package cn.nukkit.potion;
 
-import cn.nukkit.Player;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
@@ -11,6 +10,7 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityRegainHealthEvent;
 import cn.nukkit.event.potion.PotionApplyEvent;
+import cn.nukkit.player.Player;
 import cn.nukkit.utils.Identifier;
 import cn.nukkit.utils.InvalidIdentifierException;
 import cn.nukkit.utils.ServerException;

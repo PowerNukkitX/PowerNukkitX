@@ -1,10 +1,10 @@
 package cn.nukkit.network.process.processor;
 
-import cn.nukkit.PlayerHandle;
 import cn.nukkit.Server;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.ClientToServerHandshakePacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
+import cn.nukkit.player.PlayerHandle;
 import org.jetbrains.annotations.NotNull;
 
 /**

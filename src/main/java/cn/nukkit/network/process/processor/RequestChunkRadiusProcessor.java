@@ -1,10 +1,10 @@
 package cn.nukkit.network.process.processor;
 
-import cn.nukkit.PlayerHandle;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.ChunkRadiusUpdatedPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.RequestChunkRadiusPacket;
+import cn.nukkit.player.PlayerHandle;
 import org.jetbrains.annotations.NotNull;
 
 public class RequestChunkRadiusProcessor extends DataPacketProcessor<RequestChunkRadiusPacket> {

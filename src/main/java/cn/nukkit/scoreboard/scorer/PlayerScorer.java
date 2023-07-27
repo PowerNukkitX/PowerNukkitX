@@ -1,10 +1,10 @@
 package cn.nukkit.scoreboard.scorer;
 
-import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.network.protocol.SetScorePacket;
+import cn.nukkit.player.Player;
 import cn.nukkit.scoreboard.data.ScorerType;
 import cn.nukkit.scoreboard.scoreboard.IScoreboard;
 import cn.nukkit.scoreboard.scoreboard.IScoreboardLine;
@@ -32,8 +32,8 @@ public class PlayerScorer implements IScorer {
 
     public Player getPlayer() {
         if (uuid == null) return null;
-        return Server.getInstance().getPlayer(uuid).isPresent()
-                ? Server.getInstance().getPlayer(uuid).get()
+        return Server.getInstance().playerManager.getPlayer(uuid).isPresent()
+                ? Server.getInstance().playerManager.getPlayer(uuid).get()
                 : null;
     }
 
@@ -61,21 +61,25 @@ public class PlayerScorer implements IScorer {
 
     @Override
     public String getName() {
-        return Server.getInstance().getOnlinePlayers().get(uuid) == null
+        return Server.getInstance().playerManager.getOnlinePlayers().get(uuid) == null
                 ? String.valueOf(uuid.getMostSignificantBits())
-                : Server.getInstance().getOnlinePlayers().get(uuid).getName();
+                : Server.getInstance()
+                        .playerManager
+                        .getOnlinePlayers()
+                        .get(uuid)
+                        .getName();
     }
 
     @Override
     public SetScorePacket.ScoreInfo toNetworkInfo(IScoreboard scoreboard, IScoreboardLine line) {
         if (uuid == null) return null;
-        return Server.getInstance().getPlayer(uuid).isPresent()
+        return Server.getInstance().playerManager.getPlayer(uuid).isPresent()
                 ? new SetScorePacket.ScoreInfo(
                         line.getLineId(),
                         scoreboard.getObjectiveName(),
                         line.getScore(),
                         ScorerType.PLAYER,
-                        Server.getInstance().getPlayer(uuid).get().getId())
+                        Server.getInstance().playerManager.getPlayer(uuid).get().getId())
                 : null;
     }
 }

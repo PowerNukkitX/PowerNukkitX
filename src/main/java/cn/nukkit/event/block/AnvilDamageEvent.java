@@ -1,6 +1,5 @@
 package cn.nukkit.event.block;
 
-import cn.nukkit.Player;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
@@ -11,6 +10,7 @@ import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.inventory.transaction.CraftingTransaction;
+import cn.nukkit.player.Player;
 import com.google.common.base.Preconditions;
 import javax.annotation.Nullable;
 import org.jetbrains.annotations.NotNull;

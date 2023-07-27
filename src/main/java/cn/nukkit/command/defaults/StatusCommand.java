@@ -241,12 +241,12 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
             sender.sendMessage(TextFormat.GOLD + "Total VM memory: " + TextFormat.RED + totalMB + " MB.");
 
             TextFormat playerColor = TextFormat.GREEN;
-            if (((float) server.getOnlinePlayers().size() / (float) server.getMaxPlayers()) > 0.85) {
+            if (((float) server.playerManager.getOnlinePlayers().size() / (float) server.getMaxPlayers()) > 0.85) {
                 playerColor = TextFormat.GOLD;
             }
 
             sender.sendMessage(TextFormat.GOLD + "Players: " + playerColor
-                    + server.getOnlinePlayers().size() + TextFormat.GREEN + " online, " + TextFormat.RED
+                    + server.playerManager.getOnlinePlayers().size() + TextFormat.GREEN + " online, " + TextFormat.RED
                     + server.getMaxPlayers() + TextFormat.GREEN + " max. ");
 
             for (Level level : server.getLevels().values()) {
@@ -288,11 +288,12 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                 sender.sendMessage(TextFormat.GOLD + "Tick Load: " + tpsColor + server.getTickUsage() + "%");
                 // 在线玩家情况
                 var playerColor = TextFormat.GREEN;
-                if (((float) server.getOnlinePlayers().size() / (float) server.getMaxPlayers()) > 0.85) {
+                if (((float) server.playerManager.getOnlinePlayers().size() / (float) server.getMaxPlayers()) > 0.85) {
                     playerColor = TextFormat.GOLD;
                 }
                 sender.sendMessage(TextFormat.GOLD + "Players: " + playerColor
-                        + server.getOnlinePlayers().size() + TextFormat.GREEN + " online, " + TextFormat.RED
+                        + server.playerManager.getOnlinePlayers().size() + TextFormat.GREEN + " online, "
+                        + TextFormat.RED
                         + server.getMaxPlayers() + TextFormat.GREEN + " max. ");
                 // 各个世界的情况
                 for (Level level : server.getLevels().values()) {

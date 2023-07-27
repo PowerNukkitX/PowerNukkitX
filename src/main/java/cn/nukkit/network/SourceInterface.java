@@ -1,10 +1,10 @@
 package cn.nukkit.network;
 
-import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.session.NetworkPlayerSession;
+import cn.nukkit.player.Player;
 import java.net.InetSocketAddress;
 
 /**

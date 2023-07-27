@@ -1,6 +1,5 @@
 package cn.nukkit.item;
 
-import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.item.EntityCrossbowFirework;
@@ -13,6 +12,7 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.*;
+import cn.nukkit.player.Player;
 import cn.nukkit.utils.Utils;
 
 @Since("1.6.0.0-PNX")

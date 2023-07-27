@@ -1,6 +1,5 @@
 package cn.nukkit.inventory;
 
-import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.block.BlockEnderChest;
 import cn.nukkit.entity.EntityHuman;
@@ -10,6 +9,7 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.network.protocol.BlockEventPacket;
 import cn.nukkit.network.protocol.ContainerClosePacket;
 import cn.nukkit.network.protocol.ContainerOpenPacket;
+import cn.nukkit.player.Player;
 
 public class PlayerEnderChestInventory extends BaseInventory {
 

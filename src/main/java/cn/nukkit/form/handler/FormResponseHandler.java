@@ -1,6 +1,6 @@
 package cn.nukkit.form.handler;
 
-import cn.nukkit.Player;
+import cn.nukkit.player.Player;
 import java.util.function.IntConsumer;
 
 public interface FormResponseHandler {

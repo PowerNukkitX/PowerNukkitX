@@ -1,5 +1,6 @@
-package cn.nukkit;
+package cn.nukkit.player;
 
+import cn.nukkit.Server;
 import cn.nukkit.metadata.Metadatable;
 import cn.nukkit.permission.ServerOperator;
 import java.util.UUID;
@@ -13,7 +14,7 @@ import java.util.UUID;
  *
  * @author MagicDroidX(code) @ Nukkit Project
  * @author 粉鞋大妈(javadoc) @ Nukkit Project
- * @see cn.nukkit.Player
+ * @see Player
  * @since Nukkit 1.0 | Nukkit API 1.0.0
  */
 public interface IPlayer extends ServerOperator, Metadatable {
@@ -31,9 +32,9 @@ public interface IPlayer extends ServerOperator, Metadatable {
      * 返回这个玩家的名称。<br>
      * Returns the name of this player.
      *
-     * <p>如果是在线的玩家，这个函数只会返回登录名字。如果要返回显示的名字，参见{@link cn.nukkit.Player#getDisplayName}<br>
+     * <p>如果是在线的玩家，这个函数只会返回登录名字。如果要返回显示的名字，参见{@link Player#getDisplayName}<br>
      * Notice that this will only return its login name. If you need its display name, turn to
-     * {@link cn.nukkit.Player#getDisplayName}</p>
+     * {@link Player#getDisplayName}</p>
      *
      * @return 这个玩家的名称。<br>The name of this player.
      * @since Nukkit 1.0 | Nukkit API 1.0.0

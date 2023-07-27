@@ -3,7 +3,6 @@ package cn.nukkit.event.block;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
-import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockBell;
@@ -11,6 +10,7 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.blockproperty.value.AttachmentType;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.Level;
+import cn.nukkit.player.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

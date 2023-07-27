@@ -3,10 +3,10 @@ package cn.nukkit.network;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.when;
 
-import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.ResourcePackChunkRequestPacket;
+import cn.nukkit.player.Player;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;

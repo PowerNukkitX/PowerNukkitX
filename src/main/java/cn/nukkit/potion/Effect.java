@@ -1,6 +1,5 @@
 package cn.nukkit.potion;
 
-import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
@@ -13,6 +12,7 @@ import cn.nukkit.event.entity.EntityEffectRemoveEvent;
 import cn.nukkit.event.entity.EntityEffectUpdateEvent;
 import cn.nukkit.event.entity.EntityRegainHealthEvent;
 import cn.nukkit.network.protocol.MobEffectPacket;
+import cn.nukkit.player.Player;
 import cn.nukkit.utils.ServerException;
 
 /**

@@ -1,12 +1,12 @@
 package cn.nukkit.event.player;
 
-import cn.nukkit.Player;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.item.EntityFishingHook;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.player.Player;
 
 /**
  * An event that is called when player catches a fish

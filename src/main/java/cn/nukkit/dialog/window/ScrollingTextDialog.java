@@ -1,9 +1,9 @@
 package cn.nukkit.dialog.window;
 
-import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.player.Player;
 import cn.nukkit.scheduler.Task;
 
 @PowerNukkitXOnly

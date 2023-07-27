@@ -1,6 +1,5 @@
 package cn.nukkit.network.protocol.types;
 
-import cn.nukkit.Player;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
@@ -9,6 +8,7 @@ import cn.nukkit.inventory.*;
 import cn.nukkit.inventory.transaction.action.*;
 import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.InventoryTransactionPacket;
+import cn.nukkit.player.Player;
 import java.util.Optional;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;

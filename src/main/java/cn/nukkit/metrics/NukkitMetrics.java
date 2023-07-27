@@ -3,12 +3,12 @@ package cn.nukkit.metrics;
 import static cn.nukkit.utils.NukkitCollectors.countingInt;
 import static java.util.stream.Collectors.groupingBy;
 
-import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.player.Player;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.LoginChainData;
 import java.io.BufferedWriter;
@@ -141,20 +141,20 @@ public class NukkitMetrics {
         nukkitMetrics.metrics = metrics;
 
         metrics.addCustomChart(new Metrics.SingleLineChart(
-                "players", () -> server.getOnlinePlayers().size()));
+                "players", () -> server.playerManager.getOnlinePlayers().size()));
         metrics.addCustomChart(new Metrics.SimplePie("minecraft_version", server::getVersion));
         metrics.addCustomChart(new Metrics.SimplePie("pnx_version", server::getBStatsNukkitVersion));
         metrics.addCustomChart(new Metrics.SimplePie(
                 "xbox_auth", () -> server.getPropertyBoolean("xbox-auth") ? "Required" : "Not required"));
 
-        metrics.addCustomChart(
-                new Metrics.AdvancedPie("player_platform_pie", () -> server.getOnlinePlayers().values().stream()
+        metrics.addCustomChart(new Metrics.AdvancedPie(
+                "player_platform_pie", () -> server.playerManager.getOnlinePlayers().values().stream()
                         .map(Player::getLoginChainData)
                         .map(LoginChainData::getDeviceOS)
                         .collect(groupingBy(nukkitMetrics::mapDeviceOSToString, countingInt()))));
 
-        metrics.addCustomChart(
-                new Metrics.AdvancedPie("player_game_version_pie", () -> server.getOnlinePlayers().values().stream()
+        metrics.addCustomChart(new Metrics.AdvancedPie(
+                "player_game_version_pie", () -> server.playerManager.getOnlinePlayers().values().stream()
                         .map(Player::getLoginChainData)
                         .collect(groupingBy(LoginChainData::getGameVersion, countingInt()))));
 

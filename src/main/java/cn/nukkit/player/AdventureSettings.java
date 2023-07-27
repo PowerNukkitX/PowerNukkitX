@@ -1,5 +1,6 @@
-package cn.nukkit;
+package cn.nukkit.player;
 
+import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.api.PowerNukkitXOnly;
@@ -151,7 +152,8 @@ public class AdventureSettings implements Cloneable {
     public void update() {
         // 向所有玩家发送以使他们能看到彼此的权限
         // Permission to send to all players so they can see each other
-        var players = new HashSet<>(player.getServer().getOnlinePlayers().values());
+        var players = new HashSet<>(
+                player.getServer().playerManager.getOnlinePlayers().values());
         // 确保会发向自己（eg：玩家进服时在线玩家里没有此玩家）
         // Make sure it will be sent to yourself (eg: there is no such player among the online players when the player
         // enters the server)

@@ -1,11 +1,11 @@
 package cn.nukkit.inventory.transaction;
 
-import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.inventory.transaction.action.InventoryAction;
 import cn.nukkit.inventory.transaction.action.SlotChangeAction;
 import cn.nukkit.inventory.transaction.action.TradeAction;
+import cn.nukkit.player.Player;
 import java.util.List;
 
 @PowerNukkitXOnly

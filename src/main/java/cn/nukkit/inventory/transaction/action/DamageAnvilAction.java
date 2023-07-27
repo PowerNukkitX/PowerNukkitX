@@ -1,6 +1,5 @@
 package cn.nukkit.inventory.transaction.action;
 
-import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAnvil;
@@ -10,6 +9,7 @@ import cn.nukkit.inventory.AnvilInventory;
 import cn.nukkit.inventory.transaction.CraftingTransaction;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
+import cn.nukkit.player.Player;
 import lombok.ToString;
 
 @PowerNukkitOnly

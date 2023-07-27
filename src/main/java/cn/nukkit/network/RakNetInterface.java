@@ -1,6 +1,5 @@
 package cn.nukkit.network;
 
-import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
@@ -10,6 +9,7 @@ import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.session.NetworkPlayerSession;
 import cn.nukkit.network.session.RakNetPlayerSession;
+import cn.nukkit.player.Player;
 import cn.nukkit.utils.Utils;
 import com.google.common.base.Strings;
 import com.nukkitx.network.raknet.RakNetServer;
@@ -76,7 +76,7 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
                 Constructor<? extends Player> constructor = event.getPlayerClass()
                         .getConstructor(SourceInterface.class, Long.class, InetSocketAddress.class);
                 Player player = constructor.newInstance(this, event.getClientId(), event.getSocketAddress());
-                this.server.addPlayer(address, player);
+                this.server.playerManager.addPlayer(address, player);
                 session.setPlayer(player);
             } catch (Exception e) {
                 Server.getInstance().getLogger().error("Failed to create player", e);

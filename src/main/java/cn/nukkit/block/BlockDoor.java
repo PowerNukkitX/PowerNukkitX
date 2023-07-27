@@ -3,8 +3,6 @@ package cn.nukkit.block;
 import static cn.nukkit.blockproperty.CommonBlockProperties.OPEN;
 import static cn.nukkit.blockproperty.CommonBlockProperties.UPPER_BLOCK;
 
-import cn.nukkit.AdventureSettings;
-import cn.nukkit.Player;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
@@ -27,6 +25,8 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockFace.AxisDirection;
 import cn.nukkit.math.SimpleAxisAlignedBB;
+import cn.nukkit.player.AdventureSettings;
+import cn.nukkit.player.Player;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
 import java.util.ArrayList;

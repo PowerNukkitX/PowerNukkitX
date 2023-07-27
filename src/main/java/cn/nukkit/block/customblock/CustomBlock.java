@@ -1,12 +1,12 @@
 package cn.nukkit.block.customblock;
 
-import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockFallableMeta;
 import cn.nukkit.block.BlockMeta;
 import cn.nukkit.item.Item;
+import cn.nukkit.player.Player;
 import java.util.Locale;
 import javax.annotation.Nullable;
 import org.jetbrains.annotations.NotNull;

@@ -1,12 +1,12 @@
 package cn.nukkit.command.tree.node;
 
-import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.exceptions.SelectorSyntaxException;
 import cn.nukkit.command.selector.EntitySelectorAPI;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.player.Player;
 import com.google.common.collect.Lists;
 import java.util.List;
 
@@ -35,7 +35,7 @@ public class EntitiesNode extends TargetNode<Entity> {
             this.value = entities;
         } else {
             entities = Lists.newArrayList();
-            Player player = Server.getInstance().getPlayer(arg);
+            Player player = Server.getInstance().playerManager.getPlayer(arg);
             if (player != null) {
                 entities.add(player);
             }

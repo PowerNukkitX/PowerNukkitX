@@ -1,12 +1,12 @@
 package cn.nukkit.entity.passive;
 
-import cn.nukkit.Player;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.entity.EntityOwnable;
 import cn.nukkit.entity.data.ByteEntityData;
 import cn.nukkit.entity.data.StringEntityData;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.player.Player;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -78,7 +78,7 @@ public abstract class EntityTameable extends EntityAnimal implements EntityOwnab
 
     @Override
     public Player getOwner() {
-        return getServer().getPlayer(getOwnerName());
+        return getServer().playerManager.getPlayer(getOwnerName());
     }
 
     public boolean isTamed() {

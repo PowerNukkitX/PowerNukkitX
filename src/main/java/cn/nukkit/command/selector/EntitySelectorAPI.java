@@ -2,7 +2,6 @@ package cn.nukkit.command.selector;
 
 import static cn.nukkit.command.selector.SelectorType.*;
 
-import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
@@ -11,6 +10,7 @@ import cn.nukkit.command.exceptions.SelectorSyntaxException;
 import cn.nukkit.command.selector.args.ISelectorArgument;
 import cn.nukkit.command.selector.args.impl.*;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.player.Player;
 import cn.nukkit.utils.StringUtils;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;

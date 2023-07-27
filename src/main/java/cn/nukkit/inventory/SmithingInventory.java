@@ -18,13 +18,13 @@
 
 package cn.nukkit.inventory;
 
-import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Position;
+import cn.nukkit.player.Player;
 import javax.annotation.Nullable;
 import org.jetbrains.annotations.NotNull;
 

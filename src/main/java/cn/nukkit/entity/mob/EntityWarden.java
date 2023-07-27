@@ -1,6 +1,5 @@
 package cn.nukkit.entity.mob;
 
-import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
@@ -32,6 +31,7 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import cn.nukkit.player.Player;
 import cn.nukkit.potion.Effect;
 import java.util.List;
 import java.util.Map;

@@ -1,8 +1,5 @@
 package cn.nukkit.network.process.processor;
 
-import cn.nukkit.AdventureSettings;
-import cn.nukkit.Player;
-import cn.nukkit.PlayerHandle;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.blockentity.BlockEntity;
@@ -43,6 +40,9 @@ import cn.nukkit.network.protocol.UpdateBlockPacket;
 import cn.nukkit.network.protocol.types.ContainerIds;
 import cn.nukkit.network.protocol.types.InventorySource;
 import cn.nukkit.network.protocol.types.NetworkInventoryAction;
+import cn.nukkit.player.AdventureSettings;
+import cn.nukkit.player.Player;
+import cn.nukkit.player.PlayerHandle;
 import java.util.*;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;

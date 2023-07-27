@@ -1,6 +1,5 @@
 package cn.nukkit.command.defaults;
 
-import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.camera.data.*;
@@ -18,6 +17,7 @@ import cn.nukkit.command.tree.node.RelativeFloatNode;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.level.Position;
 import cn.nukkit.network.protocol.CameraInstructionPacket;
+import cn.nukkit.player.Player;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;

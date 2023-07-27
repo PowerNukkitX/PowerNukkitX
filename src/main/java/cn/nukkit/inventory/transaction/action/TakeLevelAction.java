@@ -1,8 +1,8 @@
 package cn.nukkit.inventory.transaction.action;
 
-import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.Item;
+import cn.nukkit.player.Player;
 import lombok.ToString;
 
 @PowerNukkitOnly

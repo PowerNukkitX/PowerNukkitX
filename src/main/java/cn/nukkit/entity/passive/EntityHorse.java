@@ -2,7 +2,6 @@ package cn.nukkit.entity.passive;
 
 import static cn.nukkit.network.protocol.SetEntityLinkPacket.TYPE_PASSENGER;
 
-import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
@@ -48,6 +47,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.EntityLink;
+import cn.nukkit.player.Player;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.Utils;
 import java.util.HashMap;
@@ -429,7 +429,7 @@ public class EntityHorse extends EntityAnimal
     @Nullable public Entity getRider() {
         String name = getMemoryStorage().get(CoreMemoryTypes.RIDER_NAME);
         if (name != null) {
-            return Server.getInstance().getPlayerExact(name);
+            return Server.getInstance().playerManager.getPlayerExact(name);
         } else return null; // todo other entity
     }
 

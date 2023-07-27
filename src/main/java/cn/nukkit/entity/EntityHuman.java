@@ -1,6 +1,5 @@
 package cn.nukkit.entity;
 
-import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
@@ -14,6 +13,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddPlayerPacket;
 import cn.nukkit.network.protocol.RemoveEntityPacket;
 import cn.nukkit.network.protocol.SetEntityLinkPacket;
+import cn.nukkit.player.Player;
 import java.util.UUID;
 import org.jetbrains.annotations.NotNull;
 
@@ -170,7 +170,7 @@ public class EntityHuman extends EntityHumanType {
             }
 
             if (this instanceof Player)
-                this.server.updatePlayerListData(
+                this.server.playerManager.updatePlayerListData(
                         this.getUniqueId(),
                         this.getId(),
                         ((Player) this).getDisplayName(),
@@ -178,7 +178,7 @@ public class EntityHuman extends EntityHumanType {
                         ((Player) this).getLoginChainData().getXUID(),
                         new Player[] {player});
             else
-                this.server.updatePlayerListData(
+                this.server.playerManager.updatePlayerListData(
                         this.getUniqueId(), this.getId(), this.getName(), this.skin, new Player[] {player});
 
             AddPlayerPacket pk = new AddPlayerPacket();
@@ -212,7 +212,7 @@ public class EntityHuman extends EntityHumanType {
             }
 
             if (!(this instanceof Player)) {
-                this.server.removePlayerListData(this.getUniqueId(), player);
+                this.server.playerManager.removePlayerListData(this.getUniqueId(), player);
             }
         }
     }

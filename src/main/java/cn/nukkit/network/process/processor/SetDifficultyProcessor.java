@@ -1,12 +1,12 @@
 package cn.nukkit.network.process.processor;
 
-import cn.nukkit.PlayerHandle;
 import cn.nukkit.Server;
 import cn.nukkit.command.Command;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.SetDifficultyPacket;
+import cn.nukkit.player.PlayerHandle;
 import org.jetbrains.annotations.NotNull;
 
 public class SetDifficultyProcessor extends DataPacketProcessor<SetDifficultyPacket> {
@@ -19,7 +19,7 @@ public class SetDifficultyProcessor extends DataPacketProcessor<SetDifficultyPac
         SetDifficultyPacket difficultyPacket = new SetDifficultyPacket();
         difficultyPacket.difficulty = playerHandle.player.getServer().getDifficulty();
         Server.broadcastPacket(
-                playerHandle.player.getServer().getOnlinePlayers().values(), difficultyPacket);
+                playerHandle.player.getServer().playerManager.getOnlinePlayers().values(), difficultyPacket);
         Command.broadcastCommandMessage(
                 playerHandle.player,
                 new TranslationContainer(

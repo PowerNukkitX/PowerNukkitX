@@ -1,6 +1,5 @@
 package cn.nukkit.item.customitem;
 
-import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -9,6 +8,7 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.item.StringItem;
 import cn.nukkit.item.food.Food;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.player.Player;
 import cn.nukkit.plugin.Plugin;
 import java.util.Map;
 import javax.annotation.Nullable;

@@ -1,7 +1,5 @@
 package cn.nukkit.inventory;
 
-import cn.nukkit.AdventureSettings;
-import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
@@ -12,6 +10,8 @@ import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.ContainerClosePacket;
 import cn.nukkit.network.protocol.ContainerOpenPacket;
+import cn.nukkit.player.AdventureSettings;
+import cn.nukkit.player.Player;
 import java.util.Map;
 
 /**

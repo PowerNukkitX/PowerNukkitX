@@ -1,10 +1,10 @@
 package cn.nukkit.inventory.transaction.action;
 
-import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.transaction.InventoryTransaction;
 import cn.nukkit.item.Item;
+import cn.nukkit.player.Player;
 import java.util.HashSet;
 import java.util.Set;
 

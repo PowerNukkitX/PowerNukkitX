@@ -1,9 +1,9 @@
 package cn.nukkit.event.server;
 
-import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
+import cn.nukkit.player.Player;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.plugin.PluginDescription;
 import cn.nukkit.utils.Binary;
@@ -54,7 +54,7 @@ public class QueryRegenerateEvent extends ServerEvent {
         this.serverName = server.getMotd();
         this.listPlugins = server.getConfig("settings.query-plugins", true);
         this.plugins = server.getPluginManager().getPlugins().values().toArray(Plugin.EMPTY_ARRAY);
-        this.players = server.getOnlinePlayers().values().toArray(Player.EMPTY_ARRAY);
+        this.players = server.playerManager.getOnlinePlayers().values().toArray(Player.EMPTY_ARRAY);
         this.gameType = (server.getGamemode() & 0x01) == 0 ? "SMP" : "CMP";
         this.version = server.getVersion();
         this.server_engine = server.getName() + " " + server.getNukkitVersion() + " (" + server.getGitCommit() + ")";

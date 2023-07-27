@@ -1,7 +1,7 @@
 package cn.nukkit.network.encryption;
 
-import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.player.Player;
 import cn.nukkit.scheduler.AsyncTask;
 import com.nimbusds.jose.jwk.Curve;
 import java.security.KeyPair;
