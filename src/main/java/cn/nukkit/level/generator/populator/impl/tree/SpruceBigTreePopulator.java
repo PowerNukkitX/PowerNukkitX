@@ -45,8 +45,11 @@ public class SpruceBigTreePopulator extends Populator {
             if (y == -1) {
                 continue;
             }
+            v.setX(x);
+            v.setY(y);
+            v.setZ(y);
             new ObjectBigSpruceTree(3 / 4f, 4)
-                    .placeObject(this.level, (int) (v.x = x), (int) (v.y = y), (int) (v.z = z), random);
+                    .placeObject(this.level, (int) (v.x()), (int) (v.y()), (int) (v.z()), random);
         }
     }
 

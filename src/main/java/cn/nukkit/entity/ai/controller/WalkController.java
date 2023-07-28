@@ -42,18 +42,18 @@ public class WalkController implements IController {
             }
             var relativeVector = direction
                     .clone()
-                    .setComponents(direction.x - entity.x, direction.y - entity.y, direction.z - entity.z);
-            var xzLengthSquared = relativeVector.x * relativeVector.x + relativeVector.z * relativeVector.z;
+                    .setComponents(direction.x() - entity.x(), direction.y() - entity.y(), direction.z() - entity.z());
+            var xzLengthSquared = relativeVector.x() * relativeVector.x() + relativeVector.z() * relativeVector.z();
             if (Math.abs(xzLengthSquared) < EntityPhysical.PRECISION) {
                 entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_MOVING, false);
                 return false;
             }
-            var xzLength = Math.sqrt(relativeVector.x * relativeVector.x + relativeVector.z * relativeVector.z);
+            var xzLength = Math.sqrt(relativeVector.x() * relativeVector.x() + relativeVector.z() * relativeVector.z());
             var k = speed / xzLength * 0.33;
-            var dx = relativeVector.x * k;
-            var dz = relativeVector.z * k;
+            var dx = relativeVector.x() * k;
+            var dz = relativeVector.z() * k;
             var dy = 0.0d;
-            if (relativeVector.y > 0 && collidesBlocks(entity, dx, 0, dz) && currentJumpCoolDown > JUMP_COOL_DOWN) {
+            if (relativeVector.y() > 0 && collidesBlocks(entity, dx, 0, dz) && currentJumpCoolDown > JUMP_COOL_DOWN) {
                 // note: 从对BDS的抓包信息来看，台阶的碰撞箱在服务端和半砖一样，高度都为0.5
                 Block[] collisionBlocks = entity.level.getTickCachedCollisionBlocks(
                         entity.getOffsetBoundingBox().getOffsetBoundingBox(dx, dy, dz), false, false, this::canJump);
@@ -62,7 +62,7 @@ public class WalkController implements IController {
                         .map(b -> b.getCollisionBoundingBox().getMaxY())
                         .max(Double::compareTo)
                         .orElse(0.0d);
-                double diffY = maxY - entity.getY();
+                double diffY = maxY - entity.y();
                 dy += entity.getJumpingMotion(diffY);
                 currentJumpCoolDown = 0;
             }

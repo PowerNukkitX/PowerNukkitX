@@ -137,7 +137,7 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
         for (BlockFace face : Plane.HORIZONTAL) {
             Vector3 v = pos.getSide(face);
 
-            if (v.getX() == this.getX() && v.getZ() == this.getZ()) {
+            if (v.x() == this.x() && v.z() == this.z()) {
                 continue;
             }
 

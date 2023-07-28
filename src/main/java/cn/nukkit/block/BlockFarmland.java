@@ -69,7 +69,7 @@ public class BlockFarmland extends BlockTransparentMeta {
 
     @Override
     public double getMaxY() {
-        return this.y + 1;
+        return this.y() + 1;
     }
 
     @Override
@@ -86,7 +86,7 @@ public class BlockFarmland extends BlockTransparentMeta {
             }
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {
             Vector3 v = new Vector3();
-            if (this.level.getBlock(v.setComponents(x, this.y + 1, z)) instanceof BlockCrops) {
+            if (this.level.getBlock(v.setComponents(x(), this.y() + 1, z())) instanceof BlockCrops) {
                 return 0;
             }
 
@@ -95,10 +95,10 @@ public class BlockFarmland extends BlockTransparentMeta {
             if (this.level.isRaining()) {
                 found = true;
             } else {
-                for (int x = (int) this.x - 4; x <= this.x + 4; x++) {
-                    for (int z = (int) this.z - 4; z <= this.z + 4; z++) {
-                        for (int y = (int) this.y; y <= this.y + 1; y++) {
-                            if (z == this.z && x == this.x && y == this.y) {
+                for (int x = (int) this.x() - 4; x <= this.x() + 4; x++) {
+                    for (int z = (int) this.z() - 4; z <= this.z() + 4; z++) {
+                        for (int y = (int) this.y(); y <= this.y() + 1; y++) {
+                            if (z == this.z() && x == this.x() && y == this.y()) {
                                 continue;
                             }
 
@@ -120,7 +120,7 @@ public class BlockFarmland extends BlockTransparentMeta {
                 }
             }
 
-            Block block = this.level.getBlock(v.setComponents(x, y - 1, z));
+            Block block = this.level.getBlock(v.setComponents(x(), y() - 1, z()));
             int damage = this.getDamage();
             if (found || block instanceof BlockWater || block instanceof BlockIceFrosted) {
                 if (damage < 7) {

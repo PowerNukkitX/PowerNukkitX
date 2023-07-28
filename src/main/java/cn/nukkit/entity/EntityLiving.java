@@ -137,8 +137,8 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                     this.setOnFire(2 * this.server.getDifficulty());
                 }
 
-                double deltaX = this.x - damager.x;
-                double deltaZ = this.z - damager.z;
+                double deltaX = this.x() - damager.x();
+                double deltaZ = this.z() - damager.z();
                 this.knockBack(
                         damager,
                         source.getDamage(),
@@ -177,15 +177,15 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
         Vector3 motion = new Vector3(this.motionX, this.motionY, this.motionZ);
 
-        motion.x /= 2d;
-        motion.y /= 2d;
-        motion.z /= 2d;
-        motion.x += x * f * base;
-        motion.y += base;
-        motion.z += z * f * base;
+        motion.setX(x() / 2d);
+        motion.setY(y() / 2d);
+        motion.setZ(z() / 2d);
+        motion.setX(x() + x() * f * base);
+        motion.setY(y() + base);
+        motion.setZ(z() + z() * f * base);
 
-        if (motion.y > base) {
-            motion.y = base;
+        if (motion.y() > base) {
+            motion.setY(base);
         }
 
         this.setMotion(motion);
@@ -310,7 +310,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
         // Used to check collisions with magma / cactus blocks
         // Math.round处理在某些条件下 出现x.999999的坐标条件,这里选择四舍五入
-        var block = this.level.getTickCachedBlock(getFloorX(), (int) (Math.round(this.y) - 1), getFloorZ());
+        var block = this.level.getTickCachedBlock(getFloorX(), (int) (Math.round(this.y()) - 1), getFloorZ());
         if (block instanceof BlockMagma || block instanceof BlockCactus) block.onEntityCollide(this);
 
         return hasUpdate;
@@ -439,7 +439,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         Vector3 entityPos = damager.getPosition();
         Vector3 direction = this.getDirectionVector();
         Vector3 normalizedVector = this.getPosition().subtract(entityPos).normalize();
-        boolean blocked = (normalizedVector.x * direction.x) + (normalizedVector.z * direction.z) < 0.0;
+        boolean blocked = (normalizedVector.x() * direction.x()) + (normalizedVector.z() * direction.z()) < 0.0;
         boolean knockBack = !(damager instanceof EntityProjectile);
         EntityDamageBlockedEvent event = new EntityDamageBlockedEvent(this, source, knockBack, true);
         if (!blocked || !source.canBeReducedByArmor()) {
@@ -452,8 +452,8 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         }
 
         if (event.getKnockBackAttacker() && damager instanceof EntityLiving attacker) {
-            double deltaX = attacker.getX() - this.getX();
-            double deltaZ = attacker.getZ() - this.getZ();
+            double deltaX = attacker.x() - this.x();
+            double deltaZ = attacker.z() - this.z();
             attacker.knockBack(this, 0, deltaX, deltaZ);
             attacker.attackTime = 10;
             attacker.attackTimeByShieldKb = true;

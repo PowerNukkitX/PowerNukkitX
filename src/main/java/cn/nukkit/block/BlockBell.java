@@ -158,7 +158,8 @@ public class BlockBell extends BlockTransparentMeta
         double d = down ? 0 : 0.25;
         double u = up ? 1 : 0.75;
 
-        return new SimpleAxisAlignedBB(this.x + w, this.y + d, this.z + n, this.x + e, this.y + u, this.z + s);
+        return new SimpleAxisAlignedBB(
+                this.x() + w, this.y() + d, this.z() + n, this.x() + e, this.y() + u, this.z() + s);
     }
 
     @Override
@@ -178,13 +179,13 @@ public class BlockBell extends BlockTransparentMeta
                         (blockBoundingBox.getMaxZ() - blockBoundingBox.getMinZ()) / 2);
                 Vector3 entityPos = entity.add(entityCenter);
                 Vector3 blockPos = this.add(
-                        blockBoundingBox.getMinX() - x + blockCenter.x,
-                        blockBoundingBox.getMinY() - y + blockCenter.y,
-                        blockBoundingBox.getMinZ() - z + blockCenter.z);
+                        blockBoundingBox.getMinX() - x() + blockCenter.x(),
+                        blockBoundingBox.getMinY() - y() + blockCenter.y(),
+                        blockBoundingBox.getMinZ() - z() + blockCenter.z());
 
                 Vector3 entityVector = entityPos.subtract(blockPos);
                 entityVector = entityVector.normalize().multiply(0.4);
-                entityVector.y = Math.max(0.15, entityVector.y);
+                entityVector.setY(Math.max(0.15, entityVector.y()));
                 if (ring(entity, BellRingEvent.RingCause.DROPPED_ITEM)) {
                     entity.setMotion(entityVector);
                 }
@@ -228,10 +229,10 @@ public class BlockBell extends BlockTransparentMeta
                 if (causeEntity instanceof EntityItem) {
                     Position blockMid = add(0.5, 0.5, 0.5);
                     Vector3 vector = causeEntity.subtract(blockMid).normalize();
-                    int x = vector.x < 0 ? -1 : vector.x > 0 ? 1 : 0;
-                    int z = vector.z < 0 ? -1 : vector.z > 0 ? 1 : 0;
+                    int x = vector.x() < 0 ? -1 : vector.x() > 0 ? 1 : 0;
+                    int z = vector.z() < 0 ? -1 : vector.z() > 0 ? 1 : 0;
                     if (x != 0 && z != 0) {
-                        if (Math.abs(vector.x) < Math.abs(vector.z)) {
+                        if (Math.abs(vector.x()) < Math.abs(vector.z())) {
                             x = 0;
                         } else {
                             z = 0;
@@ -369,7 +370,7 @@ public class BlockBell extends BlockTransparentMeta
         for (BlockFace side : BlockFace.values()) {
             Block b = this.getSide(side);
 
-            if (b.getId() == Block.REDSTONE_WIRE && b.getDamage() > 0 && b.y >= this.getY()) {
+            if (b.getId() == Block.REDSTONE_WIRE && b.getDamage() > 0 && b.y() >= this.y()) {
                 return true;
             }
 

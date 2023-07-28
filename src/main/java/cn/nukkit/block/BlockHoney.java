@@ -55,16 +55,16 @@ public class BlockHoney extends BlockSolid {
                 && entity.motionY <= 0.08
                 && (!(entity instanceof Player)
                         || !((Player) entity).getAdventureSettings().get(AdventureSettings.Type.FLYING))) {
-            double ex = Math.abs(x + 0.5D - entity.x);
-            double ez = Math.abs(z + 0.5D - entity.z);
+            double ex = Math.abs(x() + 0.5D - entity.x());
+            double ez = Math.abs(z() + 0.5D - entity.z());
             double width = 0.4375D + (double) (entity.getWidth() / 2.0F);
             if (ex + 1.0E-3D > width || ez + 1.0E-3D > width) {
                 Vector3 motion = entity.getMotion();
-                motion.y = -0.05;
+                motion.setY(-0.05);
                 if (entity.motionY < -0.13) {
                     double m = -0.05 / entity.motionY;
-                    motion.x *= m;
-                    motion.z *= m;
+                    motion.setX(motion.x() * m);
+                    motion.setZ(motion.z() * m);
                 }
 
                 if (!entity.getMotion().equals(motion)) {
@@ -81,27 +81,27 @@ public class BlockHoney extends BlockSolid {
 
     @Override
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
-        return new SimpleAxisAlignedBB(x, y, z, x + 1, y + 1, z + 1);
+        return new SimpleAxisAlignedBB(x(), y(), z(), x() + 1, y() + 1, z() + 1);
     }
 
     @Override
     public double getMinX() {
-        return x + 0.1;
+        return x() + 0.1;
     }
 
     @Override
     public double getMaxX() {
-        return x + 0.9;
+        return x() + 0.9;
     }
 
     @Override
     public double getMinZ() {
-        return z + 0.1;
+        return z() + 0.1;
     }
 
     @Override
     public double getMaxZ() {
-        return z + 0.9;
+        return z() + 0.9;
     }
 
     @Since("1.4.0.0-PN")

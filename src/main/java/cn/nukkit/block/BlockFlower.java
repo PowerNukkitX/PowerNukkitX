@@ -212,8 +212,8 @@ public class BlockFlower extends BlockFlowable implements BlockFlowerPot.FlowerP
 
                 if (level.getBlock(vec).getId() == AIR
                         && level.getBlock(vec.down()).getId() == GRASS
-                        && vec.getY() >= 0
-                        && vec.getY() < level.getMaxHeight()) {
+                        && vec.y() >= 0
+                        && vec.y() < level.getMaxHeight()) {
                     if (ThreadLocalRandom.current().nextInt(10) == 0) {
                         this.level.setBlock(vec, this.getUncommonFlower(), true);
                     } else {

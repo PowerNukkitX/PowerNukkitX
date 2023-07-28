@@ -43,7 +43,7 @@ public class BlockDirtWithRoots extends BlockSolid {
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
-        Vector3 vector = new Vector3(this.x, this.y - 1, this.z);
+        Vector3 vector = new Vector3(this.x(), this.y() - 1, this.z());
         if (!this.up().canBeReplaced()) {
             return false;
         }
@@ -56,7 +56,7 @@ public class BlockDirtWithRoots extends BlockSolid {
             return true;
         }
         if (item.isHoe()) {
-            vector.setY(this.y + 1);
+            vector.setY(this.y() + 1);
             item.useOn(this);
             this.getLevel().setBlock(this, Block.get(BlockID.DIRT), true);
             this.getLevel().dropItem(vector, new ItemBlock(Block.get(BlockID.HANGING_ROOTS)));

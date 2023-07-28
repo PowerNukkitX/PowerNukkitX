@@ -615,9 +615,9 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                                         blockVector.asVector3(),
                                         i,
                                         face,
-                                        useItemData.clickPos.x,
-                                        useItemData.clickPos.y,
-                                        useItemData.clickPos.z,
+                                        useItemData.clickPos.x(),
+                                        useItemData.clickPos.y(),
+                                        useItemData.clickPos.z(),
                                         player)
                                 != null) {
                             return;
@@ -630,9 +630,9 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                                         blockVector.asVector3(),
                                         i,
                                         face,
-                                        useItemData.clickPos.x,
-                                        useItemData.clickPos.y,
-                                        useItemData.clickPos.z,
+                                        useItemData.clickPos.x(),
+                                        useItemData.clickPos.y(),
+                                        useItemData.clickPos.z(),
                                         player))
                                 != null) {
                             if (!i.equals(oldItem) || i.getCount() != oldItem.getCount()) {

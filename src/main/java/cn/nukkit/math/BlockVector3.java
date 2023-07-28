@@ -77,7 +77,7 @@ public class BlockVector3 implements Cloneable {
     }
 
     public Vector3 add(Vector3 x) {
-        return new Vector3(this.x + x.getX(), this.y + x.getY(), this.z + x.getZ());
+        return new Vector3(this.x + x.x(), this.y + x.y(), this.z + x.z());
     }
 
     public Vector3 subtract(double x) {
@@ -93,7 +93,7 @@ public class BlockVector3 implements Cloneable {
     }
 
     public Vector3 subtract(Vector3 x) {
-        return this.add(-x.getX(), -x.getY(), -x.getZ());
+        return this.add(-x.x(), -x.y(), -x.z());
     }
 
     public BlockVector3 add(int x) {
@@ -208,7 +208,7 @@ public class BlockVector3 implements Cloneable {
     }
 
     public double distanceSquared(Vector3 pos) {
-        return distanceSquared(pos.x, pos.y, pos.z);
+        return distanceSquared(pos.x(), pos.y(), pos.z());
     }
 
     public double distanceSquared(BlockVector3 pos) {

@@ -71,9 +71,9 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         }
         var bb = new SimpleAxisAlignedBB(0, 0, 0, 1, 1, 1)
                 .getOffsetBoundingBox(
-                        this.x + (pushDirection.getXOffset() * progress),
-                        this.y + (pushDirection.getYOffset() * progress),
-                        this.z + (pushDirection.getZOffset() * progress)
+                        this.x() + (pushDirection.getXOffset() * progress),
+                        this.y() + (pushDirection.getYOffset() * progress),
+                        this.z() + (pushDirection.getZOffset() * progress)
                         // 带动站在移动方块上的实体
                         )
                 .addCoord(0, pushDirection.getAxis().isHorizontal() ? 0.25 : 0, 0);

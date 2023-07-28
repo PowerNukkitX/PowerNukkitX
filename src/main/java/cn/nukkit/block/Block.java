@@ -1038,9 +1038,9 @@ public abstract class Block extends Position
 
         if (id > MAX_BLOCK_ID) {
             block = ID_TO_CUSTOM_BLOCK.get(id).toCustomBlock(meta);
-            block.x = pos.x;
-            block.y = pos.y;
-            block.z = pos.z;
+            block.setX(pos.x());
+            block.setY(pos.y());
+            block.setZ(pos.z());
             block.level = pos.level;
             block.layer = layer;
             return block;
@@ -1058,9 +1058,9 @@ public abstract class Block extends Position
         }
 
         if (pos != null) {
-            block.x = pos.x;
-            block.y = pos.y;
-            block.z = pos.z;
+            block.setX(pos.x());
+            block.setY(pos.y());
+            block.setZ(pos.z());
             block.level = pos.level;
             block.layer = layer;
         }
@@ -1102,17 +1102,17 @@ public abstract class Block extends Position
         var id = fullId >> DATA_BITS;
         if (id > MAX_BLOCK_ID) {
             var block = ID_TO_CUSTOM_BLOCK.get(id).toCustomBlock((~(id << DATA_BITS)) & fullId);
-            block.x = x;
-            block.y = y;
-            block.z = z;
+            block.setX(x);
+            block.setY(y);
+            block.setZ(z);
             block.level = level;
             block.layer = layer;
             return block;
         }
         var block = fullList[fullId].clone();
-        block.x = x;
-        block.y = y;
-        block.z = z;
+        block.setX(x);
+        block.setY(y);
+        block.setZ(z);
         block.level = level;
         block.layer = layer;
         return block;
@@ -1141,9 +1141,9 @@ public abstract class Block extends Position
 
         if (id > MAX_BLOCK_ID) {
             block = ID_TO_CUSTOM_BLOCK.get(id).toCustomBlock();
-            block.x = x;
-            block.y = y;
-            block.z = z;
+            block.setX(x);
+            block.setY(y);
+            block.setZ(z);
             block.level = level;
             block.layer = layer;
             return block;
@@ -1155,9 +1155,9 @@ public abstract class Block extends Position
             block = fullList[id << DATA_BITS].clone();
             block.setDamage(meta);
         }
-        block.x = x;
-        block.y = y;
-        block.z = z;
+        block.setX(x);
+        block.setY(y);
+        block.setZ(z);
         block.level = level;
         block.layer = layer;
         return block;
@@ -1898,9 +1898,9 @@ public abstract class Block extends Position
     }
 
     public final void position(Position v) {
-        this.x = (int) v.x;
-        this.y = (int) v.y;
-        this.z = (int) v.z;
+        this.setX((int) v.x());
+        this.setY((int) v.y());
+        this.setZ((int) v.z());
         this.level = v.level;
     }
 
@@ -2273,9 +2273,9 @@ public abstract class Block extends Position
         if (this.isValid()) {
             return this.getLevel()
                     .getTickCachedBlock(
-                            (int) x + face.getXOffset(),
-                            (int) y + face.getYOffset(),
-                            (int) z + face.getZOffset(),
+                            (int) x() + face.getXOffset(),
+                            (int) y() + face.getYOffset(),
+                            (int) z() + face.getZOffset(),
                             layer);
         }
         return this.getTickCachedSide(face, 1);
@@ -2288,23 +2288,23 @@ public abstract class Block extends Position
             if (step == 1) {
                 return this.getLevel()
                         .getTickCachedBlock(
-                                (int) x + face.getXOffset(),
-                                (int) y + face.getYOffset(),
-                                (int) z + face.getZOffset(),
+                                (int) x() + face.getXOffset(),
+                                (int) y() + face.getYOffset(),
+                                (int) z() + face.getZOffset(),
                                 layer);
             } else {
                 return this.getLevel()
                         .getTickCachedBlock(
-                                (int) x + face.getXOffset() * step,
-                                (int) y + face.getYOffset() * step,
-                                (int) z + face.getZOffset() * step,
+                                (int) x() + face.getXOffset() * step,
+                                (int) y() + face.getYOffset() * step,
+                                (int) z() + face.getZOffset() * step,
                                 layer);
             }
         }
         Block block = Block.get(Item.AIR, 0);
-        block.x = (int) x + face.getXOffset() * step;
-        block.y = (int) y + face.getYOffset() * step;
-        block.z = (int) z + face.getZOffset() * step;
+        block.setX((int) x() + face.getXOffset() * step);
+        block.setY((int) y() + face.getYOffset() * step);
+        block.setZ((int) z() + face.getZOffset() * step);
         block.layer = layer;
         return block;
     }
@@ -2324,9 +2324,9 @@ public abstract class Block extends Position
         if (this.isValid()) {
             return this.getLevel()
                     .getBlock(
-                            (int) x + face.getXOffset(),
-                            (int) y + face.getYOffset(),
-                            (int) z + face.getZOffset(),
+                            (int) x() + face.getXOffset(),
+                            (int) y() + face.getYOffset(),
+                            (int) z() + face.getZOffset(),
                             layer);
         }
         return this.getSide(face, 1);
@@ -2338,23 +2338,23 @@ public abstract class Block extends Position
             if (step == 1) {
                 return this.getLevel()
                         .getBlock(
-                                (int) x + face.getXOffset(),
-                                (int) y + face.getYOffset(),
-                                (int) z + face.getZOffset(),
+                                (int) x() + face.getXOffset(),
+                                (int) y() + face.getYOffset(),
+                                (int) z() + face.getZOffset(),
                                 layer);
             } else {
                 return this.getLevel()
                         .getBlock(
-                                (int) x + face.getXOffset() * step,
-                                (int) y + face.getYOffset() * step,
-                                (int) z + face.getZOffset() * step,
+                                (int) x() + face.getXOffset() * step,
+                                (int) y() + face.getYOffset() * step,
+                                (int) z() + face.getZOffset() * step,
                                 layer);
             }
         }
         Block block = Block.get(Item.AIR, 0);
-        block.x = (int) x + face.getXOffset() * step;
-        block.y = (int) y + face.getYOffset() * step;
-        block.z = (int) z + face.getZOffset() * step;
+        block.setX((int) x() + face.getXOffset() * step);
+        block.setY((int) y() + face.getYOffset() * step);
+        block.setZ((int) z() + face.getZOffset() * step);
         block.layer = layer;
         return block;
     }
@@ -2491,32 +2491,32 @@ public abstract class Block extends Position
 
     @Override
     public double getMinX() {
-        return this.x;
+        return this.x();
     }
 
     @Override
     public double getMinY() {
-        return this.y;
+        return this.y();
     }
 
     @Override
     public double getMinZ() {
-        return this.z;
+        return this.z();
     }
 
     @Override
     public double getMaxX() {
-        return this.x + 1;
+        return this.x() + 1;
     }
 
     @Override
     public double getMaxY() {
-        return this.y + 1;
+        return this.y() + 1;
     }
 
     @Override
     public double getMaxZ() {
-        return this.z + 1;
+        return this.z() + 1;
     }
 
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
@@ -2604,7 +2604,7 @@ public abstract class Block extends Position
         }
 
         return MovingObjectPosition.fromBlock(
-                (int) this.x, (int) this.y, (int) this.z, f, vector.add(this.x, this.y, this.z));
+                (int) this.x(), (int) this.y(), (int) this.z(), f, vector.add(this.x(), this.y(), this.z()));
     }
 
     public String getSaveId() {
@@ -2697,44 +2697,38 @@ public abstract class Block extends Position
         }
 
         if (face.getAxis().getPlane() == BlockFace.Plane.HORIZONTAL) {
-            if (boundingBox.getMinY() != getY() || boundingBox.getMaxY() != getY() + 1) {
+            if (boundingBox.getMinY() != y() || boundingBox.getMaxY() != y() + 1) {
                 return false;
             }
             int offset = face.getXOffset();
             if (offset < 0) {
-                return boundingBox.getMinX() == getX()
-                        && boundingBox.getMinZ() == getZ()
-                        && boundingBox.getMaxZ() == getZ() + 1;
+                return boundingBox.getMinX() == x() && boundingBox.getMinZ() == z() && boundingBox.getMaxZ() == z() + 1;
             } else if (offset > 0) {
-                return boundingBox.getMaxX() == getX() + 1
-                        && boundingBox.getMaxZ() == getZ() + 1
-                        && boundingBox.getMinZ() == getZ();
+                return boundingBox.getMaxX() == x() + 1
+                        && boundingBox.getMaxZ() == z() + 1
+                        && boundingBox.getMinZ() == z();
             }
 
             offset = face.getZOffset();
             if (offset < 0) {
-                return boundingBox.getMinZ() == getZ()
-                        && boundingBox.getMinX() == getX()
-                        && boundingBox.getMaxX() == getX() + 1;
+                return boundingBox.getMinZ() == z() && boundingBox.getMinX() == x() && boundingBox.getMaxX() == x() + 1;
             }
 
-            return boundingBox.getMaxZ() == getZ() + 1
-                    && boundingBox.getMaxX() == getX() + 1
-                    && boundingBox.getMinX() == getX();
+            return boundingBox.getMaxZ() == z() + 1 && boundingBox.getMaxX() == x() + 1 && boundingBox.getMinX() == x();
         }
 
-        if (boundingBox.getMinX() != getX()
-                || boundingBox.getMaxX() != getX() + 1
-                || boundingBox.getMinZ() != getZ()
-                || boundingBox.getMaxZ() != getZ() + 1) {
+        if (boundingBox.getMinX() != x()
+                || boundingBox.getMaxX() != x() + 1
+                || boundingBox.getMinZ() != z()
+                || boundingBox.getMaxZ() != z() + 1) {
             return false;
         }
 
         if (face.getYOffset() < 0) {
-            return boundingBox.getMinY() == getY();
+            return boundingBox.getMinY() == y();
         }
 
-        return boundingBox.getMaxY() == getY() + 1;
+        return boundingBox.getMaxY() == y() + 1;
     }
 
     /**
@@ -2747,12 +2741,12 @@ public abstract class Block extends Position
         if (boundingBox == null) {
             return false;
         }
-        return boundingBox.getMinX() == getX()
-                && boundingBox.getMaxX() == getX() + 1
-                && boundingBox.getMinY() == getY()
-                && boundingBox.getMaxY() == getY() + 1
-                && boundingBox.getMinZ() == getZ()
-                && boundingBox.getMaxZ() == getZ() + 1;
+        return boundingBox.getMinX() == x()
+                && boundingBox.getMaxX() == x() + 1
+                && boundingBox.getMinY() == y()
+                && boundingBox.getMaxY() == y() + 1
+                && boundingBox.getMinZ() == z()
+                && boundingBox.getMaxZ() == z() + 1;
     }
 
     public static boolean equals(Block b1, Block b2) {
@@ -3195,7 +3189,7 @@ public abstract class Block extends Position
 
     @Override
     public int hashCode() {
-        return ((int) x ^ ((int) z << 12)) ^ ((int) (y + 64) << 23);
+        return ((int) x() ^ ((int) z() << 12)) ^ ((int) (y() + 64) << 23);
     }
 
     @PowerNukkitXOnly

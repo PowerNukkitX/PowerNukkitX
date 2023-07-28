@@ -37,9 +37,9 @@ public class MovePlayerPacket extends DataPacket {
     public void decode() {
         this.eid = this.getEntityRuntimeId();
         Vector3f v = this.getVector3f();
-        this.x = v.x;
-        this.y = v.y;
-        this.z = v.z;
+        this.x = v.x();
+        this.y = v.y();
+        this.z = v.z();
         this.pitch = this.getLFloat();
         this.yaw = this.getLFloat();
         this.headYaw = this.getLFloat();

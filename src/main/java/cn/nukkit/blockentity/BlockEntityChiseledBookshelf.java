@@ -69,9 +69,9 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
     public CompoundTag getSpawnCompound() {
         CompoundTag compoundTag = new CompoundTag()
                 .putString("id", BlockEntity.BARREL)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z)
+                .putInt("x", (int) this.x())
+                .putInt("y", (int) this.y())
+                .putInt("z", (int) this.z())
                 .putBoolean("isMovable", this.isMovable());
         addBookshelfNbt(compoundTag);
         return compoundTag;

@@ -162,7 +162,7 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
         Location clientLoc = Location.fromObject(clientPosition, player.level, yaw, pitch, headYaw);
         // Proper player.isPassenger() check may be needed
         if (playerHandle.player.riding instanceof EntityMinecartAbstract entityMinecartAbstract) {
-            entityMinecartAbstract.setCurrentSpeed(pk.getMotion().getY());
+            entityMinecartAbstract.setCurrentSpeed(pk.getMotion().y());
         } else if (playerHandle.player.riding instanceof EntityHorse entityHorse) {
             // 为了保证玩家和马位置同步，骑马时不使用移动队列处理
             var distance = clientLoc.distanceSquared(player);

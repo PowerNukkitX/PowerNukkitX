@@ -377,7 +377,7 @@ public class EntityHorse extends EntityAnimal
         this.motionZ = 0;
         this.setMoveTarget(null);
         this.setLookTarget(null);
-        this.move(clientLoc.x - this.x, (clientLoc.y - 0.5) - this.y, clientLoc.z - this.z);
+        this.move(clientLoc.x() - this.x(), (clientLoc.y() - 0.5) - this.y(), clientLoc.z() - this.z());
         this.yaw = clientLoc.yaw;
         this.headYaw = clientLoc.headYaw;
         broadcastMovement();
@@ -550,9 +550,9 @@ public class EntityHorse extends EntityAnimal
         addEntity.yaw = (float) this.yaw;
         addEntity.headYaw = (float) this.yaw;
         addEntity.pitch = (float) this.pitch;
-        addEntity.x = (float) this.x;
-        addEntity.y = (float) this.y + this.getBaseOffset();
-        addEntity.z = (float) this.z;
+        addEntity.x = (float) this.x();
+        addEntity.y = (float) this.y() + this.getBaseOffset();
+        addEntity.z = (float) this.z();
         addEntity.speedX = (float) this.motionX;
         addEntity.speedY = (float) this.motionY;
         addEntity.speedZ = (float) this.motionZ;

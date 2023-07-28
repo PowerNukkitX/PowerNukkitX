@@ -170,9 +170,9 @@ public class ShootExecutor implements EntityControl, IBehaviorExecutor {
 
         CompoundTag nbt = new CompoundTag()
                 .putList(new ListTag<DoubleTag>("Pos")
-                        .add(new DoubleTag("", entity.x))
-                        .add(new DoubleTag("", entity.y + entity.getCurrentHeight() / 2 + 0.2f))
-                        .add(new DoubleTag("", entity.z)))
+                        .add(new DoubleTag("", entity.x()))
+                        .add(new DoubleTag("", entity.y() + entity.getCurrentHeight() / 2 + 0.2f))
+                        .add(new DoubleTag("", entity.z())))
                 .putList(new ListTag<DoubleTag>("Motion")
                         .add(new DoubleTag(
                                 "", -Math.sin(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI)))

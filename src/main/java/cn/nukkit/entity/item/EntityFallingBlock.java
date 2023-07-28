@@ -142,7 +142,7 @@ public class EntityFallingBlock extends Entity {
             motionY *= 1 - getDrag();
             motionZ *= friction;
 
-            Vector3 pos = (new Vector3(x - 0.5, y, z - 0.5)).round();
+            Vector3 pos = (new Vector3(x() - 0.5, y(), z() - 0.5)).round();
 
             if (breakOnLava && level.getBlock(pos.subtract(0, 1, 0)) instanceof BlockLava) {
                 close();
@@ -157,7 +157,7 @@ public class EntityFallingBlock extends Entity {
                 close();
                 Block block = level.getBlock(pos);
 
-                Vector3 floorPos = (new Vector3(x - 0.5, y, z - 0.5)).floor();
+                Vector3 floorPos = (new Vector3(x() - 0.5, y(), z() - 0.5)).floor();
                 Block floorBlock = this.level.getBlock(floorPos);
                 if (this.getBlock() == Block.SNOW_LAYER
                         && floorBlock.getId() == Block.SNOW_LAYER
@@ -279,7 +279,7 @@ public class EntityFallingBlock extends Entity {
     @Override
     public void resetFallDistance() {
         if (!this.closed) { // For falling anvil: do not reset fall distance before dealing damage to entities
-            this.highestPosition = this.y;
+            this.highestPosition = this.y();
         }
     }
 

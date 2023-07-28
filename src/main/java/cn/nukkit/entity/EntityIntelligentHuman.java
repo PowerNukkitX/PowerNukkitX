@@ -139,16 +139,16 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
     @Override
     public void updateMovement() {
         // 检测自由落体时间
-        if (!this.onGround && this.y < this.highestPosition) {
+        if (!this.onGround && this.y() < this.highestPosition) {
             this.fallingTick++;
         }
         // 这样做是为了向后兼容旧插件
         if (!enableHeadYaw()) {
             this.headYaw = this.yaw;
         }
-        double diffPosition = (this.x - this.lastX) * (this.x - this.lastX)
-                + (this.y - this.lastY) * (this.y - this.lastY)
-                + (this.z - this.lastZ) * (this.z - this.lastZ);
+        double diffPosition = (this.x() - this.lastX) * (this.x() - this.lastX)
+                + (this.y() - this.lastY) * (this.y() - this.lastY)
+                + (this.z() - this.lastZ) * (this.z() - this.lastZ);
         double diffRotation = enableHeadYaw()
                 ? (this.headYaw - this.lastHeadYaw) * (this.headYaw - this.lastHeadYaw)
                 : 0
@@ -170,9 +170,9 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
                 }
             }
             this.broadcastMovement();
-            this.lastX = this.x;
-            this.lastY = this.y;
-            this.lastZ = this.z;
+            this.lastX = this.x();
+            this.lastY = this.y();
+            this.lastZ = this.z();
             this.lastPitch = this.pitch;
             this.lastYaw = this.yaw;
             this.lastHeadYaw = this.headYaw;
@@ -367,9 +367,9 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
             pk.username = this.getName();
             pk.entityUniqueId = this.getId();
             pk.entityRuntimeId = this.getId();
-            pk.x = (float) this.x;
-            pk.y = (float) this.y;
-            pk.z = (float) this.z;
+            pk.x = (float) this.x();
+            pk.y = (float) this.y();
+            pk.z = (float) this.z();
             pk.speedX = (float) this.motionX;
             pk.speedY = (float) this.motionY;
             pk.speedZ = (float) this.motionZ;

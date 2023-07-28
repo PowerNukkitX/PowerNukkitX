@@ -54,9 +54,9 @@ public class ItemFlintSteel extends ItemTool {
             }
 
             BlockFire fire = (BlockFire) Block.get(BlockID.FIRE);
-            fire.x = block.x;
-            fire.y = block.y;
-            fire.z = block.z;
+            fire.setX(block.x());
+            fire.setY(block.y());
+            fire.setZ(block.z());
             fire.level = level;
 
             if (fire.isBlockTopFacingSurfaceSolid(fire.down()) || fire.canNeighborBurn()) {

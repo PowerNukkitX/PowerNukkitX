@@ -178,9 +178,9 @@ public class EntityBoat extends EntityVehicle {
         addEntity.yaw = (float) this.yaw;
         addEntity.headYaw = (float) this.yaw;
         addEntity.pitch = (float) this.pitch;
-        addEntity.x = (float) this.x;
-        addEntity.y = (float) this.y + getBaseOffset();
-        addEntity.z = (float) this.z;
+        addEntity.x = (float) this.x();
+        addEntity.y = (float) this.y() + getBaseOffset();
+        addEntity.z = (float) this.z();
         addEntity.speedX = (float) this.motionX;
         addEntity.speedY = (float) this.motionY;
         addEntity.speedZ = (float) this.motionZ;
@@ -234,11 +234,11 @@ public class EntityBoat extends EntityVehicle {
 
         // A killer task
         if (this.level != null) {
-            if (y < this.level.getMinHeight() - 16) {
+            if (y() < this.level.getMinHeight() - 16) {
                 kill();
                 return false;
             }
-        } else if (y < -16) {
+        } else if (y() < -16) {
             kill();
             return false;
         }
@@ -294,7 +294,7 @@ public class EntityBoat extends EntityVehicle {
     }
 
     private void moveBoat(double waterDiff) {
-        checkObstruction(this.x, this.y, this.z);
+        checkObstruction(this.x(), this.y(), this.z());
         move(this.motionX, this.motionY, this.motionZ);
 
         double friction = 1 - this.getDrag();
@@ -302,7 +302,7 @@ public class EntityBoat extends EntityVehicle {
         if (this.onGround && (Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionZ) > 0.00001)) {
             friction *= this.getLevel()
                     .getBlock(this.temporalVector.setComponents(
-                            (int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z)))
+                            (int) Math.floor(this.x()), (int) Math.floor(this.y() - 1), (int) Math.floor(this.z())))
                     .getFrictionFactor();
         }
 
@@ -317,7 +317,7 @@ public class EntityBoat extends EntityVehicle {
         this.motionZ *= friction;
 
         Location from = new Location(lastX, lastY, lastZ, lastYaw, lastPitch, level);
-        Location to = new Location(this.x, this.y, this.z, this.yaw, this.pitch, level);
+        Location to = new Location(this.x(), this.y(), this.z(), this.yaw, this.pitch, level);
 
         if (!from.equals(to)) {
             this.getServer().getPluginManager().callEvent(new VehicleMoveEvent(this, from, to));
@@ -550,8 +550,8 @@ public class EntityBoat extends EntityVehicle {
                 return;
             }
 
-            double diffX = entity.x - this.x;
-            double diffZ = entity.z - this.z;
+            double diffX = entity.x() - this.x();
+            double diffZ = entity.z() - this.z();
 
             double direction = NukkitMath.getDirection(diffX, diffZ);
 

@@ -123,6 +123,6 @@ public class FlatRandomRoamExecutor implements EntityControl, IBehaviorExecutor 
         var random = ThreadLocalRandom.current();
         int x = random.nextInt(maxRoamRange * 2) - maxRoamRange + entity.getFloorX();
         int z = random.nextInt(maxRoamRange * 2) - maxRoamRange + entity.getFloorZ();
-        return new Vector3(x, entity.y, z);
+        return new Vector3(x, entity.y(), z);
     }
 }

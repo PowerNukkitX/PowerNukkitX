@@ -69,7 +69,7 @@ public class ObjectAzaleaTree extends TreeGenerator {
 
     @Override
     protected void setDirtAt(ChunkManager level, Vector3 pos) {
-        if (level.getBlockIdAt((int) pos.x, (int) pos.y, (int) pos.z) != Item.DIRT_WITH_ROOTS) {
+        if (level.getBlockIdAt((int) pos.x(), (int) pos.y(), (int) pos.z()) != Item.DIRT_WITH_ROOTS) {
             this.setBlockAndNotifyAdequately(level, pos, Block.get(BlockID.DIRT_WITH_ROOTS));
         }
     }

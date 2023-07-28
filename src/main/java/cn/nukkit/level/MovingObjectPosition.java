@@ -46,7 +46,7 @@ public class MovingObjectPosition {
         objectPosition.blockX = x;
         objectPosition.blockY = y;
         objectPosition.blockZ = z;
-        objectPosition.hitVector = new Vector3(hitVector.x, hitVector.y, hitVector.z);
+        objectPosition.hitVector = new Vector3(hitVector.x(), hitVector.y(), hitVector.z());
         objectPosition.setFaceHit(face);
         return objectPosition;
     }
@@ -64,7 +64,7 @@ public class MovingObjectPosition {
         objectPosition.blockY = y;
         objectPosition.blockZ = z;
         objectPosition.sideHit = side;
-        objectPosition.hitVector = new Vector3(hitVector.x, hitVector.y, hitVector.z);
+        objectPosition.hitVector = new Vector3(hitVector.x(), hitVector.y(), hitVector.z());
         return objectPosition;
     }
 
@@ -72,7 +72,7 @@ public class MovingObjectPosition {
         MovingObjectPosition objectPosition = new MovingObjectPosition();
         objectPosition.typeOfHit = 1;
         objectPosition.entityHit = entity;
-        objectPosition.hitVector = new Vector3(entity.x, entity.y, entity.z);
+        objectPosition.hitVector = new Vector3(entity.x(), entity.y(), entity.z());
         return objectPosition;
     }
 

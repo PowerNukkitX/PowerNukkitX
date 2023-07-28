@@ -106,9 +106,9 @@ public class BlockBamboo extends BlockTransparentMeta implements BlockFlowerPot.
         level.getServer().getPluginManager().callEvent(blockGrowEvent);
         if (!blockGrowEvent.isCancelled()) {
             Block newState1 = blockGrowEvent.getNewState();
-            newState1.x = x;
-            newState1.y = up.y;
-            newState1.z = z;
+            newState1.setX(x());
+            newState1.setY(up.y());
+            newState1.setZ(z());
             newState1.level = level;
             newState1.place(toItem(), up, this, BlockFace.DOWN, 0.5, 0.5, 0.5, null);
             return true;
@@ -144,9 +144,9 @@ public class BlockBamboo extends BlockTransparentMeta implements BlockFlowerPot.
         int downId = down.getId();
         if (downId != BAMBOO && downId != BAMBOO_SAPLING) {
             BlockBambooSapling sampling = new BlockBambooSapling();
-            sampling.x = x;
-            sampling.y = y;
-            sampling.z = z;
+            sampling.setX(x());
+            sampling.setY(y());
+            sampling.setZ(z());
             sampling.level = level;
             return sampling.place(item, block, target, face, fx, fy, fz, player);
         }
@@ -338,7 +338,7 @@ public class BlockBamboo extends BlockTransparentMeta implements BlockFlowerPot.
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
         if (item.isFertilizer()) {
-            int top = (int) y;
+            int top = (int) y();
             int count = 1;
 
             for (int i = 1; i <= 16; i++) {
@@ -367,7 +367,7 @@ public class BlockBamboo extends BlockTransparentMeta implements BlockFlowerPot.
 
             boolean success = false;
 
-            Block block = this.up(top - (int) y + 1);
+            Block block = this.up(top - (int) y() + 1);
             if (block.getId() == BlockID.AIR) {
                 success = grow(block);
             }

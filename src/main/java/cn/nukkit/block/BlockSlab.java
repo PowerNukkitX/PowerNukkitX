@@ -48,12 +48,12 @@ public abstract class BlockSlab extends BlockTransparentMeta {
 
     @Override
     public double getMinY() {
-        return isOnTop() ? this.y + 0.5 : this.y;
+        return isOnTop() ? this.y() + 0.5 : this.y();
     }
 
     @Override
     public double getMaxY() {
-        return isOnTop() ? this.y + 1 : this.y + 0.5;
+        return isOnTop() ? this.y() + 1 : this.y() + 0.5;
     }
 
     @Override

@@ -71,9 +71,9 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
         addEntity.yaw = (float) this.yaw;
         addEntity.headYaw = (float) this.yaw;
         addEntity.pitch = (float) this.pitch;
-        addEntity.x = (float) this.x;
-        addEntity.y = (float) this.y + getBaseOffset();
-        addEntity.z = (float) this.z;
+        addEntity.x = (float) this.x();
+        addEntity.y = (float) this.y() + getBaseOffset();
+        addEntity.z = (float) this.z();
         addEntity.speedX = (float) this.motionX;
         addEntity.speedY = (float) this.motionY;
         addEntity.speedZ = (float) this.motionZ;

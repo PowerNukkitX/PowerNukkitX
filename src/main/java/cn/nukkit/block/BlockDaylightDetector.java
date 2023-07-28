@@ -168,7 +168,7 @@ public class BlockDaylightDetector extends BlockTransparentMeta
     public void updatePower() {
         int i;
         if (getLevel().getDimension() == Level.DIMENSION_OVERWORLD) {
-            i = getLevel().getBlockSkyLightAt((int) x, (int) y, (int) z)
+            i = getLevel().getBlockSkyLightAt((int) x(), (int) y(), (int) z())
                     - getLevel().calculateSkylightSubtracted(1.0F);
             float f = getLevel().getCelestialAngle(1.0F) * 6.2831855F;
 
@@ -198,6 +198,6 @@ public class BlockDaylightDetector extends BlockTransparentMeta
 
     @Override
     public double getMaxY() {
-        return this.y + 0.625;
+        return this.y() + 0.625;
     }
 }

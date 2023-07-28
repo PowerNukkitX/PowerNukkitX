@@ -85,11 +85,11 @@ public class BlockCommandBlock extends BlockSolidMeta implements Faceable, Block
             Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
         if (player != null) {
             if (!player.isCreative()) return false;
-            if (Math.abs(player.getFloorX() - this.x) < 2 && Math.abs(player.getFloorZ() - this.z) < 2) {
-                double y = player.y + player.getEyeHeight();
-                if (y - this.y > 2) {
+            if (Math.abs(player.getFloorX() - this.x()) < 2 && Math.abs(player.getFloorZ() - this.z()) < 2) {
+                double y = player.y() + player.getEyeHeight();
+                if (y - this.y() > 2) {
                     this.setPropertyValue(FACING_DIRECTION, BlockFace.UP);
-                } else if (this.y - y > 0) {
+                } else if (this.y() - y > 0) {
                     this.setPropertyValue(FACING_DIRECTION, BlockFace.DOWN);
                 } else {
                     this.setPropertyValue(

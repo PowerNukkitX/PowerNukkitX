@@ -84,7 +84,7 @@ public class BlockCherrySapling extends BlockFlowable implements BlockFlowerPot.
 
     private void grow() {
         ListChunkManager chunkManager = new ListChunkManager(this.level);
-        Vector3 vector3 = new Vector3(this.x, this.y - 1, this.z);
+        Vector3 vector3 = new Vector3(this.x(), this.y() - 1, this.z());
         var objectCherryTree = new ObjectCherryTree();
         objectCherryTree.generate(chunkManager, new NukkitRandom(), this);
         StructureGrowEvent ev = new StructureGrowEvent(this, chunkManager.getBlocks());

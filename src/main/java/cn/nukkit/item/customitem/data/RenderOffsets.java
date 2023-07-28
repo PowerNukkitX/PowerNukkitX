@@ -122,23 +122,23 @@ public class RenderOffsets {
         var result = new CompoundTag();
         if (pos != null) {
             var position = new ListTag<FloatTag>("position");
-            position.add(new FloatTag("", pos.x));
-            position.add(new FloatTag("", pos.y));
-            position.add(new FloatTag("", pos.z));
+            position.add(new FloatTag("", pos.x()));
+            position.add(new FloatTag("", pos.y()));
+            position.add(new FloatTag("", pos.z()));
             result.putList(position);
         }
         if (rot != null) {
             var rotation = new ListTag<FloatTag>("rotation");
-            rotation.add(new FloatTag("", rot.x));
-            rotation.add(new FloatTag("", rot.y));
-            rotation.add(new FloatTag("", rot.z));
+            rotation.add(new FloatTag("", rot.x()));
+            rotation.add(new FloatTag("", rot.y()));
+            rotation.add(new FloatTag("", rot.z()));
             result.putList(rotation);
         }
         if (sc != null) {
             var scale = new ListTag<FloatTag>("scale");
-            scale.add(new FloatTag("", sc.x));
-            scale.add(new FloatTag("", sc.y));
-            scale.add(new FloatTag("", sc.z));
+            scale.add(new FloatTag("", sc.x()));
+            scale.add(new FloatTag("", sc.y()));
+            scale.add(new FloatTag("", sc.z()));
             result.putList(scale);
         }
         return result;

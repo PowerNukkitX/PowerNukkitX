@@ -78,32 +78,32 @@ public class BlockCandleCake extends BlockTransparentMeta {
 
     @Override
     public double getMinX() {
-        return this.x + (1 + getDamage() * 2) / 16d;
+        return this.x() + (1 + getDamage() * 2) / 16d;
     }
 
     @Override
     public double getMinY() {
-        return this.y;
+        return this.y();
     }
 
     @Override
     public double getMinZ() {
-        return this.z + 0.0625;
+        return this.z() + 0.0625;
     }
 
     @Override
     public double getMaxX() {
-        return this.x - 0.0625 + 1;
+        return this.x() - 0.0625 + 1;
     }
 
     @Override
     public double getMaxY() {
-        return this.y + 0.5;
+        return this.y() + 0.5;
     }
 
     @Override
     public double getMaxZ() {
-        return this.z - 0.0625 + 1;
+        return this.z() - 0.0625 + 1;
     }
 
     @Override

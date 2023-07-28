@@ -104,9 +104,9 @@ public class EntitySmallFireBall extends EntityProjectile {
             affect = onCollideWithBlock(position, motion, collisionBlock);
         if (!affect && this.getLevelBlock().getId() == BlockID.AIR) {
             BlockFire fire = (BlockFire) Block.get(BlockID.FIRE);
-            fire.x = this.x;
-            fire.y = this.y;
-            fire.z = this.z;
+            fire.setX(this.x());
+            fire.setY(this.y());
+            fire.setZ(this.z());
             fire.level = level;
 
             if (fire.isBlockTopFacingSurfaceSolid(fire.down()) || fire.canNeighborBurn()) {

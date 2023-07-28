@@ -62,12 +62,12 @@ public class FillCommand extends VanillaCommand {
         int replaceDataValue = -1;
 
         AxisAlignedBB aabb = new SimpleAxisAlignedBB(
-                Math.min(from.getX(), to.getX()),
-                Math.min(from.getY(), to.getY()),
-                Math.min(from.getZ(), to.getZ()),
-                Math.max(from.getX(), to.getX()),
-                Math.max(from.getY(), to.getY()),
-                Math.max(from.getZ(), to.getZ()));
+                Math.min(from.x(), to.x()),
+                Math.min(from.y(), to.y()),
+                Math.min(from.z(), to.z()),
+                Math.max(from.x(), to.x()),
+                Math.max(from.y(), to.y()),
+                Math.max(from.z(), to.z()));
         if (aabb.getMinY() < -64 || aabb.getMaxY() > 320) {
             log.addError("commands.fill.outOfWorld").output();
             return 0;
@@ -117,12 +117,12 @@ public class FillCommand extends VanillaCommand {
                                         y <= NukkitMath.floorDouble(aabb.getMaxY());
                                         y++) {
 
-                                    boolean isBorderX =
-                                            x == NukkitMath.floorDouble(from.x) || x == NukkitMath.floorDouble(to.x);
-                                    boolean isBorderZ =
-                                            z == NukkitMath.floorDouble(from.z) || z == NukkitMath.floorDouble(to.z);
-                                    boolean isBorderY =
-                                            y == NukkitMath.floorDouble(from.y) || y == NukkitMath.floorDouble(to.y);
+                                    boolean isBorderX = x == NukkitMath.floorDouble(from.x())
+                                            || x == NukkitMath.floorDouble(to.x());
+                                    boolean isBorderZ = z == NukkitMath.floorDouble(from.z())
+                                            || z == NukkitMath.floorDouble(to.z());
+                                    boolean isBorderY = y == NukkitMath.floorDouble(from.y())
+                                            || y == NukkitMath.floorDouble(to.y());
 
                                     if (isBorderX || isBorderZ || isBorderY) {
                                         level.setBlock(x, y, z, Block.get(tileId, tileData), false, true);
@@ -143,12 +143,12 @@ public class FillCommand extends VanillaCommand {
                                         y <= NukkitMath.floorDouble(aabb.getMaxY());
                                         y++) {
                                     Block block;
-                                    boolean isBorderX =
-                                            x == NukkitMath.floorDouble(from.x) || x == NukkitMath.floorDouble(to.x);
-                                    boolean isBorderZ =
-                                            z == NukkitMath.floorDouble(from.z) || z == NukkitMath.floorDouble(to.z);
-                                    boolean isBorderY =
-                                            y == NukkitMath.floorDouble(from.y) || y == NukkitMath.floorDouble(to.y);
+                                    boolean isBorderX = x == NukkitMath.floorDouble(from.x())
+                                            || x == NukkitMath.floorDouble(to.x());
+                                    boolean isBorderZ = z == NukkitMath.floorDouble(from.z())
+                                            || z == NukkitMath.floorDouble(to.z());
+                                    boolean isBorderY = y == NukkitMath.floorDouble(from.y())
+                                            || y == NukkitMath.floorDouble(to.y());
 
                                     if (isBorderX || isBorderZ || isBorderY) {
                                         block = Block.get(tileId, tileData);

@@ -222,7 +222,7 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
         BasicGenerator generator = null;
         boolean bigTree = false;
 
-        Vector3 vector3 = new Vector3(this.x, this.y - 1, this.z);
+        Vector3 vector3 = new Vector3(this.x(), this.y() - 1, this.z());
 
         switch (getWoodType()) {
             case JUNGLE:
@@ -348,7 +348,7 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
         for (List<Vector2> validVectors : validVectorsList) {
             boolean correct = true;
             for (Vector2 vector2 : validVectors) {
-                if (!this.isSameType(this.add(vector2.x, 0, vector2.y), type)) correct = false;
+                if (!this.isSameType(this.add(vector2.x(), 0, vector2.y()), type)) correct = false;
             }
             if (correct) {
                 int lowestX = 0;

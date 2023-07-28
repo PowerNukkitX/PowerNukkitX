@@ -141,7 +141,7 @@ public abstract class BlockWallBase extends BlockTransparentMeta implements Bloc
         if (boundingBox == null) {
             return false;
         }
-        boundingBox = boundingBox.getOffsetBoundingBox(-above.x, -above.y, -above.z);
+        boundingBox = boundingBox.getOffsetBoundingBox(-above.x(), -above.y(), -above.z());
         if (boundingBox.getMinY() > 0) {
             return false;
         }
@@ -496,7 +496,8 @@ public abstract class BlockWallBase extends BlockTransparentMeta implements Bloc
             s = 0.6875;
         }
 
-        return new SimpleAxisAlignedBB(this.x + w, this.y, this.z + n, this.x + e, this.y + 1.5, this.z + s);
+        return new SimpleAxisAlignedBB(
+                this.x() + w, this.y(), this.z() + n, this.x() + e, this.y() + 1.5, this.z() + s);
     }
 
     @PowerNukkitOnly

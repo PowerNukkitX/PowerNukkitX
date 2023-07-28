@@ -226,7 +226,7 @@ public class BlockSkull extends BlockTransparentMeta
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
         AxisAlignedBB bb = new SimpleAxisAlignedBB(
-                this.x + 0.25, this.y, this.z + 0.25, this.x + 1 - 0.25, this.y + 0.5, this.z + 1 - 0.25);
+                this.x() + 0.25, this.y(), this.z() + 0.25, this.x() + 1 - 0.25, this.y() + 0.5, this.z() + 1 - 0.25);
         switch (this.getBlockFace()) {
             case NORTH:
                 return bb.offset(0, 0.25, 0.25);

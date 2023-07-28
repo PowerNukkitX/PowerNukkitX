@@ -186,9 +186,9 @@ public class EntityHuman extends EntityHumanType {
             pk.username = this.getName();
             pk.entityUniqueId = this.getId();
             pk.entityRuntimeId = this.getId();
-            pk.x = (float) this.x;
-            pk.y = (float) this.y;
-            pk.z = (float) this.z;
+            pk.x = (float) this.x();
+            pk.y = (float) this.y();
+            pk.z = (float) this.z();
             pk.speedX = (float) this.motionX;
             pk.speedY = (float) this.motionY;
             pk.speedZ = (float) this.motionZ;

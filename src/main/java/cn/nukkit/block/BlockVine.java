@@ -161,7 +161,8 @@ public class BlockVine extends BlockTransparentMeta {
             f3 = 0;
             f6 = 1;
         }
-        return new SimpleAxisAlignedBB(this.x + f1, this.y + f2, this.z + f3, this.x + f4, this.y + f5, this.z + f6);
+        return new SimpleAxisAlignedBB(
+                this.x() + f1, this.y() + f2, this.z() + f3, this.x() + f4, this.y() + f5, this.z() + f6);
     }
 
     @Override
@@ -225,7 +226,7 @@ public class BlockVine extends BlockTransparentMeta {
                 int faceMeta = getMetaFromFace(face);
                 int meta = this.getDamage();
 
-                if (this.y < 255 && face == BlockFace.UP && block.getId() == AIR) {
+                if (this.y() < 255 && face == BlockFace.UP && block.getId() == AIR) {
                     if (this.canSpread()) {
                         for (BlockFace horizontalFace : BlockFace.Plane.HORIZONTAL) {
                             if (random.nextBoolean()
@@ -269,7 +270,7 @@ public class BlockVine extends BlockTransparentMeta {
                             putVine(this, meta, null);
                         }
                     }
-                } else if (this.y > 0) {
+                } else if (this.y() > 0) {
                     Block below = this.down();
                     int id = below.getId();
                     if (id == AIR || id == VINE) {

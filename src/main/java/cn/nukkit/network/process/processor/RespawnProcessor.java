@@ -17,7 +17,7 @@ public class RespawnProcessor extends DataPacketProcessor<RespawnPacket> {
         if (pk.respawnState == RespawnPacket.STATE_CLIENT_READY_TO_SPAWN) {
             RespawnPacket respawn1 = new RespawnPacket();
             respawn1.x = (float) player.getX();
-            respawn1.y = (float) player.getY();
+            respawn1.y = (float) player.y();
             respawn1.z = (float) player.getZ();
             respawn1.respawnState = RespawnPacket.STATE_READY_TO_SPAWN;
             player.dataPacket(respawn1);

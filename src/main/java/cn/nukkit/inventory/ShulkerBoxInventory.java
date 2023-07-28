@@ -30,9 +30,9 @@ public class ShulkerBoxInventory extends ContainerInventory {
 
         if (this.getViewers().size() == 1) {
             BlockEventPacket pk = new BlockEventPacket();
-            pk.x = (int) this.getHolder().getX();
-            pk.y = (int) this.getHolder().getY();
-            pk.z = (int) this.getHolder().getZ();
+            pk.x = (int) this.getHolder().x();
+            pk.y = (int) this.getHolder().y();
+            pk.z = (int) this.getHolder().z();
             pk.case1 = 1;
             pk.case2 = 2;
 
@@ -40,9 +40,7 @@ public class ShulkerBoxInventory extends ContainerInventory {
             if (level != null) {
                 level.addSound(this.getHolder().add(0.5, 0.5, 0.5), Sound.RANDOM_SHULKERBOXOPEN);
                 level.addChunkPacket(
-                        (int) this.getHolder().getX() >> 4,
-                        (int) this.getHolder().getZ() >> 4,
-                        pk);
+                        (int) this.getHolder().x() >> 4, (int) this.getHolder().z() >> 4, pk);
             }
         }
     }
@@ -52,9 +50,9 @@ public class ShulkerBoxInventory extends ContainerInventory {
     public void onClose(Player who) {
         if (this.getViewers().size() == 1) {
             BlockEventPacket pk = new BlockEventPacket();
-            pk.x = (int) this.getHolder().getX();
-            pk.y = (int) this.getHolder().getY();
-            pk.z = (int) this.getHolder().getZ();
+            pk.x = (int) this.getHolder().x();
+            pk.y = (int) this.getHolder().y();
+            pk.z = (int) this.getHolder().z();
             pk.case1 = 1;
             pk.case2 = 0;
 
@@ -62,9 +60,7 @@ public class ShulkerBoxInventory extends ContainerInventory {
             if (level != null) {
                 level.addSound(this.getHolder().add(0.5, 0.5, 0.5), Sound.RANDOM_SHULKERBOXCLOSED);
                 level.addChunkPacket(
-                        (int) this.getHolder().getX() >> 4,
-                        (int) this.getHolder().getZ() >> 4,
-                        pk);
+                        (int) this.getHolder().x() >> 4, (int) this.getHolder().z() >> 4, pk);
             }
         }
 

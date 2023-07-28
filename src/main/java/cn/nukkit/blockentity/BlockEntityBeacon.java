@@ -59,9 +59,9 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
     public CompoundTag getSpawnCompound() {
         return new CompoundTag()
                 .putString("id", BlockEntity.BEACON)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z)
+                .putInt("x", (int) this.x())
+                .putInt("y", (int) this.y())
+                .putInt("z", (int) this.z())
                 .putString("Lock", this.namedTag.getString("Lock"))
                 .putInt("Levels", this.namedTag.getInt("Levels"))
                 .putInt("primary", this.namedTag.getInt("Primary"))

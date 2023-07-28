@@ -55,12 +55,12 @@ public abstract class BlockStairs extends BlockTransparentMeta implements Faceab
 
     @Override
     public double getMinY() {
-        return this.y + (isUpsideDown() ? 0.5 : 0);
+        return this.y() + (isUpsideDown() ? 0.5 : 0);
     }
 
     @Override
     public double getMaxY() {
-        return this.y + (isUpsideDown() ? 1 : 0.5);
+        return this.y() + (isUpsideDown() ? 1 : 0.5);
     }
 
     @Since("1.3.0.0-PN")
@@ -108,23 +108,43 @@ public abstract class BlockStairs extends BlockTransparentMeta implements Faceab
         }
 
         if (bb.intersectsWith(new SimpleAxisAlignedBB(
-                this.x, this.y + minSlabY, this.z, this.x + 1, this.y + maxSlabY, this.z + 1))) {
+                this.x(), this.y() + minSlabY, this.z(), this.x() + 1, this.y() + maxSlabY, this.z() + 1))) {
             return true;
         }
 
         switch (face) {
             case EAST:
                 return bb.intersectsWith(new SimpleAxisAlignedBB(
-                        this.x + 0.5, this.y + minHalfSlabY, this.z, this.x + 1, this.y + maxHalfSlabY, this.z + 1));
+                        this.x() + 0.5,
+                        this.y() + minHalfSlabY,
+                        this.z(),
+                        this.x() + 1,
+                        this.y() + maxHalfSlabY,
+                        this.z() + 1));
             case WEST:
                 return bb.intersectsWith(new SimpleAxisAlignedBB(
-                        this.x, this.y + minHalfSlabY, this.z, this.x + 0.5, this.y + maxHalfSlabY, this.z + 1));
+                        this.x(),
+                        this.y() + minHalfSlabY,
+                        this.z(),
+                        this.x() + 0.5,
+                        this.y() + maxHalfSlabY,
+                        this.z() + 1));
             case SOUTH:
                 return bb.intersectsWith(new SimpleAxisAlignedBB(
-                        this.x, this.y + minHalfSlabY, this.z + 0.5, this.x + 1, this.y + maxHalfSlabY, this.z + 1));
+                        this.x(),
+                        this.y() + minHalfSlabY,
+                        this.z() + 0.5,
+                        this.x() + 1,
+                        this.y() + maxHalfSlabY,
+                        this.z() + 1));
             case NORTH:
                 return bb.intersectsWith(new SimpleAxisAlignedBB(
-                        this.x, this.y + minHalfSlabY, this.z, this.x + 1, this.y + maxHalfSlabY, this.z + 0.5));
+                        this.x(),
+                        this.y() + minHalfSlabY,
+                        this.z(),
+                        this.x() + 1,
+                        this.y() + maxHalfSlabY,
+                        this.z() + 0.5));
             default:
                 return false;
         }

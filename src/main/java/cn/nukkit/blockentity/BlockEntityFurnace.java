@@ -395,9 +395,9 @@ public class BlockEntityFurnace extends BlockEntitySpawnable
     public CompoundTag getSpawnCompound() {
         CompoundTag c = new CompoundTag()
                 .putString("id", getClientName())
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z)
+                .putInt("x", (int) this.x())
+                .putInt("y", (int) this.y())
+                .putInt("z", (int) this.z())
                 .putShort("BurnDuration", burnDuration)
                 .putShort("BurnTime", burnTime)
                 .putShort("CookTime", cookTime)

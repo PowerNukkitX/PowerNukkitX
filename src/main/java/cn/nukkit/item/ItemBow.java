@@ -81,9 +81,9 @@ public class ItemBow extends ItemTool {
 
         CompoundTag nbt = new CompoundTag()
                 .putList(new ListTag<DoubleTag>("Pos")
-                        .add(new DoubleTag("", player.x))
-                        .add(new DoubleTag("", player.y + player.getEyeHeight()))
-                        .add(new DoubleTag("", player.z)))
+                        .add(new DoubleTag("", player.x()))
+                        .add(new DoubleTag("", player.y() + player.getEyeHeight()))
+                        .add(new DoubleTag("", player.z())))
                 .putList(new ListTag<DoubleTag>("Motion")
                         .add(new DoubleTag(
                                 "", -Math.sin(player.yaw / 180 * Math.PI) * Math.cos(player.pitch / 180 * Math.PI)))

@@ -30,7 +30,9 @@ public class LookController implements IController {
             Vector3 moveDirectionEnd = entity.getMoveDirectionEnd().clone();
             // 构建路径方向向量
             var routeDirectionVector = new Vector3(
-                    moveDirectionEnd.x - entity.x, moveDirectionEnd.y - entity.y, moveDirectionEnd.z - entity.z);
+                    moveDirectionEnd.x() - entity.x(),
+                    moveDirectionEnd.y() - entity.y(),
+                    moveDirectionEnd.z() - entity.z());
             var yaw = BVector3.getYawFromVector(routeDirectionVector);
             entity.setYaw(yaw);
             if (!lookAtTarget) {
@@ -40,7 +42,8 @@ public class LookController implements IController {
         }
         if (lookAtTarget && lookTarget != null) {
             // 构建指向玩家的向量
-            var toPlayerVector = new Vector3(lookTarget.x - entity.x, lookTarget.y - entity.y, lookTarget.z - entity.z);
+            var toPlayerVector =
+                    new Vector3(lookTarget.x() - entity.x(), lookTarget.y() - entity.y(), lookTarget.z() - entity.z());
             if (entity.isEnablePitch()) entity.setPitch(BVector3.getPitchFromVector(toPlayerVector));
             entity.setHeadYaw(BVector3.getYawFromVector(toPlayerVector));
         }

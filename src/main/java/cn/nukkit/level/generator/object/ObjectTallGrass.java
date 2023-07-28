@@ -61,13 +61,13 @@ public class ObjectTallGrass {
         };
         int arrC = arr.length - 1;
         for (int c = 0; c < count; c++) {
-            int x = random.nextRange((int) (pos.x - radius), (int) (pos.x + radius));
-            int z = random.nextRange((int) (pos.z) - radius, (int) (pos.z + radius));
+            int x = random.nextRange((int) (pos.x() - radius), (int) (pos.x() + radius));
+            int z = random.nextRange((int) (pos.z()) - radius, (int) (pos.z() + radius));
 
-            if (level.getBlockIdAt(x, (int) (pos.y + 1), z) == Block.AIR
-                    && level.getBlockIdAt(x, (int) (pos.y), z) == Block.GRASS) {
+            if (level.getBlockIdAt(x, (int) (pos.y() + 1), z) == Block.AIR
+                    && level.getBlockIdAt(x, (int) (pos.y()), z) == Block.GRASS) {
                 int[] t = arr[random.nextRange(0, arrC)];
-                level.setBlockAt(x, (int) (pos.y + 1), z, t[0], t[1]);
+                level.setBlockAt(x, (int) (pos.y() + 1), z, t[0], t[1]);
             }
         }
     }

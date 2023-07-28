@@ -19,7 +19,7 @@ public class PNXEntity implements Entity {
 
     @Override
     public Vector3 position() {
-        return Vector3.of(nukkitEntity.getX(), nukkitEntity.getY(), nukkitEntity.getZ());
+        return Vector3.of(nukkitEntity.x(), nukkitEntity.y(), nukkitEntity.z());
     }
 
     @Override

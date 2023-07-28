@@ -184,27 +184,27 @@ public class BlockTurtleEgg extends BlockFlowable {
 
     @Override
     public double getMinX() {
-        return x + (3.0 / 16);
+        return x() + (3.0 / 16);
     }
 
     @Override
     public double getMinZ() {
-        return z + (3.0 / 16);
+        return z() + (3.0 / 16);
     }
 
     @Override
     public double getMaxX() {
-        return x + (12.0 / 16);
+        return x() + (12.0 / 16);
     }
 
     @Override
     public double getMaxZ() {
-        return z + (12.0 / 16);
+        return z() + (12.0 / 16);
     }
 
     @Override
     public double getMaxY() {
-        return y + (7.0 / 16);
+        return y() + (7.0 / 16);
     }
 
     @Override
@@ -274,7 +274,7 @@ public class BlockTurtleEgg extends BlockFlowable {
                             creatureSpawnEvent.getEntityNetworkId(), creatureSpawnEvent.getPosition());
                     if (turtle != null) {
                         turtle.setBreedingAge(-24000);
-                        turtle.setHomePos(new Vector3(x, y, z));
+                        turtle.setHomePos(new Vector3(x(), y(), z()));
                         turtle.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_BABY, true);
                         turtle.setScale(0.16f);
                         turtle.spawnToAll();
@@ -303,7 +303,7 @@ public class BlockTurtleEgg extends BlockFlowable {
                 && !(entity instanceof EntityBat)
                 && !(entity instanceof EntityGhast)
                 && !(entity instanceof EntityPhantom)
-                && entity.getY() >= this.getMaxY()) {
+                && entity.y() >= this.getMaxY()) {
             Event ev;
 
             if (entity instanceof Player) {

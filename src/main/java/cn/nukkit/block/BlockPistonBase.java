@@ -58,10 +58,10 @@ public abstract class BlockPistonBase extends BlockTransparentMeta
     public static boolean canPush(Block block, BlockFace face, boolean destroyBlocks, boolean extending) {
         var min = block.level.getMinHeight();
         var max = block.level.getMaxHeight() - 1;
-        if (block.getY() >= min
-                && (face != BlockFace.DOWN || block.getY() != min)
-                && block.getY() <= max
-                && (face != BlockFace.UP || block.getY() != max)) {
+        if (block.y() >= min
+                && (face != BlockFace.DOWN || block.y() != min)
+                && block.y() <= max
+                && (face != BlockFace.UP || block.y() != max)) {
             if (extending && !block.canBePushed() || !extending && !block.canBePulled()) return false;
             if (block.breaksWhenMoved()) return destroyBlocks || block.sticksToPiston();
             var blockEntity = block.getLevelBlockEntity();
@@ -120,12 +120,12 @@ public abstract class BlockPistonBase extends BlockTransparentMeta
             double fz,
             @Nullable Player player) {
         if (player != null) {
-            if (Math.abs(player.getFloorX() - this.x) <= 1 && Math.abs(player.getFloorZ() - this.z) <= 1) {
-                double y = player.y + player.getEyeHeight();
+            if (Math.abs(player.getFloorX() - this.x()) <= 1 && Math.abs(player.getFloorZ() - this.z()) <= 1) {
+                double y = player.y() + player.getEyeHeight();
 
-                if (y - this.y > 2) {
+                if (y - this.y() > 2) {
                     this.setPropertyValue(CommonBlockProperties.FACING_DIRECTION, BlockFace.UP);
-                } else if (this.y - y > 0) {
+                } else if (this.y() - y > 0) {
                     this.setPropertyValue(CommonBlockProperties.FACING_DIRECTION, BlockFace.DOWN);
                 } else {
                     this.setPropertyValue(CommonBlockProperties.FACING_DIRECTION, player.getHorizontalFacing());
@@ -283,7 +283,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta
             toMoveBlockVec = blocksToMove.stream().map(Vector3::asBlockVector3).collect(Collectors.toList());
             var moveDirection = extending ? pistonFace : pistonFace.getOpposite();
             for (Block blockToMove : blocksToMove) {
-                var oldPos = new Vector3(blockToMove.x, blockToMove.y, blockToMove.z);
+                var oldPos = new Vector3(blockToMove.x(), blockToMove.y(), blockToMove.z());
                 var newPos = blockToMove.getSidePos(moveDirection);
                 // 清除位置上所含的水等
                 level.setBlock(newPos, 1, Block.get(AIR), true, false);

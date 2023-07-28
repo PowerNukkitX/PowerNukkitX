@@ -127,22 +127,22 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
 
     @Override
     public double getMinX() {
-        return this.x + offMinX[getOffsetIndex()];
+        return this.x() + offMinX[getOffsetIndex()];
     }
 
     @Override
     public double getMinZ() {
-        return this.z + offMinZ[getOffsetIndex()];
+        return this.z() + offMinZ[getOffsetIndex()];
     }
 
     @Override
     public double getMaxX() {
-        return this.x + offMaxX[getOffsetIndex()];
+        return this.x() + offMaxX[getOffsetIndex()];
     }
 
     @Override
     public double getMaxZ() {
-        return this.z + offMaxZ[getOffsetIndex()];
+        return this.z() + offMaxZ[getOffsetIndex()];
     }
 
     @PowerNukkitDifference(

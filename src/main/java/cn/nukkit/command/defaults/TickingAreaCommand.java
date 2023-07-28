@@ -88,8 +88,8 @@ public class TickingAreaCommand extends VanillaCommand {
                 manager.addTickingArea(area);
                 log.addSuccess(
                                 "commands.tickingarea-add-bounds.success",
-                                (int) from.x + "," + (int) from.y + "," + (int) from.z,
-                                (int) to.x + "," + (int) to.y + "," + (int) to.z)
+                                (int) from.x() + "," + (int) from.y() + "," + (int) from.z(),
+                                (int) to.x() + "," + (int) to.y() + "," + (int) to.z())
                         .output();
                 return 1;
             }
@@ -118,7 +118,7 @@ public class TickingAreaCommand extends VanillaCommand {
                 manager.addTickingArea(area);
                 log.addSuccess(
                                 "commands.tickingarea-add-circle.success",
-                                (int) center.x + "," + (int) center.y + "," + (int) center.z,
+                                (int) center.x() + "," + (int) center.y() + "," + (int) center.z(),
                                 String.valueOf(radius))
                         .output();
                 return 1;
@@ -128,9 +128,9 @@ public class TickingAreaCommand extends VanillaCommand {
                 if (manager.getTickingAreaByPos(pos) == null) {
                     log.addSuccess(
                                     "commands.tickingarea-remove.failure",
-                                    String.valueOf((int) pos.x),
-                                    String.valueOf((int) pos.y),
-                                    String.valueOf((int) pos.z))
+                                    String.valueOf((int) pos.x()),
+                                    String.valueOf((int) pos.y()),
+                                    String.valueOf((int) pos.z()))
                             .output();
                     return 0;
                 }

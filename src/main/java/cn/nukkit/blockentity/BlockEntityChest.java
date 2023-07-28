@@ -82,7 +82,7 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer implements B
             if (pair.doubleInventory != null) {
                 this.doubleInventory = pair.doubleInventory;
             } else if (this.doubleInventory == null) {
-                if ((pair.x + ((int) pair.z << 15)) > (this.x + ((int) this.z << 15))) { // Order them correctly
+                if ((pair.x() + ((int) pair.z() << 15)) > (this.x() + ((int) this.z() << 15))) { // Order them correctly
                     this.doubleInventory = new DoubleChestInventory(pair, this);
                 } else {
                     this.doubleInventory = new DoubleChestInventory(this, pair);
@@ -105,7 +105,7 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer implements B
         if (this.isPaired()) {
             BlockEntity blockEntity = this.getLevel()
                     .getBlockEntityIfLoaded(
-                            new Vector3(this.namedTag.getInt("pairx"), this.y, this.namedTag.getInt("pairz")));
+                            new Vector3(this.namedTag.getInt("pairx"), this.y(), this.namedTag.getInt("pairz")));
             if (blockEntity instanceof BlockEntityChest) {
                 return (BlockEntityChest) blockEntity;
             }
@@ -131,10 +131,10 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer implements B
     }
 
     public void createPair(BlockEntityChest chest) {
-        this.namedTag.putInt("pairx", (int) chest.x);
-        this.namedTag.putInt("pairz", (int) chest.z);
-        chest.namedTag.putInt("pairx", (int) this.x);
-        chest.namedTag.putInt("pairz", (int) this.z);
+        this.namedTag.putInt("pairx", (int) chest.x());
+        this.namedTag.putInt("pairz", (int) chest.z());
+        chest.namedTag.putInt("pairx", (int) this.x());
+        chest.namedTag.putInt("pairz", (int) this.z());
     }
 
     public boolean unpair() {
@@ -168,17 +168,17 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer implements B
         if (this.isPaired()) {
             c = new CompoundTag()
                     .putString("id", BlockEntity.CHEST)
-                    .putInt("x", (int) this.x)
-                    .putInt("y", (int) this.y)
-                    .putInt("z", (int) this.z)
+                    .putInt("x", (int) this.x())
+                    .putInt("y", (int) this.y())
+                    .putInt("z", (int) this.z())
                     .putInt("pairx", this.namedTag.getInt("pairx"))
                     .putInt("pairz", this.namedTag.getInt("pairz"));
         } else {
             c = new CompoundTag()
                     .putString("id", BlockEntity.CHEST)
-                    .putInt("x", (int) this.x)
-                    .putInt("y", (int) this.y)
-                    .putInt("z", (int) this.z);
+                    .putInt("x", (int) this.x())
+                    .putInt("y", (int) this.y())
+                    .putInt("z", (int) this.z());
         }
 
         if (this.hasName()) {

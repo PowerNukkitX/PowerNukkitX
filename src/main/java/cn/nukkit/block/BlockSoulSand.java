@@ -45,7 +45,7 @@ public class BlockSoulSand extends BlockSolid {
             info = "Fixed MaxY BB, soul sand is a normal full cube in Bedrock Edition")
     @Override
     public double getMaxY() {
-        return this.y + 1;
+        return this.y() + 1;
     }
 
     @Override

@@ -248,9 +248,9 @@ public class BlockEntityBeehive extends BlockEntity {
                     face.getZOffset() * 0.25 - face.getXOffset() * 0.5);
 
             saveData.putList(new ListTag<DoubleTag>("Pos")
-                    .add(new DoubleTag("0", spawnPosition.x))
-                    .add(new DoubleTag("1", spawnPosition.y))
-                    .add(new DoubleTag("2", spawnPosition.z)));
+                    .add(new DoubleTag("0", spawnPosition.x()))
+                    .add(new DoubleTag("1", spawnPosition.y()))
+                    .add(new DoubleTag("2", spawnPosition.z())));
 
             saveData.putList(new ListTag<DoubleTag>("Motion")
                     .add(new DoubleTag("0", 0))
@@ -263,8 +263,8 @@ public class BlockEntityBeehive extends BlockEntity {
             lookAt = spawnPosition.add(RANDOM.nextDouble(), 0, RANDOM.nextDouble());
         }
 
-        double dx = lookAt.getX() - spawnPosition.getX();
-        double dz = lookAt.getZ() - spawnPosition.getZ();
+        double dx = lookAt.x() - spawnPosition.x();
+        double dz = lookAt.z() - spawnPosition.z();
         float yaw = 0;
 
         if (dx != 0) {

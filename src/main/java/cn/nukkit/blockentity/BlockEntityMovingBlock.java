@@ -86,9 +86,9 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
         var bb = block.getBoundingBox();
         if (bb == null) return;
         bb = bb.getOffsetBoundingBox(
-                        this.x + (piston.progress * moveDirection.getXOffset()) - moveDirection.getXOffset(),
-                        this.y + (piston.progress * moveDirection.getYOffset()) - moveDirection.getYOffset(),
-                        this.z + (piston.progress * moveDirection.getZOffset()) - moveDirection.getZOffset()
+                        this.x() + (piston.progress * moveDirection.getXOffset()) - moveDirection.getXOffset(),
+                        this.y() + (piston.progress * moveDirection.getYOffset()) - moveDirection.getYOffset(),
+                        this.z() + (piston.progress * moveDirection.getZOffset()) - moveDirection.getZOffset()
                         // 带动站在移动方块上的实体
                         )
                 .addCoord(0, moveDirection.getAxis().isHorizontal() ? 0.25 : 0, 0);

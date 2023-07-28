@@ -217,7 +217,7 @@ public class CameraCommand extends VanillaCommand {
                 Position position = list.get(4).get();
                 pk.setInstruction(SetInstruction.builder()
                         .preset(preset)
-                        .pos(new Pos((float) position.getX(), (float) position.getY(), (float) position.getZ()))
+                        .pos(new Pos((float) position.x(), (float) position.y(), (float) position.z()))
                         .build());
             }
             case "set-pos-rot" -> {
@@ -229,7 +229,7 @@ public class CameraCommand extends VanillaCommand {
                 Position position = list.get(4).get();
                 pk.setInstruction(SetInstruction.builder()
                         .preset(preset)
-                        .pos(new Pos((float) position.getX(), (float) position.getY(), (float) position.getZ()))
+                        .pos(new Pos((float) position.x(), (float) position.y(), (float) position.z()))
                         .rot(new Rot(
                                 ((RelativeFloatNode) list.get(6)).get((float) senderLocation.getPitch()),
                                 ((RelativeFloatNode) list.get(7)).get((float) senderLocation.getYaw())))
@@ -276,7 +276,7 @@ public class CameraCommand extends VanillaCommand {
                 pk.setInstruction(SetInstruction.builder()
                         .preset(preset)
                         .ease(new Ease(easeTime, easeType))
-                        .pos(new Pos((float) position.getX(), (float) position.getY(), (float) position.getZ()))
+                        .pos(new Pos((float) position.x(), (float) position.y(), (float) position.z()))
                         .build());
             }
             case "set-ease-pos-rot" -> {
@@ -291,7 +291,7 @@ public class CameraCommand extends VanillaCommand {
                 pk.setInstruction(SetInstruction.builder()
                         .preset(preset)
                         .ease(new Ease(easeTime, easeType))
-                        .pos(new Pos((float) position.getX(), (float) position.getY(), (float) position.getZ()))
+                        .pos(new Pos((float) position.x(), (float) position.y(), (float) position.z()))
                         .rot(new Rot(
                                 ((RelativeFloatNode) list.get(9)).get((float) senderLocation.getPitch()),
                                 ((RelativeFloatNode) list.get(10)).get((float) senderLocation.getYaw())))

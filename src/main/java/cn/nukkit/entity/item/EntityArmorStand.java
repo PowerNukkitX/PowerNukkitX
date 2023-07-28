@@ -179,7 +179,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
                 slot = EntityEquipmentInventory.MAIN_HAND;
             }
         } else {
-            double clickHeight = clickedPos.y - this.y;
+            double clickHeight = clickedPos.y() - this.y();
             if (clickHeight >= 0.1
                     && clickHeight < 0.55
                     && !armorInventory.getBoots().isNull()) {
@@ -369,19 +369,19 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
 
         Vector3 pos = getPosition();
 
-        pos.y += 0.2;
+        pos.setY(pos.y() + 0.2);
         level.dropItem(pos, armorInventory.getBoots());
 
-        pos.y = y + 0.6;
+        pos.setY(y() + 0.6);
         level.dropItem(pos, armorInventory.getLeggings());
 
-        pos.y = y + 1.4;
+        pos.setY(y() + 1.4);
         level.dropItem(byAttack ? pos : this, Item.get(ItemID.ARMOR_STAND));
         level.dropItem(pos, armorInventory.getChestplate());
         equipmentInventory.getContents().values().forEach(items -> this.level.dropItem(this, items));
         equipmentInventory.clearAll();
 
-        pos.y = y + 1.8;
+        pos.setY(y() + 1.8);
         level.dropItem(pos, armorInventory.getHelmet());
         armorInventory.clearAll();
 
@@ -530,7 +530,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
 
             updateMovement();
             hasUpdate = true;
-            if (onGround && (highestPosition - y) >= 3) {
+            if (onGround && (highestPosition - y()) >= 3) {
                 level.addSound(this, Sound.MOB_ARMOR_STAND_LAND);
             }
         }

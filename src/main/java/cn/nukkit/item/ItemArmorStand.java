@@ -62,8 +62,8 @@ public class ItemArmorStand extends Item {
             return false;
         }
 
-        for (Entity collidingEntity : level.getCollidingEntities(
-                new SimpleAxisAlignedBB(block.x, block.y, block.z, block.x + 1, block.y + 1, block.z + 1))) {
+        for (Entity collidingEntity : level.getCollidingEntities(new SimpleAxisAlignedBB(
+                block.x(), block.y(), block.z(), block.x() + 1, block.y() + 1, block.z() + 1))) {
             if (collidingEntity instanceof EntityArmorStand) {
                 return false;
             }

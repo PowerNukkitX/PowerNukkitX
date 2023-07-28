@@ -36,7 +36,7 @@ public class BlockGrassPath extends BlockGrass {
 
     @Override
     public double getMaxY() {
-        return this.y + 1;
+        return this.y() + 1;
     }
 
     @Override

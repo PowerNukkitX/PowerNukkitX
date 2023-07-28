@@ -303,9 +303,9 @@ public interface IBlockState {
             @Nullable Consumer<BlockStateRepair> callback) {
         Block block = Block.get(getBlockId());
         block.level = level;
-        block.x = x;
-        block.y = y;
-        block.z = z;
+        block.setX(x);
+        block.setY(y);
+        block.setZ(z);
         block.layer = layer;
         BlockState currentState = getCurrentState();
         try {

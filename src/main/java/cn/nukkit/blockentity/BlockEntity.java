@@ -159,9 +159,9 @@ public abstract class BlockEntity extends Position {
         this.namedTag = nbt;
         this.name = "";
         this.id = BlockEntity.count++;
-        this.x = this.namedTag.getInt("x");
-        this.y = this.namedTag.getInt("y");
-        this.z = this.namedTag.getInt("z");
+        this.setX(this.namedTag.getInt("x"));
+        this.setY(this.namedTag.getInt("y"));
+        this.setZ(this.namedTag.getInt("z"));
 
         if (namedTag.contains("isMovable")) {
             this.movable = this.namedTag.getBoolean("isMovable");
@@ -322,9 +322,9 @@ public abstract class BlockEntity extends Position {
      */
     public void saveNBT() {
         this.namedTag.putString("id", this.getSaveId());
-        this.namedTag.putInt("x", (int) this.getX());
-        this.namedTag.putInt("y", (int) this.getY());
-        this.namedTag.putInt("z", (int) this.getZ());
+        this.namedTag.putInt("x", (int) this.x());
+        this.namedTag.putInt("y", (int) this.y());
+        this.namedTag.putInt("z", (int) this.z());
         this.namedTag.putBoolean("isMovable", this.movable);
     }
 

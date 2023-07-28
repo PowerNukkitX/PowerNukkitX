@@ -328,18 +328,18 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
     }
 
     public boolean isInSniffRange(Entity entity) {
-        double deltaX = this.x - entity.x;
-        double deltaZ = this.z - entity.z;
+        double deltaX = this.x() - entity.x();
+        double deltaZ = this.z() - entity.z();
         var distanceXZSqrt = deltaX * deltaX + deltaZ * deltaZ;
-        var deltaY = Math.abs(this.y - entity.y);
+        var deltaY = Math.abs(this.y() - entity.y());
         return distanceXZSqrt <= 36 && deltaY <= 400;
     }
 
     public boolean isInRangedAttackRange(Entity entity) {
-        double deltaX = this.x - entity.x;
-        double deltaZ = this.z - entity.z;
+        double deltaX = this.x() - entity.x();
+        double deltaZ = this.z() - entity.z();
         var distanceXZSqrt = deltaX * deltaX + deltaZ * deltaZ;
-        var deltaY = Math.abs(this.y - entity.y);
+        var deltaY = Math.abs(this.y() - entity.y());
         return distanceXZSqrt <= 225 && deltaY <= 400;
     }
 

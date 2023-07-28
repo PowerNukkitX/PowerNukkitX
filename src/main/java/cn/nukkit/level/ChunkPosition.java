@@ -19,7 +19,7 @@ public class ChunkPosition {
     }
 
     public ChunkPosition(Vector3 vec3d) {
-        this(MathHelper.floor(vec3d.x), MathHelper.floor(vec3d.y), MathHelper.floor(vec3d.z));
+        this(MathHelper.floor(vec3d.x()), MathHelper.floor(vec3d.y()), MathHelper.floor(vec3d.z()));
     }
 
     @Override

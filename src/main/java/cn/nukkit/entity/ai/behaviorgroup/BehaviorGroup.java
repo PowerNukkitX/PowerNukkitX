@@ -358,7 +358,7 @@ public class BehaviorGroup implements IBehaviorGroup {
     protected Set<ChunkSectionVector> calPassByChunkSections(Collection<Vector3> nodes, Level level) {
         return nodes.stream()
                 .map(vector3 -> new ChunkSectionVector(
-                        vector3.getChunkX(), ((int) vector3.y - level.getMinHeight()) >> 4, vector3.getChunkZ()))
+                        vector3.getChunkX(), ((int) vector3.y() - level.getMinHeight()) >> 4, vector3.getChunkZ()))
                 .collect(Collectors.toSet());
     }
 

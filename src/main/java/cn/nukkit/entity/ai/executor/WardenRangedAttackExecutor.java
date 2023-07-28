@@ -115,7 +115,7 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor {
 
     protected void sendAttackParticle(EntityIntelligent entity, Vector3 from, Vector3 to) {
         var length = from.distance(to);
-        var relativeVector = new Vector3(to.x - from.x, to.y - from.y, to.z - from.z);
+        var relativeVector = new Vector3(to.x() - from.x(), to.y() - from.y(), to.z() - from.z());
         for (int i = 1; i <= (length + 4); i++) {
             var pk = new LevelEventGenericPacket();
             pk.eventId = LevelEventPacket.EVENT_PARTICLE_SONIC_EXPLOSION;
@@ -126,6 +126,9 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor {
     }
 
     protected CompoundTag createVec3fTag(Vector3f vec3f) {
-        return new CompoundTag().putFloat("x", vec3f.x).putFloat("y", vec3f.y).putFloat("z", vec3f.z);
+        return new CompoundTag()
+                .putFloat("x", vec3f.x())
+                .putFloat("y", vec3f.y())
+                .putFloat("z", vec3f.z());
     }
 }

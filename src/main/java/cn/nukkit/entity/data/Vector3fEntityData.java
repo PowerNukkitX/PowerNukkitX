@@ -19,7 +19,7 @@ public class Vector3fEntityData extends EntityData<Vector3f> {
     }
 
     public Vector3fEntityData(int id, Vector3f pos) {
-        this(id, pos.x, pos.y, pos.z);
+        this(id, pos.x(), pos.y(), pos.z());
     }
 
     @Override
@@ -30,9 +30,9 @@ public class Vector3fEntityData extends EntityData<Vector3f> {
     @Override
     public void setData(Vector3f data) {
         if (data != null) {
-            this.x = data.x;
-            this.y = data.y;
-            this.z = data.z;
+            this.x = data.x();
+            this.y = data.y();
+            this.z = data.z();
         }
     }
 

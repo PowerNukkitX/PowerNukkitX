@@ -98,7 +98,7 @@ public class BlockSnowLayer extends BlockFallableMeta {
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Returns the max Y based on the snow height")
     @Override
     public double getMaxY() {
-        return y + (Math.min(16, getSnowHeight() + 1) * 2) / 16.0;
+        return y() + (Math.min(16, getSnowHeight() + 1) * 2) / 16.0;
     }
 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Renders a bounding box that the entities stands on top")
@@ -111,7 +111,7 @@ public class BlockSnowLayer extends BlockFallableMeta {
         if (snowHeight == 3 || snowHeight == SNOW_HEIGHT.getMaxValue()) {
             return this;
         }
-        return new SimpleAxisAlignedBB(x, y, z, x + 1, y + 8 / 16.0, z + 1);
+        return new SimpleAxisAlignedBB(x(), y(), z(), x() + 1, y() + 8 / 16.0, z() + 1);
     }
 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Renders a bounding box with the actual snow_layer height")
@@ -163,8 +163,8 @@ public class BlockSnowLayer extends BlockFallableMeta {
 
         if (increment.isPresent()) {
             BlockSnowLayer other = increment.get();
-            if (Arrays.stream(level.getCollidingEntities(
-                            new SimpleAxisAlignedBB(other.x, other.y, other.z, other.x + 1, other.y + 1, other.z + 1)))
+            if (Arrays.stream(level.getCollidingEntities(new SimpleAxisAlignedBB(
+                            other.x(), other.y(), other.z(), other.x() + 1, other.y() + 1, other.z() + 1)))
                     .anyMatch(e -> e instanceof EntityLiving)) {
                 return false;
             }

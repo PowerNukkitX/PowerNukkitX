@@ -178,9 +178,9 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements Invento
     public CompoundTag getSpawnCompound() {
         CompoundTag c = new CompoundTag()
                 .putString("id", BlockEntity.CAMPFIRE)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z);
+                .putInt("x", (int) this.x())
+                .putInt("y", (int) this.y())
+                .putInt("z", (int) this.z());
 
         for (int i = 1; i <= burnTime.length; i++) {
             Item item = inventory.getItem(i - 1);

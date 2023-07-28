@@ -103,9 +103,9 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
         Item item = getItem();
         CompoundTag tag = new CompoundTag()
                 .putString("id", BlockEntity.ITEM_FRAME)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z);
+                .putInt("x", (int) this.x())
+                .putInt("y", (int) this.y())
+                .putInt("z", (int) this.z());
 
         if (!item.isNull()) {
             CompoundTag itemTag = NBTIO.putItemHelper(item);

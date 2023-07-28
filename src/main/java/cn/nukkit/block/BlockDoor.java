@@ -148,20 +148,20 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
     private AxisAlignedBB recalculateBoundingBoxWithPos(BlockFace pos) {
         if (pos.getAxisDirection() == AxisDirection.NEGATIVE) {
             return new SimpleAxisAlignedBB(
-                    this.x,
-                    this.y,
-                    this.z,
-                    this.x + 1 + pos.getXOffset() - (THICKNESS * pos.getXOffset()),
-                    this.y + 1,
-                    this.z + 1 + pos.getZOffset() - (THICKNESS * pos.getZOffset()));
+                    this.x(),
+                    this.y(),
+                    this.z(),
+                    this.x() + 1 + pos.getXOffset() - (THICKNESS * pos.getXOffset()),
+                    this.y() + 1,
+                    this.z() + 1 + pos.getZOffset() - (THICKNESS * pos.getZOffset()));
         } else {
             return new SimpleAxisAlignedBB(
-                    this.x + pos.getXOffset() - (THICKNESS * pos.getXOffset()),
-                    this.y,
-                    this.z + pos.getZOffset() - (THICKNESS * pos.getZOffset()),
-                    this.x + 1,
-                    this.y + 1,
-                    this.z + 1);
+                    this.x() + pos.getXOffset() - (THICKNESS * pos.getXOffset()),
+                    this.y(),
+                    this.z() + pos.getZOffset() - (THICKNESS * pos.getZOffset()),
+                    this.x() + 1,
+                    this.y() + 1,
+                    this.z() + 1);
         }
     }
 
@@ -293,7 +293,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
             double fy,
             double fz,
             @Nullable Player player) {
-        if (this.y > this.level.getMaxHeight() - 2 || face != BlockFace.UP) {
+        if (this.y() > this.level.getMaxHeight() - 2 || face != BlockFace.UP) {
             return false;
         }
 
@@ -321,7 +321,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
         }
 
         BlockDoor doorTop = (BlockDoor) clone();
-        doorTop.y++;
+        doorTop.setX(doorTop.y() + 1);
         doorTop.setTop(true);
         level.setBlock(doorTop, doorTop, true, true); // Top
 

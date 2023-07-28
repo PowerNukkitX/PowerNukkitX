@@ -145,7 +145,7 @@ public class BlockTarget extends BlockTransparent implements RedstoneComponent, 
             return false;
         }
 
-        Vector3 hitVector = intercept.hitVector.subtract(x * 2, y * 2, z * 2);
+        Vector3 hitVector = intercept.hitVector.subtract(x() * 2, y() * 2, z() * 2);
         List<Axis> axes = new ArrayList<>(Arrays.asList(Axis.values()));
         axes.remove(faceHit.getAxis());
 

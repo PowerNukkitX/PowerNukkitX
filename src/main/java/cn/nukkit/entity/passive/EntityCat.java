@@ -65,7 +65,7 @@ public class EntityCat extends EntityAnimal
     @Override
     public void updateMovement() {
         // 猫猫流线运动怎么可能会摔落造成伤害呢~
-        this.highestPosition = this.y;
+        this.highestPosition = this.y();
         super.updateMovement();
     }
 

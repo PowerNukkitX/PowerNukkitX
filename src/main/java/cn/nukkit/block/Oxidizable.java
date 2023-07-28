@@ -60,7 +60,7 @@ public interface Oxidizable {
                     if (x == 0 && y == 0 && z == 0) {
                         continue;
                     }
-                    mutableLocation.setComponents(block.x + x, block.y + y, block.z + z);
+                    mutableLocation.setComponents(block.x() + x, block.y() + y, block.z() + z);
                     if (block.distanceManhattan(mutableLocation) > 4) {
                         continue;
                     }

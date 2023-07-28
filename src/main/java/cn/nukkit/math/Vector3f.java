@@ -12,9 +12,9 @@ public class Vector3f implements Cloneable {
     public static final int SIDE_WEST = 4;
     public static final int SIDE_EAST = 5;
 
-    public float x;
-    public float y;
-    public float z;
+    private float x;
+    private float y;
+    private float z;
 
     public Vector3f() {
         this(0, 0, 0);
@@ -34,15 +34,15 @@ public class Vector3f implements Cloneable {
         this.z = z;
     }
 
-    public float getX() {
+    public float x() {
         return this.x;
     }
 
-    public float getY() {
+    public float y() {
         return this.y;
     }
 
-    public float getZ() {
+    public float z() {
         return this.z;
     }
 
@@ -109,7 +109,7 @@ public class Vector3f implements Cloneable {
     }
 
     public Vector3f add(Vector3f x) {
-        return new Vector3f(this.x + x.getX(), this.y + x.getY(), this.z + x.getZ());
+        return new Vector3f(this.x + x.x(), this.y + x.y(), this.z + x.z());
     }
 
     public Vector3f subtract() {
@@ -129,7 +129,7 @@ public class Vector3f implements Cloneable {
     }
 
     public Vector3f subtract(Vector3f x) {
-        return this.add(-x.getX(), -x.getY(), -x.getZ());
+        return this.add(-x.x(), -x.y(), -x.z());
     }
 
     public Vector3f multiply(float number) {
@@ -219,7 +219,7 @@ public class Vector3f implements Cloneable {
     }
 
     public float maxPlainDistance(Vector2f vector) {
-        return this.maxPlainDistance(vector.x, vector.y);
+        return this.maxPlainDistance(vector.x(), vector.y());
     }
 
     public float maxPlainDistance(Vector3f x) {

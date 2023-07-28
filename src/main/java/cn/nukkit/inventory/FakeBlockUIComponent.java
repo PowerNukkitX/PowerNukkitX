@@ -58,9 +58,9 @@ public class FakeBlockUIComponent extends PlayerUIComponent {
         pk.type = type.getNetworkType();
         InventoryHolder holder = this.getHolder();
         if (holder != null) {
-            pk.x = (int) ((Vector3) holder).getX();
-            pk.y = (int) ((Vector3) holder).getY();
-            pk.z = (int) ((Vector3) holder).getZ();
+            pk.x = (int) ((Vector3) holder).x();
+            pk.y = (int) ((Vector3) holder).y();
+            pk.z = (int) ((Vector3) holder).z();
         } else {
             pk.x = pk.y = pk.z = 0;
         }

@@ -109,10 +109,10 @@ public class BlockChiseledBookshelf extends BlockBookshelf
              */
             Vector2 clickPos =
                     switch (blockFace) {
-                        case NORTH -> new Vector2(1 - clickPoint.getX(), clickPoint.getY());
-                        case SOUTH -> new Vector2(clickPoint.getX(), clickPoint.getY());
-                        case WEST -> new Vector2(clickPoint.getZ(), clickPoint.getY());
-                        case EAST -> new Vector2(1 - clickPoint.getZ(), clickPoint.getY());
+                        case NORTH -> new Vector2(1 - clickPoint.x(), clickPoint.y());
+                        case SOUTH -> new Vector2(clickPoint.x(), clickPoint.y());
+                        case WEST -> new Vector2(clickPoint.z(), clickPoint.y());
+                        case EAST -> new Vector2(1 - clickPoint.z(), clickPoint.y());
                         default -> throw new IllegalArgumentException(blockFace.toString());
                     };
             int index = getRegion(clickPos);
@@ -149,12 +149,12 @@ public class BlockChiseledBookshelf extends BlockBookshelf
     }
 
     private int getRegion(Vector2 clickPos) {
-        if (clickPos.getX() - 0.333333 < 0) {
-            return clickPos.getY() - 0.5 < 0 ? 3 : 0;
-        } else if (clickPos.getX() - 0.666666 < 0) {
-            return clickPos.getY() - 0.5 < 0 ? 4 : 1;
+        if (clickPos.x() - 0.333333 < 0) {
+            return clickPos.y() - 0.5 < 0 ? 3 : 0;
+        } else if (clickPos.x() - 0.666666 < 0) {
+            return clickPos.y() - 0.5 < 0 ? 4 : 1;
         } else {
-            return clickPos.getY() - 0.5 < 0 ? 5 : 2;
+            return clickPos.y() - 0.5 < 0 ? 5 : 2;
         }
     }
 }

@@ -159,9 +159,9 @@ public class ItemCrossbow extends ItemTool {
             double mZ;
             CompoundTag nbt = (new CompoundTag())
                     .putList((new ListTag<>("Pos"))
-                            .add(new DoubleTag("", player.x))
-                            .add(new DoubleTag("", player.y + (double) player.getEyeHeight()))
-                            .add(new DoubleTag("", player.z)))
+                            .add(new DoubleTag("", player.x()))
+                            .add(new DoubleTag("", player.y() + (double) player.getEyeHeight()))
+                            .add(new DoubleTag("", player.z())))
                     .putList((new ListTag("Motion"))
                             .add(new DoubleTag(
                                     "",

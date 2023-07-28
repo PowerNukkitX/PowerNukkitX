@@ -139,22 +139,22 @@ public class BlockLadder extends BlockTransparentMeta implements Faceable {
 
     @Override
     public double getMinX() {
-        return this.x + offMinX;
+        return this.x() + offMinX;
     }
 
     @Override
     public double getMinZ() {
-        return this.z + offMinZ;
+        return this.z() + offMinZ;
     }
 
     @Override
     public double getMaxX() {
-        return this.x + offMaxX;
+        return this.x() + offMaxX;
     }
 
     @Override
     public double getMaxZ() {
-        return this.z + offMaxZ;
+        return this.z() + offMaxZ;
     }
 
     @Override

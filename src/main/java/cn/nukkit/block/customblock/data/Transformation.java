@@ -20,11 +20,11 @@ public record Transformation(Vector3 translation, Vector3 scale, Vector3 rotatio
                 .putInt("RX", rx)
                 .putInt("RY", ry)
                 .putInt("RZ", rz)
-                .putFloat("SX", (float) scale.x)
-                .putFloat("SY", (float) scale.y)
-                .putFloat("SZ", (float) scale.z)
-                .putFloat("TX", (float) translation.x)
-                .putFloat("TY", (float) translation.y)
-                .putFloat("TZ", (float) translation.z);
+                .putFloat("SX", (float) scale.x())
+                .putFloat("SY", (float) scale.y())
+                .putFloat("SZ", (float) scale.z())
+                .putFloat("TX", (float) translation.x())
+                .putFloat("TY", (float) translation.y())
+                .putFloat("TZ", (float) translation.z());
     }
 }

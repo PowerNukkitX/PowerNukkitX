@@ -106,7 +106,7 @@ public class BlockBed extends BlockTransparentMeta implements Faceable, BlockEnt
 
     @Override
     public double getMaxY() {
-        return this.y + 0.5625;
+        return this.y() + 0.5625;
     }
 
     @PowerNukkitOnly
@@ -178,7 +178,7 @@ public class BlockBed extends BlockTransparentMeta implements Faceable, BlockEnt
         }
 
         AxisAlignedBB accessArea = new SimpleAxisAlignedBB(
-                        head.x - 2, head.y - 5.5, head.z - 2, head.x + 3, head.y + 2.5, head.z + 3)
+                        head.x() - 2, head.y() - 5.5, head.z() - 2, head.x() + 3, head.y() + 2.5, head.z() + 3)
                 .addCoord(footPart.getXOffset(), 0, footPart.getZOffset());
 
         if (!accessArea.isVectorInside(player)) {
@@ -204,7 +204,7 @@ public class BlockBed extends BlockTransparentMeta implements Faceable, BlockEnt
 
         if (!player.isCreative()) {
             AxisAlignedBB checkMonsterArea = new SimpleAxisAlignedBB(
-                            head.x - 8, head.y - 6.5, head.z - 8, head.x + 9, head.y + 5.5, head.z + 9)
+                            head.x() - 8, head.y() - 6.5, head.z() - 8, head.x() + 9, head.y() + 5.5, head.z() + 9)
                     .addCoord(footPart.getXOffset(), 0, footPart.getZOffset());
 
             for (Entity entity : this.level.getCollidingEntities(checkMonsterArea)) {

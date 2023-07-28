@@ -323,9 +323,9 @@ public class ReadOnlyLegacyStructureTemplate extends AbstractLegacyStructureTemp
             Vector3 pos = entityInfo.pos.add(position.getX(), position.getY(), position.getZ());
 
             ListTag<DoubleTag> posTag = new ListTag<>("Pos");
-            posTag.add(new DoubleTag("", pos.x));
-            posTag.add(new DoubleTag("", pos.y));
-            posTag.add(new DoubleTag("", pos.z));
+            posTag.add(new DoubleTag("", pos.x()));
+            posTag.add(new DoubleTag("", pos.y()));
+            posTag.add(new DoubleTag("", pos.z()));
             nbt.putList(posTag);
 
             Server.getInstance().getScheduler().scheduleTask(new ActorSpawnTask(level, nbt));

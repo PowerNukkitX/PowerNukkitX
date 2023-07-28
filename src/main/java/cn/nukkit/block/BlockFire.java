@@ -197,14 +197,14 @@ public class BlockFire extends BlockFlowable {
                     this.tryToCatchBlockOnFire(this.south(), 300 + o, meta);
                     this.tryToCatchBlockOnFire(this.north(), 300 + o, meta);
 
-                    for (int x = (int) (this.x - 1); x <= (int) (this.x + 1); ++x) {
-                        for (int z = (int) (this.z - 1); z <= (int) (this.z + 1); ++z) {
-                            for (int y = (int) (this.y - 1); y <= (int) (this.y + 4); ++y) {
-                                if (x != (int) this.x || y != (int) this.y || z != (int) this.z) {
+                    for (int x = (int) (this.x() - 1); x <= (int) (this.x() + 1); ++x) {
+                        for (int z = (int) (this.z() - 1); z <= (int) (this.z() + 1); ++z) {
+                            for (int y = (int) (this.y() - 1); y <= (int) (this.y() + 4); ++y) {
+                                if (x != (int) this.x() || y != (int) this.y() || z != (int) this.z()) {
                                     int k = 100;
 
-                                    if (y > this.y + 1) {
-                                        k += (y - (this.y + 1)) * 100;
+                                    if (y > this.y() + 1) {
+                                        k += (y - (this.y() + 1)) * 100;
                                     }
 
                                     Block block = this.getLevel().getBlock(new Vector3(x, y, z));

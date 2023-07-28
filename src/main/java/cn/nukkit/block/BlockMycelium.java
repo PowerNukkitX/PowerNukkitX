@@ -56,10 +56,10 @@ public class BlockMycelium extends BlockSolid {
             if (getLevel().getFullLight(add(0, 1, 0)) >= BlockCrops.MINIMUM_LIGHT_LEVEL) {
                 // TODO: light levels
                 NukkitRandom random = new NukkitRandom();
-                x = random.nextRange((int) x - 1, (int) x + 1);
-                y = random.nextRange((int) y - 1, (int) y + 1);
-                z = random.nextRange((int) z - 1, (int) z + 1);
-                Block block = this.getLevel().getBlock(new Vector3(x, y, z));
+                setX(random.nextRange((int) x() - 1, (int) x() + 1));
+                setY(random.nextRange((int) y() - 1, (int) y() + 1));
+                setZ(random.nextRange((int) z() - 1, (int) z() + 1));
+                Block block = this.getLevel().getBlock(new Vector3(x(), y(), z()));
                 if (block.getId() == Block.DIRT && block.getDamage() == 0) {
                     if (block.up().isTransparent()) {
                         BlockSpreadEvent ev = new BlockSpreadEvent(block, this, Block.get(BlockID.MYCELIUM));

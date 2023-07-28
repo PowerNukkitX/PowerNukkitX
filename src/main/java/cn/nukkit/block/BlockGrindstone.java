@@ -238,7 +238,8 @@ public class BlockGrindstone extends BlockTransparentMeta implements Faceable {
         double d = down ? 0 : pixels;
         double u = up ? 1 : 1 - pixels;
 
-        return new SimpleAxisAlignedBB(this.x + w, this.y + d, this.z + n, this.x + e, this.y + u, this.z + s);
+        return new SimpleAxisAlignedBB(
+                this.x() + w, this.y() + d, this.z() + n, this.x() + e, this.y() + u, this.z() + s);
     }
 
     @Override

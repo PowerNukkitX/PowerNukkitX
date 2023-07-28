@@ -179,9 +179,9 @@ public class BlockKelp extends BlockFlowable {
     public boolean onActivate(@NotNull Item item, Player player) {
         // Bone meal
         if (item.isFertilizer()) {
-            int x = (int) this.x;
-            int z = (int) this.z;
-            for (int y = (int) this.y + 1; y < 255; y++) {
+            int x = (int) this.x();
+            int z = (int) this.z();
+            for (int y = (int) this.y() + 1; y < 255; y++) {
                 BlockState blockStateAbove = getLevel().getBlockStateAt(x, y, z);
                 int blockIdAbove = blockStateAbove.getBlockId();
                 if (blockIdAbove != BLOCK_KELP) {

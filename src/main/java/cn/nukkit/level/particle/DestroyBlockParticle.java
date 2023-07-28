@@ -15,7 +15,7 @@ public class DestroyBlockParticle extends Particle {
     protected final int data;
 
     public DestroyBlockParticle(Vector3 pos, Block block) {
-        super(pos.x, pos.y, pos.z);
+        super(pos.x(), pos.y(), pos.z());
         this.data = GlobalBlockPalette.getOrCreateRuntimeId(block.getId(), block.getDamage());
     }
 
@@ -23,9 +23,9 @@ public class DestroyBlockParticle extends Particle {
     public DataPacket[] encode() {
         LevelEventPacket pk = new LevelEventPacket();
         pk.evid = LevelEventPacket.EVENT_PARTICLE_DESTROY;
-        pk.x = (float) this.x;
-        pk.y = (float) this.y;
-        pk.z = (float) this.z;
+        pk.x = (float) this.x();
+        pk.y = (float) this.y();
+        pk.z = (float) this.z();
         pk.data = this.data;
 
         return new DataPacket[] {pk};

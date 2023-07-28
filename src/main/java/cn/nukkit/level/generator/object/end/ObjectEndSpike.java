@@ -41,13 +41,13 @@ public class ObjectEndSpike extends BasicGenerator {
     }
 
     public boolean generate(ChunkManager level, NukkitRandom rand) {
-        while (position.getY() > 5
+        while (position.y() > 5
                 && level.getBlockIdAt(position.getFloorX(), position.getFloorY(), position.getFloorZ()) == AIR)
             position.down();
         for (int z = position.getFloorZ() - radius; z <= position.getFloorZ() + radius; ++z)
             for (int y = position.getFloorY() - radius; y < height; ++y)
                 for (int x = position.getFloorX() - radius; x <= position.getFloorX() + radius; ++x) {
-                    double d0 = position.getX() - x, d2 = position.getZ() - z;
+                    double d0 = position.x() - x, d2 = position.z() - z;
                     if (d0 * d0 + d2 * d2 <= this.radius * this.radius + 1 && y < height)
                         level.setBlockStateAt(x, y, z, STATE_OBSIDIAN);
                     else if (y > 65) level.setBlockStateAt(x, y, z, STATE_AIR);

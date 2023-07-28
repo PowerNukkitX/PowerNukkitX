@@ -46,9 +46,9 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
     public CompoundTag getSpawnCompound() {
         CompoundTag c = new CompoundTag()
                 .putString("id", BlockEntity.LECTERN)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z)
+                .putInt("x", (int) this.x())
+                .putInt("y", (int) this.y())
+                .putInt("z", (int) this.z())
                 .putBoolean("isMovable", this.movable);
 
         Item book = getBook();

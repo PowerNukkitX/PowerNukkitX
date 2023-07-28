@@ -296,12 +296,12 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
                    );*/ null;
         } else {
             return new SimpleAxisAlignedBB(
-                    this.x,
-                    this.y + 0.6875,
-                    this.z,
-                    this.x + 1,
-                    this.y + (getTilt() == PARTIAL_TILT ? 0.8125 : 0.9375),
-                    this.z + 1);
+                    this.x(),
+                    this.y() + 0.6875,
+                    this.z(),
+                    this.x() + 1,
+                    this.y() + (getTilt() == PARTIAL_TILT ? 0.8125 : 0.9375),
+                    this.z() + 1);
         }
     }
 

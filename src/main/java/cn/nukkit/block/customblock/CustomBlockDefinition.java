@@ -261,13 +261,13 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
                             new CompoundTag()
                                     .putBoolean("enabled", true)
                                     .putList(new ListTag<FloatTag>("origin")
-                                            .add(new FloatTag("", origin.x))
-                                            .add(new FloatTag("", origin.y))
-                                            .add(new FloatTag("", origin.z)))
+                                            .add(new FloatTag("", origin.x()))
+                                            .add(new FloatTag("", origin.y()))
+                                            .add(new FloatTag("", origin.z())))
                                     .putList(new ListTag<FloatTag>("size")
-                                            .add(new FloatTag("", size.x))
-                                            .add(new FloatTag("", size.y))
-                                            .add(new FloatTag("", size.z))));
+                                            .add(new FloatTag("", size.x()))
+                                            .add(new FloatTag("", size.y()))
+                                            .add(new FloatTag("", size.z()))));
             return this;
         }
 
@@ -287,13 +287,13 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
                             new CompoundTag()
                                     .putBoolean("enabled", true)
                                     .putList(new ListTag<FloatTag>("origin")
-                                            .add(new FloatTag("", origin.x))
-                                            .add(new FloatTag("", origin.y))
-                                            .add(new FloatTag("", origin.z)))
+                                            .add(new FloatTag("", origin.x()))
+                                            .add(new FloatTag("", origin.y()))
+                                            .add(new FloatTag("", origin.z())))
                                     .putList(new ListTag<FloatTag>("size")
-                                            .add(new FloatTag("", size.x))
-                                            .add(new FloatTag("", size.y))
-                                            .add(new FloatTag("", size.z))));
+                                            .add(new FloatTag("", size.x()))
+                                            .add(new FloatTag("", size.y()))
+                                            .add(new FloatTag("", size.z()))));
             return this;
         }
 

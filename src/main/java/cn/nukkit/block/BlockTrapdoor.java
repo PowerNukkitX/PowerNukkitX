@@ -171,32 +171,32 @@ public class BlockTrapdoor extends BlockTransparentMeta implements RedstoneCompo
 
     @Override
     public double getMinX() {
-        return this.x + getRelativeBoundingBox().getMinX();
+        return this.x() + getRelativeBoundingBox().getMinX();
     }
 
     @Override
     public double getMaxX() {
-        return this.x + getRelativeBoundingBox().getMaxX();
+        return this.x() + getRelativeBoundingBox().getMaxX();
     }
 
     @Override
     public double getMinY() {
-        return this.y + getRelativeBoundingBox().getMinY();
+        return this.y() + getRelativeBoundingBox().getMinY();
     }
 
     @Override
     public double getMaxY() {
-        return this.y + getRelativeBoundingBox().getMaxY();
+        return this.y() + getRelativeBoundingBox().getMaxY();
     }
 
     @Override
     public double getMinZ() {
-        return this.z + getRelativeBoundingBox().getMinZ();
+        return this.z() + getRelativeBoundingBox().getMinZ();
     }
 
     @Override
     public double getMaxZ() {
-        return this.z + getRelativeBoundingBox().getMaxZ();
+        return this.z() + getRelativeBoundingBox().getMaxZ();
     }
 
     @PowerNukkitDifference(

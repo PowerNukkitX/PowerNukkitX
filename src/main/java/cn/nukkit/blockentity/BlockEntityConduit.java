@@ -152,11 +152,11 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
         }
         final int radiusSquared = radius * radius;
 
-        Vector2 conduitPos = new Vector2(x, z);
+        Vector2 conduitPos = new Vector2(x(), z());
 
         this.getLevel().getPlayers().values().stream()
                 .filter(this::canAffect)
-                .filter(p -> conduitPos.distanceSquared(p.x, p.z) <= radiusSquared)
+                .filter(p -> conduitPos.distanceSquared(p.x(), p.z()) <= radiusSquared)
                 .forEach(p -> p.addEffect(Effect.getEffect(Effect.CONDUIT_POWER)
                         .setDuration(260)
                         .setVisible(true)
@@ -183,7 +183,12 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
 
         if (target == null) {
             Entity[] mobs = Arrays.stream(level.getCollidingEntities(new SimpleAxisAlignedBB(
-                            x - radius, y - radius, z - radius, x + 1 + radius, y + 1 + radius, z + 1 + radius)))
+                            x() - radius,
+                            y() - radius,
+                            z() - radius,
+                            x() + 1 + radius,
+                            y() + 1 + radius,
+                            z() + 1 + radius)))
                     .filter(this::canAttack)
                     .toArray(Entity[]::new);
             if (mobs.length == 0) {
@@ -374,9 +379,9 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
     public CompoundTag getSpawnCompound() {
         CompoundTag tag = new CompoundTag()
                 .putString("id", BlockEntity.CONDUIT)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z)
+                .putInt("x", (int) this.x())
+                .putInt("y", (int) this.y())
+                .putInt("z", (int) this.z())
                 .putBoolean("Active", this.active)
                 .putBoolean("isMovable", isMovable());
         Entity targetEntity = this.targetEntity;

@@ -260,7 +260,7 @@ public class BlockTripWire extends BlockTransparentMeta {
 
     @Override
     public double getMaxY() {
-        return this.y + 0.5;
+        return this.y() + 0.5;
     }
 
     @Override

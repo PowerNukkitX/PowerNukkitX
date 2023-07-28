@@ -87,11 +87,11 @@ public class BlockMoss extends BlockSolid {
 
     public void convertToMoss(Position pos) {
         Random random = new Random();
-        for (double x = pos.x - 3; x <= pos.x + 3; x++) {
-            for (double z = pos.z - 3; z <= pos.z + 3; z++) {
-                for (double y = pos.y + 5; y >= pos.y - 5; y--) {
+        for (double x = pos.x() - 3; x <= pos.x() + 3; x++) {
+            for (double z = pos.z() - 3; z <= pos.z() + 3; z++) {
+                for (double y = pos.y() + 5; y >= pos.y() - 5; y--) {
                     if (canConvertToMoss(pos.level.getBlock(new Position(x, y, z, pos.level)))
-                            && (random.nextDouble() < 0.6 || Math.abs(x - pos.x) < 3 && Math.abs(z - pos.z) < 3)) {
+                            && (random.nextDouble() < 0.6 || Math.abs(x - pos.x()) < 3 && Math.abs(z - pos.z()) < 3)) {
                         pos.level.setBlock(new Position(x, y, z, pos.level), Block.get(BlockID.MOSS_BLOCK));
                         break;
                     }
@@ -102,9 +102,9 @@ public class BlockMoss extends BlockSolid {
 
     public void populateRegion(Position pos) {
         Random random = new Random();
-        for (double x = pos.x - 3; x <= pos.x + 3; x++) {
-            for (double z = pos.z - 3; z <= pos.z + 3; z++) {
-                for (double y = pos.y + 5; y >= pos.y - 5; y--) {
+        for (double x = pos.x() - 3; x <= pos.x() + 3; x++) {
+            for (double z = pos.z() - 3; z <= pos.z() + 3; z++) {
+                for (double y = pos.y() + 5; y >= pos.y() - 5; y--) {
                     if (canBePopulated(new Position(x, y, z, pos.level))) {
                         if (!canGrowPlant(new Position(x, y, z, pos.level))) break;
                         double randomDouble = random.nextDouble();

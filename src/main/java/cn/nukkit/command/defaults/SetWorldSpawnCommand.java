@@ -44,9 +44,9 @@ public class SetWorldSpawnCommand extends VanillaCommand {
         DecimalFormat round2 = new DecimalFormat("##0.00");
         log.addSuccess(
                         "commands.setworldspawn.success",
-                        round2.format(pos.x),
-                        round2.format(pos.y),
-                        round2.format(pos.z))
+                        round2.format(pos.x()),
+                        round2.format(pos.y()),
+                        round2.format(pos.z()))
                 .output(true);
         return 1;
     }

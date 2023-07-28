@@ -202,12 +202,12 @@ public interface AxisAlignedBB extends Cloneable {
     }
 
     default boolean isVectorInside(Vector3 vector) {
-        return vector.x >= this.getMinX()
-                && vector.x <= this.getMaxX()
-                && vector.y >= this.getMinY()
-                && vector.y <= this.getMaxY()
-                && vector.z >= this.getMinZ()
-                && vector.z <= this.getMaxZ();
+        return vector.x() >= this.getMinX()
+                && vector.x() <= this.getMaxX()
+                && vector.y() >= this.getMinY()
+                && vector.y() <= this.getMaxY()
+                && vector.z() >= this.getMinZ()
+                && vector.z() <= this.getMaxZ();
     }
 
     @PowerNukkitXOnly
@@ -227,24 +227,24 @@ public interface AxisAlignedBB extends Cloneable {
     }
 
     default boolean isVectorInYZ(Vector3 vector) {
-        return vector.y >= this.getMinY()
-                && vector.y <= this.getMaxY()
-                && vector.z >= this.getMinZ()
-                && vector.z <= this.getMaxZ();
+        return vector.y() >= this.getMinY()
+                && vector.y() <= this.getMaxY()
+                && vector.z() >= this.getMinZ()
+                && vector.z() <= this.getMaxZ();
     }
 
     default boolean isVectorInXZ(Vector3 vector) {
-        return vector.x >= this.getMinX()
-                && vector.x <= this.getMaxX()
-                && vector.z >= this.getMinZ()
-                && vector.z <= this.getMaxZ();
+        return vector.x() >= this.getMinX()
+                && vector.x() <= this.getMaxX()
+                && vector.z() >= this.getMinZ()
+                && vector.z() <= this.getMaxZ();
     }
 
     default boolean isVectorInXY(Vector3 vector) {
-        return vector.x >= this.getMinX()
-                && vector.x <= this.getMaxX()
-                && vector.y >= this.getMinY()
-                && vector.y <= this.getMaxY();
+        return vector.x() >= this.getMinX()
+                && vector.x() <= this.getMaxX()
+                && vector.y() >= this.getMinY()
+                && vector.y() <= this.getMaxY();
     }
 
     default MovingObjectPosition calculateIntercept(Vector3 pos1, Vector3 pos2) {

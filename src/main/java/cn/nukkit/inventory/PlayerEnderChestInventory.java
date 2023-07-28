@@ -34,9 +34,9 @@ public class PlayerEnderChestInventory extends BaseInventory {
         containerOpenPacket.type = this.getType().getNetworkType();
         BlockEnderChest chest = who.getViewingEnderChest();
         if (chest != null) {
-            containerOpenPacket.x = (int) chest.getX();
-            containerOpenPacket.y = (int) chest.getY();
-            containerOpenPacket.z = (int) chest.getZ();
+            containerOpenPacket.x = (int) chest.x();
+            containerOpenPacket.y = (int) chest.y();
+            containerOpenPacket.z = (int) chest.z();
         } else {
             containerOpenPacket.x = containerOpenPacket.y = containerOpenPacket.z = 0;
         }
@@ -47,9 +47,9 @@ public class PlayerEnderChestInventory extends BaseInventory {
 
         if (chest != null && chest.getViewers().size() == 1) {
             BlockEventPacket blockEventPacket = new BlockEventPacket();
-            blockEventPacket.x = (int) chest.getX();
-            blockEventPacket.y = (int) chest.getY();
-            blockEventPacket.z = (int) chest.getZ();
+            blockEventPacket.x = (int) chest.x();
+            blockEventPacket.y = (int) chest.y();
+            blockEventPacket.z = (int) chest.z();
             blockEventPacket.case1 = 1;
             blockEventPacket.case2 = 2;
 
@@ -57,9 +57,7 @@ public class PlayerEnderChestInventory extends BaseInventory {
             if (level != null) {
                 level.addSound(this.getHolder().add(0.5, 0.5, 0.5), Sound.RANDOM_ENDERCHESTOPEN);
                 level.addChunkPacket(
-                        (int) this.getHolder().getX() >> 4,
-                        (int) this.getHolder().getZ() >> 4,
-                        blockEventPacket);
+                        (int) this.getHolder().x() >> 4, (int) this.getHolder().z() >> 4, blockEventPacket);
             }
         }
     }
@@ -76,9 +74,9 @@ public class PlayerEnderChestInventory extends BaseInventory {
         BlockEnderChest chest = who.getViewingEnderChest();
         if (chest != null && chest.getViewers().size() == 1) {
             BlockEventPacket blockEventPacket = new BlockEventPacket();
-            blockEventPacket.x = (int) chest.getX();
-            blockEventPacket.y = (int) chest.getY();
-            blockEventPacket.z = (int) chest.getZ();
+            blockEventPacket.x = (int) chest.x();
+            blockEventPacket.y = (int) chest.y();
+            blockEventPacket.z = (int) chest.z();
             blockEventPacket.case1 = 1;
             blockEventPacket.case2 = 0;
 
@@ -86,9 +84,7 @@ public class PlayerEnderChestInventory extends BaseInventory {
             if (level != null) {
                 level.addSound(this.getHolder().add(0.5, 0.5, 0.5), Sound.RANDOM_ENDERCHESTCLOSED);
                 level.addChunkPacket(
-                        (int) this.getHolder().getX() >> 4,
-                        (int) this.getHolder().getZ() >> 4,
-                        blockEventPacket);
+                        (int) this.getHolder().x() >> 4, (int) this.getHolder().z() >> 4, blockEventPacket);
             }
 
             who.setViewingEnderChest(null);

@@ -18,27 +18,27 @@ public class ObjectSavannaTree extends TreeGenerator {
         int i = rand.nextBoundedInt(3) + rand.nextBoundedInt(3) + 5;
         boolean flag = true;
 
-        if (position.getY() >= 1 && position.getY() + i + 1 <= 256) {
-            for (int j = (int) position.getY(); j <= position.getY() + 1 + i; ++j) {
+        if (position.y() >= 1 && position.y() + i + 1 <= 256) {
+            for (int j = (int) position.y(); j <= position.y() + 1 + i; ++j) {
                 int k = 1;
 
-                if (j == position.getY()) {
+                if (j == position.y()) {
                     k = 0;
                 }
 
-                if (j >= position.getY() + 1 + i - 2) {
+                if (j >= position.y() + 1 + i - 2) {
                     k = 2;
                 }
 
                 Vector3 vector3 = new Vector3();
 
-                for (int l = (int) position.getX() - k; l <= position.getX() + k && flag; ++l) {
-                    for (int i1 = (int) position.getZ() - k; i1 <= position.getZ() + k && flag; ++i1) {
+                for (int l = (int) position.x() - k; l <= position.x() + k && flag; ++l) {
+                    for (int i1 = (int) position.z() - k; i1 <= position.z() + k && flag; ++i1) {
                         if (j >= 0 && j < 256) {
 
                             vector3.setComponents(l, j, i1);
                             if (!this.canGrowInto(
-                                    level.getBlockIdAt((int) vector3.x, (int) vector3.y, (int) vector3.z))) {
+                                    level.getBlockIdAt((int) vector3.x(), (int) vector3.y(), (int) vector3.z()))) {
                                 flag = false;
                             }
                         } else {
@@ -54,7 +54,7 @@ public class ObjectSavannaTree extends TreeGenerator {
                 Vector3 down = position.down();
                 int block = level.getBlockIdAt(down.getFloorX(), down.getFloorY(), down.getFloorZ());
 
-                if ((block == Block.GRASS || block == Block.DIRT) && position.getY() < 256 - i - 1) {
+                if ((block == Block.GRASS || block == Block.DIRT) && position.y() < 256 - i - 1) {
                     this.setDirtAt(level, position.down());
                     BlockFace face = BlockFace.Plane.HORIZONTAL.random(rand);
                     int k2 = i - rand.nextBoundedInt(4) - 1;

@@ -54,7 +54,7 @@ public abstract class BlockThin extends BlockTransparent implements BlockConnect
         } catch (LevelException ignore) {
             // null sucks
         }
-        return new SimpleAxisAlignedBB(this.x + w, this.y, this.z + n, this.x + e, this.y + 1, this.z + s);
+        return new SimpleAxisAlignedBB(this.x() + w, this.y(), this.z() + n, this.x() + e, this.y() + 1, this.z() + s);
     }
 
     @PowerNukkitDifference(info = "Fixed connection logic for BE 1.16.0", since = "1.3.0.0-PN")

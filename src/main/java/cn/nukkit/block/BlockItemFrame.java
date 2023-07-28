@@ -317,6 +317,11 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
         }
 
         return new SimpleAxisAlignedBB(
-                aabb[0][0] + x, aabb[1][0] + y, aabb[2][0] + z, aabb[0][1] + x, aabb[1][1] + y, aabb[2][1] + z);
+                aabb[0][0] + x(),
+                aabb[1][0] + y(),
+                aabb[2][0] + z(),
+                aabb[0][1] + x(),
+                aabb[1][1] + y(),
+                aabb[2][1] + z());
     }
 }

@@ -93,7 +93,7 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
                                                         new ProbabilityEvaluator(43, 50))),
                                         any(
                                                 new BlockCheckEvaluator(Block.GRASS, new Vector3(0, -1, 0)),
-                                                new BlockCheckEvaluator(Block.TALL_GRASS, Vector3.ZERO))),
+                                                new BlockCheckEvaluator(Block.TALL_GRASS, new Vector3(0, 0, 0)))),
                                 3,
                                 1,
                                 100),

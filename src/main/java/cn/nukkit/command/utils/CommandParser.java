@@ -490,7 +490,7 @@ public class CommandParser {
         if (!moveCursor) {
             this.cursor -= 2;
         }
-        return new Vector2(baseVector.x, baseVector.z);
+        return new Vector2(baseVector.x(), baseVector.z());
     }
 
     public String parseAllRemain() {

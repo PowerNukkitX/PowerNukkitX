@@ -54,18 +54,18 @@ public class BigMushroom extends BasicGenerator {
 
         boolean flag = true;
 
-        if (position.getY() >= 1 && position.getY() + i + 1 < 256) {
-            for (int j = position.getFloorY(); j <= position.getY() + 1 + i; ++j) {
+        if (position.y() >= 1 && position.y() + i + 1 < 256) {
+            for (int j = position.getFloorY(); j <= position.y() + 1 + i; ++j) {
                 int k = 3;
 
-                if (j <= position.getY() + 3) {
+                if (j <= position.y() + 3) {
                     k = 0;
                 }
 
                 Vector3 pos = new Vector3();
 
-                for (int l = position.getFloorX() - k; l <= position.getX() + k && flag; ++l) {
-                    for (int i1 = position.getFloorZ() - k; i1 <= position.getZ() + k && flag; ++i1) {
+                for (int l = position.getFloorX() - k; l <= position.x() + k && flag; ++l) {
+                    for (int i1 = position.getFloorZ() - k; i1 <= position.z() + k && flag; ++i1) {
                         if (j >= 0 && j < 256) {
                             pos.setComponents(l, j, i1);
                             int material = level.getBlockIdAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
@@ -95,10 +95,10 @@ public class BigMushroom extends BasicGenerator {
                         k2 = position.getFloorY() + i - 3;
                     }
 
-                    for (int l2 = k2; l2 <= position.getY() + i; ++l2) {
+                    for (int l2 = k2; l2 <= position.y() + i; ++l2) {
                         int j3 = 1;
 
-                        if (l2 < position.getY() + i) {
+                        if (l2 < position.y() + i) {
                             ++j3;
                         }
 
@@ -129,49 +129,49 @@ public class BigMushroom extends BasicGenerator {
 
                                 int meta = j2;
 
-                                if (block == BROWN || l2 < position.getY() + i) {
+                                if (block == BROWN || l2 < position.y() + i) {
                                     if ((l1 == k3 || l1 == l3) && (i2 == j1 || i2 == k1)) {
                                         continue;
                                     }
 
-                                    if (l1 == position.getX() - (j3 - 1) && i2 == j1) {
+                                    if (l1 == position.x() - (j3 - 1) && i2 == j1) {
                                         meta = NORTH_WEST;
                                     }
 
-                                    if (l1 == k3 && i2 == position.getZ() - (j3 - 1)) {
+                                    if (l1 == k3 && i2 == position.z() - (j3 - 1)) {
                                         meta = NORTH_WEST;
                                     }
 
-                                    if (l1 == position.getX() + (j3 - 1) && i2 == j1) {
+                                    if (l1 == position.x() + (j3 - 1) && i2 == j1) {
                                         meta = NORTH_EAST;
                                     }
 
-                                    if (l1 == l3 && i2 == position.getZ() - (j3 - 1)) {
+                                    if (l1 == l3 && i2 == position.z() - (j3 - 1)) {
                                         meta = NORTH_EAST;
                                     }
 
-                                    if (l1 == position.getX() - (j3 - 1) && i2 == k1) {
+                                    if (l1 == position.x() - (j3 - 1) && i2 == k1) {
                                         meta = SOUTH_WEST;
                                     }
 
-                                    if (l1 == k3 && i2 == position.getZ() + (j3 - 1)) {
+                                    if (l1 == k3 && i2 == position.z() + (j3 - 1)) {
                                         meta = SOUTH_WEST;
                                     }
 
-                                    if (l1 == position.getX() + (j3 - 1) && i2 == k1) {
+                                    if (l1 == position.x() + (j3 - 1) && i2 == k1) {
                                         meta = SOUTH_EAST;
                                     }
 
-                                    if (l1 == l3 && i2 == position.getZ() + (j3 - 1)) {
+                                    if (l1 == l3 && i2 == position.z() + (j3 - 1)) {
                                         meta = SOUTH_EAST;
                                     }
                                 }
 
-                                if (meta == CENTER && l2 < position.getY() + i) {
+                                if (meta == CENTER && l2 < position.y() + i) {
                                     meta = ALL_INSIDE;
                                 }
 
-                                if (position.getY() >= position.getY() + i - 1 || meta != ALL_INSIDE) {
+                                if (position.y() >= position.y() + i - 1 || meta != ALL_INSIDE) {
                                     Vector3 blockPos = new Vector3(l1, l2, i2);
 
                                     if (!Block.isSolid(level.getBlockIdAt(

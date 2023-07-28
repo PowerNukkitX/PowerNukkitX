@@ -69,10 +69,10 @@ public abstract class SlenderProjectile extends EntityProjectile {
         Block collisionBlock = null;
         for (int i = 0; i < SPLIT_NUMBER; ++i) {
             var collisionBlocks =
-                    this.level.getCollisionBlocks(currentAABB.offset(dirVector.x, dirVector.y, dirVector.z));
+                    this.level.getCollisionBlocks(currentAABB.offset(dirVector.x(), dirVector.y(), dirVector.z()));
             var collisionEntities = this.getLevel().fastCollidingEntities(currentAABB, this);
             if (collisionBlocks.length != 0) {
-                currentAABB.offset(-dirVector.x, -dirVector.y, -dirVector.z);
+                currentAABB.offset(-dirVector.x(), -dirVector.y(), -dirVector.z());
                 collisionBlock = Arrays.stream(collisionBlocks)
                         .min(Comparator.comparingDouble(projectile::distanceSquared))
                         .get();
@@ -107,41 +107,41 @@ public abstract class SlenderProjectile extends EntityProjectile {
                 (this.boundingBox.getMinZ() + this.boundingBox.getMaxZ()) / 2);
         Vector3 diff = centerPoint1.subtract(centerPoint2);
         if (dy > 0) {
-            if (diff.getY() + 0.001 < dy) {
-                dy = diff.getY();
+            if (diff.y() + 0.001 < dy) {
+                dy = diff.y();
             }
         }
         if (dy < 0) {
-            if (diff.getY() - 0.001 > dy) {
-                dy = diff.getY();
+            if (diff.y() - 0.001 > dy) {
+                dy = diff.y();
             }
         }
         if (dx > 0) {
-            if (diff.getX() + 0.001 < dx) {
-                dx = diff.getX();
+            if (diff.x() + 0.001 < dx) {
+                dx = diff.x();
             }
         }
         if (dx < 0) {
-            if (diff.getX() - 0.001 > dx) {
-                dx = diff.getX();
+            if (diff.x() - 0.001 > dx) {
+                dx = diff.x();
             }
         }
         if (dz > 0) {
-            if (diff.getZ() + 0.001 < dz) {
-                dz = diff.getZ();
+            if (diff.z() + 0.001 < dz) {
+                dz = diff.z();
             }
         }
         if (dz < 0) {
-            if (diff.getZ() - 0.001 > dz) {
-                dz = diff.getZ();
+            if (diff.z() - 0.001 > dz) {
+                dz = diff.z();
             }
         }
         this.boundingBox.offset(0, dy, 0);
         this.boundingBox.offset(dx, 0, 0);
         this.boundingBox.offset(0, 0, dz);
-        this.x = (this.boundingBox.getMinX() + this.boundingBox.getMaxX()) / 2;
-        this.y = this.boundingBox.getMinY() - this.ySize;
-        this.z = (this.boundingBox.getMinZ() + this.boundingBox.getMaxZ()) / 2;
+        this.setX((this.boundingBox.getMinX() + this.boundingBox.getMaxX()) / 2);
+        this.setY(this.boundingBox.getMinY() - this.ySize);
+        this.setZ((this.boundingBox.getMinZ() + this.boundingBox.getMaxZ()) / 2);
 
         this.checkChunks();
 

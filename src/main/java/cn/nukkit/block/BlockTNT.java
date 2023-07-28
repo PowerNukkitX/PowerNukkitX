@@ -102,9 +102,9 @@ public class BlockTNT extends BlockSolid implements RedstoneComponent {
         double mot = (new NukkitRandom()).nextSignedFloat() * Math.PI * 2;
         CompoundTag nbt = new CompoundTag()
                 .putList(new ListTag<DoubleTag>("Pos")
-                        .add(new DoubleTag("", this.x + 0.5))
-                        .add(new DoubleTag("", this.y))
-                        .add(new DoubleTag("", this.z + 0.5)))
+                        .add(new DoubleTag("", this.x() + 0.5))
+                        .add(new DoubleTag("", this.y()))
+                        .add(new DoubleTag("", this.z() + 0.5)))
                 .putList(new ListTag<DoubleTag>("Motion")
                         .add(new DoubleTag("", -Math.sin(mot) * 0.02))
                         .add(new DoubleTag("", 0.2))

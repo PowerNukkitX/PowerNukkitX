@@ -78,8 +78,8 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     @Override
     public boolean onUpdate(int currentTick) {
         // 记录最大高度，用于计算坠落伤害
-        if (!this.onGround && this.y > highestPosition) {
-            this.highestPosition = this.y;
+        if (!this.onGround && this.y() > highestPosition) {
+            this.highestPosition = this.y();
         }
         // 添加挤压伤害
         if (needsCollisionDamage) {
@@ -134,18 +134,18 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     @PowerNukkitXOnly
     @Since("1.19.60-r1")
     public boolean isFalling() {
-        return !this.onGround && this.y < this.highestPosition;
+        return !this.onGround && this.y() < this.highestPosition;
     }
 
     public final void addTmpMoveMotion(Vector3 tmpMotion) {
-        this.motionX += tmpMotion.x;
-        this.motionY += tmpMotion.y;
-        this.motionZ += tmpMotion.z;
+        this.motionX += tmpMotion.x();
+        this.motionY += tmpMotion.y();
+        this.motionZ += tmpMotion.z();
     }
 
     public final void addTmpMoveMotionXZ(Vector3 tmpMotion) {
-        this.motionX += tmpMotion.x;
-        this.motionZ += tmpMotion.z;
+        this.motionX += tmpMotion.x();
+        this.motionZ += tmpMotion.z();
     }
 
     protected void handleGravity() {
@@ -202,7 +202,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         if (!this.onGround) return 1.0;
         return this.getLevel()
                 .getTickCachedBlock(this.temporalVector.setComponents(
-                        (int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z)))
+                        (int) Math.floor(this.x()), (int) Math.floor(this.y() - 1), (int) Math.floor(this.z())))
                 .getFrictionFactor();
     }
 
@@ -228,17 +228,17 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
                 .getCollisionBlocks(getOffsetBoundingBox(), false, true, block -> block instanceof BlockLiquid)) {
             blockLiquid = (BlockLiquid) each;
             final var flowVector = blockLiquid.getFlowVector();
-            tmp.x += flowVector.x;
-            tmp.y += flowVector.y;
-            tmp.z += flowVector.z;
+            tmp.setX(tmp.x() + flowVector.x());
+            tmp.setY(tmp.y() + flowVector.y());
+            tmp.setZ(tmp.z() + flowVector.z());
         }
         if (blockLiquid != null) {
             final var len = tmp.length();
             final var speed = getLiquidMovementSpeed(blockLiquid) * 0.3f;
             if (len > 0) {
-                this.motionX += tmp.x / len * speed;
-                this.motionY += tmp.y / len * speed;
-                this.motionZ += tmp.z / len * speed;
+                this.motionX += tmp.x() / len * speed;
+                this.motionY += tmp.y() / len * speed;
+                this.motionZ += tmp.z() / len * speed;
             }
         }
     }
@@ -389,12 +389,12 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         if (this.offsetBoundingBox == null) return;
         final double dx = this.getWidth() * 0.5;
         final double dz = this.getHeight() * 0.5;
-        this.offsetBoundingBox.setMinX(this.x - dx);
-        this.offsetBoundingBox.setMaxX(this.x + dz);
-        this.offsetBoundingBox.setMinY(this.y);
-        this.offsetBoundingBox.setMaxY(this.y + this.getHeight());
-        this.offsetBoundingBox.setMinZ(this.z - dz);
-        this.offsetBoundingBox.setMaxZ(this.z + dz);
+        this.offsetBoundingBox.setMinX(this.x() - dx);
+        this.offsetBoundingBox.setMaxX(this.x() + dz);
+        this.offsetBoundingBox.setMinY(this.y());
+        this.offsetBoundingBox.setMaxY(this.y() + this.getHeight());
+        this.offsetBoundingBox.setMinZ(this.z() - dz);
+        this.offsetBoundingBox.setMaxZ(this.z() + dz);
     }
 
     public AxisAlignedBB getOffsetBoundingBox() {

@@ -289,9 +289,9 @@ public abstract class BaseLevelProvider implements LevelProvider {
 
     @Override
     public void setSpawn(Vector3 pos) {
-        this.levelData.putInt("SpawnX", (int) pos.x);
-        this.levelData.putInt("SpawnY", (int) pos.y);
-        this.levelData.putInt("SpawnZ", (int) pos.z);
+        this.levelData.putInt("SpawnX", (int) pos.x());
+        this.levelData.putInt("SpawnY", (int) pos.y());
+        this.levelData.putInt("SpawnZ", (int) pos.z());
         spawn = pos;
     }
 

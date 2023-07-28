@@ -44,9 +44,9 @@ public class BlockEntityBed extends BlockEntitySpawnable {
     public CompoundTag getSpawnCompound() {
         return new CompoundTag()
                 .putString("id", BlockEntity.BED)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z)
+                .putInt("x", (int) this.x())
+                .putInt("y", (int) this.y())
+                .putInt("z", (int) this.z())
                 .putByte("color", this.color);
     }
 

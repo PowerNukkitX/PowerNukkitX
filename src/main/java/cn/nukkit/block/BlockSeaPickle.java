@@ -176,15 +176,15 @@ public class BlockSeaPickle extends BlockFlowable {
             }
 
             ThreadLocalRandom random = ThreadLocalRandom.current();
-            Block[] blocksAround =
-                    this.getLevel().getCollisionBlocks(new SimpleAxisAlignedBB(x - 2, y - 2, z - 2, x + 3, y, z + 3));
+            Block[] blocksAround = this.getLevel()
+                    .getCollisionBlocks(new SimpleAxisAlignedBB(x() - 2, y() - 2, z() - 2, x() + 3, y(), z() + 3));
             for (Block blockNearby : blocksAround) {
                 if (blockNearby.getId() == CORAL_BLOCK) {
                     Block up = blockNearby.up();
                     if (up instanceof BlockWater
                             && (up.getDamage() == 0 || up.getDamage() == 8)
                             && random.nextInt(6) == 0
-                            && new Vector2(up.x, up.z).distance(new Vector2(this.x, this.z)) <= 2) {
+                            && new Vector2(up.x(), up.z()).distance(new Vector2(this.x(), this.z())) <= 2) {
                         BlockSpreadEvent blockSpreadEvent =
                                 new BlockSpreadEvent(up, this, new BlockSeaPickle(random.nextInt(3)));
                         if (!blockSpreadEvent.isCancelled()) {

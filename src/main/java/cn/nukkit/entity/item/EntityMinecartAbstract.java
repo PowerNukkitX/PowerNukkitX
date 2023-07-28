@@ -138,13 +138,13 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
             }
 
             // Entity variables
-            lastX = x;
-            lastY = y;
-            lastZ = z;
+            lastX = x();
+            lastY = y();
+            lastZ = z();
             motionY -= 0.03999999910593033D;
-            int dx = MathHelper.floor(x);
-            int dy = MathHelper.floor(y);
-            int dz = MathHelper.floor(z);
+            int dx = MathHelper.floor(x());
+            int dy = MathHelper.floor(y());
+            int dz = MathHelper.floor(z());
 
             // Some hack to check rails
             if (Rail.isRailBlock(level.getBlockIdAt(dx, dy - 1, dz))) {
@@ -173,8 +173,8 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
 
             // Minecart head
             pitch = 0;
-            double diffX = this.lastX - this.x;
-            double diffZ = this.lastZ - this.z;
+            double diffX = this.lastX - this.x();
+            double diffZ = this.lastZ - this.z();
             double yawToChange = yaw;
             if (diffX * diffX + diffZ * diffZ > 0.001D) {
                 yawToChange = (Math.atan2(diffZ, diffX) * 180 / Math.PI);
@@ -189,7 +189,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
             setRotation(yawToChange, pitch);
 
             Location from = new Location(lastX, lastY, lastZ, lastYaw, lastPitch, level);
-            Location to = new Location(this.x, this.y, this.z, this.yaw, this.pitch, level);
+            Location to = new Location(this.x(), this.y(), this.z(), this.yaw, this.pitch, level);
 
             this.getServer().getPluginManager().callEvent(new VehicleUpdateEvent(this));
 
@@ -221,11 +221,13 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
             // 使矿车通知漏斗更新而不是漏斗来检测矿车
             // 通常情况下，矿车的数量远远少于漏斗，所以说此举能大福提高性能
             if (this instanceof InventoryHolder holder) {
-                var pickupArea = new SimpleAxisAlignedBB(this.x, this.y - 1, this.z, this.x + 1, this.y, this.z + 1);
+                var pickupArea =
+                        new SimpleAxisAlignedBB(this.x(), this.y() - 1, this.z(), this.x() + 1, this.y(), this.z() + 1);
                 checkPickupHopper(pickupArea, holder);
                 // 漏斗矿车会自行拉取物品!
                 if (!(this instanceof EntityMinecartHopper)) {
-                    var pushArea = new SimpleAxisAlignedBB(this.x, this.y, this.z, this.x + 1, this.y + 2, this.z + 1);
+                    var pushArea = new SimpleAxisAlignedBB(
+                            this.x(), this.y(), this.z(), this.x() + 1, this.y() + 2, this.z() + 1);
                     checkPushHopper(pushArea, holder);
                 }
             }
@@ -316,8 +318,8 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
                 }
             }
 
-            double motiveX = entity.x - x;
-            double motiveZ = entity.z - z;
+            double motiveX = entity.x() - x();
+            double motiveZ = entity.z() - z();
             double square = motiveX * motiveX + motiveZ * motiveZ;
 
             if (square >= 9.999999747378752E-5D) {
@@ -339,8 +341,8 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
                 motiveX *= 0.5D;
                 motiveZ *= 0.5D;
                 if (entity instanceof EntityMinecartAbstract mine) {
-                    double desinityX = mine.x - x;
-                    double desinityZ = mine.z - z;
+                    double desinityX = mine.x() - x();
+                    double desinityZ = mine.z() - z();
                     Vector3 vector = new Vector3(desinityX, 0, desinityZ).normalize();
                     Vector3 vec = new Vector3(
                                     MathHelper.cos((float) yaw * 0.017453292F),
@@ -494,9 +496,9 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
 
     private void processMovement(int dx, int dy, int dz, BlockRail block) {
         fallDistance = 0.0F;
-        Vector3 vector = getNextRail(x, y, z);
+        Vector3 vector = getNextRail(x(), y(), z());
 
-        y = dy;
+        setY(dy);
         boolean isPowered = false;
         boolean isSlowed = false;
 
@@ -508,19 +510,19 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         switch (Orientation.byMetadata(block.getRealMeta())) {
             case ASCENDING_NORTH:
                 motionX -= 0.0078125D;
-                y += 1;
+                setY(y() + 1);
                 break;
             case ASCENDING_SOUTH:
                 motionX += 0.0078125D;
-                y += 1;
+                setY(y() + 1);
                 break;
             case ASCENDING_EAST:
                 motionZ += 0.0078125D;
-                y += 1;
+                setY(y() + 1);
                 break;
             case ASCENDING_WEST:
                 motionZ -= 0.0078125D;
-                y += 1;
+                setY(y() + 1);
                 break;
         }
 
@@ -591,20 +593,20 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         double motZ;
 
         if (facing1 == 0) {
-            x = (double) dx + 0.5D;
-            expectedSpeed = z - (double) dz;
+            setX((double) dx + 0.5D);
+            expectedSpeed = z() - (double) dz;
         } else if (facing2 == 0) {
-            z = (double) dz + 0.5D;
-            expectedSpeed = x - (double) dx;
+            setZ((double) dz + 0.5D);
+            expectedSpeed = x() - (double) dx;
         } else {
-            motX = x - playerYawNeg;
-            motZ = z - playerYawPos;
+            motX = x() - playerYawNeg;
+            motZ = z() - playerYawPos;
             expectedSpeed = (motX * facing1 + motZ * facing2) * 2;
         }
 
-        x = playerYawNeg + facing1 * expectedSpeed;
-        z = playerYawPos + facing2 * expectedSpeed;
-        setPosition(new Vector3(x, y, z)); // Hehe, my minstake :3
+        setX(playerYawNeg + facing1 * expectedSpeed);
+        setZ(playerYawPos + facing2 * expectedSpeed);
+        setPosition(new Vector3(x(), y(), z())); // Hehe, my minstake :3
 
         motX = motionX;
         motZ = motionZ;
@@ -616,19 +618,21 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         motZ = NukkitMath.clamp(motZ, -getMaxSpeed(), getMaxSpeed());
 
         move(motX, 0, motZ);
-        if (facing[0][1] != 0 && MathHelper.floor(x) - dx == facing[0][0] && MathHelper.floor(z) - dz == facing[0][2]) {
-            setPosition(new Vector3(x, y + (double) facing[0][1], z));
+        if (facing[0][1] != 0
+                && MathHelper.floor(x()) - dx == facing[0][0]
+                && MathHelper.floor(z()) - dz == facing[0][2]) {
+            setPosition(new Vector3(x(), y() + (double) facing[0][1], z()));
         } else if (facing[1][1] != 0
-                && MathHelper.floor(x) - dx == facing[1][0]
-                && MathHelper.floor(z) - dz == facing[1][2]) {
-            setPosition(new Vector3(x, y + (double) facing[1][1], z));
+                && MathHelper.floor(x()) - dx == facing[1][0]
+                && MathHelper.floor(z()) - dz == facing[1][2]) {
+            setPosition(new Vector3(x(), y() + (double) facing[1][1], z()));
         }
 
         applyDrag();
-        Vector3 vector1 = getNextRail(x, y, z);
+        Vector3 vector1 = getNextRail(x(), y(), z());
 
         if (vector1 != null && vector != null) {
-            double d14 = (vector.y - vector1.y) * 0.05D;
+            double d14 = (vector.y() - vector1.y()) * 0.05D;
 
             squareOfFame = Math.sqrt(motionX * motionX + motionZ * motionZ);
             if (squareOfFame > 0) {
@@ -636,11 +640,11 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
                 motionZ = motionZ / squareOfFame * (squareOfFame + d14);
             }
 
-            setPosition(new Vector3(x, vector1.y, z));
+            setPosition(new Vector3(x(), vector1.y(), z()));
         }
 
-        int floorX = MathHelper.floor(x);
-        int floorZ = MathHelper.floor(z);
+        int floorX = MathHelper.floor(x());
+        int floorZ = MathHelper.floor(z());
 
         if (floorX != dx || floorZ != dz) {
             squareOfFame = Math.sqrt(motionX * motionX + motionZ * motionZ);
@@ -883,9 +887,9 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
 
     public void setFlyingVelocityMod(Vector3 flying) {
         Objects.requireNonNull(flying, "Flying velocity modifiers cannot be null");
-        flyingX = flying.getX();
-        flyingY = flying.getY();
-        flyingZ = flying.getZ();
+        flyingX = flying.x();
+        flyingY = flying.y();
+        flyingZ = flying.z();
     }
 
     public Vector3 getDerailedVelocityMod() {
@@ -894,9 +898,9 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
 
     public void setDerailedVelocityMod(Vector3 derailed) {
         Objects.requireNonNull(derailed, "Derailed velocity modifiers cannot be null");
-        derailedX = derailed.getX();
-        derailedY = derailed.getY();
-        derailedZ = derailed.getZ();
+        derailedX = derailed.x();
+        derailedY = derailed.y();
+        derailedZ = derailed.z();
     }
 
     public void setMaximumSpeed(double speed) {

@@ -297,12 +297,12 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
 
     @Override
     public double getMaxY() {
-        return y + 0.4371948;
+        return y() + 0.4371948;
     }
 
     @Override
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
-        return new SimpleAxisAlignedBB(x, y, z, x + 1, y + 1, z + 1);
+        return new SimpleAxisAlignedBB(x(), y(), z(), x() + 1, y() + 1, z() + 1);
     }
 
     @PowerNukkitOnly

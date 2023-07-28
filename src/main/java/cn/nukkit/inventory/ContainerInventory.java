@@ -49,9 +49,9 @@ public abstract class ContainerInventory extends BaseInventory {
         pk.type = this.getType().getNetworkType();
         InventoryHolder holder = this.getHolder();
         if (holder instanceof Vector3) {
-            pk.x = (int) ((Vector3) holder).getX();
-            pk.y = (int) ((Vector3) holder).getY();
-            pk.z = (int) ((Vector3) holder).getZ();
+            pk.x = (int) ((Vector3) holder).x();
+            pk.y = (int) ((Vector3) holder).y();
+            pk.z = (int) ((Vector3) holder).z();
         } else {
             pk.x = pk.y = pk.z = 0;
         }

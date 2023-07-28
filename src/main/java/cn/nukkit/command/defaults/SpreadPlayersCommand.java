@@ -58,7 +58,7 @@ public class SpreadPlayersCommand extends VanillaCommand {
         }
         for (Entity target : targets) {
             Vector3 vec3 = this.nextXZ(x, z, (int) maxRange);
-            vec3.y = target.getLevel().getHighestBlockAt(vec3.getFloorX(), vec3.getFloorZ()) + 1;
+            vec3.setY(target.getLevel().getHighestBlockAt(vec3.getFloorX(), vec3.getFloorZ()) + 1);
             target.teleport(vec3);
         }
         log.addSuccess(
@@ -72,8 +72,8 @@ public class SpreadPlayersCommand extends VanillaCommand {
 
     private Vector3 nextXZ(double centerX, double centerZ, int maxRange) {
         Vector3 vec3 = new Vector3(centerX, 0, centerZ);
-        vec3.x = Math.round(vec3.x) + this.random.nextInt(-maxRange, maxRange) + 0.5;
-        vec3.z = Math.round(vec3.z) + this.random.nextInt(-maxRange, maxRange) + 0.5;
+        vec3.setX(Math.round(vec3.x()) + this.random.nextInt(-maxRange, maxRange) + 0.5);
+        vec3.setZ(Math.round(vec3.z()) + this.random.nextInt(-maxRange, maxRange) + 0.5);
         return vec3;
     }
 }

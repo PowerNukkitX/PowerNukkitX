@@ -198,7 +198,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
 
         Vector3 vector3 = new Vector3(
                 node.getVector3().getFloorX() + 0.5,
-                node.getVector3().getY(),
+                node.getVector3().y(),
                 node.getVector3().getFloorZ() + 0.5);
 
         double offsetY;
@@ -406,12 +406,13 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
     protected int calH(Vector3 start, Vector3 target) {
         // 使用DIRECT_MOVE_COST和OBLIQUE_MOVE_COST计算代价
         // 计算对角线距离
-        int obliqueCost = (int) (Math.abs(Math.min(target.x - start.x, target.z - start.z)) * OBLIQUE_MOVE_COST);
+        int obliqueCost =
+                (int) (Math.abs(Math.min(target.x() - start.x(), target.z() - start.z())) * OBLIQUE_MOVE_COST);
         // 计算剩余直线距离
-        int directCost = (int) ((Math.abs(Math.max(target.x - start.x, target.z - start.z))
-                        - Math.abs(Math.min(target.x - start.x, target.z - start.z)))
+        int directCost = (int) ((Math.abs(Math.max(target.x() - start.x(), target.z() - start.z()))
+                        - Math.abs(Math.min(target.x() - start.x(), target.z() - start.z())))
                 * DIRECT_MOVE_COST);
-        return obliqueCost + directCost + (int) (Math.abs(target.y - start.y) * DIRECT_MOVE_COST);
+        return obliqueCost + directCost + (int) (Math.abs(target.y() - start.y()) * DIRECT_MOVE_COST);
     }
 
     /**

@@ -103,9 +103,9 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
                             "Block entity validation of {} at {}, {} {} {} failed, removing as invalid.",
                             entity.getClass().getName(),
                             getProvider().getLevel().getName(),
-                            entity.x,
-                            entity.y,
-                            entity.z,
+                            entity.x(),
+                            entity.y(),
+                            entity.z(),
                             e);
                 } catch (Exception e2) {
                     e.addSuppressed(e2);

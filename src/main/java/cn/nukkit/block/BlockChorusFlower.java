@@ -109,7 +109,7 @@ public class BlockChorusFlower extends BlockTransparentMeta {
             return type;
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {
             // Check limit
-            if (this.up().getId() == AIR && this.up().getY() < level.getMaxHeight()) {
+            if (this.up().getId() == AIR && this.up().y() < level.getMaxHeight()) {
                 if (!isFullyAged()) {
                     boolean growUp = false; // Grow upward?
                     boolean ground = false; // Is on the ground directly?
@@ -136,7 +136,7 @@ public class BlockChorusFlower extends BlockTransparentMeta {
                     // Grow Upward
                     if (growUp && this.up(2).getId() == AIR && isHorizontalAir(this.up())) {
                         BlockChorusFlower block = (BlockChorusFlower) this.clone();
-                        block.y = this.y + 1;
+                        block.setY(this.y() + 1);
                         BlockGrowEvent ev = new BlockGrowEvent(this, block);
                         Server.getInstance().getPluginManager().callEvent(ev);
 
@@ -156,9 +156,9 @@ public class BlockChorusFlower extends BlockTransparentMeta {
                                     && check.down().getId() == AIR
                                     && isHorizontalAirExcept(check, face.getOpposite())) {
                                 BlockChorusFlower block = (BlockChorusFlower) this.clone();
-                                block.x = check.x;
-                                block.y = check.y;
-                                block.z = check.z;
+                                block.setX(check.x());
+                                block.setY(check.y());
+                                block.setZ(check.z());
                                 block.setAge(getAge() + 1);
                                 BlockGrowEvent ev = new BlockGrowEvent(this, block);
                                 Server.getInstance().getPluginManager().callEvent(ev);

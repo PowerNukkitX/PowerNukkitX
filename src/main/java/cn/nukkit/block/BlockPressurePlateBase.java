@@ -66,32 +66,32 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
 
     @Override
     public double getMinX() {
-        return this.x + 0.625;
+        return this.x() + 0.625;
     }
 
     @Override
     public double getMinZ() {
-        return this.z + 0.625;
+        return this.z() + 0.625;
     }
 
     @Override
     public double getMinY() {
-        return this.y + 0;
+        return this.y() + 0;
     }
 
     @Override
     public double getMaxX() {
-        return this.x + 0.9375;
+        return this.x() + 0.9375;
     }
 
     @Override
     public double getMaxZ() {
-        return this.z + 0.9375;
+        return this.z() + 0.9375;
     }
 
     @Override
     public double getMaxY() {
-        return isActivated() ? this.y + 0.03125 : this.y + 0.0625;
+        return isActivated() ? this.y() + 0.03125 : this.y() + 0.0625;
     }
 
     @Override
@@ -157,7 +157,7 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
     @Override
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
         return new SimpleAxisAlignedBB(
-                this.x + 0.125, this.y, this.z + 0.125, this.x + 0.875, this.y + 0.25, this.z + 0.875D);
+                this.x() + 0.125, this.y(), this.z() + 0.125, this.x() + 0.875, this.y() + 0.25, this.z() + 0.875D);
     }
 
     @Override

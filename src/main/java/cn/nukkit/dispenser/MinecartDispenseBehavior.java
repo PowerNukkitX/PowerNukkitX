@@ -23,9 +23,9 @@ public class MinecartDispenseBehavior extends DefaultDispenseBehavior {
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
         Block target = block.getSide(face);
         if (target instanceof BlockRail) {
-            target.x += 0.5;
-            target.y += 0.125;
-            target.z += 0.5;
+            target.setX(target.x() + 0.5);
+            target.setY(target.y() + 0.125);
+            target.setZ(target.z() + 0.5);
         } else return super.dispense(block, face, item);
         Entity minecart = Entity.createEntity(this.getEntityType(), target);
         if (minecart != null) minecart.spawnToAll();

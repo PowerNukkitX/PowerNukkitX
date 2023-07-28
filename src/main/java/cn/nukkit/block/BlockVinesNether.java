@@ -158,14 +158,14 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
     @Since("1.4.0.0-PN")
     public boolean grow() {
         Block pos = getSide(getGrowthDirection());
-        if (pos.getId() != AIR || pos.y < 0 || 255 < pos.y) {
+        if (pos.getId() != AIR || pos.y() < 0 || 255 < pos.y()) {
             return false;
         }
 
         BlockVinesNether growing = clone();
-        growing.x = pos.x;
-        growing.y = pos.y;
-        growing.z = pos.z;
+        growing.setX(pos.x());
+        growing.setY(pos.y());
+        growing.setZ(pos.z());
         growing.setVineAge(Math.min(getVineAge() + 1, getMaxVineAge()));
 
         BlockGrowEvent ev = new BlockGrowEvent(this, growing);
@@ -201,14 +201,14 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
         int grew = 0;
         for (int distance = 1; distance <= blocksToGrow; distance++) {
             Block pos = getSide(growthDirection, distance);
-            if (pos.getId() != AIR || pos.y < 0 || 255 < pos.y) {
+            if (pos.getId() != AIR || pos.y() < 0 || 255 < pos.y()) {
                 break;
             }
 
             growing.setVineAge(Math.min(age++, maxAge));
-            growing.x = pos.x;
-            growing.y = pos.y;
-            growing.z = pos.z;
+            growing.setX(pos.x());
+            growing.setY(pos.y());
+            growing.setZ(pos.z());
 
             BlockGrowEvent ev = new BlockGrowEvent(this, growing.clone());
             Server.getInstance().getPluginManager().callEvent(ev);
@@ -401,27 +401,27 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
 
     @Override
     public double getMinX() {
-        return x + (4 / 16.0);
+        return x() + (4 / 16.0);
     }
 
     @Override
     public double getMinZ() {
-        return z + (4 / 16.0);
+        return z() + (4 / 16.0);
     }
 
     @Override
     public double getMaxX() {
-        return x + (12 / 16.0);
+        return x() + (12 / 16.0);
     }
 
     @Override
     public double getMaxZ() {
-        return z + (12 / 16.0);
+        return z() + (12 / 16.0);
     }
 
     @Override
     public double getMaxY() {
-        return y + (15 / 16.0);
+        return y() + (15 / 16.0);
     }
 
     @Override

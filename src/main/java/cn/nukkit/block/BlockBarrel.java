@@ -80,12 +80,12 @@ public class BlockBarrel extends BlockSolidMeta implements Faceable, BlockEntity
             double fy,
             double fz,
             Player player) {
-        if (Math.abs(player.x - this.x) < 2 && Math.abs(player.z - this.z) < 2) {
-            double y = player.y + player.getEyeHeight();
+        if (Math.abs(player.x() - this.x()) < 2 && Math.abs(player.z() - this.z()) < 2) {
+            double y = player.y() + player.getEyeHeight();
 
-            if (y - this.y > 2) {
+            if (y - this.y() > 2) {
                 this.setDamage(BlockFace.UP.getIndex());
-            } else if (this.y - y > 0) {
+            } else if (this.y() - y > 0) {
                 this.setDamage(BlockFace.DOWN.getIndex());
             } else {
                 this.setDamage(player.getHorizontalFacing().getOpposite().getIndex());

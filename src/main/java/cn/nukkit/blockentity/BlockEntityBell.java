@@ -141,9 +141,9 @@ public class BlockEntityBell extends BlockEntitySpawnable {
     public CompoundTag getSpawnCompound() {
         CompoundTag tag = new CompoundTag()
                 .putString("id", BlockEntity.BELL)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z)
+                .putInt("x", (int) this.x())
+                .putInt("y", (int) this.y())
+                .putInt("z", (int) this.z())
                 .putBoolean("Ringing", this.ringing)
                 .putInt("Direction", this.direction)
                 .putInt("Ticks", this.ticks);

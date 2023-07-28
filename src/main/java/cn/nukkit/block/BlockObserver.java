@@ -79,11 +79,11 @@ public class BlockObserver extends BlockSolidMeta implements RedstoneComponent, 
             double fz,
             @Nullable Player player) {
         if (player != null) {
-            if (Math.abs(player.getFloorX() - this.x) <= 1 && Math.abs(player.getFloorZ() - this.z) <= 1) {
-                double y = player.y + player.getEyeHeight();
-                if (y - this.y > 2) {
+            if (Math.abs(player.getFloorX() - this.x()) <= 1 && Math.abs(player.getFloorZ() - this.z()) <= 1) {
+                double y = player.y() + player.getEyeHeight();
+                if (y - this.y() > 2) {
                     setBlockFace(BlockFace.DOWN);
-                } else if (this.y - y > 0) {
+                } else if (this.y() - y > 0) {
                     setBlockFace(BlockFace.UP);
                 } else {
                     setBlockFace(player.getHorizontalFacing());

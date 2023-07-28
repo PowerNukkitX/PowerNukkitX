@@ -46,27 +46,27 @@ public class BlockWaterLily extends BlockFlowable {
 
     @Override
     public double getMinX() {
-        return this.x + 0.0625;
+        return this.x() + 0.0625;
     }
 
     @Override
     public double getMinZ() {
-        return this.z + 0.0625;
+        return this.z() + 0.0625;
     }
 
     @Override
     public double getMaxX() {
-        return this.x + 0.9375;
+        return this.x() + 0.9375;
     }
 
     @Override
     public double getMaxY() {
-        return this.y + 0.015625;
+        return this.y() + 0.015625;
     }
 
     @Override
     public double getMaxZ() {
-        return this.z + 0.9375;
+        return this.z() + 0.9375;
     }
 
     @Override

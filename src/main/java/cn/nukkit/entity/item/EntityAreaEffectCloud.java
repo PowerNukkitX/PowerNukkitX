@@ -417,7 +417,7 @@ public class EntityAreaEffectCloud extends Entity {
         }
 
         float height = getHeight();
-        boundingBox.setBounds(x - radius, y - height, z - radius, x + radius, y + height, z + radius);
+        boundingBox.setBounds(x() - radius, y() - height, z() - radius, x() + radius, y() + height, z() + radius);
         this.setDataProperty(new FloatEntityData(DATA_BOUNDING_BOX_HEIGHT, height), false);
         this.setDataProperty(new FloatEntityData(DATA_BOUNDING_BOX_WIDTH, radius), false);
 

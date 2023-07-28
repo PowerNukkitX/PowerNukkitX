@@ -50,7 +50,7 @@ public class ItemPainting extends Item {
             return false;
         }
 
-        FullChunk chunk = level.getChunk((int) block.getX() >> 4, (int) block.getZ() >> 4);
+        FullChunk chunk = level.getChunk((int) block.x() >> 4, (int) block.z() >> 4);
 
         if (chunk == null || target.isTransparent() || face.getHorizontalIndex() == -1 || block.isSolid()) {
             return false;
@@ -80,36 +80,36 @@ public class ItemPainting extends Item {
         EntityPainting.Motive motive =
                 validMotives.get(ThreadLocalRandom.current().nextInt(validMotives.size()));
 
-        Vector3 position = new Vector3(target.x + 0.5, target.y + 0.5, target.z + 0.5);
+        Vector3 position = new Vector3(target.x() + 0.5, target.y() + 0.5, target.z() + 0.5);
         double widthOffset = offset(motive.width);
 
         switch (face.getHorizontalIndex()) {
             case 0:
-                position.x += widthOffset;
-                position.z += OFFSET;
+                position.setX(position.x() + widthOffset);
+                position.setZ(position.z() + OFFSET);
                 break;
             case 1:
-                position.x -= OFFSET;
-                position.z += widthOffset;
+                position.setX(position.x() - OFFSET);
+                position.setZ(position.z() + widthOffset);
                 break;
             case 2:
-                position.x -= widthOffset;
-                position.z -= OFFSET;
+                position.setX(position.x() - widthOffset);
+                position.setZ(position.z() - OFFSET);
                 break;
             case 3:
-                position.x += OFFSET;
-                position.z -= widthOffset;
+                position.setX(position.x() + OFFSET);
+                position.setZ(position.z() - widthOffset);
                 break;
         }
-        position.y += offset(motive.height);
+        position.setY(position.y() + offset(motive.height));
 
         CompoundTag nbt = new CompoundTag()
                 .putByte("Direction", direction)
                 .putString("Motive", motive.title)
                 .putList(new ListTag<DoubleTag>("Pos")
-                        .add(new DoubleTag("0", position.x))
-                        .add(new DoubleTag("1", position.y))
-                        .add(new DoubleTag("2", position.z)))
+                        .add(new DoubleTag("0", position.x()))
+                        .add(new DoubleTag("1", position.y()))
+                        .add(new DoubleTag("2", position.z())))
                 .putList(new ListTag<DoubleTag>("Motion")
                         .add(new DoubleTag("0", 0))
                         .add(new DoubleTag("1", 0))

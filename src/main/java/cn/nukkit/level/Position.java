@@ -40,9 +40,9 @@ public class Position extends NamedPosition {
     }
 
     public Position(double x, double y, double z, Level level) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+        this.setX(x);
+        this.setY(y);
+        this.setZ(z);
         this.level = level;
     }
 
@@ -51,7 +51,7 @@ public class Position extends NamedPosition {
     }
 
     public static Position fromObject(Vector3 pos, Level level) {
-        return new Position(pos.x, pos.y, pos.z, level);
+        return new Position(pos.x(), pos.y(), pos.z(), level);
     }
 
     public Level getLevel() {
@@ -94,15 +94,15 @@ public class Position extends NamedPosition {
 
     @Override
     public String toString() {
-        return "Position(level=" + (this.isValid() ? this.getLevel().getName() : "null") + ",x=" + this.x + ",y="
-                + this.y + ",z=" + this.z + ")";
+        return "Position(level=" + (this.isValid() ? this.getLevel().getName() : "null") + ",x=" + this.x() + ",y="
+                + this.y() + ",z=" + this.z() + ")";
     }
 
     @Override
     public Position setComponents(double x, double y, double z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+        this.setX(x);
+        this.setY(y);
+        this.setZ(z);
         return this;
     }
 
@@ -179,7 +179,7 @@ public class Position extends NamedPosition {
     }
 
     @NotNull public Location getLocation() {
-        return new Location(this.x, this.y, this.z, 0, 0, getValidLevel());
+        return new Location(this.x(), this.y(), this.z(), 0, 0, getValidLevel());
     }
 
     @Since("1.4.0.0-PN")
@@ -211,12 +211,12 @@ public class Position extends NamedPosition {
 
     @Override
     public Position add(double x, double y, double z) {
-        return new Position(this.x + x, this.y + y, this.z + z, this.level);
+        return new Position(this.x() + x, this.y() + y, this.z() + z, this.level);
     }
 
     @Override
     public Position add(Vector3 x) {
-        return new Position(this.x + x.getX(), this.y + x.getY(), this.z + x.getZ(), this.level);
+        return new Position(this.x() + x.x(), this.y() + x.y(), this.z() + x.z(), this.level);
     }
 
     @Override
@@ -241,22 +241,23 @@ public class Position extends NamedPosition {
 
     @Override
     public Position subtract(Vector3 x) {
-        return this.add(-x.getX(), -x.getY(), -x.getZ());
+        return this.add(-x.x(), -x.y(), -x.z());
     }
 
     @Override
     public Position multiply(double number) {
-        return new Position(this.x * number, this.y * number, this.z * number, this.level);
+        return new Position(this.x() * number, this.y() * number, this.z() * number, this.level);
     }
 
     @Override
     public Position divide(double number) {
-        return new Position(this.x / number, this.y / number, this.z / number, this.level);
+        return new Position(this.x() / number, this.y() / number, this.z() / number, this.level);
     }
 
     @Override
     public Position ceil() {
-        return new Position((int) Math.ceil(this.x), (int) Math.ceil(this.y), (int) Math.ceil(this.z), this.level);
+        return new Position(
+                (int) Math.ceil(this.x()), (int) Math.ceil(this.y()), (int) Math.ceil(this.z()), this.level);
     }
 
     @Override
@@ -266,12 +267,12 @@ public class Position extends NamedPosition {
 
     @Override
     public Position round() {
-        return new Position(Math.round(this.x), Math.round(this.y), Math.round(this.z), this.level);
+        return new Position(Math.round(this.x()), Math.round(this.y()), Math.round(this.z()), this.level);
     }
 
     @Override
     public Position abs() {
-        return new Position((int) Math.abs(this.x), (int) Math.abs(this.y), (int) Math.abs(this.z), this.level);
+        return new Position((int) Math.abs(this.x()), (int) Math.abs(this.y()), (int) Math.abs(this.z()), this.level);
     }
 
     @Override

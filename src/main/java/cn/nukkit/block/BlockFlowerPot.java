@@ -244,27 +244,27 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
 
     @Override
     public double getMinX() {
-        return this.x + 0.3125;
+        return this.x() + 0.3125;
     }
 
     @Override
     public double getMinZ() {
-        return this.z + 0.3125;
+        return this.z() + 0.3125;
     }
 
     @Override
     public double getMaxX() {
-        return this.x + 0.6875;
+        return this.x() + 0.6875;
     }
 
     @Override
     public double getMaxY() {
-        return this.y + 0.375;
+        return this.y() + 0.375;
     }
 
     @Override
     public double getMaxZ() {
-        return this.z + 0.6875;
+        return this.z() + 0.6875;
     }
 
     @Override

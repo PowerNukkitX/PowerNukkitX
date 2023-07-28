@@ -75,9 +75,9 @@ public class BlockBambooSapling extends BlockFlowable {
                 level.getServer().getPluginManager().callEvent(blockGrowEvent);
                 if (!blockGrowEvent.isCancelled()) {
                     Block newState1 = blockGrowEvent.getNewState();
-                    newState1.y = up.y;
-                    newState1.x = x;
-                    newState1.z = z;
+                    newState1.setY(up.y());
+                    newState1.setX(x());
+                    newState1.setZ(z());
                     newState1.level = level;
                     newState1.place(toItem(), up, this, BlockFace.DOWN, 0.5, 0.5, 0.5, null);
                 }
@@ -140,9 +140,9 @@ public class BlockBambooSapling extends BlockFlowable {
     @PowerNukkitOnly
     public boolean grow(Block up) {
         BlockBamboo bamboo = new BlockBamboo();
-        bamboo.x = x;
-        bamboo.y = y;
-        bamboo.z = z;
+        bamboo.setX(x());
+        bamboo.setY(y());
+        bamboo.setZ(z());
         bamboo.level = level;
         return bamboo.grow(up);
     }
@@ -175,26 +175,26 @@ public class BlockBambooSapling extends BlockFlowable {
 
     @Override
     public double getMinX() {
-        return x + 0.125;
+        return x() + 0.125;
     }
 
     @Override
     public double getMaxX() {
-        return x + 0.875;
+        return x() + 0.875;
     }
 
     @Override
     public double getMinZ() {
-        return z + 0.125;
+        return z() + 0.125;
     }
 
     @Override
     public double getMaxZ() {
-        return z + 0.875;
+        return z() + 0.875;
     }
 
     @Override
     public double getMaxY() {
-        return y + 0.875;
+        return y() + 0.875;
     }
 }

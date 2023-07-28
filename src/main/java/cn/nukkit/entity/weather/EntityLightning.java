@@ -64,9 +64,9 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
             Block block = this.getLevelBlock();
             if (block.getId() == 0 || block.getId() == Block.TALL_GRASS) {
                 BlockFire fire = (BlockFire) Block.get(BlockID.FIRE);
-                fire.x = block.x;
-                fire.y = block.y;
-                fire.z = block.z;
+                fire.setX(block.x());
+                fire.setY(block.y());
+                fire.setZ(block.z());
                 fire.level = level;
                 //                this.getLevel().setBlock(fire, fire, true); WTF???
                 if (fire.isBlockTopFacingSurfaceSolid(fire.down()) || fire.canNeighborBurn()) {
@@ -136,9 +136,9 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
                 Position randomPos = new Position().setLevel(level);
                 Supplier<Vector3> cleanOxidizationAround = () -> {
                     for (int attempt = 0; attempt < 10; attempt++) {
-                        randomPos.x = directionPos.x + (random.nextInt(3) - 1);
-                        randomPos.y = directionPos.y + (random.nextInt(3) - 1);
-                        randomPos.z = directionPos.z + (random.nextInt(3) - 1);
+                        randomPos.setX(directionPos.x() + (random.nextInt(3) - 1));
+                        randomPos.setY(directionPos.y() + (random.nextInt(3) - 1));
+                        randomPos.setZ(directionPos.z() + (random.nextInt(3) - 1));
                         Block possibility = level.getBlock(randomPos);
                         if (isVulnerableOxidizable(possibility)) {
                             Position nextPos = randomPos.clone();

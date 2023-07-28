@@ -409,9 +409,9 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable
     public CompoundTag getSpawnCompound() {
         CompoundTag nbt = new CompoundTag()
                 .putString("id", BlockEntity.BREWING_STAND)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z)
+                .putInt("x", (int) this.x())
+                .putInt("y", (int) this.y())
+                .putInt("z", (int) this.z())
                 .putShort("FuelTotal", this.fuelTotal)
                 .putShort("FuelAmount", this.fuelAmount);
 

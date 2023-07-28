@@ -136,24 +136,24 @@ public class DoubleChestInventory extends ContainerInventory implements Inventor
 
         if (this.getViewers().size() == 1) {
             BlockEventPacket pk1 = new BlockEventPacket();
-            pk1.x = (int) this.left.getHolder().getX();
-            pk1.y = (int) this.left.getHolder().getY();
-            pk1.z = (int) this.left.getHolder().getZ();
+            pk1.x = (int) this.left.getHolder().x();
+            pk1.y = (int) this.left.getHolder().y();
+            pk1.z = (int) this.left.getHolder().z();
             pk1.case1 = 1;
             pk1.case2 = 2;
             Level level = this.left.getHolder().getLevel();
             if (level != null) {
                 level.addSound(this.left.getHolder().add(0.5, 0.5, 0.5), Sound.RANDOM_CHESTOPEN);
                 level.addChunkPacket(
-                        (int) this.left.getHolder().getX() >> 4,
-                        (int) this.left.getHolder().getZ() >> 4,
+                        (int) this.left.getHolder().x() >> 4,
+                        (int) this.left.getHolder().z() >> 4,
                         pk1);
             }
 
             BlockEventPacket pk2 = new BlockEventPacket();
-            pk2.x = (int) this.right.getHolder().getX();
-            pk2.y = (int) this.right.getHolder().getY();
-            pk2.z = (int) this.right.getHolder().getZ();
+            pk2.x = (int) this.right.getHolder().x();
+            pk2.y = (int) this.right.getHolder().y();
+            pk2.z = (int) this.right.getHolder().z();
             pk2.case1 = 1;
             pk2.case2 = 2;
 
@@ -161,8 +161,8 @@ public class DoubleChestInventory extends ContainerInventory implements Inventor
             if (level != null) {
                 level.addSound(this.right.getHolder().add(0.5, 0.5, 0.5), Sound.RANDOM_CHESTOPEN);
                 level.addChunkPacket(
-                        (int) this.right.getHolder().getX() >> 4,
-                        (int) this.right.getHolder().getZ() >> 4,
+                        (int) this.right.getHolder().x() >> 4,
+                        (int) this.right.getHolder().z() >> 4,
                         pk2);
             }
         }
@@ -173,9 +173,9 @@ public class DoubleChestInventory extends ContainerInventory implements Inventor
     public void onClose(Player who) {
         if (this.getViewers().size() == 1) {
             BlockEventPacket pk1 = new BlockEventPacket();
-            pk1.x = (int) this.right.getHolder().getX();
-            pk1.y = (int) this.right.getHolder().getY();
-            pk1.z = (int) this.right.getHolder().getZ();
+            pk1.x = (int) this.right.getHolder().x();
+            pk1.y = (int) this.right.getHolder().y();
+            pk1.z = (int) this.right.getHolder().z();
             pk1.case1 = 1;
             pk1.case2 = 0;
 
@@ -183,15 +183,15 @@ public class DoubleChestInventory extends ContainerInventory implements Inventor
             if (level != null) {
                 level.addSound(this.right.getHolder().add(0.5, 0.5, 0.5), Sound.RANDOM_CHESTCLOSED);
                 level.addChunkPacket(
-                        (int) this.right.getHolder().getX() >> 4,
-                        (int) this.right.getHolder().getZ() >> 4,
+                        (int) this.right.getHolder().x() >> 4,
+                        (int) this.right.getHolder().z() >> 4,
                         pk1);
             }
 
             BlockEventPacket pk2 = new BlockEventPacket();
-            pk2.x = (int) this.left.getHolder().getX();
-            pk2.y = (int) this.left.getHolder().getY();
-            pk2.z = (int) this.left.getHolder().getZ();
+            pk2.x = (int) this.left.getHolder().x();
+            pk2.y = (int) this.left.getHolder().y();
+            pk2.z = (int) this.left.getHolder().z();
             pk2.case1 = 1;
             pk2.case2 = 0;
 
@@ -199,8 +199,8 @@ public class DoubleChestInventory extends ContainerInventory implements Inventor
             if (level != null) {
                 level.addSound(this.left.getHolder().add(0.5, 0.5, 0.5), Sound.RANDOM_CHESTCLOSED);
                 level.addChunkPacket(
-                        (int) this.left.getHolder().getX() >> 4,
-                        (int) this.left.getHolder().getZ() >> 4,
+                        (int) this.left.getHolder().x() >> 4,
+                        (int) this.left.getHolder().z() >> 4,
                         pk2);
             }
         }

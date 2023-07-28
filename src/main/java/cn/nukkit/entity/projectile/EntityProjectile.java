@@ -198,7 +198,7 @@ public abstract class EntityProjectile extends Entity {
                 updateMotion();
             }
 
-            Vector3 moveVector = new Vector3(this.x + this.motionX, this.y + this.motionY, this.z + this.motionZ);
+            Vector3 moveVector = new Vector3(this.x() + this.motionX, this.y() + this.motionY, this.z() + this.motionZ);
 
             Entity[] list = this.getLevel()
                     .getCollidingEntities(

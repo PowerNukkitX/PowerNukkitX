@@ -210,7 +210,7 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Redsto
 
     @Override
     public double getMaxY() {
-        return this.y + 0.125;
+        return this.y() + 0.125;
     }
 
     @Override
@@ -257,7 +257,7 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Redsto
 
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
-        return new SimpleAxisAlignedBB(this.x, this.y, this.z, this.x + 1, this.y + 0.125, this.z + 1);
+        return new SimpleAxisAlignedBB(this.x(), this.y(), this.z(), this.x() + 1, this.y() + 0.125, this.z() + 1);
     }
 
     @Override

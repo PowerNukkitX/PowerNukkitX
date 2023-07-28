@@ -97,7 +97,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable
     @Since("1.20.0-r1")
     @PowerNukkitXOnly
     protected SimpleAxisAlignedBB generatePickupArea() {
-        return new SimpleAxisAlignedBB(this.x, this.y, this.z, this.x + 1, this.y + 2, this.z + 1);
+        return new SimpleAxisAlignedBB(this.x(), this.y(), this.z(), this.x() + 1, this.y() + 2, this.z() + 1);
     }
 
     @Since("1.20.0-r1")
@@ -563,9 +563,9 @@ public class BlockEntityHopper extends BlockEntitySpawnable
     public CompoundTag getSpawnCompound() {
         CompoundTag c = new CompoundTag()
                 .putString("id", BlockEntity.HOPPER)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z);
+                .putInt("x", (int) this.x())
+                .putInt("y", (int) this.y())
+                .putInt("z", (int) this.z());
 
         if (this.hasName()) {
             c.put("CustomName", this.namedTag.get("CustomName"));

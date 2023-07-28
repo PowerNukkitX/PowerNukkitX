@@ -4,8 +4,8 @@ package cn.nukkit.math;
  * @author MagicDroidX (Nukkit Project)
  */
 public class Vector2 {
-    public final double x;
-    public final double y;
+    private final double x;
+    private final double y;
 
     public Vector2() {
         this(0, 0);
@@ -20,11 +20,11 @@ public class Vector2 {
         this.y = y;
     }
 
-    public double getX() {
+    public double x() {
         return this.x;
     }
 
-    public double getY() {
+    public double y() {
         return this.y;
     }
 
@@ -45,7 +45,7 @@ public class Vector2 {
     }
 
     public Vector2 add(Vector2 x) {
-        return this.add(x.getX(), x.getY());
+        return this.add(x.x(), x.y());
     }
 
     public Vector2 subtract(double x) {
@@ -57,7 +57,7 @@ public class Vector2 {
     }
 
     public Vector2 subtract(Vector2 x) {
-        return this.add(-x.getX(), -x.getY());
+        return this.add(-x.x(), -x.y());
     }
 
     public Vector2 ceil() {

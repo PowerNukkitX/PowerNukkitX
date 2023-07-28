@@ -553,9 +553,9 @@ public class Player extends EntityHuman
                 int breakTick = (int) Math.ceil(miningTimeRequired * 20);
                 LevelEventPacket pk = new LevelEventPacket();
                 pk.evid = LevelEventPacket.EVENT_BLOCK_UPDATE_BREAK;
-                pk.x = (float) this.breakingBlock.x;
-                pk.y = (float) this.breakingBlock.y;
-                pk.z = (float) this.breakingBlock.z;
+                pk.x = (float) this.breakingBlock.x();
+                pk.y = (float) this.breakingBlock.y();
+                pk.z = (float) this.breakingBlock.z();
                 pk.data = 65535 / breakTick;
                 this.getLevel()
                         .addChunkPacket(this.breakingBlock.getFloorX() >> 4, this.breakingBlock.getFloorZ() >> 4, pk);
@@ -643,9 +643,9 @@ public class Player extends EntityHuman
             if (breakTime > 0) {
                 LevelEventPacket pk = new LevelEventPacket();
                 pk.evid = LevelEventPacket.EVENT_BLOCK_START_BREAK;
-                pk.x = (float) pos.x;
-                pk.y = (float) pos.y;
-                pk.z = (float) pos.z;
+                pk.x = (float) pos.x();
+                pk.y = (float) pos.y();
+                pk.z = (float) pos.z();
                 pk.data = 65535 / breakTime;
                 this.getLevel().addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, pk);
                 // 优化反矿透时玩家的挖掘体验
@@ -688,9 +688,9 @@ public class Player extends EntityHuman
         if (pos.distanceSquared(this) < 100) { // same as with ACTION_START_BREAK
             LevelEventPacket pk = new LevelEventPacket();
             pk.evid = LevelEventPacket.EVENT_BLOCK_STOP_BREAK;
-            pk.x = (float) pos.x;
-            pk.y = (float) pos.y;
-            pk.z = (float) pos.z;
+            pk.x = (float) pos.x();
+            pk.y = (float) pos.y();
+            pk.z = (float) pos.z();
             pk.data = 0;
             this.getLevel().addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, pk);
         }
@@ -761,9 +761,9 @@ public class Player extends EntityHuman
     private void setDimension(int dimension) {
         ChangeDimensionPacket pk = new ChangeDimensionPacket();
         pk.dimension = dimension;
-        pk.x = (float) this.x;
-        pk.y = (float) this.y;
-        pk.z = (float) this.z;
+        pk.x = (float) this.x();
+        pk.y = (float) this.y();
+        pk.z = (float) this.z();
         this.dataPacket(pk);
 
         this.needDimensionChangeACK = true;
@@ -925,8 +925,8 @@ public class Player extends EntityHuman
         loadQueue.clear();
         Long2ObjectOpenHashMap<Boolean> lastChunk = new Long2ObjectOpenHashMap<>(this.usedChunks);
 
-        int centerX = (int) this.x >> 4;
-        int centerZ = (int) this.z >> 4;
+        int centerX = (int) this.x() >> 4;
+        int centerZ = (int) this.z() >> 4;
 
         int radius = spawned ? this.chunkRadius : (int) Math.ceil(Math.sqrt(spawnThreshold));
         int radiusSqr = radius * radius;
@@ -1170,16 +1170,16 @@ public class Player extends EntityHuman
         }
 
         // update server-side position and rotation and aabb
-        double diffX = clientPos.getX() - this.x;
-        double diffY = clientPos.getY() - this.y;
-        double diffZ = clientPos.getZ() - this.z;
+        double diffX = clientPos.x() - this.x();
+        double diffY = clientPos.y() - this.y();
+        double diffZ = clientPos.z() - this.z();
         this.fastMove(diffX, diffY, diffZ);
         this.setRotation(clientPos.getYaw(), clientPos.getPitch(), clientPos.getHeadYaw());
 
         // after check
-        double corrX = this.x - clientPos.getX();
-        double corrY = this.y - clientPos.getY();
-        double corrZ = this.z - clientPos.getZ();
+        double corrX = this.x() - clientPos.x();
+        double corrY = this.y() - clientPos.y();
+        double corrZ = this.z() - clientPos.z();
         if (this.checkMovement
                 && (Math.abs(corrX) > 0.5 || Math.abs(corrY) > 0.5 || Math.abs(corrZ) > 0.5)
                 && this.riding == null
@@ -1211,9 +1211,9 @@ public class Player extends EntityHuman
         Location last = new Location(
                 this.lastX, this.lastY, this.lastZ, this.lastYaw, this.lastPitch, this.lastHeadYaw, this.level);
         Location now = this.getLocation();
-        this.lastX = now.x;
-        this.lastY = now.y;
-        this.lastZ = now.z;
+        this.lastX = now.x();
+        this.lastY = now.y();
+        this.lastZ = now.z();
         this.lastYaw = now.yaw;
         this.lastPitch = now.pitch;
         this.lastHeadYaw = now.headYaw;
@@ -1243,7 +1243,7 @@ public class Player extends EntityHuman
                     this.teleport(ev.getTo(), null);
                 } else {
                     if (this.getGamemode() != Player.SPECTATOR
-                            && (last.x != now.x || last.y != now.y || last.z != now.z)) {
+                            && (last.x() != now.x() || last.y() != now.y() || last.z() != now.z())) {
                         if (this.isOnGround() && this.isGliding()) {
                             this.level
                                     .getVibrationManager()
@@ -1271,9 +1271,9 @@ public class Player extends EntityHuman
 
         // update speed
         if (this.speed == null) {
-            this.speed = new Vector3(last.x - now.x, last.y - now.y, last.z - now.z);
+            this.speed = new Vector3(last.x() - now.x(), last.y() - now.y(), last.z() - now.z());
         } else {
-            this.speed.setComponents(last.x - now.x, last.y - now.y, last.z - now.z);
+            this.speed.setComponents(last.x() - now.x(), last.y() - now.y(), last.z() - now.z());
         }
 
         handleLogicInMove(invalidMotion, distance);
@@ -1341,8 +1341,8 @@ public class Player extends EntityHuman
             if (frostWalker != null
                     && frostWalker.getLevel() > 0
                     && !this.isSpectator()
-                    && this.y >= 1
-                    && this.y <= 255) {
+                    && this.y() >= 1
+                    && this.y() <= 255) {
                 int radius = 2 + frostWalker.getLevel();
                 for (int coordX = this.getFloorX() - radius; coordX < this.getFloorX() + radius + 1; coordX++) {
                     for (int coordZ = this.getFloorZ() - radius; coordZ < this.getFloorZ() + radius + 1; coordZ++) {
@@ -1395,9 +1395,9 @@ public class Player extends EntityHuman
     }
 
     protected void revertClientMotion(Location originalPos) {
-        this.lastX = originalPos.getX();
-        this.lastY = originalPos.getY();
-        this.lastZ = originalPos.getZ();
+        this.lastX = originalPos.x();
+        this.lastY = originalPos.y();
+        this.lastZ = originalPos.z();
         this.lastYaw = originalPos.getYaw();
         this.lastPitch = originalPos.getPitch();
 
@@ -1505,9 +1505,9 @@ public class Player extends EntityHuman
             nbt.putString("Level", this.level.getName());
             Position spawnLocation = this.level.getSafeSpawn();
             nbt.getList("Pos", DoubleTag.class)
-                    .add(new DoubleTag("0", spawnLocation.x))
-                    .add(new DoubleTag("1", spawnLocation.y))
-                    .add(new DoubleTag("2", spawnLocation.z));
+                    .add(new DoubleTag("0", spawnLocation.x()))
+                    .add(new DoubleTag("1", spawnLocation.y()))
+                    .add(new DoubleTag("2", spawnLocation.z()));
         } else {
             this.setLevel(level);
         }
@@ -1640,9 +1640,9 @@ public class Player extends EntityHuman
         startGamePacket.entityUniqueId = this.id;
         startGamePacket.entityRuntimeId = this.id;
         startGamePacket.playerGamemode = toNetworkGamemode(this.gamemode);
-        startGamePacket.x = (float) this.x;
-        startGamePacket.y = (float) (isOnGround() ? this.y + this.getEyeHeight() : this.y); // 防止在地上生成容易陷进地里
-        startGamePacket.z = (float) this.z;
+        startGamePacket.x = (float) this.x();
+        startGamePacket.y = (float) (isOnGround() ? this.y() + this.getEyeHeight() : this.y()); // 防止在地上生成容易陷进地里
+        startGamePacket.z = (float) this.z();
         startGamePacket.yaw = (float) this.yaw;
         startGamePacket.pitch = (float) this.pitch;
         startGamePacket.seed = -1L;
@@ -1714,9 +1714,9 @@ public class Player extends EntityHuman
                         String.valueOf(this.getPort()),
                         String.valueOf(this.id),
                         this.level.getName(),
-                        String.valueOf(NukkitMath.round(this.x, 4)),
-                        String.valueOf(NukkitMath.round(this.y, 4)),
-                        String.valueOf(NukkitMath.round(this.z, 4))));
+                        String.valueOf(NukkitMath.round(this.x(), 4)),
+                        String.valueOf(NukkitMath.round(this.y(), 4)),
+                        String.valueOf(NukkitMath.round(this.z(), 4))));
 
         if (this.isOp() || this.hasPermission("nukkit.textcolor")) {
             this.setRemoveFormat(false);
@@ -1745,7 +1745,7 @@ public class Player extends EntityHuman
             pos.yaw = this.yaw;
             pos.pitch = this.pitch;
         } else {
-            pos = new Location(this.x, this.y, this.z, this.yaw, this.pitch, this.level);
+            pos = new Location(this.x(), this.y(), this.z(), this.yaw, this.pitch, this.level);
         }
         PlayerRespawnEvent respawnEvent = new PlayerRespawnEvent(this, pos, true);
         this.server.getPluginManager().callEvent(respawnEvent);
@@ -1867,14 +1867,14 @@ public class Player extends EntityHuman
     @Override
     protected void checkChunks() {
         if (this.chunk == null
-                || (this.chunk.getX() != ((int) this.x >> 4) || this.chunk.getZ() != ((int) this.z >> 4))) {
+                || (this.chunk.getX() != ((int) this.x() >> 4) || this.chunk.getZ() != ((int) this.z() >> 4))) {
             if (this.chunk != null) {
                 this.chunk.removeEntity(this);
             }
-            this.chunk = this.level.getChunk((int) this.x >> 4, (int) this.z >> 4, true);
+            this.chunk = this.level.getChunk((int) this.x() >> 4, (int) this.z() >> 4, true);
 
             if (!this.justCreated) {
-                Map<Integer, Player> newChunk = this.level.getChunkPlayers((int) this.x >> 4, (int) this.z >> 4);
+                Map<Integer, Player> newChunk = this.level.getChunkPlayers((int) this.x() >> 4, (int) this.z() >> 4);
                 newChunk.remove(this.getLoaderId());
 
                 // List<Player> reload = new ArrayList<>();
@@ -2370,7 +2370,7 @@ public class Player extends EntityHuman
             this.startAirTicks = 5;
         }
         this.inAirTicks = 0;
-        this.highestPosition = this.y;
+        this.highestPosition = this.y();
     }
 
     @Override
@@ -2640,7 +2640,7 @@ public class Player extends EntityHuman
      */
     public Position getNextPosition() {
         return this.newPosition != null
-                ? new Position(this.newPosition.x, this.newPosition.y, this.newPosition.z, this.level)
+                ? new Position(this.newPosition.x(), this.newPosition.y(), this.newPosition.z(), this.level)
                 : this.getPosition();
     }
 
@@ -2783,13 +2783,13 @@ public class Player extends EntityHuman
             } else {
                 level = this.level;
             }
-            this.spawnPosition = new Position(pos.x, pos.y, pos.z, level);
+            this.spawnPosition = new Position(pos.x(), pos.y(), pos.z(), level);
             this.spawnBlockPosition = null;
             SetSpawnPositionPacket pk = new SetSpawnPositionPacket();
             pk.spawnType = SetSpawnPositionPacket.TYPE_PLAYER_SPAWN;
-            pk.x = (int) this.spawnPosition.x;
-            pk.y = (int) this.spawnPosition.y;
-            pk.z = (int) this.spawnPosition.z;
+            pk.x = (int) this.spawnPosition.x();
+            pk.y = (int) this.spawnPosition.y();
+            pk.z = (int) this.spawnPosition.z();
             pk.dimension = this.spawnPosition.level.getDimension();
             this.dataPacket(pk);
         } else {
@@ -2816,7 +2816,7 @@ public class Player extends EntityHuman
             if (spawnBlock instanceof Position position && position.isValid()) {
                 level = position.level;
             } else level = this.level;
-            this.spawnBlockPosition = new Position(spawnBlock.x, spawnBlock.y, spawnBlock.z, level);
+            this.spawnBlockPosition = new Position(spawnBlock.x(), spawnBlock.y(), spawnBlock.z(), level);
             this.spawnPosition = null;
             SetSpawnPositionPacket pk = new SetSpawnPositionPacket();
             pk.spawnType = SetSpawnPositionPacket.TYPE_PLAYER_SPAWN;
@@ -3007,10 +3007,11 @@ public class Player extends EntityHuman
         }
 
         this.sleeping = pos.clone();
-        this.teleport(new Location(pos.x + 0.5, pos.y + 0.5, pos.z + 0.5, this.yaw, this.pitch, this.level), null);
+        this.teleport(
+                new Location(pos.x() + 0.5, pos.y() + 0.5, pos.z() + 0.5, this.yaw, this.pitch, this.level), null);
 
         this.setDataProperty(
-                new IntPositionEntityData(DATA_PLAYER_BED_POSITION, (int) pos.x, (int) pos.y, (int) pos.z));
+                new IntPositionEntityData(DATA_PLAYER_BED_POSITION, (int) pos.x(), (int) pos.y(), (int) pos.z()));
         this.setDataFlag(DATA_PLAYER_FLAGS, DATA_PLAYER_FLAG_SLEEP, true);
         this.setSpawnBlock(Position.fromObject(pos, getLevel()));
         this.level.sleepTicks = 60;
@@ -3199,10 +3200,9 @@ public class Player extends EntityHuman
 
     @Override
     public boolean fastMove(double dx, double dy, double dz) {
-
-        this.x += dx;
-        this.y += dy;
-        this.z += dz;
+        this.setX(x() + dx);
+        this.setY(y() + dy);
+        this.setZ(z() + dz);
         this.recalculateBoundingBox();
 
         this.checkChunks();
@@ -3225,7 +3225,7 @@ public class Player extends EntityHuman
         float dx = this.getWidth() / 2;
         float dz = this.getWidth() / 2;
         return this.offsetBoundingBox.setBounds(
-                this.x - dx, this.y, this.z - dz, this.x + dx, this.y + this.getHeight(), this.z + dz);
+                this.x() - dx, this.y(), this.z() - dz, this.x() + dx, this.y() + this.getHeight(), this.z() + dz);
     }
 
     @Override
@@ -3251,9 +3251,9 @@ public class Player extends EntityHuman
                 this.addMotion(this.motionX, this.motionY, this.motionZ); // Send to others
                 SetEntityMotionPacket pk = new SetEntityMotionPacket();
                 pk.eid = this.id;
-                pk.motionX = (float) motion.x;
-                pk.motionY = (float) motion.y;
-                pk.motionZ = (float) motion.z;
+                pk.motionX = (float) motion.x();
+                pk.motionY = (float) motion.y();
+                pk.motionZ = (float) motion.z();
                 this.dataPacket(pk); // Send to self
             }
 
@@ -3394,7 +3394,7 @@ public class Player extends EntityHuman
                         this.startAirTicks = 5;
                     }
                     this.inAirTicks = 0;
-                    this.highestPosition = this.y;
+                    this.highestPosition = this.y();
                 } else {
                     this.lastInAirTick = server.getTick();
                     // 检测玩家是否异常飞行
@@ -3413,7 +3413,7 @@ public class Player extends EntityHuman
                                 - ((-this.getGravity()) / ((double) this.getDrag()))
                                         * Math.exp(-((double) this.getDrag())
                                                 * ((double) (this.inAirTicks - this.startAirTicks)));
-                        double diff = (this.speed.y - expectedVelocity) * (this.speed.y - expectedVelocity);
+                        double diff = (this.speed.y() - expectedVelocity) * (this.speed.y() - expectedVelocity);
 
                         Block block = level.getBlock(this);
                         int blockId = block.getId();
@@ -3425,7 +3425,7 @@ public class Player extends EntityHuman
 
                         if (!this.hasEffect(Effect.JUMP_BOOST)
                                 && diff > 0.6
-                                && expectedVelocity < this.speed.y
+                                && expectedVelocity < this.speed.y()
                                 && !ignore) {
                             if (this.inAirTicks < 150) {
                                 this.setMotion(new Vector3(0, expectedVelocity, 0));
@@ -3439,13 +3439,13 @@ public class Player extends EntityHuman
                         }
                     }
 
-                    if (this.y > highestPosition) {
-                        this.highestPosition = this.y;
+                    if (this.y() > highestPosition) {
+                        this.highestPosition = this.y();
                     }
 
                     // Wiki: 使用鞘翅滑翔时在垂直高度下降率低于每刻 0.5 格的情况下，摔落高度被重置为 1 格。
                     // Wiki: 玩家在较小的角度和足够低的速度上着陆不会受到坠落伤害。着陆时临界伤害角度为50°，伤害值等同于玩家从滑行的最高点直接摔落到着陆点受到的伤害。
-                    if (this.isGliding() && Math.abs(this.speed.y) < 0.5 && this.getPitch() <= 40) {
+                    if (this.isGliding() && Math.abs(this.speed.y()) < 0.5 && this.getPitch() <= 40) {
                         this.resetFallDistance();
                     }
 
@@ -3595,8 +3595,8 @@ public class Player extends EntityHuman
         }
 
         Vector2 dV = this.getDirectionPlane();
-        double dot = dV.dot(new Vector2(this.x, this.z));
-        double dot1 = dV.dot(new Vector2(pos.x, pos.z));
+        double dot = dV.dot(new Vector2(this.x(), this.z()));
+        double dot1 = dV.dot(new Vector2(pos.x(), pos.z()));
         return (dot1 - dot) >= -maxDiff;
     }
 
@@ -4592,9 +4592,9 @@ public class Player extends EntityHuman
 
             RespawnPacket pk = new RespawnPacket();
             Position pos = this.getSpawn();
-            pk.x = (float) pos.x;
-            pk.y = (float) pos.y;
-            pk.z = (float) pos.z;
+            pk.x = (float) pos.x();
+            pk.y = (float) pos.y();
+            pk.z = (float) pos.z();
             pk.respawnState = RespawnPacket.STATE_SEARCHING_FOR_SPAWN;
 
             this.dataPacket(pk);
@@ -5005,9 +5005,9 @@ public class Player extends EntityHuman
     public void sendPosition(Vector3 pos, double yaw, double pitch, int mode, Player[] targets) {
         MovePlayerPacket pk = new MovePlayerPacket();
         pk.eid = this.getId();
-        pk.x = (float) pos.x;
-        pk.y = (float) (pos.y + this.getEyeHeight());
-        pk.z = (float) pos.z;
+        pk.x = (float) pos.x();
+        pk.y = (float) (pos.y() + this.getEyeHeight());
+        pk.z = (float) pos.z();
         pk.headYaw = (float) yaw;
         pk.pitch = (float) pitch;
         pk.yaw = (float) yaw;
@@ -5563,6 +5563,16 @@ public class Player extends EntityHuman
         return this.isConnected();
     }
 
+    @Override
+    public double getX() {
+        return 0;
+    }
+
+    @Override
+    public double getZ() {
+        return 0;
+    }
+
     public static BatchPacket getChunkCacheFromData(int chunkX, int chunkZ, int subChunkCount, byte[] payload) {
         LevelChunkPacket pk = new LevelChunkPacket();
         pk.chunkX = chunkX;
@@ -5943,9 +5953,9 @@ public class Player extends EntityHuman
     public void startFishing(Item fishingRod) {
         CompoundTag nbt = new CompoundTag()
                 .putList(new ListTag<DoubleTag>("Pos")
-                        .add(new DoubleTag("", x))
-                        .add(new DoubleTag("", y + this.getEyeHeight()))
-                        .add(new DoubleTag("", z)))
+                        .add(new DoubleTag("", x()))
+                        .add(new DoubleTag("", y() + this.getEyeHeight()))
+                        .add(new DoubleTag("", z())))
                 .putList(new ListTag<DoubleTag>("Motion")
                         .add(new DoubleTag("", -Math.sin(yaw / 180 + Math.PI) * Math.cos(pitch / 180 * Math.PI)))
                         .add(new DoubleTag("", -Math.sin(pitch / 180 * Math.PI)))

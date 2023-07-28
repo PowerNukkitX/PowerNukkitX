@@ -17,7 +17,7 @@ public class ShearsDispenseBehavior extends DefaultDispenseBehavior {
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
         item = item.clone();
         var target = block.getSide(face);
-        var bb = new SimpleAxisAlignedBB(0, 0, 0, 1, 1, 1).offset(target.x, target.y, target.z);
+        var bb = new SimpleAxisAlignedBB(0, 0, 0, 1, 1, 1).offset(target.x(), target.y(), target.z());
         for (var entity : block.level.getCollidingEntities(bb)) {
             if (entity instanceof EntityShearable shearable) {
                 shearable.shear();

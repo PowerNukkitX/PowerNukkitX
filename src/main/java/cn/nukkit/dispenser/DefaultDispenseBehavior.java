@@ -30,9 +30,9 @@ public class DefaultDispenseBehavior implements DispenseBehavior {
         Vector3 dispensePos = block.getDispensePosition();
 
         if (face.getAxis() == Axis.Y) {
-            dispensePos.y -= 0.125;
+            dispensePos.setY(dispensePos.y() - 0.125);
         } else {
-            dispensePos.y -= 0.15625;
+            dispensePos.setY(dispensePos.y() - 0.15625);
         }
 
         Random rand = ThreadLocalRandom.current();
@@ -40,25 +40,25 @@ public class DefaultDispenseBehavior implements DispenseBehavior {
 
         double offset = rand.nextDouble() * 0.1 + 0.2;
 
-        motion.x = face.getXOffset() * offset;
-        motion.y = 0.20000000298023224;
-        motion.z = face.getZOffset() * offset;
+        motion.setX(face.getXOffset() * offset);
+        motion.setY(0.20000000298023224);
+        motion.setZ(face.getZOffset() * offset);
 
-        motion.x += rand.nextGaussian() * 0.007499999832361937 * 6;
-        motion.y += rand.nextGaussian() * 0.007499999832361937 * 6;
-        motion.z += rand.nextGaussian() * 0.007499999832361937 * 6;
+        motion.setX(motion.x() + rand.nextGaussian() * 0.007499999832361937 * 6);
+        motion.setY(motion.y() + rand.nextGaussian() * 0.007499999832361937 * 6);
+        motion.setZ(motion.z() + rand.nextGaussian() * 0.007499999832361937 * 6);
 
         Item clone = item.clone();
         clone.count = 1;
 
         Vector3 dropPos = dispensePos.add(face.getXOffset(), face.getYOffset(), face.getZOffset());
         AxisAlignedBB bb = new SimpleAxisAlignedBB(
-                dropPos.getX() - 0.5,
-                dropPos.getY() - 1,
-                dropPos.getZ() - 0.5,
-                dropPos.getX() + 0.5,
-                dropPos.getY() + 1,
-                dropPos.getZ() + 0.5);
+                dropPos.x() - 0.5,
+                dropPos.y() - 1,
+                dropPos.z() - 0.5,
+                dropPos.x() + 0.5,
+                dropPos.y() + 1,
+                dropPos.z() + 0.5);
         for (Entity e : block.level.getNearbyEntities(bb)) {
             if (e instanceof EntityInventoryHolder inventoryHolder && inventoryHolder.canEquipByDispenser()) {
                 EntityArmorInventory armorInventory = inventoryHolder.getArmorInventory();

@@ -50,7 +50,7 @@ public class BlockLava extends BlockLiquid {
 
     @Override
     public void onEntityCollide(Entity entity) {
-        entity.highestPosition -= (entity.highestPosition - entity.y) * 0.5;
+        entity.highestPosition -= (entity.highestPosition - entity.y()) * 0.5;
 
         EntityCombustByBlockEvent ev = new EntityCombustByBlockEvent(this, entity, 8);
         Server.getInstance().getPluginManager().callEvent(ev);
