@@ -193,14 +193,14 @@ public abstract class BlockLiquid extends BlockTransparentMeta {
                 if (blockDecay >= 0) {
                     int realDecay = blockDecay - (decay - 8);
                     vector.setX(vector.x() + (sideBlock.x() - this.x()) * realDecay);
-                    vector.setY(vector.y() + (sideBlock.y() - this.x()) * realDecay);
-                    vector.setZ(vector.z() + (sideBlock.z() - this.x()) * realDecay);
+                    vector.setY(vector.y() + (sideBlock.y() - this.y()) * realDecay);
+                    vector.setZ(vector.z() + (sideBlock.z() - this.z()) * realDecay);
                 }
             } else {
                 int realDecay = blockDecay - decay;
                 vector.setX(vector.x() + (sideBlock.x() - this.x()) * realDecay);
-                vector.setY(vector.y() + (sideBlock.y() - this.x()) * realDecay);
-                vector.setZ(vector.z() + (sideBlock.z() - this.x()) * realDecay);
+                vector.setY(vector.y() + (sideBlock.y() - this.y()) * realDecay);
+                vector.setZ(vector.z() + (sideBlock.z() - this.z()) * realDecay);
             }
         }
         if (getLiquidDepth() >= 8) {

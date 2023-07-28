@@ -321,7 +321,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
         }
 
         BlockDoor doorTop = (BlockDoor) clone();
-        doorTop.setX(doorTop.y() + 1);
+        doorTop.setY(doorTop.y() + 1);
         doorTop.setTop(true);
         level.setBlock(doorTop, doorTop, true, true); // Top
 

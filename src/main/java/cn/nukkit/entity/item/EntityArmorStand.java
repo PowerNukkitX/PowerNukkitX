@@ -372,16 +372,16 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         pos.setY(pos.y() + 0.2);
         level.dropItem(pos, armorInventory.getBoots());
 
-        pos.setY(y() + 0.6);
+        pos.setY(pos.y() + 0.6);
         level.dropItem(pos, armorInventory.getLeggings());
 
-        pos.setY(y() + 1.4);
+        pos.setY(pos.y() + 1.4);
         level.dropItem(byAttack ? pos : this, Item.get(ItemID.ARMOR_STAND));
         level.dropItem(pos, armorInventory.getChestplate());
         equipmentInventory.getContents().values().forEach(items -> this.level.dropItem(this, items));
         equipmentInventory.clearAll();
 
-        pos.setY(y() + 1.8);
+        pos.setY(pos.y() + 1.8);
         level.dropItem(pos, armorInventory.getHelmet());
         armorInventory.clearAll();
 

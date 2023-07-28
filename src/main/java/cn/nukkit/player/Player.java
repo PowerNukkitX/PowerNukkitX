@@ -5565,12 +5565,12 @@ public class Player extends EntityHuman
 
     @Override
     public double getX() {
-        return 0;
+        return x();
     }
 
     @Override
     public double getZ() {
-        return 0;
+        return z();
     }
 
     public static BatchPacket getChunkCacheFromData(int chunkX, int chunkZ, int subChunkCount, byte[] payload) {
