@@ -180,9 +180,9 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         motion.setX(x() / 2d);
         motion.setY(y() / 2d);
         motion.setZ(z() / 2d);
-        motion.setX(x() + x() * f * base);
+        motion.setX(x() + x * f * base);
         motion.setY(y() + base);
-        motion.setZ(z() + z() * f * base);
+        motion.setZ(z() + z * f * base);
 
         if (motion.y() > base) {
             motion.setY(base);
