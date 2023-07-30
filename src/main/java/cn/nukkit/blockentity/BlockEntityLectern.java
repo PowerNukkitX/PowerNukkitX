@@ -71,7 +71,7 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
 
     @Override
     public void onBreak() {
-        level.dropItem(this, getBook());
+        getLevel().dropItem(this, getBook());
     }
 
     @PowerNukkitOnly

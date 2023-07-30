@@ -40,8 +40,8 @@ public class EntityElytraFirework extends EntityFirework {
                     this.move(this.motionX, this.motionY, this.motionZ);
                     this.updateMovement();
                     float f = (float) Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
-                    this.yaw = (float) (Math.atan2(this.motionX, this.motionZ) * 57.29577951308232D);
-                    this.pitch = (float) (Math.atan2(this.motionY, f) * 57.29577951308232D);
+                    this.setYaw((float) (Math.atan2(this.motionX, this.motionZ) * 57.29577951308232D));
+                    this.setPitch((float) (Math.atan2(this.motionY, f) * 57.29577951308232D));
                     if (this.fireworkAge == 0) {
                         this.getLevel().addLevelSoundEvent(this, 56);
                     }
@@ -53,7 +53,7 @@ public class EntityElytraFirework extends EntityFirework {
                         pk.data = 0;
                         pk.event = 25;
                         pk.eid = this.getId();
-                        this.level.addLevelSoundEvent(this, 58, -1, 72);
+                        this.getLevel().addLevelSoundEvent(this, 58, -1, 72);
                         Server.broadcastPacket(this.getViewers().values(), pk);
                         this.kill();
                     }

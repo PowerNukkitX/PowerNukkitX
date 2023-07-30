@@ -73,7 +73,7 @@ public class BlockHoney extends BlockSolid {
                 entity.resetFallDistance();
 
                 if (RANDOM.nextInt(10) == 0) {
-                    level.addSound(entity, Sound.LAND_SLIME);
+                    getLevel().addSound(entity, Sound.LAND_SLIME);
                 }
             }
         }

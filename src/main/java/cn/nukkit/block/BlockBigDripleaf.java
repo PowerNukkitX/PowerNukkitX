@@ -150,7 +150,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
             var bf = ((BlockBigDripleaf) below).getBlockFace();
             b.setBlockFace(bf);
             b.setHead(false);
-            level.setBlock(below, b, true, false);
+            getLevel().setBlock(below, b, true, false);
             setHead(true);
             setBlockFace(bf);
         } else {
@@ -158,7 +158,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
             setHead(true);
         }
 
-        if (block instanceof BlockWater) level.setBlock(this, 1, block, true, false);
+        if (block instanceof BlockWater) getLevel().setBlock(this, 1, block, true, false);
         return super.place(item, block, target, face, fx, fy, fz, player);
     }
 
@@ -168,19 +168,19 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
             Block head = this;
             Block up;
             while ((up = head.up()).getId() == BIG_DRIPLEAF) head = up;
-            if (head.getFloorY() + 1 >= level.getMaxHeight()) return false;
+            if (head.getFloorY() + 1 >= getLevel().getMaxHeight()) return false;
             Block above = head.up();
             if (!(above.getId() == AIR) && !(above instanceof BlockWater)) return false;
             if (player != null && !player.isCreative()) item.count--;
-            level.addParticle(new BoneMealParticle(this));
+            getLevel().addParticle(new BoneMealParticle(this));
             var aboveDownBlock = new BlockBigDripleaf();
             aboveDownBlock.setBlockFace(this.getBlockFace());
-            level.setBlock(above.getSideVec(BlockFace.DOWN), aboveDownBlock, true, false);
-            if (above instanceof BlockWater) level.setBlock(above, 1, above, true, false);
+            getLevel().setBlock(above.getSideVec(BlockFace.DOWN), aboveDownBlock, true, false);
+            if (above instanceof BlockWater) getLevel().setBlock(above, 1, above, true, false);
             var aboveBock = new BlockBigDripleaf();
             aboveBock.setBlockFace(this.getBlockFace());
             aboveBock.setHead(true);
-            level.setBlock(above, aboveBock, true);
+            getLevel().setBlock(above, aboveBock, true);
             return true;
         }
 
@@ -190,13 +190,13 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            level.scheduleUpdate(this, 1);
+            getLevel().scheduleUpdate(this, 1);
             return Level.BLOCK_UPDATE_NORMAL;
         }
 
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
             if (!canSurvive()) {
-                level.useBreakOn(this);
+                getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
 
@@ -205,7 +205,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
                     return 0;
                 }
 
-                level.useBreakOn(this);
+                getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
 
@@ -214,9 +214,9 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
                 return 0;
             }
 
-            if (level.isBlockPowered(this)) {
+            if (getLevel().isBlockPowered(this)) {
                 setTilt(Tilt.NONE);
-                level.setBlock(this, this, true, false);
+                getLevel().setBlock(this, this, true, false);
                 return Level.BLOCK_UPDATE_SCHEDULED;
             }
 
@@ -224,9 +224,9 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
                 case UNSTABLE -> setTiltAndScheduleTick(PARTIAL_TILT);
                 case PARTIAL_TILT -> setTiltAndScheduleTick(FULL_TILT);
                 case FULL_TILT -> {
-                    level.addSound(this, Sound.TILT_UP_BIG_DRIPLEAF);
+                    getLevel().addSound(this, Sound.TILT_UP_BIG_DRIPLEAF);
                     setTilt(NONE);
-                    level.setBlock(this, this, true, false);
+                    getLevel().setBlock(this, this, true, false);
                 }
             }
             return Level.BLOCK_UPDATE_SCHEDULED;
@@ -236,12 +236,12 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
             if (!isHead()) return 0;
             var tilt = getTilt();
             if (tilt == NONE) return 0;
-            if (!level.isBlockPowered(this)) return 0;
-            if (tilt != UNSTABLE) level.addSound(this, Sound.TILT_UP_BIG_DRIPLEAF);
+            if (!getLevel().isBlockPowered(this)) return 0;
+            if (tilt != UNSTABLE) getLevel().addSound(this, Sound.TILT_UP_BIG_DRIPLEAF);
             setTilt(NONE);
-            level.setBlock(this, this, true, false);
+            getLevel().setBlock(this, this, true, false);
 
-            level.cancelSheduledUpdate(this, this);
+            getLevel().cancelSheduledUpdate(this, this);
             return Level.BLOCK_UPDATE_SCHEDULED;
         }
 
@@ -338,19 +338,19 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
 
     private boolean setTiltAndScheduleTick(Tilt tilt) {
         if (!setTilt(tilt)) return false;
-        level.setBlock(this, this, true, false);
+        getLevel().setBlock(this, this, true, false);
 
         switch (tilt) {
-            case NONE -> level.scheduleUpdate(this, 1);
+            case NONE -> getLevel().scheduleUpdate(this, 1);
             case UNSTABLE -> {
-                level.scheduleUpdate(this, 15);
+                getLevel().scheduleUpdate(this, 15);
                 return true;
             }
-            case PARTIAL_TILT -> level.scheduleUpdate(this, 15);
-            case FULL_TILT -> level.scheduleUpdate(this, 100);
+            case PARTIAL_TILT -> getLevel().scheduleUpdate(this, 15);
+            case FULL_TILT -> getLevel().scheduleUpdate(this, 100);
         }
 
-        level.addSound(this, Sound.TILT_DOWN_BIG_DRIPLEAF);
+        getLevel().addSound(this, Sound.TILT_DOWN_BIG_DRIPLEAF);
         return true;
     }
 

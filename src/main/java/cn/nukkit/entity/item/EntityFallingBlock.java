@@ -144,21 +144,21 @@ public class EntityFallingBlock extends Entity {
 
             Vector3 pos = (new Vector3(x() - 0.5, y(), z() - 0.5)).round();
 
-            if (breakOnLava && level.getBlock(pos.subtract(0, 1, 0)) instanceof BlockLava) {
+            if (breakOnLava && getLevel().getBlock(pos.subtract(0, 1, 0)) instanceof BlockLava) {
                 close();
-                if (this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
+                if (this.getLevel().getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
                     dropItems();
                 }
-                level.addParticle(new DestroyBlockParticle(pos, Block.get(getBlock(), getDamage())));
+                getLevel().addParticle(new DestroyBlockParticle(pos, Block.get(getBlock(), getDamage())));
                 return true;
             }
 
             if (onGround) {
                 close();
-                Block block = level.getBlock(pos);
+                Block block = getLevel().getBlock(pos);
 
                 Vector3 floorPos = (new Vector3(x() - 0.5, y(), z() - 0.5)).floor();
-                Block floorBlock = this.level.getBlock(floorPos);
+                Block floorBlock = this.getLevel().getBlock(floorPos);
                 if (this.getBlock() == Block.SNOW_LAYER
                         && floorBlock.getId() == Block.SNOW_LAYER
                         && (floorBlock.getDamage() & 0x7) != 0x7) {
@@ -168,16 +168,16 @@ public class EntityFallingBlock extends Entity {
                                 new EntityBlockChangeEvent(this, floorBlock, Block.get(Block.SNOW_LAYER, 0x7));
                         this.server.getPluginManager().callEvent(event);
                         if (!event.isCancelled()) {
-                            this.level.setBlock(floorPos, event.getTo(), true);
+                            this.getLevel().setBlock(floorPos, event.getTo(), true);
 
                             Vector3 abovePos = floorPos.up();
-                            Block aboveBlock = this.level.getBlock(abovePos);
+                            Block aboveBlock = this.getLevel().getBlock(abovePos);
                             if (aboveBlock.getId() == Block.AIR) {
                                 EntityBlockChangeEvent event2 = new EntityBlockChangeEvent(
                                         this, aboveBlock, Block.get(Block.SNOW_LAYER, mergedHeight - 8 - 1));
                                 this.server.getPluginManager().callEvent(event2);
                                 if (!event2.isCancelled()) {
-                                    this.level.setBlock(abovePos, event2.getTo(), true);
+                                    this.getLevel().setBlock(abovePos, event2.getTo(), true);
                                 }
                             }
                         }
@@ -186,14 +186,14 @@ public class EntityFallingBlock extends Entity {
                                 this, floorBlock, Block.get(Block.SNOW_LAYER, mergedHeight - 1));
                         this.server.getPluginManager().callEvent(event);
                         if (!event.isCancelled()) {
-                            this.level.setBlock(floorPos, event.getTo(), true);
+                            this.getLevel().setBlock(floorPos, event.getTo(), true);
                         }
                     }
                 } else if (block.getId() > 0 && block.isTransparent() && !block.canBeReplaced()
                         || this.getBlock() == Block.SNOW_LAYER && block instanceof BlockLiquid) {
                     if (this.getBlock() != Block.SNOW_LAYER
-                            ? this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)
-                            : this.level.getGameRules().getBoolean(GameRule.DO_TILE_DROPS)) {
+                            ? this.getLevel().getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)
+                            : this.getLevel().getGameRules().getBoolean(GameRule.DO_TILE_DROPS)) {
                         dropItems();
                     }
                 } else {
@@ -203,16 +203,16 @@ public class EntityFallingBlock extends Entity {
                     if (!event.isCancelled()) {
                         if (!breakOnGround) getLevel().setBlock(pos, event.getTo(), true);
                         else {
-                            if (this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
+                            if (this.getLevel().getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
                                 dropItems();
                             }
-                            level.addParticle(new DestroyBlockParticle(pos, Block.get(getBlock(), getDamage())));
+                            getLevel().addParticle(new DestroyBlockParticle(pos, Block.get(getBlock(), getDamage())));
                         }
 
                         if (event.getTo().getId() == Item.ANVIL) {
                             getLevel().addLevelEvent(block, LevelEventPacket.EVENT_SOUND_ANVIL_FALL);
 
-                            Entity[] e = level.getCollidingEntities(this.getBoundingBox(), this);
+                            Entity[] e = getLevel().getCollidingEntities(this.getBoundingBox(), this);
                             for (Entity entity : e) {
                                 if (entity instanceof EntityLiving && fallDistance > 0) {
                                     entity.attack(new EntityDamageByBlockEvent(
@@ -226,7 +226,7 @@ public class EntityFallingBlock extends Entity {
                         if (event.getTo().getId() == Item.POINTED_DRIPSTONE) {
                             getLevel().addLevelEvent(block, LevelEventPacket.EVENT_SOUND_POINTED_DRIPSTONE_LAND);
 
-                            Entity[] e = level.getCollidingEntities(new SimpleAxisAlignedBB(pos, pos.add(1, 1, 1)));
+                            Entity[] e = getLevel().getCollidingEntities(new SimpleAxisAlignedBB(pos, pos.add(1, 1, 1)));
                             for (Entity entity : e) {
                                 if (entity instanceof EntityLiving && fallDistance > 0) {
                                     entity.attack(new EntityDamageByBlockEvent(

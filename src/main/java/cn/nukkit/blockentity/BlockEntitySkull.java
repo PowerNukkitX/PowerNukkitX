@@ -60,7 +60,7 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
         if (mouthMoving) {
             scheduleUpdate();
         }
-        this.level.updateComparatorOutputLevelSelective(this, true);
+        this.getLevel().updateComparatorOutputLevelSelective(this, true);
         spawnToAll();
         if (chunk != null) {
             setDirty();

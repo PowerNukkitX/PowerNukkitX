@@ -119,7 +119,7 @@ public class EntityFirework extends Entity {
                 this.hadCollision = true;
 
                 for (Block collisionBlock :
-                        level.getCollisionBlocks(getBoundingBox().grow(0.1, 0.1, 0.1))) {
+                        getLevel().getCollisionBlocks(getBoundingBox().grow(0.1, 0.1, 0.1))) {
                     collisionBlock.onProjectileHit(this, position, motion);
                 }
 
@@ -130,9 +130,9 @@ public class EntityFirework extends Entity {
             this.updateMovement();
 
             float f = (float) Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
-            this.yaw = (float) (Math.atan2(this.motionX, this.motionZ) * (180D / Math.PI));
+            this.setYaw((float) (Math.atan2(this.motionX, this.motionZ) * (180D / Math.PI)));
 
-            this.pitch = (float) (Math.atan2(this.motionY, f) * (180D / Math.PI));
+            this.setPitch((float) (Math.atan2(this.motionY, f) * (180D / Math.PI)));
 
             if (this.fireworkAge == 0) {
                 this.getLevel().addSound(this, Sound.FIREWORK_LAUNCH);
@@ -147,7 +147,7 @@ public class EntityFirework extends Entity {
                 pk.event = EntityEventPacket.FIREWORK_EXPLOSION;
                 pk.eid = this.getId();
 
-                level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_LARGE_BLAST, -1, NETWORK_ID);
+                getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_LARGE_BLAST, -1, NETWORK_ID);
 
                 Server.broadcastPacket(getViewers().values(), pk);
 

@@ -357,7 +357,7 @@ public abstract class BlockEntity extends Position {
     }
 
     public final void scheduleUpdate() {
-        this.level.scheduleBlockEntityUpdate(this);
+        this.getLevel().scheduleBlockEntityUpdate(this);
     }
 
     public void close() {
@@ -366,10 +366,10 @@ public abstract class BlockEntity extends Position {
             if (this.chunk != null) {
                 this.chunk.removeBlockEntity(this);
             }
-            if (this.level != null) {
-                this.level.removeBlockEntity(this);
+            if (this.getLevel() != null) {
+                this.getLevel().removeBlockEntity(this);
             }
-            this.level = null;
+            this.setLevel(null);
         }
     }
 

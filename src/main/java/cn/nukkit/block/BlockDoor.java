@@ -173,7 +173,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
             return type;
         }
 
-        if (type == Level.BLOCK_UPDATE_REDSTONE && level.getServer().isRedstoneEnabled()) {
+        if (type == Level.BLOCK_UPDATE_REDSTONE && getLevel().getServer().isRedstoneEnabled()) {
             this.onRedstoneUpdate();
             return type;
         }
@@ -185,7 +185,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
         Block down = this.down();
         if (isTop()) {
             if (down.getId() != this.getId() || down.getBooleanValue(UPPER_BLOCK)) {
-                level.setBlock(this, Block.get(AIR), false);
+                getLevel().setBlock(this, Block.get(AIR), false);
             }
 
             /* Doesn't work with redstone
@@ -198,7 +198,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
         }
 
         if (down.getId() == AIR) {
-            level.useBreakOn(this, getToolType() == ItemTool.TYPE_PICKAXE ? Item.get(ItemID.DIAMOND_PICKAXE) : null);
+            getLevel().useBreakOn(this, getToolType() == ItemTool.TYPE_PICKAXE ? Item.get(ItemID.DIAMOND_PICKAXE) : null);
         }
     }
 
@@ -206,7 +206,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
     private void onRedstoneUpdate() {
         if ((this.isOpen() != this.isGettingPower()) && !this.getManualOverride()) {
             if (this.isOpen() != this.isGettingPower()) {
-                level.getServer()
+                getLevel().getServer()
                         .getPluginManager()
                         .callEvent(new BlockRedstoneEvent(this, this.isOpen() ? 15 : 0, this.isOpen() ? 0 : 15));
 
@@ -273,13 +273,13 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
             Block blockDown = down.getSide(side).getLevelBlock();
             Block blockUp = up.getSide(side).getLevelBlock();
 
-            if (this.level.isSidePowered(blockDown.getLocation(), side)
-                    || this.level.isSidePowered(blockUp.getLocation(), side)) {
+            if (this.getLevel().isSidePowered(blockDown.getLocation(), side)
+                    || this.getLevel().isSidePowered(blockUp.getLocation(), side)) {
                 return true;
             }
         }
 
-        return this.level.isBlockPowered(down) || this.level.isBlockPowered(up);
+        return this.getLevel().isBlockPowered(down) || this.getLevel().isBlockPowered(up);
     }
 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed support logic")
@@ -293,7 +293,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
             double fy,
             double fz,
             @Nullable Player player) {
-        if (this.y() > this.level.getMaxHeight() - 2 || face != BlockFace.UP) {
+        if (this.y() > this.getLevel().getMaxHeight() - 2 || face != BlockFace.UP) {
             return false;
         }
 
@@ -314,20 +314,20 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
 
         setTop(false);
 
-        level.setBlock(block, this, true, false); // Bottom
+        getLevel().setBlock(block, this, true, false); // Bottom
 
         if (blockUp instanceof BlockLiquid && ((BlockLiquid) blockUp).usesWaterLogging()) {
-            level.setBlock(blockUp, 1, blockUp, true, false);
+            getLevel().setBlock(blockUp, 1, blockUp, true, false);
         }
 
         BlockDoor doorTop = (BlockDoor) clone();
         doorTop.setY(doorTop.y() + 1);
         doorTop.setTop(true);
-        level.setBlock(doorTop, doorTop, true, true); // Top
+        getLevel().setBlock(doorTop, doorTop, true, true); // Top
 
-        level.updateAround(block);
+        getLevel().updateAround(block);
 
-        if (level.getServer().isRedstoneEnabled() && !this.isOpen() && this.isGettingPower()) {
+        if (getLevel().getServer().isRedstoneEnabled() && !this.isOpen() && this.isGettingPower()) {
             this.setOpen(null, true);
         }
 
@@ -340,12 +340,12 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
         if (isTop()) {
             Block down = this.down();
             if (down.getId() == this.getId() && !down.getBooleanValue(UPPER_BLOCK)) {
-                level.setBlock(down, Block.get(AIR), true);
+                getLevel().setBlock(down, Block.get(AIR), true);
             }
         } else {
             Block up = this.up();
             if (up.getId() == this.getId() && up.getBooleanValue(UPPER_BLOCK)) {
-                level.setBlock(up, Block.get(BlockID.AIR), true);
+                getLevel().setBlock(up, Block.get(BlockID.AIR), true);
             }
         }
         this.getLevel().setBlock(this, Block.get(BlockID.AIR), true);
@@ -379,13 +379,13 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void playOpenSound() {
-        level.addSound(this, Sound.RANDOM_DOOR_OPEN);
+        getLevel().addSound(this, Sound.RANDOM_DOOR_OPEN);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void playCloseSound() {
-        level.addSound(this, Sound.RANDOM_DOOR_CLOSE);
+        getLevel().addSound(this, Sound.RANDOM_DOOR_CLOSE);
     }
 
     @PowerNukkitDifference(info = "Just call the #setOpen() method.", since = "1.4.0.0-PN")
@@ -406,7 +406,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
         }
 
         DoorToggleEvent event = new DoorToggleEvent(this, player);
-        level.getServer().getPluginManager().callEvent(event);
+        getLevel().getServer().getPluginManager().callEvent(event);
 
         if (event.isCancelled()) {
             return false;
@@ -425,10 +425,10 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
         }
 
         up.setBooleanValue(OPEN, open);
-        up.level.setBlock(up, up, true, true);
+        up.getLevel().setBlock(up, up, true, true);
 
         down.setBooleanValue(OPEN, open);
-        down.level.setBlock(down, down, true, true);
+        down.getLevel().setBlock(down, down, true, true);
 
         if (player != null) {
             this.setManualOverride(this.isGettingPower() || isOpen());
@@ -440,7 +440,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
         VibrationEvent vibrationEvent = open
                 ? new VibrationEvent(player != null ? player : this, source, VibrationType.BLOCK_OPEN)
                 : new VibrationEvent(player != null ? player : this, source, VibrationType.BLOCK_CLOSE);
-        this.level.getVibrationManager().callVibrationEvent(vibrationEvent);
+        this.getLevel().getVibrationManager().callVibrationEvent(vibrationEvent);
         return true;
     }
 

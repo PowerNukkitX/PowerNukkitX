@@ -69,7 +69,7 @@ public abstract class SlenderProjectile extends EntityProjectile {
         Block collisionBlock = null;
         for (int i = 0; i < SPLIT_NUMBER; ++i) {
             var collisionBlocks =
-                    this.level.getCollisionBlocks(currentAABB.offset(dirVector.x(), dirVector.y(), dirVector.z()));
+                    this.getLevel().getCollisionBlocks(currentAABB.offset(dirVector.x(), dirVector.y(), dirVector.z()));
             var collisionEntities = this.getLevel().fastCollidingEntities(currentAABB, this);
             if (collisionBlocks.length != 0) {
                 currentAABB.offset(-dirVector.x(), -dirVector.y(), -dirVector.z());
@@ -166,16 +166,16 @@ public abstract class SlenderProjectile extends EntityProjectile {
             this.motionZ = 0;
             BVector3 bVector3 = BVector3.fromPos(new Vector3(dx, dy, dz));
             BlockFace blockFace = BlockFace.fromHorizontalAngle(bVector3.getYaw());
-            Block block = level.getBlock(this.getFloorX(), this.getFloorY(), this.getFloorZ())
+            Block block = getLevel().getBlock(this.getFloorX(), this.getFloorY(), this.getFloorZ())
                     .getSide(blockFace);
             if (block.getId() == 0) {
                 blockFace = BlockFace.DOWN;
-                block = level.getBlock(this.getFloorX(), this.getFloorY(), this.getFloorZ())
+                block = getLevel().getBlock(this.getFloorX(), this.getFloorY(), this.getFloorZ())
                         .down();
             }
             if (block.getId() == 0) {
                 blockFace = BlockFace.UP;
-                block = level.getBlock(this.getFloorX(), this.getFloorY(), this.getFloorZ())
+                block = getLevel().getBlock(this.getFloorX(), this.getFloorY(), this.getFloorZ())
                         .up();
             }
             if (block.getId() == 0 && collisionBlock != null) {
@@ -201,7 +201,7 @@ public abstract class SlenderProjectile extends EntityProjectile {
         if (this.isCollided && this.hadCollision) {
             if (lastHitBlock != null
                     && lastHitBlock.typeOfHit == 0
-                    && level.getBlock(lastHitBlock.blockX, lastHitBlock.blockY, lastHitBlock.blockZ)
+                    && getLevel().getBlock(lastHitBlock.blockX, lastHitBlock.blockY, lastHitBlock.blockZ)
                                     .getId()
                             == 0) {
                 this.motionY -= this.getGravity();

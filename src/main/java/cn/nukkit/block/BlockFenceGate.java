@@ -171,7 +171,7 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
             return false;
         }
 
-        if (level.getServer().isRedstoneEnabled() && !this.isOpen() && this.isGettingPower()) {
+        if (getLevel().getServer().isRedstoneEnabled() && !this.isOpen() && this.isGettingPower()) {
             this.setOpen(null, true);
         }
 
@@ -210,7 +210,7 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
         BlockFace originDirection = getBlockFace();
 
         if (player != null) {
-            double yaw = player.yaw;
+            double yaw = player.yaw();
             double rotation = (yaw - 90) % 360;
 
             if (rotation < 0) {
@@ -240,7 +240,7 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
 
         setBlockFace(direction);
         toggleBooleanProperty(OPEN);
-        this.level.setBlock(this, this, false, false);
+        this.getLevel().setBlock(this, this, false, false);
 
         if (player != null) {
             this.setManualOverride(this.isGettingPower() || isOpen());
@@ -252,7 +252,7 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
         VibrationEvent vibrationEvent = open
                 ? new VibrationEvent(player != null ? player : this, source, VibrationType.BLOCK_OPEN)
                 : new VibrationEvent(player != null ? player : this, source, VibrationType.BLOCK_CLOSE);
-        this.level.getVibrationManager().callVibrationEvent(vibrationEvent);
+        this.getLevel().getVibrationManager().callVibrationEvent(vibrationEvent);
         return true;
     }
 
@@ -269,13 +269,13 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void playOpenSound() {
-        level.addSound(this, Sound.RANDOM_DOOR_OPEN);
+        getLevel().addSound(this, Sound.RANDOM_DOOR_OPEN);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void playCloseSound() {
-        level.addSound(this, Sound.RANDOM_DOOR_CLOSE);
+        getLevel().addSound(this, Sound.RANDOM_DOOR_CLOSE);
     }
 
     public boolean isOpen() {
@@ -297,10 +297,10 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
                     || getSide(face.rotateYCCW()) instanceof BlockWallBase;
             if (touchingWall != isInWall()) {
                 this.setInWall(touchingWall);
-                level.setBlock(this, this, true);
+                getLevel().setBlock(this, this, true);
                 return type;
             }
-        } else if (type == Level.BLOCK_UPDATE_REDSTONE && this.level.getServer().isRedstoneEnabled()) {
+        } else if (type == Level.BLOCK_UPDATE_REDSTONE && this.getLevel().getServer().isRedstoneEnabled()) {
             this.onRedstoneUpdate();
             return type;
         }
@@ -312,7 +312,7 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
     private void onRedstoneUpdate() {
         if ((this.isOpen() != this.isGettingPower()) && !this.getManualOverride()) {
             if (this.isOpen() != this.isGettingPower()) {
-                level.getServer()
+                getLevel().getServer()
                         .getPluginManager()
                         .callEvent(new BlockRedstoneEvent(this, this.isOpen() ? 15 : 0, this.isOpen() ? 0 : 15));
 

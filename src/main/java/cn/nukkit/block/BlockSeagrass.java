@@ -131,10 +131,10 @@ public class BlockSeagrass extends BlockFlowable {
                     item.count--;
                 }
 
-                this.level.addParticle(new BoneMealParticle(this));
-                this.level.setBlock(this, new BlockSeagrass(2), true, false);
-                this.level.setBlock(up, 1, up, true, false);
-                this.level.setBlock(up, 0, new BlockSeagrass(1), true);
+                this.getLevel().addParticle(new BoneMealParticle(this));
+                this.getLevel().setBlock(this, new BlockSeagrass(2), true, false);
+                this.getLevel().setBlock(up, 1, up, true, false);
+                this.getLevel().setBlock(up, 0, new BlockSeagrass(1), true);
                 return true;
             }
         }

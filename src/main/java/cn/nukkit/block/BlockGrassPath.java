@@ -58,7 +58,7 @@ public class BlockGrassPath extends BlockGrass {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (this.up().isSolid()) {
-                this.level.setBlock(this, Block.get(BlockID.DIRT), false, true);
+                this.getLevel().setBlock(this, Block.get(BlockID.DIRT), false, true);
             }
 
             return Level.BLOCK_UPDATE_NORMAL;

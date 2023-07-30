@@ -138,7 +138,7 @@ public class BlockTripWire extends BlockTransparentMeta {
     @PowerNukkitDifference(info = "Trigger observer.", since = "1.4.0.0-PN")
     @Override
     public void onEntityCollide(Entity entity) {
-        if (!this.level.getServer().isRedstoneEnabled()) {
+        if (!this.getLevel().getServer().isRedstoneEnabled()) {
             return;
         }
 
@@ -150,16 +150,16 @@ public class BlockTripWire extends BlockTransparentMeta {
 
         if (!powered) {
             this.setPowered(true);
-            this.level.setBlock(this, this, true, false);
+            this.getLevel().setBlock(this, this, true, false);
             this.updateHook(false);
 
-            this.level.scheduleUpdate(this, 10);
-            this.level.updateComparatorOutputLevelSelective(this, true);
+            this.getLevel().scheduleUpdate(this, 10);
+            this.getLevel().updateComparatorOutputLevelSelective(this, true);
         }
     }
 
     private void updateHook(boolean scheduleUpdate) {
-        if (!this.level.getServer().isRedstoneEnabled()) {
+        if (!this.getLevel().getServer().isRedstoneEnabled()) {
             return;
         }
 
@@ -190,7 +190,7 @@ public class BlockTripWire extends BlockTransparentMeta {
     @PowerNukkitDifference(info = "Trigger observer.", since = "1.4.0.0-PN")
     @Override
     public int onUpdate(int type) {
-        if (!this.level.getServer().isRedstoneEnabled()) {
+        if (!this.getLevel().getServer().isRedstoneEnabled()) {
             return 0;
         }
 
@@ -200,7 +200,7 @@ public class BlockTripWire extends BlockTransparentMeta {
             }
 
             boolean found = false;
-            for (Entity entity : this.level.getCollidingEntities(this.getCollisionBoundingBox())) {
+            for (Entity entity : this.getLevel().getCollidingEntities(this.getCollisionBoundingBox())) {
                 if (!entity.doesTriggerPressurePlate()) {
                     continue;
                 }
@@ -209,13 +209,13 @@ public class BlockTripWire extends BlockTransparentMeta {
             }
 
             if (found) {
-                this.level.scheduleUpdate(this, 10);
+                this.getLevel().scheduleUpdate(this, 10);
             } else {
                 this.setPowered(false);
-                this.level.setBlock(this, this, true, false);
+                this.getLevel().setBlock(this, this, true, false);
                 this.updateHook(false);
 
-                this.level.updateComparatorOutputLevelSelective(this, true);
+                this.getLevel().updateComparatorOutputLevelSelective(this, true);
             }
             return type;
         }
@@ -243,11 +243,11 @@ public class BlockTripWire extends BlockTransparentMeta {
     public boolean onBreak(Item item) {
         if (item.getId() == Item.SHEARS) {
             this.setDisarmed(true);
-            this.level.setBlock(this, this, true, false);
+            this.getLevel().setBlock(this, this, true, false);
             this.updateHook(false);
             this.getLevel().setBlock(this, Block.get(BlockID.AIR), true, true);
             // todo: initiator should be a entity
-            level.getVibrationManager()
+            getLevel().getVibrationManager()
                     .callVibrationEvent(new VibrationEvent(this, this.add(0.5, 0.5, 0.5), VibrationType.SHEAR));
         } else {
             this.setPowered(true);

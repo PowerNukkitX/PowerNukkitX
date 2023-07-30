@@ -160,15 +160,15 @@ public class BlockTurtleEgg extends BlockFlowable {
             if (placeEvent.isCancelled()) {
                 return false;
             }
-            if (!this.level.setBlock(this, placeEvent.getBlock(), true, true)) {
+            if (!this.getLevel().setBlock(this, placeEvent.getBlock(), true, true)) {
                 return false;
             }
             Block placeBlock = placeEvent.getBlock();
-            this.level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_PLACE, placeBlock.getRuntimeId());
+            this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_PLACE, placeBlock.getRuntimeId());
             item.setCount(item.getCount() - 1);
 
             if (down().getId() == SAND) {
-                this.level.addParticle(new BoneMealParticle(this));
+                this.getLevel().addParticle(new BoneMealParticle(this));
             }
 
             return true;
@@ -216,7 +216,7 @@ public class BlockTurtleEgg extends BlockFlowable {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_RANDOM) {
             if (down().getId() == BlockID.SAND) {
-                float celestialAngle = level.calculateCelestialAngle(level.getTime(), 1);
+                float celestialAngle = getLevel().calculateCelestialAngle(getLevel().getTime(), 1);
                 ThreadLocalRandom random = ThreadLocalRandom.current();
                 if (0.70 > celestialAngle && celestialAngle > 0.65 || random.nextInt(500) == 0) {
                     CrackState crackState = getCracks();
@@ -224,10 +224,10 @@ public class BlockTurtleEgg extends BlockFlowable {
                         BlockTurtleEgg newState = clone();
                         newState.setCracks(crackState.getNext());
                         BlockGrowEvent event = new BlockGrowEvent(this, newState);
-                        this.level.getServer().getPluginManager().callEvent(event);
+                        this.getLevel().getServer().getPluginManager().callEvent(event);
                         if (!event.isCancelled()) {
-                            level.addSound(this, Sound.BLOCK_TURTLE_EGG_CRACK, 0.7f, 0.9f + random.nextFloat() * 0.2f);
-                            this.level.setBlock(this, event.getNewState(), true, true);
+                            getLevel().addSound(this, Sound.BLOCK_TURTLE_EGG_CRACK, 0.7f, 0.9f + random.nextFloat() * 0.2f);
+                            this.getLevel().setBlock(this, event.getNewState(), true, true);
                         }
                     } else {
                         hatch();
@@ -255,19 +255,19 @@ public class BlockTurtleEgg extends BlockFlowable {
         TurtleEggHatchEvent turtleEggHatchEvent = new TurtleEggHatchEvent(this, eggs, newState);
         // TODO Cancelled by default because EntityTurtle doesn't have AI yet, remove it when AI is added
         turtleEggHatchEvent.setCancelled(true);
-        this.level.getServer().getPluginManager().callEvent(turtleEggHatchEvent);
+        this.getLevel().getServer().getPluginManager().callEvent(turtleEggHatchEvent);
         int eggsHatching = turtleEggHatchEvent.getEggsHatching();
         if (!turtleEggHatchEvent.isCancelled()) {
-            level.addSound(this, Sound.BLOCK_TURTLE_EGG_CRACK);
+            getLevel().addSound(this, Sound.BLOCK_TURTLE_EGG_CRACK);
 
             boolean hasFailure = false;
             for (int i = 0; i < eggsHatching; i++) {
 
-                this.level.addSound(this, Sound.BLOCK_TURTLE_EGG_CRACK);
+                this.getLevel().addSound(this, Sound.BLOCK_TURTLE_EGG_CRACK);
 
                 CreatureSpawnEvent creatureSpawnEvent = new CreatureSpawnEvent(
                         EntityTurtle.NETWORK_ID, add(0.3 + i * 0.2, 0, 0.3), CreatureSpawnEvent.SpawnReason.TURTLE_EGG);
-                this.level.getServer().getPluginManager().callEvent(creatureSpawnEvent);
+                this.getLevel().getServer().getPluginManager().callEvent(creatureSpawnEvent);
 
                 if (!creatureSpawnEvent.isCancelled()) {
                     EntityTurtle turtle = (EntityTurtle) Entity.createEntity(
@@ -292,7 +292,7 @@ public class BlockTurtleEgg extends BlockFlowable {
                 turtleEggHatchEvent.recalculateNewState();
             }
 
-            this.level.setBlock(this, turtleEggHatchEvent.getNewState(), true, true);
+            this.getLevel().setBlock(this, turtleEggHatchEvent.getNewState(), true, true);
         }
     }
 
@@ -313,9 +313,9 @@ public class BlockTurtleEgg extends BlockFlowable {
             }
 
             ev.setCancelled(ThreadLocalRandom.current().nextInt(200) > 0);
-            this.level.getServer().getPluginManager().callEvent(ev);
+            this.getLevel().getServer().getPluginManager().callEvent(ev);
             if (!ev.isCancelled()) {
-                this.level.useBreakOn(this, null, null, true);
+                this.getLevel().useBreakOn(this, null, null, true);
             }
         }
     }
@@ -329,13 +329,13 @@ public class BlockTurtleEgg extends BlockFlowable {
     public boolean onBreak(Item item) {
         int eggCount = getEggCount();
         if (item.getEnchantment(Enchantment.ID_SILK_TOUCH) == null) {
-            this.level.addSound(this, Sound.BLOCK_TURTLE_EGG_CRACK);
+            this.getLevel().addSound(this, Sound.BLOCK_TURTLE_EGG_CRACK);
         }
         if (eggCount == 1) {
             return super.onBreak(item);
         } else {
             setEggCount(eggCount - 1);
-            return this.level.setBlock(this, this, true, true);
+            return this.getLevel().setBlock(this, this, true, true);
         }
     }
 
@@ -353,9 +353,9 @@ public class BlockTurtleEgg extends BlockFlowable {
             return false;
         }
 
-        if (this.level.setBlock(this, this, true, true)) {
+        if (this.getLevel().setBlock(this, this, true, true)) {
             if (down().getId() == BlockID.SAND) {
-                this.level.addParticle(new BoneMealParticle(this));
+                this.getLevel().addParticle(new BoneMealParticle(this));
             }
             return true;
         } else {

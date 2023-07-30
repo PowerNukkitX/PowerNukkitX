@@ -175,7 +175,7 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
             return false;
         }
 
-        if (level.setBlock(pos, growing)) {
+        if (getLevel().setBlock(pos, growing)) {
             increaseRootAge();
             return true;
         }
@@ -217,7 +217,7 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
                 break;
             }
 
-            if (!level.setBlock(pos, ev.getNewState())) {
+            if (!getLevel().setBlock(pos, ev.getNewState())) {
                 break;
             }
 

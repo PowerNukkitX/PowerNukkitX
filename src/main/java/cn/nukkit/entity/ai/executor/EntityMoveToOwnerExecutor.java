@@ -45,7 +45,7 @@ public class EntityMoveToOwnerExecutor implements EntityControl, IBehaviorExecut
             if (target.distanceSquared(entity) <= 9) return false;
 
             // 不允许跨世界
-            if (!target.level.getName().equals(entity.level.getName())) return false;
+            if (!target.getLevel().getName().equals(entity.getLevel().getName())) return false;
 
             if (entity.getPosition().floor().equals(oldTarget)) return false;
 

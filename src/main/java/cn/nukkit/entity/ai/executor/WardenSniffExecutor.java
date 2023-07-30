@@ -35,7 +35,7 @@ public class WardenSniffExecutor implements IBehaviorExecutor {
         this.endTime = Server.getInstance().getTick() + this.duration;
         entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_SNIFFING, true);
         entity.setDataFlag(Entity.DATA_FLAGS_EXTENDED, Entity.DATA_FLAG_SNIFFING, true);
-        entity.level.addSound(entity.clone(), Sound.MOB_WARDEN_SNIFF);
+        entity.getLevel().addSound(entity.clone(), Sound.MOB_WARDEN_SNIFF);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class WardenSniffExecutor implements IBehaviorExecutor {
 
     protected void sniff(EntityIntelligent entity) {
         if (!(entity instanceof EntityWarden warden)) return;
-        for (var other : entity.level.getEntities()) {
+        for (var other : entity.getLevel().getEntities()) {
             if (!warden.isValidAngerEntity(other, true)) continue;
             warden.addEntityAngerValue(other, this.angerAddition);
         }

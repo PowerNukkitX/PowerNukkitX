@@ -60,14 +60,14 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
         this.state = 2;
         this.liveTime = ThreadLocalRandom.current().nextInt(3) + 1;
 
-        if (isEffect && this.level.gameRules.getBoolean(GameRule.DO_FIRE_TICK) && (this.server.getDifficulty() >= 2)) {
+        if (isEffect && this.getLevel().gameRules.getBoolean(GameRule.DO_FIRE_TICK) && (this.server.getDifficulty() >= 2)) {
             Block block = this.getLevelBlock();
             if (block.getId() == 0 || block.getId() == Block.TALL_GRASS) {
                 BlockFire fire = (BlockFire) Block.get(BlockID.FIRE);
                 fire.setX(block.x());
                 fire.setY(block.y());
                 fire.setZ(block.z());
-                fire.level = level;
+                fire.setLevel(getLevel());
                 //                this.getLevel().setBlock(fire, fire, true); WTF???
                 if (fire.isBlockTopFacingSurfaceSolid(fire.down()) || fire.canNeighborBurn()) {
 
@@ -76,8 +76,8 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
                     getServer().getPluginManager().callEvent(e);
 
                     if (!e.isCancelled()) {
-                        level.setBlock(fire, fire, true);
-                        level.scheduleUpdate(
+                        getLevel().setBlock(fire, fire, true);
+                        getLevel().scheduleUpdate(
                                 fire,
                                 fire.tickRate() + ThreadLocalRandom.current().nextInt(10));
                     }
@@ -121,25 +121,25 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
         this.entityBaseTick(tickDiff);
 
         if (this.state == 2) {
-            this.level.addSound(this, Sound.AMBIENT_WEATHER_THUNDER);
-            this.level.addSound(this, Sound.RANDOM_EXPLODE);
+            this.getLevel().addSound(this, Sound.AMBIENT_WEATHER_THUNDER);
+            this.getLevel().addSound(this, Sound.RANDOM_EXPLODE);
 
             Block down = getLevel().getBlock(down());
             if (isVulnerableOxidizable(down)) {
                 Map<Position, OxidizationLevel> changes = new LinkedHashMap<>();
-                changes.put(new Position().setComponents(down).setLevel(level), OxidizationLevel.UNAFFECTED);
+                changes.put(new Position().setComponents(down).setLevel(getLevel()), OxidizationLevel.UNAFFECTED);
 
                 ThreadLocalRandom random = ThreadLocalRandom.current();
                 int scans = random.nextInt(3) + 3;
 
-                Position directionPos = new Position().setLevel(level);
-                Position randomPos = new Position().setLevel(level);
+                Position directionPos = new Position().setLevel(getLevel());
+                Position randomPos = new Position().setLevel(getLevel());
                 Supplier<Vector3> cleanOxidizationAround = () -> {
                     for (int attempt = 0; attempt < 10; attempt++) {
                         randomPos.setX(directionPos.x() + (random.nextInt(3) - 1));
                         randomPos.setY(directionPos.y() + (random.nextInt(3) - 1));
                         randomPos.setZ(directionPos.z() + (random.nextInt(3) - 1));
-                        Block possibility = level.getBlock(randomPos);
+                        Block possibility = getLevel().getBlock(randomPos);
                         if (isVulnerableOxidizable(possibility)) {
                             Position nextPos = randomPos.clone();
                             changes.compute(nextPos, (k, v) -> {
@@ -175,7 +175,7 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
                 }
 
                 for (Map.Entry<Position, OxidizationLevel> entry : changes.entrySet()) {
-                    Block current = level.getBlock(entry.getKey());
+                    Block current = getLevel().getBlock(entry.getKey());
                     Block next = ((Oxidizable) current)
                             .getStateWithOxidizationLevel(entry.getValue())
                             .getBlock(current);
@@ -200,7 +200,7 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
                 this.liveTime--;
                 this.state = 1;
 
-                if (this.isEffect && this.level.gameRules.getBoolean(GameRule.DO_FIRE_TICK)) {
+                if (this.isEffect && this.getLevel().gameRules.getBoolean(GameRule.DO_FIRE_TICK)) {
                     Block block = this.getLevelBlock();
 
                     if (block.getId() == Block.AIR || block.getId() == Block.TALL_GRASS) {
@@ -210,7 +210,7 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
 
                         if (!e.isCancelled()) {
                             Block fire = Block.get(BlockID.FIRE);
-                            this.level.setBlock(block, fire);
+                            this.getLevel().setBlock(block, fire);
                             this.getLevel().scheduleUpdate(fire, fire.tickRate());
                         }
                     }
@@ -223,7 +223,7 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
                 AxisAlignedBB bb = getBoundingBox().grow(3, 3, 3);
                 bb.setMaxX(bb.getMaxX() + 6);
 
-                for (Entity entity : this.level.getCollidingEntities(bb, this)) {
+                for (Entity entity : this.getLevel().getCollidingEntities(bb, this)) {
                     entity.onStruckByLightning(this);
                 }
             }
@@ -241,7 +241,7 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
 
     @Override
     public void spawnToAll() {
-        this.level
+        this.getLevel()
                 .getVibrationManager()
                 .callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.LIGHTNING_STRIKE));
         super.spawnToAll();

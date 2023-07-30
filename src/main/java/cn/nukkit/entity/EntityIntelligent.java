@@ -84,7 +84,7 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
     @Override
     public void asyncPrepare(int currentTick) {
         // 计算是否活跃
-        isActive = level.isHighLightChunk(getChunkX(), getChunkZ());
+        isActive = getLevel().isHighLightChunk(getChunkX(), getChunkZ());
         if (!this.isImmobile()) { // immobile会禁用实体AI
             var behaviorGroup = getBehaviorGroup();
             if (behaviorGroup == null) return;

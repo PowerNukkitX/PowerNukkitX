@@ -19,6 +19,6 @@ public class BlockCheckEvaluator implements IBehaviorEvaluator {
 
     @Override
     public boolean evaluate(EntityIntelligent entity) {
-        return entity.level.getTickCachedBlock(entity.add(offsetVec)).getId() == blockId;
+        return entity.getLevel().getTickCachedBlock(entity.add(offsetVec)).getId() == blockId;
     }
 }

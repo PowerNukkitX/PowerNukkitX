@@ -130,7 +130,7 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             Block support = this.getSideAtLayer(0, getFacing().getOpposite());
             if (!support.isSolid() && support.getId() != COBBLE_WALL) {
-                this.level.useBreakOn(this);
+                this.getLevel().useBreakOn(this);
                 return type;
             }
         }

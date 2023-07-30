@@ -70,7 +70,7 @@ public class MoveToTargetExecutor implements EntityControl, IBehaviorExecutor {
         Vector3 target =
                 entity.getBehaviorGroup().getMemoryStorage().get(memory).clone();
 
-        if (target instanceof Position position && !position.level.getName().equals(entity.level.getName()))
+        if (target instanceof Position position && !position.getLevel().getName().equals(entity.getLevel().getName()))
             return false;
 
         if (enableRangeTest) {

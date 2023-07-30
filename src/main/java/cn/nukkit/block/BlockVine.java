@@ -215,7 +215,7 @@ public class BlockVine extends BlockTransparentMeta {
             }
             int meta = getMetaFromFaces(faces);
             if (meta != this.getDamage()) {
-                this.level.setBlock(this, Block.get(VINE, meta), true);
+                this.getLevel().setBlock(this, Block.get(VINE, meta), true);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {
@@ -297,7 +297,7 @@ public class BlockVine extends BlockTransparentMeta {
         for (int x = blockX - 4; x <= blockX + 4; x++) {
             for (int z = blockZ - 4; z <= blockZ + 4; z++) {
                 for (int y = blockY - 1; y <= blockY + 1; y++) {
-                    if (this.level.getBlock(x, y, z).getId() == VINE) {
+                    if (this.getLevel().getBlock(x, y, z).getId() == VINE) {
                         if (++count >= 5) return false;
                     }
                 }
@@ -315,9 +315,9 @@ public class BlockVine extends BlockTransparentMeta {
         } else {
             event = new BlockGrowEvent(block, vine);
         }
-        this.level.getServer().getPluginManager().callEvent(event);
+        this.getLevel().getServer().getPluginManager().callEvent(event);
         if (!event.isCancelled()) {
-            this.level.setBlock(block, vine, true);
+            this.getLevel().setBlock(block, vine, true);
         }
     }
 

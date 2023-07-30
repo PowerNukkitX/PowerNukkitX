@@ -2803,7 +2803,7 @@ public class Level implements ChunkManager, Metadatable {
         block.setX(x);
         block.setY(y);
         block.setZ(z);
-        block.level = this;
+        block.setLevel(this);
         block.layer = layer;
 
         Block blockPrevious = statePrevious.getBlockRepairing(this, x, y, z, layer);

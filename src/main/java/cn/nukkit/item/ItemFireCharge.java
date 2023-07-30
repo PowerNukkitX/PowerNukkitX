@@ -50,7 +50,7 @@ public class ItemFireCharge extends Item {
             fire.setX(block.x());
             fire.setY(block.y());
             fire.setZ(block.z());
-            fire.level = level;
+            fire.setLevel(level);
 
             if (fire.isBlockTopFacingSurfaceSolid(fire.down()) || fire.canNeighborBurn()) {
                 BlockIgniteEvent e =

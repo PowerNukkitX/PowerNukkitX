@@ -47,12 +47,12 @@ public class BlockDirtWithRoots extends BlockSolid {
         if (!this.up().canBeReplaced()) {
             return false;
         }
-        if (item.isFertilizer() && this.level.getBlock(vector).getId() == BlockID.AIR) {
+        if (item.isFertilizer() && this.getLevel().getBlock(vector).getId() == BlockID.AIR) {
             if (player != null && (player.gamemode & 0x01) == 0) {
                 item.count--;
             }
-            this.level.addParticle(new BoneMealParticle(this));
-            this.level.setBlock(vector, Block.get(BlockID.HANGING_ROOTS));
+            this.getLevel().addParticle(new BoneMealParticle(this));
+            this.getLevel().setBlock(vector, Block.get(BlockID.HANGING_ROOTS));
             return true;
         }
         if (item.isHoe()) {

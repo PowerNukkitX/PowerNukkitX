@@ -283,7 +283,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
 
     @Override
     public boolean execute(int chain) {
-        if (!this.level.gameRules.getBoolean(GameRule.COMMAND_BLOCKS_ENABLED)) {
+        if (!this.getLevel().gameRules.getBoolean(GameRule.COMMAND_BLOCKS_ENABLED)) {
             return false;
         }
         if (this.getLevelBlock()

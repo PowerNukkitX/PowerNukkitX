@@ -103,7 +103,7 @@ public class TeleportCommand extends VanillaCommand {
                     return 0;
                 }
                 Location victim = sender.getLocation();
-                Location target = destination.get(0).setYaw(victim.getYaw()).setPitch(victim.getPitch());
+                Location target = destination.get(0).setYaw(victim.yaw()).setPitch(victim.pitch());
                 boolean checkForBlocks = false;
                 if (list.hasResult(1)) {
                     checkForBlocks = list.getResult(1);
@@ -162,7 +162,7 @@ public class TeleportCommand extends VanillaCommand {
                             && !target.add(0, 1, 0).getLevelBlock().isSolid()) {
                         for (Entity victim : victims) {
                             victim.teleport(
-                                    target.getLocation().setYaw(victim.getYaw()).setPitch(victim.getPitch()));
+                                    target.getLocation().setYaw(victim.yaw()).setPitch(victim.pitch()));
                         }
                         log.addSuccess("commands.tp.success", sb.toString(), target.getName());
                     } else {
@@ -173,7 +173,7 @@ public class TeleportCommand extends VanillaCommand {
                 } else {
                     for (Entity victim : victims) {
                         victim.teleport(
-                                target.getLocation().setYaw(victim.getYaw()).setPitch(victim.getPitch()));
+                                target.getLocation().setYaw(victim.yaw()).setPitch(victim.pitch()));
                     }
                     log.addSuccess("commands.tp.success", sb.toString(), target.getName());
                 }
@@ -187,11 +187,11 @@ public class TeleportCommand extends VanillaCommand {
                     return 0;
                 }
                 Position pos = list.getResult(1);
-                double yRot = sender.getLocation().pitch;
+                double yRot = sender.getLocation().pitch();
                 if (list.hasResult(2)) {
                     yRot = list.getResult(2);
                 }
-                double xRot = sender.getLocation().yaw;
+                double xRot = sender.getLocation().yaw();
                 if (list.hasResult(3)) {
                     xRot = list.getResult(3);
                 }
@@ -203,7 +203,7 @@ public class TeleportCommand extends VanillaCommand {
                 for (Entity victim : victims) {
                     sb.append(victim.getName()).append(" ");
                 }
-                Location target = Location.fromObject(pos, pos.level, xRot, yRot);
+                Location target = Location.fromObject(pos, pos.getLevel(), xRot, yRot);
                 if (checkForBlocks) {
                     if (!target.getLevelBlock().isSolid()
                             && !target.add(0, 1, 0).getLevelBlock().isSolid()) {
@@ -252,7 +252,7 @@ public class TeleportCommand extends VanillaCommand {
                 }
                 BVector3 bv = BVector3.fromPos(new Vector3(
                         lookAtPosition.x() - pos.x(), lookAtPosition.y() - pos.y(), lookAtPosition.z() - pos.z()));
-                Location target = Location.fromObject(pos, pos.level, bv.getYaw(), bv.getPitch());
+                Location target = Location.fromObject(pos, pos.getLevel(), bv.getYaw(), bv.getPitch());
                 if (checkForBlocks) {
                     if (!target.getLevelBlock().isSolid()
                             && !target.add(0, 1, 0).getLevelBlock().isSolid()) {
@@ -314,7 +314,7 @@ public class TeleportCommand extends VanillaCommand {
                 }
                 BVector3 bv = BVector3.fromPos(new Vector3(
                         lookAtPosition.x() - pos.x(), lookAtPosition.y() - pos.y(), lookAtPosition.z() - pos.z()));
-                Location target = Location.fromObject(pos, pos.level, bv.getYaw(), bv.getPitch());
+                Location target = Location.fromObject(pos, pos.getLevel(), bv.getYaw(), bv.getPitch());
                 if (checkForBlocks) {
                     if (!target.getLevelBlock().isSolid()
                             && !target.add(0, 1, 0).getLevelBlock().isSolid()) {
@@ -352,11 +352,11 @@ public class TeleportCommand extends VanillaCommand {
                     return 0;
                 }
                 Position pos = list.getResult(0);
-                double yRot = sender.getLocation().pitch;
+                double yRot = sender.getLocation().pitch();
                 if (list.hasResult(1)) {
                     yRot = list.getResult(1);
                 }
-                double xRot = sender.getLocation().yaw;
+                double xRot = sender.getLocation().yaw();
                 if (list.hasResult(2)) {
                     xRot = list.getResult(2);
                 }
@@ -364,7 +364,7 @@ public class TeleportCommand extends VanillaCommand {
                 if (list.hasResult(3)) {
                     checkForBlocks = list.getResult(3);
                 }
-                Location target = Location.fromObject(pos, pos.level, xRot, yRot);
+                Location target = Location.fromObject(pos, pos.getLevel(), xRot, yRot);
                 if (checkForBlocks) {
                     if (!target.getLevelBlock().isSolid()
                             && !target.add(0, 1, 0).getLevelBlock().isSolid()) {
@@ -405,7 +405,7 @@ public class TeleportCommand extends VanillaCommand {
                 }
                 BVector3 bv = BVector3.fromPos(new Vector3(
                         lookAtPosition.x() - pos.x(), lookAtPosition.y() - pos.y(), lookAtPosition.z() - pos.z()));
-                Location target = Location.fromObject(pos, pos.level, bv.getYaw(), bv.getPitch());
+                Location target = Location.fromObject(pos, pos.getLevel(), bv.getYaw(), bv.getPitch());
                 if (checkForBlocks) {
                     if (!target.getLevelBlock().isSolid()
                             && !target.add(0, 1, 0).getLevelBlock().isSolid()) {
@@ -458,7 +458,7 @@ public class TeleportCommand extends VanillaCommand {
                 }
                 BVector3 bv = BVector3.fromPos(new Vector3(
                         lookAtPosition.x() - pos.x(), lookAtPosition.y() - pos.y(), lookAtPosition.z() - pos.z()));
-                Location target = Location.fromObject(pos, pos.level, bv.getYaw(), bv.getPitch());
+                Location target = Location.fromObject(pos, pos.getLevel(), bv.getYaw(), bv.getPitch());
                 if (checkForBlocks) {
                     if (!target.getLevelBlock().isSolid()
                             && !target.add(0, 1, 0).getLevelBlock().isSolid()) {

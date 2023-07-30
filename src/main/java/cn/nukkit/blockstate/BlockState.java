@@ -712,7 +712,7 @@ public final class BlockState implements Serializable, IBlockState {
             block.setY(y);
             block.setZ(z);
             block.layer = layer;
-            block.level = level;
+            block.setLevel(level);
             return block;
         }
 

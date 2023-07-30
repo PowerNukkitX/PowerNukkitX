@@ -38,8 +38,8 @@ public abstract class ProjectileItem extends Item {
                         .add(new DoubleTag("", directionVector.y()))
                         .add(new DoubleTag("", directionVector.z())))
                 .putList(new ListTag<FloatTag>("Rotation")
-                        .add(new FloatTag("", (float) player.yaw))
-                        .add(new FloatTag("", (float) player.pitch)));
+                        .add(new FloatTag("", (float) player.yaw()))
+                        .add(new FloatTag("", (float) player.pitch())));
 
         this.correctNBT(nbt);
 

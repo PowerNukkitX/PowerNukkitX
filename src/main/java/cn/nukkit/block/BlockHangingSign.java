@@ -124,15 +124,15 @@ public abstract class BlockHangingSign extends BlockSignBase implements BlockEnt
             return false;
         }
 
-        Block layer0 = level.getBlock(this, 0);
-        Block layer1 = level.getBlock(this, 1);
+        Block layer0 = getLevel().getBlock(this, 0);
+        Block layer1 = getLevel().getBlock(this, 1);
 
         CompoundTag nbt = new CompoundTag();
 
         if (face == BlockFace.DOWN) {
             this.setPropertyValue(CommonBlockProperties.HANGING, true);
             CompassRoseDirection direction = CommonBlockProperties.GROUND_SIGN_DIRECTION.getValueForMeta(
-                    (int) Math.floor((((player != null ? player.yaw : 0) + 180) * 16 / 360) + 0.5) & 0x0f);
+                    (int) Math.floor((((player != null ? player.yaw() : 0) + 180) * 16 / 360) + 0.5) & 0x0f);
             if ((player != null && player.isSneaking())
                     || target instanceof BlockThin
                     || target instanceof BlockChain
@@ -162,8 +162,8 @@ public abstract class BlockHangingSign extends BlockSignBase implements BlockEnt
             return true;
         } catch (Exception e) {
             log.warn("Failed to create block entity {} at {}", getBlockEntityType(), getLocation(), e);
-            level.setBlock(layer0, 0, layer0, true);
-            level.setBlock(layer1, 0, layer1, true);
+            getLevel().setBlock(layer0, 0, layer0, true);
+            getLevel().setBlock(layer1, 0, layer1, true);
             return false;
         }
     }

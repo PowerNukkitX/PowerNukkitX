@@ -136,12 +136,12 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
         if (fillLevel == getFillLevel()) return;
         setIntValue(FILL_LEVEL, fillLevel);
         if (fillLevel > getFillLevel()) {
-            this.level
+            this.getLevel()
                     .getVibrationManager()
                     .callVibrationEvent(new VibrationEvent(
                             player != null ? player : this, this.add(0.5, 0.5, 0.5), VibrationType.FLUID_PLACE));
         } else {
-            this.level
+            this.getLevel()
                     .getVibrationManager()
                     .callVibrationEvent(new VibrationEvent(
                             player != null ? player : this, this.add(0.5, 0.5, 0.5), VibrationType.FLUID_PICKUP));
@@ -192,11 +192,11 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
                             this,
                             item,
                             MinecraftItemID.WATER_BUCKET.get(1, bucket.getCompoundTag()));
-                    this.level.getServer().getPluginManager().callEvent(ev);
+                    this.getLevel().getServer().getPluginManager().callEvent(ev);
                     if (!ev.isCancelled()) {
                         replaceBucket(bucket, player, ev.getItem());
                         this.setFillLevel(FILL_LEVEL.getMinValue(), player); // empty
-                        this.level.setBlock(this, this, true);
+                        this.getLevel().setBlock(this, this, true);
                         cauldron.clearCustomColor();
                         this.getLevel()
                                 .addLevelEvent(
@@ -210,7 +210,7 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
 
                     PlayerBucketEmptyEvent ev = new PlayerBucketEmptyEvent(
                             player, this, null, this, item, MinecraftItemID.BUCKET.get(1, bucket.getCompoundTag()));
-                    this.level.getServer().getPluginManager().callEvent(ev);
+                    this.getLevel().getServer().getPluginManager().callEvent(ev);
                     if (!ev.isCancelled()) {
                         if (player.isSurvival() || player.isAdventure()) {
                             replaceBucket(bucket, player, ev.getItem());
@@ -221,19 +221,19 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
                             this.setFillLevel(FILL_LEVEL.getMaxValue(), player); // fill
                             // default liquid type is water so we don't need to set it
                             cauldron.clearCustomColor();
-                            this.level.setBlock(this, this, true);
+                            this.getLevel().setBlock(this, this, true);
                             this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.CAULDRON_FILLWATER);
                         } else if (bucket.isPowderSnow()) { // powder snow bucket
                             this.setFillLevel(FILL_LEVEL.getMaxValue(), player); // fill
                             this.setCauldronLiquid(CauldronLiquid.POWDER_SNOW);
                             cauldron.clearCustomColor();
-                            this.level.setBlock(this, this, true);
+                            this.getLevel().setBlock(this, this, true);
                             // todo: add the sound of powder snow (I can't find it)
                         } else { // lava bucket
                             if (isEmpty()) {
                                 this.setCauldronLiquid(CauldronLiquid.LAVA);
                                 this.setFillLevel(FILL_LEVEL.getMaxValue(), player);
-                                this.level.setBlock(this, this, true);
+                                this.getLevel().setBlock(this, this, true);
                                 cauldron.clearCustomColor();
                                 cauldron.setType(BlockEntityCauldron.PotionType.LAVA);
                                 this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.BUCKET_EMPTY_LAVA);
@@ -266,7 +266,7 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
                             (int) Math.round(Math.sqrt(color.getBlue() * current.getBlue()) * 0.965));
                     cauldron.setCustomColor(mixed);
                 }
-                this.level.addSound(this.add(0.5, 0.5, 0.5), Sound.CAULDRON_ADDDYE);
+                this.getLevel().addSound(this.add(0.5, 0.5, 0.5), Sound.CAULDRON_ADDDYE);
 
                 break;
 
@@ -286,8 +286,8 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
                     player.getInventory().setItemInHand(item);
 
                     setFillLevel(FILL_LEVEL.clamp(getFillLevel() - 2), player);
-                    this.level.setBlock(this, this, true, true);
-                    this.level.addSound(add(0.5, 0.5, 0.5), Sound.CAULDRON_DYEARMOR);
+                    this.getLevel().setBlock(this, this, true, true);
+                    this.getLevel().addSound(add(0.5, 0.5, 0.5), Sound.CAULDRON_DYEARMOR);
                 } else {
                     if (!item.hasCompoundTag()) {
                         break;
@@ -303,7 +303,7 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
                     player.getInventory().setItemInHand(item);
 
                     setFillLevel(FILL_LEVEL.clamp(getFillLevel() - 2), player);
-                    this.level.setBlock(this, this, true, true);
+                    this.getLevel().setBlock(this, this, true, true);
                     this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.CAULDRON_TAKEWATER);
                 }
 
@@ -336,11 +336,11 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
                 cauldron.spawnToAll();
 
                 setFillLevel(FILL_LEVEL.clamp(getFillLevel() + 2), player);
-                this.level.setBlock(this, this, true);
+                this.getLevel().setBlock(this, this, true);
 
                 consumePotion(item, player);
 
-                this.level.addLevelEvent(
+                this.getLevel().addLevelEvent(
                         this.add(0.5, 0.375 + getFillLevel() * 0.125, 0.5),
                         LevelEventPacket.EVENT_CAULDRON_FILL_POTION);
                 break;
@@ -366,7 +366,7 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
                     cauldron.setPotionId(-1); // reset potion
                     cauldron.clearCustomColor();
                 }
-                this.level.setBlock(this, this, true);
+                this.getLevel().setBlock(this, this, true);
 
                 boolean consumeBottle = player.isSurvival() || player.isAdventure();
                 if (consumeBottle && item.getCount() == 1) {
@@ -388,7 +388,7 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
                     }
                 }
 
-                this.level.addLevelEvent(
+                this.getLevel().addLevelEvent(
                         this.add(0.5, 0.375 + getFillLevel() * 0.125, 0.5),
                         LevelEventPacket.EVENT_CAULDRON_TAKE_POTION);
                 break;
@@ -424,7 +424,7 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
                 }
 
                 setFillLevel(FILL_LEVEL.clamp(getFillLevel() - 2), player);
-                this.level.setBlock(this, this, true, true);
+                this.getLevel().setBlock(this, this, true, true);
                 this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.CAULDRON_TAKEWATER);
 
                 break;
@@ -450,18 +450,18 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
                                 current.getBlue() + (color.getBlue() - current.getBlue()) / 2);
                         cauldron.setCustomColor(mixed);
                     }
-                    this.level.addSound(this.add(0.5, 0.5, 0.5), Sound.CAULDRON_ADDDYE);
+                    this.getLevel().addSound(this.add(0.5, 0.5, 0.5), Sound.CAULDRON_ADDDYE);
                 } else {
                     return true;
                 }
         }
 
-        this.level.updateComparatorOutputLevel(this);
+        this.getLevel().updateComparatorOutputLevel(this);
         return true;
     }
 
     public boolean onLavaActivate(@NotNull Item item, Player player) {
-        BlockEntity be = this.level.getBlockEntity(this);
+        BlockEntity be = this.getLevel().getBlockEntity(this);
 
         if (!(be instanceof BlockEntityCauldron cauldron)) {
             return false;
@@ -485,11 +485,11 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
                             this,
                             item,
                             MinecraftItemID.LAVA_BUCKET.get(1, bucket.getCompoundTag()));
-                    this.level.getServer().getPluginManager().callEvent(ev);
+                    this.getLevel().getServer().getPluginManager().callEvent(ev);
                     if (!ev.isCancelled()) {
                         replaceBucket(bucket, player, ev.getItem());
                         this.setFillLevel(FILL_LEVEL.getMinValue(), player); // empty
-                        this.level.setBlock(this, new BlockCauldron(0), true);
+                        this.getLevel().setBlock(this, new BlockCauldron(0), true);
                         cauldron.clearCustomColor();
                         this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.BUCKET_FILL_LAVA);
                     }
@@ -500,7 +500,7 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
 
                     PlayerBucketEmptyEvent ev = new PlayerBucketEmptyEvent(
                             player, this, null, this, item, MinecraftItemID.BUCKET.get(1, bucket.getCompoundTag()));
-                    this.level.getServer().getPluginManager().callEvent(ev);
+                    this.getLevel().getServer().getPluginManager().callEvent(ev);
                     if (!ev.isCancelled()) {
                         replaceBucket(bucket, player, ev.getItem());
 
@@ -509,11 +509,11 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
                         } else if (bucket.isLava()) { // lava bucket
                             this.setFillLevel(FILL_LEVEL.getMaxValue(), player); // fill
                             cauldron.clearCustomColor();
-                            this.level.setBlock(this, this, true);
+                            this.getLevel().setBlock(this, this, true);
                             this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.BUCKET_EMPTY_LAVA);
                         } else {
                             if (isEmpty()) {
-                                this.level.setBlock(this, new BlockCauldron(6), true, true);
+                                this.getLevel().setBlock(this, new BlockCauldron(6), true, true);
                                 cauldron.clearCustomColor();
                                 this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.CAULDRON_FILLWATER);
                             } else {
@@ -542,7 +542,7 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
                 return true;
         }
 
-        this.level.updateComparatorOutputLevel(this);
+        this.getLevel().updateComparatorOutputLevel(this);
         return true;
     }
 
@@ -597,8 +597,8 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
         cauldron.setPotionId(-1); // reset potion
         cauldron.setType(BlockEntityCauldron.PotionType.NORMAL);
         cauldron.clearCustomColor();
-        this.level.setBlock(this, new BlockCauldron(0), true);
-        this.level.addSound(this.add(0.5, 0, 0.5), Sound.RANDOM_FIZZ);
+        this.getLevel().setBlock(this, new BlockCauldron(0), true);
+        this.getLevel().addSound(this.add(0.5, 0, 0.5), Sound.RANDOM_FIZZ);
         for (int i = 0; i < 8; ++i) {
             this.getLevel().addParticle(new SmokeParticle(add(Math.random(), 1.2, Math.random())));
         }

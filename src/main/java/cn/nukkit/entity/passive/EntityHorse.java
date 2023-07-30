@@ -270,7 +270,7 @@ public class EntityHorse extends EntityAnimal
         if (this.getRider() == null
                 || this.getOwner() == null
                 || this.getSaddle().isNull()) {
-            isActive = level.isHighLightChunk(getChunkX(), getChunkZ());
+            isActive = getLevel().isHighLightChunk(getChunkX(), getChunkZ());
             if (!this.isImmobile()) {
                 var behaviorGroup = getBehaviorGroup();
                 if (behaviorGroup == null) return;
@@ -283,8 +283,8 @@ public class EntityHorse extends EntityAnimal
                 behaviorGroup.applyController(this);
                 if (EntityAI.checkDebugOption(EntityAI.DebugOption.BEHAVIOR)) behaviorGroup.debugTick(this);
             }
-            this.needsRecalcMovement = this.level.tickRateOptDelay == 1
-                    || ((currentTick + tickSpread) & (this.level.tickRateOptDelay - 1)) == 0;
+            this.needsRecalcMovement = this.getLevel().tickRateOptDelay == 1
+                    || ((currentTick + tickSpread) & (this.getLevel().tickRateOptDelay - 1)) == 0;
             this.calculateOffsetBoundingBox();
             if (!this.isImmobile()) {
                 handleGravity();
@@ -306,7 +306,7 @@ public class EntityHorse extends EntityAnimal
         }
 
         Location floorLocation = this.floor();
-        Block down = this.level.getBlock(floorLocation.down());
+        Block down = this.getLevel().getBlock(floorLocation.down());
 
         EntityFallEvent event = new EntityFallEvent(this, down, fallDistance);
         this.server.getPluginManager().callEvent(event);
@@ -315,7 +315,7 @@ public class EntityHorse extends EntityAnimal
         }
         fallDistance = event.getFallDistance();
 
-        if ((!this.isPlayer || level.getGameRules().getBoolean(GameRule.FALL_DAMAGE)) && down.useDefaultFallDamage()) {
+        if ((!this.isPlayer || getLevel().getGameRules().getBoolean(GameRule.FALL_DAMAGE)) && down.useDefaultFallDamage()) {
             int jumpBoost = this.hasEffect(Effect.JUMP_BOOST)
                     ? (getEffect(Effect.JUMP_BOOST).getAmplifier() + 1)
                     : 0;
@@ -336,16 +336,16 @@ public class EntityHorse extends EntityAnimal
                 var farmEvent = new FarmLandDecayEvent(this, down);
                 this.server.getPluginManager().callEvent(farmEvent);
                 if (farmEvent.isCancelled()) return;
-                this.level.setBlock(down, new BlockDirt(), false, true);
+                this.getLevel().setBlock(down, new BlockDirt(), false, true);
                 return;
             }
 
-            Block floor = this.level.getTickCachedBlock(floorLocation);
+            Block floor = this.getLevel().getTickCachedBlock(floorLocation);
             if (floor instanceof BlockTurtleEgg) {
                 if (onPhysicalInteraction(floor, ThreadLocalRandom.current().nextInt(10) >= 3)) {
                     return;
                 }
-                this.level.useBreakOn(this, null, null, true);
+                this.getLevel().useBreakOn(this, null, null, true);
             }
         }
     }
@@ -378,8 +378,8 @@ public class EntityHorse extends EntityAnimal
         this.setMoveTarget(null);
         this.setLookTarget(null);
         this.move(clientLoc.x() - this.x(), (clientLoc.y() - 0.5) - this.y(), clientLoc.z() - this.z());
-        this.yaw = clientLoc.yaw;
-        this.headYaw = clientLoc.headYaw;
+        this.setYaw(clientLoc.yaw());
+        this.setHeadYaw(clientLoc.headYaw());
         broadcastMovement();
     }
 
@@ -547,9 +547,9 @@ public class EntityHorse extends EntityAnimal
             addEntity.id = customEntity.getDefinition().getStringId();
         }
         addEntity.entityRuntimeId = this.getId();
-        addEntity.yaw = (float) this.yaw;
-        addEntity.headYaw = (float) this.yaw;
-        addEntity.pitch = (float) this.pitch;
+        addEntity.yaw = (float) this.yaw();
+        addEntity.headYaw = (float) this.yaw();
+        addEntity.pitch = (float) this.pitch();
         addEntity.x = (float) this.x();
         addEntity.y = (float) this.y() + this.getBaseOffset();
         addEntity.z = (float) this.z();

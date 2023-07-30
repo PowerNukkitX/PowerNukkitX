@@ -90,7 +90,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!BlockLever.isSupportValid(down(), BlockFace.UP)) {
-                level.useBreakOn(this);
+                getLevel().useBreakOn(this);
                 return type;
             }
         }

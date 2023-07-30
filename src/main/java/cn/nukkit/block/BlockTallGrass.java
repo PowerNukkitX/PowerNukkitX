@@ -139,12 +139,12 @@ public class BlockTallGrass extends BlockFlowable implements BlockFlowerPot.Flow
                     doublePlant.setDoublePlantType(type);
                     doublePlant.setTopHalf(false);
 
-                    this.level.addParticle(new BoneMealParticle(this));
-                    this.level.setBlock(this, doublePlant, true, false);
+                    this.getLevel().addParticle(new BoneMealParticle(this));
+                    this.getLevel().setBlock(this, doublePlant, true, false);
 
                     doublePlant.setTopHalf(true);
-                    this.level.setBlock(up, doublePlant, true);
-                    this.level.updateAround(this);
+                    this.getLevel().setBlock(up, doublePlant, true);
+                    this.getLevel().updateAround(this);
                 }
             }
 

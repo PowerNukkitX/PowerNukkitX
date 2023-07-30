@@ -58,7 +58,7 @@ public class BlockRailPowered extends BlockRail implements RedstoneComponent {
                 return 0; // Already broken
             }
 
-            if (!this.level.getServer().isRedstoneEnabled()) {
+            if (!this.getLevel().getServer().isRedstoneEnabled()) {
                 return 0;
             }
             boolean wasPowered = isActive();
@@ -108,7 +108,7 @@ public class BlockRailPowered extends BlockRail implements RedstoneComponent {
         int dz = pos.getFloorZ();
         // First: get the base block
         BlockRail block;
-        Block block2 = level.getBlock(new Vector3(dx, dy, dz));
+        Block block2 = getLevel().getBlock(new Vector3(dx, dy, dz));
 
         // Second: check if the rail is Powered rail
         if (Rail.isRailBlock(block2)) {
@@ -184,7 +184,7 @@ public class BlockRailPowered extends BlockRail implements RedstoneComponent {
 
     @PowerNukkitDifference(info = "Using new method for checking if powered", since = "1.4.0.0-PN")
     protected boolean canPowered(Vector3 pos, Rail.Orientation state, int power, boolean relative) {
-        Block block = level.getBlock(pos);
+        Block block = getLevel().getBlock(pos);
         // What! My block is air??!! Impossible! XD
         if (!(block instanceof BlockRailPowered)) {
             return false;

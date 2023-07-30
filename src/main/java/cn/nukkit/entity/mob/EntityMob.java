@@ -86,7 +86,7 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
 
     public void spawnToAll() {
         if (this.chunk != null && !this.closed) {
-            Collection<Player> chunkPlayers = this.level
+            Collection<Player> chunkPlayers = this.getLevel()
                     .getChunkPlayers(this.chunk.getX(), this.chunk.getZ())
                     .values();
             for (Player chunkPlayer : chunkPlayers) {

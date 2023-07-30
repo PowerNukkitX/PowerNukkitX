@@ -272,7 +272,7 @@ public class BlockBell extends BlockTransparentMeta
         }
 
         BellRingEvent event = new BellRingEvent(this, cause, causeEntity);
-        this.level.getServer().getPluginManager().callEvent(event);
+        this.getLevel().getServer().getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             return false;
         }
@@ -344,19 +344,19 @@ public class BlockBell extends BlockTransparentMeta
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!checkSupport()) {
-                this.level.useBreakOn(this);
+                this.getLevel().useBreakOn(this);
             }
             return type;
-        } else if (type == Level.BLOCK_UPDATE_REDSTONE && this.level.getServer().isRedstoneEnabled()) {
+        } else if (type == Level.BLOCK_UPDATE_REDSTONE && this.getLevel().getServer().isRedstoneEnabled()) {
             if (this.isGettingPower()) {
                 if (!isToggled()) {
                     setToggled(true);
-                    this.level.setBlock(this, this, true, true);
+                    this.getLevel().setBlock(this, this, true, true);
                     ring(null, BellRingEvent.RingCause.REDSTONE);
                 }
             } else if (isToggled()) {
                 setToggled(false);
-                this.level.setBlock(this, this, true, true);
+                this.getLevel().setBlock(this, this, true, true);
             }
             return type;
         }
@@ -374,12 +374,12 @@ public class BlockBell extends BlockTransparentMeta
                 return true;
             }
 
-            if (this.level.isSidePowered(b, side)) {
+            if (this.getLevel().isSidePowered(b, side)) {
                 return true;
             }
         }
 
-        return this.level.isBlockPowered(this.getLocation());
+        return this.getLevel().isBlockPowered(this.getLocation());
     }
 
     @Override
@@ -429,8 +429,8 @@ public class BlockBell extends BlockTransparentMeta
         ring(projectile, BellRingEvent.RingCause.PROJECTILE);
         if (projectile.isOnFire()
                 && projectile instanceof EntityArrow
-                && level.getBlock(projectile).getId() == BlockID.AIR) {
-            level.setBlock(projectile, Block.get(BlockID.FIRE), true);
+                && getLevel().getBlock(projectile).getId() == BlockID.AIR) {
+            getLevel().setBlock(projectile, Block.get(BlockID.FIRE), true);
         }
         return true;
     }

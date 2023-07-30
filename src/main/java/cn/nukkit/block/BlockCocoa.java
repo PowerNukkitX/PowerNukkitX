@@ -164,7 +164,7 @@ public class BlockCocoa extends BlockTransparentMeta implements Faceable {
                 };
 
                 this.setDamage(faces[face.getIndex()]);
-                this.level.setBlock(block, this, true, true);
+                this.getLevel().setBlock(block, this, true, true);
                 return true;
             }
         }
@@ -209,7 +209,7 @@ public class BlockCocoa extends BlockTransparentMeta implements Faceable {
                 if (!this.grow()) {
                     return false;
                 }
-                this.level.addParticle(new BoneMealParticle(this));
+                this.getLevel().addParticle(new BoneMealParticle(this));
 
                 if (player != null && (player.gamemode & 0x01) == 0) {
                     item.count--;

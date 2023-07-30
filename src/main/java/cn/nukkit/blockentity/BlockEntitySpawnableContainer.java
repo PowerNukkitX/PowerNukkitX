@@ -55,7 +55,7 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
     @Override
     public void onBreak() {
         for (Item content : inventory.getContents().values()) {
-            level.dropItem(this, content);
+            getLevel().dropItem(this, content);
         }
         inventory.clearAll(); // Stop items from being moved around by another player in the inventory
     }

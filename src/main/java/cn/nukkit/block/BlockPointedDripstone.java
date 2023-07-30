@@ -191,8 +191,8 @@ public class BlockPointedDripstone extends BlockFallableMeta {
         int placeX = block.getFloorX();
         int placeY = block.getFloorY();
         int placeZ = block.getFloorZ();
-        int upBlockID = level.getBlockIdAt(placeX, placeY + 1, placeZ);
-        int downBlockID = level.getBlockIdAt(placeX, placeY - 1, placeZ);
+        int upBlockID = getLevel().getBlockIdAt(placeX, placeY + 1, placeZ);
+        int downBlockID = getLevel().getBlockIdAt(placeX, placeY - 1, placeZ);
         if (upBlockID == AIR && downBlockID == AIR) return false;
         /*    "up" define is exist drip stone in block above,"down" is Similarly.
               up   down
@@ -211,7 +211,7 @@ public class BlockPointedDripstone extends BlockFallableMeta {
                 setBlockThicknessStateAt(placeX, placeY + 1, placeZ, true, "merge");
             }
             case 2 -> {
-                if (level.getBlockIdAt(placeX, placeY - 1, placeZ) != AIR) {
+                if (getLevel().getBlockIdAt(placeX, placeY - 1, placeZ) != AIR) {
                     if (face.equals(BlockFace.UP)) {
                         setBlockThicknessStateAt(placeX, placeY + 1, placeZ, true, "merge");
                         setMergeBlock(placeX, placeY, placeZ, false);
@@ -232,7 +232,7 @@ public class BlockPointedDripstone extends BlockFallableMeta {
                 return true;
             }
             case 4 -> {
-                if (level.getBlockIdAt(placeX, placeY + 1, placeZ) != AIR) {
+                if (getLevel().getBlockIdAt(placeX, placeY + 1, placeZ) != AIR) {
                     if (face.equals(BlockFace.DOWN)) {
                         setMergeBlock(placeX, placeY, placeZ, true);
                         setBlockThicknessStateAt(placeX, placeY - 1, placeZ, false, "merge");
@@ -256,7 +256,7 @@ public class BlockPointedDripstone extends BlockFallableMeta {
         int x = this.getFloorX();
         int y = this.getFloorY();
         int z = this.getFloorZ();
-        level.setBlock(x, y, z, Block.get(AIR), true, true);
+        getLevel().setBlock(x, y, z, Block.get(AIR), true, true);
         boolean hanging = getPropertyValue(HANGING);
         String thickness = getPropertyValue(DRIPSTONE_THICKNESS);
         if (thickness.equals("merge")) {
@@ -269,7 +269,7 @@ public class BlockPointedDripstone extends BlockFallableMeta {
             if (length > 0) {
                 Block downBlock = down();
                 for (int i = 0; i <= length - 1; ++i) {
-                    level.setBlock(downBlock.down(i), Block.get(AIR), false, false);
+                    getLevel().setBlock(downBlock.down(i), Block.get(AIR), false, false);
                 }
                 for (int i = length - 1; i >= 0; --i) {
                     place(null, downBlock.down(i), null, BlockFace.DOWN, 0, 0, 0, null);
@@ -281,7 +281,7 @@ public class BlockPointedDripstone extends BlockFallableMeta {
             if (length > 0) {
                 Block upBlock = up();
                 for (int i = 0; i <= length - 1; ++i) {
-                    level.setBlock(upBlock.up(i), Block.get(AIR), false, false);
+                    getLevel().setBlock(upBlock.up(i), Block.get(AIR), false, false);
                 }
                 for (int i = length - 1; i >= 0; --i) {
                     place(null, upBlock.up(i), null, BlockFace.DOWN, 0, 0, 0, null);
@@ -294,7 +294,7 @@ public class BlockPointedDripstone extends BlockFallableMeta {
 
     @Override
     public void onEntityFallOn(Entity entity, float fallDistance) {
-        if (this.level.gameRules.getBoolean(GameRule.FALL_DAMAGE)
+        if (this.getLevel().gameRules.getBoolean(GameRule.FALL_DAMAGE)
                 && this.getPropertyValue(DRIPSTONE_THICKNESS).equals("tip")
                 && !this.getPropertyValue(HANGING)) {
             int jumpBoost = entity.hasEffect(Effect.JUMP_BOOST)
@@ -335,7 +335,7 @@ public class BlockPointedDripstone extends BlockFallableMeta {
         this.setPropertyValue(DRIPSTONE_THICKNESS, thickness);
         this.setPropertyValue(HANGING, hanging);
         blockState = this.getCurrentState();
-        level.setBlockStateAt(x, y, z, blockState);
+        getLevel().setBlockStateAt(x, y, z, blockState);
     }
 
     @PowerNukkitXOnly
@@ -343,14 +343,14 @@ public class BlockPointedDripstone extends BlockFallableMeta {
     protected int getPointedDripStoneLength(int x, int y, int z, boolean hanging) {
         if (hanging) {
             for (int j = y + 1; j < 320; ++j) {
-                int blockId = level.getBlockIdAt(x, j, z);
+                int blockId = getLevel().getBlockIdAt(x, j, z);
                 if (blockId != POINTED_DRIPSTONE) {
                     return j - y - 1;
                 }
             }
         } else {
             for (int j = y - 1; j > -64; --j) {
-                int blockId = level.getBlockIdAt(x, j, z);
+                int blockId = getLevel().getBlockIdAt(x, j, z);
                 if (blockId != POINTED_DRIPSTONE) {
                     return y - j - 1;
                 }
@@ -447,7 +447,7 @@ public class BlockPointedDripstone extends BlockFallableMeta {
                     if (event.isCancelled()) return;
                     cauldron.setCauldronLiquid(event.getLiquid());
                     cauldron.setFillLevel(cauldron.getFillLevel() + event.getLiquidLevelIncrement());
-                    cauldron.level.setBlock(cauldron, cauldron, true, true);
+                    cauldron.getLevel().setBlock(cauldron, cauldron, true, true);
                     this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.CAULDRON_DRIP_LAVA_POINTED_DRIPSTONE);
                 }
             }
@@ -462,7 +462,7 @@ public class BlockPointedDripstone extends BlockFallableMeta {
                     if (event.isCancelled()) return;
                     cauldron.setCauldronLiquid(event.getLiquid());
                     cauldron.setFillLevel(cauldron.getFillLevel() + event.getLiquidLevelIncrement());
-                    cauldron.level.setBlock(cauldron, cauldron, true, true);
+                    cauldron.getLevel().setBlock(cauldron, cauldron, true, true);
                     this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.CAULDRON_DRIP_WATER_POINTED_DRIPSTONE);
                 }
             }

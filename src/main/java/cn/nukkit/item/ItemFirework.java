@@ -65,9 +65,9 @@ public class ItemFirework extends Item {
     public boolean onClickAir(Player player, Vector3 directionVector) {
         if (player.getInventory().getChestplate() instanceof ItemElytra && player.isGliding()) {
             player.setMotion(new Vector3(
-                    -Math.sin(Math.toRadians(player.yaw)) * Math.cos(Math.toRadians(player.pitch)) * 2,
-                    -Math.sin(Math.toRadians(player.pitch)) * 2,
-                    Math.cos(Math.toRadians(player.yaw)) * Math.cos(Math.toRadians(player.pitch)) * 2));
+                    -Math.sin(Math.toRadians(player.yaw())) * Math.cos(Math.toRadians(player.pitch())) * 2,
+                    -Math.sin(Math.toRadians(player.pitch())) * 2,
+                    Math.cos(Math.toRadians(player.yaw())) * Math.cos(Math.toRadians(player.pitch())) * 2));
 
             spawnElytraFirework(player.getLevel(), player, player);
             if (!player.isCreative()) {

@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
  */
 @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Overrides NamedPosition instead of Vector3")
 public class Position extends NamedPosition {
-    public Level level;
+    private Level level;
 
     public Position() {
         this(0, 0, 0, null);

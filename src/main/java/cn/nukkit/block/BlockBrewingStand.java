@@ -213,7 +213,7 @@ public class BlockBrewingStand extends BlockTransparentMeta implements BlockEnti
 
     @Override
     public int getComparatorInputOverride() {
-        BlockEntity blockEntity = this.level.getBlockEntity(this);
+        BlockEntity blockEntity = this.getLevel().getBlockEntity(this);
 
         if (blockEntity instanceof BlockEntityBrewingStand) {
             return ContainerInventory.calculateRedstone(((BlockEntityBrewingStand) blockEntity).getInventory());

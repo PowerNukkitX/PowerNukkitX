@@ -109,8 +109,8 @@ public class BlockRespawnAnchor extends BlockMeta {
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     protected boolean attemptToSetSpawn(@NotNull Player player) {
-        if (this.level.getDimension() != Level.DIMENSION_NETHER) {
-            if (this.level.getGameRules().getBoolean(GameRule.TNT_EXPLODES)) {
+        if (this.getLevel().getDimension() != Level.DIMENSION_NETHER) {
+            if (this.getLevel().getGameRules().getBoolean(GameRule.TNT_EXPLODES)) {
                 explode(player);
             }
             return true;
@@ -141,7 +141,7 @@ public class BlockRespawnAnchor extends BlockMeta {
             return;
         }
 
-        level.setBlock(this, get(AIR));
+        getLevel().setBlock(this, get(AIR));
         Explosion explosion = new Explosion(this, event.getForce(), this);
         explosion.setFireChance(event.getFireChance());
         if (event.isBlockBreaking()) {

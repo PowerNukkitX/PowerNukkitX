@@ -97,7 +97,7 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                 playerHandle.onBlockBreakComplete(new BlockVector3(pk.x, pk.y, pk.z), face);
                 break;
             case PlayerActionPacket.ACTION_DIMENSION_CHANGE_ACK:
-                player.sendPosition(player, player.yaw, player.pitch, MovePlayerPacket.MODE_NORMAL);
+                player.sendPosition(player, player.yaw(), player.pitch(), MovePlayerPacket.MODE_NORMAL);
                 break; // TODO
             case PlayerActionPacket.ACTION_START_GLIDE:
                 PlayerToggleGlideEvent playerToggleGlideEvent = new PlayerToggleGlideEvent(player, true);
@@ -142,20 +142,20 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                 break;
             case PlayerActionPacket.ACTION_START_SPIN_ATTACK:
                 if (player.getInventory().getItemInHand().getId() != ItemID.TRIDENT) {
-                    player.sendPosition(player, player.yaw, player.pitch, MovePlayerPacket.MODE_RESET);
+                    player.sendPosition(player, player.yaw(), player.pitch(), MovePlayerPacket.MODE_RESET);
                     break;
                 }
 
                 int riptideLevel =
                         player.getInventory().getItemInHand().getEnchantmentLevel(Enchantment.ID_TRIDENT_RIPTIDE);
                 if (riptideLevel < 1) {
-                    player.sendPosition(player, player.yaw, player.pitch, MovePlayerPacket.MODE_RESET);
+                    player.sendPosition(player, player.yaw(), player.pitch(), MovePlayerPacket.MODE_RESET);
                     break;
                 }
 
                 if (!(player.isTouchingWater()
                         || (player.getLevel().isRaining() && player.getLevel().canBlockSeeSky(player)))) {
-                    player.sendPosition(player, player.yaw, player.pitch, MovePlayerPacket.MODE_RESET);
+                    player.sendPosition(player, player.yaw(), player.pitch(), MovePlayerPacket.MODE_RESET);
                     break;
                 }
 
@@ -163,7 +163,7 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                 player.getServer().getPluginManager().callEvent(playerToggleSpinAttackEvent);
 
                 if (playerToggleSpinAttackEvent.isCancelled()) {
-                    player.sendPosition(player, player.yaw, player.pitch, MovePlayerPacket.MODE_RESET);
+                    player.sendPosition(player, player.yaw(), player.pitch(), MovePlayerPacket.MODE_RESET);
                 } else {
                     player.setSpinAttacking(true);
 
@@ -175,7 +175,7 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                     } else {
                         riptideSound = Sound.ITEM_TRIDENT_RIPTIDE_1;
                     }
-                    player.level.addSound(player, riptideSound);
+                    player.getLevel().addSound(player, riptideSound);
                 }
                 return;
             case PlayerActionPacket.ACTION_STOP_SPIN_ATTACK:

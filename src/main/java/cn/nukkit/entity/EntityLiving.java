@@ -204,7 +204,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         // 测试环境中此项会null，所以说需要判空下
         if (manager != null) manager.onEntityDead(this);
 
-        if (this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
+        if (this.getLevel().getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
             for (cn.nukkit.item.Item item : ev.getDrops()) {
                 this.getLevel().dropItem(this, item);
             }
@@ -310,7 +310,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
         // Used to check collisions with magma / cactus blocks
         // Math.round处理在某些条件下 出现x.999999的坐标条件,这里选择四舍五入
-        var block = this.level.getTickCachedBlock(getFloorX(), (int) (Math.round(this.y()) - 1), getFloorZ());
+        var block = this.getLevel().getTickCachedBlock(getFloorX(), (int) (Math.round(this.y()) - 1), getFloorZ());
         if (block instanceof BlockMagma || block instanceof BlockCactus) block.onEntityCollide(this);
 
         return hasUpdate;
@@ -345,7 +345,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         List<Block> blocks = new ArrayList<>();
 
         var itr = new TickCachedBlockIterator(
-                this.level, this.getPosition(), this.getDirectionVector(), this.getEyeHeight(), maxDistance);
+                this.getLevel(), this.getPosition(), this.getDirectionVector(), this.getEyeHeight(), maxDistance);
 
         while (itr.hasNext()) {
             Block block = itr.next();

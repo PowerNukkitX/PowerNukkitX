@@ -149,7 +149,7 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable
     @Override
     public void onBreak() {
         for (Item content : inventory.getContents().values()) {
-            level.dropItem(this, content);
+            getLevel().dropItem(this, content);
         }
     }
 }

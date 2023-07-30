@@ -88,7 +88,7 @@ public class BlockPumpkin extends BlockSolidMeta implements Faceable {
                 carvedPumpkin.setBlockFace(player.getDirection().getOpposite());
             }
             item.useOn(this);
-            this.level.setBlock(this, carvedPumpkin, true, true);
+            this.getLevel().setBlock(this, carvedPumpkin, true, true);
             this.getLevel()
                     .dropItem(
                             add(0.5, 0.5, 0.5), Item.get(ItemID.PUMPKIN_SEEDS)); // TODO: Get correct drop item position
@@ -112,7 +112,7 @@ public class BlockPumpkin extends BlockSolidMeta implements Faceable {
         } else {
             setBlockFace(player.getDirection().getOpposite());
         }
-        this.level.setBlock(block, this, true, true);
+        this.getLevel().setBlock(block, this, true, true);
         return true;
     }
 

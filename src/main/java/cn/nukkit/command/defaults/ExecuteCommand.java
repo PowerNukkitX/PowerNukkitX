@@ -266,9 +266,9 @@ public class ExecuteCommand extends VanillaCommand {
                 return num;
             }
             case "rotated" -> {
-                double yaw = sender.getLocation().yaw;
+                double yaw = sender.getLocation().yaw();
                 if (list.hasResult(1)) yaw = list.getResult(1);
-                double pitch = sender.getLocation().pitch;
+                double pitch = sender.getLocation().pitch();
                 if (list.hasResult(2)) pitch = list.getResult(2);
                 String chainCommand = list.getResult(3);
                 Location location = sender.getLocation();
@@ -287,8 +287,8 @@ public class ExecuteCommand extends VanillaCommand {
                 String chainCommand = list.getResult(3);
                 for (Entity executor : executors) {
                     Location location = sender.getLocation();
-                    location.setYaw(executor.getYaw());
-                    location.setPitch(executor.getPitch());
+                    location.setYaw(executor.yaw());
+                    location.setPitch(executor.pitch());
                     ExecutorCommandSender executorCommandSender =
                             new ExecutorCommandSender(sender, sender.asEntity(), location);
                     num += executorCommandSender.getServer().executeCommand(executorCommandSender, chainCommand);

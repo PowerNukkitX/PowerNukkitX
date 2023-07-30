@@ -72,7 +72,7 @@ public class FlatRandomRoamExecutor implements EntityControl, IBehaviorExecutor 
                 int blockId;
                 int time = 0;
                 while (time <= maxRetryTime
-                        && ((blockId = entity.level
+                        && ((blockId = entity.getLevel()
                                                 .getTickCachedBlock(target.add(0, -1, 0))
                                                 .getId())
                                         == Block.FLOWING_WATER

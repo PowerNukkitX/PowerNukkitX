@@ -182,8 +182,7 @@ public class PlayerInventory extends BaseInventory {
             this.sendArmorSlot(index, this.getViewers());
             this.sendArmorSlot(index, this.getHolder().getViewers().values());
             if (this.getItem(index) instanceof ItemArmor) {
-                this.getHolder()
-                        .level
+                this.getHolder().getLevel()
                         .getVibrationManager()
                         .callVibrationEvent(
                                 new VibrationEvent(getHolder(), this.getHolder().clone(), VibrationType.EQUIP));

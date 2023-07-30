@@ -140,7 +140,7 @@ public class ItemPotion extends Item {
         }
         Potion potion = Potion.getPotion(this.getDamage()).setSplash(false);
 
-        player.level
+        player.getLevel()
                 .getVibrationManager()
                 .callVibrationEvent(new VibrationEvent(player, player.clone(), VibrationType.DRINKING));
 

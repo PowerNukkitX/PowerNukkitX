@@ -40,26 +40,26 @@ public class BlockRedstoneLampLit extends BlockRedstoneLamp implements RedstoneC
             since = "1.4.0.0-PN")
     @Override
     public int onUpdate(int type) {
-        if (!this.level.getServer().isRedstoneEnabled()) {
+        if (!this.getLevel().getServer().isRedstoneEnabled()) {
             return 0;
         }
 
         if ((type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_REDSTONE) && !this.isGettingPower()) {
-            this.level.scheduleUpdate(this, 4);
+            this.getLevel().scheduleUpdate(this, 4);
             return 1;
         }
 
         if (type == Level.BLOCK_UPDATE_SCHEDULED && !this.isGettingPower()) {
             // Redstone event
             RedstoneUpdateEvent ev = new RedstoneUpdateEvent(this);
-            this.level.getServer().getPluginManager().callEvent(ev);
+            this.getLevel().getServer().getPluginManager().callEvent(ev);
             if (ev.isCancelled()) {
                 return 0;
             }
 
-            this.level.updateComparatorOutputLevelSelective(this, true);
+            this.getLevel().updateComparatorOutputLevelSelective(this, true);
 
-            this.level.setBlock(this, Block.get(BlockID.REDSTONE_LAMP), false, false);
+            this.getLevel().setBlock(this, Block.get(BlockID.REDSTONE_LAMP), false, false);
         }
         return 0;
     }

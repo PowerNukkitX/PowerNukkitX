@@ -83,21 +83,21 @@ public class BlockCherrySapling extends BlockFlowable implements BlockFlowerPot.
     }
 
     private void grow() {
-        ListChunkManager chunkManager = new ListChunkManager(this.level);
+        ListChunkManager chunkManager = new ListChunkManager(this.getLevel());
         Vector3 vector3 = new Vector3(this.x(), this.y() - 1, this.z());
         var objectCherryTree = new ObjectCherryTree();
         objectCherryTree.generate(chunkManager, new NukkitRandom(), this);
         StructureGrowEvent ev = new StructureGrowEvent(this, chunkManager.getBlocks());
-        this.level.getServer().getPluginManager().callEvent(ev);
+        this.getLevel().getServer().getPluginManager().callEvent(ev);
         if (ev.isCancelled()) {
             return;
         }
-        if (this.level.getBlock(vector3).getId() == BlockID.DIRT_WITH_ROOTS) {
-            this.level.setBlock(vector3, Block.get(BlockID.DIRT));
+        if (this.getLevel().getBlock(vector3).getId() == BlockID.DIRT_WITH_ROOTS) {
+            this.getLevel().setBlock(vector3, Block.get(BlockID.DIRT));
         }
         for (Block block : ev.getBlockList()) {
             if (block.getId() == BlockID.AIR) continue;
-            this.level.setBlock(block, block);
+            this.getLevel().setBlock(block, block);
         }
     }
 
@@ -119,7 +119,7 @@ public class BlockCherrySapling extends BlockFlowable implements BlockFlowerPot.
             return false;
         }
 
-        this.level.setBlock(this, this, true, true);
+        this.getLevel().setBlock(this, this, true, true);
         return true;
     }
 
@@ -135,7 +135,7 @@ public class BlockCherrySapling extends BlockFlowable implements BlockFlowerPot.
                 item.count--;
             }
 
-            this.level.addParticle(new BoneMealParticle(this));
+            this.getLevel().addParticle(new BoneMealParticle(this));
             if (ThreadLocalRandom.current().nextFloat() >= 0.45) {
                 return true;
             }

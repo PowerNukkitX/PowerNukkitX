@@ -85,7 +85,7 @@ public class BlockCauldronLava extends BlockCauldron {
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
-        BlockEntity be = this.level.getBlockEntity(this);
+        BlockEntity be = this.getLevel().getBlockEntity(this);
 
         if (!(be instanceof BlockEntityCauldron)) {
             return false;
@@ -111,11 +111,11 @@ public class BlockCauldronLava extends BlockCauldron {
                             this,
                             item,
                             MinecraftItemID.LAVA_BUCKET.get(1, bucket.getCompoundTag()));
-                    this.level.getServer().getPluginManager().callEvent(ev);
+                    this.getLevel().getServer().getPluginManager().callEvent(ev);
                     if (!ev.isCancelled()) {
                         replaceBucket(bucket, player, ev.getItem());
                         this.setFillLevel(FILL_LEVEL.getMinValue(), player); // empty
-                        this.level.setBlock(this, new BlockCauldron(0), true);
+                        this.getLevel().setBlock(this, new BlockCauldron(0), true);
                         cauldron.clearCustomColor();
                         this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.BUCKET_FILL_LAVA);
                     }
@@ -126,7 +126,7 @@ public class BlockCauldronLava extends BlockCauldron {
 
                     PlayerBucketEmptyEvent ev = new PlayerBucketEmptyEvent(
                             player, this, null, this, item, MinecraftItemID.BUCKET.get(1, bucket.getCompoundTag()));
-                    this.level.getServer().getPluginManager().callEvent(ev);
+                    this.getLevel().getServer().getPluginManager().callEvent(ev);
                     if (!ev.isCancelled()) {
                         replaceBucket(bucket, player, ev.getItem());
 
@@ -135,11 +135,11 @@ public class BlockCauldronLava extends BlockCauldron {
                         } else if (bucket.isLava()) { // lava bucket
                             this.setFillLevel(FILL_LEVEL.getMaxValue(), player); // fill
                             cauldron.clearCustomColor();
-                            this.level.setBlock(this, this, true);
+                            this.getLevel().setBlock(this, this, true);
                             this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.BUCKET_EMPTY_LAVA);
                         } else {
                             if (isEmpty()) {
-                                this.level.setBlock(this, new BlockCauldron(6), true, true);
+                                this.getLevel().setBlock(this, new BlockCauldron(6), true, true);
                                 cauldron.clearCustomColor();
                                 this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.CAULDRON_FILLWATER);
                             } else {
@@ -168,7 +168,7 @@ public class BlockCauldronLava extends BlockCauldron {
                 return true;
         }
 
-        this.level.updateComparatorOutputLevel(this);
+        this.getLevel().updateComparatorOutputLevel(this);
         return true;
     }
 }

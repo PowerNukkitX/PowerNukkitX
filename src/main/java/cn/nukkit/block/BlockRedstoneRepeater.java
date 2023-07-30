@@ -46,7 +46,7 @@ public abstract class BlockRedstoneRepeater extends BlockRedstoneDiode {
             setPropertyValue(REPEATER_DELAY, repeaterDelay + 1);
         }
 
-        this.level.setBlock(this, this, true, true);
+        this.getLevel().setBlock(this, this, true, true);
         return true;
     }
 
@@ -71,13 +71,13 @@ public abstract class BlockRedstoneRepeater extends BlockRedstoneDiode {
                         ? BlockFace.fromHorizontalIndex(
                                 player.getDirection().getOpposite().getHorizontalIndex())
                         : BlockFace.SOUTH);
-        if (!this.level.setBlock(block, this, true, true)) {
+        if (!this.getLevel().setBlock(block, this, true, true)) {
             return false;
         }
 
-        if (this.level.getServer().isRedstoneEnabled()) {
+        if (this.getLevel().getServer().isRedstoneEnabled()) {
             if (shouldBePowered()) {
-                this.level.scheduleUpdate(this, 1);
+                this.getLevel().scheduleUpdate(this, 1);
             }
         }
         return true;

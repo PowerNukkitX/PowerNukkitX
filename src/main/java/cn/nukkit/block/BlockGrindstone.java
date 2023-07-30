@@ -149,7 +149,7 @@ public class BlockGrindstone extends BlockTransparentMeta implements Faceable {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!checkSupport()) {
-                this.level.useBreakOn(this, Item.get(Item.DIAMOND_PICKAXE));
+                this.getLevel().useBreakOn(this, Item.get(Item.DIAMOND_PICKAXE));
             }
             return type;
         }
@@ -185,7 +185,7 @@ public class BlockGrindstone extends BlockTransparentMeta implements Faceable {
         if (!checkSupport()) {
             return false;
         }
-        this.level.setBlock(this, this, true, true);
+        this.getLevel().setBlock(this, this, true, true);
         return true;
     }
 

@@ -28,7 +28,7 @@ public class MovePlayerProcessor extends DataPacketProcessor<MovePlayerPacket> {
         if (pk.headYaw < 0) {
             pk.headYaw += 360;
         }
-        playerHandle.offerMovementTask(Location.fromObject(newPos, player.level, pk.yaw, pk.pitch, pk.headYaw));
+        playerHandle.offerMovementTask(Location.fromObject(newPos, player.getLevel(), pk.yaw, pk.pitch, pk.headYaw));
     }
 
     @Override

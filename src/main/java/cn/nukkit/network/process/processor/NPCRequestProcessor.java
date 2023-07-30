@@ -19,7 +19,7 @@ public class NPCRequestProcessor extends DataPacketProcessor<NPCRequestPacket> {
         Player player = playerHandle.player;
         // 若sceneName字段为空，则为玩家在编辑NPC，我们并不需要记录对话框，直接通过entityRuntimeId获取实体即可
         if (pk.getSceneName().isEmpty()
-                && player.level.getEntity(pk.getRequestedEntityRuntimeId()) instanceof EntityNPCEntity npcEntity) {
+                && player.getLevel().getEntity(pk.getRequestedEntityRuntimeId()) instanceof EntityNPCEntity npcEntity) {
             FormWindowDialog dialog = npcEntity.getDialog();
 
             FormResponseDialog response = new FormResponseDialog(pk, dialog);

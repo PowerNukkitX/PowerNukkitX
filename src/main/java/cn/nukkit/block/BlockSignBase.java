@@ -78,7 +78,7 @@ public abstract class BlockSignBase extends BlockTransparentMeta implements Face
         }
         // If a sign is waxed, it cannot be modified.
         if (sign.isWaxed() || (player.isSneaking() && item.getId() != 0)) {
-            level.addLevelSoundEvent(this.add(0.5, 0.5, 0.5), LevelSoundEventPacket.SOUND_WAXED_SIGN_INTERACT_FAIL);
+            getLevel().addLevelSoundEvent(this.add(0.5, 0.5, 0.5), LevelSoundEventPacket.SOUND_WAXED_SIGN_INTERACT_FAIL);
             return;
         }
         boolean front =
@@ -103,14 +103,14 @@ public abstract class BlockSignBase extends BlockTransparentMeta implements Face
                 return;
             }
             SignColorChangeEvent event = new SignColorChangeEvent(this, player, color);
-            this.level.getServer().getPluginManager().callEvent(event);
+            this.getLevel().getServer().getPluginManager().callEvent(event);
             if (event.isCancelled()) {
                 sign.spawnTo(player);
                 return;
             }
             sign.setColor(front, color);
             sign.spawnToAll();
-            this.level.addLevelEvent(this, LevelEventPacket.EVENT_SOUND_DYE_USED);
+            this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_DYE_USED);
             if ((player.getGamemode() & 0x01) == 0) {
                 item.count--;
             }
@@ -121,21 +121,21 @@ public abstract class BlockSignBase extends BlockTransparentMeta implements Face
                 return;
             }
             SignGlowEvent event = new SignGlowEvent(this, player, true);
-            this.level.getServer().getPluginManager().callEvent(event);
+            this.getLevel().getServer().getPluginManager().callEvent(event);
             if (event.isCancelled()) {
                 sign.spawnTo(player);
                 return;
             }
             sign.setGlowing(front, true);
             sign.spawnToAll();
-            this.level.addLevelEvent(this, LevelEventPacket.EVENT_SOUND_INK_SACE_USED);
+            this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_INK_SACE_USED);
             if ((player.getGamemode() & 0x01) == 0) {
                 item.count--;
             }
             return;
         } else if (item instanceof ItemHoneycomb) {
             SignWaxedEvent event = new SignWaxedEvent(this, player, true);
-            this.level.getServer().getPluginManager().callEvent(event);
+            this.getLevel().getServer().getPluginManager().callEvent(event);
             if (event.isCancelled()) {
                 sign.spawnTo(player);
                 return;

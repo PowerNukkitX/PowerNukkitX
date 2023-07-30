@@ -72,7 +72,7 @@ public class BlockMangrovePropagule extends BlockFlowable implements BlockFlower
                 item.count--;
             }
 
-            this.level.addParticle(new BoneMealParticle(this));
+            this.getLevel().addParticle(new BoneMealParticle(this));
             if (ThreadLocalRandom.current().nextFloat() >= 0.45) {
                 return true;
             }

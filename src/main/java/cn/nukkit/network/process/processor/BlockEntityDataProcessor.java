@@ -30,7 +30,7 @@ public class BlockEntityDataProcessor extends DataPacketProcessor<BlockEntityDat
             return;
         }
 
-        BlockEntity t = player.level.getBlockEntity(pos);
+        BlockEntity t = player.getLevel().getBlockEntity(pos);
         if (t instanceof BlockEntitySpawnable) {
             CompoundTag nbt;
             try {

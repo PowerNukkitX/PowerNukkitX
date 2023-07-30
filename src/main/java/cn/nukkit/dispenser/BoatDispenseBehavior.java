@@ -34,7 +34,7 @@ public class BoatDispenseBehavior extends DefaultDispenseBehavior {
         }
 
         spawnBoatEntity(
-                block.level,
+                block.getLevel(),
                 target.getLocation()
                         .add(face.getXOffset() * 0.75, face.getYOffset() * 0.75, face.getZOffset() * 0.75)
                         .setYaw(face.getHorizontalAngle()),

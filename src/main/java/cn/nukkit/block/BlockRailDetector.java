@@ -91,7 +91,7 @@ public class BlockRailDetector extends BlockRail implements RedstoneComponent {
     }
 
     @Nullable public EntityMinecartAbstract findMinecart() {
-        for (Entity entity : level.getNearbyEntities(new SimpleAxisAlignedBB(
+        for (Entity entity : getLevel().getNearbyEntities(new SimpleAxisAlignedBB(
                 getFloorX() + 0.2,
                 getFloorY(),
                 getFloorZ() + 0.2,
@@ -112,9 +112,9 @@ public class BlockRailDetector extends BlockRail implements RedstoneComponent {
         }
         if (powered) {
             // 每20gt检查一遍
-            level.scheduleUpdate(this, 20);
+            getLevel().scheduleUpdate(this, 20);
             // 更新比较器输出
-            level.updateComparatorOutputLevel(this);
+            getLevel().updateComparatorOutputLevel(this);
         }
     }
 

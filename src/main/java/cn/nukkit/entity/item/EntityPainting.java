@@ -118,8 +118,8 @@ public class EntityPainting extends EntityHanging {
                 Entity damager = ((EntityDamageByEntityEvent) source).getDamager();
                 if (damager instanceof Player
                         && (((Player) damager).isAdventure() || ((Player) damager).isSurvival())
-                        && this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
-                    this.level.dropItem(this, new ItemPainting());
+                        && this.getLevel().getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
+                    this.getLevel().dropItem(this, new ItemPainting());
                 }
             }
             this.close();
@@ -138,8 +138,8 @@ public class EntityPainting extends EntityHanging {
     @PowerNukkitOnly
     @Override
     public void onPushByPiston(BlockEntityPistonArm piston) {
-        if (this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
-            this.level.dropItem(this, new ItemPainting());
+        if (this.getLevel().getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
+            this.getLevel().dropItem(this, new ItemPainting());
         }
 
         this.close();

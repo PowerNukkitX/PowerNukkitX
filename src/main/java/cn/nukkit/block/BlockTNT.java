@@ -119,7 +119,7 @@ public class BlockTNT extends BlockSolid implements RedstoneComponent {
             return;
         }
         tnt.spawnToAll();
-        this.level
+        this.getLevel()
                 .getVibrationManager()
                 .callVibrationEvent(new VibrationEvent(
                         source != null ? source : this, this.add(0.5, 0.5, 0.5), VibrationType.PRIME_FUSE));
@@ -128,7 +128,7 @@ public class BlockTNT extends BlockSolid implements RedstoneComponent {
     @Override
     @PowerNukkitDifference(info = "Using new method for checking if powered", since = "1.4.0.0-PN")
     public int onUpdate(int type) {
-        if (!this.level.getServer().isRedstoneEnabled()) {
+        if (!this.getLevel().getServer().isRedstoneEnabled()) {
             return 0;
         }
 

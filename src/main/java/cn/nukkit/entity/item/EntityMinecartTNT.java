@@ -66,7 +66,7 @@ public class EntityMinecartTNT extends EntityMinecartAbstract implements EntityE
             fuse -= tickDiff;
 
             if (isAlive() && fuse <= 0) {
-                if (this.level.getGameRules().getBoolean(GameRule.TNT_EXPLODES)) {
+                if (this.getLevel().getGameRules().getBoolean(GameRule.TNT_EXPLODES)) {
                     this.explode(ThreadLocalRandom.current().nextInt(5));
                 }
                 this.close();
@@ -80,7 +80,7 @@ public class EntityMinecartTNT extends EntityMinecartAbstract implements EntityE
     @PowerNukkitDifference(info = "Using new method to play sounds", since = "1.4.0.0-PN")
     @Override
     public void activate(int x, int y, int z, boolean flag) {
-        level.addSound(this, Sound.FIRE_IGNITE);
+        getLevel().addSound(this, Sound.FIRE_IGNITE);
         this.fuse = 79;
     }
 
@@ -119,7 +119,7 @@ public class EntityMinecartTNT extends EntityMinecartAbstract implements EntityE
                 return;
             }
         }
-        level.dropItem(this, new ItemMinecartTNT());
+        getLevel().dropItem(this, new ItemMinecartTNT());
     }
 
     @PowerNukkitOnly
@@ -151,7 +151,7 @@ public class EntityMinecartTNT extends EntityMinecartAbstract implements EntityE
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         boolean interact = super.onInteract(player, item, clickedPos);
         if (item.getId() == Item.FLINT_AND_STEEL || item.getId() == Item.FIRE_CHARGE) {
-            level.addSound(this, Sound.FIRE_IGNITE);
+            getLevel().addSound(this, Sound.FIRE_IGNITE);
             this.fuse = 79;
             return true;
         }

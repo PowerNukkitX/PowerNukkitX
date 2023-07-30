@@ -23,7 +23,7 @@ public class RYM extends CachedSimpleSelectorArgument {
         final var rym = Double.parseDouble(arguments[0]);
         if (!ParseUtils.checkBetween(-180d, 180d, rym))
             throw new SelectorSyntaxException("RX out of bound (-180 - 180): " + rym);
-        return entity -> ((entity.getYaw() + 90) % 360 - 180) >= rym;
+        return entity -> ((entity.yaw() + 90) % 360 - 180) >= rym;
     }
 
     @Override

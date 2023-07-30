@@ -73,7 +73,7 @@ public class BlockSculkSensor extends BlockSolid
     public int onUpdate(int type) {
         getOrCreateBlockEntity();
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
-            if (level.getServer().isRedstoneEnabled()) {
+            if (getLevel().getServer().isRedstoneEnabled()) {
                 this.getBlockEntity().calPower();
                 this.setPowered(false);
                 updateAroundRedstone();
@@ -84,10 +84,10 @@ public class BlockSculkSensor extends BlockSolid
     }
 
     public void setPowered(boolean powered) {
-        if (powered) this.level.addSound(this.add(0.5, 0.5, 0.5), Sound.POWER_ON_SCULK_SENSOR);
-        else this.level.addSound(this.add(0.5, 0.5, 0.5), Sound.POWER_OFF_SCULK_SENSOR);
+        if (powered) this.getLevel().addSound(this.add(0.5, 0.5, 0.5), Sound.POWER_ON_SCULK_SENSOR);
+        else this.getLevel().addSound(this.add(0.5, 0.5, 0.5), Sound.POWER_OFF_SCULK_SENSOR);
         this.setBooleanValue(SCULK_SENSOR_PHASE, powered);
-        this.level.setBlock(this, this, true, false);
+        this.getLevel().setBlock(this, this, true, false);
     }
 
     @Override

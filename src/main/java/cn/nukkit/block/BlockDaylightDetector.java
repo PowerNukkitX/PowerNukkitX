@@ -93,7 +93,7 @@ public class BlockDaylightDetector extends BlockTransparentMeta
 
     @Override
     public int onUpdate(int type) {
-        if (!this.level.getServer().isRedstoneEnabled()) {
+        if (!this.getLevel().getServer().isRedstoneEnabled()) {
             return 0;
         }
 
@@ -121,7 +121,7 @@ public class BlockDaylightDetector extends BlockTransparentMeta
             return false;
         }
         if (getLevel().getDimension() == Level.DIMENSION_OVERWORLD) {
-            if (this.level.getServer().isRedstoneEnabled()) {
+            if (this.getLevel().getServer().isRedstoneEnabled()) {
                 updatePower();
             }
         }
@@ -132,7 +132,7 @@ public class BlockDaylightDetector extends BlockTransparentMeta
     public boolean onActivate(@NotNull Item item, Player player) {
         BlockDaylightDetectorInverted block = new BlockDaylightDetectorInverted();
         getLevel().setBlock(this, block, true, true);
-        if (this.level.getServer().isRedstoneEnabled()) {
+        if (this.getLevel().getServer().isRedstoneEnabled()) {
             block.updatePower();
         }
         return true;

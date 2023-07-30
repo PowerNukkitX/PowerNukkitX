@@ -132,12 +132,12 @@ public class BlockBeehive extends BlockSolidMeta implements Faceable, BlockEntit
     public boolean onActivate(@NotNull Item item, Player player) {
         if (item.getId() == ItemID.SHEARS && isFull()) {
             honeyCollected(player);
-            level.addSound(add(0.5, 0.5, 0.5), Sound.BLOCK_BEEHIVE_SHEAR);
+            getLevel().addSound(add(0.5, 0.5, 0.5), Sound.BLOCK_BEEHIVE_SHEAR);
             item.useOn(this);
             for (int i = 0; i < 3; ++i) {
-                level.dropItem(this, Item.get(ItemID.HONEYCOMB));
+                getLevel().dropItem(this, Item.get(ItemID.HONEYCOMB));
             }
-            level.getVibrationManager()
+            getLevel().getVibrationManager()
                     .callVibrationEvent(new VibrationEvent(this, this.add(0.5, 0.5, 0.5), VibrationType.SHEAR));
             return true;
         }
@@ -151,7 +151,7 @@ public class BlockBeehive extends BlockSolidMeta implements Faceable, BlockEntit
 
     @PowerNukkitOnly
     public void honeyCollected(Player player) {
-        honeyCollected(player, level.getServer().getDifficulty() > 0 && !player.isCreative());
+        honeyCollected(player, getLevel().getServer().getDifficulty() > 0 && !player.isCreative());
     }
 
     @PowerNukkitOnly
@@ -173,7 +173,7 @@ public class BlockBeehive extends BlockSolidMeta implements Faceable, BlockEntit
     @Override
     public Item toItem() {
         Item item = Item.get(getItemId(), 0, 1);
-        if (level != null) {
+        if (getLevel() != null) {
             BlockEntityBeehive beehive = getBlockEntity();
             if (beehive != null) {
                 beehive.saveNBT();

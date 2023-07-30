@@ -52,14 +52,14 @@ public class BlockBambooSapling extends BlockFlowable {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (isSupportInvalid()) {
-                level.useBreakOn(this, null, null, true);
+                getLevel().useBreakOn(this, null, null, true);
             } else {
                 Block up = up();
                 if (up.getId() == BAMBOO) {
                     BlockBamboo upperBamboo = (BlockBamboo) up;
                     BlockBamboo newState = new BlockBamboo();
                     newState.setThick(upperBamboo.isThick());
-                    level.setBlock(this, newState, true, true);
+                    getLevel().setBlock(this, newState, true, true);
                 }
             }
             return type;
@@ -67,18 +67,18 @@ public class BlockBambooSapling extends BlockFlowable {
             Block up = up();
             if (getAge() == 0
                     && up.getId() == AIR
-                    && level.getFullLight(up) >= BlockCrops.MINIMUM_LIGHT_LEVEL
+                    && getLevel().getFullLight(up) >= BlockCrops.MINIMUM_LIGHT_LEVEL
                     && ThreadLocalRandom.current().nextInt(3) == 0) {
                 BlockBamboo newState = new BlockBamboo();
                 newState.setLeafSize(BlockBamboo.LEAF_SIZE_SMALL);
                 BlockGrowEvent blockGrowEvent = new BlockGrowEvent(up, newState);
-                level.getServer().getPluginManager().callEvent(blockGrowEvent);
+                getLevel().getServer().getPluginManager().callEvent(blockGrowEvent);
                 if (!blockGrowEvent.isCancelled()) {
                     Block newState1 = blockGrowEvent.getNewState();
                     newState1.setY(up.y());
                     newState1.setX(x());
                     newState1.setZ(z());
-                    newState1.level = level;
+                    newState1.setLevel(getLevel());
                     newState1.place(toItem(), up, this, BlockFace.DOWN, 0.5, 0.5, 0.5, null);
                 }
             }
@@ -105,7 +105,7 @@ public class BlockBambooSapling extends BlockFlowable {
             return false;
         }
 
-        this.level.setBlock(this, this, true, true);
+        this.getLevel().setBlock(this, this, true, true);
         return true;
     }
 
@@ -129,7 +129,7 @@ public class BlockBambooSapling extends BlockFlowable {
                     item.count--;
                 }
 
-                level.addParticle(new BoneMealParticle(this));
+                getLevel().addParticle(new BoneMealParticle(this));
             }
 
             return true;
@@ -143,7 +143,7 @@ public class BlockBambooSapling extends BlockFlowable {
         bamboo.setX(x());
         bamboo.setY(y());
         bamboo.setZ(z());
-        bamboo.level = level;
+        bamboo.setLevel(getLevel());
         return bamboo.grow(up);
     }
 

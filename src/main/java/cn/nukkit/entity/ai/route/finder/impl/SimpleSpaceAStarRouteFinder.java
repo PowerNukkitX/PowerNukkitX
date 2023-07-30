@@ -48,7 +48,7 @@ public class SimpleSpaceAStarRouteFinder extends SimpleFlatAStarRouteFinder {
                                             case 3 -> OBLIQUE_3D_MOVE_COST;
                                             default -> Integer.MIN_VALUE;
                                         }
-                                        + getBlockMoveCostAt(this.entity.level, vec)
+                                        + getBlockMoveCostAt(this.entity.getLevel(), vec)
                                         + node.getG()
                                         - dy; // -dy是为了倾向于从空中飞而不是贴地飞
                         if (cost < 0) continue;
@@ -74,6 +74,6 @@ public class SimpleSpaceAStarRouteFinder extends SimpleFlatAStarRouteFinder {
     protected boolean hasBarrier(Vector3 pos1, Vector3 pos2) {
         if (pos1.equals(pos2)) return false;
         return VectorMath.getPassByVector3(pos1, pos2).stream()
-                .anyMatch((pos) -> !evalPos(this.entity.level.getTickCachedBlock(pos.add(0, -1))));
+                .anyMatch((pos) -> !evalPos(this.entity.getLevel().getTickCachedBlock(pos.add(0, -1))));
     }
 }

@@ -147,7 +147,7 @@ public class BlockCaveVines extends BlockTransparentMeta {
                     return false;
                 }
                 this.getLevel().setBlock(this, ev.getNewState(), false, true);
-                this.level.addParticle(new BoneMealParticle(this));
+                this.getLevel().addParticle(new BoneMealParticle(this));
                 if (player != null && !player.isCreative()) {
                     item.count--;
                 }

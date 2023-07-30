@@ -23,7 +23,7 @@ public abstract class BlockFallable extends BlockSolid {
                     || down instanceof BlockLiquid
                     || (down instanceof BlockBubbleColumn && down.getLevelBlockAtLayer(1) instanceof BlockLiquid))) {
                 BlockFallEvent event = new BlockFallEvent(this);
-                this.level.getServer().getPluginManager().callEvent(event);
+                this.getLevel().getServer().getPluginManager().callEvent(event);
                 if (event.isCancelled()) {
                     return type;
                 }
@@ -37,7 +37,7 @@ public abstract class BlockFallable extends BlockSolid {
 
     @PowerNukkitOnly
     public void drop(CompoundTag customNbt) {
-        this.level.setBlock(this, Block.get(Block.AIR), true, true);
+        this.getLevel().setBlock(this, Block.get(Block.AIR), true, true);
         EntityFallingBlock fall = createFallingEntity(customNbt);
 
         fall.spawnToAll();

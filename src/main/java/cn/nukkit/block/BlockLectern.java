@@ -196,15 +196,15 @@ public class BlockLectern extends BlockTransparentMeta
     @PowerNukkitOnly
     public void executeRedstonePulse() {
         if (isActivated()) {
-            level.cancelSheduledUpdate(this, this);
+            getLevel().cancelSheduledUpdate(this, this);
         } else {
-            this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 0, 15));
+            this.getLevel().getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 0, 15));
         }
 
-        level.scheduleUpdate(this, this, 4);
+        getLevel().scheduleUpdate(this, this, 4);
         setActivated(true);
-        level.setBlock(this, this, true, false);
-        level.addSound(this.add(0.5, 0.5, 0.5), Sound.ITEM_BOOK_PAGE_TURN);
+        getLevel().setBlock(this, this, true, false);
+        getLevel().addSound(this.add(0.5, 0.5, 0.5), Sound.ITEM_BOOK_PAGE_TURN);
 
         updateAroundRedstone();
         RedstoneComponent.updateAroundRedstone(getSide(BlockFace.DOWN), BlockFace.UP);
@@ -226,10 +226,10 @@ public class BlockLectern extends BlockTransparentMeta
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
             if (isActivated()) {
-                this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 15, 0));
+                this.getLevel().getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 15, 0));
 
                 setActivated(false);
-                level.setBlock(this, this, true, false);
+                getLevel().setBlock(this, this, true, false);
                 updateAroundRedstone();
                 RedstoneComponent.updateAroundRedstone(getSide(BlockFace.DOWN), BlockFace.UP);
             }
@@ -260,6 +260,6 @@ public class BlockLectern extends BlockTransparentMeta
 
         lectern.setBook(Item.getBlock(BlockID.AIR));
         lectern.spawnToAll();
-        this.level.dropItem(lectern.add(0.5f, 0.6f, 0.5f), dropBookEvent.getBook());
+        this.getLevel().dropItem(lectern.add(0.5f, 0.6f, 0.5f), dropBookEvent.getBook());
     }
 }

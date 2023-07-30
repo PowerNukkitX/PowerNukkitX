@@ -96,7 +96,7 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
         }
 
         // Get all players in game
-        Map<Long, Player> players = this.level.getPlayers();
+        Map<Long, Player> players = this.getLevel().getPlayers();
 
         // Calculate vars for beacon power
         int range = 10 + getPowerLevel() * 10;
@@ -155,7 +155,7 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
 
         // Check every block from our y coord to the top of the world
         for (int y = tileY + 1; y <= 255; y++) {
-            int testBlockId = level.getBlockIdAt(tileX, y, tileZ);
+            int testBlockId = getLevel().getBlockIdAt(tileX, y, tileZ);
             if (!Block.isTransparent(testBlockId)) {
                 // There is no sky access
                 return false;
@@ -177,7 +177,7 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
             for (int queryX = tileX - powerLevel; queryX <= tileX + powerLevel; queryX++) {
                 for (int queryZ = tileZ - powerLevel; queryZ <= tileZ + powerLevel; queryZ++) {
 
-                    int testBlockId = level.getBlockIdAt(queryX, queryY, queryZ);
+                    int testBlockId = getLevel().getBlockIdAt(queryX, queryY, queryZ);
                     if (testBlockId != Block.IRON_BLOCK
                             && testBlockId != Block.GOLD_BLOCK
                             && testBlockId != Block.EMERALD_BLOCK

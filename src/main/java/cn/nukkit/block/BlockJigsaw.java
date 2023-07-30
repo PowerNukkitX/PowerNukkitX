@@ -100,7 +100,7 @@ public class BlockJigsaw extends BlockSolidMeta implements Faceable {
         } else {
             this.setDamage(player.getHorizontalFacing().getOpposite().getIndex());
         }
-        this.level.setBlock(block, this, true, false);
+        this.getLevel().setBlock(block, this, true, false);
 
         return super.place(item, block, target, face, fx, fy, fz, player);
     }

@@ -127,7 +127,7 @@ public class EntityBreedingExecutor<T extends EntityAnimal> implements IBehavior
     }
 
     @Nullable protected T getNearestInLove(EntityIntelligent entity) {
-        var entities = entity.level.getEntities();
+        var entities = entity.getLevel().getEntities();
         var maxDistanceSquared = -1d;
         T nearestInLove = null;
         for (var e : entities) {

@@ -77,22 +77,22 @@ public class BlockFarmland extends BlockTransparentMeta {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (this.up().isSolid()) {
                 var farmEvent = new FarmLandDecayEvent(null, this);
-                this.level.getServer().getPluginManager().callEvent(farmEvent);
+                this.getLevel().getServer().getPluginManager().callEvent(farmEvent);
                 if (farmEvent.isCancelled()) return 0;
 
-                this.level.setBlock(this, Block.get(BlockID.DIRT), false, true);
+                this.getLevel().setBlock(this, Block.get(BlockID.DIRT), false, true);
 
                 return type;
             }
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {
             Vector3 v = new Vector3();
-            if (this.level.getBlock(v.setComponents(x(), this.y() + 1, z())) instanceof BlockCrops) {
+            if (this.getLevel().getBlock(v.setComponents(x(), this.y() + 1, z())) instanceof BlockCrops) {
                 return 0;
             }
 
             boolean found = false;
 
-            if (this.level.isRaining()) {
+            if (this.getLevel().isRaining()) {
                 found = true;
             } else {
                 for (int x = (int) this.x() - 4; x <= this.x() + 4; x++) {
@@ -103,13 +103,13 @@ public class BlockFarmland extends BlockTransparentMeta {
                             }
 
                             v.setComponents(x, y, z);
-                            int block = this.level.getBlockIdAt(v.getFloorX(), v.getFloorY(), v.getFloorZ());
+                            int block = this.getLevel().getBlockIdAt(v.getFloorX(), v.getFloorY(), v.getFloorZ());
 
                             if (block == FLOWING_WATER || block == STILL_WATER || block == ICE_FROSTED) {
                                 found = true;
                                 break;
                             } else {
-                                block = this.level.getBlockIdAt(v.getFloorX(), v.getFloorY(), v.getFloorZ(), 1);
+                                block = this.getLevel().getBlockIdAt(v.getFloorX(), v.getFloorY(), v.getFloorZ(), 1);
                                 if (block == FLOWING_WATER || block == STILL_WATER || block == ICE_FROSTED) {
                                     found = true;
                                     break;
@@ -120,24 +120,24 @@ public class BlockFarmland extends BlockTransparentMeta {
                 }
             }
 
-            Block block = this.level.getBlock(v.setComponents(x(), y() - 1, z()));
+            Block block = this.getLevel().getBlock(v.setComponents(x(), y() - 1, z()));
             int damage = this.getDamage();
             if (found || block instanceof BlockWater || block instanceof BlockIceFrosted) {
                 if (damage < 7) {
                     this.setDamage(7);
-                    this.level.setBlock(this, this, false, damage == 0);
+                    this.getLevel().setBlock(this, this, false, damage == 0);
                 }
                 return Level.BLOCK_UPDATE_RANDOM;
             }
 
             if (damage > 0) {
                 this.setDamage(damage - 1);
-                this.level.setBlock(this, this, false, damage == 1);
+                this.getLevel().setBlock(this, this, false, damage == 1);
             } else {
                 var farmEvent = new FarmLandDecayEvent(null, this);
-                this.level.getServer().getPluginManager().callEvent(farmEvent);
+                this.getLevel().getServer().getPluginManager().callEvent(farmEvent);
                 if (farmEvent.isCancelled()) return 0;
-                this.level.setBlock(this, Block.get(Block.DIRT), false, true);
+                this.getLevel().setBlock(this, Block.get(Block.DIRT), false, true);
             }
 
             return Level.BLOCK_UPDATE_RANDOM;

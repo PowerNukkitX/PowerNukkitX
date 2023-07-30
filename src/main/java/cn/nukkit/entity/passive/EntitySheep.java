@@ -192,12 +192,12 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
         this.sheared = true;
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_SHEARED, true);
 
-        this.level.dropItem(
+        this.getLevel().dropItem(
                 this,
                 Item.get(Item.WOOL, getColor(), ThreadLocalRandom.current().nextInt(2) + 1));
 
-        level.addSound(this, Sound.MOB_SHEEP_SHEAR);
-        level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.SHEAR));
+        getLevel().addSound(this, Sound.MOB_SHEEP_SHEAR);
+        getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.SHEAR));
         return true;
     }
 

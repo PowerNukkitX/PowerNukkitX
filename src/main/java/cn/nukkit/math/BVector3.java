@@ -56,7 +56,7 @@ public final class BVector3 {
      * @return the b vector 3
      */
     public static BVector3 fromLocation(Location location, double length) {
-        return new BVector3(location.getYaw(), location.getPitch(), length);
+        return new BVector3(location.yaw(), location.pitch(), length);
     }
 
     /**

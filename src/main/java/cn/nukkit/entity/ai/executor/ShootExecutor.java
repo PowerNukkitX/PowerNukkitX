@@ -87,7 +87,7 @@ public class ShootExecutor implements EntityControl, IBehaviorExecutor {
             if (player.isCreative()
                     || player.isSpectator()
                     || !player.isOnline()
-                    || !entity.level.getName().equals(player.level.getName())) {
+                    || !entity.getLevel().getName().equals(player.getLevel().getName())) {
                 return false;
             }
         }
@@ -175,13 +175,13 @@ public class ShootExecutor implements EntityControl, IBehaviorExecutor {
                         .add(new DoubleTag("", entity.z())))
                 .putList(new ListTag<DoubleTag>("Motion")
                         .add(new DoubleTag(
-                                "", -Math.sin(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI)))
-                        .add(new DoubleTag("", -Math.sin(entity.pitch / 180 * Math.PI)))
+                                "", -Math.sin(entity.headYaw() / 180 * Math.PI) * Math.cos(entity.pitch() / 180 * Math.PI)))
+                        .add(new DoubleTag("", -Math.sin(entity.pitch() / 180 * Math.PI)))
                         .add(new DoubleTag(
-                                "", Math.cos(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI))))
+                                "", Math.cos(entity.headYaw() / 180 * Math.PI) * Math.cos(entity.pitch() / 180 * Math.PI))))
                 .putList(new ListTag<FloatTag>("Rotation")
-                        .add(new FloatTag("", (entity.headYaw > 180 ? 360 : 0) - (float) entity.headYaw))
-                        .add(new FloatTag("", (float) -entity.pitch)))
+                        .add(new FloatTag("", (entity.headYaw() > 180 ? 360 : 0) - (float) entity.headYaw()))
+                        .add(new FloatTag("", (float) -entity.pitch())))
                 .putShort("Fire", flame ? 45 * 60 : 0)
                 .putDouble("damage", damage);
 

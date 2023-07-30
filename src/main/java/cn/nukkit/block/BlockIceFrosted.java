@@ -76,29 +76,29 @@ public class BlockIceFrosted extends BlockTransparentMeta {
             Player player) {
         boolean success = super.place(item, block, target, face, fx, fy, fz, player);
         if (success) {
-            level.scheduleUpdate(this, ThreadLocalRandom.current().nextInt(20, 40));
+            getLevel().scheduleUpdate(this, ThreadLocalRandom.current().nextInt(20, 40));
         }
         return success;
     }
 
     @Override
     public boolean onBreak(Item item) {
-        level.setBlock(this, get(FLOWING_WATER), true);
+        getLevel().setBlock(this, get(FLOWING_WATER), true);
         return true;
     }
 
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
-            if (level.getBlockLightAt(getFloorX(), getFloorY(), getFloorZ()) > 11
+            if (getLevel().getBlockLightAt(getFloorX(), getFloorY(), getFloorZ()) > 11
                     && (ThreadLocalRandom.current().nextInt(3) == 0 || countNeighbors() < 4)) {
                 slightlyMelt(true);
             } else {
-                level.scheduleUpdate(this, ThreadLocalRandom.current().nextInt(20, 40));
+                getLevel().scheduleUpdate(this, ThreadLocalRandom.current().nextInt(20, 40));
             }
         } else if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (countNeighbors() < 2) {
-                level.setBlock(this, layer, get(FLOWING_WATER), true);
+                getLevel().setBlock(this, layer, get(FLOWING_WATER), true);
             }
         }
         return super.onUpdate(type);
@@ -119,11 +119,11 @@ public class BlockIceFrosted extends BlockTransparentMeta {
         int age = getDamage();
         if (age < 3) {
             setDamage(age + 1);
-            level.setBlock(this, layer, this, true);
-            level.scheduleUpdate(
-                    level.getBlock(this), ThreadLocalRandom.current().nextInt(20, 40));
+            getLevel().setBlock(this, layer, this, true);
+            getLevel().scheduleUpdate(
+                    getLevel().getBlock(this), ThreadLocalRandom.current().nextInt(20, 40));
         } else {
-            level.setBlock(this, layer, get(FLOWING_WATER), true);
+            getLevel().setBlock(this, layer, get(FLOWING_WATER), true);
             if (isSource) {
                 for (BlockFace face : BlockFace.values()) {
                     Block block = getSide(face);

@@ -57,8 +57,8 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     @Override
     public void asyncPrepare(int currentTick) {
         // 计算是否需要重新计算高开销实体运动
-        this.needsRecalcMovement = this.level.tickRateOptDelay == 1
-                || ((currentTick + tickSpread) & (this.level.tickRateOptDelay - 1)) == 0;
+        this.needsRecalcMovement = this.getLevel().tickRateOptDelay == 1
+                || ((currentTick + tickSpread) & (this.getLevel().tickRateOptDelay - 1)) == 0;
         // 重新计算绝对位置碰撞箱
         this.calculateOffsetBoundingBox();
         if (!this.isImmobile()) {
@@ -288,7 +288,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
 
     protected void handleCollideMovement(int currentTick) {
         var selfAABB = getOffsetBoundingBox().getOffsetBoundingBox(this.motionX, this.motionY, this.motionZ);
-        var collidingEntities = this.level.fastCollidingEntities(selfAABB, this);
+        var collidingEntities = this.getLevel().fastCollidingEntities(selfAABB, this);
         collidingEntities.removeIf(
                 entity -> !(entity.canCollide() && (entity instanceof EntityPhysical || entity instanceof Player)));
         var size = collidingEntities.size();

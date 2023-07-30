@@ -22,7 +22,7 @@ public class TNTDispenseBehavior extends DefaultDispenseBehavior {
         Vector3 pos = block.getSide(face).add(0.5, 0, 0.5);
 
         EntityPrimedTNT tnt =
-                new EntityPrimedTNT(block.level.getChunk(pos.getChunkX(), pos.getChunkZ()), Entity.getDefaultNBT(pos));
+                new EntityPrimedTNT(block.getLevel().getChunk(pos.getChunkX(), pos.getChunkZ()), Entity.getDefaultNBT(pos));
         tnt.spawnToAll();
 
         return null;

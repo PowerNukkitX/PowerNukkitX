@@ -75,16 +75,16 @@ public class BlockBamboo extends BlockTransparentMeta implements BlockFlowerPot.
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (isSupportInvalid()) {
-                level.scheduleUpdate(this, 0);
+                getLevel().scheduleUpdate(this, 0);
             }
             return type;
         } else if (type == Level.BLOCK_UPDATE_SCHEDULED) {
-            level.useBreakOn(this, null, null, true);
+            getLevel().useBreakOn(this, null, null, true);
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {
             Block up = up();
             if (getAge() == 0
                     && up.getId() == AIR
-                    && level.getFullLight(up) >= BlockCrops.MINIMUM_LIGHT_LEVEL
+                    && getLevel().getFullLight(up) >= BlockCrops.MINIMUM_LIGHT_LEVEL
                     && ThreadLocalRandom.current().nextInt(3) == 0) {
                 grow(up);
             }
@@ -103,13 +103,13 @@ public class BlockBamboo extends BlockTransparentMeta implements BlockFlowerPot.
             newState.setLeafSize(LEAF_SIZE_SMALL);
         }
         BlockGrowEvent blockGrowEvent = new BlockGrowEvent(up, newState);
-        level.getServer().getPluginManager().callEvent(blockGrowEvent);
+        getLevel().getServer().getPluginManager().callEvent(blockGrowEvent);
         if (!blockGrowEvent.isCancelled()) {
             Block newState1 = blockGrowEvent.getNewState();
             newState1.setX(x());
             newState1.setY(up.y());
             newState1.setZ(z());
-            newState1.level = level;
+            newState1.setLevel(getLevel());
             newState1.place(toItem(), up, this, BlockFace.DOWN, 0.5, 0.5, 0.5, null);
             return true;
         }
@@ -147,7 +147,7 @@ public class BlockBamboo extends BlockTransparentMeta implements BlockFlowerPot.
             sampling.setX(x());
             sampling.setY(y());
             sampling.setZ(z());
-            sampling.level = level;
+            sampling.setLevel(getLevel());
             return sampling.place(item, block, target, face, fx, fy, fz, player);
         }
 
@@ -179,18 +179,18 @@ public class BlockBamboo extends BlockTransparentMeta implements BlockFlowerPot.
                     bambooDown.setLeafSize(LEAF_SIZE_SMALL);
                     bambooDown.setThick(true);
                     bambooDown.setAge(1);
-                    this.level.setBlock(bambooDown, bambooDown, false, true);
+                    this.getLevel().setBlock(bambooDown, bambooDown, false, true);
                     while ((down = down.down()) instanceof BlockBamboo) {
                         bambooDown = (BlockBamboo) down;
                         bambooDown.setThick(true);
                         bambooDown.setLeafSize(LEAF_SIZE_NONE);
                         bambooDown.setAge(1);
-                        this.level.setBlock(bambooDown, bambooDown, false, true);
+                        this.getLevel().setBlock(bambooDown, bambooDown, false, true);
                     }
                 } else {
                     setLeafSize(LEAF_SIZE_SMALL);
                     bambooDown.setAge(1);
-                    this.level.setBlock(bambooDown, bambooDown, false, true);
+                    this.getLevel().setBlock(bambooDown, bambooDown, false, true);
                 }
             } else {
                 setThick(true);
@@ -198,19 +198,19 @@ public class BlockBamboo extends BlockTransparentMeta implements BlockFlowerPot.
                 setAge(0);
                 bambooDown.setLeafSize(LEAF_SIZE_LARGE);
                 bambooDown.setAge(1);
-                this.level.setBlock(bambooDown, bambooDown, false, true);
+                this.getLevel().setBlock(bambooDown, bambooDown, false, true);
                 down = bambooDown.down();
                 if (down instanceof BlockBamboo) {
                     bambooDown = (BlockBamboo) down;
                     bambooDown.setLeafSize(LEAF_SIZE_SMALL);
                     bambooDown.setAge(1);
-                    this.level.setBlock(bambooDown, bambooDown, false, true);
+                    this.getLevel().setBlock(bambooDown, bambooDown, false, true);
                     down = bambooDown.down();
                     if (down instanceof BlockBamboo) {
                         bambooDown = (BlockBamboo) down;
                         bambooDown.setLeafSize(LEAF_SIZE_NONE);
                         bambooDown.setAge(1);
-                        this.level.setBlock(bambooDown, bambooDown, false, true);
+                        this.getLevel().setBlock(bambooDown, bambooDown, false, true);
                     }
                 }
             }
@@ -225,7 +225,7 @@ public class BlockBamboo extends BlockTransparentMeta implements BlockFlowerPot.
             setAge(1);
         }
 
-        this.level.setBlock(this, this, false, true);
+        this.getLevel().setBlock(this, this, false, true);
         return true;
     }
 
@@ -237,7 +237,7 @@ public class BlockBamboo extends BlockTransparentMeta implements BlockFlowerPot.
             int height = bambooDown.countHeight();
             if (height < 15 && (height < 11 || !(ThreadLocalRandom.current().nextFloat() < 0.25F))) {
                 bambooDown.setAge(0);
-                this.level.setBlock(bambooDown, bambooDown.layer, bambooDown, false, true);
+                this.getLevel().setBlock(bambooDown, bambooDown.layer, bambooDown, false, true);
             }
         }
         return super.onBreak(item);
@@ -342,7 +342,7 @@ public class BlockBamboo extends BlockTransparentMeta implements BlockFlowerPot.
             int count = 1;
 
             for (int i = 1; i <= 16; i++) {
-                int id = this.level.getBlockIdAt(this.getFloorX(), this.getFloorY() - i, this.getFloorZ());
+                int id = this.getLevel().getBlockIdAt(this.getFloorX(), this.getFloorY() - i, this.getFloorZ());
                 if (id == BAMBOO) {
                     count++;
                 } else {
@@ -351,7 +351,7 @@ public class BlockBamboo extends BlockTransparentMeta implements BlockFlowerPot.
             }
 
             for (int i = 1; i <= 16; i++) {
-                int id = this.level.getBlockIdAt(this.getFloorX(), this.getFloorY() + i, this.getFloorZ());
+                int id = this.getLevel().getBlockIdAt(this.getFloorX(), this.getFloorY() + i, this.getFloorZ());
                 if (id == BAMBOO) {
                     top++;
                     count++;
@@ -376,7 +376,7 @@ public class BlockBamboo extends BlockTransparentMeta implements BlockFlowerPot.
                 if (player != null && player.isSurvival()) {
                     item.count--;
                 }
-                level.addParticle(new BoneMealParticle(this));
+                getLevel().addParticle(new BoneMealParticle(this));
             }
 
             return true;

@@ -106,14 +106,14 @@ public abstract class BlockAmethystBud extends BlockTransparentMeta implements F
             @Nullable Player player) {
         if (!target.isSolid()) return false;
         setBlockFace(face);
-        this.level.setBlock(block, this, true, true);
+        this.getLevel().setBlock(block, this, true, true);
         return true;
     }
 
     @Override
     public boolean onBreak(Item item) {
         if (item.isPickaxe()) {
-            Arrays.stream(this.getDrops(item)).forEach(item1 -> this.level.dropItem(this.add(0.5, 0, 0.5), item1));
+            Arrays.stream(this.getDrops(item)).forEach(item1 -> this.getLevel().dropItem(this.add(0.5, 0, 0.5), item1));
             this.getLevel().setBlock(this, layer, Block.get(BlockID.AIR), true, true);
         } else {
             this.getLevel().setBlock(this, layer, Block.get(BlockID.AIR), true, true);

@@ -1041,7 +1041,7 @@ public abstract class Block extends Position
             block.setX(pos.x());
             block.setY(pos.y());
             block.setZ(pos.z());
-            block.level = pos.level;
+            block.setLevel(pos.getLevel());
             block.layer = layer;
             return block;
         }
@@ -1061,7 +1061,7 @@ public abstract class Block extends Position
             block.setX(pos.x());
             block.setY(pos.y());
             block.setZ(pos.z());
-            block.level = pos.level;
+            block.setLevel(pos.getLevel());
             block.layer = layer;
         }
         return block;
@@ -1105,7 +1105,7 @@ public abstract class Block extends Position
             block.setX(x);
             block.setY(y);
             block.setZ(z);
-            block.level = level;
+            block.setLevel(level);
             block.layer = layer;
             return block;
         }
@@ -1113,7 +1113,7 @@ public abstract class Block extends Position
         block.setX(x);
         block.setY(y);
         block.setZ(z);
-        block.level = level;
+        block.setLevel(level);
         block.layer = layer;
         return block;
     }
@@ -1144,7 +1144,7 @@ public abstract class Block extends Position
             block.setX(x);
             block.setY(y);
             block.setZ(z);
-            block.level = level;
+            block.setLevel(level);
             block.layer = layer;
             return block;
         }
@@ -1158,7 +1158,7 @@ public abstract class Block extends Position
         block.setX(x);
         block.setY(y);
         block.setZ(z);
-        block.level = level;
+        block.setLevel(level);
         block.layer = layer;
         return block;
     }
@@ -1901,7 +1901,7 @@ public abstract class Block extends Position
         this.setX((int) v.x());
         this.setY((int) v.y());
         this.setZ((int) v.z());
-        this.level = v.level;
+        this.setLevel(v.getLevel());
     }
 
     /**
@@ -2816,7 +2816,7 @@ public abstract class Block extends Position
 
     @PowerNukkitOnly
     public Optional<Block> firstInLayers(int startingLayer, Predicate<Block> condition) {
-        int maximumLayer = this.level.requireProvider().getMaximumLayer();
+        int maximumLayer = this.getLevel().requireProvider().getMaximumLayer();
         for (int layer = startingLayer; layer <= maximumLayer; layer++) {
             Block block = this.getLevelBlockAtLayer(layer);
             if (condition.test(block)) {
@@ -3107,16 +3107,16 @@ public abstract class Block extends Position
     @Since("1.4.0.0-PN")
     @PowerNukkitDifference(info = "Used so often, why not create own method here?", since = "1.4.0.0-PN")
     public boolean isGettingPower() {
-        if (!this.level.getServer().isRedstoneEnabled()) return false;
+        if (!this.getLevel().getServer().isRedstoneEnabled()) return false;
 
         for (BlockFace side : BlockFace.values()) {
             Block b = this.getSide(side).getLevelBlock();
 
-            if (this.level.isSidePowered(b.getLocation(), side)) {
+            if (this.getLevel().isSidePowered(b.getLocation(), side)) {
                 return true;
             }
         }
-        return this.level.isBlockPowered(this.getLocation());
+        return this.getLevel().isBlockPowered(this.getLocation());
     }
 
     @PowerNukkitXOnly
@@ -3138,7 +3138,7 @@ public abstract class Block extends Position
     @Since("1.6.0.0-PNX")
     public boolean cloneTo(Position pos, boolean update) {
         // 清除旧方块
-        level.setBlock(pos, this.layer, Block.get(Block.AIR), false, false);
+        getLevel().setBlock(pos, this.layer, Block.get(Block.AIR), false, false);
         if (this instanceof BlockEntityHolder<?> holder && holder.getBlockEntity() != null) {
             var clonedBlock = this.clone();
             clonedBlock.position(pos);
@@ -3147,7 +3147,7 @@ public abstract class Block extends Position
             return BlockEntityHolder.setBlockAndCreateEntity((BlockEntityHolder<?>) clonedBlock, true, update, tag)
                     != null;
         } else {
-            return pos.level.setBlock(pos, this.layer, this.clone(), true, update);
+            return pos.getLevel().setBlock(pos, this.layer, this.clone(), true, update);
         }
     }
 

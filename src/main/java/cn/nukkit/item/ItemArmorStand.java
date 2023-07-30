@@ -69,7 +69,7 @@ public class ItemArmorStand extends Item {
             }
         }
 
-        CompassRoseDirection direction = CompassRoseDirection.getClosestFromYaw(player.yaw, PRIMARY_INTER_CARDINAL)
+        CompassRoseDirection direction = CompassRoseDirection.getClosestFromYaw(player.yaw(), PRIMARY_INTER_CARDINAL)
                 .getOppositeFace();
         CompoundTag nbt = Entity.getDefaultNBT(block.add(0.5, 0, 0.5), new Vector3(), direction.getYaw(), 0f);
         if (this.hasCustomName()) {

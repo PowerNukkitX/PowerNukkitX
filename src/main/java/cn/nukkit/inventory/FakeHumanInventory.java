@@ -124,7 +124,7 @@ public class FakeHumanInventory extends BaseInventory {
                 this.sendArmorSlot(index, this.getHolder().getViewers().values());
                 if (this.getItem(index) instanceof ItemArmor) {
                     this.getHolder()
-                            .level
+                            .getLevel()
                             .getVibrationManager()
                             .callVibrationEvent(new VibrationEvent(
                                     getHolder(), this.getHolder().clone(), VibrationType.EQUIP));

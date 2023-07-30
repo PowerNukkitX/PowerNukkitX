@@ -59,7 +59,7 @@ public class DefaultDispenseBehavior implements DispenseBehavior {
                 dropPos.x() + 0.5,
                 dropPos.y() + 1,
                 dropPos.z() + 0.5);
-        for (Entity e : block.level.getNearbyEntities(bb)) {
+        for (Entity e : block.getLevel().getNearbyEntities(bb)) {
             if (e instanceof EntityInventoryHolder inventoryHolder && inventoryHolder.canEquipByDispenser()) {
                 EntityArmorInventory armorInventory = inventoryHolder.getArmorInventory();
                 if (clone.isHelmet() && armorInventory.getHelmet().getId() == Item.AIR) {
@@ -101,7 +101,7 @@ public class DefaultDispenseBehavior implements DispenseBehavior {
                 }
             }
         }
-        block.level.dropItem(dispensePos, clone, motion);
+        block.getLevel().dropItem(dispensePos, clone, motion);
         return null;
     }
 

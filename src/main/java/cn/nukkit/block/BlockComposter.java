@@ -114,7 +114,7 @@ public class BlockComposter extends BlockSolidMeta implements ItemID {
     public boolean incrementLevel() {
         int fillLevel = getPropertyValue(COMPOSTER_FILL_LEVEL) + 1;
         setPropertyValue(COMPOSTER_FILL_LEVEL, fillLevel);
-        this.level.setBlock(this, this, true, true);
+        this.getLevel().setBlock(this, this, true, true);
         return fillLevel == 8;
     }
 
@@ -138,12 +138,12 @@ public class BlockComposter extends BlockSolidMeta implements ItemID {
         if (isFull()) {
             ComposterEmptyEvent event =
                     new ComposterEmptyEvent(this, player, item, MinecraftItemID.BONE_MEAL.get(1), 0);
-            this.level.getServer().getPluginManager().callEvent(event);
+            this.getLevel().getServer().getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
                 setDamage(event.getNewLevel());
-                this.level.setBlock(this, this, true, true);
-                this.level.dropItem(add(0.5, 0.85, 0.5), event.getDrop(), event.getMotion(), false, 10);
-                this.level.addSound(add(0.5, 0.5, 0.5), Sound.BLOCK_COMPOSTER_EMPTY);
+                this.getLevel().setBlock(this, this, true, true);
+                this.getLevel().dropItem(add(0.5, 0.85, 0.5), event.getDrop(), event.getMotion(), false, 10);
+                this.getLevel().addSound(add(0.5, 0.5, 0.5), Sound.BLOCK_COMPOSTER_EMPTY);
             }
             return true;
         }
@@ -155,7 +155,7 @@ public class BlockComposter extends BlockSolidMeta implements ItemID {
 
         boolean success = new Random().nextInt(100) < chance;
         ComposterFillEvent event = new ComposterFillEvent(this, player, item, chance, success);
-        this.level.getServer().getPluginManager().callEvent(event);
+        this.getLevel().getServer().getPluginManager().callEvent(event);
 
         if (event.isCancelled()) {
             return true;
@@ -167,12 +167,12 @@ public class BlockComposter extends BlockSolidMeta implements ItemID {
 
         if (event.isSuccess()) {
             if (incrementLevel()) {
-                level.addSound(this.add(0.5, 0.5, 0.5), Sound.BLOCK_COMPOSTER_READY);
+                getLevel().addSound(this.add(0.5, 0.5, 0.5), Sound.BLOCK_COMPOSTER_READY);
             } else {
-                level.addSound(this.add(0.5, 0.5, 0.5), Sound.BLOCK_COMPOSTER_FILL_SUCCESS);
+                getLevel().addSound(this.add(0.5, 0.5, 0.5), Sound.BLOCK_COMPOSTER_FILL_SUCCESS);
             }
         } else {
-            level.addSound(this.add(0.5, 0.5, 0.5), Sound.BLOCK_COMPOSTER_FILL);
+            getLevel().addSound(this.add(0.5, 0.5, 0.5), Sound.BLOCK_COMPOSTER_FILL);
         }
 
         return true;
@@ -187,14 +187,14 @@ public class BlockComposter extends BlockSolidMeta implements ItemID {
     @PowerNukkitDifference
     public Item empty(@Nullable Item item, @Nullable Player player) {
         ComposterEmptyEvent event = new ComposterEmptyEvent(this, player, item, new ItemDye(DyeColor.BONE_MEAL), 0);
-        this.level.getServer().getPluginManager().callEvent(event);
+        this.getLevel().getServer().getPluginManager().callEvent(event);
         if (!event.isCancelled()) {
             setPropertyValue(COMPOSTER_FILL_LEVEL, event.getNewLevel());
-            this.level.setBlock(this, this, true, true);
+            this.getLevel().setBlock(this, this, true, true);
             if (item != null) {
-                this.level.dropItem(add(0.5, 0.85, 0.5), event.getDrop(), event.getMotion(), false, 10);
+                this.getLevel().dropItem(add(0.5, 0.85, 0.5), event.getDrop(), event.getMotion(), false, 10);
             }
-            this.level.addSound(add(0.5, 0.5, 0.5), Sound.BLOCK_COMPOSTER_EMPTY);
+            this.getLevel().addSound(add(0.5, 0.5, 0.5), Sound.BLOCK_COMPOSTER_EMPTY);
             return event.getDrop();
         }
         return null;

@@ -175,9 +175,9 @@ public class EntityBoat extends EntityVehicle {
         addEntity.id = "minecraft:boat";
         addEntity.entityUniqueId = this.getId();
         addEntity.entityRuntimeId = this.getId();
-        addEntity.yaw = (float) this.yaw;
-        addEntity.headYaw = (float) this.yaw;
-        addEntity.pitch = (float) this.pitch;
+        addEntity.yaw = (float) this.yaw();
+        addEntity.headYaw = (float) this.yaw();
+        addEntity.pitch = (float) this.pitch();
         addEntity.x = (float) this.x();
         addEntity.y = (float) this.y() + getBaseOffset();
         addEntity.z = (float) this.z();
@@ -233,8 +233,8 @@ public class EntityBoat extends EntityVehicle {
         }
 
         // A killer task
-        if (this.level != null) {
-            if (y() < this.level.getMinHeight() - 16) {
+        if (this.getLevel() != null) {
+            if (y() < this.getLevel().getMinHeight() - 16) {
                 kill();
                 return false;
             }
@@ -316,8 +316,8 @@ public class EntityBoat extends EntityVehicle {
 
         this.motionZ *= friction;
 
-        Location from = new Location(lastX, lastY, lastZ, lastYaw, lastPitch, level);
-        Location to = new Location(this.x(), this.y(), this.z(), this.yaw, this.pitch, level);
+        Location from = new Location(lastX, lastY, lastZ, lastYaw, lastPitch, getLevel());
+        Location to = new Location(this.x(), this.y(), this.z(), this.yaw(), this.pitch(), getLevel());
 
         if (!from.equals(to)) {
             this.getServer().getPluginManager().callEvent(new VehicleMoveEvent(this, from, to));
@@ -332,7 +332,7 @@ public class EntityBoat extends EntityVehicle {
             return false;
         }
 
-        for (Entity entity : this.level.getCollidingEntities(
+        for (Entity entity : this.getLevel().getCollidingEntities(
                 this.boundingBox.grow(0.20000000298023224, 0.0D, 0.20000000298023224), this)) {
             if (entity.riding != null
                     || !(entity instanceof EntityLiving)
@@ -442,7 +442,7 @@ public class EntityBoat extends EntityVehicle {
 
             @Override
             public void accept(int x, int y, int z) {
-                Block block = EntityBoat.this.level.getBlock(EntityBoat.this.temporalVector.setComponents(x, y, z));
+                Block block = EntityBoat.this.getLevel().getBlock(EntityBoat.this.temporalVector.setComponents(x, y, z));
 
                 if (block instanceof BlockWater || ((block = block.getLevelBlockAtLayer(1)) instanceof BlockWater)) {
                     double level = block.getMaxY();
@@ -485,7 +485,7 @@ public class EntityBoat extends EntityVehicle {
             entity.setDataProperty(
                     new FloatEntityData(DATA_RIDER_MIN_ROTATION, this.passengers.indexOf(entity) == 1 ? -90 : 1));
             entity.setDataProperty(new FloatEntityData(DATA_RIDER_ROTATION_OFFSET, -90));
-            entity.setRotation(yaw, entity.pitch);
+            entity.setRotation(yaw(), entity.pitch());
             entity.updateMovement();
         }
         return r;
@@ -597,7 +597,7 @@ public class EntityBoat extends EntityVehicle {
             }
         }
 
-        if (level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
+        if (getLevel().getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
             dropItem();
         }
     }
@@ -605,7 +605,7 @@ public class EntityBoat extends EntityVehicle {
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     protected void dropItem() {
-        this.level.dropItem(this, Item.get(ItemID.BOAT, this.woodID));
+        this.getLevel().dropItem(this, Item.get(ItemID.BOAT, this.woodID));
     }
 
     @Override

@@ -47,7 +47,7 @@ public class EntityExplosionExecutor implements IBehaviorExecutor {
 
         currentTick++;
         if (explodeTime > currentTick) {
-            entity.level.addSound(entity, Sound.RANDOM_FUSE);
+            entity.getLevel().addSound(entity, Sound.RANDOM_FUSE);
             entity.setDataProperty(new IntEntityData(Entity.DATA_FUSE_LENGTH, currentTick));
             entity.setDataFlag(DATA_FLAGS, DATA_FLAG_IGNITED, true);
             return true;
@@ -76,7 +76,7 @@ public class EntityExplosionExecutor implements IBehaviorExecutor {
                         ? creeper.isPowered() ? explodeForce * 2 : explodeForce
                         : explodeForce);
 
-        if (!entity.level.gameRules.getBoolean(GameRule.MOB_GRIEFING)) {
+        if (!entity.getLevel().gameRules.getBoolean(GameRule.MOB_GRIEFING)) {
             ev.setBlockBreaking(false);
         }
 
@@ -85,12 +85,12 @@ public class EntityExplosionExecutor implements IBehaviorExecutor {
         if (!ev.isCancelled()) {
             Explosion explosion = new Explosion(entity, (float) ev.getForce(), entity);
 
-            if (ev.isBlockBreaking() && entity.level.getGameRules().getBoolean(GameRule.MOB_GRIEFING)) {
+            if (ev.isBlockBreaking() && entity.getLevel().getGameRules().getBoolean(GameRule.MOB_GRIEFING)) {
                 explosion.explodeA();
             }
 
             explosion.explodeB();
-            entity.level.addParticle(new HugeExplodeSeedParticle(entity));
+            entity.getLevel().addParticle(new HugeExplodeSeedParticle(entity));
         }
 
         entity.close();

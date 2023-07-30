@@ -92,7 +92,7 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
                         // 带动站在移动方块上的实体
                         )
                 .addCoord(0, moveDirection.getAxis().isHorizontal() ? 0.25 : 0, 0);
-        for (Entity entity : this.level.getCollidingEntities(bb)) piston.moveEntity(entity, moveDirection);
+        for (Entity entity : this.getLevel().getCollidingEntities(bb)) piston.moveEntity(entity, moveDirection);
     }
 
     @Override

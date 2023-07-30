@@ -56,8 +56,8 @@ public abstract class BlockPistonBase extends BlockTransparentMeta
      * @return 指定方块是否能向指定方向推动
      */
     public static boolean canPush(Block block, BlockFace face, boolean destroyBlocks, boolean extending) {
-        var min = block.level.getMinHeight();
-        var max = block.level.getMaxHeight() - 1;
+        var min = block.getLevel().getMinHeight();
+        var max = block.getLevel().getMaxHeight() - 1;
         if (block.y() >= min
                 && (face != BlockFace.DOWN || block.y() != min)
                 && block.y() <= max
@@ -134,13 +134,13 @@ public abstract class BlockPistonBase extends BlockTransparentMeta
                 this.setPropertyValue(CommonBlockProperties.FACING_DIRECTION, player.getHorizontalFacing());
             }
         }
-        this.level.setBlock(block, this, true, true);
+        this.getLevel().setBlock(block, this, true, true);
         var nbt = BlockEntity.getDefaultCompound(this, BlockEntity.PISTON_ARM)
                 .putInt("facing", this.getBlockFace().getIndex())
                 .putBoolean("Sticky", this.sticky)
                 .putBoolean("powered", isGettingPower());
         var piston = (BlockEntityPistonArm) BlockEntity.createBlockEntity(
-                BlockEntity.PISTON_ARM, this.level.getChunk(getChunkX(), getChunkZ()), nbt);
+                BlockEntity.PISTON_ARM, this.getLevel().getChunk(getChunkX(), getChunkZ()), nbt);
         piston.powered = isGettingPower();
         this.checkState(piston.powered);
         return true;
@@ -148,7 +148,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta
 
     @Override
     public boolean onBreak(Item item) {
-        this.level.setBlock(this, Block.get(BlockID.AIR), true, true);
+        this.getLevel().setBlock(this, Block.get(BlockID.AIR), true, true);
         var block = this.getSide(getBlockFace());
         if (block instanceof BlockPistonHead b && b.getBlockFace() == this.getBlockFace()) block.onBreak(item);
         return true;
@@ -167,12 +167,12 @@ public abstract class BlockPistonBase extends BlockTransparentMeta
             since = "1.4.0.0-PN")
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_REDSTONE || type == Level.BLOCK_UPDATE_MOVED) {
-            if (!this.level.getServer().isRedstoneEnabled()) return 0;
-            level.scheduleUpdate(this, 1);
+            if (!this.getLevel().getServer().isRedstoneEnabled()) return 0;
+            getLevel().scheduleUpdate(this, 1);
             return type;
         }
         if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_SCHEDULED) {
-            if (!this.level.getServer().isRedstoneEnabled()) return 0;
+            if (!this.getLevel().getServer().isRedstoneEnabled()) return 0;
             // We can't use getOrCreateBlockEntity(), because the update method is called on block place,
             // before the "real" BlockEntity is set. That means, if we'd use the other method here,
             // it would create two BlockEntities.
@@ -186,13 +186,13 @@ public abstract class BlockPistonBase extends BlockTransparentMeta
                 if (powered && !isExtended())
                     // 推出未成功,下一个计划刻再次自检
                     // TODO: 这里可以记录阻挡的方块并在阻挡因素移除后同步更新到活塞，而不是使用计划刻
-                    level.scheduleUpdate(this, 1);
+                    getLevel().scheduleUpdate(this, 1);
                 return type;
             }
             // 上一次推出未成功
             if (type == Level.BLOCK_UPDATE_SCHEDULED && powered && !isExtended() && !checkState(true))
                 // 依然不成功，下一个计划刻继续自检
-                level.scheduleUpdate(this, 1);
+                getLevel().scheduleUpdate(this, 1);
             return type;
         }
         return 0;
@@ -207,7 +207,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta
             if (side == face) continue;
             var b = this.getSide(side);
             if (b.getId() == Block.REDSTONE_WIRE && b.getDamage() > 0) return true;
-            if (this.level.isSidePowered(b, side)) return true;
+            if (this.getLevel().isSidePowered(b, side)) return true;
         }
         return false;
     }
@@ -229,7 +229,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta
     }
 
     protected boolean checkState(Boolean isPowered) {
-        if (!this.level.getServer().isRedstoneEnabled()) return false;
+        if (!this.getLevel().getServer().isRedstoneEnabled()) return false;
         if (isPowered == null) isPowered = this.isGettingPower();
         var face = getBlockFace();
         var block = getSide(face);
@@ -265,7 +265,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta
         List<BlockVector3> toMoveBlockVec = new ArrayList<>();
         var event = new BlockPistonEvent(
                 this, pistonFace, calculator.getBlocksToMove(), calculator.getBlocksToDestroy(), extending);
-        this.level.getServer().getPluginManager().callEvent(event);
+        this.getLevel().getServer().getPluginManager().callEvent(event);
         if (event.isCancelled()) return false;
         var oldPosList = new ArrayList<Vector3>();
         var blockEntityHolderList = new ArrayList<BlockEntityHolder<?>>();
@@ -276,8 +276,8 @@ public abstract class BlockPistonBase extends BlockTransparentMeta
             for (int i = destroyBlocks.size() - 1; i >= 0; --i) {
                 var block = destroyBlocks.get(i);
                 // 清除位置上所含的水等
-                level.setBlock(block, 1, Block.get(BlockID.AIR), true, false);
-                this.level.useBreakOn(block);
+                getLevel().setBlock(block, 1, Block.get(BlockID.AIR), true, false);
+                this.getLevel().useBreakOn(block);
             }
             var blocksToMove = calculator.getBlocksToMove();
             toMoveBlockVec = blocksToMove.stream().map(Vector3::asBlockVector3).collect(Collectors.toList());
@@ -286,7 +286,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta
                 var oldPos = new Vector3(blockToMove.x(), blockToMove.y(), blockToMove.z());
                 var newPos = blockToMove.getSidePos(moveDirection);
                 // 清除位置上所含的水等
-                level.setBlock(newPos, 1, Block.get(AIR), true, false);
+                getLevel().setBlock(newPos, 1, Block.get(AIR), true, false);
                 // TODO: 使用Block-State Tag而不是id-meta
                 // 2023/2/8: NBTIO.getBlockHelper()有性能问题，先不换用
                 CompoundTag movingBlockTag = /*NBTIO.putBlockHelper(blockToMove);*/ new CompoundTag()
@@ -300,7 +300,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta
                         .putInt("pistonPosY", this.getFloorY())
                         .putInt("pistonPosZ", this.getFloorZ())
                         .putCompound("movingBlock", movingBlockTag);
-                var blockEntity = this.level.getBlockEntity(oldPos);
+                var blockEntity = this.getLevel().getBlockEntity(oldPos);
                 // 移动方块实体
                 if (blockEntity != null && !(blockEntity instanceof BlockEntityMovingBlock)) {
                     blockEntity.saveNBT();
@@ -311,7 +311,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta
                 }
                 oldPosList.add(oldPos);
                 blockEntityHolderList.add((BlockEntityHolder<?>)
-                        BlockState.of(BlockID.MOVING_BLOCK).getBlock(Position.fromObject(newPos, this.level)));
+                        BlockState.of(BlockID.MOVING_BLOCK).getBlock(Position.fromObject(newPos, this.getLevel())));
                 nbtList.add(nbt);
             }
         }
@@ -323,16 +323,16 @@ public abstract class BlockPistonBase extends BlockTransparentMeta
                 var blockEntityHolder = blockEntityHolderList.get(i);
                 var nbt = nbtList.get(i);
                 BlockEntityHolder.setBlockAndCreateEntity(blockEntityHolder, true, true, nbt);
-                if (this.level.getBlock(oldPos).getId() != BlockID.MOVING_BLOCK)
-                    this.level.setBlock(oldPos, Block.get(BlockID.AIR));
+                if (this.getLevel().getBlock(oldPos).getId() != BlockID.MOVING_BLOCK)
+                    this.getLevel().setBlock(oldPos, Block.get(BlockID.AIR));
             }
         }
         // 创建活塞臂方块
         if (extending) {
             var pistonArmPos = this.getSide(pistonFace);
             // 清除位置上所含的水等
-            level.setBlock(pistonArmPos, 1, Block.get(AIR), true, false);
-            this.level.setBlock(pistonArmPos, createHead(this.getDamage()));
+            getLevel().setBlock(pistonArmPos, 1, Block.get(AIR), true, false);
+            this.getLevel().setBlock(pistonArmPos, createHead(this.getDamage()));
         }
         // 开始移动
         this.getBlockEntity().move();

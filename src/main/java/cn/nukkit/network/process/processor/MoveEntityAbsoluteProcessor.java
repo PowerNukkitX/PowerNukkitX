@@ -31,9 +31,9 @@ public class MoveEntityAbsoluteProcessor extends DataPacketProcessor<MoveEntityA
                     movedEntity.x(),
                     movedEntity.y(),
                     movedEntity.z(),
-                    movedEntity.yaw,
-                    movedEntity.pitch,
-                    movedEntity.yaw);
+                    movedEntity.yaw(),
+                    movedEntity.pitch(),
+                    movedEntity.yaw());
             return;
         }
 

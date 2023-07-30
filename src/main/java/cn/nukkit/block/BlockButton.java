@@ -89,7 +89,7 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
         }
 
         setBlockFace(face);
-        this.level.setBlock(block, this, true, true);
+        this.getLevel().setBlock(block, this, true, true);
         return true;
     }
 
@@ -105,16 +105,16 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
             return false;
         }
 
-        this.level.scheduleUpdate(this, 30);
+        this.getLevel().scheduleUpdate(this, 30);
 
         setActivated(true, player);
-        this.level.setBlock(this, this, true, false);
-        this.level.addLevelSoundEvent(
+        this.getLevel().setBlock(this, this, true, false);
+        this.getLevel().addLevelSoundEvent(
                 this.add(0.5, 0.5, 0.5),
                 LevelSoundEventPacket.SOUND_POWER_ON,
                 GlobalBlockPalette.getOrCreateRuntimeId(this.getId(), this.getDamage()));
-        if (this.level.getServer().isRedstoneEnabled()) {
-            this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 0, 15));
+        if (this.getLevel().getServer().isRedstoneEnabled()) {
+            this.getLevel().getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 0, 15));
 
             updateAroundRedstone();
             RedstoneComponent.updateAroundRedstone(getSide(getFacing().getOpposite()), getFacing());
@@ -131,20 +131,20 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
             BlockFace touchingFace = thisFace.getOpposite();
             Block side = this.getSide(touchingFace);
             if (!BlockLever.isSupportValid(side, thisFace)) {
-                this.level.useBreakOn(this, Item.get(Item.WOODEN_PICKAXE));
+                this.getLevel().useBreakOn(this, Item.get(Item.WOODEN_PICKAXE));
                 return Level.BLOCK_UPDATE_NORMAL;
             }
         } else if (type == Level.BLOCK_UPDATE_SCHEDULED) {
             if (this.isActivated()) {
                 setActivated(false);
-                this.level.setBlock(this, this, true, false);
-                this.level.addLevelSoundEvent(
+                this.getLevel().setBlock(this, this, true, false);
+                this.getLevel().addLevelSoundEvent(
                         this.add(0.5, 0.5, 0.5),
                         LevelSoundEventPacket.SOUND_POWER_OFF,
                         GlobalBlockPalette.getOrCreateRuntimeId(this.getId(), this.getDamage()));
 
-                if (this.level.getServer().isRedstoneEnabled()) {
-                    this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 15, 0));
+                if (this.getLevel().getServer().isRedstoneEnabled()) {
+                    this.getLevel().getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 15, 0));
 
                     updateAroundRedstone();
                     RedstoneComponent.updateAroundRedstone(getSide(getFacing().getOpposite()), getFacing());
@@ -172,12 +172,12 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
         setBooleanValue(BUTTON_PRESSED, activated);
         var pos = this.add(0.5, 0.5, 0.5);
         if (activated) {
-            this.level
+            this.getLevel()
                     .getVibrationManager()
                     .callVibrationEvent(
                             new VibrationEvent(player != null ? player : this, pos, VibrationType.BLOCK_ACTIVATE));
         } else {
-            this.level
+            this.getLevel()
                     .getVibrationManager()
                     .callVibrationEvent(
                             new VibrationEvent(player != null ? player : this, pos, VibrationType.BLOCK_DEACTIVATE));
@@ -213,7 +213,7 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
     @Override
     public boolean onBreak(Item item) {
         if (isActivated()) {
-            this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 15, 0));
+            this.getLevel().getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 15, 0));
         }
 
         return super.onBreak(item);

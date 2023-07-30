@@ -70,7 +70,7 @@ public class BlockSugarcane extends BlockFlowable {
             int count = 1;
 
             for (int i = 1; i <= 2; i++) {
-                int id = this.level.getBlockIdAt(this.getFloorX(), this.getFloorY() - i, this.getFloorZ());
+                int id = this.getLevel().getBlockIdAt(this.getFloorX(), this.getFloorY() - i, this.getFloorZ());
 
                 if (id == REEDS) {
                     count++;
@@ -101,7 +101,7 @@ public class BlockSugarcane extends BlockFlowable {
                         item.count--;
                     }
 
-                    this.level.addParticle(new BoneMealParticle(this));
+                    this.getLevel().addParticle(new BoneMealParticle(this));
                 }
             }
 

@@ -29,7 +29,7 @@ public abstract class BlockNylium extends BlockSolid {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_RANDOM && !up().isTransparent()) {
-            level.setBlock(this, Block.get(NETHERRACK), false);
+            getLevel().setBlock(this, Block.get(NETHERRACK), false);
             return type;
         }
         return 0;
@@ -53,7 +53,7 @@ public abstract class BlockNylium extends BlockSolid {
 
         grow();
 
-        level.addParticle(new BoneMealParticle(up));
+        getLevel().addParticle(new BoneMealParticle(up));
 
         return true;
     }
@@ -61,7 +61,7 @@ public abstract class BlockNylium extends BlockSolid {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean grow() {
-        ObjectNyliumVegetation.growVegetation(level, this, new NukkitRandom());
+        ObjectNyliumVegetation.growVegetation(getLevel(), this, new NukkitRandom());
         return true;
     }
 

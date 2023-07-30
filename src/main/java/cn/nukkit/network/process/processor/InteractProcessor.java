@@ -32,7 +32,7 @@ public class InteractProcessor extends DataPacketProcessor<InteractPacket> {
             // player.resetCraftingGridType();
         }
 
-        Entity targetEntity = player.level.getEntity(pk.target);
+        Entity targetEntity = player.getLevel().getEntity(pk.target);
 
         if (targetEntity == null || !player.isAlive() || !targetEntity.isAlive()) {
             return;

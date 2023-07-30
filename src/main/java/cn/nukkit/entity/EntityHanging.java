@@ -64,12 +64,12 @@ public abstract class EntityHanging extends Entity {
             return true;
         }
 
-        if (this.lastYaw != this.yaw || this.lastX != this.x() || this.lastY != this.y() || this.lastZ != this.z()) {
+        if (this.lastYaw != this.yaw() || this.lastX != this.x() || this.lastY != this.y() || this.lastZ != this.z()) {
             this.despawnFromAll();
 
-            this.direction = (int) (this.yaw / 90);
+            this.direction = (int) (this.yaw() / 90);
 
-            this.lastYaw = this.yaw;
+            this.lastYaw = this.yaw();
             this.lastX = this.x();
             this.lastY = this.y();
             this.lastZ = this.z();

@@ -181,8 +181,8 @@ public class EntityFishingHook extends SlenderProjectile {
     }
 
     public int getWaterHeight() {
-        for (int y = this.getFloorY(); y < level.getMaxHeight(); y++) {
-            int id = this.level.getBlockIdAt(this.getFloorX(), y, this.getFloorZ());
+        for (int y = this.getFloorY(); y < getLevel().getMaxHeight(); y++) {
+            int id = this.getLevel().getBlockIdAt(this.getFloorX(), y, this.getFloorZ());
             if (id == Block.AIR) {
                 return y;
             }
@@ -210,7 +210,7 @@ public class EntityFishingHook extends SlenderProjectile {
 
         ThreadLocalRandom random = ThreadLocalRandom.current();
         for (int i = 0; i < 5; i++) {
-            this.level.addParticle(new BubbleParticle(this.setComponents(
+            this.getLevel().addParticle(new BubbleParticle(this.setComponents(
                     this.x() + random.nextDouble() * 0.5 - 0.25,
                     this.getWaterHeight(),
                     this.z() + random.nextDouble() * 0.5 - 0.25)));
@@ -232,7 +232,7 @@ public class EntityFishingHook extends SlenderProjectile {
                 this.fish.y(),
                 this.fish.z() + (this.z() - this.fish.z()) * multiply);
         if (ThreadLocalRandom.current().nextInt(100) < 85) {
-            this.level.addParticle(new WaterParticle(this.fish));
+            this.getLevel().addParticle(new WaterParticle(this.fish));
         }
         double dist = Math.abs(Math.sqrt(this.x() * this.x() + this.z() * this.z())
                 - Math.sqrt(this.fish.x() * this.fish.x() + this.fish.z() * this.fish.z()));
@@ -254,7 +254,7 @@ public class EntityFishingHook extends SlenderProjectile {
             if (!event.isCancelled()) {
                 EntityItem itemEntity = (EntityItem) Entity.createEntity(
                         EntityItem.NETWORK_ID,
-                        this.level.getChunk((int) this.x() >> 4, (int) this.z() >> 4, true),
+                        this.getLevel().getChunk((int) this.x() >> 4, (int) this.z() >> 4, true),
                         Entity.getDefaultNBT(
                                         pos,
                                         event.getMotion(),
@@ -293,8 +293,8 @@ public class EntityFishingHook extends SlenderProjectile {
         pk.speedX = (float) this.motionX;
         pk.speedY = (float) this.motionY;
         pk.speedZ = (float) this.motionZ;
-        pk.yaw = (float) this.yaw;
-        pk.pitch = (float) this.pitch;
+        pk.yaw = (float) this.yaw();
+        pk.pitch = (float) this.pitch();
 
         long ownerId = -1;
         if (this.shootingEntity != null) {

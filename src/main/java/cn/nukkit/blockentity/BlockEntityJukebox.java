@@ -75,7 +75,7 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
     public void dropItem() {
         if (this.recordItem.getId() != 0) {
             stop();
-            this.level.dropItem(this.up(), this.recordItem);
+            this.getLevel().dropItem(this.up(), this.recordItem);
             this.recordItem = Item.get(0);
         }
     }

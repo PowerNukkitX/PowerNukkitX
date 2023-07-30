@@ -68,7 +68,7 @@ public class BlockTripWireHook extends BlockTransparentMeta implements RedstoneC
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             var supportBlock = this.getSide(this.getFacing().getOpposite());
             if (!supportBlock.isNormalBlock() && !(supportBlock instanceof BlockGlass)) {
-                this.level.useBreakOn(this);
+                this.getLevel().useBreakOn(this);
             }
 
             return type;
@@ -101,7 +101,7 @@ public class BlockTripWireHook extends BlockTransparentMeta implements RedstoneC
             this.setFace(face);
         }
 
-        this.level.setBlock(this, this);
+        this.getLevel().setBlock(this, this);
 
         if (player != null) {
             this.calculateState(false, false, -1, null);
@@ -128,7 +128,7 @@ public class BlockTripWireHook extends BlockTransparentMeta implements RedstoneC
     }
 
     public void calculateState(boolean onBreak, boolean updateAround, int pos, Block block) {
-        if (!this.level.getServer().isRedstoneEnabled()) {
+        if (!this.getLevel().getServer().isRedstoneEnabled()) {
             return;
         }
 
@@ -143,7 +143,7 @@ public class BlockTripWireHook extends BlockTransparentMeta implements RedstoneC
 
         for (int i = 1; i < 42; ++i) {
             Vector3 vector = position.getSide(facing, i);
-            Block b = this.level.getBlock(vector);
+            Block b = this.getLevel().getBlock(vector);
 
             if (b instanceof BlockTripWireHook) {
                 if (((BlockTripWireHook) b).getFacing() == facing.getOpposite()) {
@@ -166,7 +166,7 @@ public class BlockTripWireHook extends BlockTransparentMeta implements RedstoneC
                     nextPowered |= disarmed && wirePowered;
 
                     if (i == pos) {
-                        this.level.scheduleUpdate(this, 10);
+                        this.getLevel().scheduleUpdate(this, 10);
                         canConnect &= disarmed;
                     }
                 }
@@ -177,7 +177,7 @@ public class BlockTripWireHook extends BlockTransparentMeta implements RedstoneC
         canConnect = canConnect & distance > 1;
         nextPowered = nextPowered & canConnect;
         BlockTripWireHook hook = (BlockTripWireHook) Block.get(BlockID.TRIPWIRE_HOOK);
-        hook.setLevel(this.level);
+        hook.setLevel(this.getLevel());
         hook.setAttached(canConnect);
         hook.setPowered(nextPowered);
 
@@ -185,7 +185,7 @@ public class BlockTripWireHook extends BlockTransparentMeta implements RedstoneC
             Position p = position.getSide(facing, distance);
             BlockFace face = facing.getOpposite();
             hook.setFace(face);
-            this.level.setBlock(p, hook, true, true);
+            this.getLevel().setBlock(p, hook, true, true);
             RedstoneComponent.updateAroundRedstone(p);
             RedstoneComponent.updateAroundRedstone(p.getSide(face.getOpposite()));
             this.addSound(p, canConnect, nextPowered, attached, powered);
@@ -195,7 +195,7 @@ public class BlockTripWireHook extends BlockTransparentMeta implements RedstoneC
 
         if (!onBreak) {
             hook.setFace(facing);
-            this.level.setBlock(position, hook, true, true);
+            this.getLevel().setBlock(position, hook, true, true);
 
             if (updateAround) {
                 updateAroundRedstone();
@@ -209,12 +209,12 @@ public class BlockTripWireHook extends BlockTransparentMeta implements RedstoneC
                 block = blocks[i];
 
                 if (block != null
-                        && this.level.getBlockIdAt(vc.getFloorX(), vc.getFloorY(), vc.getFloorZ()) != Block.AIR) {
+                        && this.getLevel().getBlockIdAt(vc.getFloorX(), vc.getFloorY(), vc.getFloorZ()) != Block.AIR) {
                     if (canConnect ^ ((block.getDamage() & 0x04) > 0)) {
                         block.setDamage(block.getDamage() ^ 0x04);
                     }
 
-                    this.level.setBlock(vc, block, true, true);
+                    this.getLevel().setBlock(vc, block, true, true);
                 }
             }
         }
@@ -222,15 +222,15 @@ public class BlockTripWireHook extends BlockTransparentMeta implements RedstoneC
 
     private void addSound(Vector3 pos, boolean canConnect, boolean nextPowered, boolean attached, boolean powered) {
         if (nextPowered && !powered) {
-            this.level.addLevelSoundEvent(pos, LevelSoundEventPacket.SOUND_POWER_ON);
-            this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 0, 15));
+            this.getLevel().addLevelSoundEvent(pos, LevelSoundEventPacket.SOUND_POWER_ON);
+            this.getLevel().getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 0, 15));
         } else if (!nextPowered && powered) {
-            this.level.addLevelSoundEvent(pos, LevelSoundEventPacket.SOUND_POWER_OFF);
-            this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 15, 0));
+            this.getLevel().addLevelSoundEvent(pos, LevelSoundEventPacket.SOUND_POWER_OFF);
+            this.getLevel().getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 15, 0));
         } else if (canConnect && !attached) {
-            this.level.addLevelSoundEvent(pos, LevelSoundEventPacket.SOUND_ATTACH);
+            this.getLevel().addLevelSoundEvent(pos, LevelSoundEventPacket.SOUND_ATTACH);
         } else if (!canConnect && attached) {
-            this.level.addLevelSoundEvent(pos, LevelSoundEventPacket.SOUND_DETACH);
+            this.getLevel().addLevelSoundEvent(pos, LevelSoundEventPacket.SOUND_DETACH);
         }
     }
 
@@ -247,11 +247,11 @@ public class BlockTripWireHook extends BlockTransparentMeta implements RedstoneC
             this.setDamage(this.getDamage() ^ 0x08);
             var pos = this.add(0.5, 0.5, 0.5);
             if (value) {
-                this.level
+                this.getLevel()
                         .getVibrationManager()
                         .callVibrationEvent(new VibrationEvent(this, pos, VibrationType.BLOCK_ACTIVATE));
             } else {
-                this.level
+                this.getLevel()
                         .getVibrationManager()
                         .callVibrationEvent(new VibrationEvent(this, pos, VibrationType.BLOCK_DEACTIVATE));
             }
@@ -263,11 +263,11 @@ public class BlockTripWireHook extends BlockTransparentMeta implements RedstoneC
             this.setDamage(this.getDamage() ^ 0x04);
             var pos = this.add(0.5, 0.5, 0.5);
             if (value) {
-                this.level
+                this.getLevel()
                         .getVibrationManager()
                         .callVibrationEvent(new VibrationEvent(this, pos, VibrationType.BLOCK_ATTACH));
             } else {
-                this.level
+                this.getLevel()
                         .getVibrationManager()
                         .callVibrationEvent(new VibrationEvent(this, pos, VibrationType.BLOCK_DETACH));
             }

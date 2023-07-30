@@ -252,8 +252,8 @@ public class EntityThrownTrident extends SlenderProjectile {
                 this.setMotion(this.getMotion().multiply(0.95).add(vector3.multiply(loyaltyLevel * 0.05)));
                 hasUpdate = true;
             } else {
-                if (level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS) && !this.closed) {
-                    this.level.dropItem(this, this.trident);
+                if (getLevel().getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS) && !this.closed) {
+                    this.getLevel().dropItem(this, this.trident);
                 }
                 this.close();
             }
@@ -274,8 +274,8 @@ public class EntityThrownTrident extends SlenderProjectile {
         pk.speedX = (float) this.motionX;
         pk.speedY = (float) this.motionY;
         pk.speedZ = (float) this.motionZ;
-        pk.yaw = (float) this.yaw;
-        pk.pitch = (float) this.pitch;
+        pk.yaw = (float) this.yaw();
+        pk.pitch = (float) this.pitch();
         pk.metadata = this.dataProperties;
         player.dataPacket(pk);
 
@@ -318,7 +318,7 @@ public class EntityThrownTrident extends SlenderProjectile {
                 this.getMotion().z() * -0.01));
 
         if (this.hasChanneling) {
-            if (this.level.isThundering() && this.level.canBlockSeeSky(this)) {
+            if (this.getLevel().isThundering() && this.getLevel().canBlockSeeSky(this)) {
                 Position pos = this.getPosition();
                 EntityLightning lighting = new EntityLightning(pos.getChunk(), getDefaultNBT(pos));
                 lighting.spawnToAll();
@@ -362,7 +362,7 @@ public class EntityThrownTrident extends SlenderProjectile {
             return;
         }
 
-        for (Block collisionBlock : level.getCollisionBlocks(getBoundingBox().grow(0.1, 0.1, 0.1))) {
+        for (Block collisionBlock : getLevel().getCollisionBlocks(getBoundingBox().grow(0.1, 0.1, 0.1))) {
             this.setStuckToBlockPos(new BlockVector3(
                     collisionBlock.getFloorX(), collisionBlock.getFloorY(), collisionBlock.getFloorZ()));
             if (this.canReturnToShooter()) {

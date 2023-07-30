@@ -33,6 +33,6 @@ public class FlyingPosEvaluator implements IPosEvaluator {
                 vector3.x() + radius,
                 vector3.y() + height,
                 vector3.z() + radius);
-        return !Utils.hasCollisionTickCachedBlocks(entity.level, bb);
+        return !Utils.hasCollisionTickCachedBlocks(entity.getLevel(), bb);
     }
 }

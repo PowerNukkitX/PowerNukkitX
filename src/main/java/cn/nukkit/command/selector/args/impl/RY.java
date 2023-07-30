@@ -25,7 +25,7 @@ public class RY extends CachedSimpleSelectorArgument {
             throw new SelectorSyntaxException("RX out of bound (-180 - 180): " + ry);
         // 获取到的yaw范围是[0, 360]，而原版规定的范围是[-180, 180]。故减去一个180
         // 并还要转换到原版的坐标系(+z为正南 etc...)
-        return entity -> ((entity.getYaw() + 90) % 360 - 180) <= ry;
+        return entity -> ((entity.yaw() + 90) % 360 - 180) <= ry;
     }
 
     @Override

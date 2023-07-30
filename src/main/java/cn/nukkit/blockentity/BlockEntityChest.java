@@ -89,7 +89,7 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer implements B
                 }
             }
         } else {
-            if (level.isChunkLoaded(this.namedTag.getInt("pairx") >> 4, this.namedTag.getInt("pairz") >> 4)) {
+            if (getLevel().isChunkLoaded(this.namedTag.getInt("pairx") >> 4, this.namedTag.getInt("pairz") >> 4)) {
                 this.doubleInventory = null;
                 this.namedTag.remove("pairx");
                 this.namedTag.remove("pairz");

@@ -155,13 +155,13 @@ public class BlockEntityFurnace extends BlockEntitySpawnable
     @Override
     public void onBreak() {
         for (Item content : inventory.getContents().values()) {
-            level.dropItem(this, content);
+            getLevel().dropItem(this, content);
         }
         this.inventory.clearAll();
         var xp = calculateXpDrop();
         if (xp > 0) {
             setStoredXP(0);
-            level.dropExpOrb(this, xp);
+            getLevel().dropExpOrb(this, xp);
         }
     }
 

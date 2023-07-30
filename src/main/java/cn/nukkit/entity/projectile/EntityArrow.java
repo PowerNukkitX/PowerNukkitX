@@ -124,7 +124,7 @@ public class EntityArrow extends SlenderProjectile {
             hasUpdate = true;
         }
 
-        if (this.level.isRaining() && this.fireTicks > 0 && this.level.canBlockSeeSky(this)) {
+        if (this.getLevel().isRaining() && this.fireTicks > 0 && this.getLevel().canBlockSeeSky(this)) {
             extinguish();
 
             hasUpdate = true;
@@ -152,7 +152,7 @@ public class EntityArrow extends SlenderProjectile {
     @PowerNukkitOnly
     @Override
     protected void addHitEffect() {
-        this.level.addSound(this, Sound.RANDOM_BOWHIT);
+        this.getLevel().addSound(this, Sound.RANDOM_BOWHIT);
         EntityEventPacket packet = new EntityEventPacket();
         packet.eid = getId();
         packet.event = EntityEventPacket.ARROW_SHAKE;

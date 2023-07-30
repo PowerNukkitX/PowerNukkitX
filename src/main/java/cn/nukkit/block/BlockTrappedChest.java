@@ -105,7 +105,7 @@ public class BlockTrappedChest extends BlockChest {
     public int getWeakPower(BlockFace face) {
         int playerCount = 0;
 
-        BlockEntity blockEntity = this.level.getBlockEntity(this);
+        BlockEntity blockEntity = this.getLevel().getBlockEntity(this);
 
         if (blockEntity instanceof BlockEntityChest) {
             playerCount =

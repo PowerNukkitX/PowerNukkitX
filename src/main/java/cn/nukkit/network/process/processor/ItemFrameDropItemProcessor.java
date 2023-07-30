@@ -16,7 +16,7 @@ public class ItemFrameDropItemProcessor extends DataPacketProcessor<ItemFrameDro
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull ItemFrameDropItemPacket pk) {
         Vector3 vector3 = playerHandle.player.temporalVector.setComponents(pk.x, pk.y, pk.z);
         if (vector3.distanceSquared(playerHandle.player) < 1000) {
-            BlockEntity itemFrame = playerHandle.player.level.getBlockEntity(vector3);
+            BlockEntity itemFrame = playerHandle.player.getLevel().getBlockEntity(vector3);
             if (itemFrame instanceof BlockEntityItemFrame) {
                 ((BlockEntityItemFrame) itemFrame).dropItem(playerHandle.player);
             }

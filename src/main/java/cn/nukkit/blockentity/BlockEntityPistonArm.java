@@ -66,7 +66,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
     protected void moveCollidedEntities() {
         var pushDirection = this.extending ? facing : facing.getOpposite();
         for (var pos : this.attachedBlocks) {
-            var blockEntity = this.level.getBlockEntity(pos.getSide(pushDirection));
+            var blockEntity = this.getLevel().getBlockEntity(pos.getSide(pushDirection));
             if (blockEntity instanceof BlockEntityMovingBlock be) be.moveCollidedEntities(this, pushDirection);
         }
         var bb = new SimpleAxisAlignedBB(0, 0, 0, 1, 1, 1)
@@ -78,7 +78,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                         )
                 .addCoord(0, pushDirection.getAxis().isHorizontal() ? 0.25 : 0, 0);
         ;
-        for (var entity : this.level.getCollidingEntities(bb)) moveEntity(entity, pushDirection);
+        for (var entity : this.getLevel().getCollidingEntities(bb)) moveEntity(entity, pushDirection);
     }
 
     void moveEntity(Entity entity, BlockFace moveDirection) {
@@ -88,7 +88,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         // 玩家客户端会自动处理移动
         if (diff == 0 || !entity.canBePushed() || entity instanceof Player) return;
         EntityMoveByPistonEvent event = new EntityMoveByPistonEvent(entity, entity.getPosition());
-        this.level.getServer().getPluginManager().callEvent(event);
+        this.getLevel().getServer().getPluginManager().callEvent(event);
         if (event.isCancelled()) return;
         entity.onPushByPiston(this);
         if (entity.closed) return;
@@ -142,14 +142,14 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
             for (var pos : this.attachedBlocks) {
                 redstoneUpdateList.add(pos);
                 redstoneUpdateList.add(pos.getSide(pushDirection));
-                var movingBlock = this.level.getBlockEntity(pos.getSide(pushDirection));
+                var movingBlock = this.getLevel().getBlockEntity(pos.getSide(pushDirection));
                 if (movingBlock instanceof BlockEntityMovingBlock movingBlockBlockEntity) {
                     movingBlock.close();
                     var moved = movingBlockBlockEntity.getMovingBlock();
                     moved.position(movingBlock);
-                    this.level.setBlock(movingBlock, 1, Block.get(BlockID.AIR), true, false);
+                    this.getLevel().setBlock(movingBlock, 1, Block.get(BlockID.AIR), true, false);
                     // 普通方块更新
-                    this.level.setBlock(movingBlock, moved, true, true);
+                    this.getLevel().setBlock(movingBlock, moved, true, true);
                     var movedBlockEntity = movingBlockBlockEntity.getMovingBlockEntityCompound();
                     if (movedBlockEntity != null) {
                         movedBlockEntity.putInt("x", movingBlock.getFloorX());
@@ -157,7 +157,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                         movedBlockEntity.putInt("z", movingBlock.getFloorZ());
                         BlockEntity.createBlockEntity(
                                 movedBlockEntity.getString("id"),
-                                this.level.getChunk(movingBlock.getChunkX(), movingBlock.getChunkZ()),
+                                this.getLevel().getChunk(movingBlock.getChunkX(), movingBlock.getChunkZ()),
                                 movedBlockEntity);
                     }
                     // 活塞更新
@@ -166,21 +166,21 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
             }
             for (var update : redstoneUpdateList)
                 // 红石更新
-                RedstoneComponent.updateAllAroundRedstone(new Position(update.x, update.y, update.z, this.level));
+                RedstoneComponent.updateAllAroundRedstone(new Position(update.x, update.y, update.z, this.getLevel()));
             var pos = getSide(facing);
             if (!extending) {
                 // 未伸出的活塞可以被推动
                 this.movable = true;
-                if (this.level.getBlock(pos) instanceof BlockPistonHead) {
-                    this.level.setBlock(pos, 1, Block.get(Block.AIR), true, false);
+                if (this.getLevel().getBlock(pos) instanceof BlockPistonHead) {
+                    this.getLevel().setBlock(pos, 1, Block.get(Block.AIR), true, false);
                     // 方块更新
-                    this.level.setBlock(pos, Block.get(Block.AIR), true);
+                    this.getLevel().setBlock(pos, Block.get(Block.AIR), true);
                 }
             }
             // 对和活塞直接接触的观察者进行更新
-            this.level.updateAroundObserver(this);
+            this.getLevel().updateAroundObserver(this);
             // 下一计划刻再自检一遍，防止出错
-            this.level.scheduleUpdate(this.getLevelBlock(), 1);
+            this.getLevel().scheduleUpdate(this.getLevelBlock(), 1);
             this.attachedBlocks.clear();
             this.finished = true;
             hasUpdate = false;
@@ -263,7 +263,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
     public void updateMovingData(boolean immediately) {
         var packet = this.getSpawnPacket();
         if (!immediately) {
-            if (packet != null) this.level.addChunkPacket(getChunkX(), getChunkZ(), packet);
+            if (packet != null) this.getLevel().addChunkPacket(getChunkX(), getChunkZ(), packet);
         } else {
             Server.broadcastPacket(
                     this.getLevel()

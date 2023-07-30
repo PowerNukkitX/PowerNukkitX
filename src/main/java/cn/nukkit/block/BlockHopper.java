@@ -117,7 +117,7 @@ public class BlockHopper extends BlockTransparentMeta
 
         setBlockFace(facing);
 
-        if (this.level.getServer().isRedstoneEnabled()) {
+        if (this.getLevel().getServer().isRedstoneEnabled()) {
             boolean powered = this.isGettingPower();
 
             if (powered == this.isEnabled()) {
@@ -177,16 +177,16 @@ public class BlockHopper extends BlockTransparentMeta
 
     @Override
     public int onUpdate(int type) {
-        if (!this.level.getServer().isRedstoneEnabled()) {
+        if (!this.getLevel().getServer().isRedstoneEnabled()) {
             return 0;
         }
 
         if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_REDSTONE) {
-            boolean disabled = this.level.isBlockPowered(this.getLocation());
+            boolean disabled = this.getLevel().isBlockPowered(this.getLocation());
 
             if (disabled == this.isEnabled()) {
                 this.setEnabled(!disabled);
-                this.level.setBlock(this, this, false, true);
+                this.getLevel().setBlock(this, this, false, true);
                 BlockEntityHopper be = getBlockEntity();
                 if (be != null) {
                     be.setDisabled(disabled);
@@ -254,7 +254,7 @@ public class BlockHopper extends BlockTransparentMeta
 
             Block blockSide = hopperPos.getSide(BlockFace.UP).getTickCachedLevelBlock();
             BlockEntity blockEntity =
-                    hopperPos.level.getBlockEntity(new Vector3().setComponentsAdding(hopperPos, BlockFace.UP));
+                    hopperPos.getLevel().getBlockEntity(new Vector3().setComponentsAdding(hopperPos, BlockFace.UP));
 
             if (blockEntity instanceof InventoryHolder) {
                 Inventory inv = blockEntity instanceof RecipeInventoryHolder recipeInventoryHolder
@@ -314,7 +314,7 @@ public class BlockHopper extends BlockTransparentMeta
 
             boolean pickedUpItem = false;
 
-            for (Entity entity : hopperPos.level.getCollidingEntities(pickupArea)) {
+            for (Entity entity : hopperPos.getLevel().getCollidingEntities(pickupArea)) {
                 if (entity.isClosed() || !(entity instanceof EntityItem itemEntity)) continue;
 
                 Item item = itemEntity.getItem();

@@ -24,7 +24,7 @@ public class LecternUpdateProcessor extends DataPacketProcessor<LecternUpdatePac
             }
         } else {
             BlockEntity blockEntityLectern =
-                    playerHandle.player.level.getBlockEntity(playerHandle.player.temporalVector);
+                    playerHandle.player.getLevel().getBlockEntity(playerHandle.player.temporalVector);
             if (blockEntityLectern instanceof BlockEntityLectern lectern) {
                 LecternPageChangeEvent lecternPageChangeEvent =
                         new LecternPageChangeEvent(playerHandle.player, lectern, pk.page);

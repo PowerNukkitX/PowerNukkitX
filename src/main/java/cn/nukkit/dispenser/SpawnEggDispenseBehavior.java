@@ -26,7 +26,7 @@ public class SpawnEggDispenseBehavior extends DefaultDispenseBehavior {
 
         Entity entity = Entity.createEntity(
                 ((ItemSpawnEgg) item).getEntityNetworkId(),
-                block.level.getChunk(pos.getChunkX(), pos.getChunkZ()),
+                block.getLevel().getChunk(pos.getChunkX(), pos.getChunkZ()),
                 Entity.getDefaultNBT(pos));
 
         this.success = entity != null;
@@ -38,7 +38,7 @@ public class SpawnEggDispenseBehavior extends DefaultDispenseBehavior {
 
             entity.spawnToAll();
 
-            block.level
+            block.getLevel()
                     .getVibrationManager()
                     .callVibrationEvent(new VibrationEvent(this, pos.clone(), VibrationType.ENTITY_PLACE));
             return null;

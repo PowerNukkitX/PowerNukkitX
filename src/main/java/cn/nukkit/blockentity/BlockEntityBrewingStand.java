@@ -127,7 +127,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable
     @Override
     public void onBreak() {
         for (Item content : inventory.getContents().values()) {
-            level.dropItem(this, content);
+            getLevel().dropItem(this, content);
         }
         this.inventory.clearAll();
     }
@@ -390,7 +390,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable
         }
 
         block.setDamage(meta);
-        this.level.setBlock(block, block, false, false);
+        this.getLevel().setBlock(block, block, false, false);
 
         if (brewTime != MAX_BREW_TIME && matchRecipes(true)[0] == null) {
             stopBrewing();

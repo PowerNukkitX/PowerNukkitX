@@ -121,7 +121,7 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!isSupportValid(down(), BlockFace.UP)) {
-                this.level.useBreakOn(this, ItemTool.getBestTool(getToolType()));
+                this.getLevel().useBreakOn(this, ItemTool.getBestTool(getToolType()));
             }
         } else if (type == Level.BLOCK_UPDATE_SCHEDULED) {
             int power = this.getRedstonePower();
@@ -150,7 +150,7 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
             return false;
         }
 
-        this.level.setBlock(block, this, true, true);
+        this.getLevel().setBlock(block, this, true, true);
         return true;
     }
 
@@ -162,7 +162,7 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
 
     @Override
     public void onEntityCollide(Entity entity) {
-        if (!this.level.getServer().isRedstoneEnabled()) {
+        if (!this.getLevel().getServer().isRedstoneEnabled()) {
             return;
         }
 
@@ -176,7 +176,7 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
                 ev = new EntityInteractEvent(entity, this);
             }
 
-            this.level.getServer().getPluginManager().callEvent(ev);
+            this.getLevel().getServer().getPluginManager().callEvent(ev);
 
             if (!ev.isCancelled()) {
                 updateState(power);
@@ -191,28 +191,28 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
 
         if (oldStrength != strength) {
             this.setRedstonePower(strength);
-            this.level.setBlock(this, this, false, false);
+            this.getLevel().setBlock(this, this, false, false);
 
             updateAroundRedstone();
             RedstoneComponent.updateAroundRedstone(this.getSide(BlockFace.DOWN));
 
             if (!isPowered && wasPowered) {
                 this.playOffSound();
-                this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 15, 0));
+                this.getLevel().getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 15, 0));
             } else if (isPowered && !wasPowered) {
                 this.playOnSound();
-                this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 0, 15));
+                this.getLevel().getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 0, 15));
             }
         }
 
         if (isPowered) {
-            this.level.scheduleUpdate(this, 20);
+            this.getLevel().scheduleUpdate(this, 20);
         }
     }
 
     @Override
     public boolean onBreak(Item item) {
-        this.level.setBlock(this, Block.get(BlockID.AIR), true, true);
+        this.getLevel().setBlock(this, Block.get(BlockID.AIR), true, true);
 
         if (this.getRedstonePower() > 0) {
             updateAroundRedstone();
@@ -241,14 +241,14 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
     }
 
     protected void playOnSound() {
-        this.level.addLevelSoundEvent(
+        this.getLevel().addLevelSoundEvent(
                 this.add(0.5, 0.1, 0.5),
                 LevelSoundEventPacket.SOUND_POWER_ON,
                 GlobalBlockPalette.getOrCreateRuntimeId(this.getId(), this.getDamage()));
     }
 
     protected void playOffSound() {
-        this.level.addLevelSoundEvent(
+        this.getLevel().addLevelSoundEvent(
                 this.add(0.5, 0.1, 0.5),
                 LevelSoundEventPacket.SOUND_POWER_OFF,
                 GlobalBlockPalette.getOrCreateRuntimeId(this.getId(), this.getDamage()));

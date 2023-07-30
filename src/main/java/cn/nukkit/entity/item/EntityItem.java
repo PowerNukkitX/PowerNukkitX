@@ -202,25 +202,25 @@ public class EntityItem extends Entity {
                   }
               }*/
 
-            int bid = this.level.getBlockIdAt((int) this.x(), (int) this.boundingBox.getMaxY(), (int) this.z(), 0);
+            int bid = this.getLevel().getBlockIdAt((int) this.x(), (int) this.boundingBox.getMaxY(), (int) this.z(), 0);
             if (bid == BlockID.FLOWING_WATER
                     || bid == BlockID.STILL_WATER
-                    || (bid = this.level.getBlockIdAt(
+                    || (bid = this.getLevel().getBlockIdAt(
                                     (int) this.x(), (int) this.boundingBox.getMaxY(), (int) this.z(), 1))
                             == BlockID.FLOWING_WATER
                     || bid == BlockID.STILL_WATER) {
                 // item is fully in water or in still water
                 this.motionY -= this.getGravity() * -0.015;
             } else if (lavaResistant
-                    && (this.level.getBlockIdAt((int) this.x(), (int) this.boundingBox.getMaxY(), (int) this.z(), 0)
+                    && (this.getLevel().getBlockIdAt((int) this.x(), (int) this.boundingBox.getMaxY(), (int) this.z(), 0)
                                     == BlockID.FLOWING_LAVA
-                            || this.level.getBlockIdAt(
+                            || this.getLevel().getBlockIdAt(
                                             (int) this.x(), (int) this.boundingBox.getMaxY(), (int) this.z(), 0)
                                     == BlockID.STILL_LAVA
-                            || this.level.getBlockIdAt(
+                            || this.getLevel().getBlockIdAt(
                                             (int) this.x(), (int) this.boundingBox.getMaxY(), (int) this.z(), 1)
                                     == BlockID.FLOWING_LAVA
-                            || this.level.getBlockIdAt(
+                            || this.getLevel().getBlockIdAt(
                                             (int) this.x(), (int) this.boundingBox.getMaxY(), (int) this.z(), 1)
                                     == BlockID.STILL_LAVA)) {
                 // item is fully in lava or in still lava

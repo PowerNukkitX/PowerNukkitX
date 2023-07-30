@@ -88,7 +88,7 @@ public class BlockLava extends BlockLiquid {
     public int onUpdate(int type) {
         int result = super.onUpdate(type);
 
-        if (type == Level.BLOCK_UPDATE_RANDOM && this.level.gameRules.getBoolean(GameRule.DO_FIRE_TICK)) {
+        if (type == Level.BLOCK_UPDATE_RANDOM && this.getLevel().gameRules.getBoolean(GameRule.DO_FIRE_TICK)) {
             Random random = ThreadLocalRandom.current();
 
             int i = random.nextInt(3);
@@ -102,7 +102,7 @@ public class BlockLava extends BlockLiquid {
                         if (this.isSurroundingBlockFlammable(block)) {
                             BlockIgniteEvent e =
                                     new BlockIgniteEvent(block, this, null, BlockIgniteEvent.BlockIgniteCause.LAVA);
-                            this.level.getServer().getPluginManager().callEvent(e);
+                            this.getLevel().getServer().getPluginManager().callEvent(e);
 
                             if (!e.isCancelled()) {
                                 Block fire = Block.get(BlockID.FIRE);
@@ -125,7 +125,7 @@ public class BlockLava extends BlockLiquid {
                     if (block.up().getId() == AIR && block.getBurnChance() > 0 && isNetherSpreadNotAllowed(block)) {
                         BlockIgniteEvent e =
                                 new BlockIgniteEvent(block, this, null, BlockIgniteEvent.BlockIgniteCause.LAVA);
-                        this.level.getServer().getPluginManager().callEvent(e);
+                        this.getLevel().getServer().getPluginManager().callEvent(e);
 
                         if (!e.isCancelled()) {
                             Block fire = Block.get(BlockID.FIRE);
@@ -179,7 +179,7 @@ public class BlockLava extends BlockLiquid {
 
     @Override
     public int tickRate() {
-        if (this.level.getDimension() == Level.DIMENSION_NETHER) {
+        if (this.getLevel().getDimension() == Level.DIMENSION_NETHER) {
             return 10;
         }
         return 30;
@@ -187,7 +187,7 @@ public class BlockLava extends BlockLiquid {
 
     @Override
     public int getFlowDecayPerBlock() {
-        if (this.level.getDimension() == Level.DIMENSION_NETHER) {
+        if (this.getLevel().getDimension() == Level.DIMENSION_NETHER) {
             return 1;
         }
         return 2;

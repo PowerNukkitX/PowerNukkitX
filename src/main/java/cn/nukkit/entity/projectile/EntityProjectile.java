@@ -105,7 +105,7 @@ public abstract class EntityProjectile extends Entity {
             return;
         }
 
-        this.level
+        this.getLevel()
                 .getVibrationManager()
                 .callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.PROJECTILE_LAND));
 
@@ -288,8 +288,8 @@ public abstract class EntityProjectile extends Entity {
     @PowerNukkitOnly
     public void updateRotation() {
         double f = Math.sqrt((this.motionX * this.motionX) + (this.motionZ * this.motionZ));
-        this.yaw = Math.atan2(this.motionX, this.motionZ) * 180 / Math.PI;
-        this.pitch = Math.atan2(this.motionY, f) * 180 / Math.PI;
+        this.setYaw(Math.atan2(this.motionX, this.motionZ) * 180 / Math.PI);
+        this.setPitch(Math.atan2(this.motionY, f) * 180 / Math.PI);
     }
 
     @PowerNukkitOnly
@@ -304,10 +304,10 @@ public abstract class EntityProjectile extends Entity {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     protected void onCollideWithBlock(Position position, Vector3 motion) {
-        this.level
+        this.getLevel()
                 .getVibrationManager()
                 .callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.PROJECTILE_LAND));
-        for (Block collisionBlock : level.getCollisionBlocks(getBoundingBox().grow(0.1, 0.1, 0.1))) {
+        for (Block collisionBlock : getLevel().getCollisionBlocks(getBoundingBox().grow(0.1, 0.1, 0.1))) {
             onCollideWithBlock(position, motion, collisionBlock);
         }
     }
@@ -361,7 +361,7 @@ public abstract class EntityProjectile extends Entity {
     public void spawnToAll() {
         super.spawnToAll();
         // vibration: minecraft:projectile_shoot
-        this.level
+        this.getLevel()
                 .getVibrationManager()
                 .callVibrationEvent(
                         new VibrationEvent(this.shootingEntity, this.clone(), VibrationType.PROJECTILE_SHOOT));

@@ -204,10 +204,10 @@ public class BlockTrapdoor extends BlockTransparentMeta implements RedstoneCompo
             since = "1.4.0.0-PN")
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_REDSTONE && this.level.getServer().isRedstoneEnabled()) {
+        if (type == Level.BLOCK_UPDATE_REDSTONE && this.getLevel().getServer().isRedstoneEnabled()) {
             if ((this.isOpen() != this.isGettingPower()) && !this.getManualOverride()) {
                 if (this.isOpen() != this.isGettingPower()) {
-                    level.getServer()
+                    getLevel().getServer()
                             .getPluginManager()
                             .callEvent(new BlockRedstoneEvent(this, this.isOpen() ? 15 : 0, this.isOpen() ? 0 : 15));
 
@@ -269,7 +269,7 @@ public class BlockTrapdoor extends BlockTransparentMeta implements RedstoneCompo
             return false;
         }
 
-        if (level.getServer().isRedstoneEnabled() && !this.isOpen() && this.isGettingPower()) {
+        if (getLevel().getServer().isRedstoneEnabled() && !this.isOpen() && this.isGettingPower()) {
             this.setOpen(null, true);
         }
 
@@ -300,7 +300,7 @@ public class BlockTrapdoor extends BlockTransparentMeta implements RedstoneCompo
         }
 
         DoorToggleEvent event = new DoorToggleEvent(this, player);
-        level.getServer().getPluginManager().callEvent(event);
+        getLevel().getServer().getPluginManager().callEvent(event);
 
         if (event.isCancelled()) {
             return false;
@@ -309,7 +309,7 @@ public class BlockTrapdoor extends BlockTransparentMeta implements RedstoneCompo
         player = event.getPlayer();
 
         setBooleanValue(OPEN, open);
-        if (!level.setBlock(this, this, true, true)) return false;
+        if (!getLevel().setBlock(this, this, true, true)) return false;
 
         if (player != null) {
             this.setManualOverride(this.isGettingPower() || isOpen());
@@ -321,7 +321,7 @@ public class BlockTrapdoor extends BlockTransparentMeta implements RedstoneCompo
         VibrationEvent vibrationEvent = open
                 ? new VibrationEvent(player != null ? player : this, source, VibrationType.BLOCK_OPEN)
                 : new VibrationEvent(player != null ? player : this, source, VibrationType.BLOCK_CLOSE);
-        this.level.getVibrationManager().callVibrationEvent(vibrationEvent);
+        this.getLevel().getVibrationManager().callVibrationEvent(vibrationEvent);
         return true;
     }
 
@@ -338,13 +338,13 @@ public class BlockTrapdoor extends BlockTransparentMeta implements RedstoneCompo
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void playOpenSound() {
-        this.level.addSound(this, Sound.RANDOM_DOOR_OPEN);
+        this.getLevel().addSound(this, Sound.RANDOM_DOOR_OPEN);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void playCloseSound() {
-        this.level.addSound(this, Sound.RANDOM_DOOR_CLOSE);
+        this.getLevel().addSound(this, Sound.RANDOM_DOOR_CLOSE);
     }
 
     public boolean isOpen() {

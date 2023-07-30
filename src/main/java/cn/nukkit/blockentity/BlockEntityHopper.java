@@ -125,7 +125,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable
 
     @Override
     public boolean isBlockEntityValid() {
-        return this.level.getBlockIdAt(this.getFloorX(), this.getFloorY(), this.getFloorZ()) == Block.HOPPER_BLOCK;
+        return this.getLevel().getBlockIdAt(this.getFloorX(), this.getFloorY(), this.getFloorZ()) == Block.HOPPER_BLOCK;
     }
 
     @Override
@@ -244,7 +244,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable
         }
 
         Block blockSide = this.getSide(BlockFace.UP).getTickCachedLevelBlock();
-        BlockEntity blockEntity = this.level.getBlockEntity(temporalVector.setComponentsAdding(this, BlockFace.UP));
+        BlockEntity blockEntity = this.getLevel().getBlockEntity(temporalVector.setComponentsAdding(this, BlockFace.UP));
 
         boolean changed = pushItems() || pushItemsIntoMinecart();
 
@@ -325,7 +325,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable
     @Override
     public void onBreak() {
         for (Item content : inventory.getContents().values()) {
-            level.dropItem(this, content);
+            getLevel().dropItem(this, content);
         }
         this.inventory.clearAll();
     }
@@ -386,7 +386,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable
 
         BlockFace side = levelBlockState.getPropertyValue(CommonBlockProperties.FACING_DIRECTION);
         Block blockSide = this.getSide(side).getTickCachedLevelBlock();
-        BlockEntity be = this.level.getBlockEntity(temporalVector.setComponentsAdding(this, side));
+        BlockEntity be = this.getLevel().getBlockEntity(temporalVector.setComponentsAdding(this, side));
 
         // 漏斗应该有主动向被锁住的漏斗推送物品的能力
         if (be instanceof BlockEntityHopper sideHopper && levelBlockState.isDefaultState() && !sideHopper.isDisabled()

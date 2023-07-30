@@ -108,19 +108,19 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
         if (!player.getAdventureSettings().get(AdventureSettings.Type.DOORS_AND_SWITCHED)) return false;
-        this.level
+        this.getLevel()
                 .getServer()
                 .getPluginManager()
                 .callEvent(new BlockRedstoneEvent(this, isPowerOn() ? 15 : 0, isPowerOn() ? 0 : 15));
         toggleBooleanProperty(OPEN);
         var pos = this.add(0.5, 0.5, 0.5);
         if (isPowerOn()) {
-            this.level
+            this.getLevel()
                     .getVibrationManager()
                     .callVibrationEvent(
                             new VibrationEvent(player != null ? player : this, pos, VibrationType.BLOCK_ACTIVATE));
         } else {
-            this.level
+            this.getLevel()
                     .getVibrationManager()
                     .callVibrationEvent(
                             new VibrationEvent(player != null ? player : this, pos, VibrationType.BLOCK_DEACTIVATE));
@@ -132,7 +132,7 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
         LeverOrientation orientation = getLeverOrientation();
         BlockFace face = orientation.getFacing();
 
-        if (this.level.getServer().isRedstoneEnabled()) {
+        if (this.getLevel().getServer().isRedstoneEnabled()) {
             updateAroundRedstone();
             RedstoneComponent.updateAroundRedstone(getSide(face.getOpposite()), face);
         }
@@ -146,7 +146,7 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
             BlockFace blockFace = getLeverOrientation().getFacing().getOpposite();
             Block side = this.getSide(blockFace);
             if (!isSupportValid(side, blockFace.getOpposite())) {
-                this.level.useBreakOn(this);
+                this.getLevel().useBreakOn(this);
             }
         }
         return 0;
@@ -216,9 +216,9 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
 
         if (isPowerOn()) {
             BlockFace face = getLeverOrientation().getFacing();
-            this.level.updateAround(this.getLocation().getSide(face.getOpposite()));
+            this.getLevel().updateAround(this.getLocation().getSide(face.getOpposite()));
 
-            if (level.getServer().isRedstoneEnabled()) {
+            if (getLevel().getServer().isRedstoneEnabled()) {
                 updateAroundRedstone();
                 RedstoneComponent.updateAroundRedstone(getSide(face.getOpposite()), face);
             }

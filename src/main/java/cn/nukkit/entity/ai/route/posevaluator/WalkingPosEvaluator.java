@@ -59,7 +59,7 @@ public class WalkingPosEvaluator implements IPosEvaluator {
             // |           |
             // F --- G --- H
             // 在P点一次通过的可能性最大，所以优先检测
-            byte collisionInfo = Utils.hasCollisionTickCachedBlocksWithInfo(entity.level, bb);
+            byte collisionInfo = Utils.hasCollisionTickCachedBlocksWithInfo(entity.getLevel(), bb);
             if (collisionInfo == 0) {
                 return true;
             }
@@ -75,14 +75,14 @@ public class WalkingPosEvaluator implements IPosEvaluator {
                     if ((collisionInfo & 0b000011) - 2 == j) continue; // 获取z轴的碰撞信息并比较
                     // 由于已经缓存了方块，检测速度还是可以接受的
                     if (!Utils.hasCollisionTickCachedBlocks(
-                            entity.level, bb.clone().offset(i * dr, 0, j * dr))) {
+                            entity.getLevel(), bb.clone().offset(i * dr, 0, j * dr))) {
                         return true;
                     }
                 }
             }
             return false;
         } else {
-            return !Utils.hasCollisionTickCachedBlocks(entity.level, bb);
+            return !Utils.hasCollisionTickCachedBlocks(entity.getLevel(), bb);
         }
     }
 }

@@ -209,7 +209,7 @@ public abstract class BlockWallBase extends BlockTransparentMeta implements Bloc
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (autoConfigureState()) {
-                level.setBlock(this, this, true);
+                getLevel().setBlock(this, this, true);
             }
             return type;
         }

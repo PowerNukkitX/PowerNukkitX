@@ -226,9 +226,9 @@ public class BlockRail extends BlockFlowable implements Faceable {
                 }
             }
         }
-        this.level.setBlock(this, this, true, true);
+        this.getLevel().setBlock(this, this, true, true);
         if (!isAbstract()) {
-            level.scheduleUpdate(this, this, 0);
+            getLevel().scheduleUpdate(this, this, 0);
         }
 
         return true;
@@ -349,7 +349,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
     public void setOrientation(Orientation o) {
         if (o != getOrientation()) {
             setRailDirection(o);
-            this.level.setBlock(this, this, true, true);
+            this.getLevel().setBlock(this, this, true, true);
         }
     }
 
@@ -389,7 +389,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
         if (getProperties().contains(ACTIVE)) {
             setRailActive(active);
         }
-        level.setBlock(this, this, true, true);
+        getLevel().setBlock(this, this, true, true);
     }
 
     @PowerNukkitOnly

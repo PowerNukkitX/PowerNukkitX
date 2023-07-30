@@ -125,8 +125,8 @@ public class BlockBed extends BlockTransparentMeta implements Faceable, BlockEnt
 
         BlockFace dir = getBlockFace();
 
-        boolean shouldExplode = this.level.getDimension() != Level.DIMENSION_OVERWORLD;
-        boolean willExplode = shouldExplode && this.level.getGameRules().getBoolean(GameRule.TNT_EXPLODES);
+        boolean shouldExplode = this.getLevel().getDimension() != Level.DIMENSION_OVERWORLD;
+        boolean willExplode = shouldExplode && this.getLevel().getGameRules().getBoolean(GameRule.TNT_EXPLODES);
 
         Block head;
         if (isHeadPiece()) {
@@ -159,9 +159,9 @@ public class BlockBed extends BlockTransparentMeta implements Faceable, BlockEnt
                 return true;
             }
 
-            level.setBlock(this, get(AIR), false, false);
+            getLevel().setBlock(this, get(AIR), false, false);
             onBreak(Item.getBlock(BlockID.AIR));
-            level.updateAround(this);
+            getLevel().updateAround(this);
 
             Explosion explosion = new Explosion(this, event.getForce(), this);
             explosion.setFireChance(event.getFireChance());
@@ -187,7 +187,7 @@ public class BlockBed extends BlockTransparentMeta implements Faceable, BlockEnt
         }
 
         Location spawn =
-                Location.fromObject(head.add(0.5, 0.5, 0.5), player.getLevel(), player.getYaw(), player.getPitch());
+                Location.fromObject(head.add(0.5, 0.5, 0.5), player.getLevel(), player.yaw(), player.pitch());
         if (!player.getSpawn().equals(spawn)) {
             player.setSpawnBlock(this);
         }
@@ -207,7 +207,7 @@ public class BlockBed extends BlockTransparentMeta implements Faceable, BlockEnt
                             head.x() - 8, head.y() - 6.5, head.z() - 8, head.x() + 9, head.y() + 5.5, head.z() + 9)
                     .addCoord(footPart.getXOffset(), 0, footPart.getZOffset());
 
-            for (Entity entity : this.level.getCollidingEntities(checkMonsterArea)) {
+            for (Entity entity : this.getLevel().getCollidingEntities(checkMonsterArea)) {
                 if (!entity.isClosed() && entity.isPreventingSleep(player)) {
                     player.sendTranslation(TextFormat.GRAY + "%tile.bed.notSafe");
                     return true;
@@ -248,21 +248,21 @@ public class BlockBed extends BlockTransparentMeta implements Faceable, BlockEnt
             return false;
         }
 
-        Block thisLayer0 = level.getBlock(this, 0);
-        Block thisLayer1 = level.getBlock(this, 1);
-        Block nextLayer0 = level.getBlock(next, 0);
-        Block nextLayer1 = level.getBlock(next, 1);
+        Block thisLayer0 = getLevel().getBlock(this, 0);
+        Block thisLayer1 = getLevel().getBlock(this, 1);
+        Block nextLayer0 = getLevel().getBlock(next, 0);
+        Block nextLayer1 = getLevel().getBlock(next, 1);
 
         setBlockFace(direction);
 
-        level.setBlock(block, this, true, true);
+        getLevel().setBlock(block, this, true, true);
         if (next instanceof BlockLiquid && ((BlockLiquid) next).usesWaterLogging()) {
-            level.setBlock(next, 1, next, true, false);
+            getLevel().setBlock(next, 1, next, true, false);
         }
 
         BlockBed head = (BlockBed) clone();
         head.setHeadPiece(true);
-        level.setBlock(next, head, true, true);
+        getLevel().setBlock(next, head, true, true);
 
         BlockEntityBed thisBed = null;
         try {
@@ -279,10 +279,10 @@ public class BlockBed extends BlockTransparentMeta implements Faceable, BlockEnt
             if (thisBed != null) {
                 thisBed.close();
             }
-            level.setBlock(thisLayer0, 0, thisLayer0, true);
-            level.setBlock(thisLayer1, 1, thisLayer1, true);
-            level.setBlock(nextLayer0, 0, nextLayer0, true);
-            level.setBlock(nextLayer1, 1, nextLayer1, true);
+            getLevel().setBlock(thisLayer0, 0, thisLayer0, true);
+            getLevel().setBlock(thisLayer1, 1, thisLayer1, true);
+            getLevel().setBlock(nextLayer0, 0, nextLayer0, true);
+            getLevel().setBlock(nextLayer1, 1, nextLayer1, true);
             return false;
         }
         return true;
@@ -324,7 +324,7 @@ public class BlockBed extends BlockTransparentMeta implements Faceable, BlockEnt
     }
 
     public DyeColor getDyeColor() {
-        if (this.level != null) {
+        if (this.getLevel() != null) {
             BlockEntityBed blockEntity = getBlockEntity();
 
             if (blockEntity != null) {
