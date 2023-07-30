@@ -17,7 +17,6 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.player.Player;
-import cn.nukkit.plugin.PluginManager;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
 import javax.annotation.Nullable;
@@ -119,15 +118,14 @@ public class BlockObserver extends BlockSolidMeta implements RedstoneComponent, 
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_SCHEDULED || type == Level.BLOCK_UPDATE_MOVED) {
-            RedstoneUpdateEvent ev = new RedstoneUpdateEvent(this);
-            PluginManager pluginManager = getLevel().getServer().getPluginManager();
-            pluginManager.callEvent(ev);
-            if (ev.isCancelled()) {
+            RedstoneUpdateEvent event = new RedstoneUpdateEvent(this);
+            event.call();
+            if (event.isCancelled()) {
                 return 0;
             }
 
             if (!isPowered()) {
-                getLevel().getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 0, 15));
+                new BlockRedstoneEvent(this, 0, 15).call();
                 setPowered(true);
 
                 if (getLevel().setBlock(this, this)) {
@@ -137,7 +135,7 @@ public class BlockObserver extends BlockSolidMeta implements RedstoneComponent, 
                     getLevel().scheduleUpdate(this, 2);
                 }
             } else {
-                pluginManager.callEvent(new BlockRedstoneEvent(this, 15, 0));
+                new BlockRedstoneEvent(this, 15, 0).call();
                 setPowered(false);
 
                 getLevel().setBlock(this, this);
@@ -159,9 +157,9 @@ public class BlockObserver extends BlockSolidMeta implements RedstoneComponent, 
             return;
         }
 
-        RedstoneUpdateEvent ev = new RedstoneUpdateEvent(this);
-        server.getPluginManager().callEvent(ev);
-        if (ev.isCancelled()) {
+        RedstoneUpdateEvent event = new RedstoneUpdateEvent(this);
+        event.call();
+        if (event.isCancelled()) {
             return;
         }
 

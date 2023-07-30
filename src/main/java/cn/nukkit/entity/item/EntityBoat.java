@@ -279,7 +279,7 @@ public class EntityBoat extends EntityVehicle {
                 }
             }
         }
-        this.getServer().getPluginManager().callEvent(new VehicleUpdateEvent(this));
+        new VehicleUpdateEvent(this).call();
         return hasUpdated;
     }
 
@@ -320,7 +320,7 @@ public class EntityBoat extends EntityVehicle {
         Location to = new Location(this.x(), this.y(), this.z(), this.yaw(), this.pitch(), getLevel());
 
         if (!from.equals(to)) {
-            this.getServer().getPluginManager().callEvent(new VehicleMoveEvent(this, from, to));
+            new VehicleMoveEvent(this, from, to).call();
         }
 
         // TODO: lily pad collision

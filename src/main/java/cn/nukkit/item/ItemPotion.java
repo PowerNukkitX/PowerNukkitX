@@ -134,7 +134,7 @@ public class ItemPotion extends Item {
     @Override
     public boolean onUse(Player player, int ticksUsed) {
         PlayerItemConsumeEvent consumeEvent = new PlayerItemConsumeEvent(player, this);
-        player.getServer().getPluginManager().callEvent(consumeEvent);
+        consumeEvent.call();
         if (consumeEvent.isCancelled()) {
             return false;
         }

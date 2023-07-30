@@ -94,7 +94,7 @@ public class EntityPotion extends EntityProjectile {
     protected void splash(Entity collidedWith) {
         Potion potion = Potion.getPotion(this.potionId);
         PotionCollideEvent event = new PotionCollideEvent(potion, this);
-        this.server.getPluginManager().callEvent(event);
+        event.call();
 
         if (event.isCancelled()) {
             return;

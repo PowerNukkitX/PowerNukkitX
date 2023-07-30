@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
 
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
@@ -231,9 +230,9 @@ public class BlockCocoa extends BlockTransparentMeta implements Faceable {
     public boolean grow() {
         Block block = this.clone();
         block.setDamage(block.getDamage() + 4);
-        BlockGrowEvent ev = new BlockGrowEvent(this, block);
-        Server.getInstance().getPluginManager().callEvent(ev);
-        return !ev.isCancelled() && this.getLevel().setBlock(this, ev.getNewState(), true, true);
+        BlockGrowEvent event = new BlockGrowEvent(this, block);
+        event.call();
+        return !event.isCancelled() && this.getLevel().setBlock(this, event.getNewState(), true, true);
     }
 
     @Override

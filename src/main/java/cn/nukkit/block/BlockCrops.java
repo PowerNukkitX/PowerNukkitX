@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
@@ -102,14 +101,14 @@ public abstract class BlockCrops extends BlockFlowable {
                 BlockCrops block = (BlockCrops) this.clone();
                 growth += ThreadLocalRandom.current().nextInt(3) + 2;
                 block.setGrowth(Math.min(growth, max));
-                BlockGrowEvent ev = new BlockGrowEvent(this, block);
-                Server.getInstance().getPluginManager().callEvent(ev);
+                BlockGrowEvent event = new BlockGrowEvent(this, block);
+                event.call();
 
-                if (ev.isCancelled()) {
+                if (event.isCancelled()) {
                     return false;
                 }
 
-                this.getLevel().setBlock(this, ev.getNewState(), false, true);
+                this.getLevel().setBlock(this, event.getNewState(), false, true);
                 this.getLevel().addParticle(new BoneMealParticle(this));
 
                 if (player != null && !player.isCreative()) {
@@ -137,11 +136,11 @@ public abstract class BlockCrops extends BlockFlowable {
                 if (growth < getMaxGrowth()) {
                     BlockCrops block = (BlockCrops) this.clone();
                     block.setGrowth(growth + 1);
-                    BlockGrowEvent ev = new BlockGrowEvent(this, block);
-                    Server.getInstance().getPluginManager().callEvent(ev);
+                    BlockGrowEvent event = new BlockGrowEvent(this, block);
+                    event.call();
 
-                    if (!ev.isCancelled()) {
-                        this.getLevel().setBlock(this, ev.getNewState(), false, true);
+                    if (!event.isCancelled()) {
+                        this.getLevel().setBlock(this, event.getNewState(), false, true);
                     } else {
                         return Level.BLOCK_UPDATE_RANDOM;
                     }

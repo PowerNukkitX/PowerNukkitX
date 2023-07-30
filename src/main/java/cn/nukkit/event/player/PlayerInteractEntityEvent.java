@@ -2,7 +2,6 @@ package cn.nukkit.event.player;
 
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.Cancellable;
-import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.player.Player;
@@ -12,8 +11,6 @@ import cn.nukkit.player.Player;
  * @since 1. 1. 2017
  */
 public class PlayerInteractEntityEvent extends PlayerEvent implements Cancellable {
-
-    private static final HandlerList handlers = new HandlerList();
 
     protected final Entity entity;
     protected final Item item;
@@ -36,9 +33,5 @@ public class PlayerInteractEntityEvent extends PlayerEvent implements Cancellabl
 
     public Vector3 getClickedPos() {
         return clickedPos;
-    }
-
-    public static HandlerList getHandlers() {
-        return handlers;
     }
 }

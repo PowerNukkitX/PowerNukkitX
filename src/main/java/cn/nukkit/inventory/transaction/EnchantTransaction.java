@@ -49,9 +49,9 @@ public class EnchantTransaction extends InventoryTransaction {
             return false;
         }
         EnchantInventory inv = (EnchantInventory) getSource().getWindowById(Player.ENCHANT_WINDOW_ID);
-        EnchantItemEvent ev = new EnchantItemEvent(inv, inputItem, outputItem, cost, source);
-        source.getServer().getPluginManager().callEvent(ev);
-        if (ev.isCancelled()) {
+        EnchantItemEvent event = new EnchantItemEvent(inv, inputItem, outputItem, cost, source);
+        event.call();
+        if (event.isCancelled()) {
             source.removeAllWindows(false);
             this.sendInventories();
 
@@ -67,14 +67,14 @@ public class EnchantTransaction extends InventoryTransaction {
             }
         }
 
-        if (!ev.getNewItem().equals(this.outputItem, true, true)) {
+        if (!event.getNewItem().equals(this.outputItem, true, true)) {
             // Plugin changed item, so the previous slot change is going to be invalid
             // Send the replaced item to the enchant inventory manually
-            inv.setItemByPlayer(source, 0, ev.getNewItem(), true);
+            inv.setItemByPlayer(source, 0, event.getNewItem(), true);
         }
 
         if (!source.isCreative()) {
-            source.setExperience(source.getExperience(), source.getExperienceLevel() - ev.getXpCost());
+            source.setExperience(source.getExperience(), source.getExperienceLevel() - event.getXpCost());
         }
         return true;
     }

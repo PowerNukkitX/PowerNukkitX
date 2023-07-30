@@ -3,12 +3,10 @@ package cn.nukkit.event.player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.event.Cancellable;
-import cn.nukkit.event.HandlerList;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.player.Player;
 
 public class PlayerKickEvent extends PlayerEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
 
     public enum Reason {
         NEW_CONNECTION,
@@ -29,10 +27,6 @@ public class PlayerKickEvent extends PlayerEvent implements Cancellable {
         public String toString() {
             return this.name();
         }
-    }
-
-    public static HandlerList getHandlers() {
-        return handlers;
     }
 
     protected TextContainer quitMessage;

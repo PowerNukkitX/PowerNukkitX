@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.Server;
 import cn.nukkit.event.block.BlockSpreadEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
@@ -62,10 +61,10 @@ public class BlockMycelium extends BlockSolid {
                 Block block = this.getLevel().getBlock(new Vector3(x(), y(), z()));
                 if (block.getId() == Block.DIRT && block.getDamage() == 0) {
                     if (block.up().isTransparent()) {
-                        BlockSpreadEvent ev = new BlockSpreadEvent(block, this, Block.get(BlockID.MYCELIUM));
-                        Server.getInstance().getPluginManager().callEvent(ev);
-                        if (!ev.isCancelled()) {
-                            this.getLevel().setBlock(block, ev.getNewState());
+                        BlockSpreadEvent event = new BlockSpreadEvent(block, this, Block.get(BlockID.MYCELIUM));
+                        event.call();
+                        if (!event.isCancelled()) {
+                            this.getLevel().setBlock(block, event.getNewState());
                         }
                     }
                 }

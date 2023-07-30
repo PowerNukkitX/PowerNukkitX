@@ -168,7 +168,7 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
         }
 
         if (meta != maxStrength) {
-            this.getLevel().getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, meta, maxStrength));
+            new BlockRedstoneEvent(this, meta, maxStrength).call();
 
             this.setDamage(maxStrength);
             this.getLevel().setBlock(this, this, false, true);
@@ -234,9 +234,9 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
         }
 
         // Redstone event
-        RedstoneUpdateEvent ev = new RedstoneUpdateEvent(this);
-        getLevel().getServer().getPluginManager().callEvent(ev);
-        if (ev.isCancelled()) {
+        RedstoneUpdateEvent event = new RedstoneUpdateEvent(this);
+        event.call();
+        if (event.isCancelled()) {
             return 0;
         }
 

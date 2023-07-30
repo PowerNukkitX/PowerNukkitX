@@ -65,9 +65,9 @@ public class BlockRedstoneTorchUnlit extends BlockTorch implements RedstoneCompo
             if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_REDSTONE) {
                 this.getLevel().scheduleUpdate(this, tickRate());
             } else if (type == Level.BLOCK_UPDATE_SCHEDULED) {
-                RedstoneUpdateEvent ev = new RedstoneUpdateEvent(this);
-                getLevel().getServer().getPluginManager().callEvent(ev);
-                if (ev.isCancelled()) {
+                RedstoneUpdateEvent event = new RedstoneUpdateEvent(this);
+                event.call();
+                if (event.isCancelled()) {
                     return 0;
                 }
 

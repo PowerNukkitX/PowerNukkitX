@@ -2,14 +2,11 @@ package cn.nukkit.event.server;
 
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.event.Cancellable;
-import cn.nukkit.event.HandlerList;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 public class ServerCommandEvent extends ServerEvent implements Cancellable {
-
-    private static final HandlerList handlers = new HandlerList();
 
     protected String command;
 
@@ -30,9 +27,5 @@ public class ServerCommandEvent extends ServerEvent implements Cancellable {
 
     public void setCommand(String command) {
         this.command = command;
-    }
-
-    public static HandlerList getHandlers() {
-        return handlers;
     }
 }

@@ -28,7 +28,7 @@ public class ModalFormResponseProcessor extends DataPacketProcessor<ModalFormRes
             }
 
             PlayerFormRespondedEvent event = new PlayerFormRespondedEvent(player, pk.formId, window);
-            player.getServer().getPluginManager().callEvent(event);
+            event.call();
         } else if (playerHandle.getServerSettings().containsKey(pk.formId)) {
             FormWindow window = playerHandle.getServerSettings().get(pk.formId);
             window.setResponse(pk.data.trim());
@@ -38,7 +38,7 @@ public class ModalFormResponseProcessor extends DataPacketProcessor<ModalFormRes
             }
 
             PlayerSettingsRespondedEvent event = new PlayerSettingsRespondedEvent(player, pk.formId, window);
-            player.getServer().getPluginManager().callEvent(event);
+            event.call();
 
             // Set back new settings if not been cancelled
             if (!event.isCancelled() && window instanceof FormWindowCustom formWindowCustom)

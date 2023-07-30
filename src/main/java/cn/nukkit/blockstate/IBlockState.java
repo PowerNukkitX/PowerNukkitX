@@ -2,7 +2,6 @@ package cn.nukkit.blockstate;
 
 import static cn.nukkit.blockstate.Loggers.logIBlockState;
 
-import cn.nukkit.Server;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
@@ -14,6 +13,7 @@ import cn.nukkit.blockproperty.exception.InvalidBlockPropertyException;
 import cn.nukkit.blockproperty.exception.InvalidBlockPropertyMetaException;
 import cn.nukkit.blockproperty.exception.InvalidBlockPropertyValueException;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
+import cn.nukkit.event.HandlerListManager;
 import cn.nukkit.event.blockstate.BlockStateRepairEvent;
 import cn.nukkit.event.blockstate.BlockStateRepairFinishEvent;
 import cn.nukkit.item.ItemBlock;
@@ -21,7 +21,6 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.plugin.PluginManager;
 import cn.nukkit.utils.HumanStringComparator;
 import java.io.Serializable;
 import java.math.BigInteger;
@@ -408,9 +407,8 @@ public interface IBlockState {
 
         Consumer<BlockStateRepair> callbackChain = repairs::add;
 
-        if (!BlockStateRepairEvent.getHandlers().isEmpty()) {
-            PluginManager manager = Server.getInstance().getPluginManager();
-            callbackChain = callbackChain.andThen(repair -> manager.callEvent(new BlockStateRepairEvent(repair)));
+        if (!HandlerListManager.global().getListFor(BlockStateRepairEvent.class).isEmpty()) {
+            callbackChain = callbackChain.andThen(repair -> new BlockStateRepairEvent(repair).call());
         }
 
         if (callback != null) {
@@ -419,9 +417,11 @@ public interface IBlockState {
 
         Block block = getBlock(level, x, y, z, layer, true, callbackChain);
 
-        if (!BlockStateRepairFinishEvent.getHandlers().isEmpty()) {
+        if (!HandlerListManager.global()
+                .getListFor(BlockStateRepairFinishEvent.class)
+                .isEmpty()) {
             BlockStateRepairFinishEvent event = new BlockStateRepairFinishEvent(repairs, block);
-            Server.getInstance().getPluginManager().callEvent(event);
+            event.call();
             block = event.getResult();
         }
 

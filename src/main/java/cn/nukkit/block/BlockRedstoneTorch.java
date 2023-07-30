@@ -95,10 +95,10 @@ public class BlockRedstoneTorch extends BlockTorch implements RedstoneComponent 
             if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_REDSTONE) {
                 this.getLevel().scheduleUpdate(this, tickRate());
             } else if (type == Level.BLOCK_UPDATE_SCHEDULED) {
-                RedstoneUpdateEvent ev = new RedstoneUpdateEvent(this);
-                getLevel().getServer().getPluginManager().callEvent(ev);
+                RedstoneUpdateEvent event = new RedstoneUpdateEvent(this);
+                event.call();
 
-                if (ev.isCancelled()) {
+                if (event.isCancelled()) {
                     return 0;
                 }
 

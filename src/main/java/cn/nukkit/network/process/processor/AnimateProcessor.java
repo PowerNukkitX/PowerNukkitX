@@ -29,7 +29,7 @@ public class AnimateProcessor extends DataPacketProcessor<AnimatePacket> {
         }
 
         PlayerAnimationEvent animationEvent = new PlayerAnimationEvent(player, pk);
-        player.getServer().getPluginManager().callEvent(animationEvent);
+        animationEvent.call();
         if (animationEvent.isCancelled()) {
             return;
         }

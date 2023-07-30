@@ -186,7 +186,7 @@ public class ItemCrossbow extends ItemTool {
             } else {
                 EntityArrow entity = new EntityArrow(player.chunk, nbt, player, false);
                 EntityShootCrossbowEvent entityShootBowEvent = new EntityShootCrossbowEvent(player, this, entity);
-                Server.getInstance().getPluginManager().callEvent(entityShootBowEvent);
+                entityShootBowEvent.call();
                 if (entityShootBowEvent.isCancelled()) {
                     entityShootBowEvent.getProjectile(0).close();
                     player.getInventory().sendContents(player);
@@ -199,9 +199,9 @@ public class ItemCrossbow extends ItemTool {
                                     .multiply(3.5D));
                     if (entityShootBowEvent.getProjectile(0) != null) {
                         EntityProjectile proj = entityShootBowEvent.getProjectile(0);
-                        ProjectileLaunchEvent projectile = new ProjectileLaunchEvent(proj, player);
-                        Server.getInstance().getPluginManager().callEvent(projectile);
-                        if (projectile.isCancelled()) {
+                        ProjectileLaunchEvent projectileLaunchEvent = new ProjectileLaunchEvent(proj, player);
+                        projectileLaunchEvent.call();
+                        if (projectileLaunchEvent.isCancelled()) {
                             proj.close();
                         } else {
                             proj.spawnToAll();

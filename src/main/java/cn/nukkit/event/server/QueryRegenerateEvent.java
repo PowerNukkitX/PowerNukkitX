@@ -1,7 +1,6 @@
 package cn.nukkit.event.server;
 
 import cn.nukkit.Server;
-import cn.nukkit.event.HandlerList;
 import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
 import cn.nukkit.player.Player;
 import cn.nukkit.plugin.Plugin;
@@ -18,12 +17,6 @@ import java.util.Map;
  */
 public class QueryRegenerateEvent extends ServerEvent {
     // alot todo
-
-    private static final HandlerList handlers = new HandlerList();
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     private static final String GAME_ID = "MINECRAFTPE";
 

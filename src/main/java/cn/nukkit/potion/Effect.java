@@ -1,6 +1,5 @@
 package cn.nukkit.potion;
 
-import cn.nukkit.Server;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
@@ -309,7 +308,7 @@ public class Effect implements Cloneable {
         Effect oldEffect = entity.getEffect(getId());
 
         EntityEffectUpdateEvent event = new EntityEffectUpdateEvent(entity, oldEffect, this);
-        Server.getInstance().getPluginManager().callEvent(event);
+        event.call();
         if (event.isCancelled()) {
             return;
         }
@@ -373,7 +372,7 @@ public class Effect implements Cloneable {
 
     public void remove(Entity entity) {
         EntityEffectRemoveEvent event = new EntityEffectRemoveEvent(entity, this);
-        Server.getInstance().getPluginManager().callEvent(event);
+        event.call();
         if (event.isCancelled()) {
             return;
         }

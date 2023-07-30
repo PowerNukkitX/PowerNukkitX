@@ -40,7 +40,7 @@ public interface IBlockOreRedstoneGlowing extends IMutableBlockState {
             Block block = getBlock();
             Level level = getLevel();
             BlockFadeEvent event = new BlockFadeEvent(block, getUnlitState().getBlock());
-            level.getServer().getPluginManager().callEvent(event);
+            event.call();
             if (!event.isCancelled()) {
                 level.setBlock(block, event.getNewState(), false, true);
             }

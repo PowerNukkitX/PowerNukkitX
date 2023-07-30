@@ -102,7 +102,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         if (this.getFreezingTicks() < 140 && collidedWithPowderSnow) {
             this.addFreezingTicks(1);
             EntityFreezeEvent event = new EntityFreezeEvent(this);
-            this.server.getPluginManager().callEvent(event);
+            event.call();
             if (!event.isCancelled()) {
                 // this.setMovementSpeed(); //todo 给物理实体添加freeze减速
             }

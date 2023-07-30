@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
@@ -128,10 +127,10 @@ public class BlockGrass extends BlockDirt {
             // but only if they cause the light level above the grass block to be four or below (like water does),
             // and the surrounding area is not otherwise sufficiently lit up.
             if (up().getLightFilter() > 1) {
-                BlockFadeEvent ev = new BlockFadeEvent(this, Block.get(BlockID.DIRT));
-                Server.getInstance().getPluginManager().callEvent(ev);
-                if (!ev.isCancelled()) {
-                    this.getLevel().setBlock(this, ev.getNewState());
+                BlockFadeEvent event = new BlockFadeEvent(this, Block.get(BlockID.DIRT));
+                event.call();
+                if (!event.isCancelled()) {
+                    this.getLevel().setBlock(this, event.getNewState());
                     return type;
                 }
             }
@@ -160,10 +159,10 @@ public class BlockGrass extends BlockDirt {
 
                         // Any block directly above the dirt block must not reduce light by 2 levels or more.
                         && block.up().getLightFilter() < 2) {
-                    BlockSpreadEvent ev = new BlockSpreadEvent(block, this, Block.get(BlockID.GRASS));
-                    Server.getInstance().getPluginManager().callEvent(ev);
-                    if (!ev.isCancelled()) {
-                        this.getLevel().setBlock(block, ev.getNewState());
+                    BlockSpreadEvent event = new BlockSpreadEvent(block, this, Block.get(BlockID.GRASS));
+                    event.call();
+                    if (!event.isCancelled()) {
+                        this.getLevel().setBlock(block, event.getNewState());
                     }
                 }
             }

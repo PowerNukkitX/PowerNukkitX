@@ -91,7 +91,7 @@ public class Scoreboard implements IScoreboard {
         if (shouldCallEvent()) {
             var event = new ScoreboardLineChangeEvent(
                     this, line, line.getScore(), line.getScore(), ScoreboardLineChangeEvent.ActionType.ADD_LINE);
-            Server.getInstance().getPluginManager().callEvent(event);
+            event.call();
             if (event.isCancelled()) return false;
             line = event.getLine();
         }
@@ -122,7 +122,7 @@ public class Scoreboard implements IScoreboard {
                     removed.getScore(),
                     removed.getScore(),
                     ScoreboardLineChangeEvent.ActionType.REMOVE_LINE);
-            Server.getInstance().getPluginManager().callEvent(event);
+            event.call();
             if (event.isCancelled()) return false;
         }
         this.lines.remove(scorer);
@@ -136,7 +136,7 @@ public class Scoreboard implements IScoreboard {
         if (shouldCallEvent()) {
             var event = new ScoreboardLineChangeEvent(
                     this, null, 0, 0, ScoreboardLineChangeEvent.ActionType.REMOVE_ALL_LINES);
-            Server.getInstance().getPluginManager().callEvent(event);
+            event.call();
             if (event.isCancelled()) return false;
         }
         if (send) {

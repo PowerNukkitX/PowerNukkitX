@@ -75,7 +75,7 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
 
         if (pk.getInputData().contains(AuthInputAction.START_SPRINTING)) {
             PlayerToggleSprintEvent event = new PlayerToggleSprintEvent(player, true);
-            player.getServer().getPluginManager().callEvent(event);
+            event.call();
             if (event.isCancelled()) {
                 player.sendData(player);
             } else {
@@ -84,7 +84,7 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
         }
         if (pk.getInputData().contains(AuthInputAction.STOP_SPRINTING)) {
             PlayerToggleSprintEvent event = new PlayerToggleSprintEvent(player, false);
-            player.getServer().getPluginManager().callEvent(event);
+            event.call();
             if (event.isCancelled()) {
                 player.sendData(player);
             } else {
@@ -93,7 +93,7 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
         }
         if (pk.getInputData().contains(AuthInputAction.START_SNEAKING)) {
             PlayerToggleSneakEvent event = new PlayerToggleSneakEvent(player, true);
-            player.getServer().getPluginManager().callEvent(event);
+            event.call();
             if (event.isCancelled()) {
                 player.sendData(player);
             } else {
@@ -102,7 +102,7 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
         }
         if (pk.getInputData().contains(AuthInputAction.STOP_SNEAKING)) {
             PlayerToggleSneakEvent event = new PlayerToggleSneakEvent(player, false);
-            player.getServer().getPluginManager().callEvent(event);
+            event.call();
             if (event.isCancelled()) {
                 player.sendData(player);
             } else {
@@ -110,40 +110,40 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
             }
         }
         if (pk.getInputData().contains(AuthInputAction.START_JUMPING)) {
-            PlayerJumpEvent playerJumpEvent = new PlayerJumpEvent(player);
-            player.getServer().getPluginManager().callEvent(playerJumpEvent);
+            PlayerJumpEvent event = new PlayerJumpEvent(player);
+            event.call();
         }
         if (pk.getInputData().contains(AuthInputAction.START_SWIMMING)) {
-            var playerSwimmingEvent = new PlayerToggleSwimEvent(player, true);
-            player.getServer().getPluginManager().callEvent(playerSwimmingEvent);
-            if (playerSwimmingEvent.isCancelled()) {
+            PlayerToggleSwimEvent event = new PlayerToggleSwimEvent(player, true);
+            event.call();
+            if (event.isCancelled()) {
                 player.sendData(player);
             } else {
                 player.setSwimming(true);
             }
         }
         if (pk.getInputData().contains(AuthInputAction.STOP_SWIMMING)) {
-            var playerSwimmingEvent = new PlayerToggleSwimEvent(player, false);
-            player.getServer().getPluginManager().callEvent(playerSwimmingEvent);
-            if (playerSwimmingEvent.isCancelled()) {
+            PlayerToggleSwimEvent event = new PlayerToggleSwimEvent(player, false);
+            event.call();
+            if (event.isCancelled()) {
                 player.sendData(player);
             } else {
                 player.setSwimming(false);
             }
         }
         if (pk.getInputData().contains(AuthInputAction.START_GLIDING)) {
-            var playerToggleGlideEvent = new PlayerToggleGlideEvent(player, true);
-            player.getServer().getPluginManager().callEvent(playerToggleGlideEvent);
-            if (playerToggleGlideEvent.isCancelled()) {
+            PlayerToggleGlideEvent event = new PlayerToggleGlideEvent(player, true);
+            event.call();
+            if (event.isCancelled()) {
                 player.sendData(player);
             } else {
                 player.setGliding(true);
             }
         }
         if (pk.getInputData().contains(AuthInputAction.STOP_GLIDING)) {
-            var playerToggleGlideEvent = new PlayerToggleGlideEvent(player, false);
-            player.getServer().getPluginManager().callEvent(playerToggleGlideEvent);
-            if (playerToggleGlideEvent.isCancelled()) {
+            PlayerToggleGlideEvent event = new PlayerToggleGlideEvent(player, false);
+            event.call();
+            if (event.isCancelled()) {
                 player.sendData(player);
             } else {
                 player.setGliding(false);

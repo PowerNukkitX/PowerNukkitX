@@ -20,7 +20,6 @@ package cn.nukkit.event.inventory;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.event.HandlerList;
 import cn.nukkit.inventory.AnvilInventory;
 import cn.nukkit.player.Player;
 import javax.annotation.Nullable;
@@ -37,13 +36,6 @@ import org.jetbrains.annotations.NotNull;
 @Since("1.4.0.0-PN")
 @ToString
 public class PlayerTypingAnvilInventoryEvent extends InventoryEvent {
-    private static final HandlerList handlers = new HandlerList();
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     private final Player player;
     private final String previousName;

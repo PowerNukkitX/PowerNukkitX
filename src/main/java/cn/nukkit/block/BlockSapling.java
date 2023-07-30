@@ -289,15 +289,15 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
                         new NukkitRandom(),
                         getWoodType(),
                         false);
-                StructureGrowEvent ev = new StructureGrowEvent(this, chunkManager.getBlocks());
-                this.getLevel().getServer().getPluginManager().callEvent(ev);
-                if (ev.isCancelled()) {
+                StructureGrowEvent event = new StructureGrowEvent(this, chunkManager.getBlocks());
+                event.call();
+                if (event.isCancelled()) {
                     return;
                 }
                 if (this.getLevel().getBlock(vector3).getId() == BlockID.DIRT_WITH_ROOTS) {
                     this.getLevel().setBlock(vector3, Block.get(BlockID.DIRT));
                 }
-                for (Block block : ev.getBlockList()) {
+                for (Block block : event.getBlockList()) {
                     this.getLevel().setBlock(block, block);
                 }
                 return;
@@ -314,9 +314,9 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
 
         ListChunkManager chunkManager = new ListChunkManager(this.getLevel());
         boolean success = generator.generate(chunkManager, new NukkitRandom(), vector3);
-        StructureGrowEvent ev = new StructureGrowEvent(this, chunkManager.getBlocks());
-        this.getLevel().getServer().getPluginManager().callEvent(ev);
-        if (ev.isCancelled() || !success) {
+        StructureGrowEvent event = new StructureGrowEvent(this, chunkManager.getBlocks());
+        event.call();
+        if (event.isCancelled() || !success) {
             if (bigTree) {
                 this.getLevel().setBlock(vector3, this, true, false);
                 this.getLevel().setBlock(vector3.add(1, 0, 0), this, true, false);
@@ -331,7 +331,7 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
         if (this.getLevel().getBlock(vector3).getId() == BlockID.DIRT_WITH_ROOTS) {
             this.getLevel().setBlock(vector3, Block.get(BlockID.DIRT));
         }
-        for (Block block : ev.getBlockList()) {
+        for (Block block : event.getBlockList()) {
             this.getLevel().setBlock(block, block);
         }
     }

@@ -197,15 +197,15 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             return;
         }
         super.kill();
-        EntityDeathEvent ev = new EntityDeathEvent(this, this.getDrops());
-        this.server.getPluginManager().callEvent(ev);
+        EntityDeathEvent event = new EntityDeathEvent(this, this.getDrops());
+        event.call();
 
         var manager = this.server.getScoreboardManager();
         // 测试环境中此项会null，所以说需要判空下
         if (manager != null) manager.onEntityDead(this);
 
         if (this.getLevel().getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
-            for (cn.nukkit.item.Item item : ev.getDrops()) {
+            for (cn.nukkit.item.Item item : event.getDrops()) {
                 this.getLevel().dropItem(this, item);
             }
         }
@@ -443,10 +443,10 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         boolean knockBack = !(damager instanceof EntityProjectile);
         EntityDamageBlockedEvent event = new EntityDamageBlockedEvent(this, source, knockBack, true);
         if (!blocked || !source.canBeReducedByArmor()) {
-            event.setCancelled();
+            event.cancel();
         }
 
-        getServer().getPluginManager().callEvent(event);
+        event.call();
         if (event.isCancelled()) {
             return false;
         }

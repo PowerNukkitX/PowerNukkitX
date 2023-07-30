@@ -1,6 +1,5 @@
 package cn.nukkit.scoreboard.manager;
 
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.data.CommandEnum;
@@ -36,7 +35,7 @@ public class ScoreboardManager implements IScoreboardManager {
     @Override
     public boolean addScoreboard(IScoreboard scoreboard) {
         var event = new ScoreboardObjectiveChangeEvent(scoreboard, ScoreboardObjectiveChangeEvent.ActionType.ADD);
-        Server.getInstance().getPluginManager().callEvent(event);
+        event.call();
         if (event.isCancelled()) {
             return false;
         }
@@ -55,7 +54,7 @@ public class ScoreboardManager implements IScoreboardManager {
         var removed = scoreboards.get(objectiveName);
         if (removed == null) return false;
         var event = new ScoreboardObjectiveChangeEvent(removed, ScoreboardObjectiveChangeEvent.ActionType.REMOVE);
-        Server.getInstance().getPluginManager().callEvent(event);
+        event.call();
         if (event.isCancelled()) {
             return false;
         }

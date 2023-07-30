@@ -166,25 +166,25 @@ public class EntityFallingBlock extends Entity {
                     if (mergedHeight > 8) {
                         EntityBlockChangeEvent event =
                                 new EntityBlockChangeEvent(this, floorBlock, Block.get(Block.SNOW_LAYER, 0x7));
-                        this.server.getPluginManager().callEvent(event);
+                        event.call();
                         if (!event.isCancelled()) {
                             this.getLevel().setBlock(floorPos, event.getTo(), true);
 
                             Vector3 abovePos = floorPos.up();
                             Block aboveBlock = this.getLevel().getBlock(abovePos);
                             if (aboveBlock.getId() == Block.AIR) {
-                                EntityBlockChangeEvent event2 = new EntityBlockChangeEvent(
+                                EntityBlockChangeEvent event1 = new EntityBlockChangeEvent(
                                         this, aboveBlock, Block.get(Block.SNOW_LAYER, mergedHeight - 8 - 1));
-                                this.server.getPluginManager().callEvent(event2);
-                                if (!event2.isCancelled()) {
-                                    this.getLevel().setBlock(abovePos, event2.getTo(), true);
+                                event1.call();
+                                if (!event1.isCancelled()) {
+                                    this.getLevel().setBlock(abovePos, event1.getTo(), true);
                                 }
                             }
                         }
                     } else {
                         EntityBlockChangeEvent event = new EntityBlockChangeEvent(
                                 this, floorBlock, Block.get(Block.SNOW_LAYER, mergedHeight - 1));
-                        this.server.getPluginManager().callEvent(event);
+                        event.call();
                         if (!event.isCancelled()) {
                             this.getLevel().setBlock(floorPos, event.getTo(), true);
                         }
@@ -199,7 +199,7 @@ public class EntityFallingBlock extends Entity {
                 } else {
                     EntityBlockChangeEvent event =
                             new EntityBlockChangeEvent(this, block, Block.get(getBlock(), getDamage()));
-                    server.getPluginManager().callEvent(event);
+                    event.call();
                     if (!event.isCancelled()) {
                         if (!breakOnGround) getLevel().setBlock(pos, event.getTo(), true);
                         else {

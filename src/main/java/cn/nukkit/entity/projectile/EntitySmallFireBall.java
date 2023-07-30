@@ -73,7 +73,7 @@ public class EntitySmallFireBall extends EntityProjectile {
 
     public void onCollideWithEntity(Entity entity) {
         ProjectileHitEvent projectileHitEvent = new ProjectileHitEvent(this, MovingObjectPosition.fromEntity(entity));
-        this.server.getPluginManager().callEvent(projectileHitEvent);
+        projectileHitEvent.call();
         if (projectileHitEvent.isCancelled()) return;
         this.getLevel()
                 .getVibrationManager()
@@ -85,7 +85,7 @@ public class EntitySmallFireBall extends EntityProjectile {
             addHitEffect();
             this.hadCollision = true;
             EntityCombustByEntityEvent event = new EntityCombustByEntityEvent(this, entity, 5);
-            this.server.getPluginManager().callEvent(event);
+            event.call();
             if (!event.isCancelled()) entity.setOnFire(event.getDuration());
         }
         afterCollisionWithEntity(entity);
@@ -111,10 +111,10 @@ public class EntitySmallFireBall extends EntityProjectile {
             fire.setLevel(getLevel());
 
             if (fire.isBlockTopFacingSurfaceSolid(fire.down()) || fire.canNeighborBurn()) {
-                BlockIgniteEvent e = new BlockIgniteEvent(
+                BlockIgniteEvent event = new BlockIgniteEvent(
                         this.getLevelBlock(), null, null, BlockIgniteEvent.BlockIgniteCause.FIREBALL);
-                getLevel().getServer().getPluginManager().callEvent(e);
-                if (!e.isCancelled()) {
+                event.call();
+                if (!event.isCancelled()) {
                     getLevel().setBlock(fire, fire, true);
                 }
             }

@@ -109,7 +109,7 @@ public class EntityItem extends Entity {
             this.fireProof = true; // Netherite items are fireproof
         }
 
-        this.server.getPluginManager().callEvent(new ItemSpawnEvent(this));
+        new ItemSpawnEvent(this).call();
     }
 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Netherite stuff is immune to fire and lava damage")
@@ -263,9 +263,9 @@ public class EntityItem extends Entity {
             this.updateMovement();
 
             if (this.age > 6000) {
-                ItemDespawnEvent ev = new ItemDespawnEvent(this);
-                this.server.getPluginManager().callEvent(ev);
-                if (ev.isCancelled()) {
+                ItemDespawnEvent event = new ItemDespawnEvent(this);
+                event.call();
+                if (event.isCancelled()) {
                     this.age = 0;
                 } else {
                     this.kill();

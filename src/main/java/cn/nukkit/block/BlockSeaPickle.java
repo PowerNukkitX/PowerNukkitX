@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
@@ -162,7 +161,7 @@ public class BlockSeaPickle extends BlockFlowable {
             block.setDamage(3);
 
             BlockGrowEvent blockGrowEvent = new BlockGrowEvent(this, block);
-            Server.getInstance().getPluginManager().callEvent(blockGrowEvent);
+            blockGrowEvent.call();
 
             if (blockGrowEvent.isCancelled()) {
                 return false;

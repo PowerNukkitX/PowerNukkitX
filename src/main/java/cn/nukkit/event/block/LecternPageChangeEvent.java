@@ -3,13 +3,11 @@ package cn.nukkit.event.block;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.blockentity.BlockEntityLectern;
 import cn.nukkit.event.Cancellable;
-import cn.nukkit.event.HandlerList;
 import cn.nukkit.player.Player;
 
 @PowerNukkitOnly
 public class LecternPageChangeEvent extends BlockEvent implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
     private final Player player;
     private final BlockEntityLectern lectern;
     private int newRawPage;
@@ -20,11 +18,6 @@ public class LecternPageChangeEvent extends BlockEvent implements Cancellable {
         this.player = player;
         this.lectern = lectern;
         this.newRawPage = newPage;
-    }
-
-    @PowerNukkitOnly
-    public static HandlerList getHandlers() {
-        return handlers;
     }
 
     @PowerNukkitOnly

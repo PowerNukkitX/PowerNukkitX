@@ -261,18 +261,18 @@ public class BlockEntityFurnace extends BlockEntitySpawnable
     }
 
     protected void checkFuel(Item fuel) {
-        FurnaceBurnEvent ev = new FurnaceBurnEvent(this, fuel, fuel.getFuelTime() == null ? 0 : fuel.getFuelTime());
-        this.server.getPluginManager().callEvent(ev);
-        if (ev.isCancelled()) {
+        FurnaceBurnEvent event = new FurnaceBurnEvent(this, fuel, fuel.getFuelTime() == null ? 0 : fuel.getFuelTime());
+        event.call();
+        if (event.isCancelled()) {
             return;
         }
 
-        maxTime = (int) Math.ceil(ev.getBurnTime() / (float) getSpeedMultiplier());
-        burnTime = (int) Math.ceil(ev.getBurnTime() / (float) getSpeedMultiplier());
+        maxTime = (int) Math.ceil(event.getBurnTime() / (float) getSpeedMultiplier());
+        burnTime = (int) Math.ceil(event.getBurnTime() / (float) getSpeedMultiplier());
         burnDuration = 0;
         setBurning(true);
 
-        if (burnTime > 0 && ev.isBurning()) {
+        if (burnTime > 0 && event.isBurning()) {
             fuel.setCount(fuel.getCount() - 1);
             if (fuel.getCount() == 0) {
                 if (fuel.getId() == Item.BUCKET && ((ItemBucket) fuel).isLava()) {
@@ -340,16 +340,16 @@ public class BlockEntityFurnace extends BlockEntitySpawnable
                     product = smelt.getResult().clone();
                     product.setCount(count);
 
-                    FurnaceSmeltEvent ev = new FurnaceSmeltEvent(this, raw, product, (float)
+                    FurnaceSmeltEvent event = new FurnaceSmeltEvent(this, raw, product, (float)
                             this.server.getCraftingManager().getRecipeXp(smelt));
-                    this.server.getPluginManager().callEvent(ev);
-                    if (!ev.isCancelled()) {
-                        this.inventory.setResult(ev.getResult());
+                    event.call();
+                    if (!event.isCancelled()) {
+                        this.inventory.setResult(event.getResult());
                         raw.setCount(raw.getCount() - 1);
                         if (raw.getCount() == 0) {
                             raw = new ItemBlock(Block.get(BlockID.AIR), 0, 0);
                         }
-                        this.storedXP += ev.getXp();
+                        this.storedXP += event.getXp();
                         this.inventory.setSmelting(raw);
                     }
 

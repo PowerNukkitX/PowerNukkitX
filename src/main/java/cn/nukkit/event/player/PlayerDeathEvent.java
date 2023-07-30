@@ -4,7 +4,6 @@ import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.event.Cancellable;
-import cn.nukkit.event.HandlerList;
 import cn.nukkit.event.entity.EntityDeathEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.lang.TextContainer;
@@ -12,11 +11,6 @@ import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.player.Player;
 
 public class PlayerDeathEvent extends EntityDeathEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     private TextContainer deathMessage;
     private boolean keepInventory = false;

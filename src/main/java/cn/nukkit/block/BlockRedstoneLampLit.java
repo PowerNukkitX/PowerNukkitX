@@ -51,9 +51,9 @@ public class BlockRedstoneLampLit extends BlockRedstoneLamp implements RedstoneC
 
         if (type == Level.BLOCK_UPDATE_SCHEDULED && !this.isGettingPower()) {
             // Redstone event
-            RedstoneUpdateEvent ev = new RedstoneUpdateEvent(this);
-            this.getLevel().getServer().getPluginManager().callEvent(ev);
-            if (ev.isCancelled()) {
+            RedstoneUpdateEvent event = new RedstoneUpdateEvent(this);
+            event.call();
+            if (event.isCancelled()) {
                 return 0;
             }
 

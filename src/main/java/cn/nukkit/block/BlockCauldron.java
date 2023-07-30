@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
@@ -185,16 +184,16 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
                         break;
                     }
 
-                    PlayerBucketFillEvent ev = new PlayerBucketFillEvent(
+                    PlayerBucketFillEvent event = new PlayerBucketFillEvent(
                             player,
                             this,
                             null,
                             this,
                             item,
                             MinecraftItemID.WATER_BUCKET.get(1, bucket.getCompoundTag()));
-                    this.getLevel().getServer().getPluginManager().callEvent(ev);
-                    if (!ev.isCancelled()) {
-                        replaceBucket(bucket, player, ev.getItem());
+                    event.call();
+                    if (!event.isCancelled()) {
+                        replaceBucket(bucket, player, event.getItem());
                         this.setFillLevel(FILL_LEVEL.getMinValue(), player); // empty
                         this.getLevel().setBlock(this, this, true);
                         cauldron.clearCustomColor();
@@ -208,12 +207,12 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
                         break;
                     }
 
-                    PlayerBucketEmptyEvent ev = new PlayerBucketEmptyEvent(
+                    PlayerBucketEmptyEvent event = new PlayerBucketEmptyEvent(
                             player, this, null, this, item, MinecraftItemID.BUCKET.get(1, bucket.getCompoundTag()));
-                    this.getLevel().getServer().getPluginManager().callEvent(ev);
-                    if (!ev.isCancelled()) {
+                    event.call();
+                    if (!event.isCancelled()) {
                         if (player.isSurvival() || player.isAdventure()) {
-                            replaceBucket(bucket, player, ev.getItem());
+                            replaceBucket(bucket, player, event.getItem());
                         }
                         if (cauldron.hasPotion()) { // if has potion
                             clearWithFizz(cauldron, player);
@@ -480,16 +479,16 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
                         break;
                     }
 
-                    PlayerBucketFillEvent ev = new PlayerBucketFillEvent(
+                    PlayerBucketFillEvent event = new PlayerBucketFillEvent(
                             player,
                             this,
                             null,
                             this,
                             item,
                             MinecraftItemID.LAVA_BUCKET.get(1, bucket.getCompoundTag()));
-                    this.getLevel().getServer().getPluginManager().callEvent(ev);
-                    if (!ev.isCancelled()) {
-                        replaceBucket(bucket, player, ev.getItem());
+                    event.call();
+                    if (!event.isCancelled()) {
+                        replaceBucket(bucket, player, event.getItem());
                         this.setFillLevel(FILL_LEVEL.getMinValue(), player); // empty
                         this.getLevel().setBlock(this, new BlockCauldron(0), true);
                         cauldron.clearCustomColor();
@@ -500,11 +499,11 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
                         break;
                     }
 
-                    PlayerBucketEmptyEvent ev = new PlayerBucketEmptyEvent(
+                    PlayerBucketEmptyEvent event = new PlayerBucketEmptyEvent(
                             player, this, null, this, item, MinecraftItemID.BUCKET.get(1, bucket.getCompoundTag()));
-                    this.getLevel().getServer().getPluginManager().callEvent(ev);
-                    if (!ev.isCancelled()) {
-                        replaceBucket(bucket, player, ev.getItem());
+                    event.call();
+                    if (!event.isCancelled()) {
+                        replaceBucket(bucket, player, event.getItem());
 
                         if (cauldron.hasPotion()) { // if has potion
                             clearWithFizz(cauldron);
@@ -691,12 +690,12 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
 
     @Override
     public void onEntityCollide(Entity entity) {
-        EntityCombustByBlockEvent ev = new EntityCombustByBlockEvent(this, entity, 15);
-        Server.getInstance().getPluginManager().callEvent(ev);
-        if (!ev.isCancelled()) {
+        EntityCombustByBlockEvent event = new EntityCombustByBlockEvent(this, entity, 15);
+        event.call();
+        if (!event.isCancelled()) {
             // Making sure the entity is actually alive and not invulnerable.
             if (getCauldronLiquid() == CauldronLiquid.LAVA && entity.isAlive() && entity.noDamageTicks == 0) {
-                entity.setOnFire(ev.getDuration());
+                entity.setOnFire(event.getDuration());
                 if (!entity.hasEffect(Effect.FIRE_RESISTANCE)) {
                     entity.attack(new EntityDamageByBlockEvent(this, entity, EntityDamageEvent.DamageCause.LAVA, 4));
                 }

@@ -225,7 +225,7 @@ public class BlockTurtleEgg extends BlockFlowable {
                         BlockTurtleEgg newState = clone();
                         newState.setCracks(crackState.getNext());
                         BlockGrowEvent event = new BlockGrowEvent(this, newState);
-                        this.getLevel().getServer().getPluginManager().callEvent(event);
+                        event.call();
                         if (!event.isCancelled()) {
                             getLevel()
                                     .addSound(
@@ -257,8 +257,8 @@ public class BlockTurtleEgg extends BlockFlowable {
     public void hatch(int eggs, Block newState) {
         TurtleEggHatchEvent turtleEggHatchEvent = new TurtleEggHatchEvent(this, eggs, newState);
         // TODO Cancelled by default because EntityTurtle doesn't have AI yet, remove it when AI is added
-        turtleEggHatchEvent.setCancelled(true);
-        this.getLevel().getServer().getPluginManager().callEvent(turtleEggHatchEvent);
+        turtleEggHatchEvent.cancel();
+        turtleEggHatchEvent.call();
         int eggsHatching = turtleEggHatchEvent.getEggsHatching();
         if (!turtleEggHatchEvent.isCancelled()) {
             getLevel().addSound(this, Sound.BLOCK_TURTLE_EGG_CRACK);
@@ -270,7 +270,7 @@ public class BlockTurtleEgg extends BlockFlowable {
 
                 CreatureSpawnEvent creatureSpawnEvent = new CreatureSpawnEvent(
                         EntityTurtle.NETWORK_ID, add(0.3 + i * 0.2, 0, 0.3), CreatureSpawnEvent.SpawnReason.TURTLE_EGG);
-                this.getLevel().getServer().getPluginManager().callEvent(creatureSpawnEvent);
+                creatureSpawnEvent.call();
 
                 if (!creatureSpawnEvent.isCancelled()) {
                     EntityTurtle turtle = (EntityTurtle) Entity.createEntity(
@@ -306,18 +306,18 @@ public class BlockTurtleEgg extends BlockFlowable {
                 && !(entity instanceof EntityBat)
                 && !(entity instanceof EntityGhast)
                 && !(entity instanceof EntityPhantom)
-                && entity.y() >= this.getMaxY()) {
-            Event ev;
+                && entity.getY() >= this.getMaxY()) {
 
+            Event event;
             if (entity instanceof Player) {
-                ev = new PlayerInteractEvent((Player) entity, null, this, null, PlayerInteractEvent.Action.PHYSICAL);
+                event = new PlayerInteractEvent((Player) entity, null, this, null, PlayerInteractEvent.Action.PHYSICAL);
             } else {
-                ev = new EntityInteractEvent(entity, this);
+                event = new EntityInteractEvent(entity, this);
             }
 
-            ev.setCancelled(ThreadLocalRandom.current().nextInt(200) > 0);
-            this.getLevel().getServer().getPluginManager().callEvent(ev);
-            if (!ev.isCancelled()) {
+            if (ThreadLocalRandom.current().nextInt(200) > 0) event.cancel();
+            event.call();
+            if (!event.isCancelled()) {
                 this.getLevel().useBreakOn(this, null, null, true);
             }
         }

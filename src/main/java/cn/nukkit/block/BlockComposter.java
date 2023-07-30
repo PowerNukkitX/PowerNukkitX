@@ -138,7 +138,7 @@ public class BlockComposter extends BlockSolidMeta implements ItemID {
         if (isFull()) {
             ComposterEmptyEvent event =
                     new ComposterEmptyEvent(this, player, item, MinecraftItemID.BONE_MEAL.get(1), 0);
-            this.getLevel().getServer().getPluginManager().callEvent(event);
+            event.call();
             if (!event.isCancelled()) {
                 setDamage(event.getNewLevel());
                 this.getLevel().setBlock(this, this, true, true);
@@ -155,7 +155,7 @@ public class BlockComposter extends BlockSolidMeta implements ItemID {
 
         boolean success = new Random().nextInt(100) < chance;
         ComposterFillEvent event = new ComposterFillEvent(this, player, item, chance, success);
-        this.getLevel().getServer().getPluginManager().callEvent(event);
+        event.call();
 
         if (event.isCancelled()) {
             return true;
@@ -187,7 +187,7 @@ public class BlockComposter extends BlockSolidMeta implements ItemID {
     @PowerNukkitDifference
     public Item empty(@Nullable Item item, @Nullable Player player) {
         ComposterEmptyEvent event = new ComposterEmptyEvent(this, player, item, new ItemDye(DyeColor.BONE_MEAL), 0);
-        this.getLevel().getServer().getPluginManager().callEvent(event);
+        event.call();
         if (!event.isCancelled()) {
             setPropertyValue(COMPOSTER_FILL_LEVEL, event.getNewLevel());
             this.getLevel().setBlock(this, this, true, true);

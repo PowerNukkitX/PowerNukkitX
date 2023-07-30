@@ -250,7 +250,7 @@ public class EntityFishingHook extends SlenderProjectile {
             motion.setY(y() + Math.sqrt(player.distance(pos)) * 0.08);
 
             PlayerFishEvent event = new PlayerFishEvent(player, this, item, experience, motion);
-            this.getServer().getPluginManager().callEvent(event);
+            event.call();
 
             if (!event.isCancelled()) {
                 EntityItem itemEntity = (EntityItem) Entity.createEntity(
@@ -307,7 +307,7 @@ public class EntityFishingHook extends SlenderProjectile {
 
     @Override
     public void onCollideWithEntity(Entity entity) {
-        this.server.getPluginManager().callEvent(new ProjectileHitEvent(this, MovingObjectPosition.fromEntity(entity)));
+        new ProjectileHitEvent(this, MovingObjectPosition.fromEntity(entity)).call();
         float damage = this.getResultDamage();
 
         EntityDamageEvent ev;

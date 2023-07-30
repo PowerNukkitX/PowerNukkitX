@@ -2,7 +2,6 @@ package cn.nukkit.event.scoreboard;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.event.HandlerList;
 import cn.nukkit.scoreboard.scoreboard.IScoreboard;
 import cn.nukkit.scoreboard.scoreboard.IScoreboardLine;
 import javax.annotation.Nullable;
@@ -15,17 +14,11 @@ import lombok.Setter;
 @Setter
 public class ScoreboardLineChangeEvent extends ScoreboardEvent {
 
-    private static final HandlerList handlers = new HandlerList();
-
     @Nullable private final IScoreboardLine line;
 
     private int newValue;
     private int oldValue;
     private final ActionType actionType;
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     public ScoreboardLineChangeEvent(
             IScoreboard scoreboard, @Nullable IScoreboardLine line, int newValue, int oldValue) {

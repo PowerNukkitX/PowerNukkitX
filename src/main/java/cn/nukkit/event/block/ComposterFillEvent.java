@@ -3,14 +3,11 @@ package cn.nukkit.event.block;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.Block;
 import cn.nukkit.event.Cancellable;
-import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
 import cn.nukkit.player.Player;
 
 @PowerNukkitOnly
 public class ComposterFillEvent extends BlockEvent implements Cancellable {
-
-    private static final HandlerList handlers = new HandlerList();
 
     private final Player player;
     private final Item item;
@@ -49,10 +46,5 @@ public class ComposterFillEvent extends BlockEvent implements Cancellable {
     @PowerNukkitOnly
     public void setSuccess(boolean success) {
         this.success = success;
-    }
-
-    @PowerNukkitOnly
-    public static HandlerList getHandlers() {
-        return handlers;
     }
 }

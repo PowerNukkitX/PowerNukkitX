@@ -73,17 +73,15 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
                 //                this.getLevel().setBlock(fire, fire, true); WTF???
                 if (fire.isBlockTopFacingSurfaceSolid(fire.down()) || fire.canNeighborBurn()) {
 
-                    BlockIgniteEvent e =
+                    BlockIgniteEvent event =
                             new BlockIgniteEvent(block, null, this, BlockIgniteEvent.BlockIgniteCause.LIGHTNING);
-                    getServer().getPluginManager().callEvent(e);
+                    event.call();
 
-                    if (!e.isCancelled()) {
+                    if (!event.isCancelled()) {
                         getLevel().setBlock(fire, fire, true);
-                        getLevel()
-                                .scheduleUpdate(
-                                        fire,
-                                        fire.tickRate()
-                                                + ThreadLocalRandom.current().nextInt(10));
+                        getLevel().scheduleUpdate(
+                                fire,
+                                fire.tickRate() + ThreadLocalRandom.current().nextInt(10));
                     }
                 }
             }
@@ -184,7 +182,7 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
                             .getStateWithOxidizationLevel(entry.getValue())
                             .getBlock(current);
                     BlockFadeEvent event = new BlockFadeEvent(current, next);
-                    getServer().getPluginManager().callEvent(event);
+                    event.call();
                     if (event.isCancelled()) {
                         break;
                     }
@@ -208,11 +206,11 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
                     Block block = this.getLevelBlock();
 
                     if (block.getId() == Block.AIR || block.getId() == Block.TALL_GRASS) {
-                        BlockIgniteEvent e =
+                        BlockIgniteEvent event =
                                 new BlockIgniteEvent(block, null, this, BlockIgniteEvent.BlockIgniteCause.LIGHTNING);
-                        getServer().getPluginManager().callEvent(e);
+                        event.call();
 
-                        if (!e.isCancelled()) {
+                        if (!event.isCancelled()) {
                             Block fire = Block.get(BlockID.FIRE);
                             this.getLevel().setBlock(block, fire);
                             this.getLevel().scheduleUpdate(fire, fire.tickRate());

@@ -55,8 +55,8 @@ public abstract class ItemEdible extends Item {
         }
 
         PlayerItemConsumeEvent consumeEvent = new PlayerItemConsumeEvent(player, this);
+        consumeEvent.call();
 
-        player.getServer().getPluginManager().callEvent(consumeEvent);
         if (consumeEvent.isCancelled()) {
             player.getInventory().sendContents(player);
             return false;

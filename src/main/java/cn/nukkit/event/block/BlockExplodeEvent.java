@@ -22,7 +22,6 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.event.Cancellable;
-import cn.nukkit.event.HandlerList;
 import cn.nukkit.level.Position;
 import java.util.Set;
 
@@ -33,14 +32,6 @@ import java.util.Set;
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
 public class BlockExplodeEvent extends BlockEvent implements Cancellable {
-
-    private static final HandlerList handlers = new HandlerList();
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")

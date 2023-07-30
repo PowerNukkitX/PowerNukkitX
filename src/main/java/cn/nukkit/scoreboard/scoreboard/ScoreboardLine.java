@@ -1,6 +1,5 @@
 package cn.nukkit.scoreboard.scoreboard;
 
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.event.scoreboard.ScoreboardLineChangeEvent;
@@ -35,7 +34,7 @@ public class ScoreboardLine implements IScoreboardLine {
         if (scoreboard.shouldCallEvent()) {
             var event = new ScoreboardLineChangeEvent(
                     scoreboard, this, score, this.score, ScoreboardLineChangeEvent.ActionType.SCORE_CHANGE);
-            Server.getInstance().getPluginManager().callEvent(event);
+            event.call();
             if (event.isCancelled()) {
                 return false;
             }

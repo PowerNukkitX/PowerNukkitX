@@ -464,8 +464,8 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
             case InventoryTransactionPacket.USE_ITEM_ON_ENTITY_ACTION_INTERACT -> {
                 PlayerInteractEntityEvent playerInteractEntityEvent =
                         new PlayerInteractEntityEvent(player, target, item, useItemOnEntityData.clickPos);
-                if (player.isSpectator()) playerInteractEntityEvent.setCancelled();
-                player.getServer().getPluginManager().callEvent(playerInteractEntityEvent);
+                if (player.isSpectator()) playerInteractEntityEvent.cancel();
+                playerInteractEntityEvent.call();
                 if (playerInteractEntityEvent.isCancelled()) {
                     return;
                 }
@@ -547,10 +547,9 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                         knockBack,
                         item.applyEnchantments() ? enchantments : null);
                 entityDamageByEntityEvent.setBreakShield(item.canBreakShield());
-                if (player.isSpectator()) entityDamageByEntityEvent.setCancelled();
-                if ((target instanceof Player)
-                        && !player.getLevel().getGameRules().getBoolean(GameRule.PVP)) {
-                    entityDamageByEntityEvent.setCancelled();
+                if (player.isSpectator()) entityDamageByEntityEvent.cancel();
+                if ((target instanceof Player) && !player.getLevel().getGameRules().getBoolean(GameRule.PVP)) {
+                    entityDamageByEntityEvent.cancel();
                 }
 
                 // 保存攻击的目标在lastAttackEntity
@@ -722,7 +721,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 }
                 PlayerInteractEvent interactEvent = new PlayerInteractEvent(
                         player, item, directionVector, face, PlayerInteractEvent.Action.RIGHT_CLICK_AIR);
-                player.getServer().getPluginManager().callEvent(interactEvent);
+                interactEvent.call();
                 if (interactEvent.isCancelled()) {
                     player.getInventory().sendHeldItem(player);
                     return;

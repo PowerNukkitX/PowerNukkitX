@@ -298,7 +298,7 @@ public class PlayerManager {
 
         PlayerDataSerializeEvent event = new PlayerDataSerializeEvent(name, playerDataSerializer);
         if (runEvent) {
-            server.getPluginManager().callEvent(event);
+            event.call();
         }
 
         Optional<InputStream> dataStream = Optional.empty();
@@ -372,7 +372,7 @@ public class PlayerManager {
         if (server.shouldSavePlayerData()) {
             PlayerDataSerializeEvent event = new PlayerDataSerializeEvent(nameLower, playerDataSerializer);
             if (runEvent) {
-                server.getPluginManager().callEvent(event);
+                event.call();
             }
 
             server.getScheduler()

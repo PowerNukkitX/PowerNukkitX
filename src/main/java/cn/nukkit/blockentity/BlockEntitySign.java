@@ -261,7 +261,7 @@ public class BlockEntitySign extends BlockEntitySpawnable {
 
         if (!this.namedTag.contains(TAG_LOCKED_FOR_EDITING_BY)
                 || !Objects.equals(player.getId(), this.getEditorEntityRuntimeId())) {
-            signChangeEvent.setCancelled();
+            signChangeEvent.cancel();
         }
 
         if (player.getRemoveFormat()) {
@@ -270,7 +270,7 @@ public class BlockEntitySign extends BlockEntitySpawnable {
             }
         }
 
-        this.server.getPluginManager().callEvent(signChangeEvent);
+        signChangeEvent.call();
 
         if (!signChangeEvent.isCancelled() && player.isOpenSignFront() != null) {
             this.setText(player.isOpenSignFront(), signChangeEvent.getLines());

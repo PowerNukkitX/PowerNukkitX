@@ -1,6 +1,5 @@
 package cn.nukkit.inventory;
 
-import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.EntityHuman;
@@ -66,10 +65,10 @@ public class PlayerInventory extends BaseInventory {
 
         if (this.getHolder() instanceof Player) {
             Player player = (Player) this.getHolder();
-            PlayerItemHeldEvent ev = new PlayerItemHeldEvent(player, this.getItem(slot), slot);
-            this.getHolder().getLevel().getServer().getPluginManager().callEvent(ev);
+            PlayerItemHeldEvent event = new PlayerItemHeldEvent(player, this.getItem(slot), slot);
+            event.call();
 
-            if (ev.isCancelled()) {
+            if (event.isCancelled()) {
                 this.sendContents(this.getViewers());
                 return false;
             }
@@ -260,22 +259,23 @@ public class PlayerInventory extends BaseInventory {
 
         // Armor change
         if (!ignoreArmorEvents && index >= this.getSize()) {
-            EntityArmorChangeEvent ev = new EntityArmorChangeEvent(this.getHolder(), this.getItem(index), item, index);
-            Server.getInstance().getPluginManager().callEvent(ev);
-            if (ev.isCancelled() && this.getHolder() != null) {
+            EntityArmorChangeEvent event =
+                    new EntityArmorChangeEvent(this.getHolder(), this.getItem(index), item, index);
+            event.call();
+            if (event.isCancelled() && this.getHolder() != null) {
                 this.sendArmorSlot(index, this.getViewers());
                 return false;
             }
-            item = ev.getNewItem();
+            item = event.getNewItem();
         } else {
-            EntityInventoryChangeEvent ev =
+            EntityInventoryChangeEvent event =
                     new EntityInventoryChangeEvent(this.getHolder(), this.getItem(index), item, index);
-            Server.getInstance().getPluginManager().callEvent(ev);
-            if (ev.isCancelled()) {
+            event.call();
+            if (event.isCancelled()) {
                 this.sendSlot(index, this.getViewers());
                 return false;
             }
-            item = ev.getNewItem();
+            item = event.getNewItem();
         }
         Item old = this.getItem(index);
         this.slots.put(index, item.clone());
@@ -289,9 +289,9 @@ public class PlayerInventory extends BaseInventory {
             Item item = new ItemBlock(Block.get(BlockID.AIR), null, 0);
             Item old = this.slots.get(index);
             if (index >= this.getSize() && index < this.size) {
-                EntityArmorChangeEvent ev = new EntityArmorChangeEvent(this.getHolder(), old, item, index);
-                Server.getInstance().getPluginManager().callEvent(ev);
-                if (ev.isCancelled()) {
+                EntityArmorChangeEvent event = new EntityArmorChangeEvent(this.getHolder(), old, item, index);
+                event.call();
+                if (event.isCancelled()) {
                     if (index >= this.size) {
                         this.sendArmorSlot(index, this.getViewers());
                     } else {
@@ -299,11 +299,11 @@ public class PlayerInventory extends BaseInventory {
                     }
                     return false;
                 }
-                item = ev.getNewItem();
+                item = event.getNewItem();
             } else {
-                EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent(this.getHolder(), old, item, index);
-                Server.getInstance().getPluginManager().callEvent(ev);
-                if (ev.isCancelled()) {
+                EntityInventoryChangeEvent event = new EntityInventoryChangeEvent(this.getHolder(), old, item, index);
+                event.call();
+                if (event.isCancelled()) {
                     if (index >= this.size) {
                         this.sendArmorSlot(index, this.getViewers());
                     } else {
@@ -311,7 +311,7 @@ public class PlayerInventory extends BaseInventory {
                     }
                     return false;
                 }
-                item = ev.getNewItem();
+                item = event.getNewItem();
             }
 
             if (item.getId() != Item.AIR) {

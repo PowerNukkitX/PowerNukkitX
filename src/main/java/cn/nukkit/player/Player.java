@@ -591,7 +591,7 @@ public class Player extends EntityHuman
                 target,
                 face,
                 target.getId() == 0 ? Action.LEFT_CLICK_AIR : Action.LEFT_CLICK_BLOCK);
-        this.getServer().getPluginManager().callEvent(playerInteractEvent);
+        playerInteractEvent.call();
         if (playerInteractEvent.isCancelled()) {
             this.inventory.sendHeldItem(this);
             this.getLevel()
@@ -815,8 +815,8 @@ public class Player extends EntityHuman
 
                 iter.remove();
 
-                PlayerChunkRequestEvent ev = new PlayerChunkRequestEvent(this, chunkX, chunkZ);
-                this.server.getPluginManager().callEvent(ev);
+                PlayerChunkRequestEvent event = new PlayerChunkRequestEvent(this, chunkX, chunkZ);
+                event.call();
                 this.getLevel().requestChunk(chunkX, chunkZ, this);
             }
         }
@@ -854,7 +854,7 @@ public class Player extends EntityHuman
                 new TranslationContainer(
                         TextFormat.YELLOW + "%multiplayer.player.joined", new String[] {this.getDisplayName()}));
 
-        this.server.getPluginManager().callEvent(playerJoinEvent);
+        playerJoinEvent.call();
 
         if (playerJoinEvent.getJoinMessage().toString().trim().length() > 0) {
             this.server.broadcastMessage(playerJoinEvent.getJoinMessage());
@@ -1081,10 +1081,10 @@ public class Player extends EntityHuman
             if (!inEndPortal) {
                 inEndPortal = true;
                 if (this.getRiding() == null && this.getPassengers().isEmpty()) {
-                    EntityPortalEnterEvent ev = new EntityPortalEnterEvent(this, PortalType.END);
-                    getServer().getPluginManager().callEvent(ev);
+                    EntityPortalEnterEvent event = new EntityPortalEnterEvent(this, PortalType.END);
+                    event.call();
 
-                    if (!ev.isCancelled()) {
+                    if (!event.isCancelled()) {
                         final Position newPos = EnumLevel.moveToTheEnd(this);
                         if (newPos != null) {
                             if (newPos.getLevel().getDimension() == Level.DIMENSION_THE_END) {
@@ -1107,7 +1107,7 @@ public class Player extends EntityHuman
                             } else {
                                 if (!this.hasSeenCredits && !this.showingCredits) {
                                     PlayerShowCreditsEvent playerShowCreditsEvent = new PlayerShowCreditsEvent(this);
-                                    this.getServer().getPluginManager().callEvent(playerShowCreditsEvent);
+                                    playerShowCreditsEvent.call();
                                     if (!playerShowCreditsEvent.isCancelled()) {
                                         this.showCredits();
                                     }
@@ -1193,7 +1193,7 @@ public class Player extends EntityHuman
             // 这里放宽了判断，否则对角穿过脚手架会判断非法移动。
             if (diff > 1.2) {
                 PlayerInvalidMoveEvent event = new PlayerInvalidMoveEvent(this, true);
-                this.getServer().getPluginManager().callEvent(event);
+                event.call();
                 if (!event.isCancelled() && (invalidMotion = event.isRevert())) {
                     log.warn(this.getServer().getLanguage().tr("nukkit.player.invalidMove", this.getName()));
                 }
@@ -1230,17 +1230,17 @@ public class Player extends EntityHuman
                 this.blocksAround = null;
                 this.collisionBlocks = null;
             }
-            PlayerMoveEvent ev = new PlayerMoveEvent(this, last, now);
-            this.server.getPluginManager().callEvent(ev);
+            PlayerMoveEvent event = new PlayerMoveEvent(this, last, now);
+            event.call();
 
-            if (!(invalidMotion = ev.isCancelled())) { // Yes, this is intended
-                if (!now.equals(ev.getTo()) && this.riding == null) { // If plugins modify the destination
+            if (!(invalidMotion = event.isCancelled())) { // Yes, this is intended
+                if (!now.equals(event.getTo()) && this.riding == null) { // If plugins modify the destination
                     if (this.getGamemode() != Player.SPECTATOR)
                         this.getLevel()
                                 .getVibrationManager()
                                 .callVibrationEvent(
-                                        new VibrationEvent(this, ev.getTo().clone(), VibrationType.TELEPORT));
-                    this.teleport(ev.getTo(), null);
+                                        new VibrationEvent(this, event.getTo().clone(), VibrationType.TELEPORT));
+                    this.teleport(event.getTo(), null);
                 } else {
                     if (this.getGamemode() != Player.SPECTATOR
                             && (last.x() != now.x() || last.y() != now.y() || last.z() != now.z())) {
@@ -1356,14 +1356,13 @@ public class Player extends EntityHuman
                                 continue;
                             }
                         }
-                        WaterFrostEvent ev = new WaterFrostEvent(block, this);
-                        server.getPluginManager().callEvent(ev);
-                        if (!ev.isCancelled()) {
+                        WaterFrostEvent event = new WaterFrostEvent(block, this);
+                        event.call();
+                        if (!event.isCancelled()) {
                             getLevel().setBlock(block, layer, Block.get(Block.ICE_FROSTED), true, false);
-                            getLevel()
-                                    .scheduleUpdate(
-                                            getLevel().getBlock(block, layer),
-                                            ThreadLocalRandom.current().nextInt(20, 40));
+                            getLevel().scheduleUpdate(
+                                    getLevel().getBlock(block, layer),
+                                    ThreadLocalRandom.current().nextInt(20, 40));
                         }
                     }
                 }
@@ -1591,10 +1590,11 @@ public class Player extends EntityHuman
      * 异步登录任务成功完成后执行
      */
     protected void completeLoginSequence() {
-        PlayerLoginEvent ev;
-        this.server.getPluginManager().callEvent(ev = new PlayerLoginEvent(this, "Plugin reason"));
-        if (ev.isCancelled()) {
-            this.close(this.getLeaveMessage(), ev.getKickMessage());
+        PlayerLoginEvent event = new PlayerLoginEvent(this, "Plugin reason");
+        event.call();
+
+        if (event.isCancelled()) {
+            this.close(this.getLeaveMessage(), event.getKickMessage());
             return;
         }
 
@@ -1746,7 +1746,7 @@ public class Player extends EntityHuman
             pos = new Location(this.x(), this.y(), this.z(), this.yaw(), this.pitch(), this.getLevel());
         }
         PlayerRespawnEvent respawnEvent = new PlayerRespawnEvent(this, pos, true);
-        this.server.getPluginManager().callEvent(respawnEvent);
+        respawnEvent.call();
         Position fromEvent = respawnEvent.getRespawnPosition();
         if (fromEvent instanceof Location) {
             pos = fromEvent.getLocation();
@@ -1828,7 +1828,7 @@ public class Player extends EntityHuman
                     this.getServer().getDefaultLevel().getSafeSpawn());
         }
 
-        this.server.getPluginManager().callEvent(playerRespawnEvent);
+        playerRespawnEvent.call();
         Position respawnPos = playerRespawnEvent.getRespawnPosition();
 
         this.sendExperience();
@@ -2909,9 +2909,9 @@ public class Player extends EntityHuman
         if (!this.connected) {
             return false;
         }
-        DataPacketSendEvent ev = new DataPacketSendEvent(this, packet);
-        this.server.getPluginManager().callEvent(ev);
-        if (ev.isCancelled()) {
+        DataPacketSendEvent event = new DataPacketSendEvent(this, packet);
+        event.call();
+        if (event.isCancelled()) {
             return false;
         }
         if (log.isTraceEnabled() && !server.isIgnoredPacket(packet.getClass())) {
@@ -2999,11 +2999,10 @@ public class Player extends EntityHuman
             }
         }
 
-        PlayerBedEnterEvent ev;
-        this.server
-                .getPluginManager()
-                .callEvent(ev = new PlayerBedEnterEvent(this, this.getLevel().getBlock(pos)));
-        if (ev.isCancelled()) {
+        PlayerBedEnterEvent event = new PlayerBedEnterEvent(this, this.level.getBlock(pos));
+        event.call();
+
+        if (event.isCancelled()) {
             return false;
         }
 
@@ -3025,9 +3024,8 @@ public class Player extends EntityHuman
 
     public void stopSleep() {
         if (this.sleeping != null) {
-            this.server
-                    .getPluginManager()
-                    .callEvent(new PlayerBedLeaveEvent(this, this.getLevel().getBlock(this.sleeping)));
+            PlayerBedLeaveEvent event = new PlayerBedLeaveEvent(this, this.getLevel().getBlock(this.sleeping));
+            event.call();
 
             this.sleeping = null;
             this.setDataProperty(new IntPositionEntityData(DATA_PLAYER_BED_POSITION, 0, 0, 0));
@@ -3102,10 +3100,10 @@ public class Player extends EntityHuman
                     });
         }
 
-        PlayerGameModeChangeEvent ev;
-        this.server.getPluginManager().callEvent(ev = new PlayerGameModeChangeEvent(this, gamemode, newSettings));
+        PlayerGameModeChangeEvent event = new PlayerGameModeChangeEvent(this, gamemode, newSettings);
+        event.call();
 
-        if (ev.isCancelled()) {
+        if (event.isCancelled()) {
             return false;
         }
 
@@ -3120,7 +3118,7 @@ public class Player extends EntityHuman
 
         this.namedTag.putInt("playerGameType", this.gamemode);
 
-        this.setAdventureSettings(ev.getNewAdventureSettings());
+        this.setAdventureSettings(event.getNewAdventureSettings());
 
         if (!serverSide) {
             var pk = new UpdatePlayerGameTypePacket();
@@ -3624,9 +3622,9 @@ public class Player extends EntityHuman
             return;
         }
 
-        DataPacketReceiveEvent ev = new DataPacketReceiveEvent(this, packet);
-        this.server.getPluginManager().callEvent(ev);
-        if (ev.isCancelled()) {
+        DataPacketReceiveEvent event = new DataPacketReceiveEvent(this, packet);
+        event.call();
+        if (event.isCancelled()) {
             return;
         }
         if (packet.packetId() == ProtocolInfo.toNewProtocolID(ProtocolInfo.BATCH_PACKET)) {
@@ -3666,7 +3664,7 @@ public class Player extends EntityHuman
         for (String msg : message.split("\n")) {
             if (!msg.trim().isEmpty() && msg.length() <= 512 && this.messageCounter-- > 0) {
                 PlayerChatEvent chatEvent = new PlayerChatEvent(this, msg);
-                this.server.getPluginManager().callEvent(chatEvent);
+                chatEvent.call();
                 if (!chatEvent.isCancelled()) {
                     this.server.broadcastMessage(
                             this.getServer().getLanguage().tr(chatEvent.getFormat(), new String[] {
@@ -3739,9 +3737,10 @@ public class Player extends EntityHuman
      * @return boolean
      */
     public boolean kick(PlayerKickEvent.Reason reason, String reasonString, boolean isAdmin) {
-        PlayerKickEvent ev;
-        this.server.getPluginManager().callEvent(ev = new PlayerKickEvent(this, reason, this.getLeaveMessage()));
-        if (!ev.isCancelled()) {
+        PlayerKickEvent event = new PlayerKickEvent(this, reason, this.getLeaveMessage());
+        event.call();
+
+        if (!event.isCancelled()) {
             String message;
             if (isAdmin) {
                 if (!this.isBanned()) {
@@ -3757,7 +3756,7 @@ public class Player extends EntityHuman
                 }
             }
 
-            this.close(ev.getQuitMessage(), message);
+            this.close(event.getQuitMessage(), message);
 
             return true;
         }
@@ -4189,9 +4188,10 @@ public class Player extends EntityHuman
             }
 
             this.connected = false;
-            PlayerQuitEvent ev = null;
+            PlayerQuitEvent event = null;
             if (this.getName() != null && this.getName().length() > 0) {
-                this.server.getPluginManager().callEvent(ev = new PlayerQuitEvent(this, message, true, reason));
+                event = new PlayerQuitEvent(this, message, true, reason);
+                event.call();
                 if (this.fishing != null) {
                     this.stopFishing(false);
                 }
@@ -4201,7 +4201,7 @@ public class Player extends EntityHuman
             this.removeAllWindows(false);
             resetCraftingGridType();
 
-            if (ev != null && this.loggedIn && ev.getAutoSave()) {
+            if (event != null && this.loggedIn && event.getAutoSave()) {
                 this.save();
             }
 
@@ -4239,11 +4239,11 @@ public class Player extends EntityHuman
 
             this.loggedIn = false;
 
-            if (ev != null
+            if (event != null
                     && !Objects.equals(this.username, "")
                     && this.spawned
-                    && !Objects.equals(ev.getQuitMessage().toString(), "")) {
-                this.server.broadcastMessage(ev.getQuitMessage());
+                    && !Objects.equals(event.getQuitMessage().toString(), "")) {
+                this.server.broadcastMessage(event.getQuitMessage());
             }
 
             this.server.getPluginManager().unsubscribeFromPermission(Server.BROADCAST_CHANNEL_USERS, this);
@@ -4534,17 +4534,17 @@ public class Player extends EntityHuman
             }
         }
 
-        PlayerDeathEvent ev = new PlayerDeathEvent(
+        PlayerDeathEvent event = new PlayerDeathEvent(
                 this,
                 this.getDrops(),
                 new TranslationContainer(message, params.toArray(EmptyArrays.EMPTY_STRINGS)),
                 this.expLevel);
-        ev.setKeepExperience(this.getLevel().gameRules.getBoolean(GameRule.KEEP_INVENTORY));
-        ev.setKeepInventory(ev.getKeepExperience());
+        event.setKeepExperience(this.getLevel().gameRules.getBoolean(GameRule.KEEP_INVENTORY));
+        event.setKeepInventory(event.getKeepExperience());
 
-        this.server.getPluginManager().callEvent(ev);
+        event.call();
 
-        if (!ev.isCancelled()) {
+        if (!event.isCancelled()) {
             if (this.fishing != null) {
                 this.stopFishing(false);
             }
@@ -4552,8 +4552,8 @@ public class Player extends EntityHuman
             this.health = 0;
             this.extinguish();
             this.scheduleUpdate();
-            if (!ev.getKeepInventory() && this.getLevel().getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
-                for (Item item : ev.getDrops()) {
+            if (!event.getKeepInventory() && this.getLevel().getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
+                for (Item item : event.getDrops()) {
                     if (!item.hasEnchantment(Enchantment.ID_VANISHING_CURSE) && item.applyEnchantments()) {
                         this.getLevel().dropItem(this, item, null, true, 40);
                     }
@@ -4575,9 +4575,9 @@ public class Player extends EntityHuman
                 }
             }
 
-            if (!ev.getKeepExperience() && this.getLevel().getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
+            if (!event.getKeepExperience() && this.getLevel().getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
                 if (this.isSurvival() || this.isAdventure()) {
-                    int exp = ev.getExperience() * 7;
+                    int exp = event.getExperience() * 7;
                     if (exp > 100) exp = 100;
                     this.getLevel().dropExpOrb(this, exp);
                 }
@@ -4587,11 +4587,11 @@ public class Player extends EntityHuman
             this.timeSinceRest = 0;
 
             DeathInfoPacket deathInfo = new DeathInfoPacket();
-            deathInfo.translation = ev.getTranslationDeathMessage();
+            deathInfo.translation = event.getTranslationDeathMessage();
             this.dataPacket(deathInfo);
 
-            if (showMessages && !ev.getDeathMessage().toString().isEmpty()) {
-                this.server.broadcast(ev.getDeathMessage(), Server.BROADCAST_CHANNEL_USERS);
+            if (showMessages && !event.getDeathMessage().toString().isEmpty()) {
+                this.server.broadcast(event.getDeathMessage(), Server.BROADCAST_CHANNEL_USERS);
             }
 
             RespawnPacket pk = new RespawnPacket();
@@ -4741,9 +4741,9 @@ public class Player extends EntityHuman
     // todo something on performance, lots of exp orbs then lots of packets, could crash client
     @PowerNukkitOnly
     public void setExperience(int exp, int level, boolean playLevelUpSound) {
-        var expEvent =
+        PlayerExperienceChangeEvent expEvent =
                 new PlayerExperienceChangeEvent(this, this.getExperience(), this.getExperienceLevel(), exp, level);
-        this.server.getPluginManager().callEvent(expEvent);
+        expEvent.call();
         if (expEvent.isCancelled()) {
             return;
         }
@@ -5045,7 +5045,7 @@ public class Player extends EntityHuman
         // event
         if (cause != null) {
             PlayerTeleportEvent event = new PlayerTeleportEvent(this, from, to, cause);
-            this.server.getPluginManager().callEvent(event);
+            event.call();
             if (event.isCancelled()) return false;
             to = event.getTo();
         }
@@ -5763,16 +5763,16 @@ public class Player extends EntityHuman
                     }
                 }
 
-                InventoryPickupArrowEvent ev = new InventoryPickupArrowEvent(inventory, (EntityArrow) entity);
+                InventoryPickupArrowEvent event = new InventoryPickupArrowEvent(inventory, (EntityArrow) entity);
 
                 int pickupMode = ((EntityArrow) entity).getPickupMode();
                 if (pickupMode == EntityProjectile.PICKUP_NONE
                         || (pickupMode == EntityProjectile.PICKUP_CREATIVE && !this.isCreative())) {
-                    ev.setCancelled();
+                    event.cancel();
                 }
 
-                this.server.getPluginManager().callEvent(ev);
-                if (ev.isCancelled()) {
+                event.call();
+                if (event.isCancelled()) {
                     return false;
                 }
 
@@ -5808,17 +5808,17 @@ public class Player extends EntityHuman
                     return false;
                 }
 
-                InventoryPickupTridentEvent ev =
+                InventoryPickupTridentEvent event =
                         new InventoryPickupTridentEvent(this.inventory, (EntityThrownTrident) entity);
 
                 int pickupMode = ((EntityThrownTrident) entity).getPickupMode();
                 if (pickupMode == EntityProjectile.PICKUP_NONE
                         || (pickupMode == EntityProjectile.PICKUP_CREATIVE && !this.isCreative())) {
-                    ev.setCancelled();
+                    event.cancel();
                 }
 
-                this.server.getPluginManager().callEvent(ev);
-                if (ev.isCancelled()) {
+                event.call();
+                if (event.isCancelled()) {
                     return false;
                 }
 
@@ -5849,11 +5849,9 @@ public class Player extends EntityHuman
                             return false;
                         }
 
-                        InventoryPickupItemEvent ev;
-                        this.server
-                                .getPluginManager()
-                                .callEvent(ev = new InventoryPickupItemEvent(inventory, (EntityItem) entity));
-                        if (ev.isCancelled()) {
+                        InventoryPickupItemEvent event = new InventoryPickupItemEvent(inventory, (EntityItem) entity);
+                        event.call();
+                        if (event.isCancelled()) {
                             return false;
                         }
 
@@ -5979,9 +5977,9 @@ public class Player extends EntityHuman
                 -Math.sin(Math.toRadians(yaw())) * Math.cos(Math.toRadians(pitch())) * f * f,
                 -Math.sin(Math.toRadians(pitch())) * f * f,
                 Math.cos(Math.toRadians(yaw())) * Math.cos(Math.toRadians(pitch())) * f * f));
-        ProjectileLaunchEvent ev = new ProjectileLaunchEvent(fishingHook, this);
-        this.getServer().getPluginManager().callEvent(ev);
-        if (ev.isCancelled()) {
+        ProjectileLaunchEvent event = new ProjectileLaunchEvent(fishingHook, this);
+        event.call();
+        if (event.isCancelled()) {
             fishingHook.close();
         } else {
             this.fishing = fishingHook;
@@ -6161,9 +6159,9 @@ public class Player extends EntityHuman
         if (!this.connected) {
             return false;
         }
-        DataPacketSendEvent ev = new DataPacketSendEvent(this, packet);
-        this.server.getPluginManager().callEvent(ev);
-        if (ev.isCancelled()) {
+        DataPacketSendEvent event = new DataPacketSendEvent(this, packet);
+        event.call();
+        if (event.isCancelled()) {
             return false;
         }
         if (log.isTraceEnabled() && !server.isIgnoredPacket(packet.getClass())) {
@@ -6179,9 +6177,9 @@ public class Player extends EntityHuman
         if (!this.connected) {
             return false;
         }
-        DataPacketSendEvent ev = new DataPacketSendEvent(this, packet);
-        this.server.getPluginManager().callEvent(ev);
-        if (ev.isCancelled()) {
+        DataPacketSendEvent event = new DataPacketSendEvent(this, packet);
+        event.call();
+        if (event.isCancelled()) {
             return false;
         }
         if (log.isTraceEnabled() && !server.isIgnoredPacket(packet.getClass())) {

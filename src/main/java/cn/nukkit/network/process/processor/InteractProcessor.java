@@ -55,7 +55,7 @@ public class InteractProcessor extends DataPacketProcessor<InteractPacket> {
                 if (pk.target == 0) {
                     return;
                 }
-                player.getServer().getPluginManager().callEvent(new PlayerMouseOverEntityEvent(player, targetEntity));
+                new PlayerMouseOverEntityEvent(player, targetEntity).call();
             }
             case InteractPacket.ACTION_VEHICLE_EXIT -> {
                 if (!(targetEntity instanceof EntityRideable) || player.riding == null) {

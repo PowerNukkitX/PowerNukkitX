@@ -108,10 +108,7 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
         if (!player.getAdventureSettings().get(AdventureSettings.Type.DOORS_AND_SWITCHED)) return false;
-        this.getLevel()
-                .getServer()
-                .getPluginManager()
-                .callEvent(new BlockRedstoneEvent(this, isPowerOn() ? 15 : 0, isPowerOn() ? 0 : 15));
+        new BlockRedstoneEvent(this, isPowerOn() ? 15 : 0, isPowerOn() ? 0 : 15).call();
         toggleBooleanProperty(OPEN);
         var pos = this.add(0.5, 0.5, 0.5);
         if (isPowerOn()) {

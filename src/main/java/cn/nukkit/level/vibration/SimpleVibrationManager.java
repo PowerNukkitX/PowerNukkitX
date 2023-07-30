@@ -31,7 +31,7 @@ public class SimpleVibrationManager implements VibrationManager {
     @Override
     public void callVibrationEvent(VibrationEvent event) {
         VibrationOccurEvent vibrationOccurPluginEvent = new VibrationOccurEvent(event);
-        this.level.getServer().getPluginManager().callEvent(vibrationOccurPluginEvent);
+        vibrationOccurPluginEvent.call();
         if (vibrationOccurPluginEvent.isCancelled()) {
             return;
         }
@@ -48,7 +48,7 @@ public class SimpleVibrationManager implements VibrationManager {
                                 () -> {
                                     VibrationArriveEvent vibrationArrivePluginEvent =
                                             new VibrationArriveEvent(event, listener);
-                                    this.level.getServer().getPluginManager().callEvent(vibrationArrivePluginEvent);
+                                    vibrationArrivePluginEvent.call();
                                     if (vibrationArrivePluginEvent.isCancelled()) {
                                         return;
                                     }

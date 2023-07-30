@@ -207,10 +207,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
     private void onRedstoneUpdate() {
         if ((this.isOpen() != this.isGettingPower()) && !this.getManualOverride()) {
             if (this.isOpen() != this.isGettingPower()) {
-                getLevel()
-                        .getServer()
-                        .getPluginManager()
-                        .callEvent(new BlockRedstoneEvent(this, this.isOpen() ? 15 : 0, this.isOpen() ? 0 : 15));
+                new BlockRedstoneEvent(this, this.isOpen() ? 15 : 0, this.isOpen() ? 0 : 15).call();
 
                 this.setOpen(null, this.isGettingPower());
             }
@@ -408,7 +405,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
         }
 
         DoorToggleEvent event = new DoorToggleEvent(this, player);
-        getLevel().getServer().getPluginManager().callEvent(event);
+        event.call();
 
         if (event.isCancelled()) {
             return false;

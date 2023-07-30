@@ -8,7 +8,6 @@ import cn.nukkit.block.BlockAnvil;
 import cn.nukkit.blockproperty.value.AnvilDamage;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.event.Cancellable;
-import cn.nukkit.event.HandlerList;
 import cn.nukkit.inventory.transaction.CraftingTransaction;
 import cn.nukkit.player.Player;
 import com.google.common.base.Preconditions;
@@ -17,13 +16,6 @@ import org.jetbrains.annotations.NotNull;
 
 @Since("1.1.1.0-PN")
 public class AnvilDamageEvent extends BlockEvent implements Cancellable {
-
-    private static final HandlerList handlers = new HandlerList();
-
-    @Since("1.1.1.0-PN")
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     @Nullable private final Player player;
 

@@ -235,32 +235,33 @@ public class Explosion {
 
         if (this.what instanceof Entity) {
             List<Block> affectedBlocksList = new ArrayList<>(this.affectedBlocks);
-            EntityExplodeEvent ev = new EntityExplodeEvent((Entity) this.what, this.source, affectedBlocksList, yield);
-            ev.setIgnitions(fireIgnitions == null ? new LinkedHashSet<>(0) : fireIgnitions);
-            this.level.getServer().getPluginManager().callEvent(ev);
-            if (ev.isCancelled()) {
+            EntityExplodeEvent event =
+                    new EntityExplodeEvent((Entity) this.what, this.source, affectedBlocksList, yield);
+            event.setIgnitions(fireIgnitions == null ? new LinkedHashSet<>(0) : fireIgnitions);
+            event.call();
+            if (event.isCancelled()) {
                 return false;
             } else {
-                yield = ev.getYield();
+                yield = event.getYield();
                 affectedBlocks.clear();
-                affectedBlocks.addAll(ev.getBlockList());
-                fireIgnitions = ev.getIgnitions();
+                affectedBlocks.addAll(event.getBlockList());
+                fireIgnitions = event.getIgnitions();
             }
         } else if (this.what instanceof Block) {
-            BlockExplodeEvent ev = new BlockExplodeEvent(
+            BlockExplodeEvent event = new BlockExplodeEvent(
                     (Block) this.what,
                     this.source,
                     this.affectedBlocks,
                     fireIgnitions == null ? new LinkedHashSet<>(0) : fireIgnitions,
                     yield,
                     this.fireChance);
-            this.level.getServer().getPluginManager().callEvent(ev);
-            if (ev.isCancelled()) {
+            event.call();
+            if (event.isCancelled()) {
                 return false;
             } else {
-                yield = ev.getYield();
-                affectedBlocks = ev.getAffectedBlocks();
-                fireIgnitions = ev.getIgnitions();
+                yield = event.getYield();
+                affectedBlocks = event.getAffectedBlocks();
+                fireIgnitions = event.getIgnitions();
             }
         }
 
@@ -349,17 +350,17 @@ public class Explosion {
                 Vector3 sideBlock = pos.getSide(side);
                 long index = Hash.hashBlock((int) sideBlock.x(), (int) sideBlock.y(), (int) sideBlock.z());
                 if (!this.affectedBlocks.contains(sideBlock) && !updateBlocks.contains(index)) {
-                    BlockUpdateEvent ev = new BlockUpdateEvent(this.level.getBlock(sideBlock));
-                    this.level.getServer().getPluginManager().callEvent(ev);
-                    if (!ev.isCancelled()) {
-                        ev.getBlock().onUpdate(Level.BLOCK_UPDATE_NORMAL);
+                    BlockUpdateEvent event = new BlockUpdateEvent(this.level.getBlock(sideBlock));
+                    event.call();
+                    if (!event.isCancelled()) {
+                        event.getBlock().onUpdate(Level.BLOCK_UPDATE_NORMAL);
                     }
                     Block layer1 = this.level.getBlock(sideBlock, 1);
                     if (layer1.getId() != BlockID.AIR) {
-                        ev = new BlockUpdateEvent(layer1);
-                        this.level.getServer().getPluginManager().callEvent(ev);
-                        if (!ev.isCancelled()) {
-                            ev.getBlock().onUpdate(Level.BLOCK_UPDATE_NORMAL);
+                        event = new BlockUpdateEvent(layer1);
+                        event.call();
+                        if (!event.isCancelled()) {
+                            event.getBlock().onUpdate(Level.BLOCK_UPDATE_NORMAL);
                         }
                     }
                     updateBlocks.add(index);

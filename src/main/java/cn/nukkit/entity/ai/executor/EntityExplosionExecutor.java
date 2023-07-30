@@ -3,7 +3,6 @@ package cn.nukkit.entity.ai.executor;
 import static cn.nukkit.entity.Entity.DATA_FLAGS;
 import static cn.nukkit.entity.Entity.DATA_FLAG_IGNITED;
 
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
@@ -70,22 +69,22 @@ public class EntityExplosionExecutor implements IBehaviorExecutor {
     }
 
     protected void explode(EntityIntelligent entity) {
-        EntityExplosionPrimeEvent ev = new EntityExplosionPrimeEvent(
+        EntityExplosionPrimeEvent event = new EntityExplosionPrimeEvent(
                 entity,
                 entity instanceof EntityCreeper creeper
                         ? creeper.isPowered() ? explodeForce * 2 : explodeForce
                         : explodeForce);
 
         if (!entity.getLevel().gameRules.getBoolean(GameRule.MOB_GRIEFING)) {
-            ev.setBlockBreaking(false);
+            event.setBlockBreaking(false);
         }
 
-        Server.getInstance().getPluginManager().callEvent(ev);
+        event.call();
 
-        if (!ev.isCancelled()) {
-            Explosion explosion = new Explosion(entity, (float) ev.getForce(), entity);
+        if (!event.isCancelled()) {
+            Explosion explosion = new Explosion(entity, (float) event.getForce(), entity);
 
-            if (ev.isBlockBreaking() && entity.getLevel().getGameRules().getBoolean(GameRule.MOB_GRIEFING)) {
+            if (event.isBlockBreaking() && entity.getLevel().getGameRules().getBoolean(GameRule.MOB_GRIEFING)) {
                 explosion.explodeA();
             }
 

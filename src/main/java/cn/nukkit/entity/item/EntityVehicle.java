@@ -105,19 +105,17 @@ public abstract class EntityVehicle extends Entity implements EntityRideable, En
         if (source instanceof EntityDamageByEntityEvent) {
             final Entity damagingEntity = ((EntityDamageByEntityEvent) source).getDamager();
 
-            final VehicleDamageByEntityEvent byEvent =
+            final VehicleDamageByEntityEvent entityEvent =
                     new VehicleDamageByEntityEvent(this, damagingEntity, source.getFinalDamage());
+            entityEvent.call();
 
-            getServer().getPluginManager().callEvent(byEvent);
-
-            if (byEvent.isCancelled()) return false;
+            if (entityEvent.isCancelled()) return false;
 
             instantKill = damagingEntity instanceof Player && ((Player) damagingEntity).isCreative();
         } else {
 
             final VehicleDamageEvent damageEvent = new VehicleDamageEvent(this, source.getFinalDamage());
-
-            getServer().getPluginManager().callEvent(damageEvent);
+            damageEvent.call();
 
             if (damageEvent.isCancelled()) return false;
         }
@@ -125,17 +123,15 @@ public abstract class EntityVehicle extends Entity implements EntityRideable, En
         if (instantKill || getHealth() - source.getFinalDamage() < 1) {
             if (source instanceof EntityDamageByEntityEvent) {
                 final Entity damagingEntity = ((EntityDamageByEntityEvent) source).getDamager();
-                final VehicleDestroyByEntityEvent byDestroyEvent =
+                final VehicleDestroyByEntityEvent destroyByEntityEvent =
                         new VehicleDestroyByEntityEvent(this, damagingEntity);
 
-                getServer().getPluginManager().callEvent(byDestroyEvent);
+                destroyByEntityEvent.call();
 
-                if (byDestroyEvent.isCancelled()) return false;
+                if (destroyByEntityEvent.isCancelled()) return false;
             } else {
-
                 final VehicleDestroyEvent destroyEvent = new VehicleDestroyEvent(this);
-
-                getServer().getPluginManager().callEvent(destroyEvent);
+                destroyEvent.call();
 
                 if (destroyEvent.isCancelled()) return false;
             }

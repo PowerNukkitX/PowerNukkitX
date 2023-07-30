@@ -169,9 +169,9 @@ public class BlockSkull extends BlockTransparentMeta
             return 0;
         }
 
-        RedstoneUpdateEvent ev = new RedstoneUpdateEvent(this);
-        getLevel().getServer().getPluginManager().callEvent(ev);
-        if (ev.isCancelled()) {
+        RedstoneUpdateEvent event = new RedstoneUpdateEvent(this);
+        event.call();
+        if (event.isCancelled()) {
             return 0;
         }
 

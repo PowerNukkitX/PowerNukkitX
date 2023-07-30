@@ -3,13 +3,10 @@ package cn.nukkit.event.block;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.Block;
 import cn.nukkit.event.Cancellable;
-import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
 
 @PowerNukkitOnly
 public class BlockHarvestEvent extends BlockEvent implements Cancellable {
-
-    private static final HandlerList handlers = new HandlerList();
 
     private Block newState;
     private Item[] drops;
@@ -39,10 +36,5 @@ public class BlockHarvestEvent extends BlockEvent implements Cancellable {
     @PowerNukkitOnly
     public void setDrops(Item[] drops) {
         this.drops = drops;
-    }
-
-    @PowerNukkitOnly
-    public static HandlerList getHandlers() {
-        return handlers;
     }
 }

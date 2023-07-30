@@ -41,7 +41,7 @@ public class MoveEntityAbsoluteProcessor extends DataPacketProcessor<MoveEntityA
         movedEntity.setPositionAndRotation(player.temporalVector, pk.headYaw, 0);
         Location to = movedEntity.getLocation();
         if (!from.equals(to)) {
-            player.getServer().getPluginManager().callEvent(new VehicleMoveEvent(player, from, to));
+            new VehicleMoveEvent(player, from, to).call();
         }
     }
 
