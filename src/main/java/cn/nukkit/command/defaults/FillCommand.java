@@ -58,7 +58,7 @@ public class FillCommand extends VanillaCommand {
         int tileData = 0;
         FillMode oldBlockHandling = FillMode.REPLACE;
         int replaceTileId;
-        int replaceDataValue = 0;
+        int replaceDataValue = -1;
 
         AxisAlignedBB aabb = new SimpleAxisAlignedBB(Math.min(from.getX(), to.getX()), Math.min(from.getY(), to.getY()), Math.min(from.getZ(), to.getZ()), Math.max(from.getX(), to.getX()), Math.max(from.getY(), to.getY()), Math.max(from.getZ(), to.getZ()));
         if (aabb.getMinY() < -64 || aabb.getMaxY() > 320) {
@@ -97,7 +97,12 @@ public class FillCommand extends VanillaCommand {
                         for (int x = NukkitMath.floorDouble(aabb.getMinX()); x <= NukkitMath.floorDouble(aabb.getMaxX()); x++) {
                             for (int z = NukkitMath.floorDouble(aabb.getMinZ()); z <= NukkitMath.floorDouble(aabb.getMaxZ()); z++) {
                                 for (int y = NukkitMath.floorDouble(aabb.getMinY()); y <= NukkitMath.floorDouble(aabb.getMaxY()); y++) {
-                                    if (x == from.x || x == to.x || z == from.z || z == to.z || y == from.y || y == to.y) {
+
+                                    boolean isBorderX = x == NukkitMath.floorDouble(from.x) || x == NukkitMath.floorDouble(to.x);
+                                    boolean isBorderZ = z == NukkitMath.floorDouble(from.z) || z == NukkitMath.floorDouble(to.z);
+                                    boolean isBorderY = y == NukkitMath.floorDouble(from.y) || y == NukkitMath.floorDouble(to.y);
+
+                                    if (isBorderX|| isBorderZ || isBorderY) {
                                         level.setBlock(x, y, z, Block.get(tileId, tileData), false, true);
                                         ++count;
                                     }
@@ -110,8 +115,11 @@ public class FillCommand extends VanillaCommand {
                             for (int z = NukkitMath.floorDouble(aabb.getMinZ()); z <= NukkitMath.floorDouble(aabb.getMaxZ()); z++) {
                                 for (int y = NukkitMath.floorDouble(aabb.getMinY()); y <= NukkitMath.floorDouble(aabb.getMaxY()); y++) {
                                     Block block;
+                                    boolean isBorderX = x == NukkitMath.floorDouble(from.x) || x == NukkitMath.floorDouble(to.x);
+                                    boolean isBorderZ = z == NukkitMath.floorDouble(from.z) || z == NukkitMath.floorDouble(to.z);
+                                    boolean isBorderY = y == NukkitMath.floorDouble(from.y) || y == NukkitMath.floorDouble(to.y);
 
-                                    if (x == from.x || x == to.x || z == from.z || z == to.z || y == from.y || y == to.y) {
+                                    if (isBorderX || isBorderZ || isBorderY) {
                                         block = Block.get(tileId, tileData);
                                     } else {
                                         block = Block.get(Block.AIR);
@@ -159,9 +167,16 @@ public class FillCommand extends VanillaCommand {
                 blocks = getLevelBlocks(level, aabb);
                 for (Block block : blocks) {
                     if (replaceTileId != -1) {
-                        if (block.getId() == replaceTileId && block.getDamage() == replaceDataValue) {
-                            level.setBlock(block, Block.get(tileId, tileData));
-                            ++count;
+                        if (replaceDataValue == -1) {
+                            if (block.getId() == replaceTileId) {
+                                level.setBlock(block, Block.get(tileId, tileData));
+                                ++count;
+                            }
+                        } else {
+                            if (block.getId() == replaceTileId && block.getDamage() == replaceDataValue) {
+                                level.setBlock(block, Block.get(tileId, tileData));
+                                ++count;
+                            }
                         }
                     } else {
                         level.setBlock(block, Block.get(tileId, tileData));

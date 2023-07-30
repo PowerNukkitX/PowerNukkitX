@@ -1866,11 +1866,11 @@ public abstract class Entity extends Location implements Metadatable {
         if (newHealth < 1 && this instanceof Player player) {
             if (source.getCause() != DamageCause.VOID && source.getCause() != DamageCause.SUICIDE) {
                 boolean totem = false;
+                boolean isOffhand = false;
                 if (player.getOffhandInventory().getItem(0) instanceof ItemTotem) {
-                    player.getOffhandInventory().clear(0, true);
                     totem = true;
+                    isOffhand = true;
                 } else if (player.getInventory().getItemInHand() instanceof ItemTotem) {
-                    player.getInventory().clear(player.getInventory().getHeldItemIndex(), true);
                     totem = true;
                 }
                 //复活图腾实现
@@ -1890,6 +1890,12 @@ public abstract class Entity extends Location implements Metadatable {
                     pk.eid = this.getId();
                     pk.event = EntityEventPacket.CONSUME_TOTEM;
                     player.dataPacket(pk);
+
+                    if (isOffhand) {
+                        player.getOffhandInventory().clear(0, true);
+                    } else {
+                        player.getInventory().clear(player.getInventory().getHeldItemIndex(), true);
+                    }
 
                     source.setCancelled(true);
                     return false;

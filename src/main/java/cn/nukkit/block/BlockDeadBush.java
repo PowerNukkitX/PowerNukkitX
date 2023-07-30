@@ -74,6 +74,8 @@ public class BlockDeadBush extends BlockFlowable implements BlockFlowerPot.Flowe
             case STAINED_TERRACOTTA:
             case DIRT:
             case PODZOL:
+            case GRASS:
+            case MOSS_BLOCK:
             case MYCELIUM:
                 return true;
             default:
