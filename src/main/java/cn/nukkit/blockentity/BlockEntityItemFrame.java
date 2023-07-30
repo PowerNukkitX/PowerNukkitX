@@ -155,7 +155,7 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
         }
 
         ItemFrameDropItemEvent event = new ItemFrameDropItemEvent(player, getLevelBlock(), this, drop);
-        level.getServer().getPluginManager().callEvent(event);
+        event.call();
         if (event.isCancelled()) {
             if (player != null) {
                 spawnTo(player);

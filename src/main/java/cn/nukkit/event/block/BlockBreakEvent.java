@@ -2,7 +2,6 @@ package cn.nukkit.event.block;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.event.Cancellable;
-import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.player.Player;
@@ -11,12 +10,6 @@ import cn.nukkit.player.Player;
  * @author MagicDroidX (Nukkit Project)
  */
 public class BlockBreakEvent extends BlockEvent implements Cancellable {
-
-    private static final HandlerList handlers = new HandlerList();
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     protected final Player player;
 

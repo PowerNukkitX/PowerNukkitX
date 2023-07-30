@@ -2,7 +2,6 @@ package cn.nukkit.event.entity;
 
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.Cancellable;
-import cn.nukkit.event.HandlerList;
 import cn.nukkit.event.player.PlayerTeleportEvent;
 import cn.nukkit.level.Location;
 
@@ -10,11 +9,6 @@ import cn.nukkit.level.Location;
  * @author MagicDroidX (Nukkit Project)
  */
 public class EntityTeleportEvent extends EntityEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     private Location from;
     private Location to;

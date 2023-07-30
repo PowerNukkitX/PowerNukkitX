@@ -114,7 +114,7 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
                 LevelSoundEventPacket.SOUND_POWER_ON,
                 GlobalBlockPalette.getOrCreateRuntimeId(this.getId(), this.getDamage()));
         if (this.level.getServer().isRedstoneEnabled()) {
-            this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 0, 15));
+            new BlockRedstoneEvent(this, 0, 15).call();
 
             updateAroundRedstone();
             RedstoneComponent.updateAroundRedstone(getSide(getFacing().getOpposite()), getFacing());
@@ -144,7 +144,7 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
                         GlobalBlockPalette.getOrCreateRuntimeId(this.getId(), this.getDamage()));
 
                 if (this.level.getServer().isRedstoneEnabled()) {
-                    this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 15, 0));
+                    new BlockRedstoneEvent(this, 15, 0).call();
 
                     updateAroundRedstone();
                     RedstoneComponent.updateAroundRedstone(getSide(getFacing().getOpposite()), getFacing());
@@ -213,7 +213,7 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
     @Override
     public boolean onBreak(Item item) {
         if (isActivated()) {
-            this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 15, 0));
+            new BlockRedstoneEvent(this, 15, 0).call();
         }
 
         return super.onBreak(item);

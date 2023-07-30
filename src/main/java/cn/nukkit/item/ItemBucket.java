@@ -185,11 +185,10 @@ public class ItemBucket extends Item {
                         : (target instanceof BlockLavaStill
                                 ? Item.get(BUCKET, 10, 1)
                                 : Item.get(BUCKET, getDamageByTarget(target.getId()), 1));
-                PlayerBucketFillEvent ev;
-                player.getServer()
-                        .getPluginManager()
-                        .callEvent(ev = new PlayerBucketFillEvent(player, block, face, target, this, result));
-                if (!ev.isCancelled()) {
+                PlayerBucketFillEvent event = new PlayerBucketFillEvent(player, block, face, target, this, result);
+                event.call();
+
+                if (!event.isCancelled()) {
                     player.getLevel().setBlock(target, target.layer, Block.get(BlockID.AIR), true, true);
 
                     level.getVibrationManager()
@@ -207,15 +206,15 @@ public class ItemBucket extends Item {
 
                     if (player.isSurvival()) {
                         if (this.getCount() - 1 <= 0) {
-                            player.getInventory().setItemInHand(ev.getItem());
+                            player.getInventory().setItemInHand(event.getItem());
                         } else {
                             Item clone = this.clone();
                             clone.setCount(this.getCount() - 1);
                             player.getInventory().setItemInHand(clone);
-                            if (player.getInventory().canAddItem(ev.getItem())) {
-                                player.getInventory().addItem(ev.getItem());
+                            if (player.getInventory().canAddItem(event.getItem())) {
+                                player.getInventory().addItem(event.getItem());
                             } else {
-                                player.dropItem(ev.getItem());
+                                player.dropItem(event.getItem());
                             }
                             player.getInventory().sendContents(player);
                         }
@@ -252,23 +251,24 @@ public class ItemBucket extends Item {
                 placementBlock = block;
             }
 
-            PlayerBucketEmptyEvent ev = new PlayerBucketEmptyEvent(player, placementBlock, face, target, this, result);
+            PlayerBucketEmptyEvent event =
+                    new PlayerBucketEmptyEvent(player, placementBlock, face, target, this, result);
             boolean canBeFlowedInto = placementBlock.canBeFlowedInto() || placementBlock.getId() == BlockID.BAMBOO;
             if (usesWaterlogging) {
-                ev.setCancelled(placementBlock.getWaterloggingLevel() <= 0 && !canBeFlowedInto);
+                if (placementBlock.getWaterloggingLevel() <= 0 && !canBeFlowedInto) event.cancel();
             } else {
-                ev.setCancelled(!canBeFlowedInto);
+                if (!canBeFlowedInto) event.cancel();
             }
 
             boolean nether = false;
             if (!canBeUsedOnDimension(player.getLevel().getDimension())) {
-                ev.setCancelled(true);
+                event.cancel();
                 nether = this.getDamage() != 10;
             }
 
-            player.getServer().getPluginManager().callEvent(ev);
+            event.call();
 
-            if (!ev.isCancelled()) {
+            if (!event.isCancelled()) {
                 player.getLevel().setBlock(placementBlock, placementBlock.layer, targetBlock, true, true);
                 target.getLevel()
                         .getVibrationManager()
@@ -276,15 +276,15 @@ public class ItemBucket extends Item {
                                 new VibrationEvent(player, target.add(0.5, 0.5, 0.5), VibrationType.FLUID_PLACE));
                 if (player.isSurvival()) {
                     if (this.getCount() - 1 <= 0) {
-                        player.getInventory().setItemInHand(ev.getItem());
+                        player.getInventory().setItemInHand(event.getItem());
                     } else {
                         Item clone = this.clone();
                         clone.setCount(this.getCount() - 1);
                         player.getInventory().setItemInHand(clone);
-                        if (player.getInventory().canAddItem(ev.getItem())) {
-                            player.getInventory().addItem(ev.getItem());
+                        if (player.getInventory().canAddItem(event.getItem())) {
+                            player.getInventory().addItem(event.getItem());
                         } else {
-                            player.dropItem(ev.getItem());
+                            player.dropItem(event.getItem());
                         }
                     }
                 }
@@ -397,8 +397,8 @@ public class ItemBucket extends Item {
         }
 
         PlayerItemConsumeEvent consumeEvent = new PlayerItemConsumeEvent(player, this);
+        consumeEvent.call();
 
-        player.getServer().getPluginManager().callEvent(consumeEvent);
         if (consumeEvent.isCancelled()) {
             player.getInventory().sendContents(player);
             return false;

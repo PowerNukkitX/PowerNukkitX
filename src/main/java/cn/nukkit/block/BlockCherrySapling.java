@@ -87,15 +87,15 @@ public class BlockCherrySapling extends BlockFlowable implements BlockFlowerPot.
         Vector3 vector3 = new Vector3(this.x, this.y - 1, this.z);
         var objectCherryTree = new ObjectCherryTree();
         objectCherryTree.generate(chunkManager, new NukkitRandom(), this);
-        StructureGrowEvent ev = new StructureGrowEvent(this, chunkManager.getBlocks());
-        this.level.getServer().getPluginManager().callEvent(ev);
-        if (ev.isCancelled()) {
+        StructureGrowEvent event = new StructureGrowEvent(this, chunkManager.getBlocks());
+        event.call();
+        if (event.isCancelled()) {
             return;
         }
         if (this.level.getBlock(vector3).getId() == BlockID.DIRT_WITH_ROOTS) {
             this.level.setBlock(vector3, Block.get(BlockID.DIRT));
         }
-        for (Block block : ev.getBlockList()) {
+        for (Block block : event.getBlockList()) {
             if (block.getId() == BlockID.AIR) continue;
             this.level.setBlock(block, block);
         }

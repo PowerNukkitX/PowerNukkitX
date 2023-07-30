@@ -23,7 +23,6 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.event.Cancellable;
-import cn.nukkit.event.HandlerList;
 import cn.nukkit.player.Player;
 import javax.annotation.Nullable;
 
@@ -34,14 +33,6 @@ import javax.annotation.Nullable;
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
 public class BlockExplosionPrimeEvent extends BlockEvent implements Cancellable {
-
-    private static final HandlerList handlers = new HandlerList();
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     private double force;
     private boolean blockBreaking;

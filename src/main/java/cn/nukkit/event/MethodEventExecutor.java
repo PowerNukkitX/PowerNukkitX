@@ -1,9 +1,7 @@
-package cn.nukkit.plugin;
+package cn.nukkit.event;
 
 import static org.objectweb.asm.Opcodes.*;
 
-import cn.nukkit.event.Event;
-import cn.nukkit.event.Listener;
 import cn.nukkit.utils.EventException;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.InaccessibleObjectException;
@@ -68,13 +66,13 @@ public class MethodEventExecutor implements EventExecutor {
         var eventClass = method.getParameterTypes()[0];
         var eventType = Type.getType(eventClass);
         var listenerType = Type.getType(listenerClass);
-        var internalName = "cn/nukkit/plugin/PNXMethodEventExecutor$" + compileTime.incrementAndGet();
+        var internalName = "cn/nukkit/event/PNXMethodEventExecutor$" + compileTime.incrementAndGet();
 
         ClassWriter classWriter = new ClassWriter(0);
         FieldVisitor fieldVisitor;
         MethodVisitor methodVisitor;
         classWriter.visit(V17, ACC_PUBLIC | ACC_SUPER, internalName, null, "java/lang/Object", new String[] {
-            "cn/nukkit/plugin/EventExecutor", "cn/nukkit/plugin/CompiledExecutor"
+            "cn/nukkit/event/EventExecutor", "cn/nukkit/event/CompiledExecutor"
         });
         classWriter.visitSource("EventHandler@" + method.getDeclaringClass().getName() + "#" + method.getName(), null);
         {
@@ -187,7 +185,7 @@ public class MethodEventExecutor implements EventExecutor {
         }
         Objects.requireNonNull(method).setAccessible(true);
         try {
-            var args = new Object[] {"cn.nukkit.plugin.PNXMethodEventExecutor$" + compileTime.get(), b, 0, b.length};
+            var args = new Object[] {"cn.nukkit.event.PNXMethodEventExecutor$" + compileTime.get(), b, 0, b.length};
             clazz = (Class<?>) method.invoke(loader, args);
         } finally {
             method.setAccessible(false);

@@ -54,8 +54,8 @@ public class MapInfoRequestProcessor extends DataPacketProcessor<MapInfoRequestP
         }
 
         if (mapItem != null) {
-            PlayerMapInfoRequestEvent event;
-            player.getServer().getPluginManager().callEvent(event = new PlayerMapInfoRequestEvent(player, mapItem));
+            PlayerMapInfoRequestEvent event = new PlayerMapInfoRequestEvent(player, mapItem);
+            event.call();
 
             if (!event.isCancelled()) {
                 ItemMap map = (ItemMap) mapItem;

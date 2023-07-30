@@ -112,9 +112,9 @@ public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
             playerHandle.player.setSkin(skin);
         }
 
-        PlayerPreLoginEvent playerPreLoginEvent;
-        server.getPluginManager()
-                .callEvent(playerPreLoginEvent = new PlayerPreLoginEvent(playerHandle.player, "Plugin reason"));
+        PlayerPreLoginEvent playerPreLoginEvent = new PlayerPreLoginEvent(playerHandle.player, "Plugin reason");
+        playerPreLoginEvent.call();
+
         if (playerPreLoginEvent.isCancelled()) {
             playerHandle.player.close("", playerPreLoginEvent.getKickMessage());
             return;
@@ -132,7 +132,7 @@ public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
                         playerHandle.player.getSkin(),
                         playerHandle.player.getRawAddress(),
                         playerHandle.player.getRawPort());
-                server.getPluginManager().callEvent(event);
+                event.call();
             }
 
             @Override

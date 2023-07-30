@@ -3,7 +3,6 @@ package cn.nukkit.event.level;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.event.Cancellable;
-import cn.nukkit.event.HandlerList;
 import java.util.List;
 import java.util.Objects;
 
@@ -12,13 +11,6 @@ import java.util.Objects;
  */
 @Since("1.4.0.0-PN")
 public class StructureGrowEvent extends LevelEvent implements Cancellable {
-
-    private static final HandlerList handlers = new HandlerList();
-
-    @Since("1.4.0.0-PN")
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     private final Block block;
     private final List<Block> blocks;

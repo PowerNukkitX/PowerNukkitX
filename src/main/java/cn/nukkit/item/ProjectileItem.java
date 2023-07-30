@@ -57,10 +57,10 @@ public abstract class ProjectileItem extends Item {
             projectile.setMotion(projectile.getMotion().multiply(this.getThrowForce()));
 
             if (projectile instanceof EntityProjectile) {
-                ProjectileLaunchEvent ev = new ProjectileLaunchEvent((EntityProjectile) projectile, player);
+                ProjectileLaunchEvent event = new ProjectileLaunchEvent((EntityProjectile) projectile, player);
+                event.call();
 
-                player.getServer().getPluginManager().callEvent(ev);
-                if (ev.isCancelled()) {
+                if (event.isCancelled()) {
                     projectile.kill();
                 } else {
                     if (!player.isCreative()) {

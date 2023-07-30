@@ -103,7 +103,7 @@ public abstract class BlockSignBase extends BlockTransparentMeta implements Face
                 return;
             }
             SignColorChangeEvent event = new SignColorChangeEvent(this, player, color);
-            this.level.getServer().getPluginManager().callEvent(event);
+            event.call();
             if (event.isCancelled()) {
                 sign.spawnTo(player);
                 return;
@@ -121,7 +121,7 @@ public abstract class BlockSignBase extends BlockTransparentMeta implements Face
                 return;
             }
             SignGlowEvent event = new SignGlowEvent(this, player, true);
-            this.level.getServer().getPluginManager().callEvent(event);
+            event.call();
             if (event.isCancelled()) {
                 sign.spawnTo(player);
                 return;
@@ -135,7 +135,7 @@ public abstract class BlockSignBase extends BlockTransparentMeta implements Face
             return;
         } else if (item instanceof ItemHoneycomb) {
             SignWaxedEvent event = new SignWaxedEvent(this, player, true);
-            this.level.getServer().getPluginManager().callEvent(event);
+            event.call();
             if (event.isCancelled()) {
                 sign.spawnTo(player);
                 return;

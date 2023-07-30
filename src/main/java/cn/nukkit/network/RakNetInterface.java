@@ -69,7 +69,7 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
 
             try {
                 PlayerCreationEvent event = new PlayerCreationEvent(this, Player.class, Player.class, null, address);
-                this.server.getPluginManager().callEvent(event);
+                event.call();
 
                 this.sessions.put(event.getSocketAddress(), session);
 

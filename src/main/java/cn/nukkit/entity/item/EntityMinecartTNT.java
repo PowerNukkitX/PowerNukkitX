@@ -98,7 +98,7 @@ public class EntityMinecartTNT extends EntityMinecartAbstract implements EntityE
 
         EntityExplosionPrimeEvent event = new EntityExplosionPrimeEvent(
                 this, (4.0D + ThreadLocalRandom.current().nextDouble() * 1.5D * root));
-        server.getPluginManager().callEvent(event);
+        event.call();
         if (event.isCancelled()) {
             return;
         }

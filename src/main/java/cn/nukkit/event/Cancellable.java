@@ -7,7 +7,7 @@ public interface Cancellable {
 
     boolean isCancelled();
 
-    void setCancelled();
+    void cancel();
 
-    void setCancelled(boolean forceCancel);
+    void uncancel();
 }

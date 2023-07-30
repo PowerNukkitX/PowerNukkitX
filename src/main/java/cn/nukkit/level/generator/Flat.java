@@ -1,6 +1,5 @@
 package cn.nukkit.level.generator;
 
-import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.event.level.ChunkPrePopulateEvent;
@@ -183,8 +182,8 @@ public class Flat extends Generator {
     public void populateChunk(int chunkX, int chunkZ) {
         BaseFullChunk chunk = level.getChunk(chunkX, chunkZ);
         this.random.setSeed(0xdeadbeef ^ ((long) chunkX << 8) ^ chunkZ ^ this.level.getSeed());
-        var event = new ChunkPrePopulateEvent(chunk, this.populators, List.of());
-        Server.getInstance().getPluginManager().callEvent(event);
+        ChunkPrePopulateEvent event = new ChunkPrePopulateEvent(chunk, this.populators, List.of());
+        event.call();
         for (Populator populator : event.getTerrainPopulators()) {
             populator.populate(this.level, chunkX, chunkZ, this.random, chunk);
         }

@@ -198,7 +198,7 @@ public class BlockLectern extends BlockTransparentMeta
         if (isActivated()) {
             level.cancelSheduledUpdate(this, this);
         } else {
-            this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 0, 15));
+            new BlockRedstoneEvent(this, 0, 15).call();
         }
 
         level.scheduleUpdate(this, this, 4);
@@ -226,7 +226,7 @@ public class BlockLectern extends BlockTransparentMeta
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
             if (isActivated()) {
-                this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 15, 0));
+                new BlockRedstoneEvent(this, 15, 0).call();
 
                 setActivated(false);
                 level.setBlock(this, this, true, false);
@@ -253,7 +253,7 @@ public class BlockLectern extends BlockTransparentMeta
         }
 
         LecternDropBookEvent dropBookEvent = new LecternDropBookEvent(player, lectern, book);
-        this.getLevel().getServer().getPluginManager().callEvent(dropBookEvent);
+        dropBookEvent.call();
         if (dropBookEvent.isCancelled()) {
             return;
         }

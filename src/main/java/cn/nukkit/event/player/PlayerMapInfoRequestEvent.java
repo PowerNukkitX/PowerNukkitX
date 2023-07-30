@@ -1,7 +1,6 @@
 package cn.nukkit.event.player;
 
 import cn.nukkit.event.Cancellable;
-import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
 import cn.nukkit.player.Player;
 
@@ -10,8 +9,6 @@ import cn.nukkit.player.Player;
  * @since 18.3.2017
  */
 public class PlayerMapInfoRequestEvent extends PlayerEvent implements Cancellable {
-
-    private static final HandlerList handlers = new HandlerList();
 
     private Item item;
 
@@ -22,9 +19,5 @@ public class PlayerMapInfoRequestEvent extends PlayerEvent implements Cancellabl
 
     public Item getMap() {
         return item;
-    }
-
-    public static HandlerList getHandlers() {
-        return handlers;
     }
 }

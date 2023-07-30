@@ -138,7 +138,7 @@ public class EntityHuman extends EntityHumanType {
             }
             this.addFreezingTicks(1);
             EntityFreezeEvent event = new EntityFreezeEvent(this);
-            this.server.getPluginManager().callEvent(event);
+            event.call();
             if (!event.isCancelled()) {
                 this.setMovementSpeed((float) Math.max(0.05, getMovementSpeed() - 3.58e-4));
             }

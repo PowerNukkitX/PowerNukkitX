@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.Server;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.blockentity.BlockEntity;
@@ -69,13 +68,13 @@ public class BlockCauldronLava extends BlockCauldron {
     @Override
     public void onEntityCollide(Entity entity) {
         // Always setting the duration to 15 seconds? TODO
-        EntityCombustByBlockEvent ev = new EntityCombustByBlockEvent(this, entity, 15);
-        Server.getInstance().getPluginManager().callEvent(ev);
-        if (!ev.isCancelled()
+        EntityCombustByBlockEvent event = new EntityCombustByBlockEvent(this, entity, 15);
+        event.call();
+        if (!event.isCancelled()
                 // Making sure the entity is actually alive and not invulnerable.
                 && entity.isAlive()
                 && entity.noDamageTicks == 0) {
-            entity.setOnFire(ev.getDuration());
+            entity.setOnFire(event.getDuration());
         }
 
         if (!entity.hasEffect(Effect.FIRE_RESISTANCE)) {
@@ -111,7 +110,7 @@ public class BlockCauldronLava extends BlockCauldron {
                             this,
                             item,
                             MinecraftItemID.LAVA_BUCKET.get(1, bucket.getCompoundTag()));
-                    this.level.getServer().getPluginManager().callEvent(ev);
+                    ev.call();
                     if (!ev.isCancelled()) {
                         replaceBucket(bucket, player, ev.getItem());
                         this.setFillLevel(FILL_LEVEL.getMinValue(), player); // empty
@@ -124,11 +123,11 @@ public class BlockCauldronLava extends BlockCauldron {
                         break;
                     }
 
-                    PlayerBucketEmptyEvent ev = new PlayerBucketEmptyEvent(
+                    PlayerBucketEmptyEvent event = new PlayerBucketEmptyEvent(
                             player, this, null, this, item, MinecraftItemID.BUCKET.get(1, bucket.getCompoundTag()));
-                    this.level.getServer().getPluginManager().callEvent(ev);
-                    if (!ev.isCancelled()) {
-                        replaceBucket(bucket, player, ev.getItem());
+                    event.call();
+                    if (!event.isCancelled()) {
+                        replaceBucket(bucket, player, event.getItem());
 
                         if (cauldron.hasPotion()) { // if has potion
                             clearWithFizz(cauldron);

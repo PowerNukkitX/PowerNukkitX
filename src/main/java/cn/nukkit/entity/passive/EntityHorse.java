@@ -309,7 +309,7 @@ public class EntityHorse extends EntityAnimal
         Block down = this.level.getBlock(floorLocation.down());
 
         EntityFallEvent event = new EntityFallEvent(this, down, fallDistance);
-        this.server.getPluginManager().callEvent(event);
+        event.call();
         if (event.isCancelled()) {
             return;
         }
@@ -333,8 +333,8 @@ public class EntityHorse extends EntityAnimal
                 if (onPhysicalInteraction(down, false)) {
                     return;
                 }
-                var farmEvent = new FarmLandDecayEvent(this, down);
-                this.server.getPluginManager().callEvent(farmEvent);
+                FarmLandDecayEvent farmEvent = new FarmLandDecayEvent(this, down);
+                farmEvent.call();
                 if (farmEvent.isCancelled()) return;
                 this.level.setBlock(down, new BlockDirt(), false, true);
                 return;

@@ -214,7 +214,7 @@ public abstract class Food {
 
     public final boolean eatenBy(Player player) {
         PlayerEatFoodEvent event = new PlayerEatFoodEvent(player, this);
-        player.getServer().getPluginManager().callEvent(event);
+        event.call();
         if (event.isCancelled()) return false;
         return event.getFood().onEatenBy(player);
     }

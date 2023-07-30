@@ -53,11 +53,11 @@ public class ItemFireCharge extends Item {
             fire.level = level;
 
             if (fire.isBlockTopFacingSurfaceSolid(fire.down()) || fire.canNeighborBurn()) {
-                BlockIgniteEvent e =
+                BlockIgniteEvent event =
                         new BlockIgniteEvent(block, null, player, BlockIgniteEvent.BlockIgniteCause.FLINT_AND_STEEL);
-                block.getLevel().getServer().getPluginManager().callEvent(e);
+                event.call();
 
-                if (!e.isCancelled()) {
+                if (!event.isCancelled()) {
                     level.setBlock(fire, fire, true);
                     level.addLevelEvent(block, LevelEventPacket.EVENT_SOUND_GHAST_SHOOT, 78642);
                     level.scheduleUpdate(

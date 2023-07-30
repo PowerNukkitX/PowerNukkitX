@@ -23,7 +23,7 @@ public abstract class BlockFallable extends BlockSolid {
                     || down instanceof BlockLiquid
                     || (down instanceof BlockBubbleColumn && down.getLevelBlockAtLayer(1) instanceof BlockLiquid))) {
                 BlockFallEvent event = new BlockFallEvent(this);
-                this.level.getServer().getPluginManager().callEvent(event);
+                event.call();
                 if (event.isCancelled()) {
                     return type;
                 }

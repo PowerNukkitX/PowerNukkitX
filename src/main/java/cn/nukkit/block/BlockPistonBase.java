@@ -265,7 +265,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta
         List<BlockVector3> toMoveBlockVec = new ArrayList<>();
         var event = new BlockPistonEvent(
                 this, pistonFace, calculator.getBlocksToMove(), calculator.getBlocksToDestroy(), extending);
-        this.level.getServer().getPluginManager().callEvent(event);
+        event.call();
         if (event.isCancelled()) return false;
         var oldPosList = new ArrayList<Vector3>();
         var blockEntityHolderList = new ArrayList<BlockEntityHolder<?>>();

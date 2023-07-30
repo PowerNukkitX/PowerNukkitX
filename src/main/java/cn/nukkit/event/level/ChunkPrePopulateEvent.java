@@ -1,7 +1,6 @@
 package cn.nukkit.event.level;
 
 import cn.nukkit.api.ImmutableCollection;
-import cn.nukkit.event.HandlerList;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.generator.populator.type.Populator;
 import java.util.Collections;
@@ -9,11 +8,6 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 public class ChunkPrePopulateEvent extends ChunkEvent {
-    private static final HandlerList handlers = new HandlerList();
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     @NotNull @ImmutableCollection
     private List<Populator> terrainPopulators;

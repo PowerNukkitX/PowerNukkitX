@@ -76,9 +76,9 @@ public class BlockRedstoneLamp extends BlockSolid implements RedstoneComponent {
 
             if (this.isGettingPower()) {
                 // Redstone event
-                RedstoneUpdateEvent ev = new RedstoneUpdateEvent(this);
-                getLevel().getServer().getPluginManager().callEvent(ev);
-                if (ev.isCancelled()) {
+                RedstoneUpdateEvent event = new RedstoneUpdateEvent(this);
+                event.call();
+                if (event.isCancelled()) {
                     return 0;
                 }
 

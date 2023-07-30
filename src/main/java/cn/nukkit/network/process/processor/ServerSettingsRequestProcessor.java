@@ -14,7 +14,7 @@ public class ServerSettingsRequestProcessor extends DataPacketProcessor<ServerSe
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull ServerSettingsRequestPacket pk) {
         PlayerServerSettingsRequestEvent settingsRequestEvent = new PlayerServerSettingsRequestEvent(
                 playerHandle.player, new HashMap<>(playerHandle.getServerSettings()));
-        playerHandle.player.getServer().getPluginManager().callEvent(settingsRequestEvent);
+        settingsRequestEvent.call();
 
         if (!settingsRequestEvent.isCancelled()) {
             settingsRequestEvent.getSettings().forEach((id, window) -> {

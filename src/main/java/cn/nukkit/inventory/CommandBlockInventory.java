@@ -183,9 +183,10 @@ public class CommandBlockInventory implements Inventory {
 
     @Override
     public boolean open(Player who) {
-        InventoryOpenEvent ev = new InventoryOpenEvent(this, who);
-        who.getServer().getPluginManager().callEvent(ev);
-        if (ev.isCancelled()) {
+        InventoryOpenEvent event = new InventoryOpenEvent(this, who);
+        event.call();
+
+        if (event.isCancelled()) {
             return false;
         }
         this.onOpen(who);

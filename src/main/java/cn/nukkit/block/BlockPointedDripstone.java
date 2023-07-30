@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import static cn.nukkit.potion.Effect.getEffect;
 
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -165,7 +164,7 @@ public class BlockPointedDripstone extends BlockFallableMeta {
         if (!blockUp.getSide(BlockFace.UP).isSolid()) AirUp = true;
         if (AirUp) {
             BlockFallEvent event = new BlockFallEvent(this);
-            Server.getInstance().getPluginManager().callEvent(event);
+            event.call();
             if (event.isCancelled()) {
                 return;
             }
@@ -443,7 +442,7 @@ public class BlockPointedDripstone extends BlockFallableMeta {
                         && nextDouble <= 15.0 / 256.0) {
                     CauldronFilledByDrippingLiquidEvent event =
                             new CauldronFilledByDrippingLiquidEvent(cauldron, CauldronLiquid.LAVA, 1);
-                    Server.getInstance().getPluginManager().callEvent(event);
+                    event.call();
                     if (event.isCancelled()) return;
                     cauldron.setCauldronLiquid(event.getLiquid());
                     cauldron.setFillLevel(cauldron.getFillLevel() + event.getLiquidLevelIncrement());
@@ -458,7 +457,7 @@ public class BlockPointedDripstone extends BlockFallableMeta {
                         && nextDouble <= 45.0 / 256.0) {
                     CauldronFilledByDrippingLiquidEvent event =
                             new CauldronFilledByDrippingLiquidEvent(cauldron, CauldronLiquid.WATER, 1);
-                    Server.getInstance().getPluginManager().callEvent(event);
+                    event.call();
                     if (event.isCancelled()) return;
                     cauldron.setCauldronLiquid(event.getLiquid());
                     cauldron.setFillLevel(cauldron.getFillLevel() + event.getLiquidLevelIncrement());

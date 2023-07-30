@@ -169,16 +169,16 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
         int power = getRedstonePower();
 
         if (power == 0) {
-            Event ev;
+            Event event;
             if (entity instanceof Player) {
-                ev = new PlayerInteractEvent((Player) entity, null, this, null, Action.PHYSICAL);
+                event = new PlayerInteractEvent((Player) entity, null, this, null, Action.PHYSICAL);
             } else {
-                ev = new EntityInteractEvent(entity, this);
+                event = new EntityInteractEvent(entity, this);
             }
 
-            this.level.getServer().getPluginManager().callEvent(ev);
+            event.call();
 
-            if (!ev.isCancelled()) {
+            if (!event.isCancelled()) {
                 updateState(power);
             }
         }
@@ -198,10 +198,10 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
 
             if (!isPowered && wasPowered) {
                 this.playOffSound();
-                this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 15, 0));
+                new BlockRedstoneEvent(this, 15, 0).call();
             } else if (isPowered && !wasPowered) {
                 this.playOnSound();
-                this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 0, 15));
+                new BlockRedstoneEvent(this, 0, 15).call();
             }
         }
 

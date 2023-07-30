@@ -26,7 +26,7 @@ public class FilterTextProcessor extends DataPacketProcessor<FilterTextPacket> {
             if (anvilInventory != null) {
                 PlayerTypingAnvilInventoryEvent playerTypingAnvilInventoryEvent = new PlayerTypingAnvilInventoryEvent(
                         player, anvilInventory, anvilInventory.getNewItemName(), pk.getText());
-                player.getServer().getPluginManager().callEvent(playerTypingAnvilInventoryEvent);
+                playerTypingAnvilInventoryEvent.call();
                 anvilInventory.setNewItemName(playerTypingAnvilInventoryEvent.getTypedName());
             }
         }

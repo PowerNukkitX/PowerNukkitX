@@ -5,7 +5,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.BlockEntityItemFrame;
 import cn.nukkit.event.Cancellable;
-import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
 import cn.nukkit.player.Player;
 import javax.annotation.Nullable;
@@ -19,15 +18,11 @@ import org.jetbrains.annotations.NotNull;
 @PowerNukkitXOnly
 @Since("1.19.62-r1")
 public class ItemFrameUseEvent extends BlockEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
+
     protected final Player player;
     protected final Item item;
     protected final BlockEntityItemFrame itemFrame;
     protected final Action action;
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     public ItemFrameUseEvent(
             @Nullable Player player,

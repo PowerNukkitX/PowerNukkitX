@@ -28,7 +28,7 @@ public class NPCRequestProcessor extends DataPacketProcessor<NPCRequestPacket> {
             }
 
             PlayerDialogRespondedEvent event = new PlayerDialogRespondedEvent(player, dialog, response);
-            player.getServer().getPluginManager().callEvent(event);
+            event.call();
             return;
         }
         if (playerHandle.getDialogWindows().getIfPresent(pk.getSceneName()) != null) {
@@ -47,7 +47,7 @@ public class NPCRequestProcessor extends DataPacketProcessor<NPCRequestPacket> {
             }
 
             PlayerDialogRespondedEvent event = new PlayerDialogRespondedEvent(player, dialog, response);
-            player.getServer().getPluginManager().callEvent(event);
+            event.call();
 
             // close dialog after clicked button (otherwise the client will not be able to close the window)
             if (response.getClickedButton() != null

@@ -1,8 +1,8 @@
 package cn.nukkit.level.generator;
 
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.event.HandlerListManager;
 import cn.nukkit.event.level.ChunkPrePopulateEvent;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.DimensionData;
@@ -59,11 +59,11 @@ public class TerraGeneratorWrapper extends Generator {
 
     @Override
     public void populateChunk(int chunkX, int chunkZ) {
-        if (!ChunkPrePopulateEvent.getHandlers().isEmpty()) {
+        if (!HandlerListManager.global().getListFor(ChunkPrePopulateEvent.class).isEmpty()) {
             var nukkitRandom = new NukkitRandom(0xdeadbeef ^ ((long) chunkX << 8) ^ chunkZ ^ this.level.getSeed());
             var chunk = level.getChunk(chunkX, chunkZ);
             var event = new ChunkPrePopulateEvent(chunk, List.of(), List.of());
-            Server.getInstance().getPluginManager().callEvent(event);
+            event.call();
             this.terra.populateChunk(chunkX, chunkZ, getChunkManager());
             for (var populator : event.getTerrainPopulators())
                 populator.populate(level, chunkX, chunkX, nukkitRandom, chunk);

@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
@@ -137,12 +136,12 @@ public class BlockChorusFlower extends BlockTransparentMeta {
                     if (growUp && this.up(2).getId() == AIR && isHorizontalAir(this.up())) {
                         BlockChorusFlower block = (BlockChorusFlower) this.clone();
                         block.y = this.y + 1;
-                        BlockGrowEvent ev = new BlockGrowEvent(this, block);
-                        Server.getInstance().getPluginManager().callEvent(ev);
+                        BlockGrowEvent event = new BlockGrowEvent(this, block);
+                        event.call();
 
-                        if (!ev.isCancelled()) {
+                        if (!event.isCancelled()) {
                             this.getLevel().setBlock(this, Block.get(CHORUS_PLANT));
-                            this.getLevel().setBlock(block, ev.getNewState());
+                            this.getLevel().setBlock(block, event.getNewState());
                             this.getLevel().addSound(this.add(0.5, 0.5, 0.5), Sound.BLOCK_CHORUSFLOWER_GROW);
                         } else {
                             return Level.BLOCK_UPDATE_RANDOM;
@@ -160,12 +159,12 @@ public class BlockChorusFlower extends BlockTransparentMeta {
                                 block.y = check.y;
                                 block.z = check.z;
                                 block.setAge(getAge() + 1);
-                                BlockGrowEvent ev = new BlockGrowEvent(this, block);
-                                Server.getInstance().getPluginManager().callEvent(ev);
+                                BlockGrowEvent event = new BlockGrowEvent(this, block);
+                                event.call();
 
-                                if (!ev.isCancelled()) {
+                                if (!event.isCancelled()) {
                                     this.getLevel().setBlock(this, Block.get(CHORUS_PLANT));
-                                    this.getLevel().setBlock(block, ev.getNewState());
+                                    this.getLevel().setBlock(block, event.getNewState());
                                     this.getLevel().addSound(this.add(0.5, 0.5, 0.5), Sound.BLOCK_CHORUSFLOWER_GROW);
                                 } else {
                                     return Level.BLOCK_UPDATE_RANDOM;
@@ -176,11 +175,11 @@ public class BlockChorusFlower extends BlockTransparentMeta {
                     } else {
                         BlockChorusFlower block = (BlockChorusFlower) this.clone();
                         block.setAge(getMaxAge());
-                        BlockGrowEvent ev = new BlockGrowEvent(this, block);
-                        Server.getInstance().getPluginManager().callEvent(ev);
+                        BlockGrowEvent event = new BlockGrowEvent(this, block);
+                        event.call();
 
-                        if (!ev.isCancelled()) {
-                            this.getLevel().setBlock(block, ev.getNewState());
+                        if (!event.isCancelled()) {
+                            this.getLevel().setBlock(block, event.getNewState());
                             this.getLevel().addSound(this.add(0.5, 0.5, 0.5), Sound.BLOCK_CHORUSFLOWER_DEATH);
                         } else {
                             return Level.BLOCK_UPDATE_RANDOM;

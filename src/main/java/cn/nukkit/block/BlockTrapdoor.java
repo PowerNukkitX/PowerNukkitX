@@ -207,9 +207,7 @@ public class BlockTrapdoor extends BlockTransparentMeta implements RedstoneCompo
         if (type == Level.BLOCK_UPDATE_REDSTONE && this.level.getServer().isRedstoneEnabled()) {
             if ((this.isOpen() != this.isGettingPower()) && !this.getManualOverride()) {
                 if (this.isOpen() != this.isGettingPower()) {
-                    level.getServer()
-                            .getPluginManager()
-                            .callEvent(new BlockRedstoneEvent(this, this.isOpen() ? 15 : 0, this.isOpen() ? 0 : 15));
+                    new BlockRedstoneEvent(this, this.isOpen() ? 15 : 0, this.isOpen() ? 0 : 15).call();
 
                     this.setOpen(null, this.isGettingPower());
                 }
@@ -300,7 +298,7 @@ public class BlockTrapdoor extends BlockTransparentMeta implements RedstoneCompo
         }
 
         DoorToggleEvent event = new DoorToggleEvent(this, player);
-        level.getServer().getPluginManager().callEvent(event);
+        event.call();
 
         if (event.isCancelled()) {
             return false;

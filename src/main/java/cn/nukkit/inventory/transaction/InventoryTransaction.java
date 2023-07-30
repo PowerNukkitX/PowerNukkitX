@@ -190,8 +190,8 @@ public class InventoryTransaction {
     }
 
     protected boolean callExecuteEvent() {
-        InventoryTransactionEvent ev = new InventoryTransactionEvent(this);
-        this.source.getServer().getPluginManager().callEvent(ev);
+        InventoryTransactionEvent event = new InventoryTransactionEvent(this);
+        event.call();
 
         SlotChangeAction from = null;
         SlotChangeAction to = null;
@@ -219,16 +219,16 @@ public class InventoryTransaction {
                 from = to;
             }
 
-            InventoryClickEvent ev2 = new InventoryClickEvent(
+            InventoryClickEvent event1 = new InventoryClickEvent(
                     who, from.getInventory(), from.getSlot(), from.getSourceItem(), from.getTargetItem());
-            this.source.getServer().getPluginManager().callEvent(ev2);
+            event1.call();
 
-            if (ev2.isCancelled()) {
+            if (event1.isCancelled()) {
                 return false;
             }
         }
 
-        return !ev.isCancelled();
+        return !event.isCancelled();
     }
 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Always returns false if the execution is not possible")

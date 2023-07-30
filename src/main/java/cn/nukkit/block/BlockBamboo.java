@@ -103,7 +103,7 @@ public class BlockBamboo extends BlockTransparentMeta implements BlockFlowerPot.
             newState.setLeafSize(LEAF_SIZE_SMALL);
         }
         BlockGrowEvent blockGrowEvent = new BlockGrowEvent(up, newState);
-        level.getServer().getPluginManager().callEvent(blockGrowEvent);
+        blockGrowEvent.call();
         if (!blockGrowEvent.isCancelled()) {
             Block newState1 = blockGrowEvent.getNewState();
             newState1.x = x;

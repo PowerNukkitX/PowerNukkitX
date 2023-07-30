@@ -4,18 +4,11 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.Cancellable;
-import cn.nukkit.event.HandlerList;
 
 /**
  * @since 15-10-27
  */
 public class EntityExplosionPrimeEvent extends EntityEvent implements Cancellable {
-
-    private static final HandlerList handlers = new HandlerList();
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     private double force;
     private boolean blockBreaking;

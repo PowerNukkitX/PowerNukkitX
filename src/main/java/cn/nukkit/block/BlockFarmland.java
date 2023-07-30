@@ -76,8 +76,8 @@ public class BlockFarmland extends BlockTransparentMeta {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (this.up().isSolid()) {
-                var farmEvent = new FarmLandDecayEvent(null, this);
-                this.level.getServer().getPluginManager().callEvent(farmEvent);
+                FarmLandDecayEvent farmEvent = new FarmLandDecayEvent(null, this);
+                farmEvent.call();
                 if (farmEvent.isCancelled()) return 0;
 
                 this.level.setBlock(this, Block.get(BlockID.DIRT), false, true);
@@ -134,8 +134,8 @@ public class BlockFarmland extends BlockTransparentMeta {
                 this.setDamage(damage - 1);
                 this.level.setBlock(this, this, false, damage == 1);
             } else {
-                var farmEvent = new FarmLandDecayEvent(null, this);
-                this.level.getServer().getPluginManager().callEvent(farmEvent);
+                FarmLandDecayEvent farmEvent = new FarmLandDecayEvent(null, this);
+                farmEvent.call();
                 if (farmEvent.isCancelled()) return 0;
                 this.level.setBlock(this, Block.get(Block.DIRT), false, true);
             }

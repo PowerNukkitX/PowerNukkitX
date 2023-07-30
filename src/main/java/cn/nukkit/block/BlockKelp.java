@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
@@ -143,13 +142,13 @@ public class BlockKelp extends BlockFlowable {
             Block up = up();
             if (up instanceof BlockWater && ((BlockWater) up).isSourceOrFlowingDown()) {
                 Block grown = BlockState.of(BLOCK_KELP, age + 1).getBlock();
-                BlockGrowEvent ev = new BlockGrowEvent(this, grown);
-                Server.getInstance().getPluginManager().callEvent(ev);
-                if (!ev.isCancelled()) {
+                BlockGrowEvent event = new BlockGrowEvent(this, grown);
+                event.call();
+                if (!event.isCancelled()) {
                     this.setAge(maxValue);
                     this.getLevel().setBlock(this, 0, this, true, true);
                     this.getLevel().setBlock(up, 1, get(FLOWING_WATER), true, false);
-                    this.getLevel().setBlock(up, 0, ev.getNewState(), true, true);
+                    this.getLevel().setBlock(up, 0, event.getNewState(), true, true);
                     return true;
                 }
             }

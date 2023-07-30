@@ -3,15 +3,12 @@ package cn.nukkit.event.block;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.Block;
 import cn.nukkit.event.Cancellable;
-import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.player.Player;
 
 @PowerNukkitOnly
 public class ComposterEmptyEvent extends BlockEvent implements Cancellable {
-
-    private static final HandlerList handlers = new HandlerList();
 
     private final Player player;
     private Item drop;
@@ -76,10 +73,5 @@ public class ComposterEmptyEvent extends BlockEvent implements Cancellable {
     @PowerNukkitOnly
     public void setMotion(Vector3 motion) {
         this.motion = motion;
-    }
-
-    @PowerNukkitOnly
-    public static HandlerList getHandlers() {
-        return handlers;
     }
 }
