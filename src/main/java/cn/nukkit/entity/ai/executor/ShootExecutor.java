@@ -1,6 +1,5 @@
 package cn.nukkit.entity.ai.executor;
 
-import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.EntityLiving;
@@ -195,7 +194,7 @@ public class ShootExecutor implements EntityControl, IBehaviorExecutor {
         }
 
         EntityShootBowEvent entityShootBowEvent = new EntityShootBowEvent(entity, bow, arrow, f);
-        Server.getInstance().getPluginManager().callEvent(entityShootBowEvent);
+        entityShootBowEvent.call();
         if (entityShootBowEvent.isCancelled()) {
             entityShootBowEvent.getProjectile().kill();
         } else {
@@ -217,10 +216,10 @@ public class ShootExecutor implements EntityControl, IBehaviorExecutor {
             }
 
             if (entityShootBowEvent.getProjectile() != null) {
-                ProjectileLaunchEvent projectev =
+                ProjectileLaunchEvent projectileLaunchEvent =
                         new ProjectileLaunchEvent(entityShootBowEvent.getProjectile(), entity);
-                Server.getInstance().getPluginManager().callEvent(projectev);
-                if (projectev.isCancelled()) {
+                projectileLaunchEvent.call();
+                if (projectileLaunchEvent.isCancelled()) {
                     entityShootBowEvent.getProjectile().kill();
                 } else {
                     entityShootBowEvent.getProjectile().spawnToAll();

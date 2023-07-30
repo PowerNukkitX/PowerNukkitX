@@ -1,6 +1,5 @@
 package cn.nukkit.item.enchantment;
 
-import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityCombustByEntityEvent;
 import cn.nukkit.player.Player;
@@ -33,11 +32,11 @@ public class EnchantmentFireAspect extends Enchantment {
         if ((!(entity instanceof Player) || !((Player) entity).isCreative())) {
             int duration = Math.max(entity.fireTicks / 20, getLevel() << 2);
 
-            EntityCombustByEntityEvent ev = new EntityCombustByEntityEvent(attacker, entity, duration);
-            Server.getInstance().getPluginManager().callEvent(ev);
+            EntityCombustByEntityEvent event = new EntityCombustByEntityEvent(attacker, entity, duration);
+            event.call();
 
-            if (!ev.isCancelled()) {
-                entity.setOnFire(ev.getDuration());
+            if (!event.isCancelled()) {
+                entity.setOnFire(event.getDuration());
             }
         }
     }

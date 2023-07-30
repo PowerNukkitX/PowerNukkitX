@@ -1,16 +1,10 @@
 package cn.nukkit.event.player;
 
 import cn.nukkit.event.Cancellable;
-import cn.nukkit.event.HandlerList;
 import cn.nukkit.level.Location;
 import cn.nukkit.player.Player;
 
 public class PlayerMoveEvent extends PlayerEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     private Location from;
     private Location to;
@@ -53,7 +47,7 @@ public class PlayerMoveEvent extends PlayerEvent implements Cancellable {
     }
 
     @Override
-    public void setCancelled() {
-        super.setCancelled();
+    public void cancel() {
+        super.cancel();
     }
 }

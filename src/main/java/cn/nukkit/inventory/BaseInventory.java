@@ -1,6 +1,5 @@
 package cn.nukkit.inventory;
 
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.api.PowerNukkitXOnly;
@@ -173,15 +172,15 @@ public abstract class BaseInventory implements Inventory {
 
         InventoryHolder holder = this.getHolder();
         if (holder instanceof Entity) {
-            EntityInventoryChangeEvent ev =
+            EntityInventoryChangeEvent event =
                     new EntityInventoryChangeEvent((Entity) holder, this.getItem(index), item, index);
-            Server.getInstance().getPluginManager().callEvent(ev);
-            if (ev.isCancelled()) {
+            event.call();
+            if (event.isCancelled()) {
                 this.sendSlot(index, this.getViewers());
                 return false;
             }
 
-            item = ev.getNewItem();
+            item = event.getNewItem();
         }
 
         if (holder instanceof BlockEntity) {
@@ -415,13 +414,13 @@ public abstract class BaseInventory implements Inventory {
             Item old = this.slots.get(index);
             InventoryHolder holder = this.getHolder();
             if (holder instanceof Entity) {
-                EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent((Entity) holder, old, item, index);
-                Server.getInstance().getPluginManager().callEvent(ev);
-                if (ev.isCancelled()) {
+                EntityInventoryChangeEvent event = new EntityInventoryChangeEvent((Entity) holder, old, item, index);
+                event.call();
+                if (event.isCancelled()) {
                     this.sendSlot(index, this.getViewers());
                     return false;
                 }
-                item = ev.getNewItem();
+                item = event.getNewItem();
             }
 
             if (item.getId() != Item.AIR) {
@@ -461,9 +460,9 @@ public abstract class BaseInventory implements Inventory {
     @Override
     public boolean open(Player who) {
         // if (this.viewers.contains(who)) return false;
-        InventoryOpenEvent ev = new InventoryOpenEvent(this, who);
-        who.getServer().getPluginManager().callEvent(ev);
-        if (ev.isCancelled()) {
+        InventoryOpenEvent event = new InventoryOpenEvent(this, who);
+        event.call();
+        if (event.isCancelled()) {
             return false;
         }
         this.onOpen(who);

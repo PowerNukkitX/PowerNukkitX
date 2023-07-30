@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.exception.InvalidBlockPropertyMetaException;
@@ -168,10 +167,10 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
         growing.z = pos.z;
         growing.setVineAge(Math.min(getVineAge() + 1, getMaxVineAge()));
 
-        BlockGrowEvent ev = new BlockGrowEvent(this, growing);
-        Server.getInstance().getPluginManager().callEvent(ev);
+        BlockGrowEvent event = new BlockGrowEvent(this, growing);
+        event.call();
 
-        if (ev.isCancelled()) {
+        if (event.isCancelled()) {
             return false;
         }
 
@@ -210,14 +209,14 @@ public abstract class BlockVinesNether extends BlockTransparentMeta {
             growing.y = pos.y;
             growing.z = pos.z;
 
-            BlockGrowEvent ev = new BlockGrowEvent(this, growing.clone());
-            Server.getInstance().getPluginManager().callEvent(ev);
+            BlockGrowEvent event = new BlockGrowEvent(this, growing.clone());
+            event.call();
 
-            if (ev.isCancelled()) {
+            if (event.isCancelled()) {
                 break;
             }
 
-            if (!level.setBlock(pos, ev.getNewState())) {
+            if (!level.setBlock(pos, event.getNewState())) {
                 break;
             }
 

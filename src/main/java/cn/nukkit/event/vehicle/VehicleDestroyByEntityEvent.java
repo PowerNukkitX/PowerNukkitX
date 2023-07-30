@@ -3,7 +3,6 @@ package cn.nukkit.event.vehicle;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.Cancellable;
-import cn.nukkit.event.HandlerList;
 
 /**
  * Is called when an entity destroyed a vehicle
@@ -13,8 +12,6 @@ import cn.nukkit.event.HandlerList;
  */
 @PowerNukkitOnly
 public final class VehicleDestroyByEntityEvent extends VehicleDestroyEvent implements Cancellable {
-
-    private static final HandlerList HANDLER_LIST = new HandlerList();
 
     private final Entity destroyer;
 
@@ -29,11 +26,6 @@ public final class VehicleDestroyByEntityEvent extends VehicleDestroyEvent imple
         super(vehicle);
 
         this.destroyer = destroyer;
-    }
-
-    @PowerNukkitOnly
-    public static HandlerList getHandlers() {
-        return HANDLER_LIST;
     }
 
     /**

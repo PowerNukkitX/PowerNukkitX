@@ -1,7 +1,5 @@
-package cn.nukkit.plugin;
+package cn.nukkit.event;
 
-import cn.nukkit.event.Event;
-import cn.nukkit.event.Listener;
 import cn.nukkit.utils.EventException;
 
 /**

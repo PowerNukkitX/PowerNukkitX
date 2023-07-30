@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
 
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntity;
@@ -196,10 +195,10 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
             return;
         }
 
-        EntityCombustByBlockEvent ev = new EntityCombustByBlockEvent(this, entity, 8);
-        Server.getInstance().getPluginManager().callEvent(ev);
-        if (!ev.isCancelled() && entity.isAlive()) {
-            entity.setOnFire(ev.getDuration());
+        EntityCombustByBlockEvent event = new EntityCombustByBlockEvent(this, entity, 8);
+        event.call();
+        if (!event.isCancelled() && entity.isAlive()) {
+            entity.setOnFire(event.getDuration());
         }
     }
 

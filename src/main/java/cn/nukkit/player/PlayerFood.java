@@ -61,14 +61,14 @@ public class PlayerFood {
             }
         }
 
-        PlayerFoodLevelChangeEvent ev = new PlayerFoodLevelChangeEvent(this.getPlayer(), foodLevel, saturationLevel);
-        this.getPlayer().getServer().getPluginManager().callEvent(ev);
-        if (ev.isCancelled()) {
+        PlayerFoodLevelChangeEvent event = new PlayerFoodLevelChangeEvent(this.getPlayer(), foodLevel, saturationLevel);
+        event.call();
+        if (event.isCancelled()) {
             this.sendFoodLevel(this.getLevel());
             return;
         }
-        int foodLevel0 = ev.getFoodLevel();
-        float fsl = ev.getFoodSaturationLevel();
+        int foodLevel0 = event.getFoodLevel();
+        float fsl = event.getFoodSaturationLevel();
         this.foodLevel = foodLevel;
         if (fsl != -1) {
             if (fsl > foodLevel) fsl = foodLevel;
@@ -85,12 +85,12 @@ public class PlayerFood {
     public void setFoodSaturationLevel(float fsl) {
         if (fsl > this.getLevel()) fsl = this.getLevel();
         if (fsl < 0) fsl = 0;
-        PlayerFoodLevelChangeEvent ev = new PlayerFoodLevelChangeEvent(this.getPlayer(), this.getLevel(), fsl);
-        this.getPlayer().getServer().getPluginManager().callEvent(ev);
-        if (ev.isCancelled()) {
+        PlayerFoodLevelChangeEvent event = new PlayerFoodLevelChangeEvent(this.getPlayer(), this.getLevel(), fsl);
+        event.call();
+        if (event.isCancelled()) {
             return;
         }
-        fsl = ev.getFoodSaturationLevel();
+        fsl = event.getFoodSaturationLevel();
         this.foodSaturationLevel = fsl;
     }
 

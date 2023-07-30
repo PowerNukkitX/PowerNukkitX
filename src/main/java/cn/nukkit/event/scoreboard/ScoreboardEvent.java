@@ -4,7 +4,6 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.Event;
-import cn.nukkit.event.HandlerList;
 import cn.nukkit.scoreboard.scoreboard.IScoreboard;
 import lombok.Getter;
 
@@ -16,16 +15,10 @@ import lombok.Getter;
 @Getter
 public abstract class ScoreboardEvent extends Event implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
-
     private final IScoreboard scoreboard;
 
     public ScoreboardEvent(IScoreboard scoreboard) {
         this.scoreboard = scoreboard;
-    }
-
-    public static HandlerList getHandlers() {
-        return handlers;
     }
 
     public IScoreboard getScoreboard() {

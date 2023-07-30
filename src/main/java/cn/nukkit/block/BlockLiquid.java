@@ -293,7 +293,7 @@ public abstract class BlockLiquid extends BlockTransparentMeta {
                         to = getBlock(decay);
                     }
                     BlockFromToEvent event = new BlockFromToEvent(this, to);
-                    level.getServer().getPluginManager().callEvent(event);
+                    event.call();
                     if (!event.isCancelled()) {
                         this.level.setBlock(this, layer, event.getTo(), true, true);
                         if (!decayed) {
@@ -355,7 +355,7 @@ public abstract class BlockLiquid extends BlockTransparentMeta {
             }
 
             LiquidFlowEvent event = new LiquidFlowEvent(block, this, newFlowDecay);
-            level.getServer().getPluginManager().callEvent(event);
+            event.call();
             if (!event.isCancelled()) {
                 if (block.layer == 0 && block.getId() > 0) {
                     this.level.useBreakOn(block, block.getId() == COBWEB ? Item.get(Item.WOODEN_SWORD) : null);
@@ -518,7 +518,7 @@ public abstract class BlockLiquid extends BlockTransparentMeta {
     @PowerNukkitDifference(info = "Using new method to play sounds", since = "1.4.0.0-PN")
     protected boolean liquidCollide(Block cause, Block result) {
         BlockFromToEvent event = new BlockFromToEvent(this, result);
-        this.level.getServer().getPluginManager().callEvent(event);
+        event.call();
         if (event.isCancelled()) {
             return false;
         }

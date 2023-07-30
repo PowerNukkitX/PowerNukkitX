@@ -134,21 +134,21 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
     }
 
     public void setPowered(EntityLightningStrike bolt) {
-        CreeperPowerEvent ev = new CreeperPowerEvent(this, bolt, CreeperPowerEvent.PowerCause.LIGHTNING);
-        this.getServer().getPluginManager().callEvent(ev);
+        CreeperPowerEvent event = new CreeperPowerEvent(this, bolt, CreeperPowerEvent.PowerCause.LIGHTNING);
+        event.call();
 
-        if (!ev.isCancelled()) {
+        if (!event.isCancelled()) {
             this.setDataProperty(new ByteEntityData(DATA_POWERED, 1));
             this.namedTag.putBoolean("powered", true);
         }
     }
 
     public void setPowered(boolean powered) {
-        CreeperPowerEvent ev = new CreeperPowerEvent(
+        CreeperPowerEvent event = new CreeperPowerEvent(
                 this, powered ? CreeperPowerEvent.PowerCause.SET_ON : CreeperPowerEvent.PowerCause.SET_OFF);
-        this.getServer().getPluginManager().callEvent(ev);
+        event.call();
 
-        if (!ev.isCancelled()) {
+        if (!event.isCancelled()) {
             this.setDataProperty(new ByteEntityData(DATA_POWERED, powered ? 1 : 0));
             this.namedTag.putBoolean("powered", powered);
         }

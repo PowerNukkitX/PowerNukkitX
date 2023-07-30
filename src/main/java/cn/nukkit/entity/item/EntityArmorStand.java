@@ -217,18 +217,18 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
             }
         }
 
-        var ev = new PlayerChangeArmorStandEvent(player, this, item, slot);
-        this.getServer().getPluginManager().callEvent(ev);
-        if (ev.isCancelled()) return false;
+        PlayerChangeArmorStandEvent event = new PlayerChangeArmorStandEvent(player, this, item, slot);
+        event.call();
+        if (event.isCancelled()) return false;
 
         boolean changed = false;
         if (isArmor) {
-            changed = this.tryChangeEquipment(player, ev.getItem(), slot, true);
+            changed = this.tryChangeEquipment(player, event.getItem(), slot, true);
             slot = EntityEquipmentInventory.MAIN_HAND;
         }
 
         if (!changed) {
-            changed = this.tryChangeEquipment(player, ev.getItem(), slot, false);
+            changed = this.tryChangeEquipment(player, event.getItem(), slot, false);
         }
 
         if (changed) {
@@ -402,7 +402,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
 
         switch (source.getCause()) {
             case FALL:
-                source.setCancelled(true);
+                source.cancel();
                 level.addSound(this, Sound.MOB_ARMOR_STAND_LAND);
                 break;
             case CONTACT:
@@ -411,7 +411,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
             case DROWNING:
             case SUFFOCATION:
             case PROJECTILE:
-                source.setCancelled(true);
+                source.cancel();
                 break;
             case FIRE:
             case FIRE_TICK:
@@ -424,7 +424,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
 
         if (source.getCause() != EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
             if (namedTag.getByte("InvulnerableTimer") > 0) {
-                source.setCancelled(true);
+                source.cancel();
             }
             if (super.attack(source)) {
                 namedTag.putByte("InvulnerableTimer", 9);
@@ -433,7 +433,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
             return false;
         }
 
-        getServer().getPluginManager().callEvent(source);
+        source.call();
         if (source.isCancelled()) {
             return false;
         }

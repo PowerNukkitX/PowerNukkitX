@@ -291,7 +291,7 @@ public class EntityThrownTrident extends SlenderProjectile {
             return;
         }
 
-        this.server.getPluginManager().callEvent(new ProjectileHitEvent(this, MovingObjectPosition.fromEntity(entity)));
+        new ProjectileHitEvent(this, MovingObjectPosition.fromEntity(entity)).call();
         float damage = this.getResultDamage();
         if (this.impalingLevel > 0
                 && (entity.isTouchingWater()

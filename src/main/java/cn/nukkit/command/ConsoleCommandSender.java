@@ -109,7 +109,7 @@ public class ConsoleCommandSender implements CommandSender {
                         .getLanguage()
                         .tr(new TranslationContainer(msg.getMessageId(), msg.getParameters()));
                 ConsoleCommandOutputEvent event = new ConsoleCommandOutputEvent(this, text);
-                this.getServer().getPluginManager().callEvent(event);
+                event.call();
                 if (event.isCancelled()) continue;
                 text = event.getMessage();
                 this.sendMessage(text);

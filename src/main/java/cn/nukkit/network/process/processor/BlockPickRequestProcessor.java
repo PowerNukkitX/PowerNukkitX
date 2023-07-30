@@ -40,10 +40,10 @@ public class BlockPickRequestProcessor extends DataPacketProcessor<BlockPickRequ
         PlayerBlockPickEvent pickEvent = new PlayerBlockPickEvent(player, block, item);
         if (player.isSpectator()) {
             log.debug("Got block-pick request from {} when in spectator mode", player.getName());
-            pickEvent.setCancelled();
+            pickEvent.cancel();
         }
 
-        player.getServer().getPluginManager().callEvent(pickEvent);
+        pickEvent.call();
 
         if (!pickEvent.isCancelled()) {
             boolean itemExists = false;

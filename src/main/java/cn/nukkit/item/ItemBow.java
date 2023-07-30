@@ -1,6 +1,5 @@
 package cn.nukkit.item;
 
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.projectile.EntityArrow;
@@ -108,10 +107,10 @@ public class ItemBow extends ItemTool {
         EntityShootBowEvent entityShootBowEvent = new EntityShootBowEvent(player, this, arrow, f);
 
         if (f < 0.1 || ticksUsed < 3) {
-            entityShootBowEvent.setCancelled();
+            entityShootBowEvent.cancel();
         }
 
-        Server.getInstance().getPluginManager().callEvent(entityShootBowEvent);
+        entityShootBowEvent.call();
         if (entityShootBowEvent.isCancelled()) {
             entityShootBowEvent.getProjectile().kill();
             player.getInventory().sendContents(player);
@@ -153,10 +152,10 @@ public class ItemBow extends ItemTool {
                 }
             }
             if (entityShootBowEvent.getProjectile() != null) {
-                ProjectileLaunchEvent projectev =
+                ProjectileLaunchEvent projectileLaunchEvent =
                         new ProjectileLaunchEvent(entityShootBowEvent.getProjectile(), player);
-                Server.getInstance().getPluginManager().callEvent(projectev);
-                if (projectev.isCancelled()) {
+                projectileLaunchEvent.call();
+                if (projectileLaunchEvent.isCancelled()) {
                     entityShootBowEvent.getProjectile().kill();
                 } else {
                     entityShootBowEvent.getProjectile().spawnToAll();

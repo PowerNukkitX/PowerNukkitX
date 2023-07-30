@@ -18,7 +18,7 @@ public class CommandRequestProcessor extends DataPacketProcessor<CommandRequestP
         playerHandle.player.craftingType = Player.CRAFTING_SMALL;
         PlayerCommandPreprocessEvent playerCommandPreprocessEvent =
                 new PlayerCommandPreprocessEvent(playerHandle.player, pk.command);
-        playerHandle.player.getServer().getPluginManager().callEvent(playerCommandPreprocessEvent);
+        playerCommandPreprocessEvent.call();
         if (playerCommandPreprocessEvent.isCancelled()) {
             return;
         }

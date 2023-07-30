@@ -221,10 +221,10 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable
         }
 
         if (brewTime == MAX_BREW_TIME) {
-            StartBrewEvent e = new StartBrewEvent(this);
-            this.server.getPluginManager().callEvent(e);
+            StartBrewEvent event = new StartBrewEvent(this);
+            event.call();
 
-            if (e.isCancelled()) {
+            if (event.isCancelled()) {
                 return false;
             }
 
@@ -241,10 +241,10 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable
         }
 
         // 20 seconds
-        BrewEvent e = new BrewEvent(this);
-        this.server.getPluginManager().callEvent(e);
+        BrewEvent event = new BrewEvent(this);
+        event.call();
 
-        if (e.isCancelled()) {
+        if (event.isCancelled()) {
             stopBrewing();
             return true;
         }

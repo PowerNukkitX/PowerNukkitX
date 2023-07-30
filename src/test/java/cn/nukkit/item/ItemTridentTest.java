@@ -73,11 +73,11 @@ class ItemTridentTest {
     void onReleaseCancelBow() {
         PluginManager pluginManager = Server.getInstance().getPluginManager();
         doAnswer(call -> {
-                    ((Event) call.getArgument(0)).setCancelled();
+                    ((Event) call.getArgument(0)).cancel();
                     return null;
                 })
-                .when(pluginManager)
-                .callEvent(any(EntityShootBowEvent.class));
+                .when(any(EntityShootBowEvent.class))
+                .call();
         assertTrue(item.onRelease(player, 20));
         Optional<EntityThrownTrident> optTrident = Arrays.stream(level.getEntities())
                 .filter(EntityThrownTrident.class::isInstance)
@@ -90,11 +90,11 @@ class ItemTridentTest {
     void onReleaseCancelProjectLaunch() {
         PluginManager pluginManager = Server.getInstance().getPluginManager();
         doAnswer(call -> {
-                    ((Event) call.getArgument(0)).setCancelled();
+                    ((Event) call.getArgument(0)).cancel();
                     return null;
                 })
-                .when(pluginManager)
-                .callEvent(any(ProjectileLaunchEvent.class));
+                .when(any(ProjectileLaunchEvent.class))
+                .call();
         assertTrue(item.onRelease(player, 20));
         Optional<EntityThrownTrident> optTrident = Arrays.stream(level.getEntities())
                 .filter(EntityThrownTrident.class::isInstance)

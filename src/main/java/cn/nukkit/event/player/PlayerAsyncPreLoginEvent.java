@@ -5,7 +5,6 @@ import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.data.Skin;
-import cn.nukkit.event.HandlerList;
 import cn.nukkit.player.Player;
 import cn.nukkit.utils.ClientChainData;
 import cn.nukkit.utils.LoginChainData;
@@ -21,12 +20,6 @@ import java.util.function.Consumer;
  * @author CreeperFace
  */
 public class PlayerAsyncPreLoginEvent extends PlayerEvent {
-
-    private static final HandlerList handlers = new HandlerList();
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     private final String name;
     private final UUID uuid;

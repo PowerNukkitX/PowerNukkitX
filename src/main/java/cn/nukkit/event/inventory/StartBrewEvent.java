@@ -2,19 +2,12 @@ package cn.nukkit.event.inventory;
 
 import cn.nukkit.blockentity.BlockEntityBrewingStand;
 import cn.nukkit.event.Cancellable;
-import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
 
 /**
  * @author CreeperFace
  */
 public class StartBrewEvent extends InventoryEvent implements Cancellable {
-
-    private static final HandlerList handlers = new HandlerList();
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     private final BlockEntityBrewingStand brewingStand;
     private final Item ingredient;

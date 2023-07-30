@@ -583,7 +583,7 @@ public class PluginManager {
             }
 
             this.server.getScheduler().cancelTask(plugin);
-            HandlerList.unregisterAll(plugin);
+            HandlerListManager.global().unregisterAll(plugin);
             for (Permission permission : plugin.getDescription().getPermissions()) {
                 this.removePermission(permission);
             }
@@ -599,49 +599,12 @@ public class PluginManager {
         this.defaultPermsOp.clear();
     }
 
-    public void callEvent(Event event) {
-        // Used for event listeners inside command blocks
-        String eventName = event.getClass().getSimpleName();
-        try {
-            for (RegisteredListener registration :
-                    getEventListeners(event.getClass()).getRegisteredListeners()) {
-                if (!registration.getPlugin().isEnabled()) {
-                    continue;
-                }
-
-                try {
-                    registration.callEvent(event);
-                } catch (Exception e) {
-                    log.error(
-                            this.server
-                                    .getLanguage()
-                                    .tr(
-                                            "nukkit.plugin.eventError",
-                                            event.getEventName(),
-                                            registration
-                                                    .getPlugin()
-                                                    .getDescription()
-                                                    .getFullName(),
-                                            e.getMessage(),
-                                            registration
-                                                    .getListener()
-                                                    .getClass()
-                                                    .getName()),
-                            e);
-                }
-            }
-        } catch (IllegalAccessException e) {
-            log.error("An error has occurred while calling the event {}", event, e);
-        }
-    }
-
     public void registerEvents(Listener listener, Plugin plugin) {
         if (!plugin.isEnabled()) {
             throw new PluginException(
                     "Plugin attempted to register " + listener.getClass().getName() + " while not enabled");
         }
 
-        Map<Class<? extends Event>, Set<RegisteredListener>> ret = new HashMap<>();
         Set<Method> methods;
         try {
             Method[] publicMethods = listener.getClass().getMethods();
@@ -657,8 +620,8 @@ public class PluginManager {
         }
 
         for (final Method method : methods) {
-            final EventHandler eh = method.getAnnotation(EventHandler.class);
-            if (eh == null) continue;
+            final EventHandler handler = method.getAnnotation(EventHandler.class);
+            if (handler == null) continue;
             if (method.isBridge() || method.isSynthetic()) {
                 continue;
             }
@@ -692,26 +655,28 @@ public class PluginManager {
                     break;
                 }
             }
+
             EventExecutor eventExecutor = MethodEventExecutor.compile(listener.getClass(), method);
             if (eventExecutor == null) {
                 eventExecutor = new MethodEventExecutor(method);
                 log.debug("Compile fast EventExecutor {} for {} failed!", eventClass.getName(), plugin.getName());
             }
-            this.registerEvent(eventClass, listener, eh.priority(), eventExecutor, plugin, eh.ignoreCancelled());
+            this.registerEvent(
+                    eventClass, listener, handler.priority(), eventExecutor, plugin, handler.ignoreCancelled());
         }
     }
 
-    public void registerEvent(
+    public RegisteredListener registerEvent(
             Class<? extends Event> event,
             Listener listener,
             EventPriority priority,
             EventExecutor executor,
             Plugin plugin)
             throws PluginException {
-        this.registerEvent(event, listener, priority, executor, plugin, false);
+        return registerEvent(event, listener, priority, executor, plugin, false);
     }
 
-    public void registerEvent(
+    public RegisteredListener registerEvent(
             Class<? extends Event> event,
             Listener listener,
             EventPriority priority,
@@ -722,48 +687,9 @@ public class PluginManager {
         if (!plugin.isEnabled()) {
             throw new PluginException("Plugin attempted to register " + event + " while not enabled");
         }
-
-        try {
-            this.getEventListeners(event)
-                    .register(new RegisteredListener(listener, executor, priority, plugin, ignoreCancelled));
-        } catch (IllegalAccessException e) {
-            log.error(
-                    "An error occurred while registering the event listener event:{}, listener:{} for plugin:{} version:{}",
-                    event,
-                    listener,
-                    plugin.getDescription().getName(),
-                    plugin.getDescription().getVersion(),
-                    e);
-        }
-    }
-
-    private HandlerList getEventListeners(Class<? extends Event> type) throws IllegalAccessException {
-        try {
-            Method method = getRegistrationClass(type).getDeclaredMethod("getHandlers");
-            method.setAccessible(true);
-            return (HandlerList) method.invoke(null);
-        } catch (NullPointerException e) {
-            throw new IllegalArgumentException("getHandlers method in " + type.getName() + " was not static!", e);
-        } catch (Exception e) {
-            IllegalAccessException illegalAccessException = new IllegalAccessException(Utils.getExceptionMessage(e));
-            illegalAccessException.addSuppressed(e);
-            throw illegalAccessException;
-        }
-    }
-
-    private Class<? extends Event> getRegistrationClass(Class<? extends Event> clazz) throws IllegalAccessException {
-        try {
-            clazz.getDeclaredMethod("getHandlers");
-            return clazz;
-        } catch (NoSuchMethodException e) {
-            if (clazz.getSuperclass() != null
-                    && !clazz.getSuperclass().equals(Event.class)
-                    && Event.class.isAssignableFrom(clazz.getSuperclass())) {
-                return getRegistrationClass(clazz.getSuperclass().asSubclass(Event.class));
-            } else {
-                throw new IllegalAccessException("Unable to find handler list for event " + clazz.getName()
-                        + ". Static getHandlers method required!");
-            }
-        }
+        RegisteredListener registeredListener =
+                new RegisteredListener(listener, executor, priority, plugin, ignoreCancelled);
+        HandlerListManager.global().getListFor(event.getName()).register(registeredListener);
+        return registeredListener;
     }
 }

@@ -2,7 +2,6 @@ package cn.nukkit.event.player;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.event.Cancellable;
-import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
@@ -14,12 +13,6 @@ import org.jetbrains.annotations.Nullable;
  * @author MagicDroidX (Nukkit Project)
  */
 public class PlayerInteractEvent extends PlayerEvent implements Cancellable {
-
-    private static final HandlerList handlers = new HandlerList();
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     @Nullable protected final Block blockTouched;
 

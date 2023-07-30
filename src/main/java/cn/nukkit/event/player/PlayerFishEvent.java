@@ -3,7 +3,6 @@ package cn.nukkit.event.player;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.item.EntityFishingHook;
 import cn.nukkit.event.Cancellable;
-import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.player.Player;
@@ -15,13 +14,6 @@ import cn.nukkit.player.Player;
  */
 @Since("1.5.0.0-PN")
 public class PlayerFishEvent extends PlayerEvent implements Cancellable {
-
-    private static final HandlerList handlers = new HandlerList();
-
-    @Since("1.5.0.0-PN")
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     private final EntityFishingHook hook;
     private Item loot;

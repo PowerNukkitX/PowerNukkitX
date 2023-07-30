@@ -32,10 +32,10 @@ public class PlayerSkinProcessor extends DataPacketProcessor<PlayerSkinPacket> {
         var tooQuick = TimeUnit.SECONDS.toMillis(player.getServer().getPlayerSkinChangeCooldown())
                 > System.currentTimeMillis() - player.lastSkinChange;
         if (tooQuick) {
-            playerChangeSkinEvent.setCancelled(true);
+            playerChangeSkinEvent.cancel();
             log.warn("Player " + playerHandle.getUsername() + " change skin too quick!");
         }
-        player.getServer().getPluginManager().callEvent(playerChangeSkinEvent);
+        playerChangeSkinEvent.call();
         if (!playerChangeSkinEvent.isCancelled()) {
             player.lastSkinChange = System.currentTimeMillis();
             player.setSkin(skin);

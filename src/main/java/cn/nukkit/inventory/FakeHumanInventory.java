@@ -1,6 +1,5 @@
 package cn.nukkit.inventory;
 
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
@@ -258,22 +257,23 @@ public class FakeHumanInventory extends BaseInventory {
         }
         // Armor change
         if (!ignoreArmorEvents && index >= this.getSize()) {
-            EntityArmorChangeEvent ev = new EntityArmorChangeEvent(this.getHolder(), this.getItem(index), item, index);
-            Server.getInstance().getPluginManager().callEvent(ev);
-            if (ev.isCancelled() && this.getHolder() != null) {
+            EntityArmorChangeEvent event =
+                    new EntityArmorChangeEvent(this.getHolder(), this.getItem(index), item, index);
+            event.call();
+            if (event.isCancelled() && this.getHolder() != null) {
                 this.sendArmorSlot(index, this.getHolder().getViewers().values());
                 return false;
             }
-            item = ev.getNewItem();
+            item = event.getNewItem();
         } else {
-            EntityInventoryChangeEvent ev =
+            EntityInventoryChangeEvent event =
                     new EntityInventoryChangeEvent(this.getHolder(), this.getItem(index), item, index);
-            Server.getInstance().getPluginManager().callEvent(ev);
-            if (ev.isCancelled()) {
+            event.call();
+            if (event.isCancelled()) {
                 this.sendSlot(index, this.getViewers());
                 return false;
             }
-            item = ev.getNewItem();
+            item = event.getNewItem();
         }
         Item old = this.getItem(index);
         this.slots.put(index, item.clone());
@@ -287,9 +287,9 @@ public class FakeHumanInventory extends BaseInventory {
             Item item = new ItemBlock(Block.get(BlockID.AIR), null, 0);
             Item old = this.slots.get(index);
             if (index >= this.getSize() && index < this.size) {
-                EntityArmorChangeEvent ev = new EntityArmorChangeEvent(this.getHolder(), old, item, index);
-                Server.getInstance().getPluginManager().callEvent(ev);
-                if (ev.isCancelled()) {
+                EntityArmorChangeEvent event = new EntityArmorChangeEvent(this.getHolder(), old, item, index);
+                event.call();
+                if (event.isCancelled()) {
                     if (index >= this.size) {
                         this.sendArmorSlot(index, this.getViewers());
                     } else {
@@ -297,11 +297,11 @@ public class FakeHumanInventory extends BaseInventory {
                     }
                     return false;
                 }
-                item = ev.getNewItem();
+                item = event.getNewItem();
             } else {
-                EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent(this.getHolder(), old, item, index);
-                Server.getInstance().getPluginManager().callEvent(ev);
-                if (ev.isCancelled()) {
+                EntityInventoryChangeEvent event = new EntityInventoryChangeEvent(this.getHolder(), old, item, index);
+                event.call();
+                if (event.isCancelled()) {
                     if (index >= this.size) {
                         this.sendArmorSlot(index, this.getViewers());
                     } else {
@@ -309,7 +309,7 @@ public class FakeHumanInventory extends BaseInventory {
                     }
                     return false;
                 }
-                item = ev.getNewItem();
+                item = event.getNewItem();
             }
 
             if (item.getId() != Item.AIR) {

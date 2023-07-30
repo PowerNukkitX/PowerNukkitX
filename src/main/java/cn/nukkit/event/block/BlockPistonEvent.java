@@ -4,20 +4,12 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockPistonBase;
 import cn.nukkit.event.Cancellable;
-import cn.nukkit.event.HandlerList;
 import cn.nukkit.math.BlockFace;
 import java.util.ArrayList;
 import java.util.List;
 
 @PowerNukkitOnly
 public class BlockPistonEvent extends BlockEvent implements Cancellable {
-
-    private static final HandlerList handlers = new HandlerList();
-
-    @PowerNukkitOnly
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     private final BlockFace direction;
     private final List<Block> blocks;

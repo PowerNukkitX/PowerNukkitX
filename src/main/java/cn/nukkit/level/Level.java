@@ -1060,15 +1060,15 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public boolean unload(boolean force) {
-        LevelUnloadEvent ev = new LevelUnloadEvent(this);
+        LevelUnloadEvent event = new LevelUnloadEvent(this);
 
         if (this == this.server.getDefaultLevel() && !force) {
-            ev.setCancelled();
+            event.cancel();
         }
 
-        this.server.getPluginManager().callEvent(ev);
+        event.call();
 
-        if (!force && ev.isCancelled()) {
+        if (!force && event.isCancelled()) {
             return false;
         }
 
@@ -1292,7 +1292,7 @@ public class Level implements ChunkManager, Metadatable {
                 QueuedUpdate queuedUpdate = this.normalUpdateQueue.poll();
                 Block block = getBlock(queuedUpdate.block, queuedUpdate.block.layer);
                 BlockUpdateEvent event = new BlockUpdateEvent(block);
-                this.server.getPluginManager().callEvent(event);
+                event.call();
 
                 if (!event.isCancelled()) {
                     block.onUpdate(BLOCK_UPDATE_NORMAL);
@@ -1559,9 +1559,9 @@ public class Level implements ChunkManager, Metadatable {
                             .add(new FloatTag("", 0)));
 
             EntityLightning bolt = new EntityLightning(chunk, nbt);
-            LightningStrikeEvent ev = new LightningStrikeEvent(this, bolt);
-            getServer().getPluginManager().callEvent(ev);
-            if (!ev.isCancelled()) {
+            LightningStrikeEvent event = new LightningStrikeEvent(this, bolt);
+            event.call();
+            if (!event.isCancelled()) {
                 bolt.spawnToAll();
             } else {
                 bolt.setEffect(false);
@@ -1842,7 +1842,8 @@ public class Level implements ChunkManager, Metadatable {
             return false;
         }
 
-        this.server.getPluginManager().callEvent(new LevelSaveEvent(this));
+        LevelSaveEvent event = new LevelSaveEvent(this);
+        event.call();
 
         LevelProvider levelProvider = this.requireProvider();
         levelProvider.setTime((int) this.time);
@@ -2845,14 +2846,14 @@ public class Level implements ChunkManager, Metadatable {
             /*if (blockPrevious.isTransparent() != block.isTransparent() || blockPrevious.getLightLevel() != block.getLightLevel()) {
                 addLightUpdate(x, y, z);
             }*/
-            BlockUpdateEvent ev = new BlockUpdateEvent(block);
-            this.server.getPluginManager().callEvent(ev);
-            if (!ev.isCancelled()) {
+            BlockUpdateEvent event = new BlockUpdateEvent(block);
+            event.call();
+            if (!event.isCancelled()) {
                 for (Entity entity :
                         this.getNearbyEntities(new SimpleAxisAlignedBB(x - 1, y - 1, z - 1, x + 1, y + 1, z + 1))) {
                     entity.scheduleUpdate();
                 }
-                block = ev.getBlock();
+                block = event.getBlock();
                 block.onUpdate(BLOCK_UPDATE_NORMAL);
                 block.getLevelBlockAtLayer(layer == 0 ? 1 : 0).onUpdate(BLOCK_UPDATE_NORMAL);
                 this.updateAround(x, y, z);
@@ -3116,29 +3117,29 @@ public class Level implements ChunkManager, Metadatable {
                 // thisBreak-lastBreak < breakTime-1000ms = the player is hacker (fastBreak)
                 boolean fastBreak = Long.sum(player.lastBreak, (long) breakTime * 1000)
                         > Long.sum(System.currentTimeMillis(), 1000);
-                BlockBreakEvent ev =
+                BlockBreakEvent event =
                         new BlockBreakEvent(player, target, face, item, eventDrops, player.isCreative(), fastBreak);
                 if (player.isSurvival() && !target.isBreakable(item)) {
-                    ev.setCancelled();
+                    event.cancel();
                 } else if (!player.isOp() && isInSpawnRadius(target)) {
-                    ev.setCancelled();
-                } else if (!ev.getInstaBreak() && ev.isFastBreak()) {
-                    ev.setCancelled();
+                    event.cancel();
+                } else if (!event.getInstaBreak() && event.isFastBreak()) {
+                    event.cancel();
                 }
 
-                this.server.getPluginManager().callEvent(ev);
-                if (ev.isCancelled()) {
+                event.call();
+                if (event.isCancelled()) {
                     return null;
                 }
 
-                if (!ev.getInstaBreak() && ev.isFastBreak()) {
+                if (!event.getInstaBreak() && event.isFastBreak()) {
                     return null;
                 }
 
                 player.lastBreak = System.currentTimeMillis();
 
-                drops = ev.getDrops();
-                dropExp = ev.getDropExp();
+                drops = event.getDrops();
+                dropExp = event.getDropExp();
             } else {
                 drops = eventDrops;
             }
@@ -3305,7 +3306,7 @@ public class Level implements ChunkManager, Metadatable {
         }
         int touchStatus = 0;
         if (player != null) {
-            PlayerInteractEvent ev = new PlayerInteractEvent(
+            PlayerInteractEvent event = new PlayerInteractEvent(
                     player,
                     item,
                     target,
@@ -3313,16 +3314,16 @@ public class Level implements ChunkManager, Metadatable {
                     target.getId() == 0 ? Action.RIGHT_CLICK_AIR : Action.RIGHT_CLICK_BLOCK);
 
             if (player.getGamemode() > 2) {
-                ev.setCancelled();
+                event.cancel();
             }
             // handle spawn protect
             if (!player.isOp() && isInSpawnRadius(target)) {
-                ev.setCancelled();
+                event.cancel();
             }
-            this.server.getPluginManager().callEvent(ev);
-            if (!ev.isCancelled()) {
-                target.onTouch(player, ev.getAction());
-                if (ev.getAction() == Action.RIGHT_CLICK_BLOCK) {
+            event.call();
+            if (!event.isCancelled()) {
+                target.onTouch(player, event.getAction());
+                if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
                     target.onPlayerRightClick(player, item, face, new Vector3(fx, fy, fz));
                 }
                 if ((!player.isSneaking()
@@ -3444,14 +3445,14 @@ public class Level implements ChunkManager, Metadatable {
                     }
                 }
                 if (!canPlace) {
-                    event.setCancelled();
+                    event.cancel();
                 }
             }
             if (!player.isOp() && isInSpawnRadius(target)) {
-                event.setCancelled();
+                event.cancel();
             }
 
-            this.server.getPluginManager().callEvent(event);
+            event.call();
             if (event.isCancelled()) {
                 return null;
             }
@@ -3942,7 +3943,8 @@ public class Level implements ChunkManager, Metadatable {
                     && (oldChunk == null || !isPopulated)
                     && chunk.isPopulated()
                     && chunk.getProvider() != null) {
-                this.server.getPluginManager().callEvent(new ChunkPopulateEvent(chunk));
+                ChunkPopulateEvent event = new ChunkPopulateEvent(chunk);
+                event.call();
 
                 for (ChunkLoader loader : this.getChunkLoaders(x, z)) {
                     loader.onChunkPopulated(chunk);
@@ -4170,7 +4172,8 @@ public class Level implements ChunkManager, Metadatable {
     public void setSpawnLocation(Vector3 pos) {
         Position previousSpawn = this.getSpawnLocation();
         this.requireProvider().setSpawn(pos);
-        this.server.getPluginManager().callEvent(new SpawnChangeEvent(this, previousSpawn));
+        SpawnChangeEvent event = new SpawnChangeEvent(this, previousSpawn);
+        event.call();
         SetSpawnPositionPacket pk = new SetSpawnPositionPacket();
         pk.spawnType = SetSpawnPositionPacket.TYPE_WORLD_SPAWN;
         pk.x = pos.getFloorX();
@@ -4390,7 +4393,7 @@ public class Level implements ChunkManager, Metadatable {
         }
 
         if (chunk.getProvider() != null) {
-            this.server.getPluginManager().callEvent(new ChunkLoadEvent(chunk, !chunk.isGenerated()));
+            new ChunkLoadEvent(chunk, !chunk.isGenerated()).call();
         } else {
             this.unloadChunk(x, z, false);
             return chunk;
@@ -4463,9 +4466,9 @@ public class Level implements ChunkManager, Metadatable {
         BaseFullChunk chunk = this.getChunk(x, z);
 
         if (chunk != null && chunk.getProvider() != null) {
-            ChunkUnloadEvent ev = new ChunkUnloadEvent(chunk);
-            this.server.getPluginManager().callEvent(ev);
-            if (ev.isCancelled()) {
+            ChunkUnloadEvent event = new ChunkUnloadEvent(chunk);
+            event.call();
+            if (event.isCancelled()) {
                 return false;
             }
         }
@@ -4998,10 +5001,10 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public boolean setRaining(boolean raining) {
-        WeatherChangeEvent ev = new WeatherChangeEvent(this, raining);
-        this.getServer().getPluginManager().callEvent(ev);
+        WeatherChangeEvent event = new WeatherChangeEvent(this, raining);
+        event.call();
 
-        if (ev.isCancelled()) {
+        if (event.isCancelled()) {
             return false;
         }
 
@@ -5038,10 +5041,10 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public boolean setThundering(boolean thundering) {
-        ThunderChangeEvent ev = new ThunderChangeEvent(this, thundering);
-        this.getServer().getPluginManager().callEvent(ev);
+        ThunderChangeEvent event = new ThunderChangeEvent(this, thundering);
+        event.call();
 
-        if (ev.isCancelled()) {
+        if (event.isCancelled()) {
             return false;
         }
 

@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
@@ -84,11 +83,11 @@ public class BlockSugarcane extends BlockFlowable {
                 for (int i = 1; i <= toGrow; i++) {
                     Block block = this.up(i);
                     if (block.getId() == 0) {
-                        BlockGrowEvent ev = new BlockGrowEvent(block, Block.get(BlockID.REEDS));
-                        Server.getInstance().getPluginManager().callEvent(ev);
+                        BlockGrowEvent event = new BlockGrowEvent(block, Block.get(BlockID.REEDS));
+                        event.call();
 
-                        if (!ev.isCancelled()) {
-                            this.getLevel().setBlock(block, ev.getNewState(), true);
+                        if (!event.isCancelled()) {
+                            this.getLevel().setBlock(block, event.getNewState(), true);
                             success = true;
                         }
                     } else if (block.getId() != REEDS) {
@@ -148,10 +147,10 @@ public class BlockSugarcane extends BlockFlowable {
                 return type;
             }
 
-            BlockGrowEvent ev = new BlockGrowEvent(up, Block.get(BlockID.REEDS));
-            Server.getInstance().getPluginManager().callEvent(ev);
+            BlockGrowEvent event = new BlockGrowEvent(up, Block.get(BlockID.REEDS));
+            event.call();
 
-            if (ev.isCancelled()) {
+            if (event.isCancelled()) {
                 return type;
             }
 

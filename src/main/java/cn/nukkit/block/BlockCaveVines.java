@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -80,10 +79,10 @@ public class BlockCaveVines extends BlockTransparentMeta {
                 if (growth + 4 < getMaxGrowth()) {
                     BlockCaveVines block = (BlockCaveVines) this.clone();
                     block.setGrowth(growth + 4);
-                    BlockGrowEvent ev = new BlockGrowEvent(this, block);
-                    Server.getInstance().getPluginManager().callEvent(ev);
-                    if (!ev.isCancelled()) {
-                        this.getLevel().setBlock(this, ev.getNewState(), false, true);
+                    BlockGrowEvent event = new BlockGrowEvent(this, block);
+                    event.call();
+                    if (!event.isCancelled()) {
+                        this.getLevel().setBlock(this, event.getNewState(), false, true);
                     } else {
                         return type;
                     }
@@ -93,10 +92,10 @@ public class BlockCaveVines extends BlockTransparentMeta {
                         block = new BlockCaveVinesHeadWithBerries();
                     } else block = new BlockCaveVinesBodyWithBerries();
                     block.setGrowth(getMaxGrowth());
-                    BlockGrowEvent ev = new BlockGrowEvent(this, block);
-                    Server.getInstance().getPluginManager().callEvent(ev);
-                    if (!ev.isCancelled()) {
-                        this.getLevel().setBlock(this, ev.getNewState(), false, true);
+                    BlockGrowEvent event = new BlockGrowEvent(this, block);
+                    event.call();
+                    if (!event.isCancelled()) {
+                        this.getLevel().setBlock(this, event.getNewState(), false, true);
                     } else {
                         return type;
                     }
@@ -109,20 +108,20 @@ public class BlockCaveVines extends BlockTransparentMeta {
                     block = new BlockCaveVinesHeadWithBerries();
                 } else block = new BlockCaveVinesBodyWithBerries();
                 block.setGrowth(getMaxGrowth());
-                BlockGrowEvent ev = new BlockGrowEvent(this, block);
-                Server.getInstance().getPluginManager().callEvent(ev);
-                if (!ev.isCancelled()) {
-                    this.getLevel().setBlock(this.down(), ev.getNewState(), false, true);
+                BlockGrowEvent event = new BlockGrowEvent(this, block);
+                event.call();
+                if (!event.isCancelled()) {
+                    this.getLevel().setBlock(this.down(), event.getNewState(), false, true);
                 } else {
                     return type;
                 }
             } else if (down().getId() == AIR) {
                 BlockCaveVines block = new BlockCaveVines();
                 block.setGrowth(0);
-                BlockGrowEvent ev = new BlockGrowEvent(this, block);
-                Server.getInstance().getPluginManager().callEvent(ev);
-                if (!ev.isCancelled()) {
-                    this.getLevel().setBlock(this.down(), ev.getNewState(), false, true);
+                BlockGrowEvent event = new BlockGrowEvent(this, block);
+                event.call();
+                if (!event.isCancelled()) {
+                    this.getLevel().setBlock(this.down(), event.getNewState(), false, true);
                 }
             }
             return type;
@@ -141,12 +140,12 @@ public class BlockCaveVines extends BlockTransparentMeta {
             int growth = getGrowth();
             if (growth < max) {
                 block.setGrowth(max);
-                BlockGrowEvent ev = new BlockGrowEvent(this, block);
-                Server.getInstance().getPluginManager().callEvent(ev);
-                if (ev.isCancelled()) {
+                BlockGrowEvent event = new BlockGrowEvent(this, block);
+                event.call();
+                if (event.isCancelled()) {
                     return false;
                 }
-                this.getLevel().setBlock(this, ev.getNewState(), false, true);
+                this.getLevel().setBlock(this, event.getNewState(), false, true);
                 this.level.addParticle(new BoneMealParticle(this));
                 if (player != null && !player.isCreative()) {
                     item.count--;

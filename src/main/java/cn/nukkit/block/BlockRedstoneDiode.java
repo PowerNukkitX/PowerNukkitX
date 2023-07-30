@@ -122,9 +122,9 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Redsto
                 return Level.BLOCK_UPDATE_NORMAL;
             } else if (this.level.getServer().isRedstoneEnabled()) {
                 // Redstone event
-                RedstoneUpdateEvent ev = new RedstoneUpdateEvent(this);
-                getLevel().getServer().getPluginManager().callEvent(ev);
-                if (ev.isCancelled()) {
+                RedstoneUpdateEvent event = new RedstoneUpdateEvent(this);
+                event.call();
+                if (event.isCancelled()) {
                     return 0;
                 }
 

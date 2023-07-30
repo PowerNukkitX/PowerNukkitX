@@ -14,7 +14,7 @@ import cn.nukkit.dispenser.DispenseBehaviorRegister;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.data.profession.Profession;
-import cn.nukkit.event.HandlerList;
+import cn.nukkit.event.HandlerListManager;
 import cn.nukkit.event.level.LevelInitEvent;
 import cn.nukkit.event.level.LevelLoadEvent;
 import cn.nukkit.event.server.*;
@@ -139,15 +139,15 @@ public class Server {
 
     private Config whitelist;
 
-    private AtomicBoolean isRunning = new AtomicBoolean(true);
+    private final AtomicBoolean isRunning = new AtomicBoolean(true);
 
-    private LongList busyingTime = LongLists.synchronize(new LongArrayList(0));
+    private final LongList busyingTime = LongLists.synchronize(new LongArrayList(0));
 
     private boolean hasStopped = false;
 
     private PluginManager pluginManager;
 
-    private int profilingTickrate = 20;
+    private final int profilingTickrate = 20;
 
     private ServerScheduler scheduler;
 
@@ -169,7 +169,7 @@ public class Server {
 
     public int sendUsageTicker = 0;
 
-    private boolean dispatchSignals = false;
+    private final boolean dispatchSignals = false;
 
     private final NukkitConsole console;
     private final ConsoleThread consoleThread;
@@ -243,8 +243,8 @@ public class Server {
     private int autoSaveTicker = 0;
     private int autoSaveTicks = 6000;
 
-    private BaseLang baseLang;
-    private LangCode baseLangCode;
+    private final BaseLang baseLang;
+    private final LangCode baseLangCode;
 
     private boolean forceLanguage = false;
 
@@ -259,8 +259,8 @@ public class Server {
 
     private QueryRegenerateEvent queryRegenerateEvent;
 
-    private Config properties;
-    private Config config;
+    private final Config properties;
+    private final Config config;
 
     private PositionTrackingService positionTrackingService;
 
@@ -718,9 +718,8 @@ public class Server {
             return;
         }
 
-        log.info(this.getLanguage().tr("language.selected", new String[] {
-            getLanguage().getName(), getLanguage().getLang()
-        }));
+        log.info(this.getLanguage()
+                .tr("language.selected", getLanguage().getName(), getLanguage().getLang()));
         log.info(getLanguage().tr("nukkit.server.start", TextFormat.AQUA + this.getVersion() + TextFormat.RESET));
 
         Object poolSize = this.getConfig("settings.async-workers", (Object) "auto");
@@ -804,9 +803,11 @@ public class Server {
             ExceptionHandler.registerExceptionHandler();
         }
 
-        log.info(this.getLanguage().tr("nukkit.server.networkStart", new String[] {
-            this.getIp().equals("") ? "*" : this.getIp(), String.valueOf(this.getPort())
-        }));
+        log.info(this.getLanguage()
+                .tr(
+                        "nukkit.server.networkStart",
+                        this.getIp().equals("") ? "*" : this.getIp(),
+                        String.valueOf(this.getPort())));
         this.serverID = UUID.randomUUID();
 
         this.network = new Network(this);
@@ -1056,7 +1057,7 @@ public class Server {
         this.enablePlugins(PluginLoadOrder.STARTUP);
         this.enablePlugins(PluginLoadOrder.POSTWORLD);
         ServerStartedEvent serverStartedEvent = new ServerStartedEvent();
-        getPluginManager().callEvent(serverStartedEvent);
+        serverStartedEvent.call();
     }
 
     /**
@@ -1084,7 +1085,7 @@ public class Server {
             this.hasStopped = true;
 
             ServerStopEvent serverStopEvent = new ServerStopEvent();
-            getPluginManager().callEvent(serverStopEvent);
+            serverStopEvent.call();
 
             if (this.rcon != null) {
                 this.rcon.close();
@@ -1098,7 +1099,7 @@ public class Server {
             this.pluginManager.disablePlugins();
 
             log.debug("Removing event handlers");
-            HandlerList.unregisterAll();
+            HandlerListManager.global().unregisterAll();
 
             log.debug("Saving scoreboards data");
             this.scoreboardManager.save();
@@ -1169,7 +1170,7 @@ public class Server {
                         String.valueOf((double) (System.currentTimeMillis() - Nukkit.START_TIME) / 1000)));
 
         ServerStartedEvent serverStartedEvent = new ServerStartedEvent();
-        getPluginManager().callEvent(serverStartedEvent);
+        serverStartedEvent.call();
         this.tickProcessor();
         this.forceShutdown();
     }
@@ -1347,7 +1348,8 @@ public class Server {
 
             if ((this.tickCounter & 0b111111111) == 0) {
                 try {
-                    this.getPluginManager().callEvent(this.queryRegenerateEvent = new QueryRegenerateEvent(this, 5));
+                    queryRegenerateEvent = new QueryRegenerateEvent(this, 5);
+                    queryRegenerateEvent.call();
                     if (this.queryHandler != null) {
                         this.queryHandler.regenerateInfo();
                     }
@@ -1812,9 +1814,9 @@ public class Server {
             return;
         }
 
-        BatchPacketsEvent ev = new BatchPacketsEvent(players, packets, forceSync);
-        getPluginManager().callEvent(ev);
-        if (ev.isCancelled()) {
+        BatchPacketsEvent event = new BatchPacketsEvent(players, packets, forceSync);
+        event.call();
+        if (event.isCancelled()) {
             return;
         }
 
@@ -2197,7 +2199,7 @@ public class Server {
         Class<? extends LevelProvider> provider = LevelProviderManager.getProvider(path);
 
         if (provider == null) {
-            log.error(this.getLanguage().tr("nukkit.level.loadError", new String[] {name, "Unknown provider"}));
+            log.error(this.getLanguage().tr("nukkit.level.loadError", name, "Unknown provider"));
 
             return false;
         }
@@ -2258,7 +2260,7 @@ public class Server {
             } else System.exit(0);
         }
 
-        this.getPluginManager().callEvent(new LevelLoadEvent(level));
+        new LevelLoadEvent(level).call();
         level.setTickRate(this.baseTickRate);
         return true;
     }
@@ -2334,16 +2336,13 @@ public class Server {
             level.initLevel(givenDimensionData);
             level.setTickRate(this.baseTickRate);
         } catch (Exception e) {
-            log.error(
-                    this.getLanguage()
-                            .tr("nukkit.level.generationError", new String[] {name, Utils.getExceptionMessage(e)}),
-                    e);
+            log.error(this.getLanguage().tr("nukkit.level.generationError", name, Utils.getExceptionMessage(e)), e);
             return false;
         }
 
-        this.getPluginManager().callEvent(new LevelInitEvent(level));
+        new LevelInitEvent(level).call();
 
-        this.getPluginManager().callEvent(new LevelLoadEvent(level));
+        new LevelLoadEvent(level).call();
 
         /*this.getLogger().notice(this.getLanguage().tr("nukkit.level.backgroundGeneration", name));
 

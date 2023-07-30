@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.Server;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
@@ -202,9 +201,9 @@ public class BlockLeaves extends BlockTransparentMeta {
                     setCheckDecay(false);
                     getLevel().setBlock(this, this, false, false);
                 } else {
-                    LeavesDecayEvent ev = new LeavesDecayEvent(this);
-                    Server.getInstance().getPluginManager().callEvent(ev);
-                    if (!ev.isCancelled()) {
+                    LeavesDecayEvent event = new LeavesDecayEvent(this);
+                    event.call();
+                    if (!event.isCancelled()) {
                         getLevel().useBreakOn(this);
                     }
                 }

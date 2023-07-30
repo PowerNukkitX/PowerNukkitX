@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
@@ -52,13 +51,13 @@ public class BlockLava extends BlockLiquid {
     public void onEntityCollide(Entity entity) {
         entity.highestPosition -= (entity.highestPosition - entity.y) * 0.5;
 
-        EntityCombustByBlockEvent ev = new EntityCombustByBlockEvent(this, entity, 8);
-        Server.getInstance().getPluginManager().callEvent(ev);
-        if (!ev.isCancelled()
+        EntityCombustByBlockEvent event = new EntityCombustByBlockEvent(this, entity, 8);
+        event.call();
+        if (!event.isCancelled()
                 // Making sure the entity is actually alive and not invulnerable.
                 && entity.isAlive()
                 && entity.noDamageTicks == 0) {
-            entity.setOnFire(ev.getDuration());
+            entity.setOnFire(event.getDuration());
         }
 
         if (!entity.hasEffect(Effect.FIRE_RESISTANCE)) {
@@ -100,11 +99,11 @@ public class BlockLava extends BlockLiquid {
 
                     if (block.getId() == AIR) {
                         if (this.isSurroundingBlockFlammable(block)) {
-                            BlockIgniteEvent e =
+                            BlockIgniteEvent event =
                                     new BlockIgniteEvent(block, this, null, BlockIgniteEvent.BlockIgniteCause.LAVA);
-                            this.level.getServer().getPluginManager().callEvent(e);
+                            event.call();
 
-                            if (!e.isCancelled()) {
+                            if (!event.isCancelled()) {
                                 Block fire = Block.get(BlockID.FIRE);
                                 this.getLevel().setBlock(v, fire, true);
                                 this.getLevel().scheduleUpdate(fire, fire.tickRate());
@@ -123,11 +122,11 @@ public class BlockLava extends BlockLiquid {
                     Block block = this.getLevel().getBlock(v);
 
                     if (block.up().getId() == AIR && block.getBurnChance() > 0 && isNetherSpreadNotAllowed(block)) {
-                        BlockIgniteEvent e =
+                        BlockIgniteEvent event =
                                 new BlockIgniteEvent(block, this, null, BlockIgniteEvent.BlockIgniteCause.LAVA);
-                        this.level.getServer().getPluginManager().callEvent(e);
+                        event.call();
 
-                        if (!e.isCancelled()) {
+                        if (!event.isCancelled()) {
                             Block fire = Block.get(BlockID.FIRE);
                             this.getLevel().setBlock(v, fire, true);
                             this.getLevel().scheduleUpdate(fire, fire.tickRate());

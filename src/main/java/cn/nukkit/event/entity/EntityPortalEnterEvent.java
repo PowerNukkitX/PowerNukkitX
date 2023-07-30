@@ -2,16 +2,10 @@ package cn.nukkit.event.entity;
 
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.Cancellable;
-import cn.nukkit.event.HandlerList;
 
 public class EntityPortalEnterEvent extends EntityEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
 
     private final PortalType type;
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     public EntityPortalEnterEvent(Entity entity, PortalType type) {
         this.entity = entity;

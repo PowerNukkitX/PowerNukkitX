@@ -103,7 +103,7 @@ public class GrindstoneTransaction extends InventoryTransaction {
         Item first = firstItem != null ? firstItem : air;
         Item second = secondItem != null ? secondItem : air;
         GrindstoneEvent event = new GrindstoneEvent(inventory, first, outputItem, second, exp, source);
-        this.source.getServer().getPluginManager().callEvent(event);
+        event.call();
         if (event.isCancelled()) {
             this.source.removeAllWindows(false);
             this.sendInventories();

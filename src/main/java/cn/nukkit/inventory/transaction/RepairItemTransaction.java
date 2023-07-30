@@ -71,7 +71,7 @@ public class RepairItemTransaction extends InventoryTransaction {
 
         RepairItemEvent event = new RepairItemEvent(
                 inventory, this.inputItem, this.outputItem, this.materialItem, this.cost, this.source);
-        this.source.getServer().getPluginManager().callEvent(event);
+        event.call();
         if (event.isCancelled()) {
             this.source.removeAllWindows(false);
             this.sendInventories();
@@ -95,18 +95,18 @@ public class RepairItemTransaction extends InventoryTransaction {
                             ? oldDamage + 1
                             : oldDamage;
 
-            AnvilDamageEvent ev = new AnvilDamageEvent(block, oldDamage, newDamage, DamageCause.USE, this.source);
-            ev.setCancelled(oldDamage == newDamage);
-            this.source.getServer().getPluginManager().callEvent(ev);
-            if (!ev.isCancelled()) {
-                BlockState newState = ev.getNewBlockState();
+            AnvilDamageEvent event1 = new AnvilDamageEvent(block, oldDamage, newDamage, DamageCause.USE, this.source);
+            if (oldDamage == newDamage) event1.cancel();
+            event1.call();
+            if (!event1.isCancelled()) {
+                BlockState newState = event1.getNewBlockState();
                 if (newState.getBlockId() == BlockID.AIR
                         || newState.getBlockId() == BlockID.ANVIL
                                 && newState.getPropertyValue(BlockAnvil.DAMAGE).equals(AnvilDamage.BROKEN)) {
                     this.source.level.setBlock(block, Block.get(Block.AIR), true);
                     this.source.level.addLevelEvent(block, LevelEventPacket.EVENT_SOUND_ANVIL_BREAK);
                 } else {
-                    if (!newState.equals(ev.getOldBlockState())) {
+                    if (!newState.equals(event1.getOldBlockState())) {
                         Block newBlock = newState.getBlockRepairing(block);
                         this.source.level.setBlock(block, newBlock, true);
                     }

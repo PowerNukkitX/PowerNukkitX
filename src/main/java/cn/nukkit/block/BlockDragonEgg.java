@@ -79,7 +79,7 @@ public class BlockDragonEgg extends BlockFallable {
                     .getBlock(this.add(random.nextInt(-16, 16), random.nextInt(0, 16), random.nextInt(-16, 16)));
             if (to.getId() == AIR) {
                 BlockFromToEvent event = new BlockFromToEvent(this, to);
-                this.level.getServer().getPluginManager().callEvent(event);
+                event.call();
                 if (event.isCancelled()) return;
                 to = event.getTo();
 

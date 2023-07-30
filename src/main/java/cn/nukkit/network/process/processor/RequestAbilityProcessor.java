@@ -32,7 +32,7 @@ public class RequestAbilityProcessor extends DataPacketProcessor<RequestAbilityP
         }
 
         PlayerToggleFlightEvent playerToggleFlightEvent = new PlayerToggleFlightEvent(player, pk.boolValue);
-        player.getServer().getPluginManager().callEvent(playerToggleFlightEvent);
+        playerToggleFlightEvent.call();
         if (playerToggleFlightEvent.isCancelled()) {
             player.getAdventureSettings().update();
         } else {

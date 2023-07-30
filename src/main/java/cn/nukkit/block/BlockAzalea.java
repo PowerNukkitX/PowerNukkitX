@@ -183,13 +183,13 @@ public class BlockAzalea extends BlockFlowable implements BlockFlowerPot.FlowerP
 
         ListChunkManager chunkManager = new ListChunkManager(this.level);
         boolean success = generator.generate(chunkManager, new NukkitRandom(), vector3);
-        StructureGrowEvent ev = new StructureGrowEvent(this, chunkManager.getBlocks());
-        this.level.getServer().getPluginManager().callEvent(ev);
-        if (ev.isCancelled() || !success) {
+        StructureGrowEvent event = new StructureGrowEvent(this, chunkManager.getBlocks());
+        event.call();
+        if (event.isCancelled() || !success) {
             return;
         }
 
-        for (Block block : ev.getBlockList()) {
+        for (Block block : event.getBlockList()) {
             this.level.setBlock(block, block);
         }
         this.level.setBlock(this, Block.get(LOG));

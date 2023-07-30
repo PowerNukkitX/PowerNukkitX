@@ -271,7 +271,7 @@ public class BlockBell extends BlockTransparentMeta
         }
 
         BellRingEvent event = new BellRingEvent(this, cause, causeEntity);
-        this.level.getServer().getPluginManager().callEvent(event);
+        event.call();
         if (event.isCancelled()) {
             return false;
         }

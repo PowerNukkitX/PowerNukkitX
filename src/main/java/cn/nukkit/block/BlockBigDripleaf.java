@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import static cn.nukkit.block.BlockBigDripleaf.Tilt.*;
 
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -89,7 +88,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
 
     public boolean setTilt(Tilt tilt) {
         BigDripleafTiltChangeEvent event = new BigDripleafTiltChangeEvent(this, this.getTilt(), tilt);
-        Server.getInstance().getPluginManager().callEvent(event);
+        event.call();
         if (event.isCancelled()) return false;
         this.setPropertyValue(TILT, tilt);
         return true;

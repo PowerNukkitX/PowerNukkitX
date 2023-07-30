@@ -1,4 +1,4 @@
-package cn.nukkit.plugin;
+package cn.nukkit.event;
 
 import java.lang.reflect.Method;
 

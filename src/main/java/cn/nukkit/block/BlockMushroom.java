@@ -92,12 +92,12 @@ public abstract class BlockMushroom extends BlockFlowable implements BlockFlower
 
         ListChunkManager chunkManager = new ListChunkManager(this.level);
         if (generator.generate(chunkManager, new NukkitRandom(), this)) {
-            StructureGrowEvent ev = new StructureGrowEvent(this, chunkManager.getBlocks());
-            this.level.getServer().getPluginManager().callEvent(ev);
-            if (ev.isCancelled()) {
+            StructureGrowEvent event = new StructureGrowEvent(this, chunkManager.getBlocks());
+            event.call();
+            if (event.isCancelled()) {
                 return false;
             }
-            for (Block block : ev.getBlockList()) {
+            for (Block block : event.getBlockList()) {
                 this.level.setBlockAt(
                         block.getFloorX(), block.getFloorY(), block.getFloorZ(), block.getId(), block.getDamage());
             }

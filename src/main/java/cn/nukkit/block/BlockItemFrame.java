@@ -167,7 +167,7 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
             Item itemOnFrame = item.clone();
             ItemFrameUseEvent event =
                     new ItemFrameUseEvent(player, this, itemFrame, itemOnFrame, ItemFrameUseEvent.Action.PUT);
-            this.getLevel().getServer().getPluginManager().callEvent(event);
+            event.call();
             if (event.isCancelled()) return false;
             if (player != null && !player.isCreative()) {
                 itemOnFrame.setCount(itemOnFrame.getCount() - 1);
@@ -183,7 +183,7 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
         } else {
             ItemFrameUseEvent event =
                     new ItemFrameUseEvent(player, this, itemFrame, null, ItemFrameUseEvent.Action.ROTATION);
-            this.getLevel().getServer().getPluginManager().callEvent(event);
+            event.call();
             if (event.isCancelled()) return false;
             itemFrame.setItemRotation((itemFrame.getItemRotation() + 1) % 8);
             if (isStoringMap()) {

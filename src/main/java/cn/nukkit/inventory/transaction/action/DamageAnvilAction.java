@@ -46,11 +46,11 @@ public class DamageAnvilAction extends InventoryAction {
         } else {
             newState.setDamage(newState.getDamage() & (Block.DATA_MASK ^ 0b1100) | (damage << 2));
         }
-        AnvilDamageEvent ev =
+        AnvilDamageEvent event =
                 new AnvilDamageEvent(levelBlock, newState, source, transaction, AnvilDamageEvent.DamageCause.USE);
-        ev.setCancelled(!shouldDamage);
-        source.getServer().getPluginManager().callEvent(ev);
-        if (ev.isCancelled()) {
+        if (!shouldDamage) event.cancel();
+        event.call();
+        if (event.isCancelled()) {
             levelBlock.getLevel().addSound(levelBlock, Sound.RANDOM_ANVIL_USE);
             return true;
         } else {

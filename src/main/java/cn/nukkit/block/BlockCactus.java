@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
@@ -129,7 +128,7 @@ public class BlockCactus extends BlockTransparentMeta implements BlockFlowerPot.
                         Block b = this.getLevel().getBlock(new Vector3(this.x, this.y + y, this.z));
                         if (b.getId() == AIR) {
                             BlockGrowEvent event = new BlockGrowEvent(b, Block.get(BlockID.CACTUS));
-                            Server.getInstance().getPluginManager().callEvent(event);
+                            event.call();
                             if (!event.isCancelled()) {
                                 this.getLevel().setBlock(b, event.getNewState(), true);
                             }

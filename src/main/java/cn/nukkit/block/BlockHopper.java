@@ -3,7 +3,6 @@ package cn.nukkit.block;
 import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
 import static cn.nukkit.blockproperty.CommonBlockProperties.TOGGLE;
 
-import cn.nukkit.Server;
 import cn.nukkit.api.*;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityHopper;
@@ -270,11 +269,11 @@ public class BlockHopper extends BlockTransparentMeta
 
                         if (!hopperInv.canAddItem(itemToAdd)) continue;
 
-                        InventoryMoveItemEvent ev = new InventoryMoveItemEvent(
+                        InventoryMoveItemEvent event = new InventoryMoveItemEvent(
                                 inv, hopperInv, hopperHolder, itemToAdd, InventoryMoveItemEvent.Action.SLOT_CHANGE);
-                        Server.getInstance().getPluginManager().callEvent(ev);
+                        event.call();
 
-                        if (ev.isCancelled()) continue;
+                        if (event.isCancelled()) continue;
 
                         Item[] items = hopperInv.addItem(itemToAdd);
 
@@ -323,11 +322,11 @@ public class BlockHopper extends BlockTransparentMeta
 
                 int originalCount = item.getCount();
 
-                InventoryMoveItemEvent ev = new InventoryMoveItemEvent(
+                InventoryMoveItemEvent event = new InventoryMoveItemEvent(
                         null, hopperInv, hopperHolder, item, InventoryMoveItemEvent.Action.PICKUP);
-                Server.getInstance().getPluginManager().callEvent(ev);
+                event.call();
 
-                if (ev.isCancelled()) continue;
+                if (event.isCancelled()) continue;
 
                 Item[] items = hopperInv.addItem(item);
 

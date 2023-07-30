@@ -5,12 +5,9 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockTurtleEgg;
 import cn.nukkit.event.Cancellable;
-import cn.nukkit.event.HandlerList;
 
 @PowerNukkitOnly
 public class TurtleEggHatchEvent extends BlockEvent implements Cancellable {
-
-    private static final HandlerList handlers = new HandlerList();
 
     private int eggsHatching;
     private Block newState;
@@ -70,10 +67,5 @@ public class TurtleEggHatchEvent extends BlockEvent implements Cancellable {
     @PowerNukkitOnly
     public void setRecalculateOnFailure(boolean recalculateOnFailure) {
         this.recalculateOnFailure = recalculateOnFailure;
-    }
-
-    @PowerNukkitOnly
-    public static HandlerList getHandlers() {
-        return handlers;
     }
 }

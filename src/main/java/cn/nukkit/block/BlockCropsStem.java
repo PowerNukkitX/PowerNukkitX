@@ -20,7 +20,6 @@ package cn.nukkit.block;
 
 import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
 
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
@@ -128,10 +127,10 @@ public abstract class BlockCropsStem extends BlockCrops implements Faceable {
         if (growth < GROWTH.getMaxValue()) {
             BlockCropsStem block = this.clone();
             block.setGrowth(growth + 1);
-            BlockGrowEvent ev = new BlockGrowEvent(this, block);
-            Server.getInstance().getPluginManager().callEvent(ev);
-            if (!ev.isCancelled()) {
-                this.getLevel().setBlock(this, ev.getNewState(), true);
+            BlockGrowEvent event = new BlockGrowEvent(this, block);
+            event.call();
+            if (!event.isCancelled()) {
+                this.getLevel().setBlock(this, event.getNewState(), true);
             }
             return Level.BLOCK_UPDATE_RANDOM;
         }
@@ -155,10 +154,10 @@ public abstract class BlockCropsStem extends BlockCrops implements Faceable {
         Block side = this.getSide(sideFace);
         Block d = side.down();
         if (side.getId() == AIR && (d.getId() == FARMLAND || d.getId() == GRASS || d.getId() == DIRT)) {
-            BlockGrowEvent ev = new BlockGrowEvent(side, Block.get(fruitId));
-            Server.getInstance().getPluginManager().callEvent(ev);
-            if (!ev.isCancelled()) {
-                this.getLevel().setBlock(side, ev.getNewState(), true);
+            BlockGrowEvent event = new BlockGrowEvent(side, Block.get(fruitId));
+            event.call();
+            if (!event.isCancelled()) {
+                this.getLevel().setBlock(side, event.getNewState(), true);
                 setBlockFace(sideFace);
                 this.getLevel().setBlock(this, this, true);
             }

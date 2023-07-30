@@ -249,7 +249,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable
         boolean changed = pushItems() || pushItemsIntoMinecart();
 
         HopperSearchItemEvent event = new HopperSearchItemEvent(this, false);
-        this.server.getPluginManager().callEvent(event);
+        event.call();
         if (!event.isCancelled()) {
             if (blockEntity instanceof InventoryHolder || blockSide instanceof BlockComposter) {
                 changed = pullItems(this, this) || changed;
@@ -291,10 +291,10 @@ public class BlockEntityHopper extends BlockEntitySpawnable
                     itemToAdd.count = 1;
                     if (!this.inventory.canAddItem(itemToAdd)) continue;
 
-                    InventoryMoveItemEvent ev = new InventoryMoveItemEvent(
+                    InventoryMoveItemEvent event = new InventoryMoveItemEvent(
                             inv, this.inventory, this, itemToAdd, InventoryMoveItemEvent.Action.SLOT_CHANGE);
-                    this.server.getPluginManager().callEvent(ev);
-                    if (ev.isCancelled()) continue;
+                    event.call();
+                    if (event.isCancelled()) continue;
 
                     Item[] items = this.inventory.addItem(itemToAdd);
                     if (items.length >= 1) continue;
@@ -347,15 +347,15 @@ public class BlockEntityHopper extends BlockEntitySpawnable
 
                     if (!holderInventory.canAddItem(itemToAdd)) continue;
 
-                    InventoryMoveItemEvent ev = new InventoryMoveItemEvent(
+                    InventoryMoveItemEvent event = new InventoryMoveItemEvent(
                             this.inventory,
                             holderInventory,
                             this,
                             itemToAdd,
                             InventoryMoveItemEvent.Action.SLOT_CHANGE);
-                    this.server.getPluginManager().callEvent(ev);
+                    event.call();
 
-                    if (ev.isCancelled()) continue;
+                    if (event.isCancelled()) continue;
 
                     Item[] items = holderInventory.addItem(itemToAdd);
 
@@ -422,7 +422,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable
                                     this,
                                     itemToAdd,
                                     InventoryMoveItemEvent.Action.SLOT_CHANGE);
-                            this.server.getPluginManager().callEvent(event);
+                            event.call();
 
                             if (!event.isCancelled()) {
                                 inventory.setSmelting(itemToAdd);
@@ -439,7 +439,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable
                                     this,
                                     itemToAdd,
                                     InventoryMoveItemEvent.Action.SLOT_CHANGE);
-                            this.server.getPluginManager().callEvent(event);
+                            event.call();
 
                             if (!event.isCancelled()) {
                                 smelting.count++;
@@ -457,7 +457,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable
                                     this,
                                     itemToAdd,
                                     InventoryMoveItemEvent.Action.SLOT_CHANGE);
-                            this.server.getPluginManager().callEvent(event);
+                            event.call();
 
                             if (!event.isCancelled()) {
                                 inventory.setFuel(itemToAdd);
@@ -474,7 +474,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable
                                     this,
                                     itemToAdd,
                                     InventoryMoveItemEvent.Action.SLOT_CHANGE);
-                            this.server.getPluginManager().callEvent(event);
+                            event.call();
 
                             if (!event.isCancelled()) {
                                 fuel.count++;
@@ -535,11 +535,11 @@ public class BlockEntityHopper extends BlockEntitySpawnable
                         continue;
                     }
 
-                    InventoryMoveItemEvent ev = new InventoryMoveItemEvent(
+                    InventoryMoveItemEvent event1 = new InventoryMoveItemEvent(
                             this.inventory, inventory, this, itemToAdd, InventoryMoveItemEvent.Action.SLOT_CHANGE);
-                    this.server.getPluginManager().callEvent(ev);
+                    event1.call();
 
-                    if (ev.isCancelled()) {
+                    if (event1.isCancelled()) {
                         continue;
                     }
 

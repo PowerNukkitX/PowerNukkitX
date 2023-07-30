@@ -100,10 +100,10 @@ public class ItemSpawnEgg extends Item {
         }
 
         int networkId = getEntityNetworkId();
-        CreatureSpawnEvent ev = new CreatureSpawnEvent(networkId, block, nbt, SpawnReason.SPAWN_EGG);
-        level.getServer().getPluginManager().callEvent(ev);
+        CreatureSpawnEvent event = new CreatureSpawnEvent(networkId, block, nbt, SpawnReason.SPAWN_EGG);
+        event.call();
 
-        if (ev.isCancelled()) {
+        if (event.isCancelled()) {
             return false;
         }
 

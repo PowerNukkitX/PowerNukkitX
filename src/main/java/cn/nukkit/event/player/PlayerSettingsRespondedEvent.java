@@ -1,18 +1,11 @@
 package cn.nukkit.event.player;
 
 import cn.nukkit.event.Cancellable;
-import cn.nukkit.event.HandlerList;
 import cn.nukkit.form.response.FormResponse;
 import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.player.Player;
 
 public class PlayerSettingsRespondedEvent extends PlayerEvent implements Cancellable {
-
-    private static final HandlerList handlers = new HandlerList();
-
-    public static HandlerList getHandlers() {
-        return handlers;
-    }
 
     protected int formID;
     protected FormWindow window;
@@ -52,7 +45,7 @@ public class PlayerSettingsRespondedEvent extends PlayerEvent implements Cancell
     }
 
     @Override
-    public void setCancelled() {
-        super.setCancelled();
+    public void cancel() {
+        super.cancel();
     }
 }

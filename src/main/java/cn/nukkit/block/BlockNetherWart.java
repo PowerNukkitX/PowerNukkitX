@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
@@ -66,11 +65,11 @@ public class BlockNetherWart extends BlockFlowable {
                 if (this.getDamage() < 0x03) {
                     BlockNetherWart block = (BlockNetherWart) this.clone();
                     block.setDamage(block.getDamage() + 1);
-                    BlockGrowEvent ev = new BlockGrowEvent(this, block);
-                    Server.getInstance().getPluginManager().callEvent(ev);
+                    BlockGrowEvent event = new BlockGrowEvent(this, block);
+                    event.call();
 
-                    if (!ev.isCancelled()) {
-                        this.getLevel().setBlock(this, ev.getNewState(), true, true);
+                    if (!event.isCancelled()) {
+                        this.getLevel().setBlock(this, event.getNewState(), true, true);
                     } else {
                         return Level.BLOCK_UPDATE_RANDOM;
                     }

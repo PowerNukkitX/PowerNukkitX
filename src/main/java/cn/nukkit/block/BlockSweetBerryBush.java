@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
@@ -86,14 +85,14 @@ public class BlockSweetBerryBush extends BlockFlowable {
             if (block.getDamage() > 3) {
                 block.setDamage(3);
             }
-            BlockGrowEvent ev = new BlockGrowEvent(this, block);
-            Server.getInstance().getPluginManager().callEvent(ev);
+            BlockGrowEvent event = new BlockGrowEvent(this, block);
+            event.call();
 
-            if (ev.isCancelled()) {
+            if (event.isCancelled()) {
                 return false;
             }
 
-            this.getLevel().setBlock(this, ev.getNewState(), false, true);
+            this.getLevel().setBlock(this, event.getNewState(), false, true);
             this.level.addParticle(new BoneMealParticle(this));
 
             if (player != null && (player.gamemode & 0x01) == 0) {
@@ -114,8 +113,8 @@ public class BlockSweetBerryBush extends BlockFlowable {
 
         BlockHarvestEvent event =
                 new BlockHarvestEvent(this, new BlockSweetBerryBush(1), new Item[] {new ItemSweetBerries(0, amount)});
+        event.call();
 
-        getLevel().getServer().getPluginManager().callEvent(event);
         if (!event.isCancelled()) {
             getLevel().setBlock(this, event.getNewState(), true, true);
             Item[] drops = event.getDrops();

@@ -55,7 +55,7 @@ public class EntityMinecartHopper extends EntityMinecartAbstract implements Inve
         }
 
         HopperSearchItemEvent event = new HopperSearchItemEvent(this, true);
-        this.server.getPluginManager().callEvent(event);
+        event.call();
         if (event.isCancelled()) return false;
 
         this.updatePickupArea();

@@ -223,10 +223,10 @@ public class BlockTripWireHook extends BlockTransparentMeta implements RedstoneC
     private void addSound(Vector3 pos, boolean canConnect, boolean nextPowered, boolean attached, boolean powered) {
         if (nextPowered && !powered) {
             this.level.addLevelSoundEvent(pos, LevelSoundEventPacket.SOUND_POWER_ON);
-            this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 0, 15));
+            new BlockRedstoneEvent(this, 0, 15).call();
         } else if (!nextPowered && powered) {
             this.level.addLevelSoundEvent(pos, LevelSoundEventPacket.SOUND_POWER_OFF);
-            this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 15, 0));
+            new BlockRedstoneEvent(this, 15, 0).call();
         } else if (canConnect && !attached) {
             this.level.addLevelSoundEvent(pos, LevelSoundEventPacket.SOUND_ATTACH);
         } else if (!canConnect && attached) {
