@@ -48,7 +48,7 @@ public class BlockDirtWithRoots extends BlockSolid {
             return false;
         }
         if (item.isFertilizer() && this.getLevel().getBlock(vector).getId() == BlockID.AIR) {
-            if (player != null && (player.gamemode & 0x01) == 0) {
+            if (player != null && player.getGamemode().isSurvival()) {
                 item.count--;
             }
             this.getLevel().addParticle(new BoneMealParticle(this));

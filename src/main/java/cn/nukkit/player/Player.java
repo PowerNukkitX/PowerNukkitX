@@ -129,11 +129,6 @@ public class Player extends EntityHuman
     @Since("1.4.0.0-PN")
     public static final Player[] EMPTY_ARRAY = new Player[0];
 
-    public static final int SURVIVAL = 0;
-    public static final int CREATIVE = 1;
-    public static final int ADVENTURE = 2;
-    public static final int SPECTATOR = 3;
-    public static final int VIEW = SPECTATOR;
     public static final int SURVIVAL_SLOTS = 36;
     public static final int CREATIVE_SLOTS = 112;
     public static final int CRAFTING_SMALL = 0;
@@ -180,7 +175,9 @@ public class Player extends EntityHuman
     @Since("1.4.0.0-PN")
     public boolean locallyInitialized = false;
 
-    public int gamemode;
+    @Getter
+    private GameMode gamemode;
+
     public long lastBreak;
     /**
      * 每tick 当前位置与移动目标位置向量之差
@@ -479,11 +476,10 @@ public class Player extends EntityHuman
         this.chunksPerTick = this.server.getConfig("chunk-sending.per-tick", 8);
         this.spawnThreshold = this.server.getConfig("chunk-sending.spawn-threshold", 56);
         this.spawnPosition = null;
-        this.gamemode = this.server.getGamemode();
+        this.gamemode = server.getGamemode();
         this.setLevel(this.server.getDefaultLevel());
         this.viewDistance = this.server.getViewDistance();
         this.chunkRadius = viewDistance;
-        // this.newPosition = new Vector3(0, 0, 0);
         this.boundingBox = new SimpleAxisAlignedBB(0, 0, 0, 0, 0, 0);
         this.lastSkinChange = -1;
 
@@ -499,19 +495,6 @@ public class Player extends EntityHuman
         } catch (UnknownHostException exception) {
             throw new IllegalArgumentException(exception);
         }
-    }
-
-    /**
-     * 将服务端侧游戏模式转换为网络包适用的游戏模式ID
-     * 此方法是为了解决NK观察者模式ID为3而原版ID为6的问题
-     *
-     * @param gamemode 服务端侧游戏模式
-     * @return 网络层游戏模式ID
-     */
-    @PowerNukkitXOnly
-    @Since("1.19.50-r3")
-    private static int toNetworkGamemode(int gamemode) {
-        return gamemode != SPECTATOR ? gamemode : GameType.SPECTATOR.ordinal();
     }
 
     private EntityInteractable getEntityAtPosition(Entity[] nearbyEntities, int x, int y, int z) {
@@ -1235,15 +1218,14 @@ public class Player extends EntityHuman
 
             if (!(invalidMotion = event.isCancelled())) { // Yes, this is intended
                 if (!now.equals(event.getTo()) && this.riding == null) { // If plugins modify the destination
-                    if (this.getGamemode() != Player.SPECTATOR)
+                    if (!this.isSpectator())
                         this.getLevel()
                                 .getVibrationManager()
                                 .callVibrationEvent(
                                         new VibrationEvent(this, event.getTo().clone(), VibrationType.TELEPORT));
                     this.teleport(event.getTo(), null);
                 } else {
-                    if (this.getGamemode() != Player.SPECTATOR
-                            && (last.x() != now.x() || last.y() != now.y() || last.z() != now.z())) {
+                    if (!this.isSpectator() && (last.x() != now.x() || last.y() != now.y() || last.z() != now.z())) {
                         if (this.isOnGround() && this.isGliding()) {
                             this.getLevel()
                                     .getVibrationManager()
@@ -1489,10 +1471,10 @@ public class Player extends EntityHuman
         int expLevel = nbt.getInt("expLevel");
         this.setExperience(exp, expLevel);
 
-        this.gamemode = nbt.getInt("playerGameType") & 0x03;
+        this.gamemode = GameMode.fromOrdinal(nbt.getInt("playerGameType") & 0x03);
         if (this.server.getForceGamemode()) {
             this.gamemode = this.server.getGamemode();
-            nbt.putInt("playerGameType", this.gamemode);
+            nbt.putInt("playerGameType", gamemode.ordinal());
         }
 
         this.adventureSettings = new AdventureSettings(this, nbt);
@@ -1638,7 +1620,7 @@ public class Player extends EntityHuman
         StartGamePacket startGamePacket = new StartGamePacket();
         startGamePacket.entityUniqueId = this.id;
         startGamePacket.entityRuntimeId = this.id;
-        startGamePacket.playerGamemode = toNetworkGamemode(this.gamemode);
+        startGamePacket.playerGamemode = gamemode.getNetworkGamemode();
         startGamePacket.x = (float) this.x();
         startGamePacket.y = (float) (isOnGround() ? this.y() + this.getEyeHeight() : this.y()); // 防止在地上生成容易陷进地里
         startGamePacket.z = (float) this.z();
@@ -1646,8 +1628,8 @@ public class Player extends EntityHuman
         startGamePacket.pitch = (float) this.pitch();
         startGamePacket.seed = -1L;
         startGamePacket.dimension = (byte) (this.getLevel().getDimension() & 0xff);
-        startGamePacket.worldGamemode = toNetworkGamemode(getServer().getDefaultGamemode());
-        startGamePacket.difficulty = this.server.getDifficulty();
+        startGamePacket.worldGamemode = this.getServer().getGamemode().getNetworkGamemode();
+        startGamePacket.difficulty = this.getServer().getDifficulty();
         startGamePacket.spawnX = worldSpawnPoint.getFloorX();
         startGamePacket.spawnY = worldSpawnPoint.getFloorY();
         startGamePacket.spawnZ = worldSpawnPoint.getFloorZ();
@@ -1656,7 +1638,7 @@ public class Player extends EntityHuman
         startGamePacket.rainLevel = 0;
         startGamePacket.lightningLevel = 0;
         startGamePacket.commandsEnabled = this.isEnableClientCommand();
-        startGamePacket.gameRules = getLevel().getGameRules();
+        startGamePacket.gameRules = this.getLevel().getGameRules();
         startGamePacket.levelId = "";
         startGamePacket.worldName = this.getServer().getNetwork().getName();
         startGamePacket.generator = (byte) ((this.getLevel().getDimension() + 1) & 0xff); // 0 旧世界, 1 主世界, 2 下界, 3末地
@@ -1732,14 +1714,15 @@ public class Player extends EntityHuman
     @Since("1.19.50-r3")
     protected void onPlayerLocallyInitialized() {
         /*
-         我们在玩家客户端初始化后才发送游戏模式，以解决观察者模式疾跑速度不正确的问题
-         只有在玩家客户端进入游戏显示后再设置观察者模式，疾跑速度才正常
-         强制更新游戏模式以确保客户端会收到模式更新包
+         We send the game mode only after the player client is initialized to solve the problem of
+         incorrect sprint speed in observer mode
+         Sprint speed is only correct if the observer mode is set after the player client is displayed in the game.
+         Force the game mode to update to ensure that the client receives the mode update package.
         */
-        this.setGamemode(this.gamemode, false, null, true);
+        this.setGamemode(this.gamemode, false, true);
         // 客户端初始化完毕再传送玩家，避免下落
         Location pos;
-        if (this.server.isSafeSpawn() && (this.gamemode & 0x01) == 0) {
+        if (this.server.isSafeSpawn() && gamemode.isSurvival()) {
             pos = this.getLevel().getSafeSpawn(this).getLocation();
             pos.setYaw(this.yaw());
             pos.setPitch(this.pitch());
@@ -2360,7 +2343,7 @@ public class Player extends EntityHuman
 
     @Override
     public boolean canCollide() {
-        return gamemode != SPECTATOR;
+        return !this.isSpectator();
     }
 
     @Override
@@ -3044,64 +3027,38 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 得到gamemode。
-     * <p>
-     * Get gamemode.
-     *
-     * @return int
+     * Sets the provided gamemode
      */
-    public int getGamemode() {
-        return gamemode;
-    }
-
-    public boolean setGamemode(int gamemode) {
-        return this.setGamemode(gamemode, false, null);
+    public boolean setGamemode(GameMode gamemode) {
+        return this.setGamemode(gamemode, false, false);
     }
 
     /**
-     * AdventureSettings=null
+     * Sets the provided gamemode
      *
-     * @see #setGamemode(int, boolean, AdventureSettings)
+     * @param gamemode    Player game mode to be set
+     * @param serverSide  Whether to update the server-side player game mode only. If true, no game mode update packet will be sent to the client side
+     * @param forceUpdate Whether to force an update. If true, will uncheck the formal parameter 'gamemode'
      */
-    public boolean setGamemode(int gamemode, boolean serverSide) {
-        return this.setGamemode(gamemode, serverSide, null);
-    }
-
-    public boolean setGamemode(int gamemode, boolean serverSide, AdventureSettings newSettings) {
-        return this.setGamemode(gamemode, serverSide, newSettings, false);
-    }
-
-    /**
-     * 设置gamemode
-     *
-     * @param gamemode    要设置的玩家游戏模式
-     * @param serverSide  是否只更新服务端侧玩家游戏模式。若为true，则不会向客户端发送游戏模式更新包
-     * @param newSettings 新的AdventureSettings
-     * @param forceUpdate 是否强制更新。若为true，将取消对形参'gamemode'的检查
-     * @return gamemode
-     */
-    public boolean setGamemode(int gamemode, boolean serverSide, AdventureSettings newSettings, boolean forceUpdate) {
-        if (!forceUpdate && (gamemode < 0 || gamemode > 3 || this.gamemode == gamemode)) {
+    public boolean setGamemode(GameMode gamemode, boolean serverSide, boolean forceUpdate) {
+        if (!forceUpdate && this.gamemode.equals(gamemode)) {
             return false;
         }
 
-        if (newSettings == null) {
-            newSettings = this.getAdventureSettings().clone(this);
-            newSettings.set(Type.WORLD_IMMUTABLE, (gamemode & 0x02) > 0);
-            newSettings.set(Type.BUILD, (gamemode & 0x02) <= 0);
-            newSettings.set(Type.WORLD_BUILDER, (gamemode & 0x02) <= 0);
-            newSettings.set(Type.ALLOW_FLIGHT, (gamemode & 0x01) > 0);
-            newSettings.set(Type.NO_CLIP, gamemode == SPECTATOR);
-            newSettings.set(
-                    Type.FLYING,
-                    switch (gamemode) {
-                        case SURVIVAL -> false;
-                        case CREATIVE -> newSettings.get(Type.FLYING);
-                        case ADVENTURE -> false;
-                        case SPECTATOR -> true;
-                        default -> throw new IllegalStateException("Unexpected game mode: " + gamemode);
-                    });
-        }
+        AdventureSettings newSettings = this.getAdventureSettings().clone(this);
+        newSettings.set(Type.WORLD_IMMUTABLE, (gamemode.ordinal() & 0x02) > 0);
+        newSettings.set(Type.BUILD, (gamemode.ordinal() & 0x02) <= 0);
+        newSettings.set(Type.WORLD_BUILDER, (gamemode.ordinal() & 0x02) <= 0);
+        newSettings.set(Type.ALLOW_FLIGHT, (gamemode.ordinal() & 0x01) > 0);
+        newSettings.set(Type.NO_CLIP, gamemode == GameMode.SPECTATOR);
+        newSettings.set(
+                Type.FLYING,
+                switch (gamemode) {
+                    case SURVIVAL -> false;
+                    case CREATIVE -> newSettings.get(Type.FLYING);
+                    case ADVENTURE -> false;
+                    case SPECTATOR -> true;
+                });
 
         PlayerGameModeChangeEvent event = new PlayerGameModeChangeEvent(this, gamemode, newSettings);
         event.call();
@@ -3119,30 +3076,29 @@ public class Player extends EntityHuman
             this.setDataFlag(DATA_FLAGS, DATA_FLAG_HAS_COLLISION, true);
         }
 
-        this.namedTag.putInt("playerGameType", this.gamemode);
+        this.namedTag.putInt("playerGameType", gamemode.ordinal());
 
         this.setAdventureSettings(event.getNewAdventureSettings());
 
         if (!serverSide) {
-            var pk = new UpdatePlayerGameTypePacket();
-            var networkGamemode = toNetworkGamemode(gamemode);
-            pk.gameType = GameType.from(networkGamemode);
-            pk.entityId = this.getId();
-            var players = Sets.newHashSet(
-                    Server.getInstance().playerManager.getOnlinePlayers().values());
-            // 不向自身发送UpdatePlayerGameTypePacket，我们将使用SetPlayerGameTypePacket
+            UpdatePlayerGameTypePacket packet = new UpdatePlayerGameTypePacket();
+            packet.gameType = GameType.from(gamemode.getNetworkGamemode());
+            packet.entityId = this.getId();
+            Set<Player> players =
+                    Sets.newHashSet(server.playerManager.getOnlinePlayers().values());
+            // Instead of sending an UpdatePlayerGameTypePacket to itself, we'll use the SetPlayerGameTypePacket
             players.remove(this);
-            // 我们需要给所有玩家发送此包，来使玩家客户端能正确渲染玩家实体
-            // eg: 观察者模式玩家对于gm 0 1 2的玩家不可见
-            Server.broadcastPacket(players, pk);
-            // 对于自身，我们使用SetPlayerGameTypePacket来确保与WaterDog的兼容
-            var pk2 = new SetPlayerGameTypePacket();
-            pk2.gamemode = networkGamemode;
-            this.dataPacket(pk2);
+            // We need to send this packet to all players to enable the player client to render the player entity
+            // correctly
+            // eg: observer mode players are not visible to players with gm 0 1 2
+            Server.broadcastPacket(players, packet);
+            // We use SetPlayerGameTypePacket to ensure compatibility with WaterDog!
+            SetPlayerGameTypePacket gameTypePacket = new SetPlayerGameTypePacket();
+            gameTypePacket.gamemode = gamemode.getNetworkGamemode();
+            this.dataPacket(gameTypePacket);
         }
 
         this.resetFallDistance();
-
         return true;
     }
 
@@ -3151,47 +3107,31 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 该玩家是否为生存模式。
-     * <p>
      * Whether the player is in survival mode?
-     *
-     * @return boolean
      */
     public boolean isSurvival() {
-        return this.gamemode == SURVIVAL;
+        return gamemode.equals(GameMode.SURVIVAL);
     }
 
     /**
-     * 该玩家是否为创造模式。
-     * <p>
      * Whether the player is in creative mode?
-     *
-     * @return boolean
      */
     public boolean isCreative() {
-        return this.gamemode == CREATIVE;
+        return gamemode.equals(GameMode.CREATIVE);
     }
 
     /**
-     * 该玩家是否为观察者模式。
-     * <p>
-     * Whether the player is in spectator mode?
-     *
-     * @return boolean
-     */
-    public boolean isSpectator() {
-        return this.gamemode == SPECTATOR;
-    }
-
-    /**
-     * 该玩家是否为冒险模式。
-     * <p>
      * Whether the player is in adventure mode?
-     *
-     * @return boolean
      */
     public boolean isAdventure() {
-        return this.gamemode == ADVENTURE;
+        return gamemode.equals(GameMode.ADVENTURE);
+    }
+
+    /**
+     * Whether the player is in spectator mode?
+     */
+    public boolean isSpectator() {
+        return gamemode.equals(GameMode.SPECTATOR);
     }
 
     @Override
@@ -4350,7 +4290,7 @@ public class Player extends EntityHuman
 
             this.namedTag.putCompound("Achievements", achievements);
 
-            this.namedTag.putInt("playerGameType", this.gamemode);
+            this.namedTag.putInt("playerGameType", gamemode.ordinal());
             this.namedTag.putLong("lastPlayed", System.currentTimeMillis() / 1000);
 
             this.namedTag.putString("lastIP", this.getAddress());
@@ -5088,7 +5028,7 @@ public class Player extends EntityHuman
         updateTrackingPositions(true);
         // Update gamemode
         if (isSpectator()) {
-            this.setGamemode(this.gamemode, false, null, true);
+            this.setGamemode(gamemode, false, true);
         }
         return true;
     }
@@ -6009,7 +5949,7 @@ public class Player extends EntityHuman
 
     @Override
     public boolean doesTriggerPressurePlate() {
-        return this.gamemode != SPECTATOR;
+        return !this.isSpectator();
     }
 
     @PowerNukkitOnly

@@ -55,6 +55,7 @@ import cn.nukkit.permission.BanEntry;
 import cn.nukkit.permission.BanList;
 import cn.nukkit.permission.DefaultPermissions;
 import cn.nukkit.permission.Permissible;
+import cn.nukkit.player.GameMode;
 import cn.nukkit.player.Player;
 import cn.nukkit.player.PlayerManager;
 import cn.nukkit.plugin.*;
@@ -238,7 +239,6 @@ public class Server {
     private int baseTickRate = 1;
     private Boolean getAllowFlight = null;
     private int difficulty = Integer.MAX_VALUE;
-    private int defaultGamemode = Integer.MAX_VALUE;
 
     private int autoSaveTicker = 0;
     private int autoSaveTicks = 6000;
@@ -1162,7 +1162,8 @@ public class Server {
         // todo send usage setting
         this.tickCounter = 0;
 
-        log.info(this.getLanguage().tr("nukkit.server.defaultGameMode", getGamemodeString(this.getGamemode())));
+        log.info(this.getLanguage()
+                .tr("nukkit.server.defaultGameMode", this.getGamemode().getTranslatableName()));
 
         log.info(this.getLanguage()
                 .tr(
@@ -1943,14 +1944,6 @@ public class Server {
         return serviceManager;
     }
 
-    // endregion
-
-    // region Players - 玩家相关
-
-    // endregion
-
-    // region constants - 常量
-
     /**
      * @return 服务器名称<br>The name of server
      */
@@ -2527,90 +2520,16 @@ public class Server {
         return this.getPropertyBoolean("generate-structures", true);
     }
 
-    /**
-     * 得到服务器的gamemode
-     * <p>
-     * Get the gamemode of the server
-     *
-     * @return gamemode id
-     */
-    public int getGamemode() {
+    public GameMode getGamemode() {
         try {
-            return this.getPropertyInt("gamemode", 0) & 0b11;
+            return GameMode.fromOrdinal(this.getPropertyInt("gamemode", 0));
         } catch (NumberFormatException exception) {
-            return getGamemodeFromString(this.getPropertyString("gamemode")) & 0b11;
+            return GameMode.fromString(this.getPropertyString("gamemode"));
         }
     }
 
     public boolean getForceGamemode() {
         return this.getPropertyBoolean("force-gamemode", false);
-    }
-
-    /**
-     * 默认{@code direct=false}
-     *
-     * @see #getGamemodeString(int, boolean)
-     */
-    public static String getGamemodeString(int mode) {
-        return getGamemodeString(mode, false);
-    }
-
-    /**
-     * 从gamemode id获取游戏模式字符串.
-     * <p>
-     * Get game mode string from gamemode id.
-     *
-     * @param mode   gamemode id
-     * @param direct 如果为true就直接返回字符串,为false返回代表游戏模式的硬编码字符串.<br>If true, the string is returned directly, and if false, the hard-coded string representing the game mode is returned.
-     * @return 游戏模式字符串<br>Game Mode String
-     */
-    public static String getGamemodeString(int mode, boolean direct) {
-        switch (mode) {
-            case Player.SURVIVAL:
-                return direct ? "Survival" : "%gameMode.survival";
-            case Player.CREATIVE:
-                return direct ? "Creative" : "%gameMode.creative";
-            case Player.ADVENTURE:
-                return direct ? "Adventure" : "%gameMode.adventure";
-            case Player.SPECTATOR:
-                return direct ? "Spectator" : "%gameMode.spectator";
-        }
-        return "UNKNOWN";
-    }
-
-    /**
-     * 从字符串获取gamemode
-     * <p>
-     * Get gamemode from string
-     *
-     * @param str 代表游戏模式的字符串，例如0,survival...<br>A string representing the game mode, e.g. 0,survival...
-     * @return 游戏模式id<br>gamemode id
-     */
-    public static int getGamemodeFromString(String str) {
-        switch (str.trim().toLowerCase()) {
-            case "0":
-            case "survival":
-            case "s":
-                return Player.SURVIVAL;
-
-            case "1":
-            case "creative":
-            case "c":
-                return Player.CREATIVE;
-
-            case "2":
-            case "adventure":
-            case "a":
-                return Player.ADVENTURE;
-
-            case "3":
-            case "spectator":
-            case "spc":
-            case "view":
-            case "v":
-                return Player.SPECTATOR;
-        }
-        return -1;
     }
 
     /**
@@ -2704,16 +2623,6 @@ public class Server {
      */
     public boolean isHardcore() {
         return this.getPropertyBoolean("hardcore", false);
-    }
-
-    /**
-     * @return 获取默认gamemode<br>Get default gamemode
-     */
-    public int getDefaultGamemode() {
-        if (this.defaultGamemode == Integer.MAX_VALUE) {
-            this.defaultGamemode = this.getGamemode();
-        }
-        return this.defaultGamemode;
     }
 
     /**

@@ -190,7 +190,7 @@ public class BlockKelp extends BlockFlowable {
                             if (highestKelp.grow()) {
                                 this.getLevel().addParticle(new BoneMealParticle(this));
 
-                                if (player != null && (player.gamemode & 0x01) == 0) {
+                                if (player != null && player.getGamemode().isSurvival()) {
                                     item.count--;
                                 }
 

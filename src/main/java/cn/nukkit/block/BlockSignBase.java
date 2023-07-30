@@ -112,7 +112,7 @@ public abstract class BlockSignBase extends BlockTransparentMeta implements Face
             sign.setColor(front, color);
             sign.spawnToAll();
             this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_DYE_USED);
-            if ((player.getGamemode() & 0x01) == 0) {
+            if (player.getGamemode().isSurvival()) {
                 item.count--;
             }
             return;
@@ -130,7 +130,7 @@ public abstract class BlockSignBase extends BlockTransparentMeta implements Face
             sign.setGlowing(front, true);
             sign.spawnToAll();
             this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_INK_SACE_USED);
-            if ((player.getGamemode() & 0x01) == 0) {
+            if (player.getGamemode().isSurvival()) {
                 item.count--;
             }
             return;
@@ -144,7 +144,7 @@ public abstract class BlockSignBase extends BlockTransparentMeta implements Face
             sign.setWaxed(true);
             sign.spawnToAll();
             this.getLevel().addParticle(new WaxOnParticle(this));
-            if ((player.getGamemode() & 0x01) == 0) {
+            if (player.getGamemode().isSurvival()) {
                 item.count--;
             }
             return;
