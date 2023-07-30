@@ -125,7 +125,7 @@ public class BlockBambooSapling extends BlockFlowable {
             }
 
             if (success) {
-                if (player.getGamemode().isSurvival()) {
+                if (player != null && player.getGamemode().isSurvival()) {
                     item.count--;
                 }
 
