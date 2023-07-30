@@ -315,7 +315,8 @@ public class EntityHorse extends EntityAnimal
         }
         fallDistance = event.getFallDistance();
 
-        if ((!this.isPlayer || getLevel().getGameRules().getBoolean(GameRule.FALL_DAMAGE)) && down.useDefaultFallDamage()) {
+        if ((!this.isPlayer || getLevel().getGameRules().getBoolean(GameRule.FALL_DAMAGE))
+                && down.useDefaultFallDamage()) {
             int jumpBoost = this.hasEffect(Effect.JUMP_BOOST)
                     ? (getEffect(Effect.JUMP_BOOST).getAmplifier() + 1)
                     : 0;

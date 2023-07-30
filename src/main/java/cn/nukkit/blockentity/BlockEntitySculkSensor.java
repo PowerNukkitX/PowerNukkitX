@@ -74,7 +74,9 @@ public class BlockEntitySculkSensor extends BlockEntity implements VibrationList
 
     @Override
     public void onVibrationArrive(VibrationEvent event) {
-        if (this.getLevel() != null && this.isBlockEntityValid() && getLevel().getServer().isRedstoneEnabled()) {
+        if (this.getLevel() != null
+                && this.isBlockEntityValid()
+                && getLevel().getServer().isRedstoneEnabled()) {
             this.lastVibrationEvent = event;
             this.updateLastActiveTime();
             waitForVibration = false;

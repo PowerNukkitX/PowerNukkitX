@@ -208,10 +208,14 @@ public abstract class BlockLiquid extends BlockTransparentMeta {
                     || !this.canFlowInto(this.getLevel().getBlock((int) this.x(), (int) this.y(), (int) this.z() + 1))
                     || !this.canFlowInto(this.getLevel().getBlock((int) this.x() - 1, (int) this.y(), (int) this.z()))
                     || !this.canFlowInto(this.getLevel().getBlock((int) this.x() + 1, (int) this.y(), (int) this.z()))
-                    || !this.canFlowInto(this.getLevel().getBlock((int) this.x(), (int) this.y() + 1, (int) this.z() - 1))
-                    || !this.canFlowInto(this.getLevel().getBlock((int) this.x(), (int) this.y() + 1, (int) this.z() + 1))
-                    || !this.canFlowInto(this.getLevel().getBlock((int) this.x() - 1, (int) this.y() + 1, (int) this.z()))
-                    || !this.canFlowInto(this.getLevel().getBlock((int) this.x() + 1, (int) this.y() + 1, (int) this.z()))) {
+                    || !this.canFlowInto(
+                            this.getLevel().getBlock((int) this.x(), (int) this.y() + 1, (int) this.z() - 1))
+                    || !this.canFlowInto(
+                            this.getLevel().getBlock((int) this.x(), (int) this.y() + 1, (int) this.z() + 1))
+                    || !this.canFlowInto(
+                            this.getLevel().getBlock((int) this.x() - 1, (int) this.y() + 1, (int) this.z()))
+                    || !this.canFlowInto(
+                            this.getLevel().getBlock((int) this.x() + 1, (int) this.y() + 1, (int) this.z()))) {
                 vector = vector.normalize().add(0, -6, 0);
             }
         }
@@ -255,13 +259,17 @@ public abstract class BlockLiquid extends BlockTransparentMeta {
                 int smallestFlowDecay = -100;
                 this.adjacentSources = 0;
                 smallestFlowDecay = this.getSmallestFlowDecay(
-                        this.getLevel().getBlock((int) this.x(), (int) this.y(), (int) this.z() - 1), smallestFlowDecay);
+                        this.getLevel().getBlock((int) this.x(), (int) this.y(), (int) this.z() - 1),
+                        smallestFlowDecay);
                 smallestFlowDecay = this.getSmallestFlowDecay(
-                        this.getLevel().getBlock((int) this.x(), (int) this.y(), (int) this.z() + 1), smallestFlowDecay);
+                        this.getLevel().getBlock((int) this.x(), (int) this.y(), (int) this.z() + 1),
+                        smallestFlowDecay);
                 smallestFlowDecay = this.getSmallestFlowDecay(
-                        this.getLevel().getBlock((int) this.x() - 1, (int) this.y(), (int) this.z()), smallestFlowDecay);
+                        this.getLevel().getBlock((int) this.x() - 1, (int) this.y(), (int) this.z()),
+                        smallestFlowDecay);
                 smallestFlowDecay = this.getSmallestFlowDecay(
-                        this.getLevel().getBlock((int) this.x() + 1, (int) this.y(), (int) this.z()), smallestFlowDecay);
+                        this.getLevel().getBlock((int) this.x() + 1, (int) this.y(), (int) this.z()),
+                        smallestFlowDecay);
                 int newDecay = smallestFlowDecay + multiplier;
                 if (newDecay >= 8 || smallestFlowDecay < 0) {
                     newDecay = -1;

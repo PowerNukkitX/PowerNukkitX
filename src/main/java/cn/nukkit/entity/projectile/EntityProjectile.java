@@ -307,7 +307,8 @@ public abstract class EntityProjectile extends Entity {
         this.getLevel()
                 .getVibrationManager()
                 .callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.PROJECTILE_LAND));
-        for (Block collisionBlock : getLevel().getCollisionBlocks(getBoundingBox().grow(0.1, 0.1, 0.1))) {
+        for (Block collisionBlock :
+                getLevel().getCollisionBlocks(getBoundingBox().grow(0.1, 0.1, 0.1))) {
             onCollideWithBlock(position, motion, collisionBlock);
         }
     }

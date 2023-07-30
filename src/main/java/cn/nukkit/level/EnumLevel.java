@@ -81,13 +81,15 @@ public enum EnumLevel {
         if (NETHER.level == null) {
             return null;
         } else {
-            if (current.getLevel() == OVERWORLD.level || current.getLevel().getDimension() == Level.DIMENSION_OVERWORLD) {
+            if (current.getLevel() == OVERWORLD.level
+                    || current.getLevel().getDimension() == Level.DIMENSION_OVERWORLD) {
                 return new Position(
                         current.getFloorX() >> 3,
                         NukkitMath.clamp(current.getFloorY(), 70, 118),
                         current.getFloorZ() >> 3,
                         NETHER.level);
-            } else if (current.getLevel() == NETHER.level || current.getLevel().getDimension() == Level.DIMENSION_NETHER) {
+            } else if (current.getLevel() == NETHER.level
+                    || current.getLevel().getDimension() == Level.DIMENSION_NETHER) {
                 return new Position(
                         current.getFloorX() << 3,
                         NukkitMath.clamp(current.getFloorY(), 70, 246),
@@ -123,9 +125,11 @@ public enum EnumLevel {
         if (THE_END.level == null) {
             return null;
         } else {
-            if (current.getLevel() == OVERWORLD.level || current.getLevel().getDimension() == Level.DIMENSION_OVERWORLD) {
+            if (current.getLevel() == OVERWORLD.level
+                    || current.getLevel().getDimension() == Level.DIMENSION_OVERWORLD) {
                 return new Position(100, 49, 0, THE_END.level);
-            } else if (current.getLevel() == THE_END.level || current.getLevel().getDimension() == Level.DIMENSION_THE_END) {
+            } else if (current.getLevel() == THE_END.level
+                    || current.getLevel().getDimension() == Level.DIMENSION_THE_END) {
                 return OVERWORLD.level.getSpawnLocation();
             } else {
                 throw new IllegalArgumentException("Neither overworld nor the end given!");

@@ -340,9 +340,10 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
 
                 consumePotion(item, player);
 
-                this.getLevel().addLevelEvent(
-                        this.add(0.5, 0.375 + getFillLevel() * 0.125, 0.5),
-                        LevelEventPacket.EVENT_CAULDRON_FILL_POTION);
+                this.getLevel()
+                        .addLevelEvent(
+                                this.add(0.5, 0.375 + getFillLevel() * 0.125, 0.5),
+                                LevelEventPacket.EVENT_CAULDRON_FILL_POTION);
                 break;
             case ItemID.GLASS_BOTTLE:
                 if (isEmpty()) {
@@ -388,9 +389,10 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
                     }
                 }
 
-                this.getLevel().addLevelEvent(
-                        this.add(0.5, 0.375 + getFillLevel() * 0.125, 0.5),
-                        LevelEventPacket.EVENT_CAULDRON_TAKE_POTION);
+                this.getLevel()
+                        .addLevelEvent(
+                                this.add(0.5, 0.375 + getFillLevel() * 0.125, 0.5),
+                                LevelEventPacket.EVENT_CAULDRON_TAKE_POTION);
                 break;
             case ItemID.BANNER:
                 if (isEmpty() || cauldron.isCustomColor() || cauldron.hasPotion()) {

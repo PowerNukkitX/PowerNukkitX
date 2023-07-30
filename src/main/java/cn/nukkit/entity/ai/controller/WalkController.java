@@ -55,8 +55,12 @@ public class WalkController implements IController {
             var dy = 0.0d;
             if (relativeVector.y() > 0 && collidesBlocks(entity, dx, 0, dz) && currentJumpCoolDown > JUMP_COOL_DOWN) {
                 // note: 从对BDS的抓包信息来看，台阶的碰撞箱在服务端和半砖一样，高度都为0.5
-                Block[] collisionBlocks = entity.getLevel().getTickCachedCollisionBlocks(
-                        entity.getOffsetBoundingBox().getOffsetBoundingBox(dx, dy, dz), false, false, this::canJump);
+                Block[] collisionBlocks = entity.getLevel()
+                        .getTickCachedCollisionBlocks(
+                                entity.getOffsetBoundingBox().getOffsetBoundingBox(dx, dy, dz),
+                                false,
+                                false,
+                                this::canJump);
                 // 计算出需要向上移动的高度
                 double maxY = Arrays.stream(collisionBlocks)
                         .map(b -> b.getCollisionBoundingBox().getMaxY())
@@ -85,7 +89,8 @@ public class WalkController implements IController {
     }
 
     protected boolean collidesBlocks(EntityIntelligent entity, double dx, double dy, double dz) {
-        return entity.getLevel().getTickCachedCollisionBlocks(
+        return entity.getLevel()
+                        .getTickCachedCollisionBlocks(
                                 entity.getOffsetBoundingBox().getOffsetBoundingBox(dx, dy, dz),
                                 true,
                                 false,

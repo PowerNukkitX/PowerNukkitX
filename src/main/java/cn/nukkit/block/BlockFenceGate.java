@@ -300,7 +300,8 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
                 getLevel().setBlock(this, this, true);
                 return type;
             }
-        } else if (type == Level.BLOCK_UPDATE_REDSTONE && this.getLevel().getServer().isRedstoneEnabled()) {
+        } else if (type == Level.BLOCK_UPDATE_REDSTONE
+                && this.getLevel().getServer().isRedstoneEnabled()) {
             this.onRedstoneUpdate();
             return type;
         }
@@ -312,7 +313,8 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
     private void onRedstoneUpdate() {
         if ((this.isOpen() != this.isGettingPower()) && !this.getManualOverride()) {
             if (this.isOpen() != this.isGettingPower()) {
-                getLevel().getServer()
+                getLevel()
+                        .getServer()
                         .getPluginManager()
                         .callEvent(new BlockRedstoneEvent(this, this.isOpen() ? 15 : 0, this.isOpen() ? 0 : 15));
 

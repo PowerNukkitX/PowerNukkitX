@@ -182,13 +182,14 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
         }
 
         if (target == null) {
-            Entity[] mobs = Arrays.stream(getLevel().getCollidingEntities(new SimpleAxisAlignedBB(
-                            x() - radius,
-                            y() - radius,
-                            z() - radius,
-                            x() + 1 + radius,
-                            y() + 1 + radius,
-                            z() + 1 + radius)))
+            Entity[] mobs = Arrays.stream(getLevel()
+                            .getCollidingEntities(new SimpleAxisAlignedBB(
+                                    x() - radius,
+                                    y() - radius,
+                                    z() - radius,
+                                    x() + 1 + radius,
+                                    y() + 1 + radius,
+                                    z() + 1 + radius)))
                     .filter(this::canAttack)
                     .toArray(Entity[]::new);
             if (mobs.length == 0) {

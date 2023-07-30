@@ -216,7 +216,8 @@ public class BlockTurtleEgg extends BlockFlowable {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_RANDOM) {
             if (down().getId() == BlockID.SAND) {
-                float celestialAngle = getLevel().calculateCelestialAngle(getLevel().getTime(), 1);
+                float celestialAngle =
+                        getLevel().calculateCelestialAngle(getLevel().getTime(), 1);
                 ThreadLocalRandom random = ThreadLocalRandom.current();
                 if (0.70 > celestialAngle && celestialAngle > 0.65 || random.nextInt(500) == 0) {
                     CrackState crackState = getCracks();
@@ -226,7 +227,9 @@ public class BlockTurtleEgg extends BlockFlowable {
                         BlockGrowEvent event = new BlockGrowEvent(this, newState);
                         this.getLevel().getServer().getPluginManager().callEvent(event);
                         if (!event.isCancelled()) {
-                            getLevel().addSound(this, Sound.BLOCK_TURTLE_EGG_CRACK, 0.7f, 0.9f + random.nextFloat() * 0.2f);
+                            getLevel()
+                                    .addSound(
+                                            this, Sound.BLOCK_TURTLE_EGG_CRACK, 0.7f, 0.9f + random.nextFloat() * 0.2f);
                             this.getLevel().setBlock(this, event.getNewState(), true, true);
                         }
                     } else {

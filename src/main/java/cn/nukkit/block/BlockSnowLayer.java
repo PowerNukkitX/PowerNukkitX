@@ -163,8 +163,9 @@ public class BlockSnowLayer extends BlockFallableMeta {
 
         if (increment.isPresent()) {
             BlockSnowLayer other = increment.get();
-            if (Arrays.stream(getLevel().getCollidingEntities(new SimpleAxisAlignedBB(
-                            other.x(), other.y(), other.z(), other.x() + 1, other.y() + 1, other.z() + 1)))
+            if (Arrays.stream(getLevel()
+                            .getCollidingEntities(new SimpleAxisAlignedBB(
+                                    other.x(), other.y(), other.z(), other.x() + 1, other.y() + 1, other.z() + 1)))
                     .anyMatch(e -> e instanceof EntityLiving)) {
                 return false;
             }

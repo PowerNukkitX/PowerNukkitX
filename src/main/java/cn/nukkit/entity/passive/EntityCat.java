@@ -125,7 +125,8 @@ public class EntityCat extends EntityAnimal
                                 entity -> {
                                     var player = this.getOwner();
                                     if (player == null) return false;
-                                    if (player.getLevel().getId() != this.getLevel().getId()) return false;
+                                    if (player.getLevel().getId()
+                                            != this.getLevel().getId()) return false;
                                     return player.isSleeping();
                                 },
                                 7),

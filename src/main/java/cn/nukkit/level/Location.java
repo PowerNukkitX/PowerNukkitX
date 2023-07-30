@@ -174,7 +174,8 @@ public class Location extends Position {
 
     @Override
     public Location add(double x, double y, double z) {
-        return new Location(this.x() + x, this.y() + y, this.z() + z, this.yaw, this.pitch, this.headYaw, this.getLevel());
+        return new Location(
+                this.x() + x, this.y() + y, this.z() + z, this.yaw, this.pitch, this.headYaw, this.getLevel());
     }
 
     @Override

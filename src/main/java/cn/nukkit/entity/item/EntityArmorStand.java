@@ -378,7 +378,8 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         pos.setY(pos.y() + 1.4);
         getLevel().dropItem(byAttack ? pos : this, Item.get(ItemID.ARMOR_STAND));
         getLevel().dropItem(pos, armorInventory.getChestplate());
-        equipmentInventory.getContents().values().forEach(items -> this.getLevel().dropItem(this, items));
+        equipmentInventory.getContents().values().forEach(items -> this.getLevel()
+                .dropItem(this, items));
         equipmentInventory.clearAll();
 
         pos.setY(pos.y() + 1.8);
@@ -388,7 +389,8 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         getLevel().addSound(this, Sound.MOB_ARMOR_STAND_BREAK);
 
         // todo: initiator should be a entity who kill it but not itself
-        getLevel().getVibrationManager()
+        getLevel()
+                .getVibrationManager()
                 .callVibrationEvent(new VibrationEvent(
                         this.getLastDamageCause() instanceof EntityDamageByEntityEvent byEntity
                                 ? byEntity.getDamager()

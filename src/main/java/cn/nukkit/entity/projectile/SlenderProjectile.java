@@ -166,16 +166,19 @@ public abstract class SlenderProjectile extends EntityProjectile {
             this.motionZ = 0;
             BVector3 bVector3 = BVector3.fromPos(new Vector3(dx, dy, dz));
             BlockFace blockFace = BlockFace.fromHorizontalAngle(bVector3.getYaw());
-            Block block = getLevel().getBlock(this.getFloorX(), this.getFloorY(), this.getFloorZ())
+            Block block = getLevel()
+                    .getBlock(this.getFloorX(), this.getFloorY(), this.getFloorZ())
                     .getSide(blockFace);
             if (block.getId() == 0) {
                 blockFace = BlockFace.DOWN;
-                block = getLevel().getBlock(this.getFloorX(), this.getFloorY(), this.getFloorZ())
+                block = getLevel()
+                        .getBlock(this.getFloorX(), this.getFloorY(), this.getFloorZ())
                         .down();
             }
             if (block.getId() == 0) {
                 blockFace = BlockFace.UP;
-                block = getLevel().getBlock(this.getFloorX(), this.getFloorY(), this.getFloorZ())
+                block = getLevel()
+                        .getBlock(this.getFloorX(), this.getFloorY(), this.getFloorZ())
                         .up();
             }
             if (block.getId() == 0 && collisionBlock != null) {
@@ -201,7 +204,8 @@ public abstract class SlenderProjectile extends EntityProjectile {
         if (this.isCollided && this.hadCollision) {
             if (lastHitBlock != null
                     && lastHitBlock.typeOfHit == 0
-                    && getLevel().getBlock(lastHitBlock.blockX, lastHitBlock.blockY, lastHitBlock.blockZ)
+                    && getLevel()
+                                    .getBlock(lastHitBlock.blockX, lastHitBlock.blockY, lastHitBlock.blockZ)
                                     .getId()
                             == 0) {
                 this.motionY -= this.getGravity();

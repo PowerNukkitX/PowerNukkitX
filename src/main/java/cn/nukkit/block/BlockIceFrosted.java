@@ -120,8 +120,10 @@ public class BlockIceFrosted extends BlockTransparentMeta {
         if (age < 3) {
             setDamage(age + 1);
             getLevel().setBlock(this, layer, this, true);
-            getLevel().scheduleUpdate(
-                    getLevel().getBlock(this), ThreadLocalRandom.current().nextInt(20, 40));
+            getLevel()
+                    .scheduleUpdate(
+                            getLevel().getBlock(this),
+                            ThreadLocalRandom.current().nextInt(20, 40));
         } else {
             getLevel().setBlock(this, layer, get(FLOWING_WATER), true);
             if (isSource) {

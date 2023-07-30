@@ -80,8 +80,8 @@ public abstract class EntityVehicle extends Entity implements EntityRideable, En
 
         // Check riding
         if (this.riding == null) {
-            for (Entity entity : getLevel().fastNearbyEntities(
-                    this.boundingBox.grow(0.20000000298023224, 0.0D, 0.20000000298023224), this)) {
+            for (Entity entity : getLevel()
+                    .fastNearbyEntities(this.boundingBox.grow(0.20000000298023224, 0.0D, 0.20000000298023224), this)) {
                 if (entity instanceof EntityLiving entityLiving) {
                     entityLiving.collidingWith(this);
                 }

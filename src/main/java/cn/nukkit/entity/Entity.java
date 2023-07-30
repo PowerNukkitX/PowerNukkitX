@@ -2139,7 +2139,11 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     protected boolean checkObstruction(double x, double y, double z) {
-        if (this.getLevel().fastCollisionCubes(this, this.getBoundingBox(), false).size() == 0 || this.noClip) {
+        if (this.getLevel()
+                                .fastCollisionCubes(this, this.getBoundingBox(), false)
+                                .size()
+                        == 0
+                || this.noClip) {
             return false;
         }
 
@@ -2807,7 +2811,8 @@ public abstract class Entity extends Location implements Metadatable {
         }
         fallDistance = event.getFallDistance();
 
-        if ((!this.isPlayer || getLevel().getGameRules().getBoolean(GameRule.FALL_DAMAGE)) && down.useDefaultFallDamage()) {
+        if ((!this.isPlayer || getLevel().getGameRules().getBoolean(GameRule.FALL_DAMAGE))
+                && down.useDefaultFallDamage()) {
             int jumpBoost = this.hasEffect(Effect.JUMP_BOOST)
                     ? (getEffect(Effect.JUMP_BOOST).getAmplifier() + 1)
                     : 0;
@@ -3005,10 +3010,16 @@ public abstract class Entity extends Location implements Metadatable {
     protected boolean hasWaterAt(float height, boolean tickCached) {
         double y = this.y() + height;
         Block block = tickCached
-                ? this.getLevel().getTickCachedBlock(this.temporalVector.setComponents(
-                        NukkitMath.floorDouble(this.x()), NukkitMath.floorDouble(y), NukkitMath.floorDouble(this.z())))
-                : this.getLevel().getBlock(this.temporalVector.setComponents(
-                        NukkitMath.floorDouble(this.x()), NukkitMath.floorDouble(y), NukkitMath.floorDouble(this.z())));
+                ? this.getLevel()
+                        .getTickCachedBlock(this.temporalVector.setComponents(
+                                NukkitMath.floorDouble(this.x()),
+                                NukkitMath.floorDouble(y),
+                                NukkitMath.floorDouble(this.z())))
+                : this.getLevel()
+                        .getBlock(this.temporalVector.setComponents(
+                                NukkitMath.floorDouble(this.x()),
+                                NukkitMath.floorDouble(y),
+                                NukkitMath.floorDouble(this.z())));
 
         boolean layer1 = false;
         Block block1 = tickCached ? block.getTickCachedLevelBlockAtLayer(1) : block.getLevelBlockAtLayer(1);
@@ -3024,8 +3035,9 @@ public abstract class Entity extends Location implements Metadatable {
 
     public boolean isInsideOfSolid() {
         double y = this.y() + this.getEyeHeight();
-        Block block = this.getLevel().getBlock(this.temporalVector.setComponents(
-                NukkitMath.floorDouble(this.x()), NukkitMath.floorDouble(y), NukkitMath.floorDouble(this.z())));
+        Block block = this.getLevel()
+                .getBlock(this.temporalVector.setComponents(
+                        NukkitMath.floorDouble(this.x()), NukkitMath.floorDouble(y), NukkitMath.floorDouble(this.z())));
 
         AxisAlignedBB bb = block.getBoundingBox();
 
@@ -3383,7 +3395,8 @@ public abstract class Entity extends Location implements Metadatable {
                     getServer().getPluginManager().callEvent(ev);
 
                     if (!ev.isCancelled()
-                            && (getLevel() == EnumLevel.OVERWORLD.getLevel() || getLevel() == EnumLevel.THE_END.getLevel())) {
+                            && (getLevel() == EnumLevel.OVERWORLD.getLevel()
+                                    || getLevel() == EnumLevel.THE_END.getLevel())) {
                         final Position newPos = EnumLevel.moveToTheEnd(this);
                         if (newPos != null) {
                             if (newPos.getLevel().getDimension() == Level.DIMENSION_THE_END) {
@@ -3519,7 +3532,8 @@ public abstract class Entity extends Location implements Metadatable {
             this.chunk = this.getLevel().getChunk((int) this.x() >> 4, (int) this.z() >> 4, true);
 
             if (!this.justCreated) {
-                Map<Integer, Player> newChunk = this.getLevel().getChunkPlayers((int) this.x() >> 4, (int) this.z() >> 4);
+                Map<Integer, Player> newChunk =
+                        this.getLevel().getChunkPlayers((int) this.x() >> 4, (int) this.z() >> 4);
                 for (Player player : new ArrayList<>(this.hasSpawned.values())) {
                     if (!newChunk.containsKey(player.getLoaderId())) {
                         this.despawnFrom(player);
@@ -3546,7 +3560,9 @@ public abstract class Entity extends Location implements Metadatable {
             return false;
         }
 
-        if (pos instanceof Position && ((Position) pos).getLevel() != null && ((Position) pos).getLevel() != this.getLevel()) {
+        if (pos instanceof Position
+                && ((Position) pos).getLevel() != null
+                && ((Position) pos).getLevel() != this.getLevel()) {
             if (!this.switchLevel(((Position) pos).getLevel())) {
                 return false;
             }
@@ -3613,7 +3629,8 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public boolean teleport(Vector3 pos, PlayerTeleportEvent.TeleportCause cause) {
-        return this.teleport(Location.fromObject(pos, this.getLevel(), this.yaw(), this.pitch(), this.headYaw()), cause);
+        return this.teleport(
+                Location.fromObject(pos, this.getLevel(), this.yaw(), this.pitch(), this.headYaw()), cause);
     }
 
     public boolean teleport(Position pos) {
@@ -3688,8 +3705,9 @@ public abstract class Entity extends Location implements Metadatable {
             return;
         }
 
-        for (Player player :
-                this.getLevel().getChunkPlayers(this.chunk.getX(), this.chunk.getZ()).values()) {
+        for (Player player : this.getLevel()
+                .getChunkPlayers(this.chunk.getX(), this.chunk.getZ())
+                .values()) {
             if (player.isOnline()) {
                 this.spawnTo(player);
             }

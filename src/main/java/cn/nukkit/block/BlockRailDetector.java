@@ -91,13 +91,14 @@ public class BlockRailDetector extends BlockRail implements RedstoneComponent {
     }
 
     @Nullable public EntityMinecartAbstract findMinecart() {
-        for (Entity entity : getLevel().getNearbyEntities(new SimpleAxisAlignedBB(
-                getFloorX() + 0.2,
-                getFloorY(),
-                getFloorZ() + 0.2,
-                getFloorX() + 0.8,
-                getFloorY() + 0.8,
-                getFloorZ() + 0.8))) {
+        for (Entity entity : getLevel()
+                .getNearbyEntities(new SimpleAxisAlignedBB(
+                        getFloorX() + 0.2,
+                        getFloorY(),
+                        getFloorZ() + 0.2,
+                        getFloorX() + 0.8,
+                        getFloorY() + 0.8,
+                        getFloorZ() + 0.8))) {
             if (entity instanceof EntityMinecartAbstract minecart) return minecart;
         }
         return null;

@@ -210,10 +210,11 @@ public class EntityFishingHook extends SlenderProjectile {
 
         ThreadLocalRandom random = ThreadLocalRandom.current();
         for (int i = 0; i < 5; i++) {
-            this.getLevel().addParticle(new BubbleParticle(this.setComponents(
-                    this.x() + random.nextDouble() * 0.5 - 0.25,
-                    this.getWaterHeight(),
-                    this.z() + random.nextDouble() * 0.5 - 0.25)));
+            this.getLevel()
+                    .addParticle(new BubbleParticle(this.setComponents(
+                            this.x() + random.nextDouble() * 0.5 - 0.25,
+                            this.getWaterHeight(),
+                            this.z() + random.nextDouble() * 0.5 - 0.25)));
         }
     }
 

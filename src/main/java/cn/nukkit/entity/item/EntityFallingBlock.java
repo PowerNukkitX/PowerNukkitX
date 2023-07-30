@@ -226,7 +226,8 @@ public class EntityFallingBlock extends Entity {
                         if (event.getTo().getId() == Item.POINTED_DRIPSTONE) {
                             getLevel().addLevelEvent(block, LevelEventPacket.EVENT_SOUND_POINTED_DRIPSTONE_LAND);
 
-                            Entity[] e = getLevel().getCollidingEntities(new SimpleAxisAlignedBB(pos, pos.add(1, 1, 1)));
+                            Entity[] e =
+                                    getLevel().getCollidingEntities(new SimpleAxisAlignedBB(pos, pos.add(1, 1, 1)));
                             for (Entity entity : e) {
                                 if (entity instanceof EntityLiving && fallDistance > 0) {
                                     entity.attack(new EntityDamageByBlockEvent(

@@ -728,11 +728,12 @@ public class Player extends EntityHuman
                 }
                 inventory.sendHeldItem(this.getViewers().values());
             } else if (handItem == null)
-                this.getLevel().sendBlocks(
-                        new Player[] {this},
-                        new Block[] {this.getLevel().getBlock(blockPos.asVector3())},
-                        UpdateBlockPacket.FLAG_ALL_PRIORITY,
-                        0);
+                this.getLevel()
+                        .sendBlocks(
+                                new Player[] {this},
+                                new Block[] {this.getLevel().getBlock(blockPos.asVector3())},
+                                UpdateBlockPacket.FLAG_ALL_PRIORITY,
+                                0);
             return;
         }
 
@@ -866,7 +867,8 @@ public class Player extends EntityHuman
         for (long index : this.usedChunks.keySet()) {
             int chunkX = Level.getHashX(index);
             int chunkZ = Level.getHashZ(index);
-            for (Entity entity : this.getLevel().getChunkEntities(chunkX, chunkZ).values()) {
+            for (Entity entity :
+                    this.getLevel().getChunkEntities(chunkX, chunkZ).values()) {
                 if (this != entity && !entity.closed && entity.isAlive()) {
                     entity.spawnTo(this);
                 }
@@ -1151,7 +1153,8 @@ public class Player extends EntityHuman
         if (distance > 128) {
             invalidMotion = true;
         } else if (this.chunk == null || !this.chunk.isGenerated()) {
-            BaseFullChunk chunk = this.getLevel().getChunk(clientPos.getChunkX() >> 4, clientPos.getChunkX() >> 4, false);
+            BaseFullChunk chunk =
+                    this.getLevel().getChunk(clientPos.getChunkX() >> 4, clientPos.getChunkX() >> 4, false);
             if (chunk == null || !chunk.isGenerated()) {
                 invalidMotion = true;
                 this.nextChunkOrderRun = 0;
@@ -1197,10 +1200,7 @@ public class Player extends EntityHuman
             }
             if (invalidMotion) {
                 this.setPositionAndRotation(
-                        revertPos.asVector3f().asVector3(),
-                        revertPos.yaw(),
-                        revertPos.pitch(),
-                        revertPos.headYaw());
+                        revertPos.asVector3f().asVector3(), revertPos.yaw(), revertPos.pitch(), revertPos.headYaw());
                 this.revertClientMotion(revertPos);
                 this.resetClientMovement();
                 return;
@@ -1281,10 +1281,7 @@ public class Player extends EntityHuman
         // if plugin cancel move
         if (invalidMotion) {
             this.setPositionAndRotation(
-                    revertPos.asVector3f().asVector3(),
-                    revertPos.yaw(),
-                    revertPos.pitch(),
-                    revertPos.headYaw());
+                    revertPos.asVector3f().asVector3(), revertPos.yaw(), revertPos.pitch(), revertPos.headYaw());
             this.revertClientMotion(revertPos);
             this.resetClientMovement();
         } else {
@@ -1363,9 +1360,10 @@ public class Player extends EntityHuman
                         server.getPluginManager().callEvent(ev);
                         if (!ev.isCancelled()) {
                             getLevel().setBlock(block, layer, Block.get(Block.ICE_FROSTED), true, false);
-                            getLevel().scheduleUpdate(
-                                    getLevel().getBlock(block, layer),
-                                    ThreadLocalRandom.current().nextInt(20, 40));
+                            getLevel()
+                                    .scheduleUpdate(
+                                            getLevel().getBlock(block, layer),
+                                            ThreadLocalRandom.current().nextInt(20, 40));
                         }
                     }
                 }
@@ -1874,7 +1872,8 @@ public class Player extends EntityHuman
             this.chunk = this.getLevel().getChunk((int) this.x() >> 4, (int) this.z() >> 4, true);
 
             if (!this.justCreated) {
-                Map<Integer, Player> newChunk = this.getLevel().getChunkPlayers((int) this.x() >> 4, (int) this.z() >> 4);
+                Map<Integer, Player> newChunk =
+                        this.getLevel().getChunkPlayers((int) this.x() >> 4, (int) this.z() >> 4);
                 newChunk.remove(this.getLoaderId());
 
                 // List<Player> reload = new ArrayList<>();
@@ -3001,14 +3000,17 @@ public class Player extends EntityHuman
         }
 
         PlayerBedEnterEvent ev;
-        this.server.getPluginManager().callEvent(ev = new PlayerBedEnterEvent(this, this.getLevel().getBlock(pos)));
+        this.server
+                .getPluginManager()
+                .callEvent(ev = new PlayerBedEnterEvent(this, this.getLevel().getBlock(pos)));
         if (ev.isCancelled()) {
             return false;
         }
 
         this.sleeping = pos.clone();
         this.teleport(
-                new Location(pos.x() + 0.5, pos.y() + 0.5, pos.z() + 0.5, this.yaw(), this.pitch(), this.getLevel()), null);
+                new Location(pos.x() + 0.5, pos.y() + 0.5, pos.z() + 0.5, this.yaw(), this.pitch(), this.getLevel()),
+                null);
 
         this.setDataProperty(
                 new IntPositionEntityData(DATA_PLAYER_BED_POSITION, (int) pos.x(), (int) pos.y(), (int) pos.z()));
@@ -3023,7 +3025,9 @@ public class Player extends EntityHuman
 
     public void stopSleep() {
         if (this.sleeping != null) {
-            this.server.getPluginManager().callEvent(new PlayerBedLeaveEvent(this, this.getLevel().getBlock(this.sleeping)));
+            this.server
+                    .getPluginManager()
+                    .callEvent(new PlayerBedLeaveEvent(this, this.getLevel().getBlock(this.sleeping)));
 
             this.sleeping = null;
             this.setDataProperty(new IntPositionEntityData(DATA_PLAYER_BED_POSITION, 0, 0, 0));
@@ -4757,8 +4761,14 @@ public class Player extends EntityHuman
                 && levelBefore / 5 != level / 5
                 && this.lastPlayerdLevelUpSoundTime < this.age - 100) {
             this.lastPlayerdLevelUpSoundTime = this.age;
-            this.getLevel().addLevelSoundEvent(
-                    this, LevelSoundEventPacketV2.SOUND_LEVELUP, Math.min(7, level / 5) << 28, "", false, false);
+            this.getLevel()
+                    .addLevelSoundEvent(
+                            this,
+                            LevelSoundEventPacketV2.SOUND_LEVELUP,
+                            Math.min(7, level / 5) << 28,
+                            "",
+                            false,
+                            false);
         }
     }
 

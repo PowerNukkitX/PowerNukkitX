@@ -74,7 +74,9 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
                                     var iterator = angerValueMap.entrySet().iterator();
                                     while (iterator.hasNext()) {
                                         Map.Entry<Entity, Integer> next = iterator.next();
-                                        if (!entity.getLevel().getName().equals(this.getLevel().getName())
+                                        if (!entity.getLevel()
+                                                        .getName()
+                                                        .equals(this.getLevel().getName())
                                                 || !isValidAngerEntity(next.getKey())) {
                                             iterator.remove();
                                             var attackTarget =
@@ -96,7 +98,8 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
                         new Behavior(
                                 (entity) -> {
                                     // 为玩家附加黑暗效果
-                                    for (var player : entity.getLevel().getPlayers().values()) {
+                                    for (var player :
+                                            entity.getLevel().getPlayers().values()) {
                                         if (!player.isCreative()
                                                 && !player.isSpectator()
                                                 && entity.distanceSquared(player) <= 400) {

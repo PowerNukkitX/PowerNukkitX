@@ -275,8 +275,9 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
 
         Instrument instrument = this.getInstrument();
 
-        this.getLevel().addLevelSoundEvent(
-                this, LevelSoundEventPacket.SOUND_NOTE, instrument.ordinal() << 8 | this.getStrength());
+        this.getLevel()
+                .addLevelSoundEvent(
+                        this, LevelSoundEventPacket.SOUND_NOTE, instrument.ordinal() << 8 | this.getStrength());
 
         BlockEventPacket pk = new BlockEventPacket();
         pk.x = this.getFloorX();

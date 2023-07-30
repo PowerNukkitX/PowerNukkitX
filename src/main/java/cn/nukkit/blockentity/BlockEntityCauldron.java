@@ -172,8 +172,10 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
             return;
         }
         BlockCauldron block = (BlockCauldron) getBlock();
-        Player[] viewers =
-                this.getLevel().getChunkPlayers(getChunkX(), getChunkZ()).values().toArray(Player.EMPTY_ARRAY);
+        Player[] viewers = this.getLevel()
+                .getChunkPlayers(getChunkX(), getChunkZ())
+                .values()
+                .toArray(Player.EMPTY_ARRAY);
         this.getLevel().sendBlocks(viewers, new Vector3[] {block});
         super.spawnToAll();
         Location location = getLocation();

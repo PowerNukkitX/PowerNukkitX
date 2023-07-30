@@ -109,10 +109,11 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
 
         setActivated(true, player);
         this.getLevel().setBlock(this, this, true, false);
-        this.getLevel().addLevelSoundEvent(
-                this.add(0.5, 0.5, 0.5),
-                LevelSoundEventPacket.SOUND_POWER_ON,
-                GlobalBlockPalette.getOrCreateRuntimeId(this.getId(), this.getDamage()));
+        this.getLevel()
+                .addLevelSoundEvent(
+                        this.add(0.5, 0.5, 0.5),
+                        LevelSoundEventPacket.SOUND_POWER_ON,
+                        GlobalBlockPalette.getOrCreateRuntimeId(this.getId(), this.getDamage()));
         if (this.getLevel().getServer().isRedstoneEnabled()) {
             this.getLevel().getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 0, 15));
 
@@ -138,10 +139,11 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
             if (this.isActivated()) {
                 setActivated(false);
                 this.getLevel().setBlock(this, this, true, false);
-                this.getLevel().addLevelSoundEvent(
-                        this.add(0.5, 0.5, 0.5),
-                        LevelSoundEventPacket.SOUND_POWER_OFF,
-                        GlobalBlockPalette.getOrCreateRuntimeId(this.getId(), this.getDamage()));
+                this.getLevel()
+                        .addLevelSoundEvent(
+                                this.add(0.5, 0.5, 0.5),
+                                LevelSoundEventPacket.SOUND_POWER_OFF,
+                                GlobalBlockPalette.getOrCreateRuntimeId(this.getId(), this.getDamage()));
 
                 if (this.getLevel().getServer().isRedstoneEnabled()) {
                     this.getLevel().getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 15, 0));

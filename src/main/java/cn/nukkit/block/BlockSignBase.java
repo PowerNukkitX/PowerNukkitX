@@ -78,7 +78,8 @@ public abstract class BlockSignBase extends BlockTransparentMeta implements Face
         }
         // If a sign is waxed, it cannot be modified.
         if (sign.isWaxed() || (player.isSneaking() && item.getId() != 0)) {
-            getLevel().addLevelSoundEvent(this.add(0.5, 0.5, 0.5), LevelSoundEventPacket.SOUND_WAXED_SIGN_INTERACT_FAIL);
+            getLevel()
+                    .addLevelSoundEvent(this.add(0.5, 0.5, 0.5), LevelSoundEventPacket.SOUND_WAXED_SIGN_INTERACT_FAIL);
             return;
         }
         boolean front =

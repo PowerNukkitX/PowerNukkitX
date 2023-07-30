@@ -98,8 +98,13 @@ public abstract class BlockMushroom extends BlockFlowable implements BlockFlower
                 return false;
             }
             for (Block block : ev.getBlockList()) {
-                this.getLevel().setBlockAt(
-                        block.getFloorX(), block.getFloorY(), block.getFloorZ(), block.getId(), block.getDamage());
+                this.getLevel()
+                        .setBlockAt(
+                                block.getFloorX(),
+                                block.getFloorY(),
+                                block.getFloorZ(),
+                                block.getId(),
+                                block.getDamage());
             }
             return true;
         } else {

@@ -198,7 +198,8 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
         }
 
         if (down.getId() == AIR) {
-            getLevel().useBreakOn(this, getToolType() == ItemTool.TYPE_PICKAXE ? Item.get(ItemID.DIAMOND_PICKAXE) : null);
+            getLevel()
+                    .useBreakOn(this, getToolType() == ItemTool.TYPE_PICKAXE ? Item.get(ItemID.DIAMOND_PICKAXE) : null);
         }
     }
 
@@ -206,7 +207,8 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
     private void onRedstoneUpdate() {
         if ((this.isOpen() != this.isGettingPower()) && !this.getManualOverride()) {
             if (this.isOpen() != this.isGettingPower()) {
-                getLevel().getServer()
+                getLevel()
+                        .getServer()
                         .getPluginManager()
                         .callEvent(new BlockRedstoneEvent(this, this.isOpen() ? 15 : 0, this.isOpen() ? 0 : 15));
 

@@ -137,7 +137,8 @@ public class BlockBeehive extends BlockSolidMeta implements Faceable, BlockEntit
             for (int i = 0; i < 3; ++i) {
                 getLevel().dropItem(this, Item.get(ItemID.HONEYCOMB));
             }
-            getLevel().getVibrationManager()
+            getLevel()
+                    .getVibrationManager()
                     .callVibrationEvent(new VibrationEvent(this, this.add(0.5, 0.5, 0.5), VibrationType.SHEAR));
             return true;
         }

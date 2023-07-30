@@ -100,7 +100,8 @@ public class EntitySmallFireBall extends EntityProjectile {
                 .getVibrationManager()
                 .callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.PROJECTILE_LAND));
         var affect = false;
-        for (Block collisionBlock : getLevel().getCollisionBlocks(getBoundingBox().grow(0.1, 0.1, 0.1)))
+        for (Block collisionBlock :
+                getLevel().getCollisionBlocks(getBoundingBox().grow(0.1, 0.1, 0.1)))
             affect = onCollideWithBlock(position, motion, collisionBlock);
         if (!affect && this.getLevelBlock().getId() == BlockID.AIR) {
             BlockFire fire = (BlockFire) Block.get(BlockID.FIRE);

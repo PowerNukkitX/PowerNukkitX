@@ -161,10 +161,11 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode
             this.setDamage(this.getDamage() + 4);
         }
 
-        this.getLevel().addLevelEvent(
-                this.add(0.5, 0.5, 0.5),
-                LevelEventPacket.EVENT_SOUND_BUTTON_CLICK,
-                this.getMode() == Mode.SUBTRACT ? 500 : 550);
+        this.getLevel()
+                .addLevelEvent(
+                        this.add(0.5, 0.5, 0.5),
+                        LevelEventPacket.EVENT_SOUND_BUTTON_CLICK,
+                        this.getMode() == Mode.SUBTRACT ? 500 : 550);
         this.getLevel().setBlock(this, this, true, false);
         this.getLevel().updateComparatorOutputLevelSelective(this, true);
         // bug?

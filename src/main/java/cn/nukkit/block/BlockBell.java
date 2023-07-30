@@ -347,7 +347,8 @@ public class BlockBell extends BlockTransparentMeta
                 this.getLevel().useBreakOn(this);
             }
             return type;
-        } else if (type == Level.BLOCK_UPDATE_REDSTONE && this.getLevel().getServer().isRedstoneEnabled()) {
+        } else if (type == Level.BLOCK_UPDATE_REDSTONE
+                && this.getLevel().getServer().isRedstoneEnabled()) {
             if (this.isGettingPower()) {
                 if (!isToggled()) {
                     setToggled(true);

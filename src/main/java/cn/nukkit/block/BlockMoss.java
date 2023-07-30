@@ -109,12 +109,20 @@ public class BlockMoss extends BlockSolid {
                         if (!canGrowPlant(new Position(x, y, z, pos.getLevel()))) break;
                         double randomDouble = random.nextDouble();
                         if (randomDouble >= 0 && randomDouble < 0.3125) {
-                            pos.getLevel().setBlock(
-                                    new Position(x, y, z, pos.getLevel()), Block.get(BlockID.TALL_GRASS), true, true);
+                            pos.getLevel()
+                                    .setBlock(
+                                            new Position(x, y, z, pos.getLevel()),
+                                            Block.get(BlockID.TALL_GRASS),
+                                            true,
+                                            true);
                         }
                         if (randomDouble >= 0.3125 && randomDouble < 0.46875) {
-                            pos.getLevel().setBlock(
-                                    new Position(x, y, z, pos.getLevel()), Block.get(BlockID.MOSS_CARPET), true, true);
+                            pos.getLevel()
+                                    .setBlock(
+                                            new Position(x, y, z, pos.getLevel()),
+                                            Block.get(BlockID.MOSS_CARPET),
+                                            true,
+                                            true);
                         }
                         if (randomDouble >= 0.46875 && randomDouble < 0.53125) {
                             if (canBePopulated2BlockAir(new Position(x, y, z, pos.getLevel()))) {
@@ -125,7 +133,8 @@ public class BlockMoss extends BlockSolid {
                                 BlockDoublePlant topBlock = (BlockDoublePlant) Block.get(BlockID.DOUBLE_PLANT);
                                 topBlock.setDoublePlantType(DoublePlantType.FERN);
                                 topBlock.setTopHalf(true);
-                                pos.getLevel().setBlock(new Position(x, y + 1, z, pos.getLevel()), topBlock, true, true);
+                                pos.getLevel()
+                                        .setBlock(new Position(x, y + 1, z, pos.getLevel()), topBlock, true, true);
                             } else {
                                 BlockTallGrass block = (BlockTallGrass) Block.get(BlockID.TALL_GRASS);
                                 block.setPropertyValue(BlockTallGrass.TALL_GRASS_TYPE, TallGrassType.TALL);
@@ -133,14 +142,25 @@ public class BlockMoss extends BlockSolid {
                             }
                         }
                         if (randomDouble >= 0.53125 && randomDouble < 0.575) {
-                            pos.getLevel().setBlock(new Position(x, y, z, pos.getLevel()), Block.get(BlockID.AZALEA), true, true);
+                            pos.getLevel()
+                                    .setBlock(
+                                            new Position(x, y, z, pos.getLevel()),
+                                            Block.get(BlockID.AZALEA),
+                                            true,
+                                            true);
                         }
                         if (randomDouble >= 0.575 && randomDouble < 0.6) {
-                            pos.getLevel().setBlock(
-                                    new Position(x, y, z, pos.getLevel()), Block.get(BlockID.FLOWERING_AZALEA), true, true);
+                            pos.getLevel()
+                                    .setBlock(
+                                            new Position(x, y, z, pos.getLevel()),
+                                            Block.get(BlockID.FLOWERING_AZALEA),
+                                            true,
+                                            true);
                         }
                         if (randomDouble >= 0.6 && randomDouble < 1) {
-                            pos.getLevel().setBlock(new Position(x, y, z, pos.getLevel()), Block.get(BlockID.AIR), true, true);
+                            pos.getLevel()
+                                    .setBlock(
+                                            new Position(x, y, z, pos.getLevel()), Block.get(BlockID.AIR), true, true);
                         }
                         break;
                     }

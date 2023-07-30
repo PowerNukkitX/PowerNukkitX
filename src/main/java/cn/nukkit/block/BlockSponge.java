@@ -93,8 +93,9 @@ public class BlockSponge extends BlockSolidMeta {
 
             ThreadLocalRandom random = ThreadLocalRandom.current();
             for (int i = 0; i < 8; ++i) {
-                getLevel().addParticle(
-                        new CloudParticle(block.getLocation().add(random.nextDouble(), 1, random.nextDouble())));
+                getLevel()
+                        .addParticle(new CloudParticle(
+                                block.getLocation().add(random.nextDouble(), 1, random.nextDouble())));
             }
 
             return true;

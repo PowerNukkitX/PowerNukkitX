@@ -132,7 +132,8 @@ public class BlockFire extends BlockFlowable {
                 if (!event.isCancelled()) {
                     getLevel().setBlock(this, event.getNewState(), true);
                 }
-            } else if (this.getLevel().gameRules.getBoolean(GameRule.DO_FIRE_TICK) && !getLevel().isUpdateScheduled(this, this)) {
+            } else if (this.getLevel().gameRules.getBoolean(GameRule.DO_FIRE_TICK)
+                    && !getLevel().isUpdateScheduled(this, this)) {
                 getLevel().scheduleUpdate(this, tickRate());
             }
 
@@ -140,7 +141,8 @@ public class BlockFire extends BlockFlowable {
             checkRain();
 
             return Level.BLOCK_UPDATE_NORMAL;
-        } else if (type == Level.BLOCK_UPDATE_SCHEDULED && this.getLevel().gameRules.getBoolean(GameRule.DO_FIRE_TICK)) {
+        } else if (type == Level.BLOCK_UPDATE_SCHEDULED
+                && this.getLevel().gameRules.getBoolean(GameRule.DO_FIRE_TICK)) {
             Block down = down();
             int downId = down.getId();
 

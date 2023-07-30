@@ -241,17 +241,19 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
     }
 
     protected void playOnSound() {
-        this.getLevel().addLevelSoundEvent(
-                this.add(0.5, 0.1, 0.5),
-                LevelSoundEventPacket.SOUND_POWER_ON,
-                GlobalBlockPalette.getOrCreateRuntimeId(this.getId(), this.getDamage()));
+        this.getLevel()
+                .addLevelSoundEvent(
+                        this.add(0.5, 0.1, 0.5),
+                        LevelSoundEventPacket.SOUND_POWER_ON,
+                        GlobalBlockPalette.getOrCreateRuntimeId(this.getId(), this.getDamage()));
     }
 
     protected void playOffSound() {
-        this.getLevel().addLevelSoundEvent(
-                this.add(0.5, 0.1, 0.5),
-                LevelSoundEventPacket.SOUND_POWER_OFF,
-                GlobalBlockPalette.getOrCreateRuntimeId(this.getId(), this.getDamage()));
+        this.getLevel()
+                .addLevelSoundEvent(
+                        this.add(0.5, 0.1, 0.5),
+                        LevelSoundEventPacket.SOUND_POWER_OFF,
+                        GlobalBlockPalette.getOrCreateRuntimeId(this.getId(), this.getDamage()));
     }
 
     protected abstract int computeRedstoneStrength();

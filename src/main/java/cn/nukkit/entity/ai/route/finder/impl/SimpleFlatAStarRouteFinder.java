@@ -158,13 +158,15 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
 
         if (EntityAI.checkDebugOption(EntityAI.DebugOption.ROUTE)) {
             if (System.currentTimeMillis() - lastRouteParticleSpawn > EntityAI.getRouteParticleSpawnInterval()) {
-                findingPath.forEach(node -> this.entity.getLevel().addParticle(
-                        new BlockForceFieldParticle(node.getVector3()),
-                        Server.getInstance()
-                                .playerManager
-                                .getOnlinePlayers()
-                                .values()
-                                .toArray(Player.EMPTY_ARRAY)));
+                findingPath.forEach(node -> this.entity
+                        .getLevel()
+                        .addParticle(
+                                new BlockForceFieldParticle(node.getVector3()),
+                                Server.getInstance()
+                                        .playerManager
+                                        .getOnlinePlayers()
+                                        .values()
+                                        .toArray(Player.EMPTY_ARRAY)));
                 lastRouteParticleSpawn = System.currentTimeMillis();
             }
         }
@@ -421,7 +423,8 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
     protected Block getHighestUnder(Vector3 vector3, int limit) {
         if (limit > 0) {
             for (int y = vector3.getFloorY(); y >= vector3.getFloorY() - limit; y--) {
-                Block block = this.entity.getLevel().getTickCachedBlock(vector3.getFloorX(), y, vector3.getFloorZ(), false);
+                Block block =
+                        this.entity.getLevel().getTickCachedBlock(vector3.getFloorX(), y, vector3.getFloorZ(), false);
                 if (evalStandingBlock(block)) return block;
             }
             return null;

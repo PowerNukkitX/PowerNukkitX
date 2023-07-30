@@ -332,8 +332,8 @@ public class EntityBoat extends EntityVehicle {
             return false;
         }
 
-        for (Entity entity : this.getLevel().getCollidingEntities(
-                this.boundingBox.grow(0.20000000298023224, 0.0D, 0.20000000298023224), this)) {
+        for (Entity entity : this.getLevel()
+                .getCollidingEntities(this.boundingBox.grow(0.20000000298023224, 0.0D, 0.20000000298023224), this)) {
             if (entity.riding != null
                     || !(entity instanceof EntityLiving)
                     || entity instanceof Player
@@ -442,7 +442,8 @@ public class EntityBoat extends EntityVehicle {
 
             @Override
             public void accept(int x, int y, int z) {
-                Block block = EntityBoat.this.getLevel().getBlock(EntityBoat.this.temporalVector.setComponents(x, y, z));
+                Block block =
+                        EntityBoat.this.getLevel().getBlock(EntityBoat.this.temporalVector.setComponents(x, y, z));
 
                 if (block instanceof BlockWater || ((block = block.getLevelBlockAtLayer(1)) instanceof BlockWater)) {
                     double level = block.getMaxY();

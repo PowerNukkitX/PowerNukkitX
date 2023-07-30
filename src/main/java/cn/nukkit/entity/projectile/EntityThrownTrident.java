@@ -362,7 +362,8 @@ public class EntityThrownTrident extends SlenderProjectile {
             return;
         }
 
-        for (Block collisionBlock : getLevel().getCollisionBlocks(getBoundingBox().grow(0.1, 0.1, 0.1))) {
+        for (Block collisionBlock :
+                getLevel().getCollisionBlocks(getBoundingBox().grow(0.1, 0.1, 0.1))) {
             this.setStuckToBlockPos(new BlockVector3(
                     collisionBlock.getFloorX(), collisionBlock.getFloorY(), collisionBlock.getFloorZ()));
             if (this.canReturnToShooter()) {
