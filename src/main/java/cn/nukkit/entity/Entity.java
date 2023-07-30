@@ -2949,7 +2949,7 @@ public abstract class Entity extends Location implements Metadatable {
         }
 
         if (this.isValid()) {
-            EntityLevelChangeEvent event = new EntityLevelChangeEvent(this, this.level, targetLevel);
+            EntityLevelChangeEvent event = new EntityLevelChangeEvent(this, this.getLevel(), targetLevel);
             event.call();
             if (event.isCancelled()) {
                 return false;

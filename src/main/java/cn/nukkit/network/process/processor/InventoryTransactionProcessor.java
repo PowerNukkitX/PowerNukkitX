@@ -548,7 +548,8 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                         item.applyEnchantments() ? enchantments : null);
                 entityDamageByEntityEvent.setBreakShield(item.canBreakShield());
                 if (player.isSpectator()) entityDamageByEntityEvent.cancel();
-                if ((target instanceof Player) && !player.getLevel().getGameRules().getBoolean(GameRule.PVP)) {
+                if ((target instanceof Player)
+                        && !player.getLevel().getGameRules().getBoolean(GameRule.PVP)) {
                     entityDamageByEntityEvent.cancel();
                 }
 

@@ -306,7 +306,7 @@ public class BlockTurtleEgg extends BlockFlowable {
                 && !(entity instanceof EntityBat)
                 && !(entity instanceof EntityGhast)
                 && !(entity instanceof EntityPhantom)
-                && entity.getY() >= this.getMaxY()) {
+                && entity.y() >= this.getMaxY()) {
 
             Event event;
             if (entity instanceof Player) {

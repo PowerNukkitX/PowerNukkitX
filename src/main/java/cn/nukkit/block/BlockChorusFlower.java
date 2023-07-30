@@ -138,7 +138,7 @@ public class BlockChorusFlower extends BlockTransparentMeta {
                         block.setY(this.y() + 1);
                         BlockGrowEvent event = new BlockGrowEvent(this, block);
                         event.call();
-    
+
                         if (!event.isCancelled()) {
                             this.getLevel().setBlock(this, Block.get(CHORUS_PLANT));
                             this.getLevel().setBlock(block, event.getNewState());

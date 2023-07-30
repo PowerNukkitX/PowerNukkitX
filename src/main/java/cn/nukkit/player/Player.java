@@ -1360,9 +1360,10 @@ public class Player extends EntityHuman
                         event.call();
                         if (!event.isCancelled()) {
                             getLevel().setBlock(block, layer, Block.get(Block.ICE_FROSTED), true, false);
-                            getLevel().scheduleUpdate(
-                                    getLevel().getBlock(block, layer),
-                                    ThreadLocalRandom.current().nextInt(20, 40));
+                            getLevel()
+                                    .scheduleUpdate(
+                                            getLevel().getBlock(block, layer),
+                                            ThreadLocalRandom.current().nextInt(20, 40));
                         }
                     }
                 }
@@ -2999,7 +3000,8 @@ public class Player extends EntityHuman
             }
         }
 
-        PlayerBedEnterEvent event = new PlayerBedEnterEvent(this, this.level.getBlock(pos));
+        PlayerBedEnterEvent event =
+                new PlayerBedEnterEvent(this, this.getLevel().getBlock(pos));
         event.call();
 
         if (event.isCancelled()) {
@@ -3024,7 +3026,8 @@ public class Player extends EntityHuman
 
     public void stopSleep() {
         if (this.sleeping != null) {
-            PlayerBedLeaveEvent event = new PlayerBedLeaveEvent(this, this.getLevel().getBlock(this.sleeping));
+            PlayerBedLeaveEvent event =
+                    new PlayerBedLeaveEvent(this, this.getLevel().getBlock(this.sleeping));
             event.call();
 
             this.sleeping = null;

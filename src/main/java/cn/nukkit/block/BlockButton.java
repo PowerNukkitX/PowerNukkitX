@@ -145,7 +145,7 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
                                 LevelSoundEventPacket.SOUND_POWER_OFF,
                                 GlobalBlockPalette.getOrCreateRuntimeId(this.getId(), this.getDamage()));
 
-                if (this.level.getServer().isRedstoneEnabled()) {
+                if (this.getLevel().getServer().isRedstoneEnabled()) {
                     new BlockRedstoneEvent(this, 15, 0).call();
 
                     updateAroundRedstone();

@@ -79,9 +79,11 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
 
                     if (!event.isCancelled()) {
                         getLevel().setBlock(fire, fire, true);
-                        getLevel().scheduleUpdate(
-                                fire,
-                                fire.tickRate() + ThreadLocalRandom.current().nextInt(10));
+                        getLevel()
+                                .scheduleUpdate(
+                                        fire,
+                                        fire.tickRate()
+                                                + ThreadLocalRandom.current().nextInt(10));
                     }
                 }
             }
