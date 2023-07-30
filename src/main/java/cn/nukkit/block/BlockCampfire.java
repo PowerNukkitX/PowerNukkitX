@@ -134,8 +134,8 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
             return false;
         }
 
-        final Block layer0 = level.getBlock(this, 0);
-        final Block layer1 = level.getBlock(this, 1);
+        final Block layer0 = getLevel().getBlock(this, 0);
+        final Block layer1 = getLevel().getBlock(this, 1);
 
         setBlockFace(player != null ? player.getDirection().getOpposite() : null);
         boolean defaultLayerCheck = (block instanceof BlockWater && ((BlockWater) block).isSourceOrFlowingDown())
@@ -144,13 +144,13 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
                 || layer1 instanceof BlockIceFrosted;
         if (defaultLayerCheck || layer1Check) {
             setExtinguished(true);
-            this.level.addSound(this, Sound.RANDOM_FIZZ, 0.5f, 2.2f);
-            this.level.setBlock(this, 1, defaultLayerCheck ? block : layer1, false, false);
+            this.getLevel().addSound(this, Sound.RANDOM_FIZZ, 0.5f, 2.2f);
+            this.getLevel().setBlock(this, 1, defaultLayerCheck ? block : layer1, false, false);
         } else {
-            this.level.setBlock(this, 1, Block.get(BlockID.AIR), false, false);
+            this.getLevel().setBlock(this, 1, Block.get(BlockID.AIR), false, false);
         }
 
-        this.level.setBlock(block, this, true, true);
+        this.getLevel().setBlock(block, this, true, true);
         try {
             CompoundTag nbt = new CompoundTag();
 
@@ -164,12 +164,12 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
             createBlockEntity(nbt);
         } catch (Exception e) {
             log.warn("Failed to create the block entity {} at {}", getBlockEntityType(), getLocation(), e);
-            level.setBlock(layer0, 0, layer0, true);
-            level.setBlock(layer1, 0, layer1, true);
+            getLevel().setBlock(layer0, 0, layer0, true);
+            getLevel().setBlock(layer1, 0, layer1, true);
             return false;
         }
 
-        this.level.updateAround(this);
+        this.getLevel().updateAround(this);
         return true;
     }
 
@@ -183,7 +183,7 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
         if (isExtinguished()) {
             if (entity.isOnFire()) {
                 setExtinguished(false);
-                level.setBlock(this, this, true);
+                getLevel().setBlock(this, this, true);
             }
             return;
         }
@@ -220,8 +220,8 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
                 Block layer1 = getLevelBlockAtLayer(1);
                 if (layer1 instanceof BlockWater || layer1 instanceof BlockIceFrosted) {
                     setExtinguished(true);
-                    this.level.setBlock(this, this, true, true);
-                    this.level.addSound(this, Sound.RANDOM_FIZZ, 0.5f, 2.2f);
+                    this.getLevel().setBlock(this, this, true, true);
+                    this.getLevel().addSound(this, Sound.RANDOM_FIZZ, 0.5f, 2.2f);
                 }
             }
             return type;
@@ -241,16 +241,16 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
         if (!isExtinguished()) {
             if (item.isShovel()) {
                 setExtinguished(true);
-                this.level.setBlock(this, this, true, true);
-                this.level.addSound(this, Sound.RANDOM_FIZZ, 0.5f, 2.2f);
+                this.getLevel().setBlock(this, this, true, true);
+                this.getLevel().addSound(this, Sound.RANDOM_FIZZ, 0.5f, 2.2f);
                 itemUsed = true;
             }
         } else if (item.getId() == ItemID.FLINT_AND_STEEL || item.getEnchantment(Enchantment.ID_FIRE_ASPECT) != null) {
             item.useOn(this);
             setExtinguished(false);
-            this.level.setBlock(this, this, true, true);
+            this.getLevel().setBlock(this, this, true, true);
             campfire.scheduleUpdate();
-            this.level.addSound(this, Sound.FIRE_IGNITE);
+            this.getLevel().addSound(this, Sound.FIRE_IGNITE);
             itemUsed = true;
         }
 
@@ -258,7 +258,8 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
         cloned.setCount(1);
         CampfireInventory inventory = campfire.getInventory();
         if (inventory.canAddItem(cloned)) {
-            CampfireRecipe recipe = this.level.getServer().getCraftingManager().matchCampfireRecipe(cloned);
+            CampfireRecipe recipe =
+                    this.getLevel().getServer().getCraftingManager().matchCampfireRecipe(cloned);
             if (recipe != null) {
                 inventory.addItem(cloned);
                 item.setCount(item.getCount() - 1);
@@ -276,13 +277,13 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
         if ((projectile instanceof EntitySmallFireBall || (projectile.isOnFire() && projectile instanceof EntityArrow))
                 && isExtinguished()) {
             setExtinguished(false);
-            level.setBlock(this, this, true);
+            getLevel().setBlock(this, this, true);
             return true;
         } else if (projectile instanceof EntityPotion
                 && !isExtinguished()
                 && ((EntityPotion) projectile).potionId == 0) {
             setExtinguished(true);
-            level.setBlock(this, this, true);
+            getLevel().setBlock(this, this, true);
             return true;
         }
         return false;
@@ -296,12 +297,12 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
 
     @Override
     public double getMaxY() {
-        return y + 0.4371948;
+        return y() + 0.4371948;
     }
 
     @Override
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
-        return new SimpleAxisAlignedBB(x, y, z, x + 1, y + 1, z + 1);
+        return new SimpleAxisAlignedBB(x(), y(), z(), x() + 1, y() + 1, z() + 1);
     }
 
     @PowerNukkitOnly

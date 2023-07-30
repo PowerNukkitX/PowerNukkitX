@@ -90,7 +90,7 @@ public class BlockAzalea extends BlockFlowable implements BlockFlowerPot.FlowerP
                 item.count--;
             }
 
-            this.level.addParticle(new BoneMealParticle(this));
+            this.getLevel().addParticle(new BoneMealParticle(this));
             if (ThreadLocalRandom.current().nextInt(4) == 0) {
                 this.grow();
                 return true;
@@ -170,7 +170,7 @@ public class BlockAzalea extends BlockFlowable implements BlockFlowerPot.FlowerP
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean isSameType(Vector3 pos, WoodType type) {
-        Block block = this.level.getBlock(pos);
+        Block block = this.getLevel().getBlock(pos);
         return block.getId() == this.getId() && ((BlockSapling) block).getWoodType() == type;
     }
 
@@ -181,7 +181,7 @@ public class BlockAzalea extends BlockFlowable implements BlockFlowerPot.FlowerP
         generator = new ObjectAzaleaTree();
         vector3 = this.add(0, 0, 0);
 
-        ListChunkManager chunkManager = new ListChunkManager(this.level);
+        ListChunkManager chunkManager = new ListChunkManager(this.getLevel());
         boolean success = generator.generate(chunkManager, new NukkitRandom(), vector3);
         StructureGrowEvent event = new StructureGrowEvent(this, chunkManager.getBlocks());
         event.call();
@@ -190,8 +190,8 @@ public class BlockAzalea extends BlockFlowable implements BlockFlowerPot.FlowerP
         }
 
         for (Block block : event.getBlockList()) {
-            this.level.setBlock(block, block);
+            this.getLevel().setBlock(block, block);
         }
-        this.level.setBlock(this, Block.get(LOG));
+        this.getLevel().setBlock(this, Block.get(LOG));
     }
 }

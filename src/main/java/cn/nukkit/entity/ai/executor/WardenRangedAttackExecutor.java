@@ -44,7 +44,7 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor {
             sendAttackParticle(entity, entity.add(0, 1.5), target.add(0, target.getHeight() / 2));
 
             // sound
-            entity.level.addSound(entity, Sound.MOB_WARDEN_SONIC_BOOM);
+            entity.getLevel().addSound(entity, Sound.MOB_WARDEN_SONIC_BOOM);
             //            LevelSoundEventPacketV2 pk = new LevelSoundEventPacketV2();
             //            pk.sound = LevelSoundEventPacket.SOUND_SONIC_BOOM;
             //            pk.entityIdentifier = "minecraft:warden";
@@ -67,7 +67,7 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor {
             EntityDamageByEntityEvent ev = new EntityDamageByEntityEvent(
                     entity, target, EntityDamageEvent.DamageCause.MAGIC, damages, 0.6f, null);
 
-            entity.level.addSound(target, Sound.MOB_WARDEN_ATTACK);
+            entity.getLevel().addSound(target, Sound.MOB_WARDEN_ATTACK);
             target.attack(ev);
         }
         if (currentTick > this.totalRunningTime) {
@@ -94,7 +94,7 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor {
         entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_SONIC_BOOM, true);
         entity.setDataFlag(Entity.DATA_FLAGS_EXTENDED, Entity.DATA_FLAG_SONIC_BOOM, true);
 
-        entity.level.addSound(entity, Sound.MOB_WARDEN_SONIC_CHARGE);
+        entity.getLevel().addSound(entity, Sound.MOB_WARDEN_SONIC_CHARGE);
         //        LevelSoundEventPacketV2 pk = new LevelSoundEventPacketV2();
         //        pk.sound = LevelSoundEventPacket.SOUND_SONIC_CHARGE;
         //        pk.entityIdentifier = "minecraft:warden";
@@ -115,7 +115,7 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor {
 
     protected void sendAttackParticle(EntityIntelligent entity, Vector3 from, Vector3 to) {
         var length = from.distance(to);
-        var relativeVector = new Vector3(to.x - from.x, to.y - from.y, to.z - from.z);
+        var relativeVector = new Vector3(to.x() - from.x(), to.y() - from.y(), to.z() - from.z());
         for (int i = 1; i <= (length + 4); i++) {
             var pk = new LevelEventGenericPacket();
             pk.eventId = LevelEventPacket.EVENT_PARTICLE_SONIC_EXPLOSION;
@@ -126,6 +126,9 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor {
     }
 
     protected CompoundTag createVec3fTag(Vector3f vec3f) {
-        return new CompoundTag().putFloat("x", vec3f.x).putFloat("y", vec3f.y).putFloat("z", vec3f.z);
+        return new CompoundTag()
+                .putFloat("x", vec3f.x())
+                .putFloat("y", vec3f.y())
+                .putFloat("z", vec3f.z());
     }
 }

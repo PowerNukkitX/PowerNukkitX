@@ -159,7 +159,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
 
     @Override
     public double getMaxY() {
-        return this.y + 0.125;
+        return this.y() + 0.125;
     }
 
     @Override
@@ -215,7 +215,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
                 }
             } else {
                 BlockFace f = faces.stream()
-                        .min((f1, f2) -> (f1.getIndex() < f2.getIndex()) ? 1 : ((x == y) ? 0 : -1))
+                        .min((f1, f2) -> (f1.getIndex() < f2.getIndex()) ? 1 : ((x() == y()) ? 0 : -1))
                         .get();
                 BlockFace fo = f.getOpposite();
                 if (faces.contains(fo)) { // Opposite connectable
@@ -226,9 +226,9 @@ public class BlockRail extends BlockFlowable implements Faceable {
                 }
             }
         }
-        this.level.setBlock(this, this, true, true);
+        this.getLevel().setBlock(this, this, true, true);
         if (!isAbstract()) {
-            level.scheduleUpdate(this, this, 0);
+            getLevel().scheduleUpdate(this, this, 0);
         }
 
         return true;
@@ -247,8 +247,8 @@ public class BlockRail extends BlockFlowable implements Faceable {
         this.connect(rail2, face2);
 
         if (face1.getOpposite() == face2) {
-            int delta1 = (int) (this.y - rail1.y);
-            int delta2 = (int) (this.y - rail2.y);
+            int delta1 = (int) (this.y() - rail1.y());
+            int delta2 = (int) (this.y() - rail2.y());
 
             if (delta1 == -1) {
                 return Orientation.ascending(face1);
@@ -260,7 +260,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
     }
 
     private Orientation connect(BlockRail other, BlockFace face) {
-        int delta = (int) (this.y - other.y);
+        int delta = (int) (this.y() - other.y());
         Map<BlockRail, BlockFace> rails = other.checkRailsConnected();
         if (rails.isEmpty()) { // Only one
             other.setOrientation(delta == 1 ? ascending(face.getOpposite()) : straight(face));
@@ -349,7 +349,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
     public void setOrientation(Orientation o) {
         if (o != getOrientation()) {
             setRailDirection(o);
-            this.level.setBlock(this, this, true, true);
+            this.getLevel().setBlock(this, this, true, true);
         }
     }
 
@@ -389,7 +389,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
         if (getProperties().contains(ACTIVE)) {
             setRailActive(active);
         }
-        level.setBlock(this, this, true, true);
+        getLevel().setBlock(this, this, true, true);
     }
 
     @PowerNukkitOnly

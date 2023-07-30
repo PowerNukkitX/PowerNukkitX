@@ -72,7 +72,7 @@ public class FlatRandomRoamExecutor implements EntityControl, IBehaviorExecutor 
                 int blockId;
                 int time = 0;
                 while (time <= maxRetryTime
-                        && ((blockId = entity.level
+                        && ((blockId = entity.getLevel()
                                                 .getTickCachedBlock(target.add(0, -1, 0))
                                                 .getId())
                                         == Block.FLOWING_WATER
@@ -123,6 +123,6 @@ public class FlatRandomRoamExecutor implements EntityControl, IBehaviorExecutor 
         var random = ThreadLocalRandom.current();
         int x = random.nextInt(maxRoamRange * 2) - maxRoamRange + entity.getFloorX();
         int z = random.nextInt(maxRoamRange * 2) - maxRoamRange + entity.getFloorZ();
-        return new Vector3(x, entity.y, z);
+        return new Vector3(x, entity.y(), z);
     }
 }

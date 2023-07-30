@@ -45,7 +45,7 @@ public abstract class TreeGenerator extends cn.nukkit.level.generator.object.Bas
      * sets dirt at a specific location if it isn't already dirt
      */
     protected void setDirtAt(ChunkManager level, Vector3 pos) {
-        if (level.getBlockIdAt((int) pos.x, (int) pos.y, (int) pos.z) != Item.DIRT) {
+        if (level.getBlockIdAt((int) pos.x(), (int) pos.y(), (int) pos.z()) != Item.DIRT) {
             this.setBlockAndNotifyAdequately(level, pos, Block.get(BlockID.DIRT));
         }
     }

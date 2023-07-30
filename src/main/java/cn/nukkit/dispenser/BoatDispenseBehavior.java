@@ -28,13 +28,13 @@ public class BoatDispenseBehavior extends DefaultDispenseBehavior {
         Block target = block.getSide(face);
 
         if (target instanceof BlockWater) {
-            pos.y += 1;
+            pos.setY(pos.y() + 1);
         } else if (target.getId() != BlockID.AIR || !(target.down() instanceof BlockWater)) {
             return super.dispense(block, face, item);
         }
 
         spawnBoatEntity(
-                block.level,
+                block.getLevel(),
                 target.getLocation()
                         .add(face.getXOffset() * 0.75, face.getYOffset() * 0.75, face.getZOffset() * 0.75)
                         .setYaw(face.getHorizontalAngle()),

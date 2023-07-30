@@ -49,24 +49,24 @@ public class BlockIce extends BlockTransparent {
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Will not create water when it is above air")
     @Override
     public boolean onBreak(Item item) {
-        if (level.getDimension() == Level.DIMENSION_NETHER
+        if (getLevel().getDimension() == Level.DIMENSION_NETHER
                 || item.getEnchantmentLevel(Enchantment.ID_SILK_TOUCH) > 0
                 || down().getId() == BlockID.AIR) {
             return super.onBreak(item);
         }
 
-        return level.setBlock(this, Block.get(BlockID.FLOWING_WATER), true);
+        return getLevel().setBlock(this, Block.get(BlockID.FLOWING_WATER), true);
     }
 
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_RANDOM) {
-            if (level.getBlockLightAt((int) this.x, (int) this.y, (int) this.z) >= 12) {
+            if (getLevel().getBlockLightAt((int) this.x(), (int) this.y(), (int) this.z()) >= 12) {
                 BlockFadeEvent event = new BlockFadeEvent(
-                        this, level.getDimension() == Level.DIMENSION_NETHER ? get(AIR) : get(FLOWING_WATER));
+                        this, getLevel().getDimension() == Level.DIMENSION_NETHER ? get(AIR) : get(FLOWING_WATER));
                 event.call();
                 if (!event.isCancelled()) {
-                    level.setBlock(this, event.getNewState(), true);
+                    getLevel().setBlock(this, event.getNewState(), true);
                 }
                 return Level.BLOCK_UPDATE_RANDOM;
             }

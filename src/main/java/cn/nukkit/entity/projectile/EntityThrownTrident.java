@@ -169,9 +169,9 @@ public class EntityThrownTrident extends SlenderProjectile {
         this.namedTag.put(TAG_TRIDENT, NBTIO.putItemHelper(this.trident));
         this.namedTag.putByte(TAG_PICKUP, this.pickupMode);
         this.namedTag.putList(new ListTag<DoubleTag>("CollisionPos")
-                .add(new DoubleTag("0", this.collisionPos.x))
-                .add(new DoubleTag("1", this.collisionPos.y))
-                .add(new DoubleTag("2", this.collisionPos.z)));
+                .add(new DoubleTag("0", this.collisionPos.x()))
+                .add(new DoubleTag("1", this.collisionPos.y()))
+                .add(new DoubleTag("2", this.collisionPos.z())));
         this.namedTag.putList(new ListTag<IntTag>("StuckToBlockPos")
                 .add(new IntTag("0", this.stuckToBlockPos.x))
                 .add(new IntTag("1", this.stuckToBlockPos.y))
@@ -244,13 +244,16 @@ public class EntityThrownTrident extends SlenderProjectile {
             if (this.canReturnToShooter()) {
                 Entity shooter = this.shootingEntity;
                 Vector3 vector3 = new Vector3(
-                        shooter.x - this.x, shooter.y + shooter.getEyeHeight() - this.y, shooter.z - this.z);
-                this.setPosition(new Vector3(this.x, this.y + vector3.y * 0.015 * ((double) loyaltyLevel), this.z));
+                        shooter.x() - this.x(),
+                        shooter.y() + shooter.getEyeHeight() - this.y(),
+                        shooter.z() - this.z());
+                this.setPosition(
+                        new Vector3(this.x(), this.y() + vector3.y() * 0.015 * ((double) loyaltyLevel), this.z()));
                 this.setMotion(this.getMotion().multiply(0.95).add(vector3.multiply(loyaltyLevel * 0.05)));
                 hasUpdate = true;
             } else {
-                if (level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS) && !this.closed) {
-                    this.level.dropItem(this, this.trident);
+                if (getLevel().getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS) && !this.closed) {
+                    this.getLevel().dropItem(this, this.trident);
                 }
                 this.close();
             }
@@ -265,14 +268,14 @@ public class EntityThrownTrident extends SlenderProjectile {
         pk.type = NETWORK_ID;
         pk.entityUniqueId = this.getId();
         pk.entityRuntimeId = this.getId();
-        pk.x = (float) this.x;
-        pk.y = (float) this.y;
-        pk.z = (float) this.z;
+        pk.x = (float) this.x();
+        pk.y = (float) this.y();
+        pk.z = (float) this.z();
         pk.speedX = (float) this.motionX;
         pk.speedY = (float) this.motionY;
         pk.speedZ = (float) this.motionZ;
-        pk.yaw = (float) this.yaw;
-        pk.pitch = (float) this.pitch;
+        pk.yaw = (float) this.yaw();
+        pk.pitch = (float) this.pitch();
         pk.metadata = this.dataProperties;
         player.dataPacket(pk);
 
@@ -310,12 +313,12 @@ public class EntityThrownTrident extends SlenderProjectile {
         this.hadCollision = true;
         this.setCollisionPos(this);
         this.setMotion(new Vector3(
-                this.getMotion().getX() * -0.01,
-                this.getMotion().getY() * -0.1,
-                this.getMotion().getZ() * -0.01));
+                this.getMotion().x() * -0.01,
+                this.getMotion().y() * -0.1,
+                this.getMotion().z() * -0.01));
 
         if (this.hasChanneling) {
-            if (this.level.isThundering() && this.level.canBlockSeeSky(this)) {
+            if (this.getLevel().isThundering() && this.getLevel().canBlockSeeSky(this)) {
                 Position pos = this.getPosition();
                 EntityLightning lighting = new EntityLightning(pos.getChunk(), getDefaultNBT(pos));
                 lighting.spawnToAll();
@@ -333,7 +336,7 @@ public class EntityThrownTrident extends SlenderProjectile {
 
     @PowerNukkitOnly
     public Entity create(Object type, Position source, Object... args) {
-        FullChunk chunk = source.getLevel().getChunk((int) source.x >> 4, (int) source.z >> 4);
+        FullChunk chunk = source.getLevel().getChunk((int) source.x() >> 4, (int) source.z() >> 4);
         if (chunk == null) return null;
 
         CompoundTag nbt = Entity.getDefaultNBT(source.add(0.5, 0, 0.5), null, new Random().nextFloat() * 360, 0);
@@ -359,7 +362,8 @@ public class EntityThrownTrident extends SlenderProjectile {
             return;
         }
 
-        for (Block collisionBlock : level.getCollisionBlocks(getBoundingBox().grow(0.1, 0.1, 0.1))) {
+        for (Block collisionBlock :
+                getLevel().getCollisionBlocks(getBoundingBox().grow(0.1, 0.1, 0.1))) {
             this.setStuckToBlockPos(new BlockVector3(
                     collisionBlock.getFloorX(), collisionBlock.getFloorY(), collisionBlock.getFloorZ()));
             if (this.canReturnToShooter()) {

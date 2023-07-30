@@ -31,9 +31,9 @@ public class BlockEntityGlowItemFrame extends BlockEntityItemFrame {
         Item item = getItem();
         CompoundTag tag = new CompoundTag()
                 .putString("id", BlockEntity.GLOW_ITEM_FRAME)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z);
+                .putInt("x", (int) this.x())
+                .putInt("y", (int) this.y())
+                .putInt("z", (int) this.z());
 
         if (!item.isNull()) {
             CompoundTag itemTag = NBTIO.putItemHelper(item);

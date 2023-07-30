@@ -172,12 +172,12 @@ public class BlockDispenser extends BlockSolidMeta
             double fz,
             Player player) {
         if (player != null) {
-            if (Math.abs(player.x - this.x) < 2 && Math.abs(player.z - this.z) < 2) {
-                double y = player.y + player.getEyeHeight();
+            if (Math.abs(player.x() - this.x()) < 2 && Math.abs(player.z() - this.z()) < 2) {
+                double y = player.y() + player.getEyeHeight();
 
-                if (y - this.y > 2) {
+                if (y - this.y() > 2) {
                     this.setDamage(BlockFace.UP.getIndex());
-                } else if (this.y - y > 0) {
+                } else if (this.y() - y > 0) {
                     this.setDamage(BlockFace.DOWN.getIndex());
                 } else {
                     this.setDamage(player.getHorizontalFacing().getOpposite().getIndex());
@@ -208,7 +208,7 @@ public class BlockDispenser extends BlockSolidMeta
             since = "1.4.0.0-PN")
     @Override
     public int onUpdate(int type) {
-        if (!this.level.getServer().isRedstoneEnabled()) {
+        if (!this.getLevel().getServer().isRedstoneEnabled()) {
             return 0;
         }
 
@@ -221,11 +221,11 @@ public class BlockDispenser extends BlockSolidMeta
 
             if (this.isGettingPower() && !triggered) {
                 this.setTriggered(true);
-                this.level.setBlock(this, this, false, false);
-                level.scheduleUpdate(this, this, 4);
+                this.getLevel().setBlock(this, this, false, false);
+                getLevel().scheduleUpdate(this, this, 4);
             } else if (!this.isGettingPower() && triggered) {
                 this.setTriggered(false);
-                this.level.setBlock(this, this, false, false);
+                this.getLevel().setBlock(this, this, false, false);
             }
 
             return type;
@@ -266,18 +266,18 @@ public class BlockDispenser extends BlockSolidMeta
         pk.z = 0.5f + facing.getZOffset() * 0.7f;
 
         if (target == null) {
-            this.level.addSound(this, Sound.RANDOM_CLICK, 1.0f, 1.2f);
+            this.getLevel().addSound(this, Sound.RANDOM_CLICK, 1.0f, 1.2f);
             getBlockEntity().setDirty();
             return;
         } else {
             if (!(getDispenseBehavior(target) instanceof DropperDispenseBehavior)
                     && !(getDispenseBehavior(target) instanceof FlintAndSteelDispenseBehavior))
-                this.level.addSound(this, Sound.RANDOM_CLICK, 1.0f, 1.0f);
+                this.getLevel().addSound(this, Sound.RANDOM_CLICK, 1.0f, 1.0f);
         }
 
         pk.evid = LevelEventPacket.EVENT_PARTICLE_SHOOT;
         pk.data = 7;
-        this.level.addChunkPacket(getChunkX(), getChunkZ(), pk);
+        this.getLevel().addChunkPacket(getChunkX(), getChunkZ(), pk);
 
         Item origin = target;
         target = target.clone();
@@ -294,7 +294,7 @@ public class BlockDispenser extends BlockSolidMeta
 
                 if (fit.length > 0) {
                     for (Item drop : fit) {
-                        this.level.dropItem(this, drop);
+                        this.getLevel().dropItem(this, drop);
                     }
                 }
             } else {

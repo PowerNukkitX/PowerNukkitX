@@ -20,9 +20,9 @@ public class DY extends ScopeArgument {
             throws SelectorSyntaxException {
         ParseUtils.singleArgument(arguments, getKeyName());
         ParseUtils.cannotReversed(arguments[0]);
-        var y = basePos.getY();
+        var y = basePos.y();
         var dy = Double.parseDouble(arguments[0]);
-        return entity -> ParseUtils.checkBetween(y, y + dy, entity.getY());
+        return entity -> ParseUtils.checkBetween(y, y + dy, entity.y());
     }
 
     @Override

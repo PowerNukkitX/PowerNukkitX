@@ -19,8 +19,8 @@ import org.jetbrains.annotations.NotNull;
 public class SwimmingPosEvaluator implements IPosEvaluator {
     @Override
     public boolean evalPos(@NotNull EntityIntelligent entity, @NotNull Vector3 pos) {
-        int blockId = entity.level
-                .getTickCachedBlock(Position.fromObject(pos, entity.level))
+        int blockId = entity.getLevel()
+                .getTickCachedBlock(Position.fromObject(pos, entity.getLevel()))
                 .getId();
         return isPassable(entity, pos) && (blockId == Block.FLOWING_WATER || blockId == Block.STILL_WATER);
     }
@@ -39,12 +39,12 @@ public class SwimmingPosEvaluator implements IPosEvaluator {
         float height = entity.getHeight() * entity.getScale();
         // 原版中不会贴地飞行
         AxisAlignedBB bb = new SimpleAxisAlignedBB(
-                vector3.getX() - radius,
-                vector3.getY() - height * 0.5,
-                vector3.getZ() - radius,
-                vector3.getX() + radius,
-                vector3.getY() + height,
-                vector3.getZ() + radius);
-        return !Utils.hasCollisionTickCachedBlocks(entity.level, bb);
+                vector3.x() - radius,
+                vector3.y() - height * 0.5,
+                vector3.z() - radius,
+                vector3.x() + radius,
+                vector3.y() + height,
+                vector3.z() + radius);
+        return !Utils.hasCollisionTickCachedBlocks(entity.getLevel(), bb);
     }
 }

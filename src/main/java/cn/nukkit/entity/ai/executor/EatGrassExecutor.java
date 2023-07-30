@@ -29,12 +29,12 @@ public class EatGrassExecutor implements IBehaviorExecutor {
         currentTick++;
         if (currentTick > duration) {
             currentTick = 0;
-            entity.level.addParticle(new DestroyBlockParticle(entity, Block.get(Block.TALL_GRASS)));
-            if (entity.level.getGameRules().getBoolean(GameRule.MOB_GRIEFING)) {
+            entity.getLevel().addParticle(new DestroyBlockParticle(entity, Block.get(Block.TALL_GRASS)));
+            if (entity.getLevel().getGameRules().getBoolean(GameRule.MOB_GRIEFING)) {
                 if (entity.getLevelBlock().getId() == Block.TALL_GRASS) {
-                    entity.level.setBlock(entity, Block.get(Block.AIR));
+                    entity.getLevel().setBlock(entity, Block.get(Block.AIR));
                 } else {
-                    entity.level.setBlock(entity.add(0, -1, 0), Block.get(Block.DIRT));
+                    entity.getLevel().setBlock(entity.add(0, -1, 0), Block.get(Block.DIRT));
                 }
             }
             if (entity instanceof EntitySheep sheep) {

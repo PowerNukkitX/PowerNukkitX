@@ -31,9 +31,9 @@ public class BlockEntityBarrel extends BlockEntitySpawnableContainer implements 
     public CompoundTag getSpawnCompound() {
         return new CompoundTag()
                 .putString("id", BlockEntity.BARREL)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z)
+                .putInt("x", (int) this.x())
+                .putInt("y", (int) this.y())
+                .putInt("z", (int) this.z())
                 .putBoolean("isMovable", this.isMovable())
                 .putBoolean("Findable", false);
     }

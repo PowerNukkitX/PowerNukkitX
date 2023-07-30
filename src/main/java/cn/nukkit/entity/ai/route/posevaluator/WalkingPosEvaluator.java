@@ -24,7 +24,7 @@ public class WalkingPosEvaluator implements IPosEvaluator {
         var blockCenter = block.add(0.5, 1, 0.5);
         // 检查是否可到达
         if (!isPassable(entity, blockCenter)) return false;
-        if (entity.hasWaterAt(0) && blockCenter.getY() - entity.getY() > 1) // 实体在水中不能移动到一格高以上的方块
+        if (entity.hasWaterAt(0) && blockCenter.y() - entity.y() > 1) // 实体在水中不能移动到一格高以上的方块
         return false;
         // TODO: 检查碰头
         // 脚下不能是伤害性方块
@@ -46,12 +46,12 @@ public class WalkingPosEvaluator implements IPosEvaluator {
         double radius = (entity.getWidth() * entity.getScale()) / 2;
         float height = entity.getHeight() * entity.getScale();
         AxisAlignedBB bb = new SimpleAxisAlignedBB(
-                vector3.getX() - radius,
-                vector3.getY(),
-                vector3.getZ() - radius,
-                vector3.getX() + radius,
-                vector3.getY() + height,
-                vector3.getZ() + radius);
+                vector3.x() - radius,
+                vector3.y(),
+                vector3.z() - radius,
+                vector3.x() + radius,
+                vector3.y() + height,
+                vector3.z() + radius);
         if (radius > 0.5) {
             // A --- B --- C
             // |           |
@@ -59,7 +59,7 @@ public class WalkingPosEvaluator implements IPosEvaluator {
             // |           |
             // F --- G --- H
             // 在P点一次通过的可能性最大，所以优先检测
-            byte collisionInfo = Utils.hasCollisionTickCachedBlocksWithInfo(entity.level, bb);
+            byte collisionInfo = Utils.hasCollisionTickCachedBlocksWithInfo(entity.getLevel(), bb);
             if (collisionInfo == 0) {
                 return true;
             }
@@ -75,14 +75,14 @@ public class WalkingPosEvaluator implements IPosEvaluator {
                     if ((collisionInfo & 0b000011) - 2 == j) continue; // 获取z轴的碰撞信息并比较
                     // 由于已经缓存了方块，检测速度还是可以接受的
                     if (!Utils.hasCollisionTickCachedBlocks(
-                            entity.level, bb.clone().offset(i * dr, 0, j * dr))) {
+                            entity.getLevel(), bb.clone().offset(i * dr, 0, j * dr))) {
                         return true;
                     }
                 }
             }
             return false;
         } else {
-            return !Utils.hasCollisionTickCachedBlocks(entity.level, bb);
+            return !Utils.hasCollisionTickCachedBlocks(entity.getLevel(), bb);
         }
     }
 }

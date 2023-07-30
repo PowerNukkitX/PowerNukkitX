@@ -169,7 +169,7 @@ public class EntityXPOrb extends Entity {
 
             this.motionY -= this.getGravity();
 
-            if (this.checkObstruction(this.x, this.y, this.z)) {
+            if (this.checkObstruction(this.x(), this.y(), this.z())) {
                 hasUpdate = true;
             }
 
@@ -195,9 +195,10 @@ public class EntityXPOrb extends Entity {
             }
 
             if (this.closestPlayer != null) {
-                double dX = (this.closestPlayer.x - this.x) / 8.0D;
-                double dY = (this.closestPlayer.y + (double) this.closestPlayer.getEyeHeight() / 2.0D - this.y) / 8.0D;
-                double dZ = (this.closestPlayer.z - this.z) / 8.0D;
+                double dX = (this.closestPlayer.x() - this.x()) / 8.0D;
+                double dY =
+                        (this.closestPlayer.y() + (double) this.closestPlayer.getEyeHeight() / 2.0D - this.y()) / 8.0D;
+                double dZ = (this.closestPlayer.z() - this.z()) / 8.0D;
                 double d = Math.sqrt(dX * dX + dY * dY + dZ * dZ);
                 double diff = 1.0D - d;
 
@@ -216,8 +217,8 @@ public class EntityXPOrb extends Entity {
             if (this.onGround && (Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionZ) > 0.00001)) {
                 friction = this.getLevel()
                                 .getBlock(this.temporalVector.setComponents(
-                                        (int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int)
-                                                Math.floor(this.z)))
+                                        (int) Math.floor(this.x()), (int) Math.floor(this.y() - 1), (int)
+                                                Math.floor(this.z())))
                                 .getFrictionFactor()
                         * friction;
             }

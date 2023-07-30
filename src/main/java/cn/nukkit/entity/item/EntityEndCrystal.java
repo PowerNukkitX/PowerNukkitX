@@ -101,7 +101,7 @@ public class EntityEndCrystal extends Entity implements EntityExplosive {
 
             this.close();
 
-            if (this.level.getGameRules().getBoolean(GameRule.MOB_GRIEFING)) {
+            if (this.getLevel().getGameRules().getBoolean(GameRule.MOB_GRIEFING)) {
                 explode.explodeA();
                 explode.explodeB();
             } else {

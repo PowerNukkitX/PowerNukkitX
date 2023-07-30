@@ -29,7 +29,7 @@ public abstract class BlockRoots extends BlockFlowable {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL && !isSupportValid()) {
-            level.useBreakOn(this);
+            getLevel().useBreakOn(this);
             return type;
         }
         return 0;

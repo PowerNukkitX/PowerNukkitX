@@ -14,7 +14,7 @@ public class ItemBreakParticle extends Particle {
     private final int data;
 
     public ItemBreakParticle(Vector3 pos, Item item) {
-        super(pos.x, pos.y, pos.z);
+        super(pos.x(), pos.y(), pos.z());
         this.data = (item.getNetworkId() << 16 | item.getDamage());
     }
 
@@ -22,9 +22,9 @@ public class ItemBreakParticle extends Particle {
     public DataPacket[] encode() {
         LevelEventPacket packet = new LevelEventPacket();
         packet.evid = (short) (LevelEventPacket.EVENT_ADD_PARTICLE_MASK | Particle.TYPE_ITEM_BREAK);
-        packet.x = (float) this.x;
-        packet.y = (float) this.y;
-        packet.z = (float) this.z;
+        packet.x = (float) this.x();
+        packet.y = (float) this.y();
+        packet.z = (float) this.z();
         packet.data = this.data;
         return new DataPacket[] {packet};
     }

@@ -250,7 +250,7 @@ public class EntityAreaEffectCloud extends Entity {
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_FIRE_IMMUNE, true);
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_IMMOBILE, true);
         this.setDataProperty(new ShortEntityData(DATA_AREA_EFFECT_CLOUD_PARTICLE_ID, 32), false);
-        this.setDataProperty(new LongEntityData(DATA_SPAWN_TIME, this.level.getCurrentTick()), false);
+        this.setDataProperty(new LongEntityData(DATA_SPAWN_TIME, this.getLevel().getCurrentTick()), false);
         this.setDataProperty(new IntEntityData(DATA_PICKUP_COUNT, 0), false);
 
         cloudEffects = new ArrayList<>(1);
@@ -372,7 +372,7 @@ public class EntityAreaEffectCloud extends Entity {
             if ((nextApply -= tickDiff) <= 0) {
                 nextApply = reapplicationDelay + 10;
 
-                Entity[] collidingEntities = level.getCollidingEntities(getBoundingBox());
+                Entity[] collidingEntities = getLevel().getCollidingEntities(getBoundingBox());
                 if (collidingEntities.length > 0) {
                     radius += radiusOnUse;
                     radiusOnUse /= 2;
@@ -417,7 +417,7 @@ public class EntityAreaEffectCloud extends Entity {
         }
 
         float height = getHeight();
-        boundingBox.setBounds(x - radius, y - height, z - radius, x + radius, y + height, z + radius);
+        boundingBox.setBounds(x() - radius, y() - height, z() - radius, x() + radius, y() + height, z() + radius);
         this.setDataProperty(new FloatEntityData(DATA_BOUNDING_BOX_HEIGHT, height), false);
         this.setDataProperty(new FloatEntityData(DATA_BOUNDING_BOX_WIDTH, radius), false);
 

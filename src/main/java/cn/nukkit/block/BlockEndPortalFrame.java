@@ -88,7 +88,7 @@ public class BlockEndPortalFrame extends BlockTransparentMeta implements Faceabl
 
     @Override
     public double getMaxY() {
-        return this.y + (this.isEndPortalEye() ? 1 : 0.8125);
+        return this.y() + (this.isEndPortalEye() ? 1 : 0.8125);
     }
 
     @Override

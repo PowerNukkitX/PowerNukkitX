@@ -119,7 +119,7 @@ public class EntitySelectorAPI {
         // 根据选择器类型先确定实体检测范围
         List<Entity> entities;
         if (selectorType != SELF) {
-            entities = Lists.newArrayList(senderLocation.level.getEntities());
+            entities = Lists.newArrayList(senderLocation.getLevel().getEntities());
         } else {
             if (sender.isEntity()) entities = Lists.newArrayList(sender.asEntity());
             // 没有符合条件的实体

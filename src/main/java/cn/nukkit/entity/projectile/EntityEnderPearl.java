@@ -92,20 +92,20 @@ public class EntityEnderPearl extends EntityProjectile {
     }
 
     private void teleport() {
-        if (!this.level.equals(this.shootingEntity.getLevel())) {
+        if (!this.getLevel().equals(this.shootingEntity.getLevel())) {
             return;
         }
 
-        this.level.addLevelEvent(this.shootingEntity.add(0.5, 0.5, 0.5), LevelEventPacket.EVENT_SOUND_PORTAL);
+        this.getLevel().addLevelEvent(this.shootingEntity.add(0.5, 0.5, 0.5), LevelEventPacket.EVENT_SOUND_PORTAL);
         this.shootingEntity.teleport(
-                new Vector3(NukkitMath.floorDouble(this.x) + 0.5, this.y, NukkitMath.floorDouble(this.z) + 0.5),
+                new Vector3(NukkitMath.floorDouble(this.x()) + 0.5, this.y(), NukkitMath.floorDouble(this.z()) + 0.5),
                 TeleportCause.ENDER_PEARL);
         if ((((Player) this.shootingEntity).getGamemode() & 0x01) == 0) {
             this.shootingEntity.attack(new EntityDamageByEntityEvent(
                     this, shootingEntity, EntityDamageEvent.DamageCause.PROJECTILE, 5f, 0f));
         }
-        this.level.addLevelEvent(this, LevelEventPacket.EVENT_PARTICLE_ENDERMAN_TELEPORT);
-        this.level.addLevelEvent(this.shootingEntity.add(0.5, 0.5, 0.5), LevelEventPacket.EVENT_SOUND_PORTAL);
+        this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_PARTICLE_ENDERMAN_TELEPORT);
+        this.getLevel().addLevelEvent(this.shootingEntity.add(0.5, 0.5, 0.5), LevelEventPacket.EVENT_SOUND_PORTAL);
     }
 
     @PowerNukkitOnly

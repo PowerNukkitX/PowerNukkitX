@@ -177,9 +177,9 @@ public class LevelEventPacket_v575 extends DataPacket {
     public void decode() {
         this.evid = this.getVarInt();
         Vector3f v = this.getVector3f();
-        this.x = v.x;
-        this.y = v.y;
-        this.z = v.z;
+        this.x = v.x();
+        this.y = v.y();
+        this.z = v.z();
         this.data = this.getVarInt();
     }
 

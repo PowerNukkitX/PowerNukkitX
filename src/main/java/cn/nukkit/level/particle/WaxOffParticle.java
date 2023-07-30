@@ -20,9 +20,9 @@ public class WaxOffParticle extends GenericParticle {
     public DataPacket[] encode() {
         LevelEventPacket pk = new LevelEventPacket();
         pk.evid = LevelEventPacket.EVENT_PARTICLE_WAX_OFF;
-        pk.x = (float) this.x;
-        pk.y = (float) this.y;
-        pk.z = (float) this.z;
+        pk.x = (float) this.x();
+        pk.y = (float) this.y();
+        pk.z = (float) this.z();
         pk.data = this.data;
 
         return new DataPacket[] {pk};

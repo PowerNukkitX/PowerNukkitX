@@ -2,7 +2,6 @@ package cn.nukkit.math;
 
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import javax.annotation.Nullable;
 import lombok.SneakyThrows;
@@ -13,13 +12,9 @@ import org.jetbrains.annotations.NotNull;
  */
 public class Vector3 implements Cloneable {
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
-    public static final Vector3 ZERO = new Vector3(0, 0, 0);
-
-    public double x;
-    public double y;
-    public double z;
+    private double x;
+    private double y;
+    private double z;
 
     public Vector3() {
         this(0, 0, 0);
@@ -39,15 +34,15 @@ public class Vector3 implements Cloneable {
         this.z = z;
     }
 
-    public double getX() {
+    public double x() {
         return this.x;
     }
 
-    public double getY() {
+    public double y() {
         return this.y;
     }
 
-    public double getZ() {
+    public double z() {
         return this.z;
     }
 
@@ -134,7 +129,7 @@ public class Vector3 implements Cloneable {
     }
 
     public Vector3 add(Vector3 x) {
-        return new Vector3(this.x + x.getX(), this.y + x.getY(), this.z + x.getZ());
+        return new Vector3(this.x + x.x(), this.y + x.y(), this.z + x.z());
     }
 
     @Deprecated
@@ -156,7 +151,7 @@ public class Vector3 implements Cloneable {
     }
 
     public Vector3 subtract(Vector3 x) {
-        return this.add(-x.getX(), -x.getY(), -x.getZ());
+        return this.add(-x.x(), -x.y(), -x.z());
     }
 
     public Vector3 multiply(double number) {
@@ -189,15 +184,14 @@ public class Vector3 implements Cloneable {
 
     public Vector3 getSide(BlockFace face, int step) {
         return new Vector3(
-                this.getX() + face.getXOffset() * step,
-                this.getY() + face.getYOffset() * step,
-                this.getZ() + face.getZOffset() * step);
+                this.x() + face.getXOffset() * step,
+                this.y() + face.getYOffset() * step,
+                this.z() + face.getZOffset() * step);
     }
 
     // Get as a Vector3 for better performance. Do not override in Block!
     public Vector3 getSideVec(BlockFace face) {
-        return new Vector3(
-                this.getX() + face.getXOffset(), this.getY() + face.getYOffset(), this.getZ() + face.getZOffset());
+        return new Vector3(this.x() + face.getXOffset(), this.y() + face.getYOffset(), this.z() + face.getZOffset());
     }
 
     public Vector3 up() {
@@ -251,9 +245,9 @@ public class Vector3 implements Cloneable {
     @PowerNukkitOnly
     @Since("FUTURE")
     public int distanceManhattan(Vector3 pos) {
-        double x = Math.abs(pos.getX() - this.getX());
-        double y = Math.abs(pos.getY() - this.getY());
-        double z = Math.abs(pos.getZ() - this.getZ());
+        double x = Math.abs(pos.x() - this.x());
+        double y = Math.abs(pos.y() - this.y());
+        double z = Math.abs(pos.z() - this.z());
         return (int) (x + y + z);
     }
 
@@ -293,7 +287,7 @@ public class Vector3 implements Cloneable {
     }
 
     public double maxPlainDistance(Vector2 vector) {
-        return this.maxPlainDistance(vector.x, vector.y);
+        return this.maxPlainDistance(vector.x(), vector.y());
     }
 
     public double maxPlainDistance(Vector3 x) {

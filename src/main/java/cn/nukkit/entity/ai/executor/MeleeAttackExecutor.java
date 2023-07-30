@@ -114,7 +114,7 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
             if (player.isCreative()
                     || player.isSpectator()
                     || !player.isOnline()
-                    || !entity.level.getName().equals(player.level.getName())) {
+                    || !entity.getLevel().getName().equals(player.getLevel().getName())) {
                 return false;
             }
         }

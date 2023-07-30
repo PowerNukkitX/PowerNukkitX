@@ -68,11 +68,11 @@ public abstract class EntityVehicle extends Entity implements EntityRideable, En
         }
 
         // A killer task
-        if (this.level != null) {
-            if (y < this.level.getMinHeight() - 16) {
+        if (this.getLevel() != null) {
+            if (y() < this.getLevel().getMinHeight() - 16) {
                 kill();
             }
-        } else if (y < -16) {
+        } else if (y() < -16) {
             kill();
         }
         // Movement code
@@ -80,8 +80,8 @@ public abstract class EntityVehicle extends Entity implements EntityRideable, En
 
         // Check riding
         if (this.riding == null) {
-            for (Entity entity : level.fastNearbyEntities(
-                    this.boundingBox.grow(0.20000000298023224, 0.0D, 0.20000000298023224), this)) {
+            for (Entity entity : getLevel()
+                    .fastNearbyEntities(this.boundingBox.grow(0.20000000298023224, 0.0D, 0.20000000298023224), this)) {
                 if (entity instanceof EntityLiving entityLiving) {
                     entityLiving.collidingWith(this);
                 }

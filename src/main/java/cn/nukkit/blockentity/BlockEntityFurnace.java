@@ -155,13 +155,13 @@ public class BlockEntityFurnace extends BlockEntitySpawnable
     @Override
     public void onBreak() {
         for (Item content : inventory.getContents().values()) {
-            level.dropItem(this, content);
+            getLevel().dropItem(this, content);
         }
         this.inventory.clearAll();
         var xp = calculateXpDrop();
         if (xp > 0) {
             setStoredXP(0);
-            level.dropExpOrb(this, xp);
+            getLevel().dropExpOrb(this, xp);
         }
     }
 
@@ -395,9 +395,9 @@ public class BlockEntityFurnace extends BlockEntitySpawnable
     public CompoundTag getSpawnCompound() {
         CompoundTag c = new CompoundTag()
                 .putString("id", getClientName())
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z)
+                .putInt("x", (int) this.x())
+                .putInt("y", (int) this.y())
+                .putInt("z", (int) this.z())
                 .putShort("BurnDuration", burnDuration)
                 .putShort("BurnTime", burnTime)
                 .putShort("CookTime", cookTime)

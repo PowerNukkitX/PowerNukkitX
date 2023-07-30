@@ -158,9 +158,9 @@ public class BlockEntityBeehive extends BlockEntity {
 
         entity.close();
         if (playSound) {
-            entity.level.addSound(this, Sound.BLOCK_BEEHIVE_ENTER);
-            if (entity.level != null && (entity.level != level || distanceSquared(this) >= 4)) {
-                entity.level.addSound(entity, Sound.BLOCK_BEEHIVE_ENTER);
+            entity.getLevel().addSound(this, Sound.BLOCK_BEEHIVE_ENTER);
+            if (entity.getLevel() != null && (entity.getLevel() != getLevel() || distanceSquared(this) >= 4)) {
+                entity.getLevel().addSound(entity, Sound.BLOCK_BEEHIVE_ENTER);
             }
         }
         return occupant;
@@ -248,9 +248,9 @@ public class BlockEntityBeehive extends BlockEntity {
                     face.getZOffset() * 0.25 - face.getXOffset() * 0.5);
 
             saveData.putList(new ListTag<DoubleTag>("Pos")
-                    .add(new DoubleTag("0", spawnPosition.x))
-                    .add(new DoubleTag("1", spawnPosition.y))
-                    .add(new DoubleTag("2", spawnPosition.z)));
+                    .add(new DoubleTag("0", spawnPosition.x()))
+                    .add(new DoubleTag("1", spawnPosition.y()))
+                    .add(new DoubleTag("2", spawnPosition.z())));
 
             saveData.putList(new ListTag<DoubleTag>("Motion")
                     .add(new DoubleTag("0", 0))
@@ -263,8 +263,8 @@ public class BlockEntityBeehive extends BlockEntity {
             lookAt = spawnPosition.add(RANDOM.nextDouble(), 0, RANDOM.nextDouble());
         }
 
-        double dx = lookAt.getX() - spawnPosition.getX();
-        double dz = lookAt.getZ() - spawnPosition.getZ();
+        double dx = lookAt.x() - spawnPosition.x();
+        double dz = lookAt.z() - spawnPosition.z();
         float yaw = 0;
 
         if (dx != 0) {
@@ -286,7 +286,7 @@ public class BlockEntityBeehive extends BlockEntity {
         Entity entity = Entity.createEntity(occupant.actorIdentifier, spawnPosition.getChunk(), saveData);
         if (entity != null) {
             removeOccupant(occupant);
-            level.addSound(this, Sound.BLOCK_BEEHIVE_EXIT);
+            getLevel().addSound(this, Sound.BLOCK_BEEHIVE_EXIT);
         }
 
         EntityBee bee = entity instanceof EntityBee ? (EntityBee) entity : null;
@@ -316,7 +316,7 @@ public class BlockEntityBeehive extends BlockEntity {
         if (!isEmpty()) {
             for (BlockEntityBeehive.Occupant occupant : getOccupants()) {
                 Entity entity = spawnOccupant(occupant, null);
-                if (level == null || level.getBlock(down()).getId() != BlockID.CAMPFIRE_BLOCK) {
+                if (getLevel() == null || getLevel().getBlock(down()).getId() != BlockID.CAMPFIRE_BLOCK) {
                     if (entity instanceof EntityBee) {
                         ((EntityBee) entity).setAngry(true);
                     } else {
@@ -380,7 +380,7 @@ public class BlockEntityBeehive extends BlockEntity {
                     occupant.ticksLeftToStay = 600;
                 }
             } else if (!occupant.isMuted() && RANDOM.nextDouble() < 0.005) {
-                level.addSound(add(0.5, 0, 0.5), occupant.workSound, 1f, occupant.workSoundPitch);
+                getLevel().addSound(add(0.5, 0, 0.5), occupant.workSound, 1f, occupant.workSoundPitch);
             }
         }
 

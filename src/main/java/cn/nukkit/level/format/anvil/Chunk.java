@@ -213,9 +213,9 @@ public class Chunk extends BaseChunk {
                     continue;
                 }
 
-                block.x = entryNBT.getInt("x");
-                block.y = entryNBT.getInt("y");
-                block.z = entryNBT.getInt("z");
+                block.setX(entryNBT.getInt("x"));
+                block.setY(entryNBT.getInt("y"));
+                block.setZ(entryNBT.getInt("z"));
                 block.layer = 0;
 
                 this.provider

@@ -72,22 +72,22 @@ public class BlockEndRod extends BlockTransparentMeta implements Faceable {
 
     @Override
     public double getMinX() {
-        return this.x + 0.4;
+        return this.x() + 0.4;
     }
 
     @Override
     public double getMinZ() {
-        return this.z + 0.4;
+        return this.z() + 0.4;
     }
 
     @Override
     public double getMaxX() {
-        return this.x + 0.6;
+        return this.x() + 0.6;
     }
 
     @Override
     public double getMaxZ() {
-        return this.z + 0.6;
+        return this.z() + 0.6;
     }
 
     @PowerNukkitOnly

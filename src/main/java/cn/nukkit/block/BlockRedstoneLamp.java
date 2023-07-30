@@ -57,9 +57,9 @@ public class BlockRedstoneLamp extends BlockSolid implements RedstoneComponent {
             double fz,
             @Nullable Player player) {
         if (this.isGettingPower()) {
-            this.level.setBlock(this, Block.get(BlockID.LIT_REDSTONE_LAMP), false, true);
+            this.getLevel().setBlock(this, Block.get(BlockID.LIT_REDSTONE_LAMP), false, true);
         } else {
-            this.level.setBlock(this, this, false, true);
+            this.getLevel().setBlock(this, this, false, true);
         }
         return true;
     }
@@ -70,7 +70,7 @@ public class BlockRedstoneLamp extends BlockSolid implements RedstoneComponent {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_REDSTONE) {
-            if (!this.level.getServer().isRedstoneEnabled()) {
+            if (!this.getLevel().getServer().isRedstoneEnabled()) {
                 return 0;
             }
 
@@ -82,9 +82,9 @@ public class BlockRedstoneLamp extends BlockSolid implements RedstoneComponent {
                     return 0;
                 }
 
-                this.level.updateComparatorOutputLevelSelective(this, true);
+                this.getLevel().updateComparatorOutputLevelSelective(this, true);
 
-                this.level.setBlock(this, Block.get(BlockID.LIT_REDSTONE_LAMP), false, false);
+                this.getLevel().setBlock(this, Block.get(BlockID.LIT_REDSTONE_LAMP), false, false);
                 return 1;
             }
         }

@@ -46,9 +46,9 @@ public class ItemMinecartTNT extends Item {
                     level.getChunk(target.getFloorX() >> 4, target.getFloorZ() >> 4),
                     new CompoundTag("")
                             .putList(new ListTag<>("Pos")
-                                    .add(new DoubleTag("", target.getX() + 0.5))
-                                    .add(new DoubleTag("", target.getY() + 0.0625D + adjacent))
-                                    .add(new DoubleTag("", target.getZ() + 0.5)))
+                                    .add(new DoubleTag("", target.x() + 0.5))
+                                    .add(new DoubleTag("", target.y() + 0.0625D + adjacent))
+                                    .add(new DoubleTag("", target.z() + 0.5)))
                             .putList(new ListTag<>("Motion")
                                     .add(new DoubleTag("", 0))
                                     .add(new DoubleTag("", 0))

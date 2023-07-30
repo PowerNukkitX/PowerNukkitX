@@ -68,7 +68,7 @@ public class BlockEntityBell extends BlockEntitySpawnable {
     public boolean onUpdate() {
         if (ringing) {
             if (ticks == 0) {
-                level.addSound(this, Sound.BLOCK_BELL_HIT);
+                getLevel().addSound(this, Sound.BLOCK_BELL_HIT);
                 spawnToAllWithExceptions();
                 spawnExceptions.clear();
             } else if (ticks >= 50) {
@@ -111,7 +111,7 @@ public class BlockEntityBell extends BlockEntitySpawnable {
 
     @PowerNukkitOnly
     public void setRinging(boolean ringing) {
-        if (this.level != null && this.ringing != ringing) {
+        if (this.getLevel() != null && this.ringing != ringing) {
             this.ringing = ringing;
             scheduleUpdate();
         }
@@ -141,9 +141,9 @@ public class BlockEntityBell extends BlockEntitySpawnable {
     public CompoundTag getSpawnCompound() {
         CompoundTag tag = new CompoundTag()
                 .putString("id", BlockEntity.BELL)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z)
+                .putInt("x", (int) this.x())
+                .putInt("y", (int) this.y())
+                .putInt("z", (int) this.z())
                 .putBoolean("Ringing", this.ringing)
                 .putInt("Direction", this.direction)
                 .putInt("Ticks", this.ticks);

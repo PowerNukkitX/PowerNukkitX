@@ -32,7 +32,7 @@ public class ItemFishingRod extends ItemTool {
     public boolean onClickAir(Player player, Vector3 directionVector) {
         if (player.fishing != null) {
             player.stopFishing(true);
-            player.level
+            player.getLevel()
                     .getVibrationManager()
                     .callVibrationEvent(new VibrationEvent(player, player.clone(), VibrationType.ITEM_INTERACT_FINISH));
         } else {

@@ -333,7 +333,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                                 int tradeXP = ta.getInt("traderExp");
                                 player.addExperience(ta.getByte("rewardExp"));
                                 ent.addExperience(tradeXP);
-                                player.level.addSound(player, Sound.RANDOM_ORB, 0, 3f, player);
+                                player.getLevel().addSound(player, Sound.RANDOM_ORB, 0, 3f, player);
                             }
                         }
                     }
@@ -451,7 +451,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
     private void handleUseItemOnEntity(@NotNull PlayerHandle playerHandle, @NotNull InventoryTransactionPacket pk) {
         Player player = playerHandle.player;
         UseItemOnEntityData useItemOnEntityData = (UseItemOnEntityData) pk.transactionData;
-        Entity target = player.level.getEntity(useItemOnEntityData.entityRuntimeId);
+        Entity target = player.getLevel().getEntity(useItemOnEntityData.entityRuntimeId);
         if (target == null) {
             return;
         }
@@ -470,12 +470,12 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                     return;
                 }
                 if (!(target instanceof EntityArmorStand)) {
-                    player.level
+                    player.getLevel()
                             .getVibrationManager()
                             .callVibrationEvent(
                                     new VibrationEvent(target, target.clone(), VibrationType.ENTITY_INTERACT));
                 } else {
-                    player.level
+                    player.getLevel()
                             .getVibrationManager()
                             .callVibrationEvent(new VibrationEvent(target, target.clone(), VibrationType.EQUIP));
                 }
@@ -548,7 +548,8 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                         item.applyEnchantments() ? enchantments : null);
                 entityDamageByEntityEvent.setBreakShield(item.canBreakShield());
                 if (player.isSpectator()) entityDamageByEntityEvent.cancel();
-                if ((target instanceof Player) && !player.level.getGameRules().getBoolean(GameRule.PVP)) {
+                if ((target instanceof Player)
+                        && !player.getLevel().getGameRules().getBoolean(GameRule.PVP)) {
                     entityDamageByEntityEvent.cancel();
                 }
 
@@ -611,14 +612,15 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 if (player.canInteract(blockVector.add(0.5, 0.5, 0.5), player.isCreative() ? 13 : 7)) {
                     if (player.isCreative()) {
                         Item i = player.getInventory().getItemInHand();
-                        if (player.level.useItemOn(
-                                        blockVector.asVector3(),
-                                        i,
-                                        face,
-                                        useItemData.clickPos.x,
-                                        useItemData.clickPos.y,
-                                        useItemData.clickPos.z,
-                                        player)
+                        if (player.getLevel()
+                                        .useItemOn(
+                                                blockVector.asVector3(),
+                                                i,
+                                                face,
+                                                useItemData.clickPos.x(),
+                                                useItemData.clickPos.y(),
+                                                useItemData.clickPos.z(),
+                                                player)
                                 != null) {
                             return;
                         }
@@ -626,14 +628,15 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                         Item i = player.getInventory().getItemInHand();
                         Item oldItem = i.clone();
                         // TODO: Implement adventure mode checks
-                        if ((i = player.level.useItemOn(
-                                        blockVector.asVector3(),
-                                        i,
-                                        face,
-                                        useItemData.clickPos.x,
-                                        useItemData.clickPos.y,
-                                        useItemData.clickPos.z,
-                                        player))
+                        if ((i = player.getLevel()
+                                        .useItemOn(
+                                                blockVector.asVector3(),
+                                                i,
+                                                face,
+                                                useItemData.clickPos.x(),
+                                                useItemData.clickPos.y(),
+                                                useItemData.clickPos.z(),
+                                                player))
                                 != null) {
                             if (!i.equals(oldItem) || i.getCount() != oldItem.getCount()) {
                                 if (oldItem.getId() == i.getId() || i.getId() == 0) {
@@ -652,15 +655,17 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 if (blockVector.distanceSquared(player) > 10000) {
                     return;
                 }
-                Block target = player.level.getBlock(blockVector.asVector3());
+                Block target = player.getLevel().getBlock(blockVector.asVector3());
                 Block block = target.getSide(face);
-                player.level.sendBlocks(
-                        new Player[] {player}, new Block[] {target, block}, UpdateBlockPacket.FLAG_NOGRAPHIC);
-                player.level.sendBlocks(
-                        new Player[] {player},
-                        new Block[] {target.getLevelBlockAtLayer(1), block.getLevelBlockAtLayer(1)},
-                        UpdateBlockPacket.FLAG_NOGRAPHIC,
-                        1);
+                player.getLevel()
+                        .sendBlocks(
+                                new Player[] {player}, new Block[] {target, block}, UpdateBlockPacket.FLAG_NOGRAPHIC);
+                player.getLevel()
+                        .sendBlocks(
+                                new Player[] {player},
+                                new Block[] {target.getLevelBlockAtLayer(1), block.getLevelBlockAtLayer(1)},
+                                UpdateBlockPacket.FLAG_NOGRAPHIC,
+                                1);
             }
             case InventoryTransactionPacket.USE_ITEM_ACTION_BREAK_BLOCK -> {
                 // Creative mode use PlayerActionPacket.ACTION_CREATIVE_PLAYER_DESTROY_BLOCK
@@ -672,7 +677,8 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 Item oldItem = i.clone();
                 if (player.isSurvival() || player.isAdventure()) {
                     if (player.canInteract(blockVector.add(0.5, 0.5, 0.5), 7)
-                            && (i = player.level.useBreakOn(blockVector.asVector3(), face, i, player, true)) != null) {
+                            && (i = player.getLevel().useBreakOn(blockVector.asVector3(), face, i, player, true))
+                                    != null) {
                         player.getFoodData().updateFoodExpLevel(0.005);
                         if (!i.equals(oldItem) || i.getCount() != oldItem.getCount()) {
                             if (oldItem.getId() == i.getId() || i.getId() == 0) {
@@ -689,11 +695,15 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 player.getInventory().sendContents(player);
                 player.getInventory().sendHeldItem(player);
                 if (blockVector.distanceSquared(player) < 10000) {
-                    Block target = player.level.getBlock(blockVector.asVector3());
-                    player.level.sendBlocks(
-                            new Player[] {player}, new Block[] {target}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 0);
+                    Block target = player.getLevel().getBlock(blockVector.asVector3());
+                    player.getLevel()
+                            .sendBlocks(
+                                    new Player[] {player},
+                                    new Block[] {target},
+                                    UpdateBlockPacket.FLAG_ALL_PRIORITY,
+                                    0);
 
-                    BlockEntity blockEntity = player.level.getBlockEntity(blockVector.asVector3());
+                    BlockEntity blockEntity = player.getLevel().getBlockEntity(blockVector.asVector3());
                     if (blockEntity instanceof BlockEntitySpawnable) {
                         ((BlockEntitySpawnable) blockEntity).spawnTo(player);
                     }

@@ -152,7 +152,7 @@ public class EntityPrimedTNT extends Entity implements EntityExplosive {
             fuse -= tickDiff;
 
             if (fuse <= 0) {
-                if (this.level.getGameRules().getBoolean(GameRule.TNT_EXPLODES)) explode();
+                if (this.getLevel().getGameRules().getBoolean(GameRule.TNT_EXPLODES)) explode();
                 kill();
             }
         }
@@ -177,7 +177,7 @@ public class EntityPrimedTNT extends Entity implements EntityExplosive {
             explosion.explodeA();
         }
         explosion.explodeB();
-        this.level
+        this.getLevel()
                 .getVibrationManager()
                 .callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.EXPLODE));
     }

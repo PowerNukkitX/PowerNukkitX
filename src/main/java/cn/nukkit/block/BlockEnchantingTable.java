@@ -85,7 +85,7 @@ public class BlockEnchantingTable extends BlockTransparent implements BlockEntit
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Will return the right BB height")
     @Override
     public double getMaxY() {
-        return getY() + 12 / 16.0;
+        return y() + 12 / 16.0;
     }
 
     @Override

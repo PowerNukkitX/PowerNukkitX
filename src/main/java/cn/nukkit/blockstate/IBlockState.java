@@ -301,10 +301,10 @@ public interface IBlockState {
             boolean repair,
             @Nullable Consumer<BlockStateRepair> callback) {
         Block block = Block.get(getBlockId());
-        block.level = level;
-        block.x = x;
-        block.y = y;
-        block.z = z;
+        block.setLevel(level);
+        block.setX(x);
+        block.setY(y);
+        block.setZ(z);
         block.layer = layer;
         BlockState currentState = getCurrentState();
         try {
@@ -366,7 +366,7 @@ public interface IBlockState {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @NotNull default Block getBlockRepairing(Position position, int layer) {
-        return getBlockRepairing(position.level, position, layer);
+        return getBlockRepairing(position.getLevel(), position, layer);
     }
 
     @PowerNukkitOnly

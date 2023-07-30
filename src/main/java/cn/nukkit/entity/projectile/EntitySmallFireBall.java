@@ -75,7 +75,7 @@ public class EntitySmallFireBall extends EntityProjectile {
         ProjectileHitEvent projectileHitEvent = new ProjectileHitEvent(this, MovingObjectPosition.fromEntity(entity));
         projectileHitEvent.call();
         if (projectileHitEvent.isCancelled()) return;
-        this.level
+        this.getLevel()
                 .getVibrationManager()
                 .callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.PROJECTILE_LAND));
         var damage = this.getResultDamage(entity);
@@ -96,25 +96,26 @@ public class EntitySmallFireBall extends EntityProjectile {
     @PowerNukkitOnly
     @Override
     protected void onCollideWithBlock(Position position, Vector3 motion) {
-        this.level
+        this.getLevel()
                 .getVibrationManager()
                 .callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.PROJECTILE_LAND));
         var affect = false;
-        for (Block collisionBlock : level.getCollisionBlocks(getBoundingBox().grow(0.1, 0.1, 0.1)))
+        for (Block collisionBlock :
+                getLevel().getCollisionBlocks(getBoundingBox().grow(0.1, 0.1, 0.1)))
             affect = onCollideWithBlock(position, motion, collisionBlock);
         if (!affect && this.getLevelBlock().getId() == BlockID.AIR) {
             BlockFire fire = (BlockFire) Block.get(BlockID.FIRE);
-            fire.x = this.x;
-            fire.y = this.y;
-            fire.z = this.z;
-            fire.level = level;
+            fire.setX(this.x());
+            fire.setY(this.y());
+            fire.setZ(this.z());
+            fire.setLevel(getLevel());
 
             if (fire.isBlockTopFacingSurfaceSolid(fire.down()) || fire.canNeighborBurn()) {
                 BlockIgniteEvent event = new BlockIgniteEvent(
                         this.getLevelBlock(), null, null, BlockIgniteEvent.BlockIgniteCause.FIREBALL);
                 event.call();
                 if (!event.isCancelled()) {
-                    level.setBlock(fire, fire, true);
+                    getLevel().setBlock(fire, fire, true);
                 }
             }
         }

@@ -202,22 +202,31 @@ public class EntityItem extends Entity {
                   }
               }*/
 
-            int bid = this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 0);
+            int bid = this.getLevel().getBlockIdAt((int) this.x(), (int) this.boundingBox.getMaxY(), (int) this.z(), 0);
             if (bid == BlockID.FLOWING_WATER
                     || bid == BlockID.STILL_WATER
-                    || (bid = this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 1))
+                    || (bid = this.getLevel()
+                                    .getBlockIdAt((int) this.x(), (int) this.boundingBox.getMaxY(), (int) this.z(), 1))
                             == BlockID.FLOWING_WATER
                     || bid == BlockID.STILL_WATER) {
                 // item is fully in water or in still water
                 this.motionY -= this.getGravity() * -0.015;
             } else if (lavaResistant
-                    && (this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 0)
+                    && (this.getLevel()
+                                            .getBlockIdAt(
+                                                    (int) this.x(), (int) this.boundingBox.getMaxY(), (int) this.z(), 0)
                                     == BlockID.FLOWING_LAVA
-                            || this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 0)
+                            || this.getLevel()
+                                            .getBlockIdAt(
+                                                    (int) this.x(), (int) this.boundingBox.getMaxY(), (int) this.z(), 0)
                                     == BlockID.STILL_LAVA
-                            || this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 1)
+                            || this.getLevel()
+                                            .getBlockIdAt(
+                                                    (int) this.x(), (int) this.boundingBox.getMaxY(), (int) this.z(), 1)
                                     == BlockID.FLOWING_LAVA
-                            || this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 1)
+                            || this.getLevel()
+                                            .getBlockIdAt(
+                                                    (int) this.x(), (int) this.boundingBox.getMaxY(), (int) this.z(), 1)
                                     == BlockID.STILL_LAVA)) {
                 // item is fully in lava or in still lava
                 this.motionY -= this.getGravity() * -0.015;
@@ -228,7 +237,7 @@ public class EntityItem extends Entity {
                 this.motionY -= this.getGravity(); // item is not in water
             }
 
-            if (this.checkObstruction(this.x, this.y, this.z)) {
+            if (this.checkObstruction(this.x(), this.y(), this.z())) {
                 hasUpdate = true;
             }
 
@@ -239,7 +248,7 @@ public class EntityItem extends Entity {
             if (this.onGround && (Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionZ) > 0.00001)) {
                 friction *= this.getLevel()
                         .getBlock(this.temporalVector.setComponents(
-                                (int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z)))
+                                (int) Math.floor(this.x()), (int) Math.floor(this.y() - 1), (int) Math.floor(this.z())))
                         .getFrictionFactor();
             }
 
@@ -354,9 +363,9 @@ public class EntityItem extends Entity {
         AddItemEntityPacket addEntity = new AddItemEntityPacket();
         addEntity.entityUniqueId = this.getId();
         addEntity.entityRuntimeId = this.getId();
-        addEntity.x = (float) this.x;
-        addEntity.y = (float) this.y + this.getBaseOffset();
-        addEntity.z = (float) this.z;
+        addEntity.x = (float) this.x();
+        addEntity.y = (float) this.y() + this.getBaseOffset();
+        addEntity.z = (float) this.z();
         addEntity.speedX = (float) this.motionX;
         addEntity.speedY = (float) this.motionY;
         addEntity.speedZ = (float) this.motionZ;

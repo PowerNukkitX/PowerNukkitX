@@ -72,7 +72,7 @@ public class ItemSpawnEgg extends Item {
             return false;
         }
 
-        FullChunk chunk = level.getChunk((int) block.getX() >> 4, (int) block.getZ() >> 4);
+        FullChunk chunk = level.getChunk((int) block.x() >> 4, (int) block.z() >> 4);
 
         if (chunk == null) {
             return false;
@@ -80,13 +80,13 @@ public class ItemSpawnEgg extends Item {
 
         CompoundTag nbt = new CompoundTag()
                 .putList(new ListTag<DoubleTag>("Pos")
-                        .add(new DoubleTag("", block.getX() + 0.5))
+                        .add(new DoubleTag("", block.x() + 0.5))
                         .add(new DoubleTag(
                                 "",
                                 target.getBoundingBox() == null
-                                        ? block.getY()
+                                        ? block.y()
                                         : target.getBoundingBox().getMaxY() + 0.0001f))
-                        .add(new DoubleTag("", block.getZ() + 0.5)))
+                        .add(new DoubleTag("", block.z() + 0.5)))
                 .putList(new ListTag<DoubleTag>("Motion")
                         .add(new DoubleTag("", 0))
                         .add(new DoubleTag("", 0))

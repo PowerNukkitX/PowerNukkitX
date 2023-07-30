@@ -74,7 +74,7 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements Invento
                     if (recipe == null) {
                         inventory.setItem(slot, Item.get(0));
                         ThreadLocalRandom random = ThreadLocalRandom.current();
-                        this.level.dropItem(add(random.nextFloat(), 0.5, random.nextFloat()), item);
+                        this.getLevel().dropItem(add(random.nextFloat(), 0.5, random.nextFloat()), item);
                         burnTime[slot] = 0;
                         recipes[slot] = null;
                         continue;
@@ -92,7 +92,7 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements Invento
                     if (!event.isCancelled()) {
                         inventory.setItem(slot, Item.get(0));
                         ThreadLocalRandom random = ThreadLocalRandom.current();
-                        this.level.dropItem(add(random.nextFloat(), 0.5, random.nextFloat()), event.getResult());
+                        this.getLevel().dropItem(add(random.nextFloat(), 0.5, random.nextFloat()), event.getResult());
                         burnTime[slot] = 0;
                         recipes[slot] = null;
                     } else if (event.getKeepItem()) {
@@ -165,7 +165,7 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements Invento
     @Override
     public void onBreak() {
         for (Item content : inventory.getContents().values()) {
-            level.dropItem(this, content);
+            getLevel().dropItem(this, content);
         }
     }
 
@@ -178,9 +178,9 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements Invento
     public CompoundTag getSpawnCompound() {
         CompoundTag c = new CompoundTag()
                 .putString("id", BlockEntity.CAMPFIRE)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z);
+                .putInt("x", (int) this.x())
+                .putInt("y", (int) this.y())
+                .putInt("z", (int) this.z());
 
         for (int i = 1; i <= burnTime.length; i++) {
             Item item = inventory.getItem(i - 1);

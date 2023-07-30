@@ -72,7 +72,7 @@ public abstract class BlockLog extends BlockSolidMeta implements IBlockWood {
         if (item.isAxe()) {
             Block strippedBlock = getStrippedState().getBlock(this);
             item.useOn(this);
-            this.level.setBlock(this, strippedBlock, true, true);
+            this.getLevel().setBlock(this, strippedBlock, true, true);
             return true;
         }
         return false;

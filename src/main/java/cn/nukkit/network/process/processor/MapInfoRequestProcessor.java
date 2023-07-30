@@ -45,7 +45,7 @@ public class MapInfoRequestProcessor extends DataPacketProcessor<MapInfoRequestP
         }
 
         if (mapItem == null) {
-            for (BlockEntity be : player.level.getBlockEntities().values()) {
+            for (BlockEntity be : player.getLevel().getBlockEntities().values()) {
                 if (be instanceof BlockEntityItemFrame itemFrame && checkMapItemValid(itemFrame.getItem(), pk)) {
                     ((ItemMap) itemFrame.getItem()).sendImage(player);
                     break;

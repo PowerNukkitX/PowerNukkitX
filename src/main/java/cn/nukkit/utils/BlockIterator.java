@@ -47,8 +47,8 @@ public class BlockIterator implements Iterator<Block> {
         this.maxDistance = maxDistance;
         this.blockQueue = new Block[3];
 
-        Vector3 startClone = new Vector3(start.x, start.y, start.z);
-        startClone.y += yOffset;
+        Vector3 startClone = new Vector3(start.x(), start.y(), start.z());
+        startClone.setY(startClone.y() + yOffset);
 
         this.currentDistance = 0;
 
@@ -60,8 +60,9 @@ public class BlockIterator implements Iterator<Block> {
         double secondPosition = 0;
         double thirdPosition = 0;
 
-        Vector3 pos = new Vector3(startClone.x, startClone.y, startClone.z);
-        Block startBlock = this.level.getBlock(new Vector3(Math.floor(pos.x), Math.floor(pos.y), Math.floor(pos.z)));
+        Vector3 pos = new Vector3(startClone.x(), startClone.y(), startClone.z());
+        Block startBlock =
+                this.level.getBlock(new Vector3(Math.floor(pos.x()), Math.floor(pos.y()), Math.floor(pos.z())));
 
         if (this.getXLength(direction) > mainDirection) {
             this.mainFace = this.getXFace(direction);
@@ -163,31 +164,31 @@ public class BlockIterator implements Iterator<Block> {
     }
 
     private boolean blockEquals(Block a, Block b) {
-        return a.x == b.x && a.y == b.y && a.z == b.z;
+        return a.x() == b.x() && a.y() == b.y() && a.z() == b.z();
     }
 
     private BlockFace getXFace(Vector3 direction) {
-        return ((direction.x) > 0) ? BlockFace.EAST : BlockFace.WEST;
+        return ((direction.x()) > 0) ? BlockFace.EAST : BlockFace.WEST;
     }
 
     private BlockFace getYFace(Vector3 direction) {
-        return ((direction.y) > 0) ? BlockFace.UP : BlockFace.DOWN;
+        return ((direction.y()) > 0) ? BlockFace.UP : BlockFace.DOWN;
     }
 
     private BlockFace getZFace(Vector3 direction) {
-        return ((direction.z) > 0) ? BlockFace.SOUTH : BlockFace.NORTH;
+        return ((direction.z()) > 0) ? BlockFace.SOUTH : BlockFace.NORTH;
     }
 
     private double getXLength(Vector3 direction) {
-        return Math.abs(direction.x);
+        return Math.abs(direction.x());
     }
 
     private double getYLength(Vector3 direction) {
-        return Math.abs(direction.y);
+        return Math.abs(direction.y());
     }
 
     private double getZLength(Vector3 direction) {
-        return Math.abs(direction.z);
+        return Math.abs(direction.z());
     }
 
     private double getPosition(double direction, double position, double blockPosition) {
@@ -195,15 +196,15 @@ public class BlockIterator implements Iterator<Block> {
     }
 
     private double getXPosition(Vector3 direction, Vector3 position, Block block) {
-        return this.getPosition(direction.x, position.x, block.x);
+        return this.getPosition(direction.x(), position.x(), block.x());
     }
 
     private double getYPosition(Vector3 direction, Vector3 position, Block block) {
-        return this.getPosition(direction.y, position.y, block.y);
+        return this.getPosition(direction.y(), position.y(), block.y());
     }
 
     private double getZPosition(Vector3 direction, Vector3 position, Block block) {
-        return this.getPosition(direction.z, position.z, block.z);
+        return this.getPosition(direction.z(), position.z(), block.z());
     }
 
     @Override

@@ -161,7 +161,8 @@ public class BlockVine extends BlockTransparentMeta {
             f3 = 0;
             f6 = 1;
         }
-        return new SimpleAxisAlignedBB(this.x + f1, this.y + f2, this.z + f3, this.x + f4, this.y + f5, this.z + f6);
+        return new SimpleAxisAlignedBB(
+                this.x() + f1, this.y() + f2, this.z() + f3, this.x() + f4, this.y() + f5, this.z() + f6);
     }
 
     @Override
@@ -214,7 +215,7 @@ public class BlockVine extends BlockTransparentMeta {
             }
             int meta = getMetaFromFaces(faces);
             if (meta != this.getDamage()) {
-                this.level.setBlock(this, Block.get(VINE, meta), true);
+                this.getLevel().setBlock(this, Block.get(VINE, meta), true);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {
@@ -225,7 +226,7 @@ public class BlockVine extends BlockTransparentMeta {
                 int faceMeta = getMetaFromFace(face);
                 int meta = this.getDamage();
 
-                if (this.y < 255 && face == BlockFace.UP && block.getId() == AIR) {
+                if (this.y() < 255 && face == BlockFace.UP && block.getId() == AIR) {
                     if (this.canSpread()) {
                         for (BlockFace horizontalFace : BlockFace.Plane.HORIZONTAL) {
                             if (random.nextBoolean()
@@ -269,7 +270,7 @@ public class BlockVine extends BlockTransparentMeta {
                             putVine(this, meta, null);
                         }
                     }
-                } else if (this.y > 0) {
+                } else if (this.y() > 0) {
                     Block below = this.down();
                     int id = below.getId();
                     if (id == AIR || id == VINE) {
@@ -296,7 +297,7 @@ public class BlockVine extends BlockTransparentMeta {
         for (int x = blockX - 4; x <= blockX + 4; x++) {
             for (int z = blockZ - 4; z <= blockZ + 4; z++) {
                 for (int y = blockY - 1; y <= blockY + 1; y++) {
-                    if (this.level.getBlock(x, y, z).getId() == VINE) {
+                    if (this.getLevel().getBlock(x, y, z).getId() == VINE) {
                         if (++count >= 5) return false;
                     }
                 }
@@ -316,7 +317,7 @@ public class BlockVine extends BlockTransparentMeta {
         }
         event.call();
         if (!event.isCancelled()) {
-            this.level.setBlock(block, vine, true);
+            this.getLevel().setBlock(block, vine, true);
         }
     }
 

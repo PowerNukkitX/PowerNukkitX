@@ -430,7 +430,7 @@ public class EntityVillager extends EntityIntelligent implements InventoryHolder
                     int x = this.namedTag.getInt("blockX");
                     int y = this.namedTag.getInt("blockY");
                     int z = this.namedTag.getInt("blockZ");
-                    if (level.getBlock(x, y, z).getId()
+                    if (getLevel().getBlock(x, y, z).getId()
                             != Profession.getProfession(this.profession).getBlockID()) {
                         setProfession(0);
                         setCanTrade(false);

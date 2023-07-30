@@ -181,7 +181,7 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
                 item.count--;
             }
 
-            this.level.addParticle(new BoneMealParticle(this));
+            this.getLevel().addParticle(new BoneMealParticle(this));
             if (ThreadLocalRandom.current().nextFloat() >= 0.45) {
                 return true;
             }
@@ -222,7 +222,7 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
         BasicGenerator generator = null;
         boolean bigTree = false;
 
-        Vector3 vector3 = new Vector3(this.x, this.y - 1, this.z);
+        Vector3 vector3 = new Vector3(this.x(), this.y() - 1, this.z());
 
         switch (getWoodType()) {
             case JUNGLE:
@@ -280,7 +280,7 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
                     break;
                 }
             default:
-                ListChunkManager chunkManager = new ListChunkManager(this.level);
+                ListChunkManager chunkManager = new ListChunkManager(this.getLevel());
                 ObjectTree.growTree(
                         chunkManager,
                         this.getFloorX(),
@@ -294,45 +294,45 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
                 if (event.isCancelled()) {
                     return;
                 }
-                if (this.level.getBlock(vector3).getId() == BlockID.DIRT_WITH_ROOTS) {
-                    this.level.setBlock(vector3, Block.get(BlockID.DIRT));
+                if (this.getLevel().getBlock(vector3).getId() == BlockID.DIRT_WITH_ROOTS) {
+                    this.getLevel().setBlock(vector3, Block.get(BlockID.DIRT));
                 }
                 for (Block block : event.getBlockList()) {
-                    this.level.setBlock(block, block);
+                    this.getLevel().setBlock(block, block);
                 }
                 return;
         }
 
         if (bigTree) {
-            this.level.setBlock(vector3, get(AIR), true, false);
-            this.level.setBlock(vector3.add(1, 0, 0), get(AIR), true, false);
-            this.level.setBlock(vector3.add(0, 0, 1), get(AIR), true, false);
-            this.level.setBlock(vector3.add(1, 0, 1), get(AIR), true, false);
+            this.getLevel().setBlock(vector3, get(AIR), true, false);
+            this.getLevel().setBlock(vector3.add(1, 0, 0), get(AIR), true, false);
+            this.getLevel().setBlock(vector3.add(0, 0, 1), get(AIR), true, false);
+            this.getLevel().setBlock(vector3.add(1, 0, 1), get(AIR), true, false);
         } else {
-            this.level.setBlock(this, get(AIR), true, false);
+            this.getLevel().setBlock(this, get(AIR), true, false);
         }
 
-        ListChunkManager chunkManager = new ListChunkManager(this.level);
+        ListChunkManager chunkManager = new ListChunkManager(this.getLevel());
         boolean success = generator.generate(chunkManager, new NukkitRandom(), vector3);
         StructureGrowEvent event = new StructureGrowEvent(this, chunkManager.getBlocks());
         event.call();
         if (event.isCancelled() || !success) {
             if (bigTree) {
-                this.level.setBlock(vector3, this, true, false);
-                this.level.setBlock(vector3.add(1, 0, 0), this, true, false);
-                this.level.setBlock(vector3.add(0, 0, 1), this, true, false);
-                this.level.setBlock(vector3.add(1, 0, 1), this, true, false);
+                this.getLevel().setBlock(vector3, this, true, false);
+                this.getLevel().setBlock(vector3.add(1, 0, 0), this, true, false);
+                this.getLevel().setBlock(vector3.add(0, 0, 1), this, true, false);
+                this.getLevel().setBlock(vector3.add(1, 0, 1), this, true, false);
             } else {
-                this.level.setBlock(this, this, true, false);
+                this.getLevel().setBlock(this, this, true, false);
             }
             return;
         }
 
-        if (this.level.getBlock(vector3).getId() == BlockID.DIRT_WITH_ROOTS) {
-            this.level.setBlock(vector3, Block.get(BlockID.DIRT));
+        if (this.getLevel().getBlock(vector3).getId() == BlockID.DIRT_WITH_ROOTS) {
+            this.getLevel().setBlock(vector3, Block.get(BlockID.DIRT));
         }
         for (Block block : event.getBlockList()) {
-            this.level.setBlock(block, block);
+            this.getLevel().setBlock(block, block);
         }
     }
 
@@ -348,7 +348,7 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
         for (List<Vector2> validVectors : validVectorsList) {
             boolean correct = true;
             for (Vector2 vector2 : validVectors) {
-                if (!this.isSameType(this.add(vector2.x, 0, vector2.y), type)) correct = false;
+                if (!this.isSameType(this.add(vector2.x(), 0, vector2.y()), type)) correct = false;
             }
             if (correct) {
                 int lowestX = 0;
@@ -370,14 +370,14 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
             reason = "Checking magic value directly is depreacated",
             replaceWith = "isSameType(Vector3,WoodType)")
     public boolean isSameType(Vector3 pos, int type) {
-        Block block = this.level.getBlock(pos);
+        Block block = this.getLevel().getBlock(pos);
         return block.getId() == this.getId() && (block.getDamage() & 0x07) == (type & 0x07);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean isSameType(Vector3 pos, WoodType type) {
-        Block block = this.level.getBlock(pos);
+        Block block = this.getLevel().getBlock(pos);
         return block.getId() == this.getId() && ((BlockSapling) block).getWoodType() == type;
     }
 }

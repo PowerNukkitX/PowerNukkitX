@@ -19,7 +19,7 @@ public class Y extends CoordinateArgument {
             throws SelectorSyntaxException {
         ParseUtils.singleArgument(arguments, getKeyName());
         ParseUtils.cannotReversed(arguments[0]);
-        basePos.setY(ParseUtils.parseOffsetDouble(arguments[0], basePos.getY()));
+        basePos.setY(ParseUtils.parseOffsetDouble(arguments[0], basePos.y()));
         return null;
     }
 

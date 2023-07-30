@@ -62,7 +62,7 @@ public class BlockPistonHead extends BlockTransparentMeta implements Faceable {
     @Override
     @PowerNukkitDifference(info = "Remove BlockEntity of piston on break.", since = "1.4.0.0-PN")
     public boolean onBreak(Item item) {
-        this.level.setBlock(this, Block.get(BlockID.AIR), true, true);
+        this.getLevel().setBlock(this, Block.get(BlockID.AIR), true, true);
         Block side = getSide(getBlockFace().getOpposite());
 
         if (side instanceof BlockPistonBase && ((BlockPistonBase) side).getBlockFace() == this.getBlockFace()) {

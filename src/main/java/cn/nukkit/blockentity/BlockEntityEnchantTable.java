@@ -42,9 +42,9 @@ public class BlockEntityEnchantTable extends BlockEntitySpawnable implements Blo
     public CompoundTag getSpawnCompound() {
         CompoundTag c = new CompoundTag()
                 .putString("id", BlockEntity.ENCHANT_TABLE)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z);
+                .putInt("x", (int) this.x())
+                .putInt("y", (int) this.y())
+                .putInt("z", (int) this.z());
 
         if (this.hasName()) {
             c.put("CustomName", this.namedTag.get("CustomName"));

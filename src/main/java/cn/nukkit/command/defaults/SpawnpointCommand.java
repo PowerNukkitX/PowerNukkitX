@@ -52,11 +52,11 @@ public class SpawnpointCommand extends VanillaCommand {
                 if (level != null) {
                     Position position = list.getResult(1);
                     if (level.isOverWorld()) {
-                        if (position.y < -64) position.y = -64;
-                        if (position.y > 320) position.y = 320;
+                        if (position.y() < -64) position.setY(-64);
+                        if (position.y() > 320) position.setY(320);
                     } else {
-                        if (position.y < 0) position.y = 0;
-                        if (position.y > 255) position.y = 255;
+                        if (position.y() < 0) position.setY(0);
+                        if (position.y() > 255) position.setY(255);
                     }
                     for (Player player : players) {
                         player.setSpawn(position);
@@ -64,9 +64,9 @@ public class SpawnpointCommand extends VanillaCommand {
                     log.addSuccess(
                                     "commands.spawnpoint.success.multiple.specific",
                                     players.stream().map(Player::getName).collect(Collectors.joining(" ")),
-                                    round2.format(position.x),
-                                    round2.format(position.y),
-                                    round2.format(position.z))
+                                    round2.format(position.x()),
+                                    round2.format(position.y()),
+                                    round2.format(position.z()))
                             .successCount(players.size())
                             .output(true);
                     return players.size();
@@ -81,9 +81,9 @@ public class SpawnpointCommand extends VanillaCommand {
             log.addSuccess(
                             "commands.spawnpoint.success.single",
                             sender.getName(),
-                            round2.format(pos.x),
-                            round2.format(pos.y),
-                            round2.format(pos.z))
+                            round2.format(pos.x()),
+                            round2.format(pos.y()),
+                            round2.format(pos.z()))
                     .output(true);
             return 1;
         } else {

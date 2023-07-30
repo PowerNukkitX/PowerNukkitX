@@ -112,12 +112,12 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
         toggleBooleanProperty(OPEN);
         var pos = this.add(0.5, 0.5, 0.5);
         if (isPowerOn()) {
-            this.level
+            this.getLevel()
                     .getVibrationManager()
                     .callVibrationEvent(
                             new VibrationEvent(player != null ? player : this, pos, VibrationType.BLOCK_ACTIVATE));
         } else {
-            this.level
+            this.getLevel()
                     .getVibrationManager()
                     .callVibrationEvent(
                             new VibrationEvent(player != null ? player : this, pos, VibrationType.BLOCK_DEACTIVATE));
@@ -129,7 +129,7 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
         LeverOrientation orientation = getLeverOrientation();
         BlockFace face = orientation.getFacing();
 
-        if (this.level.getServer().isRedstoneEnabled()) {
+        if (this.getLevel().getServer().isRedstoneEnabled()) {
             updateAroundRedstone();
             RedstoneComponent.updateAroundRedstone(getSide(face.getOpposite()), face);
         }
@@ -143,7 +143,7 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
             BlockFace blockFace = getLeverOrientation().getFacing().getOpposite();
             Block side = this.getSide(blockFace);
             if (!isSupportValid(side, blockFace.getOpposite())) {
-                this.level.useBreakOn(this);
+                this.getLevel().useBreakOn(this);
             }
         }
         return 0;
@@ -213,9 +213,9 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
 
         if (isPowerOn()) {
             BlockFace face = getLeverOrientation().getFacing();
-            this.level.updateAround(this.getLocation().getSide(face.getOpposite()));
+            this.getLevel().updateAround(this.getLocation().getSide(face.getOpposite()));
 
-            if (level.getServer().isRedstoneEnabled()) {
+            if (getLevel().getServer().isRedstoneEnabled()) {
                 updateAroundRedstone();
                 RedstoneComponent.updateAroundRedstone(getSide(face.getOpposite()), face);
             }

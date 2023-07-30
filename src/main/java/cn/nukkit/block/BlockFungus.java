@@ -47,7 +47,7 @@ public abstract class BlockFungus extends BlockFlowable implements BlockFlowerPo
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL && !isValidSupport(down())) {
-            level.useBreakOn(this);
+            getLevel().useBreakOn(this);
             return type;
         }
 
@@ -60,7 +60,7 @@ public abstract class BlockFungus extends BlockFlowable implements BlockFlowerPo
             return false;
         }
 
-        level.addParticle(new BoneMealParticle(this));
+        getLevel().addParticle(new BoneMealParticle(this));
 
         if (player != null && !player.isCreative()) {
             item.count--;
@@ -68,7 +68,7 @@ public abstract class BlockFungus extends BlockFlowable implements BlockFlowerPo
 
         Block down = down();
         if (!isValidSupport(down)) {
-            level.useBreakOn(this);
+            getLevel().useBreakOn(this);
             return true;
         }
 

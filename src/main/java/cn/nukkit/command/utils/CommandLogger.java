@@ -276,7 +276,7 @@ public record CommandLogger(
      * @param params   给命令目标的反馈信息参数
      */
     public void outputObjectWhisper(Player receiver, String key, String... params) {
-        if (receiver.level.getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK)) {
+        if (receiver.getLevel().getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK)) {
             receiver.sendMessage(new TranslationContainer(key, params));
         }
     }
@@ -291,7 +291,7 @@ public record CommandLogger(
      * @param params   给命令目标的反馈信息参数
      */
     public void outputObjectWhisper(Player receiver, String rawtext, Object... params) {
-        if (receiver.level.getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK)) {
+        if (receiver.getLevel().getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK)) {
             receiver.sendRawTextMessage(RawText.fromRawText(String.format(rawtext, params)));
         }
     }

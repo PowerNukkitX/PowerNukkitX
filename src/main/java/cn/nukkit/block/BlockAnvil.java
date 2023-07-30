@@ -171,6 +171,7 @@ public class BlockAnvil extends BlockFallableMeta implements Faceable {
         BlockFace face = getBlockFace().rotateY();
         double xOffset = Math.abs(face.getXOffset()) * (2 / 16.0);
         double zOffset = Math.abs(face.getZOffset()) * (2 / 16.0);
-        return new SimpleAxisAlignedBB(x + xOffset, y, z + zOffset, x + 1 - xOffset, y + 1, z + 1 - zOffset);
+        return new SimpleAxisAlignedBB(
+                x() + xOffset, y(), z() + zOffset, x() + 1 - xOffset, y() + 1, z() + 1 - zOffset);
     }
 }

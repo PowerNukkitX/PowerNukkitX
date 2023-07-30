@@ -26,8 +26,8 @@ public class FlintAndSteelDispenseBehavior extends DefaultDispenseBehavior {
 
         var down = target.down();
         if (down.getId() == BlockID.OBSIDIAN) {
-            if (down.level.getDimension() != Level.DIMENSION_THE_END) {
-                if (down.level.createPortal(down)) {
+            if (down.getLevel().getDimension() != Level.DIMENSION_THE_END) {
+                if (down.getLevel().createPortal(down)) {
                     item.useOn(target);
                     return item.getDamage() >= item.getMaxDurability() ? null : item;
                 }
@@ -35,12 +35,12 @@ public class FlintAndSteelDispenseBehavior extends DefaultDispenseBehavior {
         }
 
         if (target.getId() == BlockID.AIR) {
-            block.level.addSound(block, Sound.RANDOM_CLICK, 1.0f, 1.0f);
-            block.level.setBlock(target, Block.get(BlockID.FIRE));
+            block.getLevel().addSound(block, Sound.RANDOM_CLICK, 1.0f, 1.0f);
+            block.getLevel().setBlock(target, Block.get(BlockID.FIRE));
             item.useOn(target);
             return item.getDamage() >= item.getMaxDurability() ? null : item;
         } else if (target.getId() == BlockID.TNT) {
-            block.level.addSound(block, Sound.RANDOM_CLICK, 1.0f, 1.0f);
+            block.getLevel().addSound(block, Sound.RANDOM_CLICK, 1.0f, 1.0f);
             target.onActivate(item);
             item.useOn(target);
             return item.getDamage() >= item.getMaxDurability() ? null : item;
@@ -48,7 +48,7 @@ public class FlintAndSteelDispenseBehavior extends DefaultDispenseBehavior {
             this.success = false;
         }
 
-        block.level.addSound(block, Sound.RANDOM_CLICK, 1.0f, 1.2f);
+        block.getLevel().addSound(block, Sound.RANDOM_CLICK, 1.0f, 1.2f);
         return item;
     }
 }

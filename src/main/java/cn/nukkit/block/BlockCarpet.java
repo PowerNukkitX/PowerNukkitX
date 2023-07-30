@@ -89,7 +89,7 @@ public class BlockCarpet extends BlockFlowable {
 
     @Override
     public double getMaxY() {
-        return this.y + 0.0625;
+        return this.y() + 0.0625;
     }
 
     @Override

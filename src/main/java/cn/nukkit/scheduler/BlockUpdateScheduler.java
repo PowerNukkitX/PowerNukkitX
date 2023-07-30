@@ -56,7 +56,8 @@ public class BlockUpdateScheduler {
                     BlockUpdateEntry entry = updateIterator.next();
 
                     Vector3 pos = entry.pos;
-                    if (level.isChunkLoaded(NukkitMath.floorDouble(pos.x) >> 4, NukkitMath.floorDouble(pos.z) >> 4)) {
+                    if (level.isChunkLoaded(
+                            NukkitMath.floorDouble(pos.x()) >> 4, NukkitMath.floorDouble(pos.z()) >> 4)) {
                         Block block = level.getBlock(entry.pos, entry.block.layer);
 
                         updateIterator.remove();
@@ -82,10 +83,10 @@ public class BlockUpdateScheduler {
             for (BlockUpdateEntry update : tickSet) {
                 Vector3 pos = update.pos;
 
-                if (pos.getX() >= boundingBox.getMinX()
-                        && pos.getX() < boundingBox.getMaxX()
-                        && pos.getZ() >= boundingBox.getMinZ()
-                        && pos.getZ() < boundingBox.getMaxZ()) {
+                if (pos.x() >= boundingBox.getMinX()
+                        && pos.x() < boundingBox.getMaxX()
+                        && pos.z() >= boundingBox.getMinZ()
+                        && pos.z() < boundingBox.getMaxZ()) {
                     set.add(update);
                 }
             }

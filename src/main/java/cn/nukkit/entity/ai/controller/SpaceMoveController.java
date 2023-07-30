@@ -23,14 +23,14 @@ public class SpaceMoveController implements IController {
             }
             var relativeVector = direction
                     .clone()
-                    .setComponents(direction.x - entity.x, direction.y - entity.y, direction.z - entity.z);
-            var xyzLength = Math.sqrt(relativeVector.x * relativeVector.x
-                    + relativeVector.y * relativeVector.y
-                    + relativeVector.z * relativeVector.z);
+                    .setComponents(direction.x() - entity.x(), direction.y() - entity.y(), direction.z() - entity.z());
+            var xyzLength = Math.sqrt(relativeVector.x() * relativeVector.x()
+                    + relativeVector.y() * relativeVector.y()
+                    + relativeVector.z() * relativeVector.z());
             var k = speed / xyzLength * 0.33;
-            var dx = relativeVector.x * k;
-            var dy = relativeVector.y * k;
-            var dz = relativeVector.z * k;
+            var dx = relativeVector.x() * k;
+            var dy = relativeVector.y() * k;
+            var dz = relativeVector.z() * k;
             entity.addTmpMoveMotion(new Vector3(dx, dy, dz));
             entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_MOVING, true);
             if (xyzLength < speed) {

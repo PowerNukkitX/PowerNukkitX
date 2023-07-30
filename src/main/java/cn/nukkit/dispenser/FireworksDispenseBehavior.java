@@ -30,7 +30,7 @@ public class FireworksDispenseBehavior extends DefaultDispenseBehavior {
 
         CompoundTag nbt = Entity.getDefaultNBT(pos);
         nbt.putCompound("FireworkItem", NBTIO.putItemHelper(item));
-        EntityFirework firework = new EntityFirework(block.level.getChunk(pos.getChunkX(), pos.getChunkZ()), nbt);
+        EntityFirework firework = new EntityFirework(block.getLevel().getChunk(pos.getChunkX(), pos.getChunkZ()), nbt);
         firework.spawnToAll();
 
         return null;

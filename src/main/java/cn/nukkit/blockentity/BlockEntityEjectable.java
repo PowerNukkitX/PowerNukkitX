@@ -105,9 +105,9 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable
     public CompoundTag getSpawnCompound() {
         CompoundTag c = new CompoundTag()
                 .putString("id", getBlockEntityName())
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z);
+                .putInt("x", (int) this.x())
+                .putInt("y", (int) this.y())
+                .putInt("z", (int) this.z());
 
         if (this.hasName()) {
             c.put("CustomName", this.namedTag.get("CustomName"));
@@ -149,7 +149,7 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable
     @Override
     public void onBreak() {
         for (Item content : inventory.getContents().values()) {
-            level.dropItem(this, content);
+            getLevel().dropItem(this, content);
         }
     }
 }

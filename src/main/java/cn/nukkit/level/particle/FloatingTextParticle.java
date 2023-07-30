@@ -50,7 +50,7 @@ public class FloatingTextParticle extends Particle {
     }
 
     private FloatingTextParticle(Level level, Vector3 pos, String title, String text) {
-        super(pos.x, pos.y, pos.z);
+        super(pos.x(), pos.y(), pos.z());
         this.level = level;
 
         long flags = (1L << Entity.DATA_FLAG_NO_AI);
@@ -137,9 +137,9 @@ public class FloatingTextParticle extends Particle {
             pk.username = "";
             pk.entityUniqueId = this.entityId;
             pk.entityRuntimeId = this.entityId;
-            pk.x = (float) this.x;
-            pk.y = (float) (this.y - 0.75);
-            pk.z = (float) this.z;
+            pk.x = (float) this.x();
+            pk.y = (float) (this.y() - 0.75);
+            pk.z = (float) this.z();
             pk.speedX = 0;
             pk.speedY = 0;
             pk.speedZ = 0;

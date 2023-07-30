@@ -48,7 +48,7 @@ public class BlockPressurePlateMangrove extends BlockPressurePlateWood {
     protected int computeRedstoneStrength() {
         AxisAlignedBB bb = getCollisionBoundingBox();
 
-        for (Entity entity : this.level.getCollidingEntities(bb)) {
+        for (Entity entity : this.getLevel().getCollidingEntities(bb)) {
             if (entity.doesTriggerPressurePlate()) {
                 return 15;
             }

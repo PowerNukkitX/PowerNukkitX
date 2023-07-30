@@ -37,7 +37,7 @@ public abstract class BlockFallable extends BlockSolid {
 
     @PowerNukkitOnly
     public void drop(CompoundTag customNbt) {
-        this.level.setBlock(this, Block.get(Block.AIR), true, true);
+        this.getLevel().setBlock(this, Block.get(Block.AIR), true, true);
         EntityFallingBlock fall = createFallingEntity(customNbt);
 
         fall.spawnToAll();
@@ -47,9 +47,9 @@ public abstract class BlockFallable extends BlockSolid {
     protected EntityFallingBlock createFallingEntity(CompoundTag customNbt) {
         CompoundTag nbt = new CompoundTag()
                 .putList(new ListTag<DoubleTag>("Pos")
-                        .add(new DoubleTag("", this.x + 0.5))
-                        .add(new DoubleTag("", this.y))
-                        .add(new DoubleTag("", this.z + 0.5)))
+                        .add(new DoubleTag("", this.x() + 0.5))
+                        .add(new DoubleTag("", this.y()))
+                        .add(new DoubleTag("", this.z() + 0.5)))
                 .putList(new ListTag<DoubleTag>("Motion")
                         .add(new DoubleTag("", 0))
                         .add(new DoubleTag("", 0))
@@ -64,8 +64,8 @@ public abstract class BlockFallable extends BlockSolid {
             nbt.put(customTag.getName(), customTag.copy());
         }
 
-        EntityFallingBlock fall = (EntityFallingBlock)
-                Entity.createEntity("FallingSand", this.getLevel().getChunk((int) this.x >> 4, (int) this.z >> 4), nbt);
+        EntityFallingBlock fall = (EntityFallingBlock) Entity.createEntity(
+                "FallingSand", this.getLevel().getChunk((int) this.x() >> 4, (int) this.z() >> 4), nbt);
 
         if (fall != null) {
             fall.spawnToAll();

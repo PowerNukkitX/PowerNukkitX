@@ -57,7 +57,7 @@ public class FurnaceInventory extends ContainerInventory {
             var xp = holder.calculateXpDrop();
             if (xp > 0) {
                 holder.setStoredXP(0);
-                holder.level.dropExpOrb(player, xp);
+                holder.getLevel().dropExpOrb(player, xp);
             }
         }
         return setItem(index, item, send);

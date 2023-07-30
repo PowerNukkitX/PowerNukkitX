@@ -71,9 +71,9 @@ public class BlockTrappedChest extends BlockChest {
         CompoundTag nbt = new CompoundTag("")
                 .putList(new ListTag<>("Items"))
                 .putString("id", BlockEntity.CHEST)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z);
+                .putInt("x", (int) this.x())
+                .putInt("y", (int) this.y())
+                .putInt("z", (int) this.z());
 
         if (item.hasCustomName()) {
             nbt.putString("CustomName", item.getCustomName());
@@ -87,7 +87,7 @@ public class BlockTrappedChest extends BlockChest {
         }
 
         BlockEntityChest blockEntity = (BlockEntityChest) BlockEntity.createBlockEntity(
-                BlockEntity.CHEST, this.getLevel().getChunk((int) (this.x) >> 4, (int) (this.z) >> 4), nbt);
+                BlockEntity.CHEST, this.getLevel().getChunk((int) (this.x()) >> 4, (int) (this.z()) >> 4), nbt);
 
         if (blockEntity == null) {
             return false;
@@ -105,7 +105,7 @@ public class BlockTrappedChest extends BlockChest {
     public int getWeakPower(BlockFace face) {
         int playerCount = 0;
 
-        BlockEntity blockEntity = this.level.getBlockEntity(this);
+        BlockEntity blockEntity = this.getLevel().getBlockEntity(this);
 
         if (blockEntity instanceof BlockEntityChest) {
             playerCount =

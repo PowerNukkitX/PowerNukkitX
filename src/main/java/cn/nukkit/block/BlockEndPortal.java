@@ -137,7 +137,7 @@ public class BlockEndPortal extends BlockFlowable implements BlockEntityHolder<B
 
     @Override
     public double getMaxY() {
-        return getY() + (12.0 / 16.0);
+        return y() + (12.0 / 16.0);
     }
 
     @PowerNukkitOnly

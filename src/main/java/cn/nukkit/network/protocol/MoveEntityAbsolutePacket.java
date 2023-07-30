@@ -40,9 +40,9 @@ public class MoveEntityAbsolutePacket extends DataPacket {
         teleport = (flags & 0x02) != 0;
         forceMoveLocalEntity = (flags & 0x04) != 0;
         Vector3f v = this.getVector3f();
-        this.x = v.x;
-        this.y = v.y;
-        this.z = v.z;
+        this.x = v.x();
+        this.y = v.y();
+        this.z = v.z();
         this.pitch = this.getByte() * (360d / 256d);
         this.headYaw = this.getByte() * (360d / 256d);
         this.yaw = this.getByte() * (360d / 256d);

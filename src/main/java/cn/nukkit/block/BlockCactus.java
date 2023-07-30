@@ -69,37 +69,37 @@ public class BlockCactus extends BlockTransparentMeta implements BlockFlowerPot.
 
     @Override
     public double getMinX() {
-        return this.x + 0.0625;
+        return this.x() + 0.0625;
     }
 
     @Override
     public double getMinY() {
-        return this.y;
+        return this.y();
     }
 
     @Override
     public double getMinZ() {
-        return this.z + 0.0625;
+        return this.z() + 0.0625;
     }
 
     @Override
     public double getMaxX() {
-        return this.x + 0.9375;
+        return this.x() + 0.9375;
     }
 
     @Override
     public double getMaxY() {
-        return this.y + 0.9375;
+        return this.y() + 0.9375;
     }
 
     @Override
     public double getMaxZ() {
-        return this.z + 0.9375;
+        return this.z() + 0.9375;
     }
 
     @Override
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
-        return new SimpleAxisAlignedBB(this.x, this.y, this.z, this.x + 1, this.y + 1, this.z + 1);
+        return new SimpleAxisAlignedBB(this.x(), this.y(), this.z(), this.x() + 1, this.y() + 1, this.z() + 1);
     }
 
     @Override
@@ -125,7 +125,7 @@ public class BlockCactus extends BlockTransparentMeta implements BlockFlowerPot.
             if (down().getId() != CACTUS) {
                 if (this.getDamage() == 0x0F) {
                     for (int y = 1; y < 3; ++y) {
-                        Block b = this.getLevel().getBlock(new Vector3(this.x, this.y + y, this.z));
+                        Block b = this.getLevel().getBlock(new Vector3(this.x(), this.y() + y, this.z()));
                         if (b.getId() == AIR) {
                             BlockGrowEvent event = new BlockGrowEvent(b, Block.get(BlockID.CACTUS));
                             event.call();

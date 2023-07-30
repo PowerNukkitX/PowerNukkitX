@@ -33,7 +33,7 @@ public class ProjectileDispenseBehavior extends DefaultDispenseBehavior {
         this.correctNBT(nbt);
 
         Entity projectile = Entity.createEntity(
-                getEntityType(), source.level.getChunk(dispensePos.getChunkX(), dispensePos.getChunkZ()), nbt);
+                getEntityType(), source.getLevel().getChunk(dispensePos.getChunkX(), dispensePos.getChunkZ()), nbt);
 
         if (!(projectile instanceof EntityProjectile)) {
             return super.dispense(source, face, item);
@@ -49,7 +49,7 @@ public class ProjectileDispenseBehavior extends DefaultDispenseBehavior {
 
         projectile.spawnToAll();
 
-        source.level.addSound(source, getShootingSound());
+        source.getLevel().addSound(source, getShootingSound());
 
         return null;
     }

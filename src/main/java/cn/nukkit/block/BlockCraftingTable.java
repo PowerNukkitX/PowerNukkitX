@@ -52,9 +52,9 @@ public class BlockCraftingTable extends BlockSolid {
             ContainerOpenPacket pk = new ContainerOpenPacket();
             pk.windowId = -1;
             pk.type = 1;
-            pk.x = (int) x;
-            pk.y = (int) y;
-            pk.z = (int) z;
+            pk.x = (int) x();
+            pk.y = (int) y();
+            pk.z = (int) z();
             pk.entityId = player.getId();
             player.dataPacket(pk);
         }

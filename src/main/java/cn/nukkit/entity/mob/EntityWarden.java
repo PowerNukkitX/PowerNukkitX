@@ -74,7 +74,9 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
                                     var iterator = angerValueMap.entrySet().iterator();
                                     while (iterator.hasNext()) {
                                         Map.Entry<Entity, Integer> next = iterator.next();
-                                        if (!entity.level.getName().equals(this.level.getName())
+                                        if (!entity.getLevel()
+                                                        .getName()
+                                                        .equals(this.getLevel().getName())
                                                 || !isValidAngerEntity(next.getKey())) {
                                             iterator.remove();
                                             var attackTarget =
@@ -96,7 +98,8 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
                         new Behavior(
                                 (entity) -> {
                                     // 为玩家附加黑暗效果
-                                    for (var player : entity.level.getPlayers().values()) {
+                                    for (var player :
+                                            entity.getLevel().getPlayers().values()) {
                                         if (!player.isCreative()
                                                 && !player.isSpectator()
                                                 && entity.distanceSquared(player) <= 400) {
@@ -203,7 +206,7 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
         this.setAmbientSoundEvent(Sound.MOB_WARDEN_IDLE);
         this.setAmbientSoundInterval(8.0f);
         this.setAmbientSoundIntervalRange(16.0f);
-        this.level.getVibrationManager().addListener(this);
+        this.getLevel().getVibrationManager().addListener(this);
         this.diffHandDamage = new float[] {16, 30, 45};
     }
 
@@ -248,8 +251,8 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
         }
 
         if (this.getMemoryStorage().notEmpty(CoreMemoryTypes.ATTACK_TARGET))
-            this.level.addSound(this, Sound.MOB_WARDEN_LISTENING_ANGRY);
-        else this.level.addSound(this, Sound.MOB_WARDEN_LISTENING);
+            this.getLevel().addSound(this, Sound.MOB_WARDEN_LISTENING_ANGRY);
+        else this.getLevel().addSound(this, Sound.MOB_WARDEN_LISTENING);
     }
 
     @Override
@@ -260,7 +263,7 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
     @Override
     public void close() {
         super.close();
-        this.level.getVibrationManager().removeListener(this);
+        this.getLevel().getVibrationManager().removeListener(this);
     }
 
     @Override
@@ -328,18 +331,18 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
     }
 
     public boolean isInSniffRange(Entity entity) {
-        double deltaX = this.x - entity.x;
-        double deltaZ = this.z - entity.z;
+        double deltaX = this.x() - entity.x();
+        double deltaZ = this.z() - entity.z();
         var distanceXZSqrt = deltaX * deltaX + deltaZ * deltaZ;
-        var deltaY = Math.abs(this.y - entity.y);
+        var deltaY = Math.abs(this.y() - entity.y());
         return distanceXZSqrt <= 36 && deltaY <= 400;
     }
 
     public boolean isInRangedAttackRange(Entity entity) {
-        double deltaX = this.x - entity.x;
-        double deltaZ = this.z - entity.z;
+        double deltaX = this.x() - entity.x();
+        double deltaZ = this.z() - entity.z();
         var distanceXZSqrt = deltaX * deltaX + deltaZ * deltaZ;
-        var deltaY = Math.abs(this.y - entity.y);
+        var deltaY = Math.abs(this.y() - entity.y());
         return distanceXZSqrt <= 225 && deltaY <= 400;
     }
 

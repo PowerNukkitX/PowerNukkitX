@@ -66,32 +66,32 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
 
     @Override
     public double getMinX() {
-        return this.x + 0.625;
+        return this.x() + 0.625;
     }
 
     @Override
     public double getMinZ() {
-        return this.z + 0.625;
+        return this.z() + 0.625;
     }
 
     @Override
     public double getMinY() {
-        return this.y + 0;
+        return this.y() + 0;
     }
 
     @Override
     public double getMaxX() {
-        return this.x + 0.9375;
+        return this.x() + 0.9375;
     }
 
     @Override
     public double getMaxZ() {
-        return this.z + 0.9375;
+        return this.z() + 0.9375;
     }
 
     @Override
     public double getMaxY() {
-        return isActivated() ? this.y + 0.03125 : this.y + 0.0625;
+        return isActivated() ? this.y() + 0.03125 : this.y() + 0.0625;
     }
 
     @Override
@@ -121,7 +121,7 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!isSupportValid(down(), BlockFace.UP)) {
-                this.level.useBreakOn(this, ItemTool.getBestTool(getToolType()));
+                this.getLevel().useBreakOn(this, ItemTool.getBestTool(getToolType()));
             }
         } else if (type == Level.BLOCK_UPDATE_SCHEDULED) {
             int power = this.getRedstonePower();
@@ -150,19 +150,19 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
             return false;
         }
 
-        this.level.setBlock(block, this, true, true);
+        this.getLevel().setBlock(block, this, true, true);
         return true;
     }
 
     @Override
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
         return new SimpleAxisAlignedBB(
-                this.x + 0.125, this.y, this.z + 0.125, this.x + 0.875, this.y + 0.25, this.z + 0.875D);
+                this.x() + 0.125, this.y(), this.z() + 0.125, this.x() + 0.875, this.y() + 0.25, this.z() + 0.875D);
     }
 
     @Override
     public void onEntityCollide(Entity entity) {
-        if (!this.level.getServer().isRedstoneEnabled()) {
+        if (!this.getLevel().getServer().isRedstoneEnabled()) {
             return;
         }
 
@@ -191,7 +191,7 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
 
         if (oldStrength != strength) {
             this.setRedstonePower(strength);
-            this.level.setBlock(this, this, false, false);
+            this.getLevel().setBlock(this, this, false, false);
 
             updateAroundRedstone();
             RedstoneComponent.updateAroundRedstone(this.getSide(BlockFace.DOWN));
@@ -206,13 +206,13 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
         }
 
         if (isPowered) {
-            this.level.scheduleUpdate(this, 20);
+            this.getLevel().scheduleUpdate(this, 20);
         }
     }
 
     @Override
     public boolean onBreak(Item item) {
-        this.level.setBlock(this, Block.get(BlockID.AIR), true, true);
+        this.getLevel().setBlock(this, Block.get(BlockID.AIR), true, true);
 
         if (this.getRedstonePower() > 0) {
             updateAroundRedstone();
@@ -241,17 +241,19 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
     }
 
     protected void playOnSound() {
-        this.level.addLevelSoundEvent(
-                this.add(0.5, 0.1, 0.5),
-                LevelSoundEventPacket.SOUND_POWER_ON,
-                GlobalBlockPalette.getOrCreateRuntimeId(this.getId(), this.getDamage()));
+        this.getLevel()
+                .addLevelSoundEvent(
+                        this.add(0.5, 0.1, 0.5),
+                        LevelSoundEventPacket.SOUND_POWER_ON,
+                        GlobalBlockPalette.getOrCreateRuntimeId(this.getId(), this.getDamage()));
     }
 
     protected void playOffSound() {
-        this.level.addLevelSoundEvent(
-                this.add(0.5, 0.1, 0.5),
-                LevelSoundEventPacket.SOUND_POWER_OFF,
-                GlobalBlockPalette.getOrCreateRuntimeId(this.getId(), this.getDamage()));
+        this.getLevel()
+                .addLevelSoundEvent(
+                        this.add(0.5, 0.1, 0.5),
+                        LevelSoundEventPacket.SOUND_POWER_OFF,
+                        GlobalBlockPalette.getOrCreateRuntimeId(this.getId(), this.getDamage()));
     }
 
     protected abstract int computeRedstoneStrength();

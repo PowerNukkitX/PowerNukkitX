@@ -27,12 +27,12 @@ public class FlyingPosEvaluator implements IPosEvaluator {
         float height = entity.getHeight() * entity.getScale();
         // 原版中不会贴地飞行
         AxisAlignedBB bb = new SimpleAxisAlignedBB(
-                vector3.getX() - radius,
-                vector3.getY() - height * 0.5,
-                vector3.getZ() - radius,
-                vector3.getX() + radius,
-                vector3.getY() + height,
-                vector3.getZ() + radius);
-        return !Utils.hasCollisionTickCachedBlocks(entity.level, bb);
+                vector3.x() - radius,
+                vector3.y() - height * 0.5,
+                vector3.z() - radius,
+                vector3.x() + radius,
+                vector3.y() + height,
+                vector3.z() + radius);
+        return !Utils.hasCollisionTickCachedBlocks(entity.getLevel(), bb);
     }
 }

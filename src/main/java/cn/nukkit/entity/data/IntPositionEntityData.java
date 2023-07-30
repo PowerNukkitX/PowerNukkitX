@@ -20,7 +20,7 @@ public class IntPositionEntityData extends EntityData<BlockVector3> {
     }
 
     public IntPositionEntityData(int id, Vector3 pos) {
-        this(id, (int) pos.x, (int) pos.y, (int) pos.z);
+        this(id, (int) pos.x(), (int) pos.y(), (int) pos.z());
     }
 
     @Override

@@ -42,7 +42,7 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
         if (!namedTag.contains("ItemDropChance")) {
             namedTag.putFloat("ItemDropChance", 1.0f);
         }
-        this.level.updateComparatorOutputLevel(this);
+        this.getLevel().updateComparatorOutputLevel(this);
     }
 
     @Override
@@ -61,7 +61,7 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
 
     public void setItemRotation(int itemRotation) {
         this.namedTag.putByte("ItemRotation", itemRotation);
-        this.level.updateComparatorOutputLevel(this);
+        this.getLevel().updateComparatorOutputLevel(this);
         this.setDirty();
     }
 
@@ -78,7 +78,7 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
         this.namedTag.putCompound("Item", NBTIO.putItemHelper(item));
         if (setChanged) {
             this.setDirty();
-        } else this.level.updateComparatorOutputLevel(this);
+        } else this.getLevel().updateComparatorOutputLevel(this);
     }
 
     public float getItemDropChance() {
@@ -103,9 +103,9 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
         Item item = getItem();
         CompoundTag tag = new CompoundTag()
                 .putString("id", BlockEntity.ITEM_FRAME)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z);
+                .putInt("x", (int) this.x())
+                .putInt("y", (int) this.y())
+                .putInt("z", (int) this.z());
 
         if (!item.isNull()) {
             CompoundTag itemTag = NBTIO.putItemHelper(item);

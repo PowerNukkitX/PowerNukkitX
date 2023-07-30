@@ -708,11 +708,11 @@ public final class BlockState implements Serializable, IBlockState {
             @Nullable Consumer<BlockStateRepair> callback) {
         if (valid == OptionalBoolean.TRUE) {
             Block block = IBlockState.super.getBlock();
-            block.x = x;
-            block.y = y;
-            block.z = z;
+            block.setX(x);
+            block.setY(y);
+            block.setZ(z);
             block.layer = layer;
-            block.level = level;
+            block.setLevel(level);
             return block;
         }
 

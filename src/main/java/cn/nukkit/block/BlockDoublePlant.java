@@ -267,8 +267,8 @@ public class BlockDoublePlant extends BlockFlowable {
                     if (player != null && (player.gamemode & 0x01) == 0) {
                         item.count--;
                     }
-                    this.level.addParticle(new BoneMealParticle(this));
-                    this.level.dropItem(this, this.toItem());
+                    this.getLevel().addParticle(new BoneMealParticle(this));
+                    this.getLevel().dropItem(this, this.toItem());
             }
 
             return true;

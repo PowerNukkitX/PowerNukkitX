@@ -112,7 +112,7 @@ public class BlockSkull extends BlockTransparentMeta
     public String getName() {
         int itemMeta = 0;
 
-        if (this.level != null) {
+        if (this.getLevel() != null) {
             BlockEntitySkull blockEntity = getBlockEntity();
             if (blockEntity != null) {
                 itemMeta = blockEntity.namedTag.getByte("SkullType");
@@ -146,7 +146,7 @@ public class BlockSkull extends BlockTransparentMeta
         }
         CompoundTag nbt = new CompoundTag()
                 .putByte("SkullType", item.getDamage())
-                .putByte("Rot", (int) Math.floor((player.yaw * 16 / 360) + 0.5) & 0x0f);
+                .putByte("Rot", (int) Math.floor((player.yaw() * 16 / 360) + 0.5) & 0x0f);
         if (item.hasCustomBlockData()) {
             for (Tag aTag : item.getCustomBlockData().getAllTags()) {
                 nbt.put(aTag.getName(), aTag);
@@ -160,7 +160,7 @@ public class BlockSkull extends BlockTransparentMeta
     @PowerNukkitDifference(info = "Using new method for checking if powered", since = "1.4.0.0-PN")
     public int onUpdate(int type) {
         if ((type != Level.BLOCK_UPDATE_REDSTONE && type != Level.BLOCK_UPDATE_NORMAL)
-                || !level.getServer().isRedstoneEnabled()) {
+                || !getLevel().getServer().isRedstoneEnabled()) {
             return 0;
         }
 
@@ -226,7 +226,7 @@ public class BlockSkull extends BlockTransparentMeta
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
         AxisAlignedBB bb = new SimpleAxisAlignedBB(
-                this.x + 0.25, this.y, this.z + 0.25, this.x + 1 - 0.25, this.y + 0.5, this.z + 1 - 0.25);
+                this.x() + 0.25, this.y(), this.z() + 0.25, this.x() + 1 - 0.25, this.y() + 0.5, this.z() + 1 - 0.25);
         switch (this.getBlockFace()) {
             case NORTH:
                 return bb.offset(0, 0.25, 0.25);

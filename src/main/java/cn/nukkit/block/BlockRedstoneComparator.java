@@ -103,12 +103,12 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode
 
     @Override
     public void updateState() {
-        if (!this.level.isBlockTickPending(this, this)) {
+        if (!this.getLevel().isBlockTickPending(this, this)) {
             int output = this.calculateOutput();
             int power = getRedstoneSignal();
 
             if (output != power || this.isPowered() != this.shouldBePowered()) {
-                this.level.scheduleUpdate(this, this, 2);
+                this.getLevel().scheduleUpdate(this, this, 2);
             }
         }
     }
@@ -161,12 +161,13 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode
             this.setDamage(this.getDamage() + 4);
         }
 
-        this.level.addLevelEvent(
-                this.add(0.5, 0.5, 0.5),
-                LevelEventPacket.EVENT_SOUND_BUTTON_CLICK,
-                this.getMode() == Mode.SUBTRACT ? 500 : 550);
-        this.level.setBlock(this, this, true, false);
-        this.level.updateComparatorOutputLevelSelective(this, true);
+        this.getLevel()
+                .addLevelEvent(
+                        this.add(0.5, 0.5, 0.5),
+                        LevelEventPacket.EVENT_SOUND_BUTTON_CLICK,
+                        this.getMode() == Mode.SUBTRACT ? 500 : 550);
+        this.getLevel().setBlock(this, this, true, false);
+        this.getLevel().updateComparatorOutputLevelSelective(this, true);
         // bug?
 
         this.onChange();
@@ -185,7 +186,7 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode
 
     @PowerNukkitDifference(info = "Trigger observer.", since = "1.4.0.0-PN")
     private void onChange() {
-        if (!this.level.getServer().isRedstoneEnabled()) {
+        if (!this.getLevel().getServer().isRedstoneEnabled()) {
             return;
         }
 
@@ -204,11 +205,11 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode
             boolean isPowered = this.isPowered();
 
             if (isPowered && !shouldBePowered) {
-                this.level.setBlock(this, getUnpowered(), true, false);
-                this.level.updateComparatorOutputLevelSelective(this, true);
+                this.getLevel().setBlock(this, getUnpowered(), true, false);
+                this.getLevel().updateComparatorOutputLevelSelective(this, true);
             } else if (!isPowered && shouldBePowered) {
-                this.level.setBlock(this, getPowered(), true, false);
-                this.level.updateComparatorOutputLevelSelective(this, true);
+                this.getLevel().setBlock(this, getPowered(), true, false);
+                this.getLevel().updateComparatorOutputLevelSelective(this, true);
             }
 
             Block side = this.getSide(getFacing().getOpposite());
@@ -227,8 +228,8 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode
             double fy,
             double fz,
             Player player) {
-        Block layer0 = level.getBlock(this, 0);
-        Block layer1 = level.getBlock(this, 1);
+        Block layer0 = getLevel().getBlock(this, 0);
+        Block layer1 = getLevel().getBlock(this, 1);
         if (!super.place(item, block, target, face, fx, fy, fz, player)) {
             return false;
         }
@@ -237,8 +238,8 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode
             createBlockEntity(new CompoundTag().putList(new ListTag<>("Items")));
         } catch (Exception e) {
             log.warn("Failed to create the block entity {} at {}", getBlockEntityType(), getLocation(), e);
-            level.setBlock(layer0, 0, layer0, true);
-            level.setBlock(layer1, 1, layer1, true);
+            getLevel().setBlock(layer0, 0, layer0, true);
+            getLevel().setBlock(layer1, 1, layer1, true);
             return false;
         }
 

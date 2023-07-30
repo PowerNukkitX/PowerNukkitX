@@ -56,7 +56,7 @@ public final class BVector3 {
      * @return the b vector 3
      */
     public static BVector3 fromLocation(Location location, double length) {
-        return new BVector3(location.getYaw(), location.getPitch(), length);
+        return new BVector3(location.yaw(), location.pitch(), length);
     }
 
     /**
@@ -228,7 +228,7 @@ public final class BVector3 {
      * @return 结果向量
      */
     public BVector3 add(Vector3 vector3) {
-        return add(vector3.x, vector3.y, vector3.z);
+        return add(vector3.x(), vector3.y(), vector3.z());
     }
 
     /**
@@ -240,7 +240,8 @@ public final class BVector3 {
      * @return the vector 3
      */
     public Vector3 addToPos() {
-        return new Vector3(this.vector3.x * this.length, this.vector3.y * this.length, this.vector3.z * this.length);
+        return new Vector3(
+                this.vector3.x() * this.length, this.vector3.y() * this.length, this.vector3.z() * this.length);
     }
 
     /**
@@ -250,7 +251,7 @@ public final class BVector3 {
      * @return the vector 3
      */
     public Vector3 addToPos(Vector3 pos) {
-        return pos.add(this.vector3.x * this.length, this.vector3.y * this.length, this.vector3.z * this.length);
+        return pos.add(this.vector3.x() * this.length, this.vector3.y() * this.length, this.vector3.z() * this.length);
     }
 
     /**
@@ -329,13 +330,13 @@ public final class BVector3 {
      * @return yaw
      */
     public static double getYawFromVector(Vector3 vector) {
-        double length = vector.x * vector.x + vector.z * vector.z;
+        double length = vector.x() * vector.x() + vector.z() * vector.z();
         // 避免NAN
         if (length == 0) {
             return 0;
         }
-        double yaw = toDegrees(asin(-vector.x / sqrt(length)));
-        return -vector.z > 0.0D ? 180.0D - yaw : StrictMath.abs(yaw) < 1E-10 ? 0 : yaw;
+        double yaw = toDegrees(asin(-vector.x() / sqrt(length)));
+        return -vector.z() > 0.0D ? 180.0D - yaw : StrictMath.abs(yaw) < 1E-10 ? 0 : yaw;
     }
 
     /**
@@ -347,12 +348,12 @@ public final class BVector3 {
      * @return pitch
      */
     public static double getPitchFromVector(Vector3 vector) {
-        double length = vector.x * vector.x + vector.z * vector.z + vector.y * vector.y;
+        double length = vector.x() * vector.x() + vector.z() * vector.z() + vector.y() * vector.y();
         // 避免NAN
         if (length == 0) {
             return 0;
         }
-        var pitch = toDegrees(asin(-vector.y / sqrt(length)));
+        var pitch = toDegrees(asin(-vector.y() / sqrt(length)));
         return StrictMath.abs(pitch) < 1E-10 ? 0 : pitch;
     }
 }

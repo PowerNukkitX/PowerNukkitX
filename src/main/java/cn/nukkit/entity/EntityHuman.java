@@ -157,7 +157,7 @@ public class EntityHuman extends EntityHumanType {
 
     @Override
     public void addMovement(double x, double y, double z, double yaw, double pitch, double headYaw) {
-        this.level.addPlayerMovement(this, x, y, z, yaw, pitch, headYaw);
+        this.getLevel().addPlayerMovement(this, x, y, z, yaw, pitch, headYaw);
     }
 
     @Override
@@ -186,14 +186,14 @@ public class EntityHuman extends EntityHumanType {
             pk.username = this.getName();
             pk.entityUniqueId = this.getId();
             pk.entityRuntimeId = this.getId();
-            pk.x = (float) this.x;
-            pk.y = (float) this.y;
-            pk.z = (float) this.z;
+            pk.x = (float) this.x();
+            pk.y = (float) this.y();
+            pk.z = (float) this.z();
             pk.speedX = (float) this.motionX;
             pk.speedY = (float) this.motionY;
             pk.speedZ = (float) this.motionZ;
-            pk.yaw = (float) this.yaw;
-            pk.pitch = (float) this.pitch;
+            pk.yaw = (float) this.yaw();
+            pk.pitch = (float) this.pitch();
             pk.item = this.getInventory().getItemInHand();
             pk.metadata = this.dataProperties;
             player.dataPacket(pk);

@@ -35,13 +35,13 @@ public abstract class PositionNode extends ParamNode<Position> {
     public <E> E get(Position basePos) {
         if (value == null) return null;
         if (this.getRelative(0)) {
-            this.value.setX(this.value.x + basePos.getX());
+            this.value.setX(this.value.x() + basePos.x());
         }
         if (this.getRelative(1)) {
-            this.value.setY(this.value.y + basePos.getY());
+            this.value.setY(this.value.y() + basePos.y());
         }
         if (this.getRelative(2)) {
-            this.value.setZ(this.value.z + basePos.getZ());
+            this.value.setZ(this.value.z() + basePos.z());
         }
         return (E) this.value;
     }
@@ -91,26 +91,26 @@ public abstract class PositionNode extends ParamNode<Position> {
                                             .setPitch(0)
                                             .setLength(Double.parseDouble(relativeAngleCoordinate))
                                             .addToPos();
-                                    coordinate[0] += vector3.x;
-                                    coordinate[1] += vector3.y;
-                                    coordinate[2] += vector3.z;
+                                    coordinate[0] += vector3.x();
+                                    coordinate[1] += vector3.y();
+                                    coordinate[2] += vector3.z();
                                 }
                                 case 1 -> {
                                     vector3 = BVector3.fromLocation(loc)
                                             .rotatePitch(-90)
                                             .setLength(Double.parseDouble(relativeAngleCoordinate))
                                             .addToPos();
-                                    coordinate[0] += vector3.x;
-                                    coordinate[1] += vector3.y;
-                                    coordinate[2] += vector3.z;
+                                    coordinate[0] += vector3.x();
+                                    coordinate[1] += vector3.y();
+                                    coordinate[2] += vector3.z();
                                 }
                                 case 2 -> {
                                     vector3 = BVector3.fromLocation(loc)
                                             .setLength(Double.parseDouble(relativeAngleCoordinate))
                                             .addToPos();
-                                    coordinate[0] += vector3.x;
-                                    coordinate[1] += vector3.y;
-                                    coordinate[2] += vector3.z;
+                                    coordinate[0] += vector3.x();
+                                    coordinate[1] += vector3.y();
+                                    coordinate[2] += vector3.z();
                                 }
                                 default -> {
                                     this.error();

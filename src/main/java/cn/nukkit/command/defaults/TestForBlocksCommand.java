@@ -51,12 +51,12 @@ public class TestForBlocksCommand extends VanillaCommand {
         }
 
         AxisAlignedBB blocksAABB = new SimpleAxisAlignedBB(
-                Math.min(begin.getX(), end.getX()),
-                Math.min(begin.getY(), end.getY()),
-                Math.min(begin.getZ(), end.getZ()),
-                Math.max(begin.getX(), end.getX()),
-                Math.max(begin.getY(), end.getY()),
-                Math.max(begin.getZ(), end.getZ()));
+                Math.min(begin.x(), end.x()),
+                Math.min(begin.y(), end.y()),
+                Math.min(begin.z(), end.z()),
+                Math.max(begin.x(), end.x()),
+                Math.max(begin.y(), end.y()),
+                Math.max(begin.z(), end.z()));
         int size = NukkitMath.floorDouble((blocksAABB.getMaxX() - blocksAABB.getMinX() + 1)
                 * (blocksAABB.getMaxY() - blocksAABB.getMinY() + 1)
                 * (blocksAABB.getMaxZ() - blocksAABB.getMinZ() + 1));
@@ -68,16 +68,16 @@ public class TestForBlocksCommand extends VanillaCommand {
         }
 
         Position to = new Position(
-                destination.getX() + (blocksAABB.getMaxX() - blocksAABB.getMinX()),
-                destination.getY() + (blocksAABB.getMaxY() - blocksAABB.getMinY()),
-                destination.getZ() + (blocksAABB.getMaxZ() - blocksAABB.getMinZ()));
+                destination.x() + (blocksAABB.getMaxX() - blocksAABB.getMinX()),
+                destination.y() + (blocksAABB.getMaxY() - blocksAABB.getMinY()),
+                destination.z() + (blocksAABB.getMaxZ() - blocksAABB.getMinZ()));
         AxisAlignedBB destinationAABB = new SimpleAxisAlignedBB(
-                Math.min(destination.getX(), to.getX()),
-                Math.min(destination.getY(), to.getY()),
-                Math.min(destination.getZ(), to.getZ()),
-                Math.max(destination.getX(), to.getX()),
-                Math.max(destination.getY(), to.getY()),
-                Math.max(destination.getZ(), to.getZ()));
+                Math.min(destination.x(), to.x()),
+                Math.min(destination.y(), to.y()),
+                Math.min(destination.z(), to.z()),
+                Math.max(destination.x(), to.x()),
+                Math.max(destination.y(), to.y()),
+                Math.max(destination.z(), to.z()));
 
         if (blocksAABB.getMinY() < 0
                 || blocksAABB.getMaxY() > 255

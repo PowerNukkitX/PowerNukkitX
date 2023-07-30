@@ -24,9 +24,9 @@ public class RespawnPacket extends DataPacket {
     @Override
     public void decode() {
         Vector3f v = this.getVector3f();
-        this.x = v.x;
-        this.y = v.y;
-        this.z = v.z;
+        this.x = v.x();
+        this.y = v.y();
+        this.z = v.z();
         this.respawnState = this.getByte();
         this.runtimeEntityId = this.getEntityRuntimeId();
     }

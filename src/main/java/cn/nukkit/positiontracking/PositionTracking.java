@@ -33,25 +33,25 @@ public class PositionTracking extends NamedPosition {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public PositionTracking(@NotNull Level level, Vector3 v) {
-        this(level, v.x, v.y, v.z);
+        this(level, v.x(), v.y(), v.z());
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public PositionTracking(@NotNull String levelName, Vector3 v) {
-        this(levelName, v.x, v.y, v.z);
+        this(levelName, v.x(), v.y(), v.z());
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public PositionTracking(@NotNull Position pos) {
-        this(pos.getLevel(), pos.x, pos.y, pos.z);
+        this(pos.getLevel(), pos.x(), pos.y(), pos.z());
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public PositionTracking(@NotNull NamedPosition pos) {
-        this(pos.getLevelName(), pos.x, pos.y, pos.z);
+        this(pos.getLevelName(), pos.x(), pos.y(), pos.z());
     }
 
     @PowerNukkitOnly
@@ -79,17 +79,17 @@ public class PositionTracking extends NamedPosition {
 
     @Override
     public PositionTracking add(double x, double y, double z) {
-        return new PositionTracking(levelName, this.x + x, this.y + y, this.z + z);
+        return new PositionTracking(levelName, this.x() + x, this.y() + y, this.z() + z);
     }
 
     @Override
     public PositionTracking add(Vector3 v) {
-        return new PositionTracking(levelName, x + v.x, y + v.y, z + v.z);
+        return new PositionTracking(levelName, x() + v.x(), y() + v.y(), z() + v.z());
     }
 
     @Override
     public PositionTracking subtract() {
-        return new PositionTracking(levelName, x, y, z);
+        return new PositionTracking(levelName, x(), y(), z());
     }
 
     @Override
@@ -109,37 +109,37 @@ public class PositionTracking extends NamedPosition {
 
     @Override
     public PositionTracking subtract(Vector3 v) {
-        return add(-v.x, -v.y, -v.z);
+        return add(-v.x(), -v.y(), -v.z());
     }
 
     @Override
     public PositionTracking multiply(double number) {
-        return new PositionTracking(levelName, x * number, y * number, z * number);
+        return new PositionTracking(levelName, x() * number, y() * number, z() * number);
     }
 
     @Override
     public PositionTracking divide(double number) {
-        return new PositionTracking(levelName, x * number, y * number, z * number);
+        return new PositionTracking(levelName, x() * number, y() * number, z() * number);
     }
 
     @Override
     public PositionTracking ceil() {
-        return new PositionTracking(levelName, Math.ceil(x), Math.ceil(y), Math.ceil(z));
+        return new PositionTracking(levelName, Math.ceil(x()), Math.ceil(y()), Math.ceil(z()));
     }
 
     @Override
     public PositionTracking floor() {
-        return new PositionTracking(levelName, Math.floor(x), Math.floor(y), Math.floor(z));
+        return new PositionTracking(levelName, Math.floor(x()), Math.floor(y()), Math.floor(z()));
     }
 
     @Override
     public PositionTracking round() {
-        return new PositionTracking(levelName, Math.round(this.x), Math.round(this.y), Math.round(this.z));
+        return new PositionTracking(levelName, Math.round(this.x()), Math.round(this.y()), Math.round(this.z()));
     }
 
     @Override
     public PositionTracking abs() {
-        return new PositionTracking(levelName, Math.abs(this.x), Math.abs(this.y), Math.abs(this.z));
+        return new PositionTracking(levelName, Math.abs(this.x()), Math.abs(this.y()), Math.abs(this.z()));
     }
 
     @Override
@@ -150,7 +150,10 @@ public class PositionTracking extends NamedPosition {
     @Override
     public PositionTracking getSide(BlockFace face, int step) {
         return new PositionTracking(
-                levelName, x + face.getXOffset() * step, y + face.getYOffset() * step, z + face.getZOffset() * step);
+                levelName,
+                x() + face.getXOffset() * step,
+                y() + face.getYOffset() * step,
+                z() + face.getZOffset() * step);
     }
 
     @Override

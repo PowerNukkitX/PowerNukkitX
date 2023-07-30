@@ -53,7 +53,7 @@ public class SummonCommand extends VanillaCommand {
         if (list.hasResult(1)) {
             pos = list.getResult(1);
         }
-        if (!pos.level.isYInRange((int) pos.y) || !pos.getChunk().isLoaded()) {
+        if (!pos.getLevel().isYInRange((int) pos.y()) || !pos.getChunk().isLoaded()) {
             log.addError("commands.summon.outOfWorld").output();
             return 0;
         }

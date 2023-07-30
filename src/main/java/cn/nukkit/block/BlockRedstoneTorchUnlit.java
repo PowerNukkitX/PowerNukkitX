@@ -58,12 +58,12 @@ public class BlockRedstoneTorchUnlit extends BlockTorch implements RedstoneCompo
     @Override
     public int onUpdate(int type) {
         if (super.onUpdate(type) == 0) {
-            if (!this.level.getServer().isRedstoneEnabled()) {
+            if (!this.getLevel().getServer().isRedstoneEnabled()) {
                 return 0;
             }
 
             if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_REDSTONE) {
-                this.level.scheduleUpdate(this, tickRate());
+                this.getLevel().scheduleUpdate(this, tickRate());
             } else if (type == Level.BLOCK_UPDATE_SCHEDULED) {
                 RedstoneUpdateEvent event = new RedstoneUpdateEvent(this);
                 event.call();
@@ -82,7 +82,7 @@ public class BlockRedstoneTorchUnlit extends BlockTorch implements RedstoneCompo
 
     private boolean checkState() {
         if (!this.isPoweredFromSide()) {
-            this.level.setBlock(getLocation(), Block.get(BlockID.REDSTONE_TORCH, getDamage()), false, true);
+            this.getLevel().setBlock(getLocation(), Block.get(BlockID.REDSTONE_TORCH, getDamage()), false, true);
 
             updateAllAroundRedstone(getBlockFace().getOpposite());
             return true;
@@ -99,7 +99,7 @@ public class BlockRedstoneTorchUnlit extends BlockTorch implements RedstoneCompo
             return true;
         }
 
-        return this.level.isSidePowered(this.getLocation().getSide(face), face);
+        return this.getLevel().isSidePowered(this.getLocation().getSide(face), face);
     }
 
     @Override

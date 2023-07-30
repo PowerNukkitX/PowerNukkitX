@@ -497,19 +497,17 @@ public class Utils {
     @Since("1.6.0.0-PNX")
     public static double calLinearFunction(Vector3 pos1, Vector3 pos2, double element, int type) {
         if (pos1.getFloorY() != pos2.getFloorY()) return Double.MAX_VALUE;
-        if (pos1.getX() == pos2.getX()) {
-            if (type == ACCORDING_Y_OBTAIN_X) return pos1.getX();
+        if (pos1.x() == pos2.x()) {
+            if (type == ACCORDING_Y_OBTAIN_X) return pos1.x();
             else return Double.MAX_VALUE;
-        } else if (pos1.getZ() == pos2.getZ()) {
-            if (type == ACCORDING_X_OBTAIN_Y) return pos1.getZ();
+        } else if (pos1.z() == pos2.z()) {
+            if (type == ACCORDING_X_OBTAIN_Y) return pos1.z();
             else return Double.MAX_VALUE;
         } else {
             if (type == ACCORDING_X_OBTAIN_Y) {
-                return (element - pos1.getX()) * (pos1.getZ() - pos2.getZ()) / (pos1.getX() - pos2.getX())
-                        + pos1.getZ();
+                return (element - pos1.x()) * (pos1.z() - pos2.z()) / (pos1.x() - pos2.x()) + pos1.z();
             } else {
-                return (element - pos1.getZ()) * (pos1.getX() - pos2.getX()) / (pos1.getZ() - pos2.getZ())
-                        + pos1.getX();
+                return (element - pos1.z()) * (pos1.x() - pos2.x()) / (pos1.z() - pos2.z()) + pos1.x();
             }
         }
     }

@@ -165,12 +165,12 @@ public class Explosion {
                                 (double) k / (double) mRays * 2d - 1);
                         double len = vector.length();
                         vector.setComponents(
-                                (vector.x / len) * this.STEP_LEN,
-                                (vector.y / len) * this.STEP_LEN,
-                                (vector.z / len) * this.STEP_LEN);
-                        double pointerX = this.source.x;
-                        double pointerY = this.source.y;
-                        double pointerZ = this.source.z;
+                                (vector.x() / len) * this.STEP_LEN,
+                                (vector.y() / len) * this.STEP_LEN,
+                                (vector.z() / len) * this.STEP_LEN);
+                        double pointerX = this.source.x();
+                        double pointerY = this.source.y();
+                        double pointerZ = this.source.z();
 
                         for (double blastForce = this.size * (random.nextInt(700, 1301)) / 1000d;
                                 blastForce > 0;
@@ -178,10 +178,10 @@ public class Explosion {
                             int x = (int) pointerX;
                             int y = (int) pointerY;
                             int z = (int) pointerZ;
-                            vBlock.x = pointerX >= x ? x : x - 1;
-                            vBlock.y = pointerY >= y ? y : y - 1;
-                            vBlock.z = pointerZ >= z ? z : z - 1;
-                            if (!this.level.isYInRange((int) vBlock.y)) {
+                            vBlock.setX(pointerX >= x ? x : x - 1);
+                            vBlock.setY(pointerY >= y ? y : y - 1);
+                            vBlock.setZ(pointerZ >= z ? z : z - 1);
+                            if (!this.level.isYInRange((int) vBlock.y())) {
                                 break;
                             }
                             Block block = this.level.getBlock(vBlock);
@@ -201,9 +201,9 @@ public class Explosion {
                                     }
                                 }
                             }
-                            pointerX += vector.x;
-                            pointerY += vector.y;
-                            pointerZ += vector.z;
+                            pointerX += vector.x();
+                            pointerY += vector.y();
+                            pointerZ += vector.z();
                         }
                     }
                 }
@@ -226,7 +226,7 @@ public class Explosion {
         LongArraySet updateBlocks = new LongArraySet();
         List<Vector3> send = new ArrayList<>();
 
-        Vector3 source = (new Vector3(this.source.x, this.source.y, this.source.z)).floor();
+        Vector3 source = (new Vector3(this.source.x(), this.source.y(), this.source.z())).floor();
         double yield = (1d / this.size) * 100d;
 
         if (affectedBlocks == null) {
@@ -266,12 +266,12 @@ public class Explosion {
         }
 
         double explosionSize = this.size * 2d;
-        double minX = NukkitMath.floorDouble(this.source.x - explosionSize - 1);
-        double maxX = NukkitMath.ceilDouble(this.source.x + explosionSize + 1);
-        double minY = NukkitMath.floorDouble(this.source.y - explosionSize - 1);
-        double maxY = NukkitMath.ceilDouble(this.source.y + explosionSize + 1);
-        double minZ = NukkitMath.floorDouble(this.source.z - explosionSize - 1);
-        double maxZ = NukkitMath.ceilDouble(this.source.z + explosionSize + 1);
+        double minX = NukkitMath.floorDouble(this.source.x() - explosionSize - 1);
+        double maxX = NukkitMath.ceilDouble(this.source.x() + explosionSize + 1);
+        double minY = NukkitMath.floorDouble(this.source.y() - explosionSize - 1);
+        double maxY = NukkitMath.ceilDouble(this.source.y() + explosionSize + 1);
+        double minZ = NukkitMath.floorDouble(this.source.z() - explosionSize - 1);
+        double maxZ = NukkitMath.ceilDouble(this.source.z() + explosionSize + 1);
 
         AxisAlignedBB explosionBB = new SimpleAxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ);
         Entity[] list =
@@ -298,9 +298,9 @@ public class Explosion {
 
                 if (!(entity instanceof EntityItem || entity instanceof EntityXPOrb)) {
                     var multipliedMotion = motion.multiply(impact);
-                    entity.motionX += multipliedMotion.x;
-                    entity.motionY += multipliedMotion.y;
-                    entity.motionZ += multipliedMotion.z;
+                    entity.motionX += multipliedMotion.x();
+                    entity.motionY += multipliedMotion.y();
+                    entity.motionZ += multipliedMotion.z();
                 }
             }
         }
@@ -338,17 +338,17 @@ public class Explosion {
                 smokePositions.add(block);
             }
 
-            this.level.setBlockAtLayer((int) block.x, (int) block.y, (int) block.z, block.layer, BlockID.AIR);
+            this.level.setBlockAtLayer((int) block.x(), (int) block.y(), (int) block.z(), block.layer, BlockID.AIR);
 
             if (block.layer != 0) {
                 continue;
             }
 
-            Vector3 pos = new Vector3(block.x, block.y, block.z);
+            Vector3 pos = new Vector3(block.x(), block.y(), block.z());
 
             for (BlockFace side : BlockFace.values()) {
                 Vector3 sideBlock = pos.getSide(side);
-                long index = Hash.hashBlock((int) sideBlock.x, (int) sideBlock.y, (int) sideBlock.z);
+                long index = Hash.hashBlock((int) sideBlock.x(), (int) sideBlock.y(), (int) sideBlock.z());
                 if (!this.affectedBlocks.contains(sideBlock) && !updateBlocks.contains(index)) {
                     BlockUpdateEvent event = new BlockUpdateEvent(this.level.getBlock(sideBlock));
                     event.call();
@@ -366,7 +366,7 @@ public class Explosion {
                     updateBlocks.add(index);
                 }
             }
-            send.add(new Vector3(block.x - source.x, block.y - source.y, block.z - source.z));
+            send.add(new Vector3(block.x() - source.x(), block.y() - source.y(), block.z() - source.z()));
         }
 
         for (Vector3 remainingPos : fireIgnitions) {
@@ -378,17 +378,17 @@ public class Explosion {
 
         int count = smokePositions.size();
         CompoundTag data = new CompoundTag(new Object2ObjectOpenHashMap<>(count, 0.999999f))
-                .putFloat("originX", (float) this.source.x)
-                .putFloat("originY", (float) this.source.y)
-                .putFloat("originZ", (float) this.source.z)
+                .putFloat("originX", (float) this.source.x())
+                .putFloat("originY", (float) this.source.y())
+                .putFloat("originZ", (float) this.source.z())
                 .putFloat("radius", (float) this.size)
                 .putInt("size", count);
         for (int i = 0; i < count; i++) {
             Vector3 pos = smokePositions.get(i);
             String prefix = "pos" + i;
-            data.putFloat(prefix + "x", (float) pos.x);
-            data.putFloat(prefix + "y", (float) pos.y);
-            data.putFloat(prefix + "z", (float) pos.z);
+            data.putFloat(prefix + "x", (float) pos.x());
+            data.putFloat(prefix + "y", (float) pos.y());
+            data.putFloat(prefix + "z", (float) pos.z());
         }
         this.level.addSound(this.source, Sound.RANDOM_EXPLODE);
         this.level.addLevelEvent(this.source, LevelEventPacket.EVENT_PARTICLE_EXPLOSION, Math.round((float) this.size));

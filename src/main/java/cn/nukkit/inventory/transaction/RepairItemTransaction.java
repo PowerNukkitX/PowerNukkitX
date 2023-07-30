@@ -87,7 +87,7 @@ public class RepairItemTransaction extends InventoryTransaction {
         }
 
         FakeBlockMenu holder = inventory.getHolder();
-        Block block = this.source.level.getBlock(holder.getFloorX(), holder.getFloorY(), holder.getFloorZ());
+        Block block = this.source.getLevel().getBlock(holder.getFloorX(), holder.getFloorY(), holder.getFloorZ());
         if (block.getId() == Block.ANVIL) {
             int oldDamage = block.getDamage() >= 8 ? 2 : block.getDamage() >= 4 ? 1 : 0;
             int newDamage =
@@ -103,17 +103,17 @@ public class RepairItemTransaction extends InventoryTransaction {
                 if (newState.getBlockId() == BlockID.AIR
                         || newState.getBlockId() == BlockID.ANVIL
                                 && newState.getPropertyValue(BlockAnvil.DAMAGE).equals(AnvilDamage.BROKEN)) {
-                    this.source.level.setBlock(block, Block.get(Block.AIR), true);
-                    this.source.level.addLevelEvent(block, LevelEventPacket.EVENT_SOUND_ANVIL_BREAK);
+                    this.source.getLevel().setBlock(block, Block.get(Block.AIR), true);
+                    this.source.getLevel().addLevelEvent(block, LevelEventPacket.EVENT_SOUND_ANVIL_BREAK);
                 } else {
                     if (!newState.equals(event1.getOldBlockState())) {
                         Block newBlock = newState.getBlockRepairing(block);
-                        this.source.level.setBlock(block, newBlock, true);
+                        this.source.getLevel().setBlock(block, newBlock, true);
                     }
-                    this.source.level.addLevelEvent(block, LevelEventPacket.EVENT_SOUND_ANVIL_USE);
+                    this.source.getLevel().addLevelEvent(block, LevelEventPacket.EVENT_SOUND_ANVIL_USE);
                 }
             } else {
-                this.source.level.addLevelEvent(block, LevelEventPacket.EVENT_SOUND_ANVIL_USE);
+                this.source.getLevel().addLevelEvent(block, LevelEventPacket.EVENT_SOUND_ANVIL_USE);
             }
         }
 

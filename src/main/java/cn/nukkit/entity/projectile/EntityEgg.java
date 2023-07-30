@@ -76,7 +76,7 @@ public class EntityEgg extends EntityProjectile {
         int particles = ThreadLocalRandom.current().nextInt(10) + 5;
         ItemEgg egg = new ItemEgg();
         for (int i = 0; i < particles; i++) {
-            level.addParticle(new ItemBreakParticle(this, egg));
+            getLevel().addParticle(new ItemBreakParticle(this, egg));
         }
     }
 

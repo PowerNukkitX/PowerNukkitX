@@ -78,11 +78,11 @@ public class BlockChorusPlant extends BlockTransparent {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!isPositionValid()) {
-                level.scheduleUpdate(this, 1);
+                getLevel().scheduleUpdate(this, 1);
                 return type;
             }
         } else if (type == Level.BLOCK_UPDATE_SCHEDULED) {
-            level.useBreakOn(this, null, null, true);
+            getLevel().useBreakOn(this, null, null, true);
             return type;
         }
 

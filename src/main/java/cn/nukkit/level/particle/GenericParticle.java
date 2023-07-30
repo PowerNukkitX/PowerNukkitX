@@ -18,7 +18,7 @@ public class GenericParticle extends Particle {
     }
 
     public GenericParticle(Vector3 pos, int id, int data) {
-        super(pos.x, pos.y, pos.z);
+        super(pos.x(), pos.y(), pos.z());
         this.id = id;
         this.data = data;
     }
@@ -27,9 +27,9 @@ public class GenericParticle extends Particle {
     public DataPacket[] encode() {
         LevelEventPacket pk = new LevelEventPacket();
         pk.evid = (short) (LevelEventPacket.EVENT_ADD_PARTICLE_MASK | this.id);
-        pk.x = (float) this.x;
-        pk.y = (float) this.y;
-        pk.z = (float) this.z;
+        pk.x = (float) this.x();
+        pk.y = (float) this.y();
+        pk.z = (float) this.z();
         pk.data = this.data;
 
         return new DataPacket[] {pk};

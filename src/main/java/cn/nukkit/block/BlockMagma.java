@@ -66,7 +66,7 @@ public class BlockMagma extends BlockSolid {
                     || p.isCreative()
                     || p.isSpectator()
                     || p.isSneaking()
-                    || !p.level.gameRules.getBoolean(GameRule.FIRE_DAMAGE)) {
+                    || !p.getLevel().gameRules.getBoolean(GameRule.FIRE_DAMAGE)) {
                 return;
             }
         }

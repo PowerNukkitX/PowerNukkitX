@@ -89,9 +89,9 @@ public class SimpleVibrationManager implements VibrationManager {
     protected CompoundTag createVec3fTag(Vector3f vec3f) {
         return new CompoundTag()
                 .putString("type", "vec3")
-                .putFloat("x", vec3f.x)
-                .putFloat("y", vec3f.y)
-                .putFloat("z", vec3f.z);
+                .putFloat("x", vec3f.x())
+                .putFloat("y", vec3f.y())
+                .putFloat("z", vec3f.z());
     }
 
     protected CompoundTag createEntityTargetTag(Entity entity) {

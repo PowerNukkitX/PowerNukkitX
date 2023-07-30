@@ -89,7 +89,7 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
         }
 
         setBlockFace(face);
-        this.level.setBlock(block, this, true, true);
+        this.getLevel().setBlock(block, this, true, true);
         return true;
     }
 
@@ -105,15 +105,16 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
             return false;
         }
 
-        this.level.scheduleUpdate(this, 30);
+        this.getLevel().scheduleUpdate(this, 30);
 
         setActivated(true, player);
-        this.level.setBlock(this, this, true, false);
-        this.level.addLevelSoundEvent(
-                this.add(0.5, 0.5, 0.5),
-                LevelSoundEventPacket.SOUND_POWER_ON,
-                GlobalBlockPalette.getOrCreateRuntimeId(this.getId(), this.getDamage()));
-        if (this.level.getServer().isRedstoneEnabled()) {
+        this.getLevel().setBlock(this, this, true, false);
+        this.getLevel()
+                .addLevelSoundEvent(
+                        this.add(0.5, 0.5, 0.5),
+                        LevelSoundEventPacket.SOUND_POWER_ON,
+                        GlobalBlockPalette.getOrCreateRuntimeId(this.getId(), this.getDamage()));
+        if (this.getLevel().getServer().isRedstoneEnabled()) {
             new BlockRedstoneEvent(this, 0, 15).call();
 
             updateAroundRedstone();
@@ -131,19 +132,20 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
             BlockFace touchingFace = thisFace.getOpposite();
             Block side = this.getSide(touchingFace);
             if (!BlockLever.isSupportValid(side, thisFace)) {
-                this.level.useBreakOn(this, Item.get(Item.WOODEN_PICKAXE));
+                this.getLevel().useBreakOn(this, Item.get(Item.WOODEN_PICKAXE));
                 return Level.BLOCK_UPDATE_NORMAL;
             }
         } else if (type == Level.BLOCK_UPDATE_SCHEDULED) {
             if (this.isActivated()) {
                 setActivated(false);
-                this.level.setBlock(this, this, true, false);
-                this.level.addLevelSoundEvent(
-                        this.add(0.5, 0.5, 0.5),
-                        LevelSoundEventPacket.SOUND_POWER_OFF,
-                        GlobalBlockPalette.getOrCreateRuntimeId(this.getId(), this.getDamage()));
+                this.getLevel().setBlock(this, this, true, false);
+                this.getLevel()
+                        .addLevelSoundEvent(
+                                this.add(0.5, 0.5, 0.5),
+                                LevelSoundEventPacket.SOUND_POWER_OFF,
+                                GlobalBlockPalette.getOrCreateRuntimeId(this.getId(), this.getDamage()));
 
-                if (this.level.getServer().isRedstoneEnabled()) {
+                if (this.getLevel().getServer().isRedstoneEnabled()) {
                     new BlockRedstoneEvent(this, 15, 0).call();
 
                     updateAroundRedstone();
@@ -172,12 +174,12 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
         setBooleanValue(BUTTON_PRESSED, activated);
         var pos = this.add(0.5, 0.5, 0.5);
         if (activated) {
-            this.level
+            this.getLevel()
                     .getVibrationManager()
                     .callVibrationEvent(
                             new VibrationEvent(player != null ? player : this, pos, VibrationType.BLOCK_ACTIVATE));
         } else {
-            this.level
+            this.getLevel()
                     .getVibrationManager()
                     .callVibrationEvent(
                             new VibrationEvent(player != null ? player : this, pos, VibrationType.BLOCK_DEACTIVATE));

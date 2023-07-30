@@ -79,18 +79,18 @@ public abstract class BlockMushroom extends BlockFlowable implements BlockFlower
                 this.grow();
             }
 
-            this.level.addParticle(new BoneMealParticle(this));
+            this.getLevel().addParticle(new BoneMealParticle(this));
             return true;
         }
         return false;
     }
 
     public boolean grow() {
-        this.level.setBlock(this, Block.get(BlockID.AIR), true, false);
+        this.getLevel().setBlock(this, Block.get(BlockID.AIR), true, false);
 
         BigMushroom generator = new BigMushroom(getType());
 
-        ListChunkManager chunkManager = new ListChunkManager(this.level);
+        ListChunkManager chunkManager = new ListChunkManager(this.getLevel());
         if (generator.generate(chunkManager, new NukkitRandom(), this)) {
             StructureGrowEvent event = new StructureGrowEvent(this, chunkManager.getBlocks());
             event.call();
@@ -98,12 +98,17 @@ public abstract class BlockMushroom extends BlockFlowable implements BlockFlower
                 return false;
             }
             for (Block block : event.getBlockList()) {
-                this.level.setBlockAt(
-                        block.getFloorX(), block.getFloorY(), block.getFloorZ(), block.getId(), block.getDamage());
+                this.getLevel()
+                        .setBlockAt(
+                                block.getFloorX(),
+                                block.getFloorY(),
+                                block.getFloorZ(),
+                                block.getId(),
+                                block.getDamage());
             }
             return true;
         } else {
-            this.level.setBlock(this, this, true, false);
+            this.getLevel().setBlock(this, this, true, false);
             return false;
         }
     }
@@ -113,7 +118,7 @@ public abstract class BlockMushroom extends BlockFlowable implements BlockFlower
         return block.getId() == MYCELIUM
                 || block.getId() == PODZOL
                 || block instanceof BlockNylium
-                || (!block.isTransparent() && this.level.getFullLight(this) < 13);
+                || (!block.isTransparent() && this.getLevel().getFullLight(this) < 13);
     }
 
     @Override

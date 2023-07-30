@@ -886,7 +886,7 @@ public class BinaryStream {
     }
 
     public void putVector3f(Vector3f v) {
-        this.putVector3f(v.x, v.y, v.z);
+        this.putVector3f(v.x(), v.y(), v.z());
     }
 
     public void putVector3f(float x, float y, float z) {
@@ -904,7 +904,7 @@ public class BinaryStream {
     @Since("1.19.70-r1")
     @PowerNukkitXOnly
     public void putVector2f(Vector2f v) {
-        this.putVector2f(v.x, v.y);
+        this.putVector2f(v.x(), v.y());
     }
 
     @Since("1.19.70-r1")

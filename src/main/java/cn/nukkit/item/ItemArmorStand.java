@@ -62,14 +62,14 @@ public class ItemArmorStand extends Item {
             return false;
         }
 
-        for (Entity collidingEntity : level.getCollidingEntities(
-                new SimpleAxisAlignedBB(block.x, block.y, block.z, block.x + 1, block.y + 1, block.z + 1))) {
+        for (Entity collidingEntity : level.getCollidingEntities(new SimpleAxisAlignedBB(
+                block.x(), block.y(), block.z(), block.x() + 1, block.y() + 1, block.z() + 1))) {
             if (collidingEntity instanceof EntityArmorStand) {
                 return false;
             }
         }
 
-        CompassRoseDirection direction = CompassRoseDirection.getClosestFromYaw(player.yaw, PRIMARY_INTER_CARDINAL)
+        CompassRoseDirection direction = CompassRoseDirection.getClosestFromYaw(player.yaw(), PRIMARY_INTER_CARDINAL)
                 .getOppositeFace();
         CompoundTag nbt = Entity.getDefaultNBT(block.add(0.5, 0, 0.5), new Vector3(), direction.getYaw(), 0f);
         if (this.hasCustomName()) {

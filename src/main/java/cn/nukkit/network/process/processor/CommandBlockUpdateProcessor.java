@@ -19,7 +19,7 @@ public class CommandBlockUpdateProcessor extends DataPacketProcessor<CommandBloc
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull CommandBlockUpdatePacket pk) {
         if (playerHandle.player.isOp() && playerHandle.player.isCreative()) {
             if (pk.isBlock) {
-                BlockEntity blockEntity = playerHandle.player.level.getBlockEntity(new Vector3(pk.x, pk.y, pk.z));
+                BlockEntity blockEntity = playerHandle.player.getLevel().getBlockEntity(new Vector3(pk.x, pk.y, pk.z));
                 if (blockEntity instanceof BlockEntityCommandBlock commandBlock) {
                     Block cmdBlock = commandBlock.getLevelBlock();
 
@@ -63,7 +63,7 @@ public class CommandBlockUpdateProcessor extends DataPacketProcessor<CommandBloc
                     commandBlock
                             .getLevelBlockAround()
                             .forEach(b -> b.onUpdate(Level.BLOCK_UPDATE_REDSTONE)); // update redstone
-                    playerHandle.player.level.setBlock(commandBlock, cmdBlock, true);
+                    playerHandle.player.getLevel().setBlock(commandBlock, cmdBlock, true);
                 }
             }
         }

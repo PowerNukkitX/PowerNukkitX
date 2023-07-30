@@ -172,16 +172,18 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
             return;
         }
         BlockCauldron block = (BlockCauldron) getBlock();
-        Player[] viewers =
-                this.level.getChunkPlayers(getChunkX(), getChunkZ()).values().toArray(Player.EMPTY_ARRAY);
-        this.level.sendBlocks(viewers, new Vector3[] {block});
+        Player[] viewers = this.getLevel()
+                .getChunkPlayers(getChunkX(), getChunkZ())
+                .values()
+                .toArray(Player.EMPTY_ARRAY);
+        this.getLevel().sendBlocks(viewers, new Vector3[] {block});
         super.spawnToAll();
         Location location = getLocation();
         Server.getInstance().getScheduler().scheduleTask(null, () -> {
             if (isValid()) {
-                BlockEntity cauldron = this.level.getBlockEntity(location);
+                BlockEntity cauldron = this.getLevel().getBlockEntity(location);
                 if (cauldron == BlockEntityCauldron.this) {
-                    this.level.sendBlocks(viewers, new Vector3[] {location});
+                    this.getLevel().sendBlocks(viewers, new Vector3[] {location});
                     super.spawnToAll();
                 }
             }
@@ -198,9 +200,9 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
     public CompoundTag getSpawnCompound() {
         CompoundTag compoundTag = new CompoundTag()
                 .putString("id", BlockEntity.CAULDRON)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z)
+                .putInt("x", (int) this.x())
+                .putInt("y", (int) this.y())
+                .putInt("z", (int) this.z())
                 .putBoolean("isMovable", isMovable())
                 .putList(new ListTag<>("Items"))
                 .putShort("PotionId", (short) namedTag.getShort("PotionId"))

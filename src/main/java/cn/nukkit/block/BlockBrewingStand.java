@@ -110,9 +110,9 @@ public class BlockBrewingStand extends BlockTransparentMeta implements BlockEnti
         CompoundTag nbt = new CompoundTag()
                 .putList(new ListTag<>("Items"))
                 .putString("id", BlockEntity.BREWING_STAND)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z);
+                .putInt("x", (int) this.x())
+                .putInt("y", (int) this.y())
+                .putInt("z", (int) this.z());
 
         if (item.hasCustomName()) {
             nbt.putString("CustomName", item.getCustomName());
@@ -126,7 +126,7 @@ public class BlockBrewingStand extends BlockTransparentMeta implements BlockEnti
         }
 
         BlockEntityBrewingStand brewing = (BlockEntityBrewingStand) BlockEntity.createBlockEntity(
-                BlockEntity.BREWING_STAND, getLevel().getChunk((int) this.x >> 4, (int) this.z >> 4), nbt);
+                BlockEntity.BREWING_STAND, getLevel().getChunk((int) this.x() >> 4, (int) this.z() >> 4), nbt);
         return brewing != null;
     }
 
@@ -141,12 +141,12 @@ public class BlockBrewingStand extends BlockTransparentMeta implements BlockEnti
                 CompoundTag nbt = new CompoundTag()
                         .putList(new ListTag<>("Items"))
                         .putString("id", BlockEntity.BREWING_STAND)
-                        .putInt("x", (int) this.x)
-                        .putInt("y", (int) this.y)
-                        .putInt("z", (int) this.z);
+                        .putInt("x", (int) this.x())
+                        .putInt("y", (int) this.y())
+                        .putInt("z", (int) this.z());
                 brewing = (BlockEntityBrewingStand) BlockEntity.createBlockEntity(
                         BlockEntity.BREWING_STAND,
-                        this.getLevel().getChunk((int) (this.x) >> 4, (int) (this.z) >> 4),
+                        this.getLevel().getChunk((int) (this.x()) >> 4, (int) (this.z()) >> 4),
                         nbt);
                 if (brewing == null) {
                     return false;
@@ -183,27 +183,27 @@ public class BlockBrewingStand extends BlockTransparentMeta implements BlockEnti
 
     @Override
     public double getMinX() {
-        return this.x + 7 / 16.0;
+        return this.x() + 7 / 16.0;
     }
 
     @Override
     public double getMinZ() {
-        return this.z + 7 / 16.0;
+        return this.z() + 7 / 16.0;
     }
 
     @Override
     public double getMaxX() {
-        return this.x + 1 - 7 / 16.0;
+        return this.x() + 1 - 7 / 16.0;
     }
 
     @Override
     public double getMaxY() {
-        return this.y + 1 - 2 / 16.0;
+        return this.y() + 1 - 2 / 16.0;
     }
 
     @Override
     public double getMaxZ() {
-        return this.z + 1 - 7 / 16.0;
+        return this.z() + 1 - 7 / 16.0;
     }
 
     @Override
@@ -213,7 +213,7 @@ public class BlockBrewingStand extends BlockTransparentMeta implements BlockEnti
 
     @Override
     public int getComparatorInputOverride() {
-        BlockEntity blockEntity = this.level.getBlockEntity(this);
+        BlockEntity blockEntity = this.getLevel().getBlockEntity(this);
 
         if (blockEntity instanceof BlockEntityBrewingStand) {
             return ContainerInventory.calculateRedstone(((BlockEntityBrewingStand) blockEntity).getInventory());

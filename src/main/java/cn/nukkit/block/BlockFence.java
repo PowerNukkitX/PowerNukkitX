@@ -134,7 +134,8 @@ public class BlockFence extends BlockTransparentMeta implements BlockConnectable
         double s = south ? 1 : 0.625;
         double w = west ? 0 : 0.375;
         double e = east ? 1 : 0.625;
-        return new SimpleAxisAlignedBB(this.x + w, this.y, this.z + n, this.x + e, this.y + 1.5, this.z + s);
+        return new SimpleAxisAlignedBB(
+                this.x() + w, this.y(), this.z() + n, this.x() + e, this.y() + 1.5, this.z() + s);
     }
 
     @Override

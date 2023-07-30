@@ -84,32 +84,32 @@ public class BlockCocoa extends BlockTransparentMeta implements Faceable {
 
     @Override
     public double getMinX() {
-        return this.x + getRelativeBoundingBox().getMinX();
+        return this.x() + getRelativeBoundingBox().getMinX();
     }
 
     @Override
     public double getMaxX() {
-        return this.x + getRelativeBoundingBox().getMaxX();
+        return this.x() + getRelativeBoundingBox().getMaxX();
     }
 
     @Override
     public double getMinY() {
-        return this.y + getRelativeBoundingBox().getMinY();
+        return this.y() + getRelativeBoundingBox().getMinY();
     }
 
     @Override
     public double getMaxY() {
-        return this.y + getRelativeBoundingBox().getMaxY();
+        return this.y() + getRelativeBoundingBox().getMaxY();
     }
 
     @Override
     public double getMinZ() {
-        return this.z + getRelativeBoundingBox().getMinZ();
+        return this.z() + getRelativeBoundingBox().getMinZ();
     }
 
     @Override
     public double getMaxZ() {
-        return this.z + getRelativeBoundingBox().getMaxZ();
+        return this.z() + getRelativeBoundingBox().getMaxZ();
     }
 
     private AxisAlignedBB getRelativeBoundingBox() {
@@ -163,7 +163,7 @@ public class BlockCocoa extends BlockTransparentMeta implements Faceable {
                 };
 
                 this.setDamage(faces[face.getIndex()]);
-                this.level.setBlock(block, this, true, true);
+                this.getLevel().setBlock(block, this, true, true);
                 return true;
             }
         }
@@ -208,7 +208,7 @@ public class BlockCocoa extends BlockTransparentMeta implements Faceable {
                 if (!this.grow()) {
                     return false;
                 }
-                this.level.addParticle(new BoneMealParticle(this));
+                this.getLevel().addParticle(new BoneMealParticle(this));
 
                 if (player != null && (player.gamemode & 0x01) == 0) {
                     item.count--;

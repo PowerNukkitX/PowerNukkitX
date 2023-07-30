@@ -99,7 +99,7 @@ public class BlockLoom extends BlockSolidMeta implements Faceable {
         if (player != null) {
             setBlockFace(player.getDirection().getOpposite());
         }
-        this.level.setBlock(this, this, true, true);
+        this.getLevel().setBlock(this, this, true, true);
         return true;
     }
 

@@ -49,9 +49,9 @@ public abstract class ContainerInventory extends BaseInventory {
         pk.type = this.getType().getNetworkType();
         InventoryHolder holder = this.getHolder();
         if (holder instanceof Vector3) {
-            pk.x = (int) ((Vector3) holder).getX();
-            pk.y = (int) ((Vector3) holder).getY();
-            pk.z = (int) ((Vector3) holder).getZ();
+            pk.x = (int) ((Vector3) holder).x();
+            pk.y = (int) ((Vector3) holder).y();
+            pk.z = (int) ((Vector3) holder).z();
         } else {
             pk.x = pk.y = pk.z = 0;
         }
@@ -64,7 +64,7 @@ public abstract class ContainerInventory extends BaseInventory {
         this.sendContents(who);
 
         if (canCauseVibration() && holder instanceof Vector3 vector3) {
-            who.level
+            who.getLevel()
                     .getVibrationManager()
                     .callVibrationEvent(
                             new VibrationEvent(who, vector3.add(0.5, 0.5, 0.5), VibrationType.CONTAINER_OPEN));
@@ -79,7 +79,7 @@ public abstract class ContainerInventory extends BaseInventory {
         who.dataPacket(pk);
 
         if (canCauseVibration() && getHolder() instanceof Vector3 vector3) {
-            who.level
+            who.getLevel()
                     .getVibrationManager()
                     .callVibrationEvent(
                             new VibrationEvent(who, vector3.add(0.5, 0.5, 0.5), VibrationType.CONTAINER_CLOSE));

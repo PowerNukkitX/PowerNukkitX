@@ -241,7 +241,7 @@ public class BehaviorGroup implements IBehaviorGroup {
     public void updateRoute(EntityIntelligent entity) {
         currentRouteUpdateTick++;
         boolean reachUpdateCycle = currentRouteUpdateTick
-                >= calcActiveDelay(entity, ROUTE_UPDATE_CYCLE + (entity.level.tickRateOptDelay << 1));
+                >= calcActiveDelay(entity, ROUTE_UPDATE_CYCLE + (entity.getLevel().tickRateOptDelay << 1));
         if (reachUpdateCycle) currentRouteUpdateTick = 0;
         Vector3 target = entity.getMoveTarget();
         if (target == null) {
@@ -269,12 +269,12 @@ public class BehaviorGroup implements IBehaviorGroup {
                                             setForceUpdateRoute(false);
                                             // 写入section变更记录
                                             cacheSectionBlockChange(
-                                                    entity.level,
+                                                    entity.getLevel(),
                                                     calPassByChunkSections(
                                                             this.routeFinder.getRoute().stream()
                                                                     .map(Node::getVector3)
                                                                     .toList(),
-                                                            entity.level));
+                                                            entity.getLevel()));
                                         })
                                         .setStart(entity.clone())
                                         .setTarget(target));
@@ -311,9 +311,9 @@ public class BehaviorGroup implements IBehaviorGroup {
         // 终点发生变化或第一次计算，需要重算
         if (this.routeFinder.getTarget() == null || hasNewUnCalMoveTarget(entity)) return true;
         Set<ChunkSectionVector> passByChunkSections = calPassByChunkSections(
-                this.routeFinder.getRoute().stream().map(Node::getVector3).toList(), entity.level);
+                this.routeFinder.getRoute().stream().map(Node::getVector3).toList(), entity.getLevel());
         long total = passByChunkSections.stream()
-                .mapToLong(vector3 -> getSectionBlockChange(entity.level, vector3))
+                .mapToLong(vector3 -> getSectionBlockChange(entity.getLevel(), vector3))
                 .sum();
         // Section发生变化，需要重算
         return blockChangeCache != total;
@@ -358,7 +358,7 @@ public class BehaviorGroup implements IBehaviorGroup {
     protected Set<ChunkSectionVector> calPassByChunkSections(Collection<Vector3> nodes, Level level) {
         return nodes.stream()
                 .map(vector3 -> new ChunkSectionVector(
-                        vector3.getChunkX(), ((int) vector3.y - level.getMinHeight()) >> 4, vector3.getChunkZ()))
+                        vector3.getChunkX(), ((int) vector3.y() - level.getMinHeight()) >> 4, vector3.getChunkZ()))
                 .collect(Collectors.toSet());
     }
 

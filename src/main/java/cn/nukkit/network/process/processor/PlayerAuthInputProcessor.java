@@ -159,17 +159,17 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
         if (yaw < 0) {
             yaw += 360;
         }
-        Location clientLoc = Location.fromObject(clientPosition, player.level, yaw, pitch, headYaw);
+        Location clientLoc = Location.fromObject(clientPosition, player.getLevel(), yaw, pitch, headYaw);
         // Proper player.isPassenger() check may be needed
         if (playerHandle.player.riding instanceof EntityMinecartAbstract entityMinecartAbstract) {
-            entityMinecartAbstract.setCurrentSpeed(pk.getMotion().getY());
+            entityMinecartAbstract.setCurrentSpeed(pk.getMotion().y());
         } else if (playerHandle.player.riding instanceof EntityHorse entityHorse) {
             // 为了保证玩家和马位置同步，骑马时不使用移动队列处理
             var distance = clientLoc.distanceSquared(player);
             var updatePosition = (float) Math.sqrt(distance) > 0.1f;
-            var updateRotation = (float) Math.abs(player.getPitch() - clientLoc.pitch) > 1
-                    || (float) Math.abs(player.getYaw() - clientLoc.yaw) > 1
-                    || (float) Math.abs(player.getHeadYaw() - clientLoc.headYaw) > 1;
+            var updateRotation = (float) Math.abs(player.pitch() - clientLoc.pitch()) > 1
+                    || (float) Math.abs(player.yaw() - clientLoc.yaw()) > 1
+                    || (float) Math.abs(player.headYaw() - clientLoc.headYaw()) > 1;
             if (updatePosition || updateRotation) {
                 entityHorse.onPlayerInput(clientLoc);
                 playerHandle.handleMovement(clientLoc);

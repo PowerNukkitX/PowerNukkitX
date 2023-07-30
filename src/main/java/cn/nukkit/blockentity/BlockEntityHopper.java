@@ -97,7 +97,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable
     @Since("1.20.0-r1")
     @PowerNukkitXOnly
     protected SimpleAxisAlignedBB generatePickupArea() {
-        return new SimpleAxisAlignedBB(this.x, this.y, this.z, this.x + 1, this.y + 2, this.z + 1);
+        return new SimpleAxisAlignedBB(this.x(), this.y(), this.z(), this.x() + 1, this.y() + 2, this.z() + 1);
     }
 
     @Since("1.20.0-r1")
@@ -125,7 +125,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable
 
     @Override
     public boolean isBlockEntityValid() {
-        return this.level.getBlockIdAt(this.getFloorX(), this.getFloorY(), this.getFloorZ()) == Block.HOPPER_BLOCK;
+        return this.getLevel().getBlockIdAt(this.getFloorX(), this.getFloorY(), this.getFloorZ()) == Block.HOPPER_BLOCK;
     }
 
     @Override
@@ -244,7 +244,8 @@ public class BlockEntityHopper extends BlockEntitySpawnable
         }
 
         Block blockSide = this.getSide(BlockFace.UP).getTickCachedLevelBlock();
-        BlockEntity blockEntity = this.level.getBlockEntity(temporalVector.setComponentsAdding(this, BlockFace.UP));
+        BlockEntity blockEntity =
+                this.getLevel().getBlockEntity(temporalVector.setComponentsAdding(this, BlockFace.UP));
 
         boolean changed = pushItems() || pushItemsIntoMinecart();
 
@@ -325,7 +326,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable
     @Override
     public void onBreak() {
         for (Item content : inventory.getContents().values()) {
-            level.dropItem(this, content);
+            getLevel().dropItem(this, content);
         }
         this.inventory.clearAll();
     }
@@ -386,7 +387,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable
 
         BlockFace side = levelBlockState.getPropertyValue(CommonBlockProperties.FACING_DIRECTION);
         Block blockSide = this.getSide(side).getTickCachedLevelBlock();
-        BlockEntity be = this.level.getBlockEntity(temporalVector.setComponentsAdding(this, side));
+        BlockEntity be = this.getLevel().getBlockEntity(temporalVector.setComponentsAdding(this, side));
 
         // 漏斗应该有主动向被锁住的漏斗推送物品的能力
         if (be instanceof BlockEntityHopper sideHopper && levelBlockState.isDefaultState() && !sideHopper.isDisabled()
@@ -563,9 +564,9 @@ public class BlockEntityHopper extends BlockEntitySpawnable
     public CompoundTag getSpawnCompound() {
         CompoundTag c = new CompoundTag()
                 .putString("id", BlockEntity.HOPPER)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z);
+                .putInt("x", (int) this.x())
+                .putInt("y", (int) this.y())
+                .putInt("z", (int) this.z());
 
         if (this.hasName()) {
             c.put("CustomName", this.namedTag.get("CustomName"));

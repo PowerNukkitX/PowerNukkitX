@@ -78,11 +78,11 @@ public class BlockObserver extends BlockSolidMeta implements RedstoneComponent, 
             double fz,
             @Nullable Player player) {
         if (player != null) {
-            if (Math.abs(player.getFloorX() - this.x) <= 1 && Math.abs(player.getFloorZ() - this.z) <= 1) {
-                double y = player.y + player.getEyeHeight();
-                if (y - this.y > 2) {
+            if (Math.abs(player.getFloorX() - this.x()) <= 1 && Math.abs(player.getFloorZ() - this.z()) <= 1) {
+                double y = player.y() + player.getEyeHeight();
+                if (y - this.y() > 2) {
                     setBlockFace(BlockFace.DOWN);
-                } else if (this.y - y > 0) {
+                } else if (this.y() - y > 0) {
                     setBlockFace(BlockFace.UP);
                 } else {
                     setBlockFace(player.getHorizontalFacing());
@@ -128,17 +128,17 @@ public class BlockObserver extends BlockSolidMeta implements RedstoneComponent, 
                 new BlockRedstoneEvent(this, 0, 15).call();
                 setPowered(true);
 
-                if (level.setBlock(this, this)) {
+                if (getLevel().setBlock(this, this)) {
                     getSide(getBlockFace().getOpposite()).onUpdate(Level.BLOCK_UPDATE_REDSTONE);
                     RedstoneComponent.updateAroundRedstone(
                             getSide(getBlockFace().getOpposite()));
-                    level.scheduleUpdate(this, 2);
+                    getLevel().scheduleUpdate(this, 2);
                 }
             } else {
                 new BlockRedstoneEvent(this, 15, 0).call();
                 setPowered(false);
 
-                level.setBlock(this, this);
+                getLevel().setBlock(this, this);
                 getSide(getBlockFace().getOpposite()).onUpdate(Level.BLOCK_UPDATE_REDSTONE);
                 RedstoneComponent.updateAroundRedstone(getSide(getBlockFace().getOpposite()));
             }
@@ -151,9 +151,9 @@ public class BlockObserver extends BlockSolidMeta implements RedstoneComponent, 
     @PowerNukkitOnly
     @Override
     public void onNeighborChange(@NotNull BlockFace side) {
-        Server server = level.getServer();
+        Server server = getLevel().getServer();
         BlockFace blockFace = getBlockFace();
-        if (!server.isRedstoneEnabled() || side != blockFace || level.isUpdateScheduled(this, this)) {
+        if (!server.isRedstoneEnabled() || side != blockFace || getLevel().isUpdateScheduled(this, this)) {
             return;
         }
 
@@ -163,7 +163,7 @@ public class BlockObserver extends BlockSolidMeta implements RedstoneComponent, 
             return;
         }
 
-        level.scheduleUpdate(this, 1);
+        getLevel().scheduleUpdate(this, 1);
     }
 
     @Override

@@ -139,43 +139,43 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
     @Override
     public void updateMovement() {
         // 检测自由落体时间
-        if (!this.onGround && this.y < this.highestPosition) {
+        if (!this.onGround && this.y() < this.highestPosition) {
             this.fallingTick++;
         }
         // 这样做是为了向后兼容旧插件
         if (!enableHeadYaw()) {
-            this.headYaw = this.yaw;
+            this.setHeadYaw(this.yaw());
         }
-        double diffPosition = (this.x - this.lastX) * (this.x - this.lastX)
-                + (this.y - this.lastY) * (this.y - this.lastY)
-                + (this.z - this.lastZ) * (this.z - this.lastZ);
+        double diffPosition = (this.x() - this.lastX) * (this.x() - this.lastX)
+                + (this.y() - this.lastY) * (this.y() - this.lastY)
+                + (this.z() - this.lastZ) * (this.z() - this.lastZ);
         double diffRotation = enableHeadYaw()
-                ? (this.headYaw - this.lastHeadYaw) * (this.headYaw - this.lastHeadYaw)
+                ? (this.headYaw() - this.lastHeadYaw) * (this.headYaw() - this.lastHeadYaw)
                 : 0
-                        + (this.yaw - this.lastYaw) * (this.yaw - this.lastYaw)
-                        + (this.pitch - this.lastPitch) * (this.pitch - this.lastPitch);
+                        + (this.yaw() - this.lastYaw) * (this.yaw() - this.lastYaw)
+                        + (this.pitch() - this.lastPitch) * (this.pitch() - this.lastPitch);
         double diffMotion = (this.motionX - this.lastMotionX) * (this.motionX - this.lastMotionX)
                 + (this.motionY - this.lastMotionY) * (this.motionY - this.lastMotionY)
                 + (this.motionZ - this.lastMotionZ) * (this.motionZ - this.lastMotionZ);
         if (diffPosition > 0.0001 || diffRotation > 1.0) { // 0.2 ** 2, 1.5 ** 2
             if (diffPosition > 0.0001) {
                 if (this.isOnGround()) {
-                    this.level
+                    this.getLevel()
                             .getVibrationManager()
                             .callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.STEP));
                 } else if (this.isTouchingWater()) {
-                    this.level
+                    this.getLevel()
                             .getVibrationManager()
                             .callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.SWIM));
                 }
             }
             this.broadcastMovement();
-            this.lastX = this.x;
-            this.lastY = this.y;
-            this.lastZ = this.z;
-            this.lastPitch = this.pitch;
-            this.lastYaw = this.yaw;
-            this.lastHeadYaw = this.headYaw;
+            this.lastX = this.x();
+            this.lastY = this.y();
+            this.lastZ = this.z();
+            this.lastPitch = this.pitch();
+            this.lastYaw = this.yaw();
+            this.lastHeadYaw = this.headYaw();
             this.positionChanged = true;
         } else {
             this.positionChanged = false;
@@ -347,7 +347,7 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
 
     @Override
     public void addMovement(double x, double y, double z, double yaw, double pitch, double headYaw) {
-        this.level.addPlayerMovement(this, x, y, z, yaw, pitch, headYaw);
+        this.getLevel().addPlayerMovement(this, x, y, z, yaw, pitch, headYaw);
     }
 
     @Override
@@ -367,14 +367,14 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
             pk.username = this.getName();
             pk.entityUniqueId = this.getId();
             pk.entityRuntimeId = this.getId();
-            pk.x = (float) this.x;
-            pk.y = (float) this.y;
-            pk.z = (float) this.z;
+            pk.x = (float) this.x();
+            pk.y = (float) this.y();
+            pk.z = (float) this.z();
             pk.speedX = (float) this.motionX;
             pk.speedY = (float) this.motionY;
             pk.speedZ = (float) this.motionZ;
-            pk.yaw = (float) this.yaw;
-            pk.pitch = (float) this.pitch;
+            pk.yaw = (float) this.yaw();
+            pk.pitch = (float) this.pitch();
             pk.item = this.getInventory().getItemInHand();
             pk.metadata = this.dataProperties;
             player.dataPacket(pk);
