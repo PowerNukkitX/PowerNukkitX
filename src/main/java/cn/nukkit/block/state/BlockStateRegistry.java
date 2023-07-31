@@ -12,7 +12,6 @@ import cn.nukkit.block.impl.BlockUnknown;
 import cn.nukkit.block.property.*;
 import cn.nukkit.block.property.exception.BlockPropertyNotFoundException;
 import cn.nukkit.block.state.exception.InvalidBlockStateException;
-import cn.nukkit.blockproperty.*;
 import cn.nukkit.item.RuntimeItemMapping;
 import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.nbt.NBTIO;

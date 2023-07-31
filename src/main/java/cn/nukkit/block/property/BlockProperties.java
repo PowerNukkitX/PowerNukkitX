@@ -6,7 +6,6 @@ import cn.nukkit.block.property.exception.BlockPropertyNotFoundException;
 import cn.nukkit.block.property.exception.InvalidBlockPropertyMetaException;
 import cn.nukkit.block.property.exception.InvalidBlockPropertyValueException;
 import cn.nukkit.block.state.*;
-import cn.nukkit.blockstate.*;
 import cn.nukkit.utils.functional.ToIntTriFunctionTwoInts;
 import cn.nukkit.utils.functional.ToLongTriFunctionOneIntOneLong;
 import cn.nukkit.utils.functional.TriFunction;

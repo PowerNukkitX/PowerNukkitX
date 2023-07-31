@@ -11,7 +11,6 @@ import cn.nukkit.block.property.*;
 import cn.nukkit.block.property.exception.BlockPropertyNotFoundException;
 import cn.nukkit.block.state.BlockState;
 import cn.nukkit.block.state.BlockStateRegistry;
-import cn.nukkit.blockproperty.*;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
