@@ -170,7 +170,7 @@ public class BlockSeaPickle extends BlockFlowable {
             this.getLevel().setBlock(this, blockGrowEvent.getNewState(), false, true);
             this.getLevel().addParticle(new BoneMealParticle(this));
 
-            if (player != null && (player.gamemode & 0x01) == 0) {
+            if (player != null && player.getGamemode().isSurvival()) {
                 item.count--;
             }
 

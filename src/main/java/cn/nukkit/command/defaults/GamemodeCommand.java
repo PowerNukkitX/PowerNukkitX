@@ -1,7 +1,5 @@
 package cn.nukkit.command.defaults;
 
-import cn.nukkit.Server;
-import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
@@ -9,6 +7,7 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.node.PlayersNode;
 import cn.nukkit.command.utils.CommandLogger;
+import cn.nukkit.player.GameMode;
 import cn.nukkit.player.Player;
 import cn.nukkit.utils.TextFormat;
 import java.util.List;
@@ -38,22 +37,18 @@ public class GamemodeCommand extends VanillaCommand {
         this.enableParamTree();
     }
 
-    @Since("1.19.60-r1")
     @Override
     public int execute(
             CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
-        int gameMode = -1;
         List<Player> players;
+        GameMode gamemode = null;
         switch (result.getKey()) {
-            case "default" -> gameMode = list.getResult(0);
-            case "byString" -> {
-                String str = list.getResult(0);
-                gameMode = Server.getGamemodeFromString(str);
-            }
+            case "default" -> gamemode = GameMode.fromOrdinal(list.getResult(0));
+            case "byString" -> gamemode = GameMode.fromString(list.getResult(0));
         }
-        if (gameMode < 0 || gameMode > 3) {
-            log.addError("commands.gamemode.fail.invalid", String.valueOf(gameMode))
+        if (gamemode == null) {
+            log.addError("commands.gamemode.fail.invalid", list.getResult(0).toString())
                     .output();
             return 0;
         }
@@ -74,22 +69,22 @@ public class GamemodeCommand extends VanillaCommand {
             return 0;
         }
 
-        if ((gameMode == 0 && !sender.hasPermission("nukkit.command.gamemode.survival"))
-                || (gameMode == 1 && !sender.hasPermission("nukkit.command.gamemode.creative"))
-                || (gameMode == 2 && !sender.hasPermission("nukkit.command.gamemode.adventure"))
-                || (gameMode == 3 && !sender.hasPermission("nukkit.command.gamemode.spectator"))) {
+        if ((gamemode == GameMode.SURVIVAL && !sender.hasPermission("nukkit.command.gamemode.survival"))
+                || (gamemode == GameMode.CREATIVE && !sender.hasPermission("nukkit.command.gamemode.creative"))
+                || (gamemode == GameMode.ADVENTURE && !sender.hasPermission("nukkit.command.gamemode.adventure"))
+                || (gamemode == GameMode.SPECTATOR && !sender.hasPermission("nukkit.command.gamemode.spectator"))) {
             log.addMessage(TextFormat.RED + "%nukkit.command.generic.permission")
                     .output();
             return 0;
         }
 
         for (Player target : players) {
-            target.setGamemode(gameMode);
+            target.setGamemode(gamemode);
             if (target.equals(sender.asPlayer())) {
-                log.addSuccess("commands.gamemode.success.self", Server.getGamemodeString(gameMode));
+                log.addSuccess("commands.gamemode.success.self", gamemode.getTranslatableName());
             } else {
-                log.outputObjectWhisper(target, "gameMode.changed", Server.getGamemodeString(gameMode));
-                log.addSuccess("commands.gamemode.success.other", Server.getGamemodeString(gameMode), target.getName());
+                log.outputObjectWhisper(target, "gameMode.changed", gamemode.getTranslatableName());
+                log.addSuccess("commands.gamemode.success.other", gamemode.getTranslatableName(), target.getName());
             }
         }
         log.successCount(players.size()).output(true);

@@ -515,8 +515,8 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 }
                 if (!player.canInteract(target, player.isCreative() ? 8 : 5)) {
                     return;
-                } else if (target instanceof Player) {
-                    if ((((Player) target).getGamemode() & 0x01) > 0) {
+                } else if (target instanceof Player p) {
+                    if ((p.getGamemode().ordinal() & 0x01) > 0) {
                         return;
                     } else if (!player.getServer().getPropertyBoolean("pvp")) {
                         return;

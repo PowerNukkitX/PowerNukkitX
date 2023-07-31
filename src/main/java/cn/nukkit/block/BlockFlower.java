@@ -198,7 +198,7 @@ public class BlockFlower extends BlockFlowable implements BlockFlowerPot.FlowerP
     @Override
     public boolean onActivate(@NotNull Item item, Player player) {
         if (item.isFertilizer()) { // Bone meal
-            if (player != null && (player.gamemode & 0x01) == 0) {
+            if (player != null && player.getGamemode().isSurvival()) {
                 item.count--;
             }
 
