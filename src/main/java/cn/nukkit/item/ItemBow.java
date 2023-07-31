@@ -82,7 +82,7 @@ public class ItemBow extends ItemTool {
         Location arrowLocation = player.getLocation();
         Vector3 directionVector = player.getDirectionVector().multiply(1.1);
         arrowLocation = arrowLocation.add(directionVector.getX(), 0, directionVector.getZ());
-        arrowLocation.setY(player.y + player.getEyeHeight() + 0.1);
+        arrowLocation.setY(player.y + player.getEyeHeight() + directionVector.getY());
 
         CompoundTag nbt = new CompoundTag()
                 .putList(new ListTag<DoubleTag>("Pos")
@@ -100,7 +100,7 @@ public class ItemBow extends ItemTool {
                 .putDouble("damage", damage);
 
         double p = (double) ticksUsed / 20;
-        double f = Math.min((p * p + p * 2) / 3, 1) * 3;
+        double f = Math.min((p * p + p * 2) / 3, 1) * 3.5;
 
         EntityArrow arrow = (EntityArrow) Entity.createEntity("Arrow", player.chunk, nbt, player, f == 2);
 
