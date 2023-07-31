@@ -35,7 +35,7 @@ public class BlockConcretePowder extends BlockFallableMeta {
 
     @Override
     public int getId() {
-        return CONCRETEPOWDER;
+        return CONCRETE_POWDER;
     }
 
     @Since("1.4.0.0-PN")

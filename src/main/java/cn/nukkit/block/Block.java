@@ -465,7 +465,7 @@ public abstract class Block extends Position
             list[RED_GLAZED_TERRACOTTA] = BlockTerracottaGlazedRed.class; // 234
             list[BLACK_GLAZED_TERRACOTTA] = BlockTerracottaGlazedBlack.class; // 235
             list[CONCRETE] = BlockConcrete.class; // 236
-            list[CONCRETEPOWDER] = BlockConcretePowder.class; // 237
+            list[CONCRETE_POWDER] = BlockConcretePowder.class; // 237
 
             list[CHORUS_PLANT] = BlockChorusPlant.class; // 240
             list[STAINED_GLASS] = BlockGlassStained.class; // 241
@@ -473,7 +473,7 @@ public abstract class Block extends Position
             list[BEETROOT_BLOCK] = BlockBeetroot.class; // 244
             list[STONECUTTER] = BlockStonecutter.class; // 245
             list[GLOWING_OBSIDIAN] = BlockObsidianGlowing.class; // 246
-            list[NETHERREACTOR] = BlockNetherReactor.class; // 247 Should not be removed
+            list[NETHER_REACTOR] = BlockNetherReactor.class; // 247 Should not be removed
             list[INFO_UPDATE] = BlockInfoUpdate.class; // 248 Don't use this Block.
             list[PISTON_EXTENSION] = BlockMoving.class; // 250
             list[OBSERVER] = BlockObserver.class; // 251

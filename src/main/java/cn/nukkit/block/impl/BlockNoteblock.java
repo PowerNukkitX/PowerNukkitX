@@ -188,7 +188,7 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
                 return Instrument.BASS;
             case SAND:
             case GRAVEL:
-            case CONCRETEPOWDER:
+            case CONCRETE_POWDER:
                 return Instrument.DRUM;
             case GLASS:
             case GLASS_PANE:

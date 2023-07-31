@@ -300,7 +300,7 @@ public interface BlockID {
     int BLACK_GLAZED_TERRACOTTA = 235;
     int CONCRETE = 236;
 
-    int CONCRETEPOWDER = 237;
+    int CONCRETE_POWDER = 237;
 
     int CHORUS_PLANT = 240;
     int STAINED_GLASS = 241;
@@ -310,7 +310,7 @@ public interface BlockID {
     int STONECUTTER = 245;
     int GLOWING_OBSIDIAN = 246;
 
-    int NETHERREACTOR = 247;
+    int NETHER_REACTOR = 247;
 
     int INFO_UPDATE = 248;
 

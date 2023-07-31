@@ -29,7 +29,7 @@ public class BlockNetherReactor extends BlockSolid implements BlockEntityHolder<
 
     @Override
     public int getId() {
-        return NETHERREACTOR;
+        return NETHER_REACTOR;
     }
 
     @PowerNukkitOnly
