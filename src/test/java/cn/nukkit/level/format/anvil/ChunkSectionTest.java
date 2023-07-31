@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockWall;
+import cn.nukkit.block.impl.BlockWall;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.format.generic.EmptyChunkSection;
 import cn.nukkit.math.BlockFace;

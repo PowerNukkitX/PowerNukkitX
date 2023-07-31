@@ -1,6 +1,8 @@
 package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.block.impl.BlockBubbleColumn;
+import cn.nukkit.block.impl.BlockFire;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityFallingBlock;
 import cn.nukkit.event.block.BlockFallEvent;

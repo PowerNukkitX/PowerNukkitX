@@ -1,6 +1,6 @@
 package cn.nukkit.level.generator.populator.impl;
 
-import cn.nukkit.block.BlockVine;
+import cn.nukkit.block.impl.BlockVine;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.format.FullChunk;

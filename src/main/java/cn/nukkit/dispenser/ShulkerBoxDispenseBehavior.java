@@ -2,8 +2,8 @@ package cn.nukkit.dispenser;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockDispenser;
-import cn.nukkit.block.BlockUndyedShulkerBox;
+import cn.nukkit.block.impl.BlockDispenser;
+import cn.nukkit.block.impl.BlockUndyedShulkerBox;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;

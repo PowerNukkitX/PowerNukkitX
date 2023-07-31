@@ -62,7 +62,7 @@ public class PopulatorFossil extends PopulatorStructure {
             int y = Math.min(64, chunk.getHighestBlockAt(0, 0));
 
             int id = chunk.getBlockId(0, y, 0);
-            while (id == WATER || id == STILL_WATER) {
+            while (id == FLOWING_WATER || id == STILL_WATER) {
                 id = chunk.getBlockId(0, --y, 0);
             }
 

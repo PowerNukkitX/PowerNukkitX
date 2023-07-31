@@ -32,7 +32,7 @@ public class JungleTemple extends ScatteredStructurePiece {
         ScatteredStructureBuilder builder = new ScatteredStructureBuilder(level, this);
         Map<Integer, Integer> stones = new Int2IntOpenHashMap();
         builder.addRandomBlock(stones, 4, Block.COBBLESTONE);
-        builder.addRandomBlock(stones, 6, Block.MOSSY_STONE);
+        builder.addRandomBlock(stones, 6, Block.MOSSY_COBBLESTONE);
 
         // 1st floor
         builder.fillWithRandomBlock(new BlockVector3(0, 0, 0), new BlockVector3(11, 0, 14), random, stones);
@@ -41,7 +41,7 @@ public class JungleTemple extends ScatteredStructurePiece {
         builder.fillWithRandomBlock(new BlockVector3(0, 1, 1), new BlockVector3(0, 3, 13), random, stones);
         builder.fillWithRandomBlock(new BlockVector3(0, 1, 14), new BlockVector3(11, 3, 14), random, stones);
         builder.fillWithRandomBlock(new BlockVector3(0, 4, 0), new BlockVector3(11, 4, 14), random, stones);
-        builder.fill(new BlockVector3(4, 4, 0), new BlockVector3(7, 4, 0), Block.COBBLESTONE_STAIRS, 2); // N
+        builder.fill(new BlockVector3(4, 4, 0), new BlockVector3(7, 4, 0), Block.STONE_STAIRS, 2); // N
         builder.fill(new BlockVector3(1, 1, 1), new BlockVector3(10, 3, 13), Block.AIR);
         builder.fill(new BlockVector3(5, 4, 7), new BlockVector3(6, 4, 9), Block.AIR);
 
@@ -112,9 +112,9 @@ public class JungleTemple extends ScatteredStructurePiece {
         builder.setBlockWithRandomBlock(new BlockVector3(7, 13, 4), random, stones);
         builder.setBlockWithRandomBlock(new BlockVector3(7, 13, 10), random, stones);
         builder.setBlockWithRandomBlock(new BlockVector3(4, 13, 10), random, stones);
-        builder.fill(new BlockVector3(5, 13, 6), new BlockVector3(6, 13, 6), Block.COBBLESTONE_STAIRS, 2); // N
+        builder.fill(new BlockVector3(5, 13, 6), new BlockVector3(6, 13, 6), Block.STONE_STAIRS, 2); // N
         builder.fillWithRandomBlock(new BlockVector3(5, 13, 7), new BlockVector3(6, 13, 7), random, stones);
-        builder.fill(new BlockVector3(5, 13, 8), new BlockVector3(6, 13, 8), Block.COBBLESTONE_STAIRS, 3); // S
+        builder.fill(new BlockVector3(5, 13, 8), new BlockVector3(6, 13, 8), Block.STONE_STAIRS, 3); // S
 
         // 1st floor inside
         for (int i = 0; i < 6; i++) {
@@ -126,22 +126,22 @@ public class JungleTemple extends ScatteredStructurePiece {
                     new BlockVector3(1, 1, 1 + (i << 1)), new BlockVector3(1, 2, 1 + (i << 1)), random, stones);
         }
         builder.setBlockWithRandomBlock(new BlockVector3(2, 2, 1), random, stones);
-        builder.setBlock(new BlockVector3(3, 1, 1), Block.MOSSY_STONE);
+        builder.setBlock(new BlockVector3(3, 1, 1), Block.MOSSY_COBBLESTONE);
         builder.fillWithRandomBlock(new BlockVector3(4, 2, 1), new BlockVector3(5, 2, 1), random, stones);
         builder.setBlockWithRandomBlock(new BlockVector3(6, 1, 1), random, stones);
         builder.setBlockWithRandomBlock(new BlockVector3(6, 3, 1), random, stones);
         builder.fillWithRandomBlock(new BlockVector3(7, 2, 1), new BlockVector3(9, 2, 1), random, stones);
-        builder.setBlock(new BlockVector3(8, 1, 1), Block.MOSSY_STONE);
+        builder.setBlock(new BlockVector3(8, 1, 1), Block.MOSSY_COBBLESTONE);
         builder.fillWithRandomBlock(new BlockVector3(10, 1, 1), new BlockVector3(10, 3, 7), random, stones);
         builder.fillWithRandomBlock(new BlockVector3(9, 3, 1), new BlockVector3(9, 3, 7), random, stones);
-        builder.setBlock(new BlockVector3(9, 1, 2), Block.MOSSY_STONE);
-        builder.setBlock(new BlockVector3(9, 1, 4), Block.MOSSY_STONE);
-        builder.setBlock(new BlockVector3(8, 1, 5), Block.MOSSY_STONE);
-        builder.fill(new BlockVector3(7, 2, 5), new BlockVector3(7, 3, 5), Block.MOSSY_STONE);
-        builder.setBlock(new BlockVector3(6, 1, 5), Block.MOSSY_STONE);
+        builder.setBlock(new BlockVector3(9, 1, 2), Block.MOSSY_COBBLESTONE);
+        builder.setBlock(new BlockVector3(9, 1, 4), Block.MOSSY_COBBLESTONE);
+        builder.setBlock(new BlockVector3(8, 1, 5), Block.MOSSY_COBBLESTONE);
+        builder.fill(new BlockVector3(7, 2, 5), new BlockVector3(7, 3, 5), Block.MOSSY_COBBLESTONE);
+        builder.setBlock(new BlockVector3(6, 1, 5), Block.MOSSY_COBBLESTONE);
         builder.setBlockWithRandomBlock(new BlockVector3(6, 2, 5), random, stones);
-        builder.fill(new BlockVector3(5, 2, 5), new BlockVector3(5, 3, 5), Block.MOSSY_STONE);
-        builder.setBlock(new BlockVector3(4, 1, 5), Block.MOSSY_STONE);
+        builder.fill(new BlockVector3(5, 2, 5), new BlockVector3(5, 3, 5), Block.MOSSY_COBBLESTONE);
+        builder.setBlock(new BlockVector3(4, 1, 5), Block.MOSSY_COBBLESTONE);
         builder.fillWithRandomBlock(new BlockVector3(7, 1, 6), new BlockVector3(7, 3, 11), random, stones);
         builder.fillWithRandomBlock(new BlockVector3(4, 1, 6), new BlockVector3(4, 3, 11), random, stones);
         builder.fillWithRandomBlock(new BlockVector3(5, 3, 11), new BlockVector3(6, 3, 11), random, stones);
@@ -157,9 +157,9 @@ public class JungleTemple extends ScatteredStructurePiece {
         builder.fillWithRandomBlock(new BlockVector3(9, 1, 7), new BlockVector3(9, 2, 7), random, stones);
         builder.fillWithRandomBlock(new BlockVector3(8, 1, 7), new BlockVector3(8, 3, 7), random, stones);
         builder.fillWithRandomBlock(new BlockVector3(10, 1, 8), new BlockVector3(10, 1, 10), random, stones);
-        builder.setBlock(new BlockVector3(10, 2, 9), Block.MOSSY_STONE);
+        builder.setBlock(new BlockVector3(10, 2, 9), Block.MOSSY_COBBLESTONE);
         builder.fillWithRandomBlock(new BlockVector3(8, 1, 8), new BlockVector3(8, 1, 10), random, stones);
-        builder.fill(new BlockVector3(8, 2, 11), new BlockVector3(10, 2, 11), Block.STONE_BRICK, 3);
+        builder.fill(new BlockVector3(8, 2, 11), new BlockVector3(10, 2, 11), Block.STONEBRICK, 3);
         builder.fill(new BlockVector3(8, 2, 12), new BlockVector3(10, 2, 12), Block.LEVER, 3); // N
         builder.setBlock(new BlockVector3(3, 2, 1), Block.DISPENSER, 3); // N
         // TODO: tile

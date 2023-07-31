@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.block.impl.BlockWater;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.IntBlockProperty;
 import cn.nukkit.entity.Entity;
@@ -529,7 +530,7 @@ public abstract class BlockLiquid extends BlockTransparentMeta {
     }
 
     @PowerNukkitDifference(info = "Using new method to play sounds", since = "1.4.0.0-PN")
-    protected boolean liquidCollide(Block cause, Block result) {
+    public boolean liquidCollide(Block cause, Block result) {
         BlockFromToEvent event = new BlockFromToEvent(this, result);
         event.call();
         if (event.isCancelled()) {

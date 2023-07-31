@@ -2,7 +2,7 @@ package cn.nukkit.dispenser;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockDispenser;
+import cn.nukkit.block.impl.BlockDispenser;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;

@@ -2,6 +2,8 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.block.impl.BlockCauldron;
+import cn.nukkit.block.impl.BlockLever;
 import cn.nukkit.event.redstone.RedstoneUpdateEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;

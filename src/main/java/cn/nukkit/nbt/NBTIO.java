@@ -5,7 +5,7 @@ import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockUnknown;
+import cn.nukkit.block.impl.BlockUnknown;
 import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.blockproperty.*;
 import cn.nukkit.blockproperty.exception.BlockPropertyNotFoundException;

@@ -1,0 +1,38 @@
+package cn.nukkit.block.impl;
+
+import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
+import cn.nukkit.block.impl.BlockGlass;
+import cn.nukkit.item.Item;
+
+/**
+ * @author LoboMetalurgico
+ * @since 13/06/2021
+ */
+@PowerNukkitOnly
+@Since("FUTURE")
+public class BlockGlassTinted extends BlockGlass {
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public BlockGlassTinted() {}
+
+    @Override
+    public String getName() {
+        return "Tinted Glass";
+    }
+
+    @Override
+    public int getId() {
+        return TINTED_GLASS;
+    }
+
+    @Override
+    public Item[] getDrops(Item item) {
+        return new Item[] {toItem()};
+    }
+
+    @Override
+    public boolean canSilkTouch() {
+        return false;
+    }
+}

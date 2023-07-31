@@ -1,7 +1,7 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.block.BlockTrappedChest;
+import cn.nukkit.block.impl.BlockTrappedChest;
 import cn.nukkit.blockentity.BlockEntityChest;
 import cn.nukkit.event.redstone.RedstoneUpdateEvent;
 import cn.nukkit.level.Level;

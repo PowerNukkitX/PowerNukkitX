@@ -21,7 +21,7 @@ package cn.nukkit.blockproperty.value;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockFlower;
+import cn.nukkit.block.impl.BlockFlower;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.utils.DyeColor;
 import lombok.RequiredArgsConstructor;

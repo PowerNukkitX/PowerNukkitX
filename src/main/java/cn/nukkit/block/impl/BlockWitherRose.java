@@ -1,0 +1,93 @@
+package cn.nukkit.block.impl;
+
+import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockID;
+import cn.nukkit.block.impl.BlockFlower;
+import cn.nukkit.blockproperty.BlockProperties;
+import cn.nukkit.blockproperty.CommonBlockProperties;
+import cn.nukkit.blockproperty.value.SmallFlowerType;
+import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityLiving;
+import cn.nukkit.item.Item;
+import cn.nukkit.math.AxisAlignedBB;
+import cn.nukkit.player.Player;
+import cn.nukkit.potion.Effect;
+import org.jetbrains.annotations.NotNull;
+
+@PowerNukkitOnly
+public class BlockWitherRose extends BlockFlower {
+    @PowerNukkitOnly
+    public BlockWitherRose() {
+        this(0);
+    }
+
+    @PowerNukkitOnly
+    public BlockWitherRose(int meta) {
+        super(0);
+    }
+
+    @Override
+    public int getId() {
+        return WITHER_ROSE;
+    }
+
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    @NotNull @Override
+    public BlockProperties getProperties() {
+        return CommonBlockProperties.EMPTY_PROPERTIES;
+    }
+
+    @PowerNukkitOnly
+    @Override
+    public boolean canPlantOn(Block block) {
+        return super.canPlantOn(block) || block.getId() == BlockID.NETHERRACK || block.getId() == BlockID.SOUL_SAND;
+    }
+
+    @Override
+    public boolean onActivate(@NotNull Item item, Player player) {
+        return false;
+    }
+
+    @Override
+    public void onEntityCollide(Entity entity) {
+        if (getLevel().getServer().getDifficulty() != 0 && entity instanceof EntityLiving) {
+            EntityLiving living = (EntityLiving) entity;
+            if (!living.invulnerable
+                    && !living.hasEffect(Effect.WITHER)
+                    && (!(living instanceof Player)
+                            || !((Player) living).isCreative() && !((Player) living).isSpectator())) {
+                Effect effect = Effect.getEffect(Effect.WITHER);
+                effect.setDuration(40);
+                effect.setAmplifier(1);
+                living.addEffect(effect);
+            }
+        }
+    }
+
+    @Override
+    protected AxisAlignedBB recalculateCollisionBoundingBox() {
+        return this;
+    }
+
+    @Override
+    public boolean hasEntityCollision() {
+        return true;
+    }
+
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    @Override
+    public void setFlowerType(SmallFlowerType flowerType) {
+        setOnSingleFlowerType(SmallFlowerType.WITHER_ROSE, flowerType);
+    }
+
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    @Override
+    public SmallFlowerType getFlowerType() {
+        return SmallFlowerType.WITHER_ROSE;
+    }
+}

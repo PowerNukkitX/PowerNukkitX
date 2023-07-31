@@ -1,7 +1,7 @@
 package cn.powernukkitx.tools;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockWood2;
+import cn.nukkit.block.impl.BlockWood2;
 import cn.nukkit.blockproperty.ArrayBlockProperty;
 import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.blockproperty.value.WoodType;

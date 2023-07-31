@@ -2,8 +2,8 @@ package cn.nukkit.event.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockAir;
-import cn.nukkit.block.BlockTurtleEgg;
+import cn.nukkit.block.impl.BlockAir;
+import cn.nukkit.block.impl.BlockTurtleEgg;
 import cn.nukkit.event.Cancellable;
 
 @PowerNukkitOnly

@@ -50,7 +50,7 @@ public final class LiquidUpdater {
                 if (decay < 0) {
                     level.setBlockAt(x, y, z, 0);
                 } else {
-                    level.setBlockAt(x, y, z, Block.LAVA, decay);
+                    level.setBlockAt(x, y, z, Block.FLOWING_LAVA, decay);
                     lavaSpread(level, x, y, z);
                     return;
                 }
@@ -99,14 +99,14 @@ public final class LiquidUpdater {
 
     private static void flowIntoBlock(ChunkManager level, int x, int y, int z, int newFlowDecay) {
         if (level.getBlockIdAt(x, y, z) == Block.AIR) {
-            level.setBlockAt(x, y, z, Block.LAVA, newFlowDecay);
+            level.setBlockAt(x, y, z, Block.FLOWING_LAVA, newFlowDecay);
             lavaSpread(level, x, y, z);
         }
     }
 
     private static boolean canFlowInto(ChunkManager level, int x, int y, int z) {
         int id = level.getBlockIdAt(x, y, z);
-        return id == Block.AIR || id == Block.LAVA || id == Block.STILL_LAVA;
+        return id == Block.AIR || id == Block.FLOWING_LAVA || id == Block.STILL_LAVA;
     }
 
     private static int calculateFlowCost(

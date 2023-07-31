@@ -2,7 +2,7 @@ package cn.nukkit.item;
 
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockFire;
+import cn.nukkit.block.impl.BlockFire;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.event.block.BlockIgniteEvent;
 import cn.nukkit.level.Level;

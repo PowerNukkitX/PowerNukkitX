@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.block.Block;
 import cn.nukkit.math.BlockFace;
 
 /**

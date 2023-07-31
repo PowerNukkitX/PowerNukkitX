@@ -2,7 +2,7 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockDaylightDetector;
+import cn.nukkit.block.impl.BlockDaylightDetector;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;

@@ -3,7 +3,7 @@ package cn.nukkit.item;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockSignPost;
+import cn.nukkit.block.impl.BlockSignPost;
 
 /**
  * @author MagicDroidX (Nukkit Project)

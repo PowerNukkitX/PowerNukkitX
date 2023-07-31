@@ -59,7 +59,7 @@ public class PopulatorPillagerOutpost extends PopulatorStructure {
 
                 switch (baseId) {
                     case COBBLESTONE:
-                    case MOSSY_STONE:
+                    case MOSSY_COBBLESTONE:
                     case LOG2:
                     case PLANKS:
                     case FENCE:

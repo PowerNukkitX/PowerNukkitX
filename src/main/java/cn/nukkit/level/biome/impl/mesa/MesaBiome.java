@@ -2,7 +2,7 @@ package cn.nukkit.level.biome.impl.mesa;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.block.BlockSand;
+import cn.nukkit.block.impl.BlockSand;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.biome.type.CoveredBiome;
 import cn.nukkit.level.generator.noise.nukkit.f.SimplexF;
@@ -21,14 +21,14 @@ public class MesaBiome extends CoveredBiome {
     static final int[] colorLayer = new int[64];
     static final SimplexF redSandNoise = new SimplexF(new NukkitRandom(937478913), 2f, 1 / 4f, 1 / 4f);
     static final SimplexF colorNoise = new SimplexF(new NukkitRandom(193759875), 2f, 1 / 4f, 1 / 32f);
-    private static final BlockState STATE_TERRACOTTA = BlockState.of(HARDENED_CLAY);
+    private static final BlockState STATE_TERRACOTTA = BlockState.of(TERRACOTTA);
     private static final BlockState STATE_RED_SAND = BlockState.of(SAND, BlockSand.RED);
     private static final BlockState STATE_RED_SANDSTONE = BlockState.of(RED_SANDSTONE);
     private static final BlockState[] STATE_STAINED_TERRACOTTA = new BlockState[16];
 
     static {
         for (int i = 0; i < STATE_STAINED_TERRACOTTA.length; i++) {
-            STATE_STAINED_TERRACOTTA[i] = BlockState.of(STAINED_HARDENED_CLAY, i);
+            STATE_STAINED_TERRACOTTA[i] = BlockState.of(STAINED_TERRACOTTA, i);
         }
 
         Random random = new Random(29864);

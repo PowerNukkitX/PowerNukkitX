@@ -96,7 +96,7 @@ public class PopulatorDungeon extends PopulatorStructure {
                             } else if (Block.fullList[(id << 4) + level.getBlockDataAt(tx, ty, tz)].isSolid()
                                     && id != CHEST) {
                                 if (dy == -1 && random.nextBoundedInt(4) != 0) {
-                                    level.setBlockAt(tx, ty, tz, MOSSY_STONE);
+                                    level.setBlockAt(tx, ty, tz, MOSSY_COBBLESTONE);
                                 } else {
                                     level.setBlockAt(tx, ty, tz, COBBLESTONE);
                                 }
@@ -154,7 +154,7 @@ public class PopulatorDungeon extends PopulatorStructure {
                     }
                 }
 
-                level.setBlockAt(x, y, z, MONSTER_SPAWNER);
+                level.setBlockAt(x, y, z, MOB_SPAWNER);
                 Server.getInstance()
                         .getScheduler()
                         .scheduleTask(

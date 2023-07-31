@@ -34,7 +34,7 @@ class OldWoodBarkUpdater implements Updater {
             return false;
         }
 
-        section.setBlockState(x, y, z, BlockState.of(BlockID.WOOD, (legacyDamage & 0b11) + increment));
+        section.setBlockState(x, y, z, BlockState.of(BlockID.LOG, (legacyDamage & 0b11) + increment));
         return true;
     }
 }

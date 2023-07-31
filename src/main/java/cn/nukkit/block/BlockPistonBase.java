@@ -3,6 +3,11 @@ package cn.nukkit.block;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.block.*;
+import cn.nukkit.block.impl.BlockPistonHead;
+import cn.nukkit.block.impl.BlockRedstoneTorch;
+import cn.nukkit.block.impl.BlockRedstoneTorchUnlit;
+import cn.nukkit.block.impl.BlockTorch;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityMovingBlock;
 import cn.nukkit.blockentity.BlockEntityPistonArm;
@@ -311,7 +316,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta
                 }
                 oldPosList.add(oldPos);
                 blockEntityHolderList.add((BlockEntityHolder<?>)
-                        BlockState.of(BlockID.MOVING_BLOCK).getBlock(Position.fromObject(newPos, this.getLevel())));
+                        BlockState.of(BlockID.PISTON_EXTENSION).getBlock(Position.fromObject(newPos, this.getLevel())));
                 nbtList.add(nbt);
             }
         }
@@ -323,7 +328,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta
                 var blockEntityHolder = blockEntityHolderList.get(i);
                 var nbt = nbtList.get(i);
                 BlockEntityHolder.setBlockAndCreateEntity(blockEntityHolder, true, true, nbt);
-                if (this.getLevel().getBlock(oldPos).getId() != BlockID.MOVING_BLOCK)
+                if (this.getLevel().getBlock(oldPos).getId() != BlockID.PISTON_EXTENSION)
                     this.getLevel().setBlock(oldPos, Block.get(BlockID.AIR));
             }
         }

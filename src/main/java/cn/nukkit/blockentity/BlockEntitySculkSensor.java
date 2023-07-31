@@ -4,7 +4,7 @@ import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockSculkSensor;
+import cn.nukkit.block.impl.BlockSculkSensor;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.vibration.VibrationEvent;

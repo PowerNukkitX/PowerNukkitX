@@ -30,7 +30,7 @@ public class BlockEntityNetherReactor extends BlockEntitySpawnable {
 
     @Override
     public boolean isBlockEntityValid() {
-        return getLevelBlock().getId() == BlockID.NETHER_REACTOR;
+        return getLevelBlock().getId() == BlockID.NETHERREACTOR;
     }
 
     @PowerNukkitOnly

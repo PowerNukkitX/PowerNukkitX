@@ -1,0 +1,33 @@
+package cn.nukkit.block.impl;
+
+import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
+import cn.nukkit.block.BlockID;
+import cn.nukkit.block.impl.BlockBasalt;
+
+@PowerNukkitOnly
+@Since("1.4.0.0-PN")
+public class BlockPolishedBasalt extends BlockBasalt {
+
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public BlockPolishedBasalt() {
+        this(0);
+    }
+
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public BlockPolishedBasalt(int meta) {
+        super(meta);
+    }
+
+    @Override
+    public String getName() {
+        return "Polished Basalt";
+    }
+
+    @Override
+    public int getId() {
+        return BlockID.POLISHED_BASALT;
+    }
+}

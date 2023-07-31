@@ -1,7 +1,7 @@
 package cn.nukkit.level.biome.impl.swamp;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockFlower;
+import cn.nukkit.block.impl.BlockFlower;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.biome.type.GrassyBiome;
 import cn.nukkit.level.generator.populator.impl.*;

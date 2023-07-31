@@ -1,7 +1,7 @@
 package cn.nukkit.item;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockBeehive;
+import cn.nukkit.block.impl.BlockBeehive;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.vibration.VibrationEvent;

@@ -1,7 +1,7 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.block.BlockEnderChest;
+import cn.nukkit.block.impl.BlockEnderChest;
 import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.EntityHumanType;
 import cn.nukkit.level.Level;

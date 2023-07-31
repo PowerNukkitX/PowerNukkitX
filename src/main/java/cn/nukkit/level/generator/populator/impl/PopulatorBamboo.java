@@ -1,7 +1,7 @@
 package cn.nukkit.level.generator.populator.impl;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockBamboo;
+import cn.nukkit.block.impl.BlockBamboo;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.format.FullChunk;

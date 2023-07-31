@@ -3,8 +3,8 @@ package cn.nukkit.dispenser;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockDispenser;
-import cn.nukkit.block.BlockWater;
+import cn.nukkit.block.impl.BlockDispenser;
+import cn.nukkit.block.impl.BlockWater;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 

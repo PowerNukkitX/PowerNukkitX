@@ -3,7 +3,7 @@ package cn.nukkit.entity;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockLava;
+import cn.nukkit.block.impl.BlockLava;
 import cn.nukkit.block.BlockLiquid;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.player.EntityFreezeEvent;

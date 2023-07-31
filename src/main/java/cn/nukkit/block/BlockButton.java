@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
 
 import cn.nukkit.api.*;
+import cn.nukkit.block.impl.BlockLever;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BooleanBlockProperty;
 import cn.nukkit.event.block.BlockRedstoneEvent;

@@ -2,7 +2,7 @@ package cn.nukkit.level.generator.populator.impl.structure.desertwell;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.block.BlockSlabStone;
+import cn.nukkit.block.impl.BlockSlabStone;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.biome.EnumBiome;
 import cn.nukkit.level.format.FullChunk;
@@ -47,11 +47,11 @@ public class PopulatorDesertWell extends PopulatorStructure {
                     }
                 }
             }
-            level.setBlockAt(x, y, z, WATER);
-            level.setBlockAt(x - 1, y, z, WATER);
-            level.setBlockAt(x + 1, y, z, WATER);
-            level.setBlockAt(x, y, z - 1, WATER);
-            level.setBlockAt(x, y, z + 1, WATER);
+            level.setBlockAt(x, y, z, FLOWING_WATER);
+            level.setBlockAt(x - 1, y, z, FLOWING_WATER);
+            level.setBlockAt(x + 1, y, z, FLOWING_WATER);
+            level.setBlockAt(x, y, z - 1, FLOWING_WATER);
+            level.setBlockAt(x, y, z + 1, FLOWING_WATER);
             for (int dx = -2; dx <= 2; ++dx) {
                 for (int dz = -2; dz <= 2; ++dz) {
                     if (dx == -2 || dx == 2 || dz == -2 || dz == 2) {

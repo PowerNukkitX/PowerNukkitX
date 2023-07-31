@@ -2,7 +2,7 @@ package cn.nukkit.item;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.block.BlockCherrySignPost;
+import cn.nukkit.block.impl.BlockCherrySignPost;
 
 @PowerNukkitXOnly
 @Since("1.20.0-r2")

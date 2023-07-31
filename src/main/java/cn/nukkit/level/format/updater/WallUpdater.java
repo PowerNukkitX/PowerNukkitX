@@ -5,7 +5,7 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockWall;
+import cn.nukkit.block.impl.BlockWall;
 import cn.nukkit.blockproperty.exception.InvalidBlockPropertyMetaException;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;

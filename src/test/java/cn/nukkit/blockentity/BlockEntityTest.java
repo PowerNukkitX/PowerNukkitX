@@ -26,7 +26,7 @@ import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockChest;
+import cn.nukkit.block.impl.BlockChest;
 import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.inventory.ChestInventory;

@@ -1,7 +1,7 @@
 package cn.nukkit.network.process.processor;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockLectern;
+import cn.nukkit.block.impl.BlockLectern;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityLectern;
 import cn.nukkit.event.block.LecternPageChangeEvent;

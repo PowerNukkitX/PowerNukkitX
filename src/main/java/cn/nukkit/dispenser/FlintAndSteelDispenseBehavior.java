@@ -3,7 +3,7 @@ package cn.nukkit.dispenser;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockDispenser;
+import cn.nukkit.block.impl.BlockDispenser;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;

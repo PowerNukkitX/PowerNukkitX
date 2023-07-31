@@ -223,10 +223,10 @@ public abstract class StructurePiece {
                             }
                         }
                         break;
-                    case Block.WOOD_STAIRS:
-                    case Block.SPRUCE_WOOD_STAIRS:
+                    case Block.OAK_STAIRS:
+                    case Block.SPRUCE_STAIRS:
                     case Block.ACACIA_WOOD_STAIRS:
-                    case Block.COBBLESTONE_STAIRS:
+                    case Block.STONE:
                     case Block.SANDSTONE_STAIRS:
                         if (this.rotation == Rotation.CLOCKWISE_90) {
                             block = block.rotate(this.rotation);
@@ -449,9 +449,9 @@ public abstract class StructurePiece {
             int cz = worldZ & 0xf;
             int blockId = chunk.getBlockId(cx, worldY, cz);
             while ((blockId == Block.AIR
-                            || blockId == Block.WATER
+                            || blockId == Block.FLOWING_WATER
                             || blockId == Block.STILL_WATER
-                            || blockId == Block.LAVA
+                            || blockId == Block.FLOWING_LAVA
                             || blockId == Block.STILL_LAVA)
                     && worldY > 1) {
                 chunk.setBlock(cx, worldY, cz, block.getId(), block.getMeta());

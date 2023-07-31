@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.block.impl.BlockDispenser;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityDispenser;
 import cn.nukkit.item.Item;

@@ -1,7 +1,7 @@
 package cn.nukkit.network.process.processor;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockCommandBlock;
+import cn.nukkit.block.impl.BlockCommandBlock;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityCommandBlock;

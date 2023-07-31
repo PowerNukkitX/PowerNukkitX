@@ -2,7 +2,7 @@ package cn.nukkit.inventory.transaction;
 
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockAnvil;
+import cn.nukkit.block.impl.BlockAnvil;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.blockproperty.value.AnvilDamage;
 import cn.nukkit.blockstate.BlockState;

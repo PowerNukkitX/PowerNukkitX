@@ -4,7 +4,7 @@ import static cn.nukkit.blockstate.BlockState.AIR;
 import static org.junit.jupiter.api.Assertions.*;
 
 import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockStone;
+import cn.nukkit.block.impl.BlockStone;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.utils.BinaryStream;
 import java.util.concurrent.atomic.AtomicBoolean;

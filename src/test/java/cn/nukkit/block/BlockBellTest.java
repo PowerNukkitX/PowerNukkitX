@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.block.impl.BlockBell;
 import cn.nukkit.blockentity.BlockEntityBell;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;

@@ -6,7 +6,7 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockUnknown;
+import cn.nukkit.block.impl.BlockUnknown;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
 import cn.nukkit.level.Level;

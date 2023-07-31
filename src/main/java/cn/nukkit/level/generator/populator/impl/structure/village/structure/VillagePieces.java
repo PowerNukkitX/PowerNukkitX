@@ -4,6 +4,7 @@ import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.*;
+import cn.nukkit.block.impl.*;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.passive.EntityVillagerV1;
@@ -44,7 +45,7 @@ public class VillagePieces { // TODO: mossyStoneSelector (zombie village)
     private static final BlockState OAK_FENCE = new BlockState(Block.FENCE, BlockFence.FENCE_OAK);
     private static final BlockState SPRUCE_FENCE = new BlockState(Block.FENCE, BlockFence.FENCE_SPRUCE);
     private static final BlockState ACACIA_FENCE = new BlockState(Block.FENCE, BlockFence.FENCE_ACACIA);
-    private static final BlockState OAK_DOOR = new BlockState(Block.WOOD_DOOR_BLOCK);
+    private static final BlockState OAK_DOOR = new BlockState(Block.OAK_DOOR_BLOCK);
     private static final BlockState SPRUCE_DOOR = new BlockState(Block.SPRUCE_DOOR_BLOCK);
     private static final BlockState ACACIA_DOOR = new BlockState(Block.ACACIA_DOOR_BLOCK);
     private static final BlockState LOG = new BlockState(Block.LOG);
@@ -53,23 +54,23 @@ public class VillagePieces { // TODO: mossyStoneSelector (zombie village)
     private static final BlockState SANDSTONE = new BlockState(Block.SANDSTONE);
     private static final BlockState SMOOTH_SANDSTONE = new BlockState(Block.SANDSTONE, BlockSandstone.SMOOTH);
     private static final BlockState COBBLESTONE_STAIRS__N =
-            new BlockState(Block.COBBLESTONE_STAIRS, WeirdoDirection.NORTH);
-    private static final BlockState OAK_STAIRS__N = new BlockState(Block.WOOD_STAIRS, WeirdoDirection.NORTH);
-    private static final BlockState OAK_STAIRS__S = new BlockState(Block.WOOD_STAIRS, WeirdoDirection.SOUTH);
+            new BlockState(Block.STONE_STAIRS, WeirdoDirection.NORTH);
+    private static final BlockState OAK_STAIRS__N = new BlockState(Block.OAK_STAIRS, WeirdoDirection.NORTH);
+    private static final BlockState OAK_STAIRS__S = new BlockState(Block.OAK_STAIRS, WeirdoDirection.SOUTH);
     private static final BlockState COBBLESTONE_STAIRS__E =
-            new BlockState(Block.COBBLESTONE_STAIRS, WeirdoDirection.EAST);
-    private static final BlockState OAK_STAIRS__E = new BlockState(Block.WOOD_STAIRS, WeirdoDirection.EAST);
+            new BlockState(Block.STONE_STAIRS, WeirdoDirection.EAST);
+    private static final BlockState OAK_STAIRS__E = new BlockState(Block.OAK_STAIRS, WeirdoDirection.EAST);
     private static final BlockState COBBLESTONE_STAIRS__W =
-            new BlockState(Block.COBBLESTONE_STAIRS, WeirdoDirection.WEST);
-    private static final BlockState OAK_STAIRS__W = new BlockState(Block.WOOD_STAIRS, WeirdoDirection.WEST);
+            new BlockState(Block.STONE_STAIRS, WeirdoDirection.WEST);
+    private static final BlockState OAK_STAIRS__W = new BlockState(Block.OAK_STAIRS, WeirdoDirection.WEST);
     private static final BlockState GRASS = new BlockState(Block.GRASS);
     private static final BlockState GRASS_PATH = new BlockState(Block.GRASS_PATH);
     private static final BlockState DIRT = new BlockState(Block.DIRT);
     private static final BlockState FARMLAND = new BlockState(Block.FARMLAND);
     private static final BlockState GRAVEL = new BlockState(Block.GRAVEL);
-    private static final BlockState FLOWING_WATER = new BlockState(Block.WATER);
+    private static final BlockState FLOWING_WATER = new BlockState(Block.FLOWING_WATER);
     private static final BlockState WATER = new BlockState(Block.STILL_WATER);
-    private static final BlockState FLOWING_LAVA = new BlockState(Block.LAVA);
+    private static final BlockState FLOWING_LAVA = new BlockState(Block.FLOWING_LAVA);
     private static final BlockState IRON_BARS = new BlockState(Block.IRON_BARS);
     private static final BlockState FURNACE = new BlockState(Block.FURNACE, FacingDirection.SOUTH);
     private static final BlockState CRAFTING_TABLE = new BlockState(Block.CRAFTING_TABLE);
@@ -478,8 +479,8 @@ public class VillagePieces { // TODO: mossyStoneSelector (zombie village)
                             return SANDSTONE;
                         case Block.PLANKS:
                             return SMOOTH_SANDSTONE;
-                        case Block.WOOD_STAIRS:
-                        case Block.COBBLESTONE_STAIRS:
+                        case Block.OAK_STAIRS:
+                        case Block.STONE_STAIRS:
                             return new BlockState(Block.SANDSTONE_STAIRS, block.getMeta());
                     }
                     break;
@@ -499,8 +500,8 @@ public class VillagePieces { // TODO: mossyStoneSelector (zombie village)
                             }
                         case Block.PLANKS:
                             return SPRUCE_PLANKS;
-                        case Block.WOOD_STAIRS:
-                            return new BlockState(Block.SPRUCE_WOOD_STAIRS, block.getMeta());
+                        case Block.OAK_STAIRS:
+                            return new BlockState(Block.SPRUCE_STAIRS, block.getMeta());
                         case Block.FENCE:
                             return SPRUCE_FENCE;
                     }
@@ -520,7 +521,7 @@ public class VillagePieces { // TODO: mossyStoneSelector (zombie village)
                             }
                         case Block.PLANKS:
                             return ACACIA_PLANKS;
-                        case Block.WOOD_STAIRS:
+                        case Block.OAK_STAIRS:
                             return new BlockState(Block.ACACIA_WOOD_STAIRS, block.getMeta());
                         case Block.COBBLESTONE:
                             return ACACIA_LOG__Y;
@@ -2410,9 +2411,9 @@ public class VillagePieces { // TODO: mossyStoneSelector (zombie village)
                                 level.setBlockAt(vec.x, vec.y, vec.z, path.getId(), path.getMeta());
                                 break;
                             }
-                            if (block == Block.WATER
+                            if (block == Block.FLOWING_WATER
                                     || block == Block.STILL_WATER
-                                    || block == Block.LAVA
+                                    || block == Block.FLOWING_LAVA
                                     || block == Block.STILL_LAVA) {
                                 level.setBlockAt(vec.x, vec.y, vec.z, planks.getId(), planks.getMeta());
                                 break;

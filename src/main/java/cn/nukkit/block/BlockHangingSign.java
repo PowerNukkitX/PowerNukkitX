@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.block.impl.BlockChain;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityHangingSign;
 import cn.nukkit.blockproperty.BlockProperties;

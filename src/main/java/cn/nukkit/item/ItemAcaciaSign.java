@@ -1,7 +1,7 @@
 package cn.nukkit.item;
 
 import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.block.BlockAcaciaSignPost;
+import cn.nukkit.block.impl.BlockAcaciaSignPost;
 
 @PowerNukkitOnly
 public class ItemAcaciaSign extends ItemSign {

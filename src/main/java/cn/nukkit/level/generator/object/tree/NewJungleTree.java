@@ -1,6 +1,9 @@
 package cn.nukkit.level.generator.object.tree;
 
 import cn.nukkit.block.*;
+import cn.nukkit.block.impl.BlockLeaves;
+import cn.nukkit.block.impl.BlockUnknown;
+import cn.nukkit.block.impl.BlockWood;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
@@ -23,7 +26,7 @@ public class NewJungleTree extends TreeGenerator {
     /**
      * The metadata value of the wood to use in tree generation.
      */
-    private final Block metaWood = Block.get(BlockID.WOOD, BlockWood.JUNGLE);
+    private final Block metaWood = Block.get(BlockID.LOG, BlockWood.JUNGLE);
 
     /**
      * The metadata value of the leaves to use in tree generation.

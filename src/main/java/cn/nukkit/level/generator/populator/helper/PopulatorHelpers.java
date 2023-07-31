@@ -25,7 +25,7 @@ public final class PopulatorHelpers implements BlockID {
 
     static {
         nonOceanSolidBlocks.add(BlockState.of(AIR));
-        nonOceanSolidBlocks.add(BlockState.of(WATER));
+        nonOceanSolidBlocks.add(BlockState.of(FLOWING_WATER));
         nonOceanSolidBlocks.add(BlockState.of(STILL_WATER));
         nonOceanSolidBlocks.add(BlockState.of(ICE));
         nonOceanSolidBlocks.add(BlockState.of(PACKED_ICE));

@@ -97,6 +97,6 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
 
     @Override
     public boolean isBlockEntityValid() {
-        return this.getBlock().getId() == BlockID.MOVING_BLOCK;
+        return this.getBlock().getId() == BlockID.PISTON_EXTENSION;
     }
 }

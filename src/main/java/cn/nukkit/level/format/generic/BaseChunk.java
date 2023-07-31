@@ -3,7 +3,7 @@ package cn.nukkit.level.format.generic;
 import cn.nukkit.api.*;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockUnknown;
+import cn.nukkit.block.impl.BlockUnknown;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;

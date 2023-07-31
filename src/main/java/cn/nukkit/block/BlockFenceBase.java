@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.block.impl.BlockFence;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.blockproperty.exception.InvalidBlockPropertyValueException;

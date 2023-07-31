@@ -2,7 +2,7 @@ package cn.nukkit.level.terra.delegate;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.block.BlockWater;
+import cn.nukkit.block.impl.BlockWater;
 import cn.nukkit.level.terra.PNXAdapter;
 import com.dfsek.terra.api.block.BlockType;
 import com.dfsek.terra.api.block.state.BlockState;

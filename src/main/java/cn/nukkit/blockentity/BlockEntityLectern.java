@@ -3,7 +3,7 @@ package cn.nukkit.blockentity;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.block.BlockAir;
+import cn.nukkit.block.impl.BlockAir;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;

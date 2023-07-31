@@ -3,7 +3,7 @@ package cn.nukkit.blockstate;
 import static org.junit.jupiter.api.Assertions.*;
 
 import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockStone;
+import cn.nukkit.block.impl.BlockStone;
 import cn.nukkit.blockproperty.value.StoneType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

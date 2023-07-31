@@ -6,6 +6,7 @@ import static cn.nukkit.utils.Utils.dynamic;
 import cn.nukkit.Server;
 import cn.nukkit.api.*;
 import cn.nukkit.block.*;
+import cn.nukkit.block.impl.*;
 import cn.nukkit.blockentity.BlockEntityPistonArm;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.entity.custom.CustomEntity;

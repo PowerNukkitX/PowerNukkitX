@@ -4,7 +4,7 @@ import cn.nukkit.Server;
 import cn.nukkit.api.*;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockUnknown;
+import cn.nukkit.block.impl.BlockUnknown;
 import cn.nukkit.blockproperty.UnknownRuntimeIdException;
 import cn.nukkit.blockproperty.exception.BlockPropertyNotFoundException;
 import cn.nukkit.blockproperty.exception.InvalidBlockPropertyMetaException;
