@@ -3045,7 +3045,7 @@ public class Level implements ChunkManager, Metadatable {
             Player player,
             boolean createParticles,
             boolean setBlockDestroy) {
-        if (player != null && player.getGamemode() > 2) {
+        if (player != null && player.isSpectator()) {
             return null;
         }
 
@@ -3072,7 +3072,7 @@ public class Level implements ChunkManager, Metadatable {
                 mustSilkTouch || (item.getEnchantment(Enchantment.ID_SILK_TOUCH) != null && item.applyEnchantments());
 
         if (player != null) {
-            if (player.getGamemode() == 2) {
+            if (player.isAdventure()) {
                 Tag tag = item.getNamedTagEntry("CanDestroy");
                 boolean canBreak = false;
                 if (tag instanceof ListTag) {
@@ -3319,7 +3319,7 @@ public class Level implements ChunkManager, Metadatable {
                     face,
                     target.getId() == 0 ? Action.RIGHT_CLICK_AIR : Action.RIGHT_CLICK_BLOCK);
 
-            if (player.getGamemode() > 2) {
+            if (player.isAdventure()) {
                 event.cancel();
             }
             // handle spawn protect
@@ -3434,7 +3434,7 @@ public class Level implements ChunkManager, Metadatable {
                 return null;
 
             BlockPlaceEvent event = new BlockPlaceEvent(player, hand, block, target, item);
-            if (player.getGamemode() == Player.ADVENTURE) {
+            if (player.isAdventure()) {
                 Tag tag = item.getNamedTagEntry("CanPlaceOn");
                 boolean canPlace = false;
                 if (tag instanceof ListTag) {

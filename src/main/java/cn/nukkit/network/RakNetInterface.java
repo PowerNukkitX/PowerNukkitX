@@ -170,7 +170,7 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
                 .add(Integer.toString(info.getMaxPlayerCount()))
                 .add(Long.toString(this.raknet.getGuid()))
                 .add(subMotd)
-                .add(Server.getGamemodeString(this.server.getDefaultGamemode(), true))
+                .add(server.getGamemode().getName())
                 .add("1");
 
         this.advertisement = joiner.toString().getBytes(StandardCharsets.UTF_8);

@@ -334,7 +334,7 @@ public class PlayerManager {
                     .putString("Level", server.getDefaultLevel().getName())
                     .putList(new ListTag<>("Inventory"))
                     .putCompound("Achievements", new CompoundTag())
-                    .putInt("playerGameType", server.getGamemode())
+                    .putInt("playerGameType", server.getGamemode().ordinal())
                     .putList(new ListTag<DoubleTag>("Motion")
                             .add(new DoubleTag("0", 0))
                             .add(new DoubleTag("1", 0))

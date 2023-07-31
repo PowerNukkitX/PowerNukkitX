@@ -129,7 +129,7 @@ public class BlockSeagrass extends BlockFlowable {
             Block up = this.up();
             int damage;
             if (up instanceof BlockWater && ((damage = up.getDamage()) == 0 || damage == 8)) {
-                if (player != null && (player.gamemode & 0x01) == 0) {
+                if (player != null && player.getGamemode().isSurvival()) {
                     item.count--;
                 }
 

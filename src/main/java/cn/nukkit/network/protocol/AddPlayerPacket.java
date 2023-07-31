@@ -36,7 +36,7 @@ public class AddPlayerPacket extends DataPacket {
     public float pitch;
     public float yaw;
     public Item item;
-    public int gameType = Server.getInstance().getGamemode();
+    public int gameType = Server.getInstance().getGamemode().ordinal();
     public EntityMetadata metadata = new EntityMetadata();
 
     @PowerNukkitXOnly

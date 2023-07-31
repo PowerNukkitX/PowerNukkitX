@@ -1,13 +1,12 @@
 package cn.nukkit.command.defaults;
 
-import cn.nukkit.Server;
-import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
+import cn.nukkit.player.GameMode;
 import java.util.Map;
 
 /**
@@ -27,32 +26,23 @@ public class DefaultGamemodeCommand extends VanillaCommand {
         this.enableParamTree();
     }
 
-    @Since("1.19.60-r1")
     @Override
     public int execute(
             CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
-        int gameMode;
+        GameMode gamemode = null;
         switch (result.getKey()) {
-            case "default" -> gameMode = list.getResult(0);
-            case "byString" -> {
-                String mode = list.getResult(0);
-                gameMode = Server.getGamemodeFromString(mode);
-            }
-            default -> {
-                return 0;
-            }
+            case "default" -> gamemode = GameMode.fromOrdinal(list.getResult(0));
+            case "byString" -> gamemode = GameMode.fromString(list.getResult(0));
         }
 
-        boolean valid = gameMode >= 0 && gameMode <= 3;
-        if (valid) {
-            sender.getServer().setPropertyInt("gamemode", gameMode);
-            log.addSuccess("commands.defaultgamemode.success", Server.getGamemodeString(gameMode))
+        if (gamemode != null) {
+            sender.getServer().setPropertyInt("gamemode", gamemode.ordinal());
+            log.addSuccess("commands.defaultgamemode.success", gamemode.getTranslatableName())
                     .output();
             return 1;
         } else {
-            log.addError("commands.gamemode.fail.invalid", String.valueOf(gameMode))
-                    .output();
+            log.addError("commands.gamemode.fail.invalid", list.getResult(0)).output();
             return 0;
         }
     }
