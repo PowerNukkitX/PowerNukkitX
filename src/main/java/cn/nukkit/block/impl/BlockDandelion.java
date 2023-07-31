@@ -3,9 +3,9 @@ package cn.nukkit.block.impl;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
-import cn.nukkit.blockproperty.value.SmallFlowerType;
+import cn.nukkit.block.property.BlockProperties;
+import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.property.value.SmallFlowerType;
 import org.jetbrains.annotations.NotNull;
 
 /**

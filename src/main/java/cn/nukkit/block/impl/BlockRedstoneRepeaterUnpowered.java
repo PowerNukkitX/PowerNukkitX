@@ -4,7 +4,7 @@ import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockRedstoneRepeater;
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.block.state.BlockState;
 
 /**
  * @author CreeperFace

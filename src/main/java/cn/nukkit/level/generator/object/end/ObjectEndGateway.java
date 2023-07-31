@@ -3,9 +3,9 @@ package cn.nukkit.level.generator.object.end;
 import static cn.nukkit.block.BlockID.BEDROCK;
 import static cn.nukkit.block.BlockID.END_GATEWAY;
 
+import cn.nukkit.block.state.BlockState;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityEndGateway;
-import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.generator.object.BasicGenerator;

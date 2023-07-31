@@ -3,9 +3,9 @@ package cn.nukkit.block.impl;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockSolidMeta;
-import cn.nukkit.blockproperty.ArrayBlockProperty;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.value.MonsterEggStoneType;
+import cn.nukkit.block.property.ArrayBlockProperty;
+import cn.nukkit.block.property.BlockProperties;
+import cn.nukkit.block.property.value.MonsterEggStoneType;
 import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
 

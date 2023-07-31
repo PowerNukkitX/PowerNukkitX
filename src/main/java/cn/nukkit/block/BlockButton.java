@@ -1,11 +1,11 @@
 package cn.nukkit.block;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
+import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
 
 import cn.nukkit.api.*;
 import cn.nukkit.block.impl.BlockLever;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BooleanBlockProperty;
+import cn.nukkit.block.property.BlockProperties;
+import cn.nukkit.block.property.BooleanBlockProperty;
 import cn.nukkit.event.block.BlockRedstoneEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.GlobalBlockPalette;

@@ -1,6 +1,6 @@
 package cn.nukkit.block;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.REDSTONE_SIGNAL;
+import static cn.nukkit.block.property.CommonBlockProperties.REDSTONE_SIGNAL;
 
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
@@ -8,8 +8,8 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.impl.BlockFence;
 import cn.nukkit.block.impl.BlockLever;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
+import cn.nukkit.block.property.BlockProperties;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.Event;
 import cn.nukkit.event.block.BlockRedstoneEvent;

@@ -4,7 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.impl.BlockStone;
-import cn.nukkit.blockproperty.value.StoneType;
+import cn.nukkit.block.property.value.StoneType;
+import cn.nukkit.block.state.BlockState;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;

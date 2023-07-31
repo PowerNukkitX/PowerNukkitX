@@ -2,8 +2,8 @@ package cn.nukkit.utils;
 
 import cn.nukkit.api.*;
 import cn.nukkit.block.Block;
-import cn.nukkit.blockstate.BlockState;
-import cn.nukkit.blockstate.BlockStateRegistry;
+import cn.nukkit.block.state.BlockState;
+import cn.nukkit.block.state.BlockStateRegistry;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.inventory.recipe.*;

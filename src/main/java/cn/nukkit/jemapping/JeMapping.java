@@ -2,7 +2,7 @@ package cn.nukkit.jemapping;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.PropertyTypes;
+import cn.nukkit.block.property.PropertyTypes;
 import cn.nukkit.level.terra.handles.PNXWorldHandle;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;

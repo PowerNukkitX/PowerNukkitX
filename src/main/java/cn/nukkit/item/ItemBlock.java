@@ -4,8 +4,8 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.impl.BlockUnknown;
-import cn.nukkit.blockstate.BlockState;
-import cn.nukkit.blockstate.exception.InvalidBlockStateException;
+import cn.nukkit.block.state.BlockState;
+import cn.nukkit.block.state.exception.InvalidBlockStateException;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 

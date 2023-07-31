@@ -4,10 +4,10 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockEntityHolder;
 import cn.nukkit.block.BlockSolid;
+import cn.nukkit.block.property.BlockProperties;
+import cn.nukkit.block.property.BooleanBlockProperty;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySculkCatalyst;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BooleanBlockProperty;
 import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 

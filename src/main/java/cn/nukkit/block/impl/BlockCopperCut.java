@@ -3,7 +3,7 @@ package cn.nukkit.block.impl;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockCopperBase;
-import cn.nukkit.blockproperty.value.OxidizationLevel;
+import cn.nukkit.block.property.value.OxidizationLevel;
 import javax.annotation.Nullable;
 import org.jetbrains.annotations.NotNull;
 

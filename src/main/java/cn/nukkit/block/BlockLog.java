@@ -1,12 +1,12 @@
 package cn.nukkit.block;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
+import static cn.nukkit.block.property.CommonBlockProperties.PILLAR_AXIS;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.block.property.BlockProperties;
+import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.state.BlockState;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;

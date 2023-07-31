@@ -4,9 +4,9 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockVinesNether;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.IntBlockProperty;
-import cn.nukkit.blockproperty.exception.InvalidBlockPropertyMetaException;
+import cn.nukkit.block.property.BlockProperties;
+import cn.nukkit.block.property.IntBlockProperty;
+import cn.nukkit.block.property.exception.InvalidBlockPropertyMetaException;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 

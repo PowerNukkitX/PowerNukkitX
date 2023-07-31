@@ -2,8 +2,8 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.exception.InvalidBlockPropertyMetaException;
-import cn.nukkit.blockproperty.exception.InvalidBlockPropertyValueException;
+import cn.nukkit.block.property.exception.InvalidBlockPropertyMetaException;
+import cn.nukkit.block.property.exception.InvalidBlockPropertyValueException;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.block.BlockGrowEvent;
 import cn.nukkit.item.Item;

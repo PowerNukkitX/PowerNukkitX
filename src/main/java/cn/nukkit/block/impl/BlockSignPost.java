@@ -1,6 +1,6 @@
 package cn.nukkit.block.impl;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
+import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
 import static cn.nukkit.math.CompassRoseDirection.*;
 
 import cn.nukkit.api.DeprecationDetails;
@@ -10,13 +10,13 @@ import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockEntityHolder;
 import cn.nukkit.block.BlockSignBase;
+import cn.nukkit.block.property.ArrayBlockProperty;
+import cn.nukkit.block.property.BlockProperties;
+import cn.nukkit.block.property.BlockProperty;
+import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.state.BlockState;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySign;
-import cn.nukkit.blockproperty.ArrayBlockProperty;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BlockProperty;
-import cn.nukkit.blockproperty.CommonBlockProperties;
-import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemSign;
 import cn.nukkit.level.Level;

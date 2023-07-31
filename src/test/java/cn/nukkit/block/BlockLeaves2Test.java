@@ -2,8 +2,8 @@ package cn.nukkit.block;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import cn.nukkit.blockstate.BlockState;
-import cn.nukkit.blockstate.exception.InvalidBlockStateException;
+import cn.nukkit.block.state.BlockState;
+import cn.nukkit.block.state.exception.InvalidBlockStateException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.powernukkit.tests.api.MockServer;

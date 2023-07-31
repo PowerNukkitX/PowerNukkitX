@@ -2,8 +2,8 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.blockstate.BlockState;
-import cn.nukkit.blockstate.IMutableBlockState;
+import cn.nukkit.block.state.BlockState;
+import cn.nukkit.block.state.IMutableBlockState;
 import cn.nukkit.event.block.BlockFadeEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;

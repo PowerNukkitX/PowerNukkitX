@@ -5,7 +5,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.impl.BlockCherryLeaves;
 import cn.nukkit.block.impl.BlockCherryLog;
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.block.state.BlockState;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;

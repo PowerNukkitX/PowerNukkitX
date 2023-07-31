@@ -3,7 +3,7 @@ package cn.nukkit.block.impl;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockWoodStripped;
-import cn.nukkit.blockproperty.value.WoodType;
+import cn.nukkit.block.property.value.WoodType;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")

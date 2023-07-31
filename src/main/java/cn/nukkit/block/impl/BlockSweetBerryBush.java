@@ -5,7 +5,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockCrops;
 import cn.nukkit.block.BlockFlowable;
-import cn.nukkit.blockproperty.BlockProperties;
+import cn.nukkit.block.property.BlockProperties;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.block.BlockGrowEvent;
 import cn.nukkit.event.block.BlockHarvestEvent;

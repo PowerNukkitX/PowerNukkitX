@@ -1,6 +1,6 @@
 package cn.nukkit.block.impl;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.UPPER_BLOCK;
+import static cn.nukkit.block.property.CommonBlockProperties.UPPER_BLOCK;
 
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitDifference;
@@ -9,9 +9,9 @@ import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockFlowable;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.blockproperty.ArrayBlockProperty;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.value.DoublePlantType;
+import cn.nukkit.block.property.ArrayBlockProperty;
+import cn.nukkit.block.property.BlockProperties;
+import cn.nukkit.block.property.value.DoublePlantType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Level;

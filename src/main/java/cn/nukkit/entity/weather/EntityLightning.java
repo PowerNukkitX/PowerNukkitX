@@ -5,7 +5,7 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.*;
 import cn.nukkit.block.impl.BlockFire;
-import cn.nukkit.blockproperty.value.OxidizationLevel;
+import cn.nukkit.block.property.value.OxidizationLevel;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.block.BlockFadeEvent;
 import cn.nukkit.event.block.BlockIgniteEvent;

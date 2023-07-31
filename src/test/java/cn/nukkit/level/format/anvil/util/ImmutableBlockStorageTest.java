@@ -21,7 +21,7 @@ package cn.nukkit.level.format.anvil.util;
 import static org.junit.jupiter.api.Assertions.*;
 
 import cn.nukkit.block.BlockID;
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.block.state.BlockState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

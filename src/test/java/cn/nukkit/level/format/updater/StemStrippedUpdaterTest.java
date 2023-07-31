@@ -1,14 +1,14 @@
 package cn.nukkit.level.format.updater;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.DEPRECATED;
-import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
+import static cn.nukkit.block.property.CommonBlockProperties.DEPRECATED;
+import static cn.nukkit.block.property.CommonBlockProperties.PILLAR_AXIS;
 import static org.junit.jupiter.api.Assertions.*;
 
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.impl.BlockHyphaeStrippedCrimson;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockstate.BlockState;
-import cn.nukkit.blockstate.MutableBlockState;
+import cn.nukkit.block.property.BlockProperties;
+import cn.nukkit.block.state.BlockState;
+import cn.nukkit.block.state.MutableBlockState;
 import cn.nukkit.level.format.anvil.ChunkSection;
 import cn.nukkit.math.BlockFace;
 import org.junit.jupiter.api.Test;

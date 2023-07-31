@@ -1,14 +1,14 @@
 package cn.nukkit.block.impl;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.PERMANENTLY_DEAD;
+import static cn.nukkit.block.property.CommonBlockProperties.PERMANENTLY_DEAD;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockFlowable;
-import cn.nukkit.blockproperty.ArrayBlockProperty;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.value.CoralType;
+import cn.nukkit.block.property.ArrayBlockProperty;
+import cn.nukkit.block.property.BlockProperties;
+import cn.nukkit.block.property.value.CoralType;
 import cn.nukkit.event.block.BlockFadeEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;

@@ -1,6 +1,6 @@
 package cn.nukkit.block.impl;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
+import static cn.nukkit.block.property.CommonBlockProperties.PILLAR_AXIS;
 
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
@@ -9,13 +9,13 @@ import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockLog;
-import cn.nukkit.blockproperty.ArrayBlockProperty;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BlockProperty;
-import cn.nukkit.blockproperty.value.WoodType;
-import cn.nukkit.blockstate.BlockState;
-import cn.nukkit.blockstate.IBlockState;
-import cn.nukkit.blockstate.exception.InvalidBlockStateException;
+import cn.nukkit.block.property.ArrayBlockProperty;
+import cn.nukkit.block.property.BlockProperties;
+import cn.nukkit.block.property.BlockProperty;
+import cn.nukkit.block.property.value.WoodType;
+import cn.nukkit.block.state.BlockState;
+import cn.nukkit.block.state.IBlockState;
+import cn.nukkit.block.state.exception.InvalidBlockStateException;
 import org.jetbrains.annotations.NotNull;
 
 /**

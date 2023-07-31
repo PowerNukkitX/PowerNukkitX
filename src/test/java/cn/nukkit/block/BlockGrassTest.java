@@ -6,7 +6,7 @@ import static org.mockito.Mockito.*;
 
 import cn.nukkit.Server;
 import cn.nukkit.block.impl.BlockGrass;
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.block.state.BlockState;
 import cn.nukkit.event.block.BlockSpreadEvent;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.Vector3;

@@ -8,7 +8,7 @@ import static org.mockito.Mockito.verify;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.block.state.BlockState;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.passive.EntityPig;
 import cn.nukkit.event.entity.EntityDamageEvent;

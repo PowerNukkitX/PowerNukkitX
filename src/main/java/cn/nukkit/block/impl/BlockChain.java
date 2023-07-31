@@ -1,13 +1,13 @@
 package cn.nukkit.block.impl;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
+import static cn.nukkit.block.property.CommonBlockProperties.PILLAR_AXIS;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockLog;
 import cn.nukkit.block.BlockTransparent;
-import cn.nukkit.blockproperty.BlockProperties;
+import cn.nukkit.block.property.BlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemChain;
 import cn.nukkit.item.ItemTool;

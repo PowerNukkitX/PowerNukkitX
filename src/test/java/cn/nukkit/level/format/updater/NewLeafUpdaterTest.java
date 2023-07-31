@@ -3,7 +3,7 @@ package cn.nukkit.level.format.updater;
 import static cn.nukkit.block.BlockID.LEAVES2;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.block.state.BlockState;
 import cn.nukkit.level.format.anvil.ChunkSection;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -3,7 +3,7 @@ package cn.nukkit.block.impl;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockStem;
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.block.state.BlockState;
 
 @Since("1.4.0.0-PN")
 @PowerNukkitOnly

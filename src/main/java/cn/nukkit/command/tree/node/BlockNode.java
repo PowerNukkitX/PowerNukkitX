@@ -3,7 +3,7 @@ package cn.nukkit.command.tree.node;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
-import cn.nukkit.blockstate.BlockStateRegistry;
+import cn.nukkit.block.state.BlockStateRegistry;
 
 /**
  * 解析对应参数为{@link Block}值

@@ -8,7 +8,7 @@ import cn.nukkit.block.BlockCrops;
 import cn.nukkit.block.BlockFlowable;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockLiquid;
-import cn.nukkit.blockproperty.BlockProperties;
+import cn.nukkit.block.property.BlockProperties;
 import cn.nukkit.event.level.StructureGrowEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;

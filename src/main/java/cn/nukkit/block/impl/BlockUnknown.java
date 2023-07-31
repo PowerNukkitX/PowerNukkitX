@@ -3,8 +3,8 @@ package cn.nukkit.block.impl;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockMeta;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.UnsignedIntBlockProperty;
+import cn.nukkit.block.property.BlockProperties;
+import cn.nukkit.block.property.UnsignedIntBlockProperty;
 import org.jetbrains.annotations.NotNull;
 
 /**

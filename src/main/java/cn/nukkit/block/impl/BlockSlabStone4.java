@@ -3,8 +3,8 @@ package cn.nukkit.block.impl;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockSlab;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.value.StoneSlab4Type;
+import cn.nukkit.block.property.BlockProperties;
+import cn.nukkit.block.property.value.StoneSlab4Type;
 import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 

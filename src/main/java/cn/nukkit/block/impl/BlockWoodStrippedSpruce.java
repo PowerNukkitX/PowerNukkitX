@@ -2,7 +2,7 @@ package cn.nukkit.block.impl;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.BlockWoodStripped;
-import cn.nukkit.blockproperty.value.WoodType;
+import cn.nukkit.block.property.value.WoodType;
 
 @PowerNukkitOnly
 public class BlockWoodStrippedSpruce extends BlockWoodStripped {

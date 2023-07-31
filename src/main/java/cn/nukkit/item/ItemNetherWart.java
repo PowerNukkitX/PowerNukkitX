@@ -1,7 +1,7 @@
 package cn.nukkit.item;
 
 import cn.nukkit.block.BlockID;
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.block.state.BlockState;
 
 /**
  * @author Leonidius20

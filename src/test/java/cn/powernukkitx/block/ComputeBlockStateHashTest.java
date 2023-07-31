@@ -1,7 +1,7 @@
 package cn.powernukkitx.block;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.block.state.BlockState;
 import cn.nukkit.dispenser.DispenseBehaviorRegister;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.item.Item;

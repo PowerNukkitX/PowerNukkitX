@@ -3,7 +3,7 @@ package cn.nukkit.blockentity;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.blockproperty.value.StructureBlockType;
+import cn.nukkit.block.property.value.StructureBlockType;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.StructBlockInventory;
 import cn.nukkit.level.format.FullChunk;

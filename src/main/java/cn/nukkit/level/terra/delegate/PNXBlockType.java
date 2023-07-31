@@ -9,7 +9,7 @@ import com.dfsek.terra.api.block.state.BlockState;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public record PNXBlockType(cn.nukkit.blockstate.BlockState innerBlockState) implements BlockType {
+public record PNXBlockType(cn.nukkit.block.state.BlockState innerBlockState) implements BlockType {
     @Override
     public BlockState getDefaultState() {
         return PNXAdapter.adapt(innerBlockState);
@@ -26,7 +26,7 @@ public record PNXBlockType(cn.nukkit.blockstate.BlockState innerBlockState) impl
     }
 
     @Override
-    public cn.nukkit.blockstate.BlockState getHandle() {
+    public cn.nukkit.block.state.BlockState getHandle() {
         return innerBlockState;
     }
 }
