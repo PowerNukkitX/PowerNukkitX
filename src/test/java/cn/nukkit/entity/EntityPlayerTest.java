@@ -21,7 +21,7 @@ package cn.nukkit.entity;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import cn.nukkit.block.BlockID;
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.block.state.BlockState;
 import cn.nukkit.level.Level;
 import cn.nukkit.network.SourceInterface;
 import cn.nukkit.player.Player;

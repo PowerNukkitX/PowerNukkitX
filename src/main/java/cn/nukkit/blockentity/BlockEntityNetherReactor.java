@@ -3,7 +3,7 @@ package cn.nukkit.blockentity;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.blockproperty.value.NetherReactorState;
+import cn.nukkit.block.property.value.NetherReactorState;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.MathHelper;
 import cn.nukkit.nbt.tag.CompoundTag;

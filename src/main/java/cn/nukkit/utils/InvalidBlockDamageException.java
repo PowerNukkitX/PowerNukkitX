@@ -3,8 +3,8 @@ package cn.nukkit.utils;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.block.BlockUnknown;
-import cn.nukkit.blockproperty.exception.InvalidBlockPropertyMetaException;
+import cn.nukkit.block.impl.BlockUnknown;
+import cn.nukkit.block.property.exception.InvalidBlockPropertyMetaException;
 import lombok.EqualsAndHashCode;
 
 @PowerNukkitOnly

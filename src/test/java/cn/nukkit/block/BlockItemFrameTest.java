@@ -2,8 +2,10 @@ package cn.nukkit.block;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import cn.nukkit.blockproperty.value.TallGrassType;
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.block.impl.BlockItemFrame;
+import cn.nukkit.block.impl.BlockTallGrass;
+import cn.nukkit.block.property.value.TallGrassType;
+import cn.nukkit.block.state.BlockState;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Level;

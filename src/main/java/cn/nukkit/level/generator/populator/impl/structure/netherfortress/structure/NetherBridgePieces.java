@@ -28,12 +28,12 @@ import javax.annotation.Nullable;
 @Since("1.19.21-r2")
 public class NetherBridgePieces {
 
-    private static final BlockState NETHER_BRICKS = new BlockState(Block.NETHER_BRICKS);
+    private static final BlockState NETHER_BRICKS = new BlockState(Block.NETHER_BRICK_BLOCK);
     private static final BlockState NETHER_BRICK_FENCE = new BlockState(Block.NETHER_BRICK_FENCE);
     private static final BlockState SOUL_SAND = new BlockState(Block.SOUL_SAND);
     private static final BlockState NETHER_WART = new BlockState(Block.NETHER_WART_BLOCK);
-    private static final BlockState LAVA = new BlockState(Block.LAVA);
-    private static final BlockState SPAWNER = new BlockState(Block.MONSTER_SPAWNER);
+    private static final BlockState LAVA = new BlockState(Block.FLOWING_LAVA);
+    private static final BlockState SPAWNER = new BlockState(Block.MOB_SPAWNER);
 
     private static final PieceWeight[] BRIDGE_PIECE_WEIGHTS = new PieceWeight[] {
         new PieceWeight(BridgeStraight.class, 30, 0, true),

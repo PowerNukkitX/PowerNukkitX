@@ -4,7 +4,7 @@ import static cn.nukkit.network.protocol.SetEntityLinkPacket.TYPE_PASSENGER;
 
 import cn.nukkit.api.*;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockWater;
+import cn.nukkit.block.impl.BlockWater;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.EntityLiving;

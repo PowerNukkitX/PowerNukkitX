@@ -1,7 +1,7 @@
 package cn.nukkit.level.generator.populator.impl.tree;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockSapling;
+import cn.nukkit.block.impl.BlockSapling;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.generator.object.tree.NewJungleTree;

@@ -1,7 +1,7 @@
 package cn.nukkit.level.biome.impl.forest;
 
-import cn.nukkit.block.BlockDoublePlant;
-import cn.nukkit.block.BlockFlower;
+import cn.nukkit.block.impl.BlockDoublePlant;
+import cn.nukkit.block.impl.BlockFlower;
 import cn.nukkit.level.generator.populator.impl.PopulatorFlower;
 
 /**

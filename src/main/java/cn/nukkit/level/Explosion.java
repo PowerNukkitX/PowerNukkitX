@@ -6,7 +6,7 @@ import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockTNT;
+import cn.nukkit.block.impl.BlockTNT;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityShulkerBox;
 import cn.nukkit.entity.Entity;

@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import cn.nukkit.block.impl.BlockUnknown;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;

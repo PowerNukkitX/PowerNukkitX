@@ -6,7 +6,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import cn.nukkit.block.*;
-import cn.nukkit.blockstate.exception.InvalidBlockStateException;
+import cn.nukkit.block.impl.BlockBeehive;
+import cn.nukkit.block.impl.BlockPlanks;
+import cn.nukkit.block.impl.BlockUnknown;
+import cn.nukkit.block.impl.BlockWall;
+import cn.nukkit.block.state.BlockState;
+import cn.nukkit.block.state.BlockStateRegistry;
+import cn.nukkit.block.state.MutableBlockState;
+import cn.nukkit.block.state.exception.InvalidBlockStateException;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.test.LogLevelAdjuster;
 import cn.nukkit.utils.MainLogger;

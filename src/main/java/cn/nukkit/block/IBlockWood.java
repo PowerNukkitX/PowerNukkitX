@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.block.state.BlockState;
 
 /**
  * 语义接口，实现了此接口的方块都是木头方块，可以使得自然生成的树叶不凋零。<br>

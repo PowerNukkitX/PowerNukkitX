@@ -1,0 +1,255 @@
+package cn.nukkit.block.impl;
+
+import cn.nukkit.api.PowerNukkitDifference;
+import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXDifference;
+import cn.nukkit.api.Since;
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockTransparentMeta;
+import cn.nukkit.block.property.BlockProperties;
+import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemTool;
+import cn.nukkit.level.Level;
+import cn.nukkit.math.AxisAlignedBB;
+import cn.nukkit.math.BlockFace;
+import cn.nukkit.player.Player;
+import cn.nukkit.utils.Faceable;
+import org.jetbrains.annotations.NotNull;
+
+/**
+ * @author xtypr
+ * @since 2015/12/8
+ */
+public class BlockLadder extends BlockTransparentMeta implements Faceable {
+
+    @PowerNukkitOnly
+    @Since("1.5.0.0-PN")
+    public static final BlockProperties PROPERTIES = CommonBlockProperties.FACING_DIRECTION_BLOCK_PROPERTIES;
+
+    public BlockLadder() {
+        this(0);
+    }
+
+    public BlockLadder(int meta) {
+        super(meta);
+        calculateOffsets();
+    }
+
+    @Override
+    public String getName() {
+        return "Ladder";
+    }
+
+    @Override
+    public int getId() {
+        return LADDER;
+    }
+
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    @NotNull @Override
+    public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    @Override
+    public boolean hasEntityCollision() {
+        return true;
+    }
+
+    @Override
+    public boolean canBeClimbed() {
+        return true;
+    }
+
+    @Override
+    public boolean isSolid() {
+        return false;
+    }
+
+    @Since("1.3.0.0-PN")
+    @PowerNukkitOnly
+    @Override
+    public boolean isSolid(BlockFace side) {
+        return false;
+    }
+
+    @PowerNukkitOnly
+    @Override
+    public int getWaterloggingLevel() {
+        return 1;
+    }
+
+    @Override
+    public double getHardness() {
+        return 0.4;
+    }
+
+    @Override
+    public double getResistance() {
+        return 2;
+    }
+
+    private double offMinX;
+    private double offMinZ;
+    private double offMaxX;
+    private double offMaxZ;
+
+    private void calculateOffsets() {
+        double f = 0.1875;
+
+        switch (this.getDamage()) {
+            case 2:
+                this.offMinX = 0;
+                this.offMinZ = 1 - f;
+                this.offMaxX = 1;
+                this.offMaxZ = 1;
+                break;
+            case 3:
+                this.offMinX = 0;
+                this.offMinZ = 0;
+                this.offMaxX = 1;
+                this.offMaxZ = f;
+                break;
+            case 4:
+                this.offMinX = 1 - f;
+                this.offMinZ = 0;
+                this.offMaxX = 1;
+                this.offMaxZ = 1;
+                break;
+            case 5:
+                this.offMinX = 0;
+                this.offMinZ = 0;
+                this.offMaxX = f;
+                this.offMaxZ = 1;
+                break;
+            default:
+                this.offMinX = 0;
+                this.offMinZ = 1;
+                this.offMaxX = 1;
+                this.offMaxZ = 1;
+                break;
+        }
+    }
+
+    @Override
+    public void setDamage(int meta) {
+        super.setDamage(meta);
+        calculateOffsets();
+    }
+
+    @Override
+    public double getMinX() {
+        return this.x() + offMinX;
+    }
+
+    @Override
+    public double getMinZ() {
+        return this.z() + offMinZ;
+    }
+
+    @Override
+    public double getMaxX() {
+        return this.x() + offMaxX;
+    }
+
+    @Override
+    public double getMaxZ() {
+        return this.z() + offMaxZ;
+    }
+
+    @Override
+    protected AxisAlignedBB recalculateCollisionBoundingBox() {
+        return super.recalculateBoundingBox();
+    }
+
+    @PowerNukkitXDifference(since = "1.19.50-r1", info = "Fixed issue#790")
+    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed support logic")
+    @Override
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
+        if (target instanceof BlockLadder) {
+            var opposite = face.getOpposite();
+            var oppositeB = this.getLevel().getBlock(target.add(face.getUnitVector()));
+            var targetBlock =
+                    this.getLevel().getBlock(target.add(face.getUnitVector().multiply(2)));
+            if (isSupportValid(targetBlock, opposite)) {
+                // 不设置damage是因为level#useItemOn中有逻辑设置
+                this.getLevel().setBlock(oppositeB, this, true, false);
+                return true;
+            }
+        }
+        if (face.getHorizontalIndex() == -1 || !isSupportValid(target, face)) {
+            return false;
+        }
+        // 不设置damage是因为level#useItemOn中有逻辑设置
+        this.getLevel().setBlock(block, this, true, true);
+        return true;
+    }
+
+    private boolean isSupportValid(Block support, BlockFace face) {
+        switch (support.getId()) {
+            case GLASS:
+            case GLASS_PANE:
+            case STAINED_GLASS:
+            case STAINED_GLASS_PANE:
+            case BEACON:
+                return false;
+            default:
+                return BlockLever.isSupportValid(support, face);
+        }
+    }
+
+    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed support logic")
+    @Override
+    public int onUpdate(int type) {
+        if (type == Level.BLOCK_UPDATE_NORMAL) {
+            int[] faces = {
+                0, // never use
+                1, // never use
+                3, 2, 5, 4
+            };
+            BlockFace face = BlockFace.fromIndex(faces[this.getDamage()]);
+            if (!isSupportValid(this.getSide(face), face.getOpposite())) {
+                this.getLevel().useBreakOn(this);
+                return Level.BLOCK_UPDATE_NORMAL;
+            }
+        }
+        return 0;
+    }
+
+    @Override
+    public int getToolType() {
+        return ItemTool.TYPE_AXE;
+    }
+
+    @Override
+    public Item[] getDrops(Item item) {
+        return new Item[] {Item.get(Item.LADDER, 0, 1)};
+    }
+
+    @Override
+    public BlockFace getBlockFace() {
+        return BlockFace.fromHorizontalIndex(this.getDamage() & 0x07);
+    }
+
+    @Override
+    @PowerNukkitOnly
+    public boolean breaksWhenMoved() {
+        return true;
+    }
+
+    @Override
+    @PowerNukkitOnly
+    public boolean sticksToPiston() {
+        return false;
+    }
+}

@@ -1,0 +1,109 @@
+package cn.nukkit.block.impl;
+
+import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
+
+import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockSolidMeta;
+import cn.nukkit.block.property.BlockProperties;
+import cn.nukkit.block.property.IntBlockProperty;
+import cn.nukkit.item.Item;
+import cn.nukkit.math.BlockFace;
+import cn.nukkit.player.Player;
+import cn.nukkit.utils.Faceable;
+import org.jetbrains.annotations.NotNull;
+
+@PowerNukkitOnly
+public class BlockJigsaw extends BlockSolidMeta implements Faceable {
+    private static final IntBlockProperty ROTATION = new IntBlockProperty("rotation", false, 3);
+
+    @PowerNukkitOnly
+    @Since("1.5.0.0-PN")
+    public static final BlockProperties PROPERTIES = new BlockProperties(FACING_DIRECTION, ROTATION);
+
+    @PowerNukkitOnly
+    public BlockJigsaw() {
+        this(0);
+    }
+
+    @PowerNukkitOnly
+    public BlockJigsaw(int meta) {
+        super(meta);
+    }
+
+    @Override
+    public String getName() {
+        return "Jigsaw";
+    }
+
+    @Override
+    public int getId() {
+        return JIGSAW;
+    }
+
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    @NotNull @Override
+    public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    @Override
+    public boolean canHarvestWithHand() {
+        return false;
+    }
+
+    @Override
+    public double getResistance() {
+        return 18000000;
+    }
+
+    @Override
+    public double getHardness() {
+        return -1;
+    }
+
+    @Override
+    public boolean isBreakable(Item item) {
+        return false;
+    }
+
+    @Override
+    public boolean canBePushed() {
+        return false;
+    }
+
+    @Override
+    public BlockFace getBlockFace() {
+        return BlockFace.fromIndex(getDamage());
+    }
+
+    @Override
+    public boolean place(
+            @NotNull Item item,
+            @NotNull Block block,
+            @NotNull Block target,
+            @NotNull BlockFace face,
+            double fx,
+            double fy,
+            double fz,
+            Player player) {
+        if (Math.abs(player.x() - this.x()) < 2 && Math.abs(player.z() - this.z()) < 2) {
+            double y = player.y() + player.getEyeHeight();
+
+            if (y - this.y() > 2) {
+                this.setDamage(BlockFace.UP.getIndex());
+            } else if (this.y() - y > 0) {
+                this.setDamage(BlockFace.DOWN.getIndex());
+            } else {
+                this.setDamage(player.getHorizontalFacing().getOpposite().getIndex());
+            }
+        } else {
+            this.setDamage(player.getHorizontalFacing().getOpposite().getIndex());
+        }
+        this.getLevel().setBlock(block, this, true, false);
+
+        return super.place(item, block, target, face, fx, fy, fz, player);
+    }
+}

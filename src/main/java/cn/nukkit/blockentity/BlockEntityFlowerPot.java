@@ -2,7 +2,7 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockFlowerPot;
+import cn.nukkit.block.impl.BlockFlowerPot;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 

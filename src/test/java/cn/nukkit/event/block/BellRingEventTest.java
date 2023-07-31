@@ -5,10 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.block.BlockBell;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.blockproperty.value.AttachmentType;
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.block.impl.BlockBell;
+import cn.nukkit.block.property.value.AttachmentType;
+import cn.nukkit.block.state.BlockState;
 import cn.nukkit.level.Level;
 import cn.nukkit.player.Player;
 import org.junit.jupiter.api.BeforeEach;

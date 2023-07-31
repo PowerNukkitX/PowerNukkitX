@@ -2,7 +2,7 @@ package cn.nukkit.event.blockstate;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.blockstate.BlockStateRepair;
+import cn.nukkit.block.state.BlockStateRepair;
 import cn.nukkit.event.Event;
 
 /**

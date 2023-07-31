@@ -2,7 +2,7 @@ package cn.nukkit.event.block;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.block.BlockHopper;
+import cn.nukkit.block.impl.BlockHopper;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.Event;
 

@@ -2,8 +2,8 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.exception.InvalidBlockPropertyMetaException;
+import cn.nukkit.block.property.BlockProperties;
+import cn.nukkit.block.property.exception.InvalidBlockPropertyMetaException;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class BlockMeta extends Block {

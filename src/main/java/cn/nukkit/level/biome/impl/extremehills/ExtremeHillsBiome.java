@@ -2,7 +2,7 @@ package cn.nukkit.level.biome.impl.extremehills;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockSapling;
+import cn.nukkit.block.impl.BlockSapling;
 import cn.nukkit.level.biome.type.GrassyBiome;
 import cn.nukkit.level.generator.object.ore.OreType;
 import cn.nukkit.level.generator.populator.impl.PopulatorOre;

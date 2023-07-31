@@ -1,6 +1,6 @@
 package cn.nukkit.level.biome.impl.plains;
 
-import cn.nukkit.block.BlockDoublePlant;
+import cn.nukkit.block.impl.BlockDoublePlant;
 import cn.nukkit.level.generator.populator.impl.PopulatorDoublePlant;
 
 /**

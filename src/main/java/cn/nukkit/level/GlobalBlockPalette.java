@@ -4,7 +4,7 @@ import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
-import cn.nukkit.blockstate.BlockStateRegistry;
+import cn.nukkit.block.state.BlockStateRegistry;
 import lombok.extern.log4j.Log4j2;
 
 @Deprecated

@@ -1,12 +1,12 @@
 package cn.nukkit.block;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
+import static cn.nukkit.block.property.CommonBlockProperties.DIRECTION;
 
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.IntBlockProperty;
+import cn.nukkit.block.property.BlockProperties;
+import cn.nukkit.block.property.IntBlockProperty;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemRedstoneRepeater;
 import cn.nukkit.math.BlockFace;

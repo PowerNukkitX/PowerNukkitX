@@ -3,7 +3,7 @@ package cn.nukkit.event.blockstate;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
-import cn.nukkit.blockstate.BlockStateRepair;
+import cn.nukkit.block.state.BlockStateRepair;
 import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.Collections;

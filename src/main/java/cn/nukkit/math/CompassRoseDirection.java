@@ -2,7 +2,7 @@ package cn.nukkit.math;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.CommonBlockProperties;
+import cn.nukkit.block.property.CommonBlockProperties;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 

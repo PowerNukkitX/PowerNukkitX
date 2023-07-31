@@ -1,6 +1,6 @@
 package cn.nukkit.network.protocol.types;
 
-import cn.nukkit.blockproperty.value.StructureBlockType;
+import cn.nukkit.block.property.value.StructureBlockType;
 import lombok.Value;
 
 @Value

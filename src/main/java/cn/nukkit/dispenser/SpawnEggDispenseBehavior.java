@@ -1,7 +1,7 @@
 package cn.nukkit.dispenser;
 
 import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.block.BlockDispenser;
+import cn.nukkit.block.impl.BlockDispenser;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.item.Item;

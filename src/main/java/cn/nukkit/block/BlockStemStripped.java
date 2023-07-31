@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.block.state.BlockState;
 import cn.nukkit.item.Item;
 import cn.nukkit.player.Player;
 import org.jetbrains.annotations.NotNull;

@@ -9,7 +9,7 @@ import com.dfsek.terra.api.block.state.properties.Property;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public record PNXBlockStateDelegate(cn.nukkit.blockstate.BlockState innerBlockState) implements BlockState {
+public record PNXBlockStateDelegate(cn.nukkit.block.state.BlockState innerBlockState) implements BlockState {
     @Override
     public boolean matches(BlockState blockState) {
         return ((PNXBlockStateDelegate) blockState).innerBlockState.equals(this.innerBlockState);
@@ -57,7 +57,7 @@ public record PNXBlockStateDelegate(cn.nukkit.blockstate.BlockState innerBlockSt
     }
 
     @Override
-    public cn.nukkit.blockstate.BlockState getHandle() {
+    public cn.nukkit.block.state.BlockState getHandle() {
         return innerBlockState;
     }
 }

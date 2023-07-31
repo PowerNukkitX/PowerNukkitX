@@ -4,6 +4,7 @@ import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.*;
+import cn.nukkit.block.impl.*;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.mob.EntitySilverfish;
 import cn.nukkit.level.ChunkManager;
@@ -31,9 +32,9 @@ public class StrongholdPieces {
 
     private static final BlockState INFESTED_STONE_BRICKS =
             new BlockState(Block.MONSTER_EGG, BlockMonsterEgg.STONE_BRICK);
-    private static final BlockState STONE_BRICKS = new BlockState(Block.STONE_BRICKS, BlockBricksStone.NORMAL);
-    private static final BlockState MOSSY_STONE_BRICKS = new BlockState(Block.STONE_BRICKS, BlockBricksStone.MOSSY);
-    private static final BlockState CRACKED_STONE_BRICKS = new BlockState(Block.STONE_BRICKS, BlockBricksStone.CRACKED);
+    private static final BlockState STONE_BRICKS = new BlockState(Block.STONEBRICK, BlockBricksStone.NORMAL);
+    private static final BlockState MOSSY_STONE_BRICKS = new BlockState(Block.STONEBRICK, BlockBricksStone.MOSSY);
+    private static final BlockState CRACKED_STONE_BRICKS = new BlockState(Block.STONEBRICK, BlockBricksStone.CRACKED);
     private static final BlockState STONE_BRICK_SLAB = new BlockState(Block.STONE_SLAB, BlockSlabStone.STONE_BRICK);
     private static final BlockState SMOOTH_STONE_SLAB = new BlockState(Block.STONE_SLAB, BlockSlabStone.STONE);
     private static final BlockState SMOOTH_STONE_SLAB_DOUBLE =
@@ -43,14 +44,14 @@ public class StrongholdPieces {
     private static final BlockState LAVA = new BlockState(Block.STILL_LAVA);
     private static final BlockState OAK_FENCE = new BlockState(Block.FENCE, BlockFence.FENCE_OAK);
     private static final BlockState OAK_PLANKS = new BlockState(Block.PLANKS, BlockPlanks.OAK);
-    private static final BlockState OAK_DOOR = new BlockState(Block.WOOD_DOOR_BLOCK);
+    private static final BlockState OAK_DOOR = new BlockState(Block.OAK_DOOR_BLOCK);
     private static final BlockState IRON_DOOR = new BlockState(Block.IRON_DOOR_BLOCK);
     private static final BlockState IRON_BARS = new BlockState(Block.IRON_BARS);
     private static final BlockState TORCH = new BlockState(Block.TORCH, TorchFacingDirection.TOP);
     private static final BlockState END_PORTAL = new BlockState(Block.END_PORTAL);
     private static final BlockState BOOKSHELF = new BlockState(Block.BOOKSHELF);
     private static final BlockState COBWEB = new BlockState(Block.COBWEB);
-    private static final BlockState SPAWNER = new BlockState(Block.MONSTER_SPAWNER);
+    private static final BlockState SPAWNER = new BlockState(Block.MOB_SPAWNER);
 
     private static final Object lock = new Object();
 
@@ -329,7 +330,7 @@ public class StrongholdPieces {
                     this.placeBlock(level, OAK_DOOR, x + 1, y, z, boundingBox);
                     this.placeBlock(
                             level,
-                            new BlockState(Block.WOOD_DOOR_BLOCK, UpperBlockBit.UPPER),
+                            new BlockState(Block.OAK_DOOR_BLOCK, UpperBlockBit.UPPER),
                             x + 1,
                             y + 1,
                             z,
@@ -940,7 +941,7 @@ public class StrongholdPieces {
             this.generateSmallDoor(level, random, boundingBox, this.entryDoor, 1, 7, 0);
             this.generateSmallDoor(level, random, boundingBox, SmallDoorType.OPENING, 1, 1, 7);
 
-            BlockState stairsS = new BlockState(Block.COBBLESTONE_STAIRS, WeirdoDirection.SOUTH);
+            BlockState stairsS = new BlockState(Block.STONE_STAIRS, WeirdoDirection.SOUTH);
             for (int i = 0; i < 6; ++i) {
                 this.placeBlock(level, stairsS, 1, 6 - i, 1 + i, boundingBox);
                 this.placeBlock(level, stairsS, 2, 6 - i, 1 + i, boundingBox);

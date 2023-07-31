@@ -3,7 +3,7 @@ package cn.nukkit.item;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockWater;
+import cn.nukkit.block.impl.BlockWater;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityBoat;
 import cn.nukkit.level.Level;

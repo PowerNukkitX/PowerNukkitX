@@ -3,7 +3,7 @@ package cn.nukkit.item;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockCaveVines;
+import cn.nukkit.block.impl.BlockCaveVines;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;

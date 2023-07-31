@@ -5,6 +5,8 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.*;
+import cn.nukkit.block.BlockLiquid;
+import cn.nukkit.block.impl.*;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.player.PlayerBucketEmptyEvent;
 import cn.nukkit.event.player.PlayerBucketFillEvent;

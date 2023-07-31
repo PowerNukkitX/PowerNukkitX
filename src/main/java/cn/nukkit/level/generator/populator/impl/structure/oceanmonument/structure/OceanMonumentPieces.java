@@ -4,8 +4,8 @@ import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockPrismarine;
-import cn.nukkit.block.BlockSponge;
+import cn.nukkit.block.impl.BlockPrismarine;
+import cn.nukkit.block.impl.BlockSponge;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.format.generic.BaseFullChunk;
@@ -33,7 +33,7 @@ public class OceanMonumentPieces {
     private static final BlockState DARK_PRISMARINE = new BlockState(Block.PRISMARINE, BlockPrismarine.DARK);
     private static final BlockState SEA_LANTERN = new BlockState(Block.SEA_LANTERN);
     private static final BlockState WATER = new BlockState(Block.STILL_WATER);
-    private static final BlockState FLOWING_WATER = new BlockState(Block.WATER);
+    private static final BlockState FLOWING_WATER = new BlockState(Block.FLOWING_WATER);
     private static final BlockState WET_SPONGE = new BlockState(Block.SPONGE, BlockSponge.WET);
     private static final BlockState GOLD_BLOCK = new BlockState(Block.GOLD_BLOCK);
     private static final BlockState ICE = new BlockState(Block.ICE);
@@ -134,7 +134,7 @@ public class OceanMonumentPieces {
                         BlockState block = this.getBlock(level, x, y, z, boundingBox);
                         if (!FILL_KEEP.contains(block)) {
                             if (this.getWorldY(y) >= 63
-                                    && block.getId() != Block.WATER
+                                    && block.getId() != Block.FLOWING_WATER
                                     && block.getId() != Block.STILL_WATER) { // != FILL_BLOCK
                                 this.placeBlock(level, BlockState.AIR, x, y, z, boundingBox);
                             } else {
@@ -179,7 +179,8 @@ public class OceanMonumentPieces {
                 for (int x = x0; x <= x1; ++x) {
                     for (int z = z0; z <= z1; ++z) {
                         BlockState current = this.getBlock(level, x, y, z, boundingBox);
-                        if (current.getId() == Block.WATER || current.getId() == Block.STILL_WATER) { // == FILL_BLOCK
+                        if (current.getId() == Block.FLOWING_WATER
+                                || current.getId() == Block.STILL_WATER) { // == FILL_BLOCK
                             this.placeBlock(level, block, x, y, z, boundingBox);
                         }
                     }

@@ -1,10 +1,10 @@
 package cn.powernukkitx.tools;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockWood2;
-import cn.nukkit.blockproperty.ArrayBlockProperty;
-import cn.nukkit.blockproperty.CommonBlockProperties;
-import cn.nukkit.blockproperty.value.WoodType;
+import cn.nukkit.block.impl.BlockWood2;
+import cn.nukkit.block.property.ArrayBlockProperty;
+import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.property.value.WoodType;
 import cn.nukkit.dispenser.DispenseBehaviorRegister;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.item.Item;

@@ -1,6 +1,6 @@
 package cn.nukkit.level.biome.impl.forest;
 
-import cn.nukkit.block.BlockSapling;
+import cn.nukkit.block.impl.BlockSapling;
 import cn.nukkit.level.biome.type.GrassyBiome;
 import cn.nukkit.level.generator.populator.impl.PopulatorTree;
 

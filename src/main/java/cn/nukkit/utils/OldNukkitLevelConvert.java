@@ -1,7 +1,7 @@
 package cn.nukkit.utils;
 
 import cn.nukkit.Server;
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.block.state.BlockState;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.anvil.Anvil;
 import cn.nukkit.level.format.generic.BaseRegionLoader;

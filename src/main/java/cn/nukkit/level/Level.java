@@ -5,12 +5,17 @@ import static cn.nukkit.utils.Utils.dynamic;
 import cn.nukkit.Server;
 import cn.nukkit.api.*;
 import cn.nukkit.block.*;
+import cn.nukkit.block.BlockLiquid;
+import cn.nukkit.block.BlockPistonBase;
+import cn.nukkit.block.BlockRedstoneDiode;
+import cn.nukkit.block.BlockSlab;
 import cn.nukkit.block.customblock.CustomBlock;
+import cn.nukkit.block.impl.*;
+import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.state.BlockState;
+import cn.nukkit.block.state.BlockStateRegistry;
+import cn.nukkit.block.state.exception.InvalidBlockStateException;
 import cn.nukkit.blockentity.BlockEntity;
-import cn.nukkit.blockproperty.CommonBlockProperties;
-import cn.nukkit.blockstate.BlockState;
-import cn.nukkit.blockstate.BlockStateRegistry;
-import cn.nukkit.blockstate.exception.InvalidBlockStateException;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityAsyncPrepare;
 import cn.nukkit.entity.item.EntityFirework;
@@ -4568,8 +4573,8 @@ public class Level implements ChunkManager, Metadatable {
                     && (blockUpper.getId() == BlockID.AIR || block.canPassThrough());
         else
             return (!blockUnder.canPassThrough()
-                            || blockUnder.getId() == BlockID.WATER
-                            || blockUnder.getId() == BlockID.WATER_LILY
+                            || blockUnder.getId() == BlockID.FLOWING_WATER
+                            || blockUnder.getId() == BlockID.WATERLILY
                             || blockUnder.getId() == BlockID.STILL_WATER)
                     && (block.getId() == BlockID.AIR || block.canPassThrough())
                     && (blockUpper.getId() == BlockID.AIR || block.canPassThrough());

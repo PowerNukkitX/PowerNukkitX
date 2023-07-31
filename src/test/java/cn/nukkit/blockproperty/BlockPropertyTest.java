@@ -1,9 +1,10 @@
 package cn.nukkit.blockproperty;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
+import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
 import static org.junit.jupiter.api.Assertions.*;
 
-import cn.nukkit.blockproperty.exception.InvalidBlockPropertyMetaException;
+import cn.nukkit.block.property.BlockProperty;
+import cn.nukkit.block.property.exception.InvalidBlockPropertyMetaException;
 import cn.nukkit.math.BlockFace;
 import java.math.BigInteger;
 import org.junit.jupiter.api.Test;

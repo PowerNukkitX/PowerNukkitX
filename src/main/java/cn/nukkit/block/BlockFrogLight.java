@@ -2,8 +2,8 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
+import cn.nukkit.block.property.BlockProperties;
+import cn.nukkit.block.property.CommonBlockProperties;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")

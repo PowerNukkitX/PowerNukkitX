@@ -1,7 +1,7 @@
 package cn.nukkit.item;
 
 import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.block.BlockKelp;
+import cn.nukkit.block.impl.BlockKelp;
 
 @PowerNukkitOnly
 public class ItemKelp extends Item {
