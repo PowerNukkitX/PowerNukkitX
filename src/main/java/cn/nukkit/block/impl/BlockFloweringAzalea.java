@@ -1,7 +1,6 @@
 package cn.nukkit.block.impl;
 
 import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.block.impl.BlockAzalea;
 
 public class BlockFloweringAzalea extends BlockAzalea {
 

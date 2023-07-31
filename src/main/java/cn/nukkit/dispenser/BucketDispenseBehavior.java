@@ -2,11 +2,11 @@ package cn.nukkit.dispenser;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.*;
+import cn.nukkit.block.BlockLiquid;
 import cn.nukkit.block.impl.BlockDispenser;
 import cn.nukkit.block.impl.BlockLava;
 import cn.nukkit.block.impl.BlockPowderSnow;
 import cn.nukkit.block.impl.BlockWater;
-import cn.nukkit.block.BlockLiquid;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBucket;
 import cn.nukkit.item.MinecraftItemID;

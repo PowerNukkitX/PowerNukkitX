@@ -4,8 +4,8 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.DEPRECATED;
 import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
 import static org.junit.jupiter.api.Assertions.*;
 
-import cn.nukkit.block.impl.BlockHyphaeStrippedCrimson;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.block.impl.BlockHyphaeStrippedCrimson;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.blockstate.MutableBlockState;

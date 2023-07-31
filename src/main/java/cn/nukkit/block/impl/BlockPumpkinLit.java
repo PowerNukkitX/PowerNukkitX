@@ -1,6 +1,5 @@
 package cn.nukkit.block.impl;
 
-import cn.nukkit.block.impl.BlockPumpkin;
 import cn.nukkit.item.Item;
 import cn.nukkit.player.Player;
 import org.jetbrains.annotations.NotNull;

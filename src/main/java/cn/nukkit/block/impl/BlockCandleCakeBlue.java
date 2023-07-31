@@ -1,9 +1,5 @@
 package cn.nukkit.block.impl;
 
-import cn.nukkit.block.impl.BlockCandle;
-import cn.nukkit.block.impl.BlockCandleBlue;
-import cn.nukkit.block.impl.BlockCandleCake;
-
 public class BlockCandleCakeBlue extends BlockCandleCake {
     public BlockCandleCakeBlue(int meta) {
         super(meta);

@@ -1,10 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
-
 @SuppressWarnings("unused")
 public interface BlockID {
     int AIR = 0;
@@ -327,7 +322,6 @@ public interface BlockID {
 
     int STRUCTURE_BLOCK = 252;
 
-
     int PRISMARINE_STAIRS = 257;
 
     int DARK_PRISMARINE_STAIRS = 258;
@@ -422,7 +416,6 @@ public interface BlockID {
     int DOUBLE_STONE_SLAB3 = 422;
 
     int DOUBLE_STONE_SLAB4 = 423;
-
 
     int GRANITE_STAIRS = 424;
 

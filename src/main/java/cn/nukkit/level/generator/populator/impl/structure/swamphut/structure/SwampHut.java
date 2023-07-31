@@ -24,8 +24,7 @@ public class SwampHut extends ScatteredStructurePiece {
         this.adjustHorizPos(level);
 
         ScatteredStructureBuilder builder = new ScatteredStructureBuilder(level, this);
-        builder.fill(
-                new BlockVector3(1, 1, 2), new BlockVector3(5, 4, 7), Block.PLANKS, 1, Block.AIR, 0); // hut body
+        builder.fill(new BlockVector3(1, 1, 2), new BlockVector3(5, 4, 7), Block.PLANKS, 1, Block.AIR, 0); // hut body
         builder.fill(new BlockVector3(1, 1, 1), new BlockVector3(5, 1, 1), Block.PLANKS, 1); // hut steps
         builder.fill(new BlockVector3(2, 1, 0), new BlockVector3(4, 1, 0), Block.PLANKS, 1); // hut steps
         builder.fill(new BlockVector3(4, 2, 2), new BlockVector3(4, 3, 2), Block.AIR); // hut door

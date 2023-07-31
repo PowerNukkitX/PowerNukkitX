@@ -1,7 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.block.Block;
-
 /**
  * @author MagicDroidX (Nukkit Project)
  */

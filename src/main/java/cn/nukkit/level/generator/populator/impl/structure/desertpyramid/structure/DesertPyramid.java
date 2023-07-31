@@ -96,8 +96,7 @@ public class DesertPyramid extends ScatteredStructurePiece {
                     new BlockVector3(1 + (i << 4), 26, 0), new BlockVector3(3 + (i << 4), 26, 0), Block.SANDSTONE, 2);
             // side
             builder.fill(new BlockVector3(i * 20, 20, 1), new BlockVector3(i * 20, 21, 1), Block.SANDSTONE, 2);
-            builder.fill(
-                    new BlockVector3(i * 20, 20, 2), new BlockVector3(i * 20, 21, 2), Block.STAINED_TERRACOTTA, 1);
+            builder.fill(new BlockVector3(i * 20, 20, 2), new BlockVector3(i * 20, 21, 2), Block.STAINED_TERRACOTTA, 1);
             builder.fill(new BlockVector3(i * 20, 20, 3), new BlockVector3(i * 20, 21, 3), Block.SANDSTONE, 2);
             builder.setBlock(new BlockVector3(i * 20, 22, 1), Block.STAINED_TERRACOTTA, 1);
             builder.setBlock(new BlockVector3(i * 20, 22, 2), Block.SANDSTONE, 1);
@@ -108,8 +107,7 @@ public class DesertPyramid extends ScatteredStructurePiece {
             builder.setBlock(new BlockVector3(i * 20, 24, 1), Block.STAINED_TERRACOTTA, 1);
             builder.setBlock(new BlockVector3(i * 20, 24, 2), Block.SANDSTONE, 1);
             builder.setBlock(new BlockVector3(i * 20, 24, 3), Block.STAINED_TERRACOTTA, 1);
-            builder.fill(
-                    new BlockVector3(i * 20, 25, 1), new BlockVector3(i * 20, 25, 3), Block.STAINED_TERRACOTTA, 1);
+            builder.fill(new BlockVector3(i * 20, 25, 1), new BlockVector3(i * 20, 25, 3), Block.STAINED_TERRACOTTA, 1);
             builder.fill(new BlockVector3(i * 20, 26, 1), new BlockVector3(i * 20, 26, 3), Block.SANDSTONE, 2);
         }
         // front entrance

@@ -7,7 +7,6 @@ import cn.nukkit.api.*;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockEntityHolder;
 import cn.nukkit.block.BlockTransparentMeta;
-import cn.nukkit.block.impl.BlockComposter;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityHopper;
 import cn.nukkit.blockproperty.BlockProperties;

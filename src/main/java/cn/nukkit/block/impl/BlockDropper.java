@@ -2,7 +2,6 @@ package cn.nukkit.block.impl;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.block.impl.BlockDispenser;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityDropper;
 import cn.nukkit.dispenser.DispenseBehavior;

@@ -53,15 +53,12 @@ public class VillagePieces { // TODO: mossyStoneSelector (zombie village)
     private static final BlockState COBBLESTONE = new BlockState(Block.COBBLESTONE);
     private static final BlockState SANDSTONE = new BlockState(Block.SANDSTONE);
     private static final BlockState SMOOTH_SANDSTONE = new BlockState(Block.SANDSTONE, BlockSandstone.SMOOTH);
-    private static final BlockState COBBLESTONE_STAIRS__N =
-            new BlockState(Block.STONE_STAIRS, WeirdoDirection.NORTH);
+    private static final BlockState COBBLESTONE_STAIRS__N = new BlockState(Block.STONE_STAIRS, WeirdoDirection.NORTH);
     private static final BlockState OAK_STAIRS__N = new BlockState(Block.OAK_STAIRS, WeirdoDirection.NORTH);
     private static final BlockState OAK_STAIRS__S = new BlockState(Block.OAK_STAIRS, WeirdoDirection.SOUTH);
-    private static final BlockState COBBLESTONE_STAIRS__E =
-            new BlockState(Block.STONE_STAIRS, WeirdoDirection.EAST);
+    private static final BlockState COBBLESTONE_STAIRS__E = new BlockState(Block.STONE_STAIRS, WeirdoDirection.EAST);
     private static final BlockState OAK_STAIRS__E = new BlockState(Block.OAK_STAIRS, WeirdoDirection.EAST);
-    private static final BlockState COBBLESTONE_STAIRS__W =
-            new BlockState(Block.STONE_STAIRS, WeirdoDirection.WEST);
+    private static final BlockState COBBLESTONE_STAIRS__W = new BlockState(Block.STONE_STAIRS, WeirdoDirection.WEST);
     private static final BlockState OAK_STAIRS__W = new BlockState(Block.OAK_STAIRS, WeirdoDirection.WEST);
     private static final BlockState GRASS = new BlockState(Block.GRASS);
     private static final BlockState GRASS_PATH = new BlockState(Block.GRASS_PATH);

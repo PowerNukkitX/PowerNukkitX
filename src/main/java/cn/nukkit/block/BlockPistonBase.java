@@ -3,7 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.block.*;
 import cn.nukkit.block.impl.BlockPistonHead;
 import cn.nukkit.block.impl.BlockRedstoneTorch;
 import cn.nukkit.block.impl.BlockRedstoneTorchUnlit;

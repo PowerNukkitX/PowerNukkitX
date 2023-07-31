@@ -179,7 +179,8 @@ public class OceanMonumentPieces {
                 for (int x = x0; x <= x1; ++x) {
                     for (int z = z0; z <= z1; ++z) {
                         BlockState current = this.getBlock(level, x, y, z, boundingBox);
-                        if (current.getId() == Block.FLOWING_WATER || current.getId() == Block.STILL_WATER) { // == FILL_BLOCK
+                        if (current.getId() == Block.FLOWING_WATER
+                                || current.getId() == Block.STILL_WATER) { // == FILL_BLOCK
                             this.placeBlock(level, block, x, y, z, boundingBox);
                         }
                     }

@@ -5,7 +5,6 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.block.impl.BlockBanner;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.level.Level;

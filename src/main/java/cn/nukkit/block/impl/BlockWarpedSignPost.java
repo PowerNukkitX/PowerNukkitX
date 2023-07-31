@@ -2,7 +2,6 @@ package cn.nukkit.block.impl;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.block.impl.BlockSignPost;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemWarpedSign;
 
