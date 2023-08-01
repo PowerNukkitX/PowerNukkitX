@@ -40,7 +40,7 @@ assignees: ''
 
 * PowerNukkitX version: ✍
 * Debug link: ✍
-* Timings link (if relevant): ✍
+* Spark link (if relevant): ✍
 
 ### 💢 错误堆栈或崩溃日志
 
