@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 public class LevelSoundEventProcessor extends DataPacketProcessor<LevelSoundEventPacket> {
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull LevelSoundEventPacket pk) {
-        Player player = playerHandle.player;
+        Player player = playerHandle.getPlayer();
         if (!player.isSpectator()) {
             player.getLevel().addChunkPacket(player.getChunkX(), player.getChunkZ(), pk);
         }

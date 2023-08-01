@@ -3,13 +3,16 @@ package cn.nukkit.network.process.processor;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.TextPacket;
+import cn.nukkit.player.Player;
 import cn.nukkit.player.PlayerHandle;
 import org.jetbrains.annotations.NotNull;
 
 public class TextProcessor extends DataPacketProcessor<TextPacket> {
+
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull TextPacket pk) {
-        if (!playerHandle.player.isSpawned() || !playerHandle.player.isAlive()) {
+        Player player = playerHandle.getPlayer();
+        if (!player.isSpawned() || !player.isAlive()) {
             return;
         }
 
@@ -20,7 +23,7 @@ public class TextProcessor extends DataPacketProcessor<TextPacket> {
             if (breakLine != -1) {
                 chatMessage = chatMessage.substring(0, breakLine);
             }
-            playerHandle.player.chat(chatMessage);
+            player.chat(chatMessage);
         }
     }
 

@@ -16,7 +16,7 @@ public class PlayerSkinProcessor extends DataPacketProcessor<PlayerSkinPacket> {
 
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull PlayerSkinPacket pk) {
-        Player player = playerHandle.player;
+        Player player = playerHandle.getPlayer();
         Skin skin = pk.skin;
 
         if (!skin.isValid()) {

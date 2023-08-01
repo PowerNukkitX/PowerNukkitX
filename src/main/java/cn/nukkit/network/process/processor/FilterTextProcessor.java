@@ -12,9 +12,10 @@ import org.jetbrains.annotations.NotNull;
 
 @Log4j2
 public class FilterTextProcessor extends DataPacketProcessor<FilterTextPacket> {
+
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull FilterTextPacket pk) {
-        Player player = playerHandle.player;
+        Player player = playerHandle.getPlayer();
         if (pk.text == null || pk.text.length() > 64) {
             log.debug(playerHandle.getUsername() + ": FilterTextPacket with too long text");
             return;

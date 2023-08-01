@@ -11,9 +11,10 @@ import org.jetbrains.annotations.NotNull;
 import org.powernukkit.version.Version;
 
 public class ResourcePackChunkRequestProcessor extends DataPacketProcessor<ResourcePackChunkRequestPacket> {
+
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull ResourcePackChunkRequestPacket pk) {
-        Player player = playerHandle.player;
+        Player player = playerHandle.getPlayer();
         // TODO: Pack version check
         ResourcePack resourcePack = player.getServer().getResourcePackManager().getPackById(pk.getPackId());
         if (resourcePack == null) {

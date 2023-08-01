@@ -12,9 +12,10 @@ import cn.nukkit.player.PlayerHandle;
 import org.jetbrains.annotations.NotNull;
 
 public class MoveEntityAbsoluteProcessor extends DataPacketProcessor<MoveEntityAbsolutePacket> {
+
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull MoveEntityAbsolutePacket pk) {
-        Player player = playerHandle.player;
+        Player player = playerHandle.getPlayer();
         if (!player.isAlive() || !player.isSpawned() || player.getRiding() == null) {
             return;
         }

@@ -10,9 +10,10 @@ import cn.nukkit.player.PlayerHandle;
 import org.jetbrains.annotations.NotNull;
 
 public class ContainerCloseProcessor extends DataPacketProcessor<ContainerClosePacket> {
+
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull ContainerClosePacket pk) {
-        Player player = playerHandle.player;
+        Player player = playerHandle.getPlayer();
         if (!player.isSpawned() || pk.windowId == ContainerIds.INVENTORY && !playerHandle.getInventoryOpen()) {
             return;
         }

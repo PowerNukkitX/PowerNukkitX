@@ -8,9 +8,10 @@ import cn.nukkit.player.PlayerHandle;
 import org.jetbrains.annotations.NotNull;
 
 public class RespawnProcessor extends DataPacketProcessor<RespawnPacket> {
+
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull RespawnPacket pk) {
-        Player player = playerHandle.player;
+        Player player = playerHandle.getPlayer();
         if (player.isAlive()) {
             return;
         }

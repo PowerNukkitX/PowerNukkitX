@@ -52,7 +52,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
 
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull InventoryTransactionPacket pk) {
-        Player player = playerHandle.player;
+        Player player = playerHandle.getPlayer();
         if (player.isSpectator()) {
             player.sendAllInventories();
             return;

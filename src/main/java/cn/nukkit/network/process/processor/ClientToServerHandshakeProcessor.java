@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
  * @author LT_Name
  */
 public class ClientToServerHandshakeProcessor extends DataPacketProcessor<ClientToServerHandshakePacket> {
+
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull ClientToServerHandshakePacket pk) {
         if (Server.getInstance().enabledNetworkEncryption

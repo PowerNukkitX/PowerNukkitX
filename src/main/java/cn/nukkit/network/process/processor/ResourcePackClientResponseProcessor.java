@@ -12,9 +12,10 @@ import org.jetbrains.annotations.NotNull;
 import org.powernukkit.version.Version;
 
 public class ResourcePackClientResponseProcessor extends DataPacketProcessor<ResourcePackClientResponsePacket> {
+
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull ResourcePackClientResponsePacket pk) {
-        Player player = playerHandle.player;
+        Player player = playerHandle.getPlayer();
         switch (pk.responseStatus) {
             case ResourcePackClientResponsePacket.STATUS_REFUSED -> {
                 player.close("", "disconnectionScreen.noReason");

@@ -18,9 +18,10 @@ import org.jetbrains.annotations.NotNull;
 
 @Log4j2
 public class MapInfoRequestProcessor extends DataPacketProcessor<MapInfoRequestPacket> {
+
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull MapInfoRequestPacket pk) {
-        Player player = playerHandle.player;
+        Player player = playerHandle.getPlayer();
         Item mapItem = null;
         int index = 0;
         var offhand = false;

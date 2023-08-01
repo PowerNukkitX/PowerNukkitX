@@ -1,6 +1,5 @@
 package cn.nukkit.player;
 
-import cn.nukkit.api.*;
 import cn.nukkit.block.Block;
 import cn.nukkit.dialog.window.FormWindowDialog;
 import cn.nukkit.entity.Entity;
@@ -29,16 +28,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * A PlayerHandle is used to access a player's protected data.
  */
 @SuppressWarnings("ClassCanBeRecord")
-@Since("1.19.80-r2")
-@PowerNukkitXOnly
 public final class PlayerHandle {
-    public final @NotNull Player player;
+
+    @NotNull @Getter
+    private final Player player;
 
     public PlayerHandle(@NotNull Player player) {
         this.player = player;
@@ -60,7 +60,6 @@ public final class PlayerHandle {
         player.forceSendEmptyChunks();
     }
 
-    @Since("1.4.0.0-PN")
     public void removeWindow(Inventory inventory, boolean isResponse) {
         player.removeWindow(inventory, isResponse);
     }
@@ -69,7 +68,6 @@ public final class PlayerHandle {
         player.addDefaultWindows();
     }
 
-    @PowerNukkitOnly
     public void onBlock(Entity entity, EntityDamageEvent e, boolean animate) {
         player.onBlock(entity, e, animate);
     }
@@ -446,14 +444,10 @@ public final class PlayerHandle {
         player.getPlayerConnection().onCompleteLoginSequence();
     }
 
-    @Since("1.19.50-r3")
-    @PowerNukkitXOnly
     public void onPlayerLocallyInitialized() {
         player.getPlayerConnection().onPlayerLocallyInitialized();
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     public boolean isValidRespawnBlock(Block block) {
         return player.isValidRespawnBlock(block);
     }
@@ -530,24 +524,18 @@ public final class PlayerHandle {
         player.lastBlockAction = actionData;
     }
 
-    @PowerNukkitXDifference(
-            since = "1.19.60-r1",
-            info = "Auto-break custom blocks if client doesn't send the break data-pack.")
     public void onBlockBreakContinue(Vector3 pos, BlockFace face) {
         player.onBlockBreakContinue(pos, face);
     }
 
-    @PowerNukkitXDifference(since = "1.19.80-r3", info = "change to protected")
     public void onBlockBreakStart(Vector3 pos, BlockFace face) {
         player.onBlockBreakStart(pos, face);
     }
 
-    @PowerNukkitXDifference(since = "1.19.80-r3", info = "change to protected")
     public void onBlockBreakAbort(Vector3 pos, BlockFace face) {
         player.onBlockBreakAbort(pos, face);
     }
 
-    @PowerNukkitXDifference(since = "1.19.80-r3", info = "change to protected")
     public void onBlockBreakComplete(BlockVector3 blockPos, BlockFace face) {
         player.onBlockBreakComplete(blockPos, face);
     }

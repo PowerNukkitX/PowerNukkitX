@@ -18,9 +18,10 @@ import cn.nukkit.player.PlayerHandle;
 import org.jetbrains.annotations.NotNull;
 
 public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInputPacket> {
+
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull PlayerAuthInputPacket pk) {
-        Player player = playerHandle.player;
+        Player player = playerHandle.getPlayer();
         if (!player.isLocallyInitialized()) return;
         if (!pk.getBlockActionData().isEmpty()) {
             for (PlayerBlockActionData action : pk.getBlockActionData().values()) {
@@ -161,9 +162,9 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
         }
         Location clientLoc = Location.fromObject(clientPosition, player.getLevel(), yaw, pitch, headYaw);
         // Proper player.isPassenger() check may be needed
-        if (playerHandle.player.riding instanceof EntityMinecartAbstract entityMinecartAbstract) {
+        if (player.riding instanceof EntityMinecartAbstract entityMinecartAbstract) {
             entityMinecartAbstract.setCurrentSpeed(pk.getMotion().y());
-        } else if (playerHandle.player.riding instanceof EntityHorse entityHorse) {
+        } else if (player.riding instanceof EntityHorse entityHorse) {
             // 为了保证玩家和马位置同步，骑马时不使用移动队列处理
             var distance = clientLoc.distanceSquared(player);
             var updatePosition = (float) Math.sqrt(distance) > 0.1f;

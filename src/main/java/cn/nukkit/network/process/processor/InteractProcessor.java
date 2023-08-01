@@ -20,9 +20,10 @@ import org.jetbrains.annotations.NotNull;
 
 @Log4j2
 public class InteractProcessor extends DataPacketProcessor<InteractPacket> {
+
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull InteractPacket pk) {
-        Player player = playerHandle.player;
+        Player player = playerHandle.getPlayer();
         if (!player.isSpawned() || !player.isAlive()) {
             return;
         }

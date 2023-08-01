@@ -11,9 +11,10 @@ import cn.nukkit.player.PlayerHandle;
 import org.jetbrains.annotations.NotNull;
 
 public class MovePlayerProcessor extends DataPacketProcessor<MovePlayerPacket> {
+
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull MovePlayerPacket pk) {
-        Player player = playerHandle.player;
+        Player player = playerHandle.getPlayer();
         if (!player.isLocallyInitialized() || Server.getInstance().getServerAuthoritativeMovement() > 0) {
             return;
         }

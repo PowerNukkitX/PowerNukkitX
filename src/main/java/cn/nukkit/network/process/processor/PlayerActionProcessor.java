@@ -16,9 +16,10 @@ import cn.nukkit.player.PlayerHandle;
 import org.jetbrains.annotations.NotNull;
 
 public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacket> {
+
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull PlayerActionPacket pk) {
-        Player player = playerHandle.player;
+        Player player = playerHandle.getPlayer();
         if (!player.isSpawned()
                 || (!player.isAlive()
                         && pk.action != PlayerActionPacket.ACTION_RESPAWN

@@ -15,6 +15,7 @@ import cn.nukkit.network.protocol.LoginPacket;
 import cn.nukkit.network.protocol.PlayStatusPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.ServerToClientHandshakePacket;
+import cn.nukkit.player.Player;
 import cn.nukkit.player.PlayerHandle;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.scheduler.AsyncTask;
@@ -29,6 +30,7 @@ import java.util.regex.Pattern;
 import org.jetbrains.annotations.NotNull;
 
 public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
+
     /**
      * Regular expression for validating player name. Allows only: Number nicknames, letter nicknames, number and letters nicknames, nicknames with underscores, nicknames with space in the middle
      */
@@ -38,8 +40,9 @@ public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
 
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull LoginPacket pk) {
-        Server server = playerHandle.player.getServer();
-        if (playerHandle.player.isLoggedIn()) {
+        Player player = playerHandle.getPlayer();
+        Server server = player.getServer();
+        if (player.isLoggedIn()) {
             return;
         }
 
@@ -49,7 +52,7 @@ public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
                 && System.currentTimeMillis() - pk.issueUnixTime > 20000) {
             var message = "disconnectionScreen.noReason";
             playerHandle.sendPlayStatus(PlayStatusPacket.LOGIN_FAILED_SERVER, true);
-            playerHandle.player.close("", message, false);
+            player.close("", message, false);
             return;
         }
 
@@ -58,22 +61,20 @@ public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
         playerHandle.setDisplayName(playerHandle.getUsername());
 
         // set user name data flag
-        playerHandle.player.setDataProperty(
-                new StringEntityData(Entity.DATA_NAMETAG, playerHandle.getUsername()), false);
+        player.setDataProperty(new StringEntityData(Entity.DATA_NAMETAG, playerHandle.getUsername()), false);
 
         // set login chain data of player
         playerHandle.setLoginChainData(ClientChainData.read(pk));
 
         // verify the player if enable the xbox-auth
         if (!playerHandle.getLoginChainData().isXboxAuthed() && server.getPropertyBoolean("xbox-auth")) {
-            playerHandle.player.close("", "disconnectionScreen.notAuthenticated");
+            player.close("", "disconnectionScreen.notAuthenticated");
             return;
         }
 
         // Verify the number of server player
         if (server.getPlayerManager().getOnlinePlayers().size() >= server.getMaxPlayers()
-                && playerHandle.player.kick(
-                        PlayerKickEvent.Reason.SERVER_FULL, "disconnectionScreen.serverFull", false)) {
+                && player.kick(PlayerKickEvent.Reason.SERVER_FULL, "disconnectionScreen.serverFull", false)) {
             return;
         }
 
@@ -81,12 +82,12 @@ public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
         if (server.isWaterdogCapable() && playerHandle.getLoginChainData().getWaterdogIP() != null) {
             playerHandle.setSocketAddress(new InetSocketAddress(
                     playerHandle.getLoginChainData().getWaterdogIP(),
-                    playerHandle.player.getPlayerConnection().getRawPort()));
+                    player.getPlayerConnection().getRawPort()));
         }
 
         playerHandle.setRandomClientId(pk.clientId);
-        playerHandle.player.setUniqueId(pk.clientUUID);
-        playerHandle.player.setRawUniqueId(Binary.writeUUID(playerHandle.player.getUniqueId()));
+        player.setUniqueId(pk.clientUUID);
+        player.setRawUniqueId(Binary.writeUUID(player.getUniqueId()));
 
         boolean valid = true;
         Matcher usernameMatcher = playerNamePattern.matcher(pk.username);
@@ -97,26 +98,26 @@ public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
         if (!valid
                 || Objects.equals(playerHandle.getUsername().toLowerCase(), "rcon")
                 || Objects.equals(playerHandle.getUsername().toLowerCase(), "console")) {
-            playerHandle.player.close("", "disconnectionScreen.invalidName");
+            player.close("", "disconnectionScreen.invalidName");
             return;
         }
 
         if (!pk.skin.isValid()) {
-            playerHandle.player.close("", "disconnectionScreen.invalidSkin");
+            player.close("", "disconnectionScreen.invalidSkin");
             return;
         } else {
             Skin skin = pk.skin;
             if (server.isForceSkinTrusted()) {
                 skin.setTrusted(true);
             }
-            playerHandle.player.setSkin(skin);
+            player.setSkin(skin);
         }
 
-        PlayerPreLoginEvent playerPreLoginEvent = new PlayerPreLoginEvent(playerHandle.player, "Plugin reason");
+        PlayerPreLoginEvent playerPreLoginEvent = new PlayerPreLoginEvent(player, "Plugin reason");
         playerPreLoginEvent.call();
 
         if (playerPreLoginEvent.isCancelled()) {
-            playerHandle.player.close("", playerPreLoginEvent.getKickMessage());
+            player.close("", playerPreLoginEvent.getKickMessage());
             return;
         }
         playerHandle.setVerified(true);
@@ -127,24 +128,24 @@ public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
             public void onRun() {
                 event = new PlayerAsyncPreLoginEvent(
                         playerHandle.getUsername(),
-                        playerHandle.player.getUniqueId(),
+                        player.getUniqueId(),
                         playerHandle.getLoginChainData(),
-                        playerHandle.player.getSkin(),
-                        playerHandle.player.getPlayerConnection().getRawAddress(),
-                        playerHandle.player.getPlayerConnection().getRawPort());
+                        player.getSkin(),
+                        player.getPlayerConnection().getRawAddress(),
+                        player.getPlayerConnection().getRawPort());
                 event.call();
             }
 
             @Override
             public void onCompletion(Server server) {
-                if (playerHandle.player.closed) {
+                if (player.closed) {
                     return;
                 }
 
                 if (event.getLoginResult() == PlayerAsyncPreLoginEvent.LoginResult.KICK) {
-                    playerHandle.player.close(event.getKickMessage(), event.getKickMessage());
+                    player.close(event.getKickMessage(), event.getKickMessage());
                 } else if (playerHandle.isShouldLogin()) {
-                    playerHandle.player.setSkin(event.getSkin());
+                    player.setSkin(event.getSkin());
                     playerHandle.onCompleteLoginSequence();
                     for (Consumer<Server> action : event.getScheduledActions()) {
                         action.accept(server);
@@ -155,32 +156,31 @@ public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
 
         server.getScheduler().scheduleAsyncTask(InternalPlugin.INSTANCE, playerHandle.getPreLoginEventTask());
         if (server.enabledNetworkEncryption && playerHandle.getLoginChainData().isXboxAuthed()) {
-            server.getScheduler()
-                    .scheduleAsyncTask(InternalPlugin.INSTANCE, new PrepareEncryptionTask(playerHandle.player) {
-                        @Override
-                        public void onCompletion(Server server) {
-                            if (!playerHandle.player.isConnected()) {
-                                return;
-                            }
-                            if (this.getHandshakeJwt() == null
-                                    || this.getEncryptionKey() == null
-                                    || this.getEncryptionCipher() == null
-                                    || this.getDecryptionCipher() == null) {
-                                playerHandle.player.close("", "Network Encryption error");
-                                return;
-                            }
-                            ServerToClientHandshakePacket pk = new ServerToClientHandshakePacket();
-                            pk.setJwt(this.getHandshakeJwt());
-                            playerHandle.player.sendPacketImmediately(pk, () -> {
-                                playerHandle
-                                        .getNetworkSession()
-                                        .setEncryption(
-                                                this.getEncryptionKey(),
-                                                this.getEncryptionCipher(),
-                                                this.getDecryptionCipher());
-                            });
-                        }
+            server.getScheduler().scheduleAsyncTask(InternalPlugin.INSTANCE, new PrepareEncryptionTask(player) {
+                @Override
+                public void onCompletion(Server server) {
+                    if (!player.isConnected()) {
+                        return;
+                    }
+                    if (this.getHandshakeJwt() == null
+                            || this.getEncryptionKey() == null
+                            || this.getEncryptionCipher() == null
+                            || this.getDecryptionCipher() == null) {
+                        player.close("", "Network Encryption error");
+                        return;
+                    }
+                    ServerToClientHandshakePacket pk = new ServerToClientHandshakePacket();
+                    pk.setJwt(this.getHandshakeJwt());
+                    player.sendPacketImmediately(pk, () -> {
+                        playerHandle
+                                .getNetworkSession()
+                                .setEncryption(
+                                        this.getEncryptionKey(),
+                                        this.getEncryptionCipher(),
+                                        this.getDecryptionCipher());
                     });
+                }
+            });
         } else {
             playerHandle.processLogin();
         }

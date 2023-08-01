@@ -14,9 +14,10 @@ import cn.nukkit.player.PlayerHandle;
 import org.jetbrains.annotations.NotNull;
 
 public class NPCRequestProcessor extends DataPacketProcessor<NPCRequestPacket> {
+
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull NPCRequestPacket pk) {
-        Player player = playerHandle.player;
+        Player player = playerHandle.getPlayer();
         // 若sceneName字段为空，则为玩家在编辑NPC，我们并不需要记录对话框，直接通过entityRuntimeId获取实体即可
         if (pk.getSceneName().isEmpty()
                 && player.getLevel().getEntity(pk.getRequestedEntityRuntimeId()) instanceof EntityNPCEntity npcEntity) {

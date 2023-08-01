@@ -11,9 +11,10 @@ import cn.nukkit.player.PlayerHandle;
 import org.jetbrains.annotations.NotNull;
 
 public class RequestNetworkSettingsProcessor extends DataPacketProcessor<RequestNetworkSettingsPacket> {
+
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull RequestNetworkSettingsPacket pk) {
-        var player = playerHandle.player;
+        var player = playerHandle.getPlayer();
         if (player.isLoggedIn()) {
             return;
         }

@@ -13,9 +13,10 @@ import org.jetbrains.annotations.NotNull;
 
 @Log4j2
 public class MobEquipmentProcessor extends DataPacketProcessor<MobEquipmentPacket> {
+
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull MobEquipmentPacket pk) {
-        Player player = playerHandle.player;
+        Player player = playerHandle.getPlayer();
         if (!player.isSpawned() || !player.isAlive()) {
             return;
         }

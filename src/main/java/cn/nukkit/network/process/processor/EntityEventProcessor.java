@@ -11,9 +11,10 @@ import cn.nukkit.player.PlayerHandle;
 import org.jetbrains.annotations.NotNull;
 
 public class EntityEventProcessor extends DataPacketProcessor<EntityEventPacket> {
+
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull EntityEventPacket pk) {
-        Player player = playerHandle.player;
+        Player player = playerHandle.getPlayer();
         if (!player.isSpawned() || !player.isAlive()) {
             return;
         }

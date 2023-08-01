@@ -14,9 +14,10 @@ import org.jetbrains.annotations.NotNull;
 
 @Log4j2
 public class BookEditProcessor extends DataPacketProcessor<BookEditPacket> {
+
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull BookEditPacket pk) {
-        Player player = playerHandle.player;
+        Player player = playerHandle.getPlayer();
         Item oldBook = player.getInventory().getItem(pk.inventorySlot);
         if (oldBook.getId() != Item.BOOK_AND_QUILL) {
             return;

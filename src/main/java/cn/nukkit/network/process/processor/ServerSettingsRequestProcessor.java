@@ -5,15 +5,18 @@ import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.ServerSettingsRequestPacket;
 import cn.nukkit.network.protocol.ServerSettingsResponsePacket;
+import cn.nukkit.player.Player;
 import cn.nukkit.player.PlayerHandle;
 import java.util.HashMap;
 import org.jetbrains.annotations.NotNull;
 
 public class ServerSettingsRequestProcessor extends DataPacketProcessor<ServerSettingsRequestPacket> {
+
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull ServerSettingsRequestPacket pk) {
-        PlayerServerSettingsRequestEvent settingsRequestEvent = new PlayerServerSettingsRequestEvent(
-                playerHandle.player, new HashMap<>(playerHandle.getServerSettings()));
+        Player player = playerHandle.getPlayer();
+        PlayerServerSettingsRequestEvent settingsRequestEvent =
+                new PlayerServerSettingsRequestEvent(player, new HashMap<>(playerHandle.getServerSettings()));
         settingsRequestEvent.call();
 
         if (!settingsRequestEvent.isCancelled()) {
@@ -21,7 +24,7 @@ public class ServerSettingsRequestProcessor extends DataPacketProcessor<ServerSe
                 ServerSettingsResponsePacket re = new ServerSettingsResponsePacket();
                 re.formId = id;
                 re.data = window.getJSONData();
-                playerHandle.player.sendPacket(re);
+                player.sendPacket(re);
             });
         }
     }

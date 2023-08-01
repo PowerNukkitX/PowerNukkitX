@@ -11,15 +11,18 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.CommandBlockUpdatePacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
+import cn.nukkit.player.Player;
 import cn.nukkit.player.PlayerHandle;
 import org.jetbrains.annotations.NotNull;
 
 public class CommandBlockUpdateProcessor extends DataPacketProcessor<CommandBlockUpdatePacket> {
+
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull CommandBlockUpdatePacket pk) {
-        if (playerHandle.player.isOp() && playerHandle.player.isCreative()) {
+        Player player = playerHandle.getPlayer();
+        if (player.isOp() && player.isCreative()) {
             if (pk.isBlock) {
-                BlockEntity blockEntity = playerHandle.player.getLevel().getBlockEntity(new Vector3(pk.x, pk.y, pk.z));
+                BlockEntity blockEntity = player.getLevel().getBlockEntity(new Vector3(pk.x, pk.y, pk.z));
                 if (blockEntity instanceof BlockEntityCommandBlock commandBlock) {
                     Block cmdBlock = commandBlock.getLevelBlock();
 
@@ -63,7 +66,7 @@ public class CommandBlockUpdateProcessor extends DataPacketProcessor<CommandBloc
                     commandBlock
                             .getLevelBlockAround()
                             .forEach(b -> b.onUpdate(Level.BLOCK_UPDATE_REDSTONE)); // update redstone
-                    playerHandle.player.getLevel().setBlock(commandBlock, cmdBlock, true);
+                    player.getLevel().setBlock(commandBlock, cmdBlock, true);
                 }
             }
         }

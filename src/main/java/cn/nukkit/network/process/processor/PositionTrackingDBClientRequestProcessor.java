@@ -14,9 +14,10 @@ import org.jetbrains.annotations.NotNull;
 @Log4j2
 public class PositionTrackingDBClientRequestProcessor
         extends DataPacketProcessor<PositionTrackingDBClientRequestPacket> {
+
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull PositionTrackingDBClientRequestPacket pk) {
-        Player player = playerHandle.player;
+        Player player = playerHandle.getPlayer();
         try {
             PositionTracking positionTracking =
                     player.getServer().getPositionTrackingService().startTracking(player, pk.getTrackingId(), true);
