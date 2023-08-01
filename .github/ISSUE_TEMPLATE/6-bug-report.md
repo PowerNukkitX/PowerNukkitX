@@ -42,7 +42,7 @@ assignees: ''
 
 * PowerNukkit version: ✍
 * Debug link: ✍
-* Timings link (if relevant): ✍
+* Spark link (if relevant): ✍
 
 ### 💢 Crash Dump, Stack Trace and Other Files
 
