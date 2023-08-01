@@ -137,7 +137,7 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
                 });
 
                 var form = new FormWindowSimple("§f" + getOriginalName(), strBuilder.toString());
-                player.showFormWindow(form);
+                player.sendForm(form);
                 return true;
             } else return super.onInteract(player, item, clickedPos);
         }

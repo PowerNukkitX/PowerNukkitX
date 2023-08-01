@@ -18,7 +18,7 @@ public class BlockEntityDataProcessor extends DataPacketProcessor<BlockEntityDat
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull BlockEntityDataPacket pk) {
         Player player = playerHandle.player;
-        if (!player.spawned || !player.isAlive()) {
+        if (!player.isSpawned() || !player.isAlive()) {
             return;
         }
 

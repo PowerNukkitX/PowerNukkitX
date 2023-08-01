@@ -19,7 +19,7 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull PlayerActionPacket pk) {
         Player player = playerHandle.player;
-        if (!player.spawned
+        if (!player.isSpawned()
                 || (!player.isAlive()
                         && pk.action != PlayerActionPacket.ACTION_RESPAWN
                         && pk.action != PlayerActionPacket.ACTION_DIMENSION_CHANGE_ACK)) {
@@ -46,7 +46,7 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                 player.stopSleep();
                 break;
             case PlayerActionPacket.ACTION_RESPAWN:
-                if (!player.spawned || player.isAlive() || !player.isOnline()) {
+                if (!player.isSpawned() || player.isAlive() || !player.isOnline()) {
                     break;
                 }
 

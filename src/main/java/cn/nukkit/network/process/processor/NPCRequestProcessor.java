@@ -56,7 +56,7 @@ public class NPCRequestProcessor extends DataPacketProcessor<NPCRequestPacket> {
                 closeWindowPacket.setRuntimeEntityId(pk.getRequestedEntityRuntimeId());
                 closeWindowPacket.setSceneName(response.getSceneName());
                 closeWindowPacket.setAction(NPCDialoguePacket.NPCDialogAction.CLOSE);
-                player.dataPacket(closeWindowPacket);
+                player.sendPacket(closeWindowPacket);
             }
             if (response.getClickedButton() != null
                     && response.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_ACTION

@@ -36,7 +36,7 @@ public class FakeHumanOffhandInventory extends BaseInventory {
         MobEquipmentPacket pk = this.createMobEquipmentPacket(item);
 
         for (Player player : players) {
-            player.dataPacket(pk);
+            player.sendPacket(pk);
         }
     }
 
@@ -46,7 +46,7 @@ public class FakeHumanOffhandInventory extends BaseInventory {
         MobEquipmentPacket pk = this.createMobEquipmentPacket(item);
 
         for (Player player : players) {
-            player.dataPacket(pk);
+            player.sendPacket(pk);
         }
     }
 

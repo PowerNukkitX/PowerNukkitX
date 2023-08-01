@@ -669,7 +669,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
             }
             case InventoryTransactionPacket.USE_ITEM_ACTION_BREAK_BLOCK -> {
                 // Creative mode use PlayerActionPacket.ACTION_CREATIVE_PLAYER_DESTROY_BLOCK
-                if (!player.spawned || !player.isAlive() || player.isCreative()) {
+                if (!player.isSpawned() || !player.isAlive() || player.isCreative()) {
                     return;
                 }
                 player.resetCraftingGridType();

@@ -68,20 +68,20 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
             InetSocketAddress address = session.getRakNetSession().getAddress();
 
             try {
-                PlayerCreationEvent event = new PlayerCreationEvent(this, Player.class, Player.class, null, address);
+                PlayerCreationEvent event = new PlayerCreationEvent(this, Player.class, Player.class, address);
                 event.call();
 
-                this.sessions.put(event.getSocketAddress(), session);
+                sessions.put(event.getSocketAddress(), session);
 
-                Constructor<? extends Player> constructor = event.getPlayerClass()
-                        .getConstructor(SourceInterface.class, Long.class, InetSocketAddress.class);
-                Player player = constructor.newInstance(this, event.getClientId(), event.getSocketAddress());
-                this.server.playerManager.addPlayer(address, player);
+                Constructor<? extends Player> constructor =
+                        event.getPlayerClass().getConstructor(SourceInterface.class, InetSocketAddress.class);
+                Player player = constructor.newInstance(this, event.getSocketAddress());
+                server.getPlayerManager().addPlayer(address, player);
                 session.setPlayer(player);
             } catch (Exception e) {
                 Server.getInstance().getLogger().error("Failed to create player", e);
                 session.disconnect("Internal error");
-                this.sessions.remove(address);
+                sessions.remove(address);
             }
         }
 
@@ -101,7 +101,8 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
 
     @Override
     public int getNetworkLatency(Player player) {
-        RakNetServerSession session = this.raknet.getSession(player.getRawSocketAddress());
+        RakNetServerSession session =
+                this.raknet.getSession(player.getPlayerConnection().getRawSocketAddress());
         return session == null ? -1 : (int) session.getPing();
     }
 
@@ -117,7 +118,8 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
 
     @Override
     public void close(Player player, String reason) {
-        NetworkPlayerSession playerSession = this.getSession(player.getRawSocketAddress());
+        NetworkPlayerSession playerSession =
+                this.getSession(player.getPlayerConnection().getRawSocketAddress());
         if (playerSession != null) {
             playerSession.disconnect(reason);
         }
@@ -188,7 +190,8 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
 
     @Override
     public Integer putPacket(Player player, DataPacket packet, boolean needACK, boolean immediate) {
-        RakNetPlayerSession session = this.sessions.get(player.getRawSocketAddress());
+        RakNetPlayerSession session =
+                this.sessions.get(player.getPlayerConnection().getRawSocketAddress());
 
         if (session != null) {
             if (!immediate) {
@@ -239,7 +242,8 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
     @Since("1.5.2.0-PN")
     @Override
     public Integer putResourcePacket(Player player, DataPacket packet) {
-        RakNetPlayerSession session = this.sessions.get(player.getRawSocketAddress());
+        RakNetPlayerSession session =
+                this.sessions.get(player.getPlayerConnection().getRawSocketAddress());
         if (session != null) {
             packet.tryEncode();
             session.sendResourcePacket(packet.clone());

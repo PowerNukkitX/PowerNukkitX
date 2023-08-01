@@ -29,7 +29,7 @@ public class PositionTrackingDBClientRequestProcessor
         PositionTrackingDBServerBroadcastPacket notFound = new PositionTrackingDBServerBroadcastPacket();
         notFound.setAction(PositionTrackingDBServerBroadcastPacket.Action.NOT_FOUND);
         notFound.setTrackingId(pk.getTrackingId());
-        player.dataPacket(notFound);
+        player.sendPacket(notFound);
     }
 
     @Override

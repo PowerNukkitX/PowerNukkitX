@@ -162,7 +162,7 @@ public class PlayerInventory extends BaseInventory {
                 this.sendSlot(this.getHeldItemIndex(), player);
             }
 
-            player.dataPacket(pk);
+            player.sendPacket(pk);
         }
     }
 
@@ -173,7 +173,7 @@ public class PlayerInventory extends BaseInventory {
     @Override
     public void onSlotChange(int index, Item before, boolean send) {
         EntityHuman holder = this.getHolder();
-        if (holder instanceof Player && !((Player) holder).spawned) {
+        if (holder instanceof Player && !((Player) holder).isSpawned()) {
             return;
         }
 
@@ -361,9 +361,9 @@ public class PlayerInventory extends BaseInventory {
                 InventoryContentPacket pk2 = new InventoryContentPacket();
                 pk2.inventoryId = InventoryContentPacket.SPECIAL_ARMOR;
                 pk2.slots = armor;
-                player.dataPacket(pk2);
+                player.sendPacket(pk2);
             } else {
-                player.dataPacket(pk);
+                player.sendPacket(pk);
             }
         }
     }
@@ -410,9 +410,9 @@ public class PlayerInventory extends BaseInventory {
                 pk2.inventoryId = InventoryContentPacket.SPECIAL_ARMOR;
                 pk2.slot = index - this.getSize();
                 pk2.item = this.getItem(index);
-                player.dataPacket(pk2);
+                player.sendPacket(pk2);
             } else {
-                player.dataPacket(pk);
+                player.sendPacket(pk);
             }
         }
     }
@@ -448,12 +448,12 @@ public class PlayerInventory extends BaseInventory {
 
         for (Player player : players) {
             int id = player.getWindowId(this);
-            if (id == -1 || !player.spawned) {
+            if (id == -1 || !player.isSpawned()) {
                 if (this.getHolder() != player) this.close(player);
                 continue;
             }
             pk.inventoryId = id;
-            player.dataPacket(pk.clone());
+            player.sendPacket(pk.clone());
         }
     }
 
@@ -476,7 +476,7 @@ public class PlayerInventory extends BaseInventory {
         for (Player player : players) {
             if (player.equals(this.getHolder())) {
                 pk.inventoryId = ContainerIds.INVENTORY;
-                player.dataPacket(pk);
+                player.sendPacket(pk);
             } else {
                 int id = player.getWindowId(this);
                 if (id == -1) {
@@ -484,7 +484,7 @@ public class PlayerInventory extends BaseInventory {
                     continue;
                 }
                 pk.inventoryId = id;
-                player.dataPacket(pk.clone());
+                player.sendPacket(pk.clone());
             }
         }
     }
@@ -499,7 +499,7 @@ public class PlayerInventory extends BaseInventory {
 
         pk.entries = Item.getCreativeItems().toArray(Item.EMPTY_ARRAY);
 
-        p.dataPacket(pk);
+        p.sendPacket(pk);
     }
 
     // 由于NK从PlayerInventory中分离了盔甲栏，并且getSize值修改为36，但实际上slots最大容量为40，按照逻辑应该将solts size也减4
@@ -530,7 +530,7 @@ public class PlayerInventory extends BaseInventory {
     @Override
     public void onOpen(Player who) {
         super.onOpen(who);
-        if (who.spawned) {
+        if (who.isSpawned()) {
             ContainerOpenPacket pk = new ContainerOpenPacket();
             pk.windowId = who.getWindowId(this);
             pk.type = this.getType().getNetworkType();
@@ -538,7 +538,7 @@ public class PlayerInventory extends BaseInventory {
             pk.y = who.getFloorY();
             pk.z = who.getFloorZ();
             pk.entityId = who.getId();
-            who.dataPacket(pk);
+            who.sendPacket(pk);
         }
     }
 
@@ -547,7 +547,7 @@ public class PlayerInventory extends BaseInventory {
         ContainerClosePacket pk = new ContainerClosePacket();
         pk.windowId = who.getWindowId(this);
         pk.wasServerInitiated = who.getClosingWindowId() != pk.windowId;
-        who.dataPacket(pk);
+        who.sendPacket(pk);
         // player can never stop viewing their own inventory
         if (who != holder) {
             super.onClose(who);

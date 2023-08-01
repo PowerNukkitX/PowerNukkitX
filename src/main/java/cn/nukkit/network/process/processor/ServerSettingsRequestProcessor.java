@@ -21,7 +21,7 @@ public class ServerSettingsRequestProcessor extends DataPacketProcessor<ServerSe
                 ServerSettingsResponsePacket re = new ServerSettingsResponsePacket();
                 re.formId = id;
                 re.data = window.getJSONData();
-                playerHandle.player.dataPacket(re);
+                playerHandle.player.sendPacket(re);
             });
         }
     }

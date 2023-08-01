@@ -37,7 +37,7 @@ public class ResourcePackClientResponseProcessor extends DataPacketProcessor<Res
                             (int) Math.ceil(resourcePack.getPackSize() / (double) dataInfoPacket.maxChunkSize);
                     dataInfoPacket.compressedPackSize = resourcePack.getPackSize();
                     dataInfoPacket.sha256 = resourcePack.getSha256();
-                    player.dataResourcePacket(dataInfoPacket);
+                    player.sendResourcePacket(dataInfoPacket);
                 }
             }
             case ResourcePackClientResponsePacket.STATUS_HAVE_ALL_PACKS -> {
@@ -55,7 +55,7 @@ public class ResourcePackClientResponseProcessor extends DataPacketProcessor<Res
                             new ResourcePackStackPacket.ExperimentData("experimental_molang_features", true));
                     stackPacket.experiments.add(new ResourcePackStackPacket.ExperimentData("cameras", true));
                 }
-                player.dataResourcePacket(stackPacket);
+                player.sendResourcePacket(stackPacket);
             }
             case ResourcePackClientResponsePacket.STATUS_COMPLETED -> {
                 playerHandle.setShouldLogin(true);

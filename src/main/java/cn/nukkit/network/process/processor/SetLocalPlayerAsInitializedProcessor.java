@@ -10,10 +10,10 @@ import org.jetbrains.annotations.NotNull;
 public class SetLocalPlayerAsInitializedProcessor extends DataPacketProcessor<SetLocalPlayerAsInitializedPacket> {
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull SetLocalPlayerAsInitializedPacket pk) {
-        if (playerHandle.player.locallyInitialized) {
+        if (playerHandle.player.isLocallyInitialized()) {
             return;
         }
-        playerHandle.player.locallyInitialized = true;
+        playerHandle.player.getPlayerConnection().setLocallyInitialized(true);
         playerHandle.onPlayerLocallyInitialized();
         PlayerLocallyInitializedEvent locallyInitializedEvent = new PlayerLocallyInitializedEvent(playerHandle.player);
         locallyInitializedEvent.call();

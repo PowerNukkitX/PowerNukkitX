@@ -25,7 +25,7 @@ public interface EntityOwnable extends EntityComponent {
         else {
             var ownerName = getOwnerName();
             if (ownerName == null) return null;
-            owner = asEntity().getServer().playerManager.getPlayerExact(ownerName);
+            owner = asEntity().getServer().getPlayerManager().getPlayerExact(ownerName);
         }
         return owner;
     }

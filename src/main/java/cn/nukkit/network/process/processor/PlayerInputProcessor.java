@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 public class PlayerInputProcessor extends DataPacketProcessor<PlayerInputPacket> {
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull PlayerInputPacket pk) {
-        if (!playerHandle.player.isAlive() || !playerHandle.player.spawned) {
+        if (!playerHandle.player.isAlive() || !playerHandle.player.isSpawned()) {
             return;
         }
         if (playerHandle.player.riding instanceof EntityMinecartAbstract entityMinecartAbstract) {

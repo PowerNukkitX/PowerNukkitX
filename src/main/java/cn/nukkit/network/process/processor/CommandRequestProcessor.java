@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 public class CommandRequestProcessor extends DataPacketProcessor<CommandRequestPacket> {
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull CommandRequestPacket pk) {
-        if (!playerHandle.player.spawned || !playerHandle.player.isAlive()) {
+        if (!playerHandle.player.isSpawned() || !playerHandle.player.isAlive()) {
             return;
         }
         // ?? why set craftType

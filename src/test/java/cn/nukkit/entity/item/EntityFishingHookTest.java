@@ -115,7 +115,7 @@ class EntityFishingHookTest {
     void spawnPacket() {
         player.usedChunks.put(Level.chunkHash(0, 0), true);
         fishingHook.spawnTo(player);
-        verify(player).dataPacket(any(AddEntityPacket.class));
+        verify(player).sendPacket(any(AddEntityPacket.class));
     }
 
     @Test

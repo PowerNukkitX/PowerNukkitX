@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 public class TextProcessor extends DataPacketProcessor<TextPacket> {
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull TextPacket pk) {
-        if (!playerHandle.player.spawned || !playerHandle.player.isAlive()) {
+        if (!playerHandle.player.isSpawned() || !playerHandle.player.isAlive()) {
             return;
         }
 

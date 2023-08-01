@@ -33,7 +33,7 @@ public class FilterTextProcessor extends DataPacketProcessor<FilterTextPacket> {
 
         textResponsePacket.text = pk.text;
         textResponsePacket.fromServer = true;
-        player.dataPacket(textResponsePacket);
+        player.sendPacket(textResponsePacket);
     }
 
     @Override

@@ -111,7 +111,7 @@ public class PositionTrackingService implements Closeable {
             packet.setDimension(player.getLevel().getDimension());
             packet.setTrackingId(trackingHandler);
             packet.setStatus(0);
-            player.dataPacket(packet);
+            player.sendPacket(packet);
         } else {
             sendTrackingDestroy(player, trackingHandler);
         }
@@ -119,7 +119,7 @@ public class PositionTrackingService implements Closeable {
 
     private void sendTrackingDestroy(Player player, int trackingHandler) {
         PositionTrackingDBServerBroadcastPacket packet = destroyPacket(trackingHandler);
-        player.dataPacket(packet);
+        player.sendPacket(packet);
     }
 
     @PowerNukkitOnly
@@ -194,7 +194,7 @@ public class PositionTrackingService implements Closeable {
                 if (entry.getValue().isEmpty()) {
                     tracking.remove(entry.getKey());
                 }
-                player.dataPacket(destroyPacket(trackingHandler));
+                player.sendPacket(destroyPacket(trackingHandler));
                 return true;
             }
         }
@@ -249,7 +249,7 @@ public class PositionTrackingService implements Closeable {
 
         toRemove.forEach((player, list) -> list.forEach((IntConsumer) handler -> stopTracking(player, handler)));
 
-        Server.getInstance().playerManager.getOnlinePlayers().values().forEach(this::detectNeededUpdates);
+        Server.getInstance().getPlayerManager().getOnlinePlayers().values().forEach(this::detectNeededUpdates);
     }
 
     private Iterable<Inventory> inventories(Player player) {
@@ -480,7 +480,7 @@ public class PositionTrackingService implements Closeable {
 
     private void handlerEnabled(int trackingHandler) throws IOException {
         Server server = Server.getInstance();
-        for (Player player : server.playerManager.getOnlinePlayers().values()) {
+        for (Player player : server.getPlayerManager().getOnlinePlayers().values()) {
             if (hasTrackingDevice(player, trackingHandler) && !isTracking(player, trackingHandler, false)) {
                 startTracking(player, trackingHandler, false);
             }

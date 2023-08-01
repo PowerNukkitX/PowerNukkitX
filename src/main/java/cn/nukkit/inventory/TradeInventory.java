@@ -56,7 +56,7 @@ public class TradeInventory extends BaseInventory {
         pk1.offers = new CompoundTag().putList(villager.getRecipes()).putList(tierExpRequirements);
         pk1.newTradingUi = true;
         pk1.usingEconomyTrade = true;
-        who.dataPacket(pk1);
+        who.sendPacket(pk1);
     }
 
     @Override

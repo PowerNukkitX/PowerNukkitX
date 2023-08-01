@@ -13,7 +13,7 @@ public class TickSyncProcessor extends DataPacketProcessor<TickSyncPacket> {
         tickSyncPacketToClient.setRequestTimestamp(pk.getRequestTimestamp());
         tickSyncPacketToClient.setResponseTimestamp(
                 playerHandle.player.getServer().getTick());
-        playerHandle.player.dataPacketImmediately(tickSyncPacketToClient);
+        playerHandle.player.sendPacketImmediately(tickSyncPacketToClient);
     }
 
     @Override

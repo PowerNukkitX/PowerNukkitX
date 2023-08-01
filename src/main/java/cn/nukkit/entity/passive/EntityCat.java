@@ -264,7 +264,7 @@ public class EntityCat extends EntityAnimal
                     EntityEventPacket packet = new EntityEventPacket();
                     packet.eid = this.getId();
                     packet.event = EntityEventPacket.TAME_SUCCESS;
-                    player.dataPacket(packet);
+                    player.sendPacket(packet);
 
                     this.setMaxHealth(10);
                     this.setHealth(10);
@@ -279,7 +279,7 @@ public class EntityCat extends EntityAnimal
                     EntityEventPacket packet = new EntityEventPacket();
                     packet.eid = this.getId();
                     packet.event = EntityEventPacket.TAME_FAIL;
-                    player.dataPacket(packet);
+                    player.sendPacket(packet);
                 }
             } else {
                 player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());

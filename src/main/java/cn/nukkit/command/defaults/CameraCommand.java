@@ -302,7 +302,7 @@ public class CameraCommand extends VanillaCommand {
             }
         }
         for (Player player : players) {
-            player.dataPacket(pk);
+            player.sendPacket(pk);
         }
         log.addSuccess("commands.camera.success", playerNames).output();
         return 1;

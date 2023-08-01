@@ -430,7 +430,7 @@ public class EntityHorse extends EntityAnimal
     @Nullable public Entity getRider() {
         String name = getMemoryStorage().get(CoreMemoryTypes.RIDER_NAME);
         if (name != null) {
-            return Server.getInstance().playerManager.getPlayerExact(name);
+            return Server.getInstance().getPlayerManager().getPlayerExact(name);
         } else return null; // todo other entity
     }
 
@@ -498,7 +498,7 @@ public class EntityHorse extends EntityAnimal
         UpdateAttributesPacket pk = new UpdateAttributesPacket();
         pk.entries = new Attribute[] {attr};
         pk.entityId = this.id;
-        player.dataPacket(pk);
+        player.sendPacket(pk);
     }
 
     protected float generateRandomMaxHealth() {

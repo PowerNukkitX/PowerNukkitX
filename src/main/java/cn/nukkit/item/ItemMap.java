@@ -117,8 +117,8 @@ public class ItemMap extends Item {
         pk.offsetZ = 0;
         pk.image = image;
 
-        p.dataPacket(pk);
-        Server.getInstance().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> p.dataPacket(pk), 20);
+        p.sendPacket(pk);
+        Server.getInstance().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> p.sendPacket(pk), 20);
     }
 
     public boolean trySendImage(Player p) {

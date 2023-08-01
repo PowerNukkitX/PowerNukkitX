@@ -39,7 +39,7 @@ public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull LoginPacket pk) {
         Server server = playerHandle.player.getServer();
-        if (playerHandle.player.loggedIn) {
+        if (playerHandle.player.isLoggedIn()) {
             return;
         }
 
@@ -56,7 +56,6 @@ public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
         // set user name
         playerHandle.setUsername(TextFormat.clean(pk.username));
         playerHandle.setDisplayName(playerHandle.getUsername());
-        playerHandle.setIusername(playerHandle.getUsername().toLowerCase());
 
         // set user name data flag
         playerHandle.player.setDataProperty(
@@ -72,7 +71,7 @@ public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
         }
 
         // Verify the number of server player
-        if (server.playerManager.getOnlinePlayers().size() >= server.getMaxPlayers()
+        if (server.getPlayerManager().getOnlinePlayers().size() >= server.getMaxPlayers()
                 && playerHandle.player.kick(
                         PlayerKickEvent.Reason.SERVER_FULL, "disconnectionScreen.serverFull", false)) {
             return;
@@ -81,7 +80,8 @@ public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
         // set proxy ip
         if (server.isWaterdogCapable() && playerHandle.getLoginChainData().getWaterdogIP() != null) {
             playerHandle.setSocketAddress(new InetSocketAddress(
-                    playerHandle.getLoginChainData().getWaterdogIP(), playerHandle.player.getRawPort()));
+                    playerHandle.getLoginChainData().getWaterdogIP(),
+                    playerHandle.player.getPlayerConnection().getRawPort()));
         }
 
         playerHandle.setRandomClientId(pk.clientId);
@@ -95,8 +95,8 @@ public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
         }
 
         if (!valid
-                || Objects.equals(playerHandle.getIusername(), "rcon")
-                || Objects.equals(playerHandle.getIusername(), "console")) {
+                || Objects.equals(playerHandle.getUsername().toLowerCase(), "rcon")
+                || Objects.equals(playerHandle.getUsername().toLowerCase(), "console")) {
             playerHandle.player.close("", "disconnectionScreen.invalidName");
             return;
         }
@@ -130,8 +130,8 @@ public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
                         playerHandle.player.getUniqueId(),
                         playerHandle.getLoginChainData(),
                         playerHandle.player.getSkin(),
-                        playerHandle.player.getRawAddress(),
-                        playerHandle.player.getRawPort());
+                        playerHandle.player.getPlayerConnection().getRawAddress(),
+                        playerHandle.player.getPlayerConnection().getRawPort());
                 event.call();
             }
 
@@ -145,7 +145,7 @@ public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
                     playerHandle.player.close(event.getKickMessage(), event.getKickMessage());
                 } else if (playerHandle.isShouldLogin()) {
                     playerHandle.player.setSkin(event.getSkin());
-                    playerHandle.completeLoginSequence();
+                    playerHandle.onCompleteLoginSequence();
                     for (Consumer<Server> action : event.getScheduledActions()) {
                         action.accept(server);
                     }
@@ -171,7 +171,7 @@ public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
                             }
                             ServerToClientHandshakePacket pk = new ServerToClientHandshakePacket();
                             pk.setJwt(this.getHandshakeJwt());
-                            playerHandle.player.forceDataPacket(pk, () -> {
+                            playerHandle.player.sendPacketImmediately(pk, () -> {
                                 playerHandle
                                         .getNetworkSession()
                                         .setEncryption(

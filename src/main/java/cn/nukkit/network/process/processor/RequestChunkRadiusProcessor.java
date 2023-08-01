@@ -13,7 +13,7 @@ public class RequestChunkRadiusProcessor extends DataPacketProcessor<RequestChun
         ChunkRadiusUpdatedPacket chunkRadiusUpdatePacket = new ChunkRadiusUpdatedPacket();
         playerHandle.setChunkRadius(Math.max(3, Math.min(pk.radius, playerHandle.player.getViewDistance())));
         chunkRadiusUpdatePacket.radius = playerHandle.getChunkRadius();
-        playerHandle.player.dataPacket(chunkRadiusUpdatePacket);
+        playerHandle.player.sendPacket(chunkRadiusUpdatePacket);
     }
 
     @Override

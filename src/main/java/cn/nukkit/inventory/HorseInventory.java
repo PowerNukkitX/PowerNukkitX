@@ -106,13 +106,13 @@ public class HorseInventory extends BaseInventory {
         ContainerClosePacket pk = new ContainerClosePacket();
         pk.windowId = who.getWindowId(this);
         pk.wasServerInitiated = who.getClosingWindowId() != pk.windowId;
-        who.dataPacket(pk);
+        who.sendPacket(pk);
     }
 
     @Override
     public void onOpen(Player who) {
         super.onOpen(who);
-        who.dataPacket(createUpdateEquipmentPacket(who));
+        who.sendPacket(createUpdateEquipmentPacket(who));
         sendContents(this.getViewers());
     }
 

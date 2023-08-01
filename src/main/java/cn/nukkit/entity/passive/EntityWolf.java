@@ -277,7 +277,7 @@ public class EntityWolf extends EntityAnimal
                     EntityEventPacket packet = new EntityEventPacket();
                     packet.eid = this.getId();
                     packet.event = EntityEventPacket.TAME_SUCCESS;
-                    player.dataPacket(packet);
+                    player.sendPacket(packet);
 
                     this.setMaxHealth(20);
                     this.setHealth(20);
@@ -292,7 +292,7 @@ public class EntityWolf extends EntityAnimal
                     EntityEventPacket packet = new EntityEventPacket();
                     packet.eid = this.getId();
                     packet.event = EntityEventPacket.TAME_FAIL;
-                    player.dataPacket(packet);
+                    player.sendPacket(packet);
                 }
             }
         } else if (item.getId() == Item.DYE) {

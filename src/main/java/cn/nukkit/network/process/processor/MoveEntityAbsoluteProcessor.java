@@ -15,7 +15,7 @@ public class MoveEntityAbsoluteProcessor extends DataPacketProcessor<MoveEntityA
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull MoveEntityAbsolutePacket pk) {
         Player player = playerHandle.player;
-        if (!player.isAlive() || !player.spawned || player.getRiding() == null) {
+        if (!player.isAlive() || !player.isSpawned() || player.getRiding() == null) {
             return;
         }
         Entity movedEntity = player.getLevel().getEntity(pk.eid);

@@ -153,7 +153,7 @@ public class AdventureSettings implements Cloneable {
         // 向所有玩家发送以使他们能看到彼此的权限
         // Permission to send to all players so they can see each other
         var players = new HashSet<>(
-                player.getServer().playerManager.getOnlinePlayers().values());
+                player.getServer().getPlayerManager().getOnlinePlayers().values());
         // 确保会发向自己（eg：玩家进服时在线玩家里没有此玩家）
         // Make sure it will be sent to yourself (eg: there is no such player among the online players when the player
         // enters the server)
@@ -257,7 +257,7 @@ public class AdventureSettings implements Cloneable {
         adventurePacket.noMvP = get(Type.NO_MVP);
         adventurePacket.noPvM = get(Type.NO_PVM);
         adventurePacket.showNameTags = get(Type.SHOW_NAME_TAGS);
-        player.dataPacket(adventurePacket);
+        player.sendPacket(adventurePacket);
         player.resetInAirTicks();
     }
 

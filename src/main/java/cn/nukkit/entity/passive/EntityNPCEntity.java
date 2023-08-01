@@ -163,7 +163,7 @@ public class EntityNPCEntity extends EntityLiving implements EntityNPC, EntityIn
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         // 对于创造模式玩家，NPC发送过去的dialog的sceneName必须为空，否则客户端会不允许修改对话框内容
         // 另外的，我们不需要记录发送给创造模式玩家的对话框，首先因为我们无法清除，其次没有必要
-        player.showDialogWindow(this.dialog, !player.isCreative());
+        player.sendDialog(this.dialog, !player.isCreative());
         return true;
     }
 

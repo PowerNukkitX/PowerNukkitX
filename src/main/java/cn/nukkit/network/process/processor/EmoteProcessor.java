@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 public class EmoteProcessor extends DataPacketProcessor<EmotePacket> {
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull EmotePacket pk) {
-        if (!playerHandle.player.spawned) {
+        if (!playerHandle.player.isSpawned()) {
             return;
         }
         if (pk.runtimeId != playerHandle.player.getId()) {
@@ -24,7 +24,7 @@ public class EmoteProcessor extends DataPacketProcessor<EmotePacket> {
             return;
         }
         for (Player viewer : playerHandle.player.getViewers().values()) {
-            viewer.dataPacket(pk);
+            viewer.sendPacket(pk);
         }
     }
 

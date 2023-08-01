@@ -16,7 +16,7 @@ public class ModalFormResponseProcessor extends DataPacketProcessor<ModalFormRes
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull ModalFormResponsePacket pk) {
         Player player = playerHandle.player;
-        if (!player.spawned || !player.isAlive()) {
+        if (!player.isSpawned() || !player.isAlive()) {
             return;
         }
         if (playerHandle.getFormWindows().containsKey(pk.formId)) {

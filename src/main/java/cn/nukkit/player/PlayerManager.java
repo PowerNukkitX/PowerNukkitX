@@ -167,7 +167,7 @@ public class PlayerManager {
         PlayerListPacket pk = new PlayerListPacket();
         pk.type = PlayerListPacket.TYPE_REMOVE;
         pk.entries = new PlayerListPacket.Entry[] {new PlayerListPacket.Entry(uuid)};
-        player.dataPacket(pk);
+        player.sendPacket(pk);
     }
 
     public void removePlayerListData(UUID uuid, Collection<Player> players) {
@@ -192,7 +192,7 @@ public class PlayerManager {
                         p.getLoginChainData().getXUID()))
                 .toArray(PlayerListPacket.Entry[]::new);
 
-        player.dataPacket(pk);
+        player.sendPacket(pk);
     }
 
     /**
@@ -488,7 +488,7 @@ public class PlayerManager {
      * @param player 需要删除的玩家<br>Players who need to be deleted
      */
     public void removePlayer(Player player) {
-        Player toRemove = this.players.remove(player.getRawSocketAddress());
+        Player toRemove = this.players.remove(player.getPlayerConnection().getRawSocketAddress());
         if (toRemove != null) {
             return;
         }

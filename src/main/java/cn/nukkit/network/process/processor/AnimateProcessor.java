@@ -14,7 +14,7 @@ public class AnimateProcessor extends DataPacketProcessor<AnimatePacket> {
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull AnimatePacket pk) {
         Player player = playerHandle.player;
-        if (!player.spawned || !player.isAlive()) {
+        if (!player.isSpawned() || !player.isAlive()) {
             return;
         }
 

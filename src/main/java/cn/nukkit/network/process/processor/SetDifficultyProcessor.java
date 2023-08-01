@@ -12,14 +12,20 @@ import org.jetbrains.annotations.NotNull;
 public class SetDifficultyProcessor extends DataPacketProcessor<SetDifficultyPacket> {
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull SetDifficultyPacket pk) {
-        if (!playerHandle.player.spawned || !playerHandle.player.hasPermission("nukkit.command.difficulty")) {
+        if (!playerHandle.player.isSpawned() || !playerHandle.player.hasPermission("nukkit.command.difficulty")) {
             return;
         }
         playerHandle.player.getServer().setDifficulty(pk.difficulty);
         SetDifficultyPacket difficultyPacket = new SetDifficultyPacket();
         difficultyPacket.difficulty = playerHandle.player.getServer().getDifficulty();
         Server.broadcastPacket(
-                playerHandle.player.getServer().playerManager.getOnlinePlayers().values(), difficultyPacket);
+                playerHandle
+                        .player
+                        .getServer()
+                        .getPlayerManager()
+                        .getOnlinePlayers()
+                        .values(),
+                difficultyPacket);
         Command.broadcastCommandMessage(
                 playerHandle.player,
                 new TranslationContainer(

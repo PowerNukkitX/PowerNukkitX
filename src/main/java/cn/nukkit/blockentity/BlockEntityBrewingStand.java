@@ -343,11 +343,11 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable
 
                 pk.property = ContainerSetDataPacket.PROPERTY_BREWING_STAND_FUEL_AMOUNT;
                 pk.value = this.fuelAmount;
-                p.dataPacket(pk);
+                p.sendPacket(pk);
 
                 pk.property = ContainerSetDataPacket.PROPERTY_BREWING_STAND_FUEL_TOTAL;
                 pk.value = this.fuelTotal;
-                p.dataPacket(pk);
+                p.sendPacket(pk);
             }
         }
     }
@@ -362,7 +362,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable
             if (windowId > 0) {
                 pk.windowId = windowId;
 
-                p.dataPacket(pk);
+                p.sendPacket(pk);
             }
         }
     }

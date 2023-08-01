@@ -13,7 +13,7 @@ public class ContainerCloseProcessor extends DataPacketProcessor<ContainerCloseP
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull ContainerClosePacket pk) {
         Player player = playerHandle.player;
-        if (!player.spawned || pk.windowId == ContainerIds.INVENTORY && !playerHandle.getInventoryOpen()) {
+        if (!player.isSpawned() || pk.windowId == ContainerIds.INVENTORY && !playerHandle.getInventoryOpen()) {
             return;
         }
 
@@ -31,7 +31,7 @@ public class ContainerCloseProcessor extends DataPacketProcessor<ContainerCloseP
             ContainerClosePacket pk2 = new ContainerClosePacket();
             pk2.wasServerInitiated = false;
             pk2.windowId = -1;
-            player.dataPacket(pk2);
+            player.sendPacket(pk2);
         }
     }
 

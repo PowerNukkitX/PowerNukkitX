@@ -91,7 +91,7 @@ public final class PlayerHandle {
     }
 
     public SourceInterface getInterfaz() {
-        return player.interfaz;
+        return player.sourceInterface;
     }
 
     public BiMap<Inventory, Integer> getWindows() {
@@ -147,11 +147,11 @@ public final class PlayerHandle {
     }
 
     public PlayerUIInventory getPlayerUIInventory() {
-        return player.playerUIInventory;
+        return player.getUIInventory();
     }
 
     public void setPlayerUIInventory(PlayerUIInventory playerUIInventory) {
-        player.playerUIInventory = playerUIInventory;
+        player.UIInventory = playerUIInventory;
     }
 
     public CraftingTransaction getCraftingTransaction() {
@@ -210,28 +210,12 @@ public final class PlayerHandle {
         player.randomClientId = randomClientId;
     }
 
-    public Vector3 getForceMovement() {
-        return player.forceMovement;
-    }
-
-    public void setForceMovement(Vector3 forceMovement) {
-        player.forceMovement = forceMovement;
-    }
-
-    public Vector3 getTeleportPosition() {
-        return player.teleportPosition;
-    }
-
-    public void setTeleportPosition(Vector3 teleportPosition) {
-        player.teleportPosition = teleportPosition;
-    }
-
     public void setConnected(boolean connected) {
-        player.connected = connected;
+        player.getPlayerConnection().connected = connected;
     }
 
     public void setSocketAddress(InetSocketAddress socketAddress) {
-        player.socketAddress = socketAddress;
+        player.getPlayerConnection().socketAddress = socketAddress;
     }
 
     public boolean isRemoveFormat() {
@@ -246,14 +230,6 @@ public final class PlayerHandle {
         player.username = username;
     }
 
-    public String getIusername() {
-        return player.iusername;
-    }
-
-    public void setIusername(String iusername) {
-        player.iusername = iusername;
-    }
-
     public String getDisplayName() {
         return player.displayName;
     }
@@ -263,11 +239,11 @@ public final class PlayerHandle {
     }
 
     public int getStartAction() {
-        return player.startAction;
+        return player.startActionTick;
     }
 
     public void setStartAction(int startAction) {
-        player.startAction = startAction;
+        player.startActionTick = startAction;
     }
 
     public Vector3 getSleeping() {
@@ -276,14 +252,6 @@ public final class PlayerHandle {
 
     public void setSleeping(Vector3 sleeping) {
         player.sleeping = sleeping;
-    }
-
-    public Long getClientID() {
-        return player.clientID;
-    }
-
-    public void setClientID(Long clientID) {
-        player.clientID = clientID;
     }
 
     public int getChunkLoadCount() {
@@ -336,10 +304,6 @@ public final class PlayerHandle {
 
     public void setInAirTicks(int inAirTicks) {
         player.inAirTicks = inAirTicks;
-    }
-
-    public int getStartAirTicks() {
-        return player.startAirTicks;
     }
 
     public void setStartAirTicks(int startAirTicks) {
@@ -478,14 +442,14 @@ public final class PlayerHandle {
         player.preLoginEventTask = preLoginEventTask;
     }
 
-    public void completeLoginSequence() {
-        player.completeLoginSequence();
+    public void onCompleteLoginSequence() {
+        player.getPlayerConnection().onCompleteLoginSequence();
     }
 
     @Since("1.19.50-r3")
     @PowerNukkitXOnly
     public void onPlayerLocallyInitialized() {
-        player.onPlayerLocallyInitialized();
+        player.getPlayerConnection().onPlayerLocallyInitialized();
     }
 
     @Since("1.4.0.0-PN")
@@ -503,7 +467,7 @@ public final class PlayerHandle {
     }
 
     public void processLogin() {
-        player.processLogin();
+        player.getPlayerConnection().processLogin();
     }
 
     public void sendNextChunk() {
@@ -515,7 +479,7 @@ public final class PlayerHandle {
     }
 
     public void doFirstSpawn() {
-        player.doFirstSpawn();
+        player.getPlayerConnection().doFirstSpawn();
     }
 
     public boolean orderChunks() {
@@ -540,12 +504,6 @@ public final class PlayerHandle {
 
     public void offerMovementTask(Location newPosition) {
         player.offerMovementTask(newPosition);
-    }
-
-    @DeprecationDetails(since = "1.19.60-r1", reason = "use handleMovement")
-    @Deprecated
-    public void processMovement(int tickDiff) {
-        player.processMovement(tickDiff);
     }
 
     public void handleLogicInMove(boolean invalidMotion, double distance) {

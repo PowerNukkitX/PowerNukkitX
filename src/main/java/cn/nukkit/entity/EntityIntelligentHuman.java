@@ -359,8 +359,9 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
                 throw new IllegalStateException(this.getClass().getSimpleName() + " must have a valid skin set");
             }
 
-            this.server.playerManager.updatePlayerListData(
-                    this.getUniqueId(), this.getId(), this.getName(), this.skin, new Player[] {player});
+            server.getPlayerManager()
+                    .updatePlayerListData(
+                            this.getUniqueId(), this.getId(), this.getName(), this.skin, new Player[] {player});
 
             AddPlayerPacket pk = new AddPlayerPacket();
             pk.uuid = this.getUniqueId();
@@ -377,7 +378,7 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
             pk.pitch = (float) this.pitch();
             pk.item = this.getInventory().getItemInHand();
             pk.metadata = this.dataProperties;
-            player.dataPacket(pk);
+            player.sendPacket(pk);
 
             this.inventory.sendArmorContents(player);
             this.offhandInventory.sendContents(player);
@@ -389,9 +390,9 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
                 pkk.type = 1;
                 pkk.immediate = 1;
 
-                player.dataPacket(pkk);
+                player.sendPacket(pkk);
             }
-            this.server.playerManager.removePlayerListData(this.getUniqueId(), player);
+            server.getPlayerManager().removePlayerListData(this.getUniqueId(), player);
         }
     }
 
@@ -401,7 +402,7 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
 
             RemoveEntityPacket pk = new RemoveEntityPacket();
             pk.eid = this.getId();
-            player.dataPacket(pk);
+            player.sendPacket(pk);
             this.hasSpawned.remove(player.getLoaderId());
         }
     }

@@ -16,7 +16,7 @@ public class MobEquipmentProcessor extends DataPacketProcessor<MobEquipmentPacke
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull MobEquipmentPacket pk) {
         Player player = playerHandle.player;
-        if (!player.spawned || !player.isAlive()) {
+        if (!player.isSpawned() || !player.isAlive()) {
             return;
         }
 

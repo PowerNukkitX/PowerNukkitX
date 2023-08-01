@@ -42,7 +42,7 @@ public class FakeStructBlock extends SingleFakeBlock {
             updateBlockPacket.x = position.getFloorX();
             updateBlockPacket.y = position.getFloorY();
             updateBlockPacket.z = position.getFloorZ();
-            player.dataPacket(updateBlockPacket);
+            player.sendPacket(updateBlockPacket);
 
             BlockEntityDataPacket blockEntityDataPacket = new BlockEntityDataPacket();
             blockEntityDataPacket.x = position.getFloorX();
@@ -55,7 +55,7 @@ public class FakeStructBlock extends SingleFakeBlock {
                 exception.printStackTrace();
             }
 
-            player.dataPacket(blockEntityDataPacket);
+            player.sendPacket(blockEntityDataPacket);
         });
     }
 
@@ -68,7 +68,7 @@ public class FakeStructBlock extends SingleFakeBlock {
             packet.x = position.getFloorX();
             packet.y = position.getFloorY();
             packet.z = position.getFloorZ();
-            player.dataPacket(packet);
+            player.sendPacket(packet);
         });
     }
 

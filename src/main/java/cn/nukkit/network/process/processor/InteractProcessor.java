@@ -23,7 +23,7 @@ public class InteractProcessor extends DataPacketProcessor<InteractPacket> {
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull InteractPacket pk) {
         Player player = playerHandle.player;
-        if (!player.spawned || !player.isAlive()) {
+        if (!player.isSpawned() || !player.isAlive()) {
             return;
         }
 

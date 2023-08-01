@@ -32,8 +32,8 @@ public class PlayerScorer implements IScorer {
 
     public Player getPlayer() {
         if (uuid == null) return null;
-        return Server.getInstance().playerManager.getPlayer(uuid).isPresent()
-                ? Server.getInstance().playerManager.getPlayer(uuid).get()
+        return Server.getInstance().getPlayerManager().getPlayer(uuid).isPresent()
+                ? Server.getInstance().getPlayerManager().getPlayer(uuid).get()
                 : null;
     }
 
@@ -61,10 +61,10 @@ public class PlayerScorer implements IScorer {
 
     @Override
     public String getName() {
-        return Server.getInstance().playerManager.getOnlinePlayers().get(uuid) == null
+        return Server.getInstance().getPlayerManager().getOnlinePlayers().get(uuid) == null
                 ? String.valueOf(uuid.getMostSignificantBits())
                 : Server.getInstance()
-                        .playerManager
+                        .getPlayerManager()
                         .getOnlinePlayers()
                         .get(uuid)
                         .getName();
@@ -73,13 +73,17 @@ public class PlayerScorer implements IScorer {
     @Override
     public SetScorePacket.ScoreInfo toNetworkInfo(IScoreboard scoreboard, IScoreboardLine line) {
         if (uuid == null) return null;
-        return Server.getInstance().playerManager.getPlayer(uuid).isPresent()
+        return Server.getInstance().getPlayerManager().getPlayer(uuid).isPresent()
                 ? new SetScorePacket.ScoreInfo(
                         line.getLineId(),
                         scoreboard.getObjectiveName(),
                         line.getScore(),
                         ScorerType.PLAYER,
-                        Server.getInstance().playerManager.getPlayer(uuid).get().getId())
+                        Server.getInstance()
+                                .getPlayerManager()
+                                .getPlayer(uuid)
+                                .get()
+                                .getId())
                 : null;
     }
 }

@@ -20,7 +20,7 @@ public class RespawnProcessor extends DataPacketProcessor<RespawnPacket> {
             respawn1.y = (float) player.y();
             respawn1.z = (float) player.getZ();
             respawn1.respawnState = RespawnPacket.STATE_READY_TO_SPAWN;
-            player.dataPacket(respawn1);
+            player.sendPacket(respawn1);
         }
     }
 

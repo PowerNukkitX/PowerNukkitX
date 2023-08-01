@@ -277,7 +277,7 @@ public class EntityThrownTrident extends SlenderProjectile {
         pk.yaw = (float) this.yaw();
         pk.pitch = (float) this.pitch();
         pk.metadata = this.dataProperties;
-        player.dataPacket(pk);
+        player.sendPacket(pk);
 
         super.spawnTo(player);
     }
