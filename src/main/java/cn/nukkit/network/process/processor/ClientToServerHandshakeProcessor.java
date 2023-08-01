@@ -15,7 +15,7 @@ public class ClientToServerHandshakeProcessor extends DataPacketProcessor<Client
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull ClientToServerHandshakePacket pk) {
         if (Server.getInstance().enabledNetworkEncryption
-                && playerHandle.getLoginChainData().isXboxAuthed()) {
+                && playerHandle.getPlayerInfo().isXboxAuthed()) {
             playerHandle.processLogin();
         }
     }

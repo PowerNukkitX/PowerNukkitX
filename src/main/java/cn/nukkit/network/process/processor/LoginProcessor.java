@@ -17,10 +17,10 @@ import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.ServerToClientHandshakePacket;
 import cn.nukkit.player.Player;
 import cn.nukkit.player.PlayerHandle;
+import cn.nukkit.player.PlayerInfo;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.utils.Binary;
-import cn.nukkit.utils.ClientChainData;
 import cn.nukkit.utils.TextFormat;
 import java.net.InetSocketAddress;
 import java.util.Objects;
@@ -46,7 +46,7 @@ public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
             return;
         }
 
-        // check the player login time
+        // Check the player login time
         if (pk.issueUnixTime != -1
                 && Server.getInstance().checkLoginTime
                 && System.currentTimeMillis() - pk.issueUnixTime > 20000) {
@@ -56,18 +56,18 @@ public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
             return;
         }
 
-        // set user name
+        // Set user name
         playerHandle.setUsername(TextFormat.clean(pk.username));
         playerHandle.setDisplayName(playerHandle.getUsername());
 
-        // set user name data flag
+        // Set user name data flag
         player.setDataProperty(new StringEntityData(Entity.DATA_NAMETAG, playerHandle.getUsername()), false);
 
-        // set login chain data of player
-        playerHandle.setLoginChainData(ClientChainData.read(pk));
+        // Set player player info
+        playerHandle.setPlayerInfo(new PlayerInfo(pk));
 
-        // verify the player if enable the xbox-auth
-        if (!playerHandle.getLoginChainData().isXboxAuthed() && server.getPropertyBoolean("xbox-auth")) {
+        // Verify the player if enable the xbox-auth
+        if (!playerHandle.getPlayerInfo().isXboxAuthed() && server.getPropertyBoolean("xbox-auth")) {
             player.close("", "disconnectionScreen.notAuthenticated");
             return;
         }
@@ -79,9 +79,9 @@ public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
         }
 
         // set proxy ip
-        if (server.isWaterdogCapable() && playerHandle.getLoginChainData().getWaterdogIP() != null) {
+        if (server.isWaterdogCapable() && playerHandle.getPlayerInfo().getWaterdogIp() != null) {
             playerHandle.setSocketAddress(new InetSocketAddress(
-                    playerHandle.getLoginChainData().getWaterdogIP(),
+                    playerHandle.getPlayerInfo().getWaterdogIp(),
                     player.getPlayerConnection().getRawPort()));
         }
 
@@ -128,7 +128,7 @@ public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
                 event = new PlayerAsyncPreLoginEvent(
                         playerHandle.getUsername(),
                         player.getUniqueId(),
-                        playerHandle.getLoginChainData(),
+                        playerHandle.getPlayerInfo(),
                         player.getSkin(),
                         player.getPlayerConnection().getRawAddress(),
                         player.getPlayerConnection().getRawPort());
@@ -154,7 +154,7 @@ public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
         });
 
         server.getScheduler().scheduleAsyncTask(InternalPlugin.INSTANCE, playerHandle.getPreLoginEventTask());
-        if (server.enabledNetworkEncryption && playerHandle.getLoginChainData().isXboxAuthed()) {
+        if (server.enabledNetworkEncryption && playerHandle.getPlayerInfo().isXboxAuthed()) {
             server.getScheduler().scheduleAsyncTask(InternalPlugin.INSTANCE, new PrepareEncryptionTask(player) {
                 @Override
                 public void onCompletion(Server server) {

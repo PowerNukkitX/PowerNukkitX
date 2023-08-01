@@ -35,7 +35,7 @@ public class PrepareEncryptionTask extends AsyncTask {
 
             this.encryptionKey = EncryptionUtils.getSecretKey(
                     privateKeyPair.getPrivate(),
-                    EncryptionUtils.generateKey(this.player.getLoginChainData().getIdentityPublicKey()),
+                    EncryptionUtils.generateKey(player.getPlayerInfo().getIdentityPublicKey()),
                     token);
             this.handshakeJwt =
                     EncryptionUtils.createHandshakeJwt(privateKeyPair, token).serialize();

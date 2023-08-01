@@ -66,7 +66,6 @@ import cn.nukkit.player.AdventureSettings.Type;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.positiontracking.PositionTrackingService;
 import cn.nukkit.potion.Effect;
-import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.scheduler.Task;
 import cn.nukkit.scheduler.TaskHandler;
 import cn.nukkit.scoreboard.data.DisplaySlot;
@@ -233,6 +232,7 @@ public class Player extends EntityHuman
      * Transactions
      */
     protected CraftingTransaction craftingTransaction;
+
     protected EnchantTransaction enchantTransaction;
     protected RepairItemTransaction repairItemTransaction;
     protected GrindstoneTransaction grindstoneTransaction;
@@ -281,6 +281,7 @@ public class Player extends EntityHuman
     @Getter
     @Setter
     protected boolean checkMovement = true;
+
     protected boolean enableClientCommand = true;
 
     protected int formWindowCount = 0;
@@ -298,6 +299,7 @@ public class Player extends EntityHuman
 
     @Getter
     protected int lastInAirTick = 0;
+
     private BlockVector3 lastBreakPosition = new BlockVector3();
     public long lastBreak;
     public long lastSkinChange;
@@ -340,13 +342,15 @@ public class Player extends EntityHuman
     private BlockEnderChest viewingEnderChest = null;
 
     private TaskHandler delayedPosTrackingUpdate;
+
+    @Getter
     private int noShieldTicks;
 
     @Getter
     protected boolean showingCredits;
 
     @Getter
-    protected LoginChainData loginChainData;
+    protected PlayerInfo playerInfo;
     /**
      * Time to play sound when player upgrades
      */
@@ -1903,7 +1907,7 @@ public class Player extends EntityHuman
                             this.getId(),
                             this.getDisplayName(),
                             this.getSkin(),
-                            this.getLoginChainData().getXUID());
+                            this.getPlayerInfo().getXuid());
         }
     }
 
@@ -3471,7 +3475,7 @@ public class Player extends EntityHuman
     }
 
     public LangCode getLanguageCode() {
-        return LangCode.valueOf(this.getLoginChainData().getLanguageCode());
+        return playerInfo.getLanguageCode();
     }
 
     @Override
@@ -4884,10 +4888,6 @@ public class Player extends EntityHuman
     @Override
     public boolean doesTriggerPressurePlate() {
         return !this.isSpectator();
-    }
-
-    public int getNoShieldTicks() {
-        return noShieldTicks;
     }
 
     public void setNoShieldTicks(int noShieldTicks) {

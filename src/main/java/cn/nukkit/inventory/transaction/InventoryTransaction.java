@@ -275,8 +275,8 @@ public class InventoryTransaction {
         }
         // hack implement to fix issue#692
         if (send
-                && source.getLoginChainData().getDeviceOS() == 7
-                && this.inventories.stream().anyMatch(i -> i instanceof PlayerInventory)) this.sendInventories();
+                && source.getPlayerInfo().getDeviceOs().getId() == 7
+                && inventories.stream().anyMatch(i -> i instanceof PlayerInventory)) this.sendInventories();
 
         this.hasExecuted = true;
         return true;

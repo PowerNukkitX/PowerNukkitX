@@ -176,7 +176,7 @@ public class EntityHuman extends EntityHumanType {
                                 this.getId(),
                                 ((Player) this).getDisplayName(),
                                 this.skin,
-                                ((Player) this).getLoginChainData().getXUID(),
+                                ((Player) this).getPlayerInfo().getXuid(),
                                 new Player[] {player});
             else
                 server.getPlayerManager()

@@ -19,7 +19,6 @@ import cn.nukkit.network.protocol.types.PlayerBlockActionData;
 import cn.nukkit.network.session.NetworkPlayerSession;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.utils.DummyBossBar;
-import cn.nukkit.utils.LoginChainData;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.google.common.collect.BiMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
@@ -40,8 +39,7 @@ import org.jetbrains.annotations.NotNull;
 @Setter
 public final class PlayerHandle {
 
-    @NotNull
-    private final Player player;
+    @NotNull private final Player player;
 
     private boolean shouldLogin = false;
     private boolean inventoryOpen;
@@ -68,12 +66,12 @@ public final class PlayerHandle {
         return player.getPlayerConnection();
     }
 
-    public void setLoginChainData(LoginChainData loginChainData) {
-        player.loginChainData = loginChainData;
+    public void setPlayerInfo(PlayerInfo playerInfo) {
+        player.playerInfo = playerInfo;
     }
 
-    public LoginChainData getLoginChainData() {
-        return player.getLoginChainData();
+    public PlayerInfo getPlayerInfo() {
+        return player.getPlayerInfo();
     }
 
     public void sendPlayStatus(int status) {
@@ -395,7 +393,6 @@ public final class PlayerHandle {
     public void doFirstSpawn() {
         player.getPlayerConnection().doFirstSpawn();
     }
-
 
     public boolean isValidRespawnBlock(Block block) {
         return player.isValidRespawnBlock(block);

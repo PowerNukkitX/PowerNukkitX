@@ -76,7 +76,7 @@ public class PlayerManager {
                 player.getId(),
                 player.getDisplayName(),
                 player.getSkin(),
-                player.getLoginChainData().getXUID());
+                player.getPlayerInfo().getXuid());
     }
 
     public void removeOnlinePlayer(Player player) {
@@ -189,7 +189,7 @@ public class PlayerManager {
                         p.getId(),
                         p.getDisplayName(),
                         p.getSkin(),
-                        p.getLoginChainData().getXUID()))
+                        p.getPlayerInfo().getXuid()))
                 .toArray(PlayerListPacket.Entry[]::new);
 
         player.sendPacket(pk);

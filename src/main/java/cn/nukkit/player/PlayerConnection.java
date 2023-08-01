@@ -47,13 +47,8 @@ public class PlayerConnection {
     protected final InetSocketAddress rawSocketAddress;
     protected InetSocketAddress socketAddress;
 
-    @Getter
     private final Player player;
-
-    @Getter
     private final NetworkPlayerSession networkSession;
-
-    @Getter
     private final Server server;
 
     public PlayerConnection(Player player, NetworkPlayerSession networkSession, InetSocketAddress socketAddress) {
@@ -132,7 +127,7 @@ public class PlayerConnection {
             return;
         }
 
-        if (player.getLoginChainData().isXboxAuthed() && server.getPropertyBoolean("xbox-auth")
+        if (player.getPlayerInfo().isXboxAuthed() && server.getPropertyBoolean("xbox-auth")
                 || !server.getPropertyBoolean("xbox-auth")) {
             server.getPlayerManager().updateName(player.getUniqueId(), player.getName());
         }
