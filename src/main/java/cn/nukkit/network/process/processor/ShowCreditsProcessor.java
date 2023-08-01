@@ -14,7 +14,7 @@ public class ShowCreditsProcessor extends DataPacketProcessor<ShowCreditsPacket>
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull ShowCreditsPacket pk) {
         Player player = playerHandle.getPlayer();
         if (pk.status == ShowCreditsPacket.STATUS_END_CREDITS) {
-            if (playerHandle.getShowingCredits()) {
+            if (player.isShowingCredits()) {
                 player.setShowingCredits(false);
                 player.teleport(player.getSpawn(), PlayerTeleportEvent.TeleportCause.END_PORTAL);
             }

@@ -14,7 +14,7 @@ public class ContainerCloseProcessor extends DataPacketProcessor<ContainerCloseP
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull ContainerClosePacket pk) {
         Player player = playerHandle.getPlayer();
-        if (!player.isSpawned() || pk.windowId == ContainerIds.INVENTORY && !playerHandle.getInventoryOpen()) {
+        if (!player.isSpawned() || pk.windowId == ContainerIds.INVENTORY && !playerHandle.isInventoryOpen()) {
             return;
         }
 

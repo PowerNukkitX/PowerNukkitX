@@ -85,7 +85,6 @@ public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
                     player.getPlayerConnection().getRawPort()));
         }
 
-        playerHandle.setRandomClientId(pk.clientId);
         player.setUniqueId(pk.clientUUID);
         player.setRawUniqueId(Binary.writeUUID(player.getUniqueId()));
 

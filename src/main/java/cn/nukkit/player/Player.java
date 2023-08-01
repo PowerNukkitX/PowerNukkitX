@@ -233,14 +233,11 @@ public class Player extends EntityHuman
      * Transactions
      */
     protected CraftingTransaction craftingTransaction;
-
     protected EnchantTransaction enchantTransaction;
     protected RepairItemTransaction repairItemTransaction;
     protected GrindstoneTransaction grindstoneTransaction;
     protected SmithingTransaction smithingTransaction;
     protected TradingTransaction tradingTransaction;
-
-    protected long randomClientId;
 
     /**
      * Whether to remove the color character in the chat of the changed player as §c §1
@@ -281,6 +278,8 @@ public class Player extends EntityHuman
     @Getter
     protected PlayerFood foodData = null;
 
+    @Getter
+    @Setter
     protected boolean checkMovement = true;
     protected boolean enableClientCommand = true;
 
@@ -296,10 +295,8 @@ public class Player extends EntityHuman
             Caffeine.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
 
     protected Map<Long, DummyBossBar> dummyBossBars = new Long2ObjectLinkedOpenHashMap<>();
-    protected boolean shouldLogin = false;
 
-    protected double lastRightClickTime = 0.0;
-    protected Vector3 lastRightClickPos = null;
+    @Getter
     protected int lastInAirTick = 0;
     private BlockVector3 lastBreakPosition = new BlockVector3();
     public long lastBreak;
@@ -348,13 +345,6 @@ public class Player extends EntityHuman
     @Getter
     protected boolean showingCredits;
 
-    protected boolean inventoryOpen;
-
-    protected PlayerBlockActionData lastBlockAction;
-
-    protected AsyncTask preLoginEventTask = null;
-    protected boolean verified = false;
-
     @Getter
     protected LoginChainData loginChainData;
     /**
@@ -364,17 +354,19 @@ public class Player extends EntityHuman
     /**
      * The entity that the player attacked last.
      */
+    @Getter
     protected Entity lastAttackEntity = null;
+    /**
+     * The entity that the player is attacked last.
+     */
+    @Getter
+    protected Entity lastBeAttackEntity = null;
     /**
      * Player Fog Settings
      */
     @Getter
     @Setter
     protected List<PlayerFogPacket.Fog> fogStack = new ArrayList<>();
-    /**
-     * The entity that the player is attacked last.
-     */
-    protected Entity lastBeAttackEntity = null;
 
     @Setter
     private boolean foodEnabled = true;
@@ -1456,20 +1448,6 @@ public class Player extends EntityHuman
     }
 
     /**
-     * @return {@link #lastAttackEntity}
-     */
-    public Entity getLastAttackEntity() {
-        return lastAttackEntity;
-    }
-
-    /**
-     * @return {@link #lastBeAttackEntity}
-     */
-    public Entity getLastBeAttackEntity() {
-        return lastBeAttackEntity;
-    }
-
-    /**
      * 设置{@link Player#startActionTick}值为{@link Server#getTick() getTick()}
      * <p>
      * Set the {@link Player#startActionTick} value to {@link Server#getTick() getTick()}
@@ -1488,8 +1466,6 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 返回{@link Player#lastEnderPearl}的值
-     * <p>
      * Returns the value of {@link Player#lastEnderPearl}
      *
      * @return int
@@ -1499,8 +1475,6 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 设置{@link Player#lastEnderPearl}值为{@link Server#getTick() getTick()}
-     * <p>
      * Set {@link Player#lastEnderPearl} value to {@link Server#getTick() getTick()}
      */
     public void onThrowEnderPearl() {
@@ -1508,8 +1482,6 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 返回{@link Player#lastChorusFruitTeleport}的值
-     * <p>
      * Returns the value of {@link Player#lastChorusFruitTeleport}
      *
      * @return int
@@ -1519,28 +1491,13 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 返回{@link Player#lastInAirTick}的值,代表玩家上次在空中的server tick
-     * <p>
-     * Returns the value of {@link Player#lastInAirTick},represent the last server tick the player was in the air
-     *
-     * @return int
-     */
-    public int getLastInAirTick() {
-        return this.lastInAirTick;
-    }
-
-    /**
-     * 设置{@link Player#lastChorusFruitTeleport}值为{@link Server#getTick() getTick()}
-     * <p>
      * Set {@link Player#lastChorusFruitTeleport} value to {@link Server#getTick() getTick()}
      */
     public void onChorusFruitTeleport() {
-        this.lastChorusFruitTeleport = this.server.getTick();
+        this.lastChorusFruitTeleport = server.getTick();
     }
 
     /**
-     * 返回{@link Player#viewingEnderChest}的值，只在玩家打开末影箱时有效.
-     * <p>
      * Returns the value of {@link Player#viewingEnderChest}, which is only valid when the player opens the Ender Chest.
      */
     public BlockEnderChest getViewingEnderChest() {
@@ -1548,8 +1505,6 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 设置{@link Player#viewingEnderChest}值为chest
-     * <p>
      * Set the {@link Player#viewingEnderChest} value to chest
      *
      * @param chest BlockEnderChest
@@ -1564,7 +1519,7 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 获取玩家离开的消息
+     * Getting the message that a player has left
      *
      * @return {@link TranslationContainer}
      */
@@ -2765,7 +2720,7 @@ public class Player extends EntityHuman
             return;
         }
 
-        if (!verified
+        if (!playerHandle.isVerified()
                 && packet.packetId() != ProtocolInfo.toNewProtocolID(ProtocolInfo.LOGIN_PACKET)
                 && packet.packetId() != ProtocolInfo.toNewProtocolID(ProtocolInfo.BATCH_PACKET)
                 && packet.packetId() != ProtocolInfo.toNewProtocolID(ProtocolInfo.REQUEST_NETWORK_SETTINGS_PACKET)) {
@@ -4632,19 +4587,6 @@ public class Player extends EntityHuman
         }
 
         return false;
-    }
-
-    /**
-     * Set whether to check for this player movement
-     *
-     * @param checkMovement the check movement
-     */
-    public void setCheckMovement(boolean checkMovement) {
-        this.checkMovement = checkMovement;
-    }
-
-    public boolean isCheckingMovement() {
-        return this.checkMovement;
     }
 
     public synchronized Locale getLocale() {

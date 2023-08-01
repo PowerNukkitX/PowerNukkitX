@@ -29,23 +29,51 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * A PlayerHandle is used to access a player's protected data.
  */
 @SuppressWarnings("ClassCanBeRecord")
+@Getter
+@Setter
 public final class PlayerHandle {
 
-    @NotNull @Getter
+    @NotNull
     private final Player player;
+
+    private boolean shouldLogin = false;
+    private boolean inventoryOpen;
+    private double lastRightClickTime = 0.0;
+    private Vector3 lastRightClickPos = null;
+    private PlayerBlockActionData lastBlockAction;
+    private AsyncTask preLoginEventTask = null;
+
+    private boolean verified = false;
 
     public PlayerHandle(@NotNull Player player) {
         this.player = player;
     }
 
     public NetworkPlayerSession getNetworkSession() {
-        return player.networkSession;
+        return player.getNetworkSession();
+    }
+
+    public SourceInterface getSourceInterface() {
+        return player.getSourceInterface();
+    }
+
+    public PlayerConnection getPlayerConnection() {
+        return player.getPlayerConnection();
+    }
+
+    public void setLoginChainData(LoginChainData loginChainData) {
+        player.loginChainData = loginChainData;
+    }
+
+    public LoginChainData getLoginChainData() {
+        return player.getLoginChainData();
     }
 
     public void sendPlayStatus(int status) {
@@ -54,10 +82,6 @@ public final class PlayerHandle {
 
     public void sendPlayStatus(int status, boolean immediate) {
         player.sendPlayStatus(status, immediate);
-    }
-
-    public void forceSendEmptyChunks() {
-        player.forceSendEmptyChunks();
     }
 
     public void removeWindow(Inventory inventory, boolean isResponse) {
@@ -86,10 +110,6 @@ public final class PlayerHandle {
 
     public void setBlockBreakProgress(double blockBreakProgress) {
         player.blockBreakProgress = blockBreakProgress;
-    }
-
-    public SourceInterface getInterfaz() {
-        return player.sourceInterface;
     }
 
     public BiMap<Inventory, Integer> getWindows() {
@@ -200,24 +220,12 @@ public final class PlayerHandle {
         player.tradingTransaction = tradingTransaction;
     }
 
-    public long getRandomClientId() {
-        return player.randomClientId;
-    }
-
-    public void setRandomClientId(long randomClientId) {
-        player.randomClientId = randomClientId;
-    }
-
     public void setConnected(boolean connected) {
         player.getPlayerConnection().connected = connected;
     }
 
     public void setSocketAddress(InetSocketAddress socketAddress) {
         player.getPlayerConnection().socketAddress = socketAddress;
-    }
-
-    public boolean isRemoveFormat() {
-        return player.removeFormat;
     }
 
     public String getUsername() {
@@ -300,24 +308,8 @@ public final class PlayerHandle {
         player.spawnBlockPosition = spawnBlockPosition;
     }
 
-    public void setInAirTicks(int inAirTicks) {
-        player.inAirTicks = inAirTicks;
-    }
-
-    public void setStartAirTicks(int startAirTicks) {
-        player.startAirTicks = startAirTicks;
-    }
-
-    public boolean isCheckMovement() {
-        return player.checkMovement;
-    }
-
     public void setFoodData(PlayerFood foodData) {
         player.foodData = foodData;
-    }
-
-    public int getLastEnderPearl() {
-        return player.lastEnderPearl;
     }
 
     public void setLastEnderPearl(int lastEnderPearl) {
@@ -364,34 +356,6 @@ public final class PlayerHandle {
         player.dummyBossBars = dummyBossBars;
     }
 
-    public boolean isShouldLogin() {
-        return player.shouldLogin;
-    }
-
-    public void setShouldLogin(boolean shouldLogin) {
-        player.shouldLogin = shouldLogin;
-    }
-
-    public double getLastRightClickTime() {
-        return player.lastRightClickTime;
-    }
-
-    public void setLastRightClickTime(double lastRightClickTime) {
-        player.lastRightClickTime = lastRightClickTime;
-    }
-
-    public Vector3 getLastRightClickPos() {
-        return player.lastRightClickPos;
-    }
-
-    public void setLastRightClickPos(Vector3 lastRightClickPos) {
-        player.lastRightClickPos = lastRightClickPos;
-    }
-
-    public void setLastInAirTick(int lastInAirTick) {
-        player.lastInAirTick = lastInAirTick;
-    }
-
     public int getLastPlayerdLevelUpSoundTime() {
         return player.lastPlayerdLevelUpSoundTime;
     }
@@ -416,30 +380,6 @@ public final class PlayerHandle {
         player.lastBeAttackEntity = lastBeAttackEntity;
     }
 
-    public void setLoginChainData(LoginChainData loginChainData) {
-        player.loginChainData = loginChainData;
-    }
-
-    public LoginChainData getLoginChainData() {
-        return player.loginChainData;
-    }
-
-    public boolean isVerified() {
-        return player.verified;
-    }
-
-    public void setVerified(boolean verified) {
-        player.verified = verified;
-    }
-
-    public AsyncTask getPreLoginEventTask() {
-        return player.preLoginEventTask;
-    }
-
-    public void setPreLoginEventTask(AsyncTask preLoginEventTask) {
-        player.preLoginEventTask = preLoginEventTask;
-    }
-
     public void onCompleteLoginSequence() {
         player.getPlayerConnection().onCompleteLoginSequence();
     }
@@ -447,6 +387,15 @@ public final class PlayerHandle {
     public void onPlayerLocallyInitialized() {
         player.getPlayerConnection().onPlayerLocallyInitialized();
     }
+
+    public void processLogin() {
+        player.getPlayerConnection().processLogin();
+    }
+
+    public void doFirstSpawn() {
+        player.getPlayerConnection().doFirstSpawn();
+    }
+
 
     public boolean isValidRespawnBlock(Block block) {
         return player.isValidRespawnBlock(block);
@@ -460,20 +409,12 @@ public final class PlayerHandle {
         player.checkChunks();
     }
 
-    public void processLogin() {
-        player.getPlayerConnection().processLogin();
-    }
-
     public void sendNextChunk() {
         player.sendNextChunk();
     }
 
     public void initEntity() {
         player.initEntity();
-    }
-
-    public void doFirstSpawn() {
-        player.getPlayerConnection().doFirstSpawn();
     }
 
     public boolean orderChunks() {
@@ -516,14 +457,6 @@ public final class PlayerHandle {
         return player.getBaseOffset();
     }
 
-    public PlayerBlockActionData getLastBlockAction() {
-        return player.lastBlockAction;
-    }
-
-    public void setLastBlockAction(PlayerBlockActionData actionData) {
-        player.lastBlockAction = actionData;
-    }
-
     public void onBlockBreakContinue(Vector3 pos, BlockFace face) {
         player.onBlockBreakContinue(pos, face);
     }
@@ -538,18 +471,6 @@ public final class PlayerHandle {
 
     public void onBlockBreakComplete(BlockVector3 blockPos, BlockFace face) {
         player.onBlockBreakComplete(blockPos, face);
-    }
-
-    public boolean getInventoryOpen() {
-        return player.inventoryOpen;
-    }
-
-    public boolean getShowingCredits() {
-        return player.showingCredits;
-    }
-
-    public void setInventoryOpen(boolean inventoryOpen) {
-        player.inventoryOpen = inventoryOpen;
     }
 
     public static int getNoShieldDelay() {
