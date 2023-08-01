@@ -63,7 +63,7 @@ public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
         // Set user name data flag
         player.setDataProperty(new StringEntityData(Entity.DATA_NAMETAG, playerHandle.getUsername()), false);
 
-        // Set player player info
+        // Set player info
         playerHandle.setPlayerInfo(new PlayerInfo(pk));
 
         // Verify the player if enable the xbox-auth
