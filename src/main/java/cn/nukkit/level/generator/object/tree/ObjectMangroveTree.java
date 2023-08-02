@@ -105,9 +105,7 @@ public class ObjectMangroveTree extends TreeGenerator {
         Vector3 blockpos = new Vector3(x, y, z);
         int material = worldIn.getBlockIdAt(blockpos.getFloorX(), blockpos.getFloorY(), blockpos.getFloorZ());
         if (material == Block.AIR) {
-            BlockMangrovePropagule block = new BlockMangrovePropagule();
-            block.set
-            this.setBlockAndNotifyAdequately(worldIn, blockpos, );
+            //Todo: Fix hanging mangrove propagule
         }
     }
 }
