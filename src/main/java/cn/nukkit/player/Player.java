@@ -4,10 +4,8 @@ import static cn.nukkit.utils.Utils.dynamic;
 
 import cn.nukkit.Server;
 import cn.nukkit.block.*;
-import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySign;
-import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.camera.data.CameraPreset;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
@@ -30,7 +28,6 @@ import cn.nukkit.event.inventory.InventoryPickupArrowEvent;
 import cn.nukkit.event.inventory.InventoryPickupItemEvent;
 import cn.nukkit.event.inventory.InventoryPickupTridentEvent;
 import cn.nukkit.event.player.*;
-import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import cn.nukkit.event.server.DataPacketReceiveEvent;
 import cn.nukkit.form.window.FormWindow;
@@ -45,7 +42,6 @@ import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.*;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.generic.BaseFullChunk;
-import cn.nukkit.level.particle.PunchBlockParticle;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.*;
@@ -175,20 +171,9 @@ public class Player extends EntityHuman
 
     public int craftingType = CRAFTING_SMALL;
     public long creationTime = 0;
-    /**
-     * block being dig
-     */
-    public Block breakingBlock = null;
-    /**
-     * direction of dig
-     */
-    public BlockFace breakingBlockFace = null;
 
     public int pickedXPOrb = 0;
     public EntityFishingHook fishing = null;
-
-    protected long breakingBlockTime = 0;
-    protected double blockBreakProgress = 0;
 
     /**
      * Network
@@ -300,16 +285,10 @@ public class Player extends EntityHuman
     @Getter
     protected int lastInAirTick = 0;
 
-    private BlockVector3 lastBreakPosition = new BlockVector3();
+    protected BlockVector3 lastBreakPosition = new BlockVector3();
     public long lastBreak;
     public long lastSkinChange;
-    /**
-     * Returns the {@link Server#getTick() getTick()} from the last time the pearl was cast, which is used to control the cooldown time of the pearl.
-     */
     protected int lastEnderPearl = 20;
-    /**
-     * Returns the {@link Server#getTick() getTick()} of the last time you ate a chorus fruit, which is used to control the cooldown time for eating chorus fruit.
-     */
     protected int lastChorusFruitTeleport = 20;
 
     private final Queue<Location> clientMovements = PlatformDependent.newMpscQueue(4);
@@ -467,215 +446,6 @@ public class Player extends EntityHuman
                 .getNetwork()
                 .unpackBatchedPackets(
                         packet, this.server.isEnableSnappy() ? CompressionProvider.SNAPPY : CompressionProvider.ZLIB);
-    }
-
-    protected void onBlockBreakContinue(Vector3 pos, BlockFace face) {
-        if (this.isBreakingBlock()) {
-            var time = System.currentTimeMillis();
-            Block block = this.getLevel().getBlock(pos, false);
-
-            double miningTimeRequired;
-            if (this.breakingBlock instanceof CustomBlock customBlock) {
-                miningTimeRequired = customBlock.breakTime(this.inventory.getItemInHand(), this);
-            } else miningTimeRequired = this.breakingBlock.calculateBreakTime(this.inventory.getItemInHand(), this);
-
-            if (miningTimeRequired > 0) {
-                int breakTick = (int) Math.ceil(miningTimeRequired * 20);
-                LevelEventPacket pk = new LevelEventPacket();
-                pk.evid = LevelEventPacket.EVENT_BLOCK_UPDATE_BREAK;
-                pk.x = (float) this.breakingBlock.x();
-                pk.y = (float) this.breakingBlock.y();
-                pk.z = (float) this.breakingBlock.z();
-                pk.data = 65535 / breakTick;
-                this.getLevel()
-                        .addChunkPacket(this.breakingBlock.getFloorX() >> 4, this.breakingBlock.getFloorZ() >> 4, pk);
-                this.getLevel().addParticle(new PunchBlockParticle(pos, block, face));
-                // miningTimeRequired * 1000-101这个算法最匹配原版计算速度，我们并不想任何方块破坏处理都由服务端执行，只处理自定义方块以绕过原版固定挖掘时间的限制
-                if (this.breakingBlock instanceof CustomBlock) {
-                    var timeDiff = time - breakingBlockTime;
-                    blockBreakProgress += timeDiff / (miningTimeRequired * 1000 - 101);
-                    if (blockBreakProgress > 0.99) {
-                        this.onBlockBreakAbort(pos, face);
-                        this.onBlockBreakComplete(pos.asBlockVector3(), face);
-                    }
-                    breakingBlockTime = time;
-                }
-            }
-        }
-    }
-
-    protected void onBlockBreakStart(Vector3 pos, BlockFace face) {
-        BlockVector3 blockPos = pos.asBlockVector3();
-        long currentBreak = System.currentTimeMillis();
-        // HACK: Client spams multiple left clicks so we need to skip them.
-        if ((this.lastBreakPosition.equals(blockPos) && (currentBreak - this.lastBreak) < 10)
-                || pos.distanceSquared(this) > 100) {
-            return;
-        }
-
-        Block target = this.getLevel().getBlock(pos);
-        PlayerInteractEvent playerInteractEvent = new PlayerInteractEvent(
-                this,
-                this.inventory.getItemInHand(),
-                target,
-                face,
-                target.getId() == 0 ? Action.LEFT_CLICK_AIR : Action.LEFT_CLICK_BLOCK);
-        playerInteractEvent.call();
-        if (playerInteractEvent.isCancelled()) {
-            this.inventory.sendHeldItem(this);
-            this.getLevel()
-                    .sendBlocks(new Player[] {this}, new Block[] {target}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 0);
-            if (target.getLevelBlockAtLayer(1) instanceof BlockLiquid) {
-                this.getLevel()
-                        .sendBlocks(
-                                new Player[] {this},
-                                new Block[] {target.getLevelBlockAtLayer(1)},
-                                UpdateBlockPacket.FLAG_ALL_PRIORITY,
-                                1);
-            }
-            return;
-        }
-
-        if (target.onTouch(this, playerInteractEvent.getAction()) != 0) return;
-
-        Block block = target.getSide(face);
-        if (block.getId() == Block.FIRE || block.getId() == BlockID.SOUL_FIRE) {
-            this.getLevel().setBlock(block, Block.get(BlockID.AIR), true);
-            this.getLevel().addLevelSoundEvent(block, LevelSoundEventPacket.SOUND_EXTINGUISH_FIRE);
-            return;
-        }
-
-        if (block.getId() == BlockID.SWEET_BERRY_BUSH && block.getDamage() == 0) {
-            Item oldItem = playerInteractEvent.getItem();
-            Item i = this.getLevel().useBreakOn(block, oldItem, this, true);
-            if (this.isSurvival() || this.isAdventure()) {
-                this.getFoodData().updateFoodExpLevel(0.005);
-                if (!i.equals(oldItem) || i.getCount() != oldItem.getCount()) {
-                    inventory.setItemInHand(i);
-                    inventory.sendHeldItem(this.getViewers().values());
-                }
-            }
-            return;
-        }
-
-        if (!block.isBlockChangeAllowed(this)) {
-            return;
-        }
-
-        if (this.isSurvival()) {
-            this.breakingBlockTime = currentBreak;
-            double miningTimeRequired;
-            if (target instanceof CustomBlock customBlock) {
-                miningTimeRequired = customBlock.breakTime(this.inventory.getItemInHand(), this);
-            } else miningTimeRequired = target.calculateBreakTime(this.inventory.getItemInHand(), this);
-            int breakTime = (int) Math.ceil(miningTimeRequired * 20);
-            if (breakTime > 0) {
-                LevelEventPacket pk = new LevelEventPacket();
-                pk.evid = LevelEventPacket.EVENT_BLOCK_START_BREAK;
-                pk.x = (float) pos.x();
-                pk.y = (float) pos.y();
-                pk.z = (float) pos.z();
-                pk.data = 65535 / breakTime;
-                this.getLevel().addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, pk);
-                // 优化反矿透时玩家的挖掘体验
-                if (this.getLevel().isAntiXrayEnabled() && this.getLevel().isPreDeObfuscate()) {
-                    var vecList = new ArrayList<Vector3WithRuntimeId>(5);
-                    Vector3WithRuntimeId tmpVec;
-                    for (var each : BlockFace.values()) {
-                        if (each == face) continue;
-                        var tmpX = target.getFloorX() + each.getXOffset();
-                        var tmpY = target.getFloorY() + each.getYOffset();
-                        var tmpZ = target.getFloorZ() + each.getZOffset();
-                        try {
-                            tmpVec = new Vector3WithRuntimeId(
-                                    tmpX,
-                                    tmpY,
-                                    tmpZ,
-                                    getLevel().getBlockRuntimeId(tmpX, tmpY, tmpZ, 0),
-                                    getLevel().getBlockRuntimeId(tmpX, tmpY, tmpZ, 1));
-                            if (getLevel().getRawFakeOreToPutRuntimeIdMap().containsKey(tmpVec.getRuntimeIdLayer0())) {
-                                vecList.add(tmpVec);
-                            }
-                        } catch (Exception ignore) {
-                        }
-                    }
-                    this.getLevel()
-                            .sendBlocks(
-                                    new Player[] {this}, vecList.toArray(Vector3[]::new), UpdateBlockPacket.FLAG_ALL);
-                }
-            }
-        }
-
-        this.breakingBlock = target;
-        this.breakingBlockFace = face;
-        this.lastBreak = currentBreak;
-        this.lastBreakPosition = blockPos;
-    }
-
-    protected void onBlockBreakAbort(Vector3 pos, BlockFace face) {
-        if (pos.distanceSquared(this) < 100) { // same as with ACTION_START_BREAK
-            LevelEventPacket pk = new LevelEventPacket();
-            pk.evid = LevelEventPacket.EVENT_BLOCK_STOP_BREAK;
-            pk.x = (float) pos.x();
-            pk.y = (float) pos.y();
-            pk.z = (float) pos.z();
-            pk.data = 0;
-            this.getLevel().addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, pk);
-        }
-        this.blockBreakProgress = 0;
-        this.breakingBlock = null;
-        this.breakingBlockFace = null;
-    }
-
-    protected void onBlockBreakComplete(BlockVector3 blockPos, BlockFace face) {
-        if (!this.isSpawned() || !this.isAlive()) {
-            return;
-        }
-
-        this.resetCraftingGridType();
-
-        Item handItem = this.getInventory().getItemInHand();
-        Item clone = handItem.clone();
-
-        boolean canInteract = this.canInteract(blockPos.add(0.5, 0.5, 0.5), this.isCreative() ? 13 : 7);
-        if (canInteract) {
-            handItem = this.getLevel().useBreakOn(blockPos.asVector3(), face, handItem, this, true);
-            if (handItem != null && this.isSurvival()) {
-                this.getFoodData().updateFoodExpLevel(0.005);
-                if (handItem.equals(clone) && handItem.getCount() == clone.getCount()) {
-                    return;
-                }
-
-                if (clone.getId() == handItem.getId() || handItem.getId() == 0) {
-                    inventory.setItemInHand(handItem);
-                } else {
-                    server.getLogger()
-                            .debug("Tried to set item " + handItem.getId() + " but " + this.username + " had item "
-                                    + clone.getId() + " in their hand slot");
-                }
-                inventory.sendHeldItem(this.getViewers().values());
-            } else if (handItem == null)
-                this.getLevel()
-                        .sendBlocks(
-                                new Player[] {this},
-                                new Block[] {this.getLevel().getBlock(blockPos.asVector3())},
-                                UpdateBlockPacket.FLAG_ALL_PRIORITY,
-                                0);
-            return;
-        }
-
-        inventory.sendContents(this);
-        inventory.sendHeldItem(this);
-
-        if (blockPos.distanceSquared(this) < 100) {
-            Block target = this.getLevel().getBlock(blockPos.asVector3());
-            this.getLevel().sendBlocks(new Player[] {this}, new Block[] {target}, UpdateBlockPacket.FLAG_ALL_PRIORITY);
-
-            BlockEntity blockEntity = this.getLevel().getBlockEntity(blockPos.asVector3());
-            if (blockEntity instanceof BlockEntitySpawnable) {
-                ((BlockEntitySpawnable) blockEntity).spawnTo(this);
-            }
-        }
     }
 
     // todo a lot on dimension
@@ -2581,10 +2351,10 @@ public class Player extends EntityHuman
                 this.timeSinceRest++;
             }
 
-            if (this.server.getServerAuthoritativeMovement()
-                    > 0) { // Only used by server-side authorities, since client-side authorities continue break is
-                // normal.
-                onBlockBreakContinue(breakingBlock, breakingBlockFace);
+            // Only used by server-side authorities, since client-side authorities continue break is normal.
+            if (server.getServerAuthoritativeMovement() > 0) {
+                playerHandle.handleBlockBreakContinue(
+                        playerHandle.getBreakingBlock(), playerHandle.getBreakingBlockFace());
             }
 
             // reset move status
@@ -4821,7 +4591,7 @@ public class Player extends EntityHuman
      * @return the boolean
      */
     public boolean isBreakingBlock() {
-        return this.breakingBlock != null;
+        return playerHandle.isBreakingBlock();
     }
 
     /**

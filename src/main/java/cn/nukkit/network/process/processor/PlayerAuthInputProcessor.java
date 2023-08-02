@@ -37,7 +37,7 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
                 if (playerHandle.getLastBlockAction() != null
                         && playerHandle.getLastBlockAction().getAction() == PlayerActionType.PREDICT_DESTROY_BLOCK
                         && action.getAction() == PlayerActionType.CONTINUE_DESTROY_BLOCK) {
-                    playerHandle.onBlockBreakStart(blockPos.asVector3(), blockFace);
+                    playerHandle.handleBlockBreakStart(blockPos.asVector3(), blockFace);
                 }
 
                 BlockVector3 lastBreakPos = playerHandle.getLastBlockAction() == null
@@ -47,26 +47,26 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
                         && (lastBreakPos.getX() != blockPos.getX()
                                 || lastBreakPos.getY() != blockPos.getY()
                                 || lastBreakPos.getZ() != blockPos.getZ())) {
-                    playerHandle.onBlockBreakAbort(lastBreakPos.asVector3(), BlockFace.DOWN);
-                    playerHandle.onBlockBreakStart(blockPos.asVector3(), blockFace);
+                    playerHandle.handleBlockBreakAbort(lastBreakPos.asVector3(), BlockFace.DOWN);
+                    playerHandle.handleBlockBreakStart(blockPos.asVector3(), blockFace);
                 }
 
                 switch (action.getAction()) {
                     case START_DESTROY_BLOCK:
-                        playerHandle.onBlockBreakStart(blockPos.asVector3(), blockFace);
+                        playerHandle.handleBlockBreakStart(blockPos.asVector3(), blockFace);
                         break;
                     case ABORT_DESTROY_BLOCK:
                     case STOP_DESTROY_BLOCK:
-                        playerHandle.onBlockBreakAbort(blockPos.asVector3(), blockFace);
+                        playerHandle.handleBlockBreakAbort(blockPos.asVector3(), blockFace);
                         break;
                     case CONTINUE_DESTROY_BLOCK: // 破坏完一个方块后接着破坏下一个方块
                         break;
                     case PREDICT_DESTROY_BLOCK:
                         if (player.isBreakingBlock()) {
-                            playerHandle.onBlockBreakAbort(blockPos.asVector3(), blockFace);
-                            playerHandle.onBlockBreakComplete(blockPos, blockFace);
+                            playerHandle.handleBlockBreakAbort(blockPos.asVector3(), blockFace);
+                            playerHandle.handleBlockBreakComplete(blockPos, blockFace);
                         } else {
-                            playerHandle.onBlockBreakAbort(blockPos.asVector3(), blockFace);
+                            playerHandle.handleBlockBreakAbort(blockPos.asVector3(), blockFace);
                         }
                         break;
                 }

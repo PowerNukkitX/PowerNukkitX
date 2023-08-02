@@ -2,6 +2,11 @@ package cn.nukkit.player;
 
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockID;
+import cn.nukkit.block.BlockLiquid;
+import cn.nukkit.block.customblock.CustomBlock;
+import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.dialog.window.FormWindowDialog;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -15,6 +20,8 @@ import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
+import cn.nukkit.level.Vector3WithRuntimeId;
+import cn.nukkit.level.particle.PunchBlockParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.NukkitMath;
@@ -54,8 +61,13 @@ public final class PlayerHandle {
     private boolean inventoryOpen;
     private double lastRightClickTime = 0.0;
     private Vector3 lastRightClickPos = null;
+    private BlockFace breakingBlockFace = null;
     private PlayerBlockActionData lastBlockAction;
     private AsyncTask preLoginEventTask = null;
+
+    private Block breakingBlock = null;
+    private long breakingBlockTime = 0;
+    private double blockBreakProgress = 0;
 
     private boolean verified = false;
 
@@ -98,22 +110,6 @@ public final class PlayerHandle {
 
     public void onBlock(Entity entity, EntityDamageEvent e, boolean animate) {
         player.onBlock(entity, e, animate);
-    }
-
-    public long getBreakingBlockTime() {
-        return player.breakingBlockTime;
-    }
-
-    public void setBreakingBlockTime(long breakingBlockTime) {
-        player.breakingBlockTime = breakingBlockTime;
-    }
-
-    public double getBlockBreakProgress() {
-        return player.blockBreakProgress;
-    }
-
-    public void setBlockBreakProgress(double blockBreakProgress) {
-        player.blockBreakProgress = blockBreakProgress;
     }
 
     public BiMap<Inventory, Integer> getWindows() {
@@ -444,24 +440,12 @@ public final class PlayerHandle {
         return player.getBaseOffset();
     }
 
-    public void onBlockBreakContinue(Vector3 pos, BlockFace face) {
-        player.onBlockBreakContinue(pos, face);
-    }
-
-    public void onBlockBreakStart(Vector3 pos, BlockFace face) {
-        player.onBlockBreakStart(pos, face);
-    }
-
-    public void onBlockBreakAbort(Vector3 pos, BlockFace face) {
-        player.onBlockBreakAbort(pos, face);
-    }
-
-    public void onBlockBreakComplete(BlockVector3 blockPos, BlockFace face) {
-        player.onBlockBreakComplete(blockPos, face);
-    }
-
     public static int getNoShieldDelay() {
         return Player.NO_SHIELD_DELAY;
+    }
+
+    public boolean isBreakingBlock() {
+        return breakingBlock != null;
     }
 
     /**
@@ -901,6 +885,239 @@ public final class PlayerHandle {
         player.sendCameraPresets();
         if (player.getHealth() < 1) {
             player.setHealth(0);
+        }
+    }
+
+    /**
+     * The player begins to break the block
+     */
+    public void handleBlockBreakStart(Vector3 pos, BlockFace face) {
+        BlockVector3 blockPos = pos.asBlockVector3();
+        long currentBreak = System.currentTimeMillis();
+        // HACK: Client spams multiple left clicks so we need to skip them.
+        if ((player.lastBreakPosition.equals(blockPos) && (currentBreak - player.lastBreak) < 10)
+                || pos.distanceSquared(player) > 100) {
+            return;
+        }
+
+        Block target = player.getLevel().getBlock(pos);
+        PlayerInteractEvent playerInteractEvent = new PlayerInteractEvent(
+                player,
+                player.getInventory().getItemInHand(),
+                target,
+                face,
+                target.getId() == 0
+                        ? PlayerInteractEvent.Action.LEFT_CLICK_AIR
+                        : PlayerInteractEvent.Action.LEFT_CLICK_BLOCK);
+        playerInteractEvent.call();
+        if (playerInteractEvent.isCancelled()) {
+            player.getInventory().sendHeldItem(player);
+            player.getLevel()
+                    .sendBlocks(new Player[] {player}, new Block[] {target}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 0);
+            if (target.getLevelBlockAtLayer(1) instanceof BlockLiquid) {
+                player.getLevel()
+                        .sendBlocks(
+                                new Player[] {player},
+                                new Block[] {target.getLevelBlockAtLayer(1)},
+                                UpdateBlockPacket.FLAG_ALL_PRIORITY,
+                                1);
+            }
+            return;
+        }
+
+        if (target.onTouch(player, playerInteractEvent.getAction()) != 0) return;
+
+        Block block = target.getSide(face);
+        if (block.getId() == Block.FIRE || block.getId() == BlockID.SOUL_FIRE) {
+            player.getLevel().setBlock(block, Block.get(BlockID.AIR), true);
+            player.getLevel().addLevelSoundEvent(block, LevelSoundEventPacket.SOUND_EXTINGUISH_FIRE);
+            return;
+        }
+
+        if (block.getId() == BlockID.SWEET_BERRY_BUSH && block.getDamage() == 0) {
+            Item oldItem = playerInteractEvent.getItem();
+            Item i = player.getLevel().useBreakOn(block, oldItem, player, true);
+            if (player.isSurvival() || player.isAdventure()) {
+                player.getFoodData().updateFoodExpLevel(0.005);
+                if (!i.equals(oldItem) || i.getCount() != oldItem.getCount()) {
+                    player.getInventory().setItemInHand(i);
+                    player.getInventory().sendHeldItem(player.getViewers().values());
+                }
+            }
+            return;
+        }
+
+        if (!block.isBlockChangeAllowed(player)) {
+            return;
+        }
+
+        if (player.isSurvival()) {
+            this.breakingBlockTime = currentBreak;
+            double miningTimeRequired;
+            if (target instanceof CustomBlock customBlock) {
+                miningTimeRequired = customBlock.breakTime(player.getInventory().getItemInHand(), player);
+            } else
+                miningTimeRequired =
+                        target.calculateBreakTime(player.getInventory().getItemInHand(), player);
+            int breakTime = (int) Math.ceil(miningTimeRequired * 20);
+            if (breakTime > 0) {
+                LevelEventPacket pk = new LevelEventPacket();
+                pk.evid = LevelEventPacket.EVENT_BLOCK_START_BREAK;
+                pk.x = (float) pos.x();
+                pk.y = (float) pos.y();
+                pk.z = (float) pos.z();
+                pk.data = 65535 / breakTime;
+                player.getLevel().addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, pk);
+                // Optimize the player's digging experience during anti-mining penetration
+                if (player.getLevel().isAntiXrayEnabled() && player.getLevel().isPreDeObfuscate()) {
+                    var vecList = new ArrayList<Vector3WithRuntimeId>(5);
+                    Vector3WithRuntimeId tmpVec;
+                    for (var each : BlockFace.values()) {
+                        if (each == face) continue;
+                        var tmpX = target.getFloorX() + each.getXOffset();
+                        var tmpY = target.getFloorY() + each.getYOffset();
+                        var tmpZ = target.getFloorZ() + each.getZOffset();
+                        try {
+                            tmpVec = new Vector3WithRuntimeId(
+                                    tmpX,
+                                    tmpY,
+                                    tmpZ,
+                                    player.getLevel().getBlockRuntimeId(tmpX, tmpY, tmpZ, 0),
+                                    player.getLevel().getBlockRuntimeId(tmpX, tmpY, tmpZ, 1));
+                            if (player.getLevel()
+                                    .getRawFakeOreToPutRuntimeIdMap()
+                                    .containsKey(tmpVec.getRuntimeIdLayer0())) {
+                                vecList.add(tmpVec);
+                            }
+                        } catch (Exception ignore) {
+                        }
+                    }
+                    player.getLevel()
+                            .sendBlocks(
+                                    new Player[] {player}, vecList.toArray(Vector3[]::new), UpdateBlockPacket.FLAG_ALL);
+                }
+            }
+        }
+
+        this.breakingBlock = target;
+        this.breakingBlockFace = face;
+        player.lastBreak = currentBreak;
+        player.lastBreakPosition = blockPos;
+    }
+
+    /**
+     * The player stopped breaking the block
+     */
+    public void handleBlockBreakAbort(Vector3 pos, BlockFace face) {
+        if (pos.distanceSquared(player) < 100) { // same as with ACTION_START_BREAK
+            LevelEventPacket pk = new LevelEventPacket();
+            pk.evid = LevelEventPacket.EVENT_BLOCK_STOP_BREAK;
+            pk.x = (float) pos.x();
+            pk.y = (float) pos.y();
+            pk.z = (float) pos.z();
+            pk.data = 0;
+            player.getLevel().addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, pk);
+        }
+        this.blockBreakProgress = 0;
+        this.breakingBlock = null;
+        this.breakingBlockFace = null;
+    }
+
+    /**
+     * The player broke the block
+     */
+    public void handleBlockBreakComplete(BlockVector3 blockPos, BlockFace face) {
+        if (!player.isSpawned() || !player.isAlive()) {
+            return;
+        }
+
+        player.resetCraftingGridType();
+
+        Item handItem = player.getInventory().getItemInHand();
+        Item clone = handItem.clone();
+
+        boolean canInteract = player.canInteract(blockPos.add(0.5, 0.5, 0.5), player.isCreative() ? 13 : 7);
+        if (canInteract) {
+            handItem = player.getLevel().useBreakOn(blockPos.asVector3(), face, handItem, player, true);
+            if (handItem != null && player.isSurvival()) {
+                player.getFoodData().updateFoodExpLevel(0.005);
+                if (handItem.equals(clone) && handItem.getCount() == clone.getCount()) {
+                    return;
+                }
+
+                if (clone.getId() == handItem.getId() || handItem.getId() == 0) {
+                    player.getInventory().setItemInHand(handItem);
+                } else {
+                    server.getLogger()
+                            .debug("Tried to set item " + handItem.getId() + " but " + player.getName() + " had item "
+                                    + clone.getId() + " in their hand slot");
+                }
+                player.getInventory().sendHeldItem(player.getViewers().values());
+            } else if (handItem == null)
+                player.getLevel()
+                        .sendBlocks(
+                                new Player[] {player},
+                                new Block[] {player.getLevel().getBlock(blockPos.asVector3())},
+                                UpdateBlockPacket.FLAG_ALL_PRIORITY,
+                                0);
+            return;
+        }
+
+        player.getInventory().sendContents(player);
+        player.getInventory().sendHeldItem(player);
+
+        if (blockPos.distanceSquared(player) < 100) {
+            Block target = player.getLevel().getBlock(blockPos.asVector3());
+            player.getLevel()
+                    .sendBlocks(new Player[] {player}, new Block[] {target}, UpdateBlockPacket.FLAG_ALL_PRIORITY);
+
+            BlockEntity blockEntity = player.getLevel().getBlockEntity(blockPos.asVector3());
+            if (blockEntity instanceof BlockEntitySpawnable) {
+                ((BlockEntitySpawnable) blockEntity).spawnTo(player);
+            }
+        }
+    }
+
+    /**
+     * The player continues to break the block
+     */
+    public void handleBlockBreakContinue(Vector3 pos, BlockFace face) {
+        if (this.isBreakingBlock()) {
+            var time = System.currentTimeMillis();
+            Block block = player.getLevel().getBlock(pos, false);
+
+            double miningTimeRequired;
+            if (breakingBlock instanceof CustomBlock customBlock) {
+                miningTimeRequired = customBlock.breakTime(player.getInventory().getItemInHand(), player);
+            } else {
+                miningTimeRequired =
+                        breakingBlock.calculateBreakTime(player.getInventory().getItemInHand(), player);
+            }
+
+            if (miningTimeRequired > 0) {
+                int breakTick = (int) Math.ceil(miningTimeRequired * 20);
+                LevelEventPacket pk = new LevelEventPacket();
+                pk.evid = LevelEventPacket.EVENT_BLOCK_UPDATE_BREAK;
+                pk.x = (float) breakingBlock.x();
+                pk.y = (float) breakingBlock.y();
+                pk.z = (float) breakingBlock.z();
+                pk.data = 65535 / breakTick;
+                player.getLevel().addChunkPacket(breakingBlock.getFloorX() >> 4, breakingBlock.getFloorZ() >> 4, pk);
+                player.getLevel().addParticle(new PunchBlockParticle(pos, block, face));
+                // miningTimeRequired * 1000-101 This algorithm best matches the original computational speed, we don't
+                // want any cube destruction processing
+                // to be performed by the server, only custom cubes are processed in order to bypass the original fixed
+                // mining time limitation
+                if (breakingBlock instanceof CustomBlock) {
+                    var timeDiff = time - this.breakingBlockTime;
+                    this.blockBreakProgress += timeDiff / (miningTimeRequired * 1000 - 101);
+                    if (this.blockBreakProgress > 0.99) {
+                        this.handleBlockBreakAbort(pos, face);
+                        this.handleBlockBreakComplete(pos.asBlockVector3(), face);
+                    }
+                    this.breakingBlockTime = time;
+                }
+            }
         }
     }
 }
