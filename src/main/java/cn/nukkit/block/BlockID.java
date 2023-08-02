@@ -1703,6 +1703,9 @@ public interface BlockID {
     @Since("1.20.0-r2")
     int CHERRY_FENCE_GATE = 788;
     @PowerNukkitXOnly
+    @Since("1.20.10-r2")
+    int CHERRY_HANGING_SIGN = 789;
+    @PowerNukkitXOnly
     @Since("1.20.0-r2")
     int STRIPPED_CHERRY_LOG = 790;
     @PowerNukkitXOnly

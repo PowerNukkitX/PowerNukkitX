@@ -866,6 +866,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             list[CHERRY_DOOR] = BlockDoorCherry.class;//786
             list[CHERRY_FENCE] = BlockFenceCherry.class;//787
             list[CHERRY_FENCE_GATE] = BlockFenceGateCherry.class;//788
+            list[CHERRY_HANGING_SIGN] = BlockCherryHangingSign.class;//789
 
             list[STRIPPED_CHERRY_LOG] = BlockLogStrippedCherry.class;//790
             list[CHERRY_LOG] = BlockCherryLog.class;//791
