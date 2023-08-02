@@ -10,30 +10,31 @@ import cn.nukkit.entity.item.EntityFallingBlock;
 import cn.nukkit.item.Item;
 import cn.nukkit.nbt.tag.CompoundTag;
 
+//todo complete
 @PowerNukkitXOnly
-@Since("1.20.0-r2")
-public class BlockSuspiciousSand extends BlockFallableMeta {
+@Since("1.20.10-r2")
+public class BlockSuspiciousGravel extends BlockFallableMeta {
     public static final IntBlockProperty BRUSHED_PROGRESS = new IntBlockProperty("brushed_progress", false, 3);
     public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.HANGING, BRUSHED_PROGRESS);
-
-    public BlockSuspiciousSand() {
-    }
-
-    public BlockSuspiciousSand(int meta) {
-        super(meta);
-    }
 
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
+    public BlockSuspiciousGravel() {
+    }
+
+    public BlockSuspiciousGravel(int meta) {
+        super(meta);
+    }
+
     public int getId() {
-        return SUSPICIOUS_SAND;
+        return SUSPICIOUS_GRAVEL;
     }
 
     public String getName() {
-        return "Suspicious Sand";
+        return "Suspicious Gravel";
     }
 
     @Override

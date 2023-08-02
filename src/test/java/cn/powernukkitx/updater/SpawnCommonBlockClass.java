@@ -14,10 +14,10 @@ import java.util.*;
 
 
 public class SpawnCommonBlockClass {
-    static Vector2 range = new Vector2(755, 784);
+    static Vector2 range = new Vector2(805, 867);
     static Gson gson = new GsonBuilder().setPrettyPrinting().create();
     static String targetPath = "src/main/java/cn/nukkit/block";
-    static String version = "1.20.0-r2";
+    static String version = "1.20.10-r2";
 
     public static void main(String[] args) throws IOException {
         try (InputStream stream = GetLegacyItemIdsFromBlockIds.class.getClassLoader().getResourceAsStream("block_ids.csv")) {
@@ -64,7 +64,7 @@ public class SpawnCommonBlockClass {
                     registerInfo.add("list[" + entry.getValue().toUpperCase(Locale.ENGLISH) + "] = " + className + ".class;//" + entry.getKey());
                     blockIDInfo.add("""
                             @PowerNukkitXOnly
-                            @Since(%s)
+                            @Since("%s")
                             int %s = %s;
                             """.formatted(version, entry.getValue().toUpperCase(Locale.ENGLISH), entry.getKey()));
                 }

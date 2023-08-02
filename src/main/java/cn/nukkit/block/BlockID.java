@@ -1747,4 +1747,36 @@ public interface BlockID {
     @PowerNukkitXOnly
     @Since("1.20.10-r1")
     int PINK_PETALS = 804;
+
+    @PowerNukkitXOnly
+    @Since("1.20.10-r2")
+    int DECORATED_POT = 806;
+
+    @PowerNukkitXOnly
+    @Since("1.20.10-r2")
+    int TORCHFLOWER_CROP = 822;
+
+    @PowerNukkitXOnly
+    @Since("1.20.10-r2")
+    int TORCHFLOWER = 823;
+
+    @PowerNukkitXOnly
+    @Since("1.20.10-r2")
+    int SUSPICIOUS_GRAVEL = 828;
+
+    @PowerNukkitXOnly
+    @Since("1.20.10-r2")
+    int PITCHER_CROP = 829;
+
+    @PowerNukkitXOnly
+    @Since("1.20.10-r2")
+    int CALIBRATED_SCULK_SENSOR = 835;
+
+    @PowerNukkitXOnly
+    @Since("1.20.10-r2")
+    int SNIFFER_EGG = 851;
+
+    @PowerNukkitXOnly
+    @Since("1.20.10-r2")
+    int PITCHER_PLANT = 867;
 }
