@@ -20,7 +20,7 @@ public class DyeDispenseBehavior extends DefaultDispenseBehavior {
 
         if (item.isFertilizer()) {
             if (target instanceof BlockCrops || target instanceof BlockSapling || target instanceof BlockTallGrass
-                    || target instanceof BlockDoublePlant || target instanceof BlockMushroom) {
+                    || target instanceof BlockDoublePlant || target instanceof BlockMushroom || target instanceof BlockCherrySapling || target instanceof BlockBambooSapling) {
                 target.onActivate(item);
 
             } else {
