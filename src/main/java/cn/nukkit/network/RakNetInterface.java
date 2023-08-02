@@ -79,7 +79,7 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
                 server.getPlayerManager().addPlayer(address, player);
                 session.setPlayer(player);
             } catch (Exception e) {
-                Server.getInstance().getLogger().error("Failed to create player", e);
+                log.error("Failed to create player", e);
                 session.disconnect("Internal error");
                 sessions.remove(address);
             }
