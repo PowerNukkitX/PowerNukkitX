@@ -6,7 +6,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySculkSensor;
 import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BooleanBlockProperty;
+import cn.nukkit.blockproperty.IntBlockProperty;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 @Since("1.6.0.0-PNX")
 public class BlockSculkSensor extends BlockSolid implements BlockEntityHolder<BlockEntitySculkSensor>, RedstoneComponent {
 
-    public static final BooleanBlockProperty SCULK_SENSOR_PHASE = new BooleanBlockProperty("sculk_sensor_phase", false);
+    public static final IntBlockProperty SCULK_SENSOR_PHASE = new IntBlockProperty("sculk_sensor_phase", false, 2);
     public static final BlockProperties PROPERTIES = new BlockProperties(SCULK_SENSOR_PHASE);
 
     @Override
@@ -74,9 +74,9 @@ public class BlockSculkSensor extends BlockSolid implements BlockEntityHolder<Bl
     public int onUpdate(int type) {
         getOrCreateBlockEntity();
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
-            if (level.getServer().isRedstoneEnabled()){
+            if (level.getServer().isRedstoneEnabled()) {
                 this.getBlockEntity().calPower();
-                this.setPowered(false);
+                this.setPhase(0);
                 updateAroundRedstone();
             }
             return type;
@@ -84,10 +84,10 @@ public class BlockSculkSensor extends BlockSolid implements BlockEntityHolder<Bl
         return 0;
     }
 
-    public void setPowered(boolean powered) {
-        if (powered) this.level.addSound(this.add(0.5,0.5,0.5), Sound.POWER_ON_SCULK_SENSOR);
-        else this.level.addSound(this.add(0.5,0.5,0.5), Sound.POWER_OFF_SCULK_SENSOR);
-        this.setBooleanValue(SCULK_SENSOR_PHASE, powered);
+    public void setPhase(int phase) {
+        if (phase == 1) this.level.addSound(this.add(0.5, 0.5, 0.5), Sound.POWER_ON_SCULK_SENSOR);
+        else this.level.addSound(this.add(0.5, 0.5, 0.5), Sound.POWER_OFF_SCULK_SENSOR);
+        this.setIntValue(SCULK_SENSOR_PHASE, phase);
         this.level.setBlock(this, this, true, false);
     }
 
