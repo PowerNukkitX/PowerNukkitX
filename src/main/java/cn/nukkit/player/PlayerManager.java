@@ -2,6 +2,7 @@ package cn.nukkit.player;
 
 import cn.nukkit.Server;
 import cn.nukkit.entity.data.Skin;
+import cn.nukkit.event.player.PlayerCreationEvent;
 import cn.nukkit.event.server.PlayerDataSerializeEvent;
 import cn.nukkit.level.Position;
 import cn.nukkit.metadata.PlayerMetadataStore;
@@ -10,14 +11,19 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.network.SourceInterface;
 import cn.nukkit.network.protocol.PlayerListPacket;
+import cn.nukkit.network.session.NetworkPlayerSession;
+import cn.nukkit.player.serializer.PlayerDataSerializer;
 import cn.nukkit.scheduler.Task;
-import cn.nukkit.utils.PlayerDataSerializer;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -53,7 +59,8 @@ public class PlayerManager {
     private final Map<InetSocketAddress, Player> players = new HashMap<>();
 
     private final Map<UUID, Player> playerList = new HashMap<>();
-    public PlayerDataSerializer playerDataSerializer;
+
+    private PlayerDataSerializer playerDataSerializer;
 
     public void onPlayerCompleteLoginSequence(Player player) {
         this.sendFullPlayerListData(player);
@@ -65,10 +72,16 @@ public class PlayerManager {
         }
     }
 
+    /**
+     * Add new Player
+     */
     public void addPlayer(InetSocketAddress socketAddress, Player player) {
         this.players.put(socketAddress, player);
     }
 
+    /**
+     * Add online Player
+     */
     public void addOnlinePlayer(Player player) {
         this.playerList.put(player.getUniqueId(), player);
         this.updatePlayerListData(
@@ -79,6 +92,26 @@ public class PlayerManager {
                 player.getPlayerInfo().getXuid());
     }
 
+    /**
+     * Remove player
+     */
+    public void removePlayer(Player player) {
+        Player toRemove = players.remove(player.getPlayerConnection().getRawSocketAddress());
+        if (toRemove != null) {
+            return;
+        }
+        for (InetSocketAddress socketAddress : new ArrayList<>(players.keySet())) {
+            Player p = players.get(socketAddress);
+            if (player == p) {
+                players.remove(socketAddress);
+                break;
+            }
+        }
+    }
+
+    /**
+     * Remove online Player
+     */
     public void removeOnlinePlayer(Player player) {
         if (this.playerList.containsKey(player.getUniqueId())) {
             this.playerList.remove(player.getUniqueId());
@@ -89,6 +122,77 @@ public class PlayerManager {
 
             Server.broadcastPacket(this.playerList.values(), pk);
         }
+    }
+
+    /**
+     * Get the player instance from the specified UUID.
+     *
+     * @param uuid uuid
+     * @return Player example, can be empty
+     */
+    public Optional<Player> getPlayer(UUID uuid) {
+        Preconditions.checkNotNull(uuid, "uuid");
+        return Optional.ofNullable(playerList.get(uuid));
+    }
+
+    /**
+     * Get an online player from the player name, this method is a fuzzy match and will be returned as long as the player name has the name prefix.
+     *
+     * @param name Player name
+     * @return Player instance object,failed to get null
+     */
+    public Player getPlayer(String name) {
+        Player found = null;
+        String loweredName = name.toLowerCase();
+        int delta = Integer.MAX_VALUE;
+        for (Player player : this.getOnlinePlayers().values()) {
+            if (player.getName().toLowerCase().startsWith(loweredName)) {
+                int curDelta = player.getName().length() - loweredName.length();
+                if (curDelta < delta) {
+                    found = player;
+                    delta = curDelta;
+                }
+                if (curDelta == 0) {
+                    break;
+                }
+            }
+        }
+        return found;
+    }
+
+    /**
+     * Get an online player from a player name, this method is an exact match and returns when the player name string is identical.
+     *
+     * @param name Player name
+     * @return Player instance object,failed to get null
+     */
+    public Player getPlayerExact(String name) {
+        for (Player player : this.getOnlinePlayers().values()) {
+            if (player.getName().toLowerCase().equals(name.toLowerCase())) {
+                return player;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Specify a partial player name and return all players with or equal to that name.
+     *
+     * @param partialName Partial name
+     * @return All players matched
+     */
+    public List<Player> getMatchingPlayers(String partialName) {
+        String loweredName = partialName.toLowerCase();
+        List<Player> matchedPlayers = new ArrayList<>();
+        for (Player player : this.getOnlinePlayers().values()) {
+            if (player.getName().toLowerCase().equals(loweredName)) {
+                matchedPlayers.add(player);
+                return Collections.singletonList(player);
+            } else if (player.getName().toLowerCase().contains(loweredName)) {
+                matchedPlayers.add(player);
+            }
+        }
+        return matchedPlayers;
     }
 
     /**
@@ -113,16 +217,14 @@ public class PlayerManager {
     }
 
     /**
-     * 更新指定玩家们(players)的{@link PlayerListPacket}数据包(即玩家列表数据)
-     * <p>
      * Update {@link PlayerListPacket} data packets (i.e. player list data) for specified players
      *
-     * @param uuid       uuid
-     * @param entityId   实体id
-     * @param name       名字
-     * @param skin       皮肤
-     * @param xboxUserId xbox用户id
-     * @param players    指定接受数据包的玩家
+     * @param uuid       Uuid
+     * @param entityId   Entity id
+     * @param name       Name
+     * @param skin       Skin
+     * @param xboxUserId Xbox user id
+     * @param players    Specify the player receiving the packet
      */
     public void updatePlayerListData(
             UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Player[] players) {
@@ -145,10 +247,9 @@ public class PlayerManager {
     }
 
     /**
-     * 移除玩家数组中所有玩家的玩家列表数据.<p>
      * Remove player list data for all players in the array.
      *
-     * @param players 玩家数组
+     * @param players Player array
      */
     public void removePlayerListData(UUID uuid, Player[] players) {
         PlayerListPacket pk = new PlayerListPacket();
@@ -158,10 +259,9 @@ public class PlayerManager {
     }
 
     /**
-     * 移除这个玩家的玩家列表数据.<p>
      * Remove this player's player list data.
      *
-     * @param player 玩家
+     * @param player Player
      */
     public void removePlayerListData(UUID uuid, Player player) {
         PlayerListPacket pk = new PlayerListPacket();
@@ -175,10 +275,9 @@ public class PlayerManager {
     }
 
     /**
-     * 发送玩家列表数据包给一个玩家.<p>
      * Send a player list packet to a player.
      *
-     * @param player 玩家
+     * @param player Player
      */
     public void sendFullPlayerListData(Player player) {
         PlayerListPacket pk = new PlayerListPacket();
@@ -196,25 +295,10 @@ public class PlayerManager {
     }
 
     /**
-     * 从指定的UUID得到玩家实例.
-     * <p>
-     * Get the player instance from the specified UUID.
-     *
-     * @param uuid uuid
-     * @return 玩家实例，可为空<br>Player example, can be empty
-     */
-    public Optional<Player> getPlayer(UUID uuid) {
-        Preconditions.checkNotNull(uuid, "uuid");
-        return Optional.ofNullable(playerList.get(uuid));
-    }
-
-    /**
-     * 从数据库中查找指定玩家名对应的UUID.
-     * <p>
      * Find the UUID corresponding to the specified player name from the database.
      *
-     * @param name 玩家名<br>player name
-     * @return 玩家的UUID，可为空.<br>The player's UUID, which can be empty.
+     * @param name Player name
+     * @return The player's UUID, which can be empty.
      */
     public Optional<UUID> lookupName(String name) {
         byte[] nameBytes = name.toLowerCase().getBytes(StandardCharsets.UTF_8);
@@ -234,12 +318,10 @@ public class PlayerManager {
     }
 
     /**
-     * 更新数据库中指定玩家名的UUID，若不存在则添加.
-     * <p>
      * Update the UUID of the specified player name in the database, or add it if it does not exist.
      *
-     * @param uuid uuid
-     * @param name 名字
+     * @param uuid Uuid
+     * @param name Name
      */
     public void updateName(UUID uuid, String name) {
         byte[] nameBytes = name.toLowerCase().getBytes(StandardCharsets.UTF_8);
@@ -252,17 +334,6 @@ public class PlayerManager {
     }
 
     /**
-     * 从指定的UUID得到一个玩家实例,可以是在线玩家也可以是离线玩家.
-     * <p>
-     * Get a player instance from the specified UUID, either online or offline.
-     *
-     * @param uuid uuid
-     * @return 玩家<br>player
-     */
-
-    /**
-     * create为false
-     * <p>
      * create is false
      *
      * @see #getOfflinePlayerData(UUID, boolean)
@@ -272,10 +343,10 @@ public class PlayerManager {
     }
 
     /**
-     * 获得UUID指定的玩家的NBT数据
+     * Get the NBT data of the player specified by UUID
      *
-     * @param uuid   要获取数据的玩家UUID<br>UUID of the player to get data from
-     * @param create 如果玩家数据不存在是否创建<br>If player data does not exist whether to create.
+     * @param uuid   UUID of the player to get data from
+     * @param create If player data does not exist whether to create.
      * @return {@link CompoundTag}
      */
     public CompoundTag getOfflinePlayerData(UUID uuid, boolean create) {
@@ -354,13 +425,11 @@ public class PlayerManager {
     }
 
     /**
-     * 保存玩家数据，玩家在线离线都行.
-     * <p>
      * Save player data, players can be offline.
      *
-     * @param name  玩家名<br>player name
-     * @param tag   NBT数据<br>nbt data
-     * @param async 是否异步保存<br>Whether to save asynchronously
+     * @param name  Player name
+     * @param tag   Nbt data
+     * @param async Whether to save asynchronously
      */
     public void saveOfflinePlayerData(String name, CompoundTag tag, boolean async) {
         Optional<UUID> uuid = lookupName(name);
@@ -411,97 +480,6 @@ public class PlayerManager {
         }
     }
 
-    /**
-     * 从玩家名获得一个在线玩家，这个方法是模糊匹配，只要玩家名带有name前缀就会被返回.
-     * <p>
-     * Get an online player from the player name, this method is a fuzzy match and will be returned as long as the player name has the name prefix.
-     *
-     * @param name 玩家名<br>player name
-     * @return 玩家实例对象，获取失败为null<br>Player instance object,failed to get null
-     */
-    public Player getPlayer(String name) {
-        Player found = null;
-        name = name.toLowerCase();
-        int delta = Integer.MAX_VALUE;
-        for (Player player : this.getOnlinePlayers().values()) {
-            if (player.getName().toLowerCase().startsWith(name)) {
-                int curDelta = player.getName().length() - name.length();
-                if (curDelta < delta) {
-                    found = player;
-                    delta = curDelta;
-                }
-                if (curDelta == 0) {
-                    break;
-                }
-            }
-        }
-
-        return found;
-    }
-
-    /**
-     * 从玩家名获得一个在线玩家，这个方法是精确匹配，当玩家名字符串完全相同时返回.
-     * <p>
-     * Get an online player from a player name, this method is an exact match and returns when the player name string is identical.
-     *
-     * @param name 玩家名<br>player name
-     * @return 玩家实例对象，获取失败为null<br>Player instance object,failed to get null
-     */
-    public Player getPlayerExact(String name) {
-        name = name.toLowerCase();
-        for (Player player : this.getOnlinePlayers().values()) {
-            if (player.getName().toLowerCase().equals(name)) {
-                return player;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * 指定一个部分玩家名，返回所有包含或者等于该名称的玩家.
-     * <p>
-     * Specify a partial player name and return all players with or equal to that name.
-     *
-     * @param partialName 部分玩家名<br>partial name
-     * @return 匹配到的所有玩家, 若匹配不到则为一个空数组<br>All players matched, if not matched then an empty array
-     */
-    public Player[] matchPlayer(String partialName) {
-        partialName = partialName.toLowerCase();
-        List<Player> matchedPlayer = new ArrayList<>();
-        for (Player player : this.getOnlinePlayers().values()) {
-            if (player.getName().toLowerCase().equals(partialName)) {
-                return new Player[] {player};
-            } else if (player.getName().toLowerCase().contains(partialName)) {
-                matchedPlayer.add(player);
-            }
-        }
-
-        return matchedPlayer.toArray(Player.EMPTY_ARRAY);
-    }
-
-    /**
-     * 删除一个玩家，可以让一个玩家离线.
-     * <p>
-     * Delete a player to take a player offline.
-     *
-     * @param player 需要删除的玩家<br>Players who need to be deleted
-     */
-    public void removePlayer(Player player) {
-        Player toRemove = this.players.remove(player.getPlayerConnection().getRawSocketAddress());
-        if (toRemove != null) {
-            return;
-        }
-
-        for (InetSocketAddress socketAddress : new ArrayList<>(this.players.keySet())) {
-            Player p = this.players.get(socketAddress);
-            if (player == p) {
-                this.players.remove(socketAddress);
-                break;
-            }
-        }
-    }
-
     public PlayerDataSerializer getPlayerDataSerializer() {
         return playerDataSerializer;
     }
@@ -511,13 +489,20 @@ public class PlayerManager {
     }
 
     /**
-     * 获得所有在线的玩家Map.
-     * <p>
      * Get all online players Map.
      *
-     * @return 所有的在线玩家Map
+     * @return All online players Map
      */
     public Map<UUID, Player> getOnlinePlayers() {
         return ImmutableMap.copyOf(playerList);
+    }
+
+    /**
+     * Get all online player List.
+     *
+     * @return All online player List
+     */
+    public List<Player> getPlayerList() {
+        return ImmutableList.copyOf(playerList.values());
     }
 }

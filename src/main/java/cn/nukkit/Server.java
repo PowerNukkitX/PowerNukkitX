@@ -58,6 +58,7 @@ import cn.nukkit.permission.Permissible;
 import cn.nukkit.player.GameMode;
 import cn.nukkit.player.Player;
 import cn.nukkit.player.PlayerManager;
+import cn.nukkit.player.serializer.DefaultPlayerDataSerializer;
 import cn.nukkit.plugin.*;
 import cn.nukkit.plugin.service.NKServiceManager;
 import cn.nukkit.plugin.service.ServiceManager;
@@ -427,7 +428,7 @@ public class Server {
                 null,
                 false);
 
-        playerManager.playerDataSerializer = new DefaultPlayerDataSerializer(this);
+        playerManager.setPlayerDataSerializer(new DefaultPlayerDataSerializer(this));
 
         // todo: VersionString 现在不必要
 

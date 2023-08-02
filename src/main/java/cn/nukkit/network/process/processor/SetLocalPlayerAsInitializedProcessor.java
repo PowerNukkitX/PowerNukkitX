@@ -17,7 +17,7 @@ public class SetLocalPlayerAsInitializedProcessor extends DataPacketProcessor<Se
             return;
         }
         player.getPlayerConnection().setLocallyInitialized(true);
-        playerHandle.onPlayerLocallyInitialized();
+        playerHandle.handlePlayerLocallyInitialized();
         PlayerLocallyInitializedEvent event = new PlayerLocallyInitializedEvent(player);
         event.call();
     }

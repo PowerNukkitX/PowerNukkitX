@@ -375,7 +375,7 @@ public class Player extends EntityHuman
     @Setter
     private boolean foodEnabled = true;
 
-    private final @NotNull PlayerHandle playerHandle = new PlayerHandle(this);
+    private final @NotNull PlayerHandle playerHandle;
 
     private boolean needDimensionChangeACK = false;
 
@@ -411,6 +411,7 @@ public class Player extends EntityHuman
         this.boundingBox = new SimpleAxisAlignedBB(0, 0, 0, 0, 0, 0);
         this.lastSkinChange = -1;
         this.playerConnection = new PlayerConnection(this, networkSession, socketAddress);
+        this.playerHandle = new PlayerHandle(this);
 
         this.uuid = null;
         this.rawUUID = null;
@@ -740,7 +741,7 @@ public class Player extends EntityHuman
             }
         }
         if (this.chunkLoadCount >= this.spawnThreshold && !this.isSpawned() && isConnected()) {
-            playerConnection.doFirstSpawn();
+            playerHandle.handleSpawn();
         }
     }
 

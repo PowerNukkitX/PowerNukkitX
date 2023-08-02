@@ -145,7 +145,7 @@ public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
                     player.close(event.getKickMessage(), event.getKickMessage());
                 } else if (playerHandle.isShouldLogin()) {
                     player.setSkin(event.getSkin());
-                    playerHandle.onCompleteLoginSequence();
+                    playerHandle.handleCompleteLoginSequence();
                     for (Consumer<Server> action : event.getScheduledActions()) {
                         action.accept(server);
                     }
@@ -181,7 +181,7 @@ public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
                 }
             });
         } else {
-            playerHandle.processLogin();
+            playerHandle.handleLogin();
         }
     }
 

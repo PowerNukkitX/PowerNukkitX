@@ -1,4 +1,4 @@
-package cn.nukkit.utils;
+package cn.nukkit.player.serializer;
 
 import java.io.IOException;
 import java.io.InputStream;
