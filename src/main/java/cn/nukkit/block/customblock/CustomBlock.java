@@ -160,6 +160,12 @@ public interface CustomBlock {
         return breakTime;
     }
 
+     /**
+     * 定义这个方块是否需要被注册到创造栏中
+     * 当你对这个方块有其他的物品想作为其展示时推荐关闭
+     */
+    @PowerNukkitXOnly
+    @Since("1.20.10-r2")
     default boolean shouldBeRegisteredInCreative() {
         return true;
     }
