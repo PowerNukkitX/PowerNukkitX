@@ -159,4 +159,8 @@ public interface CustomBlock {
         }
         return breakTime;
     }
+
+    default boolean shouldBeRegisteredInCreative() {
+        return true;
+    }
 }
