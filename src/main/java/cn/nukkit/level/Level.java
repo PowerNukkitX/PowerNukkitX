@@ -3089,7 +3089,7 @@ public class Level implements ChunkManager, Metadatable {
                 if (ev.getAction() == Action.RIGHT_CLICK_BLOCK) {
                     target.onPlayerRightClick(player, item, face, new Vector3(fx, fy, fz));
                 }
-                if ((!player.isSneaking() || player.getInventory().getItemInHand().isNull()) && target.canBeActivated() && target.onActivate(item, player)) {
+                if (((!player.isSneaking() && !player.isFlySneaking()) || player.getInventory().getItemInHand().isNull()) && target.canBeActivated() && target.onActivate(item, player)) {
                     if (item.isTool() && item.getDamage() >= item.getMaxDurability()) {
                         addSound(player, Sound.RANDOM_BREAK);
                         item = new ItemBlock(Block.get(BlockID.AIR), 0, 0);

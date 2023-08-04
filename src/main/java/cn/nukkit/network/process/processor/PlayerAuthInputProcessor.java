@@ -1,5 +1,6 @@
 package cn.nukkit.network.process.processor;
 
+import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.entity.item.EntityMinecartAbstract;
@@ -102,6 +103,11 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
             } else {
                 player.setSneaking(false);
             }
+        }
+        if(player.getAdventureSettings().get(AdventureSettings.Type.FLYING)) {
+            if (pk.getInputData().contains(AuthInputAction.SNEAKING)) {
+                player.setFlySneaking(true);
+            } else player.setFlySneaking(false);
         }
         if (pk.getInputData().contains(AuthInputAction.START_JUMPING)) {
             PlayerJumpEvent playerJumpEvent = new PlayerJumpEvent(player);
