@@ -15,6 +15,8 @@ import cn.nukkit.event.inventory.InventoryMoveItemEvent;
 import cn.nukkit.inventory.*;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
+import cn.nukkit.item.ItemPotion;
+import cn.nukkit.item.ItemPotionSplash;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.AxisAlignedBB;
@@ -457,6 +459,65 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
                                 inventory.setFuel(fuel);
                                 item.count--;
                                 pushedItem = true;
+                            }
+                        }
+                    }
+
+                    if (pushedItem) {
+                        this.inventory.setItem(i, item);
+                    }
+                }
+            }
+
+            return pushedItem;
+        } else if (be instanceof BlockEntityBrewingStand) {
+            BlockEntityBrewingStand brewingstand = (BlockEntityBrewingStand) be;
+            BrewingInventory inventory = brewingstand.getInventory();
+            if (inventory.isFull()) {
+                return false;
+            }
+
+            boolean pushedItem = false;
+
+            for (int i = 0; i < this.inventory.getSize(); i++) {
+                Item item = this.inventory.getItem(i);
+                if (!item.isNull()) {
+                    Item itemToAdd = item.clone();
+                    itemToAdd.setCount(1);
+
+                    //Check direction of hopper
+                    if (this.getBlock().getDamage() == 0) {
+                        Item ingredient = inventory.getIngredient();
+                        if (ingredient.isNull()) {
+                            event = new InventoryMoveItemEvent(this.inventory, inventory, this, itemToAdd, InventoryMoveItemEvent.Action.SLOT_CHANGE);
+                            this.server.getPluginManager().callEvent(event);
+
+                            if (!event.isCancelled()) {
+                                inventory.setIngredient(itemToAdd);
+                                item.count--;
+                                pushedItem = true;
+                            }
+                        } else if (ingredient.getId() == itemToAdd.getId() && ingredient.getDamage() == itemToAdd.getDamage() && ingredient.getNamespaceId().equals(itemToAdd.getNamespaceId()) && ingredient.count < ingredient.getMaxStackSize()) {
+                            event = new InventoryMoveItemEvent(this.inventory, inventory, this, itemToAdd, InventoryMoveItemEvent.Action.SLOT_CHANGE);
+                            this.server.getPluginManager().callEvent(event);
+
+                            if (!event.isCancelled()) {
+                                ingredient.count++;
+                                inventory.setIngredient(ingredient);
+                                item.count--;
+                                pushedItem = true;
+                            }
+                        }
+                    } else if (itemToAdd instanceof ItemPotion || itemToAdd instanceof ItemPotionSplash) {
+                        Inventory productView = brewingstand.getProductView();
+                        if(productView.canAddItem(itemToAdd)) {
+                            for(int j = 1; j < 4; j++) {
+                                if(inventory.getItem(j).isNull()) {
+                                    inventory.setItem(j, itemToAdd);
+                                    item.count--;
+                                    pushedItem = true;
+                                    break;
+                                }
                             }
                         }
                     }
