@@ -6153,7 +6153,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public void setFlySneaking(boolean sneaking) {
         this.flySneaking = sneaking;
     }
-    
+
     @PowerNukkitXOnly
     @Since("1.20.0-r1")
     public boolean isFlySneaking() {

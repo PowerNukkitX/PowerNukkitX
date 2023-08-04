@@ -3,6 +3,7 @@ package cn.nukkit.blockentity;
 import cn.nukkit.Player;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitDifference;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBrewingStand;
@@ -405,12 +406,14 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
 
         return nbt;
     }
-
+    @PowerNukkitXOnly
+    @Since("1.20.0-r1")
     @Override
     public Inventory getIngredientView() {
         return new InventorySlice(this.inventory, 0, 1);
     }
-
+    @PowerNukkitXOnly
+    @Since("1.20.0-r1")
     @Override
     public Inventory getProductView() {
         return new InventorySlice(this.inventory, 1, 4);
