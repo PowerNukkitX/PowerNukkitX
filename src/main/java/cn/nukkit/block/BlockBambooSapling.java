@@ -190,4 +190,9 @@ public class BlockBambooSapling extends BlockFlowable {
         return y + 0.875;
     }
 
+    @Override
+    public boolean isFertilizable() {
+        return true;
+    }
+
 }

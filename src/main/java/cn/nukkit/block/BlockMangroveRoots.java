@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 //todo 2022/06/09 实现未完成的功能
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class BlockMangroveRoots extends BlockTransparentMeta{
+public class BlockMangroveRoots extends BlockTransparentMeta {
     public BlockMangroveRoots() {
         super(0);
     }

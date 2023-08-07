@@ -123,4 +123,9 @@ public abstract class BlockMushroom extends BlockFlowable implements BlockFlower
     }
 
     protected abstract int getType();
+
+    @Override
+    public boolean isFertilizable() {
+        return true;
+    }
 }

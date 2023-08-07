@@ -411,6 +411,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     private boolean needDimensionChangeACK = false;
     private Boolean openSignFront = null;
 
+    protected Boolean flySneaking = false;
 
     /**
      * 单元测试用的构造函数
@@ -6147,4 +6148,16 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             }
         }
     }
+    @PowerNukkitXOnly
+    @Since("1.20.10-r2")
+    public void setFlySneaking(boolean sneaking) {
+        this.flySneaking = sneaking;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.20.10-r2")
+    public boolean isFlySneaking() {
+        return this.flySneaking;
+    }
+
 }

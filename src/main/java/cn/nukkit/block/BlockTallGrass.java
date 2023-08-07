@@ -180,4 +180,9 @@ public class BlockTallGrass extends BlockFlowable implements BlockFlowerPot.Flow
     public boolean isPotBlockState() {
         return getPropertyValue(TALL_GRASS_TYPE) == TallGrassType.FERN;
     }
+
+    @Override
+    public boolean isFertilizable() {
+        return true;
+    }
 }

@@ -3080,4 +3080,10 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     public long computeUnsignedBlockStateHash() {
         return Integer.toUnsignedLong(computeBlockStateHash());
     }
+    @PowerNukkitXOnly
+    @Since("1.20.10-r2")
+    public boolean isFertilizable() {
+        return false;
+    }
+
 }
