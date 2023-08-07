@@ -239,4 +239,9 @@ public class BlockDoublePlant extends BlockFlowable {
 
         return false;
     }
+
+    @Override
+    public boolean isFertilizable() {
+        return true;
+    }
 }

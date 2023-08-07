@@ -407,13 +407,13 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
         return nbt;
     }
     @PowerNukkitXOnly
-    @Since("1.20.0-r1")
+    @Since("1.20.10-r2")
     @Override
     public Inventory getIngredientView() {
         return new InventorySlice(this.inventory, 0, 1);
     }
     @PowerNukkitXOnly
-    @Since("1.20.0-r1")
+    @Since("1.20.10-r2")
     @Override
     public Inventory getProductView() {
         return new InventorySlice(this.inventory, 1, 4);

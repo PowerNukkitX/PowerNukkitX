@@ -337,4 +337,9 @@ public class BlockSapling extends BlockFlowable implements BlockFlowerPot.Flower
         return block.getId() == this.getId() && ((BlockSapling) block).getWoodType() == type;
     }
 
+    @Override
+    public boolean isFertilizable() {
+        return true;
+    }
+
 }
