@@ -38,7 +38,7 @@ import cn.nukkit.inventory.*;
 import cn.nukkit.inventory.transaction.*;
 import cn.nukkit.item.*;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.item.test.trim.TrimFactory;
+import cn.nukkit.item.trim.TrimFactory;
 import cn.nukkit.lang.CommandOutputContainer;
 import cn.nukkit.lang.LangCode;
 import cn.nukkit.lang.TextContainer;

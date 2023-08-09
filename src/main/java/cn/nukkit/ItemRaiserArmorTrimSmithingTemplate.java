@@ -1,4 +1,4 @@
-package cn.nukkit.item.test;
+package cn.nukkit;
 
 import cn.nukkit.item.Item;
 

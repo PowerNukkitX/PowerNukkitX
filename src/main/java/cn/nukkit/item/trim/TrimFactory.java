@@ -1,4 +1,4 @@
-package cn.nukkit.item.test.trim;
+package cn.nukkit.item.trim;
 
 import cn.nukkit.network.protocol.types.TrimMaterial;
 import cn.nukkit.network.protocol.types.TrimPattern;

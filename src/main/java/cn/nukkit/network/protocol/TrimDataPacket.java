@@ -1,7 +1,6 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.item.test.trim.TrimFactory;
 import cn.nukkit.network.protocol.types.TrimMaterial;
 import cn.nukkit.network.protocol.types.TrimPattern;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
