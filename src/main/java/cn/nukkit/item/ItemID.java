@@ -400,4 +400,73 @@ public interface ItemID {
     @PowerNukkitOnly
     int SOUL_CAMPFIRE = 801;
     //@PowerNukkitOnly int DEBUG_STICK = <Possible:> 802+;
+
+    @Since("1.20.10-r1")
+    @PowerNukkitXOnly
+    int NETHERITE_UPGRADE_SMITHING_TEMPLATE = 802;
+
+    @Since("1.20.10-r1")
+    @PowerNukkitXOnly
+    int SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE = 803;
+
+    @Since("1.20.10-r1")
+    @PowerNukkitXOnly
+    int DUNE_ARMOR_TRIM_SMITHING_TEMPLATE = 804;
+
+    @Since("1.20.10-r1")
+    @PowerNukkitXOnly
+    int COAST_ARMOR_TRIM_SMITHING_TEMPLATE = 805;
+
+    @Since("1.20.10-r1")
+    @PowerNukkitXOnly
+    int WILD_ARMOR_TRIM_SMITHING_TEMPLATE = 806;
+
+    @Since("1.20.10-r1")
+    @PowerNukkitXOnly
+    int WARD_ARMOR_TRIM_SMITHING_TEMPLATE = 807;
+
+    @Since("1.20.10-r1")
+    @PowerNukkitXOnly
+    int EYE_ARMOR_TRIM_SMITHING_TEMPLATE = 808;
+
+    @Since("1.20.10-r1")
+    @PowerNukkitXOnly
+    int VEX_ARMOR_TRIM_SMITHING_TEMPLATE = 809;
+
+    @Since("1.20.10-r1")
+    @PowerNukkitXOnly
+    int TIDE_ARMOR_TRIM_SMITHING_TEMPLATE = 810;
+
+    @Since("1.20.10-r1")
+    @PowerNukkitXOnly
+    int SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE = 811;
+
+    @Since("1.20.10-r1")
+    @PowerNukkitXOnly
+    int RIB_ARMOR_TRIM_SMITHING_TEMPLATE = 812;
+
+    @Since("1.20.10-r1")
+    @PowerNukkitXOnly
+    int SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE = 813;
+
+    @Since("1.20.10-r1")
+    @PowerNukkitXOnly
+    int SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE = 814;
+
+    @Since("1.20.10-r1")
+    @PowerNukkitXOnly
+    int WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE = 815;
+
+    @Since("1.20.10-r1")
+    @PowerNukkitXOnly
+    int RAISER_ARMOR_TRIM_SMITHING_TEMPLATE = 816;
+
+    @Since("1.20.10-r1")
+    @PowerNukkitXOnly
+    int SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE = 817;
+
+    @Since("1.20.10-r1")
+    @PowerNukkitXOnly
+    int HOST_ARMOR_TRIM_SMITHING_TEMPLATE = 818;
+
 }

@@ -19,6 +19,7 @@ import cn.nukkit.item.customitem.CustomItem;
 import cn.nukkit.item.customitem.CustomItemDefinition;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.randomitem.ItemEchoShard;
+import cn.nukkit.item.test.*;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
@@ -387,6 +388,24 @@ public class Item implements Cloneable, BlockID, ItemID {
             list[ACACIA_SIGN] = ItemAcaciaSign.class; //475
             list[DARKOAK_SIGN] = ItemDarkOakSign.class; //476
             list[SWEET_BERRIES] = ItemSweetBerries.class; //477
+
+            list[NETHERITE_UPGRADE_SMITHING_TEMPLATE] = ItemNetheriteUpgradeSmithingTemplate.class; // 683
+            list[SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE] = ItemSentryArmorTrimSmithingTemplate.class; // 684
+            list[DUNE_ARMOR_TRIM_SMITHING_TEMPLATE] = ItemDuneArmorTrimSmithingTemplate.class; // 685
+            list[COAST_ARMOR_TRIM_SMITHING_TEMPLATE] = ItemCoastArmorTrimSmithingTemplate.class; // 686
+            list[WILD_ARMOR_TRIM_SMITHING_TEMPLATE] = ItemWildArmorTrimSmithingTemplate.class; // 687
+            list[WARD_ARMOR_TRIM_SMITHING_TEMPLATE] = ItemWardArmorTrimSmithingTemplate.class; // 688
+            list[EYE_ARMOR_TRIM_SMITHING_TEMPLATE] = ItemEyeArmorTrimSmithingTemplate.class; // 689
+            list[VEX_ARMOR_TRIM_SMITHING_TEMPLATE] = ItemVexArmorTrimSmithingTemplate.class; // 690
+            list[TIDE_ARMOR_TRIM_SMITHING_TEMPLATE] = ItemTideArmorTrimSmithingTemplate.class; // 691
+            list[SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE] = ItemSnoutArmorTrimSmithingTemplate.class; // 692
+            list[RIB_ARMOR_TRIM_SMITHING_TEMPLATE] = ItemRibArmorTrimSmithingTemplate.class; // 693
+            list[SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE] = ItemSpireArmorTrimSmithingTemplate.class; // 694
+            list[SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE] = ItemSilenceArmorTrimSmithingTemplate.class; // 695
+            list[WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE] = ItemWayfinderArmorTrimSmithingTemplate.class; // 696
+            list[RAISER_ARMOR_TRIM_SMITHING_TEMPLATE] = ItemRaiserArmorTrimSmithingTemplate.class; // 697
+            list[SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE] = ItemShaperArmorTrimSmithingTemplate.class; // 698
+            list[HOST_ARMOR_TRIM_SMITHING_TEMPLATE] = ItemHostArmorTrimSmithingTemplate.class; // 699
 
             list[RECORD_13] = ItemRecord13.class; //500
             list[RECORD_CAT] = ItemRecordCat.class; //501

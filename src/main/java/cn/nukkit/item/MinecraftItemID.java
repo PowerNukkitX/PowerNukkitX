@@ -1379,8 +1379,58 @@ public enum MinecraftItemID {
     CHERRY_LEAVES,
     @Since("1.20.10-r1")
     @PowerNukkitXOnly
-    PINK_PETALS;
-
+    PINK_PETALS,
+    @Since("1.20.10-r1")
+    @PowerNukkitXOnly
+    NETHERITE_UPGRADE_SMITHING_TEMPLATE,
+    @Since("1.20.10-r1")
+    @PowerNukkitXOnly
+    SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE,
+    @Since("1.20.10-r1")
+    @PowerNukkitXOnly
+    DUNE_ARMOR_TRIM_SMITHING_TEMPLATE,
+    @Since("1.20.10-r1")
+    @PowerNukkitXOnly
+    COAST_ARMOR_TRIM_SMITHING_TEMPLATE,
+    @Since("1.20.10-r1")
+    @PowerNukkitXOnly
+    WILD_ARMOR_TRIM_SMITHING_TEMPLATE,
+    @Since("1.20.10-r1")
+    @PowerNukkitXOnly
+    WARD_ARMOR_TRIM_SMITHING_TEMPLATE,
+    @Since("1.20.10-r1")
+    @PowerNukkitXOnly
+    EYE_ARMOR_TRIM_SMITHING_TEMPLATE,
+    @Since("1.20.10-r1")
+    @PowerNukkitXOnly
+    VEX_ARMOR_TRIM_SMITHING_TEMPLATE,
+    @Since("1.20.10-r1")
+    @PowerNukkitXOnly
+    TIDE_ARMOR_TRIM_SMITHING_TEMPLATE,
+    @Since("1.20.10-r1")
+    @PowerNukkitXOnly
+    SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE,
+    @Since("1.20.10-r1")
+    @PowerNukkitXOnly
+    RIB_ARMOR_TRIM_SMITHING_TEMPLATE,
+    @Since("1.20.10-r1")
+    @PowerNukkitXOnly
+    SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE,
+    @Since("1.20.10-r1")
+    @PowerNukkitXOnly
+    SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE,
+    @Since("1.20.10-r1")
+    @PowerNukkitXOnly
+    WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE,
+    @Since("1.20.10-r1")
+    @PowerNukkitXOnly
+    RAISER_ARMOR_TRIM_SMITHING_TEMPLATE,
+    @Since("1.20.10-r1")
+    @PowerNukkitXOnly
+    SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE,
+    @Since("1.20.10-r1")
+    @PowerNukkitXOnly
+    HOST_ARMOR_TRIM_SMITHING_TEMPLATE;
 
     private static final Map<String, MinecraftItemID> namespacedIdMap = Arrays.stream(values())
             .flatMap(id ->
