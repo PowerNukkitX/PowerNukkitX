@@ -19,7 +19,7 @@ public enum ItemArmorPatternType {
     WILD_ARMOR_TRIM("wild"),
     HOST_ARMOR_TRIM("host"),
     RAISER_ARMOR_TRIM_ARMOR_TRIM("raiser"),
-    SHAPER_ARMOR_TRIM("raiser"),
+    SHAPER_ARMOR_TRIM("shaper"),
     SILENCE_ARMOR_TRIM("silence"),
     WAYFINDER_ARMOR_TRIM("wayfinder");
 
