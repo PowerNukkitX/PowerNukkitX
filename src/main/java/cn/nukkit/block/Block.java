@@ -1439,7 +1439,9 @@ public abstract class Block extends Position
                         result.getError());
             }
             RuntimeItems.getRuntimeMapping().registerCustomBlock(blocks); // 注册物品
-            blocks.forEach(b -> Item.addCreativeItem(b.toItem())); // 注册创造栏物品
+            blocks.stream().filter( CustomBlock::shouldBeRegisteredInCreative ).forEach(
+                    b -> Item.addCreativeItem(b.toItem())
+            );//注册创造栏物品
         }
     }
 
