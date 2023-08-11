@@ -3332,7 +3332,7 @@ public class Level implements ChunkManager, Metadatable {
                 if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
                     target.onPlayerRightClick(player, item, face, new Vector3(fx, fy, fz));
                 }
-                if ((!player.isSneaking()
+                if (((!player.isSneaking() && !player.isFlySneaking())
                                 || player.getInventory().getItemInHand().isNull())
                         && target.canBeActivated()
                         && target.onActivate(item, player)) {

@@ -201,4 +201,9 @@ public class BlockBambooSapling extends BlockFlowable {
     public double getMaxY() {
         return y() + 0.875;
     }
+
+    @Override
+    public boolean isFertilizable() {
+        return true;
+    }
 }

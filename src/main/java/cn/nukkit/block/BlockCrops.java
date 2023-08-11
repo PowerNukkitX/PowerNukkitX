@@ -152,4 +152,9 @@ public abstract class BlockCrops extends BlockFlowable {
 
         return 0;
     }
+
+    @Override
+    public boolean isFertilizable() {
+        return true;
+    }
 }

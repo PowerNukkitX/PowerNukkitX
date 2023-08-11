@@ -452,6 +452,8 @@ public class Player extends EntityHuman
 
     private Boolean openSignFront = null;
 
+    private Boolean flySneaking = null;
+
     /**
      * 单元测试用的构造函数
      * <p>
@@ -6314,5 +6316,13 @@ public class Player extends EntityHuman
                 throw new IllegalArgumentException("Block at this position is not a sign");
             }
         }
+    }
+
+    public void setFlySneaking(boolean sneaking) {
+        this.flySneaking = sneaking;
+    }
+
+    public boolean isFlySneaking() {
+        return this.flySneaking;
     }
 }

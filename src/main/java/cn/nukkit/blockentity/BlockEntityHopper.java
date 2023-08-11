@@ -405,6 +405,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable
                 return false;
             }
 
+
             boolean pushedItem = false;
 
             for (int i = 0; i < this.inventory.getSize(); i++) {
@@ -493,6 +494,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable
             }
 
             return pushedItem;
+
         } else if (blockSide instanceof BlockComposter) {
             BlockComposter composter = (BlockComposter) blockSide;
             if (composter.isFull()) {
@@ -516,7 +518,9 @@ public class BlockEntityHopper extends BlockEntitySpawnable
                 this.inventory.setItem(i, item);
                 return true;
             }
-        } else {
+        }
+
+        else {
             Inventory inventory = be instanceof RecipeInventoryHolder recipeInventoryHolder
                     ? recipeInventoryHolder.getIngredientView()
                     : ((InventoryHolder) be).getInventory();

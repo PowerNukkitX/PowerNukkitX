@@ -25,7 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 
 public class BlockEntityBrewingStand extends BlockEntitySpawnable
-        implements InventoryHolder, BlockEntityContainer, BlockEntityNameable {
+        implements RecipeInventoryHolder, BlockEntityContainer, BlockEntityNameable {
 
     protected BrewingInventory inventory;
 
@@ -424,5 +424,15 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable
         }
 
         return nbt;
+    }
+
+    @Override
+    public Inventory getIngredientView() {
+        return new InventorySlice(this.inventory, 0, 1);
+    }
+
+    @Override
+    public Inventory getProductView() {
+        return new InventorySlice(this.inventory, 1, 4);
     }
 }

@@ -6,13 +6,19 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockFlowable;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.block.property.BlockProperties;
 import cn.nukkit.block.property.BooleanBlockProperty;
 import cn.nukkit.block.property.IntBlockProperty;
+import cn.nukkit.event.level.StructureGrowEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.ListChunkManager;
+import cn.nukkit.level.generator.object.tree.ObjectMangroveTree;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.player.Player;
 import java.util.concurrent.ThreadLocalRandom;
 import org.jetbrains.annotations.NotNull;
@@ -101,7 +107,23 @@ public class BlockMangrovePropagule extends BlockFlowable implements BlockFlower
     }
 
     public void grow() {
-        // todo: 红树树苗催化
+        ListChunkManager chunkManager = new ListChunkManager(this.getLevel());
+        Vector3 vector3 = new Vector3(this.x(), this.y() - 1, this.z());
+        var objectMangroveTree = new ObjectMangroveTree();
+        objectMangroveTree.generate(chunkManager, new NukkitRandom(), this);
+        StructureGrowEvent ev = new StructureGrowEvent(this, chunkManager.getBlocks());
+        ev.call();
+        if (ev.isCancelled()) {
+            return;
+        }
+        this.getLevel().setBlock(this, Block.get(BlockID.AIR));
+        if (this.getLevel().getBlock(vector3).getId() == BlockID.DIRT_WITH_ROOTS) {
+            this.getLevel().setBlock(vector3, Block.get(BlockID.DIRT));
+        }
+        for (Block block : ev.getBlockList()) {
+            if (block.getId() == BlockID.AIR) continue;
+            this.getLevel().setBlock(block, block);
+        }
     }
     ;
 }

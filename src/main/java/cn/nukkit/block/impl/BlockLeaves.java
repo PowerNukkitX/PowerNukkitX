@@ -238,7 +238,7 @@ public class BlockLeaves extends BlockTransparentMeta {
             visited = new Long2LongOpenHashMap();
             visited.defaultReturnValue(-1);
         }
-        if (current instanceof IBlockWood) {
+        if (current instanceof IBlockWood || current instanceof BlockMangroveRoots) {
             return true;
         }
         if (distance == 0 || !(current instanceof BlockLeaves)) {

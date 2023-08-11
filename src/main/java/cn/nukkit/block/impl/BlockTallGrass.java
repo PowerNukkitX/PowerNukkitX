@@ -4,6 +4,7 @@ import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockDoublePlant;
 import cn.nukkit.block.BlockFlowable;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.property.ArrayBlockProperty;
@@ -184,5 +185,10 @@ public class BlockTallGrass extends BlockFlowable implements BlockFlowerPot.Flow
     @Override
     public boolean isPotBlockState() {
         return getPropertyValue(TALL_GRASS_TYPE) == TallGrassType.FERN;
+    }
+
+    @Override
+    public boolean isFertilizable() {
+        return true;
     }
 }

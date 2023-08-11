@@ -1,4 +1,4 @@
-package cn.nukkit.block.impl;
+package cn.nukkit.block;
 
 import static cn.nukkit.block.property.CommonBlockProperties.UPPER_BLOCK;
 
@@ -278,5 +278,10 @@ public class BlockDoublePlant extends BlockFlowable {
         }
 
         return false;
+    }
+
+    @Override
+    public boolean isFertilizable() {
+        return true;
     }
 }

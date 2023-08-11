@@ -13,6 +13,7 @@ import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.types.AuthInputAction;
 import cn.nukkit.network.protocol.types.PlayerActionType;
 import cn.nukkit.network.protocol.types.PlayerBlockActionData;
+import cn.nukkit.player.AdventureSettings;
 import cn.nukkit.player.Player;
 import cn.nukkit.player.PlayerHandle;
 import org.jetbrains.annotations.NotNull;
@@ -108,6 +109,11 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
             } else {
                 player.setSneaking(false);
             }
+        }
+        if(player.getAdventureSettings().get(AdventureSettings.Type.FLYING)) {
+            if (pk.getInputData().contains(AuthInputAction.SNEAKING)) {
+                player.setFlySneaking(true);
+            } else player.setFlySneaking(false);
         }
         if (pk.getInputData().contains(AuthInputAction.START_JUMPING)) {
             PlayerJumpEvent event = new PlayerJumpEvent(player);

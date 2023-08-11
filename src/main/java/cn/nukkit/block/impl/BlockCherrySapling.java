@@ -169,4 +169,9 @@ public class BlockCherrySapling extends BlockFlowable implements BlockFlowerPot.
     public Item toItem() {
         return new ItemBlock(new BlockCherrySapling());
     }
+
+    @Override
+    public boolean isFertilizable() {
+        return true;
+    }
 }

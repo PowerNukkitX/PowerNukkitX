@@ -3210,4 +3210,8 @@ public abstract class Block extends Position
     public long computeUnsignedBlockStateHash() {
         return Integer.toUnsignedLong(computeBlockStateHash());
     }
+
+    public boolean isFertilizable() {
+        return false;
+    }
 }
