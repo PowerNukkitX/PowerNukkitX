@@ -3,6 +3,7 @@ package cn.nukkit.command.defaults;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
@@ -31,7 +32,7 @@ public class FogCommand extends VanillaCommand {
         });
         this.commandParameters.put("delete", new CommandParameter[] {
             CommandParameter.newType("victim", CommandParamType.TARGET, new PlayersNode()),
-            CommandParameter.newEnum("delete", new String[] {"pop", "remove"}),
+            CommandParameter.newEnum("mode", new CommandEnum("delete", "pop", "remove")),
             CommandParameter.newType("userProvidedId", CommandParamType.STRING)
         });
         this.enableParamTree();
@@ -73,7 +74,7 @@ public class FogCommand extends VanillaCommand {
                     case "pop" -> {
                         targets.forEach(player -> {
                             var fogStack = player.getFogStack();
-                            for (int i = 0; i < fogStack.size(); i++) {
+                            for (int i = fogStack.size() - 1; i >= 0; i--) {
                                 var fog = fogStack.get(i);
                                 if (fog.userProvidedId().equals(userProvidedId)) {
                                     fogStack.remove(i);
