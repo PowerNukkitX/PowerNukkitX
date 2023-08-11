@@ -39,10 +39,10 @@ public class TpsCommand extends Command implements CoreCommand {
 
     private TextFormat getTpsColor(float tps) {
         TextFormat tpsColor = TextFormat.GREEN;
-        if (tps < 17) {
-            tpsColor = TextFormat.GOLD;
-        } else if (tps < 12) {
+        if (tps < 12) {
             tpsColor = TextFormat.RED;
+        } else if (tps < 17) {
+            tpsColor = TextFormat.GOLD;
         }
         return tpsColor;
     }
