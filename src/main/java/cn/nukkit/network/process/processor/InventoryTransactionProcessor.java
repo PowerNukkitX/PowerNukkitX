@@ -69,7 +69,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 int type = releaseItemData.actionType;
                 switch (type) {
                     case InventoryTransactionPacket.RELEASE_ITEM_ACTION_RELEASE -> {
-                        if (player.isUsingItem()) {
+                        if (player.getStartActionTick() != 1) {
                             Item item = player.getInventory().getItemInHand();
 
                             int ticksUsed = player.getServer().getTick() - player.getStartActionTick();

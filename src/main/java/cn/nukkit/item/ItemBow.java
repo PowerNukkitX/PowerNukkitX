@@ -9,6 +9,7 @@ import cn.nukkit.event.entity.ProjectileLaunchEvent;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.enchantment.bow.EnchantmentBow;
+import cn.nukkit.level.Location;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -78,11 +79,16 @@ public class ItemBow extends ItemTool {
         Enchantment flameEnchant = this.getEnchantment(Enchantment.ID_BOW_FLAME);
         boolean flame = flameEnchant != null && flameEnchant.getLevel() > 0;
 
+        Location arrowLocation = player.getLocation();
+        Vector3 directionVector = player.getDirectionVector().multiply(1.1);
+        arrowLocation = arrowLocation.add(directionVector.x(), 0, directionVector.z());
+        arrowLocation.setY(player.y() + player.getEyeHeight() + directionVector.y());
+
         CompoundTag nbt = new CompoundTag()
                 .putList(new ListTag<DoubleTag>("Pos")
-                        .add(new DoubleTag("", player.x()))
-                        .add(new DoubleTag("", player.y() + player.getEyeHeight()))
-                        .add(new DoubleTag("", player.z())))
+                        .add(new DoubleTag("", arrowLocation.x()))
+                        .add(new DoubleTag("", arrowLocation.y()))
+                        .add(new DoubleTag("", arrowLocation.z())))
                 .putList(new ListTag<DoubleTag>("Motion")
                         .add(new DoubleTag(
                                 "", -Math.sin(player.yaw() / 180 * Math.PI) * Math.cos(player.pitch() / 180 * Math.PI)))
@@ -96,7 +102,7 @@ public class ItemBow extends ItemTool {
                 .putDouble("damage", damage);
 
         double p = (double) ticksUsed / 20;
-        double f = Math.min((p * p + p * 2) / 3, 1) * 3;
+        double f = Math.min((p * p + p * 2) / 3, 1) * 3.5;
 
         EntityArrow arrow = (EntityArrow) Entity.createEntity("Arrow", player.chunk, nbt, player, f == 2);
 
