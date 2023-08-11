@@ -1116,6 +1116,8 @@ public interface BlockID {
 
     int CHERRY_FENCE_GATE = 788;
 
+    int CHERRY_HANGING_SIGN = 789;
+
     int STRIPPED_CHERRY_LOG = 790;
 
     int CHERRY_LOG = 791;
@@ -1145,4 +1147,20 @@ public interface BlockID {
     int CHERRY_LEAVES = 803;
 
     int PINK_PETALS = 804;
+
+    int DECORATED_POT = 806;
+
+    int TORCHFLOWER_CROP = 822;
+
+    int TORCHFLOWER = 823;
+
+    int SUSPICIOUS_GRAVEL = 828;
+
+    int PITCHER_CROP = 829;
+
+    int CALIBRATED_SCULK_SENSOR = 835;
+
+    int SNIFFER_EGG = 851;
+
+    int PITCHER_PLANT = 867;
 }

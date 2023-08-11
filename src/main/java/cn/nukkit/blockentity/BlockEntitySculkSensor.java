@@ -84,7 +84,7 @@ public class BlockEntitySculkSensor extends BlockEntity implements VibrationList
             calPower();
 
             var block = (BlockSculkSensor) this.getBlock();
-            block.setPowered(true);
+            block.setPhase(1);
             block.updateAroundRedstone();
             getLevel().scheduleUpdate(block, 41);
         }

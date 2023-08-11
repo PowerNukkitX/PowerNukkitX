@@ -7,7 +7,7 @@ import cn.nukkit.block.BlockEntityHolder;
 import cn.nukkit.block.BlockRedstoneComparator;
 import cn.nukkit.block.BlockSolid;
 import cn.nukkit.block.property.BlockProperties;
-import cn.nukkit.block.property.BooleanBlockProperty;
+import cn.nukkit.block.property.IntBlockProperty;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySculkSensor;
 import cn.nukkit.level.Level;
@@ -24,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
 public class BlockSculkSensor extends BlockSolid
         implements BlockEntityHolder<BlockEntitySculkSensor>, RedstoneComponent {
 
-    public static final BooleanBlockProperty SCULK_SENSOR_PHASE = new BooleanBlockProperty("sculk_sensor_phase", false);
+    public static final IntBlockProperty SCULK_SENSOR_PHASE = new IntBlockProperty("sculk_sensor_phase", false, 2);
     public static final BlockProperties PROPERTIES = new BlockProperties(SCULK_SENSOR_PHASE);
 
     @Override
@@ -78,7 +78,7 @@ public class BlockSculkSensor extends BlockSolid
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
             if (getLevel().getServer().isRedstoneEnabled()) {
                 this.getBlockEntity().calPower();
-                this.setPowered(false);
+                this.setPhase(0);
                 updateAroundRedstone();
             }
             return type;
@@ -86,10 +86,10 @@ public class BlockSculkSensor extends BlockSolid
         return 0;
     }
 
-    public void setPowered(boolean powered) {
-        if (powered) this.getLevel().addSound(this.add(0.5, 0.5, 0.5), Sound.POWER_ON_SCULK_SENSOR);
+    public void setPhase(int phase) {
+        if (phase == 1) this.getLevel().addSound(this.add(0.5, 0.5, 0.5), Sound.POWER_ON_SCULK_SENSOR);
         else this.getLevel().addSound(this.add(0.5, 0.5, 0.5), Sound.POWER_OFF_SCULK_SENSOR);
-        this.setBooleanValue(SCULK_SENSOR_PHASE, powered);
+        this.setIntValue(SCULK_SENSOR_PHASE, phase);
         this.getLevel().setBlock(this, this, true, false);
     }
 
