@@ -4,7 +4,7 @@ import cn.nukkit.block.BlockTransparentMeta;
 import cn.nukkit.block.property.BlockProperties;
 import cn.nukkit.block.property.CommonBlockProperties;
 
-public class BlockDecoratedPot extends  BlockTransparentMeta {
+public class BlockDecoratedPot extends BlockTransparentMeta {
     public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.DIRECTION);
 
     @Override
@@ -12,8 +12,7 @@ public class BlockDecoratedPot extends  BlockTransparentMeta {
         return PROPERTIES;
     }
 
-    public BlockDecoratedPot() {
-    }
+    public BlockDecoratedPot() {}
 
     public BlockDecoratedPot(int meta) {
         super(meta);

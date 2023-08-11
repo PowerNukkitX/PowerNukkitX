@@ -31,8 +31,9 @@ public abstract class TreeGenerator extends cn.nukkit.level.generator.object.Bas
                     Item.CHERRY_LEAVES,
                     Item.CHERRY_LOG,
                     Item.CHERRY_SAPLING,
-                    Item.MANGROVE_LEAVES, Item.MANGROVE_ROOTS, Item.MANGROVE_PROPAGULE
-                    -> true;
+                    Item.MANGROVE_LEAVES,
+                    Item.MANGROVE_ROOTS,
+                    Item.MANGROVE_PROPAGULE -> true;
             default -> false;
         };
     }

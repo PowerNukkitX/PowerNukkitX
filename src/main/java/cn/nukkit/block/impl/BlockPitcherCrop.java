@@ -9,11 +9,9 @@ public class BlockPitcherCrop extends BlockCrops {
 
     public static final BooleanBlockProperty UPPER_BLOCK = new BooleanBlockProperty("upper_block_bit", false);
 
-
     public static final BlockProperties PROPERTIES = new BlockProperties(GROWTH, UPPER_BLOCK);
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }

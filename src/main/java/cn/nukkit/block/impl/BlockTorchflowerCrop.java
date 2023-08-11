@@ -1,8 +1,8 @@
 package cn.nukkit.block.impl;
 
+import cn.nukkit.block.BlockTransparentMeta;
 import cn.nukkit.block.property.BlockProperties;
 import cn.nukkit.block.property.IntBlockProperty;
-import cn.nukkit.block.BlockTransparentMeta;
 
 public class BlockTorchflowerCrop extends BlockTransparentMeta {
     public static final IntBlockProperty GROWTH = new IntBlockProperty("growth", false, 7);
@@ -13,8 +13,7 @@ public class BlockTorchflowerCrop extends BlockTransparentMeta {
         return PROPERTIES;
     }
 
-    public BlockTorchflowerCrop() {
-    }
+    public BlockTorchflowerCrop() {}
 
     public BlockTorchflowerCrop(int meta) {
         super(meta);

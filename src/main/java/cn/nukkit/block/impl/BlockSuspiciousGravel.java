@@ -10,15 +10,15 @@ import cn.nukkit.nbt.tag.CompoundTag;
 
 public class BlockSuspiciousGravel extends BlockFallableMeta {
     public static final IntBlockProperty BRUSHED_PROGRESS = new IntBlockProperty("brushed_progress", false, 3);
-    public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.HANGING, BRUSHED_PROGRESS);
+    public static final BlockProperties PROPERTIES =
+            new BlockProperties(CommonBlockProperties.HANGING, BRUSHED_PROGRESS);
 
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
-    public BlockSuspiciousGravel() {
-    }
+    public BlockSuspiciousGravel() {}
 
     public BlockSuspiciousGravel(int meta) {
         super(meta);
@@ -42,7 +42,6 @@ public class BlockSuspiciousGravel extends BlockFallableMeta {
         return 1.25;
     }
 
-
     @Override
     protected EntityFallingBlock createFallingEntity(CompoundTag customNbt) {
         customNbt.putBoolean("BreakOnGround", true);
@@ -51,6 +50,6 @@ public class BlockSuspiciousGravel extends BlockFallableMeta {
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{Item.AIR_ITEM};
+        return new Item[] {Item.AIR_ITEM};
     }
 }

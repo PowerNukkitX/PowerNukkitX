@@ -3,8 +3,7 @@ package cn.nukkit.block.impl;
 import cn.nukkit.block.BlockHangingSign;
 
 public class BlockCherryHangingSign extends BlockHangingSign {
-    public BlockCherryHangingSign() {
-    }
+    public BlockCherryHangingSign() {}
 
     public int getId() {
         return CHERRY_HANGING_SIGN;

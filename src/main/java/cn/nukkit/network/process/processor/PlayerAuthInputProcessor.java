@@ -110,7 +110,7 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
                 player.setSneaking(false);
             }
         }
-        if(player.getAdventureSettings().get(AdventureSettings.Type.FLYING)) {
+        if (player.getAdventureSettings().get(AdventureSettings.Type.FLYING)) {
             if (pk.getInputData().contains(AuthInputAction.SNEAKING)) {
                 player.setFlySneaking(true);
             } else player.setFlySneaking(false);
