@@ -44,7 +44,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
     @Since("1.6.0.0-PNX")
     public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.DIRECTION, TILT, HEAD);
 
-    protected BlockBigDripleaf() {
+    public BlockBigDripleaf() {
         super(0);
     }
 

@@ -27,7 +27,7 @@ public class BlockSmallDripleaf extends BlockFlowable implements Faceable {
     public static final BlockProperties PROPERTIES =
             new BlockProperties(CommonBlockProperties.DIRECTION, CommonBlockProperties.UPPER_BLOCK);
 
-    protected BlockSmallDripleaf() {
+    public BlockSmallDripleaf() {
         super(0);
     }
 
