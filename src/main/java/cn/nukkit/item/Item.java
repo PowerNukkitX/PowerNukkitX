@@ -637,7 +637,7 @@ public class Item implements Cloneable, BlockID, ItemID {
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public static OK<?> registerCustomItem(@NotNull List<Class<? extends CustomItem>> itemClassList) {
-        if (!Server.getInstance().isEnableExperimentMode() || Server.getInstance().getConfig("settings.waterdogpe", false)) {
+        if (!Server.getInstance().isEnableExperimentMode()) {
             return new OK<>(false, "The server does not have the custom item feature enabled. Unable to register the customItemList!");
         }
         for (var clazz : itemClassList) {

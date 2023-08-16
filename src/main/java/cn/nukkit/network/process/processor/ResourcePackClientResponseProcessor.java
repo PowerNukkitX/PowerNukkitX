@@ -41,7 +41,7 @@ public class ResourcePackClientResponseProcessor extends DataPacketProcessor<Res
                 ResourcePackStackPacket stackPacket = new ResourcePackStackPacket();
                 stackPacket.mustAccept = player.getServer().getForceResources() && !player.getServer().getForceResourcesAllowOwnPacks();
                 stackPacket.resourcePackStack = player.getServer().getResourcePackManager().getResourceStack();
-                if (player.getServer().isEnableExperimentMode() && !player.getServer().getConfig("settings.waterdogpe", false)) {
+                if (player.getServer().isEnableExperimentMode()) {
                     stackPacket.experiments.add(
                             new ResourcePackStackPacket.ExperimentData("data_driven_items", true)
                     );
