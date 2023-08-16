@@ -177,6 +177,8 @@ dependencies {
 ---
 Please read the [CONTRIBUTING](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/CONTRIBUTING.md) guide before submitting any issue.  Issues with insufficient information or in the wrong format will be closed and will not be reviewed.
 
+<a href="https://github.com/PowerNukkitX/PowerNukkitX/graphs/contributors"><img src="https://opencollective.com/GoMint/contributors.svg?width=890&button=false" /></a>
+
 ---
 
 🌐 Links
