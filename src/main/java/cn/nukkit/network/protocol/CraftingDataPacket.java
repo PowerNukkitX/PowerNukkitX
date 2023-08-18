@@ -5,6 +5,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.inventory.*;
 import cn.nukkit.inventory.recipe.DefaultDescriptor;
 import cn.nukkit.inventory.recipe.ItemDescriptor;
+import cn.nukkit.inventory.recipe.ItemTagDescriptor;
 import cn.nukkit.item.Item;
 import lombok.ToString;
 
@@ -99,7 +100,7 @@ public class CraftingDataPacket extends DataPacket {
     @Override
     public void encode() {
         this.reset();
-        this.putUnsignedVarInt(entries.size());
+        this.putUnsignedVarInt(entries.size() + 1);
 
         int recipeNetworkId = 1;
 
@@ -189,10 +190,20 @@ public class CraftingDataPacket extends DataPacket {
                     this.putUnsignedVarInt(recipeNetworkId++);
                 }
                 case SMITHING_TRIM -> {
-                    //todo
+                    //no-op
                 }
             }
         }
+
+        // Identical smithing_trim recipe sent by BDS that uses tag-descriptors, as the client seems to ignore the
+        // approach of using many default-descriptors (which we do for smithing_transform)
+        this.putVarInt(RecipeType.SMITHING_TRIM.networkType);
+        this.putString("minecraft:smithing_armor_trim");
+        this.putRecipeIngredient(new ItemTagDescriptor("minecraft:trim_templates", 1));
+        this.putRecipeIngredient(new ItemTagDescriptor("minecraft:trimmable_armors", 1));
+        this.putRecipeIngredient(new ItemTagDescriptor("minecraft:trim_materials", 1));
+        this.putString(CRAFTING_TAG_SMITHING_TABLE);
+        this.putUnsignedVarInt(recipeNetworkId);
 
         this.putUnsignedVarInt(this.brewingEntries.size());
         for (BrewingRecipe recipe : brewingEntries) {
