@@ -1,5 +1,7 @@
 package cn.nukkit.utils;
 
+import cn.nukkit.api.PowerNukkitOnly;
+
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -19,13 +21,17 @@ public class ServerKiller extends Thread {
     }
 
     @Override
+    @PowerNukkitOnly
     public void run() {
         try {
             sleep(sleepTime);
+            System.out.println("\nTook too long to stop, server was killed forcefully!\n");
+            System.exit(1);
         } catch (InterruptedException e) {
-            // ignore
+            // The thread was interrupted, which might mean that Ctrl+C was pressed
+            // Support Ctrl+C
+            System.out.println("\nServer stopping process was interrupted. Killing server...\n");
+            System.exit(1);
         }
-        System.out.println("\nTook too long to stop, server was killed forcefully!\n");
-        System.exit(1);
     }
 }
