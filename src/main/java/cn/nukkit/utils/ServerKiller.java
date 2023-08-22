@@ -21,7 +21,6 @@ public class ServerKiller extends Thread {
     }
 
     @Override
-    @PowerNukkitOnly
     public void run() {
         try {
             sleep(sleepTime);
