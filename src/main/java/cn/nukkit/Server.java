@@ -1203,6 +1203,11 @@ public class Server {
 
             try {
                 long levelTime = System.currentTimeMillis();
+                //Ensures that the server won't try to tick a level without providers.
+                if(level.getProvider().getLevel() == null) {
+                    log.warn("Tried to tick Level " + level.getName() + " without a provider!");
+                    continue;
+                }
                 level.doTick(currentTick);
                 int tickMs = (int) (System.currentTimeMillis() - levelTime);
                 level.tickRateTime = tickMs;

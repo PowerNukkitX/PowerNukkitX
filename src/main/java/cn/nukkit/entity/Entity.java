@@ -3174,7 +3174,8 @@ public abstract class Entity extends Location implements Metadatable {
             outerScaffolding:
             for (int i = minX; i <= maxX; i++) {
                 for (int j = minZ; j <= maxZ; j++) {
-                    if (level.getBlockIdAt(i, Y, j) == BlockID.SCAFFOLDING) {
+                    Location location = new Location(i, Y, j,level);
+                    if (location.getLevelBlock(false).getId() == BlockID.SCAFFOLDING) {
                         setDataFlag(DATA_FLAGS_EXTENDED, DATA_FLAG_OVER_SCAFFOLDING, true);
                         break outerScaffolding;
                     }
