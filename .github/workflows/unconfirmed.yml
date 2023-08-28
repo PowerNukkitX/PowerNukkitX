@@ -1,0 +1,22 @@
+name: 'Manage UnConfirmed request issues'
+
+on:
+  issues:
+    types: [labeled, unlabeled, reopened]
+
+jobs:
+  support:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: dessant/support-requests@v2
+        with:
+          github-token: ${{ github.token }}
+          support-label:  "Unconfirmed | 未确认"
+          issue-comment: >
+            :wave: @{issue-author} We have taken your problem into account. However, we are unable to confirm this at this time. This could be due to several potential issues, including a lack of image or screenshot evidence of the issue. Therefore, your issue has been closed. However, we invite you to [recreate a new issue](https://github.com/PowerNukkitX/PowerNukkitX/issues/new/choose) if you are able to provide more substantial evidence.
+            Thank you for your understanding and continued cooperation.
+
+            [Docs](https://powernukkitx.com/doc/index.html) | [Discord](https://discord.gg/9ygGndMvaB)
+
+          close-issue: false
+          lock-issue: false
