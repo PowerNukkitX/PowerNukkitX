@@ -1,40 +1,57 @@
 ---
-name: "\U0001F41E 错误汇报"
-about: 创建一个错误报告来啊帮助我们更好地解决问题
+name: "\U0001F41E I found a bug"
+about: Create a report to help us improve
 title: ''
 labels: 'Type: bug'
 assignees: ''
 
 ---
 
-# 🐞 错误汇报
-<!-- 
-👉 尽可能详实地描述错误信息
+# 🐞 I found a bug
+
+<!--
+👉 This template is helpful, but you may erase everything if you can express the issue clearly
+      Feel free to ask questions or start related discussion
 -->
 
-### 📸 截图或视频
-<!-- ✍ 如果可能的话，附上视频或者截图有助于解决问题 -->
+## 📝 Bug Description
+<!-- 
+Could you please furnish us with a concise and well-detailed description ?
+-->
 
+## 🔍 Steps to Reproduce
+> Steps to reproduce the behavior:
 
-### ▶ 复现步骤
-<!--- ✍ 详细描述此问题的复现步骤 -->
+<!-- It would be helpful if we understood the steps you took to achieve this. This is an example -->
 
+1. Go to '...' ✍
+2. Interact with '....' ✍
+3. Perform action '....' ✍
+4. See unexpected behavior 😕 ✍
 
-### ✔ 预期行为
-<!-- ✍ 正常情况下应该发生什么 -->
+## ✅ Expected Behavior
+<!-- A description that is both clear and succinct, outlining your anticipated outcome. -->
 
+## 📸 Screenshots / Video
+<!--To enhance the illustration of your issues, it is recommended to include a screenshot or even a video. If you don't provide one, there is a high likelihood that your issues will remain unconfirmed.-->
 
-### ❌ 实际行为
-<!-- ✍ 但是实际上发生了什么不该发生的 -->
+## 💻 OS and versions
+<!--Try to do the `version command` in your game or on the server console this command will give you the information-->
+* Version: ✍
+* Java: OracleJDK/GraalVM/AdoptOpenJDK <!-- Delete the ones that don't fit -->
+* Java version: 17 <!-- Default -->
+* Game version: Android/iOS/Win10/Xbox/PS4/Switch <!-- Delete the ones that don't fit -->
 
+## 💡 Possible Solution
+<!-- If you have any initial thoughts on how to solve this bug, please share them here. -->
 
-### 📋 Debug information
-<!-- 使用 'debugpaste upload' 和 'timings paste' 指令并粘贴结果至此 -->
+I think that...
 
-### 💢 错误堆栈或崩溃日志
-<!-- ✍ 最好使用 https://hastebin.com -->
+## 📝 Logs
+<!-- If you encounter an error in your console, you can share it as a message under the "ERROR" category. Just replace the word "ERROR" and then paste the error details into the message. -->
 
+```error
 
-### 💬 其他信息
-<!-- ✍ 其他可能有助于解决此问题的信息 -->
+ERROR
 
+```
