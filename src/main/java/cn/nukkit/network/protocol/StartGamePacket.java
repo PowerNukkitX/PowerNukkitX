@@ -33,6 +33,10 @@ public class StartGamePacket extends DataPacket {
     public static final int GAME_PUBLISH_SETTING_FRIENDS_OF_FRIENDS = 3;
     public static final int GAME_PUBLISH_SETTING_PUBLIC = 4;
 
+    @PowerNukkitXOnly
+    @Since("1.20.10-r2")
+    public static CompoundTag playerPropertyData = new CompoundTag("");
+
     @Override
     public byte pid() {
         return NETWORK_ID;
@@ -256,7 +260,7 @@ public class StartGamePacket extends DataPacket {
         this.putBoolean(this.isInventoryServerAuthoritative);
         this.putString(vanillaVersion); // Server Engine
         try {
-            this.put(NBTIO.writeNetwork(new CompoundTag(""))); // playerPropertyData
+            this.put(NBTIO.writeNetwork(playerPropertyData)); // playerPropertyData
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
