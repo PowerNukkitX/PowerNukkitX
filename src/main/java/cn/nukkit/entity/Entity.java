@@ -3896,19 +3896,19 @@ public abstract class Entity extends Location implements Metadatable {
 
     @PowerNukkitXOnly
     @Since("1.20.10-r2")
-    public boolean setIntEntityProperty(String identifier, int value) {
+    public final boolean setIntEntityProperty(String identifier, int value) {
         return validateAndSetIntProperty(identifier, value);
     }
 
     @PowerNukkitXOnly
     @Since("1.20.10-r2")
-    public boolean setBooleanEntityProperty(String identifier, boolean value) {
+    public final boolean setBooleanEntityProperty(String identifier, boolean value) {
         return validateAndSetIntProperty(identifier, value ? 1 : 0);
     }
 
     @PowerNukkitXOnly
     @Since("1.20.10-r2")
-    public boolean setFloatEntityProperty(String identifier, float value) {
+    public final boolean setFloatEntityProperty(String identifier, float value) {
         if(!floatProperties.containsKey(identifier)) return false;
         floatProperties.put(identifier, value);
         return true;
@@ -3916,7 +3916,7 @@ public abstract class Entity extends Location implements Metadatable {
 
     @PowerNukkitXOnly
     @Since("1.20.10-r2")
-    public boolean setEnumEntityProperty(String identifier, String value) {
+    public final boolean setEnumEntityProperty(String identifier, String value) {
         if(!intProperties.containsKey(identifier)) return false;
         List<EntityProperty> entityPropertyList = EntityProperty.getEntityProperty(this.getIdentifier().toString());
 
