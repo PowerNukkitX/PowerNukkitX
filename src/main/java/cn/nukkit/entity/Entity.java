@@ -3938,7 +3938,9 @@ public abstract class Entity extends Location implements Metadatable {
     @PowerNukkitXOnly
     @Since("1.20.10-r2")
     private void initEntityProperties() {
-        initEntityProperties(this.getIdentifier().toString());
+        if(this.getIdentifier() != null) {
+            initEntityProperties(this.getIdentifier().toString());
+        }
     }
 
     @PowerNukkitXOnly

@@ -15,8 +15,8 @@ public abstract class EntityProperty {
     private static final String PROPERTIES_KEY = "properties";
 
     private static final Map<String, List<EntityProperty>> entityPropertyMap = new HashMap<>();
-    private static List<SyncEntityPropertyPacket> packetCache;
-    private static CompoundTag playerPropertyCache;
+    private static List<SyncEntityPropertyPacket> packetCache = new ArrayList<>();
+    private static CompoundTag playerPropertyCache = new CompoundTag("");
 
     private final String identifier;
 
