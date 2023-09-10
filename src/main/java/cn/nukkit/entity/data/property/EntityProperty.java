@@ -38,7 +38,7 @@ public abstract class EntityProperty {
         List<SyncEntityPropertyPacket> packetList = new ArrayList<>();
         for (Map.Entry<String, List<EntityProperty>> entry : entityPropertyMap.entrySet()) {
             ListTag<CompoundTag> listProperty = buildPropertyList(entry.getValue());
-            CompoundTag nbt = new CompoundTag().putList(PROPERTIES_KEY, listProperty).putString("name", entry.getKey());
+            CompoundTag nbt = new CompoundTag().putList(PROPERTIES_KEY, listProperty).putString("type", entry.getKey());
             SyncEntityPropertyPacket packet = new SyncEntityPropertyPacket();
             packet.setData(nbt);
             packetList.add(packet);
@@ -53,7 +53,7 @@ public abstract class EntityProperty {
             return;
         }
         ListTag<CompoundTag> listProperty = buildPropertyList(properties);
-        playerPropertyCache = new CompoundTag().putList(PROPERTIES_KEY, listProperty).putString("name", PLAYER_KEY);
+        playerPropertyCache = new CompoundTag().putList(PROPERTIES_KEY, listProperty).putString("type", PLAYER_KEY);
     }
 
     public static List<SyncEntityPropertyPacket> getPacketCache() {
