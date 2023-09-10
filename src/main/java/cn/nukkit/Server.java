@@ -957,6 +957,7 @@ public class Server {
         this.enablePlugins(PluginLoadOrder.POSTWORLD);
 
         EntityProperty.buildPacket();
+        EntityProperty.buildPlayerProperty();
 
         if (this.getConfig("settings.download-spark", false)) {
             SparkInstaller.initSpark(this);

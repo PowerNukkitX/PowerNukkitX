@@ -1535,6 +1535,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         startGamePacket.serverAuthoritativeMovement = getServer().getServerAuthoritativeMovement();
         //写入自定义方块数据
         startGamePacket.blockProperties.addAll(Block.getCustomBlockDefinitionList());
+        startGamePacket.playerPropertyData = EntityProperty.getPlayerPropertyCache();
         this.dataPacketImmediately(startGamePacket);
         this.loggedIn = true;
 
