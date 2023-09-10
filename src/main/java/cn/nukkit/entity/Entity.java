@@ -594,6 +594,7 @@ public abstract class Entity extends Location implements Metadatable {
 
     public Entity(FullChunk chunk, CompoundTag nbt) {
         if (this instanceof Player) {
+            initEntityProperties("minecraft:player");
             return;
         }
 
@@ -3937,7 +3938,13 @@ public abstract class Entity extends Location implements Metadatable {
     @PowerNukkitXOnly
     @Since("1.20.10-r2")
     private void initEntityProperties() {
-        List<EntityProperty> entityPropertyList = EntityProperty.getEntityProperty(this.getIdentifier().toString());
+        initEntityProperties(this.getIdentifier().toString());
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.20.10-r2")
+    private void initEntityProperties(String entityIdentifier) {
+        List<EntityProperty> entityPropertyList = EntityProperty.getEntityProperty(entityIdentifier);
         if (entityPropertyList.isEmpty()) return;
 
         for (EntityProperty property : entityPropertyList) {
