@@ -47,4 +47,13 @@ public class EnumEntityProperty extends EntityProperty {
         }
         tag.putList("enum", enumList);
     }
+
+    public int findIndex(String value) {
+        for (int i = 0; i < enums.length; i++) {
+            if (enums[i].equals(value)) {
+                return i;
+            }
+        }
+        return -1;
+    }
 }

@@ -64,6 +64,13 @@ public abstract class EntityProperty {
     public static List<SyncEntityPropertyPacket> getPacketCache() {
         return packetCache;
     }
+    public static List<EntityProperty> getEntityProperty(String identifier) {
+        return entityPropertyMap.getOrDefault(identifier, new ArrayList<>());
+    }
 
     public abstract void populateTag(CompoundTag tag);
+
+    public String getIdentifier() {
+        return identifier;
+    }
 }
