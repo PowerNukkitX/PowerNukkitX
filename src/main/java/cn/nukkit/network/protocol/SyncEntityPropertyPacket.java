@@ -29,7 +29,11 @@ public class SyncEntityPropertyPacket extends DataPacket {
 
     @Override
     public void decode() {
-        data = getTag();
+        try {
+            this.data = NBTIO.read(this.get(), ByteOrder.BIG_ENDIAN, true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

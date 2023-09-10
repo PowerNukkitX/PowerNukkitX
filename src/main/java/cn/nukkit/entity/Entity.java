@@ -586,11 +586,11 @@ public abstract class Entity extends Location implements Metadatable {
 
     @PowerNukkitXOnly
     @Since("1.20.10-r2")
-    private Map<String, Integer> intProperties = new HashMap<>();
+    private Map<String, Integer> intProperties = new LinkedHashMap<>();
 
     @PowerNukkitXOnly
     @Since("1.20.10-r2")
-    private Map<String, Float> floatProperties = new HashMap<>();
+    private Map<String, Float> floatProperties = new LinkedHashMap<>();
 
     public Entity(FullChunk chunk, CompoundTag nbt) {
         if (this instanceof Player) {
