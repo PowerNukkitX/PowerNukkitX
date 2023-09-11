@@ -33,10 +33,6 @@ public class StartGamePacket extends DataPacket {
     public static final int GAME_PUBLISH_SETTING_FRIENDS_OF_FRIENDS = 3;
     public static final int GAME_PUBLISH_SETTING_PUBLIC = 4;
 
-    @PowerNukkitXOnly
-    @Since("1.20.10-r2")
-    public static CompoundTag playerPropertyData = new CompoundTag("");
-
     @Override
     public byte pid() {
         return NETWORK_ID;
@@ -91,6 +87,8 @@ public class StartGamePacket extends DataPacket {
     public String vanillaVersion = ProtocolInfo.MINECRAFT_VERSION_NETWORK;
     //HACK: For now we can specify this version, since the new chunk changes are not relevant for our Anvil format.
     //However, it could be that Microsoft will prevent this in a new update.
+
+    public CompoundTag playerPropertyData = new CompoundTag("");
 
     public String levelId = ""; //base64 string, usually the same as world folder name in vanilla
     public String worldName;

@@ -15,6 +15,7 @@ import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.entity.data.profession.Profession;
+import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.event.level.LevelInitEvent;
 import cn.nukkit.event.level.LevelLoadEvent;
@@ -954,6 +955,9 @@ public class Server {
         }
 
         this.enablePlugins(PluginLoadOrder.POSTWORLD);
+
+        EntityProperty.buildPacket();
+        EntityProperty.buildPlayerProperty();
 
         if (this.getConfig("settings.download-spark", false)) {
             SparkInstaller.initSpark(this);

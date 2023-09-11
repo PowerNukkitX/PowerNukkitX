@@ -15,6 +15,7 @@ import cn.nukkit.command.utils.RawText;
 import cn.nukkit.dialog.window.FormWindowDialog;
 import cn.nukkit.entity.*;
 import cn.nukkit.entity.data.*;
+import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.entity.item.EntityFishingHook;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.entity.item.EntityXPOrb;
@@ -1534,8 +1535,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         startGamePacket.serverAuthoritativeMovement = getServer().getServerAuthoritativeMovement();
         //写入自定义方块数据
         startGamePacket.blockProperties.addAll(Block.getCustomBlockDefinitionList());
+        startGamePacket.playerPropertyData = EntityProperty.getPlayerPropertyCache();
         this.dataPacketImmediately(startGamePacket);
         this.loggedIn = true;
+
+        //注册实体属性
+        for(SyncEntityPropertyPacket pk : EntityProperty.getPacketCache()) {
+            this.dataPacketImmediately(pk);
+        }
 
         //写入自定义物品数据
         ItemComponentPacket itemComponentPacket = new ItemComponentPacket();
