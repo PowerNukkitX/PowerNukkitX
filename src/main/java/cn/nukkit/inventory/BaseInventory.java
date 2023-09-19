@@ -525,12 +525,12 @@ public abstract class BaseInventory implements Inventory {
 
         for (Player player : players) {
             int id = player.getWindowId(this);
-            if (id == -1 || !player.spawned) {
+            if (id == -1 || !player.isSpawned()) {
                 this.close(player);
                 continue;
             }
             pk.inventoryId = id;
-            player.dataPacket(pk);
+            player.sendPacket(pk);
         }
     }
 
@@ -614,7 +614,7 @@ public abstract class BaseInventory implements Inventory {
                 continue;
             }
             pk.inventoryId = id;
-            player.dataPacket(pk);
+            player.sendPacket(pk);
         }
     }
 

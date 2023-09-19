@@ -1830,7 +1830,7 @@ public abstract class Entity extends Location implements Metadatable {
                 && this.chunk != null
                 && player.usedChunks.containsKey(Level.chunkHash(this.chunk.getX(), this.chunk.getZ()))) {
             this.hasSpawned.put(player.getLoaderId(), player);
-            player.dataPacket(createAddEntityPacket());
+            player.sendPacket(createAddEntityPacket());
         }
 
         if (this.riding != null) {
@@ -1842,7 +1842,7 @@ public abstract class Entity extends Location implements Metadatable {
             pkk.type = 1;
             pkk.immediate = 1;
 
-            player.dataPacket(pkk);
+            player.sendPacket(pkk);
         }
     }
 
@@ -1892,7 +1892,7 @@ public abstract class Entity extends Location implements Metadatable {
             pk.duration = effect.getDuration();
             pk.eventId = MobEffectPacket.EVENT_ADD;
 
-            player.dataPacket(pk);
+            player.sendPacket(pk);
         }
     }
 
@@ -1905,7 +1905,7 @@ public abstract class Entity extends Location implements Metadatable {
         pk.eid = this.getId();
         pk.metadata = data == null ? this.dataProperties : data;
 
-        player.dataPacket(pk);
+        player.sendPacket(pk);
     }
 
     public void sendData(Player[] players) {
@@ -1921,10 +1921,10 @@ public abstract class Entity extends Location implements Metadatable {
             if (player == this) {
                 continue;
             }
-            player.dataPacket(pk.clone());
+            player.sendPacket(pk.clone());
         }
         if (this instanceof Player) {
-            ((Player) this).dataPacket(pk);
+            ((Player) this).sendPacket(pk);
         }
     }
 
@@ -1932,7 +1932,7 @@ public abstract class Entity extends Location implements Metadatable {
         if (this.hasSpawned.containsKey(player.getLoaderId())) {
             RemoveEntityPacket pk = new RemoveEntityPacket();
             pk.eid = this.getId();
-            player.dataPacket(pk);
+            player.sendPacket(pk);
             this.hasSpawned.remove(player.getLoaderId());
         }
     }
@@ -2023,7 +2023,7 @@ public abstract class Entity extends Location implements Metadatable {
                     EntityEventPacket pk = new EntityEventPacket();
                     pk.eid = this.getId();
                     pk.event = EntityEventPacket.CONSUME_TOTEM;
-                    player.dataPacket(pk);
+                    player.sendPacket(pk);
 
                     if (isOffhand) {
                         player.getOffhandInventory().clear(0, true);

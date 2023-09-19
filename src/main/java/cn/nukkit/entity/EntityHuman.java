@@ -170,16 +170,18 @@ public class EntityHuman extends EntityHumanType {
             }
 
             if (this instanceof Player)
-                this.server.playerManager.updatePlayerListData(
-                        this.getUniqueId(),
-                        this.getId(),
-                        ((Player) this).getDisplayName(),
-                        this.skin,
-                        ((Player) this).getLoginChainData().getXUID(),
-                        new Player[] {player});
+                server.getPlayerManager()
+                        .updatePlayerListData(
+                                this.getUniqueId(),
+                                this.getId(),
+                                ((Player) this).getDisplayName(),
+                                this.skin,
+                                ((Player) this).getPlayerInfo().getXuid(),
+                                new Player[] {player});
             else
-                this.server.playerManager.updatePlayerListData(
-                        this.getUniqueId(), this.getId(), this.getName(), this.skin, new Player[] {player});
+                server.getPlayerManager()
+                        .updatePlayerListData(
+                                this.getUniqueId(), this.getId(), this.getName(), this.skin, new Player[] {player});
 
             AddPlayerPacket pk = new AddPlayerPacket();
             pk.uuid = this.getUniqueId();
@@ -196,7 +198,7 @@ public class EntityHuman extends EntityHumanType {
             pk.pitch = (float) this.pitch();
             pk.item = this.getInventory().getItemInHand();
             pk.metadata = this.dataProperties;
-            player.dataPacket(pk);
+            player.sendPacket(pk);
 
             this.inventory.sendArmorContents(player);
             this.offhandInventory.sendContents(player);
@@ -208,11 +210,11 @@ public class EntityHuman extends EntityHumanType {
                 pkk.type = 1;
                 pkk.immediate = 1;
 
-                player.dataPacket(pkk);
+                player.sendPacket(pkk);
             }
 
             if (!(this instanceof Player)) {
-                this.server.playerManager.removePlayerListData(this.getUniqueId(), player);
+                server.getPlayerManager().removePlayerListData(this.getUniqueId(), player);
             }
         }
     }
@@ -223,20 +225,19 @@ public class EntityHuman extends EntityHumanType {
 
             RemoveEntityPacket pk = new RemoveEntityPacket();
             pk.eid = this.getId();
-            player.dataPacket(pk);
+            player.sendPacket(pk);
             this.hasSpawned.remove(player.getLoaderId());
         }
     }
 
     @Override
     public void close() {
-        if (!this.closed) {
-            if (inventory != null && (!(this instanceof Player) || ((Player) this).loggedIn)) {
-                for (Player viewer : this.inventory.getViewers()) {
-                    viewer.removeWindow(this.inventory);
+        if (!closed) {
+            if (inventory != null && (!(this instanceof Player) || ((Player) this).isLoggedIn())) {
+                for (Player viewer : inventory.getViewers()) {
+                    viewer.removeWindow(inventory);
                 }
             }
-
             super.close();
         }
     }

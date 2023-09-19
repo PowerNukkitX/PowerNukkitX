@@ -230,7 +230,7 @@ public class DoubleChestInventory extends ContainerInventory implements Inventor
                 continue;
             }
             pk.inventoryId = id;
-            player.dataPacket(pk);
+            player.sendPacket(pk);
         }
     }
 }

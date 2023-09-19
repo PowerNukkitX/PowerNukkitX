@@ -12,8 +12,6 @@ public class PlayerCreationEvent extends Event {
 
     private final SourceInterface interfaz;
 
-    private final Long clientId;
-
     private final InetSocketAddress socketAddress;
 
     private Class<? extends Player> baseClass;
@@ -24,10 +22,8 @@ public class PlayerCreationEvent extends Event {
             SourceInterface interfaz,
             Class<? extends Player> baseClass,
             Class<? extends Player> playerClass,
-            Long clientId,
             InetSocketAddress socketAddress) {
         this.interfaz = interfaz;
-        this.clientId = clientId;
         this.socketAddress = socketAddress;
 
         this.baseClass = baseClass;
@@ -48,10 +44,6 @@ public class PlayerCreationEvent extends Event {
 
     public InetSocketAddress getSocketAddress() {
         return socketAddress;
-    }
-
-    public Long getClientId() {
-        return clientId;
     }
 
     public Class<? extends Player> getBaseClass() {

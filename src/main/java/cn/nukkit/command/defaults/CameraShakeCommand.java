@@ -62,7 +62,7 @@ public class CameraShakeCommand extends VanillaCommand {
                 packet.duration = second;
                 packet.shakeType = shakeType;
                 packet.shakeAction = CameraShakePacket.CameraShakeAction.ADD;
-                players.forEach(player -> player.dataPacket(packet));
+                players.forEach(player -> player.sendPacket(packet));
                 log.addSuccess("commands.screenshake.success", players_str).output();
                 return 1;
             }
@@ -74,7 +74,7 @@ public class CameraShakeCommand extends VanillaCommand {
                 packet.intensity = -1;
                 packet.duration = -1;
                 packet.shakeType = CameraShakePacket.CameraShakeType.POSITIONAL;
-                players.forEach(player -> player.dataPacket(packet));
+                players.forEach(player -> player.sendPacket(packet));
                 log.addSuccess("commands.screenshake.successStop", players_str).output();
                 return 1;
             }

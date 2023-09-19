@@ -13,10 +13,11 @@ import cn.nukkit.player.PlayerHandle;
 import org.jetbrains.annotations.NotNull;
 
 public class ModalFormResponseProcessor extends DataPacketProcessor<ModalFormResponsePacket> {
+
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull ModalFormResponsePacket pk) {
-        Player player = playerHandle.player;
-        if (!player.spawned || !player.isAlive()) {
+        Player player = playerHandle.getPlayer();
+        if (!player.isSpawned() || !player.isAlive()) {
             return;
         }
         if (playerHandle.getFormWindows().containsKey(pk.formId)) {

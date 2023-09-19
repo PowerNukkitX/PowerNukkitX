@@ -52,10 +52,13 @@ public class BanIpCommand extends VanillaCommand {
             case "default" -> {
                 String value = list.getResult(0);
                 if (list.hasResult(1)) reason = list.getResult(1);
-                Player player = sender.getServer().playerManager.getPlayer(value);
+                Player player = sender.getServer().getPlayerManager().getPlayer(value);
                 if (player != null) {
-                    this.processIPBan(player.getAddress(), sender, reason);
-                    log.addSuccess("commands.banip.success.players", player.getAddress(), player.getName())
+                    this.processIPBan(player.getPlayerConnection().getAddress(), sender, reason);
+                    log.addSuccess(
+                                    "commands.banip.success.players",
+                                    player.getPlayerConnection().getAddress(),
+                                    player.getName())
                             .output(true);
                     return 1;
                 } else {
@@ -102,8 +105,8 @@ public class BanIpCommand extends VanillaCommand {
         sender.getServer().getIPBans().addBan(ip, reason, null, sender.getName());
 
         for (Player player : new ArrayList<>(
-                sender.getServer().playerManager.getOnlinePlayers().values())) {
-            if (player.getAddress().equals(ip)) {
+                sender.getServer().getPlayerManager().getOnlinePlayers().values())) {
+            if (player.getPlayerConnection().getAddress().equals(ip)) {
                 player.kick(PlayerKickEvent.Reason.IP_BANNED, !reason.isEmpty() ? reason : "IP banned");
             }
         }

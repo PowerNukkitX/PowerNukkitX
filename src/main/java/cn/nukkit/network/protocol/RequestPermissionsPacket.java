@@ -56,7 +56,7 @@ public class RequestPermissionsPacket extends DataPacket {
 
     public Player getTargetPlayer() {
         for (Player player :
-                Server.getInstance().playerManager.getOnlinePlayers().values()) {
+                Server.getInstance().getPlayerManager().getOnlinePlayers().values()) {
             if (player.getId() == this.uniqueEntityId) return player;
         }
         return null;

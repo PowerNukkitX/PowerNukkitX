@@ -15,10 +15,11 @@ import java.nio.ByteOrder;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockEntityDataProcessor extends DataPacketProcessor<BlockEntityDataPacket> {
+
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull BlockEntityDataPacket pk) {
-        Player player = playerHandle.player;
-        if (!player.spawned || !player.isAlive()) {
+        Player player = playerHandle.getPlayer();
+        if (!player.isSpawned() || !player.isAlive()) {
             return;
         }
 

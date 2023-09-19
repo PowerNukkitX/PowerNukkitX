@@ -97,13 +97,13 @@ public class ScrollingTextDialog implements Dialog {
         public void onRun(int currentTick) {
             if (!scrolling || cursor >= dialog.getContent().length()) {
                 cursor = 0;
-                player.showDialogWindow(dialog);
+                player.sendDialog(dialog);
                 stopScrolling();
                 this.cancel();
                 return;
             }
             clone.setContent(dialog.getContent().substring(0, cursor));
-            player.showDialogWindow(clone);
+            player.sendDialog(clone);
             if (dialog.getContent().length() - (cursor + 1) >= 2
                     && dialog.getContent().charAt(cursor) == '§') cursor += 2;
             else cursor++;

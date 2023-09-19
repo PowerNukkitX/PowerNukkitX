@@ -174,7 +174,7 @@ public class StructBlockInventory implements Inventory {
             if (holder instanceof Entity) {
                 pk.entityId = ((Entity) holder).getId();
             }
-            who.dataPacket(pk);
+            who.sendPacket(pk);
         }
     }
 

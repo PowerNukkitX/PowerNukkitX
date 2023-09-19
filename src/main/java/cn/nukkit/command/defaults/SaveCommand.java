@@ -28,7 +28,8 @@ public class SaveCommand extends VanillaCommand {
     public int execute(
             CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         log.addSuccess("commands.save.start").output(true);
-        for (Player player : sender.getServer().playerManager.getOnlinePlayers().values()) {
+        for (Player player :
+                sender.getServer().getPlayerManager().getOnlinePlayers().values()) {
             player.save();
         }
         for (Level level : sender.getServer().getLevels().values()) {

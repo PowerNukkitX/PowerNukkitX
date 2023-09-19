@@ -105,7 +105,7 @@ public class FakeHumanInventory extends BaseInventory {
 
         for (Player player : players) {
             pk.eid = this.getHolder().getId();
-            player.dataPacket(pk);
+            player.sendPacket(pk);
         }
     }
 
@@ -367,7 +367,7 @@ public class FakeHumanInventory extends BaseInventory {
         pk.tryEncode();
 
         for (Player player : players) {
-            player.dataPacket(pk);
+            player.sendPacket(pk);
         }
     }
 
@@ -428,7 +428,7 @@ public class FakeHumanInventory extends BaseInventory {
         pk.tryEncode();
 
         for (Player player : players) {
-            player.dataPacket(pk);
+            player.sendPacket(pk);
         }
     }
 

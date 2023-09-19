@@ -41,7 +41,7 @@ public class PlayerEnderChestInventory extends BaseInventory {
             containerOpenPacket.x = containerOpenPacket.y = containerOpenPacket.z = 0;
         }
 
-        who.dataPacket(containerOpenPacket);
+        who.sendPacket(containerOpenPacket);
 
         this.sendContents(who);
 
@@ -68,7 +68,7 @@ public class PlayerEnderChestInventory extends BaseInventory {
         ContainerClosePacket containerClosePacket = new ContainerClosePacket();
         containerClosePacket.windowId = who.getWindowId(this);
         containerClosePacket.wasServerInitiated = who.getClosingWindowId() != containerClosePacket.windowId;
-        who.dataPacket(containerClosePacket);
+        who.sendPacket(containerClosePacket);
         super.onClose(who);
 
         BlockEnderChest chest = who.getViewingEnderChest();

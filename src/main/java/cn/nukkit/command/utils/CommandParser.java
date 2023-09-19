@@ -425,7 +425,7 @@ public class CommandParser {
             if (EntitySelectorAPI.getAPI().checkValid(arg)) {
                 return EntitySelectorAPI.getAPI().matchEntities(this.sender, arg);
             } else {
-                Player player = Server.getInstance().playerManager.getPlayer(arg);
+                Player player = Server.getInstance().getPlayerManager().getPlayer(arg);
                 return player == null ? Collections.emptyList() : Collections.singletonList(player);
             }
         } catch (Exception e) {

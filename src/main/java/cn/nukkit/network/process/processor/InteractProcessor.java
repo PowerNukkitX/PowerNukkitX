@@ -20,10 +20,11 @@ import org.jetbrains.annotations.NotNull;
 
 @Log4j2
 public class InteractProcessor extends DataPacketProcessor<InteractPacket> {
+
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull InteractPacket pk) {
-        Player player = playerHandle.player;
-        if (!player.spawned || !player.isAlive()) {
+        Player player = playerHandle.getPlayer();
+        if (!player.isSpawned() || !player.isAlive()) {
             return;
         }
 
@@ -77,7 +78,7 @@ public class InteractProcessor extends DataPacketProcessor<InteractPacket> {
                 } else if (targetEntity.getId() != player.getId()) {
                     return;
                 }
-                if (!playerHandle.getInventoryOpen()) {
+                if (!playerHandle.isInventoryOpen()) {
                     playerHandle.setInventoryOpen(player.getInventory().open(player));
                 }
             }

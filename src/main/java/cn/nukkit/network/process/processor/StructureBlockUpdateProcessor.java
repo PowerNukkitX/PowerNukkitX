@@ -8,23 +8,24 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.StructureBlockUpdatePacket;
+import cn.nukkit.player.Player;
 import cn.nukkit.player.PlayerHandle;
 import org.jetbrains.annotations.NotNull;
 
 public class StructureBlockUpdateProcessor extends DataPacketProcessor<StructureBlockUpdatePacket> {
+
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull StructureBlockUpdatePacket pk) {
-        if (playerHandle.player.isOp() && playerHandle.player.isCreative()) {
-            BlockEntity blockEntity = playerHandle
-                    .player
-                    .getLevel()
+        Player player = playerHandle.getPlayer();
+        if (player.isOp() && player.isCreative()) {
+            BlockEntity blockEntity = player.getLevel()
                     .getBlockEntity(new Vector3(pk.blockPosition.x, pk.blockPosition.y, pk.blockPosition.z));
             if (blockEntity instanceof BlockEntityStructBlock structBlock) {
                 Block sBlock = structBlock.getLevelBlock();
                 sBlock.setPropertyValue(BlockStructure.STRUCTURE_BLOCK_TYPE, pk.editorData.getType());
                 structBlock.updateSetting(pk);
-                playerHandle.player.getLevel().setBlock(structBlock, sBlock, true);
-                structBlock.spawnTo(playerHandle.player);
+                player.getLevel().setBlock(structBlock, sBlock, true);
+                structBlock.spawnTo(player);
             }
         }
     }

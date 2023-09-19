@@ -101,7 +101,7 @@ public class PlaySoundCommand extends VanillaCommand {
 
             packet.name = sound;
             packet.pitch = pitch;
-            player.dataPacket(packet);
+            player.sendPacket(packet);
 
             successes.add(name);
         }

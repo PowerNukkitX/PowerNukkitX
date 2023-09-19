@@ -9,22 +9,22 @@ import cn.nukkit.player.PlayerHandle;
 import org.jetbrains.annotations.NotNull;
 
 public class CommandRequestProcessor extends DataPacketProcessor<CommandRequestPacket> {
+
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull CommandRequestPacket pk) {
-        if (!playerHandle.player.spawned || !playerHandle.player.isAlive()) {
+        Player player = playerHandle.getPlayer();
+        if (!player.isSpawned() || !player.isAlive()) {
             return;
         }
         // ?? why set craftType
-        playerHandle.player.craftingType = Player.CRAFTING_SMALL;
+        player.craftingType = Player.CRAFTING_SMALL;
         PlayerCommandPreprocessEvent playerCommandPreprocessEvent =
-                new PlayerCommandPreprocessEvent(playerHandle.player, pk.command);
+                new PlayerCommandPreprocessEvent(player, pk.command);
         playerCommandPreprocessEvent.call();
         if (playerCommandPreprocessEvent.isCancelled()) {
             return;
         }
-        playerHandle
-                .player
-                .getServer()
+        player.getServer()
                 .executeCommand(playerCommandPreprocessEvent.getPlayer(), playerCommandPreprocessEvent.getMessage());
     }
 

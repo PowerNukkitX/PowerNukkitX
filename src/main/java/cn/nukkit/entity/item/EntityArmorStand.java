@@ -310,10 +310,10 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         setEntityDataPacket.eid = this.getId();
         setEntityDataPacket.metadata = this.getDataProperties();
         Server.getInstance()
-                .playerManager
+                .getPlayerManager()
                 .getOnlinePlayers()
                 .values()
-                .forEach(all -> all.dataPacket(setEntityDataPacket));
+                .forEach(all -> all.sendPacket(setEntityDataPacket));
     }
 
     @Override

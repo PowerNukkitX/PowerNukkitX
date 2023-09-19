@@ -137,9 +137,9 @@ public class EntityArmorInventory extends BaseInventory {
             inventorySlotPacket.inventoryId = player.getWindowId(this);
             inventorySlotPacket.slot = index;
             inventorySlotPacket.item = this.getItem(index);
-            player.dataPacket(inventorySlotPacket);
+            player.sendPacket(inventorySlotPacket);
         } else {
-            player.dataPacket(mobArmorEquipmentPacket);
+            player.sendPacket(mobArmorEquipmentPacket);
         }
     }
 
@@ -162,9 +162,9 @@ public class EntityArmorInventory extends BaseInventory {
             inventoryContentPacket.inventoryId = player.getWindowId(this);
             inventoryContentPacket.slots =
                     new Item[] {this.getHelmet(), this.getChestplate(), this.getLeggings(), this.getBoots()};
-            player.dataPacket(inventoryContentPacket);
+            player.sendPacket(inventoryContentPacket);
         } else {
-            player.dataPacket(mobArmorEquipmentPacket);
+            player.sendPacket(mobArmorEquipmentPacket);
         }
     }
 

@@ -98,7 +98,7 @@ public class BlockEntityBell extends BlockEntitySpawnable {
         for (Player player : this.getLevel()
                 .getChunkPlayers(this.chunk.getX(), this.chunk.getZ())
                 .values()) {
-            if (player.spawned && !spawnExceptions.contains(player)) {
+            if (player.isSpawned() && !spawnExceptions.contains(player)) {
                 this.spawnTo(player);
             }
         }

@@ -24,7 +24,7 @@ public class PlayerOffhandInventory extends BaseInventory {
     public void onSlotChange(int index, Item before, boolean send) {
         EntityHuman holder = this.getHolder();
         if (holder instanceof Player player) {
-            if (!player.spawned) return;
+            if (!player.isSpawned()) return;
             if (send) {
                 this.sendContents(this.getViewers());
                 this.sendContents(holder.getViewers().values());
@@ -43,9 +43,9 @@ public class PlayerOffhandInventory extends BaseInventory {
                 InventoryContentPacket pk2 = new InventoryContentPacket();
                 pk2.inventoryId = ContainerIds.OFFHAND;
                 pk2.slots = new Item[] {item};
-                player.dataPacket(pk2);
+                player.sendPacket(pk2);
             } else {
-                player.dataPacket(pk);
+                player.sendPacket(pk);
             }
         }
     }
@@ -60,9 +60,9 @@ public class PlayerOffhandInventory extends BaseInventory {
                 InventorySlotPacket pk2 = new InventorySlotPacket();
                 pk2.inventoryId = ContainerIds.OFFHAND;
                 pk2.item = item;
-                player.dataPacket(pk2);
+                player.sendPacket(pk2);
             } else {
-                player.dataPacket(pk);
+                player.sendPacket(pk);
             }
         }
     }

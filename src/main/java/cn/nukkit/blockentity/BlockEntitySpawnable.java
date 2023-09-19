@@ -33,7 +33,7 @@ public abstract class BlockEntitySpawnable extends BlockEntity {
             return;
         }
 
-        player.dataPacket(getSpawnPacket());
+        player.sendPacket(getSpawnPacket());
     }
 
     @PowerNukkitOnly
@@ -68,7 +68,7 @@ public abstract class BlockEntitySpawnable extends BlockEntity {
         for (Player player : this.getLevel()
                 .getChunkPlayers(this.chunk.getX(), this.chunk.getZ())
                 .values()) {
-            if (player.spawned) {
+            if (player.isSpawned()) {
                 this.spawnTo(player);
             }
         }

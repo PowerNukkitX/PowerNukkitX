@@ -57,7 +57,7 @@ public class BlockCraftingTable extends BlockSolid {
             pk.y = (int) y();
             pk.z = (int) z();
             pk.entityId = player.getId();
-            player.dataPacket(pk);
+            player.sendPacket(pk);
         }
         return true;
     }
