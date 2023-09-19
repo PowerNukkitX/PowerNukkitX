@@ -63,6 +63,7 @@ import cn.nukkit.network.SourceInterface;
 import cn.nukkit.network.process.DataPacketManager;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.*;
+import cn.nukkit.network.protocol.v618.ResourcePacksInfoPacket_v618;
 import cn.nukkit.network.session.NetworkPlayerSession;
 import cn.nukkit.permission.PermissibleBase;
 import cn.nukkit.permission.Permission;
@@ -1568,8 +1569,8 @@ public class Player extends EntityHuman
         if (!this.server.isCheckMovement()) {
             this.checkMovement = false;
         }
-
-        ResourcePacksInfoPacket infoPacket = new ResourcePacksInfoPacket();
+        ResourcePacksInfoPacket_v618 infoPacket = new ResourcePacksInfoPacket_v618();
+        //ResourcePacksInfoPacket infoPacket = new ResourcePacksInfoPacket();
         infoPacket.resourcePackEntries = this.server.getResourcePackManager().getResourceStack();
         infoPacket.mustAccept = this.server.getForceResources();
         this.dataPacket(infoPacket);
