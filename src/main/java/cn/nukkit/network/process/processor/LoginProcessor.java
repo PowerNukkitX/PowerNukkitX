@@ -46,6 +46,8 @@ public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
             return;
         }
 
+        playerHandle.setProtocol(pk.protocol);
+
         // Check the player login time
         if (pk.issueUnixTime != -1
                 && Server.getInstance().checkLoginTime

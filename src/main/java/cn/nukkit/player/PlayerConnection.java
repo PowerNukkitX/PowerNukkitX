@@ -178,4 +178,8 @@ public class PlayerConnection {
         player.getSourceInterface().putResourcePacket(player, packet);
         return true;
     }
+
+    public int getProtocol() {
+        return player.getPlayerHandle().getProtocol();
+    }
 }

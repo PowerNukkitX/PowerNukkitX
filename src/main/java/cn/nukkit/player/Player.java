@@ -96,6 +96,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -354,6 +356,7 @@ public class Player extends EntityHuman
     @Setter
     private boolean foodEnabled = true;
 
+    @Getter(value = AccessLevel.PACKAGE)
     private final @NotNull PlayerHandle playerHandle;
 
     private boolean needDimensionChangeACK = false;
