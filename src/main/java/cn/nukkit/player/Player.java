@@ -5,7 +5,6 @@ import static cn.nukkit.utils.Utils.dynamic;
 import cn.nukkit.Server;
 import cn.nukkit.api.*;
 import cn.nukkit.block.*;
-import cn.nukkit.block.BlockLiquid;
 import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.block.impl.BlockBed;
 import cn.nukkit.block.impl.BlockEndPortal;
@@ -3347,6 +3346,9 @@ public class Player extends EntityHuman
                     }
                     this.inAirTicks = 0;
                     this.highestPosition = this.y();
+                    if (this.isGliding()) {
+                        this.setGliding(false);
+                    }
                 } else {
                     this.lastInAirTick = server.getTick();
                     // 检测玩家是否异常飞行
@@ -3405,6 +3407,25 @@ public class Player extends EntityHuman
                 }
 
                 if (this.getFoodData() != null) this.getFoodData().update(tickDiff);
+
+                //Elytra check and durability calculation
+                if (this.isGliding()) {
+                    PlayerInventory playerInventory = this.getInventory();
+                    if (playerInventory != null) {
+                        Item chestplate = playerInventory.getChestplate();
+                        if ((chestplate == null || chestplate.getId() != ItemID.ELYTRA)) {
+                            this.setGliding(false);
+                        } else if (this.age % (20 * (chestplate.getEnchantmentLevel(Enchantment.ID_DURABILITY) + 1)) == 0) {
+                            int newDamage = chestplate.getDamage() + 1;
+                            if (newDamage < chestplate.getMaxDurability()) {
+                                chestplate.setDamage(newDamage);
+                                playerInventory.setChestplate(chestplate);
+                            } else {
+                                this.setGliding(false);
+                            }
+                        }
+                    }
+                }
             }
 
             if (!this.isSleeping()) {
