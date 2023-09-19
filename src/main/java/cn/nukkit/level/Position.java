@@ -140,7 +140,11 @@ public class Position extends NamedPosition {
     }
 
     public Block getLevelBlock() {
-        return getValidLevel().getBlock(this);
+        return getLevelBlock(true);
+    }
+
+    public Block getLevelBlock(boolean load) {
+        return getValidLevel().getBlock(this, load);
     }
 
     @PowerNukkitXOnly
