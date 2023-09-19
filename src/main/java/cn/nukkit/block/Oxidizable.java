@@ -2,8 +2,8 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.value.OxidizationLevel;
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.block.property.value.OxidizationLevel;
+import cn.nukkit.block.state.BlockState;
 import cn.nukkit.event.block.BlockFadeEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;

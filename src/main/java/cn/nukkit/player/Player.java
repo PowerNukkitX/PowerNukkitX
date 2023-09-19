@@ -4,6 +4,12 @@ import static cn.nukkit.utils.Utils.dynamic;
 
 import cn.nukkit.Server;
 import cn.nukkit.block.*;
+import cn.nukkit.block.BlockLiquid;
+import cn.nukkit.block.customblock.CustomBlock;
+import cn.nukkit.block.impl.BlockBed;
+import cn.nukkit.block.impl.BlockEndPortal;
+import cn.nukkit.block.impl.BlockEnderChest;
+import cn.nukkit.block.impl.BlockRespawnAnchor;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySign;
 import cn.nukkit.camera.data.CameraPreset;

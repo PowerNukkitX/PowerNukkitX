@@ -3,7 +3,7 @@ package cn.nukkit.level.format.updater;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.block.state.BlockState;
 import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.math.BlockFace;
 

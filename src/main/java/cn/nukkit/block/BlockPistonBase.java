@@ -3,13 +3,17 @@ package cn.nukkit.block;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.block.impl.BlockPistonHead;
+import cn.nukkit.block.impl.BlockRedstoneTorch;
+import cn.nukkit.block.impl.BlockRedstoneTorchUnlit;
+import cn.nukkit.block.impl.BlockTorch;
+import cn.nukkit.block.property.BlockProperties;
+import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.state.BlockState;
+import cn.nukkit.block.state.BlockStateRegistry;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityMovingBlock;
 import cn.nukkit.blockentity.BlockEntityPistonArm;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
-import cn.nukkit.blockstate.BlockState;
-import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.event.block.BlockPistonEvent;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
@@ -311,7 +315,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta
                 }
                 oldPosList.add(oldPos);
                 blockEntityHolderList.add((BlockEntityHolder<?>)
-                        BlockState.of(BlockID.MOVING_BLOCK).getBlock(Position.fromObject(newPos, this.getLevel())));
+                        BlockState.of(BlockID.PISTON_EXTENSION).getBlock(Position.fromObject(newPos, this.getLevel())));
                 nbtList.add(nbt);
             }
         }
@@ -323,7 +327,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta
                 var blockEntityHolder = blockEntityHolderList.get(i);
                 var nbt = nbtList.get(i);
                 BlockEntityHolder.setBlockAndCreateEntity(blockEntityHolder, true, true, nbt);
-                if (this.getLevel().getBlock(oldPos).getId() != BlockID.MOVING_BLOCK)
+                if (this.getLevel().getBlock(oldPos).getId() != BlockID.PISTON_EXTENSION)
                     this.getLevel().setBlock(oldPos, Block.get(BlockID.AIR));
             }
         }

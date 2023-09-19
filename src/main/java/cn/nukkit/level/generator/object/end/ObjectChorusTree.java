@@ -2,8 +2,8 @@ package cn.nukkit.level.generator.object.end;
 
 import static cn.nukkit.block.BlockID.*;
 
-import cn.nukkit.block.BlockChorusFlower;
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.block.impl.BlockChorusFlower;
+import cn.nukkit.block.state.BlockState;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.generator.object.BasicGenerator;
 import cn.nukkit.math.BlockFace;

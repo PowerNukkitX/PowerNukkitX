@@ -21,13 +21,13 @@ public abstract class ScatteredStructurePiece {
             add(Block.BROWN_MUSHROOM);
             add(Block.RED_MUSHROOM);
             add(Block.CACTUS);
-            add(Block.SUGARCANE_BLOCK);
+            add(Block.REEDS);
             add(Block.PUMPKIN);
             add(Block.BROWN_MUSHROOM_BLOCK);
             add(Block.RED_MUSHROOM_BLOCK);
             add(Block.MELON_BLOCK);
             add(Block.VINE);
-            add(Block.LILY_PAD);
+            add(Block.WATERLILY);
             add(Block.COCOA);
             add(Block.LEAVES2);
             add(Block.LOG2);

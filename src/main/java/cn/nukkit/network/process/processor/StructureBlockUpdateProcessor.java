@@ -1,7 +1,7 @@
 package cn.nukkit.network.process.processor;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockStructure;
+import cn.nukkit.block.impl.BlockStructure;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityStructBlock;
 import cn.nukkit.math.Vector3;

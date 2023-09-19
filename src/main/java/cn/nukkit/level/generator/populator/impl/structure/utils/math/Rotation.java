@@ -71,15 +71,15 @@ public enum Rotation {
                 break;
 
             case BlockID.RED_SANDSTONE_STAIRS:
-            case BlockID.OAK_WOOD_STAIRS:
-            case BlockID.COBBLESTONE_STAIRS:
+            case BlockID.OAK_STAIRS:
+            case BlockID.STONE_STAIRS:
             case BlockID.BRICK_STAIRS:
             case BlockID.STONE_BRICK_STAIRS:
             case BlockID.NETHER_BRICKS_STAIRS:
             case BlockID.SANDSTONE_STAIRS:
-            case BlockID.SPRUCE_WOOD_STAIRS:
-            case BlockID.BIRCH_WOOD_STAIRS:
-            case BlockID.JUNGLE_WOOD_STAIRS:
+            case BlockID.SPRUCE_STAIRS:
+            case BlockID.BIRCH_STAIRS:
+            case BlockID.JUNGLE_STAIRS:
             case BlockID.QUARTZ_STAIRS:
             case BlockID.ACACIA_WOODEN_STAIRS:
             case BlockID.DARK_OAK_WOODEN_STAIRS:
@@ -144,7 +144,7 @@ public enum Rotation {
                 break;
             }
 
-            case BlockID.WOODEN_DOOR_BLOCK:
+            case BlockID.OAK_DOOR_BLOCK:
             case BlockID.IRON_DOOR_BLOCK:
             case BlockID.SPRUCE_DOOR_BLOCK:
             case BlockID.BIRCH_DOOR_BLOCK:
@@ -159,7 +159,7 @@ public enum Rotation {
                 /* FALL-THROUGH */
 
             case BlockID.END_PORTAL_FRAME:
-            case BlockID.COCOA_BLOCK:
+            case BlockID.COCOA:
             case BlockID.TRIPWIRE_HOOK: {
                 int extra = meta & ~0x3;
                 int withoutFlags = meta & 0x3;
@@ -184,7 +184,7 @@ public enum Rotation {
             case BlockID.WALL_BANNER:
             case BlockID.CHEST:
             case BlockID.FURNACE:
-            case BlockID.BURNING_FURNACE:
+            case BlockID.LIT_FURNACE:
             case BlockID.ENDER_CHEST:
             case BlockID.TRAPPED_CHEST:
             case BlockID.HOPPER_BLOCK: {
@@ -219,7 +219,7 @@ public enum Rotation {
                 break;
 
             case BlockID.PUMPKIN:
-            case BlockID.JACK_O_LANTERN:
+            case BlockID.LIT_PUMPKIN:
                 switch (meta) {
                     case 0:
                         return 1;
@@ -436,15 +436,15 @@ public enum Rotation {
                 break;
 
             case BlockID.RED_SANDSTONE_STAIRS:
-            case BlockID.OAK_WOOD_STAIRS:
-            case BlockID.COBBLESTONE_STAIRS:
+            case BlockID.OAK_STAIRS:
+            case BlockID.STONE_STAIRS:
             case BlockID.BRICK_STAIRS:
             case BlockID.STONE_BRICK_STAIRS:
             case BlockID.NETHER_BRICKS_STAIRS:
             case BlockID.SANDSTONE_STAIRS:
-            case BlockID.SPRUCE_WOOD_STAIRS:
-            case BlockID.BIRCH_WOOD_STAIRS:
-            case BlockID.JUNGLE_WOOD_STAIRS:
+            case BlockID.SPRUCE_STAIRS:
+            case BlockID.BIRCH_STAIRS:
+            case BlockID.JUNGLE_STAIRS:
             case BlockID.QUARTZ_STAIRS:
             case BlockID.ACACIA_WOODEN_STAIRS:
             case BlockID.DARK_OAK_WOODEN_STAIRS:
@@ -509,7 +509,7 @@ public enum Rotation {
                 break;
             }
 
-            case BlockID.WOODEN_DOOR_BLOCK:
+            case BlockID.OAK_DOOR_BLOCK:
             case BlockID.IRON_DOOR_BLOCK:
             case BlockID.SPRUCE_DOOR_BLOCK:
             case BlockID.BIRCH_DOOR_BLOCK:
@@ -524,7 +524,7 @@ public enum Rotation {
                 /* FALL-THROUGH */
 
             case BlockID.END_PORTAL_FRAME:
-            case BlockID.COCOA_BLOCK:
+            case BlockID.COCOA:
             case BlockID.TRIPWIRE_HOOK: {
                 int extra = meta & ~0x3;
                 int withoutFlags = meta & 0x3;
@@ -549,7 +549,7 @@ public enum Rotation {
             case BlockID.WALL_BANNER:
             case BlockID.CHEST:
             case BlockID.FURNACE:
-            case BlockID.BURNING_FURNACE:
+            case BlockID.LIT_FURNACE:
             case BlockID.ENDER_CHEST:
             case BlockID.TRAPPED_CHEST:
             case BlockID.HOPPER_BLOCK: {
@@ -583,7 +583,7 @@ public enum Rotation {
                 }
                 break;
             case BlockID.PUMPKIN:
-            case BlockID.JACK_O_LANTERN:
+            case BlockID.LIT_PUMPKIN:
                 switch (meta) {
                     case 1:
                         return 0;
@@ -797,15 +797,15 @@ public enum Rotation {
                 break;
 
             case BlockID.RED_SANDSTONE_STAIRS:
-            case BlockID.OAK_WOOD_STAIRS:
-            case BlockID.COBBLESTONE_STAIRS:
+            case BlockID.OAK_STAIRS:
+            case BlockID.STONE_STAIRS:
             case BlockID.BRICK_STAIRS:
             case BlockID.STONE_BRICK_STAIRS:
             case BlockID.NETHER_BRICKS_STAIRS:
             case BlockID.SANDSTONE_STAIRS:
-            case BlockID.SPRUCE_WOOD_STAIRS:
-            case BlockID.BIRCH_WOOD_STAIRS:
-            case BlockID.JUNGLE_WOOD_STAIRS:
+            case BlockID.SPRUCE_STAIRS:
+            case BlockID.BIRCH_STAIRS:
+            case BlockID.JUNGLE_STAIRS:
             case BlockID.QUARTZ_STAIRS:
             case BlockID.ACACIA_WOODEN_STAIRS:
             case BlockID.DARK_OAK_WOODEN_STAIRS:
@@ -870,7 +870,7 @@ public enum Rotation {
                 break;
             }
 
-            case BlockID.WOODEN_DOOR_BLOCK:
+            case BlockID.OAK_DOOR_BLOCK:
             case BlockID.IRON_DOOR_BLOCK:
             case BlockID.SPRUCE_DOOR_BLOCK:
             case BlockID.BIRCH_DOOR_BLOCK:
@@ -885,7 +885,7 @@ public enum Rotation {
                 /* FALL-THROUGH */
 
             case BlockID.END_PORTAL_FRAME:
-            case BlockID.COCOA_BLOCK:
+            case BlockID.COCOA:
             case BlockID.TRIPWIRE_HOOK: {
                 int extra = meta & ~0x3;
                 int withoutFlags = meta & 0x3;
@@ -910,7 +910,7 @@ public enum Rotation {
             case BlockID.WALL_BANNER:
             case BlockID.CHEST:
             case BlockID.FURNACE:
-            case BlockID.BURNING_FURNACE:
+            case BlockID.LIT_FURNACE:
             case BlockID.ENDER_CHEST:
             case BlockID.TRAPPED_CHEST:
             case BlockID.HOPPER_BLOCK: {
@@ -945,7 +945,7 @@ public enum Rotation {
                 break;
 
             case BlockID.PUMPKIN:
-            case BlockID.JACK_O_LANTERN:
+            case BlockID.LIT_PUMPKIN:
                 switch (meta) {
                     case 0:
                         return 2;

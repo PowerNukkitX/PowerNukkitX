@@ -1,7 +1,7 @@
 package cn.nukkit.item;
 
 import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.block.BlockJungleSignPost;
+import cn.nukkit.block.impl.BlockJungleSignPost;
 
 @PowerNukkitOnly
 public class ItemJungleSign extends ItemSign {

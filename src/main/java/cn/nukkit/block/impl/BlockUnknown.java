@@ -1,0 +1,63 @@
+package cn.nukkit.block.impl;
+
+import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
+import cn.nukkit.block.BlockMeta;
+import cn.nukkit.block.property.BlockProperties;
+import cn.nukkit.block.property.UnsignedIntBlockProperty;
+import org.jetbrains.annotations.NotNull;
+
+/**
+ * @author MagicDroidX (Nukkit Project)
+ */
+public class BlockUnknown extends BlockMeta {
+    @PowerNukkitOnly
+    @Since("1.5.0.0-PN")
+    public static final UnsignedIntBlockProperty UNKNOWN =
+            new UnsignedIntBlockProperty("nukkit-unknown", true, 0xFFFFFFFF);
+
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public static final BlockProperties PROPERTIES = new BlockProperties(UNKNOWN);
+
+    private final int id;
+
+    public BlockUnknown(int id) {
+        this(id, 0);
+    }
+
+    public BlockUnknown(int id, Integer meta) {
+        super(0);
+        this.id = id;
+        if (meta != null && meta != 0) {
+            getMutableState().setDataStorageFromInt(meta, false);
+        }
+    }
+
+    @PowerNukkitOnly
+    @Since("1.5.2.0-PN")
+    public BlockUnknown(int id, Number meta) {
+        super(0);
+        this.id = id;
+        if (meta != null) {
+            getMutableState().setDataStorage(meta, false);
+        }
+    }
+
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    @NotNull @Override
+    public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
+    @Override
+    public int getId() {
+        return id;
+    }
+
+    @Override
+    public String getName() {
+        return "Unknown";
+    }
+}

@@ -2,7 +2,7 @@ package cn.nukkit.level.terra;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.block.state.BlockState;
 import cn.nukkit.level.biome.Biome;
 import cn.nukkit.level.terra.delegate.PNXBiomeDelegate;
 import cn.nukkit.level.terra.delegate.PNXBlockStateDelegate;

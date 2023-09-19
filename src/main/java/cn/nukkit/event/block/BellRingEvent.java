@@ -1,7 +1,7 @@
 package cn.nukkit.event.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.block.BlockBell;
+import cn.nukkit.block.impl.BlockBell;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.Cancellable;
 

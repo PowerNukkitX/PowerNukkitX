@@ -19,7 +19,7 @@
 package org.powernukkit.tools;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.blockstate.BlockStateRegistry;
+import cn.nukkit.block.state.BlockStateRegistry;
 import com.google.common.base.Preconditions;
 import java.io.*;
 import java.util.Map;

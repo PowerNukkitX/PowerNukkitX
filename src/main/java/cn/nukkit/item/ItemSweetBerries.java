@@ -1,6 +1,6 @@
 package cn.nukkit.item;
 
-import cn.nukkit.block.BlockSweetBerryBush;
+import cn.nukkit.block.impl.BlockSweetBerryBush;
 
 public class ItemSweetBerries extends ItemEdible {
 

@@ -1,7 +1,7 @@
 package cn.nukkit.item;
 
 import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.block.BlockCampfire;
+import cn.nukkit.block.impl.BlockCampfire;
 
 @PowerNukkitOnly
 public class ItemCampfire extends Item {

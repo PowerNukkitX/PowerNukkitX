@@ -5,10 +5,10 @@ import static cn.nukkit.block.BlockID.*;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockDoor;
-import cn.nukkit.blockproperty.CommonBlockProperties;
-import cn.nukkit.blockstate.BlockState;
-import cn.nukkit.blockstate.BlockStateRegistry;
-import cn.nukkit.blockstate.MutableBlockState;
+import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.state.BlockState;
+import cn.nukkit.block.state.BlockStateRegistry;
+import cn.nukkit.block.state.MutableBlockState;
 import cn.nukkit.level.format.Chunk;
 import cn.nukkit.level.format.ChunkSection;
 

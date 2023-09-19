@@ -2,7 +2,7 @@ package cn.nukkit.level.terra.handles;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.blockstate.BlockStateRegistry;
+import cn.nukkit.block.state.BlockStateRegistry;
 import cn.nukkit.jemapping.JeBlockState;
 import cn.nukkit.jemapping.JeMapping;
 import cn.nukkit.level.terra.PNXAdapter;
@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public class PNXWorldHandle implements WorldHandle {
-    public static final PNXBlockStateDelegate AIR = new PNXBlockStateDelegate(cn.nukkit.blockstate.BlockState.AIR);
+    public static final PNXBlockStateDelegate AIR = new PNXBlockStateDelegate(cn.nukkit.block.state.BlockState.AIR);
     public static int err = 0;
 
     @Override

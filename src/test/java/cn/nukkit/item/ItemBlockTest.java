@@ -3,8 +3,8 @@ package cn.nukkit.item;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockLever;
-import cn.nukkit.block.BlockUnknown;
+import cn.nukkit.block.impl.BlockLever;
+import cn.nukkit.block.impl.BlockUnknown;
 import cn.nukkit.test.LogLevelAdjuster;
 import org.apache.logging.log4j.Level;
 import org.junit.jupiter.api.AfterEach;

@@ -2,7 +2,7 @@ package cn.nukkit.item;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.block.BlockWarpedSignPost;
+import cn.nukkit.block.impl.BlockWarpedSignPost;
 
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")

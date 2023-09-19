@@ -1,7 +1,7 @@
 package cn.nukkit.item;
 
 import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.block.BlockSpruceSignPost;
+import cn.nukkit.block.impl.BlockSpruceSignPost;
 
 @PowerNukkitOnly
 public class ItemSpruceSign extends ItemSign {

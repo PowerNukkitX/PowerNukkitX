@@ -24,10 +24,9 @@ public class SwampHut extends ScatteredStructurePiece {
         this.adjustHorizPos(level);
 
         ScatteredStructureBuilder builder = new ScatteredStructureBuilder(level, this);
-        builder.fill(
-                new BlockVector3(1, 1, 2), new BlockVector3(5, 4, 7), Block.WOODEN_PLANK, 1, Block.AIR, 0); // hut body
-        builder.fill(new BlockVector3(1, 1, 1), new BlockVector3(5, 1, 1), Block.WOODEN_PLANK, 1); // hut steps
-        builder.fill(new BlockVector3(2, 1, 0), new BlockVector3(4, 1, 0), Block.WOODEN_PLANK, 1); // hut steps
+        builder.fill(new BlockVector3(1, 1, 2), new BlockVector3(5, 4, 7), Block.PLANKS, 1, Block.AIR, 0); // hut body
+        builder.fill(new BlockVector3(1, 1, 1), new BlockVector3(5, 1, 1), Block.PLANKS, 1); // hut steps
+        builder.fill(new BlockVector3(2, 1, 0), new BlockVector3(4, 1, 0), Block.PLANKS, 1); // hut steps
         builder.fill(new BlockVector3(4, 2, 2), new BlockVector3(4, 3, 2), Block.AIR); // hut door
         builder.fill(new BlockVector3(5, 3, 4), new BlockVector3(5, 3, 5), Block.AIR); // left window
         builder.setBlock(new BlockVector3(1, 3, 4), Block.AIR);
@@ -41,10 +40,10 @@ public class SwampHut extends ScatteredStructurePiece {
         builder.setBlock(new BlockVector3(2, 3, 2), Block.FENCE);
         builder.setBlock(new BlockVector3(3, 3, 7), Block.FENCE);
 
-        builder.fill(new BlockVector3(0, 4, 1), new BlockVector3(6, 4, 1), Block.SPRUCE_WOOD_STAIRS, 2); // N
-        builder.fill(new BlockVector3(6, 4, 2), new BlockVector3(6, 4, 7), Block.SPRUCE_WOOD_STAIRS, 1); // E
-        builder.fill(new BlockVector3(0, 4, 8), new BlockVector3(6, 4, 8), Block.SPRUCE_WOOD_STAIRS, 3); // S
-        builder.fill(new BlockVector3(0, 4, 2), new BlockVector3(0, 4, 7), Block.SPRUCE_WOOD_STAIRS, 0); // W
+        builder.fill(new BlockVector3(0, 4, 1), new BlockVector3(6, 4, 1), Block.SPRUCE_STAIRS, 2); // N
+        builder.fill(new BlockVector3(6, 4, 2), new BlockVector3(6, 4, 7), Block.SPRUCE_STAIRS, 1); // E
+        builder.fill(new BlockVector3(0, 4, 8), new BlockVector3(6, 4, 8), Block.SPRUCE_STAIRS, 3); // S
+        builder.fill(new BlockVector3(0, 4, 2), new BlockVector3(0, 4, 7), Block.SPRUCE_STAIRS, 0); // W
 
         builder.fill(new BlockVector3(1, 0, 2), new BlockVector3(1, 3, 2), Block.LOG);
         builder.fill(new BlockVector3(5, 0, 2), new BlockVector3(5, 3, 2), Block.LOG);
@@ -57,7 +56,7 @@ public class SwampHut extends ScatteredStructurePiece {
         builder.setBlock(new BlockVector3(4, 2, 6), Block.CAULDRON_BLOCK);
         builder.setTile(new BlockVector3(4, 2, 6), BlockEntity.CAULDRON);
 
-        builder.setBlock(new BlockVector3(3, 2, 6), Block.WORKBENCH);
+        builder.setBlock(new BlockVector3(3, 2, 6), Block.CRAFTING_TABLE);
 
         builder.setBlockDownward(new BlockVector3(1, -1, 2), Block.LOG);
         builder.setBlockDownward(new BlockVector3(5, -1, 2), Block.LOG);

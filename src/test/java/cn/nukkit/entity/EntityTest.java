@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.lenient;
 
 import cn.nukkit.block.BlockID;
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.block.state.BlockState;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.entity.mob.EntityBlaze;
 import cn.nukkit.entity.mob.EntityZombie;

@@ -49,7 +49,7 @@ public class TerraGenerator implements GeneratorWrapper {
     private DimensionData dimensionData;
 
     public TerraGenerator(Level level) {
-        this(createConfigPack(), new PNXBlockStateDelegate(cn.nukkit.blockstate.BlockState.AIR), level);
+        this(createConfigPack(), new PNXBlockStateDelegate(cn.nukkit.block.state.BlockState.AIR), level);
     }
 
     public TerraGenerator(Map<String, Object> option, Level level) {
@@ -66,7 +66,7 @@ public class TerraGenerator implements GeneratorWrapper {
                 }
             }
         }
-        this.air = new PNXBlockStateDelegate(cn.nukkit.blockstate.BlockState.AIR);
+        this.air = new PNXBlockStateDelegate(cn.nukkit.block.state.BlockState.AIR);
         this.configPack = createConfigPack(packName);
         this.chunkGenerator = createGenerator(this.configPack);
         this.biomeProvider = this.configPack.getBiomeProvider();

@@ -2,7 +2,7 @@ package cn.nukkit.level.generator.object.end;
 
 import static cn.nukkit.block.BlockID.END_STONE;
 
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.block.state.BlockState;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.generator.object.BasicGenerator;
 import cn.nukkit.math.NukkitMath;

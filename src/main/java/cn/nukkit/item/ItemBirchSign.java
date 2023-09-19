@@ -1,7 +1,7 @@
 package cn.nukkit.item;
 
 import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.block.BlockBirchSignPost;
+import cn.nukkit.block.impl.BlockBirchSignPost;
 
 @PowerNukkitOnly
 public class ItemBirchSign extends ItemSign {

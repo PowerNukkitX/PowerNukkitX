@@ -6,11 +6,12 @@ import cn.nukkit.Server;
 import cn.nukkit.api.*;
 import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.block.customblock.CustomBlockDefinition;
+import cn.nukkit.block.impl.*;
+import cn.nukkit.block.property.BlockProperties;
+import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.state.*;
+import cn.nukkit.block.state.exception.InvalidBlockStateException;
 import cn.nukkit.blockentity.BlockEntity;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
-import cn.nukkit.blockstate.*;
-import cn.nukkit.blockstate.exception.InvalidBlockStateException;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.item.Item;
@@ -474,7 +475,7 @@ public abstract class Block extends Position
             list[GLOWING_OBSIDIAN] = BlockObsidianGlowing.class; // 246
             list[NETHER_REACTOR] = BlockNetherReactor.class; // 247 Should not be removed
             list[INFO_UPDATE] = BlockInfoUpdate.class; // 248 Don't use this Block.
-            list[MOVING_BLOCK] = BlockMoving.class; // 250
+            list[PISTON_EXTENSION] = BlockMoving.class; // 250
             list[OBSERVER] = BlockObserver.class; // 251
             list[STRUCTURE_BLOCK] = BlockStructure.class; // 252
 

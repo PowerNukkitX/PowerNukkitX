@@ -1,9 +1,9 @@
 package cn.nukkit.item;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockBedrock;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockObsidian;
+import cn.nukkit.block.impl.BlockBedrock;
+import cn.nukkit.block.impl.BlockObsidian;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.FullChunk;

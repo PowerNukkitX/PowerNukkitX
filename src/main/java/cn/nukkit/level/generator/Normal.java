@@ -3,8 +3,8 @@ package cn.nukkit.level.generator;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockStone;
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.block.impl.BlockStone;
+import cn.nukkit.block.state.BlockState;
 import cn.nukkit.event.level.ChunkPrePopulateEvent;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.biome.Biome;
@@ -216,9 +216,17 @@ public class Normal extends Generator {
                 new PopulatorCaves(),
                 // new PopulatorRavines()
                 new PopulatorSpring(
-                        BlockState.of(BlockID.WATER), ImmutableList.of(BlockState.of(BlockID.STONE)), 50, 8, 255),
+                        BlockState.of(BlockID.FLOWING_WATER),
+                        ImmutableList.of(BlockState.of(BlockID.STONE)),
+                        50,
+                        8,
+                        255),
                 new PopulatorSpring(
-                        BlockState.of(BlockID.LAVA), ImmutableList.of(BlockState.of(BlockID.STONE)), 20, 16, 255));
+                        BlockState.of(BlockID.FLOWING_LAVA),
+                        ImmutableList.of(BlockState.of(BlockID.STONE)),
+                        20,
+                        16,
+                        255));
     }
 
     @Override

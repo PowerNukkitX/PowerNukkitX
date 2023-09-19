@@ -1,6 +1,6 @@
 package cn.nukkit.level.biome.impl.river;
 
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.block.state.BlockState;
 import cn.nukkit.level.generator.populator.impl.PopulatorDisk;
 import cn.nukkit.level.generator.populator.impl.WaterIcePopulator;
 import java.util.Arrays;

@@ -24,7 +24,7 @@ import static cn.nukkit.api.API.Usage.BLEEDING;
 import cn.nukkit.api.API;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.block.state.BlockState;
 import cn.nukkit.level.util.PalettedBlockStorage;
 import java.util.BitSet;
 import javax.annotation.Nullable;

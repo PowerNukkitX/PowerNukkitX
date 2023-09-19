@@ -1,7 +1,7 @@
 package cn.nukkit.item;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockRail;
+import cn.nukkit.block.impl.BlockRail;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityMinecartChest;
 import cn.nukkit.level.Level;

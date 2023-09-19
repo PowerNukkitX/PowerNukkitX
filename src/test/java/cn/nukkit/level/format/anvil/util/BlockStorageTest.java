@@ -1,11 +1,11 @@
 package cn.nukkit.level.format.anvil.util;
 
-import static cn.nukkit.blockstate.BlockState.AIR;
+import static cn.nukkit.block.state.BlockState.AIR;
 import static org.junit.jupiter.api.Assertions.*;
 
 import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockStone;
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.block.impl.BlockStone;
+import cn.nukkit.block.state.BlockState;
 import cn.nukkit.utils.BinaryStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
