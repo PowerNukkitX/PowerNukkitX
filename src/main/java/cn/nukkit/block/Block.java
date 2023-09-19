@@ -1364,8 +1364,7 @@ public abstract class Block extends Position
      */
     @PowerNukkitXOnly
     public static OK<?> registerCustomBlock(@NotNull List<Class<? extends CustomBlock>> blockClassList) {
-        if (!Server.getInstance().isEnableExperimentMode()
-                || Server.getInstance().getConfig("settings.waterdogpe", false)) {
+        if (!Server.getInstance().isEnableExperimentMode()) {
             return new OK<>(
                     false,
                     "The server does not have the experiment mode feature enabled.Unable to register custom block!");
@@ -1397,8 +1396,7 @@ public abstract class Block extends Position
      */
     @PowerNukkitXOnly
     public static OK<?> registerCustomBlock(@NotNull Map<String, Class<? extends CustomBlock>> blockNamespaceClassMap) {
-        if (!Server.getInstance().isEnableExperimentMode()
-                || Server.getInstance().getConfig("settings.waterdogpe", false)) {
+        if (!Server.getInstance().isEnableExperimentMode()) {
             return new OK<>(
                     false,
                     "The server does not have the experiment mode feature enabled.Unable to register custom block!");
