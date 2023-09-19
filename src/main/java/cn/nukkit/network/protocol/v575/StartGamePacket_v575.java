@@ -205,7 +205,6 @@ public class StartGamePacket_v575 extends DataPacket {
         this.putString(""); // EduSharedUriResource linkUri
         if (Server.getInstance().isEnableExperimentMode() && !Server.getInstance().isWaterdogCapable()) { // force Experimental Gameplay
             this.putBoolean(true); // force Experimental Gameplay
-            this.putBoolean(true);
         } else {
             this.putBoolean(false);
         }
