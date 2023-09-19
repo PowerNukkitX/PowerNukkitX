@@ -90,7 +90,9 @@ public enum SmallFlowerType {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    WITHER_ROSE("Wither Rose", DyeColor.BLACK, BlockID.WITHER_ROSE);
+    WITHER_ROSE("Wither Rose", DyeColor.BLACK, BlockID.WITHER_ROSE),
+
+    TORCHFLOWER("Torchflower", DyeColor.ORANGE, BlockID.TORCHFLOWER);
 
     private final String englishName;
     private final DyeColor dyeColor;

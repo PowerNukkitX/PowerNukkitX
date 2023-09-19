@@ -39,7 +39,8 @@ public class BlockFlower extends BlockFlowable implements BlockFlowerPot.FlowerP
                 SmallFlowerType.TULIP_PINK,
                 SmallFlowerType.OXEYE,
                 SmallFlowerType.CORNFLOWER,
-                SmallFlowerType.LILY_OF_THE_VALLEY
+                SmallFlowerType.LILY_OF_THE_VALLEY,
+                SmallFlowerType.TORCHFLOWER
             });
 
     @PowerNukkitOnly

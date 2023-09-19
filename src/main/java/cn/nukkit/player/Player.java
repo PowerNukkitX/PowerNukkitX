@@ -452,7 +452,7 @@ public class Player extends EntityHuman
 
     private Boolean openSignFront = null;
 
-    private Boolean flySneaking = null;
+    private Boolean flySneaking = false;
 
     /**
      * 单元测试用的构造函数
