@@ -32,6 +32,8 @@ public class StartGamePacket extends DataPacket {
     public static final int GAME_PUBLISH_SETTING_FRIENDS_OF_FRIENDS = 3;
     public static final int GAME_PUBLISH_SETTING_PUBLIC = 4;
 
+    public static CompoundTag playerPropertyData = new CompoundTag("");
+
     @Override
     public byte pid() {
         return NETWORK_ID;
@@ -182,8 +184,7 @@ public class StartGamePacket extends DataPacket {
         this.putBoolean(this.commandsEnabled);
         this.putBoolean(this.isTexturePacksRequired);
         this.putGameRules(this.gameRules);
-        if (Server.getInstance().isEnableExperimentMode()
-                && !Server.getInstance().getConfig("settings.waterdogpe", false)) {
+        if (Server.getInstance().isEnableExperimentMode()) {
             this.putLInt(4); // Experiment count
             {
                 this.putString("data_driven_items");
@@ -259,7 +260,7 @@ public class StartGamePacket extends DataPacket {
         this.putBoolean(this.isInventoryServerAuthoritative);
         this.putString(vanillaVersion); // Server Engine
         try {
-            this.put(NBTIO.writeNetwork(new CompoundTag(""))); // playerPropertyData
+            this.put(NBTIO.writeNetwork(playerPropertyData)); // playerPropertyData
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

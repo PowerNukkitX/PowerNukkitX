@@ -1,7 +1,10 @@
 package cn.nukkit.network.protocol;
 
+import java.nio.ByteOrder;
+
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 @PowerNukkitOnly
@@ -30,9 +33,13 @@ public class SyncEntityPropertyPacket extends DataPacket {
     }
 
     @Override
-    public void encode() {
-        reset();
-        putTag(data);
+    public void encode(){
+        this.reset();
+        try {
+            this.put(NBTIO.write(data, ByteOrder.BIG_ENDIAN, true));
+        } catch ( Exception  e ) {
+            e.printStackTrace();
+        }
     }
 
     @PowerNukkitOnly
