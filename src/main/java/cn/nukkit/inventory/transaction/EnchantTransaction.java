@@ -7,6 +7,7 @@ import cn.nukkit.inventory.EnchantInventory;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.transaction.action.EnchantingAction;
 import cn.nukkit.inventory.transaction.action.InventoryAction;
+import cn.nukkit.inventory.transaction.action.SlotChangeAction;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDye;
 import cn.nukkit.network.protocol.types.NetworkInventoryAction;
@@ -22,6 +23,13 @@ public class EnchantTransaction extends InventoryTransaction {
     @Since("1.3.1.0-PN")
     public EnchantTransaction(Player source, List<InventoryAction> actions) {
         super(source, actions);
+        for (InventoryAction action : actions) {
+            if (action instanceof SlotChangeAction slotChangeAction) {
+                if (slotChangeAction.getInventory() instanceof EnchantInventory && slotChangeAction.getSlot() == 0) {
+                    this.outputItem = slotChangeAction.getTargetItem();
+                }
+            }
+        }
     }
 
     @Override
@@ -32,7 +40,10 @@ public class EnchantTransaction extends InventoryTransaction {
         if (!getSource().isCreative()) {
             if (cost == -1 || !isLapisLazuli(eInv.getReagentSlot()) || eInv.getReagentSlot().count < cost) return false;
         }
-        return (inputItem != null && outputItem != null && inputItem.equals(eInv.getInputSlot(), true, true));
+        return inputItem != null && outputItem != null
+                && inputItem.equals(eInv.getInputSlot(), true, true)
+                && inputItem.getId() == outputItem.getId()
+                && inputItem.getCount() == outputItem.getCount();
     }
 
     private boolean isLapisLazuli(Item item) {
