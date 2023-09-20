@@ -219,9 +219,8 @@ public class StartGamePacket_v582 extends DataPacket {
         this.putBoolean(false); // Nether type
         this.putString(""); // EduSharedUriResource buttonName
         this.putString(""); // EduSharedUriResource linkUri
-        if (Server.getInstance().isEnableExperimentMode()) { // force Experimental Gameplay
-            this.putBoolean(Server.getInstance().isEnableExperimentMode()); // force Experimental Gameplay
-            this.putBoolean(!Server.getInstance().getConfig("settings.waterdogpe", false)); // Why WaterDogPE require an extra optional boolean if this is set to true? I don't know.
+        if (Server.getInstance().isEnableExperimentMode() && !Server.getInstance().isWaterdogCapable()) { // force Experimental Gameplay
+            this.putBoolean(true); // force Experimental Gameplay
         } else {
             this.putBoolean(false);
         }
