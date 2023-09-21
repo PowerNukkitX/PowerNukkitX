@@ -16,8 +16,8 @@ public class BlockSlabStone extends BlockSlab {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(
-            CommonBlockProperties.VERTICAL_HALF,
-            StoneSlab1Type.PROPERTY
+            StoneSlab1Type.PROPERTY,
+            CommonBlockProperties.VERTICAL_HALF
     );
 
     public static final int STONE = 0;

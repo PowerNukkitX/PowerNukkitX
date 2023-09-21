@@ -18,18 +18,24 @@ public class BlockSlabRedSandstone extends BlockSlab {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(
-            CommonBlockProperties.VERTICAL_HALF,
-            StoneSlab2Type.PROPERTY
+            StoneSlab2Type.PROPERTY,
+            CommonBlockProperties.VERTICAL_HALF
     );
 
     public static final int RED_SANDSTONE = 0;
     public static final int PURPUR = 1;
-    @PowerNukkitOnly public static final int PRISMARINE = 2;
-    @PowerNukkitOnly public static final int PRISMARINE_BRICKS = 3;
-    @PowerNukkitOnly public static final int DARK_PRISMARINE = 4;
-    @PowerNukkitOnly public static final int MOSSY_COBBLESTONE = 5;
-    @PowerNukkitOnly public static final int SMOOTH_SANDSTONE = 6;
-    @PowerNukkitOnly public static final int RED_NETHER_BRICK = 7;
+    @PowerNukkitOnly
+    public static final int PRISMARINE = 2;
+    @PowerNukkitOnly
+    public static final int PRISMARINE_BRICKS = 3;
+    @PowerNukkitOnly
+    public static final int DARK_PRISMARINE = 4;
+    @PowerNukkitOnly
+    public static final int MOSSY_COBBLESTONE = 5;
+    @PowerNukkitOnly
+    public static final int SMOOTH_SANDSTONE = 6;
+    @PowerNukkitOnly
+    public static final int RED_NETHER_BRICK = 7;
 
     public BlockSlabRedSandstone() {
         this(0);
@@ -43,6 +49,7 @@ public class BlockSlabRedSandstone extends BlockSlab {
     public int getId() {
         return RED_SANDSTONE_SLAB;
     }
+
     @PowerNukkitOnly
     @Override
     public String getSlabName() {
