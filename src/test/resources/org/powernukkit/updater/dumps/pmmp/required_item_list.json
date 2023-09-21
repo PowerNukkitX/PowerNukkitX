@@ -121,7 +121,7 @@
     },
     "minecraft:arrow": {
         "runtime_id": 303,
-      "component_based": true
+        "component_based": true
     },
     "minecraft:axolotl_bucket": {
         "runtime_id": 371,
@@ -248,7 +248,7 @@
         "component_based": false
     },
     "minecraft:banner_pattern": {
-      "runtime_id": 716,
+        "runtime_id": 716,
         "component_based": false
     },
     "minecraft:barrel": {
@@ -387,10 +387,10 @@
         "runtime_id": -642,
         "component_based": false
     },
-  "minecraft:black_concrete_powder": {
-    "runtime_id": -723,
-    "component_based": false
-  },
+    "minecraft:black_concrete_powder": {
+        "runtime_id": -723,
+        "component_based": false
+    },
     "minecraft:black_dye": {
         "runtime_id": 397,
         "component_based": false
@@ -403,18 +403,18 @@
         "runtime_id": -627,
         "component_based": false
     },
-  "minecraft:black_stained_glass": {
-    "runtime_id": -687,
-    "component_based": false
-  },
-  "minecraft:black_stained_glass_pane": {
-    "runtime_id": -657,
-    "component_based": false
-  },
-  "minecraft:black_terracotta": {
-    "runtime_id": -738,
-    "component_based": false
-  },
+    "minecraft:black_stained_glass": {
+        "runtime_id": -687,
+        "component_based": false
+    },
+    "minecraft:black_stained_glass_pane": {
+        "runtime_id": -657,
+        "component_based": false
+    },
+    "minecraft:black_terracotta": {
+        "runtime_id": -738,
+        "component_based": false
+    },
     "minecraft:black_wool": {
         "runtime_id": -554,
         "component_based": false
@@ -479,10 +479,10 @@
         "runtime_id": -638,
         "component_based": false
     },
-  "minecraft:blue_concrete_powder": {
-    "runtime_id": -719,
-    "component_based": false
-  },
+    "minecraft:blue_concrete_powder": {
+        "runtime_id": -719,
+        "component_based": false
+    },
     "minecraft:blue_dye": {
         "runtime_id": 401,
         "component_based": false
@@ -499,24 +499,24 @@
         "runtime_id": -623,
         "component_based": false
     },
-  "minecraft:blue_stained_glass": {
-    "runtime_id": -683,
-    "component_based": false
-  },
-  "minecraft:blue_stained_glass_pane": {
-    "runtime_id": -653,
-    "component_based": false
-  },
-  "minecraft:blue_terracotta": {
-    "runtime_id": -734,
-    "component_based": false
+    "minecraft:blue_stained_glass": {
+        "runtime_id": -683,
+        "component_based": false
+    },
+    "minecraft:blue_stained_glass_pane": {
+        "runtime_id": -653,
+        "component_based": false
+    },
+    "minecraft:blue_terracotta": {
+        "runtime_id": -734,
+        "component_based": false
     },
     "minecraft:blue_wool": {
         "runtime_id": -563,
         "component_based": false
     },
     "minecraft:boat": {
-      "runtime_id": 714,
+        "runtime_id": 714,
         "component_based": false
     },
     "minecraft:bone": {
@@ -599,9 +599,9 @@
         "runtime_id": -639,
         "component_based": false
     },
-  "minecraft:brown_concrete_powder": {
-    "runtime_id": -720,
-    "component_based": false
+    "minecraft:brown_concrete_powder": {
+        "runtime_id": -720,
+        "component_based": false
     },
     "minecraft:brown_dye": {
         "runtime_id": 400,
@@ -623,18 +623,18 @@
         "runtime_id": -624,
         "component_based": false
     },
-  "minecraft:brown_stained_glass": {
-    "runtime_id": -684,
-    "component_based": false
-  },
-  "minecraft:brown_stained_glass_pane": {
-    "runtime_id": -654,
-    "component_based": false
-  },
-  "minecraft:brown_terracotta": {
-    "runtime_id": -735,
-    "component_based": false
-  },
+    "minecraft:brown_stained_glass": {
+        "runtime_id": -684,
+        "component_based": false
+    },
+    "minecraft:brown_stained_glass_pane": {
+        "runtime_id": -654,
+        "component_based": false
+    },
+    "minecraft:brown_terracotta": {
+        "runtime_id": -735,
+        "component_based": false
+    },
     "minecraft:brown_wool": {
         "runtime_id": -555,
         "component_based": false
@@ -700,7 +700,7 @@
         "component_based": false
     },
     "minecraft:carpet": {
-      "runtime_id": 704,
+        "runtime_id": 704,
         "component_based": false
     },
     "minecraft:carrot": {
@@ -1024,11 +1024,11 @@
         "component_based": false
     },
     "minecraft:concrete": {
-      "runtime_id": 709,
+        "runtime_id": 709,
         "component_based": false
     },
     "minecraft:concrete_powder": {
-      "runtime_id": 710,
+        "runtime_id": 710,
         "component_based": false
     },
     "minecraft:conduit": {
@@ -1080,7 +1080,7 @@
         "component_based": false
     },
     "minecraft:coral": {
-      "runtime_id": 707,
+        "runtime_id": 707,
         "component_based": false
     },
     "minecraft:coral_block": {
@@ -1251,10 +1251,10 @@
         "runtime_id": -636,
         "component_based": false
     },
-  "minecraft:cyan_concrete_powder": {
-    "runtime_id": -717,
-    "component_based": false
-  },
+    "minecraft:cyan_concrete_powder": {
+        "runtime_id": -717,
+        "component_based": false
+    },
     "minecraft:cyan_dye": {
         "runtime_id": 403,
         "component_based": false
@@ -1267,18 +1267,18 @@
         "runtime_id": -621,
         "component_based": false
     },
-  "minecraft:cyan_stained_glass": {
-    "runtime_id": -681,
-    "component_based": false
-  },
-  "minecraft:cyan_stained_glass_pane": {
-    "runtime_id": -651,
-    "component_based": false
-  },
-  "minecraft:cyan_terracotta": {
-    "runtime_id": -732,
-    "component_based": false
-  },
+    "minecraft:cyan_stained_glass": {
+        "runtime_id": -681,
+        "component_based": false
+    },
+    "minecraft:cyan_stained_glass_pane": {
+        "runtime_id": -651,
+        "component_based": false
+    },
+    "minecraft:cyan_terracotta": {
+        "runtime_id": -732,
+        "component_based": false
+    },
     "minecraft:cyan_wool": {
         "runtime_id": -561,
         "component_based": false
@@ -1608,7 +1608,7 @@
         "component_based": false
     },
     "minecraft:dye": {
-      "runtime_id": 715,
+        "runtime_id": 715,
         "component_based": false
     },
     "minecraft:echo_shard": {
@@ -2140,7 +2140,7 @@
         "component_based": false
     },
     "minecraft:end_crystal": {
-      "runtime_id": 718,
+        "runtime_id": 718,
         "component_based": false
     },
     "minecraft:end_gateway": {
@@ -2232,7 +2232,7 @@
         "component_based": false
     },
     "minecraft:fence": {
-      "runtime_id": 706,
+        "runtime_id": 706,
         "component_based": false
     },
     "minecraft:fence_gate": {
@@ -2368,7 +2368,7 @@
         "component_based": false
     },
     "minecraft:glow_berries": {
-      "runtime_id": 719,
+        "runtime_id": 719,
         "component_based": false
     },
     "minecraft:glow_frame": {
@@ -2511,9 +2511,9 @@
         "runtime_id": -634,
         "component_based": false
     },
-  "minecraft:gray_concrete_powder": {
-    "runtime_id": -715,
-    "component_based": false
+    "minecraft:gray_concrete_powder": {
+        "runtime_id": -715,
+        "component_based": false
     },
     "minecraft:gray_dye": {
         "runtime_id": 405,
@@ -2527,18 +2527,18 @@
         "runtime_id": -619,
         "component_based": false
     },
-  "minecraft:gray_stained_glass": {
-    "runtime_id": -679,
-    "component_based": false
-  },
-  "minecraft:gray_stained_glass_pane": {
-    "runtime_id": -649,
-    "component_based": false
-  },
-  "minecraft:gray_terracotta": {
-    "runtime_id": -730,
-    "component_based": false
-  },
+    "minecraft:gray_stained_glass": {
+        "runtime_id": -679,
+        "component_based": false
+    },
+    "minecraft:gray_stained_glass_pane": {
+        "runtime_id": -649,
+        "component_based": false
+    },
+    "minecraft:gray_terracotta": {
+        "runtime_id": -730,
+        "component_based": false
+    },
     "minecraft:gray_wool": {
         "runtime_id": -553,
         "component_based": false
@@ -2559,10 +2559,10 @@
         "runtime_id": -640,
         "component_based": false
     },
-  "minecraft:green_concrete_powder": {
-    "runtime_id": -721,
-    "component_based": false
-  },
+    "minecraft:green_concrete_powder": {
+        "runtime_id": -721,
+        "component_based": false
+    },
     "minecraft:green_dye": {
         "runtime_id": 399,
         "component_based": false
@@ -2575,17 +2575,17 @@
         "runtime_id": -625,
         "component_based": false
     },
-  "minecraft:green_stained_glass": {
-    "runtime_id": -685,
-    "component_based": false
-  },
-  "minecraft:green_stained_glass_pane": {
-    "runtime_id": -655,
-    "component_based": false
-  },
-  "minecraft:green_terracotta": {
-    "runtime_id": -736,
-    "component_based": false
+    "minecraft:green_stained_glass": {
+        "runtime_id": -685,
+        "component_based": false
+    },
+    "minecraft:green_stained_glass_pane": {
+        "runtime_id": -655,
+        "component_based": false
+    },
+    "minecraft:green_terracotta": {
+        "runtime_id": -736,
+        "component_based": false
     },
     "minecraft:green_wool": {
         "runtime_id": -560,
@@ -3075,10 +3075,10 @@
         "runtime_id": -630,
         "component_based": false
     },
-  "minecraft:light_blue_concrete_powder": {
-    "runtime_id": -711,
-    "component_based": false
-  },
+    "minecraft:light_blue_concrete_powder": {
+        "runtime_id": -711,
+        "component_based": false
+    },
     "minecraft:light_blue_dye": {
         "runtime_id": 409,
         "component_based": false
@@ -3091,18 +3091,18 @@
         "runtime_id": -615,
         "component_based": false
     },
-  "minecraft:light_blue_stained_glass": {
-    "runtime_id": -675,
-    "component_based": false
-  },
-  "minecraft:light_blue_stained_glass_pane": {
-    "runtime_id": -645,
-    "component_based": false
-  },
-  "minecraft:light_blue_terracotta": {
-    "runtime_id": -726,
-    "component_based": false
-  },
+    "minecraft:light_blue_stained_glass": {
+        "runtime_id": -675,
+        "component_based": false
+    },
+    "minecraft:light_blue_stained_glass_pane": {
+        "runtime_id": -645,
+        "component_based": false
+    },
+    "minecraft:light_blue_terracotta": {
+        "runtime_id": -726,
+        "component_based": false
+    },
     "minecraft:light_blue_wool": {
         "runtime_id": -562,
         "component_based": false
@@ -3123,9 +3123,9 @@
         "runtime_id": -635,
         "component_based": false
     },
-  "minecraft:light_gray_concrete_powder": {
-    "runtime_id": -716,
-    "component_based": false
+    "minecraft:light_gray_concrete_powder": {
+        "runtime_id": -716,
+        "component_based": false
     },
     "minecraft:light_gray_dye": {
         "runtime_id": 404,
@@ -3135,17 +3135,17 @@
         "runtime_id": -620,
         "component_based": false
     },
-  "minecraft:light_gray_stained_glass": {
-    "runtime_id": -680,
-    "component_based": false
-  },
-  "minecraft:light_gray_stained_glass_pane": {
-    "runtime_id": -650,
-    "component_based": false
-  },
-  "minecraft:light_gray_terracotta": {
-    "runtime_id": -731,
-    "component_based": false
+    "minecraft:light_gray_stained_glass": {
+        "runtime_id": -680,
+        "component_based": false
+    },
+    "minecraft:light_gray_stained_glass_pane": {
+        "runtime_id": -650,
+        "component_based": false
+    },
+    "minecraft:light_gray_terracotta": {
+        "runtime_id": -731,
+        "component_based": false
     },
     "minecraft:light_gray_wool": {
         "runtime_id": -552,
@@ -3175,9 +3175,9 @@
         "runtime_id": -632,
         "component_based": false
     },
-  "minecraft:lime_concrete_powder": {
-    "runtime_id": -713,
-    "component_based": false
+    "minecraft:lime_concrete_powder": {
+        "runtime_id": -713,
+        "component_based": false
     },
     "minecraft:lime_dye": {
         "runtime_id": 407,
@@ -3191,18 +3191,18 @@
         "runtime_id": -617,
         "component_based": false
     },
-  "minecraft:lime_stained_glass": {
-    "runtime_id": -677,
-    "component_based": false
-  },
-  "minecraft:lime_stained_glass_pane": {
-    "runtime_id": -647,
-    "component_based": false
-  },
-  "minecraft:lime_terracotta": {
-    "runtime_id": -728,
-    "component_based": false
-  },
+    "minecraft:lime_stained_glass": {
+        "runtime_id": -677,
+        "component_based": false
+    },
+    "minecraft:lime_stained_glass_pane": {
+        "runtime_id": -647,
+        "component_based": false
+    },
+    "minecraft:lime_terracotta": {
+        "runtime_id": -728,
+        "component_based": false
+    },
     "minecraft:lime_wool": {
         "runtime_id": -559,
         "component_based": false
@@ -3252,11 +3252,11 @@
         "component_based": false
     },
     "minecraft:log": {
-      "runtime_id": 705,
+        "runtime_id": 705,
         "component_based": false
     },
     "minecraft:log2": {
-      "runtime_id": 708,
+        "runtime_id": 708,
         "component_based": false
     },
     "minecraft:loom": {
@@ -3279,10 +3279,10 @@
         "runtime_id": -629,
         "component_based": false
     },
-  "minecraft:magenta_concrete_powder": {
-    "runtime_id": -710,
-    "component_based": false
-  },
+    "minecraft:magenta_concrete_powder": {
+        "runtime_id": -710,
+        "component_based": false
+    },
     "minecraft:magenta_dye": {
         "runtime_id": 410,
         "component_based": false
@@ -3295,18 +3295,18 @@
         "runtime_id": -614,
         "component_based": false
     },
-  "minecraft:magenta_stained_glass": {
-    "runtime_id": -674,
-    "component_based": false
-  },
-  "minecraft:magenta_stained_glass_pane": {
-    "runtime_id": -644,
-    "component_based": false
-  },
-  "minecraft:magenta_terracotta": {
-    "runtime_id": -725,
-    "component_based": false
-  },
+    "minecraft:magenta_stained_glass": {
+        "runtime_id": -674,
+        "component_based": false
+    },
+    "minecraft:magenta_stained_glass_pane": {
+        "runtime_id": -644,
+        "component_based": false
+    },
+    "minecraft:magenta_terracotta": {
+        "runtime_id": -725,
+        "component_based": false
+    },
     "minecraft:magenta_wool": {
         "runtime_id": -565,
         "component_based": false
@@ -3771,9 +3771,9 @@
         "runtime_id": -628,
         "component_based": false
     },
-  "minecraft:orange_concrete_powder": {
-    "runtime_id": -709,
-    "component_based": false
+    "minecraft:orange_concrete_powder": {
+        "runtime_id": -709,
+        "component_based": false
     },
     "minecraft:orange_dye": {
         "runtime_id": 411,
@@ -3787,17 +3787,17 @@
         "runtime_id": -613,
         "component_based": false
     },
-  "minecraft:orange_stained_glass": {
-    "runtime_id": -673,
-    "component_based": false
-  },
-  "minecraft:orange_stained_glass_pane": {
-    "runtime_id": -643,
-    "component_based": false
-  },
-  "minecraft:orange_terracotta": {
-    "runtime_id": -724,
-    "component_based": false
+    "minecraft:orange_stained_glass": {
+        "runtime_id": -673,
+        "component_based": false
+    },
+    "minecraft:orange_stained_glass_pane": {
+        "runtime_id": -643,
+        "component_based": false
+    },
+    "minecraft:orange_terracotta": {
+        "runtime_id": -724,
+        "component_based": false
     },
     "minecraft:orange_wool": {
         "runtime_id": -557,
@@ -3895,10 +3895,10 @@
         "runtime_id": -633,
         "component_based": false
     },
-  "minecraft:pink_concrete_powder": {
-    "runtime_id": -714,
-    "component_based": false
-  },
+    "minecraft:pink_concrete_powder": {
+        "runtime_id": -714,
+        "component_based": false
+    },
     "minecraft:pink_dye": {
         "runtime_id": 406,
         "component_based": false
@@ -3915,18 +3915,18 @@
         "runtime_id": -618,
         "component_based": false
     },
-  "minecraft:pink_stained_glass": {
-    "runtime_id": -678,
-    "component_based": false
-  },
-  "minecraft:pink_stained_glass_pane": {
-    "runtime_id": -648,
-    "component_based": false
-  },
-  "minecraft:pink_terracotta": {
-    "runtime_id": -729,
-    "component_based": false
-  },
+    "minecraft:pink_stained_glass": {
+        "runtime_id": -678,
+        "component_based": false
+    },
+    "minecraft:pink_stained_glass_pane": {
+        "runtime_id": -648,
+        "component_based": false
+    },
+    "minecraft:pink_terracotta": {
+        "runtime_id": -729,
+        "component_based": false
+    },
     "minecraft:pink_wool": {
         "runtime_id": -566,
         "component_based": false
@@ -4167,10 +4167,10 @@
         "runtime_id": -637,
         "component_based": false
     },
-  "minecraft:purple_concrete_powder": {
-    "runtime_id": -718,
-    "component_based": false
-  },
+    "minecraft:purple_concrete_powder": {
+        "runtime_id": -718,
+        "component_based": false
+    },
     "minecraft:purple_dye": {
         "runtime_id": 402,
         "component_based": false
@@ -4183,17 +4183,17 @@
         "runtime_id": -622,
         "component_based": false
     },
-  "minecraft:purple_stained_glass": {
-    "runtime_id": -682,
-    "component_based": false
-  },
-  "minecraft:purple_stained_glass_pane": {
-    "runtime_id": -652,
-    "component_based": false
-  },
-  "minecraft:purple_terracotta": {
-    "runtime_id": -733,
-    "component_based": false
+    "minecraft:purple_stained_glass": {
+        "runtime_id": -682,
+        "component_based": false
+    },
+    "minecraft:purple_stained_glass_pane": {
+        "runtime_id": -652,
+        "component_based": false
+    },
+    "minecraft:purple_terracotta": {
+        "runtime_id": -733,
+        "component_based": false
     },
     "minecraft:purple_wool": {
         "runtime_id": -564,
@@ -4307,10 +4307,10 @@
         "runtime_id": -641,
         "component_based": false
     },
-  "minecraft:red_concrete_powder": {
-    "runtime_id": -722,
-    "component_based": false
-  },
+    "minecraft:red_concrete_powder": {
+        "runtime_id": -722,
+        "component_based": false
+    },
     "minecraft:red_dye": {
         "runtime_id": 398,
         "component_based": false
@@ -4351,18 +4351,18 @@
         "runtime_id": -626,
         "component_based": false
     },
-  "minecraft:red_stained_glass": {
-    "runtime_id": -686,
-    "component_based": false
-  },
-  "minecraft:red_stained_glass_pane": {
-    "runtime_id": -656,
-    "component_based": false
-  },
-  "minecraft:red_terracotta": {
-    "runtime_id": -737,
-    "component_based": false
-  },
+    "minecraft:red_stained_glass": {
+        "runtime_id": -686,
+        "component_based": false
+    },
+    "minecraft:red_stained_glass_pane": {
+        "runtime_id": -656,
+        "component_based": false
+    },
+    "minecraft:red_terracotta": {
+        "runtime_id": -737,
+        "component_based": false
+    },
     "minecraft:red_wool": {
         "runtime_id": -556,
         "component_based": false
@@ -4524,7 +4524,7 @@
         "component_based": false
     },
     "minecraft:shulker_box": {
-      "runtime_id": 713,
+        "runtime_id": 713,
         "component_based": false
     },
     "minecraft:shulker_shell": {
@@ -4676,7 +4676,7 @@
         "component_based": false
     },
     "minecraft:spawn_egg": {
-      "runtime_id": 717,
+        "runtime_id": 717,
         "component_based": false
     },
     "minecraft:spider_eye": {
@@ -4768,15 +4768,15 @@
         "component_based": false
     },
     "minecraft:stained_glass": {
-      "runtime_id": 711,
+        "runtime_id": 711,
         "component_based": false
     },
     "minecraft:stained_glass_pane": {
-      "runtime_id": 712,
+        "runtime_id": 712,
         "component_based": false
     },
     "minecraft:stained_hardened_clay": {
-      "runtime_id": 702,
+        "runtime_id": 702,
         "component_based": false
     },
     "minecraft:standing_banner": {
@@ -5387,10 +5387,10 @@
         "runtime_id": 236,
         "component_based": false
     },
-  "minecraft:white_concrete_powder": {
-    "runtime_id": 237,
-    "component_based": false
-  },
+    "minecraft:white_concrete_powder": {
+        "runtime_id": 237,
+        "component_based": false
+    },
     "minecraft:white_dye": {
         "runtime_id": 412,
         "component_based": false
@@ -5403,18 +5403,18 @@
         "runtime_id": 218,
         "component_based": false
     },
-  "minecraft:white_stained_glass": {
-    "runtime_id": 241,
-    "component_based": false
-  },
-  "minecraft:white_stained_glass_pane": {
-    "runtime_id": 160,
-    "component_based": false
-  },
-  "minecraft:white_terracotta": {
-    "runtime_id": 159,
-    "component_based": false
-  },
+    "minecraft:white_stained_glass": {
+        "runtime_id": 241,
+        "component_based": false
+    },
+    "minecraft:white_stained_glass_pane": {
+        "runtime_id": 160,
+        "component_based": false
+    },
+    "minecraft:white_terracotta": {
+        "runtime_id": 159,
+        "component_based": false
+    },
     "minecraft:white_wool": {
         "runtime_id": 35,
         "component_based": false
@@ -5484,7 +5484,7 @@
         "component_based": false
     },
     "minecraft:wool": {
-      "runtime_id": 703,
+        "runtime_id": 703,
         "component_based": false
     },
     "minecraft:writable_book": {
@@ -5511,9 +5511,9 @@
         "runtime_id": -631,
         "component_based": false
     },
-  "minecraft:yellow_concrete_powder": {
-    "runtime_id": -712,
-    "component_based": false
+    "minecraft:yellow_concrete_powder": {
+        "runtime_id": -712,
+        "component_based": false
     },
     "minecraft:yellow_dye": {
         "runtime_id": 408,
@@ -5531,17 +5531,17 @@
         "runtime_id": -616,
         "component_based": false
     },
-  "minecraft:yellow_stained_glass": {
-    "runtime_id": -676,
-    "component_based": false
-  },
-  "minecraft:yellow_stained_glass_pane": {
-    "runtime_id": -646,
-    "component_based": false
-  },
-  "minecraft:yellow_terracotta": {
-    "runtime_id": -727,
-    "component_based": false
+    "minecraft:yellow_stained_glass": {
+        "runtime_id": -676,
+        "component_based": false
+    },
+    "minecraft:yellow_stained_glass_pane": {
+        "runtime_id": -646,
+        "component_based": false
+    },
+    "minecraft:yellow_terracotta": {
+        "runtime_id": -727,
+        "component_based": false
     },
     "minecraft:yellow_wool": {
         "runtime_id": -558,
