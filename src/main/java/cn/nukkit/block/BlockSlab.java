@@ -6,6 +6,7 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BooleanBlockProperty;
+import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
@@ -23,7 +24,15 @@ public abstract class BlockSlab extends BlockTransparentMeta {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final BlockProperties SIMPLE_SLAB_PROPERTIES = new BlockProperties(TOP_SLOT_PROPERTY);
+    public static final BlockProperties SIMPLE_SLAB_PROPERTIES = new BlockProperties(CommonBlockProperties.CARDINAL_DIRECTION);
+
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    @NotNull
+    @Override
+    public BlockProperties getProperties() {
+        return SIMPLE_SLAB_PROPERTIES;
+    }
 
     protected final int doubleSlab;
 
@@ -34,7 +43,7 @@ public abstract class BlockSlab extends BlockTransparentMeta {
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public BlockSlab(int doubleSlab){
+    public BlockSlab(int doubleSlab) {
         this.doubleSlab = doubleSlab;
     }
 
@@ -44,7 +53,7 @@ public abstract class BlockSlab extends BlockTransparentMeta {
 
     @Override
     public String getName() {
-        return (isOnTop()? "Upper " : "") + getSlabName() + " Slab";
+        return (isOnTop() ? "Upper " : "") + getSlabName() + " Slab";
     }
 
     @Override
@@ -72,7 +81,7 @@ public abstract class BlockSlab extends BlockTransparentMeta {
     public int getWaterloggingLevel() {
         return 1;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean isOnTop() {

@@ -3,7 +3,10 @@ package cn.nukkit.command.defaults;
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.camera.data.*;
+import cn.nukkit.camera.data.CameraPreset;
+import cn.nukkit.camera.data.Ease;
+import cn.nukkit.camera.data.EaseType;
+import cn.nukkit.camera.data.Time;
 import cn.nukkit.camera.instruction.impl.ClearInstruction;
 import cn.nukkit.camera.instruction.impl.FadeInstruction;
 import cn.nukkit.camera.instruction.impl.SetInstruction;
@@ -17,8 +20,11 @@ import cn.nukkit.command.tree.node.PlayersNode;
 import cn.nukkit.command.tree.node.RelativeFloatNode;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.level.Position;
+import cn.nukkit.math.Vector2f;
+import cn.nukkit.math.Vector3f;
 import cn.nukkit.network.protocol.CameraInstructionPacket;
 
+import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -144,6 +150,11 @@ public class CameraCommand extends VanillaCommand {
         this.enableParamTree();
     }
 
+    private static float getFloat(ParamList list, int index) {
+        return list.get(index).get();
+    }
+
+
     @Since("1.19.60-r1")
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
@@ -166,14 +177,14 @@ public class CameraCommand extends VanillaCommand {
             case "fade-color" -> {
                 pk.setInstruction(FadeInstruction
                         .builder()
-                        .color(new Color(list.get(3).get(), list.get(4).get(), list.get(5).get()))
+                        .color(new Color(getFloat(list, 3), getFloat(list, 4), getFloat(list, 5)))
                         .build());
             }
             case "fade-time-color" -> {
                 pk.setInstruction(FadeInstruction
                         .builder()
                         .time(new Time(list.get(3).get(), list.get(4).get(), list.get(5).get()))
-                        .color(new Color(list.get(7).get(), list.get(8).get(), list.get(9).get()))
+                        .color(new Color(getFloat(list, 7), getFloat(list, 8), getFloat(list, 9)))
                         .build());
             }
             case "set-default" -> {
@@ -192,7 +203,7 @@ public class CameraCommand extends VanillaCommand {
                 }
                 pk.setInstruction(SetInstruction.builder()
                         .preset(preset)
-                        .rot(new Rot(((RelativeFloatNode)list.get(4)).get((float) senderLocation.getPitch()), ((RelativeFloatNode)list.get(5)).get((float) senderLocation.getYaw())))
+                        .rot(new Vector2f(((RelativeFloatNode) list.get(4)).get((float) senderLocation.getPitch()), ((RelativeFloatNode) list.get(5)).get((float) senderLocation.getYaw())))
                         .build());
             }
             case "set-pos" -> {
@@ -204,7 +215,7 @@ public class CameraCommand extends VanillaCommand {
                 Position position = list.get(4).get();
                 pk.setInstruction(SetInstruction.builder()
                         .preset(preset)
-                        .pos(new Pos((float) position.getX(), (float) position.getY(), (float) position.getZ()))
+                        .pos(new Vector3f((float) position.getX(), (float) position.getY(), (float) position.getZ()))
                         .build());
             }
             case "set-pos-rot" -> {
@@ -216,8 +227,8 @@ public class CameraCommand extends VanillaCommand {
                 Position position = list.get(4).get();
                 pk.setInstruction(SetInstruction.builder()
                         .preset(preset)
-                        .pos(new Pos((float) position.getX(), (float) position.getY(), (float) position.getZ()))
-                        .rot(new Rot(((RelativeFloatNode)list.get(6)).get((float) senderLocation.getPitch()), ((RelativeFloatNode)list.get(7)).get((float) senderLocation.getYaw())))
+                        .pos(new Vector3f((float) position.getX(), (float) position.getY(), (float) position.getZ()))
+                        .rot(new Vector2f(((RelativeFloatNode) list.get(6)).get((float) senderLocation.getPitch()), ((RelativeFloatNode) list.get(7)).get((float) senderLocation.getYaw())))
                         .build());
             }
             case "set-ease-default" -> {
@@ -227,7 +238,7 @@ public class CameraCommand extends VanillaCommand {
                     return 0;
                 }
                 float easeTime = list.get(4).get();
-                var easeType = EaseType.valueOf(((String)list.get(5).get()).toUpperCase());
+                var easeType = EaseType.valueOf(((String) list.get(5).get()).toUpperCase());
                 pk.setInstruction(SetInstruction.builder()
                         .preset(preset)
                         .ease(new Ease(easeTime, easeType))
@@ -240,11 +251,11 @@ public class CameraCommand extends VanillaCommand {
                     return 0;
                 }
                 float easeTime = list.get(4).get();
-                var easeType = EaseType.valueOf(((String)list.get(5).get()).toUpperCase());
+                var easeType = EaseType.valueOf(((String) list.get(5).get()).toUpperCase());
                 pk.setInstruction(SetInstruction.builder()
                         .preset(preset)
                         .ease(new Ease(easeTime, easeType))
-                        .rot(new Rot(((RelativeFloatNode)list.get(7)).get((float) senderLocation.getPitch()), ((RelativeFloatNode)list.get(8)).get((float) senderLocation.getYaw())))
+                        .rot(new Vector2f(((RelativeFloatNode) list.get(7)).get((float) senderLocation.getPitch()), ((RelativeFloatNode) list.get(8)).get((float) senderLocation.getYaw())))
                         .build());
             }
             case "set-ease-pos" -> {
@@ -254,12 +265,12 @@ public class CameraCommand extends VanillaCommand {
                     return 0;
                 }
                 float easeTime = list.get(4).get();
-                var easeType = EaseType.valueOf(((String)list.get(5).get()).toUpperCase());
+                var easeType = EaseType.valueOf(((String) list.get(5).get()).toUpperCase());
                 Position position = list.get(7).get();
                 pk.setInstruction(SetInstruction.builder()
                         .preset(preset)
                         .ease(new Ease(easeTime, easeType))
-                        .pos(new Pos((float) position.getX(), (float) position.getY(), (float) position.getZ()))
+                        .pos(new Vector3f((float) position.getX(), (float) position.getY(), (float) position.getZ()))
                         .build());
             }
             case "set-ease-pos-rot" -> {
@@ -269,13 +280,13 @@ public class CameraCommand extends VanillaCommand {
                     return 0;
                 }
                 float easeTime = list.get(4).get();
-                var easeType = EaseType.valueOf(((String)list.get(5).get()).toUpperCase());
+                var easeType = EaseType.valueOf(((String) list.get(5).get()).toUpperCase());
                 Position position = list.get(7).get();
                 pk.setInstruction(SetInstruction.builder()
                         .preset(preset)
                         .ease(new Ease(easeTime, easeType))
-                        .pos(new Pos((float) position.getX(), (float) position.getY(), (float) position.getZ()))
-                        .rot(new Rot(((RelativeFloatNode)list.get(9)).get((float) senderLocation.getPitch()), ((RelativeFloatNode)list.get(10)).get((float) senderLocation.getYaw())))
+                        .pos(new Vector3f((float) position.getX(), (float) position.getY(), (float) position.getZ()))
+                        .rot(new Vector2f(((RelativeFloatNode) list.get(9)).get((float) senderLocation.getPitch()), ((RelativeFloatNode) list.get(10)).get((float) senderLocation.getYaw())))
                         .build());
             }
             default -> {

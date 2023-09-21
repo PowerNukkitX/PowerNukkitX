@@ -5,7 +5,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.value.StoneSlab3Type;
 import cn.nukkit.item.ItemTool;
-import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 public class BlockSlabStone3 extends BlockSlab {
@@ -39,15 +38,6 @@ public class BlockSlabStone3 extends BlockSlab {
     public int getId() {
         return STONE_SLAB3;
     }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
     @PowerNukkitOnly
     @Override
     public String getSlabName() {

@@ -4,6 +4,7 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.value.ChiselType;
+import cn.nukkit.blockproperty.value.VerticalHalf;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.CompassRoseDirection;
 import cn.nukkit.utils.DyeColor;
@@ -40,16 +41,25 @@ public final class CommonBlockProperties {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final BlockProperty<BlockFace> FACING_DIRECTION = new ArrayBlockProperty<>("facing_direction", false, new BlockFace[] {
+    public static final BlockProperty<BlockFace> FACING_DIRECTION = new ArrayBlockProperty<>("facing_direction", false, new BlockFace[]{
             // Index based
             BlockFace.DOWN, BlockFace.UP,
             BlockFace.NORTH, BlockFace.SOUTH,
             BlockFace.WEST, BlockFace.EAST,
     }).ordinal(true);
 
+    @PowerNukkitXOnly
+    @Since("1.20.30-r1")
+    public static final ArrayBlockProperty<BlockFace> BLOCK_FACE = new ArrayBlockProperty<>("minecraft:block_face", false, new BlockFace[]{
+            // Index based
+            BlockFace.DOWN, BlockFace.UP,
+            BlockFace.NORTH, BlockFace.SOUTH,
+            BlockFace.WEST, BlockFace.EAST,
+    });
+
     @Since("1.20.0-r2")
     @PowerNukkitXOnly
-    public static final ArrayBlockProperty<BlockFace> FACING_DIRECTION_ARRAY = new ArrayBlockProperty<>("facing_direction", false, new BlockFace[] {
+    public static final ArrayBlockProperty<BlockFace> FACING_DIRECTION_ARRAY = new ArrayBlockProperty<>("facing_direction", false, new BlockFace[]{
             // Index based
             BlockFace.DOWN, BlockFace.UP,
             BlockFace.NORTH, BlockFace.SOUTH,
@@ -90,6 +100,23 @@ public final class CommonBlockProperties {
             BlockFace.NORTH, BlockFace.EAST,
     }).ordinal(true);
 
+    @PowerNukkitXOnly
+    @Since("1.20.30-r1")
+    public static final ArrayBlockProperty<BlockFace> CARDINAL_DIRECTION = new ArrayBlockProperty<>("minecraft:cardinal_direction", false, new BlockFace[]{
+            BlockFace.SOUTH, BlockFace.WEST,
+            BlockFace.NORTH, BlockFace.EAST,
+    });
+
+    @PowerNukkitXOnly
+    @Since("1.20.30-r1")
+    public static final ArrayBlockProperty<VerticalHalf> VERTICAL_HALF = new ArrayBlockProperty<>("minecraft:vertical_half", false, new VerticalHalf[]{
+            VerticalHalf.BOTTOM, VerticalHalf.TOP
+    });
+
+    @PowerNukkitXOnly
+    @Since("1.20.30-r1")
+    public static final BlockProperties VERTICAL_HALF_PROPERTIES = new BlockProperties(CommonBlockProperties.VERTICAL_HALF);
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockProperty<BlockFace.Axis> PILLAR_AXIS = new ArrayBlockProperty<>("pillar_axis", false, new BlockFace.Axis[]{
@@ -110,11 +137,11 @@ public final class CommonBlockProperties {
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
-    public static final BlockProperty<DyeColor> COLOR = new ArrayBlockProperty<>("color", true, new DyeColor[] {
+    public static final BlockProperty<DyeColor> COLOR = new ArrayBlockProperty<>("color", true, new DyeColor[]{
             DyeColor.WHITE, DyeColor.ORANGE, DyeColor.MAGENTA, DyeColor.LIGHT_BLUE, DyeColor.YELLOW, DyeColor.LIME, DyeColor.PINK,
             DyeColor.GRAY, DyeColor.LIGHT_GRAY, DyeColor.CYAN, DyeColor.PURPLE, DyeColor.BLUE, DyeColor.BROWN,
             DyeColor.GREEN, DyeColor.RED, DyeColor.BLACK
-    }, 4, "color", false, new String[] {
+    }, 4, "color", false, new String[]{
             "white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray", "silver", "cyan", "purple", "blue",
             "brown", "green", "red", "black"
     });

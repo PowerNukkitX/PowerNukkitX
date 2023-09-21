@@ -5,7 +5,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.value.StoneSlab2Type;
 import cn.nukkit.item.ItemTool;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * @author CreeperFace
@@ -40,15 +39,6 @@ public class BlockSlabRedSandstone extends BlockSlab {
     public int getId() {
         return RED_SANDSTONE_SLAB;
     }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-
     @PowerNukkitOnly
     @Override
     public String getSlabName() {

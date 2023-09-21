@@ -6,13 +6,16 @@ import cn.nukkit.api.DoNotModify;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.data.CommandEnum;
-import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.math.Vector3f;
 import cn.nukkit.network.protocol.UpdateSoftEnumPacket;
+import cn.nukkit.network.protocol.types.CameraAudioListener;
 import lombok.Builder;
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 
 /**
@@ -22,6 +25,7 @@ import java.util.TreeMap;
  */
 @PowerNukkitXOnly
 @Since("1.20.0-r2")
+@Getter
 public final class CameraPreset {
 
     private static final Map<String, CameraPreset> PRESETS = new TreeMap<>();
@@ -62,8 +66,9 @@ public final class CameraPreset {
                 .build();
         FREE = CameraPreset.builder()
                 .identifier("minecraft:free")
-                .pos(new Pos(0, 0, 0))
-                .rot(new Rot(0, 0))
+                .pos(new Vector3f(0, 0, 0))
+                .yaw(0f)
+                .pitch(0f)
                 .build();
         THIRD_PERSON = CameraPreset.builder()
                 .identifier("minecraft:third_person")
@@ -75,49 +80,31 @@ public final class CameraPreset {
         registerCameraPresets(FIRST_PERSON, FREE, THIRD_PERSON, THIRD_PERSON_FRONT);
     }
 
-    @Getter
     private final String identifier;
-    @Getter
     private final String inheritFrom;
-    @Getter
     @Nullable
-    private final Pos pos;
-    @Getter
+    private final Vector3f pos;
     @Nullable
-    private final Rot rot;
-
-    @Getter
+    private final Float yaw;
+    @Nullable
+    private final Float pitch;
+    @Nullable
+    private CameraAudioListener listener;
+    @NotNull
+    private Optional<Boolean> playEffect;
     private int id;
 
     /**
      * Remember to call the registerCameraPresets() method to register!
      */
     @Builder
-    public CameraPreset(String identifier, String inheritFrom, @Nullable Pos pos, @Nullable Rot rot) {
+    public CameraPreset(String identifier, String inheritFrom, @Nullable Vector3f pos, @Nullable Float yaw, @Nullable Float pitch, @Nullable CameraAudioListener listener, @NotNull Optional<Boolean> playEffect) {
         this.identifier = identifier;
         this.inheritFrom = inheritFrom != null ? inheritFrom : "";
         this.pos = pos;
-        this.rot = rot;
-    }
-
-    private CompoundTag cache;
-
-    @DoNotModify
-    public CompoundTag serialize() {
-        if (cache == null) {
-            cache = new CompoundTag()
-                    .putString("identifier", identifier)
-                    .putString("inherit_from", inheritFrom);
-            if (pos != null) {
-                cache.putFloat("pos_x", pos.x())
-                        .putFloat("pos_y", pos.y())
-                        .putFloat("pos_z", pos.z());
-            }
-            if (rot != null) {
-                cache.putFloat("rot_x", rot.x())
-                        .putFloat("rot_y", rot.y());
-            }
-        }
-        return cache;
+        this.yaw = yaw;
+        this.pitch = pitch;
+        this.listener = listener;
+        this.playEffect = playEffect;
     }
 }

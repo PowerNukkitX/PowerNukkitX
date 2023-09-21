@@ -3162,12 +3162,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @PowerNukkitXOnly
     @Since("1.20.0-r2")
     public void sendCameraPresets() {
-        var presetListTag = new ListTag<CompoundTag>("presets");
-        for (var preset : CameraPreset.getPresets().values()) {
-            presetListTag.add(preset.serialize());
-        }
         var pk = new CameraPresetsPacket();
-        pk.setData(new CompoundTag().putList("presets", presetListTag));
+        pk.getPresets().addAll(CameraPreset.getPresets().values());
         dataPacket(pk);
     }
 

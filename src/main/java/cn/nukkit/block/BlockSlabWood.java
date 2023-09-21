@@ -5,7 +5,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.value.WoodType;
 import cn.nukkit.item.ItemTool;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * @author xtypr
@@ -47,14 +46,6 @@ public class BlockSlabWood extends BlockSlab {
     @Override
     public boolean isSameType(BlockSlab slab) {
         return slab.getId() == getId() && slab.getPropertyValue(WoodType.PROPERTY).equals(getWoodType());
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
     }
 
     @Override

@@ -1,9 +1,14 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.resourcepacks.ResourcePack;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.ToString;
+import lombok.Value;
+
+import java.util.List;
 
 @ToString
 public class ResourcePacksInfoPacket extends DataPacket {
@@ -12,9 +17,14 @@ public class ResourcePacksInfoPacket extends DataPacket {
 
     public boolean mustAccept;
     public boolean scripting;
-    @Since("FUTURE") public boolean forceServerPacks;
+    @Since("FUTURE")
+    public boolean forceServerPacks;
     public ResourcePack[] behaviourPackEntries = ResourcePack.EMPTY_ARRAY;
     public ResourcePack[] resourcePackEntries = ResourcePack.EMPTY_ARRAY;
+    /**
+     * @since v618
+     */
+    private List<CDNEntry> CDNEntries = new ObjectArrayList<>();
 
     @Override
     public void decode() {
@@ -29,6 +39,11 @@ public class ResourcePacksInfoPacket extends DataPacket {
         this.putBoolean(this.forceServerPacks);
         this.encodePacks(this.behaviourPackEntries, true);
         this.encodePacks(this.resourcePackEntries, false);
+        putUnsignedVarInt(getCDNEntries().size());
+        for (var cdn : getCDNEntries()) {
+            putString(cdn.packId);
+            putString(cdn.remoteUrl);
+        }
     }
 
     private void encodePacks(ResourcePack[] packs, boolean behaviour) {
@@ -110,5 +125,23 @@ public class ResourcePacksInfoPacket extends DataPacket {
     @Since("1.5.2.0-PN")
     public void setForcingServerPacksEnabled(boolean forcingServerPacksEnabled) {
         this.forceServerPacks = forcingServerPacksEnabled;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.20.30-r1")
+    public void setCDNEntries(List<CDNEntry> CDNEntries) {
+        this.CDNEntries = CDNEntries;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.20.30-r1")
+    public List<CDNEntry> getCDNEntries() {
+        return CDNEntries;
+    }
+
+    @Value
+    public static class CDNEntry {
+        private final String packId;
+        private final String remoteUrl;
     }
 }

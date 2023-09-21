@@ -158,6 +158,22 @@ public class BinaryStream {
         this.put(Binary.writeLInt(i));
     }
 
+    public <T> void putNotNull(T data, Consumer<T> consumer) {
+        boolean present = data != null;
+        putBoolean(present);
+        if (present) {
+            consumer.accept(data);
+        }
+    }
+
+    public <T> void putOptional(Optional<T> data, Consumer<T> consumer) {
+        boolean present = data.isPresent();
+        putBoolean(present);
+        if (present) {
+            consumer.accept(data.get());
+        }
+    }
+
     public int getShort() {
         return Binary.readShort(this.get(2));
     }
