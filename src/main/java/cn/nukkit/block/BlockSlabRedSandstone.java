@@ -3,10 +3,14 @@ package cn.nukkit.block;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
+import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.blockproperty.value.StoneSlab2Type;
 import cn.nukkit.item.ItemTool;
+import org.jetbrains.annotations.NotNull;
 
 /**
+ * StoneSlab2Type
+ *
  * @author CreeperFace
  * @since 26. 11. 2016
  */
@@ -14,8 +18,8 @@ public class BlockSlabRedSandstone extends BlockSlab {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(
-            StoneSlab2Type.PROPERTY,
-            TOP_SLOT_PROPERTY
+            CommonBlockProperties.VERTICAL_HALF,
+            StoneSlab2Type.PROPERTY
     );
 
     public static final int RED_SANDSTONE = 0;
@@ -43,6 +47,14 @@ public class BlockSlabRedSandstone extends BlockSlab {
     @Override
     public String getSlabName() {
         return getSlabType().getEnglishName();
+    }
+
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    @NotNull
+    @Override
+    public BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
     @PowerNukkitOnly

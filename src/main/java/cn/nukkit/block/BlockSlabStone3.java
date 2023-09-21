@@ -3,8 +3,10 @@ package cn.nukkit.block;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
+import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.blockproperty.value.StoneSlab3Type;
 import cn.nukkit.item.ItemTool;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 public class BlockSlabStone3 extends BlockSlab {
@@ -12,7 +14,7 @@ public class BlockSlabStone3 extends BlockSlab {
     @Since("1.4.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(
             StoneSlab3Type.PROPERTY,
-            TOP_SLOT_PROPERTY
+            CommonBlockProperties.VERTICAL_HALF
     );
     
     @PowerNukkitOnly public static final int END_STONE_BRICKS = 0;
@@ -38,6 +40,15 @@ public class BlockSlabStone3 extends BlockSlab {
     public int getId() {
         return STONE_SLAB3;
     }
+
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    @NotNull
+    @Override
+    public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+
     @PowerNukkitOnly
     @Override
     public String getSlabName() {
