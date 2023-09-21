@@ -183,7 +183,7 @@ public class StartGamePacket extends DataPacket {
         this.putBoolean(this.commandsEnabled);
         this.putBoolean(this.isTexturePacksRequired);
         this.putGameRules(this.gameRules);
-        if (Server.getInstance().isEnableExperimentMode()) {
+        if (Server.getInstance().isEnableExperimentMode() && !Server.getInstance().isWaterdogCapable()) {
             this.putLInt(4); // Experiment count
             {
                 this.putString("data_driven_items");
@@ -224,7 +224,11 @@ public class StartGamePacket extends DataPacket {
         this.putBoolean(false); // Nether type
         this.putString(""); // EduSharedUriResource buttonName
         this.putString(""); // EduSharedUriResource linkUri
-        this.putBoolean(Server.getInstance().isEnableExperimentMode()); // force Experimental Gameplay
+        if (Server.getInstance().isEnableExperimentMode() && !Server.getInstance().isWaterdogCapable()) { // force Experimental Gameplay
+            this.putBoolean(true); // force Experimental Gameplay
+        } else {
+            this.putBoolean(false);
+        }
         this.putByte(this.chatRestrictionLevel);
         this.putBoolean(this.disablePlayerInteractions);
         /* Level settings end */
