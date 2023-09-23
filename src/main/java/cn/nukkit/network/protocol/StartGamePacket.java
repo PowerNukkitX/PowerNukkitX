@@ -224,11 +224,7 @@ public class StartGamePacket extends DataPacket {
         this.putBoolean(false); // Nether type
         this.putString(""); // EduSharedUriResource buttonName
         this.putString(""); // EduSharedUriResource linkUri
-        if (Server.getInstance().isEnableExperimentMode() && !Server.getInstance().isWaterdogCapable()) { // force Experimental Gameplay
-            this.putBoolean(true); // force Experimental Gameplay
-        } else {
-            this.putBoolean(false);
-        }
+        this.putBoolean(false); // force Experimental Gameplay (exclusive to debug clients)
         this.putByte(this.chatRestrictionLevel);
         this.putBoolean(this.disablePlayerInteractions);
         /* Level settings end */
