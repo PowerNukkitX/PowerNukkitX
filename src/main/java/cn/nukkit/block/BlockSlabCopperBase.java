@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.block.property.BlockProperties;
 import cn.nukkit.block.property.value.OxidizationLevel;
 import cn.nukkit.block.state.BlockState;
 import cn.nukkit.item.Item;
@@ -45,13 +44,6 @@ public abstract class BlockSlabCopperBase extends BlockSlab implements Waxable, 
     @Override
     public boolean canBeActivated() {
         return true;
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull @Override
-    public BlockProperties getProperties() {
-        return SIMPLE_SLAB_PROPERTIES;
     }
 
     @Override

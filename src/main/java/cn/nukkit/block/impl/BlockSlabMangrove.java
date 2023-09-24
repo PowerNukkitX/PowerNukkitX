@@ -4,9 +4,7 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockSlab;
-import cn.nukkit.block.property.BlockProperties;
 import cn.nukkit.item.ItemTool;
-import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -43,13 +41,6 @@ public class BlockSlabMangrove extends BlockSlab {
     @Override
     public boolean isSameType(BlockSlab slab) {
         return slab.getId() == getId();
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull @Override
-    public BlockProperties getProperties() {
-        return SIMPLE_SLAB_PROPERTIES;
     }
 
     @Override

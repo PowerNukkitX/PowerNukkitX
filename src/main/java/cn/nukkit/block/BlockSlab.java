@@ -5,6 +5,8 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.property.BlockProperties;
 import cn.nukkit.block.property.BooleanBlockProperty;
+import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.property.value.VerticalHalf;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
@@ -20,9 +22,12 @@ public abstract class BlockSlab extends BlockTransparentMeta {
     @Since("1.4.0.0-PN")
     public static final BooleanBlockProperty TOP_SLOT_PROPERTY = new BooleanBlockProperty("top_slot_bit", false);
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public static final BlockProperties SIMPLE_SLAB_PROPERTIES = new BlockProperties(TOP_SLOT_PROPERTY);
+    public static final BlockProperties SIMPLE_SLAB_PROPERTIES = CommonBlockProperties.VERTICAL_HALF_PROPERTIES;
+
+    @NotNull @Override
+    public BlockProperties getProperties() {
+        return SIMPLE_SLAB_PROPERTIES;
+    }
 
     protected final int doubleSlab;
 
@@ -75,13 +80,13 @@ public abstract class BlockSlab extends BlockTransparentMeta {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean isOnTop() {
-        return getBooleanValue(TOP_SLOT_PROPERTY);
+        return getPropertyValue(CommonBlockProperties.VERTICAL_HALF) == VerticalHalf.TOP;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void setOnTop(boolean top) {
-        setBooleanValue(TOP_SLOT_PROPERTY, top);
+        setPropertyValue(CommonBlockProperties.VERTICAL_HALF, top ? VerticalHalf.TOP : VerticalHalf.BOTTOM);
     }
 
     @PowerNukkitOnly
@@ -107,9 +112,7 @@ public abstract class BlockSlab extends BlockTransparentMeta {
             @Nullable Player player) {
         setOnTop(false);
         if (face == BlockFace.DOWN) {
-            if (target instanceof BlockSlab
-                    && target.getBooleanValue(TOP_SLOT_PROPERTY)
-                    && isSameType((BlockSlab) target)) {
+            if (target instanceof BlockSlab slab && slab.isOnTop() && isSameType((BlockSlab) target)) {
                 this.getLevel()
                         .setBlock(
                                 target,
@@ -127,9 +130,7 @@ public abstract class BlockSlab extends BlockTransparentMeta {
                 setOnTop(true);
             }
         } else if (face == BlockFace.UP) {
-            if (target instanceof BlockSlab
-                    && !target.getBooleanValue(TOP_SLOT_PROPERTY)
-                    && isSameType((BlockSlab) target)) {
+            if (target instanceof BlockSlab slab && !slab.isOnTop() && isSameType((BlockSlab) target)) {
                 this.getLevel()
                         .setBlock(
                                 target,

@@ -25,7 +25,7 @@ public class BlockSmallDripleaf extends BlockFlowable implements Faceable {
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public static final BlockProperties PROPERTIES =
-            new BlockProperties(CommonBlockProperties.DIRECTION, CommonBlockProperties.UPPER_BLOCK);
+            new BlockProperties(CommonBlockProperties.CARDINAL_DIRECTION, CommonBlockProperties.UPPER_BLOCK);
 
     public BlockSmallDripleaf() {
         super(0);

@@ -9,7 +9,7 @@ public class BlockCalibratedSculkSensor extends BlockTransparentMeta {
     public static final IntBlockProperty SCULK_SENSOR_PHASE = new IntBlockProperty("sculk_sensor_phase", false, 2);
 
     public static final BlockProperties PROPERTIES =
-            new BlockProperties(CommonBlockProperties.DIRECTION, SCULK_SENSOR_PHASE);
+            new BlockProperties(CommonBlockProperties.CARDINAL_DIRECTION, SCULK_SENSOR_PHASE);
 
     @Override
     public BlockProperties getProperties() {

@@ -40,7 +40,8 @@ public class EnchantTransaction extends InventoryTransaction {
         if (!getSource().isCreative()) {
             if (cost == -1 || !isLapisLazuli(eInv.getReagentSlot()) || eInv.getReagentSlot().count < cost) return false;
         }
-        return inputItem != null && outputItem != null
+        return inputItem != null
+                && outputItem != null
                 && inputItem.equals(eInv.getInputSlot(), true, true)
                 && inputItem.getId() == outputItem.getId()
                 && inputItem.getCount() == outputItem.getCount();

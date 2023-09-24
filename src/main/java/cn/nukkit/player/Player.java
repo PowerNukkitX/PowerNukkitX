@@ -57,7 +57,6 @@ import cn.nukkit.network.SourceInterface;
 import cn.nukkit.network.process.DataPacketManager;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.*;
-import cn.nukkit.network.protocol.v618.ResourcePacksInfoPacket_v618;
 import cn.nukkit.network.session.NetworkPlayerSession;
 import cn.nukkit.permission.PermissibleBase;
 import cn.nukkit.permission.Permission;
@@ -2206,12 +2205,8 @@ public class Player extends EntityHuman
     }
 
     public void sendCameraPresets() {
-        var presetListTag = new ListTag<CompoundTag>("presets");
-        for (var preset : CameraPreset.getPresets().values()) {
-            presetListTag.add(preset.serialize());
-        }
         var pk = new CameraPresetsPacket();
-        pk.setData(new CompoundTag().putList("presets", presetListTag));
+        pk.getPresets().addAll(CameraPreset.getPresets().values());
         sendPacket(pk);
     }
 
@@ -2358,14 +2353,15 @@ public class Player extends EntityHuman
 
                 if (this.getFoodData() != null) this.getFoodData().update(tickDiff);
 
-                //Elytra check and durability calculation
+                // Elytra check and durability calculation
                 if (this.isGliding()) {
                     PlayerInventory playerInventory = this.getInventory();
                     if (playerInventory != null) {
                         Item chestplate = playerInventory.getChestplate();
                         if ((chestplate == null || chestplate.getId() != ItemID.ELYTRA)) {
                             this.setGliding(false);
-                        } else if (this.age % (20 * (chestplate.getEnchantmentLevel(Enchantment.ID_DURABILITY) + 1)) == 0) {
+                        } else if (this.age % (20 * (chestplate.getEnchantmentLevel(Enchantment.ID_DURABILITY) + 1))
+                                == 0) {
                             int newDamage = chestplate.getDamage() + 1;
                             if (newDamage < chestplate.getMaxDurability()) {
                                 chestplate.setDamage(newDamage);

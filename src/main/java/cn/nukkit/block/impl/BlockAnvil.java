@@ -10,6 +10,7 @@ import cn.nukkit.block.BlockFallableMeta;
 import cn.nukkit.block.property.ArrayBlockProperty;
 import cn.nukkit.block.property.BlockProperties;
 import cn.nukkit.block.property.BlockProperty;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.value.AnvilDamage;
 import cn.nukkit.inventory.AnvilInventory;
 import cn.nukkit.item.Item;
@@ -36,8 +37,8 @@ public class BlockAnvil extends BlockFallableMeta implements Faceable {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final BlockProperties PROPERTIES =
-            new BlockProperties(DIRECTION.exportingToItems(true), DAMAGE.exportingToItems(true));
+    public static final BlockProperties PROPERTIES = new BlockProperties(
+            CommonBlockProperties.CARDINAL_DIRECTION.exportingToItems(true), DAMAGE.exportingToItems(true));
 
     public BlockAnvil() {
         // Does nothing

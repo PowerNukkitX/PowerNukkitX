@@ -1328,8 +1328,8 @@ public class Level implements ChunkManager, Metadatable {
                         .join();
                 for (long id : this.updateEntities.keySetLong()) {
                     Entity entity = this.updateEntities.get(id);
-                    if(entity instanceof EntityIntelligent intelligent) {
-                        if(intelligent.getBehaviorGroup() == null) {
+                    if (entity instanceof EntityIntelligent intelligent) {
+                        if (intelligent.getBehaviorGroup() == null) {
                             this.updateEntities.remove(id);
                             continue;
                         }

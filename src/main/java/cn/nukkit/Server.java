@@ -1248,7 +1248,7 @@ public class Server {
 
             try {
                 long levelTime = System.currentTimeMillis();
-                if(level.getProvider().getLevel() == null) {
+                if (level.getProvider().getLevel() == null) {
                     log.warn("Tried to tick Level " + level.getName() + " without a provider!");
                     continue;
                 }

@@ -3,10 +3,7 @@ package cn.nukkit.block.impl;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockDoubleSlabBase;
-import cn.nukkit.block.BlockSlab;
-import cn.nukkit.block.property.BlockProperties;
 import cn.nukkit.item.ItemTool;
-import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
@@ -32,13 +29,6 @@ public class BlockDoubleSlabBlackstone extends BlockDoubleSlabBase {
     @Override
     public int getId() {
         return BLACKSTONE_DOUBLE_SLAB;
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull @Override
-    public BlockProperties getProperties() {
-        return BlockSlab.SIMPLE_SLAB_PROPERTIES;
     }
 
     @Override

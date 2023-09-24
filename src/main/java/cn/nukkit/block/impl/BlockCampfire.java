@@ -7,6 +7,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.block.*;
 import cn.nukkit.block.property.BlockProperties;
 import cn.nukkit.block.property.BooleanBlockProperty;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityCampfire;
 import cn.nukkit.entity.Entity;
@@ -46,9 +47,8 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
     @Since("1.4.0.0-PN")
     public static final BooleanBlockProperty EXTINGUISHED = new BooleanBlockProperty("extinguished", false);
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(DIRECTION, EXTINGUISHED);
+    public static final BlockProperties PROPERTIES =
+            new BlockProperties(EXTINGUISHED, CommonBlockProperties.CARDINAL_DIRECTION);
 
     @PowerNukkitOnly
     public BlockCampfire() {

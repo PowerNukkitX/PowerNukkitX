@@ -3,7 +3,10 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.resourcepacks.ResourcePack;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import java.util.List;
 import lombok.ToString;
+import lombok.Value;
 
 @ToString
 public class ResourcePacksInfoPacket extends DataPacket {
@@ -12,12 +15,12 @@ public class ResourcePacksInfoPacket extends DataPacket {
 
     public boolean mustAccept;
     public boolean scripting;
-
-    @Since("FUTURE")
     public boolean forceServerPacks;
 
     public ResourcePack[] behaviourPackEntries = ResourcePack.EMPTY_ARRAY;
     public ResourcePack[] resourcePackEntries = ResourcePack.EMPTY_ARRAY;
+
+    private List<CDNEntry> CDNEntries = new ObjectArrayList<>();
 
     @Override
     public void decode() {}
@@ -30,6 +33,11 @@ public class ResourcePacksInfoPacket extends DataPacket {
         this.putBoolean(this.forceServerPacks);
         this.encodePacks(this.behaviourPackEntries, true);
         this.encodePacks(this.resourcePackEntries, false);
+        putUnsignedVarInt(getCDNEntries().size());
+        for (var cdn : getCDNEntries()) {
+            putString(cdn.packId);
+            putString(cdn.remoteUrl);
+        }
     }
 
     private void encodePacks(ResourcePack[] packs, boolean behaviour) {
@@ -112,5 +120,19 @@ public class ResourcePacksInfoPacket extends DataPacket {
     @Since("1.5.2.0-PN")
     public void setForcingServerPacksEnabled(boolean forcingServerPacksEnabled) {
         this.forceServerPacks = forcingServerPacksEnabled;
+    }
+
+    public void setCDNEntries(List<CDNEntry> CDNEntries) {
+        this.CDNEntries = CDNEntries;
+    }
+
+    public List<CDNEntry> getCDNEntries() {
+        return CDNEntries;
+    }
+
+    @Value
+    public static class CDNEntry {
+        private final String packId;
+        private final String remoteUrl;
     }
 }

@@ -1,12 +1,10 @@
 package cn.nukkit.camera.instruction.impl;
 
-import cn.nukkit.api.DoNotModify;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.camera.data.Color;
 import cn.nukkit.camera.data.Time;
 import cn.nukkit.camera.instruction.CameraInstruction;
-import cn.nukkit.nbt.tag.CompoundTag;
+import java.awt.Color;
 import javax.annotation.Nullable;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,13 +23,4 @@ public class FadeInstruction implements CameraInstruction {
     @Nullable private final Color color;
 
     @Nullable private final Time time;
-
-    @Override
-    @DoNotModify
-    public CompoundTag serialize() {
-        var nbt = new CompoundTag("fade");
-        if (color != null) nbt.putCompound("color", color.serialize());
-        if (time != null) nbt.putCompound("time", time.serialize());
-        return nbt;
-    }
 }

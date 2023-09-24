@@ -3,9 +3,7 @@ package cn.nukkit.block.impl;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockSlab;
-import cn.nukkit.block.property.BlockProperties;
 import cn.nukkit.item.ItemTool;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * @author GoodLucky777
@@ -34,11 +32,6 @@ public class BlockSlabDeepslatePolished extends BlockSlab {
     @Override
     public String getSlabName() {
         return "Polished Deepslate";
-    }
-
-    @NotNull @Override
-    public BlockProperties getProperties() {
-        return SIMPLE_SLAB_PROPERTIES;
     }
 
     @Override

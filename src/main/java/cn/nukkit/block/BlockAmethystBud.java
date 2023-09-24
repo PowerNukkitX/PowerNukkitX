@@ -20,9 +20,8 @@ import org.jetbrains.annotations.NotNull;
 @Since("1.6.0.0-PNX")
 @PowerNukkitOnly
 public abstract class BlockAmethystBud extends BlockTransparentMeta implements Faceable {
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
-    public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.FACING_DIRECTION);
+
+    public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.BLOCK_FACE);
 
     @Override
     public String getName() {

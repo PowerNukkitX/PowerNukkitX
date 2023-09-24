@@ -6,6 +6,7 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.property.value.ChiselType;
+import cn.nukkit.block.property.value.VerticalHalf;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.CompassRoseDirection;
 import cn.nukkit.utils.DyeColor;
@@ -52,6 +53,14 @@ public final class CommonBlockProperties {
                     })
             .ordinal(true);
 
+    public static final ArrayBlockProperty<BlockFace> BLOCK_FACE =
+            new ArrayBlockProperty<>("minecraft:block_face", false, new BlockFace[] {
+                // Index based
+                BlockFace.DOWN, BlockFace.UP,
+                BlockFace.NORTH, BlockFace.SOUTH,
+                BlockFace.WEST, BlockFace.EAST,
+            });
+
     @Since("1.20.0-r2")
     @PowerNukkitXOnly
     public static final ArrayBlockProperty<BlockFace> FACING_DIRECTION_ARRAY =
@@ -61,6 +70,18 @@ public final class CommonBlockProperties {
                 BlockFace.NORTH, BlockFace.SOUTH,
                 BlockFace.WEST, BlockFace.EAST,
             });
+
+    public static final ArrayBlockProperty<BlockFace> CARDINAL_DIRECTION =
+            new ArrayBlockProperty<>("minecraft:cardinal_direction", false, new BlockFace[] {
+                BlockFace.SOUTH, BlockFace.WEST,
+                BlockFace.NORTH, BlockFace.EAST,
+            });
+
+    public static final ArrayBlockProperty<VerticalHalf> VERTICAL_HALF = new ArrayBlockProperty<>(
+            "minecraft:vertical_half", false, new VerticalHalf[] {VerticalHalf.BOTTOM, VerticalHalf.TOP});
+
+    public static final BlockProperties VERTICAL_HALF_PROPERTIES =
+            new BlockProperties(CommonBlockProperties.VERTICAL_HALF);
 
     public static final ArrayBlockProperty<CompassRoseDirection> GROUND_SIGN_DIRECTION = new ArrayBlockProperty<>(
                     "ground_sign_direction", false, new CompassRoseDirection[] {

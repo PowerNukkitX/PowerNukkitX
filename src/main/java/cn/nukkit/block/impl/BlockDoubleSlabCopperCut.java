@@ -12,17 +12,11 @@ import org.jetbrains.annotations.NotNull;
  * @author joserobjr
  * @since 2021-06-14
  */
-@PowerNukkitOnly
-@Since("FUTURE")
 public class BlockDoubleSlabCopperCut extends BlockDoubleSlabCopperBase {
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public BlockDoubleSlabCopperCut() {
         this(0);
     }
 
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public BlockDoubleSlabCopperCut(int meta) {
         super(meta);
     }

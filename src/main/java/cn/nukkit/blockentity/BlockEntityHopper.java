@@ -247,7 +247,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable
         BlockEntity blockEntity =
                 this.getLevel().getBlockEntity(temporalVector.setComponentsAdding(this, BlockFace.UP));
 
-        if(this.getLocation().getLevel() == null) return true;
+        if (this.getLocation().getLevel() == null) return true;
 
         boolean changed = pushItems() || pushItemsIntoMinecart();
 
@@ -390,7 +390,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable
         BlockFace side = levelBlockState.getPropertyValue(CommonBlockProperties.FACING_DIRECTION);
         Position sidePos = this.getSide(side);
         Block blockSide = sidePos.getLevelBlock(false);
-        if(blockSide.getId() == Block.AIR) return false;
+        if (blockSide.getId() == Block.AIR) return false;
         BlockEntity be = this.getLevel().getBlockEntity(temporalVector.setComponentsAdding(this, side));
 
         // 漏斗应该有主动向被锁住的漏斗推送物品的能力

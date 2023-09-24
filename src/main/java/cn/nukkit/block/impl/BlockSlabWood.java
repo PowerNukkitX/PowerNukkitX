@@ -4,6 +4,7 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockSlab;
 import cn.nukkit.block.property.BlockProperties;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.value.WoodType;
 import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
@@ -15,7 +16,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockSlabWood extends BlockSlab {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(WoodType.PROPERTY, TOP_SLOT_PROPERTY);
+    public static final BlockProperties PROPERTIES =
+            new BlockProperties(WoodType.PROPERTY, CommonBlockProperties.VERTICAL_HALF);
 
     public BlockSlabWood() {
         this(0);
@@ -48,8 +50,6 @@ public class BlockSlabWood extends BlockSlab {
                 && slab.getPropertyValue(WoodType.PROPERTY).equals(getWoodType());
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;

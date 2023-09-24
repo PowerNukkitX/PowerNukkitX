@@ -1,12 +1,11 @@
 package cn.nukkit.block;
 
-import static cn.nukkit.block.property.CommonBlockProperties.DIRECTION;
-
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.property.BlockProperties;
 import cn.nukkit.block.property.BooleanBlockProperty;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityComparator;
 import cn.nukkit.item.Item;
@@ -38,9 +37,8 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode
     @Since("1.5.0.0-PN")
     public static final BooleanBlockProperty OUTPUT_SUBTRACT = new BooleanBlockProperty("output_subtract_bit", false);
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(DIRECTION, OUTPUT_SUBTRACT, OUTPUT_LIT);
+    public static final BlockProperties PROPERTIES =
+            new BlockProperties(CommonBlockProperties.CARDINAL_DIRECTION, OUTPUT_SUBTRACT, OUTPUT_LIT);
 
     public BlockRedstoneComparator() {
         this(0);

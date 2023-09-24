@@ -6,6 +6,7 @@ import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.property.BlockProperties;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.IntBlockProperty;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemRedstoneRepeater;
@@ -22,7 +23,8 @@ public abstract class BlockRedstoneRepeater extends BlockRedstoneDiode {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(DIRECTION, REPEATER_DELAY);
+    public static final BlockProperties PROPERTIES =
+            new BlockProperties(CommonBlockProperties.CARDINAL_DIRECTION, REPEATER_DELAY);
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly

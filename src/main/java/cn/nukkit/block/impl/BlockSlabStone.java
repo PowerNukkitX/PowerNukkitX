@@ -4,6 +4,7 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockSlab;
 import cn.nukkit.block.property.BlockProperties;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.value.StoneSlab1Type;
 import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
@@ -15,7 +16,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockSlabStone extends BlockSlab {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(StoneSlab1Type.PROPERTY, TOP_SLOT_PROPERTY);
+    public static final BlockProperties PROPERTIES =
+            new BlockProperties(StoneSlab1Type.PROPERTY, CommonBlockProperties.VERTICAL_HALF);
 
     public static final int STONE = 0;
     public static final int SANDSTONE = 1;

@@ -10,6 +10,7 @@ public class BlockTorchflower extends BlockFlower {
     public BlockTorchflower() {
         this(0);
     }
+
     public BlockTorchflower(int meta) {
         super(0);
     }
@@ -18,9 +19,8 @@ public class BlockTorchflower extends BlockFlower {
         return TORCHFLOWER;
     }
 
-
-   @Override @NotNull
-   public BlockProperties getProperties() {
+    @Override
+    @NotNull public BlockProperties getProperties() {
         return CommonBlockProperties.EMPTY_PROPERTIES;
     }
 

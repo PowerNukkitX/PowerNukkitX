@@ -9,6 +9,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockTransparentMeta;
 import cn.nukkit.block.property.BlockProperties;
 import cn.nukkit.block.property.BooleanBlockProperty;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Sound;
@@ -31,9 +32,8 @@ public class BlockEndPortalFrame extends BlockTransparentMeta implements Faceabl
     @Since("1.5.0.0-PN")
     public static final BooleanBlockProperty END_PORTAL_EYE = new BooleanBlockProperty("end_portal_eye_bit", false);
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(DIRECTION, END_PORTAL_EYE);
+    public static final BlockProperties PROPERTIES =
+            new BlockProperties(CommonBlockProperties.CARDINAL_DIRECTION, END_PORTAL_EYE);
 
     private static final int[] FACES = {2, 3, 0, 1};
 

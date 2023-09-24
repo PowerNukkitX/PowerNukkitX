@@ -2,11 +2,13 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.camera.data.Ease;
+import cn.nukkit.camera.data.Time;
 import cn.nukkit.camera.instruction.CameraInstruction;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
-import java.io.IOException;
-import java.nio.ByteOrder;
+import cn.nukkit.camera.instruction.impl.ClearInstruction;
+import cn.nukkit.camera.instruction.impl.FadeInstruction;
+import cn.nukkit.camera.instruction.impl.SetInstruction;
+import java.awt.Color;
 import javax.annotation.Nonnegative;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,7 +18,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CameraInstructionPacket extends DataPacket {
-    private CompoundTag data;
+    private SetInstruction setInstruction;
+    private FadeInstruction fadeInstruction;
+    private ClearInstruction clearInstruction;
 
     @Override
     @Deprecated
@@ -32,23 +36,56 @@ public class CameraInstructionPacket extends DataPacket {
     }
 
     @Override
-    public void decode() {
-        this.data = this.getTag();
-    }
+    public void decode() {}
 
     @Override
     public void encode() {
         this.reset();
-        try {
-            this.put(NBTIO.write(this.data, ByteOrder.LITTLE_ENDIAN, true));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        putNotNull(setInstruction, (s) -> {
+            putLInt(s.getPreset().getId());
+            putNotNull(s.getEase(), this::writeEase);
+            putNotNull(s.getPos(), this::putVector3f);
+            putNotNull(s.getRot(), this::putVector2f);
+            putNotNull(s.getFacing(), this::putVector3f);
+            putOptional(s.getDefaultPreset(), this::putBoolean);
+        });
+        if (clearInstruction == null) {
+            putBoolean(false);
+        } else {
+            putBoolean(true); // optional.isPresent
+            putBoolean(true); // actual data
         }
+        putNotNull(fadeInstruction, (f) -> {
+            putNotNull(f.getTime(), this::writeTimeData);
+            putNotNull(f.getColor(), this::writeColor);
+        });
     }
 
     @Since("1.20.0-r2")
     public void setInstruction(CameraInstruction instruction) {
-        var tag = instruction.serialize();
-        data = new CompoundTag().put(tag.getName(), tag);
+        if (instruction instanceof SetInstruction se) {
+            this.setInstruction = se;
+        } else if (instruction instanceof FadeInstruction fa) {
+            this.fadeInstruction = fa;
+        } else if (instruction instanceof ClearInstruction cl) {
+            this.clearInstruction = cl;
+        }
+    }
+
+    protected void writeEase(Ease ease) {
+        this.putByte((byte) ease.easeType().ordinal());
+        this.putLFloat(ease.time());
+    }
+
+    protected void writeTimeData(Time time) {
+        this.putLFloat(time.fadeIn());
+        this.putLFloat(time.hold());
+        this.putLFloat(time.fadeOut());
+    }
+
+    protected void writeColor(Color color) {
+        this.putLFloat(color.getRed() / 255F);
+        this.putLFloat(color.getGreen() / 255F);
+        this.putLFloat(color.getBlue() / 255F);
     }
 }

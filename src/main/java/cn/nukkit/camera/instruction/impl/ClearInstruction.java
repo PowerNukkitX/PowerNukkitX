@@ -1,10 +1,8 @@
 package cn.nukkit.camera.instruction.impl;
 
-import cn.nukkit.api.DoNotModify;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.camera.instruction.CameraInstruction;
-import cn.nukkit.nbt.tag.ByteTag;
 
 /**
  * @author daoge_cmd
@@ -16,17 +14,10 @@ import cn.nukkit.nbt.tag.ByteTag;
 public class ClearInstruction implements CameraInstruction {
 
     private static final ClearInstruction INSTANCE = new ClearInstruction();
-    private static final ByteTag TAG = new ByteTag("clear", 1);
 
     private ClearInstruction() {}
 
     public static ClearInstruction get() {
         return INSTANCE;
-    }
-
-    @Override
-    @DoNotModify
-    public ByteTag serialize() {
-        return TAG;
     }
 }

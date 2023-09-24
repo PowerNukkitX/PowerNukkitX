@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.block.property.BlockProperties;
 import cn.nukkit.block.property.value.OxidizationLevel;
 import cn.nukkit.block.state.BlockState;
 import cn.nukkit.item.Item;
@@ -23,13 +22,6 @@ public abstract class BlockDoubleSlabCopperBase extends BlockDoubleSlabBase impl
     @Since("FUTURE")
     public BlockDoubleSlabCopperBase(int meta) {
         super(meta);
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull @Override
-    public BlockProperties getProperties() {
-        return BlockSlab.SIMPLE_SLAB_PROPERTIES;
     }
 
     @Override
