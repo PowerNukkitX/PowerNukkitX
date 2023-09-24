@@ -24,7 +24,7 @@ Join US:
 
 What's new in PowerNukkitX? Let's See：
 
-1. Support for 1.20.10 protocol.
+1. Support for 1.20.30 protocol.
 2. Support for 384 world height.
 3. Support for The Nether world, no need to install additional plugin.
 4. Support 3D biomes.<!--Custom dimension interface TODO-->
@@ -146,7 +146,7 @@ repositories {
 }
 
 dependencies {
-    compile group: 'cn.powernukkitx', name: 'powernukkitx', version: '1.20.10-r1'
+    compile group: 'cn.powernukkitx', name: 'powernukkitx', version: '1.20.30-r1'
 }
 ```
 
@@ -156,7 +156,7 @@ dependencies {
     <dependency>
         <groupId>cn.powernukkitx</groupId>
         <artifactId>powernukkitx</artifactId>
-        <version>1.20.10-r1</version>
+        <version>1.20.30-r1</version>
     </dependency>
 </dependencies>
 ```

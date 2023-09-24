@@ -2,11 +2,9 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
-import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
@@ -34,15 +32,6 @@ public class BlockSlabWarped extends BlockSlab {
     public int getId() {
         return WARPED_SLAB;
     }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return SIMPLE_SLAB_PROPERTIES;
-    }
-
     @PowerNukkitOnly
     @Override
     public boolean isSameType(BlockSlab slab) {
