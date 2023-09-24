@@ -23,7 +23,7 @@ Issues, bug reports and feature suggestions are welcomed, though please keep in 
   Bugs are not equal - some of them will be reproducible every time on pretty much all hardware, while others will be hard to track down due to being specific to particular hardware or even somewhat random in nature. As such, providing as much detail as possible when reporting a bug is hugely appreciated. A good starting set of information consists of:
 
   * the server logs (when avaliable), which can be obtained with:
-    * `/debugpaste upload`
+    * `/spark`
     * `[Server path]/logs/latest.log`
   * your system specifications (including the operating system and platform you are playing on),
   * a reproduction scenario (list of steps you have performed leading up to the occurrence of the bug),

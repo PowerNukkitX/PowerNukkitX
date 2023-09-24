@@ -1,52 +1,66 @@
 ---
-name: "\U0001F50C 我发现一个兼容性问题"
-about: 关于一些旧插件无法使用的问题
+name: "\U0001F50C I found a compatibility issue / 我找到了有关兼容性的问题"
+about: Report a plugin or backward compatibility problem / 反馈插件或向前兼容的兼容性问题
 title: ''
-labels: 'Type: 兼容性问题'
+labels: ''
 assignees: ''
 
 ---
 
-# 🔌 插件兼容性问题
+# 🔌 Plugin compatibility issue | 插件兼容性问题
 
-<!-- 
-👉 尽可能详实地描述你使用插件的环境和你所遇到的问题
+<!--
+👉 This template is helpful, but you may erase everything if you can express the issue clearly 
+👉 该模板用于高效的表达问题，如果您能清楚的描述问题也可无需使用该模板的内容
 -->
 
-### 📸 截图 / 视频
+### 📸 Screenshots / Videos | 截图或视频
 
-<!-- ✍ 如果可能的话，附上视频或者截图有助于解决问题 -->
+<!-- 
+✍ If applicable, add screenshots or a video recording to help explain your problem 
+✍ 如果可以的话，请附带上相关截图或视频记录，这样将更好的帮助我们解决您遇到的问题
+-->
 
-### ▶ 复现步骤
+### 🔍 Steps to Reproduce | 复现步骤
 
-<!--- ✍ 复现问题的步骤 -->
+<!---
+✍ Reliable steps which someone can use to reproduce the issue.
+✍ 请在下方填写内容以方便文本更好的复现该问题。
+-->
 
 1. Run command '...'
 2. Click on '....'
 3. Put '....' at '...'
 4. See error
 
-### ✔ 预期行为
+### ✔ Expected Behavior | 预期行为
 
-<!-- ✍ 预期行为 -->
+<!-- 
+✍ What would you expect to happen
+✍ 您预计会发生什么行为
+-->
 
-### ❌ 实际行为
+### ❌ Actual Behavior | 实际行为
 
-<!-- ✍ 实际行为 -->
+<!--
+✍ What actually happened, if relevant
+✍ 但实际发生了什么（请尽量保持于反馈内容相关）
+-->
 
-### 📋 Debug 信息
+### 📋 Debug information | Debug信息
 
-<!-- 使用 'debugpaste upload' 和 'timings paste' 指令并粘贴结果至此 -->
+<!-- ⚠ This information may help us to give you better answers but they are not required ⚠ -->
+<!-- Use the 'spark' command in PowerNukkitX -->
+<!-- Use https://hastebin.com for big logs or dumps -->
+<!-- You can get the version from the file name, the 'about' or 'version' command outputs -->
 
-* PowerNukkitX version: ✍
-* Debug link: ✍
-* Spark link (if relevant): ✍
+* PowerNukkitX version / PNX版本: ✍
+* Debug link / Debug链接: ✍
+* Spark link (if relevant) | Spark链接（若可用）: ✍
 
-### 💢 错误堆栈或崩溃日志
+### 💬 Anything else we should know? | 还有什么是我们需要知道的？
 
-<!-- ✍ 最好使用 https://hastebin.com -->
-
-### 💬 其他信息
-
-<!-- ✍ 其他可能有助于解决此问题的信息 -->
-
+<!-- 
+✍ This is the perfect place to add any additional details 
+✍ 您可在此补充相关细节，这将有助于我们帮助您解决问题
+-->

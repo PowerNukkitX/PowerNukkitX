@@ -11,9 +11,44 @@
 3. <a href="#CataLogs-Version-history">🔖 Version history / 歷史版本 </a>
 
 ## [Dev-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - Future
-該版本目前支持了Minecraft:BE `1.20.0 (協議版本594)`.
+該版本目前支持了Minecraft:BE `1.20.10 (協議版本594)`.
 
-## 開發中，敬請期待
+## 新增內容
+
+- [#1329] 枯死的灌木可以被放置在草方塊和苔蘚塊上。
+- [#1333] 加入`竹筏`。
+- [#1346] 新增新的方塊物品。
+- [#1348] 添加物品`懸掛式櫻花木告示牌`。
+- [#1349] 新增了`紅樹`（簡單新增）。
+- [#1358] 實現鞘翅耐久消耗。
+- [#1363] 支援透過`Ctrl + C`關閉伺服器。
+- [#1376] Entity Prorperty System。
+
+## 修改記錄
+
+- [#1326] 更新`maven.yml`。
+- [#1339] 在`/version`版本指令中使用`,`分隔插件程式作者名稱。
+- [#1341] 優化弓的整體體驗。
+- [#1344] `/fog pop` 改為移除最後（最近）一次加入的迷霧。
+- [#1357] `WaterdogPE`配置不影響實驗模式。
+- [#1374] 更新`StartGamePacket.java`。
+- [#1383] `極限模式`強制將`實驗模式`設定為停用。
+
+## BUG修復
+
+- [#1321] 修正講台的一些問題。
+- [#1322] 修復牧羊人村民交易床的數量。
+- [#1325] 修復錯誤的`damagecause`。
+- [#1331] 修正`/fill`指令取代邏輯。
+- [#1334] 修復不死圖騰動畫問題。
+- [#1336] 修復`/fill hollow-outline`。
+- [#1341] 修復與弓相關的問題。
+- [#1351] 方塊實體BUG修復。
+- [#1352] 修正錯誤的`if-else`語句。
+- [#1358] 修復鞘翅落地不結束飛行。
+- [#1365] 修復鐵砧和附魔台的物品判斷。
+- [#1371] 修正`block_states`的配方轉換。
+- [#1377]/[#1378] 修正`WaterdogPE`相關的問題。
 
 ## [1.20.10-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.10-r2) - 2023-7-15
 該版本目前支持了Minecraft:BE `1.20.10 (協議版本594)`.
@@ -2683,6 +2718,33 @@ Need to switch languages?
 [#1317]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1317
 [#1318]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1318
 [#1319]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1319
+[#1321]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1321
+[#1322]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1322
+[#1325]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1325
+[#1326]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1326
+[#1329]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1329
+[#1331]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1331
+[#1333]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1333
+[#1334]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1334
+[#1336]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1336
+[#1339]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1339
+[#1341]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1341
+[#1344]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1344
+[#1346]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1346
+[#1348]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1348
+[#1349]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1349
+[#1351]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1351
+[#1352]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1352
+[#1357]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1357
+[#1358]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1358
+[#1363]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1363
+[#1365]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1365
+[#1371]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1371
+[#1374]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1374
+[#1376]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1376
+[#1377]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1377
+[#1378]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1378
+[#1383]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1383
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->
