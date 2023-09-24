@@ -13,9 +13,10 @@ import org.jetbrains.annotations.NotNull;
 @PowerNukkitXOnly
 @Since("1.19.80-r3")
 public class RiderJumpProcessor extends DataPacketProcessor<RiderJumpPacket> {
+
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull RiderJumpPacket pk) {
-        if (playerHandle.player.riding instanceof EntityHorse horse
+        if (playerHandle.getPlayer().riding instanceof EntityHorse horse
                 && horse.isAlive()
                 && !horse.getJumping().get()) {
             float maxMotionY = horse.getClientMaxJumpHeight();

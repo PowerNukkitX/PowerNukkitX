@@ -1,13 +1,14 @@
 package cn.nukkit.player;
 
+import cn.nukkit.network.protocol.types.GameType;
 import lombok.Getter;
 
 @Getter
 public enum GameMode {
-    SURVIVAL("Survival", "%gameMode.survival", new String[] {"s", "0"}, 0),
-    CREATIVE("Creative", "%gameMode.creative", new String[] {"c", "1"}, 1),
-    ADVENTURE("Adventure", "%gameMode.adventure", new String[] {"a", "2"}, 2),
-    SPECTATOR("Spectator", "%gameMode.spectator", new String[] {"spc", "view", "v", "3"}, 6);
+    SURVIVAL("Survival", "%gameMode.survival", new String[] {"s", "0"}, GameType.SURVIVAL),
+    CREATIVE("Creative", "%gameMode.creative", new String[] {"c", "1"}, GameType.CREATIVE),
+    ADVENTURE("Adventure", "%gameMode.adventure", new String[] {"a", "2"}, GameType.ADVENTURE),
+    SPECTATOR("Spectator", "%gameMode.spectator", new String[] {"spc", "view", "v", "3"}, GameType.ADVENTURE);
 
     private final String name;
     private final String translatableName;
@@ -16,11 +17,11 @@ public enum GameMode {
 
     private static final GameMode[] VALUES = values();
 
-    GameMode(String name, String translatableName, String[] aliases, int networkGamemode) {
+    GameMode(String name, String translatableName, String[] aliases, GameType networkGamemode) {
         this.name = name;
         this.translatableName = translatableName;
         this.aliases = aliases;
-        this.networkGamemode = networkGamemode;
+        this.networkGamemode = networkGamemode.ordinal();
     }
 
     public boolean isSurvival() {
@@ -28,7 +29,11 @@ public enum GameMode {
     }
 
     public static GameMode fromOrdinal(int ordinal) {
-        return VALUES.length > ordinal ? VALUES[ordinal] : null;
+        return ordinal < 0 || ordinal >= VALUES.length ? null : VALUES[ordinal];
+    }
+
+    public static GameMode fromNetwork(GameType network) {
+        return fromNetwork(network.ordinal());
     }
 
     public static GameMode fromNetwork(int network) {

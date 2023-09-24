@@ -3,16 +3,13 @@ package cn.nukkit.player;
 import static cn.nukkit.utils.Utils.dynamic;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.*;
 import cn.nukkit.block.*;
-import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.block.impl.BlockBed;
 import cn.nukkit.block.impl.BlockEndPortal;
 import cn.nukkit.block.impl.BlockEnderChest;
 import cn.nukkit.block.impl.BlockRespawnAnchor;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySign;
-import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.camera.data.CameraPreset;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
@@ -35,10 +32,8 @@ import cn.nukkit.event.inventory.InventoryPickupArrowEvent;
 import cn.nukkit.event.inventory.InventoryPickupItemEvent;
 import cn.nukkit.event.inventory.InventoryPickupTridentEvent;
 import cn.nukkit.event.player.*;
-import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import cn.nukkit.event.server.DataPacketReceiveEvent;
-import cn.nukkit.event.server.DataPacketSendEvent;
 import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.inventory.*;
 import cn.nukkit.inventory.transaction.*;
@@ -51,7 +46,6 @@ import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.*;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.generic.BaseFullChunk;
-import cn.nukkit.level.particle.PunchBlockParticle;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.*;
@@ -73,7 +67,6 @@ import cn.nukkit.player.AdventureSettings.Type;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.positiontracking.PositionTrackingService;
 import cn.nukkit.potion.Effect;
-import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.scheduler.Task;
 import cn.nukkit.scheduler.TaskHandler;
 import cn.nukkit.scoreboard.data.DisplaySlot;
@@ -98,7 +91,6 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
-import java.io.File;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -109,6 +101,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -116,8 +109,6 @@ import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * 游戏玩家对象，代表操控的角色
- * <p>
  * Game player object, representing the controlled character
  *
  * @author MagicDroidX &amp; Box (Nukkit Project)
@@ -126,12 +117,8 @@ import org.jetbrains.annotations.NotNull;
 public class Player extends EntityHuman
         implements CommandSender, InventoryHolder, ChunkLoader, IPlayer, IScoreboardViewer {
     /**
-     * 一个承载玩家的空数组静态常量
-     * <p>
      * A empty array of static constants that host the player
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public static final Player[] EMPTY_ARRAY = new Player[0];
 
     public static final int SURVIVAL_SLOTS = 36;
@@ -141,18 +128,14 @@ public class Player extends EntityHuman
     public static final int CRAFTING_ANVIL = 2;
     public static final int CRAFTING_ENCHANT = 3;
     public static final int CRAFTING_BEACON = 4;
-    public static final @PowerNukkitOnly int CRAFTING_GRINDSTONE = 1000;
-    public static final @PowerNukkitOnly int CRAFTING_STONECUTTER = 1001;
-    public static final @PowerNukkitOnly int CRAFTING_CARTOGRAPHY = 1002;
-    public static final @PowerNukkitOnly int CRAFTING_SMITHING = 1003;
+    public static final int CRAFTING_GRINDSTONE = 1000;
+    public static final int CRAFTING_STONECUTTER = 1001;
+    public static final int CRAFTING_CARTOGRAPHY = 1002;
+    public static final int CRAFTING_SMITHING = 1003;
 
     /**
-     * 村民交易window id
-     * <p>
      * Villager trading window id
      */
-    @PowerNukkitXOnly
-    @Since("1.19.21-r1")
     public static final int TRADE_WINDOW_ID = 500;
 
     public static final float DEFAULT_SPEED = 0.1f;
@@ -162,323 +145,249 @@ public class Player extends EntityHuman
     public static final int PERMISSION_OPERATOR = 2;
     public static final int PERMISSION_MEMBER = 1;
     public static final int PERMISSION_VISITOR = 0;
+
     public static final int ANVIL_WINDOW_ID = 2;
     public static final int ENCHANT_WINDOW_ID = 3;
     public static final int BEACON_WINDOW_ID = 4;
-    public static final @PowerNukkitOnly int GRINDSTONE_WINDOW_ID = dynamic(5);
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+    public static final int GRINDSTONE_WINDOW_ID = dynamic(5);
     public static final int SMITHING_WINDOW_ID = dynamic(6);
+
+    private static final float ROTATION_UPDATE_THRESHOLD = 1;
+    private static final float MOVEMENT_DISTANCE_THRESHOLD = 0.1f;
+
+    protected static final int RESOURCE_PACK_CHUNK_SIZE = 8 * 1024; // 8KB
+    protected static final int NO_SHIELD_DELAY = 10;
 
     public final HashSet<String> achievements = new HashSet<>();
     public final Map<Long, Boolean> usedChunks = new Long2ObjectOpenHashMap<>();
-    public boolean playedBefore;
-    public boolean spawned = false;
-    public boolean loggedIn = false;
-
-    @Since("1.4.0.0-PN")
-    public boolean locallyInitialized = false;
 
     @Getter
-    private GameMode gamemode;
+    protected GameMode gamemode;
 
-    public long lastBreak;
+    @Getter
+    private int experience = 0;
+
+    @Getter
+    private int experienceLevel = 0;
+
     /**
-     * 每tick 当前位置与移动目标位置向量之差
-     * <p>
      * The difference between the current position and the moving target position vector per tick
      */
     public Vector3 speed = null;
 
     public int craftingType = CRAFTING_SMALL;
     public long creationTime = 0;
-    /**
-     * 正在挖掘的方块
-     * <p>
-     * block being dig
-     */
-    public Block breakingBlock = null;
-    /**
-     * 正在挖掘的方向
-     * <p>
-     * direction of dig
-     */
-    @Since("1.19.60-r1")
-    @PowerNukkitXOnly
-    public BlockFace breakingBlockFace = null;
 
     public int pickedXPOrb = 0;
     public EntityFishingHook fishing = null;
-    public long lastSkinChange;
 
-    @Since("1.19.63-r1")
-    @PowerNukkitXOnly
-    protected long breakingBlockTime = 0;
+    /**
+     * Network
+     */
+    @Getter
+    protected final SourceInterface sourceInterface;
 
-    @Since("1.19.63-r1")
-    @PowerNukkitXOnly
-    protected double blockBreakProgress = 0;
-
-    protected final SourceInterface interfaz;
-
-    @Since("1.19.30-r1")
-    @PowerNukkitXOnly
+    @Getter
     protected final NetworkPlayerSession networkSession;
 
+    @Getter
+    protected final PlayerConnection playerConnection;
+
+    /**
+     * Windows
+     */
     protected final BiMap<Inventory, Integer> windows = HashBiMap.create();
+
     protected final BiMap<Integer, Inventory> windowIndex = windows.inverse();
     protected final Set<Integer> permanentWindows = new IntOpenHashSet();
-    protected final InetSocketAddress rawSocketAddress;
+
+    @Getter
+    protected int closingWindowId = Integer.MIN_VALUE;
+
+    protected int windowCnt = 4;
+
     protected final Long2ObjectLinkedOpenHashMap<Boolean> loadQueue = new Long2ObjectLinkedOpenHashMap<>();
     protected final Map<UUID, Player> hiddenPlayers = new HashMap<>();
     protected final int chunksPerTick;
     protected final int spawnThreshold;
-    protected int windowCnt = 4;
-
-    @Since("1.4.0.0-PN")
-    protected int closingWindowId = Integer.MIN_VALUE;
 
     protected int messageCounter = 2;
-    protected PlayerUIInventory playerUIInventory;
+
+    @Getter
+    protected PlayerUIInventory UIInventory;
+
+    @Getter
     protected CraftingGrid craftingGrid;
+
+    /**
+     * Transactions
+     */
     protected CraftingTransaction craftingTransaction;
 
-    @Since("1.3.1.0-PN")
     protected EnchantTransaction enchantTransaction;
-
-    @Since("1.4.0.0-PN")
     protected RepairItemTransaction repairItemTransaction;
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     protected GrindstoneTransaction grindstoneTransaction;
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     protected SmithingTransaction smithingTransaction;
-
-    @PowerNukkitXOnly
-    @Since("1.19.21-r1")
     protected TradingTransaction tradingTransaction;
 
-    protected long randomClientId;
-
-    @Deprecated
-    @DeprecationDetails(since = "1.19.60-r1", reason = "Useless, use teleport directly")
-    protected Vector3 forceMovement = null;
-
-    @Deprecated
-    @DeprecationDetails(since = "1.19.60-r1", reason = "Useless, use teleport directly")
-    protected Vector3 teleportPosition = null;
-
-    protected boolean connected = true;
-    protected InetSocketAddress socketAddress;
     /**
-     * 是否移除改玩家聊天中的颜色字符如 §c §1
-     * <p>
      * Whether to remove the color character in the chat of the changed player as §c §1
      */
+    @Getter
+    @Setter
     protected boolean removeFormat = true;
 
     protected String username;
-    protected String iusername;
     protected String displayName;
-    protected static final int RESOURCE_PACK_CHUNK_SIZE = 8 * 1024; // 8KB
 
     /**
-     * 这个值代表玩家是否正在使用物品(长按右键)，-1时玩家未使用物品，当玩家使用物品时该值为{@link Server#getTick() getTick()}的值.
-     * <p>
      * This value represents whether the player is using the item or not (long right click), -1 means the player is not using the item, when the player is using the item this value is the value of {@link Server#getTick() getTick()}.
      */
-    protected int startAction = -1;
+    @Getter
+    protected int startActionTick = -1;
 
     protected Vector3 sleeping = null;
-    protected Long clientID = null;
     protected int chunkLoadCount = 0;
     protected int nextChunkOrderRun = 1;
     protected Vector3 newPosition = null;
     protected int chunkRadius;
     protected int viewDistance;
-    protected Position spawnPosition;
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    @PowerNukkitXDifference(info = "change as Position")
+    protected Position spawnPosition;
     protected Position spawnBlockPosition;
 
     /**
-     * 代表玩家悬浮空中所经过的tick数.
-     * <p>
      * Represents the number of ticks the player has passed through the air.
      */
+    @Getter
     protected int inAirTicks = 0;
 
     protected int startAirTicks = 5;
+
     protected AdventureSettings adventureSettings;
-    protected boolean checkMovement = true;
+
+    @Getter
     protected PlayerFood foodData = null;
+
+    @Getter
+    @Setter
+    protected boolean checkMovement = true;
+
     protected boolean enableClientCommand = true;
-
-    /**
-     * 返回上次投掷末影珍珠时的{@link Server#getTick() getTick()}，这个值用于控制末影珍珠的冷却时间.
-     * <p>
-     * Returns the {@link Server#getTick() getTick()} from the last time the pearl was cast, which is used to control the cooldown time of the pearl.
-     */
-    protected int lastEnderPearl = 20;
-
-    /**
-     * 返回上次吃紫颂果时的{@link Server#getTick() getTick()}，这个值用于控制吃紫颂果的冷却时间.
-     * <p>
-     * Returns the {@link Server#getTick() getTick()} of the last time you ate a chorus fruit, which is used to control the cooldown time for eating chorus fruit.
-     */
-    protected int lastChorusFruitTeleport = 20;
 
     protected int formWindowCount = 0;
     protected Map<Integer, FormWindow> formWindows = new Int2ObjectOpenHashMap<>();
     protected Map<Integer, FormWindow> serverSettings = new Int2ObjectOpenHashMap<>();
     /**
-     * 我们使用google的cache来存储NPC对话框发送信息
-     * 原因是发送过去的对话框客户端有几率不响应，在特定情况下我们无法清除这些对话框，这会导致内存泄漏
-     * 5分钟后未响应的对话框会被清除
-     * <p>
      * We use Google's cache to store NPC dialogs to send messages
      * The reason is that there is a chance that the client will not respond to the dialogs sent, and in certain cases we cannot clear these dialogs, which can lead to memory leaks
      * Unresponsive dialogs will be cleared after 5 minutes
      */
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
     protected Cache<String, FormWindowDialog> dialogWindows =
             Caffeine.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
 
     protected Map<Long, DummyBossBar> dummyBossBars = new Long2ObjectLinkedOpenHashMap<>();
-    protected boolean shouldLogin = false;
-    protected double lastRightClickTime = 0.0;
-    protected Vector3 lastRightClickPos = null;
+
+    @Getter
     protected int lastInAirTick = 0;
-    private static final float ROTATION_UPDATE_THRESHOLD = 1;
-    private static final float MOVEMENT_DISTANCE_THRESHOLD = 0.1f;
+
+    protected BlockVector3 lastBreakPosition = new BlockVector3();
+    public long lastBreak;
+    public long lastSkinChange;
+    protected int lastEnderPearl = 20;
+    protected int lastChorusFruitTeleport = 20;
+
     private final Queue<Location> clientMovements = PlatformDependent.newMpscQueue(4);
     private final AtomicReference<Locale> locale = new AtomicReference<>(null);
     private int unverifiedPackets;
-    private String clientSecret;
-    private int timeSinceRest;
-    private String buttonText = "Button";
-    private PermissibleBase perm = null;
-    private int hash;
-    private int exp = 0;
-    private int expLevel = 0;
-    private final int loaderId;
-    private BlockVector3 lastBreakPosition = new BlockVector3();
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+    @Getter
+    @Setter
+    private int timeSinceRest;
+
+    private String buttonText = "Button";
+    protected PermissibleBase perm;
+    private int hash;
+
+    @Getter
+    private final int loaderId;
+
+    @Setter
     private boolean hasSeenCredits;
 
     private boolean wasInSoulSandCompatible;
+
+    @Getter
     private float soulSpeedMultiplier = 1;
+
     private Entity killer = null;
     /**
-     * 用来暂存放玩家打开的末影箱实例对象，当玩家打开末影箱时该值为指定为那个末影箱，当玩家关闭末影箱后重新设置回null.
-     * <p>
      * This is used to temporarily store the player's open EnderChest instance object, when the player opens the EnderChest the value is specified as that EnderChest, when the player closes the EnderChest reset back to null.
      */
     private BlockEnderChest viewingEnderChest = null;
 
     private TaskHandler delayedPosTrackingUpdate;
+
+    @Getter
     private int noShieldTicks;
 
-    @PowerNukkitXDifference(since = "1.19.80-r3", info = "change to protected")
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+    @Getter
     protected boolean showingCredits;
 
-    @PowerNukkitXDifference(since = "1.19.80-r3", info = "change to protected")
-    protected static final int NO_SHIELD_DELAY = 10;
-
-    @PowerNukkitXDifference(since = "1.19.80-r3", info = "change to protected")
-    protected boolean inventoryOpen;
-
-    @PowerNukkitXDifference(since = "1.19.80-r3", info = "change to protected")
-    protected PlayerBlockActionData lastBlockAction;
-
-    protected AsyncTask preLoginEventTask = null;
-    protected boolean verified = false;
-    protected LoginChainData loginChainData;
+    @Getter
+    protected PlayerInfo playerInfo;
     /**
-     * 玩家升级时播放音乐的时间
-     * <p>
      * Time to play sound when player upgrades
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     protected int lastPlayerdLevelUpSoundTime = 0;
     /**
-     * 玩家最后攻击的实体.
-     * <p>
      * The entity that the player attacked last.
      */
-    @PowerNukkitXOnly
-    @Since("1.19.30-r1")
+    @Getter
     protected Entity lastAttackEntity = null;
     /**
-     * 玩家迷雾设置
-     * <p>
+     * The entity that the player is attacked last.
+     */
+    @Getter
+    protected Entity lastBeAttackEntity = null;
+    /**
      * Player Fog Settings
      */
-    @PowerNukkitXOnly
-    @Since("1.19.50-r3")
     @Getter
     @Setter
     protected List<PlayerFogPacket.Fog> fogStack = new ArrayList<>();
-    /**
-     * 最后攻击玩家的实体.
-     * <p>
-     * The entity that the player is attacked last.
-     */
-    @PowerNukkitXOnly
-    @Since("1.19.30-r1")
-    protected Entity lastBeAttackEntity = null;
 
+    @Setter
     private boolean foodEnabled = true;
 
-    @Since("1.19.80-r1")
-    @PowerNukkitXOnly
-    private final @NotNull PlayerHandle playerHandle = new PlayerHandle(this);
+    @Getter(value = AccessLevel.PACKAGE)
+    private final @NotNull PlayerHandle playerHandle;
 
-    @Since("1.19.80-r3")
-    @PowerNukkitXOnly
     private boolean needDimensionChangeACK = false;
 
+    @Setter
     private Boolean openSignFront = null;
 
     private Boolean flySneaking = false;
 
     /**
-     * 单元测试用的构造函数
-     * <p>
      * Constructor for unit testing
      *
-     * @param interfaz interfaz
-     * @param clientID clientID
-     * @param ip       IP地址
-     * @param port     端口
+     * @param sourceInterface Interfaz
+     * @param ip       IP address
+     * @param port     Port
      */
-    @PowerNukkitOnly
-    public Player(SourceInterface interfaz, Long clientID, String ip, int port) {
-        this(interfaz, clientID, uncheckedNewInetSocketAddress(ip, port));
+    public Player(SourceInterface sourceInterface, String ip, int port) {
+        this(sourceInterface, uncheckedNewInetSocketAddress(ip, port));
     }
 
-    public Player(SourceInterface interfaz, Long clientID, InetSocketAddress socketAddress) {
+    public Player(SourceInterface sourceInterface, InetSocketAddress socketAddress) {
         super(null, new CompoundTag());
-        this.interfaz = interfaz;
-        this.networkSession = interfaz.getSession(socketAddress);
-        this.perm = new PermissibleBase(this);
+        this.sourceInterface = sourceInterface;
+        this.networkSession = sourceInterface.getSession(socketAddress);
         this.server = Server.getInstance();
+        this.perm = new PermissibleBase(this);
         this.lastBreak = -1;
-        this.rawSocketAddress = socketAddress;
-        this.socketAddress = socketAddress;
-        this.clientID = clientID;
         this.loaderId = Level.generateChunkLoaderId(this);
         this.chunksPerTick = this.server.getConfig("chunk-sending.per-tick", 8);
         this.spawnThreshold = this.server.getConfig("chunk-sending.spawn-threshold", 56);
@@ -489,11 +398,34 @@ public class Player extends EntityHuman
         this.chunkRadius = viewDistance;
         this.boundingBox = new SimpleAxisAlignedBB(0, 0, 0, 0, 0, 0);
         this.lastSkinChange = -1;
+        this.playerConnection = new PlayerConnection(this, networkSession, socketAddress);
+        this.playerHandle = new PlayerHandle(this);
 
         this.uuid = null;
         this.rawUUID = null;
 
         this.creationTime = System.currentTimeMillis();
+    }
+
+    public boolean isConnected() {
+        return playerConnection != null && playerConnection.isConnected();
+    }
+
+    public boolean isLoggedIn() {
+        return playerConnection != null && playerConnection.isLoggedIn();
+    }
+
+    @Override
+    public boolean isOnline() {
+        return isConnected() && isLoggedIn();
+    }
+
+    public boolean isSpawned() {
+        return playerConnection != null && playerConnection.isSpawned();
+    }
+
+    public boolean isLocallyInitialized() {
+        return playerConnection != null && playerConnection.isLocallyInitialized();
     }
 
     private static InetSocketAddress uncheckedNewInetSocketAddress(String ip, int port) {
@@ -525,229 +457,6 @@ public class Player extends EntityHuman
                         packet, this.server.isEnableSnappy() ? CompressionProvider.SNAPPY : CompressionProvider.ZLIB);
     }
 
-    @PowerNukkitXDifference(
-            since = "1.19.60-r1",
-            info = "Auto-break custom blocks if client doesn't send the break data-pack.")
-    @PowerNukkitXDifference(since = "1.19.80-r3", info = "change to protected")
-    protected void onBlockBreakContinue(Vector3 pos, BlockFace face) {
-        if (this.isBreakingBlock()) {
-            var time = System.currentTimeMillis();
-            Block block = this.getLevel().getBlock(pos, false);
-
-            double miningTimeRequired;
-            if (this.breakingBlock instanceof CustomBlock customBlock) {
-                miningTimeRequired = customBlock.breakTime(this.inventory.getItemInHand(), this);
-            } else miningTimeRequired = this.breakingBlock.calculateBreakTime(this.inventory.getItemInHand(), this);
-
-            if (miningTimeRequired > 0) {
-                int breakTick = (int) Math.ceil(miningTimeRequired * 20);
-                LevelEventPacket pk = new LevelEventPacket();
-                pk.evid = LevelEventPacket.EVENT_BLOCK_UPDATE_BREAK;
-                pk.x = (float) this.breakingBlock.x();
-                pk.y = (float) this.breakingBlock.y();
-                pk.z = (float) this.breakingBlock.z();
-                pk.data = 65535 / breakTick;
-                this.getLevel()
-                        .addChunkPacket(this.breakingBlock.getFloorX() >> 4, this.breakingBlock.getFloorZ() >> 4, pk);
-                this.getLevel().addParticle(new PunchBlockParticle(pos, block, face));
-                // miningTimeRequired * 1000-101这个算法最匹配原版计算速度，我们并不想任何方块破坏处理都由服务端执行，只处理自定义方块以绕过原版固定挖掘时间的限制
-                if (this.breakingBlock instanceof CustomBlock) {
-                    var timeDiff = time - breakingBlockTime;
-                    blockBreakProgress += timeDiff / (miningTimeRequired * 1000 - 101);
-                    if (blockBreakProgress > 0.99) {
-                        this.onBlockBreakAbort(pos, face);
-                        this.onBlockBreakComplete(pos.asBlockVector3(), face);
-                    }
-                    breakingBlockTime = time;
-                }
-            }
-        }
-    }
-
-    @PowerNukkitXDifference(since = "1.19.80-r3", info = "change to protected")
-    protected void onBlockBreakStart(Vector3 pos, BlockFace face) {
-        BlockVector3 blockPos = pos.asBlockVector3();
-        long currentBreak = System.currentTimeMillis();
-        // HACK: Client spams multiple left clicks so we need to skip them.
-        if ((this.lastBreakPosition.equals(blockPos) && (currentBreak - this.lastBreak) < 10)
-                || pos.distanceSquared(this) > 100) {
-            return;
-        }
-
-        Block target = this.getLevel().getBlock(pos);
-        PlayerInteractEvent playerInteractEvent = new PlayerInteractEvent(
-                this,
-                this.inventory.getItemInHand(),
-                target,
-                face,
-                target.getId() == 0 ? Action.LEFT_CLICK_AIR : Action.LEFT_CLICK_BLOCK);
-        playerInteractEvent.call();
-        if (playerInteractEvent.isCancelled()) {
-            this.inventory.sendHeldItem(this);
-            this.getLevel()
-                    .sendBlocks(new Player[] {this}, new Block[] {target}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 0);
-            if (target.getLevelBlockAtLayer(1) instanceof BlockLiquid) {
-                this.getLevel()
-                        .sendBlocks(
-                                new Player[] {this},
-                                new Block[] {target.getLevelBlockAtLayer(1)},
-                                UpdateBlockPacket.FLAG_ALL_PRIORITY,
-                                1);
-            }
-            return;
-        }
-
-        if (target.onTouch(this, playerInteractEvent.getAction()) != 0) return;
-
-        Block block = target.getSide(face);
-        if (block.getId() == Block.FIRE || block.getId() == BlockID.SOUL_FIRE) {
-            this.getLevel().setBlock(block, Block.get(BlockID.AIR), true);
-            this.getLevel().addLevelSoundEvent(block, LevelSoundEventPacket.SOUND_EXTINGUISH_FIRE);
-            return;
-        }
-
-        if (block.getId() == BlockID.SWEET_BERRY_BUSH && block.getDamage() == 0) {
-            Item oldItem = playerInteractEvent.getItem();
-            Item i = this.getLevel().useBreakOn(block, oldItem, this, true);
-            if (this.isSurvival() || this.isAdventure()) {
-                this.getFoodData().updateFoodExpLevel(0.005);
-                if (!i.equals(oldItem) || i.getCount() != oldItem.getCount()) {
-                    inventory.setItemInHand(i);
-                    inventory.sendHeldItem(this.getViewers().values());
-                }
-            }
-            return;
-        }
-
-        if (!block.isBlockChangeAllowed(this)) {
-            return;
-        }
-
-        if (this.isSurvival()) {
-            this.breakingBlockTime = currentBreak;
-            double miningTimeRequired;
-            if (target instanceof CustomBlock customBlock) {
-                miningTimeRequired = customBlock.breakTime(this.inventory.getItemInHand(), this);
-            } else miningTimeRequired = target.calculateBreakTime(this.inventory.getItemInHand(), this);
-            int breakTime = (int) Math.ceil(miningTimeRequired * 20);
-            if (breakTime > 0) {
-                LevelEventPacket pk = new LevelEventPacket();
-                pk.evid = LevelEventPacket.EVENT_BLOCK_START_BREAK;
-                pk.x = (float) pos.x();
-                pk.y = (float) pos.y();
-                pk.z = (float) pos.z();
-                pk.data = 65535 / breakTime;
-                this.getLevel().addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, pk);
-                // 优化反矿透时玩家的挖掘体验
-                if (this.getLevel().isAntiXrayEnabled() && this.getLevel().isPreDeObfuscate()) {
-                    var vecList = new ArrayList<Vector3WithRuntimeId>(5);
-                    Vector3WithRuntimeId tmpVec;
-                    for (var each : BlockFace.values()) {
-                        if (each == face) continue;
-                        var tmpX = target.getFloorX() + each.getXOffset();
-                        var tmpY = target.getFloorY() + each.getYOffset();
-                        var tmpZ = target.getFloorZ() + each.getZOffset();
-                        try {
-                            tmpVec = new Vector3WithRuntimeId(
-                                    tmpX,
-                                    tmpY,
-                                    tmpZ,
-                                    getLevel().getBlockRuntimeId(tmpX, tmpY, tmpZ, 0),
-                                    getLevel().getBlockRuntimeId(tmpX, tmpY, tmpZ, 1));
-                            if (getLevel().getRawFakeOreToPutRuntimeIdMap().containsKey(tmpVec.getRuntimeIdLayer0())) {
-                                vecList.add(tmpVec);
-                            }
-                        } catch (Exception ignore) {
-                        }
-                    }
-                    this.getLevel()
-                            .sendBlocks(
-                                    new Player[] {this}, vecList.toArray(Vector3[]::new), UpdateBlockPacket.FLAG_ALL);
-                }
-            }
-        }
-
-        this.breakingBlock = target;
-        this.breakingBlockFace = face;
-        this.lastBreak = currentBreak;
-        this.lastBreakPosition = blockPos;
-    }
-
-    @PowerNukkitXDifference(since = "1.19.80-r3", info = "change to protected")
-    protected void onBlockBreakAbort(Vector3 pos, BlockFace face) {
-        if (pos.distanceSquared(this) < 100) { // same as with ACTION_START_BREAK
-            LevelEventPacket pk = new LevelEventPacket();
-            pk.evid = LevelEventPacket.EVENT_BLOCK_STOP_BREAK;
-            pk.x = (float) pos.x();
-            pk.y = (float) pos.y();
-            pk.z = (float) pos.z();
-            pk.data = 0;
-            this.getLevel().addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, pk);
-        }
-        this.blockBreakProgress = 0;
-        this.breakingBlock = null;
-        this.breakingBlockFace = null;
-    }
-
-    @PowerNukkitXDifference(since = "1.19.80-r3", info = "change to protected")
-    protected void onBlockBreakComplete(BlockVector3 blockPos, BlockFace face) {
-        if (!this.spawned || !this.isAlive()) {
-            return;
-        }
-
-        this.resetCraftingGridType();
-
-        Item handItem = this.getInventory().getItemInHand();
-        Item clone = handItem.clone();
-
-        boolean canInteract = this.canInteract(blockPos.add(0.5, 0.5, 0.5), this.isCreative() ? 13 : 7);
-        if (canInteract) {
-            handItem = this.getLevel().useBreakOn(blockPos.asVector3(), face, handItem, this, true);
-            if (handItem != null && this.isSurvival()) {
-                this.getFoodData().updateFoodExpLevel(0.005);
-                if (handItem.equals(clone) && handItem.getCount() == clone.getCount()) {
-                    return;
-                }
-
-                if (clone.getId() == handItem.getId() || handItem.getId() == 0) {
-                    inventory.setItemInHand(handItem);
-                } else {
-                    server.getLogger()
-                            .debug("Tried to set item " + handItem.getId() + " but " + this.username + " had item "
-                                    + clone.getId() + " in their hand slot");
-                }
-                inventory.sendHeldItem(this.getViewers().values());
-            } else if (handItem == null)
-                this.getLevel()
-                        .sendBlocks(
-                                new Player[] {this},
-                                new Block[] {this.getLevel().getBlock(blockPos.asVector3())},
-                                UpdateBlockPacket.FLAG_ALL_PRIORITY,
-                                0);
-            return;
-        }
-
-        inventory.sendContents(this);
-        inventory.sendHeldItem(this);
-
-        if (blockPos.distanceSquared(this) < 100) {
-            Block target = this.getLevel().getBlock(blockPos.asVector3());
-            this.getLevel().sendBlocks(new Player[] {this}, new Block[] {target}, UpdateBlockPacket.FLAG_ALL_PRIORITY);
-
-            BlockEntity blockEntity = this.getLevel().getBlockEntity(blockPos.asVector3());
-            if (blockEntity instanceof BlockEntitySpawnable) {
-                ((BlockEntitySpawnable) blockEntity).spawnTo(this);
-            }
-        }
-    }
-
-    private void setTitle(String text) {
-        SetTitlePacket packet = new SetTitlePacket();
-        packet.text = text;
-        packet.type = SetTitlePacket.TYPE_TITLE;
-        this.dataPacket(packet);
-    }
-
     // todo a lot on dimension
     private void setDimension(int dimension) {
         ChangeDimensionPacket pk = new ChangeDimensionPacket();
@@ -755,7 +464,7 @@ public class Player extends EntityHuman
         pk.x = (float) this.x();
         pk.y = (float) this.y();
         pk.z = (float) this.z();
-        this.dataPacket(pk);
+        this.sendPacket(pk);
 
         this.needDimensionChangeACK = true;
     }
@@ -772,7 +481,7 @@ public class Player extends EntityHuman
     }
 
     protected void sendNextChunk() {
-        if (!this.connected) {
+        if (!this.isConnected()) {
             return;
         }
 
@@ -796,7 +505,7 @@ public class Player extends EntityHuman
                 this.getLevel().registerChunkLoader(this, chunkX, chunkZ, false);
 
                 if (!this.getLevel().populateChunk(chunkX, chunkZ)) {
-                    if (this.spawned) {
+                    if (this.isSpawned()) {
                         continue;
                     } else {
                         break;
@@ -810,8 +519,8 @@ public class Player extends EntityHuman
                 this.getLevel().requestChunk(chunkX, chunkZ, this);
             }
         }
-        if (this.chunkLoadCount >= this.spawnThreshold && !this.spawned && loggedIn) {
-            this.doFirstSpawn();
+        if (this.chunkLoadCount >= this.spawnThreshold && !this.isSpawned() && isConnected()) {
+            playerHandle.handleSpawn();
         }
     }
 
@@ -821,94 +530,8 @@ public class Player extends EntityHuman
         this.addDefaultWindows();
     }
 
-    /**
-     * 完成completeLoginSequence后执行
-     */
-    protected void doFirstSpawn() {
-        this.spawned = true;
-
-        this.inventory.sendContents(this);
-        this.inventory.sendHeldItem(this);
-        this.inventory.sendArmorContents(this);
-        this.offhandInventory.sendContents(this);
-        this.setEnableClientCommand(true);
-
-        SetTimePacket setTimePacket = new SetTimePacket();
-        setTimePacket.time = this.getLevel().getTime();
-        this.dataPacket(setTimePacket);
-
-        this.sendPlayStatus(PlayStatusPacket.PLAYER_SPAWN);
-
-        PlayerJoinEvent playerJoinEvent = new PlayerJoinEvent(
-                this,
-                new TranslationContainer(
-                        TextFormat.YELLOW + "%multiplayer.player.joined", new String[] {this.getDisplayName()}));
-
-        playerJoinEvent.call();
-
-        if (playerJoinEvent.getJoinMessage().toString().trim().length() > 0) {
-            this.server.broadcastMessage(playerJoinEvent.getJoinMessage());
-        }
-
-        this.noDamageTicks = 60;
-
-        this.getServer().sendRecipeList(this);
-
-        for (long index : this.usedChunks.keySet()) {
-            int chunkX = Level.getHashX(index);
-            int chunkZ = Level.getHashZ(index);
-            for (Entity entity :
-                    this.getLevel().getChunkEntities(chunkX, chunkZ).values()) {
-                if (this != entity && !entity.closed && entity.isAlive()) {
-                    entity.spawnTo(this);
-                }
-            }
-        }
-
-        int experience = this.getExperience();
-        if (experience != 0) {
-            this.sendExperience(experience);
-        }
-
-        int level = this.getExperienceLevel();
-        if (level != 0) {
-            this.sendExperienceLevel(this.getExperienceLevel());
-        }
-
-        // todo Updater
-
-        // Weather
-        this.getLevel().sendWeather(this);
-
-        // FoodLevel
-        PlayerFood food = this.getFoodData();
-        if (food.getLevel() != food.getMaxLevel()) {
-            food.sendFoodLevel();
-        }
-
-        var scoreboardManager = this.getServer().getScoreboardManager();
-        if (scoreboardManager != null) { // in test environment sometimes the scoreboard manager is null
-            scoreboardManager.onPlayerJoin(this);
-        }
-
-        // update compass
-        SetSpawnPositionPacket pk = new SetSpawnPositionPacket();
-        pk.spawnType = SetSpawnPositionPacket.TYPE_WORLD_SPAWN;
-        pk.x = this.getLevel().getSpawnLocation().getFloorX();
-        pk.y = this.getLevel().getSpawnLocation().getFloorY();
-        pk.z = this.getLevel().getSpawnLocation().getFloorZ();
-        pk.dimension = this.getLevel().getDimension();
-        this.dataPacket(pk);
-
-        this.sendFogStack();
-        this.sendCameraPresets();
-        if (this.getHealth() < 1) {
-            this.setHealth(0);
-        }
-    }
-
     protected boolean orderChunks() {
-        if (!this.connected) {
+        if (!this.isConnected()) {
             return false;
         }
 
@@ -920,7 +543,7 @@ public class Player extends EntityHuman
         int centerX = (int) this.x() >> 4;
         int centerZ = (int) this.z() >> 4;
 
-        int radius = spawned ? this.chunkRadius : (int) Math.ceil(Math.sqrt(spawnThreshold));
+        int radius = playerConnection.isSpawned() ? this.chunkRadius : (int) Math.ceil(Math.sqrt(spawnThreshold));
         int radiusSqr = radius * radius;
         long index;
 
@@ -994,7 +617,7 @@ public class Player extends EntityHuman
             NetworkChunkPublisherUpdatePacket packet = new NetworkChunkPublisherUpdatePacket();
             packet.position = this.asBlockVector3();
             packet.radius = viewDistance << 4;
-            this.dataPacket(packet);
+            this.sendPacket(packet);
         }
         return true;
     }
@@ -1286,17 +909,12 @@ public class Player extends EntityHuman
         var updateRotation = (float) Math.abs(this.pitch() - newPosition.pitch()) > ROTATION_UPDATE_THRESHOLD
                 || (float) Math.abs(this.yaw() - newPosition.yaw()) > ROTATION_UPDATE_THRESHOLD
                 || (float) Math.abs(this.headYaw() - newPosition.headYaw()) > ROTATION_UPDATE_THRESHOLD;
-        var isHandle = this.isAlive() && this.spawned && !this.isSleeping() && (updatePosition || updateRotation);
+        var isHandle = this.isAlive() && this.isSpawned() && !this.isSleeping() && (updatePosition || updateRotation);
         if (isHandle) {
             this.newPosition = newPosition;
             this.clientMovements.offer(newPosition);
         }
     }
-
-    // NK原始处理移动的方法
-    @Deprecated
-    @DeprecationDetails(since = "1.19.60-r1", reason = "use handleMovement")
-    protected void processMovement(int tickDiff) {}
 
     protected void handleLogicInMove(boolean invalidMotion, double distance) {
         if (!invalidMotion) {
@@ -1381,6 +999,10 @@ public class Player extends EntityHuman
         this.positionChanged = false;
     }
 
+    protected final void initialize(FullChunk chunk, CompoundTag nbt) {
+        super.init(chunk, nbt);
+    }
+
     protected void revertClientMotion(Location originalPos) {
         this.lastX = originalPos.x();
         this.lastY = originalPos.y();
@@ -1399,369 +1021,11 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 处理LOGIN_PACKET中执行
-     */
-    protected void processLogin() {
-        if (!this.server.isWhitelisted((this.getName()).toLowerCase())) {
-            this.kick(PlayerKickEvent.Reason.NOT_WHITELISTED, "Server is white-listed");
-
-            return;
-        } else if (this.isBanned()) {
-            String reason = this.server
-                    .getNameBans()
-                    .getEntires()
-                    .get(this.getName().toLowerCase())
-                    .getReason();
-            this.kick(
-                    PlayerKickEvent.Reason.NAME_BANNED,
-                    !reason.isEmpty() ? "You are banned. Reason: " + reason : "You are banned");
-            return;
-        } else if (this.server.getIPBans().isBanned(this.getAddress())) {
-            String reason =
-                    this.server.getIPBans().getEntires().get(this.getAddress()).getReason();
-            this.kick(
-                    PlayerKickEvent.Reason.IP_BANNED,
-                    !reason.isEmpty() ? "You are banned. Reason: " + reason : "You are banned");
-            return;
-        }
-
-        if (this.hasPermission(Server.BROADCAST_CHANNEL_USERS)) {
-            this.server.getPluginManager().subscribeToPermission(Server.BROADCAST_CHANNEL_USERS, this);
-        }
-        if (this.hasPermission(Server.BROADCAST_CHANNEL_ADMINISTRATIVE)) {
-            this.server.getPluginManager().subscribeToPermission(Server.BROADCAST_CHANNEL_ADMINISTRATIVE, this);
-        }
-
-        Player oldPlayer = null;
-        for (Player p :
-                new ArrayList<>(this.server.playerManager.getOnlinePlayers().values())) {
-            if (p != this && p.getName() != null && p.getName().equalsIgnoreCase(this.getName())
-                    || this.getUniqueId().equals(p.getUniqueId())) {
-                oldPlayer = p;
-                break;
-            }
-        }
-        CompoundTag nbt;
-        if (oldPlayer != null) {
-            oldPlayer.saveNBT();
-            nbt = oldPlayer.namedTag;
-            oldPlayer.close("", "disconnectionScreen.loggedinOtherLocation");
-        } else {
-            File legacyDataFile = new File(server.getDataPath() + "players/" + this.username.toLowerCase() + ".dat");
-            File dataFile = new File(server.getDataPath() + "players/" + this.uuid.toString() + ".dat");
-            if (legacyDataFile.exists() && !dataFile.exists()) {
-                nbt = this.server.playerManager.getOfflinePlayerData(this.username, false);
-
-                if (!legacyDataFile.delete()) {
-                    log.warn("Could not delete legacy player data for {}", this.username);
-                }
-            } else {
-                nbt = this.server.playerManager.getOfflinePlayerData(this.uuid, true);
-            }
-        }
-
-        if (nbt == null) {
-            this.close(this.getLeaveMessage(), "Invalid data");
-            return;
-        }
-
-        if (loginChainData.isXboxAuthed() && server.getPropertyBoolean("xbox-auth")
-                || !server.getPropertyBoolean("xbox-auth")) {
-            server.playerManager.updateName(this.uuid, this.username);
-        }
-
-        this.playedBefore = (nbt.getLong("lastPlayed") - nbt.getLong("firstPlayed")) > 1;
-
-        nbt.putString("NameTag", this.username);
-
-        int exp = nbt.getInt("EXP");
-        int expLevel = nbt.getInt("expLevel");
-        this.setExperience(exp, expLevel);
-
-        this.gamemode = GameMode.fromOrdinal(nbt.getInt("playerGameType") & 0x03);
-        if (this.server.getForceGamemode()) {
-            this.gamemode = this.server.getGamemode();
-            nbt.putInt("playerGameType", gamemode.ordinal());
-        }
-
-        this.adventureSettings = new AdventureSettings(this, nbt);
-
-        Level level;
-        if ((level = this.server.getLevelByName(nbt.getString("Level"))) == null) {
-            this.setLevel(this.server.getDefaultLevel());
-            nbt.putString("Level", this.getLevel().getName());
-            Position spawnLocation = this.getLevel().getSafeSpawn();
-            nbt.getList("Pos", DoubleTag.class)
-                    .add(new DoubleTag("0", spawnLocation.x()))
-                    .add(new DoubleTag("1", spawnLocation.y()))
-                    .add(new DoubleTag("2", spawnLocation.z()));
-        } else {
-            this.setLevel(level);
-        }
-
-        for (Tag achievement : nbt.getCompound("Achievements").getAllTags()) {
-            if (!(achievement instanceof ByteTag)) {
-                continue;
-            }
-
-            if (((ByteTag) achievement).getData() > 0) {
-                this.achievements.add(achievement.getName());
-            }
-        }
-
-        nbt.putLong("lastPlayed", System.currentTimeMillis() / 1000);
-
-        UUID uuid = getUniqueId();
-        nbt.putLong("UUIDLeast", uuid.getLeastSignificantBits());
-        nbt.putLong("UUIDMost", uuid.getMostSignificantBits());
-
-        if (this.server.getAutoSave()) {
-            this.server.playerManager.saveOfflinePlayerData(String.valueOf(this.uuid), nbt, true);
-        }
-
-        this.sendPlayStatus(PlayStatusPacket.LOGIN_SUCCESS);
-        this.server.playerManager.onPlayerLogin(this);
-
-        ListTag<DoubleTag> posList = nbt.getList("Pos", DoubleTag.class);
-
-        super.init(this.getLevel().getChunk((int) posList.get(0).data >> 4, (int) posList.get(2).data >> 4, true), nbt);
-
-        if (!this.namedTag.contains("foodLevel")) {
-            this.namedTag.putInt("foodLevel", 20);
-        }
-        int foodLevel = this.namedTag.getInt("foodLevel");
-        if (!this.namedTag.contains("foodSaturationLevel")) {
-            this.namedTag.putFloat("foodSaturationLevel", 20);
-        }
-        float foodSaturationLevel = this.namedTag.getFloat("foodSaturationLevel");
-        this.foodData = new PlayerFood(this, foodLevel, foodSaturationLevel);
-
-        if (this.isSpectator()) {
-            this.onGround = false;
-        }
-
-        if (!this.namedTag.contains("TimeSinceRest")) {
-            this.namedTag.putInt("TimeSinceRest", 0);
-        }
-        this.timeSinceRest = this.namedTag.getInt("TimeSinceRest");
-
-        if (!this.namedTag.contains("HasSeenCredits")) {
-            this.namedTag.putBoolean("HasSeenCredits", false);
-        }
-        this.hasSeenCredits = this.namedTag.getBoolean("HasSeenCredits");
-
-        // 以下两个List的元素一一对应
-        if (!this.namedTag.contains("fogIdentifiers")) {
-            this.namedTag.putList(new ListTag<StringTag>("fogIdentifiers"));
-        }
-        if (!this.namedTag.contains("userProvidedFogIds")) {
-            this.namedTag.putList(new ListTag<StringTag>("userProvidedFogIds"));
-        }
-        var fogIdentifiers = this.namedTag.getList("fogIdentifiers", StringTag.class);
-        var userProvidedFogIds = this.namedTag.getList("userProvidedFogIds", StringTag.class);
-        for (int i = 0; i < fogIdentifiers.size(); i++) {
-            this.fogStack.add(
-                    i,
-                    new PlayerFogPacket.Fog(
-                            Identifier.tryParse(fogIdentifiers.get(i).data), userProvidedFogIds.get(i).data));
-        }
-
-        if (!this.server.isCheckMovement()) {
-            this.checkMovement = false;
-        }
-        ResourcePacksInfoPacket_v618 infoPacket = new ResourcePacksInfoPacket_v618();
-        //ResourcePacksInfoPacket infoPacket = new ResourcePacksInfoPacket();
-        infoPacket.resourcePackEntries = this.server.getResourcePackManager().getResourceStack();
-        infoPacket.mustAccept = this.server.getForceResources();
-        this.dataPacket(infoPacket);
-    }
-
-    /**
-     * 异步登录任务成功完成后执行
-     */
-    protected void completeLoginSequence() {
-        PlayerLoginEvent event = new PlayerLoginEvent(this, "Plugin reason");
-        event.call();
-
-        if (event.isCancelled()) {
-            this.close(this.getLeaveMessage(), event.getKickMessage());
-            return;
-        }
-
-        Level level = null;
-        if (this.namedTag.containsString("SpawnLevel")) {
-            level = this.server.getLevelByName(this.namedTag.getString("SpawnLevel"));
-        }
-        if (this.namedTag.containsString("SpawnBlockLevel")) {
-            level = this.server.getLevelByName(this.namedTag.getString("SpawnBlockLevel"));
-        }
-        if (level != null) {
-            if (this.namedTag.containsInt("SpawnX")
-                    && this.namedTag.containsInt("SpawnY")
-                    && this.namedTag.containsInt("SpawnZ")) {
-                this.spawnPosition = new Position(
-                        this.namedTag.getInt("SpawnX"),
-                        this.namedTag.getInt("SpawnY"),
-                        this.namedTag.getInt("SpawnZ"),
-                        level);
-            } else {
-                this.spawnPosition = null;
-            }
-            if (this.namedTag.containsInt("SpawnBlockPositionX")
-                    && this.namedTag.containsInt("SpawnBlockPositionY")
-                    && this.namedTag.containsInt("SpawnBlockPositionZ")) {
-                this.spawnBlockPosition = new Position(
-                        namedTag.getInt("SpawnBlockPositionX"),
-                        namedTag.getInt("SpawnBlockPositionY"),
-                        namedTag.getInt("SpawnBlockPositionZ"),
-                        level);
-            } else {
-                this.spawnBlockPosition = null;
-            }
-        }
-        Vector3 worldSpawnPoint;
-        if (this.spawnPosition == null)
-            worldSpawnPoint = this.server.getDefaultLevel().getSafeSpawn();
-        else worldSpawnPoint = spawnPosition;
-
-        StartGamePacket startGamePacket = new StartGamePacket();
-        startGamePacket.entityUniqueId = this.id;
-        startGamePacket.entityRuntimeId = this.id;
-        startGamePacket.playerGamemode = gamemode.getNetworkGamemode();
-        startGamePacket.x = (float) this.x();
-        startGamePacket.y = (float) (isOnGround() ? this.y() + this.getEyeHeight() : this.y()); // 防止在地上生成容易陷进地里
-        startGamePacket.z = (float) this.z();
-        startGamePacket.yaw = (float) this.yaw();
-        startGamePacket.pitch = (float) this.pitch();
-        startGamePacket.seed = -1L;
-        startGamePacket.dimension = (byte) (this.getLevel().getDimension() & 0xff);
-        startGamePacket.worldGamemode = this.getServer().getGamemode().getNetworkGamemode();
-        startGamePacket.difficulty = this.getServer().getDifficulty();
-        startGamePacket.spawnX = worldSpawnPoint.getFloorX();
-        startGamePacket.spawnY = worldSpawnPoint.getFloorY();
-        startGamePacket.spawnZ = worldSpawnPoint.getFloorZ();
-        startGamePacket.hasAchievementsDisabled = true;
-        startGamePacket.dayCycleStopTime = -1;
-        startGamePacket.rainLevel = 0;
-        startGamePacket.lightningLevel = 0;
-        startGamePacket.commandsEnabled = this.isEnableClientCommand();
-        startGamePacket.gameRules = this.getLevel().getGameRules();
-        startGamePacket.levelId = "";
-        startGamePacket.worldName = this.getServer().getNetwork().getName();
-        startGamePacket.generator = (byte) ((this.getLevel().getDimension() + 1) & 0xff); // 0 旧世界, 1 主世界, 2 下界, 3末地
-        startGamePacket.serverAuthoritativeMovement = getServer().getServerAuthoritativeMovement();
-        // 写入自定义方块数据
-        startGamePacket.blockProperties.addAll(Block.getCustomBlockDefinitionList());
-        this.dataPacketImmediately(startGamePacket);
-        this.loggedIn = true;
-
-        // 写入自定义物品数据
-        ItemComponentPacket itemComponentPacket = new ItemComponentPacket();
-        if (this.getServer().isEnableExperimentMode()
-                && !Item.getCustomItemDefinition().isEmpty()) {
-            Int2ObjectOpenHashMap<ItemComponentPacket.Entry> entries = new Int2ObjectOpenHashMap<>();
-            int i = 0;
-            for (var entry : Item.getCustomItemDefinition().entrySet()) {
-                try {
-                    CompoundTag data = entry.getValue().nbt();
-                    data.putShort("minecraft:identifier", i);
-                    entries.put(i, new ItemComponentPacket.Entry(entry.getKey(), data));
-                    i++;
-                } catch (Exception e) {
-                    log.error("ItemComponentPacket encoding error", e);
-                }
-            }
-            itemComponentPacket.setEntries(entries.values().toArray(ItemComponentPacket.Entry.EMPTY_ARRAY));
-        }
-        this.dataPacket(itemComponentPacket);
-
-        this.dataPacket(new BiomeDefinitionListPacket());
-        this.dataPacket(new AvailableEntityIdentifiersPacket());
-        this.inventory.sendCreativeContents();
-        // 发送玩家权限列表
-        server.playerManager.getOnlinePlayers().values().forEach(player -> {
-            if (player != this) {
-                player.adventureSettings.sendAbilities(Collections.singleton(this));
-            }
-        });
-
-        this.sendAttributes();
-        this.sendPotionEffects(this);
-        this.sendData(this);
-        this.sendAttributes();
-        this.setNameTagVisible(true);
-        this.setNameTagAlwaysVisible(true);
-        this.setCanClimb(true);
-
-        log.info(this.getServer()
-                .getLanguage()
-                .tr(
-                        "nukkit.player.logIn",
-                        TextFormat.AQUA + this.username + TextFormat.WHITE,
-                        this.getAddress(),
-                        String.valueOf(this.getPort()),
-                        String.valueOf(this.id),
-                        this.getLevel().getName(),
-                        String.valueOf(NukkitMath.round(this.x(), 4)),
-                        String.valueOf(NukkitMath.round(this.y(), 4)),
-                        String.valueOf(NukkitMath.round(this.z(), 4))));
-
-        if (this.isOp() || this.hasPermission("nukkit.textcolor")) {
-            this.setRemoveFormat(false);
-        }
-
-        this.server.playerManager.addOnlinePlayer(this);
-        this.server.playerManager.onPlayerCompleteLoginSequence(this);
-    }
-
-    /**
-     * 玩家客户端初始化完成后调用
-     */
-    @PowerNukkitXOnly
-    @Since("1.19.50-r3")
-    protected void onPlayerLocallyInitialized() {
-        /*
-         We send the game mode only after the player client is initialized to solve the problem of
-         incorrect sprint speed in observer mode
-         Sprint speed is only correct if the observer mode is set after the player client is displayed in the game.
-         Force the game mode to update to ensure that the client receives the mode update package.
-        */
-        this.setGamemode(this.gamemode, false, true);
-        // 客户端初始化完毕再传送玩家，避免下落
-        Location pos;
-        if (this.server.isSafeSpawn() && gamemode.isSurvival()) {
-            pos = this.getLevel().getSafeSpawn(this).getLocation();
-            pos.setYaw(this.yaw());
-            pos.setPitch(this.pitch());
-        } else {
-            pos = new Location(this.x(), this.y(), this.z(), this.yaw(), this.pitch(), this.getLevel());
-        }
-        PlayerRespawnEvent respawnEvent = new PlayerRespawnEvent(this, pos, true);
-        respawnEvent.call();
-        Position fromEvent = respawnEvent.getRespawnPosition();
-        if (fromEvent instanceof Location) {
-            pos = fromEvent.getLocation();
-        } else {
-            pos = fromEvent.getLocation();
-            pos.setYaw(this.yaw());
-            pos.setPitch(this.pitch());
-        }
-        this.teleport(pos, TeleportCause.PLAYER_SPAWN);
-        this.spawnToAll();
-    }
-
-    /**
-     * 判断重生锚是否有效如果重生锚有效则在重生锚上重生或者在床上重生
-     * 如果玩家以上2种都没有则在服务器重生点重生
-     * <p>
      * Determine if the respawn anchor is valid if the respawn anchor is valid then the anchor is respawned at the respawn anchor or reborn in bed
      * If the player has none of the above 2 then respawn at the server respawn point
      *
-     * @param block
-     * @return
+     * @param block - Block
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     protected boolean isValidRespawnBlock(Block block) {
         if (block.getId() == BlockID.RESPAWN_ANCHOR && block.getLevel().getDimension() == Level.DIMENSION_NETHER) {
             BlockRespawnAnchor anchor = (BlockRespawnAnchor) block;
@@ -1899,9 +1163,9 @@ public class Player extends EntityHuman
         pk.status = status;
 
         if (immediate) {
-            this.dataPacketImmediately(pk);
+            this.sendPacketImmediately(pk);
         } else {
-            this.dataPacket(pk);
+            this.sendPacket(pk);
         }
     }
 
@@ -1914,12 +1178,11 @@ public class Player extends EntityHuman
                 chunk.chunkX = chunkPositionX + x;
                 chunk.chunkZ = chunkPositionZ + z;
                 chunk.data = EmptyArrays.EMPTY_BYTES;
-                this.dataPacket(chunk);
+                this.sendPacket(chunk);
             }
         }
     }
 
-    @Since("1.4.0.0-PN")
     protected void removeWindow(Inventory inventory, boolean isResponse) {
         inventory.close(this);
         if (isResponse && !this.permanentWindows.contains(this.getWindowId(inventory))) {
@@ -1931,11 +1194,11 @@ public class Player extends EntityHuman
     protected void addDefaultWindows() {
         this.addWindow(this.getInventory(), ContainerIds.INVENTORY, true, true);
 
-        this.playerUIInventory = new PlayerUIInventory(this);
-        this.addWindow(this.playerUIInventory, ContainerIds.UI, true);
+        this.UIInventory = new PlayerUIInventory(this);
+        this.addWindow(this.UIInventory, ContainerIds.UI, true);
         this.addWindow(this.offhandInventory, ContainerIds.OFFHAND, true, true);
 
-        this.craftingGrid = this.playerUIInventory.getCraftingGrid();
+        this.craftingGrid = this.UIInventory.getCraftingGrid();
         this.addWindow(this.craftingGrid, ContainerIds.NONE, true);
 
         // TODO: more windows
@@ -1946,7 +1209,6 @@ public class Player extends EntityHuman
         return super.getBaseOffset();
     }
 
-    @PowerNukkitOnly
     @Override
     protected void onBlock(Entity entity, EntityDamageEvent e, boolean animate) {
         super.onBlock(entity, e, animate);
@@ -1970,64 +1232,24 @@ public class Player extends EntityHuman
     }
 
     /**
-     * @return {@link #lastAttackEntity}
-     */
-    @PowerNukkitXOnly
-    @Since("1.19.30-r1")
-    public Entity getLastAttackEntity() {
-        return lastAttackEntity;
-    }
-
-    /**
-     * @return {@link #lastBeAttackEntity}
-     */
-    @PowerNukkitXOnly
-    @Since("1.19.30-r1")
-    public Entity getLastBeAttackEntity() {
-        return lastBeAttackEntity;
-    }
-
-    /**
-     * 返回灵魂急行带来的速度增加倍速
+     * 设置{@link Player#startActionTick}值为{@link Server#getTick() getTick()}
      * <p>
-     * Return to the speed increase multiplier brought by SOUL_SPEED Enchantment
-     */
-    public float getSoulSpeedMultiplier() {
-        return this.soulSpeedMultiplier;
-    }
-
-    /**
-     * 返回{@link Player#startAction}的值
-     * <p>
-     * Returns the value of {@link Player#startAction}
-     *
-     * @return int
-     */
-    public int getStartActionTick() {
-        return startAction;
-    }
-
-    /**
-     * 设置{@link Player#startAction}值为{@link Server#getTick() getTick()}
-     * <p>
-     * Set the {@link Player#startAction} value to {@link Server#getTick() getTick()}
+     * Set the {@link Player#startActionTick} value to {@link Server#getTick() getTick()}
      */
     public void startAction() {
-        this.startAction = this.server.getTick();
+        this.startActionTick = this.server.getTick();
     }
 
     /**
-     * 设置{@link Player#startAction}值为-1
+     * 设置{@link Player#startActionTick}值为-1
      * <p>
-     * Set the {@link Player#startAction} value to -1
+     * Set the {@link Player#startActionTick} value to -1
      */
     public void stopAction() {
-        this.startAction = -1;
+        this.startActionTick = -1;
     }
 
     /**
-     * 返回{@link Player#lastEnderPearl}的值
-     * <p>
      * Returns the value of {@link Player#lastEnderPearl}
      *
      * @return int
@@ -2037,17 +1259,13 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 设置{@link Player#lastEnderPearl}值为{@link Server#getTick() getTick()}
-     * <p>
      * Set {@link Player#lastEnderPearl} value to {@link Server#getTick() getTick()}
      */
     public void onThrowEnderPearl() {
-        this.lastEnderPearl = this.server.getTick();
+        this.lastEnderPearl = server.getTick();
     }
 
     /**
-     * 返回{@link Player#lastChorusFruitTeleport}的值
-     * <p>
      * Returns the value of {@link Player#lastChorusFruitTeleport}
      *
      * @return int
@@ -2057,30 +1275,13 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 返回{@link Player#lastInAirTick}的值,代表玩家上次在空中的server tick
-     * <p>
-     * Returns the value of {@link Player#lastInAirTick},represent the last server tick the player was in the air
-     *
-     * @return int
-     */
-    @PowerNukkitXOnly
-    @Since("1.19.63-r1")
-    public int getLastInAirTick() {
-        return this.lastInAirTick;
-    }
-
-    /**
-     * 设置{@link Player#lastChorusFruitTeleport}值为{@link Server#getTick() getTick()}
-     * <p>
      * Set {@link Player#lastChorusFruitTeleport} value to {@link Server#getTick() getTick()}
      */
     public void onChorusFruitTeleport() {
-        this.lastChorusFruitTeleport = this.server.getTick();
+        this.lastChorusFruitTeleport = server.getTick();
     }
 
     /**
-     * 返回{@link Player#viewingEnderChest}的值，只在玩家打开末影箱时有效.
-     * <p>
      * Returns the value of {@link Player#viewingEnderChest}, which is only valid when the player opens the Ender Chest.
      */
     public BlockEnderChest getViewingEnderChest() {
@@ -2088,8 +1289,6 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 设置{@link Player#viewingEnderChest}值为chest
-     * <p>
      * Set the {@link Player#viewingEnderChest} value to chest
      *
      * @param chest BlockEnderChest
@@ -2104,27 +1303,12 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 获取玩家离开的消息
+     * Getting the message that a player has left
      *
      * @return {@link TranslationContainer}
      */
     public TranslationContainer getLeaveMessage() {
         return new TranslationContainer(TextFormat.YELLOW + "%multiplayer.player.left", this.getDisplayName());
-    }
-
-    public String getClientSecret() {
-        return clientSecret;
-    }
-
-    /**
-     * This might disappear in the future.
-     * Please use getUniqueId() instead (IP + clientId + name combo, in the future it'll change to real UUID for online auth)
-     *
-     * @return random client id
-     */
-    @Deprecated
-    public Long getClientId() {
-        return randomClientId;
     }
 
     @Override
@@ -2172,13 +1356,11 @@ public class Player extends EntityHuman
     }
 
     @Override
-    public boolean hasPlayedBefore() {
-        return this.playedBefore;
+    public boolean isPlayedBefore() {
+        return playerConnection.isPlayedBefore();
     }
 
     /**
-     * 获得玩家权限设置.
-     * <p>
      * Get player permission settings.
      */
     public AdventureSettings getAdventureSettings() {
@@ -2186,11 +1368,9 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 用于设置玩家权限，对应游戏中的玩家权限设置.
-     * <p>
      * Used to set player permissions, corresponding to the game's player permissions settings.
      *
-     * @param adventureSettings 玩家权限设置<br>player permissions settings
+     * @param adventureSettings player permissions settings
      */
     public void setAdventureSettings(AdventureSettings adventureSettings) {
         this.adventureSettings = adventureSettings.clone(this);
@@ -2198,8 +1378,6 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 设置{@link #inAirTicks}为0
-     * <p>
      * Set {@link #inAirTicks} to 0
      */
     public void resetInAirTicks() {
@@ -2216,11 +1394,10 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 设置允许修改世界(未知原因设置完成之后，玩家不允许挖掘方块，但是可以放置方块)
-     * <p>
-     * Set allow to modify the world (after the unknown reason setting is completed, the player is not allowed to dig the blocks, but can place them)
+     * Set allow to modify the world (after the unknown reason setting is completed,
+     * the player is not allowed to dig the blocks, but can place them)
      *
-     * @param value 是否允许修改世界<br>Whether to allow modification of the world
+     * @param value Whether to allow modification of the world
      */
     public void setAllowModifyWorld(boolean value) {
         this.getAdventureSettings().set(Type.WORLD_IMMUTABLE, !value);
@@ -2234,10 +1411,10 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 设置允许交互世界/容器
+     * Setting up the allowed interaction world/container
      *
-     * @param value      是否允许交互世界
-     * @param containers 是否允许交互容器
+     * @param value      Whether to allow interactive worlds
+     * @param containers Whether to allow interaction containers
      */
     public void setAllowInteract(boolean value, boolean containers) {
         this.getAdventureSettings().set(Type.WORLD_IMMUTABLE, !value);
@@ -2257,19 +1434,20 @@ public class Player extends EntityHuman
 
     @Override
     public void spawnTo(Player player) {
-        if (this.spawned
-                && player.spawned
+        if (this.isSpawned()
+                && player.isSpawned()
                 && this.isAlive()
                 && player.getLevel() == this.getLevel()
                 && player.canSee(this) /* && !this.isSpectator()*/) {
             super.spawnTo(player);
 
             if (this.isSpectator()) {
-                // 发送旁观者的游戏模式给对方，使得对方客户端正确渲染玩家实体
+                // Sends the spectator's game mode to the other side so that the other
+                // client renders the player entity correctly
                 var pk = new UpdatePlayerGameTypePacket();
                 pk.gameType = GameType.SPECTATOR;
                 pk.entityId = this.getId();
-                player.dataPacket(pk);
+                player.sendPacket(pk);
             }
         }
     }
@@ -2280,43 +1458,17 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 得到{@link #removeFormat}
-     * <p>
-     * get {@link #removeFormat}
-     *
-     * @return boolean
-     */
-    public boolean getRemoveFormat() {
-        return removeFormat;
-    }
-
-    /**
-     * 设置{@link #removeFormat}为指定值
-     *
-     * @param remove 是否清楚格式化字符<br>Whether remove the formatting character
-     */
-    public void setRemoveFormat(boolean remove) {
-        this.removeFormat = remove;
-    }
-
-    public void setRemoveFormat() {
-        this.setRemoveFormat(true);
-    }
-
-    /**
-     * @param player 玩家
-     * @return 是否可以看到该玩家<br>Whether the player can be seen
+     * @param player Player
+     * @return Whether the player can be seen
      */
     public boolean canSee(Player player) {
         return !this.hiddenPlayers.containsKey(player.getUniqueId());
     }
 
     /**
-     * 从当前玩家实例的视角中隐藏指定玩家player
-     * <p>
      * Hide the specified player from the view of the current player instance
      *
-     * @param player 要隐藏的玩家<br>Players who want to hide
+     * @param player Players who want to hide
      */
     public void hidePlayer(Player player) {
         if (this == player) {
@@ -2327,11 +1479,9 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 从当前玩家实例的视角中显示指定玩家player
-     * <p>
      * Show the specified player from the view of the current player instance
      *
-     * @param player 要显示的玩家<br>Players who want to show
+     * @param player Players who want to show
      */
     public void showPlayer(Player player) {
         if (this == player) {
@@ -2361,11 +1511,6 @@ public class Player extends EntityHuman
         }
         this.inAirTicks = 0;
         this.highestPosition = this.y();
-    }
-
-    @Override
-    public boolean isOnline() {
-        return this.connected && this.loggedIn;
     }
 
     @Override
@@ -2445,7 +1590,7 @@ public class Player extends EntityHuman
             this.server.getPluginManager().subscribeToPermission(Server.BROADCAST_CHANNEL_ADMINISTRATIVE, this);
         }
 
-        if (this.isEnableClientCommand() && spawned) this.sendCommandData();
+        if (this.isEnableClientCommand() && isSpawned()) this.sendCommandData();
     }
 
     public boolean isEnableClientCommand() {
@@ -2456,12 +1601,12 @@ public class Player extends EntityHuman
         this.enableClientCommand = enable;
         SetCommandsEnabledPacket pk = new SetCommandsEnabledPacket();
         pk.enabled = enable;
-        this.dataPacket(pk);
+        this.sendPacket(pk);
         if (enable) this.sendCommandData();
     }
 
     public void sendCommandData() {
-        if (!spawned) {
+        if (!isSpawned()) {
             return;
         }
         AvailableCommandsPacket pk = new AvailableCommandsPacket();
@@ -2478,7 +1623,7 @@ public class Player extends EntityHuman
         if (count > 0) {
             // TODO: structure checking
             pk.commands = data;
-            this.dataPacket(pk);
+            this.sendPacket(pk);
         }
     }
 
@@ -2515,10 +1660,6 @@ public class Player extends EntityHuman
         return achievements.contains(achievementId);
     }
 
-    public boolean isConnected() {
-        return connected;
-    }
-
     /**
      * 得到该玩家的显示名称
      * <p>
@@ -2539,91 +1680,31 @@ public class Player extends EntityHuman
      */
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
-        if (this.spawned) {
-            this.server.playerManager.updatePlayerListData(
-                    this.getUniqueId(),
-                    this.getId(),
-                    this.getDisplayName(),
-                    this.getSkin(),
-                    this.getLoginChainData().getXUID());
+        if (this.isSpawned()) {
+            server.getPlayerManager()
+                    .updatePlayerListData(
+                            this.getUniqueId(),
+                            this.getId(),
+                            this.getDisplayName(),
+                            this.getSkin(),
+                            this.getPlayerInfo().getXuid());
         }
     }
 
     @Override
     public void setSkin(Skin skin) {
         super.setSkin(skin);
-        if (this.spawned) {
-            //            this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getDisplayName(),
-            // skin, this.getLoginChainData().getXUID());
+        if (this.isSpawned()) {
             var skinPacket = new PlayerSkinPacket();
             skinPacket.uuid = this.getUniqueId();
             skinPacket.skin = this.getSkin();
             skinPacket.newSkinName = this.getSkin().getSkinId();
             skinPacket.oldSkinName = "";
-            Server.broadcastPacket(
-                    Server.getInstance().playerManager.getOnlinePlayers().values(), skinPacket);
+            Server.broadcastPacket(server.getPlayerManager().getOnlinePlayers().values(), skinPacket);
         }
     }
 
     /**
-     * 得到原始地址
-     *
-     * @return {@link String}
-     */
-    public String getRawAddress() {
-        return this.rawSocketAddress.getAddress().getHostAddress();
-    }
-
-    /**
-     * 得到原始端口
-     *
-     * @return int
-     */
-    public int getRawPort() {
-        return this.rawSocketAddress.getPort();
-    }
-
-    /**
-     * 得到原始套接字地址
-     *
-     * @return {@link InetSocketAddress}
-     */
-    public InetSocketAddress getRawSocketAddress() {
-        return this.rawSocketAddress;
-    }
-
-    /**
-     * 得到地址,如果开启waterdogpe兼容，该地址是被修改为兼容waterdogpe型的，反之则与{@link #rawSocketAddress} 一样
-     * <p>
-     * If waterdogpe compatibility is enabled, the address is modified to be waterdogpe compatible, otherwise it is the same as {@link #rawSocketAddress}
-     *
-     * @return {@link String}
-     */
-    public String getAddress() {
-        return this.socketAddress.getAddress().getHostAddress();
-    }
-
-    /**
-     * @see #getRawPort
-     */
-    public int getPort() {
-        return this.socketAddress.getPort();
-    }
-
-    /**
-     * 得到套接字地址,如果开启waterdogpe兼容，该套接字地址是被修改为兼容waterdogpe型的，反正则与{@link #rawSocketAddress} 一样
-     * <p>
-     * If waterdogpe compatibility is enabled, the address is modified to be waterdogpe compatible, otherwise it is the same as {@link #rawSocketAddress}
-     *
-     * @return {@link InetSocketAddress}
-     */
-    public InetSocketAddress getSocketAddress() {
-        return this.socketAddress;
-    }
-
-    /**
-     * 获得下一个tick客户端玩家将要移动的位置
-     * <p>
      * Get the position where the next tick client player will move
      *
      * @return the next position
@@ -2635,49 +1716,25 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 玩家是否在睡觉
-     * <p>
-     * Whether the player is sleeping
-     *
-     * @return boolean
-     */
-    public boolean isSleeping() {
-        return this.sleeping != null;
-    }
-
-    /**
-     * @return {@link #inAirTicks}
-     */
-    public int getInAirTicks() {
-        return this.inAirTicks;
-    }
-
-    /**
-     * 返回玩家当前是否正在使用某项物品（右击并按住）。
-     * <p>
      * Returns whether the player is currently using an item (right-click and hold).
      *
-     * @return {@link #startAction}
+     * @return {@link #startActionTick}
      */
     public boolean isUsingItem() {
-        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_ACTION) && this.startAction > -1;
+        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_ACTION) && this.startActionTick > -1;
     }
 
     /**
-     * 设置玩家当前是否正在使用某项物品 {@link #startAction}（右击并按住）。
-     * <p>
-     * Set whether the player is currently using an item {@link #startAction} (right-click and hold).
+     * Set whether the player is currently using an item {@link #startActionTick} (right-click and hold).
      *
-     * @param value 玩家当前是否正在使用某项物品<br>whether the player is currently using an item.
+     * @param value Whether the player is currently using an item.
      */
     public void setUsingItem(boolean value) {
-        this.startAction = value ? this.server.getTick() : -1;
+        this.startActionTick = value ? this.server.getTick() : -1;
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_ACTION, value);
     }
 
     /**
-     * 获得移动设备玩家面对载具时出现的交互按钮的语言硬编码。
-     * <p>
      * Get the language hardcoded for the interaction buttons that appear when mobile device players face the carrier.
      */
     public String getButtonText() {
@@ -2685,8 +1742,6 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 设置移动设备玩家面对载具时出现的交互按钮的语言硬编码。
-     * <p>
      * Set the language hardcoded for the interaction buttons that appear when mobile device players face the carrier.
      */
     public void setButtonText(String text) {
@@ -2715,15 +1770,13 @@ public class Player extends EntityHuman
     }
 
     /**
-     * @return 玩家是否在主世界(维度为0)<br>Is the player in the world(Dimension equal 0)
+     * @return Is the player in the world (Dimension equal 0)
      */
     public boolean isInOverWorld() {
         return this.getLevel().getDimension() == 0;
     }
 
     /**
-     * 获取该玩家的可用重生点,
-     * <p>
      * Get the player's Spawn point
      *
      * @return {@link Position}
@@ -2740,31 +1793,10 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 保存玩家重生位置的方块的位置。当未知时可能为空。
-     * <p>
-     * The block that holds the player respawn position. May be null when unknown.
-     * <p>
-     * 保存着玩家重生位置的方块。当未知时可能为空。
-     *
-     * @return 床、重生锚的位置，或在未知时为空。<br>The position of a bed, respawn anchor, or null when unknown.
-     */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    @Deprecated
-    @DeprecationDetails(since = "1.19.60-r1", reason = "same #getSpawn")
-    public Position getSpawnBlock() {
-        return this.getSpawn();
-    }
-
-    /**
-     * 设置玩家的出生点/复活点。
-     * <p>
      * Set the player's birth point.
      *
-     * @param pos 出生点位置
+     * @param pos Location of the birth point
      */
-    @PowerNukkitDifference(
-            info = "pos can be null now and if it is null,the player's spawn will use the level's default spawn")
     public void setSpawn(@Nullable Vector3 pos) {
         if (pos != null) {
             Level level;
@@ -2781,23 +1813,17 @@ public class Player extends EntityHuman
             pk.y = (int) this.spawnPosition.y();
             pk.z = (int) this.spawnPosition.z();
             pk.dimension = this.spawnPosition.getLevel().getDimension();
-            this.dataPacket(pk);
+            this.sendPacket(pk);
         } else {
             this.spawnPosition = null;
         }
     }
 
     /**
-     * 设置保存玩家重生位置的方块的位置。当未知时可能为空。
-     * <p>
      * Sets the position of the block that holds the player respawn position. May be null when unknown.
-     * <p>
-     * 设置保存着玩家重生位置的方块的位置。可以设置为空。
      *
-     * @param spawnBlock 床位或重生锚的位置<br>The position of a bed or respawn anchor
+     * @param spawnBlock The position of a bed or respawn anchor
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public void setSpawnBlock(@Nullable Vector3 spawnBlock) {
         if (spawnBlock == null) {
             this.spawnBlockPosition = null;
@@ -2805,7 +1831,9 @@ public class Player extends EntityHuman
             Level level;
             if (spawnBlock instanceof Position position && position.isValid()) {
                 level = position.getLevel();
-            } else level = this.getLevel();
+            } else {
+                level = this.getLevel();
+            }
             this.spawnBlockPosition = new Position(spawnBlock.x(), spawnBlock.y(), spawnBlock.z(), level);
             this.spawnPosition = null;
             SetSpawnPositionPacket pk = new SetSpawnPositionPacket();
@@ -2814,21 +1842,21 @@ public class Player extends EntityHuman
             pk.y = this.spawnBlockPosition.getFloorY();
             pk.z = this.spawnBlockPosition.getFloorZ();
             pk.dimension = this.spawnBlockPosition.getLevel().getDimension();
-            this.dataPacket(pk);
+            this.sendPacket(pk);
         }
     }
 
     public void sendChunk(int x, int z, DataPacket packet) {
-        if (!this.connected) {
+        if (!this.isConnected()) {
             return;
         }
 
         this.usedChunks.put(Level.chunkHash(x, z), Boolean.TRUE);
         this.chunkLoadCount++;
 
-        this.dataPacket(packet);
+        this.sendPacket(packet);
 
-        if (this.spawned) {
+        if (this.isSpawned()) {
             for (Entity entity : this.getLevel().getChunkEntities(x, z).values()) {
                 if (this != entity && !entity.closed && entity.isAlive()) {
                     entity.spawnTo(this);
@@ -2842,7 +1870,7 @@ public class Player extends EntityHuman
             PlayerActionPacket playerActionPacket = new PlayerActionPacket();
             playerActionPacket.action = PlayerActionPacket.ACTION_DIMENSION_CHANGE_ACK;
             playerActionPacket.entityId = this.getId();
-            this.dataPacket(playerActionPacket);
+            this.sendPacket(playerActionPacket);
         }
     }
 
@@ -2856,14 +1884,10 @@ public class Player extends EntityHuman
         this.sendChunk(x, z, pk);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public void updateTrackingPositions() {
         updateTrackingPositions(false);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public void updateTrackingPositions(boolean delayed) {
         Server server = getServer();
         if (delayed) {
@@ -2878,103 +1902,26 @@ public class Player extends EntityHuman
         positionTrackingService.forceRecheck(this);
     }
 
-    @DeprecationDetails(
-            by = "Cloudburst Nukkit",
-            since = "1.4.0.0-PN",
-            replaceWith = "dataPacket(DataPacket)",
-            reason = "Batching packet is now handled near the RakNet layer")
-    @Deprecated
-    public boolean batchDataPacket(DataPacket packet) {
-        return this.dataPacket(packet);
-    }
-
     /**
-     * 0 is true
-     * -1 is false
-     * other is identifer
+     * Send data packet
      *
-     * @param packet 发送的数据包<br>packet to send
-     * @return 数据包是否成功发送<br>packet successfully sent
+     * @param packet Packet to send
+     * @return Packet successfully sent
      */
-    public boolean dataPacket(DataPacket packet) {
-        if (!this.connected) {
-            return false;
-        }
-        DataPacketSendEvent event = new DataPacketSendEvent(this, packet);
-        event.call();
-        if (event.isCancelled()) {
-            return false;
-        }
-        if (log.isTraceEnabled() && !server.isIgnoredPacket(packet.getClass())) {
-            log.trace("Outbound {}: {}", this.getName(), packet);
-        }
-        this.getNetworkSession().sendPacket(packet);
-        return true;
+    public boolean sendPacket(DataPacket packet) {
+        return playerConnection != null && playerConnection.sendPacket(packet);
     }
 
-    @DeprecationDetails(
-            by = "Cloudburst Nukkit",
-            since = "2019-05-08",
-            replaceWith = "dataPacket(DataPacket)",
-            reason = "ACKs are handled by the RakNet layer only")
-    @PowerNukkitDifference(
-            since = "1.4.0.0-PN",
-            info =
-                    "Cloudburst changed the return values from 0/-1 to 1/0, breaking backward compatibility for no reason, "
-                            + "we reversed that.")
-    @Deprecated
-    public int dataPacket(DataPacket packet, boolean needACK) {
-        return dataPacket(packet) ? 0 : -1;
+    public void sendPacketImmediately(DataPacket packet, Runnable callback) {
+        if (playerConnection != null) playerConnection.sendPacketImmediately(packet, callback);
     }
 
-    /**
-     * 0 is true
-     * -1 is false
-     * other is identifer
-     *
-     * @param packet packet to send
-     * @return packet successfully sent
-     */
-    @Deprecated
-    @DeprecationDetails(
-            by = "Cloudburst Nukkit",
-            since = "1.4.0.0-PN",
-            replaceWith = "dataPacket(DataPacket)",
-            reason = "Direct packets are no longer allowed")
-    public boolean directDataPacket(DataPacket packet) {
-        return this.dataPacket(packet);
+    public boolean sendPacketImmediately(DataPacket packet) {
+        return playerConnection != null && playerConnection.sendPacketImmediately(packet);
     }
 
-    @DeprecationDetails(
-            by = "Cloudburst Nukkit",
-            since = "2019-05-08",
-            replaceWith = "dataPacket(DataPacket)",
-            reason = "ACK are handled by the RakNet layer and direct packets are no longer allowed")
-    @PowerNukkitDifference(
-            since = "1.4.0.0-PN",
-            info =
-                    "Cloudburst changed the return values from 0/-1 to 1/0, breaking backward compatibility for no reason, "
-                            + "we reversed that.")
-    @Deprecated
-    public int directDataPacket(DataPacket packet, boolean needACK) {
-        return this.dataPacket(packet) ? 0 : -1;
-    }
-
-    @Since("1.19.30-r1")
-    @PowerNukkitXOnly
-    public void forceDataPacket(DataPacket packet, Runnable callback) {
-        this.networkSession.sendImmediatePacket(packet, (callback == null ? () -> {} : callback));
-    }
-
-    /**
-     * 得到该玩家的网络延迟。
-     * <p>
-     * Get the network latency of the player.
-     *
-     * @return int
-     */
-    public int getPing() {
-        return this.interfaz.getNetworkLatency(this);
+    public boolean sendResourcePacket(DataPacket packet) {
+        return playerConnection != null && playerConnection.sendResourcePacket(packet);
     }
 
     public boolean sleepOn(Vector3 pos) {
@@ -3029,8 +1976,17 @@ public class Player extends EntityHuman
             AnimatePacket pk = new AnimatePacket();
             pk.eid = this.id;
             pk.action = AnimatePacket.Action.WAKE_UP;
-            this.dataPacket(pk);
+            this.sendPacket(pk);
         }
+    }
+
+    /**
+     * Whether the player is sleeping
+     *
+     * @return boolean
+     */
+    public boolean isSleeping() {
+        return this.sleeping != null;
     }
 
     /**
@@ -3092,7 +2048,7 @@ public class Player extends EntityHuman
             packet.gameType = GameType.from(gamemode.getNetworkGamemode());
             packet.entityId = this.getId();
             Set<Player> players =
-                    Sets.newHashSet(server.playerManager.getOnlinePlayers().values());
+                    Sets.newHashSet(server.getPlayerManager().getOnlinePlayers().values());
             // Instead of sending an UpdatePlayerGameTypePacket to itself, we'll use the SetPlayerGameTypePacket
             players.remove(this);
             // We need to send this packet to all players to enable the player client to render the player entity
@@ -3102,7 +2058,7 @@ public class Player extends EntityHuman
             // We use SetPlayerGameTypePacket to ensure compatibility with WaterDog!
             SetPlayerGameTypePacket gameTypePacket = new SetPlayerGameTypePacket();
             gameTypePacket.gamemode = gamemode.getNetworkGamemode();
-            this.dataPacket(gameTypePacket);
+            this.sendPacket(gameTypePacket);
         }
 
         this.resetFallDistance();
@@ -3146,7 +2102,6 @@ public class Player extends EntityHuman
         if (!this.isCreative() && !this.isSpectator()) {
             return super.getDrops();
         }
-
         return Item.EMPTY_ARRAY;
     }
 
@@ -3171,8 +2126,6 @@ public class Player extends EntityHuman
         return true;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
     public AxisAlignedBB reCalcOffsetBoundingBox() {
         float dx = this.getWidth() / 2;
         float dz = this.getWidth() / 2;
@@ -3191,10 +2144,11 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 每次调用此方法都会向客户端发送motion包。若多次调用，motion将在客户端叠加<p/>
+     * Each call to this method sends a motion packet to the client. If called multiple times,
+     * motion will be overlaid on the client side
      *
-     * @param motion 运动向量<br>a motion vector
-     * @return 调用是否成功
+     * @param motion A motion vector
+     * @return Whether the call was successful or not
      */
     @Override
     public boolean setMotion(Vector3 motion) {
@@ -3206,7 +2160,7 @@ public class Player extends EntityHuman
                 pk.motionX = (float) motion.x();
                 pk.motionY = (float) motion.y();
                 pk.motionZ = (float) motion.z();
-                this.dataPacket(pk); // Send to self
+                this.sendPacket(pk); // Send to self
             }
 
             if (this.motionY > 0) {
@@ -3224,7 +2178,7 @@ public class Player extends EntityHuman
         return false;
     }
 
-    public void sendAttributes() {
+    public void sendDefaultAttributes() {
         UpdateAttributesPacket pk = new UpdateAttributesPacket();
         pk.entityId = this.getId();
         pk.entries = new Attribute[] {
@@ -3238,23 +2192,19 @@ public class Player extends EntityHuman
             Attribute.getAttribute(Attribute.EXPERIENCE)
                     .setValue(((float) this.getExperience()) / calculateRequireExperience(this.getExperienceLevel()))
         };
-        this.dataPacket(pk);
+        this.sendPacket(pk);
     }
 
     /**
-     * 将迷雾设定发送到客户端
+     * Sending Mist Settings to the Client
      */
-    @PowerNukkitXOnly
-    @Since("1.19.50-r3")
     public void sendFogStack() {
         var pk = new PlayerFogPacket();
         pk.setFogStack(this.fogStack);
         pk.encode();
-        this.dataPacket(pk);
+        this.sendPacket(pk);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.20.0-r2")
     public void sendCameraPresets() {
         var presetListTag = new ListTag<CompoundTag>("presets");
         for (var preset : CameraPreset.getPresets().values()) {
@@ -3262,13 +2212,12 @@ public class Player extends EntityHuman
         }
         var pk = new CameraPresetsPacket();
         pk.setData(new CompoundTag().putList("presets", presetListTag));
-        dataPacket(pk);
+        sendPacket(pk);
     }
 
     @Override
-    @PowerNukkitXDifference(info = "Calculate fall distance when wearing elytra", since = "1.19.60-r1")
     public boolean onUpdate(int currentTick) {
-        if (!this.loggedIn) {
+        if (!this.isLoggedIn()) {
             return false;
         }
 
@@ -3288,7 +2237,7 @@ public class Player extends EntityHuman
             }
         }
 
-        if (!this.isAlive() && this.spawned) {
+        if (!this.isAlive() && this.isSpawned()) {
             if (this.getLevel().getGameRules().getBoolean(GameRule.DO_IMMEDIATE_RESPAWN)) {
                 this.despawnFromAll();
                 return true;
@@ -3300,7 +2249,7 @@ public class Player extends EntityHuman
             return true;
         }
 
-        if (this.spawned) {
+        if (this.isSpawned()) {
             if (this.motionX != 0 || this.motionY != 0 || this.motionZ != 0) {
                 this.setMotion(new Vector3(motionX, motionY, motionZ));
                 motionX = motionY = motionZ = 0;
@@ -3433,8 +2382,10 @@ public class Player extends EntityHuman
                 this.timeSinceRest++;
             }
 
-            if (this.server.getServerAuthoritativeMovement() > 0) { // 仅服务端权威使用，因为客户端权威continue break是正常的
-                onBlockBreakContinue(breakingBlock, breakingBlockFace);
+            // Only used by server-side authorities, since client-side authorities continue break is normal.
+            if (server.getServerAuthoritativeMovement() > 0) {
+                playerHandle.handleBlockBreakContinue(
+                        playerHandle.getBreakingBlock(), playerHandle.getBreakingBlockFace());
             }
 
             // reset move status
@@ -3451,7 +2402,7 @@ public class Player extends EntityHuman
             this.checkInteractNearby();
         }
 
-        if (this.spawned && this.dummyBossBars.size() > 0 && currentTick % 100 == 0) {
+        if (this.isSpawned() && this.dummyBossBars.size() > 0 && currentTick % 100 == 0) {
             this.dummyBossBars.values().forEach(DummyBossBar::updateBossEntityPosition);
         }
 
@@ -3487,8 +2438,6 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 检查附近可交互的实体(插件一般不使用)
-     * <p>
      * Check for nearby interactable entities (not generally used by plugins)
      */
     public void checkInteractNearby() {
@@ -3506,12 +2455,10 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 返回玩家目前正在看的实体。
-     * <p>
      * Returns the Entity the player is looking at currently
      *
-     * @param maxDistance 检查实体的最大距离<br>the maximum distance to check for entities
-     * @return Entity|null    如果没有找到实体，则为NULL，或者是实体的一个实例。<br>either NULL if no entity is found or an instance of the entity
+     * @param maxDistance  The maximum distance to check for entities
+     * @return Entity|null Either NULL if no entity is found or an instance of the entity
      */
     public EntityInteractable getEntityPlayerLookingAt(int maxDistance) {
         EntityInteractable entity = null;
@@ -3554,7 +2501,7 @@ public class Player extends EntityHuman
             this.orderChunks();
         }
 
-        if (!this.loadQueue.isEmpty() || !this.spawned) {
+        if (!this.loadQueue.isEmpty() || !this.isSpawned()) {
             this.sendNextChunk();
         }
     }
@@ -3574,20 +2521,19 @@ public class Player extends EntityHuman
         return (dot1 - dot) >= -maxDiff;
     }
 
-    @PowerNukkitXDifference(since = "1.19.70-r1", info = "Use new packet id system.")
     public void handleDataPacket(DataPacket packet) {
-        if (!connected) {
+        if (!isConnected()) {
             return;
         }
 
-        if (!verified
+        if (!playerHandle.isVerified()
                 && packet.packetId() != ProtocolInfo.toNewProtocolID(ProtocolInfo.LOGIN_PACKET)
                 && packet.packetId() != ProtocolInfo.toNewProtocolID(ProtocolInfo.BATCH_PACKET)
                 && packet.packetId() != ProtocolInfo.toNewProtocolID(ProtocolInfo.REQUEST_NETWORK_SETTINGS_PACKET)) {
             log.warn(
                     "Ignoring {} from {} due to player not verified yet",
                     packet.getClass().getSimpleName(),
-                    getAddress());
+                    playerConnection.getAddress());
             if (unverifiedPackets++ > 100) {
                 this.close("", "Too many failed login attempts");
             }
@@ -3613,16 +2559,14 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 以该玩家的身份发送一条聊天信息。如果消息以/（正斜杠）开头，它将被视为一个命令。
-     * <p>
      * Sends a chat message as this player. If the message begins with a / (forward-slash) it will be treated
      * as a command.
      *
-     * @param message 发送的信息<br>message to send
+     * @param message Message to send
      * @return successful
      */
     public boolean chat(String message) {
-        if (!this.spawned || !this.isAlive()) {
+        if (!this.isSpawned() || !this.isAlive()) {
             return false;
         }
 
@@ -3639,9 +2583,12 @@ public class Player extends EntityHuman
                 chatEvent.call();
                 if (!chatEvent.isCancelled()) {
                     this.server.broadcastMessage(
-                            this.getServer().getLanguage().tr(chatEvent.getFormat(), new String[] {
-                                chatEvent.getPlayer().getDisplayName(), chatEvent.getMessage()
-                            }),
+                            this.getServer()
+                                    .getLanguage()
+                                    .tr(
+                                            chatEvent.getFormat(),
+                                            chatEvent.getPlayer().getDisplayName(),
+                                            chatEvent.getMessage()),
                             chatEvent.getRecipients());
                 }
             }
@@ -3699,13 +2646,11 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 踢出该玩家
-     * <p>
      * Kick out the player
      *
-     * @param reason       原因枚举<br>Cause Enumeration
-     * @param reasonString 原因字符串<br>Reason String
-     * @param isAdmin      是否来自管理员踢出<br>Whether from the administrator kicked out
+     * @param reason       Cause Enumeration
+     * @param reasonString Reason String
+     * @param isAdmin      Whether from the administrator kicked out
      * @return boolean
      */
     public boolean kick(PlayerKickEvent.Reason reason, String reasonString, boolean isAdmin) {
@@ -3737,11 +2682,9 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 设置玩家的可视距离(范围 0--{@link Server#getViewDistance})
-     * <p>
      * Set the player's viewing distance (range 0--{@link Server#getViewDistance})
      *
-     * @param distance 可视距离
+     * @param distance Viewing distance
      */
     public void setViewDistance(int distance) {
         this.chunkRadius = distance;
@@ -3749,12 +2692,10 @@ public class Player extends EntityHuman
         ChunkRadiusUpdatedPacket pk = new ChunkRadiusUpdatedPacket();
         pk.radius = distance;
 
-        this.dataPacket(pk);
+        this.sendPacket(pk);
     }
 
     /**
-     * 得到玩家的可视距离
-     * <p>
      * Get the player's viewing distance
      *
      * @return int
@@ -3768,20 +2709,9 @@ public class Player extends EntityHuman
         TextPacket pk = new TextPacket();
         pk.type = TextPacket.TYPE_RAW;
         pk.message = this.server.getLanguage().tr(message);
-        this.dataPacket(pk);
+        this.sendPacket(pk);
     }
 
-    @Override
-    public void sendMessage(TextContainer message) {
-        if (message instanceof TranslationContainer) {
-            this.sendTranslation(message.getText(), ((TranslationContainer) message).getParameters());
-            return;
-        }
-        this.sendMessage(message.getText());
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
     public void sendCommandOutput(CommandOutputContainer container) {
         if (this.getLevel().getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK)) {
             var pk = new CommandOutputPacket();
@@ -3790,24 +2720,20 @@ public class Player extends EntityHuman
                     CommandOriginData.Origin.PLAYER, this.getUniqueId(), "", null); // Only players can effect
             pk.type = CommandOutputType.ALL_OUTPUT; // Useless
             pk.successCount = container.getSuccessCount(); // Useless,maybe used for server-client interaction
-            this.dataPacket(pk);
+            this.sendPacket(pk);
         }
     }
 
     /**
-     * 在玩家聊天栏发送一个JSON文本
-     * <p>
      * Send a JSON text in the player chat bar
      *
-     * @param text JSON文本<br>Json text
+     * @param text Json text
      */
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
     public void sendRawTextMessage(RawText text) {
         TextPacket pk = new TextPacket();
         pk.type = TextPacket.TYPE_OBJECT;
         pk.message = text.toRawText();
-        this.dataPacket(pk);
+        this.sendPacket(pk);
     }
 
     /**
@@ -3818,14 +2744,11 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 在玩家聊天栏发送一个多语言翻译文本，示例:<br>{@code message="Test Message {%0} {%1}" parameters=["Hello","World"]}<br>
-     * 实际消息内容{@code "Test Message Hello World"}
-     * <p>
      * Send a multilingual translated text in the player chat bar, example:<br> {@code message="Test Message {%0} {%1}" parameters=["Hello", "World"]}<br>
      * actual message content {@code "Test Message Hello World"}
      *
-     * @param message    消息
-     * @param parameters 参数
+     * @param message    Message
+     * @param parameters Parameters
      */
     public void sendTranslation(String message, String[] parameters) {
         TextPacket pk = new TextPacket();
@@ -3840,127 +2763,90 @@ public class Player extends EntityHuman
             pk.type = TextPacket.TYPE_RAW;
             pk.message = this.server.getLanguage().tr(message, parameters);
         }
-        this.dataPacket(pk);
+        this.sendPacket(pk);
+    }
+
+    @Override
+    public void sendMessage(TextContainer message) {
+        if (message instanceof TranslationContainer) {
+            this.sendTranslation(message.getText(), ((TranslationContainer) message).getParameters());
+            return;
+        }
+        this.sendMessage(message.getText());
     }
 
     /**
-     * @see #sendChat(String, String)
-     */
-    public void sendChat(String message) {
-        this.sendChat("", message);
-    }
-
-    /**
-     * 在玩家聊天栏发送一个文本
-     * <p>
-     * Send a text in the player chat bar
-     *
-     * @param message 消息
-     */
-    public void sendChat(String source, String message) {
-        TextPacket pk = new TextPacket();
-        pk.type = TextPacket.TYPE_CHAT;
-        pk.source = source;
-        pk.message = this.server.getLanguage().tr(message);
-        this.dataPacket(pk);
-    }
-
-    /**
-     * @see #sendPopup(String, String)
-     */
-    public void sendPopup(String message) {
-        this.sendPopup(message, "");
-    }
-
-    /**
-     * 在玩家物品栏上方发送一个弹出式的文本
-     * <p>
      * Send a pop-up text above the player's item bar
      *
-     * @param message 消息
+     * @param message Message
      */
-    // TODO: Support Translation Parameters
-    public void sendPopup(String message, String subtitle) {
+    public void sendPopup(String message) {
         TextPacket pk = new TextPacket();
         pk.type = TextPacket.TYPE_POPUP;
         pk.message = message;
-        this.dataPacket(pk);
+        this.sendPacket(pk);
     }
 
     /**
-     * 在玩家物品栏上方发送一个提示文本
-     * <p>
      * Send a tip text above the player's item bar
      *
-     * @param message 消息
+     * @param message Message
      */
     public void sendTip(String message) {
         TextPacket pk = new TextPacket();
         pk.type = TextPacket.TYPE_TIP;
         pk.message = message;
-        this.dataPacket(pk);
+        this.sendPacket(pk);
     }
 
     /**
-     * 清除掉玩家身上正在显示的标题信息。
-     * <p>
      * Clears away the title info being displayed on the player.
      */
     public void clearTitle() {
         SetTitlePacket pk = new SetTitlePacket();
         pk.type = SetTitlePacket.TYPE_CLEAR;
-        this.dataPacket(pk);
+        this.sendPacket(pk);
     }
 
     /**
-     * 为下一个显示的标题重新设置标题动画时间和副标题。
-     * <p>
      * Resets both title animation times and subtitle for the next shown title.
      */
     public void resetTitleSettings() {
         SetTitlePacket pk = new SetTitlePacket();
         pk.type = SetTitlePacket.TYPE_RESET;
-        this.dataPacket(pk);
+        this.sendPacket(pk);
     }
 
     /**
-     * 设置副标题，在主标题下方显示。
-     * <p>
      * Set subtitle to be displayed below the main title.
      *
-     * @param subtitle 副标题
+     * @param subtitle Subtitle
      */
     public void setSubtitle(String subtitle) {
         SetTitlePacket pk = new SetTitlePacket();
         pk.type = SetTitlePacket.TYPE_SUBTITLE;
         pk.text = subtitle;
-        this.dataPacket(pk);
+        this.sendPacket(pk);
     }
 
     /**
-     * 设置一个JSON文本副标题。
-     * <p>
      * Set a JSON text subtitle.
      *
-     * @param text JSON文本<br>JSON text
+     * @param text JSON text
      */
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
     public void setRawTextSubTitle(RawText text) {
         SetTitlePacket pk = new SetTitlePacket();
         pk.type = SetTitlePacket.TYPE_SUBTITLE_JSON;
         pk.text = text.toRawText();
-        this.dataPacket(pk);
+        this.sendPacket(pk);
     }
 
     /**
-     * 设置标题动画时间
-     * <p>
      * Set title animation time
      *
-     * @param fadein   淡入时间
-     * @param duration 持续时间
-     * @param fadeout  淡出时间
+     * @param fadein   fade-in time
+     * @param duration duration
+     * @param fadeout  fade-out time
      */
     public void setTitleAnimationTimes(int fadein, int duration, int fadeout) {
         SetTitlePacket pk = new SetTitlePacket();
@@ -3968,23 +2854,26 @@ public class Player extends EntityHuman
         pk.fadeInTime = fadein;
         pk.stayTime = duration;
         pk.fadeOutTime = fadeout;
-        this.dataPacket(pk);
+        this.sendPacket(pk);
     }
 
     /**
-     * 设置一个JSON文本标题。
-     * <p>
      * Set a JSON text title.
      *
-     * @param text JSON文本<br>JSON text
+     * @param text JSON text
      */
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
     public void setRawTextTitle(RawText text) {
         SetTitlePacket pk = new SetTitlePacket();
         pk.type = SetTitlePacket.TYPE_TITLE_JSON;
         pk.text = text.toRawText();
-        this.dataPacket(pk);
+        this.sendPacket(pk);
+    }
+
+    private void setTitle(String text) {
+        SetTitlePacket packet = new SetTitlePacket();
+        packet.text = text;
+        packet.type = SetTitlePacket.TYPE_TITLE;
+        this.sendPacket(packet);
     }
 
     /**
@@ -3993,7 +2882,7 @@ public class Player extends EntityHuman
      * @see #sendTitle(String, String, int, int, int)
      */
     public void sendTitle(String title) {
-        this.sendTitle(title, null, 20, 20, 5);
+        this.sendTitle(title, null);
     }
 
     /**
@@ -4006,15 +2895,13 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 在玩家视角正中央发送一个标题文本。
-     * <p>
      * Send a title text in the center of the player's view.
      *
-     * @param title    标题
-     * @param subtitle 副标题
-     * @param fadeIn   淡入时间<br>fadeIn time(tick)
-     * @param stay     持续时间<br>stay time
-     * @param fadeOut  淡出时间<br>fadeOut time
+     * @param title    title
+     * @param subtitle subtitle
+     * @param fadeIn   fade-in time(tick)
+     * @param stay     stay time
+     * @param fadeOut  fade-out time
      */
     public void sendTitle(String title, String subtitle, int fadeIn, int stay, int fadeOut) {
         this.setTitleAnimationTimes(fadeIn, stay, fadeOut);
@@ -4035,14 +2922,12 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 在玩家物品栏上方发送一个ActionBar消息。
-     * <p>
      * Send a ActionBar text above the player's item bar.
      *
-     * @param title    消息
-     * @param fadein   淡入时间
-     * @param duration 持续时间
-     * @param fadeout  淡出时间
+     * @param title    title
+     * @param fadein   fade-in time
+     * @param duration duration
+     * @param fadeout  fade-out time
      */
     public void sendActionBar(String title, int fadein, int duration, int fadeout) {
         SetTitlePacket pk = new SetTitlePacket();
@@ -4051,7 +2936,7 @@ public class Player extends EntityHuman
         pk.fadeInTime = fadein;
         pk.stayTime = duration;
         pk.fadeOutTime = fadeout;
-        this.dataPacket(pk);
+        this.sendPacket(pk);
     }
 
     /**
@@ -4059,24 +2944,18 @@ public class Player extends EntityHuman
      *
      * @see #setRawTextActionBar(RawText, int, int, int)
      */
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
     public void setRawTextActionBar(RawText text) {
         this.setRawTextActionBar(text, 1, 0, 1);
     }
 
     /**
-     * 设置一个JSON ActionBar消息。
-     * <p>
      * Set a JSON ActionBar text.
      *
-     * @param text     JSON文本<br>JSON text
-     * @param fadein   淡入时间
-     * @param duration 持续时间
-     * @param fadeout  淡出时间
+     * @param text     JSON text
+     * @param fadein   fade-in time
+     * @param duration duration
+     * @param fadeout  fade-out time
      */
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
     public void setRawTextActionBar(RawText text, int fadein, int duration, int fadeout) {
         SetTitlePacket pk = new SetTitlePacket();
         pk.type = SetTitlePacket.TYPE_ACTIONBAR_JSON;
@@ -4084,7 +2963,48 @@ public class Player extends EntityHuman
         pk.fadeInTime = fadein;
         pk.stayTime = duration;
         pk.fadeOutTime = fadeout;
-        this.dataPacket(pk);
+        this.sendPacket(pk);
+    }
+
+    public void sendJukeboxPopup(String message) {
+        TextPacket pk = new TextPacket();
+        pk.type = TextPacket.TYPE_JUKEBOX_POPUP;
+        pk.message = message;
+        this.sendPacket(pk);
+    }
+
+    public void sendWhisper(String message) {
+        this.sendWhisper("", message);
+    }
+
+    public void sendWhisper(String source, String message) {
+        TextPacket pk = new TextPacket();
+        pk.type = TextPacket.TYPE_WHISPER;
+        pk.source = source;
+        pk.message = message;
+        this.sendPacket(pk);
+    }
+
+    public void sendAnnouncement(String message) {
+        this.sendAnnouncement("", message);
+    }
+
+    public void sendAnnouncement(String source, String message) {
+        TextPacket pk = new TextPacket();
+        pk.type = TextPacket.TYPE_ANNOUNCEMENT;
+        pk.source = source;
+        pk.message = message;
+        this.sendPacket(pk);
+    }
+
+    /**
+     * Sends a toast message to the player, or queue to send it if a toast message is already shown.
+     */
+    public void sendToastNotification(String title, String body) {
+        ToastRequestPacket pk = new ToastRequestPacket();
+        pk.title = title;
+        pk.content = body;
+        this.sendPacket(pk);
     }
 
     @Override
@@ -4136,17 +3056,15 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 关闭该玩家的连接及其一切活动，和{@link #kick}差不多效果，区别在于{@link #kick}是基于{@code close}实现的。
-     * <p>
      * Closing the player's connection and all its activities is almost as function as {@link #kick}, the difference is that {@link #kick} is implemented based on {@code close}.
      *
-     * @param message PlayerQuitEvent事件消息<br>PlayerQuitEvent message
-     * @param reason  登出原因<br>Reason for logout
-     * @param notify  是否显示登出画面通知<br>Whether to display the logout screen notification
+     * @param message PlayerQuitEvent message
+     * @param reason  Reason for logout
+     * @param notify  Whether to display the logout screen notification
      */
     public void close(TextContainer message, String reason, boolean notify) {
-        if (this.connected && !this.closed) {
-            // 这里必须在玩家离线之前调用，否则无法将包发过去
+        if (this.isConnected() && !this.closed) {
+            // This must be called here before the player goes offline, otherwise the packet cannot be sent over
             var scoreboardManager = this.getServer().getScoreboardManager();
             // in test environment sometimes the scoreboard manager is null
             if (scoreboardManager != null) {
@@ -4156,10 +3074,10 @@ public class Player extends EntityHuman
             if (notify && reason.length() > 0) {
                 DisconnectPacket pk = new DisconnectPacket();
                 pk.message = reason;
-                this.dataPacketImmediately(pk);
+                this.sendPacketImmediately(pk);
             }
 
-            this.connected = false;
+            playerConnection.connected = false;
             PlayerQuitEvent event = null;
             if (this.getName() != null && this.getName().length() > 0) {
                 event = new PlayerQuitEvent(this, message, true, reason);
@@ -4171,14 +3089,14 @@ public class Player extends EntityHuman
 
             // Close the temporary windows first, so they have chance to change all inventories before being disposed
             this.removeAllWindows(false);
-            resetCraftingGridType();
+            this.resetCraftingGridType();
 
-            if (event != null && this.loggedIn && event.getAutoSave()) {
+            if (event != null && this.isLoggedIn() && event.getAutoSave()) {
                 this.save();
             }
 
             for (Player player :
-                    new ArrayList<>(this.server.playerManager.getOnlinePlayers().values())) {
+                    new ArrayList<>(server.getPlayerManager().getOnlinePlayers().values())) {
                 if (!player.canSee(this)) {
                     player.showPlayer(this);
                 }
@@ -4203,30 +3121,31 @@ public class Player extends EntityHuman
 
             super.close();
 
-            this.interfaz.close(this, notify ? reason : "");
+            this.sourceInterface.close(this, notify ? reason : "");
 
-            if (this.loggedIn) {
-                this.server.playerManager.removeOnlinePlayer(this);
+            if (this.isLoggedIn()) {
+                server.getPlayerManager().removeOnlinePlayer(this);
             }
 
-            this.loggedIn = false;
+            playerConnection.setLoggedIn(false);
 
             if (event != null
                     && !Objects.equals(this.username, "")
-                    && this.spawned
+                    && this.isSpawned()
                     && !Objects.equals(event.getQuitMessage().toString(), "")) {
                 this.server.broadcastMessage(event.getQuitMessage());
             }
 
             this.server.getPluginManager().unsubscribeFromPermission(Server.BROADCAST_CHANNEL_USERS, this);
-            this.spawned = false;
+            playerConnection.setSpawned(false);
+            ;
             log.info(this.getServer()
                     .getLanguage()
                     .tr(
                             "nukkit.player.logOut",
                             TextFormat.AQUA + (this.getName() == null ? "" : this.getName()) + TextFormat.WHITE,
-                            this.getAddress(),
-                            String.valueOf(this.getPort()),
+                            playerConnection.getAddress(),
+                            String.valueOf(playerConnection.getPort()),
                             this.getServer().getLanguage().tr(reason)));
             this.windows.clear();
             this.usedChunks.clear();
@@ -4252,7 +3171,7 @@ public class Player extends EntityHuman
 
         this.chunk = null;
 
-        this.server.playerManager.removePlayer(this);
+        server.getPlayerManager().removePlayer(this);
     }
 
     public void save() {
@@ -4322,7 +3241,7 @@ public class Player extends EntityHuman
             this.namedTag.putInt("playerGameType", gamemode.ordinal());
             this.namedTag.putLong("lastPlayed", System.currentTimeMillis() / 1000);
 
-            this.namedTag.putString("lastIP", this.getAddress());
+            this.namedTag.putString("lastIP", playerConnection.getAddress());
 
             this.namedTag.putInt("EXP", this.getExperience());
             this.namedTag.putInt("expLevel", this.getExperienceLevel());
@@ -4341,14 +3260,12 @@ public class Player extends EntityHuman
 
             this.namedTag.putInt("TimeSinceRest", this.timeSinceRest);
 
-            if (!this.username.isEmpty() && this.namedTag != null) {
-                this.server.playerManager.saveOfflinePlayerData(String.valueOf(this.uuid), this.namedTag, async);
+            if (!username.isEmpty() && this.namedTag != null) {
+                server.getPlayerManager().saveOfflinePlayerData(String.valueOf(this.uuid), this.namedTag, async);
             }
         }
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
         return "Player";
@@ -4359,15 +3276,13 @@ public class Player extends EntityHuman
         return this.username;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.60-r1")
     public LangCode getLanguageCode() {
-        return LangCode.valueOf(this.getLoginChainData().getLanguageCode());
+        return playerInfo.getLanguageCode();
     }
 
     @Override
     public void kill() {
-        if (!this.spawned) {
+        if (!this.isSpawned()) {
             return;
         }
 
@@ -4510,7 +3425,7 @@ public class Player extends EntityHuman
                 this,
                 this.getDrops(),
                 new TranslationContainer(message, params.toArray(EmptyArrays.EMPTY_STRINGS)),
-                this.expLevel);
+                this.experienceLevel);
         event.setKeepExperience(this.getLevel().gameRules.getBoolean(GameRule.KEEP_INVENTORY));
         event.setKeepInventory(event.getKeepExperience());
 
@@ -4560,7 +3475,7 @@ public class Player extends EntityHuman
 
             DeathInfoPacket deathInfo = new DeathInfoPacket();
             deathInfo.translation = event.getTranslationDeathMessage();
-            this.dataPacket(deathInfo);
+            this.sendPacket(deathInfo);
 
             if (showMessages && !event.getDeathMessage().toString().isEmpty()) {
                 this.server.broadcast(event.getDeathMessage(), Server.BROADCAST_CHANNEL_USERS);
@@ -4573,7 +3488,7 @@ public class Player extends EntityHuman
             pk.z = (float) pos.z();
             pk.respawnState = RespawnPacket.STATE_SEARCHING_FOR_SPAWN;
 
-            this.dataPacket(pk);
+            this.sendPacket(pk);
         }
     }
 
@@ -4588,11 +3503,11 @@ public class Player extends EntityHuman
         Attribute attr = Attribute.getAttribute(Attribute.MAX_HEALTH)
                 .setMaxValue(this.getAbsorption() % 2 != 0 ? this.getMaxHealth() + 1 : this.getMaxHealth())
                 .setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
-        if (this.spawned) {
+        if (this.isSpawned()) {
             UpdateAttributesPacket pk = new UpdateAttributesPacket();
             pk.entries = new Attribute[] {attr};
             pk.entityId = this.id;
-            this.dataPacket(pk);
+            this.sendPacket(pk);
         }
     }
 
@@ -4603,34 +3518,12 @@ public class Player extends EntityHuman
         Attribute attr = Attribute.getAttribute(Attribute.MAX_HEALTH)
                 .setMaxValue(this.getAbsorption() % 2 != 0 ? this.getMaxHealth() + 1 : this.getMaxHealth())
                 .setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
-        if (this.spawned) {
+        if (this.isSpawned()) {
             UpdateAttributesPacket pk = new UpdateAttributesPacket();
             pk.entries = new Attribute[] {attr};
             pk.entityId = this.id;
-            this.dataPacket(pk);
+            this.sendPacket(pk);
         }
-    }
-
-    /**
-     * 得到该玩家的经验值(并不会显示玩家从的经验值总数，而仅仅显示当前等级所在的经验值，即经验条)。
-     * <p>
-     * Get the experience value of the player (it does not show the total experience value of the player from, but only the experience value where the current level is, i.e. the experience bar).
-     *
-     * @return int
-     */
-    public int getExperience() {
-        return this.exp;
-    }
-
-    /**
-     * 得到该玩家的等级。
-     * <p>
-     * Get the level of the player.
-     *
-     * @return int
-     */
-    public int getExperienceLevel() {
-        return this.expLevel;
     }
 
     /**
@@ -4643,14 +3536,11 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 增加该玩家的经验值
-     * <p>
      * Increase the experience value of the player
      *
-     * @param add              经验值的数量
-     * @param playLevelUpSound 有无升级声音
+     * @param add              Number of experience values
+     * @param playLevelUpSound With or without upgrade sound
      */
-    @PowerNukkitOnly
     public void addExperience(int add, boolean playLevelUpSound) {
         if (add == 0) return;
         int now = this.getExperience();
@@ -4666,11 +3556,9 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 计算玩家到达某等级所需要的经验值
-     * <p>
      * Calculates the amount of experience a player needs to reach a certain level
      *
-     * @param level 等级
+     * @param level level
      * @return int
      */
     public static int calculateRequireExperience(int level) {
@@ -4702,16 +3590,13 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 设置该玩家的经验值和等级
-     * <p>
      * set the experience value and level of the player
      *
-     * @param playLevelUpSound 有无升级声音
-     * @param exp              经验值
-     * @param level            等级
+     * @param playLevelUpSound With or without upgrade sound
+     * @param exp              Experience value
+     * @param level            Level
      */
     // todo something on performance, lots of exp orbs then lots of packets, could crash client
-    @PowerNukkitOnly
     public void setExperience(int exp, int level, boolean playLevelUpSound) {
         PlayerExperienceChangeEvent expEvent =
                 new PlayerExperienceChangeEvent(this, this.getExperience(), this.getExperienceLevel(), exp, level);
@@ -4722,9 +3607,9 @@ public class Player extends EntityHuman
         exp = expEvent.getNewExperience();
         level = expEvent.getNewExperienceLevel();
 
-        int levelBefore = this.expLevel;
-        this.exp = exp;
-        this.expLevel = level;
+        int levelBefore = this.experienceLevel;
+        this.experience = exp;
+        this.experienceLevel = level;
 
         this.sendExperienceLevel(level);
         this.sendExperience(exp);
@@ -4752,14 +3637,12 @@ public class Player extends EntityHuman
     }
 
     /**
-     * setExperience的实现部分，用来设置当前等级所对应的经验值，即经验条
-     * <p>
      * The implementation of setExperience is used to set the experience value corresponding to the current level, i.e. the experience bar
      *
-     * @param exp 经验值
+     * @param exp Experience value
      */
     public void sendExperience(int exp) {
-        if (this.spawned) {
+        if (this.isSpawned()) {
             float percent = ((float) exp) / calculateRequireExperience(this.getExperienceLevel());
             percent = Math.max(0f, Math.min(1f, percent));
             this.setAttribute(Attribute.getAttribute(Attribute.EXPERIENCE).setValue(percent));
@@ -4774,21 +3657,17 @@ public class Player extends EntityHuman
     }
 
     /**
-     * setExperience的实现部分，用来设置当前等级
-     * <p>
      * The implementation of setExperience is used to set the level
      *
-     * @param level 等级
+     * @param level Level
      */
     public void sendExperienceLevel(int level) {
-        if (this.spawned) {
+        if (this.isSpawned()) {
             this.setAttribute(Attribute.getAttribute(Attribute.EXPERIENCE_LEVEL).setValue(level));
         }
     }
 
     /**
-     * 以指定{@link Attribute}发送UpdateAttributesPacket数据包到该玩家。
-     * <p>
      * Send UpdateAttributesPacket packets to this player with the specified {@link Attribute}.
      *
      * @param attribute the attribute
@@ -4797,7 +3676,7 @@ public class Player extends EntityHuman
         UpdateAttributesPacket pk = new UpdateAttributesPacket();
         pk.entries = new Attribute[] {attribute};
         pk.entityId = this.id;
-        this.dataPacket(pk);
+        this.sendPacket(pk);
     }
 
     /**
@@ -4811,36 +3690,29 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 设置该玩家的移动速度
-     * <p>
      * Set the movement speed of this player.
      *
-     * @param speed 速度大小，注意默认移动速度为{@link #DEFAULT_SPEED}<br>Speed value, note that the default movement speed is {@link #DEFAULT_SPEED}
-     * @param send  是否发送数据包{@link UpdateAttributesPacket}到客户端<br>Whether to send {@link UpdateAttributesPacket} to the client
+     * @param speed Speed value, note that the default movement speed is {@link #DEFAULT_SPEED}
+     * @param send  Whether to send {@link UpdateAttributesPacket} to the client
      */
     public void setMovementSpeed(float speed, boolean send) {
         super.setMovementSpeed(speed);
-        if (this.spawned && send) {
+        if (this.isSpawned() && send) {
             this.sendMovementSpeed(speed);
         }
     }
 
     /**
-     * 发送{@link Attribute#MOVEMENT_SPEED}属性到客户端
-     * <p>
      * Send {@link Attribute#MOVEMENT_SPEED} Attribute to Client.
      *
-     * @param speed 属性值<br>the speed value
+     * @param speed The speed value
      */
-    @Since("1.4.0.0-PN")
     public void sendMovementSpeed(float speed) {
         Attribute attribute = Attribute.getAttribute(Attribute.MOVEMENT_SPEED).setValue(speed);
         this.setAttribute(attribute);
     }
 
     /**
-     * 获取击杀该玩家的实体
-     * <p>
      * Get the entity that killed this player
      *
      * @return Entity | null
@@ -4875,19 +3747,19 @@ public class Player extends EntityHuman
         }
 
         if (super.attack(source)) { // !source.isCancelled()
-            if (this.getLastDamageCause() == source && this.spawned) {
+            if (this.getLastDamageCause() == source && this.isSpawned()) {
                 if (source instanceof EntityDamageByEntityEvent entityDamageByEntityEvent) {
                     Entity damager = entityDamageByEntityEvent.getDamager();
                     if (damager instanceof Player) {
                         ((Player) damager).getFoodData().updateFoodExpLevel(0.1);
                     }
-                    // 保存攻击玩家的实体在lastBeAttackEntity
+                    // Save the entity that attacked the player in the lastBeAttackEntity
                     this.lastBeAttackEntity = entityDamageByEntityEvent.getDamager();
                 }
                 EntityEventPacket pk = new EntityEventPacket();
                 pk.eid = this.id;
                 pk.event = EntityEventPacket.HURT_ANIMATION;
-                this.dataPacket(pk);
+                this.sendPacket(pk);
             }
             return true;
         } else {
@@ -4896,15 +3768,13 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 在玩家面前的地面上掉落一个物品。如果物品投放成功，则返回。
-     * <p>
      * Drops an item on the ground in front of the player. Returns if the item drop was successful.
      *
-     * @param item 掉落的物品<br>to drop
-     * @return 一个bool值，丢弃物品成功或该物品为空<br>bool if the item was dropped or if the item was null
+     * @param item To drop
+     * @return Bool if the item was dropped or if the item was null
      */
     public boolean dropItem(Item item) {
-        if (!this.spawned || !this.isAlive()) {
+        if (!this.isSpawned() || !this.isAlive()) {
             return false;
         }
 
@@ -4922,16 +3792,13 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 在玩家面前的地面上扔下一个物品。返回值为该掉落的物品。
-     * <p>
      * Drops an item on the ground in front of the player. Returns the dropped item.
      *
-     * @param item 掉落的物品<br>to drop
-     * @return 如果物品被丢弃成功，则返回EntityItem；如果物品为空，则为null<br>EntityItem if the item was dropped or null if the item was null
+     * @param item To drop
+     * @return EntityItem if the item was dropped or null if the item was null
      */
-    @Since("1.4.0.0-PN")
     @Nullable public EntityItem dropAndGetItem(@NotNull Item item) {
-        if (!this.spawned || !this.isAlive()) {
+        if (!this.isSpawned() || !this.isAlive()) {
             return null;
         }
 
@@ -4976,13 +3843,13 @@ public class Player extends EntityHuman
     }
 
     /**
-     * {@link Player#addMovement}的实现,仅发送{@link MovePlayerPacket}数据包到客户端
+     * Implementation of {@link Player#addMovement}, only sends {@link MovePlayerPacket} packets to the client.
      *
-     * @param pos     the pos of MovePlayerPacket
-     * @param yaw     the yaw of MovePlayerPacket
-     * @param pitch   the pitch of MovePlayerPacket
-     * @param mode    the mode of MovePlayerPacket
-     * @param targets 接受数据包的玩家们<br>players of receive the packet
+     * @param pos     The pos of MovePlayerPacket
+     * @param yaw     The yaw of MovePlayerPacket
+     * @param pitch   The pitch of MovePlayerPacket
+     * @param mode    The mode of MovePlayerPacket
+     * @param targets Players of receive the packet
      */
     public void sendPosition(Vector3 pos, double yaw, double pitch, int mode, Player[] targets) {
         MovePlayerPacket pk = new MovePlayerPacket();
@@ -4999,26 +3866,26 @@ public class Player extends EntityHuman
             pk.ridingEid = this.riding.getId();
             pk.mode = MovePlayerPacket.MODE_PITCH;
         }
-
         if (targets != null) {
             Server.broadcastPacket(targets, pk);
         } else {
-            this.dataPacket(pk);
+            this.sendPacket(pk);
         }
     }
 
     @Override
-    public boolean teleport(Location location, TeleportCause cause) {
+    public boolean teleport(Location to, TeleportCause cause) {
         if (!this.isOnline()) {
             return false;
         }
         Location from = this.getLocation();
-        Location to = location;
         // event
         if (cause != null) {
             PlayerTeleportEvent event = new PlayerTeleportEvent(this, from, to, cause);
             event.call();
-            if (event.isCancelled()) return false;
+            if (event.isCancelled()) {
+                return false;
+            }
             to = event.getTo();
         }
         // remove inventory
@@ -5035,7 +3902,7 @@ public class Player extends EntityHuman
         }
         this.setMotion(this.temporalVector.setComponents(0, 0, 0));
         // switch level, update pos and rotation, update aabb
-        if (setPositionAndRotation(to, to.yaw(), to.pitch(), to.headYaw())) {
+        if (this.setPositionAndRotation(to, to.yaw(), to.pitch(), to.headYaw())) {
             this.resetFallDistance();
             this.onGround = !this.noClip;
             // send to client
@@ -5054,39 +3921,24 @@ public class Player extends EntityHuman
         this.getLevel().sendWeather(this);
         // Update time
         this.getLevel().sendTime(this);
-        updateTrackingPositions(true);
+        this.updateTrackingPositions(true);
         // Update gamemode
-        if (isSpectator()) {
+        if (this.isSpectator()) {
             this.setGamemode(gamemode, false, true);
         }
         return true;
     }
 
-    @Deprecated
-    @DeprecationDetails(since = "1.19.60-r1", reason = "same teleport")
-    public void teleportImmediate(Location location) {
-        this.teleportImmediate(location, TeleportCause.PLUGIN);
-    }
-
-    @Deprecated
-    @DeprecationDetails(since = "1.19.60-r1", reason = "same teleport")
-    public void teleportImmediate(Location location, TeleportCause cause) {
-        this.teleport(location, cause);
-    }
-
     /**
      * Automatic id assignment
      *
-     * @see #showFormWindow(FormWindow, int)
+     * @see #sendForm(FormWindow, int)
      */
-    public int showFormWindow(FormWindow window) {
-        return showFormWindow(window, this.formWindowCount++);
+    public int sendForm(FormWindow window) {
+        return sendForm(window, this.formWindowCount++);
     }
 
     /**
-     * 向玩家显示一个新的FormWindow。
-     * 你可以通过监听PlayerFormRespondedEvent来了解FormWindow的结果。
-     * <p>
      * Shows a new FormWindow to the player
      * You can find out FormWindow result by listening to PlayerFormRespondedEvent
      *
@@ -5094,7 +3946,7 @@ public class Player extends EntityHuman
      * @param id     form id
      * @return form id to use in {@link PlayerFormRespondedEvent}
      */
-    public int showFormWindow(FormWindow window, int id) {
+    public int sendForm(FormWindow window, int id) {
         if (this.formWindows.size() > 100) {
             this.kick("Possible DoS vulnerability: More Than 10 FormWindow sent to client already.");
             return id;
@@ -5104,28 +3956,26 @@ public class Player extends EntityHuman
         packet.data = window.getJSONData();
         this.formWindows.put(packet.formId, window);
 
-        this.dataPacket(packet);
+        this.sendPacket(packet);
         return id;
     }
 
     /**
      * book=true
      *
-     * @see #showDialogWindow(FormWindowDialog, boolean)
+     * @see #sendDialog(FormWindowDialog, boolean)
      */
-    public void showDialogWindow(FormWindowDialog dialog) {
-        showDialogWindow(dialog, true);
+    public void sendDialog(FormWindowDialog dialog) {
+        sendDialog(dialog, true);
     }
 
     /**
-     * 向玩家展示一个NPC对话框.
-     * <p>
      * Show dialog window to the player.
      *
-     * @param dialog NPC对话框<br>the dialog
-     * @param book   如果为true,将会立即更新该{@link FormWindowDialog#getSceneName()}<br>If true, the {@link FormWindowDialog#getSceneName()} will be updated immediately.
+     * @param dialog The dialog
+     * @param book   If true, the {@link FormWindowDialog#getSceneName()} will be updated immediately.
      */
-    public void showDialogWindow(FormWindowDialog dialog, boolean book) {
+    public void sendDialog(FormWindowDialog dialog, boolean book) {
         String actionJson = dialog.getButtonJSONData();
 
         if (book && dialogWindows.getIfPresent(dialog.getSceneName()) != null) dialog.updateSceneName();
@@ -5142,13 +3992,10 @@ public class Player extends EntityHuman
         if (book) packet.setSceneName(dialog.getSceneName());
         packet.setActionJson(dialog.getButtonJSONData());
         if (book) this.dialogWindows.put(dialog.getSceneName(), dialog);
-        this.dataPacket(packet);
+        this.sendPacket(packet);
     }
 
     /**
-     * 在游戏设置中显示一个新的设置页面。
-     * 你可以通过监听PlayerFormRespondedEvent来了解设置结果。
-     * <p>
      * Shows a new setting page in game settings.
      * You can find out settings result by listening to PlayerFormRespondedEvent
      *
@@ -5163,28 +4010,10 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 创建并发送一个BossBar给玩家。
-     * <p>
      * Creates and sends a BossBar to the player
      *
-     * @param text   BossBar信息<br>The BossBar message
-     * @param length BossBar百分比<br>The BossBar percentage
-     * @return bossBarId BossBar的ID，如果你想以后删除或更新BossBar，你应该存储它。<br>bossBarId The BossBar ID, you should store it if you want to remove or update the BossBar later
-     */
-    @Deprecated
-    public long createBossBar(String text, int length) {
-        DummyBossBar bossBar =
-                new DummyBossBar.Builder(this).text(text).length(length).build();
-        return this.createBossBar(bossBar);
-    }
-
-    /**
-     * 创建并发送一个BossBar给玩家。
-     * <p>
-     * Creates and sends a BossBar to the player
-     *
-     * @param dummyBossBar DummyBossBar对象（通过{@link DummyBossBar.Builder}实例化）。<br>DummyBossBar Object (Instantiate it by the Class Builder)
-     * @return bossBarId BossBar的ID，如果你想以后删除或更新BossBar，你应该储存它。<br>bossBarId  The BossBar ID, you should store it if you want to remove or update the BossBar later
+     * @param dummyBossBar DummyBossBar Object (Instantiate it by the Class Builder)
+     * @return bossBarId  The BossBar ID, you should store it if you want to remove or update the BossBar later
      * @see DummyBossBar.Builder
      */
     public long createBossBar(DummyBossBar dummyBossBar) {
@@ -5194,12 +4023,10 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 获取一个DummyBossBar对象
-     * <p>
      * Get a DummyBossBar object
      *
-     * @param bossBarId 要查找的BossBar ID<br>The BossBar ID
-     * @return DummyBossBar对象<br>DummyBossBar object
+     * @param bossBarId The BossBar ID
+     * @return DummyBossBar object
      * @see DummyBossBar#setText(String) Set BossBar text
      * @see DummyBossBar#setLength(float) Set BossBar length
      * @see DummyBossBar#setColor(BossBarColor) Set BossBar color
@@ -5209,8 +4036,6 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 获取所有DummyBossBar对象
-     * <p>
      * Get all DummyBossBar objects
      *
      * @return DummyBossBars Map
@@ -5220,8 +4045,6 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 更新一个BossBar
-     * <p>
      * Updates a BossBar
      *
      * @param text      The new BossBar message
@@ -5238,8 +4061,6 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 移除一个BossBar
-     * <p>
      * Removes a BossBar
      *
      * @param bossBarId The BossBar ID
@@ -5252,8 +4073,6 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 获取id从指定{@link Inventory}
-     * <p>
      * Get id from the specified {@link Inventory}
      *
      * @param inventory the inventory
@@ -5268,11 +4087,9 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 获取{@link Inventory}从指定id
-     * <p>
      * Get {@link Inventory} from the specified id
      *
-     * @param id 窗口id<br>the window id
+     * @param id The window id
      */
     public Inventory getWindowById(int id) {
         return this.windowIndex.get(id);
@@ -5284,7 +4101,7 @@ public class Player extends EntityHuman
      * @see #addWindow(Inventory, Integer, boolean, boolean)
      */
     public int addWindow(Inventory inventory) {
-        return this.addWindow(inventory, null);
+        return addWindow(inventory, null);
     }
 
     /**
@@ -5306,15 +4123,14 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 添加一个{@link Inventory}窗口显示到该玩家
+     * Add a {@link Inventory} window to display to this player
      *
-     * @param inventory   这个库存窗口<br>the inventory
-     * @param forceId     强制指定window id,若和现有window重复将会删除它并替换,为null则自动分配<br>Force the window id to be specified, if it is duplicated with an existing window, it will be deleted and replaced,if is null is automatically assigned.
-     * @param isPermanent 如果为true将会把Inventory存放到{@link #permanentWindows}<br>If true it will store the Inventory in {@link #permanentWindows}
-     * @param alwaysOpen  如果为true即使玩家未{@link #spawned}也会添加改玩家为指定inventory的viewer<br>If true, even if the player is not {@link #spawned}, it will add the player as viewer to the specified inventory.
-     * @return 返回窗口id，可以利用id通过{@link #windowIndex}重新获取该Inventory<br>Return the window id, you can use the id to retrieve the Inventory via {@link #windowIndex}
+     * @param inventory   The inventory
+     * @param forceId     Force the window id to be specified, if it is duplicated with an existing window, it will be deleted and replaced,if is null is automatically assigned.
+     * @param isPermanent If true it will store the Inventory in {@link #permanentWindows}
+     * @param alwaysOpen  If true, even if the player is not {@link #isSpawned}, it will add the player as viewer to the specified inventory.
+     * @return Return the window id, you can use the id to retrieve the Inventory via {@link #windowIndex}
      */
-    @Since("1.4.0.0-PN")
     public int addWindow(Inventory inventory, Integer forceId, boolean isPermanent, boolean alwaysOpen) {
         if (this.windows.containsKey(inventory)) {
             return this.windows.get(inventory);
@@ -5331,7 +4147,7 @@ public class Player extends EntityHuman
             this.permanentWindows.add(cnt);
         }
 
-        if (this.spawned && inventory.open(this)) {
+        if (this.isSpawned() && inventory.open(this)) {
             if (!isPermanent) {
                 updateTrackingPositions(true);
             }
@@ -5361,8 +4177,6 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 移除该玩家身上的指定Inventory
-     * <p>
      * Remove the specified Inventory from the player
      *
      * @param inventory the inventory
@@ -5372,8 +4186,6 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 常用于刷新。
-     * <p>
      * Commonly used for refreshing.
      */
     public void sendAllInventories() {
@@ -5388,35 +4200,13 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 获取该玩家的{@link PlayerUIInventory}
-     * <p>
-     * Gets ui inventory of the player.
-     */
-    public PlayerUIInventory getUIInventory() {
-        return playerUIInventory;
-    }
-
-    /**
-     * 获取该玩家的{@link PlayerCursorInventory}
-     * <p>
      * Gets cursor inventory of the player.
      */
     public PlayerCursorInventory getCursorInventory() {
-        return this.playerUIInventory.getCursorInventory();
+        return this.getUIInventory().getCursorInventory();
     }
 
     /**
-     * 获取该玩家的{@link CraftingGrid}
-     * <p>
-     * Gets crafting grid of the player.
-     */
-    public CraftingGrid getCraftingGrid() {
-        return this.craftingGrid;
-    }
-
-    /**
-     * 设置该玩家的{@link CraftingGrid}
-     * <p>
      * Sets crafting grid.
      *
      * @param grid {@link CraftingGrid}
@@ -5447,16 +4237,11 @@ public class Player extends EntityHuman
                 }
             }
 
-            this.playerUIInventory.clearAll();
+            this.getUIInventory().clearAll();
 
             if (this.craftingGrid instanceof BigCraftingGrid) {
-                this.craftingGrid = this.playerUIInventory.getCraftingGrid();
+                this.craftingGrid = this.getUIInventory().getCraftingGrid();
                 this.addWindow(this.craftingGrid, ContainerIds.NONE);
-                //
-                //                ContainerClosePacket pk = new ContainerClosePacket(); //be sure, big crafting is
-                // really closed
-                //                pk.windowId = ContainerIds.NONE;
-                //                this.dataPacket(pk);
             }
 
             this.craftingType = CRAFTING_SMALL;
@@ -5473,11 +4258,9 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 清空{@link #windows}
-     * <p>
      * Remove all windows.
      *
-     * @param permanent 如果为false则会跳过删除{@link #permanentWindows}里面对应的window<br>If false, it will skip deleting the corresponding window in {@link #permanentWindows}
+     * @param permanent If false, it will skip deleting the corresponding window in {@link #permanentWindows}
      */
     public void removeAllWindows(boolean permanent) {
         for (Entry<Integer, Inventory> entry : new ArrayList<>(this.windowIndex.entrySet())) {
@@ -5486,16 +4269,6 @@ public class Player extends EntityHuman
             }
             this.removeWindow(entry.getValue());
         }
-    }
-
-    /**
-     * 获取上一个关闭窗口对应的id
-     * <p>
-     * Get the id corresponding to the last closed window
-     */
-    @Since("1.4.0.0-PN")
-    public int getClosingWindowId() {
-        return this.closingWindowId;
     }
 
     @Override
@@ -5534,11 +4307,6 @@ public class Player extends EntityHuman
 
     @Override
     public void onBlockChanged(Vector3 block) {}
-
-    @Override
-    public int getLoaderId() {
-        return this.loaderId;
-    }
 
     @Override
     public boolean isLoaderActive() {
@@ -5582,32 +4350,10 @@ public class Player extends EntityHuman
     }
 
     /**
-     * @return 该玩家是否开启饮食系统<br>Whether the player is on the food system
+     * @return Whether the player is on the food system
      */
     public boolean isFoodEnabled() {
         return !(this.isCreative() || this.isSpectator()) && this.foodEnabled;
-    }
-
-    /**
-     * 设置该玩家是否开启饮食系统
-     * <p>
-     * Set whether the player is on the food system
-     *
-     * @param foodEnabled 如果为false,则关闭玩家的饮食系统<br>If false, turn off the player's food system
-     */
-    public void setFoodEnabled(boolean foodEnabled) {
-        this.foodEnabled = foodEnabled;
-    }
-
-    /**
-     * 获取玩家的{@link PlayerFood}
-     * <p>
-     * Get the player's {@link PlayerFood}
-     *
-     * @return the food data
-     */
-    public PlayerFood getFoodData() {
-        return this.foodData;
     }
 
     @Override
@@ -5621,7 +4367,7 @@ public class Player extends EntityHuman
             spawnPosition.y = spawn.getFloorY();
             spawnPosition.z = spawn.getFloorZ();
             spawnPosition.dimension = spawn.getLevel().getDimension();
-            this.dataPacket(spawnPosition);
+            this.sendPacket(spawnPosition);
 
             // Remove old chunks
             for (long index : new ArrayList<>(this.usedChunks.keySet())) {
@@ -5633,11 +4379,11 @@ public class Player extends EntityHuman
 
             SetTimePacket setTime = new SetTimePacket();
             setTime.time = level.getTime();
-            this.dataPacket(setTime);
+            this.sendPacket(setTime);
 
             GameRulesChangedPacket gameRulesChanged = new GameRulesChangedPacket();
             gameRulesChanged.gameRules = level.getGameRules();
-            this.dataPacket(gameRulesChanged);
+            this.sendPacket(gameRulesChanged);
 
             if (oldLevel.getDimension() != level.getDimension()) {
                 this.setDimension(level.getDimension());
@@ -5647,24 +4393,6 @@ public class Player extends EntityHuman
         }
 
         return false;
-    }
-
-    /**
-     * 设置是否检查该玩家移动
-     * <p>
-     * Set whether to check for this player movement
-     *
-     * @param checkMovement the check movement
-     */
-    public void setCheckMovement(boolean checkMovement) {
-        this.checkMovement = checkMovement;
-    }
-
-    /**
-     * @since 1.2.1.0-PN
-     */
-    public boolean isCheckingMovement() {
-        return this.checkMovement;
     }
 
     public synchronized Locale getLocale() {
@@ -5690,34 +4418,21 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 传送该玩家到另一个服务器
-     * <p>
-     * Teleport the player to another server
+     * Transfers a player to another server
      *
-     * @param address the address
+     * @param address The address
+     * @param port The port
      */
-    public void transfer(InetSocketAddress address) {
-        String hostName = address.getAddress().getHostAddress();
-        int port = address.getPort();
-        TransferPacket pk = new TransferPacket();
-        pk.address = hostName;
-        pk.port = port;
-        this.dataPacket(pk);
-    }
-
-    /**
-     * 获取该玩家的登录链数据
-     * <p>
-     * Get the login chain data of this player
-     *
-     * @return the login chain data
-     */
-    public LoginChainData getLoginChainData() {
-        return this.loginChainData;
+    public void transfer(String address, int port) {
+        PlayerTransferEvent event = new PlayerTransferEvent(this, address, port);
+        event.call();
+        if (!event.isCancelled()) {
+            playerConnection.transfer(event.getAddress(), event.getPort());
+        }
     }
 
     public boolean pickupEntity(Entity entity, boolean near) {
-        if (!this.spawned || !this.isAlive() || !this.isOnline() || this.isSpectator() || entity.isClosed()) {
+        if (!this.isSpawned() || !this.isAlive() || !this.isOnline() || this.isSpectator() || entity.isClosed()) {
             return false;
         }
 
@@ -5752,7 +4467,7 @@ public class Player extends EntityHuman
                 pk.entityId = this.getId();
                 pk.target = entity.getId();
                 Server.broadcastPacket(entity.getViewers().values(), pk);
-                this.dataPacket(pk);
+                this.sendPacket(pk);
 
                 if (!this.isCreative()) {
                     inventory.addItem(item.clone());
@@ -5798,7 +4513,7 @@ public class Player extends EntityHuman
                 pk.entityId = this.getId();
                 pk.target = entity.getId();
                 Server.broadcastPacket(entity.getViewers().values(), pk);
-                this.dataPacket(pk);
+                this.sendPacket(pk);
 
                 if (!((EntityThrownTrident) entity).isCreative()) {
                     if (inventory
@@ -5831,7 +4546,7 @@ public class Player extends EntityHuman
                         pk.entityId = this.getId();
                         pk.target = entity.getId();
                         Server.broadcastPacket(entity.getViewers().values(), pk);
-                        this.dataPacket(pk);
+                        this.sendPacket(pk);
 
                         this.inventory.addItem(item.clone());
                         entity.close();
@@ -5902,19 +4617,15 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 玩家是否在挖掘方块
-     * <p>
      * Whether the player is digging block
      *
      * @return the boolean
      */
     public boolean isBreakingBlock() {
-        return this.breakingBlock != null;
+        return playerHandle.isBreakingBlock();
     }
 
     /**
-     * 显示一个XBOX账户的资料窗口
-     * <p>
      * Show a window of a XBOX account's profile
      *
      * @param xuid XUID
@@ -5922,7 +4633,7 @@ public class Player extends EntityHuman
     public void showXboxProfile(String xuid) {
         ShowProfilePacket pk = new ShowProfilePacket();
         pk.xuid = xuid;
-        this.dataPacket(pk);
+        this.sendPacket(pk);
     }
 
     /**
@@ -5981,14 +4692,6 @@ public class Player extends EntityHuman
         return !this.isSpectator();
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public int getNoShieldTicks() {
-        return noShieldTicks;
-    }
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public void setNoShieldTicks(int noShieldTicks) {
         this.noShieldTicks = noShieldTicks;
     }
@@ -5999,171 +4702,38 @@ public class Player extends EntityHuman
     }
 
     /**
-     * 将物品添加到玩家的主要库存中，并将任何多余的物品丢在地上。
-     * <p>
      * Adds the items to the main player inventory and drops on the floor any excess.
      *
      * @param items The items to give to the player.
      */
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public void giveItem(Item... items) {
         for (Item failed : getInventory().addItem(items)) {
             getLevel().dropItem(this, failed);
         }
     }
 
-    @Since("1.4.0.0-PN")
-    public int getTimeSinceRest() {
-        return timeSinceRest;
-    }
-
-    @Since("1.4.0.0-PN")
-    public void setTimeSinceRest(int timeSinceRest) {
-        this.timeSinceRest = timeSinceRest;
-    }
-
-    @Since("1.19.30-r1")
-    @PowerNukkitXOnly
-    public NetworkPlayerSession getNetworkSession() {
-        return this.networkSession;
-    }
-
-    // TODO: Support Translation Parameters
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public void sendPopupJukebox(String message) {
-        TextPacket pk = new TextPacket();
-        pk.type = TextPacket.TYPE_JUKEBOX_POPUP;
-        pk.message = message;
-        this.dataPacket(pk);
-    }
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public void sendSystem(String message) {
-        TextPacket pk = new TextPacket();
-        pk.type = TextPacket.TYPE_SYSTEM;
-        pk.message = message;
-        this.dataPacket(pk);
-    }
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public void sendWhisper(String message) {
-        this.sendWhisper("", message);
-    }
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public void sendWhisper(String source, String message) {
-        TextPacket pk = new TextPacket();
-        pk.type = TextPacket.TYPE_WHISPER;
-        pk.source = source;
-        pk.message = message;
-        this.dataPacket(pk);
-    }
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public void sendAnnouncement(String message) {
-        this.sendAnnouncement("", message);
-    }
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public void sendAnnouncement(String source, String message) {
-        TextPacket pk = new TextPacket();
-        pk.type = TextPacket.TYPE_ANNOUNCEMENT;
-        pk.source = source;
-        pk.message = message;
-        this.dataPacket(pk);
-    }
-
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
     public void completeUsingItem(int itemId, int action) {
         CompletedUsingItemPacket pk = new CompletedUsingItemPacket();
         pk.itemId = itemId;
         pk.action = action;
-        this.dataPacket(pk);
+        this.sendPacket(pk);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public boolean isShowingCredits() {
-        return showingCredits;
-    }
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public void setShowingCredits(boolean showingCredits) {
         this.showingCredits = showingCredits;
         if (showingCredits) {
             ShowCreditsPacket pk = new ShowCreditsPacket();
             pk.eid = this.getId();
             pk.status = ShowCreditsPacket.STATUS_START_CREDITS;
-            this.dataPacket(pk);
+            this.sendPacket(pk);
         }
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public void showCredits() {
         this.setShowingCredits(true);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public boolean hasSeenCredits() {
-        return showingCredits;
-    }
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public void setHasSeenCredits(boolean hasSeenCredits) {
-        this.hasSeenCredits = hasSeenCredits;
-    }
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public boolean dataPacketImmediately(DataPacket packet) {
-        if (!this.connected) {
-            return false;
-        }
-        DataPacketSendEvent event = new DataPacketSendEvent(this, packet);
-        event.call();
-        if (event.isCancelled()) {
-            return false;
-        }
-        if (log.isTraceEnabled() && !server.isIgnoredPacket(packet.getClass())) {
-            log.trace("Immediate Outbound {}: {}", this.getName(), packet);
-        }
-        this.getNetworkSession().sendImmediatePacket(packet);
-        return true;
-    }
-
-    @PowerNukkitOnly
-    @Since("1.5.2.0-PN")
-    public boolean dataResourcePacket(DataPacket packet) {
-        if (!this.connected) {
-            return false;
-        }
-        DataPacketSendEvent event = new DataPacketSendEvent(this, packet);
-        event.call();
-        if (event.isCancelled()) {
-            return false;
-        }
-        if (log.isTraceEnabled() && !server.isIgnoredPacket(packet.getClass())) {
-            log.trace("Resource Outbound {}: {}", this.getName(), packet);
-        }
-        this.interfaz.putResourcePacket(this, packet);
-        return true;
-    }
-
     /**
-     * 玩家屏幕振动效果
-     * <p>
      * Player screen shake effect
      *
      * @param intensity   the intensity
@@ -6171,8 +4741,6 @@ public class Player extends EntityHuman
      * @param shakeType   the shake type
      * @param shakeAction the shake action
      */
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
     public void shakeCamera(
             float intensity,
             float duration,
@@ -6183,50 +4751,29 @@ public class Player extends EntityHuman
         packet.duration = duration;
         packet.shakeType = shakeType;
         packet.shakeAction = shakeAction;
-        this.dataPacket(packet);
+        this.sendPacket(packet);
     }
 
     /**
-     * 设置指定itemCategory物品的冷却显示效果，注意该方法仅为客户端显示效果，冷却逻辑实现仍需自己实现
-     * <p>
      * Set the cooling display effect of the specified itemCategory items, note that this method is only for client-side display effect, cooling logic implementation still needs to be implemented by itself
      *
      * @param coolDown     the cool down
      * @param itemCategory the item category
      */
-    @PowerNukkitXOnly
-    @Since("1.19.21-r4")
     public void setItemCoolDown(int coolDown, String itemCategory) {
         var pk = new PlayerStartItemCoolDownPacket();
         pk.setCoolDownDuration(coolDown);
         pk.setItemCategory(itemCategory);
-        this.dataPacket(pk);
+        this.sendPacket(pk);
     }
 
-    /**
-     * 发送一个下弹消息框给玩家
-     * <p>
-     * Send a Toast message box to the player
-     *
-     * @param title   the title
-     * @param content the content
-     */
-    public void sendToast(String title, String content) {
-        ToastRequestPacket pk = new ToastRequestPacket();
-        pk.title = title;
-        pk.content = content;
-        this.dataPacket(pk);
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.30-r1")
     @Override
     public void removeLine(IScoreboardLine line) {
         SetScorePacket packet = new SetScorePacket();
         packet.action = SetScorePacket.Action.REMOVE;
         var networkInfo = line.toNetworkInfo();
         if (networkInfo != null) packet.infos.add(networkInfo);
-        this.dataPacket(packet);
+        this.sendPacket(packet);
 
         var scorer = new PlayerScorer(this);
         if (line.getScorer().equals(scorer)
@@ -6235,15 +4782,13 @@ public class Player extends EntityHuman
         }
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.30-r1")
     @Override
     public void updateScore(IScoreboardLine line) {
         SetScorePacket packet = new SetScorePacket();
         packet.action = SetScorePacket.Action.SET;
         var networkInfo = line.toNetworkInfo();
         if (networkInfo != null) packet.infos.add(networkInfo);
-        this.dataPacket(packet);
+        this.sendPacket(packet);
 
         var scorer = new PlayerScorer(this);
         if (line.getScorer().equals(scorer)
@@ -6252,8 +4797,6 @@ public class Player extends EntityHuman
         }
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.30-r1")
     @Override
     public void display(IScoreboard scoreboard, DisplaySlot slot) {
         SetDisplayObjectivePacket pk = new SetDisplayObjectivePacket();
@@ -6262,7 +4805,7 @@ public class Player extends EntityHuman
         pk.displayName = scoreboard.getDisplayName();
         pk.criteriaName = scoreboard.getCriteriaName();
         pk.sortOrder = scoreboard.getSortOrder();
-        this.dataPacket(pk);
+        this.sendPacket(pk);
 
         // client won't storage the score of a scoreboard,so we should send the score to client
         SetScorePacket pk2 = new SetScorePacket();
@@ -6271,7 +4814,7 @@ public class Player extends EntityHuman
                 .filter(line -> line != null)
                 .collect(Collectors.toList());
         pk2.action = SetScorePacket.Action.SET;
-        this.dataPacket(pk2);
+        this.sendPacket(pk2);
 
         var scorer = new PlayerScorer(this);
         var line = scoreboard.getLine(scorer);
@@ -6280,8 +4823,6 @@ public class Player extends EntityHuman
         }
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.30-r1")
     @Override
     public void hide(DisplaySlot slot) {
         SetDisplayObjectivePacket pk = new SetDisplayObjectivePacket();
@@ -6290,7 +4831,7 @@ public class Player extends EntityHuman
         pk.displayName = "";
         pk.criteriaName = "";
         pk.sortOrder = SortOrder.ASCENDING;
-        this.dataPacket(pk);
+        this.sendPacket(pk);
 
         if (slot == DisplaySlot.BELOW_NAME) {
             this.setScoreTag("");
@@ -6302,26 +4843,16 @@ public class Player extends EntityHuman
         RemoveObjectivePacket pk = new RemoveObjectivePacket();
         pk.objectiveName = scoreboard.getObjectiveName();
 
-        this.dataPacket(pk);
+        this.sendPacket(pk);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.20.0-r1")
     public Boolean isOpenSignFront() {
         return openSignFront;
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.20.0-r1")
-    public void setOpenSignFront(Boolean frontSide) {
-        openSignFront = frontSide;
     }
 
     /**
      * Opens the player's sign editor GUI for the sign at the given position.
      */
-    @PowerNukkitXOnly
-    @Since("1.20.0-r1")
     public void openSignEditor(Vector3 position, boolean frontSide) {
         if (openSignFront == null) {
             BlockEntity blockEntity = this.getLevel().getBlockEntity(position);
@@ -6331,7 +4862,7 @@ public class Player extends EntityHuman
                     OpenSignPacket openSignPacket = new OpenSignPacket();
                     openSignPacket.setPosition(position.asBlockVector3());
                     openSignPacket.setFrontSide(frontSide);
-                    this.dataPacket(openSignPacket);
+                    this.sendPacket(openSignPacket);
                     setOpenSignFront(frontSide);
                 }
             } else {

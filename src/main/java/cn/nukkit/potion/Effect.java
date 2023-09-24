@@ -326,7 +326,7 @@ public class Effect implements Cloneable {
                 pk.eventId = MobEffectPacket.EVENT_ADD;
             }
 
-            player.dataPacket(pk);
+            player.sendPacket(pk);
 
             if (this.id == Effect.SPEED && (oldEffect == null || oldEffect.amplifier != this.amplifier)) {
                 if (oldEffect != null) {
@@ -384,7 +384,7 @@ public class Effect implements Cloneable {
                 pk.effectId = this.getId();
                 pk.eventId = MobEffectPacket.EVENT_REMOVE;
 
-                player.dataPacket(pk);
+                player.sendPacket(pk);
             }
 
             if (this.id == Effect.SPEED) {

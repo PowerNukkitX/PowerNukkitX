@@ -19,10 +19,11 @@ import cn.nukkit.player.PlayerHandle;
 import org.jetbrains.annotations.NotNull;
 
 public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInputPacket> {
+
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull PlayerAuthInputPacket pk) {
-        Player player = playerHandle.player;
-        if (!player.locallyInitialized) return;
+        Player player = playerHandle.getPlayer();
+        if (!player.isLocallyInitialized()) return;
         if (!pk.getBlockActionData().isEmpty()) {
             for (PlayerBlockActionData action : pk.getBlockActionData().values()) {
                 // hack 自从1.19.70开始，创造模式剑客户端不会发送PREDICT_DESTROY_BLOCK，但仍然发送START_DESTROY_BLOCK，过滤掉
@@ -37,7 +38,7 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
                 if (playerHandle.getLastBlockAction() != null
                         && playerHandle.getLastBlockAction().getAction() == PlayerActionType.PREDICT_DESTROY_BLOCK
                         && action.getAction() == PlayerActionType.CONTINUE_DESTROY_BLOCK) {
-                    playerHandle.onBlockBreakStart(blockPos.asVector3(), blockFace);
+                    playerHandle.handleBlockBreakStart(blockPos.asVector3(), blockFace);
                 }
 
                 BlockVector3 lastBreakPos = playerHandle.getLastBlockAction() == null
@@ -47,26 +48,26 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
                         && (lastBreakPos.getX() != blockPos.getX()
                                 || lastBreakPos.getY() != blockPos.getY()
                                 || lastBreakPos.getZ() != blockPos.getZ())) {
-                    playerHandle.onBlockBreakAbort(lastBreakPos.asVector3(), BlockFace.DOWN);
-                    playerHandle.onBlockBreakStart(blockPos.asVector3(), blockFace);
+                    playerHandle.handleBlockBreakAbort(lastBreakPos.asVector3(), BlockFace.DOWN);
+                    playerHandle.handleBlockBreakStart(blockPos.asVector3(), blockFace);
                 }
 
                 switch (action.getAction()) {
                     case START_DESTROY_BLOCK:
-                        playerHandle.onBlockBreakStart(blockPos.asVector3(), blockFace);
+                        playerHandle.handleBlockBreakStart(blockPos.asVector3(), blockFace);
                         break;
                     case ABORT_DESTROY_BLOCK:
                     case STOP_DESTROY_BLOCK:
-                        playerHandle.onBlockBreakAbort(blockPos.asVector3(), blockFace);
+                        playerHandle.handleBlockBreakAbort(blockPos.asVector3(), blockFace);
                         break;
                     case CONTINUE_DESTROY_BLOCK: // 破坏完一个方块后接着破坏下一个方块
                         break;
                     case PREDICT_DESTROY_BLOCK:
                         if (player.isBreakingBlock()) {
-                            playerHandle.onBlockBreakAbort(blockPos.asVector3(), blockFace);
-                            playerHandle.onBlockBreakComplete(blockPos, blockFace);
+                            playerHandle.handleBlockBreakAbort(blockPos.asVector3(), blockFace);
+                            playerHandle.handleBlockBreakComplete(blockPos, blockFace);
                         } else {
-                            playerHandle.onBlockBreakAbort(blockPos.asVector3(), blockFace);
+                            playerHandle.handleBlockBreakAbort(blockPos.asVector3(), blockFace);
                         }
                         break;
                 }
@@ -167,9 +168,9 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
         }
         Location clientLoc = Location.fromObject(clientPosition, player.getLevel(), yaw, pitch, headYaw);
         // Proper player.isPassenger() check may be needed
-        if (playerHandle.player.riding instanceof EntityMinecartAbstract entityMinecartAbstract) {
+        if (player.riding instanceof EntityMinecartAbstract entityMinecartAbstract) {
             entityMinecartAbstract.setCurrentSpeed(pk.getMotion().y());
-        } else if (playerHandle.player.riding instanceof EntityHorse entityHorse) {
+        } else if (player.riding instanceof EntityHorse entityHorse) {
             // 为了保证玩家和马位置同步，骑马时不使用移动队列处理
             var distance = clientLoc.distanceSquared(player);
             var updatePosition = (float) Math.sqrt(distance) > 0.1f;

@@ -11,10 +11,11 @@ import cn.nukkit.player.PlayerHandle;
 import org.jetbrains.annotations.NotNull;
 
 public class RequestNetworkSettingsProcessor extends DataPacketProcessor<RequestNetworkSettingsPacket> {
+
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull RequestNetworkSettingsPacket pk) {
-        var player = playerHandle.player;
-        if (player.loggedIn) {
+        var player = playerHandle.getPlayer();
+        if (player.isLoggedIn()) {
             return;
         }
         var protocolVersion = pk.protocolVersion;
@@ -28,7 +29,7 @@ public class RequestNetworkSettingsProcessor extends DataPacketProcessor<Request
         }
         settingsPacket.compressionAlgorithm = algorithm;
         settingsPacket.compressionThreshold = 1; // compress everything
-        player.forceDataPacket(
+        player.sendPacketImmediately(
                 settingsPacket,
                 () -> playerHandle.getNetworkSession().setCompression(CompressionProvider.from(algorithm)));
         if (!ProtocolInfo.SUPPORTED_PROTOCOLS.contains(protocolVersion)) {

@@ -177,7 +177,7 @@ public class EntityXPOrb extends Entity {
                 this.closestPlayer = null;
                 double closestDistance = 0.0D;
                 for (Player p : this.getViewers().values()) {
-                    if (!p.isSpectator() && p.spawned && p.isAlive()) {
+                    if (!p.isSpectator() && p.isSpawned() && p.isAlive()) {
                         double d = p.distanceSquared(this);
                         if (d <= 64.0D && (this.closestPlayer == null || d < closestDistance)) {
                             this.closestPlayer = p;
@@ -189,7 +189,7 @@ public class EntityXPOrb extends Entity {
 
             if (this.closestPlayer != null
                     && (this.closestPlayer.isSpectator()
-                            || !this.closestPlayer.spawned
+                            || !this.closestPlayer.isSpawned()
                             || !this.closestPlayer.isAlive())) {
                 this.closestPlayer = null;
             }

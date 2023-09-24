@@ -11,10 +11,11 @@ import cn.nukkit.player.PlayerHandle;
 import org.jetbrains.annotations.NotNull;
 
 public class EntityEventProcessor extends DataPacketProcessor<EntityEventPacket> {
+
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull EntityEventPacket pk) {
-        Player player = playerHandle.player;
-        if (!player.spawned || !player.isAlive()) {
+        Player player = playerHandle.getPlayer();
+        if (!player.isSpawned() || !player.isAlive()) {
             return;
         }
         if (player.craftingType != Player.CRAFTING_ANVIL && pk.event != EntityEventPacket.ENCHANT) {
@@ -30,7 +31,7 @@ public class EntityEventProcessor extends DataPacketProcessor<EntityEventPacket>
             pk.eid = player.getId();
             pk.isEncoded = false;
 
-            player.dataPacket(pk);
+            player.sendPacket(pk);
             Server.broadcastPacket(player.getViewers().values(), pk);
         } else if (pk.event == EntityEventPacket.ENCHANT) {
             if (pk.eid != player.getId()) {

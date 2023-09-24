@@ -11,10 +11,11 @@ import cn.nukkit.player.PlayerHandle;
 import org.jetbrains.annotations.NotNull;
 
 public class AnimateProcessor extends DataPacketProcessor<AnimatePacket> {
+
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull AnimatePacket pk) {
-        Player player = playerHandle.player;
-        if (!player.spawned || !player.isAlive()) {
+        Player player = playerHandle.getPlayer();
+        if (!player.isSpawned() || !player.isAlive()) {
             return;
         }
 

@@ -8,12 +8,13 @@ import cn.nukkit.player.PlayerHandle;
 import org.jetbrains.annotations.NotNull;
 
 public class PlayerHotbarProcessor extends DataPacketProcessor<PlayerHotbarPacket> {
+
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull PlayerHotbarPacket pk) {
         if (pk.windowId != ContainerIds.INVENTORY) {
             return; // In PE this should never happen
         }
-        playerHandle.player.getInventory().equipItem(pk.selectedHotbarSlot);
+        playerHandle.getPlayer().getInventory().equipItem(pk.selectedHotbarSlot);
     }
 
     @Override

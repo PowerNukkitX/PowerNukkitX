@@ -137,6 +137,6 @@ public class FormWindowDialog implements Dialog {
 
     @Override
     public void send(@NotNull Player player) {
-        player.showDialogWindow(this);
+        player.sendDialog(this);
     }
 }

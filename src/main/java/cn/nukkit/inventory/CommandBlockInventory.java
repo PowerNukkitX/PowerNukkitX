@@ -177,7 +177,7 @@ public class CommandBlockInventory implements Inventory {
                 pk.entityId = ((Entity) holder).getId();
             }
 
-            who.dataPacket(pk);
+            who.sendPacket(pk);
         }
     }
 

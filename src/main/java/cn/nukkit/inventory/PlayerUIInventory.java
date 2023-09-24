@@ -73,7 +73,7 @@ public class PlayerUIInventory extends BaseInventory {
                 }
                 pk.inventoryId = id;
             }
-            p.dataPacket(pk);
+            p.sendPacket(pk);
         }
     }
 

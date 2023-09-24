@@ -9,8 +9,8 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.player.Player;
+import cn.nukkit.player.PlayerInfo;
 import cn.nukkit.utils.Config;
-import cn.nukkit.utils.LoginChainData;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -141,22 +141,22 @@ public class NukkitMetrics {
         nukkitMetrics.metrics = metrics;
 
         metrics.addCustomChart(new Metrics.SingleLineChart(
-                "players", () -> server.playerManager.getOnlinePlayers().size()));
+                "players", () -> server.getPlayerManager().getOnlinePlayers().size()));
         metrics.addCustomChart(new Metrics.SimplePie("minecraft_version", server::getVersion));
         metrics.addCustomChart(new Metrics.SimplePie("pnx_version", server::getBStatsNukkitVersion));
         metrics.addCustomChart(new Metrics.SimplePie(
                 "xbox_auth", () -> server.getPropertyBoolean("xbox-auth") ? "Required" : "Not required"));
 
         metrics.addCustomChart(new Metrics.AdvancedPie(
-                "player_platform_pie", () -> server.playerManager.getOnlinePlayers().values().stream()
-                        .map(Player::getLoginChainData)
-                        .map(LoginChainData::getDeviceOS)
+                "player_platform_pie", () -> server.getPlayerManager().getOnlinePlayers().values().stream()
+                        .map(Player::getPlayerInfo)
+                        .map(info -> info.getDeviceOs().getId())
                         .collect(groupingBy(nukkitMetrics::mapDeviceOSToString, countingInt()))));
 
         metrics.addCustomChart(new Metrics.AdvancedPie(
-                "player_game_version_pie", () -> server.playerManager.getOnlinePlayers().values().stream()
-                        .map(Player::getLoginChainData)
-                        .collect(groupingBy(LoginChainData::getGameVersion, countingInt()))));
+                "player_game_version_pie", () -> server.getPlayerManager().getOnlinePlayers().values().stream()
+                        .map(Player::getPlayerInfo)
+                        .collect(groupingBy(PlayerInfo::getGameVersion, countingInt()))));
 
         metrics.addCustomChart(new Metrics.DrilldownPie("java_version_pie", new JavaVersionRetriever()));
 

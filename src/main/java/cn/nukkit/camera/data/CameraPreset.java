@@ -46,7 +46,7 @@ public final class CameraPreset {
         for (var preset : presets) {
             preset.id = id++;
         }
-        Server.getInstance().playerManager.getOnlinePlayers().values().forEach(Player::sendCameraPresets);
+        Server.getInstance().getPlayerManager().getOnlinePlayers().values().forEach(Player::sendCameraPresets);
     }
 
     public static final CameraPreset FIRST_PERSON;

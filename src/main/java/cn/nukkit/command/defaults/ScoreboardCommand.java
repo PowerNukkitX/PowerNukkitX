@@ -688,8 +688,8 @@ public class ScoreboardCommand extends VanillaCommand {
             scorers = EntitySelectorAPI.getAPI().matchEntities(sender, wildcardTargetStr).stream()
                     .map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t))
                     .collect(Collectors.toSet());
-        } else if (Server.getInstance().playerManager.getPlayer(wildcardTargetStr) != null) {
-            scorers.add(new PlayerScorer(Server.getInstance().playerManager.getPlayer(wildcardTargetStr)));
+        } else if (Server.getInstance().getPlayerManager().getPlayer(wildcardTargetStr) != null) {
+            scorers.add(new PlayerScorer(Server.getInstance().getPlayerManager().getPlayer(wildcardTargetStr)));
         } else {
             scorers.add(new FakeScorer(wildcardTargetStr));
         }

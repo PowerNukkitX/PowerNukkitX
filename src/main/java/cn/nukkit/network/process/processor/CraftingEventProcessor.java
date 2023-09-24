@@ -8,9 +8,10 @@ import cn.nukkit.player.PlayerHandle;
 import org.jetbrains.annotations.NotNull;
 
 public class CraftingEventProcessor extends DataPacketProcessor<CraftingEventPacket> {
+
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull CraftingEventPacket pk) {
-        Player player = playerHandle.player;
+        Player player = playerHandle.getPlayer();
         if (player.craftingType == Player.CRAFTING_BIG && pk.type == CraftingEventPacket.TYPE_WORKBENCH
                 || player.craftingType == Player.CRAFTING_SMALL && pk.type == CraftingEventPacket.TYPE_INVENTORY) {
             if (playerHandle.getCraftingTransaction() != null) {

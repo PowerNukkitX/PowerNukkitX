@@ -69,7 +69,7 @@ public class EntityEquipmentInventory extends BaseInventory {
         mobEquipmentPacket.eid = this.entity.getId();
         mobEquipmentPacket.inventorySlot = mobEquipmentPacket.hotbarSlot = index;
         mobEquipmentPacket.item = this.getItem(index);
-        player.dataPacket(mobEquipmentPacket);
+        player.sendPacket(mobEquipmentPacket);
     }
 
     @Override

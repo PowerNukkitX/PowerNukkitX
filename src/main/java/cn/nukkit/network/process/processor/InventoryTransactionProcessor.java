@@ -52,7 +52,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
 
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull InventoryTransactionPacket pk) {
-        Player player = playerHandle.player;
+        Player player = playerHandle.getPlayer();
         if (player.isSpectator()) {
             player.sendAllInventories();
             return;
@@ -449,7 +449,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
     }
 
     private void handleUseItemOnEntity(@NotNull PlayerHandle playerHandle, @NotNull InventoryTransactionPacket pk) {
-        Player player = playerHandle.player;
+        Player player = playerHandle.getPlayer();
         UseItemOnEntityData useItemOnEntityData = (UseItemOnEntityData) pk.transactionData;
         Entity target = player.getLevel().getEntity(useItemOnEntityData.entityRuntimeId);
         if (target == null) {
@@ -591,7 +591,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
     }
 
     private void handleUseItem(@NotNull PlayerHandle playerHandle, @NotNull InventoryTransactionPacket pk) {
-        Player player = playerHandle.player;
+        Player player = playerHandle.getPlayer();
         UseItemData useItemData = (UseItemData) pk.transactionData;
         BlockVector3 blockVector = useItemData.blockPos;
         BlockFace face = useItemData.face;
@@ -669,7 +669,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
             }
             case InventoryTransactionPacket.USE_ITEM_ACTION_BREAK_BLOCK -> {
                 // Creative mode use PlayerActionPacket.ACTION_CREATIVE_PLAYER_DESTROY_BLOCK
-                if (!player.spawned || !player.isAlive() || player.isCreative()) {
+                if (!player.isSpawned() || !player.isAlive() || player.isCreative()) {
                     return;
                 }
                 player.resetCraftingGridType();

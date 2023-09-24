@@ -33,7 +33,7 @@ public class BanCommand extends VanillaCommand {
         String reason = list.getResult(1);
         sender.getServer().getNameBans().addBan(name, reason, null, sender.getName());
 
-        Player player = sender.getServer().playerManager.getPlayerExact(name);
+        Player player = sender.getServer().getPlayerManager().getPlayerExact(name);
         if (player != null) {
             player.kick(
                     PlayerKickEvent.Reason.NAME_BANNED,

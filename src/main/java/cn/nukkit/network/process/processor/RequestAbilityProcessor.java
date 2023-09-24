@@ -14,9 +14,10 @@ import org.jetbrains.annotations.NotNull;
 
 @Log4j2
 public class RequestAbilityProcessor extends DataPacketProcessor<RequestAbilityPacket> {
+
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull RequestAbilityPacket pk) {
-        Player player = playerHandle.player;
+        Player player = playerHandle.getPlayer();
         PlayerAbility ability = pk.ability;
         if (ability != PlayerAbility.FLYING) {
             log.info("[" + player.getName() + "] has tried to trigger " + ability + " ability "

@@ -416,24 +416,11 @@ public class Network {
         });
     }
 
-    @Deprecated
-    @DeprecationDetails(
-            since = "1.4.0.0-PN",
-            by = "Cloudburst Nukkit",
-            reason = "Changed the id to int without backward compatibility",
-            replaceWith = "getPacket(int id)")
-    @PowerNukkitOnly
-    public DataPacket getPacket(byte id) {
-        return getPacket((int) id);
-    }
-
-    // TODO: 2023/4/30 将低性能的newInstance替换为其他方式以提高数据包创建性能
-    @Since("1.4.0.0-PN")
     public DataPacket getPacket(int id) {
         Class<? extends DataPacket> clazz = this.packetPool.get(id);
         if (clazz != null) {
             try {
-                return clazz.newInstance();
+                return clazz.getDeclaredConstructor().newInstance();
             } catch (Exception e) {
                 log.error("Error while creating a class for the packet id {}", id, e);
             }

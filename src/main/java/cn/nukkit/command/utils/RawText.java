@@ -85,8 +85,8 @@ public class RawText {
                     .toList();
             if (scorers.isEmpty()) return null;
             scorer = scorers.get(0);
-        } else if (Server.getInstance().playerManager.getPlayer(name_str) != null) {
-            scorer = new PlayerScorer(Server.getInstance().playerManager.getPlayer(name_str));
+        } else if (Server.getInstance().getPlayerManager().getPlayer(name_str) != null) {
+            scorer = new PlayerScorer(Server.getInstance().getPlayerManager().getPlayer(name_str));
         } else {
             scorer = new FakeScorer(name_str);
         }

@@ -16,10 +16,11 @@ import cn.nukkit.player.PlayerHandle;
 import org.jetbrains.annotations.NotNull;
 
 public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacket> {
+
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull PlayerActionPacket pk) {
-        Player player = playerHandle.player;
-        if (!player.spawned
+        Player player = playerHandle.getPlayer();
+        if (!player.isSpawned()
                 || (!player.isAlive()
                         && pk.action != PlayerActionPacket.ACTION_RESPAWN
                         && pk.action != PlayerActionPacket.ACTION_DIMENSION_CHANGE_ACK)) {
@@ -32,11 +33,11 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
 
         switch (pk.action) {
             case PlayerActionPacket.ACTION_START_BREAK:
-                playerHandle.onBlockBreakStart(pos, face);
+                playerHandle.handleBlockBreakStart(pos, face);
                 break;
             case PlayerActionPacket.ACTION_ABORT_BREAK:
             case PlayerActionPacket.ACTION_STOP_BREAK:
-                playerHandle.onBlockBreakAbort(pos, face);
+                playerHandle.handleBlockBreakAbort(pos, face);
                 break;
             case PlayerActionPacket.ACTION_GET_UPDATED_BLOCK:
                 break; // TODO
@@ -46,7 +47,7 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                 player.stopSleep();
                 break;
             case PlayerActionPacket.ACTION_RESPAWN:
-                if (!player.spawned || player.isAlive() || !player.isOnline()) {
+                if (!player.isSpawned() || player.isAlive() || !player.isOnline()) {
                     break;
                 }
 
@@ -94,7 +95,7 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                 return;
             case PlayerActionPacket.ACTION_CREATIVE_PLAYER_DESTROY_BLOCK:
                 if (player.getServer().getServerAuthoritativeMovement() > 0) break; // ServerAuthorInput not use player
-                playerHandle.onBlockBreakComplete(new BlockVector3(pk.x, pk.y, pk.z), face);
+                playerHandle.handleBlockBreakComplete(new BlockVector3(pk.x, pk.y, pk.z), face);
                 break;
             case PlayerActionPacket.ACTION_DIMENSION_CHANGE_ACK:
                 player.sendPosition(player, player.yaw(), player.pitch(), MovePlayerPacket.MODE_NORMAL);
@@ -118,7 +119,7 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                 }
                 return;
             case PlayerActionPacket.ACTION_CONTINUE_BREAK:
-                playerHandle.onBlockBreakContinue(pos, face);
+                playerHandle.handleBlockBreakContinue(pos, face);
                 break;
             case PlayerActionPacket.ACTION_START_SWIMMING:
                 PlayerToggleSwimEvent playerToggleSwimEvent = new PlayerToggleSwimEvent(player, true);

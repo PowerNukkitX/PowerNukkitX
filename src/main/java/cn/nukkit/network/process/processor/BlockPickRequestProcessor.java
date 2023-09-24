@@ -16,9 +16,10 @@ import org.jetbrains.annotations.NotNull;
 
 @Log4j2
 public class BlockPickRequestProcessor extends DataPacketProcessor<BlockPickRequestPacket> {
+
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull BlockPickRequestPacket pk) {
-        Player player = playerHandle.player;
+        Player player = playerHandle.getPlayer();
         Block block = player.getLevel().getBlock(pk.x, pk.y, pk.z, false);
         if (block.distanceSquared(player) > 1000) {
             log.debug(playerHandle.getUsername() + ": Block pick request for a block too far away");

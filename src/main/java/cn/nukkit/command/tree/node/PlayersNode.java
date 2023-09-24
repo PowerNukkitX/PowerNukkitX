@@ -39,8 +39,8 @@ public class PlayersNode extends TargetNode<Player> {
                     .collect(Collectors.toList());
             this.value = result;
         } else {
-            this.value =
-                    Collections.singletonList(Server.getInstance().playerManager.getPlayer(arg));
+            this.value = Collections.singletonList(
+                    Server.getInstance().getPlayerManager().getPlayer(arg));
         }
     }
 }

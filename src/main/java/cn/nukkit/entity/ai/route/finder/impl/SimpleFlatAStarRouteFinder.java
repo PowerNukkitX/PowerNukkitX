@@ -163,7 +163,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
                         .addParticle(
                                 new BlockForceFieldParticle(node.getVector3()),
                                 Server.getInstance()
-                                        .playerManager
+                                        .getPlayerManager()
                                         .getOnlinePlayers()
                                         .values()
                                         .toArray(Player.EMPTY_ARRAY)));

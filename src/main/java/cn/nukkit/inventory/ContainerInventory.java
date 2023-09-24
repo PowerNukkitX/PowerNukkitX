@@ -59,7 +59,7 @@ public abstract class ContainerInventory extends BaseInventory {
             pk.entityId = ((Entity) holder).getId();
         }
 
-        who.dataPacket(pk);
+        who.sendPacket(pk);
 
         this.sendContents(who);
 
@@ -76,7 +76,7 @@ public abstract class ContainerInventory extends BaseInventory {
         ContainerClosePacket pk = new ContainerClosePacket();
         pk.windowId = who.getWindowId(this);
         pk.wasServerInitiated = who.getClosingWindowId() != pk.windowId;
-        who.dataPacket(pk);
+        who.sendPacket(pk);
 
         if (canCauseVibration() && getHolder() instanceof Vector3 vector3) {
             who.getLevel()

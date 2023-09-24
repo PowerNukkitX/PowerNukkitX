@@ -201,7 +201,7 @@ public interface CoreMemoryTypes {
                     entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_TAMED, false);
                 } else {
                     entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_TAMED, true);
-                    var owner = entity.getServer().playerManager.getPlayerExact(data);
+                    var owner = entity.getServer().getPlayerManager().getPlayerExact(data);
                     if (owner != null && owner.isOnline()) {
                         entity.setDataProperty(new LongEntityData(Entity.DATA_OWNER_EID, owner.getId()));
                     }

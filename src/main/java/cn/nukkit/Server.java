@@ -58,6 +58,7 @@ import cn.nukkit.permission.Permissible;
 import cn.nukkit.player.GameMode;
 import cn.nukkit.player.Player;
 import cn.nukkit.player.PlayerManager;
+import cn.nukkit.player.serializer.DefaultPlayerDataSerializer;
 import cn.nukkit.plugin.*;
 import cn.nukkit.plugin.service.NKServiceManager;
 import cn.nukkit.plugin.service.ServiceManager;
@@ -103,6 +104,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.iq80.leveldb.CompressionType;
 import org.iq80.leveldb.Options;
@@ -130,7 +132,8 @@ public class Server {
 
     private static Server instance = null;
 
-    public final PlayerManager playerManager = new PlayerManager(this);
+    @Getter
+    private final PlayerManager playerManager = new PlayerManager(this);
 
     private BanList banByName;
 
@@ -425,7 +428,7 @@ public class Server {
                 null,
                 false);
 
-        playerManager.playerDataSerializer = new DefaultPlayerDataSerializer(this);
+        playerManager.setPlayerDataSerializer(new DefaultPlayerDataSerializer(this));
 
         // todo: VersionString 现在不必要
 
@@ -1782,7 +1785,7 @@ public class Server {
         packet.tryEncode();
 
         for (Player player : players) {
-            player.dataPacket(packet);
+            player.sendPacket(packet);
         }
     }
 
@@ -1796,7 +1799,7 @@ public class Server {
         packet.tryEncode();
 
         for (Player player : players) {
-            player.dataPacket(packet);
+            player.sendPacket(packet);
         }
     }
 
@@ -1839,7 +1842,7 @@ public class Server {
         List<InetSocketAddress> targets = new ArrayList<>();
         for (Player p : players) {
             if (p.isConnected()) {
-                targets.add(p.getRawSocketAddress());
+                targets.add(p.getPlayerConnection().getRawSocketAddress());
             }
         }
 
@@ -1866,7 +1869,7 @@ public class Server {
 
         for (InetSocketAddress i : targets) {
             if (playerManager.getPlayers().containsKey(i)) {
-                playerManager.getPlayers().get(i).dataPacket(pk);
+                playerManager.getPlayers().get(i).sendPacket(pk);
             }
         }
     }
@@ -2060,7 +2063,7 @@ public class Server {
      * @param player 玩家
      */
     public void sendRecipeList(Player player) {
-        player.dataPacket(CraftingManager.getCraftingPacket());
+        player.sendPacket(CraftingManager.getCraftingPacket());
     }
 
     /**

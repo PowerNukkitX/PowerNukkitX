@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 @Log4j2
 public class PacketViolationWarningProcessor extends DataPacketProcessor<PacketViolationWarningPacket> {
+
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull PacketViolationWarningPacket pk) {
         Optional<String> packetName = Arrays.stream(ProtocolInfo.class.getDeclaredFields())
@@ -27,7 +28,7 @@ public class PacketViolationWarningProcessor extends DataPacketProcessor<PacketV
                 .findFirst();
         log.warn(
                 "Violation warning from {}{}",
-                playerHandle.player.getName(),
+                playerHandle.getPlayer().getName(),
                 packetName.map(name -> " for packet " + name).orElse("") + ": " + pk);
     }
 
