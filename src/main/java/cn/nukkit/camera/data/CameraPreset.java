@@ -9,13 +9,13 @@ import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.network.protocol.UpdateSoftEnumPacket;
 import cn.nukkit.network.protocol.types.CameraAudioListener;
+import cn.nukkit.utils.OptionalValue;
 import lombok.Builder;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.Map;
-import java.util.Optional;
 import java.util.TreeMap;
 
 /**
@@ -92,20 +92,20 @@ public final class CameraPreset {
     private CameraAudioListener listener;
     @NotNull
     @Builder.Default
-    private Optional<Boolean> playEffect = Optional.empty();
-    private int id;
+    private OptionalValue<Boolean> playEffect = OptionalValue.empty();
+    private int id = 0;
 
     /**
      * Remember to call the registerCameraPresets() method to register!
      */
     @Builder
-    public CameraPreset(String identifier, String inheritFrom, @Nullable Vector3f pos, @Nullable Float yaw, @Nullable Float pitch, @Nullable CameraAudioListener listener, @NotNull Optional<Boolean> playEffect) {
+    public CameraPreset(String identifier, String inheritFrom, @Nullable Vector3f pos, @Nullable Float yaw, @Nullable Float pitch, @Nullable CameraAudioListener listener, OptionalValue<Boolean> playEffect) {
         this.identifier = identifier;
         this.inheritFrom = inheritFrom != null ? inheritFrom : "";
         this.pos = pos;
         this.yaw = yaw;
         this.pitch = pitch;
         this.listener = listener;
-        this.playEffect = playEffect;
+        this.playEffect = playEffect == null ? OptionalValue.empty() : playEffect;
     }
 }

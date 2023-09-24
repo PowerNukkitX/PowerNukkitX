@@ -7,12 +7,12 @@ import cn.nukkit.camera.data.Ease;
 import cn.nukkit.camera.instruction.CameraInstruction;
 import cn.nukkit.math.Vector2f;
 import cn.nukkit.math.Vector3f;
+import cn.nukkit.utils.OptionalValue;
 import lombok.Builder;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.util.Optional;
 
 /**
  * @author daoge_cmd
@@ -34,5 +34,5 @@ public class SetInstruction implements CameraInstruction {
     private final Vector3f facing;
     @NotNull
     private final CameraPreset preset;
-    private final Optional<Boolean> defaultPreset = Optional.empty();
+    private final OptionalValue<Boolean> defaultPreset = OptionalValue.empty();
 }
