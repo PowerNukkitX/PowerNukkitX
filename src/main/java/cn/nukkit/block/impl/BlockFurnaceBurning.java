@@ -107,7 +107,7 @@ public class BlockFurnaceBurning extends BlockSolidMeta implements Faceable, Blo
             double fy,
             double fz,
             Player player) {
-        int[] faces = {2, 5, 3, 4};
+        int[] faces = {2, 3, 0, 1};
         this.setDamage(faces[player != null ? player.getDirection().getHorizontalIndex() : 0]);
         CompoundTag nbt = new CompoundTag().putList(new ListTag<>("Items"));
 
