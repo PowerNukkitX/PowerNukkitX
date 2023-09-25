@@ -121,8 +121,6 @@ public class BlockAnvil extends BlockFallableMeta implements Faceable {
             double fz,
             Player player) {
         setBlockFace(player != null ? player.getDirection().rotateY() : BlockFace.SOUTH);
-        System.out.println("Player direction: " + player.getDirection().rotateY());
-        System.out.println("Setted: " + (player != null ? player.getDirection().rotateY() : BlockFace.SOUTH));
         this.getLevel().setBlock(this, this, true);
         if (player == null) {
             this.getLevel().addSound(this, Sound.RANDOM_ANVIL_LAND, 1, 0.8F);
