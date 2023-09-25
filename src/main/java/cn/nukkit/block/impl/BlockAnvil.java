@@ -158,7 +158,7 @@ public class BlockAnvil extends BlockFallableMeta implements Faceable {
     @PowerNukkitOnly
     @Override
     public void setBlockFace(BlockFace face) {
-        setPropertyValue(CommonBlockProperties.CARDINAL_DIRECTION, face);
+        setPropertyValue(CommonBlockProperties.CARDINAL_DIRECTION, face.getOpposite());
     }
 
     @Override
