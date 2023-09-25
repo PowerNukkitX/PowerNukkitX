@@ -1,4 +1,22 @@
 {
+  "159": {
+    "0":"minecraft:white_terracotta",
+    "1":"minecraft:orange_terracotta",
+    "2":"minecraft:magenta_terracotta",
+    "3":"minecraft:light_blue_terracotta",
+    "4":"minecraft:yellow_terracotta",
+    "5":"minecraft:lime_terracotta",
+    "6":"minecraft:pink_terracotta",
+    "7":"minecraft:gray_terracotta",
+    "8":"minecraft:light_gray_terracotta",
+    "9":"minecraft:cyan_terracotta",
+    "10":"minecraft:purple_terracotta",
+    "11":"minecraft:blue_terracotta",
+    "12":"minecraft:brown_terracotta",
+    "13":"minecraft:green_terracotta",
+    "14":"minecraft:red_terracotta",
+    "15":"minecraft:black_terracotta"
+  },
   "237": {
     "0": "minecraft:white_concrete_powder",
     "1": "minecraft:orange_concrete_powder",
