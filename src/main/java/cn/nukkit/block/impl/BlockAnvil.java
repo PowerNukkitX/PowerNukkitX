@@ -40,6 +40,7 @@ public class BlockAnvil extends BlockFallableMeta implements Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties(
             CommonBlockProperties.CARDINAL_DIRECTION.exportingToItems(true), DAMAGE.exportingToItems(true));
 
+
     public BlockAnvil() {
         // Does nothing
     }
@@ -123,6 +124,8 @@ public class BlockAnvil extends BlockFallableMeta implements Faceable {
             double fz,
             Player player) {
         setBlockFace(player != null ? player.getDirection().rotateY() : BlockFace.SOUTH);
+        System.out.println("Player direction: " + player.getDirection().rotateY());
+        System.out.println("Setted: " + (player != null ? player.getDirection().rotateY() : BlockFace.SOUTH));
         this.getLevel().setBlock(this, this, true);
         if (player == null) {
             this.getLevel().addSound(this, Sound.RANDOM_ANVIL_LAND, 1, 0.8F);
@@ -160,12 +163,12 @@ public class BlockAnvil extends BlockFallableMeta implements Faceable {
     @PowerNukkitOnly
     @Override
     public void setBlockFace(BlockFace face) {
-        setPropertyValue(DIRECTION, face);
+        setPropertyValue(CommonBlockProperties.CARDINAL_DIRECTION, face);
     }
 
     @Override
     public BlockFace getBlockFace() {
-        return getPropertyValue(DIRECTION);
+        return getPropertyValue(CommonBlockProperties.CARDINAL_DIRECTION);
     }
 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed the returned bounding box")
