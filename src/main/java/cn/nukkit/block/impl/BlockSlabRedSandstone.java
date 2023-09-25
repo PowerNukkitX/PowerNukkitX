@@ -59,8 +59,7 @@ public class BlockSlabRedSandstone extends BlockSlab {
         return getSlabType().getEnglishName();
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
     }

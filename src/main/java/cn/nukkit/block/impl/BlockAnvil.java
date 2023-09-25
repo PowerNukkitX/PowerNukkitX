@@ -1,7 +1,5 @@
 package cn.nukkit.block.impl;
 
-import static cn.nukkit.block.property.CommonBlockProperties.DIRECTION;
-
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
@@ -39,7 +37,6 @@ public class BlockAnvil extends BlockFallableMeta implements Faceable {
     @Since("1.4.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(
             CommonBlockProperties.CARDINAL_DIRECTION.exportingToItems(true), DAMAGE.exportingToItems(true));
-
 
     public BlockAnvil() {
         // Does nothing
