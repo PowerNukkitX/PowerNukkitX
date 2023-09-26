@@ -16,9 +16,10 @@
 
 
 ### Debug information
-<!--- Use the 'debugpaste' and 'timings paste' command in Nukkit -->
-* Debug link:
-* Timings link (if relevant):
+<!--- Use the 'spark' command in Nukkit -->
+<!--- Use https://hastebin.com for big logs or dumps -->
+* Debug link :
+* Spark link (if relevant):
 
 
 ### Crashdump, Backtrace or Other Files

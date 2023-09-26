@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.item.ItemTool;
 
 @PowerNukkitXOnly
@@ -28,11 +27,6 @@ public class BlockBambooMosaicSlab extends BlockSlab {
     @Override
     public boolean isSameType(BlockSlab slab) {
         return slab.getId() == getId();
-    }
-
-    @Override
-    public BlockProperties getProperties() {
-        return SIMPLE_SLAB_PROPERTIES;
     }
 
     @Override

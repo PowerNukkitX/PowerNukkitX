@@ -1,24 +1,32 @@
 ---
-name: "\U0001F4AC 打开一个关于PNX的讨论"
-about: 讨论一些关于插件开发,反馈的问题
+name: "\U0001F4AC Start a discussion about PowerNukkitX / 开启关于PNX的讨论"
+about: Discuss ideas, solutions, give feedback, cheers, etc / 讨论关于PNX的新点子，反馈等
 title: ''
 labels: 'Type: dialog'
 assignees: ''
-
----
+	@@ -9,16 +9,23 @@ assignees: ''
 
 # 💬 Let's talk
 
-<!--✍ 尽可能详实地描述你想讨论的问题 -->
+<!--
+✍ Feel free to ask questions or start related discussion below
+✍ 您可在此提问或发起于PNX相关的问题和讨论
+-->
 
-### 📋 Debug 信息
+### 📋 Debug information | Debug信息
 
-<!-- 使用 'debugpaste upload' 和 'timings paste' 指令并粘贴结果至此 -->
+<!-- ⚠ This information may help us to give you better answers but they are not required ⚠ -->
+<!-- Use the 'spark' command in PowerNukkitX -->
+<!-- Use https://hastebin.com for big logs or dumps -->
+<!-- You can get the version from the file name, the 'about' or 'version' command outputs -->
 
-* PowerNukkitX version: ✍
-* Debug link: ✍
+* PowerNukkitX version / PNX版本: ✍
+* Debug link / Debug链接: ✍
+* Spark link (if relevant) | Spark链接（若可用）: ✍
 
-### 💬 其他信息
+### 💬 Anything else we should know? | 还有什么是我们需要知道的？
 
-<!-- ✍ 其他可能有助于解决此问题的信息 -->
-
+<!-- 
+✍ This is the perfect place to add any additional details 
+✍ 您可在此补充相关细节，这将有助于我们帮助您解决问题
+-->

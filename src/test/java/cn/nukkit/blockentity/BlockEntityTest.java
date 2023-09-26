@@ -68,7 +68,7 @@ class BlockEntityTest {
         pos.y++;
         level.setBlock(pos, Block.get(REDSTONE_WIRE));
         level.setBlock(pos.getSide(BlockFace.EAST), BlockState.of(UNPOWERED_COMPARATOR)
-                .withProperty(CommonBlockProperties.DIRECTION, BlockFace.EAST)
+                .withProperty(CommonBlockProperties.CARDINAL_DIRECTION, BlockFace.EAST)
                 .getBlock());
         level.setBlock(pos.getSide(BlockFace.EAST, 2), Block.get(CHEST));
         level.setBlock(pos.getSide(BlockFace.EAST, 3), Block.get(CHEST));

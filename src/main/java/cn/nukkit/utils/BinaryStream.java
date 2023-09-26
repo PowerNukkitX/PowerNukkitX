@@ -158,6 +158,22 @@ public class BinaryStream {
         this.put(Binary.writeLInt(i));
     }
 
+    public <T> void putNotNull(T data, Consumer<T> consumer) {
+        boolean present = data != null;
+        putBoolean(present);
+        if (present) {
+            consumer.accept(data);
+        }
+    }
+
+    public <T> void putOptional(OptionalValue<T> data, Consumer<T> consumer) {
+        boolean present = data.isPresent();
+        putBoolean(present);
+        if (present) {
+            consumer.accept(data.get());
+        }
+    }
+
     public int getShort() {
         return Binary.readShort(this.get(2));
     }
@@ -640,7 +656,9 @@ public class BinaryStream {
 
         ByteBuf userDataBuf = ByteBufAllocator.DEFAULT.ioBuffer();
         try (LittleEndianByteBufOutputStream stream = new LittleEndianByteBufOutputStream(userDataBuf)) {
-            if ((item instanceof ItemDurable && data != 0) || block != null && block.getDamage() > 0) {
+            if ((item instanceof ItemDurable && data != 0) || block != null &&
+                    !RuntimeItemMapping.getBlockMapping().containsKey(block.getId() + ":" + block.getDataStorage().longValue())
+                    && block.getDataStorage().longValue() > 0) {
                 byte[] nbt = item.getCompoundTag();
                 CompoundTag tag;
                 if (nbt == null || nbt.length == 0) {

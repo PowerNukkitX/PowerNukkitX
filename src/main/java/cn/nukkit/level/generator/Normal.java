@@ -200,12 +200,14 @@ public class Normal extends Generator {
         //this should run before all other populators so that we don't do things like generate ground cover on bedrock or something
         this.generationPopulators = ImmutableList.of(
                 new PopulatorBedrock(),
+                new PopulatorDeepslate(),
                 new PopulatorGroundCover()
         );
 
         this.populators = ImmutableList.of(
                 new PopulatorOre(STONE, new OreType[]{
                         new OreType(Block.get(BlockID.COAL_ORE), 20, 17, 0, 128),
+                        new OreType(Block.get(BlockID.COPPER_ORE), 17, 9, 0, 64),
                         new OreType(Block.get(BlockID.IRON_ORE), 20, 9, 0, 64),
                         new OreType(Block.get(BlockID.REDSTONE_ORE), 8, 8, 0, 16),
                         new OreType(Block.get(BlockID.LAPIS_ORE), 1, 7, 0, 16),
@@ -213,9 +215,18 @@ public class Normal extends Generator {
                         new OreType(Block.get(BlockID.DIAMOND_ORE), 1, 8, 0, 16),
                         new OreType(Block.get(BlockID.DIRT), 10, 33, 0, 128),
                         new OreType(Block.get(BlockID.GRAVEL), 8, 33, 0, 128),
-                        new OreType(Block.get(BlockID.STONE, BlockStone.GRANITE), 10, 33, 0, 80),
-                        new OreType(Block.get(BlockID.STONE, BlockStone.DIORITE), 10, 33, 0, 80),
-                        new OreType(Block.get(BlockID.STONE, BlockStone.ANDESITE), 10, 33, 0, 80)
+                        new OreType(Block.get(BlockID.STONE, BlockStone.GRANITE), 10, 33, 8, 80),
+                        new OreType(Block.get(BlockID.STONE, BlockStone.DIORITE), 10, 33, 8, 80),
+                        new OreType(Block.get(BlockID.STONE, BlockStone.ANDESITE), 10, 33, 8, 80)
+                }),
+                new PopulatorOre(BlockID.DEEPSLATE, new OreType[]{
+                        new OreType(Block.get(BlockID.DEEPSLATE_COAL_ORE), 20, 17, 0, 8),
+                        new OreType(Block.get(BlockID.DEEPSLATE_COPPER_ORE), 20, 9, -64, 8),
+                        new OreType(Block.get(BlockID.DEEPSLATE_IRON_ORE), 20, 9, -64, 8),
+                        new OreType(Block.get(BlockID.DEEPSLATE_REDSTONE_ORE), 8, 8, -64, 8),
+                        new OreType(Block.get(BlockID.DEEPSLATE_LAPIS_ORE), 1, 7, -64, 8),
+                        new OreType(Block.get(BlockID.DEEPSLATE_GOLD_ORE), 2, 9, -64, 8),
+                        new OreType(Block.get(BlockID.DEEPSLATE_DIAMOND_ORE), 1, 8, -64, 8)
                 }),
                 new PopulatorCaves(),
                 //new PopulatorRavines()
@@ -363,7 +374,8 @@ public class Normal extends Generator {
 
                             for (int xIn = 0; xIn < 4; ++xIn) {
                                 if ((scaleZ2 += scaleZ) > 0.0f) {
-                                    chunk.setBlockId(xSeg * 4 + zIn, ySeg * 8 + yIn, zSeg * 4 + xIn, STONE);
+                                    int y = ySeg * 8 + yIn;
+                                    chunk.setBlockId(xSeg * 4 + zIn, y, zSeg * 4 + xIn, STONE);
                                 } else if (ySeg * 8 + yIn <= seaHeight) {
                                     chunk.setBlockId(xSeg * 4 + zIn, ySeg * 8 + yIn, zSeg * 4 + xIn, STILL_WATER);
                                 }
