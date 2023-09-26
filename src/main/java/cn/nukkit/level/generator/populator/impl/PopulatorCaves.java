@@ -18,7 +18,7 @@ public class PopulatorCaves extends Populator {
 
     public static int caveRarity = 7; // 7
     public static int caveFrequency = 40; // 40
-    public static int caveMinAltitude = 8;
+    public static int caveMinAltitude = -56;
     public static int caveMaxAltitude = 67;
     public static int individualCaveRarity = 25; // 25
     public static int caveSystemFrequency = 1;
@@ -173,7 +173,7 @@ public class PopulatorCaves extends Populator {
             if (xFrom < 0) xFrom = 0;
             if (xTo > 16) xTo = 16;
 
-            if (yFrom < 1) yFrom = 1;
+            if (yFrom < 63) yFrom = -63;
             if (yTo > this.worldHeightCap - 8) {
                 yTo = this.worldHeightCap - 8;
             }
@@ -185,7 +185,7 @@ public class PopulatorCaves extends Populator {
             for (int xx = xFrom; (!waterFound) && (xx < xTo); xx++) {
                 for (int zz = zFrom; (!waterFound) && (zz < zTo); zz++) {
                     for (int yy = yTo + 1; (!waterFound) && (yy >= yFrom - 1); yy--) {
-                        if (yy >= 0 && yy < this.worldHeightCap) {
+                        if (yy >= -64 && yy < this.worldHeightCap) {
                             int block = chunk.getBlockId(xx, yy, zz);
                             if (block == Block.FLOWING_WATER || block == Block.STILL_WATER) {
                                 waterFound = true;
@@ -228,7 +228,7 @@ public class PopulatorCaves extends Populator {
                                 // TODO: check this
                                 //								if (this.isSuitableBlock(material, materialAbove, biome))
                                 {
-                                    if (yy - 1 < 10) {
+                                    if (yy - 1 < -58) {
                                         chunk.setBlock(xx, yy, zz, Block.FLOWING_LAVA);
                                     } else {
                                         chunk.setBlock(xx, yy, zz, Block.AIR);
