@@ -21,8 +21,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
-
 /**
  * @author Pub4Game
  * @since 27.12.2015
@@ -148,12 +146,12 @@ public class BlockAnvil extends BlockFallableMeta implements Faceable {
     @PowerNukkitOnly
     @Override
     public void setBlockFace(BlockFace face) {
-        setPropertyValue(DIRECTION, face);
+        setPropertyValue(CommonBlockProperties.CARDINAL_DIRECTION, face);
     }
 
     @Override
     public BlockFace getBlockFace() {
-        return getPropertyValue(DIRECTION);
+        return getPropertyValue(CommonBlockProperties.CARDINAL_DIRECTION);
     }
 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed the returned bounding box")
