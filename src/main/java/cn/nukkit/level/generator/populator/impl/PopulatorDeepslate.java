@@ -10,17 +10,18 @@ import cn.nukkit.math.NukkitRandom;
  * <p>
  * Places bedrock on the bottom of the world
  */
-public class PopulatorBedrock extends Populator {
+public class PopulatorDeepslate extends Populator {
 
-    public static final int BEDROCK_LAYER = -64;
     @Override
     public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
-                chunk.setBlockId(x, BEDROCK_LAYER, z, BEDROCK);
-                for (int i = 1; i < 5; i++) {
-                    if (random.nextBoundedInt(i) == 0) { //decreasing amount
-                        chunk.setBlockId(x, BEDROCK_LAYER +i, z, BEDROCK);
+                for(int y = PopulatorBedrock.BEDROCK_LAYER; y < 0; y++) {
+                    if(chunk.getBlockId(x,y,z) == 0) chunk.setBlockId(x, y, z, DEEPSLATE);
+                }
+                for (int y = 0; y < 8; y++) {
+                    if (random.nextBoundedInt(y) == 0) {
+                        chunk.setBlockId(x, y, z, DEEPSLATE);
                     }
                 }
             }
