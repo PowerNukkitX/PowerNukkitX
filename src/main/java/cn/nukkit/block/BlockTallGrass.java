@@ -154,7 +154,7 @@ public class BlockTallGrass extends BlockFlowable implements BlockFlowerPot.Flow
 
     @Override
     public Item[] getDrops(Item item) {
-        // https://minecraft.gamepedia.com/Fortune#Grass_and_ferns
+        // https://minecraft.wiki/w/Fortune#Grass_and_ferns
         List<Item> drops = new ArrayList<>(2);
         if (item.isShears()) {
             drops.add(getCurrentState().asItemBlock());

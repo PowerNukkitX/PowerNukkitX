@@ -45,7 +45,7 @@ public abstract class BlockCropsStem extends BlockCrops implements Faceable {
     @Since("1.4.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(GROWTH, FACING_DIRECTION);
 
-    //https://minecraft.gamepedia.com/Melon_Seeds#Breaking
+    //https://minecraft.wiki/w/Melon_Seeds#Breaking
     private static final double[][] dropChances = new double[][]{
             {.8130,.1742,.0124,.0003}, //0
             {.6510,.3004,.0462,.0024}, //1
