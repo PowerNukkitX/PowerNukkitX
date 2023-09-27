@@ -562,7 +562,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
             }
         }
 
-        //http://minecraft.gamepedia.com/Powered_Rail#Rail
+        //http://minecraft.wiki/w/Powered_Rail#Rail
         if (isSlowed) {
             expectedSpeed = Math.sqrt(motionX * motionX + motionZ * motionZ);
             if (expectedSpeed < 0.03D) {

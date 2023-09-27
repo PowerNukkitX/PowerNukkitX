@@ -104,7 +104,7 @@ public class BlockCaveVines extends BlockTransparentMeta {
                     }
                 }
             }
-            //random grow feature,according to wiki in https://minecraft.fandom.com/wiki/Glow_Berries#Growth
+            //random grow feature,according to wiki in https://minecraft.wiki/w/Glow_Berries#Growth
             if (down().getId() == AIR && random.nextInt(10) == 0) {
                 BlockCaveVines block;
                 if (this.up() instanceof BlockCaveVines && !(this.down() instanceof BlockCaveVines)) {

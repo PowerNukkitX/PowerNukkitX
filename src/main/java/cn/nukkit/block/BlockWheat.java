@@ -38,7 +38,7 @@ public class BlockWheat extends BlockCrops {
 
     @Override
     public Item[] getDrops(Item item) {
-        // https://minecraft.gamepedia.com/Fortune#Seeds
+        // https://minecraft.wiki/w/Fortune#Seeds
         if (!isFullyGrown()) {
             return new Item[]{ new ItemSeedsWheat() };
         }

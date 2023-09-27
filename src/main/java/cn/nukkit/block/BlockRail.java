@@ -164,7 +164,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
         return this;
     }
 
-    //Information from http://minecraft.gamepedia.com/Rail
+    //Information from http://minecraft.wiki/w/Rail
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         Block down = this.down();
