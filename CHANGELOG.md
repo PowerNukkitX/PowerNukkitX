@@ -2767,8 +2767,8 @@ Need to switch languages?
 [#1374]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1374
 [#1376]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1376
 [#1377]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1377
-[#1379]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1379
 [#1378]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1378
+[#1379]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1379
 [#1381]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1381
 [#1383]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1383
 [#1385]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1385
