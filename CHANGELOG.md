@@ -11,7 +11,24 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 3. <a href="#CataLogs-Version-history">🔖 Version history / 历史版本 </a>
 
 ## [Dev-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - Future
-This work in progress version supports Minecraft:BE `1.20.10 (Protocol Version 594)`.
+This work in progress version supports Minecraft:BE `1.20.30 (Protocol Version 618)`.
+
+## Added
+
+- [#1379] Added Deepslate Generation.
+
+## Changed
+
+- [#1390] Update English Minecraft Wiki links to new domain.
+
+## Fixes
+
+- [#1385] Fix colored terracotta blocks.
+- [#1386] Fix: anvil property operate.
+- [#1387] Fix furnace facing.
+
+## [1.20.30-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.30-r1) - 2023-9-25
+This work in progress version supports Minecraft:BE `1.20.30 (Protocol Version 618)`.
 
 ## Added
 
@@ -22,7 +39,9 @@ This work in progress version supports Minecraft:BE `1.20.10 (Protocol Version 5
 - [#1349] Added simple `mangrove tree` (and some fixes).
 - [#1358] Achieving durable consumption of Elytra.
 - [#1363] Added support to shut down a server with `ctrl+c`.
-- [#1376] Entity Prorperty System。
+- [#1376] Entity Prorperty System.
+- [#1381] Adapt Minecraft:BE `1.20.30  (Protocol Version 618)`.
+- [#1381] `PNX-1.20.30-r1` released.
 
 ## Changed
 
@@ -50,7 +69,7 @@ This work in progress version supports Minecraft:BE `1.20.10 (Protocol Version 5
 - [#1371] Fixing the recipe conventions for `block_states`.
 - [#1377]/[#1378] Fixing `WaterdogPE` related issues.
 
-## [1.20.10-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.10-r2) - 2023-7-15
+## [1.20.10-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.10-r1) - 2023-7-15
 This work in progress version supports Minecraft:BE `1.20.10 (Protocol Version 594)`.
 
 ## Added
@@ -1892,6 +1911,13 @@ Fixes several anvil issues.
 
 </details>
 
+<details>
+  <summary>1.20.30-PNX</summary>
+
+   1. [#1.20.30-r1] PNX-1.20.30-r1 (Protocol Version 618)
+
+</details>
+
 ## <a id="CataLogs-Swlang"></a>🌐 多语言文档
 
 ---
@@ -2741,8 +2767,14 @@ Need to switch languages?
 [#1374]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1374
 [#1376]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1376
 [#1377]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1377
+[#1379]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1379
 [#1378]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1378
+[#1381]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1381
 [#1383]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1383
+[#1385]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1385
+[#1386]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1386
+[#1387]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1387
+[#1390]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1390
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->
@@ -2829,6 +2861,8 @@ Need to switch languages?
 [#1.20.0-r2]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.0-r2
 <!--1.20.10-r1-PNX Protocol Version 594-->
 [#1.20.10-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.10-r1
+<!--1.20.30-r1-PNX Protocol Version 618-->
+[#1.20.30-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.30-r1
 <!--1.20.xx-PNX Version summary End-->
 
 <!--PowerNukkitX Urls-->

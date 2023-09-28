@@ -11,7 +11,24 @@
 3. <a href="#CataLogs-Version-history">🔖 Version history / 歷史版本 </a>
 
 ## [Dev-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - Future
-該版本目前支持了Minecraft:BE `1.20.10 (協議版本594)`.
+該版本目前支持了Minecraft:BE `1.20.30 (協議版本618)`.
+
+## 新增內容
+
+- [#1379] 增加深板岩生成器。
+
+## 修改記錄
+
+- [#1390] 更新程式碼內的Minecraft Wiki相關連結。
+
+## BUG修復
+
+- [#1385] 修復彩色陶瓦方塊。
+- [#1386] 修復鐵砧操作屬性。
+- [#1387] 熔爐修復。
+
+## [1.20.30-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.30-r1) - 2023-9-25
+該版本目前支持了Minecraft:BE `1.20.30 (協議版本618)`.
 
 ## 新增內容
 
@@ -23,6 +40,8 @@
 - [#1358] 實現鞘翅耐久消耗。
 - [#1363] 支援透過`Ctrl + C`關閉伺服器。
 - [#1376] Entity Prorperty System。
+- [#1381] 適配`Minecraft:BE 1.20.30`。
+- [#1381] `PNX-1.20.30-r1`正式發布。
 
 ## 修改記錄
 
@@ -50,7 +69,7 @@
 - [#1371] 修正`block_states`的配方轉換。
 - [#1377]/[#1378] 修正`WaterdogPE`相關的問題。
 
-## [1.20.10-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.10-r2) - 2023-7-15
+## [1.20.10-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.10-r1) - 2023-7-15
 該版本目前支持了Minecraft:BE `1.20.10 (協議版本594)`.
 
 ## 新增內容
@@ -1894,6 +1913,13 @@ Fixes several anvil issues.
 
 </details>
 
+<details>
+  <summary>1.20.30-PNX</summary>
+
+   1. [#1.20.30-r1] PNX-1.20.30-r1 (協議版本618)
+
+</details>
+
 ## <a id="CataLogs-Swlang"></a>🌐 多語言文檔
 
 ---
@@ -2743,8 +2769,14 @@ Need to switch languages?
 [#1374]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1374
 [#1376]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1376
 [#1377]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1377
+[#1379]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1379
 [#1378]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1378
+[#1381]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1381
 [#1383]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1383
+[#1385]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1385
+[#1386]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1386
+[#1387]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1387
+[#1390]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1390
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->
@@ -2831,6 +2863,8 @@ Need to switch languages?
 [#1.20.0-r2]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.0-r2
 <!--1.20.10-r1-PNX Protocol Version 594-->
 [#1.20.10-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.10-r1
+<!--1.20.30-r1-PNX Protocol Version 618-->
+[#1.20.30-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.30-r1
 <!--1.20.xx-PNX Version summary End-->
 
 <!--PowerNukkitX Urls-->
