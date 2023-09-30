@@ -21,9 +21,11 @@ import java.util.Set;
 public class EmptyBehaviorGroup implements IBehaviorGroup {
 
     protected EntityIntelligent entity;
+    protected MemoryStorage memoryStorage;
 
     public EmptyBehaviorGroup(EntityIntelligent entity) {
         this.entity = entity;
+        this.memoryStorage = new MemoryStorage(entity);
     }
     
     
@@ -99,7 +101,7 @@ public class EmptyBehaviorGroup implements IBehaviorGroup {
 
     @Override
     public IMemoryStorage getMemoryStorage() {
-        return new MemoryStorage(entity);
+        return this.memoryStorage;
     }
 
     @Override
