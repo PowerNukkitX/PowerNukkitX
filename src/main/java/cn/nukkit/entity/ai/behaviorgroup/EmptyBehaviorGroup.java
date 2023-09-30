@@ -21,7 +21,7 @@ import java.util.Set;
 public class EmptyBehaviorGroup implements IBehaviorGroup {
 
     protected EntityIntelligent entity;
-    protected MemoryStorage memoryStorage;
+    protected IMemoryStorage memoryStorage;
 
     public EmptyBehaviorGroup(EntityIntelligent entity) {
         this.entity = entity;
