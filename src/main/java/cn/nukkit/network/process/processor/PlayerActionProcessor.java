@@ -1,5 +1,6 @@
 package cn.nukkit.network.process.processor;
 
+import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.event.player.*;
@@ -181,6 +182,28 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                     player.sendData(player);
                 } else {
                     player.setSpinAttacking(false);
+                }
+                break;
+            case PlayerActionPacket.ACTION_START_FLYING:
+                if (!player.getServer().getAllowFlight() && !player.getAdventureSettings().get(AdventureSettings.Type.ALLOW_FLIGHT)) {
+                    player.kick(PlayerKickEvent.Reason.FLYING_DISABLED, "Flying is not enabled on this server");
+                    break;
+                }
+                PlayerToggleFlightEvent playerToggleFlightEvent = new PlayerToggleFlightEvent(player, true);
+                player.getServer().getPluginManager().callEvent(playerToggleFlightEvent);
+                if (playerToggleFlightEvent.isCancelled()) {
+                    player.getAdventureSettings().update();
+                } else {
+                    player.getAdventureSettings().set(AdventureSettings.Type.FLYING, playerToggleFlightEvent.isFlying());
+                }
+                break;
+            case PlayerActionPacket.ACTION_STOP_FLYING:
+                playerToggleFlightEvent = new PlayerToggleFlightEvent(player, false);
+                player.getServer().getPluginManager().callEvent(playerToggleFlightEvent);
+                if (playerToggleFlightEvent.isCancelled()) {
+                    player.getAdventureSettings().update();
+                } else {
+                    player.getAdventureSettings().set(AdventureSettings.Type.FLYING, playerToggleFlightEvent.isFlying());
                 }
                 break;
         }
