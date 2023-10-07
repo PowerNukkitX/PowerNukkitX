@@ -29,7 +29,6 @@ import java.util.Objects;
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public abstract class EntityIntelligent extends EntityPhysical implements LogicalUtils, EntityControlUtils {
-    public static final IBehaviorGroup EMPTY_BEHAVIOR_GROUP = new EmptyBehaviorGroup();
 
     @Since("1.19.60-r1")
     protected IBehaviorGroup behaviorGroup;
@@ -79,7 +78,7 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
      */
     @Since("1.19.60-r1")
     protected IBehaviorGroup requireBehaviorGroup() {
-        return EMPTY_BEHAVIOR_GROUP;
+        return new EmptyBehaviorGroup(this);
     }
 
     @Override

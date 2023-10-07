@@ -149,6 +149,28 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
                 player.setGliding(false);
             }
         }
+        if (pk.getInputData().contains(AuthInputAction.START_FLYING)) {
+            if (!player.getServer().getAllowFlight() && !player.getAdventureSettings().get(AdventureSettings.Type.ALLOW_FLIGHT)) {
+                player.kick(PlayerKickEvent.Reason.FLYING_DISABLED, "Flying is not enabled on this server");
+                return;
+            }
+            PlayerToggleFlightEvent playerToggleFlightEvent = new PlayerToggleFlightEvent(player, true);
+            player.getServer().getPluginManager().callEvent(playerToggleFlightEvent);
+            if (playerToggleFlightEvent.isCancelled()) {
+                player.getAdventureSettings().update();
+            } else {
+                player.getAdventureSettings().set(AdventureSettings.Type.FLYING, playerToggleFlightEvent.isFlying());
+            }
+        }
+        if (pk.getInputData().contains(AuthInputAction.STOP_FLYING)) {
+            PlayerToggleFlightEvent playerToggleFlightEvent = new PlayerToggleFlightEvent(player, false);
+            player.getServer().getPluginManager().callEvent(playerToggleFlightEvent);
+            if (playerToggleFlightEvent.isCancelled()) {
+                player.getAdventureSettings().update();
+            } else {
+                player.getAdventureSettings().set(AdventureSettings.Type.FLYING, playerToggleFlightEvent.isFlying());
+            }
+        }
         Vector3 clientPosition = pk.getPosition().asVector3().subtract(0, playerHandle.getBaseOffset(), 0);
         float yaw = pk.getYaw() % 360;
         float pitch = pk.getPitch() % 360;

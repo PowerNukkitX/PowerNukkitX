@@ -1434,7 +1434,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return this.getLevel().setBlock(this, this, true, true);
     }
 
-    //http://minecraft.gamepedia.com/Breaking
+    //http://minecraft.wiki/w/Breaking
     public boolean canHarvestWithHand() {  //used for calculating breaking time
         return true;
     }
@@ -1625,7 +1625,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return isSideFull(side);
     }
 
-    // https://minecraft.gamepedia.com/Opacity#Lighting
+    // https://minecraft.wiki/w/Opacity#Lighting
     @PowerNukkitOnly
     public boolean diffusesSkyLight() {
         return false;
@@ -1979,7 +1979,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
                 (blockId == COBWEB && item.isShears());
     }
 
-    //http://minecraft.gamepedia.com/Breaking
+    //http://minecraft.wiki/w/Breaking
     private static double breakTime0(double blockHardness, boolean correctTool, boolean canHarvestWithHand,
                                      int blockId, int toolType, int toolTier, int efficiencyLoreLevel, int hasteEffectLevel,
                                      boolean insideOfWaterWithoutAquaAffinity, boolean outOfWaterButNotOnGround) {
@@ -2102,7 +2102,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     /**
-     * 计算方块挖掘需要多少tick (计算算法来自https://minecraft.fandom.com/wiki/Breaking)
+     * 计算方块挖掘需要多少tick (计算算法来自https://minecraft.wiki/w/Breaking)
      *
      * @param item   挖掘工具
      * @param player 挖掘方块的玩家

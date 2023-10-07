@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
 /**
- * http://minecraft.gamepedia.com/End_Rod
+ * http://minecraft.wiki/w/End_Rod
  *
  * @author PikyCZ
  */
