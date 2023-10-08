@@ -62,7 +62,7 @@ public abstract class BlockRedstoneRepeater extends BlockRedstoneDiode {
             return false;
         }
 
-        setPropertyValue(DIRECTION, player != null ? BlockFace.fromHorizontalIndex(player.getDirection().getOpposite().getHorizontalIndex()) : BlockFace.SOUTH);
+        setPropertyValue(CommonBlockProperties.CARDINAL_DIRECTION, player != null ? BlockFace.fromHorizontalIndex(player.getDirection().getOpposite().getHorizontalIndex()) : BlockFace.SOUTH);
         if (!this.level.setBlock(block, this, true, true)) {
             return false;
         }
@@ -77,7 +77,7 @@ public abstract class BlockRedstoneRepeater extends BlockRedstoneDiode {
 
     @Override
     public BlockFace getFacing() {
-        return getPropertyValue(DIRECTION);
+        return getPropertyValue(CommonBlockProperties.CARDINAL_DIRECTION);
     }
 
     @Override
