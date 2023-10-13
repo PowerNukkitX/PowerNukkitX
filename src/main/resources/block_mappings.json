@@ -127,14 +127,6 @@
     "4": "minecraft:acacia_fence",
     "5": "minecraft:dark_oak_fence"
   },
-  "162": {
-    "0": "minecraft:acacia_log;pillar_axis=y",
-    "1": "minecraft:dark_oak_log;pillar_axis=y",
-    "4": "minecraft:acacia_log;pillar_axis=x",
-    "5": "minecraft:dark_oak_log;pillar_axis=x",
-    "8": "minecraft:acacia_log;pillar_axis=z",
-    "9": "minecraft:dark_oak_log;pillar_axis=z"
-  },
   "17": {
     "0": "minecraft:oak_log;pillar_axis=y",
     "1": "minecraft:spruce_log;pillar_axis=y",
