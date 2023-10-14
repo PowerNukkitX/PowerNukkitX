@@ -3,9 +3,12 @@ package cn.nukkit.item;
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.Since;
+import cn.nukkit.item.trim.ItemTrimMaterialType;
+import cn.nukkit.item.trim.ItemTrimPatternType;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.ByteTag;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 
 import static cn.nukkit.utils.Utils.dynamic;
@@ -129,5 +132,16 @@ abstract public class ItemArmor extends Item implements ItemDurable {
     public boolean isUnbreakable() {
         Tag tag = this.getNamedTagEntry("Unbreakable");
         return tag instanceof ByteTag && ((ByteTag) tag).data > 0;
+    }
+
+    public void setTrim(ItemTrimPatternType pattern, ItemTrimMaterialType material) {
+        CompoundTag tag = new CompoundTag();
+        if (this.hasCompoundTag()) {
+            tag = this.getNamedTag();
+        }
+        tag = tag.putCompound("Trim", new CompoundTag()
+                .putString("Pattern", pattern.getTrimPattern())
+                .putString("Material", material.getMaterialName()));
+        this.setCompoundTag(tag);
     }
 }

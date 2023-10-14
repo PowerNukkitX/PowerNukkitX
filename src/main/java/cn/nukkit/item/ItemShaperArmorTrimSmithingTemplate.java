@@ -1,11 +1,11 @@
 package cn.nukkit.item;
 
-import cn.nukkit.item.Item;
+import cn.nukkit.item.trim.ItemTrimPatternType;
 
 /**
  * @author Glorydark
  */
-public class ItemShaperArmorTrimSmithingTemplate extends Item {
+public class ItemShaperArmorTrimSmithingTemplate extends Item implements ItemTrimPattern {
 
     public ItemShaperArmorTrimSmithingTemplate() {
         this(0, 1);
@@ -17,5 +17,10 @@ public class ItemShaperArmorTrimSmithingTemplate extends Item {
 
     public ItemShaperArmorTrimSmithingTemplate(Integer meta, int count) {
         super(SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE, meta, count, "Shaper Armor Trim Smithing Template");
+    }
+
+    @Override
+    public ItemTrimPatternType getPattern() {
+        return ItemTrimPatternType.SHAPER_ARMOR_TRIM;
     }
 }

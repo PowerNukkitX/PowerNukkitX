@@ -2,10 +2,11 @@ package cn.nukkit.item;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.item.trim.ItemTrimMaterialType;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class ItemAmethystShard extends Item {
+public class ItemAmethystShard extends Item implements ItemTrimMaterial {
     public ItemAmethystShard() {
         this(AMETHYST_SHARD);
     }
@@ -32,5 +33,10 @@ public class ItemAmethystShard extends Item {
 
     public ItemAmethystShard(int id, Integer meta, int count, String name) {
         super(id, meta, count, name);
+    }
+
+    @Override
+    public ItemTrimMaterialType getMaterial() {
+        return ItemTrimMaterialType.MATERIAL_AMETHYST;
     }
 }

@@ -2,9 +2,10 @@ package cn.nukkit.item;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.item.trim.ItemTrimMaterialType;
 
 @Since("1.4.0.0-PN")
-public class ItemIngotNetherite extends Item {
+public class ItemIngotNetherite extends Item implements ItemTrimMaterial {
 
     @Since("1.4.0.0-PN")
     public ItemIngotNetherite() {
@@ -24,5 +25,10 @@ public class ItemIngotNetherite extends Item {
     @Override
     public boolean isLavaResistant() {
         return true;
+    }
+
+    @Override
+    public ItemTrimMaterialType getMaterial() {
+        return ItemTrimMaterialType.MATERIAL_NETHERITE;
     }
 }

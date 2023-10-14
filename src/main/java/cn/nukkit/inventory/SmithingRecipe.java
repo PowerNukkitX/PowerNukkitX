@@ -88,27 +88,37 @@ public class SmithingRecipe extends ShapelessRecipe {
         return result;
     }
 
+    @Deprecated
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public Item getFinalResult(Item equip) {
-        Item finalResult = getResult().clone();
+        return getFinalResult(equip, template);
+    }
 
-        if (equip.hasCompoundTag()) {
-            finalResult.setCompoundTag(equip.getCompoundTag());
-        }
+    @PowerNukkitXOnly
+    @Since("1.20.30-r2")
+    public Item getFinalResult(Item equip, Item template) {
+        if (template.getNamespaceId().equals("minecraft:netherite_upgrade_smithing_template")) { //We do not use the recipe check template for the time being
+            Item finalResult = getResult().clone();
 
-        int maxDurability = finalResult.getMaxDurability();
-        if (maxDurability <= 0 || equip.getMaxDurability() <= 0) {
+            if (equip.hasCompoundTag()) {
+                finalResult.setCompoundTag(equip.getCompoundTag());
+            }
+
+            int maxDurability = finalResult.getMaxDurability();
+            if (maxDurability <= 0 || equip.getMaxDurability() <= 0) {
+                return finalResult;
+            }
+
+            int damage = equip.getDamage();
+            if (damage <= 0) {
+                return finalResult;
+            }
+
+            finalResult.setDamage(Math.min(maxDurability, damage));
             return finalResult;
         }
-
-        int damage = equip.getDamage();
-        if (damage <= 0) {
-            return finalResult;
-        }
-
-        finalResult.setDamage(Math.min(maxDurability, damage));
-        return finalResult;
+        return Item.AIR_ITEM.clone();
     }
 
     @Override

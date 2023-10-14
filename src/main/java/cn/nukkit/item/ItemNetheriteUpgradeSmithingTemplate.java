@@ -1,7 +1,5 @@
 package cn.nukkit.item;
 
-import cn.nukkit.item.Item;
-
 /**
  * @author Glorydark
  */

@@ -547,6 +547,7 @@ public class CraftingManager {
         getMultiRecipeMap().put(recipe.getId(), recipe);
     }
 
+    @Deprecated
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Nullable
@@ -573,6 +574,7 @@ public class CraftingManager {
                 );
     }
 
+    @Deprecated
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Nullable
@@ -929,7 +931,7 @@ public class CraftingManager {
             Item outputItem = parseRecipeItem(output);
             Map<String, Object> template = (Map<String, Object>) recipeObject.get("template");
             Item templateItem = parseRecipeItem(template);
-            if (additionItem.isNull() || inputItem.isNull() || outputItem.isNull() /*|| templateItem.isNull()*/) {
+            if (additionItem.isNull() || inputItem.isNull() || outputItem.isNull() || templateItem.isNull()) {
                 return null;
             }
             items.add(inputItem);
