@@ -7,6 +7,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.ArrayBlockProperty;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BlockProperty;
+import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.blockproperty.value.AnvilDamage;
 import cn.nukkit.inventory.AnvilInventory;
 import cn.nukkit.item.Item;
@@ -19,8 +20,6 @@ import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
-
-import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
 
 /**
  * @author Pub4Game
@@ -35,7 +34,7 @@ public class BlockAnvil extends BlockFallableMeta implements Faceable {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(
-        DIRECTION.exportingToItems(true), DAMAGE.exportingToItems(true)
+            CommonBlockProperties.CARDINAL_DIRECTION.exportingToItems(true), DAMAGE.exportingToItems(true)
     );
 
     public BlockAnvil() {
@@ -147,12 +146,12 @@ public class BlockAnvil extends BlockFallableMeta implements Faceable {
     @PowerNukkitOnly
     @Override
     public void setBlockFace(BlockFace face) {
-        setPropertyValue(DIRECTION, face);
+        setPropertyValue(CommonBlockProperties.CARDINAL_DIRECTION, face);
     }
 
     @Override
     public BlockFace getBlockFace() {
-        return getPropertyValue(DIRECTION);
+        return getPropertyValue(CommonBlockProperties.CARDINAL_DIRECTION);
     }
 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed the returned bounding box")

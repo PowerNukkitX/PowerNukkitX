@@ -6,6 +6,7 @@ import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.behavior.IBehavior;
 import cn.nukkit.entity.ai.controller.IController;
 import cn.nukkit.entity.ai.memory.IMemoryStorage;
+import cn.nukkit.entity.ai.memory.MemoryStorage;
 import cn.nukkit.entity.ai.route.finder.IRouteFinder;
 import cn.nukkit.entity.ai.sensor.ISensor;
 
@@ -18,6 +19,16 @@ import java.util.Set;
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public class EmptyBehaviorGroup implements IBehaviorGroup {
+
+    protected EntityIntelligent entity;
+    protected IMemoryStorage memoryStorage;
+
+    public EmptyBehaviorGroup(EntityIntelligent entity) {
+        this.entity = entity;
+        this.memoryStorage = new MemoryStorage(entity);
+    }
+    
+    
     @Override
     public void evaluateBehaviors(EntityIntelligent entity) {
 
@@ -90,7 +101,7 @@ public class EmptyBehaviorGroup implements IBehaviorGroup {
 
     @Override
     public IMemoryStorage getMemoryStorage() {
-        return null;
+        return this.memoryStorage;
     }
 
     @Override

@@ -11,11 +11,65 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 3. <a href="#CataLogs-Version-history">🔖 Version history / 历史版本 </a>
 
 ## [Dev-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - Future
-This work in progress version supports Minecraft:BE `1.20.10 (Protocol Version 594)`.
+This work in progress version supports Minecraft:BE `1.20.30 (Protocol Version 618)`.
 
-## Under development, stay tuned!
+## Added
 
-## [1.20.10-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.10-r2) - 2023-7-15
+- [#1379] Added Deepslate Generation.
+
+## Changed
+
+- [#1390] Update English Minecraft Wiki links to new domain.
+
+## Fixes
+
+- [#1385] Fix colored terracotta blocks.
+- [#1386] Fix: anvil property operate.
+- [#1387] Fix furnace facing.
+
+## [1.20.30-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.30-r1) - 2023-9-25
+This work in progress version supports Minecraft:BE `1.20.30 (Protocol Version 618)`.
+
+## Added
+
+- [#1329] Dead bush can be placed on grass and moss blocks.
+- [#1333] Add `Bamboo raft`.
+- [#1346] Add new blocks items.
+- [#1348] Add missing `CherryHangingSign`.
+- [#1349] Added simple `mangrove tree` (and some fixes).
+- [#1358] Achieving durable consumption of Elytra.
+- [#1363] Added support to shut down a server with `ctrl+c`.
+- [#1376] Entity Prorperty System.
+- [#1381] Adapt Minecraft:BE `1.20.30  (Protocol Version 618)`.
+- [#1381] `PNX-1.20.30-r1` released.
+
+## Changed
+
+- [#1326] Update `maven.yml`.
+- [#1339] Separate plugin authors with "," in the `version command`.
+- [#1341] Optimize the overall bow experience.
+- [#1344] `/fog pop` changed to remove the last (most recent) addition of fog.
+- [#1357] The `WaterdogPE` configuration does not affect experimental mode.
+- [#1374] Update `StartGamePacket.java`.
+- [#1383] `Hardcode force experimental gameplay` to `false`.
+
+## Fixes
+
+- [#1321] Fix some issues with Lectern.
+- [#1322] Fix the number of Shepherd villagers trading beds.
+- [#1325] Fix wrong `damagecause`.
+- [#1331] Fix `/fill` replace logic.
+- [#1334] Fix Totem of Undying animation issues.
+- [#1336] Fix `/fill hollow-outline`.
+- [#1341] Fix bow related issues.
+- [#1351] Fix Block Entity Bug.
+- [#1352] Fix wrong `if-else` statement.
+- [#1358] Fix Elytra landing not ending flight.
+- [#1365] Fix item judgment on Anvil and Enchanting Table.
+- [#1371] Fixing the recipe conventions for `block_states`.
+- [#1377]/[#1378] Fixing `WaterdogPE` related issues.
+
+## [1.20.10-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.10-r1) - 2023-7-15
 This work in progress version supports Minecraft:BE `1.20.10 (Protocol Version 594)`.
 
 ## Added
@@ -1857,6 +1911,13 @@ Fixes several anvil issues.
 
 </details>
 
+<details>
+  <summary>1.20.30-PNX</summary>
+
+   1. [#1.20.30-r1] PNX-1.20.30-r1 (Protocol Version 618)
+
+</details>
+
 ## <a id="CataLogs-Swlang"></a>🌐 多语言文档
 
 ---
@@ -2681,6 +2742,39 @@ Need to switch languages?
 [#1317]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1317
 [#1318]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1318
 [#1319]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1319
+[#1321]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1321
+[#1322]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1322
+[#1325]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1325
+[#1326]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1326
+[#1329]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1329
+[#1331]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1331
+[#1333]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1333
+[#1334]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1334
+[#1336]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1336
+[#1339]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1339
+[#1341]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1341
+[#1344]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1344
+[#1346]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1346
+[#1348]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1348
+[#1349]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1349
+[#1351]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1351
+[#1352]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1352
+[#1357]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1357
+[#1358]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1358
+[#1363]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1363
+[#1365]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1365
+[#1371]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1371
+[#1374]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1374
+[#1376]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1376
+[#1377]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1377
+[#1378]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1378
+[#1379]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1379
+[#1381]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1381
+[#1383]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1383
+[#1385]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1385
+[#1386]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1386
+[#1387]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1387
+[#1390]: https://github.com/PowerNukkitX/PowerNukkitX/pull/1390
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->
@@ -2767,6 +2861,8 @@ Need to switch languages?
 [#1.20.0-r2]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.0-r2
 <!--1.20.10-r1-PNX Protocol Version 594-->
 [#1.20.10-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.10-r1
+<!--1.20.30-r1-PNX Protocol Version 618-->
+[#1.20.30-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.20.30-r1
 <!--1.20.xx-PNX Version summary End-->
 
 <!--PowerNukkitX Urls-->

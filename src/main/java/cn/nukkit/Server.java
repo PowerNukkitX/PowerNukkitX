@@ -15,6 +15,7 @@ import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.entity.data.profession.Profession;
+import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.event.level.LevelInitEvent;
 import cn.nukkit.event.level.LevelLoadEvent;
@@ -955,6 +956,9 @@ public class Server {
 
         this.enablePlugins(PluginLoadOrder.POSTWORLD);
 
+        EntityProperty.buildPacket();
+        EntityProperty.buildPlayerProperty();
+
         if (this.getConfig("settings.download-spark", false)) {
             SparkInstaller.initSpark(this);
         }
@@ -1203,6 +1207,11 @@ public class Server {
 
             try {
                 long levelTime = System.currentTimeMillis();
+                //Ensures that the server won't try to tick a level without providers.
+                if(level.getProvider().getLevel() == null) {
+                    log.warn("Tried to tick Level " + level.getName() + " without a provider!");
+                    continue;
+                }
                 level.doTick(currentTick);
                 int tickMs = (int) (System.currentTimeMillis() - levelTime);
                 level.tickRateTime = tickMs;

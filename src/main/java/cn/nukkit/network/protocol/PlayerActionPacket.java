@@ -41,6 +41,9 @@ public class PlayerActionPacket extends DataPacket {
     public static final int ACTION_START_ITEM_USE_ON = 28;
     public static final int ACTION_STOP_ITEM_USE_ON = 29;
 
+    public static final int ACTION_START_FLYING = 34;
+    public static final int ACTION_STOP_FLYING = 35;
+
     public long entityId;
     public int action;
     public int x;

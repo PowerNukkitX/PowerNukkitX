@@ -2,8 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * @author joserobjr
@@ -28,14 +26,6 @@ public class BlockSlabDeepslateCobbled extends BlockSlab {
     @Override
     public int getId() {
         return COBBLED_DEEPSLATE_SLAB;
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @NotNull
-    @Override
-    public BlockProperties getProperties() {
-        return SIMPLE_SLAB_PROPERTIES;
     }
 
     @Since("1.4.0.0-PN")

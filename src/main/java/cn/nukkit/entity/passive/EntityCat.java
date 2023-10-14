@@ -87,7 +87,7 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
                                 ),
                                 1, 1
                         ),
-                        //"流浪猫会寻找并攻击15格内的鸡[仅Java版]、兔子和幼年海龟" --- 来自Wiki https://minecraft.fandom.com/wiki/Cat#Bedrock_Edition
+                        //"流浪猫会寻找并攻击15格内的鸡[仅Java版]、兔子和幼年海龟" --- 来自Wiki https://minecraft.wiki/w/Cat#Bedrock_Edition
                         new Behavior(
                                 entity -> {
                                     if (this.hasOwner(false)) return false;
@@ -148,7 +148,7 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
         );
     }
 
-    //猫咪身体大小来自Wiki https://minecraft.fandom.com/wiki/Cat
+    //猫咪身体大小来自Wiki https://minecraft.wiki/w/Cat
     @Override
     public float getWidth() {
         return this.isBaby() ? 0.24f : 0.48f;

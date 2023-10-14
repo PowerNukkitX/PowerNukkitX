@@ -1,7 +1,6 @@
 package cn.powernukkitx.block;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockPumpkin;
 import cn.nukkit.dispenser.DispenseBehaviorRegister;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.item.Item;
@@ -25,12 +24,6 @@ public class BlockStateTest {
         Attribute.init();
         DispenseBehaviorRegister.init();
         GlobalBlockPalette.getOrCreateRuntimeId(0, 0); //Force it to load
-
-        BlockPumpkin block = new BlockPumpkin();
-        for (var i : BlockPumpkin.CARDINAL_DIRECTION.getUniverse()) {
-            block.setPropertyValue(BlockPumpkin.CARDINAL_DIRECTION, i);
-            System.out.println(block.getDataStorage().intValue());
-        }
         System.exit(0);
     }
 }

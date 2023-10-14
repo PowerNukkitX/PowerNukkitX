@@ -30,7 +30,7 @@ public class BlockFurnaceBurning extends BlockSolidMeta implements Faceable, Blo
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
-    public static final BlockProperties PROPERTIES = CommonBlockProperties.FACING_DIRECTION_BLOCK_PROPERTIES;
+    public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.CARDINAL_DIRECTION);
 
     public BlockFurnaceBurning() {
         this(0);
@@ -101,7 +101,7 @@ public class BlockFurnaceBurning extends BlockSolidMeta implements Faceable, Blo
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        int[] faces = {2, 5, 3, 4};
+        int[] faces = {2, 3, 0, 1};
         this.setDamage(faces[player != null ? player.getDirection().getHorizontalIndex() : 0]);
         CompoundTag nbt = new CompoundTag().putList(new ListTag<>("Items"));
 

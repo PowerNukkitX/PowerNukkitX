@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📚 Documentation
+    url: https://www.powernukkitx.com/doc/index.html
+    about: PowerNukkitX Ducumentation
+  - name: 💁‍♀️ Help & support on Discord
+    url: https://discord.gg/9ygGndMvaB
+    about: We do not accept plugin problems or questions about your code, we invite you to join the discord so that the community can answer you

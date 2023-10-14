@@ -13,10 +13,8 @@ import java.util.Locale;
  * @since 2021-06-14
  */
 @PowerNukkitOnly
-@Since("FUTURE")
 public class BlockDoubleSlabCopperCut extends BlockDoubleSlabCopperBase {
     @PowerNukkitOnly
-    @Since("FUTURE")
     public BlockDoubleSlabCopperCut() {
         this(0);
     }

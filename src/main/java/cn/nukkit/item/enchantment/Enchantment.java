@@ -711,7 +711,7 @@ public abstract class Enchantment implements Cloneable {
     }
 
     /**
-     * The minimum enchantability for the given level as described in https://minecraft.gamepedia.com/Enchanting/Levels
+     * The minimum enchantability for the given level as described in https://minecraft.wiki/w/Enchanting/Levels
      *
      * @param level The level being checked
      * @return The minimum value
@@ -721,7 +721,7 @@ public abstract class Enchantment implements Cloneable {
     }
 
     /**
-     * The maximum enchantability for the given level as described in https://minecraft.gamepedia.com/Enchanting/Levels
+     * The maximum enchantability for the given level as described in https://minecraft.wiki/w/Enchanting/Levels
      *
      * @param level The level being checked
      * @return The maximum value

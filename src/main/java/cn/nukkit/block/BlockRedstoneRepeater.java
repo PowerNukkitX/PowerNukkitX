@@ -5,6 +5,7 @@ import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
+import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.blockproperty.IntBlockProperty;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemRedstoneRepeater;
@@ -23,7 +24,7 @@ public abstract class BlockRedstoneRepeater extends BlockRedstoneDiode {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(
-            DIRECTION,
+            CommonBlockProperties.CARDINAL_DIRECTION,
             REPEATER_DELAY
     );
 
@@ -61,7 +62,7 @@ public abstract class BlockRedstoneRepeater extends BlockRedstoneDiode {
             return false;
         }
 
-        setPropertyValue(DIRECTION, player != null ? BlockFace.fromHorizontalIndex(player.getDirection().getOpposite().getHorizontalIndex()) : BlockFace.SOUTH);
+        setPropertyValue(CommonBlockProperties.CARDINAL_DIRECTION, player != null ? BlockFace.fromHorizontalIndex(player.getDirection().getOpposite().getHorizontalIndex()) : BlockFace.SOUTH);
         if (!this.level.setBlock(block, this, true, true)) {
             return false;
         }
@@ -76,7 +77,7 @@ public abstract class BlockRedstoneRepeater extends BlockRedstoneDiode {
 
     @Override
     public BlockFace getFacing() {
-        return getPropertyValue(DIRECTION);
+        return getPropertyValue(CommonBlockProperties.CARDINAL_DIRECTION);
     }
 
     @Override

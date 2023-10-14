@@ -5,16 +5,16 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import lombok.SneakyThrows;
 
-import java.io.*;
-import java.net.*;
+import java.io.FileReader;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.ProxySelector;
+import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.util.*;
 
 @SuppressWarnings("unchecked")
@@ -116,9 +116,11 @@ public class UpdateResource {
             builder.proxy(ProxySelector.of(new InetSocketAddress(proxyHost, proxyPort)));
         }
         var client = builder.build();
+        Path path = Path.of(into);
+        Files.delete(path);
         var resp = client.send(HttpRequest.newBuilder().uri(URI.create(url)).
                 header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36")
-                .GET().build(), HttpResponse.BodyHandlers.ofFile(Paths.get(into)));
+                .GET().build(), HttpResponse.BodyHandlers.ofFile(path, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE));
         System.out.println(resp.statusCode());
     }
 
