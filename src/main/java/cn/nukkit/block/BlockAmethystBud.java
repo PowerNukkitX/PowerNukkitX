@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.BLOCK_FACE;
 import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
 
 @Since("1.6.0.0-PNX")
@@ -23,7 +24,7 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
 public abstract class BlockAmethystBud extends BlockTransparentMeta implements Faceable {
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public static final BlockProperties PROPERTIES = new BlockProperties(FACING_DIRECTION);
+    public static final BlockProperties PROPERTIES = new BlockProperties(BLOCK_FACE);
 
     @Override
     public String getName() {
@@ -86,14 +87,14 @@ public abstract class BlockAmethystBud extends BlockTransparentMeta implements F
 
     @Override
     public BlockFace getBlockFace() {
-        return getPropertyValue(FACING_DIRECTION);
+        return getPropertyValue(BLOCK_FACE);
     }
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     @Override
     public void setBlockFace(BlockFace face) {
-        setPropertyValue(FACING_DIRECTION, face);
+        setPropertyValue(BLOCK_FACE, face);
     }
 
     @Override
