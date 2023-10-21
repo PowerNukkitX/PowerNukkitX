@@ -23,7 +23,7 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
 public abstract class BlockAmethystBud extends BlockTransparentMeta implements Faceable {
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.BLOCK_FACE);
+    public static final BlockProperties PROPERTIES = new BlockProperties(FACING_DIRECTION);
 
     @Override
     public String getName() {

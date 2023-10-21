@@ -328,11 +328,7 @@ public class BlockStateRegistry {
         } catch (Exception e) {
             log.fatal("An error has occurred while trying to parse the legacyStateId of {}:{}", state.getBlockId(), state.getDataStorage(), e);
         }
-
-        logDiscoveryError(state);
-
-        // Replace broken block with air
-        return new Registration(BlockState.AIR, 0, 0, null);
+        return logDiscoveryError(state);
     }
 
     private void removeStateIdsAsync(@Nullable Registration registration) {
@@ -341,7 +337,7 @@ public class BlockStateRegistry {
         }
     }
 
-    private void logDiscoveryError(BlockState state) {
+    private Registration logDiscoveryError(BlockState state) {
         log.error("Found an unknown BlockId:Meta combination: {}:{}"
                         + " - {}"
                         + " - {}"
@@ -350,6 +346,7 @@ public class BlockStateRegistry {
                 state.getBlockId(), state.getDataStorage(), state.getStateId(), state.getProperties(),
                 blockIdToPersistenceName.get(state.getBlockId())
         );
+        return updateBlockRegistration;
     }
 
     @PowerNukkitOnly
