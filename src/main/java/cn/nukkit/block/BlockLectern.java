@@ -21,14 +21,13 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
-import static cn.nukkit.blockproperty.CommonBlockProperties.POWERED;
+import static cn.nukkit.blockproperty.CommonBlockProperties.*;
 
 @PowerNukkitOnly
 public class BlockLectern extends BlockTransparentMeta implements RedstoneComponent, Faceable, BlockEntityHolder<BlockEntityLectern> {
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(DIRECTION, POWERED);
+    public static final BlockProperties PROPERTIES = new BlockProperties(CARDINAL_DIRECTION, POWERED);
 
     @PowerNukkitOnly
     public BlockLectern() {
