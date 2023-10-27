@@ -22,7 +22,7 @@ public class BlockStonecutterBlock extends BlockTransparentMeta implements Facea
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
-    public static final BlockProperties PROPERTIES = CommonBlockProperties.FACING_DIRECTION_BLOCK_PROPERTIES;
+    public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.CARDINAL_DIRECTION);
 
     @PowerNukkitOnly
     public BlockStonecutterBlock() {
