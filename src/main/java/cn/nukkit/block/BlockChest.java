@@ -33,7 +33,7 @@ public class BlockChest extends BlockTransparentMeta implements Faceable, BlockE
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
-    public static final BlockProperties PROPERTIES = CommonBlockProperties.FACING_DIRECTION_BLOCK_PROPERTIES;
+    public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.CARDINAL_DIRECTION);
 
     public BlockChest() {
         this(0);
