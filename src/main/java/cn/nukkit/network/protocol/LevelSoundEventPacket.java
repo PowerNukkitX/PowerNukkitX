@@ -606,7 +606,9 @@ public class LevelSoundEventPacket extends DataPacket {
     public static final int SOUND_HOGLIN_CONVERT_TO_ZOMBIE = 474;
     public static final int SOUND_AMBIENT_UNDERWATER_ENTER = 475;
     public static final int SOUND_AMBIENT_UNDERWATER_EXIT = 476;
-    public static final int SOUND_UNDEFINED = dynamic(477);
+    public static final int SOUND_BOTTLE_FILL = 477;
+    public static final int SOUND_BOTTLE_EMPTY = 478;
+    public static final int SOUND_UNDEFINED = dynamic(479);
 
     public int sound;
     public float x;

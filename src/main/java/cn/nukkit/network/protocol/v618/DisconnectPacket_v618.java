@@ -1,16 +1,17 @@
-package cn.nukkit.network.protocol;
+package cn.nukkit.network.protocol.v618;
 
-import cn.nukkit.network.protocol.types.DisconnectFailReason;
+import cn.nukkit.network.protocol.DataPacket;
+import cn.nukkit.network.protocol.ProtocolInfo;
 import lombok.ToString;
 
 /**
  * @since 15-10-12
  */
 @ToString
-public class DisconnectPacket extends DataPacket {
+@Deprecated(since = "1.20.40-r1")
+public class DisconnectPacket_v618 extends DataPacket {
     public static final byte NETWORK_ID = ProtocolInfo.DISCONNECT_PACKET;
 
-    public DisconnectFailReason reason = DisconnectFailReason.UNKNOWN;
     public boolean hideDisconnectionScreen = false;
     public String message;
 
@@ -21,7 +22,6 @@ public class DisconnectPacket extends DataPacket {
 
     @Override
     public void decode() {
-        this.reason = DisconnectFailReason.values()[this.getVarInt()];
         this.hideDisconnectionScreen = this.getBoolean();
         this.message = this.getString();
     }
@@ -29,7 +29,6 @@ public class DisconnectPacket extends DataPacket {
     @Override
     public void encode() {
         this.reset();
-        this.putVarInt(this.reason.ordinal());
         this.putBoolean(this.hideDisconnectionScreen);
         if (!this.hideDisconnectionScreen) {
             this.putString(this.message);
