@@ -5026,7 +5026,7 @@
     },
     "output": [
       {
-        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgAAAAABDQB0cmlnZ2VyZWRfYml0AAA=",
+        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgMAAAABDQB0cmlnZ2VyZWRfYml0AAA=",
         "name": "minecraft:dispenser"
       }
     ],
@@ -5105,7 +5105,7 @@
     },
     "output": [
       {
-        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgAAAAABDQB0cmlnZ2VyZWRfYml0AAA=",
+        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgMAAAABDQB0cmlnZ2VyZWRfYml0AAA=",
         "name": "minecraft:dropper"
       }
     ],
@@ -5304,7 +5304,7 @@
     },
     "output": [
       {
-        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgAAAAAA",
+        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgEAAAAA",
         "name": "minecraft:piston"
       }
     ],
@@ -5672,14 +5672,13 @@
     },
     "output": [
       {
-        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgAAAAAA",
-        "name": "minecraft:chest"
+        "block_states": "CgAACBcAbWluZWNyYWZ0OnZlcnRpY2FsX2hhbGYGAGJvdHRvbQA=",
+        "count": 6,
+        "name": "minecraft:crimson_slab"
       }
     ],
-    "priority": 2,
+    "priority": 0,
     "shape": [
-      "AAA",
-      "A A",
       "AAA"
     ]
   },
@@ -5693,13 +5692,14 @@
     },
     "output": [
       {
-        "block_states": "CgAACBcAbWluZWNyYWZ0OnZlcnRpY2FsX2hhbGYGAGJvdHRvbQA=",
-        "count": 6,
-        "name": "minecraft:crimson_slab"
+        "block_states": "CgAACBwAbWluZWNyYWZ0OmNhcmRpbmFsX2RpcmVjdGlvbgUAbm9ydGgA",
+        "name": "minecraft:chest"
       }
     ],
-    "priority": 0,
+    "priority": 2,
     "shape": [
+      "AAA",
+      "A A",
       "AAA"
     ]
   },
@@ -9964,7 +9964,7 @@
     },
     "output": [
       {
-        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgAAAAAA",
+        "block_states": "CgAACBwAbWluZWNyYWZ0OmNhcmRpbmFsX2RpcmVjdGlvbgUAbm9ydGgA",
         "name": "minecraft:stonecutter_block"
       }
     ],
@@ -10746,7 +10746,7 @@
     },
     "output": [
       {
-        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgAAAAAA",
+        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgEAAAAA",
         "name": "minecraft:piston"
       }
     ],
@@ -11114,14 +11114,13 @@
     },
     "output": [
       {
-        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgAAAAAA",
-        "name": "minecraft:chest"
+        "block_states": "CgAACBcAbWluZWNyYWZ0OnZlcnRpY2FsX2hhbGYGAGJvdHRvbQA=",
+        "count": 6,
+        "name": "minecraft:mangrove_slab"
       }
     ],
-    "priority": 2,
+    "priority": 0,
     "shape": [
-      "AAA",
-      "A A",
       "AAA"
     ]
   },
@@ -11135,13 +11134,14 @@
     },
     "output": [
       {
-        "block_states": "CgAACBcAbWluZWNyYWZ0OnZlcnRpY2FsX2hhbGYGAGJvdHRvbQA=",
-        "count": 6,
-        "name": "minecraft:mangrove_slab"
+        "block_states": "CgAACBwAbWluZWNyYWZ0OmNhcmRpbmFsX2RpcmVjdGlvbgUAbm9ydGgA",
+        "name": "minecraft:chest"
       }
     ],
-    "priority": 0,
+    "priority": 2,
     "shape": [
+      "AAA",
+      "A A",
       "AAA"
     ]
   },
@@ -11684,7 +11684,7 @@
     },
     "output": [
       {
-        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgAAAAAA",
+        "block_states": "CgAACBwAbWluZWNyYWZ0OmNhcmRpbmFsX2RpcmVjdGlvbgUAbm9ydGgA",
         "name": "minecraft:ender_chest"
       }
     ],
@@ -12957,7 +12957,7 @@
     },
     "output": [
       {
-        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgAAAAAA",
+        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgEAAAAA",
         "name": "minecraft:sticky_piston"
       }
     ],
@@ -16659,7 +16659,7 @@
     },
     "output": [
       {
-        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgAAAAAA",
+        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgEAAAAA",
         "name": "minecraft:piston"
       }
     ],
@@ -17027,14 +17027,13 @@
     },
     "output": [
       {
-        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgAAAAAA",
-        "name": "minecraft:chest"
+        "block_states": "CgAACBcAbWluZWNyYWZ0OnZlcnRpY2FsX2hhbGYGAGJvdHRvbQA=",
+        "count": 6,
+        "name": "minecraft:warped_slab"
       }
     ],
-    "priority": 2,
+    "priority": 0,
     "shape": [
-      "AAA",
-      "A A",
       "AAA"
     ]
   },
@@ -17048,13 +17047,14 @@
     },
     "output": [
       {
-        "block_states": "CgAACBcAbWluZWNyYWZ0OnZlcnRpY2FsX2hhbGYGAGJvdHRvbQA=",
-        "count": 6,
-        "name": "minecraft:warped_slab"
+        "block_states": "CgAACBwAbWluZWNyYWZ0OmNhcmRpbmFsX2RpcmVjdGlvbgUAbm9ydGgA",
+        "name": "minecraft:chest"
       }
     ],
-    "priority": 0,
+    "priority": 2,
     "shape": [
+      "AAA",
+      "A A",
       "AAA"
     ]
   },
@@ -20938,7 +20938,7 @@
     },
     "output": [
       {
-        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgAAAAAA",
+        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgEAAAAA",
         "name": "minecraft:piston"
       }
     ],
@@ -21212,7 +21212,7 @@
     },
     "output": [
       {
-        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgAAAAAA",
+        "block_states": "CgAACBwAbWluZWNyYWZ0OmNhcmRpbmFsX2RpcmVjdGlvbgUAbm9ydGgA",
         "name": "minecraft:chest"
       }
     ],
