@@ -136,7 +136,7 @@ public class BlockChest extends BlockTransparentMeta implements Faceable, BlockE
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        int[] faces = {2, 5, 3, 4};
+        int[] faces = {2, 3, 0, 1};
         this.setDamage(faces[player != null ? player.getDirection().getHorizontalIndex() : 0]);
 
         CompoundTag nbt = new CompoundTag().putList(new ListTag<>("Items"));
