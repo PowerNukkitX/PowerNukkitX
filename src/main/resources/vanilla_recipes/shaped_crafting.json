@@ -5026,7 +5026,7 @@
     },
     "output": [
       {
-        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgMAAAABDQB0cmlnZ2VyZWRfYml0AAA=",
+        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgAAAAABDQB0cmlnZ2VyZWRfYml0AAA=",
         "name": "minecraft:dispenser"
       }
     ],
@@ -5105,7 +5105,7 @@
     },
     "output": [
       {
-        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgMAAAABDQB0cmlnZ2VyZWRfYml0AAA=",
+        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgAAAAABDQB0cmlnZ2VyZWRfYml0AAA=",
         "name": "minecraft:dropper"
       }
     ],
@@ -5304,7 +5304,7 @@
     },
     "output": [
       {
-        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgEAAAAA",
+        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgAAAAAA",
         "name": "minecraft:piston"
       }
     ],
@@ -10746,7 +10746,7 @@
     },
     "output": [
       {
-        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgEAAAAA",
+        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgAAAAAA",
         "name": "minecraft:piston"
       }
     ],
@@ -12957,7 +12957,7 @@
     },
     "output": [
       {
-        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgEAAAAA",
+        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgAAAAAA",
         "name": "minecraft:sticky_piston"
       }
     ],
@@ -16659,7 +16659,7 @@
     },
     "output": [
       {
-        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgEAAAAA",
+        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgAAAAAA",
         "name": "minecraft:piston"
       }
     ],
@@ -20938,7 +20938,7 @@
     },
     "output": [
       {
-        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgEAAAAA",
+        "block_states": "CgAAAxAAZmFjaW5nX2RpcmVjdGlvbgAAAAAA",
         "name": "minecraft:piston"
       }
     ],

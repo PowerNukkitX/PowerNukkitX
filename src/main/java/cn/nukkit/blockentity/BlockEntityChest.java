@@ -82,7 +82,9 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer implements B
 
             if (pair.doubleInventory != null) {
                 this.doubleInventory = pair.doubleInventory;
+                this.namedTag.putBoolean("pairlead",false);
             } else if (this.doubleInventory == null) {
+                this.namedTag.putBoolean("pairlead",true);
                 if ((pair.x + ((int) pair.z << 15)) > (this.x + ((int) this.z << 15))) { //Order them correctly
                     this.doubleInventory = new DoubleChestInventory(pair, this);
                 } else {
@@ -94,6 +96,7 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer implements B
                 this.doubleInventory = null;
                 this.namedTag.remove("pairx");
                 this.namedTag.remove("pairz");
+                this.namedTag.remove("pairlead");
             }
         }
     }
@@ -119,10 +122,10 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer implements B
         }
 
         this.createPair(chest);
+        this.checkPairing();
 
         chest.spawnToAll();
         this.spawnToAll();
-        this.checkPairing();
 
         return true;
     }
@@ -168,6 +171,7 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer implements B
                     .putInt("x", (int) this.x)
                     .putInt("y", (int) this.y)
                     .putInt("z", (int) this.z)
+                    .putBoolean("pairlead", this.namedTag.getBoolean("pairlead"))
                     .putInt("pairx", this.namedTag.getInt("pairx"))
                     .putInt("pairz", this.namedTag.getInt("pairz"));
         } else {
