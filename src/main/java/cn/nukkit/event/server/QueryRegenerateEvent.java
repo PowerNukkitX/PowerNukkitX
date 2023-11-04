@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
+import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.plugin.PluginDescription;
 import cn.nukkit.utils.Binary;
@@ -35,7 +36,7 @@ public class QueryRegenerateEvent extends ServerEvent {
     private Player[] players;
 
     private final String gameType;
-    private final String version;
+    private String version;
     private final String server_engine;
     private String map;
     private int numPlayers;
@@ -57,7 +58,7 @@ public class QueryRegenerateEvent extends ServerEvent {
         this.plugins = server.getPluginManager().getPlugins().values().toArray(Plugin.EMPTY_ARRAY);
         this.players = server.getOnlinePlayers().values().toArray(Player.EMPTY_ARRAY);
         this.gameType = (server.getGamemode() & 0x01) == 0 ? "SMP" : "CMP";
-        this.version = server.getVersion();
+        this.version = ProtocolInfo.MINECRAFT_VERSION_NETWORK;
         this.server_engine = server.getName() + " " + server.getNukkitVersion() + " ("+server.getGitCommit()+")";
         this.map = server.getDefaultLevel() == null ? "unknown" : server.getDefaultLevel().getName();
         this.numPlayers = this.players.length;
@@ -105,6 +106,14 @@ public class QueryRegenerateEvent extends ServerEvent {
 
     public void setPlayerList(Player[] players) {
         this.players = players;
+    }
+
+    public String getVersion() {
+        return this.version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 
     public int getPlayerCount() {
@@ -162,7 +171,7 @@ public class QueryRegenerateEvent extends ServerEvent {
             KVdata.put("hostname", this.serverName);
             KVdata.put("gametype", this.gameType);
             KVdata.put("game_id", GAME_ID);
-            KVdata.put("version", this.version);
+            KVdata.put("version", "v" + this.version);
             KVdata.put("server_engine", this.server_engine);
             KVdata.put("plugins", plist.toString());
             KVdata.put("map", this.map);
