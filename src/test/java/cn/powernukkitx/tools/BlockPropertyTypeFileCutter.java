@@ -20,7 +20,7 @@ import java.util.Objects;
  */
 public class BlockPropertyTypeFileCutter {
 
-    static final String BLOCK_PROPERTY_TYPES_FILE_PATH = "cn/powernukkitx/block/block_property_types_allayserver.json";
+    static final String BLOCK_PROPERTY_TYPES_FILE_PATH = "cn/powernukkitx/block/block_property_types_allay.json";
     static final Path OUTPUT = Path.of("./src/main/resources/block_property_types.json");
 
     @SneakyThrows

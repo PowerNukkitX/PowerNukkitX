@@ -1,13 +1,13 @@
 package cn.powernukkitx.tools;
 
 import cn.nukkit.block.BlockAttributesTest;
+import cn.nukkit.nbt.NBTIO;
+import cn.nukkit.nbt.tag.CompoundTag;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonParser;
 import lombok.SneakyThrows;
 
 import java.io.BufferedInputStream;
-import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -20,22 +20,25 @@ import java.util.Objects;
  */
 public class BlockAttributeFileCutter {
 
-    static final String BLOCK_ATTRIBUTES_REFERENCE_FILE_PATH = "cn/powernukkitx/block/block_attributes.json";
+    static final String BLOCK_ATTRIBUTES_REFERENCE_FILE_PATH = "cn/powernukkitx/block/block_attributes_allay.nbt";
     static final Path OUTPUT = Path.of("./src/main/resources/block_color.json");
 
     @SneakyThrows
     public static void main(String[] args) {
-        var reader = new InputStreamReader(new BufferedInputStream(Objects.requireNonNull(BlockAttributesTest.class.getClassLoader().getResourceAsStream(BLOCK_ATTRIBUTES_REFERENCE_FILE_PATH))));
-        var parser = JsonParser.parseReader(reader);
-        var ext = new HashMap<Long, Color>();
-        for (var jsonElement : parser.getAsJsonArray()) {
-            var obj = jsonElement.getAsJsonObject();
-            var hash = obj.get("blockStateHash").getAsLong();
-            var colorObj = obj.get("color").getAsJsonObject();
-            var r = colorObj.get("r").getAsInt();
-            var g = colorObj.get("g").getAsInt();
-            var b = colorObj.get("b").getAsInt();
-            var a = obj.get("translucency").getAsFloat() >= 1 ? 0 : 255;
+        var nbt = NBTIO.readCompressed(new BufferedInputStream(
+                Objects.requireNonNull(
+                        BlockAttributesTest.class.getClassLoader().getResourceAsStream(BLOCK_ATTRIBUTES_REFERENCE_FILE_PATH),
+                        "block_attributes.nbt is missing!"
+                )
+        ));
+        var ext = new HashMap<Integer, Color>();
+        for (var block : nbt.getList("block", CompoundTag.class).getAll()) {
+            var hash = block.getInt("blockStateHash");
+            var color = block.getCompound("color");
+            var r = color.getInt("r");
+            var g = color.getInt("g");
+            var b = color.getInt("b");
+            var a = block.getFloat("translucency") >= 1 ? 0 : 255;
             ext.put(hash, new Color(r, g, b, a));
         }
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
