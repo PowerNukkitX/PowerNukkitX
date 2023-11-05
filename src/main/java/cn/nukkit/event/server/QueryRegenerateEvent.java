@@ -2,6 +2,8 @@ package cn.nukkit.event.server;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
 import cn.nukkit.network.protocol.ProtocolInfo;
@@ -108,10 +110,14 @@ public class QueryRegenerateEvent extends ServerEvent {
         this.players = players;
     }
 
+    @PowerNukkitXOnly
+    @Since("1.20.40-r2")
     public String getVersion() {
         return this.version;
     }
 
+    @PowerNukkitXOnly
+    @Since("1.20.40-r2")
     public void setVersion(String version) {
         this.version = version;
     }
