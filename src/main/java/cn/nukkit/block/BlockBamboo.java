@@ -239,7 +239,7 @@ public class BlockBamboo extends BlockTransparentMeta implements BlockFlowerPot.
 
     private boolean isSupportInvalid() {
         int downId = down().getId();
-        return downId != BAMBOO && downId != DIRT && downId != GRASS && downId != SAND && downId != GRAVEL && downId != PODZOL && downId != BAMBOO_SAPLING;
+        return downId != BAMBOO && downId != DIRT && downId != GRASS && downId != SAND && downId != GRAVEL && downId != PODZOL && downId != BAMBOO_SAPLING && downId != MOSS_BLOCK;
     }
 
     @Override
