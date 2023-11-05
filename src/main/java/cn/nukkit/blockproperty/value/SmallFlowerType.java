@@ -19,6 +19,7 @@
 package cn.nukkit.blockproperty.value;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockFlower;
@@ -90,7 +91,11 @@ public enum SmallFlowerType {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    WITHER_ROSE("Wither Rose", DyeColor.BLACK, BlockID.WITHER_ROSE);
+    WITHER_ROSE("Wither Rose", DyeColor.BLACK, BlockID.WITHER_ROSE),
+
+    @PowerNukkitXOnly
+    @Since("1.20.40-r2")
+    TORCHFLOWER("Torchflower", DyeColor.ORANGE, BlockID.TORCHFLOWER);
 
     private final String englishName;
     private final DyeColor dyeColor;

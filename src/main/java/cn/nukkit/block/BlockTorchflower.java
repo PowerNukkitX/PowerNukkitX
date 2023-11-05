@@ -1,13 +1,28 @@
 package cn.nukkit.block;
-
+import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.blockproperty.BlockProperties;
+import cn.nukkit.blockproperty.CommonBlockProperties;
+import cn.nukkit.blockproperty.value.SmallFlowerType;
+import cn.nukkit.item.Item;
+import org.jetbrains.annotations.NotNull;
 
-//todo complete
 @PowerNukkitXOnly
 @Since("1.20.10-r2")
-public class BlockTorchflower extends BlockTransparent {
+public class BlockTorchflower extends BlockFlower {
     public BlockTorchflower() {
+    }
+
+    @NotNull
+    @Override
+    public BlockProperties getProperties() {
+        return CommonBlockProperties.EMPTY_PROPERTIES;
+    }
+
+    @Override
+    public boolean onActivate(@NotNull Item item, Player player) {
+        return false;
     }
 
     public int getId() {
@@ -16,5 +31,15 @@ public class BlockTorchflower extends BlockTransparent {
 
     public String getName() {
         return "Torchflower";
+    }
+
+    @Override
+    public void setFlowerType(SmallFlowerType flowerType) {
+        setOnSingleFlowerType(SmallFlowerType.TORCHFLOWER, flowerType);
+    }
+
+    @Override
+    public SmallFlowerType getFlowerType() {
+        return SmallFlowerType.TORCHFLOWER;
     }
 }
