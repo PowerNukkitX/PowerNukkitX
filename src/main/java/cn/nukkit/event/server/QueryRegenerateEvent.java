@@ -171,7 +171,7 @@ public class QueryRegenerateEvent extends ServerEvent {
             KVdata.put("hostname", this.serverName);
             KVdata.put("gametype", this.gameType);
             KVdata.put("game_id", GAME_ID);
-            KVdata.put("version", "v" + this.version);
+            KVdata.put("version", this.version);
             KVdata.put("server_engine", this.server_engine);
             KVdata.put("plugins", plist.toString());
             KVdata.put("map", this.map);
