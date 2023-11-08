@@ -1,9 +1,14 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.ArrayBlockProperty;
 import cn.nukkit.blockproperty.BlockProperties;
+import cn.nukkit.item.Item;
+import cn.nukkit.math.BlockFace;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 //todo complete
 @PowerNukkitXOnly
@@ -31,5 +36,11 @@ public class BlockSnifferEgg extends BlockTransparentMeta {
 
     public String getName() {
         return "Sniffer Egg";
+    }
+
+    @Override
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+        this.setPropertyValue(CRACKED_STATE, "no_cracks");
+        return this.getLevel().setBlock(this, this);
     }
 }
