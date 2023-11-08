@@ -399,5 +399,10 @@ public interface ItemID {
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     int SOUL_CAMPFIRE = 801;
+
+    @Since("1.20.40-r2")
+    @PowerNukkitXOnly
+    int TORCHFLOWER_SEEDS = 802;
+
     //@PowerNukkitOnly int DEBUG_STICK = <Possible:> 802+;
 }

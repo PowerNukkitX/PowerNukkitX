@@ -457,7 +457,7 @@ public class Item implements Cloneable, BlockID, ItemID {
             list[SPYGLASS] = ItemSpyglass.class; //772
 
             list[SOUL_CAMPFIRE] = ItemCampfireSoul.class; //801
-
+            list[TORCHFLOWER_SEEDS] = ItemTorchflowerSeeds.class; // 802
 
             for (int i = 0; i < 256; ++i) {
                 if (Block.list[i] != null) {
